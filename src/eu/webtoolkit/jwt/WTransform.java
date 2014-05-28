@@ -253,6 +253,25 @@ public class WTransform {
 		ty = this.m_[M21] * x + this.m_[M22] * y + this.m_[M23];
 	}
 
+	public WRectF map(final WRectF rect) {
+		double minX;
+		double minY;
+		double maxX;
+		double maxY;
+		WPointF p = this.map(rect.getTopLeft());
+		minX = maxX = p.getX();
+		minY = maxY = p.getY();
+		for (int i = 0; i < 3; ++i) {
+			WPointF p2 = this.map(i == 0 ? rect.getBottomLeft() : i == 1 ? rect
+					.getTopRight() : rect.getBottomRight());
+			minX = Math.min(minX, p2.getX());
+			maxX = Math.max(maxX, p2.getX());
+			minY = Math.min(minY, p2.getY());
+			maxY = Math.max(maxY, p2.getY());
+		}
+		return new WRectF(minX, minY, maxX - minX, maxY - minY);
+	}
+
 	/**
 	 * Resets the transformation to the identity.
 	 * <p>

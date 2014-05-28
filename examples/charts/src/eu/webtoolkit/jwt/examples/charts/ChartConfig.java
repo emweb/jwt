@@ -120,9 +120,6 @@ public class ChartConfig extends WContainerWidget {
         p.resize(new WLength(880), WLength.Auto);
         p.setMargin(20, Side.Top, Side.Bottom);
 
-        if (chart_.isLegendEnabled())
-            chart_.setPlotAreaPadding(200, Side.Right);
-
         // ---- Series properties ----
 
         WStandardItemModel types = new WStandardItemModel(0, 1, this);
@@ -636,7 +633,6 @@ public class ChartConfig extends WContainerWidget {
         }
 
         chart_.setLegendEnabled(haveLegend);
-        chart_.setPlotAreaPadding(haveLegend ? 200 : 40, Side.Right);
     }
 
     private static boolean validate(WFormWidget w) {

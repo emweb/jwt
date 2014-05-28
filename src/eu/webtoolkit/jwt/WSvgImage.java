@@ -59,6 +59,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.nextShadowId_ = 0;
 		this.pathTranslation_ = new WPointF();
 		this.shapes_ = new StringBuilder();
+		this.fontMetrics_ = null;
 		this.fillStyle_ = "";
 		this.strokeStyle_ = "";
 		this.fontStyle_ = "";
@@ -87,7 +88,12 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
-		return EnumSet.of(WPaintDevice.FeatureFlag.CanWordWrap);
+		if (ServerSideFontMetrics.isAvailable()) {
+			return EnumSet.of(WPaintDevice.FeatureFlag.HasFontMetrics,
+					WPaintDevice.FeatureFlag.CanWordWrap);
+		} else {
+			return EnumSet.of(WPaintDevice.FeatureFlag.CanWordWrap);
+		}
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
@@ -300,7 +306,11 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new WException("WSvgImage::measureText() not supported");
+		if (!(this.fontMetrics_ != null)) {
+			this.fontMetrics_ = new ServerSideFontMetrics();
+		}
+		return this.fontMetrics_.measureText(this.getPainter().getFont(), text,
+				maxWidth, wordWrap);
 	}
 
 	public final WTextItem measureText(final CharSequence text) {
@@ -312,7 +322,10 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new WException("WSvgImage::fontMetrics() not supported");
+		if (!(this.fontMetrics_ != null)) {
+			this.fontMetrics_ = new ServerSideFontMetrics();
+		}
+		return this.fontMetrics_.fontMetrics(this.getPainter().getFont());
 	}
 
 	public void init() {
@@ -389,6 +402,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private int nextShadowId_;
 	private WPointF pathTranslation_;
 	private StringBuilder shapes_;
+	private ServerSideFontMetrics fontMetrics_;
 
 	private void finishPath() {
 		if (this.busyWithPath_) {

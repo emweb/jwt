@@ -484,7 +484,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @param javascript the JavaScript function.
 	 */
 	public void addListener(String javascript) {
-		addListener(null, new JavaScriptListener(null, null, "(" + javascript + ")(o,e);"));
+		addListener(null, new JavaScriptListener(null, null, "(" + javascript + ")(o,e,a1,a2,a3,a4,a5,a6);"));
 	}
 
 	/**
@@ -559,12 +559,23 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 
 	protected String createUserEventCall(String jsObject, String jsEvent, String name, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
+		WApplication app = WApplication.getInstance();
+
+		if (!this.isExposedSignal() && !isConnected())
+		    app.addExposedSignal(this);
+
 		StringBuilder out = new StringBuilder();
+
+		out.append("var a1=").append(arg1 == null || arg1.isEmpty() ? "null" : arg1).append(",");
+		out.append("a2=").append(arg2 == null || arg2.isEmpty() ? "null" : arg2).append(",");
+		out.append("a3=").append(arg3 == null || arg3.isEmpty() ? "null" : arg3).append(",");
+		out.append("a4=").append(arg4 == null || arg4.isEmpty() ? "null" : arg4).append(",");
+		out.append("a5=").append(arg5 == null || arg5.isEmpty() ? "null" : arg5).append(",");
+		out.append("a6=").append(arg6 == null || arg6.isEmpty() ? "null" : arg6).append(";");
 
 		out.append(getJavaScript());
 
-		WApplication app = WApplication.getInstance();
-		{
+		if (isExposedSignal()) {
 			out.append(app.getJavaScriptClass()).append(".emit('").append(getSender().getUniqueId());
 
 			if (jsObject != null)

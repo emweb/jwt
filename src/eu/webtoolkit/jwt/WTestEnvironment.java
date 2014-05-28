@@ -64,7 +64,6 @@ public class WTestEnvironment extends WEnvironment {
 		this.dialogExecuted_ = new Signal1<WDialog>();
 		this.popupExecuted_ = new Signal1<WPopupMenu>();
 		List<String> dummy = new ArrayList<String>();
-		this.configuration_ = configuration;
 		this.controller_ = new TestController(configuration);
 		this.init(type);
 	}
@@ -363,7 +362,6 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	private WebSession theSession_;
-	private Configuration configuration_;
 	private WtServlet controller_;
 	private Signal1<WDialog> dialogExecuted_;
 	private Signal1<WPopupMenu> popupExecuted_;

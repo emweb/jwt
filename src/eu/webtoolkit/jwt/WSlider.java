@@ -99,7 +99,7 @@ public class WSlider extends WFormWidget {
 		this.maximum_ = 99;
 		this.value_ = 0;
 		this.valueChanged_ = new Signal1<Integer>(this);
-		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
+		this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {
 		};
 		this.paintedSlider_ = null;
 		this.resize(new WLength(150), new WLength(50));
@@ -136,7 +136,7 @@ public class WSlider extends WFormWidget {
 		this.maximum_ = 99;
 		this.value_ = 0;
 		this.valueChanged_ = new Signal1<Integer>(this);
-		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
+		this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {
 		};
 		this.paintedSlider_ = null;
 		if (orientation == Orientation.Horizontal) {

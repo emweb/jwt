@@ -464,8 +464,6 @@ class GraphicsWidgets extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WCartesian3DChart chart = new WCartesian3DChart(container);
 		chart.setType(ChartType.ScatterPlot);
-		chart.setRenderOptions(EnumSet
-				.of(WGLWidget.RenderOption.ClientSideRendering));
 		final WCssDecorationStyle style = new WCssDecorationStyle();
 		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
 				WColor.black));
@@ -480,6 +478,8 @@ class GraphicsWidgets extends TopicWidget {
 		chart.axis(Axis.XAxis_3D).setTitle("X");
 		chart.axis(Axis.YAxis_3D).setTitle("Y");
 		chart.axis(Axis.ZAxis_3D).setTitle("Z");
+		chart.setIntersectionLinesEnabled(true);
+		chart.setIntersectionLinesColor(new WColor(0, 255, 255));
 		WStandardItemModel model1 = new SombreroData(40, 40, container);
 		WGridData dataset1 = new WGridData(model1);
 		dataset1.setType(Series3DType.SurfaceSeries3D);
@@ -513,9 +513,15 @@ class GraphicsWidgets extends TopicWidget {
 		WStandardItemModel model3 = new SpiralData(100, container);
 		WScatterData dataset3 = new WScatterData(model3);
 		dataset3.setPointSize(5);
+		WStandardItemModel model4 = new HorizontalPlaneData(20, 20, container);
+		WEquidistantGridData dataset4 = new WEquidistantGridData(model4, -10,
+				1.0f, -10, 1.0f);
+		dataset4.setType(Series3DType.SurfaceSeries3D);
+		dataset4.setSurfaceMeshEnabled(true);
 		chart.addDataSeries(dataset1);
 		chart.addDataSeries(dataset2);
 		chart.addDataSeries(dataset3);
+		chart.addDataSeries(dataset4);
 		chart.setAlternativeContent(new WImage(new WLink(
 				"pics/numericalChartScreenshot.png")));
 		return container;
@@ -525,8 +531,6 @@ class GraphicsWidgets extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WCartesian3DChart chart = new WCartesian3DChart(container);
 		chart.setType(ChartType.CategoryChart);
-		chart.setRenderOptions(EnumSet
-				.of(WGLWidget.RenderOption.ClientSideRendering));
 		final WCssDecorationStyle style = new WCssDecorationStyle();
 		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
 				WColor.black));

@@ -63,6 +63,38 @@ public class WCartesian3DChart extends WGLWidget {
 			.getLogger(WCartesian3DChart.class);
 
 	/**
+	 * An invisible intersection plane.
+	 * <p>
+	 * 
+	 * Describes an invisible intersection plane, with the axis it is
+	 * perpendicular to, its position and the color of the intersection.
+	 */
+	public static class IntersectionPlane {
+		private static Logger logger = LoggerFactory
+				.getLogger(IntersectionPlane.class);
+
+		public Axis axis;
+		public double position;
+		public WColor color;
+
+		/**
+		 * Constructor.
+		 * <p>
+		 * Create an intersection plane perpendicular to the given axis, at the
+		 * given position on that axis, and the color that the intersection
+		 * lines should have.
+		 * <p>
+		 * 
+		 * @see WCartesian3DChart#setIntersectionPlanes(List intersectionPlanes)
+		 */
+		public IntersectionPlane(Axis axis, double position, WColor col) {
+			this.axis = axis;
+			this.position = position;
+			this.color = col;
+		}
+	}
+
+	/**
 	 * Constructor.
 	 * <p>
 	 * Constructs a cartesian 3D chart, with the type set to ScatterPlot, a
@@ -98,7 +130,10 @@ public class WCartesian3DChart extends WGLWidget {
 		this.currentBottomOffset_ = 0;
 		this.currentLeftOffset_ = 0;
 		this.currentRightOffset_ = 0;
-		this.updates_ = EnumSet.noneOf(WCartesian3DChart.ChartUpdates.class);
+		this.updates_ = EnumSet.noneOf(ChartUpdates.class);
+		this.intersectionLinesEnabled_ = false;
+		this.intersectionLinesColor_ = new WColor();
+		this.intersectionPlanes_ = new ArrayList<WCartesian3DChart.IntersectionPlane>();
 		this.fragmentShader_ = new WGLWidget.Shader();
 		this.vertexShader_ = new WGLWidget.Shader();
 		this.fragmentShader2_ = new WGLWidget.Shader();
@@ -107,10 +142,15 @@ public class WCartesian3DChart extends WGLWidget {
 		this.cubeLineVertShader_ = new WGLWidget.Shader();
 		this.vertexShader2D_ = new WGLWidget.Shader();
 		this.fragmentShader2D_ = new WGLWidget.Shader();
+		this.intersectionLinesFragmentShader_ = new WGLWidget.Shader();
+		this.clippingPlaneFragShader_ = new WGLWidget.Shader();
+		this.clippingPlaneVertexShader_ = new WGLWidget.Shader();
 		this.cubeProgram_ = new WGLWidget.Program();
 		this.cubeLineProgram_ = new WGLWidget.Program();
 		this.axisProgram_ = new WGLWidget.Program();
 		this.textureProgram_ = new WGLWidget.Program();
+		this.intersectionLinesProgram_ = new WGLWidget.Program();
+		this.clippingPlaneProgram_ = new WGLWidget.Program();
 		this.cube_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
 		this.cube_planeNormalAttribute_ = new WGLWidget.AttribLocation();
 		this.cube_textureCoordAttribute_ = new WGLWidget.AttribLocation();
@@ -141,6 +181,23 @@ public class WCartesian3DChart extends WGLWidget {
 		this.texture_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
 		this.texture_vertexTextureCoAttribute_ = new WGLWidget.AttribLocation();
 		this.texture_texSamplerUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
+		this.intersectionLines_vertexTextureCoAttribute_ = new WGLWidget.AttribLocation();
+		this.intersectionLines_cameraUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_viewportWidthUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_viewportHeightUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_positionSamplerUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_colorUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_meshIndexSamplerUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
+		this.clippingPlane_mvMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_pMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_cMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_clipPtUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_dataMinPtUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_dataMaxPtUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_clippingAxis_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_drawPositionUniform_ = new WGLWidget.UniformLocation();
 		this.pMatrix_ = new javax.vecmath.Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f);
@@ -188,6 +245,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.legendTexCoBuffer_ = new WGLWidget.Buffer();
 		this.colorMapPosBuffer_ = new WGLWidget.Buffer();
 		this.colorMapTexCoBuffer_ = new WGLWidget.Buffer();
+		this.clippingPlaneVertBuffer_ = new WGLWidget.Buffer();
 		this.horizAxisTexture_ = new WGLWidget.Texture();
 		this.horizAxisTexture2_ = new WGLWidget.Texture();
 		this.vertAxisTexture_ = new WGLWidget.Texture();
@@ -197,6 +255,13 @@ public class WCartesian3DChart extends WGLWidget {
 		this.titleTexture_ = new WGLWidget.Texture();
 		this.legendTexture_ = new WGLWidget.Texture();
 		this.colorMapTexture_ = new WGLWidget.Texture();
+		this.meshIndexTexture_ = new WGLWidget.Texture();
+		this.positionTexture_ = new WGLWidget.Texture();
+		this.intersectionLinesTexture_ = new WGLWidget.Texture();
+		this.meshIndexFramebuffer_ = new WGLWidget.Framebuffer();
+		this.positionFramebuffer_ = new WGLWidget.Framebuffer();
+		this.intersectionLinesFramebuffer_ = new WGLWidget.Framebuffer();
+		this.offscreenDepthbuffer_ = new WGLWidget.Renderbuffer();
 		this.XYGridEnabled_[0] = false;
 		this.XYGridEnabled_[1] = false;
 		this.XZGridEnabled_[0] = false;
@@ -214,6 +279,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15,
 				WLength.Unit.Point));
+		this.addJavaScriptMatrix4(this.jsMatrix_);
 	}
 
 	/**
@@ -261,7 +327,10 @@ public class WCartesian3DChart extends WGLWidget {
 		this.currentBottomOffset_ = 0;
 		this.currentLeftOffset_ = 0;
 		this.currentRightOffset_ = 0;
-		this.updates_ = EnumSet.noneOf(WCartesian3DChart.ChartUpdates.class);
+		this.updates_ = EnumSet.noneOf(ChartUpdates.class);
+		this.intersectionLinesEnabled_ = false;
+		this.intersectionLinesColor_ = new WColor();
+		this.intersectionPlanes_ = new ArrayList<WCartesian3DChart.IntersectionPlane>();
 		this.fragmentShader_ = new WGLWidget.Shader();
 		this.vertexShader_ = new WGLWidget.Shader();
 		this.fragmentShader2_ = new WGLWidget.Shader();
@@ -270,10 +339,15 @@ public class WCartesian3DChart extends WGLWidget {
 		this.cubeLineVertShader_ = new WGLWidget.Shader();
 		this.vertexShader2D_ = new WGLWidget.Shader();
 		this.fragmentShader2D_ = new WGLWidget.Shader();
+		this.intersectionLinesFragmentShader_ = new WGLWidget.Shader();
+		this.clippingPlaneFragShader_ = new WGLWidget.Shader();
+		this.clippingPlaneVertexShader_ = new WGLWidget.Shader();
 		this.cubeProgram_ = new WGLWidget.Program();
 		this.cubeLineProgram_ = new WGLWidget.Program();
 		this.axisProgram_ = new WGLWidget.Program();
 		this.textureProgram_ = new WGLWidget.Program();
+		this.intersectionLinesProgram_ = new WGLWidget.Program();
+		this.clippingPlaneProgram_ = new WGLWidget.Program();
 		this.cube_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
 		this.cube_planeNormalAttribute_ = new WGLWidget.AttribLocation();
 		this.cube_textureCoordAttribute_ = new WGLWidget.AttribLocation();
@@ -304,6 +378,23 @@ public class WCartesian3DChart extends WGLWidget {
 		this.texture_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
 		this.texture_vertexTextureCoAttribute_ = new WGLWidget.AttribLocation();
 		this.texture_texSamplerUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
+		this.intersectionLines_vertexTextureCoAttribute_ = new WGLWidget.AttribLocation();
+		this.intersectionLines_cameraUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_viewportWidthUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_viewportHeightUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_positionSamplerUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_colorUniform_ = new WGLWidget.UniformLocation();
+		this.intersectionLines_meshIndexSamplerUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_vertexPositionAttribute_ = new WGLWidget.AttribLocation();
+		this.clippingPlane_mvMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_pMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_cMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_clipPtUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_dataMinPtUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_dataMaxPtUniform_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_clippingAxis_ = new WGLWidget.UniformLocation();
+		this.clippingPlane_drawPositionUniform_ = new WGLWidget.UniformLocation();
 		this.pMatrix_ = new javax.vecmath.Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f);
@@ -351,6 +442,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.legendTexCoBuffer_ = new WGLWidget.Buffer();
 		this.colorMapPosBuffer_ = new WGLWidget.Buffer();
 		this.colorMapTexCoBuffer_ = new WGLWidget.Buffer();
+		this.clippingPlaneVertBuffer_ = new WGLWidget.Buffer();
 		this.horizAxisTexture_ = new WGLWidget.Texture();
 		this.horizAxisTexture2_ = new WGLWidget.Texture();
 		this.vertAxisTexture_ = new WGLWidget.Texture();
@@ -360,6 +452,13 @@ public class WCartesian3DChart extends WGLWidget {
 		this.titleTexture_ = new WGLWidget.Texture();
 		this.legendTexture_ = new WGLWidget.Texture();
 		this.colorMapTexture_ = new WGLWidget.Texture();
+		this.meshIndexTexture_ = new WGLWidget.Texture();
+		this.positionTexture_ = new WGLWidget.Texture();
+		this.intersectionLinesTexture_ = new WGLWidget.Texture();
+		this.meshIndexFramebuffer_ = new WGLWidget.Framebuffer();
+		this.positionFramebuffer_ = new WGLWidget.Framebuffer();
+		this.intersectionLinesFramebuffer_ = new WGLWidget.Framebuffer();
+		this.offscreenDepthbuffer_ = new WGLWidget.Renderbuffer();
 		this.XYGridEnabled_[0] = false;
 		this.XYGridEnabled_[1] = false;
 		this.XZGridEnabled_[0] = false;
@@ -372,6 +471,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15,
 				WLength.Unit.Point));
+		this.addJavaScriptMatrix4(this.jsMatrix_);
 	}
 
 	/**
@@ -425,7 +525,7 @@ public class WCartesian3DChart extends WGLWidget {
 		if ((dataseries.getTitle().length() == 0)) {
 			dataseries.setDefaultTitle(++this.seriesCounter_);
 		}
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLContext));
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
 	/**
@@ -439,7 +539,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void removeDataSeries(WAbstractDataSeries3D dataseries) {
 		this.dataSeriesVector_.remove(dataseries);
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLContext));
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
 	/**
@@ -506,7 +606,7 @@ public class WCartesian3DChart extends WGLWidget {
 			}
 			break;
 		}
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLContext));
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
 	/**
@@ -521,6 +621,79 @@ public class WCartesian3DChart extends WGLWidget {
 
 	// public boolean isGridEnabled(Plane plane, Axis axis) ;
 	/**
+	 * Set whether intersection lines are shown between surface charts.
+	 * <p>
+	 * This is disabled by default.
+	 */
+	public void setIntersectionLinesEnabled(boolean enabled) {
+		this.intersectionLinesEnabled_ = enabled;
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+	}
+
+	/**
+	 * Set whether intersection lines are shown between surface charts.
+	 * <p>
+	 * Calls {@link #setIntersectionLinesEnabled(boolean enabled)
+	 * setIntersectionLinesEnabled(true)}
+	 */
+	public final void setIntersectionLinesEnabled() {
+		setIntersectionLinesEnabled(true);
+	}
+
+	/**
+	 * Returns whether intersection lines are shown between surface charts.
+	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setIntersectionLinesEnabled(boolean enabled)
+	 */
+	public boolean isIntersectionLinesEnabled() {
+		return this.intersectionLinesEnabled_;
+	}
+
+	/**
+	 * Sets the color of the intersection lines between surface charts.
+	 */
+	public void setIntersectionLinesColor(WColor color) {
+		this.intersectionLinesColor_ = color;
+		this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
+	}
+
+	/**
+	 * Gets the color of the intersection lines between surface charts.
+	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setIntersectionLinesColor(WColor color)
+	 */
+	public WColor getIntersectionLinesColor() {
+		return this.intersectionLinesColor_;
+	}
+
+	/**
+	 * Set the invisible planes with which intersections are drawn.
+	 * <p>
+	 * This plane is perpendicular to the given axis, and the intersection is
+	 * shown in the given color.
+	 * <p>
+	 * Note that render times will take increasingly longer as you add more
+	 * intersection planes.
+	 */
+	public void setIntersectionPlanes(
+			final List<WCartesian3DChart.IntersectionPlane> intersectionPlanes) {
+		Utils.copyList(intersectionPlanes, this.intersectionPlanes_);
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+	}
+
+	/**
+	 * Get the invisible planes with which intersections are drawn.
+	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setIntersectionPlanes(List intersectionPlanes)
+	 */
+	public List<WCartesian3DChart.IntersectionPlane> getIntersectionPlanes() {
+		return this.intersectionPlanes_;
+	}
+
+	/**
 	 * Sets the pen used for drawing the gridlines.
 	 * <p>
 	 * The default pen for drawing gridlines is a black pen of width 0.
@@ -530,7 +703,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setGridLinesPen(final WPen pen) {
 		this.gridLinesPen_ = pen;
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLContext));
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
 	/**
@@ -596,7 +769,7 @@ public class WCartesian3DChart extends WGLWidget {
 		}
 		;
 		this.chartPalette_ = palette;
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLContext));
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
 	/**
@@ -617,7 +790,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setBackground(final WColor background) {
 		this.background_ = background;
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLContext));
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
 	/**
@@ -640,7 +813,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setTitle(final CharSequence title) {
 		this.title_ = WString.toWString(title);
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 	}
 
 	/**
@@ -664,7 +837,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setTitleFont(final WFont titleFont) {
 		this.titleFont_ = titleFont;
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 	}
 
 	/**
@@ -694,7 +867,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setLegendEnabled(boolean enabled) {
 		this.legend_.setLegendEnabled(enabled);
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 	}
 
 	/**
@@ -731,7 +904,7 @@ public class WCartesian3DChart extends WGLWidget {
 	public void setLegendLocation(Side side, AlignmentFlag alignment) {
 		this.legend_.setLegendLocation(LegendLocation.LegendOutside, side,
 				alignment);
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 	}
 
 	/**
@@ -750,7 +923,7 @@ public class WCartesian3DChart extends WGLWidget {
 	public void setLegendStyle(final WFont font, final WPen border,
 			final WBrush background) {
 		this.legend_.setLegendStyle(font, border, background);
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 	}
 
 	/**
@@ -834,8 +1007,9 @@ public class WCartesian3DChart extends WGLWidget {
 	 * The default value is a single column, 100 pixels wide.
 	 */
 	public void setLegendColumns(int columns, final WLength columnWidth) {
-		this.legend_.setLegendColumns(columns, columnWidth);
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.legend_.setLegendColumns(columns);
+		this.legend_.setLegendColumnWidth(columnWidth);
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 	}
 
 	/**
@@ -849,7 +1023,7 @@ public class WCartesian3DChart extends WGLWidget {
 	public void initLayout() {
 		this.textureScaling_ = 1;
 		int widgetWidth = (int) this.getWidth().getValue();
-		while (widgetWidth < 1024) {
+		while (widgetWidth > 0 && widgetWidth < 1024) {
 			this.textureScaling_ *= 2;
 			widgetWidth *= 2;
 		}
@@ -895,8 +1069,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setCameraMatrix(final javax.vecmath.Matrix4f matrix) {
 		this.worldTransform_ = matrix;
-		this.updateChart(EnumSet
-				.of(WCartesian3DChart.ChartUpdates.CameraMatrix));
+		this.updateChart(EnumSet.of(ChartUpdates.CameraMatrix));
 	}
 
 	/**
@@ -913,12 +1086,22 @@ public class WCartesian3DChart extends WGLWidget {
 		return this.jsMatrix_.getValue();
 	}
 
-	public javax.vecmath.Matrix4f getPMatrix() {
-		return this.pMatrix_;
-	}
-
+	/**
+	 * Get the current camera matrix as a JavaScriptMatrix4x4.
+	 * <p>
+	 * This JavaScriptMatrix4x4 can be used to implement a custom mouse handler
+	 * using {@link WGLWidget#setClientSideMouseHandler(String handlerCode)
+	 * WGLWidget#setClientSideMouseHandler()}.
+	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setCameraMatrix(javax.vecmath.Matrix4f matrix)
+	 */
 	public WGLWidget.JavaScriptMatrix4x4 getJsMatrix() {
 		return this.jsMatrix_;
+	}
+
+	public javax.vecmath.Matrix4f getPMatrix() {
+		return this.pMatrix_;
 	}
 
 	public double toPlotCubeCoords(double value, Axis axis) {
@@ -959,18 +1142,20 @@ public class WCartesian3DChart extends WGLWidget {
 			WebGLUtils.rotate(this.worldTransform_, 5.0, 0.0, 1.0, 0.0);
 			WebGLUtils.scale(this.worldTransform_, (float) 1.8);
 			WebGLUtils.translate(this.worldTransform_, -0.5, -0.5, -0.5);
+			this.initJavaScriptMatrix4(this.jsMatrix_);
+			this.setClientSideLookAtHandler(this.jsMatrix_, 0.5, 0.5, 0.5, 0,
+					1, 0, 0.005, 0.005);
+			this.isViewSet_ = true;
 		}
-		this.jsMatrix_ = this.createJavaScriptMatrix4();
-		this.setClientSideLookAtHandler(this.jsMatrix_, 0.5, 0.5, 0.5, 0, 1, 0,
-				0.005, 0.005);
 		double ratio = this.getHeight().getValue() / this.getWidth().getValue();
 		WebGLUtils
 				.ortho(this.pMatrix_, -2, 2, -2 * ratio, 2 * ratio, -100, 100);
 		this.disable(WGLWidget.GLenum.DEPTH_TEST);
 		this.cullFace(WGLWidget.GLenum.BACK);
 		this.enable(WGLWidget.GLenum.CULL_FACE);
-		this.viewport(0, 0, (int) this.getWidth().getValue(), (int) this
-				.getHeight().getValue());
+		int w = (int) this.getWidth().getValue();
+		int h = (int) this.getHeight().getValue();
+		this.viewport(0, 0, w < 0 ? 0 : w, h < 0 ? 0 : h);
 		this.init2DShaders();
 		float[] vertexPos = { -1, 1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0 };
 		float[] texCo = { 0, 1, 1, 1, 0, 0, 1, 0 };
@@ -994,13 +1179,31 @@ public class WCartesian3DChart extends WGLWidget {
 		}
 		this.bufferDatafv(WGLWidget.GLenum.ARRAY_BUFFER, texCoBuf,
 				WGLWidget.GLenum.STATIC_DRAW);
+		this.clippingPlaneVertBuffer_ = this.createBuffer();
+		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+				this.clippingPlaneVertBuffer_);
+		java.nio.ByteBuffer clippingPlaneBuf = WebGLUtils
+				.newByteBuffer(4 * (8));
+		clippingPlaneBuf.putFloat(-1.0f);
+		clippingPlaneBuf.putFloat(-1.0f);
+		clippingPlaneBuf.putFloat(-1.0f);
+		clippingPlaneBuf.putFloat(2.0f);
+		clippingPlaneBuf.putFloat(2.0f);
+		clippingPlaneBuf.putFloat(-1.0f);
+		clippingPlaneBuf.putFloat(2.0f);
+		clippingPlaneBuf.putFloat(2.0f);
+		this.bufferDatafv(WGLWidget.GLenum.ARRAY_BUFFER, clippingPlaneBuf,
+				WGLWidget.GLenum.STATIC_DRAW);
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			this.dataSeriesVector_.get(i).initializeGL();
 		}
-		this.updateChart(EnumUtils.or(EnumSet.of(
-				WCartesian3DChart.ChartUpdates.GLContext,
-				WCartesian3DChart.ChartUpdates.GLTextures),
-				WCartesian3DChart.ChartUpdates.CameraMatrix));
+		if (this.isRestoringContext()) {
+			this.updateChart(EnumSet.of(ChartUpdates.GLContext,
+					ChartUpdates.GLTextures));
+		} else {
+			this.updateChart(EnumUtils.or(EnumSet.of(ChartUpdates.GLContext,
+					ChartUpdates.GLTextures), ChartUpdates.CameraMatrix));
+		}
 	}
 
 	/**
@@ -1009,6 +1212,9 @@ public class WCartesian3DChart extends WGLWidget {
 	 * Specialized for chart rendering.
 	 */
 	public void paintGL() {
+		this.clearColor(this.background_.getRed() / 255.0, this.background_
+				.getGreen() / 255.0, this.background_.getBlue() / 255.0,
+				this.background_.getAlpha() / 255.0);
 		this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
 				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
 		this.enable(WGLWidget.GLenum.BLEND);
@@ -1168,7 +1374,87 @@ public class WCartesian3DChart extends WGLWidget {
 		this.disableVertexAttribArray(this.axis_outOfPlaneNormalAttribute_);
 		this.disable(WGLWidget.GLenum.BLEND);
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
-			this.dataSeriesVector_.get(i).paintGL();
+			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+					.get(i))
+					: null);
+			if (gridData != null
+					&& gridData.getType() == Series3DType.SurfaceSeries3D
+					&& gridData.isClippingLinesEnabled()) {
+				gridData.paintGL();
+				this.renderClippingLines(gridData);
+				this.enable(WGLWidget.GLenum.BLEND);
+				this.disable(WGLWidget.GLenum.CULL_FACE);
+				this.disable(WGLWidget.GLenum.DEPTH_TEST);
+				this.depthMask(false);
+				if (!this.intersectionLinesTexture_.isNull()) {
+					this.paintPeripheralTexture(this.overlayPosBuffer_,
+							this.overlayTexCoBuffer_,
+							this.intersectionLinesTexture_);
+				}
+				this.depthMask(true);
+				this.disable(WGLWidget.GLenum.BLEND);
+				this.enable(WGLWidget.GLenum.CULL_FACE);
+				this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			}
+		}
+		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+					.get(i))
+					: null);
+			if (gridData != null
+					&& gridData.getType() == Series3DType.SurfaceSeries3D
+					&& !gridData.isClippingLinesEnabled()) {
+				gridData.paintGL();
+			}
+		}
+		if (!this.intersectionLinesEnabled_
+				&& this.intersectionPlanes_.isEmpty()) {
+			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+				WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+						.get(i))
+						: null);
+				if (!(gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D)) {
+					this.dataSeriesVector_.get(i).paintGL();
+				}
+			}
+		}
+		if (this.intersectionLinesEnabled_
+				|| !this.intersectionPlanes_.isEmpty()) {
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.intersectionLinesFramebuffer_);
+			this.clearColor(0.0, 0.0, 0.0, 0.0);
+			this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					new WGLWidget.Framebuffer());
+			if (this.intersectionLinesEnabled_) {
+				this.renderIntersectionLines();
+			}
+			if (!this.intersectionPlanes_.isEmpty()) {
+				this.renderIntersectionLinesWithInvisiblePlanes();
+			}
+			this.enable(WGLWidget.GLenum.BLEND);
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.disable(WGLWidget.GLenum.DEPTH_TEST);
+			this.depthMask(false);
+			if (!this.intersectionLinesTexture_.isNull()) {
+				this.paintPeripheralTexture(this.overlayPosBuffer_,
+						this.overlayTexCoBuffer_,
+						this.intersectionLinesTexture_);
+			}
+			this.depthMask(true);
+			this.disable(WGLWidget.GLenum.BLEND);
+			this.enable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+				WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+						.get(i))
+						: null);
+				if (!(gridData != null)
+						|| gridData.getType() != Series3DType.SurfaceSeries3D) {
+					this.dataSeriesVector_.get(i).paintGL();
+				}
+			}
 		}
 		this.enable(WGLWidget.GLenum.BLEND);
 		this.disable(WGLWidget.GLenum.CULL_FACE);
@@ -1194,8 +1480,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * Specialized for chart rendering.
 	 */
 	public void updateGL() {
-		if (!EnumUtils.mask(this.updates_,
-				WCartesian3DChart.ChartUpdates.GLContext).isEmpty()) {
+		if (!EnumUtils.mask(this.updates_, ChartUpdates.GLContext).isEmpty()) {
 			this.deleteAllGLResources();
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 				this.dataSeriesVector_.get(i).deleteAllGLResources();
@@ -1204,19 +1489,36 @@ public class WCartesian3DChart extends WGLWidget {
 					.getGreen() / 255.0, this.background_.getBlue() / 255.0,
 					this.background_.getAlpha() / 255.0);
 			this.initializePlotCube();
+			if (this.intersectionLinesEnabled_
+					|| !this.intersectionPlanes_.isEmpty()) {
+				this.initializeIntersectionLinesProgram();
+				this.initOffscreenBuffer();
+			}
+			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+				WAbstractGridData data = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+						.get(i))
+						: null);
+				if (data != null) {
+					this.initializeClippingPlaneProgram();
+					if (!this.intersectionLinesEnabled_
+							&& this.intersectionPlanes_.isEmpty()) {
+						this.initializeIntersectionLinesProgram();
+						this.initOffscreenBuffer();
+					}
+					break;
+				}
+			}
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 				this.dataSeriesVector_.get(i).updateGL();
 			}
 			this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.RESIZE_GL));
 			this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
 		}
-		if (!EnumUtils.mask(this.updates_,
-				WCartesian3DChart.ChartUpdates.CameraMatrix).isEmpty()) {
+		if (!EnumUtils.mask(this.updates_, ChartUpdates.CameraMatrix).isEmpty()) {
 			this.setJavaScriptMatrix4(this.jsMatrix_, this.worldTransform_);
 			this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
 		}
-		if (!EnumUtils.mask(this.updates_,
-				WCartesian3DChart.ChartUpdates.GLTextures).isEmpty()) {
+		if (!EnumUtils.mask(this.updates_, ChartUpdates.GLTextures).isEmpty()) {
 			this.deleteGLTextures();
 			this.loadCubeTextures();
 			this.currentTopOffset_ = 0;
@@ -1260,35 +1562,72 @@ public class WCartesian3DChart extends WGLWidget {
 		this.uniformMatrix4(this.cubeLine_pMatrixUniform_, this.pMatrix_);
 		this.useProgram(this.axisProgram_);
 		this.uniformMatrix4(this.axis_pMatrixUniform_, this.pMatrix_);
+		boolean clippingLinesEnabled = false;
+		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+			WAbstractGridData data = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+					.get(i))
+					: null);
+			if (data != null && data.isClippingLinesEnabled()) {
+				clippingLinesEnabled = true;
+				break;
+			}
+		}
+		if (this.intersectionLinesEnabled_ || clippingLinesEnabled
+				|| !this.intersectionPlanes_.isEmpty()) {
+			this.resizeOffscreenBuffer();
+		}
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			this.dataSeriesVector_.get(i).resizeGL();
 		}
 	}
 
-	enum ChartUpdates {
-		CameraMatrix, GLContext, GLTextures;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
-		}
-	}
-
-	public void updateChart(EnumSet<WCartesian3DChart.ChartUpdates> flags) {
+	/**
+	 * Update the chart.
+	 */
+	public void updateChart(EnumSet<ChartUpdates> flags) {
 		this.updates_.addAll(flags);
 		this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.UPDATE_GL));
 	}
 
-	public final void updateChart(WCartesian3DChart.ChartUpdates flag,
-			WCartesian3DChart.ChartUpdates... flags) {
+	/**
+	 * Update the chart.
+	 * <p>
+	 * Calls {@link #updateChart(EnumSet flags) updateChart(EnumSet.of(flag,
+	 * flags))}
+	 */
+	public final void updateChart(ChartUpdates flag, ChartUpdates... flags) {
 		updateChart(EnumSet.of(flag, flags));
 	}
 
 	public void resize(final WLength width, final WLength height) {
-		this.updateChart(EnumSet.of(WCartesian3DChart.ChartUpdates.GLTextures));
+		this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 		super.resize(width, height);
+	}
+
+	public void createRay(double x, double y, final javax.vecmath.GVector eye,
+			final javax.vecmath.GVector direction) {
+		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(this.pMatrix_,
+				this.getCameraMatrix());
+		javax.vecmath.Matrix4f invTransform = transform;
+		invTransform.invert();
+		javax.vecmath.GVector near = new javax.vecmath.GVector(new double[] {
+				x / this.getWidth().getValue() * 2 - 1,
+				y / this.getHeight().getValue() * -2 + 1, -1.0, 1.0 });
+		javax.vecmath.GVector far = new javax.vecmath.GVector(new double[] {
+				near.getElement(0), near.getElement(1), 1.0, 1.0 });
+		near = WebGLUtils.multiply(invTransform, near);
+		far = WebGLUtils.multiply(invTransform, far);
+		near = WebGLUtils.multiply(near, 1.0 / near.getElement(3));
+		far = WebGLUtils.multiply(far, 1.0 / far.getElement(3));
+		javax.vecmath.GVector ray = new javax.vecmath.GVector(WebGLUtils
+				.subtract(far, near));
+		WebGLUtils.normalize(ray);
+		direction.setElement(0, ray.getElement(0));
+		direction.setElement(1, ray.getElement(2));
+		direction.setElement(2, ray.getElement(1));
+		eye.setElement(0, near.getElement(0));
+		eye.setElement(1, near.getElement(2));
+		eye.setElement(2, near.getElement(1));
 	}
 
 	private void initializePlotCube() {
@@ -1574,18 +1913,25 @@ public class WCartesian3DChart extends WGLWidget {
 		if (this.cubeProgram_.isNull()) {
 			return;
 		}
-		this.detachShader(this.cubeProgram_, this.fragmentShader_);
-		this.detachShader(this.cubeProgram_, this.vertexShader_);
-		this.detachShader(this.axisProgram_, this.fragmentShader2_);
-		this.detachShader(this.axisProgram_, this.vertexShader2_);
-		this.deleteShader(this.fragmentShader_);
-		this.deleteShader(this.vertexShader_);
-		this.deleteShader(this.fragmentShader2_);
-		this.deleteShader(this.vertexShader2_);
-		this.deleteProgram(this.cubeProgram_);
-		this.cubeProgram_.clear();
-		this.deleteProgram(this.axisProgram_);
-		this.axisProgram_.clear();
+		if (!this.intersectionLinesProgram_.isNull()) {
+			this.detachShader(this.intersectionLinesProgram_,
+					this.intersectionLinesFragmentShader_);
+			this.detachShader(this.intersectionLinesProgram_,
+					this.vertexShader2D_);
+			this.deleteShader(this.intersectionLinesFragmentShader_);
+			this.deleteProgram(this.intersectionLinesProgram_);
+			this.intersectionLinesProgram_.clear();
+		}
+		if (!this.clippingPlaneProgram_.isNull()) {
+			this.detachShader(this.clippingPlaneProgram_,
+					this.clippingPlaneFragShader_);
+			this.detachShader(this.clippingPlaneProgram_,
+					this.clippingPlaneVertexShader_);
+			this.deleteShader(this.clippingPlaneFragShader_);
+			this.deleteShader(this.clippingPlaneVertexShader_);
+			this.deleteProgram(this.clippingPlaneProgram_);
+			this.clippingPlaneProgram_.clear();
+		}
 		this.deleteBuffer(this.cubeBuffer_);
 		this.deleteBuffer(this.cubeNormalsBuffer_);
 		this.deleteBuffer(this.cubeIndicesBuffer_);
@@ -1604,6 +1950,19 @@ public class WCartesian3DChart extends WGLWidget {
 		this.cubeTexCoords_.clear();
 		this.deleteBuffer(this.axisTexCoordsHoriz_);
 		this.axisTexCoordsHoriz_.clear();
+		this.detachShader(this.cubeProgram_, this.fragmentShader_);
+		this.detachShader(this.cubeProgram_, this.vertexShader_);
+		this.detachShader(this.axisProgram_, this.fragmentShader2_);
+		this.detachShader(this.axisProgram_, this.vertexShader2_);
+		this.deleteShader(this.fragmentShader_);
+		this.deleteShader(this.vertexShader_);
+		this.deleteShader(this.fragmentShader2_);
+		this.deleteShader(this.vertexShader2_);
+		this.deleteProgram(this.cubeProgram_);
+		this.cubeProgram_.clear();
+		this.deleteProgram(this.axisProgram_);
+		this.axisProgram_.clear();
+		this.deleteOffscreenBuffer();
 		this.clearBinaryResources();
 	}
 
@@ -1635,6 +1994,590 @@ public class WCartesian3DChart extends WGLWidget {
 			this.deleteTexture(this.colorMapTexture_);
 		}
 		this.colorMapTexture_.clear();
+	}
+
+	private void initializeIntersectionLinesProgram() {
+		this.intersectionLinesFragmentShader_ = this
+				.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
+		this.shaderSource(this.intersectionLinesFragmentShader_,
+				intersectionLinesFragmentShaderSrc);
+		this.compileShader(this.intersectionLinesFragmentShader_);
+		this.intersectionLinesProgram_ = this.createProgram();
+		this.attachShader(this.intersectionLinesProgram_, this.vertexShader2D_);
+		this.attachShader(this.intersectionLinesProgram_,
+				this.intersectionLinesFragmentShader_);
+		this.linkProgram(this.intersectionLinesProgram_);
+		this.useProgram(this.intersectionLinesProgram_);
+		this.intersectionLines_vertexPositionAttribute_ = this
+				.getAttribLocation(this.intersectionLinesProgram_,
+						"aVertexPosition");
+		this.intersectionLines_vertexTextureCoAttribute_ = this
+				.getAttribLocation(this.intersectionLinesProgram_, "aTextureCo");
+		this.intersectionLines_viewportWidthUniform_ = this.getUniformLocation(
+				this.intersectionLinesProgram_, "uVPwidth");
+		this.intersectionLines_viewportHeightUniform_ = this
+				.getUniformLocation(this.intersectionLinesProgram_, "uVPheight");
+		this.intersectionLines_cameraUniform_ = this.getUniformLocation(
+				this.intersectionLinesProgram_, "uCamera");
+		this.intersectionLines_colorUniform_ = this.getUniformLocation(
+				this.intersectionLinesProgram_, "uColor");
+		this.intersectionLines_positionSamplerUniform_ = this
+				.getUniformLocation(this.intersectionLinesProgram_,
+						"uPositionSampler");
+		this.intersectionLines_meshIndexSamplerUniform_ = this
+				.getUniformLocation(this.intersectionLinesProgram_,
+						"uMeshIndexSampler");
+	}
+
+	private void initializeClippingPlaneProgram() {
+		this.clippingPlaneFragShader_ = this
+				.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
+		this.shaderSource(this.clippingPlaneFragShader_,
+				clippingPlaneFragShaderSrc);
+		this.compileShader(this.clippingPlaneFragShader_);
+		this.clippingPlaneVertexShader_ = this
+				.createShader(WGLWidget.GLenum.VERTEX_SHADER);
+		this.shaderSource(this.clippingPlaneVertexShader_,
+				clippingPlaneVertexShaderSrc);
+		this.compileShader(this.clippingPlaneVertexShader_);
+		this.clippingPlaneProgram_ = this.createProgram();
+		this.attachShader(this.clippingPlaneProgram_,
+				this.clippingPlaneVertexShader_);
+		this.attachShader(this.clippingPlaneProgram_,
+				this.clippingPlaneFragShader_);
+		this.linkProgram(this.clippingPlaneProgram_);
+		this.useProgram(this.clippingPlaneProgram_);
+		this.clippingPlane_vertexPositionAttribute_ = this.getAttribLocation(
+				this.clippingPlaneProgram_, "aVertexPosition");
+		this.clippingPlane_mvMatrixUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uMVMatrix");
+		this.clippingPlane_pMatrixUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uPMatrix");
+		this.clippingPlane_cMatrixUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uCMatrix");
+		this.clippingPlane_clipPtUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uClipPt");
+		this.clippingPlane_dataMinPtUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uDataMinPt");
+		this.clippingPlane_dataMaxPtUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uDataMaxPt");
+		this.clippingPlane_clippingAxis_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uClippingAxis");
+		this.clippingPlane_drawPositionUniform_ = this.getUniformLocation(
+				this.clippingPlaneProgram_, "uDrawPosition");
+	}
+
+	private void initOffscreenBuffer() {
+		this.offscreenDepthbuffer_ = this.getCreateRenderbuffer();
+		this.intersectionLinesFramebuffer_ = this.getCreateFramebuffer();
+		this.intersectionLinesTexture_ = this.createTexture();
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+				this.intersectionLinesTexture_);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.meshIndexFramebuffer_ = this.getCreateFramebuffer();
+		this.meshIndexTexture_ = this.createTexture();
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.meshIndexTexture_);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.positionFramebuffer_ = this.getCreateFramebuffer();
+		this.positionTexture_ = this.createTexture();
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.resizeOffscreenBuffer();
+	}
+
+	private void resizeOffscreenBuffer() {
+		int w = (int) this.getWidth().getValue();
+		int h = (int) this.getHeight().getValue();
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+				this.intersectionLinesTexture_);
+		this.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0, WGLWidget.GLenum.RGBA,
+				w, h, 0, WGLWidget.GLenum.RGBA);
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.meshIndexTexture_);
+		this.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0, WGLWidget.GLenum.RGB,
+				w, h, 0, WGLWidget.GLenum.RGB);
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_);
+		this.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0, WGLWidget.GLenum.RGB,
+				w, h, 0, WGLWidget.GLenum.RGB);
+		this.bindRenderbuffer(WGLWidget.GLenum.RENDERBUFFER,
+				this.offscreenDepthbuffer_);
+		this.renderbufferStorage(WGLWidget.GLenum.RENDERBUFFER,
+				WGLWidget.GLenum.DEPTH_COMPONENT16, w, h);
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.intersectionLinesFramebuffer_);
+		this.framebufferTexture2D(WGLWidget.GLenum.FRAMEBUFFER,
+				WGLWidget.GLenum.COLOR_ATTACHMENT0,
+				WGLWidget.GLenum.TEXTURE_2D, this.intersectionLinesTexture_, 0);
+		this.framebufferRenderbuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				WGLWidget.GLenum.DEPTH_ATTACHMENT,
+				WGLWidget.GLenum.RENDERBUFFER, this.offscreenDepthbuffer_);
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.meshIndexFramebuffer_);
+		this.framebufferTexture2D(WGLWidget.GLenum.FRAMEBUFFER,
+				WGLWidget.GLenum.COLOR_ATTACHMENT0,
+				WGLWidget.GLenum.TEXTURE_2D, this.meshIndexTexture_, 0);
+		this.framebufferRenderbuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				WGLWidget.GLenum.DEPTH_ATTACHMENT,
+				WGLWidget.GLenum.RENDERBUFFER, this.offscreenDepthbuffer_);
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.positionFramebuffer_);
+		this.framebufferTexture2D(WGLWidget.GLenum.FRAMEBUFFER,
+				WGLWidget.GLenum.COLOR_ATTACHMENT0,
+				WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_, 0);
+		this.framebufferRenderbuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				WGLWidget.GLenum.DEPTH_ATTACHMENT,
+				WGLWidget.GLenum.RENDERBUFFER, this.offscreenDepthbuffer_);
+		this.bindRenderbuffer(WGLWidget.GLenum.RENDERBUFFER,
+				new WGLWidget.Renderbuffer());
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				new WGLWidget.Framebuffer());
+	}
+
+	private void deleteOffscreenBuffer() {
+		if (!this.offscreenDepthbuffer_.isNull()) {
+			this.deleteRenderbuffer(this.offscreenDepthbuffer_);
+		}
+		this.offscreenDepthbuffer_.clear();
+		if (!this.intersectionLinesFramebuffer_.isNull()) {
+			this.deleteFramebuffer(this.intersectionLinesFramebuffer_);
+		}
+		this.intersectionLinesFramebuffer_.clear();
+		if (!this.positionFramebuffer_.isNull()) {
+			this.deleteFramebuffer(this.positionFramebuffer_);
+		}
+		this.positionFramebuffer_.clear();
+		if (!this.meshIndexFramebuffer_.isNull()) {
+			this.deleteFramebuffer(this.meshIndexFramebuffer_);
+		}
+		this.meshIndexFramebuffer_.clear();
+		if (!this.intersectionLinesTexture_.isNull()) {
+			this.deleteTexture(this.intersectionLinesTexture_);
+		}
+		this.intersectionLinesTexture_.clear();
+		if (!this.meshIndexTexture_.isNull()) {
+			this.deleteTexture(this.meshIndexTexture_);
+		}
+		this.meshIndexTexture_.clear();
+		if (!this.positionTexture_.isNull()) {
+			this.deleteTexture(this.positionTexture_);
+		}
+		this.positionTexture_.clear();
+	}
+
+	private void renderIntersectionLines() {
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.meshIndexFramebuffer_);
+		this.clearColor(1.0, 1.0, 1.0, 1.0);
+		this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+					.get(i))
+					: null);
+			if (gridData != null
+					&& gridData.getType() == Series3DType.SurfaceSeries3D) {
+				gridData.paintGLIndex(i);
+			}
+		}
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.positionFramebuffer_);
+		this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
+			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+					.get(i))
+					: null);
+			if (gridData != null
+					&& gridData.getType() == Series3DType.SurfaceSeries3D) {
+				gridData.paintGLPositions();
+			}
+		}
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.intersectionLinesFramebuffer_);
+		this.disable(WGLWidget.GLenum.CULL_FACE);
+		this.disable(WGLWidget.GLenum.DEPTH_TEST);
+		this.enable(WGLWidget.GLenum.BLEND);
+		this.useProgram(this.intersectionLinesProgram_);
+		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.overlayPosBuffer_);
+		this.vertexAttribPointer(
+				this.intersectionLines_vertexPositionAttribute_, 3,
+				WGLWidget.GLenum.FLOAT, false, 0, 0);
+		this
+				.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+		this
+				.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+						this.overlayTexCoBuffer_);
+		this.vertexAttribPointer(
+				this.intersectionLines_vertexTextureCoAttribute_, 2,
+				WGLWidget.GLenum.FLOAT, false, 0, 0);
+		this
+				.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+		this.uniformMatrix4(this.intersectionLines_cameraUniform_,
+				this.jsMatrix_);
+		this.uniform1f(this.intersectionLines_viewportWidthUniform_, this
+				.getWidth().getValue());
+		this.uniform1f(this.intersectionLines_viewportHeightUniform_, this
+				.getHeight().getValue());
+		this.uniform4f(this.intersectionLines_colorUniform_,
+				this.intersectionLinesColor_.getRed() / 255.0,
+				this.intersectionLinesColor_.getGreen() / 255.0,
+				this.intersectionLinesColor_.getBlue() / 255.0,
+				this.intersectionLinesColor_.getAlpha() / 255.0);
+		this.activeTexture(WGLWidget.GLenum.TEXTURE0);
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_);
+		this.uniform1i(this.intersectionLines_positionSamplerUniform_, 0);
+		this.activeTexture(WGLWidget.GLenum.TEXTURE1);
+		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.meshIndexTexture_);
+		this.uniform1i(this.intersectionLines_meshIndexSamplerUniform_, 1);
+		this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+		this
+				.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+		this
+				.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				new WGLWidget.Framebuffer());
+		this.enable(WGLWidget.GLenum.CULL_FACE);
+		this.enable(WGLWidget.GLenum.DEPTH_TEST);
+		this.disable(WGLWidget.GLenum.BLEND);
+	}
+
+	private void renderIntersectionLinesWithInvisiblePlanes() {
+		for (int i = 0; i < this.intersectionPlanes_.size(); ++i) {
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.meshIndexFramebuffer_);
+			this.clearColor(1.0, 1.0, 1.0, 1.0);
+			this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+			for (int j = 0; j < this.dataSeriesVector_.size(); j++) {
+				WAbstractGridData gridData = ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+						.get(j))
+						: null);
+				if (gridData != null
+						&& gridData.getType() == Series3DType.SurfaceSeries3D) {
+					gridData.paintGLIndex(1);
+				}
+			}
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			this.useProgram(this.clippingPlaneProgram_);
+			double minX = this.XAxis_.getMinimum();
+			double maxX = this.XAxis_.getMaximum();
+			double minY = this.YAxis_.getMinimum();
+			double maxY = this.YAxis_.getMaximum();
+			double minZ = this.ZAxis_.getMinimum();
+			double maxZ = this.ZAxis_.getMaximum();
+			WCartesian3DChart.IntersectionPlane plane = this.intersectionPlanes_
+					.get(i);
+			if (plane.axis == Axis.XAxis_3D) {
+				this.uniform1i(this.clippingPlane_clippingAxis_, 0);
+			} else {
+				if (plane.axis == Axis.YAxis_3D) {
+					this.uniform1i(this.clippingPlane_clippingAxis_, 1);
+				} else {
+					this.uniform1i(this.clippingPlane_clippingAxis_, 2);
+				}
+			}
+			this.uniform3f(this.clippingPlane_clipPtUniform_, plane.position,
+					plane.position, plane.position);
+			this.uniform3f(this.clippingPlane_dataMinPtUniform_, minX, minY,
+					minZ);
+			this.uniform3f(this.clippingPlane_dataMaxPtUniform_, maxX, maxY,
+					maxZ);
+			this.uniform1i(this.clippingPlane_drawPositionUniform_, 0);
+			javax.vecmath.Matrix4f mvMatrix = new javax.vecmath.Matrix4f(1.0f,
+					0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+					0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+			this.uniformMatrix4(this.clippingPlane_pMatrixUniform_,
+					this.pMatrix_);
+			this.uniformMatrix4(this.clippingPlane_mvMatrixUniform_, mvMatrix);
+			this.uniformMatrix4(this.clippingPlane_cMatrixUniform_,
+					this.jsMatrix_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.clippingPlaneVertBuffer_);
+			this.vertexAttribPointer(
+					this.clippingPlane_vertexPositionAttribute_, 2,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+			this.enable(WGLWidget.GLenum.CULL_FACE);
+			this.disable(WGLWidget.GLenum.DEPTH_TEST);
+			this
+					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.positionFramebuffer_);
+			this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+			for (int j = 0; j < this.dataSeriesVector_.size(); j++) {
+				WAbstractGridData gridData = ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+						.get(j))
+						: null);
+				if (gridData != null
+						&& gridData.getType() == Series3DType.SurfaceSeries3D) {
+					gridData.paintGLPositions();
+				}
+			}
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			this.useProgram(this.clippingPlaneProgram_);
+			this.uniform1i(this.clippingPlane_drawPositionUniform_, 1);
+			this.uniformMatrix4(this.clippingPlane_pMatrixUniform_,
+					this.pMatrix_);
+			this.uniformMatrix4(this.clippingPlane_mvMatrixUniform_, mvMatrix);
+			this.uniformMatrix4(this.clippingPlane_cMatrixUniform_,
+					this.jsMatrix_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.clippingPlaneVertBuffer_);
+			this.vertexAttribPointer(
+					this.clippingPlane_vertexPositionAttribute_, 2,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+			this.enable(WGLWidget.GLenum.CULL_FACE);
+			this.disable(WGLWidget.GLenum.DEPTH_TEST);
+			this
+					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.intersectionLinesFramebuffer_);
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.disable(WGLWidget.GLenum.DEPTH_TEST);
+			this.enable(WGLWidget.GLenum.BLEND);
+			this.useProgram(this.intersectionLinesProgram_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.overlayPosBuffer_);
+			this.vertexAttribPointer(
+					this.intersectionLines_vertexPositionAttribute_, 3,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.overlayTexCoBuffer_);
+			this.vertexAttribPointer(
+					this.intersectionLines_vertexTextureCoAttribute_, 2,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.uniformMatrix4(this.intersectionLines_cameraUniform_,
+					this.jsMatrix_);
+			this.uniform1f(this.intersectionLines_viewportWidthUniform_, this
+					.getWidth().getValue());
+			this.uniform1f(this.intersectionLines_viewportHeightUniform_, this
+					.getHeight().getValue());
+			this.uniform4f(this.intersectionLines_colorUniform_, plane.color
+					.getRed() / 255.0, plane.color.getGreen() / 255.0,
+					plane.color.getBlue() / 255.0,
+					plane.color.getAlpha() / 255.0);
+			this.activeTexture(WGLWidget.GLenum.TEXTURE0);
+			this
+					.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+							this.positionTexture_);
+			this.uniform1i(this.intersectionLines_positionSamplerUniform_, 0);
+			this.activeTexture(WGLWidget.GLenum.TEXTURE1);
+			this.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+					this.meshIndexTexture_);
+			this.uniform1i(this.intersectionLines_meshIndexSamplerUniform_, 1);
+			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+			this
+					.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this
+					.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					new WGLWidget.Framebuffer());
+			this.enable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			this.disable(WGLWidget.GLenum.BLEND);
+		}
+	}
+
+	private void renderClippingLines(WAbstractGridData data) {
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				this.intersectionLinesFramebuffer_);
+		this.clearColor(0.0, 0.0, 0.0, 0.0);
+		this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+				new WGLWidget.Framebuffer());
+		for (int i = 0; i < 6; ++i) {
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.meshIndexFramebuffer_);
+			this.clearColor(1.0, 1.0, 1.0, 1.0);
+			this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			double minX = this.XAxis_.getMinimum();
+			double maxX = this.XAxis_.getMaximum();
+			double minY = this.YAxis_.getMinimum();
+			double maxY = this.YAxis_.getMaximum();
+			double minZ = this.ZAxis_.getMinimum();
+			double maxZ = this.ZAxis_.getMaximum();
+			this.useProgram(this.clippingPlaneProgram_);
+			int clippingAxis = i / 2;
+			this.uniform1i(this.clippingPlane_clippingAxis_, clippingAxis);
+			if (i % 2 == 0) {
+				this.uniform3fv(this.clippingPlane_clipPtUniform_,
+						data.jsMaxPt_);
+			} else {
+				this.uniform3fv(this.clippingPlane_clipPtUniform_,
+						data.jsMinPt_);
+			}
+			this.uniform3f(this.clippingPlane_dataMinPtUniform_, minX, minY,
+					minZ);
+			this.uniform3f(this.clippingPlane_dataMaxPtUniform_, maxX, maxY,
+					maxZ);
+			this.uniform1i(this.clippingPlane_drawPositionUniform_, 0);
+			javax.vecmath.Matrix4f mvMatrix = new javax.vecmath.Matrix4f(1.0f,
+					0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+					0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+			this.uniformMatrix4(this.clippingPlane_pMatrixUniform_,
+					this.pMatrix_);
+			this.uniformMatrix4(this.clippingPlane_mvMatrixUniform_, mvMatrix);
+			this.uniformMatrix4(this.clippingPlane_cMatrixUniform_,
+					this.jsMatrix_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.clippingPlaneVertBuffer_);
+			this.vertexAttribPointer(
+					this.clippingPlane_vertexPositionAttribute_, 2,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+			this
+					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			data.paintGLIndex(1, clippingAxis == 0 ? 0.01 : 0.0,
+					clippingAxis == 1 ? 0.01 : 0.0, clippingAxis == 2 ? 0.01
+							: 0.0);
+			for (int j = 0; j < this.dataSeriesVector_.size(); ++j) {
+				if (this.dataSeriesVector_.get(j) != data) {
+					WAbstractGridData gridData = ((this.dataSeriesVector_
+							.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+							.get(j))
+							: null);
+					if (gridData != null
+							&& gridData.getType() == Series3DType.SurfaceSeries3D
+							&& gridData.isClippingLinesEnabled()) {
+						gridData.paintGLIndex(0xffffff);
+					}
+				}
+			}
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.positionFramebuffer_);
+			this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
+					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			this.useProgram(this.clippingPlaneProgram_);
+			this.uniform1i(this.clippingPlane_drawPositionUniform_, 1);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.clippingPlaneVertBuffer_);
+			this.vertexAttribPointer(
+					this.clippingPlane_vertexPositionAttribute_, 2,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+			this
+					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			data.paintGLPositions(clippingAxis == 0 ? 0.01 : 0.0,
+					clippingAxis == 1 ? 0.01 : 0.0, clippingAxis == 2 ? 0.01
+							: 0.0);
+			for (int j = 0; j < this.dataSeriesVector_.size(); ++j) {
+				if (this.dataSeriesVector_.get(j) != data) {
+					WAbstractGridData gridData = ((this.dataSeriesVector_
+							.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
+							.get(j))
+							: null);
+					if (gridData != null
+							&& gridData.getType() == Series3DType.SurfaceSeries3D
+							&& gridData.isClippingLinesEnabled()) {
+						gridData.paintGLPositions();
+					}
+				}
+			}
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					this.intersectionLinesFramebuffer_);
+			this.disable(WGLWidget.GLenum.CULL_FACE);
+			this.disable(WGLWidget.GLenum.DEPTH_TEST);
+			this.enable(WGLWidget.GLenum.BLEND);
+			this.useProgram(this.intersectionLinesProgram_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.overlayPosBuffer_);
+			this.vertexAttribPointer(
+					this.intersectionLines_vertexPositionAttribute_, 3,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.overlayTexCoBuffer_);
+			this.vertexAttribPointer(
+					this.intersectionLines_vertexTextureCoAttribute_, 2,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this
+					.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.uniformMatrix4(this.intersectionLines_cameraUniform_,
+					this.jsMatrix_);
+			this.uniform1f(this.intersectionLines_viewportWidthUniform_, this
+					.getWidth().getValue());
+			this.uniform1f(this.intersectionLines_viewportHeightUniform_, this
+					.getHeight().getValue());
+			this.uniform4f(this.intersectionLines_colorUniform_, data
+					.getClippingLinesColor().getRed() / 255.0, data
+					.getClippingLinesColor().getGreen() / 255.0, data
+					.getClippingLinesColor().getBlue() / 255.0, data
+					.getClippingLinesColor().getAlpha() / 255.0);
+			this.activeTexture(WGLWidget.GLenum.TEXTURE0);
+			this
+					.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+							this.positionTexture_);
+			this.uniform1i(this.intersectionLines_positionSamplerUniform_, 0);
+			this.activeTexture(WGLWidget.GLenum.TEXTURE1);
+			this.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+					this.meshIndexTexture_);
+			this.uniform1i(this.intersectionLines_meshIndexSamplerUniform_, 1);
+			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
+			this
+					.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this
+					.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
+					new WGLWidget.Framebuffer());
+			this.enable(WGLWidget.GLenum.CULL_FACE);
+			this.enable(WGLWidget.GLenum.DEPTH_TEST);
+			this.disable(WGLWidget.GLenum.BLEND);
+		}
 	}
 
 	private void paintHorizAxisTextures(WPaintDevice paintDevice,
@@ -2434,7 +3377,10 @@ public class WCartesian3DChart extends WGLWidget {
 	private int currentBottomOffset_;
 	private int currentLeftOffset_;
 	private int currentRightOffset_;
-	private EnumSet<WCartesian3DChart.ChartUpdates> updates_;
+	private EnumSet<ChartUpdates> updates_;
+	private boolean intersectionLinesEnabled_;
+	private WColor intersectionLinesColor_;
+	List<WCartesian3DChart.IntersectionPlane> intersectionPlanes_;
 	private WGLWidget.Shader fragmentShader_;
 	private WGLWidget.Shader vertexShader_;
 	private WGLWidget.Shader fragmentShader2_;
@@ -2443,10 +3389,15 @@ public class WCartesian3DChart extends WGLWidget {
 	private WGLWidget.Shader cubeLineVertShader_;
 	private WGLWidget.Shader vertexShader2D_;
 	private WGLWidget.Shader fragmentShader2D_;
+	private WGLWidget.Shader intersectionLinesFragmentShader_;
+	private WGLWidget.Shader clippingPlaneFragShader_;
+	private WGLWidget.Shader clippingPlaneVertexShader_;
 	private WGLWidget.Program cubeProgram_;
 	private WGLWidget.Program cubeLineProgram_;
 	private WGLWidget.Program axisProgram_;
 	private WGLWidget.Program textureProgram_;
+	private WGLWidget.Program intersectionLinesProgram_;
+	private WGLWidget.Program clippingPlaneProgram_;
 	private WGLWidget.AttribLocation cube_vertexPositionAttribute_;
 	private WGLWidget.AttribLocation cube_planeNormalAttribute_;
 	private WGLWidget.AttribLocation cube_textureCoordAttribute_;
@@ -2477,6 +3428,23 @@ public class WCartesian3DChart extends WGLWidget {
 	private WGLWidget.AttribLocation texture_vertexPositionAttribute_;
 	private WGLWidget.AttribLocation texture_vertexTextureCoAttribute_;
 	private WGLWidget.UniformLocation texture_texSamplerUniform_;
+	private WGLWidget.AttribLocation intersectionLines_vertexPositionAttribute_;
+	private WGLWidget.AttribLocation intersectionLines_vertexTextureCoAttribute_;
+	private WGLWidget.UniformLocation intersectionLines_cameraUniform_;
+	private WGLWidget.UniformLocation intersectionLines_viewportWidthUniform_;
+	private WGLWidget.UniformLocation intersectionLines_viewportHeightUniform_;
+	private WGLWidget.UniformLocation intersectionLines_positionSamplerUniform_;
+	private WGLWidget.UniformLocation intersectionLines_colorUniform_;
+	private WGLWidget.UniformLocation intersectionLines_meshIndexSamplerUniform_;
+	private WGLWidget.AttribLocation clippingPlane_vertexPositionAttribute_;
+	private WGLWidget.UniformLocation clippingPlane_mvMatrixUniform_;
+	private WGLWidget.UniformLocation clippingPlane_pMatrixUniform_;
+	private WGLWidget.UniformLocation clippingPlane_cMatrixUniform_;
+	private WGLWidget.UniformLocation clippingPlane_clipPtUniform_;
+	private WGLWidget.UniformLocation clippingPlane_dataMinPtUniform_;
+	private WGLWidget.UniformLocation clippingPlane_dataMaxPtUniform_;
+	private WGLWidget.UniformLocation clippingPlane_clippingAxis_;
+	private WGLWidget.UniformLocation clippingPlane_drawPositionUniform_;
 	private javax.vecmath.Matrix4f pMatrix_;
 	private WGLWidget.JavaScriptMatrix4x4 jsMatrix_;
 	private java.nio.ByteBuffer cubeData_;
@@ -2522,6 +3490,7 @@ public class WCartesian3DChart extends WGLWidget {
 	private WGLWidget.Buffer legendTexCoBuffer_;
 	private WGLWidget.Buffer colorMapPosBuffer_;
 	private WGLWidget.Buffer colorMapTexCoBuffer_;
+	private WGLWidget.Buffer clippingPlaneVertBuffer_;
 	private WGLWidget.Texture horizAxisTexture_;
 	private WGLWidget.Texture horizAxisTexture2_;
 	private WGLWidget.Texture vertAxisTexture_;
@@ -2531,6 +3500,13 @@ public class WCartesian3DChart extends WGLWidget {
 	private WGLWidget.Texture titleTexture_;
 	private WGLWidget.Texture legendTexture_;
 	private WGLWidget.Texture colorMapTexture_;
+	private WGLWidget.Texture meshIndexTexture_;
+	private WGLWidget.Texture positionTexture_;
+	private WGLWidget.Texture intersectionLinesTexture_;
+	private WGLWidget.Framebuffer meshIndexFramebuffer_;
+	private WGLWidget.Framebuffer positionFramebuffer_;
+	private WGLWidget.Framebuffer intersectionLinesFramebuffer_;
+	private WGLWidget.Renderbuffer offscreenDepthbuffer_;
 	private static float[] cubeData = { 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0,
 			0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1,
 			0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0,
@@ -2722,6 +3698,9 @@ public class WCartesian3DChart extends WGLWidget {
 	private static final String axisFragmentShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\nvarying float vShowTexture;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCo.s, vTextureCo.t));\n}\n";
 	private static final String fragmentShaderSrc2D = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCo.s, vTextureCo.t));\n}";
 	private static final String vertexShaderSrc2D = "attribute vec3 aVertexPosition;\nattribute vec2 aTextureCo;\n\nvarying vec2 vTextureCo;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCo = aTextureCo;\n}";
+	private static final String intersectionLinesFragmentShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform mat4 uCamera;\nuniform vec4 uColor;\nuniform float uVPwidth;\nuniform float uVPheight;\nuniform sampler2D uPositionSampler;\nuniform sampler2D uMeshIndexSampler;\n\nvoid main(void) {\n  float dx = 1.0/uVPwidth;\n  float dy = 1.0/uVPheight;\n  vec3 pt  = texture2D(uPositionSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 pl  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 pr  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 pb  = texture2D(uPositionSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  vec3 it  = texture2D(uMeshIndexSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 il  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 ir  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 ib  = texture2D(uMeshIndexSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  float scale = length(vec3(uCamera[0][0], uCamera[1][0], uCamera[2][0]));\n  scale = scale > 5.0 ? 5.0 : scale;\n  float totalDistance = 0.0;\n  int count = 0;\n  vec3 white = vec3(1.0);\n  if (il != ir && il != white && ir != white) {\n    count ++;\n    totalDistance += length(pl - pr) * scale;\n  }\n  if (it != ib && it != white && ib != white) {\n    count ++;\n    totalDistance += length(pt - pb) * scale;\n  }\n  float factor = 1.0 - totalDistance / float(count);\n  factor = smoothstep(0.9, 1.0, factor);\n  gl_FragColor = factor * uColor;\n}";
+	private static final String clippingPlaneFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform bool uDrawPosition;\nuniform lowp int uClippingAxis;\n\nvoid main(void) {\n  if (uClippingAxis == 0 && (vPos.x <= 0.0 || vPos.x >= 1.0) ||      uClippingAxis == 1 && (vPos.y <= 0.0 || vPos.y >= 1.0) ||      uClippingAxis == 2 && (vPos.z <= 0.0 || vPos.z >= 1.0)) {\n    discard;\n  }\n  if (uDrawPosition) {\n    gl_FragColor = vec4(vPos, 1.0);\n  } else {\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n  }\n}\n";
+	private static final String clippingPlaneVertexShaderSrc = "attribute vec2 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform vec3 uClipPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\nuniform lowp int uClippingAxis;\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  vec3 pos;\n  vec3 clipPt = clamp((uClipPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), 0.0, 1.0);\n  if (uClippingAxis == 0) {\n    pos = vec3(clipPt.x, aVertexPosition);\n  } else if (uClippingAxis == 1) {\n    pos = vec3(aVertexPosition.x, clipPt.y, aVertexPosition.y);\n  } else if (uClippingAxis == 2) {\n    pos = vec3(aVertexPosition, clipPt.z);\n  }\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(pos, 1.0);\n  vPos = pos;\n}\n";
 	private static final double TICKLENGTH = 5.0;
 	private static final double TITLEOFFSET = 30;
 	private static final double ANGLE1 = 15;

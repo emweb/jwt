@@ -20,21 +20,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enumeration with the possible representations of a {@link WAbstractGridData}.
+ * Lists the different ways that a chart can be updated.
  */
-public enum Series3DType {
+public enum ChartUpdates {
 	/**
-	 * Series rendered as points.
+	 * Camera matrix.
 	 */
-	PointSeries3D,
+	CameraMatrix,
 	/**
-	 * Series rendered as a surface.
+	 * GL context.
 	 */
-	SurfaceSeries3D,
+	GLContext,
 	/**
-	 * Series rendered as bars.
+	 * GL textures.
 	 */
-	BarSeries3D;
+	GLTextures;
 
 	/**
 	 * Returns the numerical representation of this enum.

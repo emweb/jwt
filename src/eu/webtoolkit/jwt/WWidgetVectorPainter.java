@@ -29,7 +29,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		this.renderType_ = renderType;
 	}
 
-	public WPaintDevice getPaintDevice(boolean paintUpdate) {
+	public WVectorImage createPaintDevice(boolean paintUpdate) {
 		if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
 			return new WSvgImage(new WLength(this.widget_.renderWidth_),
 					new WLength(this.widget_.renderHeight_), (WObject) null,
@@ -38,6 +38,10 @@ class WWidgetVectorPainter extends WWidgetPainter {
 			return new WVmlImage(new WLength(this.widget_.renderWidth_),
 					new WLength(this.widget_.renderHeight_), paintUpdate);
 		}
+	}
+
+	public WPaintDevice getPaintDevice(boolean paintUpdate) {
+		return this.createPaintDevice(paintUpdate);
 	}
 
 	public void createContents(DomElement canvas, WPaintDevice device) {

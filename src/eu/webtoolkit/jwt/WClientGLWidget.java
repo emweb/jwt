@@ -37,7 +37,6 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.textures_ = 0;
 		this.images_ = 1;
 		this.canvas_ = 0;
-		this.matrices_ = 0;
 		this.currentlyBoundBuffer_ = new WGLWidget.Buffer();
 		this.currentlyBoundTexture_ = new WGLWidget.Texture();
 		this.binaryResources_ = new ArrayList<WMemoryResource>();
@@ -53,10 +52,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.activeTexture(").append(
 				"ctx." + texture.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -67,10 +66,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.attachShader(").append(program.getJsRef()).append(
 				", ").append(shader.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -83,10 +82,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",").append(String.valueOf(index)).append(",").append(
 						WWebWidget.jsStringLiteral(name)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -98,10 +97,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",").append(buffer.getJsRef()).append(");");
 		this.currentlyBoundBuffer_ = buffer;
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -114,10 +113,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + target.toString()).append(",").append(
 				buffer.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -130,10 +129,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + target.toString()).append(",").append(
 				buffer.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -145,10 +144,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",").append(texture.getJsRef()).append(");");
 		this.currentlyBoundTexture_ = texture;
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -163,10 +162,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(blue)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(alpha)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -177,10 +176,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.blendEquation(").append("ctx." + mode.toString())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -193,10 +192,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + modeRGB.toString()).append(",").append(
 				"ctx." + modeAlpha.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -207,10 +206,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.blendFunc(").append("ctx." + sfactor.toString())
 				.append(",").append("ctx." + dfactor.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -226,10 +225,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + srcAlpha.toString()).append(",").append(
 				"ctx." + dstAlpha.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -243,10 +242,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(String.valueOf(size)).append(",");
 		this.js_.append("ctx." + usage.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -260,10 +259,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(res.getJsRef()).append(".data, ");
 		this.js_.append("ctx." + usage.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -281,10 +280,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append("),");
 		this.js_.append("ctx." + usage.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -298,10 +297,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(String.valueOf(offset)).append(",");
 		this.js_.append(res.getJsRef()).append(".data);");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -319,10 +318,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				String.valueOf(bufferResourceOffset + bufferResourceSize))
 				.append("));");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -348,10 +347,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 					.asFloatBuffer(), usage);
 		}
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -391,10 +390,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 					.rewind()).asFloatBuffer());
 		}
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -424,10 +423,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		renderiv(this.js_, buffer, type);
 		this.js_.append(",").append("ctx." + usage.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -442,10 +441,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		renderiv(this.js_, buffer, type);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -473,10 +472,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("0);");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -491,10 +490,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(b)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(a)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -506,10 +505,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.clearDepth(").append(WebGLUtils.makeFloat(depth))
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -520,10 +519,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.clearStencil(").append(String.valueOf(s)).append(
 				");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -537,10 +536,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(blue ? "true" : "false").append(",").append(
 						alpha ? "true" : "false").append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -555,10 +554,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"alert(ctx.getShaderInfoLog(").append(shader.getJsRef())
 				.append("));}");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -577,10 +576,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						String.valueOf(height)).append(",").append(
 						String.valueOf(border)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -598,10 +597,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						String.valueOf(width)).append(",").append(
 						String.valueOf(height)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -611,12 +610,13 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	public WGLWidget.Buffer getCreateBuffer() {
 		WGLWidget.Buffer retval = new WGLWidget.Buffer(this.buffers_++);
 		this.js_.append("if (!").append(retval.getJsRef()).append("){");
-		this.js_.append(retval.getJsRef()).append("=ctx.createBuffer();\n}");
+		this.js_.append(retval.getJsRef()).append("=ctx.createBuffer();");
+		this.js_.append("\n}");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -637,10 +637,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				this.framebuffers_++);
 		this.js_.append(retval.getJsRef()).append("=ctx.createFramebuffer();");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -652,10 +652,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WGLWidget.Program retval = new WGLWidget.Program(this.programs_++);
 		this.js_.append(retval.getJsRef()).append("=ctx.createProgram();");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -668,10 +668,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				this.renderbuffers_++);
 		this.js_.append(retval.getJsRef()).append("=ctx.createRenderbuffer();");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -684,10 +684,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(retval.getJsRef()).append("=ctx.createShader(").append(
 				"ctx." + shader.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -701,10 +701,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(retval.getJsRef()).append("=ctx.createTexture();");
 		this.js_.append("\n}");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -728,10 +728,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.cullFace(").append("ctx." + mode.toString())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -739,13 +739,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void deleteBuffer(WGLWidget.Buffer buffer) {
+		if ((int) buffer.getId() >= this.buffers_) {
+			return;
+		}
 		this.js_.append("ctx.deleteBuffer(").append(buffer.getJsRef()).append(
 				");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -753,13 +756,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void deleteFramebuffer(WGLWidget.Framebuffer buffer) {
+		if ((int) buffer.getId() >= this.framebuffers_) {
+			return;
+		}
 		this.js_.append("ctx.deleteFramebuffer(").append(buffer.getJsRef())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -767,13 +773,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void deleteProgram(WGLWidget.Program program) {
+		if ((int) program.getId() >= this.programs_) {
+			return;
+		}
 		this.js_.append("ctx.deleteProgram(").append(program.getJsRef())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -781,13 +790,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void deleteRenderbuffer(WGLWidget.Renderbuffer buffer) {
+		if ((int) buffer.getId() >= this.renderbuffers_) {
+			return;
+		}
 		this.js_.append("ctx.deleteRenderbuffer(").append(buffer.getJsRef())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -795,13 +807,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void deleteShader(WGLWidget.Shader shader) {
+		if ((int) shader.getId() >= this.shaders_) {
+			return;
+		}
 		this.js_.append("ctx.deleteShader(").append(shader.getJsRef()).append(
 				");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -809,13 +824,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void deleteTexture(WGLWidget.Texture texture) {
+		if ((int) texture.getId() >= this.textures_) {
+			return;
+		}
 		this.js_.append("ctx.deleteTexture(").append(texture.getJsRef())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -826,10 +844,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.depthFunc(").append("ctx." + func.toString())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -840,10 +858,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.depthMask(").append(flag ? "true" : "false")
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -856,10 +874,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",");
 		this.js_.append(WebGLUtils.makeFloat(zFar)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -867,13 +885,17 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	public void detachShader(WGLWidget.Program program, WGLWidget.Shader shader) {
+		if ((int) program.getId() >= this.programs_
+				|| (int) shader.getId() >= this.shaders_) {
+			return;
+		}
 		this.js_.append("ctx.detachShader(").append(program.getJsRef()).append(
 				",").append(shader.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -884,10 +906,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.disable(").append("ctx." + cap.toString()).append(
 				");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -898,10 +920,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.disableVertexAttribArray(").append(
 				index.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -913,10 +935,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",").append(String.valueOf(first)).append(",").append(
 						String.valueOf(count)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -930,10 +952,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"ctx." + type.toString()).append(",").append(
 						String.valueOf(offset)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -944,10 +966,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.enable(").append("ctx." + cap.toString()).append(
 				");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -958,10 +980,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.enableVertexAttribArray(")
 				.append(index.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -971,10 +993,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	public void finish() {
 		this.js_.append("ctx.finish();");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -984,10 +1006,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	public void flush() {
 		this.js_.append("ctx.flush();");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1003,10 +1025,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + renderbuffertarget.toString()).append(",").append(
 				renderbuffer.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1023,10 +1045,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				texture.getJsRef()).append(",").append(String.valueOf(level))
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1037,10 +1059,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.frontFace(").append("ctx." + mode.toString())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1051,10 +1073,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.generateMipmap(").append(
 				"ctx." + target.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1069,10 +1091,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(program.getJsRef()).append(",").append(
 						WWebWidget.jsStringLiteral(attrib)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1088,10 +1110,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(program.getJsRef()).append(",").append(
 						WWebWidget.jsStringLiteral(location)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1103,10 +1125,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.hint(").append("ctx." + target.toString()).append(
 				",").append("ctx." + mode.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1120,10 +1142,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 					WebGLUtils.makeFloat(width)).append(");");
 		}
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1141,10 +1163,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"alert('Could not initialize shaders: ' + ctx.getProgramInfoLog(")
 				.append(program.getJsRef()).append("));}");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1155,10 +1177,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.pixelStorei(").append("ctx." + pname.toString())
 				.append(",").append(String.valueOf(param)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1171,10 +1193,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				WebGLUtils.makeFloat(factor)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(units)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1189,10 +1211,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				String.valueOf(width)).append(",").append(
 				String.valueOf(height)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1205,10 +1227,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				WebGLUtils.makeFloat(value)).append(",").append(
 				invert ? "true" : "false").append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1221,10 +1243,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						String.valueOf(width)).append(",").append(
 						String.valueOf(height)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1235,10 +1257,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.shaderSource(").append(shader.getJsRef()).append(
 				",").append(WWebWidget.jsStringLiteral(src)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1250,10 +1272,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",").append(String.valueOf(ref)).append(",").append(
 						String.valueOf(mask)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1268,10 +1290,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				String.valueOf(ref)).append(",").append(String.valueOf(mask))
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1282,10 +1304,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.stencilMask(").append(String.valueOf(mask))
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1297,10 +1319,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + face.toString()).append(",").append(
 				String.valueOf(mask)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1313,10 +1335,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",").append("ctx." + zfail.toString()).append(",")
 				.append("ctx." + zpass.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1331,10 +1353,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + zfail.toString()).append(",").append(
 				"ctx." + zpass.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1354,10 +1376,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"ctx." + WGLWidget.GLenum.UNSIGNED_BYTE.toString())
 				.append(",null);");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1374,10 +1396,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"ctx." + type.toString()).append(",").append(
 						image.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1395,10 +1417,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				"ctx." + type.toString()).append(",").append(
 				video.getJsMediaRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1422,10 +1444,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						this.currentlyBoundTexture_.getJsRef())
 				.append(".image").append(String.valueOf(imgNb)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1474,10 +1496,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						this.currentlyBoundTexture_.getJsRef())
 				.append(".image").append(String.valueOf(imgNb)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1494,10 +1516,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"ctx." + type.toString()).append(",").append(
 						texture.getJsRef()).append(".image0);");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1511,10 +1533,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"ctx." + pname.toString()).append(",").append(
 						"ctx." + param.toString()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1526,10 +1548,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.uniform1f(").append(location.getJsRef()).append(
 				",").append(WebGLUtils.makeFloat(x)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1543,10 +1565,25 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 1, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
+						.append("(unknown)")
+						.append(": ' + err); debugger;}}\n");
+			}
+		} while (false);
+	}
+
+	public void uniform1fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v) {
+		this.js_.append("ctx.uniform1fv(").append(location.getJsRef()).append(
+				",").append(v.getJsRef()).append(");");
+		do {
+			if (this.debugging_) {
+				this.js_
+						.append(
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1559,10 +1596,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				",");
 		this.js_.append(WebGLUtils.makeInt(x)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1575,10 +1612,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		renderiv(this.js_, value, 1, WGLWidget.GLenum.INT);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1593,10 +1630,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(x)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(y)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1610,10 +1647,25 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 2, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
+						.append("(unknown)")
+						.append(": ' + err); debugger;}}\n");
+			}
+		} while (false);
+	}
+
+	public void uniform2fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v) {
+		this.js_.append("ctx.uniform2fv(").append(location.getJsRef()).append(
+				",").append(v.getJsRef()).append(");");
+		do {
+			if (this.debugging_) {
+				this.js_
+						.append(
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1627,10 +1679,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeInt(x)).append(",");
 		this.js_.append(WebGLUtils.makeInt(y)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1643,10 +1695,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		renderiv(this.js_, value, 2, WGLWidget.GLenum.INT);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1662,10 +1714,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(y)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(z)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1679,10 +1731,25 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 3, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
+						.append("(unknown)")
+						.append(": ' + err); debugger;}}\n");
+			}
+		} while (false);
+	}
+
+	public void uniform3fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v) {
+		this.js_.append("ctx.uniform3fv(").append(location.getJsRef()).append(
+				",").append(v.getJsRef()).append(");");
+		do {
+			if (this.debugging_) {
+				this.js_
+						.append(
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1698,10 +1765,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeInt(y)).append(",");
 		this.js_.append(WebGLUtils.makeInt(z)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1714,10 +1781,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		renderiv(this.js_, value, 3, WGLWidget.GLenum.INT);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1734,10 +1801,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(z)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(w)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1751,10 +1818,25 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 4, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
+						.append("(unknown)")
+						.append(": ' + err); debugger;}}\n");
+			}
+		} while (false);
+	}
+
+	public void uniform4fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v) {
+		this.js_.append("ctx.uniform4fv(").append(location.getJsRef()).append(
+				",").append(v.getJsRef()).append(");");
+		do {
+			if (this.debugging_) {
+				this.js_
+						.append(
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1771,10 +1853,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeInt(z)).append(",");
 		this.js_.append(WebGLUtils.makeInt(w)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1787,10 +1869,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		renderiv(this.js_, value, 4, WGLWidget.GLenum.INT);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1804,10 +1886,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 4, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1822,10 +1904,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1839,10 +1921,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 9, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1857,10 +1939,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1874,10 +1956,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		WebGLUtils.renderfv(this.js_, value, 16, JsArrayType.Float32Array);
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1899,10 +1981,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("])");
 		this.js_.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1915,10 +1997,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",false,");
 		this.js_.append(m.getJsRef()).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1929,10 +2011,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.useProgram(").append(program.getJsRef()).append(
 				");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1943,10 +2025,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append("ctx.validateProgram(").append(program.getJsRef())
 				.append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1959,10 +2041,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				.append(",");
 		this.js_.append(WebGLUtils.makeFloat(x)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1977,10 +2059,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(x)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(y)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -1996,10 +2078,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(y)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(z)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -2016,10 +2098,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WebGLUtils.makeFloat(z)).append(",");
 		this.js_.append(WebGLUtils.makeFloat(w)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -2036,10 +2118,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						String.valueOf(stride)).append(",").append(
 						String.valueOf(offset)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
@@ -2052,37 +2134,34 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						String.valueOf(width)).append(",").append(
 						String.valueOf(height)).append(");");
 		do {
-			if (debugging_) {
+			if (this.debugging_) {
 				this.js_
 						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
+								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR && err != ctx.CONTEXT_LOST_WEBGL) {alert('error ")
 						.append("(unknown)")
 						.append(": ' + err); debugger;}}\n");
 			}
 		} while (false);
 	}
 
-	public WGLWidget.JavaScriptMatrix4x4 getCreateJavaScriptMatrix4() {
-		javax.vecmath.Matrix4f m = new javax.vecmath.Matrix4f();
-		WGLWidget.JavaScriptMatrix4x4 retval = new WGLWidget.JavaScriptMatrix4x4(
-				this.matrices_++, JsArrayType.Float32Array, this.glInterface_);
-		this.js_.append(retval.getJsRef()).append("=");
+	public void initJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 mat) {
+		if (!mat.hasContext()) {
+			this.glInterface_.addJavaScriptMatrix4(mat);
+		} else {
+			if (mat.context_ != this.glInterface_) {
+				throw new WException(
+						"JavaScriptMatrix4x4: associated WGLWidget is not equal to the WGLWidget it's being initialized in");
+			}
+		}
+		if (mat.isInitialized()) {
+			throw new WException(
+					"JavaScriptMatrix4x4: matrix already initialized");
+		}
+		javax.vecmath.Matrix4f m = new javax.vecmath.Matrix4f(mat.getValue());
+		this.js_.append(mat.getJsRef()).append("=");
 		WebGLUtils.renderfv(this.js_, m, JsArrayType.Float32Array);
 		this.js_.append(";");
-		this.js_.append("obj.jsMatrices[").append(
-				String.valueOf(retval.getId())).append("] = ");
-		this.js_.append(retval.getJsRef());
-		this.js_.append(";");
-		do {
-			if (debugging_) {
-				this.js_
-						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
-						.append("(unknown)")
-						.append(": ' + err); debugger;}}\n");
-			}
-		} while (false);
-		return retval;
+		mat.initialize();
 	}
 
 	public void setJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 jsm,
@@ -2091,40 +2170,122 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
 		WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
 		this.js_.append(", ").append(jsm.getJsRef()).append(");");
-		do {
-			if (debugging_) {
-				this.js_
-						.append(
-								"\n{var err = ctx.getError(); if(err != ctx.NO_ERROR) {alert('error ")
-						.append("(unknown)")
-						.append(": ' + err); debugger;}}\n");
+	}
+
+	public void initJavaScriptVector(final WGLWidget.JavaScriptVector vec) {
+		if (!vec.hasContext()) {
+			this.glInterface_.addJavaScriptVector(vec);
+		} else {
+			if (vec.context_ != this.glInterface_) {
+				throw new WException(
+						"JavaScriptVector: associated WGLWidget is not equal to the WGLWidget it's being initialized in");
 			}
-		} while (false);
+		}
+		if (vec.isInitialized()) {
+			throw new WException("JavaScriptVector: vector already initialized");
+		}
+		List<Float> v = vec.getValue();
+		this.js_.append(vec.getJsRef()).append("= new Float32Array([");
+		for (int i = 0; i < vec.getLength(); ++i) {
+			String val = "";
+			if (v.get(i) == Float.POSITIVE_INFINITY) {
+				val = "Infinity";
+			} else {
+				if (v.get(i) == -Float.POSITIVE_INFINITY) {
+					val = "-Infinity";
+				} else {
+					val = String.valueOf(v.get(i));
+				}
+			}
+			if (i != 0) {
+				this.js_.append(",");
+			}
+			this.js_.append(val);
+		}
+		this.js_.append("]);");
+		vec.initialize();
+	}
+
+	public void setJavaScriptVector(final WGLWidget.JavaScriptVector jsv,
+			final List<Float> v) {
+		if (jsv.getLength() != v.size()) {
+			throw new WException(
+					"Trying to set a JavaScriptVector with incompatible length!");
+		}
+		for (int i = 0; i < jsv.getLength(); ++i) {
+			String val = "";
+			if (v.get(i) == Float.POSITIVE_INFINITY) {
+				val = "Infinity";
+			} else {
+				if (v.get(i) == -Float.POSITIVE_INFINITY) {
+					val = "-Infinity";
+				} else {
+					val = String.valueOf(v.get(i));
+				}
+			}
+			this.js_.append(jsv.getJsRef()).append("[").append(
+					String.valueOf(i)).append("] = ").append(val).append(";");
+		}
+	}
+
+	public void setClientSideMouseHandler(final String handlerCode) {
+		this.js_.append("obj.setMouseHandler(").append(handlerCode)
+				.append(");");
 	}
 
 	public void setClientSideLookAtHandler(
 			final WGLWidget.JavaScriptMatrix4x4 m, double centerX,
 			double centerY, double centerZ, double uX, double uY, double uZ,
 			double pitchRate, double yawRate) {
-		this.js_.append("obj.setLookAtParams(").append(m.getJsRef()).append(
-				",[").append(String.valueOf(centerX)).append(",").append(
-				String.valueOf(centerY)).append(",").append(
-				String.valueOf(centerZ)).append("],").append("[").append(
-				String.valueOf(uX)).append(",").append(String.valueOf(uY))
-				.append(",").append(String.valueOf(uZ)).append("],").append(
+		this.js_.append("obj.setMouseHandler(new obj.LookAtMouseHandler(")
+				.append(m.getJsRef()).append(",[").append(
+						String.valueOf(centerX)).append(",").append(
+						String.valueOf(centerY)).append(",").append(
+						String.valueOf(centerZ)).append("],").append("[")
+				.append(String.valueOf(uX)).append(",").append(
+						String.valueOf(uY)).append(",").append(
+						String.valueOf(uZ)).append("],").append(
 						String.valueOf(pitchRate)).append(",").append(
-						String.valueOf(yawRate)).append(");");
+						String.valueOf(yawRate)).append("));");
 	}
 
 	public void setClientSideWalkHandler(final WGLWidget.JavaScriptMatrix4x4 m,
 			double frontStep, double rotStep) {
-		this.js_.append("obj.setWalkParams(").append(m.getJsRef()).append(",")
-				.append(String.valueOf(frontStep)).append(",").append(
-						String.valueOf(rotStep)).append(");");
+		this.js_.append("obj.setMouseHandler(new obj.WalkMouseHandler(")
+				.append(m.getJsRef()).append(",").append(
+						String.valueOf(frontStep)).append(",").append(
+						String.valueOf(rotStep)).append("));");
 	}
 
 	public void injectJS(final String jsString) {
 		this.js_.append(jsString);
+	}
+
+	public void restoreContext(final String jsRef) {
+		StringWriter tmp = new StringWriter();
+		tmp.append("{var o = ").append(this.glObjJsRef(jsRef)).append(";\n");
+		this.shaders_ = 0;
+		this.programs_ = 0;
+		this.attributes_ = 0;
+		this.uniforms_ = 0;
+		for (int i = 0; i < this.buffers_; ++i) {
+			tmp.append("o.ctx.WtBuffer").append(String.valueOf(i)).append(
+					"=null;");
+		}
+		this.buffers_ = 0;
+		this.arrayBuffers_ = 0;
+		this.framebuffers_ = 0;
+		this.renderbuffers_ = 0;
+		for (int i = 0; i < this.textures_; ++i) {
+			tmp.append("o.ctx.WtTexture").append(String.valueOf(i)).append(
+					"=null;");
+		}
+		this.textures_ = 0;
+		this.images_ = 0;
+		this.canvas_ = 0;
+		this.initializeGL(jsRef, tmp);
+		tmp.append("o.initialized = false;}");
+		WApplication.getInstance().doJavaScript(tmp.toString());
 	}
 
 	public void render(final String jsRef, EnumSet<RenderFlag> flags) {
@@ -2134,18 +2295,14 @@ class WClientGLWidget extends WAbstractGLImplementation {
 					WApplication.getInstance().getJavaScriptClass())
 					.append(",").append(jsRef).append(
 							");\no.discoverContext(function(){").append(
-							this.webglNotAvailable_.createCall()).append(
-							"});\n");
-			this.js_ = new StringWriter();
-			this.glInterface_.initializeGL();
-			tmp
-					.append("o.initializeGL=function(){\nvar obj=")
-					.append(this.glObjJsRef(jsRef))
-					.append(";\nvar ctx=obj.ctx; if(!ctx) return;\n")
-					.append("")
-					.append(this.js_.toString())
+							this.webglNotAvailable_.createCall()).append("}, ")
 					.append(
-							"obj.initialized = true;\nvar key;\nfor(key in obj.updates) obj.updates[key]();\nobj.updates = new Array();\nobj.resizeGL();\n};\n}\n");
+							!EnumUtils.mask(this.glInterface_.renderOptions_,
+									WGLWidget.RenderOption.AntiAliasing)
+									.isEmpty() ? "true" : "false").append(
+							");\n");
+			this.initializeGL(jsRef, tmp);
+			tmp.append("}\n");
 			WApplication.getInstance().doJavaScript(tmp.toString());
 		}
 		if (this.updateGL_ || this.updateResizeGL_ || this.updatePaintGL_) {
@@ -2271,7 +2428,6 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	private int textures_;
 	private int images_;
 	private int canvas_;
-	private int matrices_;
 	private WGLWidget.Buffer currentlyBoundBuffer_;
 	private WGLWidget.Texture currentlyBoundTexture_;
 	private List<WMemoryResource> binaryResources_;
@@ -2982,5 +3138,16 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				+ ";var o = r ? jQuery.data(r,'obj') : null;return o ? o : {ctx: null};})()";
 	}
 
-	private static boolean debugging_ = true;
+	private void initializeGL(final String jsRef, final StringWriter ss) {
+		this.js_ = new StringWriter();
+		this.glInterface_.initializeGL();
+		ss
+				.append("o.initializeGL=function(){\nvar obj=")
+				.append(this.glObjJsRef(jsRef))
+				.append(";\nvar ctx=obj.ctx; if(!ctx) return;\n")
+				.append("")
+				.append(this.js_.toString())
+				.append(
+						"obj.initialized = true;\nvar key;\nfor(key in obj.updates) obj.updates[key]();\nobj.updates = new Array();\nobj.resizeGL();\n};\n");
+	}
 }

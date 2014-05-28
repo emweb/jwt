@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GL2;
@@ -43,19 +44,35 @@ import eu.webtoolkit.jwt.WGLWidget.Buffer;
 import eu.webtoolkit.jwt.WGLWidget.Framebuffer;
 import eu.webtoolkit.jwt.WGLWidget.GLenum;
 import eu.webtoolkit.jwt.WGLWidget.JavaScriptMatrix4x4;
+import eu.webtoolkit.jwt.WGLWidget.JavaScriptVector;
 import eu.webtoolkit.jwt.WGLWidget.Program;
 import eu.webtoolkit.jwt.WGLWidget.Renderbuffer;
 import eu.webtoolkit.jwt.WGLWidget.Shader;
 import eu.webtoolkit.jwt.WGLWidget.Texture;
 import eu.webtoolkit.jwt.WGLWidget.UniformLocation;
+import eu.webtoolkit.jwt.servlet.WebRequest;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 public class WServerGLWidget extends WAbstractGLImplementation {
 
+	private class WGLImageResource extends WMemoryResource {
+		public WGLImageResource(final String mimeType) {
+			super(mimeType);
+		}
+
+		@Override
+		public void handleRequest(WebRequest request, WebResponse response) throws IOException {
+			response.addHeader("Cache-Control", "max-age=60");
+			super.handleRequest(request, response);
+		}
+	}
+
+
 	public WServerGLWidget(WGLWidget glInterface) {
 		super(glInterface);
 		
-		mr_ = new WMemoryResource("image/png");
+		mr_ = new WGLImageResource("image/png");
 	    link_ = new WLink(mr_);
 	    
 	    js_ = new StringWriter();
@@ -122,14 +139,22 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 
 	@Override
 	public void bindFramebuffer(GLenum target, Framebuffer buffer) {
-		glCtx_.glBindFramebuffer(serverGLenum(target), buffer.getId());
+		if (buffer == null || buffer.isNull()) {
+		    glCtx_.glBindFramebuffer(serverGLenum(target), 0);
+		} else {
+		    glCtx_.glBindFramebuffer(serverGLenum(target), buffer.getId());
+		}
 		if (debug_)
 			System.out.println(glCtx_.glGetError());
 	}
 
 	@Override
 	public void bindRenderbuffer(GLenum target, Renderbuffer buffer) {
-		glCtx_.glBindRenderbuffer(serverGLenum(target), buffer.getId());
+		if (buffer == null || buffer.isNull()) {
+		    glCtx_.glBindRenderbuffer(serverGLenum(target), 0);
+		} else {
+		    glCtx_.glBindRenderbuffer(serverGLenum(target), buffer.getId());
+		}
 		if (debug_)
 			System.out.println(glCtx_.glGetError());
 	}
@@ -801,6 +826,16 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	}
 
 	@Override
+	public void uniform1fv(WGLWidget.UniformLocation location,
+			JavaScriptVector value) {
+		FloatBuffer buffer = FloatBuffer.allocate(1);
+		buffer.put(0,value.getValue().get(0));
+		glCtx_.glUniform1fv(location.getId(), 1, buffer);
+		if (debug_) 
+			System.out.println(glCtx_.glGetError());
+	}
+
+	@Override
 	public void uniform1i(WGLWidget.UniformLocation location, int x) {
 		glCtx_.glUniform1i(location.getId(), x);
 		if (debug_) 
@@ -827,6 +862,17 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public void uniform2fv(WGLWidget.UniformLocation location,
 			float[] value) {
 		glCtx_.glUniform2fv(location.getId(), 1, FloatBuffer.wrap(value));
+		if (debug_) 
+			System.out.println(glCtx_.glGetError());
+	}
+
+	@Override
+	public void uniform2fv(WGLWidget.UniformLocation location,
+			JavaScriptVector value) {
+		FloatBuffer buffer = FloatBuffer.allocate(2);
+		buffer.put(0,value.getValue().get(0));
+		buffer.put(1,value.getValue().get(1));
+		glCtx_.glUniform2fv(location.getId(), 1, buffer);
 		if (debug_) 
 			System.out.println(glCtx_.glGetError());
 	}
@@ -864,6 +910,18 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	}
 
 	@Override
+	public void uniform3fv(WGLWidget.UniformLocation location,
+			JavaScriptVector value) {
+		FloatBuffer buffer = FloatBuffer.allocate(3);
+		buffer.put(0,value.getValue().get(0));
+		buffer.put(1,value.getValue().get(1));
+		buffer.put(2,value.getValue().get(2));
+		glCtx_.glUniform3fv(location.getId(), 1, buffer);
+		if (debug_) 
+			System.out.println(glCtx_.glGetError());
+	}
+
+	@Override
 	public void uniform3i(WGLWidget.UniformLocation location, int x,
 			int y, int z) {
 		glCtx_.glUniform3i(location.getId(), x, y, z);
@@ -891,6 +949,19 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public void uniform4fv(WGLWidget.UniformLocation location,
 			float[] value) {
 		glCtx_.glUniform4fv(location.getId(), 1, FloatBuffer.wrap(value));
+		if (debug_) 
+			System.out.println(glCtx_.glGetError());
+	}
+
+	@Override
+	public void uniform4fv(WGLWidget.UniformLocation location,
+			JavaScriptVector value) {
+		FloatBuffer buffer = FloatBuffer.allocate(4);
+		buffer.put(0,value.getValue().get(0));
+		buffer.put(1,value.getValue().get(1));
+		buffer.put(2,value.getValue().get(2));
+		buffer.put(3,value.getValue().get(3));
+		glCtx_.glUniform4fv(location.getId(), 1, buffer);
 		if (debug_) 
 			System.out.println(glCtx_.glGetError());
 	}
@@ -1059,6 +1130,10 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	}
 	
 	@Override
+	public void restoreContext(String jsRef) {
+	}
+
+	@Override
 	public void render(String jsRef, EnumSet<RenderFlag> flags) {
 		if (serverWindow_)
 			ctx_ = window_.getContext();
@@ -1148,14 +1223,13 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    
 	    mr_.setData(pngData.toByteArray());
 	    
-		// zet src veld op de gegenereerde image
-		StringWriter tmp = new StringWriter();
-		tmp.append("{\n")
-			.append(jsRef)
-			.append(".src = ")
-			.append(WWebWidget.jsStringLiteral(link_.getUrl()))
-			.append(";\n}");
-		glInterface_.doJavaScript(tmp.toString());
+	    StringWriter tmp = new StringWriter();
+	    tmp.append("jQuery.data(")
+	       .append(jsRef)
+	       .append(",'obj').loadImage(")
+	       .append(WWebWidget.jsStringLiteral(link_.getUrl()))
+	       .append(");");
+	    glInterface_.doJavaScript(tmp.toString());
 	}
 	
 	private static int serverGLenum(GLenum type) {
@@ -1786,6 +1860,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			ctx_ = offscreenDrawable_.getContext();
 		glCtx_ = ctx_.getGL().getGL2();
 		glCtx_.glEnable(GL2.GL_VERTEX_PROGRAM_POINT_SIZE);
+		glCtx_.glEnable(GL2.GL_POINT_SPRITE);
 		glInterface_.paintGL();
 
 		if (serverWindow_)
@@ -1808,7 +1883,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	private GL2 glCtx_;
 	
 	private StringWriter js_;
-	private int jsMatrices_;
+	private int jsValues_;
 	
 	private static final boolean debug_ = false;
 
@@ -1830,13 +1905,20 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	}
 
 	@Override
-	public JavaScriptMatrix4x4 getCreateJavaScriptMatrix4() {
-		JavaScriptMatrix4x4 mat = new JavaScriptMatrix4x4(jsMatrices_++, JsArrayType.Array, glInterface_);
-		Matrix4f m = new Matrix4f(); m.setIdentity();
-		js_.append("obj.jsMatrices[").append(""+mat.getId()).append("] = ");
-		WebGLUtils.renderfv(this.js_, m, JsArrayType.Array);
-		js_.append(";");
-		return mat;
+	public void initJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 mat) {
+	    if (!mat.hasContext())
+	      glInterface_.addJavaScriptMatrix4(mat);
+	    else if (mat.context_ != glInterface_)
+	      throw new WException("JavaScriptMatrix4x4: associated WGLWidget is not equal to the WGLWidget it's being initialized in");
+	    if (mat.isInitialized())
+	      throw new WException("JavaScriptMatrix4x4: matrix already initialized");
+
+	    javax.vecmath.Matrix4f m = mat.getValue();
+	    this.js_.append(mat.getJsRef()).append("=");
+	    WebGLUtils.renderfv(this.js_, m, JsArrayType.Array);
+	    this.js_.append(";");
+
+	    mat.initialize();
 	}
 
 	@Override
@@ -1845,15 +1927,53 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		this.js_.append(WEnvironment.getJavaScriptWtScope());
 		this.js_.append(".glMatrix.mat4.set(");
 		WebGLUtils.renderfv(this.js_, t, JsArrayType.Array);
-		this.js_.append(", ").append("obj.jsMatrices[");
+		this.js_.append(", ").append("obj.jsValues[");
 		this.js_.append(String.valueOf(jsm.getId())).append("]);");
+	}
+
+	@Override
+	public void initJavaScriptVector(final WGLWidget.JavaScriptVector vec) {
+	    if (!vec.hasContext())
+	      glInterface_.addJavaScriptVector(vec);
+	    else if (vec.context_ != glInterface_)
+	      throw new WException("JavaScriptMatrix4x4: associated WGLWidget is not equal to the WGLWidget it's being initialized in");
+	    if (vec.isInitialized())
+	      throw new WException("JavaScriptVector: vector already initialized");
+
+	    List<Float> v = vec.getValue();
+	    js_.append(vec.getJsRef()).append("= new Float32Array([");
+	    for (int i = 0; i < vec.getLength(); i++) {
+	      if (i != 0)
+		js_.append(",");
+	      js_.append(String.valueOf(v.get(i)));
+	    }
+	    js_.append("]);");
+
+	    vec.initialize();
+	}
+
+	@Override
+	public void setJavaScriptVector(JavaScriptVector jsv, List<Float> v) {
+		if (jsv.getLength() != v.size())
+		  throw new WException("Trying to set a JavaScriptVector with incompatible length!");
+		for (int i = 0; i < jsv.getLength(); ++i) {
+		  this.js_.append("obj.jsValues[").append(String.valueOf(jsv.getId()))
+		    .append("][").append(String.valueOf(i)).append("] = ")
+		    .append(String.valueOf(v.get(i))).append(";");
+		}
+	}
+
+	@Override
+	public void setClientSideMouseHandler(String handlerCode) {
+	  this.js_.append("obj.setMouseHandler(").append(handlerCode).append(");");
 	}
 
 	@Override
 	public void setClientSideLookAtHandler(JavaScriptMatrix4x4 m, double centerX,
 			double centerY, double centerZ, double uX, double uY, double uZ,
 			double pitchRate, double yawRate) {
-		this.js_.append("obj.setLookAtParams(").append("obj.jsMatrices[").append(""+m.getId()).append("]")
+		this.js_.append("obj.setMouseHandler(new obj.LookAtMouseHandler(")
+		.append("obj.jsValues[").append(String.valueOf(m.getId())).append("]")
 		.append(",[").append(String.valueOf(centerX)).append(",")
 		.append(String.valueOf(centerY)).append(",")
 		.append(String.valueOf(centerZ)).append("],").append("[")
@@ -1861,15 +1981,16 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		.append(String.valueOf(uY)).append(",")
 		.append(String.valueOf(uZ)).append("],")
 		.append(String.valueOf(pitchRate)).append(",")
-		.append(String.valueOf(yawRate)).append(");");
+		.append(String.valueOf(yawRate)).append("));");
 	}
 
 	@Override
 	public void setClientSideWalkHandler(JavaScriptMatrix4x4 m,
 			double frontStep, double rotStep) {
-		this.js_.append("obj.setWalkParams(").append("obj.jsMatrices[").append(""+m.getId()).append("]").append(",")
+		this.js_.append("obj.setMouseHandler(new obj.WalkMouseHandler(")
+		.append("obj.jsValues[").append(String.valueOf(m.getId())).append("]").append(",")
 		.append(String.valueOf(frontStep)).append(",")
-		.append(String.valueOf(rotStep)).append(");");
+		.append(String.valueOf(rotStep)).append("));");
 	}
 
 	@Override
@@ -1974,6 +2095,6 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public void injectJS(String jsString) { // only functional for WClientGLWidget
 	}
 
-	private static final boolean serverWindow_ = true;
+	private static final boolean serverWindow_ = false;
 
 }

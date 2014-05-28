@@ -196,10 +196,15 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Set an internal margin for the main plot area.
 	 * <p>
 	 * This configures the area (in pixels) around the plot area that is
-	 * available for axes, labels, and titles. You need to set this
-	 * appropriately so that labels fit inside these margins.
+	 * available for axes, labels, and titles.
 	 * <p>
 	 * The default is dependent on the chart type.
+	 * <p>
+	 * Alternatively, you can configure the chart layout to be computed
+	 * automatically using
+	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}.
+	 * <p>
 	 */
 	public void setPlotAreaPadding(int padding, EnumSet<Side> sides) {
 		if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
@@ -239,6 +244,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Returns the internal margin for the main plot area.
 	 * <p>
+	 * This is either the paddings set through
+	 * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
+	 * setPlotAreaPadding()} or computed using
+	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
 	 */
@@ -257,6 +268,41 @@ public abstract class WAbstractChart extends WPaintedWidget {
 					"plotAreaPadding(): improper side.").toString());
 			return 0;
 		}
+	}
+
+	/**
+	 * Configures the chart layout to be automatic.
+	 * <p>
+	 * This configures the plot area so that the space around it is suited for
+	 * the text that is rendered (axis labels and text, the title, and legend).
+	 * <p>
+	 * The default value is <code>false</code>, and the chart layout is set
+	 * manually using values set in
+	 * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
+	 * setPlotAreaPadding()}.
+	 */
+	public void setAutoLayoutEnabled(boolean enabled) {
+		this.autoPadding_ = enabled;
+	}
+
+	/**
+	 * Configures the chart layout to be automatic.
+	 * <p>
+	 * Calls {@link #setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled(true)}
+	 */
+	public final void setAutoLayoutEnabled() {
+		setAutoLayoutEnabled(true);
+	}
+
+	/**
+	 * Returns whether chart layout is computed automatically.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 */
+	public boolean isAutoLayoutEnabled() {
+		return this.autoPadding_;
 	}
 
 	/**
@@ -353,6 +399,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		this.model_ = null;
 		this.background_ = new WBrush(WColor.white);
 		this.palette_ = null;
+		this.autoPadding_ = false;
 		this.title_ = new WString();
 		this.titleFont_ = new WFont();
 		this.axisTitleFont_ = new WFont();
@@ -367,6 +414,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	private WAbstractItemModel model_;
 	private WBrush background_;
 	private WChartPalette palette_;
+	private boolean autoPadding_;
 	private int[] padding_ = new int[4];
 	private WString title_;
 	private WFont titleFont_;

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Carefully consider the use of this. Not only is writing cross-browser
  * JavaScript hard and tedious, but one must also be aware of possible security
- * problems (see further), and ofcourse, the event handling will not be
+ * problems (see further), and of course, the event handling will not be
  * available when JavaScript is disabled or not present at all.
  * <p>
  * For some purposes, stateless slot implementations are not sufficient, since
@@ -39,8 +39,9 @@ import org.slf4j.LoggerFactory;
  * client-side event handling.
  * <p>
  * The JavaScript code may be set (or changed) using the
- * {@link JSlot#setJavaScript(String js) setJavaScript()} method which takes a
- * string that implements a JavaScript function with the following signature:
+ * {@link JSlot#setJavaScript(String js, int nbArgs) setJavaScript()} method
+ * which takes a string that implements a JavaScript function with the following
+ * signature:
  * <p>
  * 
  * <pre>
@@ -51,8 +52,9 @@ import org.slf4j.LoggerFactory;
  *    // equivalent to the sender for a normal %Wt slot.
  * 
  *    // You can prevent the default action using:
- *    ${WT_CLASS}.cancelEvent(event);
- *    // (where ${WT_CLASS} should be the value of the WT_CLASS define
+ *    var fixed = jQuery.event.fix(event);
+ *    fixed.preventDefault();
+ *    fixed.stopPropagation();
  *  }
  * }
  * </pre>
@@ -61,9 +63,14 @@ import org.slf4j.LoggerFactory;
  * WWidget#getJsRef()} to obtain the DOM element corresponding to any
  * {@link WWidget}, or {@link WObject#getId() WObject#getId()} to obtain the DOM
  * id. In addition you may trigger server-side events using the JavaScript
- * WtSignalEmit function (see {@link JSignal} documentation). That&apos;s how
- * far we can help you. For the rest you are left to yourself, buggy browsers
- * and quirky JavaScript (<a
+ * WtSignalEmit function (see {@link JSignal} documentation).
+ * <p>
+ * A JSlot can take up to six extra arguments. This is so that a {@link JSignal}
+ * can pass its arguments directly on to a JSlot, without communicating with the
+ * server.
+ * <p>
+ * That&apos;s how far we can help you. For the rest you are left to yourself,
+ * buggy browsers and quirky JavaScript (<a
  * href="http://www.quirksmode.org/">http://www.quirksmode.org/</a> was a
  * reliable companion to me) -- good luck.
  * <p>
@@ -81,14 +88,17 @@ public class JSlot {
 	 * <p>
 	 * The JavaScript code block will reside within the scope of the given
 	 * widget. By picking a long-lived parent, one may reuse a single block of
-	 * JavasCript code for multiple widgets.
+	 * JavaScript code for multiple widgets.
 	 * <p>
 	 * When <code>parent</code> = <code>null</code>, then the JavaScript will be
 	 * inlined in each caller (possibly replicating the same JavaScript).
+	 * <p>
+	 * The slot will have no extra arguments.
 	 */
 	public JSlot(WWidget parent) {
 		this.widget_ = parent;
 		this.fid_ = nextFid_++;
+		this.nbArgs_ = 0;
 		this.create();
 	}
 
@@ -102,21 +112,24 @@ public class JSlot {
 	}
 
 	/**
-	 * Constructs a JavaScript-only and sets the JavaScript code.
+	 * Constructs a JavaScript-only slot and sets the JavaScript code.
+	 * <p>
+	 * The slot will have no extra arguments.
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
-	 * @see JSlot#setJavaScript(String js)
+	 * @see JSlot#setJavaScript(String js, int nbArgs)
 	 */
 	public JSlot(final String javaScript, WWidget parent) {
 		this.widget_ = parent;
 		this.fid_ = nextFid_++;
+		this.nbArgs_ = 0;
 		this.create();
 		this.setJavaScript(javaScript);
 	}
 
 	/**
-	 * Constructs a JavaScript-only and sets the JavaScript code.
+	 * Constructs a JavaScript-only slot and sets the JavaScript code.
 	 * <p>
 	 * Calls {@link #JSlot(String javaScript, WWidget parent) this(javaScript,
 	 * (WWidget)null)}
@@ -126,12 +139,62 @@ public class JSlot {
 	}
 
 	/**
-	 * Sets or modify the JavaScript code associated with the slot.
+	 * Constructs a JavaScript-only slot and set the number of arguments.
+	 * <p>
+	 * 
+	 * @see JSlot#JSlot(WWidget parent)
+	 * @see JSlot#setJavaScript(String js, int nbArgs)
+	 */
+	public JSlot(int nbArgs, WWidget parent) {
+		this.widget_ = parent;
+		this.fid_ = nextFid_++;
+		this.nbArgs_ = nbArgs;
+		if (this.nbArgs_ < 0 || this.nbArgs_ > 6) {
+			throw new WException(
+					"The number of arguments given must be between 0 and 6.");
+		}
+		this.create();
+	}
+
+	/**
+	 * Constructs a JavaScript-only slot and sets the JavaScript code and a
+	 * number of arguments.
+	 * <p>
+	 * 
+	 * @see JSlot#JSlot(WWidget parent)
+	 * @see JSlot#setJavaScript(String js, int nbArgs)
+	 */
+	public JSlot(final String javaScript, int nbArgs, WWidget parent) {
+		this.widget_ = parent;
+		this.fid_ = nextFid_++;
+		this.nbArgs_ = nbArgs;
+		if (this.nbArgs_ < 0 || this.nbArgs_ > 6) {
+			throw new WException(
+					"The number of arguments given must be between 0 and 6.");
+		}
+		this.create();
+		this.setJavaScript(javaScript, this.nbArgs_);
+	}
+
+	/**
+	 * Constructs a JavaScript-only slot and sets the JavaScript code and a
+	 * number of arguments.
+	 * <p>
+	 * Calls {@link #JSlot(String javaScript, int nbArgs, WWidget parent)
+	 * this(javaScript, nbArgs, (WWidget)null)}
+	 */
+	public JSlot(final String javaScript, int nbArgs) {
+		this(javaScript, nbArgs, (WWidget) null);
+	}
+
+	/**
+	 * Set or modify the JavaScript code associated with the slot.
 	 * <p>
 	 * When the slot is triggered, the corresponding function defined by
 	 * <code>javaScript</code> is executed.
 	 * <p>
-	 * The JavaScript function takes two parameters and thus should look like:
+	 * The JavaScript function takes at least two parameters and thus should
+	 * look like:
 	 * 
 	 * <pre>
 	 * {@code
@@ -140,21 +203,55 @@ public class JSlot {
 	 *        }
 	 *   }
 	 * </pre>
-	 * <p>
+	 * 
 	 * The first parameter <code>obj</code> is a reference to the DOM element
 	 * that generates the event. The <code>event</code> refers to the JavaScript
 	 * event object.
 	 * <p>
+	 * The JavaScript function can take up to six extra arguments, which is to
+	 * be configured using the nbArgs parameter.
+	 * 
+	 * <pre>
+	 * {@code
+	 *        function(obj, event, a1, a2, a3, a4, a5, a6) {
+	 *          // ...
+	 *        }
+	 *   }
+	 * </pre>
+	 * 
+	 * If this {@link JSlot} is connected to a {@link JSignal}, that
+	 * JSignal&apos;s arguments will be passed on to the {@link JSlot}.
+	 * <p>
 	 * 
 	 * @see WWidget#getJsRef()
 	 */
-	public void setJavaScript(final String js) {
+	public void setJavaScript(final String js, int nbArgs) {
+		if (nbArgs < 0 || nbArgs > 6) {
+			throw new WException(
+					"The number of arguments given must be between 0 and 6.");
+		}
+		this.nbArgs_ = nbArgs;
 		if (this.widget_ != null) {
 			WApplication.getInstance().declareJavaScriptFunction(
 					this.getJsFunctionName(), js);
 		} else {
-			this.imp_.setJavaScript("{var f=" + js + ";f(o,e);}");
+			StringWriter ss = new StringWriter();
+			ss.append("{var f=").append(js).append(";f(o,e");
+			for (int i = 1; i <= nbArgs; ++i) {
+				ss.append(",a").append(String.valueOf(i));
+			}
+			ss.append(");}");
+			this.imp_.setJavaScript(ss.toString());
 		}
+	}
+
+	/**
+	 * Set or modify the JavaScript code associated with the slot.
+	 * <p>
+	 * Calls {@link #setJavaScript(String js, int nbArgs) setJavaScript(js, 0)}
+	 */
+	public final void setJavaScript(final String js) {
+		setJavaScript(js, 0);
 	}
 
 	/**
@@ -164,32 +261,112 @@ public class JSlot {
 	 * {@link EventSignal}. This function returns immediately, and execution of
 	 * the JavaScript code is deferred until after the event handling.
 	 * <p>
-	 * The arguments are the <code>&quot;object, event&quot;</code> arguments of
-	 * the JavaScript event callback function.
+	 * The first two arguments are the <code>&quot;object, event&quot;</code>
+	 * arguments of the JavaScript event callback function.
 	 * <p>
 	 * 
-	 * @see JSlot#setJavaScript(String js)
+	 * @see JSlot#setJavaScript(String js, int nbArgs)
 	 */
-	public void exec(final String object, final String event) {
-		WApplication.getInstance().doJavaScript(this.execJs(object, event));
+	public void exec(final String object, final String event,
+			final String arg1, final String arg2, final String arg3,
+			final String arg4, final String arg5, final String arg6) {
+		WApplication.getInstance().doJavaScript(
+				this.execJs(object, event, arg1, arg2, arg3, arg4, arg5, arg6));
 	}
 
 	/**
 	 * Executes the JavaScript code.
 	 * <p>
-	 * Calls {@link #exec(String object, String event) exec("null", "null")}
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec("null", "null", "null", "null", "null", "null", "null", "null")}
 	 */
 	public final void exec() {
-		exec("null", "null");
+		exec("null", "null", "null", "null", "null", "null", "null", "null");
 	}
 
 	/**
 	 * Executes the JavaScript code.
 	 * <p>
-	 * Calls {@link #exec(String object, String event) exec(object, "null")}
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, "null", "null", "null", "null", "null", "null", "null")}
 	 */
 	public final void exec(final String object) {
-		exec(object, "null");
+		exec(object, "null", "null", "null", "null", "null", "null", "null");
+	}
+
+	/**
+	 * Executes the JavaScript code.
+	 * <p>
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, event, "null", "null", "null", "null", "null", "null")}
+	 */
+	public final void exec(final String object, final String event) {
+		exec(object, event, "null", "null", "null", "null", "null", "null");
+	}
+
+	/**
+	 * Executes the JavaScript code.
+	 * <p>
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, event, arg1, "null", "null", "null", "null", "null")}
+	 */
+	public final void exec(final String object, final String event,
+			final String arg1) {
+		exec(object, event, arg1, "null", "null", "null", "null", "null");
+	}
+
+	/**
+	 * Executes the JavaScript code.
+	 * <p>
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, event, arg1, arg2, "null", "null", "null", "null")}
+	 */
+	public final void exec(final String object, final String event,
+			final String arg1, final String arg2) {
+		exec(object, event, arg1, arg2, "null", "null", "null", "null");
+	}
+
+	/**
+	 * Executes the JavaScript code.
+	 * <p>
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, event, arg1, arg2, arg3, "null", "null", "null")}
+	 */
+	public final void exec(final String object, final String event,
+			final String arg1, final String arg2, final String arg3) {
+		exec(object, event, arg1, arg2, arg3, "null", "null", "null");
+	}
+
+	/**
+	 * Executes the JavaScript code.
+	 * <p>
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, event, arg1, arg2, arg3, arg4, "null", "null")}
+	 */
+	public final void exec(final String object, final String event,
+			final String arg1, final String arg2, final String arg3,
+			final String arg4) {
+		exec(object, event, arg1, arg2, arg3, arg4, "null", "null");
+	}
+
+	/**
+	 * Executes the JavaScript code.
+	 * <p>
+	 * Calls
+	 * {@link #exec(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * exec(object, event, arg1, arg2, arg3, arg4, arg5, "null")}
+	 */
+	public final void exec(final String object, final String event,
+			final String arg1, final String arg2, final String arg3,
+			final String arg4, final String arg5) {
+		exec(object, event, arg1, arg2, arg3, arg4, arg5, "null");
 	}
 
 	/**
@@ -201,31 +378,146 @@ public class JSlot {
 	 * the JavaScript event callback function.
 	 * <p>
 	 * 
-	 * @see JSlot#exec(String object, String event)
+	 * @see JSlot#exec(String object, String event, String arg1, String arg2,
+	 *      String arg3, String arg4, String arg5, String arg6)
 	 */
-	public String execJs(final String object, final String event) {
-		return "{var o=" + object + ", e=" + event + ";"
-				+ this.imp_.getJavaScript() + "}";
+	public String execJs(final String object, final String event,
+			final String arg1, final String arg2, final String arg3,
+			final String arg4, final String arg5, final String arg6) {
+		StringWriter result = new StringWriter();
+		result.append("{var o=").append(object);
+		result.append(",e=").append(event);
+		for (int i = 0; i < this.nbArgs_; ++i) {
+			result.append(",a").append(String.valueOf(i + 1)).append("=");
+			switch (i) {
+			case 0:
+				result.append(arg1);
+				break;
+			case 1:
+				result.append(arg2);
+				break;
+			case 2:
+				result.append(arg3);
+				break;
+			case 3:
+				result.append(arg4);
+				break;
+			case 4:
+				result.append(arg5);
+				break;
+			case 5:
+				result.append(arg6);
+				break;
+			}
+		}
+		result.append(";").append(this.imp_.getJavaScript() + "}");
+		return result.toString();
 	}
 
 	/**
 	 * Returns a JavaScript statement that executes the slot.
 	 * <p>
-	 * Returns {@link #execJs(String object, String event) execJs("null",
-	 * "null")}
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs("null", "null", "null", "null", "null", "null", "null", "null")}
 	 */
 	public final String execJs() {
-		return execJs("null", "null");
+		return execJs("null", "null", "null", "null", "null", "null", "null",
+				"null");
 	}
 
 	/**
 	 * Returns a JavaScript statement that executes the slot.
 	 * <p>
-	 * Returns {@link #execJs(String object, String event) execJs(object,
-	 * "null")}
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, "null", "null", "null", "null", "null", "null", "null")}
 	 */
 	public final String execJs(final String object) {
-		return execJs(object, "null");
+		return execJs(object, "null", "null", "null", "null", "null", "null",
+				"null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, event, "null", "null", "null", "null", "null", "null")}
+	 */
+	public final String execJs(final String object, final String event) {
+		return execJs(object, event, "null", "null", "null", "null", "null",
+				"null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, event, arg1, "null", "null", "null", "null", "null")}
+	 */
+	public final String execJs(final String object, final String event,
+			final String arg1) {
+		return execJs(object, event, arg1, "null", "null", "null", "null",
+				"null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, event, arg1, arg2, "null", "null", "null", "null")}
+	 */
+	public final String execJs(final String object, final String event,
+			final String arg1, final String arg2) {
+		return execJs(object, event, arg1, arg2, "null", "null", "null", "null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, event, arg1, arg2, arg3, "null", "null", "null")}
+	 */
+	public final String execJs(final String object, final String event,
+			final String arg1, final String arg2, final String arg3) {
+		return execJs(object, event, arg1, arg2, arg3, "null", "null", "null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, event, arg1, arg2, arg3, arg4, "null", "null")}
+	 */
+	public final String execJs(final String object, final String event,
+			final String arg1, final String arg2, final String arg3,
+			final String arg4) {
+		return execJs(object, event, arg1, arg2, arg3, arg4, "null", "null");
+	}
+
+	/**
+	 * Returns a JavaScript statement that executes the slot.
+	 * <p>
+	 * Returns
+	 * {@link #execJs(String object, String event, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6)
+	 * execJs(object, event, arg1, arg2, arg3, arg4, arg5, "null")}
+	 */
+	public final String execJs(final String object, final String event,
+			final String arg1, final String arg2, final String arg3,
+			final String arg4, final String arg5) {
+		return execJs(object, event, arg1, arg2, arg3, arg4, arg5, "null");
+	}
+
+	/**
+	 * Returns the number of extra arguments this JSlot takes.
+	 */
+	public int getNbArgs() {
+		return this.nbArgs_;
 	}
 
 	private WWidget widget_;
@@ -240,12 +532,20 @@ public class JSlot {
 	}
 
 	private void create() {
+		StringWriter ss = new StringWriter();
+		if (this.widget_ != null) {
+			ss.append(WApplication.getInstance().getJavaScriptClass()).append(
+					".").append(this.getJsFunctionName()).append("(o,e");
+			for (int i = 1; i <= this.nbArgs_; ++i) {
+				ss.append(",a").append(String.valueOf(i));
+			}
+			ss.append(");");
+		}
 		this.imp_ = new AbstractEventSignal.JavaScriptListener(this.widget_,
-				null, this.widget_ != null ? WApplication.getInstance()
-						.getJavaScriptClass()
-						+ '.' + this.getJsFunctionName() + "(o,e);" : "");
+				null, ss.toString());
 	}
 
 	private int fid_;
 	private static int nextFid_ = 0;
+	private int nbArgs_;
 }

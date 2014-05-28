@@ -20,26 +20,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enumeration with the possible representations of a {@link WAbstractGridData}.
+ * Represents a single point selection on a {@link WScatterData}.
  */
-public enum Series3DType {
-	/**
-	 * Series rendered as points.
-	 */
-	PointSeries3D,
-	/**
-	 * Series rendered as a surface.
-	 */
-	SurfaceSeries3D,
-	/**
-	 * Series rendered as bars.
-	 */
-	BarSeries3D;
+public class WPointSelection extends WSelection {
+	private static Logger logger = LoggerFactory
+			.getLogger(WPointSelection.class);
 
 	/**
-	 * Returns the numerical representation of this enum.
+	 * The row number of the WAbstractDataModel that the selected point is
+	 * defined in.
 	 */
-	public int getValue() {
-		return ordinal();
+	public int rowNumber;
+
+	public WPointSelection() {
+		super();
+		this.rowNumber = -1;
+	}
+
+	public WPointSelection(double distance, int rowNumber) {
+		super(distance);
+		this.rowNumber = rowNumber;
 	}
 }

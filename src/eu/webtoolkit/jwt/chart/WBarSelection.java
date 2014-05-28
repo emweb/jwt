@@ -20,26 +20,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enumeration with the possible representations of a {@link WAbstractGridData}.
+ * Represents a selection of a bar.
  */
-public enum Series3DType {
-	/**
-	 * Series rendered as points.
-	 */
-	PointSeries3D,
-	/**
-	 * Series rendered as a surface.
-	 */
-	SurfaceSeries3D,
-	/**
-	 * Series rendered as bars.
-	 */
-	BarSeries3D;
+public class WBarSelection extends WSelection {
+	private static Logger logger = LoggerFactory.getLogger(WBarSelection.class);
 
 	/**
-	 * Returns the numerical representation of this enum.
+	 * The index that corresponds to the selected bar in the WAbstractDataModel.
 	 */
-	public int getValue() {
-		return ordinal();
+	public WModelIndex index;
+
+	public WBarSelection() {
+		super();
+		this.index = null;
+	}
+
+	public WBarSelection(double distance, WModelIndex index) {
+		super(distance);
+		this.index = index;
 	}
 }

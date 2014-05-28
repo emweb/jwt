@@ -489,6 +489,36 @@ public class WAxis {
 	}
 
 	/**
+	 * Sets a point to be included as one of the labels (if possible).
+	 * <p>
+	 * The given point will be included as one of the labels, by adjusting the
+	 * minimum value on the axis, if that minimum is auto-computed. This is only
+	 * applicable to a Linear scale axis.
+	 * <p>
+	 * The default value is 0.0.
+	 * <p>
+	 * 
+	 * @see WAxis#setRoundLimits(EnumSet locations)
+	 */
+	public void setLabelBasePoint(double labelBasePoint) {
+		if (!ChartUtils.equals(this.labelBasePoint_, labelBasePoint)) {
+			this.labelBasePoint_ = labelBasePoint;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the base point for labels.
+	 * <p>
+	 * 
+	 * @see WAxis#setLabelBasePoint(double labelBasePoint)
+	 */
+	public double getLabelBasePoint() {
+		return this.labelBasePoint_;
+	}
+
+	/**
 	 * Sets the label format.
 	 * <p>
 	 * Sets a format string which is used to format values, both for the axis
@@ -891,6 +921,16 @@ public class WAxis {
 								AxisValue.MinimumValue).isEmpty()) {
 							s.renderMinimum = roundDown125(s.renderMinimum,
 									this.renderInterval_);
+							if (s.renderMinimum <= this.labelBasePoint_
+									&& s.renderMaximum >= this.labelBasePoint_) {
+								double interv = this.labelBasePoint_
+										- s.renderMinimum;
+								interv = this.renderInterval_
+										* 2
+										* Math.ceil(interv
+												/ (this.renderInterval_ * 2));
+								s.renderMinimum = this.labelBasePoint_ - interv;
+							}
 						}
 						if (!EnumUtils.mask(this.roundLimits_,
 								AxisValue.MaximumValue).isEmpty()) {
@@ -1550,6 +1590,7 @@ public class WAxis {
 	private AxisScale scale_;
 	private double resolution_;
 	private double labelInterval_;
+	private double labelBasePoint_;
 	private WString labelFormat_;
 	private boolean defaultLabelFormat_;
 	private boolean gridLines_;
@@ -1598,6 +1639,7 @@ public class WAxis {
 		this.scale_ = AxisScale.LinearScale;
 		this.resolution_ = 0.0;
 		this.labelInterval_ = 0;
+		this.labelBasePoint_ = 0;
 		this.labelFormat_ = new WString();
 		this.defaultLabelFormat_ = true;
 		this.gridLines_ = false;

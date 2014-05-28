@@ -175,9 +175,8 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 	}
 
 	public void update() {
-		this.chart_.updateChart(EnumSet.of(
-				WCartesian3DChart.ChartUpdates.GLContext,
-				WCartesian3DChart.ChartUpdates.GLTextures));
+		this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext,
+				ChartUpdates.GLTextures));
 	}
 
 	private WCartesian3DChart chart_;

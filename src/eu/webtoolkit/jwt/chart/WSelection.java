@@ -20,26 +20,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enumeration with the possible representations of a {@link WAbstractGridData}.
+ * Represents a selection on a chart.
  */
-public enum Series3DType {
-	/**
-	 * Series rendered as points.
-	 */
-	PointSeries3D,
-	/**
-	 * Series rendered as a surface.
-	 */
-	SurfaceSeries3D,
-	/**
-	 * Series rendered as bars.
-	 */
-	BarSeries3D;
+public class WSelection {
+	private static Logger logger = LoggerFactory.getLogger(WSelection.class);
 
 	/**
-	 * Returns the numerical representation of this enum.
+	 * The distance from the look point to the selected point.
 	 */
-	public int getValue() {
-		return ordinal();
+	public double distance;
+
+	public WSelection() {
+		this.distance = Double.POSITIVE_INFINITY;
+	}
+
+	public WSelection(double distance) {
+		this.distance = distance;
 	}
 }

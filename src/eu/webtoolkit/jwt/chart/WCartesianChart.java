@@ -571,9 +571,16 @@ public class WCartesianChart extends WAbstractChart {
 	 * or at the bottom of the chart.
 	 * <p>
 	 * The default value is a single column, 100 pixels wide.
+	 * <p>
+	 * When automatic chart layout is enabled, then the legend column width is
+	 * computed automatically, and this setting is ignored.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
 	 */
 	public void setLegendColumns(int columns, final WLength columnWidth) {
-		this.legend_.setLegendColumns(columns, columnWidth);
+		this.legend_.setLegendColumns(columns);
+		this.legend_.setLegendColumnWidth(columnWidth);
 		this.update();
 	}
 
@@ -725,7 +732,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * This uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle) initLayout()} first.
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis
@@ -760,7 +768,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * This uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle) initLayout()} first.
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
 	 * <p>
 	 * The <code>xSegment</code> and <code>ySegment</code> arguments are
 	 * relevant only when the corresponding axis is broken using
@@ -832,7 +841,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Unless a specific chart rectangle is specified, the entire widget area is
 	 * assumed.
 	 */
-	public boolean initLayout(final WRectF rectangle) {
+	public boolean initLayout(final WRectF rectangle, WPaintDevice device) {
 		WRectF rect = rectangle;
 		if ((rect == null) || rect.isEmpty()) {
 			rect = new WRectF(0.0, 0.0, this.getWidth().toPixels(), this
@@ -848,6 +857,48 @@ public class WCartesianChart extends WAbstractChart {
 		for (int i = 0; i < 3; ++i) {
 			this.location_[i] = AxisValue.MinimumValue;
 		}
+		if (this.isAutoLayoutEnabled()) {
+			WCartesianChart self = this;
+			self.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
+			self.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
+			this.calcChartArea();
+			if (this.chartArea_.getWidth() <= 5
+					|| this.chartArea_.getHeight() <= 5
+					|| !this.isPrepareAxes()) {
+				return false;
+			}
+			WPaintDevice d = device;
+			if (!(d != null)) {
+				d = this.getCreatePaintDevice();
+			}
+			WMeasurePaintDevice md = new WMeasurePaintDevice(d);
+			WPainter painter = new WPainter(md);
+			this.renderAxes(painter, EnumSet.of(AxisProperty.Line,
+					AxisProperty.Labels));
+			this.renderLegend(painter);
+			WRectF bounds = md.getBoundingRect();
+			final int MARGIN = 5;
+			int corrLeft = (int) Math.max(0.0, rect.getLeft()
+					- bounds.getLeft() + MARGIN);
+			int corrRight = (int) Math.max(0.0, bounds.getRight()
+					- rect.getRight() + MARGIN);
+			int corrTop = (int) Math.max(0.0, rect.getTop() - bounds.getTop()
+					+ MARGIN);
+			int corrBottom = (int) Math.max(0.0, bounds.getBottom()
+					- rect.getBottom() + MARGIN);
+			self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Left)
+					+ corrLeft, EnumSet.of(Side.Left));
+			self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Right)
+					+ corrRight, EnumSet.of(Side.Right));
+			self.setPlotAreaPadding(
+					this.getPlotAreaPadding(Side.Top) + corrTop, EnumSet
+							.of(Side.Top));
+			self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Bottom)
+					+ corrBottom, EnumSet.of(Side.Bottom));
+			if (!(device != null)) {
+				;
+			}
+		}
 		this.calcChartArea();
 		return this.chartArea_.getWidth() > 5
 				&& this.chartArea_.getHeight() > 5 && this.isPrepareAxes();
@@ -856,10 +907,21 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Initializes the chart layout.
 	 * <p>
-	 * Returns {@link #initLayout(WRectF rectangle) initLayout(null)}
+	 * Returns {@link #initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout(null, (WPaintDevice)null)}
 	 */
 	public final boolean initLayout() {
-		return initLayout(null);
+		return initLayout(null, (WPaintDevice) null);
+	}
+
+	/**
+	 * Initializes the chart layout.
+	 * <p>
+	 * Returns {@link #initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout(rectangle, (WPaintDevice)null)}
+	 */
+	public final boolean initLayout(final WRectF rectangle) {
+		return initLayout(rectangle, (WPaintDevice) null);
 	}
 
 	/**
@@ -1256,7 +1318,7 @@ public class WCartesianChart extends WAbstractChart {
 	protected void render(final WPainter painter, final WRectF rectangle) {
 		painter.save();
 		painter.translate(rectangle.getTopLeft());
-		if (this.initLayout(rectangle)) {
+		if (this.initLayout(rectangle, painter.getDevice())) {
 			this.renderBackground(painter);
 			this.renderGrid(painter, this.getAxis(Axis.XAxis));
 			this.renderGrid(painter, this.getAxis(Axis.Y1Axis));
@@ -1650,13 +1712,31 @@ public class WCartesianChart extends WAbstractChart {
 		int h = vertical ? this.height_ : this.width_;
 		final int margin = 10;
 		if (this.isLegendEnabled()) {
+			painter.save();
 			int numSeriesWithLegend = 0;
 			for (int i = 0; i < this.getSeries().size(); ++i) {
 				if (this.getSeries().get(i).isLegendEnabled()) {
 					++numSeriesWithLegend;
 				}
 			}
+			painter.setFont(this.getLegendFont());
 			WFont f = painter.getFont();
+			if (this.isAutoLayoutEnabled()) {
+				int columnWidth = 0;
+				for (int i = 0; i < this.getSeries().size(); ++i) {
+					if (this.getSeries().get(i).isLegendEnabled()) {
+						WString s = StringUtils.asString(this.getModel()
+								.getHeaderData(
+										this.getSeries().get(i)
+												.getModelColumn()));
+						WTextItem t = painter.getDevice().measureText(s);
+						columnWidth = Math.max(columnWidth, (int) t.getWidth());
+					}
+				}
+				WCartesianChart self = this;
+				self.legend_
+						.setLegendColumnWidth(new WLength(columnWidth + 25));
+			}
 			int numLegendRows = (numSeriesWithLegend - 1)
 					/ this.getLegendColumns() + 1;
 			double lineHeight = f.getSizeLength().toPixels() * 1.5;
@@ -1757,7 +1837,6 @@ public class WCartesianChart extends WAbstractChart {
 			painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
 					+ margin, legendHeight + margin);
 			painter.setPen(new WPen());
-			painter.save();
 			painter.setFont(this.getLegendFont());
 			int item = 0;
 			for (int i = 0; i < this.getSeries().size(); ++i) {

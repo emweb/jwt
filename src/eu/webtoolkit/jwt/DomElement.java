@@ -377,6 +377,8 @@ public class DomElement {
 		if (isExposed || anchorClick || jsCode.length() != 0) {
 			js.append("var e=event||window.event,");
 			js.append("o=this;");
+			js
+					.append("var a1 = null, a2 = null, a3 = null, a4 = null, a5 = null, a6 = null;");
 			if (anchorClick) {
 				js
 						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_2.button(e) > 1))return true;else{");
@@ -456,6 +458,8 @@ public class DomElement {
 				code.append("if(").append(actions.get(i).jsCondition).append(
 						"){");
 			}
+			code
+					.append("var a1 = null, a2 = null, a3 = null, a4 = null, a5 = null, a6 = null;");
 			code.append(actions.get(i).jsCode);
 			if (actions.get(i).exposed) {
 				code.append(WApplication.getInstance().getJavaScriptClass())

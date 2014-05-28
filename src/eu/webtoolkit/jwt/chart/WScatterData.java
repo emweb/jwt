@@ -71,6 +71,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 		this.vertexColorBuffer2_ = new WGLWidget.Buffer();
 		this.lineVertBuffer_ = new WGLWidget.Buffer();
 		this.colormapTexture_ = new WGLWidget.Texture();
+		this.pointSpriteTexture_ = new WGLWidget.Texture();
 		this.vertexShader_ = new WGLWidget.Shader();
 		this.colVertexShader_ = new WGLWidget.Shader();
 		this.linesVertShader_ = new WGLWidget.Shader();
@@ -97,6 +98,10 @@ public class WScatterData extends WAbstractDataSeries3D {
 		this.cMatrixUniform3_ = new WGLWidget.UniformLocation();
 		this.lineColorUniform_ = new WGLWidget.UniformLocation();
 		this.samplerUniform_ = new WGLWidget.UniformLocation();
+		this.pointSpriteUniform_ = new WGLWidget.UniformLocation();
+		this.pointSpriteUniform2_ = new WGLWidget.UniformLocation();
+		this.vpHeightUniform_ = new WGLWidget.UniformLocation();
+		this.vpHeightUniform2_ = new WGLWidget.UniformLocation();
 		this.offsetUniform_ = new WGLWidget.UniformLocation();
 		this.scaleFactorUniform_ = new WGLWidget.UniformLocation();
 	}
@@ -115,8 +120,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 		if (this.droplinesEnabled_ != enabled) {
 			this.droplinesEnabled_ = enabled;
 			if (this.chart_ != null) {
-				this.chart_.updateChart(EnumSet
-						.of(WCartesian3DChart.ChartUpdates.GLContext));
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 			}
 		}
 	}
@@ -155,8 +159,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	public void setDroplinesPen(final WPen pen) {
 		this.droplinesPen_ = pen;
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLContext));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 		}
 	}
 
@@ -256,6 +259,117 @@ public class WScatterData extends WAbstractDataSeries3D {
 		setSizeColumn(columnNumber, ItemDataRole.DisplayRole);
 	}
 
+	/**
+	 * Pick points on this {@link WScatterData} using a single pixel.
+	 * <p>
+	 * x,y are the screen coordinates of the pixel from the top left of the
+	 * chart, and radius is the radius in pixels around that pixel. All points
+	 * around the ray projected through the pixel within the given radius will
+	 * be returned.
+	 */
+	public List<WPointSelection> pickPoints(int x, int y, int radius) {
+		double otherY = this.chart_.getHeight().getValue() - y;
+		double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
+		double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
+		double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
+		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
+		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(this.chart_
+				.getCameraMatrix(), this.mvMatrix_);
+		javax.vecmath.Matrix4f invTransform = new javax.vecmath.Matrix4f(
+				transform);
+		invTransform.invert();
+		javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {
+				0.0, 0.0, 0.0, 1.0 });
+		camera = WebGLUtils.multiply(invTransform, camera);
+		transform = WebGLUtils.multiply(this.chart_.getPMatrix(), transform);
+		List<WPointSelection> result = new ArrayList<WPointSelection>();
+		for (int r = 0; r < this.model_.getRowCount(); ++r) {
+			javax.vecmath.GVector v = new javax.vecmath.GVector(new double[] {
+					(StringUtils.asNumber(this.model_.getData(r,
+							this.XSeriesColumn_)) - xMin)
+							/ (xMax - xMin),
+					(StringUtils.asNumber(this.model_.getData(r,
+							this.YSeriesColumn_)) - yMin)
+							/ (yMax - yMin),
+					(StringUtils.asNumber(this.model_.getData(r,
+							this.ZSeriesColumn_)) - zMin)
+							/ (zMax - zMin), 1.0 });
+			javax.vecmath.GVector tv = new javax.vecmath.GVector(WebGLUtils
+					.multiply(transform, v));
+			tv = WebGLUtils.multiply(tv, 1.0 / tv.getElement(3));
+			double vx = (tv.getElement(0) + 1) / 2
+					* this.chart_.getWidth().getValue();
+			double vy = (tv.getElement(1) + 1) / 2
+					* this.chart_.getHeight().getValue();
+			double dx = x - vx;
+			double dy = otherY - vy;
+			if (dx * dx + dy * dy <= radius * radius) {
+				double d = new javax.vecmath.GVector(WebGLUtils.subtract(v,
+						camera)).norm();
+				result.add(new WPointSelection(d, r));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Pick points on this {@link WScatterData} inside of a rectangle.
+	 * <p>
+	 * The screen coordinates (x1, y1) and (x2, y2) from the top left of the
+	 * chart define a rectangle within which the points should be selected.
+	 */
+	public List<WPointSelection> pickPoints(int x1, int y1, int x2, int y2) {
+		double otherY1 = this.chart_.getHeight().getValue() - y1;
+		double otherY2 = this.chart_.getHeight().getValue() - y2;
+		int leftX = Math.min(x1, x2);
+		int rightX = Math.max(x1, x2);
+		double bottomY = Math.min(otherY1, otherY2);
+		double topY = Math.max(otherY1, otherY2);
+		double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
+		double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
+		double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
+		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
+		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(this.chart_
+				.getCameraMatrix(), this.mvMatrix_);
+		javax.vecmath.Matrix4f invTransform = new javax.vecmath.Matrix4f(
+				transform);
+		invTransform.invert();
+		javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {
+				0.0, 0.0, 0.0, 1.0 });
+		camera = WebGLUtils.multiply(invTransform, camera);
+		transform = WebGLUtils.multiply(this.chart_.getPMatrix(), transform);
+		List<WPointSelection> result = new ArrayList<WPointSelection>();
+		for (int r = 0; r < this.model_.getRowCount(); ++r) {
+			javax.vecmath.GVector v = new javax.vecmath.GVector(new double[] {
+					(StringUtils.asNumber(this.model_.getData(r,
+							this.XSeriesColumn_)) - xMin)
+							/ (xMax - xMin),
+					(StringUtils.asNumber(this.model_.getData(r,
+							this.YSeriesColumn_)) - yMin)
+							/ (yMax - yMin),
+					(StringUtils.asNumber(this.model_.getData(r,
+							this.ZSeriesColumn_)) - zMin)
+							/ (zMax - zMin), 1.0 });
+			javax.vecmath.GVector tv = new javax.vecmath.GVector(WebGLUtils
+					.multiply(transform, v));
+			tv = WebGLUtils.multiply(tv, 1.0 / tv.getElement(3));
+			double vx = (tv.getElement(0) + 1) / 2
+					* this.chart_.getWidth().getValue();
+			double vy = (tv.getElement(1) + 1) / 2
+					* this.chart_.getHeight().getValue();
+			if (leftX <= vx && vx <= rightX && bottomY <= vy && vy <= topY) {
+				double d = new javax.vecmath.GVector(WebGLUtils.subtract(v,
+						camera)).norm();
+				result.add(new WPointSelection(d, r));
+			}
+		}
+		return result;
+	}
+
 	public double minimum(Axis axis) {
 		if (axis == Axis.XAxis_3D) {
 			if (!this.xRangeCached_) {
@@ -335,6 +449,12 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 					this.colormapTexture_);
 			this.chart_.uniform1i(this.samplerUniform_, 0);
+			this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE1);
+			this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+					this.pointSpriteTexture_);
+			this.chart_.uniform1i(this.pointSpriteUniform_, 1);
+			this.chart_.uniform1f(this.vpHeightUniform_, this.chart_
+					.getHeight().getValue());
 			this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 					this.vertexBufferSize_ / 3);
 			this.chart_.disableVertexAttribArray(this.posAttr_);
@@ -363,6 +483,12 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.chart_.vertexAttribPointer(this.colorAttr2_, 4,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
 			this.chart_.enableVertexAttribArray(this.colorAttr2_);
+			this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
+			this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+					this.pointSpriteTexture_);
+			this.chart_.uniform1i(this.pointSpriteUniform2_, 0);
+			this.chart_.uniform1f(this.vpHeightUniform2_, this.chart_
+					.getHeight().getValue());
 			this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 					this.vertexBuffer2Size_ / 3);
 			this.chart_.disableVertexAttribArray(this.posAttr2_);
@@ -454,6 +580,19 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.lineVertBufferSize_ = dropLineVerts.capacity() / 4;
 		}
 		this.colormapTexture_ = this.getColorTexture();
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.pointSpriteTexture_ = this.getPointSpriteTexture();
 		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
 		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
@@ -559,6 +698,10 @@ public class WScatterData extends WAbstractDataSeries3D {
 		if (!this.colormapTexture_.isNull()) {
 			this.chart_.deleteTexture(this.colormapTexture_);
 			this.colormapTexture_.clear();
+		}
+		if (!this.pointSpriteTexture_.isNull()) {
+			this.chart_.deleteTexture(this.pointSpriteTexture_);
+			this.pointSpriteTexture_.clear();
 		}
 	}
 
@@ -711,10 +854,14 @@ public class WScatterData extends WAbstractDataSeries3D {
 				this.shaderProgram_, "uCMatrix");
 		this.samplerUniform_ = this.chart_.getUniformLocation(
 				this.shaderProgram_, "uSampler");
+		this.pointSpriteUniform_ = this.chart_.getUniformLocation(
+				this.shaderProgram_, "uPointSprite");
 		this.offsetUniform_ = this.chart_.getUniformLocation(
 				this.shaderProgram_, "uOffset");
 		this.scaleFactorUniform_ = this.chart_.getUniformLocation(
 				this.shaderProgram_, "uScaleFactor");
+		this.vpHeightUniform_ = this.chart_.getUniformLocation(
+				this.shaderProgram_, "uVPHeight");
 		this.colFragmentShader_ = this.chart_
 				.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
 		this.chart_.shaderSource(this.colFragmentShader_, colPtFragShaderSrc);
@@ -742,6 +889,10 @@ public class WScatterData extends WAbstractDataSeries3D {
 				this.colShaderProgram_, "uPMatrix");
 		this.cMatrixUniform2_ = this.chart_.getUniformLocation(
 				this.colShaderProgram_, "uCMatrix");
+		this.pointSpriteUniform2_ = this.chart_.getUniformLocation(
+				this.colShaderProgram_, "uPointSprite");
+		this.vpHeightUniform2_ = this.chart_.getUniformLocation(
+				this.colShaderProgram_, "uVPHeight");
 		this.linesFragShader_ = this.chart_
 				.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
 		this.chart_.shaderSource(this.linesFragShader_, meshFragShaderSrc);
@@ -851,6 +1002,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	private int vertexBuffer2Size_;
 	private int lineVertBufferSize_;
 	private WGLWidget.Texture colormapTexture_;
+	private WGLWidget.Texture pointSpriteTexture_;
 	private WGLWidget.Shader vertexShader_;
 	private WGLWidget.Shader colVertexShader_;
 	private WGLWidget.Shader linesVertShader_;
@@ -877,18 +1029,26 @@ public class WScatterData extends WAbstractDataSeries3D {
 	private WGLWidget.UniformLocation cMatrixUniform3_;
 	private WGLWidget.UniformLocation lineColorUniform_;
 	private WGLWidget.UniformLocation samplerUniform_;
+	private WGLWidget.UniformLocation pointSpriteUniform_;
+	private WGLWidget.UniformLocation pointSpriteUniform2_;
+	private WGLWidget.UniformLocation vpHeightUniform_;
+	private WGLWidget.UniformLocation vpHeightUniform2_;
 	private WGLWidget.UniformLocation offsetUniform_;
 	private WGLWidget.UniformLocation scaleFactorUniform_;
-	private static final String barFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec2 vTextureCoord;\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  if (vPos.x < 0.0 || vPos.x > 1.0 ||      vPos.y < 0.0 || vPos.y > 1.0 ||      vPos.z < 0.0 || vPos.z > 1.0) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t) );\n}\n";
+	private static final String barFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec2 vTextureCoord;\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t) );\n}\n";
 	private static final String barVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n  vPos = aVertexPosition;\n}\n";
-	private static final String colBarFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec3 vPos;\nvarying vec4 vColor;\n\nvoid main(void) {\n  if (vPos.x < 0.0 || vPos.x > 1.0 ||      vPos.y < 0.0 || vPos.y > 1.0 ||      vPos.z < 0.0 || vPos.z > 1.0) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
+	private static final String colBarFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec3 vPos;\nvarying vec4 vColor;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
 	private static final String colBarVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vColor = aVertexColor/255.0;\n  vPos = aVertexPosition;\n}\n";
-	private static final String ptFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying float x, y, z;\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\n\nvoid main(void) {\n  if (x < 0.0 || x > 1.0 ||      y < 0.0 || y > 1.0 ||      z < 0.0 || z > 1.0) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (z - uOffset) ) );\n}\n";
-	private static final String ptVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying float x, y, z;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  x = aVertexPosition.x;\n  y = aVertexPosition.y;\n  z = aVertexPosition.z;\n  gl_PointSize = aPointSize;\n}\n";
-	private static final String colPtFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec4 vColor;\nvarying float x, y, z;\n\nvoid main(void) {\n  if (x < 0.0 || x > 1.0 ||      y < 0.0 || y > 1.0 ||      z < 0.0 || z > 1.0) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
-	private static final String colPtVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\nattribute vec4 aColor;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec4 vColor;\nvarying float x, y, z;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vColor = aColor/255.0;\n  x = aVertexPosition.x;\n  y = aVertexPosition.y;\n  z = aVertexPosition.z;\n  gl_PointSize = aPointSize;\n}\n";
-	private static final String surfFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying float x, y, z;\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\n\nvoid main(void) {\n  if (x < 0.0 || x > 1.0 ||      y < 0.0 || y > 1.0 ||      z < 0.0 || z > 1.0) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (z - uOffset) ) );\n}\n";
-	private static final String surfVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying float x, y, z;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  x = aVertexPosition.x;\n  y = aVertexPosition.y;\n  z = aVertexPosition.z;\n}\n";
-	private static final String meshFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec4 uColor;\n\nvoid main(void) {\n  if (vPos.x < 0.0 || vPos.x > 1.0 ||      vPos.y < 0.0 || vPos.y > 1.0 ||      vPos.z < 0.0 || vPos.z > 1.0) {\n    discard;\n  }\n  gl_FragColor = uColor/255.0;\n}\n";
+	private static final String ptFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\nuniform sampler2D uPointSprite;\nuniform float uOffset;\nuniform float uScaleFactor;\nuniform float uVPHeight;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  vec2 texCoord = gl_PointCoord - vec2(0.0, 1.0 / uVPHeight) * 0.50;\n  texCoord.y = 1.0 - texCoord.y;\n  if (texture2D(uPointSprite, texCoord).w < 0.5) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (vPos.z - uOffset) ) );\n}\n";
+	private static final String ptVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vPos = aVertexPosition;\n  gl_PointSize = aPointSize;\n}\n";
+	private static final String colPtFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nuniform sampler2D uPointSprite;\nvarying vec4 vColor;\nvarying vec3 vPos;\nuniform float uVPHeight;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  vec2 texCoord = gl_PointCoord - vec2(0.0, 1.0 / uVPHeight) * 0.25;\n  texCoord.y = 1.0 - texCoord.y;\n  if (texture2D(uPointSprite, texCoord).w < 0.5) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
+	private static final String colPtVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\nattribute vec4 aColor;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vColor = aColor/255.0;\n  vPos = aVertexPosition;\n  gl_PointSize = aPointSize;\n}\n";
+	private static final String surfFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (vPos.z - uOffset) ) );\n}\n";
+	private static final String surfFragSingleColorShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec3 uMargin;\nuniform vec3 uColor;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  minPt = minPt - uMargin;\n  maxPt = maxPt + uMargin;\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  if (any(lessThan(vPos, minPt + uMargin / 2.0)) ||        any(greaterThan(vPos, maxPt - uMargin / 2.0))) {\n      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n  } else {\n    gl_FragColor = vec4(uColor, 1.0);\n  }\n}\n";
+	private static final String surfFragPosShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec3 uMargin;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  minPt = minPt - uMargin;\n  maxPt = maxPt + uMargin;\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  gl_FragColor = vec4(vPos, 1.0);\n}\n";
+	private static final String surfVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vPos = aVertexPosition;\n}\n";
+	private static final String meshFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec4 uColor;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  gl_FragColor = uColor/255.0;\n}\n";
 	private static final String meshVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vPos = aVertexPosition;\n}\n";
+	private static final String isoLineFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\n\nvarying vec3 vPos;\n\nvoid main(void) {\n  if (any(lessThan(vPos.xy, vec2(0.0, 0.0))) ||      any(greaterThan(vPos.xy, vec2(1.0, 1.0)))) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (vPos.z - uOffset) ) );\n}\n";
+	private static final String isoLineVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  float z = (uCMatrix[1][2] > 0.0) ? 0.0 : 1.0;\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition.xy, z, 1.0);\n  vPos = aVertexPosition;\n}\n";
 }

@@ -1164,9 +1164,19 @@ class Block {
 								if (this.type_ == DomElementType.DomElement_H3) {
 									return 0.83 * this.cssFontSize(fontScale);
 								} else {
-									if (this.type_ == DomElementType.DomElement_HR) {
-										return 0.5 * this
+									if (this.type_ == DomElementType.DomElement_H5) {
+										return 1.5 * this
 												.cssFontSize(fontScale);
+									} else {
+										if (this.type_ == DomElementType.DomElement_H6) {
+											return 1.67 * this
+													.cssFontSize(fontScale);
+										} else {
+											if (this.type_ == DomElementType.DomElement_HR) {
+												return 0.5 * this
+														.cssFontSize(fontScale);
+											}
+										}
 									}
 								}
 							}

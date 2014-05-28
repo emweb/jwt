@@ -117,6 +117,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		this.chart_ = null;
 		this.rangeCached_ = false;
 		this.pointSize_ = 2.0;
+		this.pointSprite_ = "";
 		this.colormap_ = null;
 		this.showColorMap_ = false;
 		this.colorMapSide_ = Side.Right;
@@ -140,8 +141,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	public void setTitle(final CharSequence name) {
 		this.name_ = WString.toWString(name);
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLTextures));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 		}
 	}
 
@@ -174,46 +174,59 @@ public abstract class WAbstractDataSeries3D extends WObject {
 			this.rangeCached_ = false;
 			this.model_ = model;
 			if (this.model_ != null && this.chart_ != null) {
-				this.chart_.updateChart(EnumSet
-						.of(WCartesian3DChart.ChartUpdates.GLContext));
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 				this.connections_.add(this.model_.modelReset().addListener(
 						this.chart_, new Signal.Listener() {
 							public void trigger() {
 								WAbstractDataSeries3D.this.chart_
-										.updateChart(EnumSet
-												.of(
-														WCartesian3DChart.ChartUpdates.GLTextures,
-														WCartesian3DChart.ChartUpdates.GLContext));
+										.updateChart(EnumSet.of(
+												ChartUpdates.GLTextures,
+												ChartUpdates.GLContext));
 							}
 						}));
 				this.connections_.add(this.model_.dataChanged().addListener(
 						this.chart_, new Signal.Listener() {
 							public void trigger() {
 								WAbstractDataSeries3D.this.chart_
-										.updateChart(EnumSet
-												.of(
-														WCartesian3DChart.ChartUpdates.GLTextures,
-														WCartesian3DChart.ChartUpdates.GLContext));
+										.updateChart(EnumSet.of(
+												ChartUpdates.GLTextures,
+												ChartUpdates.GLContext));
 							}
 						}));
 				this.connections_.add(this.model_.rowsInserted().addListener(
 						this.chart_, new Signal.Listener() {
 							public void trigger() {
 								WAbstractDataSeries3D.this.chart_
-										.updateChart(EnumSet
-												.of(
-														WCartesian3DChart.ChartUpdates.GLTextures,
-														WCartesian3DChart.ChartUpdates.GLContext));
+										.updateChart(EnumSet.of(
+												ChartUpdates.GLTextures,
+												ChartUpdates.GLContext));
 							}
 						}));
 				this.connections_.add(this.model_.columnsInserted()
 						.addListener(this.chart_, new Signal.Listener() {
 							public void trigger() {
 								WAbstractDataSeries3D.this.chart_
-										.updateChart(EnumSet
-												.of(
-														WCartesian3DChart.ChartUpdates.GLTextures,
-														WCartesian3DChart.ChartUpdates.GLContext));
+										.updateChart(EnumSet.of(
+												ChartUpdates.GLTextures,
+												ChartUpdates.GLContext));
+							}
+						}));
+				this.connections_.add(this.model_.rowsRemoved().addListener(
+						this.chart_, new Signal.Listener() {
+							public void trigger() {
+								WAbstractDataSeries3D.this.chart_
+										.updateChart(EnumSet.of(
+												ChartUpdates.GLTextures,
+												ChartUpdates.GLContext));
+							}
+						}));
+				this.connections_.add(this.model_.columnsRemoved().addListener(
+						this.chart_, new Signal.Listener() {
+							public void trigger() {
+								WAbstractDataSeries3D.this.chart_
+										.updateChart(EnumSet.of(
+												ChartUpdates.GLTextures,
+												ChartUpdates.GLContext));
 							}
 						}));
 			}
@@ -268,8 +281,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		if (size != this.pointSize_) {
 			this.pointSize_ = size;
 			if (this.chart_ != null) {
-				this.chart_.updateChart(EnumSet
-						.of(WCartesian3DChart.ChartUpdates.GLContext));
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 			}
 		}
 	}
@@ -282,6 +294,40 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 */
 	public double getPointSize() {
 		return this.pointSize_;
+	}
+
+	/**
+	 * Set the point sprite used for drawing this dataseries.
+	 * <p>
+	 * This should be a local path to an image, such as a PNG or GIF. Only the
+	 * alpha channel of this image is used: the sprite only decides if a pixel
+	 * in the point appears or not. If the alpha value is 1, the pixel is drawn,
+	 * otherwise it isn&apos;t.
+	 * <p>
+	 * For best effect, the point sprite&apos;s width and height should be the
+	 * same as the {@link WAbstractDataSeries3D#getPointSize() getPointSize()},
+	 * and the chart&apos;s antialiasing should be disabled.
+	 * <p>
+	 * Defaults to the empty string, meaning that every pixel of the point will
+	 * be drawn.
+	 */
+	public void setPointSprite(final String image) {
+		if (!image.equals(this.pointSprite_)) {
+			this.pointSprite_ = image;
+			if (this.chart_ != null) {
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+			}
+		}
+	}
+
+	/**
+	 * Returns the point sprite used for drawing this dataseries.
+	 * <p>
+	 * 
+	 * @see WAbstractDataSeries3D#setPointSprite(String image)
+	 */
+	public String getPointSprite() {
+		return this.pointSprite_;
 	}
 
 	/**
@@ -300,14 +346,12 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * @see WAbstractDataSeries3D#setColorMapSide(Side side)
 	 */
 	public void setColorMap(WAbstractColorMap colormap) {
-		if (colormap != this.colormap_) {
-			;
-		}
 		this.colormap_ = colormap;
+		if (this.colormap_ != null) {
+		}
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet.of(
-					WCartesian3DChart.ChartUpdates.GLContext,
-					WCartesian3DChart.ChartUpdates.GLTextures));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext,
+					ChartUpdates.GLTextures));
 		}
 	}
 
@@ -341,8 +385,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		}
 		this.showColorMap_ = enabled;
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLTextures));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 		}
 	}
 
@@ -387,8 +430,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		}
 		this.colorMapSide_ = side;
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLTextures));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLTextures));
 		}
 	}
 
@@ -441,8 +483,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		if (enabled != this.hidden_) {
 			this.hidden_ = enabled;
 			if (this.chart_ != null) {
-				this.chart_.updateChart(EnumSet
-						.of(WCartesian3DChart.ChartUpdates.GLContext));
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 			}
 		}
 	}
@@ -506,40 +547,54 @@ public abstract class WAbstractDataSeries3D extends WObject {
 					this.chart_, new Signal.Listener() {
 						public void trigger() {
 							WAbstractDataSeries3D.this.chart_
-									.updateChart(EnumSet
-											.of(
-													WCartesian3DChart.ChartUpdates.GLTextures,
-													WCartesian3DChart.ChartUpdates.GLContext));
+									.updateChart(EnumSet.of(
+											ChartUpdates.GLTextures,
+											ChartUpdates.GLContext));
 						}
 					}));
 			this.connections_.add(this.model_.dataChanged().addListener(
 					this.chart_, new Signal.Listener() {
 						public void trigger() {
 							WAbstractDataSeries3D.this.chart_
-									.updateChart(EnumSet
-											.of(
-													WCartesian3DChart.ChartUpdates.GLTextures,
-													WCartesian3DChart.ChartUpdates.GLContext));
+									.updateChart(EnumSet.of(
+											ChartUpdates.GLTextures,
+											ChartUpdates.GLContext));
 						}
 					}));
 			this.connections_.add(this.model_.rowsInserted().addListener(
 					this.chart_, new Signal.Listener() {
 						public void trigger() {
 							WAbstractDataSeries3D.this.chart_
-									.updateChart(EnumSet
-											.of(
-													WCartesian3DChart.ChartUpdates.GLTextures,
-													WCartesian3DChart.ChartUpdates.GLContext));
+									.updateChart(EnumSet.of(
+											ChartUpdates.GLTextures,
+											ChartUpdates.GLContext));
 						}
 					}));
 			this.connections_.add(this.model_.columnsInserted().addListener(
 					this.chart_, new Signal.Listener() {
 						public void trigger() {
 							WAbstractDataSeries3D.this.chart_
-									.updateChart(EnumSet
-											.of(
-													WCartesian3DChart.ChartUpdates.GLTextures,
-													WCartesian3DChart.ChartUpdates.GLContext));
+									.updateChart(EnumSet.of(
+											ChartUpdates.GLTextures,
+											ChartUpdates.GLContext));
+						}
+					}));
+			this.connections_.add(this.model_.rowsRemoved().addListener(
+					this.chart_, new Signal.Listener() {
+						public void trigger() {
+							WAbstractDataSeries3D.this.chart_
+									.updateChart(EnumSet.of(
+											ChartUpdates.GLTextures,
+											ChartUpdates.GLContext));
+						}
+					}));
+			this.connections_.add(this.model_.columnsRemoved().addListener(
+					this.chart_, new Signal.Listener() {
+						public void trigger() {
+							WAbstractDataSeries3D.this.chart_
+									.updateChart(EnumSet.of(
+											ChartUpdates.GLTextures,
+											ChartUpdates.GLContext));
 						}
 					}));
 		}
@@ -615,6 +670,29 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		return tex;
 	}
 
+	protected WGLWidget.Texture getPointSpriteTexture() {
+		WGLWidget.Texture tex = this.chart_.createTexture();
+		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D, tex);
+		if (this.pointSprite_.length() != 0
+				&& !WApplication.getInstance().getEnvironment().agentIsIE()) {
+			this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
+					WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,
+					WGLWidget.GLenum.UNSIGNED_BYTE, this.pointSprite_);
+		} else {
+			WPaintDevice cpd = this.chart_.createPaintDevice(new WLength(1),
+					new WLength(1));
+			WColor color = new WColor(255, 255, 255, 255);
+			WPainter painter = new WPainter(cpd);
+			painter.setPen(new WPen(color));
+			painter.drawLine(0, 0, 1, 1);
+			painter.end();
+			this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
+					WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,
+					WGLWidget.GLenum.UNSIGNED_BYTE, cpd);
+		}
+		return tex;
+	}
+
 	WString name_;
 	protected WAbstractItemModel model_;
 	protected WCartesian3DChart chart_;
@@ -622,6 +700,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	double zMax_;
 	boolean rangeCached_;
 	double pointSize_;
+	protected String pointSprite_;
 	WAbstractColorMap colormap_;
 	boolean showColorMap_;
 	Side colorMapSide_;

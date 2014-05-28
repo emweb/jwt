@@ -70,6 +70,9 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.lineBufferSizes_ = new ArrayList<Integer>();
 		this.indexBufferSizes2_ = new ArrayList<Integer>();
 		this.lineBufferSizes2_ = new ArrayList<Integer>();
+		this.isoLineBufferSizes_ = new ArrayList<Integer>();
+		this.isoLineHeights_ = new ArrayList<Double>();
+		this.isoLineColorMap_ = null;
 		this.vertexPosBuffers_ = new ArrayList<WGLWidget.Buffer>();
 		this.vertexPosBuffers2_ = new ArrayList<WGLWidget.Buffer>();
 		this.vertexSizeBuffers_ = new ArrayList<WGLWidget.Buffer>();
@@ -80,37 +83,103 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.overlayLinesBuffers_ = new ArrayList<WGLWidget.Buffer>();
 		this.overlayLinesBuffers2_ = new ArrayList<WGLWidget.Buffer>();
 		this.colormapTexBuffers_ = new ArrayList<WGLWidget.Buffer>();
+		this.isoLineBuffers_ = new ArrayList<WGLWidget.Buffer>();
 		this.binaryResources_ = new ArrayList<WMemoryResource>();
 		this.fragShader_ = new WGLWidget.Shader();
 		this.colFragShader_ = new WGLWidget.Shader();
 		this.meshFragShader_ = new WGLWidget.Shader();
+		this.singleColorFragShader_ = new WGLWidget.Shader();
+		this.positionFragShader_ = new WGLWidget.Shader();
+		this.isoLineFragShader_ = new WGLWidget.Shader();
 		this.vertShader_ = new WGLWidget.Shader();
 		this.colVertShader_ = new WGLWidget.Shader();
 		this.meshVertShader_ = new WGLWidget.Shader();
+		this.isoLineVertexShader_ = new WGLWidget.Shader();
 		this.seriesProgram_ = new WGLWidget.Program();
 		this.colSeriesProgram_ = new WGLWidget.Program();
 		this.meshProgram_ = new WGLWidget.Program();
+		this.singleColorProgram_ = new WGLWidget.Program();
+		this.positionProgram_ = new WGLWidget.Program();
+		this.isoLineProgram_ = new WGLWidget.Program();
 		this.vertexPosAttr_ = new WGLWidget.AttribLocation();
 		this.vertexPosAttr2_ = new WGLWidget.AttribLocation();
+		this.singleColor_vertexPosAttr_ = new WGLWidget.AttribLocation();
+		this.position_vertexPosAttr_ = new WGLWidget.AttribLocation();
 		this.meshVertexPosAttr_ = new WGLWidget.AttribLocation();
+		this.isoLineVertexPosAttr_ = new WGLWidget.AttribLocation();
 		this.vertexSizeAttr_ = new WGLWidget.AttribLocation();
 		this.vertexSizeAttr2_ = new WGLWidget.AttribLocation();
 		this.vertexColAttr2_ = new WGLWidget.AttribLocation();
 		this.barTexCoordAttr_ = new WGLWidget.AttribLocation();
 		this.mvMatrixUniform_ = new WGLWidget.UniformLocation();
 		this.mvMatrixUniform2_ = new WGLWidget.UniformLocation();
+		this.singleColor_mvMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.position_mvMatrixUniform_ = new WGLWidget.UniformLocation();
 		this.mesh_mvMatrixUniform_ = new WGLWidget.UniformLocation();
+		this.isoLine_mvMatrixUniform_ = new WGLWidget.UniformLocation();
 		this.pMatrix_ = new WGLWidget.UniformLocation();
 		this.pMatrix2_ = new WGLWidget.UniformLocation();
+		this.singleColor_pMatrix_ = new WGLWidget.UniformLocation();
+		this.position_pMatrix_ = new WGLWidget.UniformLocation();
 		this.mesh_pMatrix_ = new WGLWidget.UniformLocation();
+		this.isoLine_pMatrix_ = new WGLWidget.UniformLocation();
 		this.cMatrix_ = new WGLWidget.UniformLocation();
 		this.cMatrix2_ = new WGLWidget.UniformLocation();
+		this.singleColor_cMatrix_ = new WGLWidget.UniformLocation();
+		this.position_cMatrix_ = new WGLWidget.UniformLocation();
 		this.mesh_cMatrix_ = new WGLWidget.UniformLocation();
+		this.isoLine_cMatrix_ = new WGLWidget.UniformLocation();
 		this.TexSampler_ = new WGLWidget.UniformLocation();
+		this.isoLine_TexSampler_ = new WGLWidget.UniformLocation();
 		this.mesh_colorUniform_ = new WGLWidget.UniformLocation();
+		this.singleColorUniform_ = new WGLWidget.UniformLocation();
+		this.pointSpriteUniform_ = new WGLWidget.UniformLocation();
+		this.pointSpriteUniform2_ = new WGLWidget.UniformLocation();
+		this.vpHeightUniform_ = new WGLWidget.UniformLocation();
+		this.vpHeightUniform2_ = new WGLWidget.UniformLocation();
 		this.offset_ = new WGLWidget.UniformLocation();
+		this.isoLine_offset_ = new WGLWidget.UniformLocation();
 		this.scaleFactor_ = new WGLWidget.UniformLocation();
+		this.isoLine_scaleFactor_ = new WGLWidget.UniformLocation();
+		this.minPtUniform_ = new WGLWidget.UniformLocation();
+		this.mesh_minPtUniform_ = new WGLWidget.UniformLocation();
+		this.singleColor_minPtUniform_ = new WGLWidget.UniformLocation();
+		this.position_minPtUniform_ = new WGLWidget.UniformLocation();
+		this.maxPtUniform_ = new WGLWidget.UniformLocation();
+		this.mesh_maxPtUniform_ = new WGLWidget.UniformLocation();
+		this.singleColor_maxPtUniform_ = new WGLWidget.UniformLocation();
+		this.position_maxPtUniform_ = new WGLWidget.UniformLocation();
+		this.dataMinPtUniform_ = new WGLWidget.UniformLocation();
+		this.mesh_dataMinPtUniform_ = new WGLWidget.UniformLocation();
+		this.singleColor_dataMinPtUniform_ = new WGLWidget.UniformLocation();
+		this.position_dataMinPtUniform_ = new WGLWidget.UniformLocation();
+		this.dataMaxPtUniform_ = new WGLWidget.UniformLocation();
+		this.mesh_dataMaxPtUniform_ = new WGLWidget.UniformLocation();
+		this.singleColor_dataMaxPtUniform_ = new WGLWidget.UniformLocation();
+		this.position_dataMaxPtUniform_ = new WGLWidget.UniformLocation();
+		this.singleColor_marginUniform_ = new WGLWidget.UniformLocation();
+		this.position_marginUniform_ = new WGLWidget.UniformLocation();
 		this.colormapTexture_ = new WGLWidget.Texture();
+		this.isoLineColorMapTexture_ = new WGLWidget.Texture();
+		this.pointSpriteTexture_ = new WGLWidget.Texture();
+		this.minPt_ = new ArrayList<Float>();
+		this.maxPt_ = new ArrayList<Float>();
+		this.jsMinPt_ = new WGLWidget.JavaScriptVector(3);
+		this.jsMaxPt_ = new WGLWidget.JavaScriptVector(3);
+		this.minPtChanged_ = true;
+		this.maxPtChanged_ = true;
+		this.changeClippingMinX_ = new JSlot();
+		this.changeClippingMaxX_ = new JSlot();
+		this.changeClippingMinY_ = new JSlot();
+		this.changeClippingMaxY_ = new JSlot();
+		this.changeClippingMinZ_ = new JSlot();
+		this.changeClippingMaxZ_ = new JSlot();
+		this.clippingLinesEnabled_ = false;
+		this.clippingLinesColor_ = new WColor(0, 0, 0);
+		for (int i = 0; i < 3; ++i) {
+			this.minPt_.add(-Float.POSITIVE_INFINITY);
+			this.maxPt_.add(Float.POSITIVE_INFINITY);
+		}
 	}
 
 	public abstract double minimum(Axis axis);
@@ -138,8 +207,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		if (this.seriesType_ != type) {
 			this.seriesType_ = type;
 			if (this.chart_ != null) {
-				this.chart_.updateChart(EnumSet
-						.of(WCartesian3DChart.ChartUpdates.GLContext));
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 			}
 		}
 	}
@@ -167,8 +235,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.surfaceMeshEnabled_ = enabled;
 			if (this.seriesType_ == Series3DType.SurfaceSeries3D) {
 				if (this.chart_ != null) {
-					this.chart_.updateChart(EnumSet
-							.of(WCartesian3DChart.ChartUpdates.GLContext));
+					this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 				}
 			}
 		}
@@ -208,8 +275,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.barWidthX_ = xWidth;
 			this.barWidthY_ = yWidth;
 			if (this.chart_ != null) {
-				this.chart_.updateChart(EnumSet
-						.of(WCartesian3DChart.ChartUpdates.GLContext));
+				this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 			}
 		}
 	}
@@ -248,8 +314,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	public void setPen(final WPen pen) {
 		this.meshPen_ = pen;
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLContext));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 		}
 	}
 
@@ -263,6 +328,531 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		return this.meshPen_;
 	}
 
+	/**
+	 * Find all points on the surface that are projected to the given pixel.
+	 * <p>
+	 * A ray is cast from the given pixel&apos;s x,y position (from the top left
+	 * of the chart, in screen coordinates) and every intersection with the
+	 * surface is returned, along with its distance from the look point. Note
+	 * that the coordinates of the intersection points are interpolated between
+	 * the data points that make up the surface.
+	 */
+	public List<WSurfaceSelection> pickSurface(int x, int y) {
+		javax.vecmath.GVector re = new javax.vecmath.GVector(new double[] { 0,
+				0, 0 });
+		javax.vecmath.GVector rd = new javax.vecmath.GVector(new double[] { 0,
+				0, 0 });
+		this.chart_.createRay(x, y, re, rd);
+		javax.vecmath.Matrix4f invTransform = WebGLUtils.multiply(this.chart_
+				.getCameraMatrix(), this.mvMatrix_);
+		invTransform.invert();
+		javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {
+				0.0, 0.0, 0.0, 1.0 });
+		camera = WebGLUtils.multiply(invTransform, camera);
+		javax.vecmath.GVector camera3 = new javax.vecmath.GVector(camera);
+		int Nx = this.getNbXPoints();
+		int Ny = this.getNbYPoints();
+		List<java.nio.ByteBuffer> simplePtsArrays = new ArrayList<java.nio.ByteBuffer>();
+		int nbXaxisBuffers;
+		int nbYaxisBuffers;
+		nbXaxisBuffers = Nx / (SURFACE_SIDE_LIMIT - 1);
+		nbYaxisBuffers = Ny / (SURFACE_SIDE_LIMIT - 1);
+		if (Nx % (SURFACE_SIDE_LIMIT - 1) != 0) {
+			nbXaxisBuffers++;
+		}
+		if (Ny % (SURFACE_SIDE_LIMIT - 1) != 0) {
+			nbYaxisBuffers++;
+		}
+		for (int i = 0; i < nbXaxisBuffers - 1; i++) {
+			for (int j = 0; j < nbYaxisBuffers - 1; j++) {
+				simplePtsArrays
+						.add(WebGLUtils
+								.newByteBuffer(4 * (3 * SURFACE_SIDE_LIMIT * SURFACE_SIDE_LIMIT)));
+			}
+			;
+			simplePtsArrays
+					.add(WebGLUtils
+							.newByteBuffer(4 * (3 * SURFACE_SIDE_LIMIT * (Ny - (nbYaxisBuffers - 1)
+									* (SURFACE_SIDE_LIMIT - 1)))));
+		}
+		for (int j = 0; j < nbYaxisBuffers - 1; j++) {
+			simplePtsArrays.add(WebGLUtils
+					.newByteBuffer(4 * (3 * (Nx - (nbXaxisBuffers - 1)
+							* (SURFACE_SIDE_LIMIT - 1)) * SURFACE_SIDE_LIMIT)));
+		}
+		simplePtsArrays
+				.add(WebGLUtils
+						.newByteBuffer(4 * (3 * (Nx - (nbXaxisBuffers - 1)
+								* (SURFACE_SIDE_LIMIT - 1)) * (Ny - (nbYaxisBuffers - 1)
+								* (SURFACE_SIDE_LIMIT - 1)))));
+		this.surfaceDataFromModel(simplePtsArrays);
+		List<WSurfaceSelection> result = new ArrayList<WSurfaceSelection>();
+		for (int i = 0; i < simplePtsArrays.size(); i++) {
+			int Nx_patch = SURFACE_SIDE_LIMIT;
+			int Ny_patch = SURFACE_SIDE_LIMIT;
+			if ((i + 1) % nbYaxisBuffers == 0) {
+				Ny_patch = Ny - (nbYaxisBuffers - 1) * (SURFACE_SIDE_LIMIT - 1);
+			}
+			if ((int) i >= (nbXaxisBuffers - 1) * nbYaxisBuffers) {
+				Nx_patch = Nx - (nbXaxisBuffers - 1) * (SURFACE_SIDE_LIMIT - 1);
+			}
+			java.nio.IntBuffer vertexIndices = java.nio.IntBuffer
+					.allocate((Nx_patch - 1) * (Ny_patch + 1) * 2);
+			this.generateVertexIndices(vertexIndices, Nx_patch, Ny_patch);
+			for (int j = 0; j < vertexIndices.capacity() - 2; ++j) {
+				if (vertexIndices.get(j) == vertexIndices.get(j + 1)
+						|| vertexIndices.get(j + 1) == vertexIndices.get(j + 2)
+						|| vertexIndices.get(j) == vertexIndices.get(j + 2)) {
+					continue;
+				}
+				javax.vecmath.GVector point = new javax.vecmath.GVector(
+						new double[] { 0, 0, 0 });
+				double distance = this
+						.rayTriangleIntersect(
+								re,
+								rd,
+								camera3,
+								new javax.vecmath.GVector(
+										new double[] {
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j) * 3)),
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j) * 3 + 1)),
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j) * 3 + 2)) }),
+								new javax.vecmath.GVector(
+										new double[] {
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 1) * 3)),
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 1) * 3 + 1)),
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 1) * 3 + 2)) }),
+								new javax.vecmath.GVector(
+										new double[] {
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 2) * 3)),
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 2) * 3 + 1)),
+												simplePtsArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 2) * 3 + 2)) }),
+								point);
+				if (distance != Double.POSITIVE_INFINITY) {
+					double resX = point.getElement(0)
+							* (this.chart_.axis(Axis.XAxis_3D).getMaximum() - this.chart_
+									.axis(Axis.XAxis_3D).getMinimum())
+							+ this.chart_.axis(Axis.XAxis_3D).getMinimum();
+					double resY = point.getElement(1)
+							* (this.chart_.axis(Axis.YAxis_3D).getMaximum() - this.chart_
+									.axis(Axis.YAxis_3D).getMinimum())
+							+ this.chart_.axis(Axis.YAxis_3D).getMinimum();
+					double resZ = point.getElement(2)
+							* (this.chart_.axis(Axis.ZAxis_3D).getMaximum() - this.chart_
+									.axis(Axis.ZAxis_3D).getMinimum())
+							+ this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+					result
+							.add(new WSurfaceSelection(distance, resX, resY,
+									resZ));
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Return the bar that is closest to the look point at the given pixel.
+	 * <p>
+	 * A ray is cast from the given pixel&apos;s x,y position (from the top left
+	 * of the chart, in screen coordinates), and the closest bar on this
+	 * {@link WAbstractGridData} is returned, along with its distance from the
+	 * look point.
+	 * <p>
+	 * Note that if this {@link WAbstractGridData} is hidden, this method still
+	 * returns the closest bar as if it was visible. Also, if multiple bars are
+	 * on the same bar chart, the bar that is returned may be behind another
+	 * data series. Use the distance field of the returned {@link WBarSelection}
+	 * to determine which data series is in front from the given angle.
+	 * <p>
+	 * If there is no bar at the given pixel, then a selection with an invalid
+	 * {@link WModelIndex} is returned. The distance is then set to positive
+	 * infinity.
+	 */
+	public WBarSelection pickBar(int x, int y) {
+		javax.vecmath.GVector re = new javax.vecmath.GVector(new double[] { 0,
+				0, 0 });
+		javax.vecmath.GVector rd = new javax.vecmath.GVector(new double[] { 0,
+				0, 0 });
+		this.chart_.createRay(x, y, re, rd);
+		double closestDistance = Double.POSITIVE_INFINITY;
+		int closestI = 0;
+		int closestJ = 0;
+		javax.vecmath.Matrix4f invTransform = WebGLUtils.multiply(this.chart_
+				.getCameraMatrix(), this.mvMatrix_);
+		invTransform.invert();
+		javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {
+				0.0, 0.0, 0.0, 1.0 });
+		camera = WebGLUtils.multiply(invTransform, camera);
+		javax.vecmath.GVector camera3 = new javax.vecmath.GVector(camera);
+		int Nx = this.getNbXPoints();
+		int Ny = this.getNbYPoints();
+		int cnt = Nx * Ny;
+		List<java.nio.ByteBuffer> simplePtsArrays = new ArrayList<java.nio.ByteBuffer>();
+		List<java.nio.ByteBuffer> barVertexArrays = new ArrayList<java.nio.ByteBuffer>();
+		int nbSimpleBarBuffers = cnt / BAR_BUFFER_LIMIT + 1;
+		int PT_INFO_SIZE = 4;
+		int PTS_PER_BAR = 8;
+		for (int i = 0; i < nbSimpleBarBuffers - 1; ++i) {
+			simplePtsArrays.add(WebGLUtils
+					.newByteBuffer(4 * (PT_INFO_SIZE * BAR_BUFFER_LIMIT)));
+			barVertexArrays.add(WebGLUtils
+					.newByteBuffer(4 * (PTS_PER_BAR * 3 * BAR_BUFFER_LIMIT)));
+		}
+		simplePtsArrays.add(WebGLUtils
+				.newByteBuffer(4 * (PT_INFO_SIZE * (cnt - BAR_BUFFER_LIMIT
+						* (nbSimpleBarBuffers - 1)))));
+		barVertexArrays.add(WebGLUtils
+				.newByteBuffer(4 * (PTS_PER_BAR * 3 * (cnt - BAR_BUFFER_LIMIT
+						* (nbSimpleBarBuffers - 1)))));
+		this.barDataFromModel(simplePtsArrays);
+		for (int i = 0; i < simplePtsArrays.size(); ++i) {
+			this.barSeriesVertexData(simplePtsArrays.get(i), barVertexArrays
+					.get(i));
+		}
+		for (int i = 0; i < simplePtsArrays.size(); ++i) {
+			java.nio.IntBuffer vertexIndices = java.nio.IntBuffer
+					.allocate(12 * 3 * (simplePtsArrays.get(i).capacity() / 4 / PT_INFO_SIZE));
+			this.generateVertexIndices(vertexIndices, 0, 0, simplePtsArrays
+					.get(i).capacity()
+					/ 4 / PT_INFO_SIZE);
+			for (int j = 0; j < vertexIndices.capacity(); j += 3) {
+				javax.vecmath.GVector point = new javax.vecmath.GVector(
+						new double[] { 0, 0, 0 });
+				double distance = this
+						.rayTriangleIntersect(
+								re,
+								rd,
+								new javax.vecmath.GVector(camera),
+								new javax.vecmath.GVector(
+										new double[] {
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j) * 3)),
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j) * 3 + 1)),
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j) * 3 + 2)) }),
+								new javax.vecmath.GVector(
+										new double[] {
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 1) * 3)),
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 1) * 3 + 1)),
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 1) * 3 + 2)) }),
+								new javax.vecmath.GVector(
+										new double[] {
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 2) * 3)),
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 2) * 3 + 1)),
+												barVertexArrays
+														.get(i)
+														.getFloat(
+																4 * (vertexIndices
+																		.get(j + 2) * 3 + 2)) }),
+								point);
+				if (distance < closestDistance) {
+					closestDistance = distance;
+					closestI = i;
+					closestJ = j;
+				}
+			}
+		}
+		if (closestDistance != Double.POSITIVE_INFINITY) {
+			int tmp = BAR_BUFFER_LIMIT * closestI + closestJ / (12 * 3);
+			return new WBarSelection(closestDistance, this.model_.getIndex(tmp
+					/ Ny + 1, tmp % Ny + 1));
+		} else {
+			return new WBarSelection(Double.POSITIVE_INFINITY,
+					(WModelIndex) null);
+		}
+	}
+
+	/**
+	 * Set isoline levels.
+	 * <p>
+	 * Isolines are drawn on the top or ground plane of the chart. Only applies
+	 * if the type is SurfaceSeries3D.
+	 * <p>
+	 * The isoline levels are set in the coordinate system of the item model.
+	 */
+	public void setIsoLevels(final List<Double> isoLevels) {
+		Utils.copyList(isoLevels, this.isoLineHeights_);
+		if (this.chart_ != null) {
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+		}
+	}
+
+	/**
+	 * Get all of the isoline levels.
+	 * <p>
+	 */
+	public List<Double> getIsoLevels() {
+		return this.isoLineHeights_;
+	}
+
+	/**
+	 * Set the color map for the isolines.
+	 * <p>
+	 * When no color map is defined for the isolines, i.e.
+	 * {@link WAbstractGridData#getIsoColorMap() getIsoColorMap()} is set to
+	 * NULL, the color map of this {@link WAbstractGridData} will be used.
+	 * <p>
+	 * The isolines are only drawn if the type is SurfaceSeries3D.
+	 * <p>
+	 * 
+	 * @see WAbstractDataSeries3D#setColorMap(WAbstractColorMap colormap)
+	 */
+	public void setIsoColorMap(WAbstractColorMap colormap) {
+		this.isoLineColorMap_ = colormap;
+		if (this.isoLineColorMap_ != null) {
+		}
+		if (this.chart_ != null) {
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext,
+					ChartUpdates.GLTextures));
+		}
+	}
+
+	/**
+	 * Get the color map for the isolines.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setIsoColorMap(WAbstractColorMap colormap)
+	 */
+	public WAbstractColorMap getIsoColorMap() {
+		return this.isoLineColorMap_;
+	}
+
+	/**
+	 * Set the value below which the data series will be clipped on the given
+	 * axis.
+	 * <p>
+	 * This only affects data series whose type is SurfaceSeries3D.
+	 */
+	public void setClippingMin(Axis axis, float v) {
+		this.minPtChanged_ = true;
+		if (this.jsMinPt_.isInitialized()) {
+			Utils.copyList(this.jsMinPt_.getValue(), this.minPt_);
+		}
+		this.minPt_.set(axisToIndex(axis), v);
+		if (this.chart_ != null) {
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+		}
+	}
+
+	/**
+	 * Gets the value below which the data series will be clipped on the given
+	 * axis.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingMin(Axis axis, float v)
+	 */
+	public float getClippingMin(Axis axis) {
+		int idx = axisToIndex(axis);
+		return this.jsMinPt_.isInitialized() ? this.jsMinPt_.getValue()
+				.get(idx) : this.minPt_.get(idx);
+	}
+
+	/**
+	 * {@link JSlot} to change the value below which the data series will be
+	 * clipped on the given axis.
+	 * <p>
+	 * The {@link JSlot} takes one extra argument: the value to clip below.
+	 * <p>
+	 * The jsRef() of this {@link JSlot} is only valid when this
+	 * {@link WAbstractGridData} has been added to a {@link WCartesian3DChart}.
+	 * If this {@link WAbstractGridData} moves to another
+	 * {@link WCartesian3DChart}, the jsRef() of the {@link JSlot} changes.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingMin(Axis axis, float v)
+	 */
+	public JSlot changeClippingMin(Axis axis) {
+		if (axis == Axis.XAxis_3D) {
+			return this.changeClippingMinX_;
+		} else {
+			if (axis == Axis.YAxis_3D) {
+				return this.changeClippingMinY_;
+			} else {
+				if (axis == Axis.ZAxis_3D) {
+					return this.changeClippingMinZ_;
+				} else {
+					throw new WException("Invalid axis for 3D chart");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Set the value above which the data series will be clipped on the given
+	 * axis.
+	 * <p>
+	 * This only affects data series whose type is SurfaceSeries3D.
+	 */
+	public void setClippingMax(Axis axis, float v) {
+		this.maxPtChanged_ = true;
+		if (this.jsMaxPt_.isInitialized()) {
+			Utils.copyList(this.jsMaxPt_.getValue(), this.maxPt_);
+		}
+		this.maxPt_.set(axisToIndex(axis), v);
+		if (this.chart_ != null) {
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+		}
+	}
+
+	/**
+	 * Gets the value above which the data series will be clipped on the given
+	 * axis.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingMax(Axis axis, float v)
+	 */
+	public float getClippingMax(Axis axis) {
+		int idx = axisToIndex(axis);
+		return this.jsMaxPt_.isInitialized() ? this.jsMaxPt_.getValue()
+				.get(idx) : this.maxPt_.get(idx);
+	}
+
+	/**
+	 * {@link JSlot} to change the value above which the data series will be
+	 * clipped on the given axis.
+	 * <p>
+	 * The {@link JSlot} takes one extra argument: the value to clip below.
+	 * <p>
+	 * The jsRef() of this {@link JSlot} is only valid when this
+	 * {@link WAbstractGridData} has been added to a {@link WCartesian3DChart}.
+	 * If this {@link WAbstractGridData} moves to another
+	 * {@link WCartesian3DChart}, the jsRef() of the {@link JSlot} changes.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingMax(Axis axis, float v)
+	 */
+	public JSlot changeClippingMax(Axis axis) {
+		if (axis == Axis.XAxis_3D) {
+			return this.changeClippingMaxX_;
+		} else {
+			if (axis == Axis.YAxis_3D) {
+				return this.changeClippingMaxY_;
+			} else {
+				if (axis == Axis.ZAxis_3D) {
+					return this.changeClippingMaxZ_;
+				} else {
+					throw new WException("Invalid axis for 3D chart");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sets whether clipping lines should be drawn where a surface is clipped.
+	 * <p>
+	 * Clipping lines are disabled by default. Note that rendering will be
+	 * significantly slower when enabled.
+	 */
+	public void setClippingLinesEnabled(boolean clippingLinesEnabled) {
+		this.clippingLinesEnabled_ = clippingLinesEnabled;
+		if (this.chart_ != null) {
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+		}
+	}
+
+	/**
+	 * Returns whether clipping lines are enabled.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingLinesEnabled(boolean
+	 *      clippingLinesEnabled)
+	 */
+	public boolean isClippingLinesEnabled() {
+		return this.clippingLinesEnabled_;
+	}
+
+	/**
+	 * Sets the color of the clipping lines.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingLinesEnabled(boolean
+	 *      clippingLinesEnabled)
+	 */
+	public void setClippingLinesColor(WColor clippingLinesColor) {
+		this.clippingLinesColor_ = clippingLinesColor;
+		if (this.chart_ != null) {
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+		}
+	}
+
+	/**
+	 * Gets the color of the clipping lines.
+	 * <p>
+	 * 
+	 * @see WAbstractGridData#setClippingLinesColor(WColor clippingLinesColor)
+	 * @see WAbstractGridData#setClippingLinesEnabled(boolean
+	 *      clippingLinesEnabled)
+	 */
+	public WColor getClippingLinesColor() {
+		return this.clippingLinesColor_;
+	}
+
 	public static final int SURFACE_SIDE_LIMIT = 256;
 	public static final int BAR_BUFFER_LIMIT = 8190;
 
@@ -273,6 +863,46 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	public abstract WString axisLabel(int u, Axis axis);
 
 	abstract Object data(int i, int j);
+
+	public void setChart(WCartesian3DChart chart) {
+		super.setChart(chart);
+		this.jsMinPt_ = new WGLWidget.JavaScriptVector(3);
+		this.jsMaxPt_ = new WGLWidget.JavaScriptVector(3);
+		chart.addJavaScriptVector(this.jsMinPt_);
+		chart.addJavaScriptVector(this.jsMaxPt_);
+		this.minPtChanged_ = true;
+		this.maxPtChanged_ = true;
+		this.changeClippingMinX_
+				.setJavaScript("function(o,e,pos) {var obj = $('#"
+						+ this.chart_.getId() + "').data('obj');"
+						+ this.jsMinPt_.getJsRef() + "[0] = pos;"
+						+ chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMaxX_
+				.setJavaScript("function(o,e,pos) {var obj = $('#"
+						+ this.chart_.getId() + "').data('obj');"
+						+ this.jsMaxPt_.getJsRef() + "[0] = pos;"
+						+ chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMinY_
+				.setJavaScript("function(o,e,pos) {var obj = $('#"
+						+ this.chart_.getId() + "').data('obj');"
+						+ this.jsMinPt_.getJsRef() + "[1] = pos;"
+						+ chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMaxY_
+				.setJavaScript("function(o,e,pos) {var obj = $('#"
+						+ this.chart_.getId() + "').data('obj');"
+						+ this.jsMaxPt_.getJsRef() + "[1] = pos;"
+						+ chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMinZ_
+				.setJavaScript("function(o,e,pos) {var obj = $('#"
+						+ this.chart_.getId() + "').data('obj');"
+						+ this.jsMinPt_.getJsRef() + "[2] = pos;"
+						+ chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMaxZ_
+				.setJavaScript("function(o,e,pos) {var obj = $('#"
+						+ this.chart_.getId() + "').data('obj');"
+						+ this.jsMaxPt_.getJsRef() + "[2] = pos;"
+						+ chart.getRepaintSlot().execJs() + " }", 1);
+	}
 
 	public void initializeGL() {
 	}
@@ -316,10 +946,22 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						WGLWidget.GLenum.FLOAT, false, 0, 0);
 				this.chart_.enableVertexAttribArray(this.barTexCoordAttr_);
 			}
+			double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
+			double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
+			double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
+			double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
+			double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+			double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
 			this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
 			this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 					this.colormapTexture_);
 			this.chart_.uniform1i(this.TexSampler_, 0);
+			if (!this.minPtUniform_.isNull()) {
+				this.chart_.uniform3fv(this.minPtUniform_, this.jsMinPt_);
+				this.chart_.uniform3fv(this.maxPtUniform_, this.jsMaxPt_);
+				this.chart_.uniform3f(this.dataMinPtUniform_, xMin, yMin, zMin);
+				this.chart_.uniform3f(this.dataMaxPtUniform_, xMax, yMax, zMax);
+			}
 			if (this.seriesType_ == Series3DType.BarSeries3D) {
 				this.chart_.enable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
 				float unitOffset = (float) (Math.pow(5, this.meshPen_
@@ -358,6 +1000,12 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						this.chart_
 								.enableVertexAttribArray(this.vertexSizeAttr_);
 					}
+					this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE1);
+					this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+							this.pointSpriteTexture_);
+					this.chart_.uniform1i(this.pointSpriteUniform_, 1);
+					this.chart_.uniform1f(this.vpHeightUniform_, this.chart_
+							.getHeight().getValue());
 					this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 							this.vertexPosBufferSizes_.get(i) / 3);
 					this.chart_.disableVertexAttribArray(this.vertexPosAttr_);
@@ -375,6 +1023,12 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
 				this.chart_.uniformMatrix4(this.mesh_cMatrix_, this.chart_
 						.getJsMatrix());
+				this.chart_.uniform3fv(this.mesh_minPtUniform_, this.jsMinPt_);
+				this.chart_.uniform3fv(this.mesh_maxPtUniform_, this.jsMaxPt_);
+				this.chart_.uniform3f(this.mesh_dataMinPtUniform_, xMin, yMin,
+						zMin);
+				this.chart_.uniform3f(this.mesh_dataMaxPtUniform_, xMax, yMax,
+						zMax);
 				this.chart_.uniform4f(this.mesh_colorUniform_,
 						(float) this.meshPen_.getColor().getRed(),
 						(float) this.meshPen_.getColor().getGreen(),
@@ -429,6 +1083,12 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 							WGLWidget.GLenum.FLOAT, false, 0, 0);
 					this.chart_.enableVertexAttribArray(this.vertexSizeAttr2_);
 				}
+				this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
+				this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+						this.pointSpriteTexture_);
+				this.chart_.uniform1i(this.pointSpriteUniform2_, 0);
+				this.chart_.uniform1f(this.vpHeightUniform2_, this.chart_
+						.getHeight().getValue());
 				this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 						this.vertexPosBuffer2Sizes_.get(i) / 3);
 				if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
@@ -465,6 +1125,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						WGLWidget.GLenum.UNSIGNED_SHORT, 0);
 				this.chart_.disableVertexAttribArray(this.meshVertexPosAttr_);
 			}
+		}
+		if (this.seriesType_ == Series3DType.SurfaceSeries3D
+				&& this.isoLineHeights_.size() > 0) {
+			this.drawIsoLines();
 		}
 		this.chart_.enable(WGLWidget.GLenum.CULL_FACE);
 		this.chart_.disable(WGLWidget.GLenum.DEPTH_TEST);
@@ -504,7 +1168,45 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 						WGLWidget.GLenum.TEXTURE_WRAP_T,
 						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.isoLineColorMapTexture_ = this.getIsoLineColorMapTexture();
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.pointSpriteTexture_ = this.getPointSpriteTexture();
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.initShaders();
+		if (!this.jsMinPt_.isInitialized()) {
+			this.chart_.initJavaScriptVector(this.jsMinPt_);
+			this.chart_.initJavaScriptVector(this.jsMaxPt_);
+		}
+		if (this.minPtChanged_) {
+			this.chart_.setJavaScriptVector(this.jsMinPt_, this.minPt_);
+			this.minPtChanged_ = false;
+		}
+		if (this.maxPtChanged_) {
+			this.chart_.setJavaScriptVector(this.jsMaxPt_, this.maxPt_);
+			this.maxPtChanged_ = false;
+		}
 		double min;
 		double max;
 		switch (this.seriesType_) {
@@ -520,9 +1222,22 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						Axis.ZAxis_3D);
 				this.chart_.uniform1f(this.offset_, min);
 				this.chart_.uniform1f(this.scaleFactor_, 1.0 / (max - min));
+				if (this.seriesType_ == Series3DType.SurfaceSeries3D
+						&& this.isoLineHeights_.size() > 0) {
+					this.chart_.useProgram(this.isoLineProgram_);
+					this.chart_.uniform1f(this.isoLine_offset_, min);
+					this.chart_.uniform1f(this.isoLine_scaleFactor_,
+							1.0 / (max - min));
+				}
 			} else {
 				this.chart_.uniform1f(this.offset_, 0.0);
 				this.chart_.uniform1f(this.scaleFactor_, 1.0);
+				if (this.seriesType_ == Series3DType.SurfaceSeries3D
+						&& this.isoLineHeights_.size() > 0) {
+					this.chart_.useProgram(this.isoLineProgram_);
+					this.chart_.uniform1f(this.isoLine_offset_, 0.0);
+					this.chart_.uniform1f(this.isoLine_scaleFactor_, 1.0);
+				}
 			}
 			break;
 		}
@@ -551,6 +1266,27 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				this.chart_.uniformMatrix4(this.mesh_pMatrix_, this.chart_
 						.getPMatrix());
 			}
+			if (this.isoLineHeights_.size() > 0) {
+				this.chart_.useProgram(this.isoLineProgram_);
+				this.chart_.uniformMatrix4(this.isoLine_mvMatrixUniform_,
+						this.mvMatrix_);
+				this.chart_.uniformMatrix4(this.isoLine_pMatrix_, this.chart_
+						.getPMatrix());
+			}
+			if (this.chart_.isIntersectionLinesEnabled()
+					|| this.isClippingLinesEnabled()
+					|| !this.chart_.intersectionPlanes_.isEmpty()) {
+				this.chart_.useProgram(this.singleColorProgram_);
+				this.chart_.uniformMatrix4(this.singleColor_mvMatrixUniform_,
+						this.mvMatrix_);
+				this.chart_.uniformMatrix4(this.singleColor_pMatrix_,
+						this.chart_.getPMatrix());
+				this.chart_.useProgram(this.positionProgram_);
+				this.chart_.uniformMatrix4(this.position_mvMatrixUniform_,
+						this.mvMatrix_);
+				this.chart_.uniformMatrix4(this.position_pMatrix_, this.chart_
+						.getPMatrix());
+			}
 			break;
 		}
 		;
@@ -566,9 +1302,24 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.chart_
 					.uniformMatrix4(this.pMatrix2_, this.chart_.getPMatrix());
 		}
+		if (!this.singleColorProgram_.isNull()) {
+			this.chart_.useProgram(this.singleColorProgram_);
+			this.chart_.uniformMatrix4(this.singleColor_pMatrix_, this.chart_
+					.getPMatrix());
+		}
+		if (!this.positionProgram_.isNull()) {
+			this.chart_.useProgram(this.positionProgram_);
+			this.chart_.uniformMatrix4(this.position_pMatrix_, this.chart_
+					.getPMatrix());
+		}
 		if (!this.meshProgram_.isNull()) {
 			this.chart_.useProgram(this.meshProgram_);
 			this.chart_.uniformMatrix4(this.mesh_pMatrix_, this.chart_
+					.getPMatrix());
+		}
+		if (!this.isoLineProgram_.isNull()) {
+			this.chart_.useProgram(this.isoLineProgram_);
+			this.chart_.uniformMatrix4(this.isoLine_pMatrix_, this.chart_
 					.getPMatrix());
 		}
 	}
@@ -576,6 +1327,23 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	public void deleteAllGLResources() {
 		if (this.seriesProgram_.isNull()) {
 			return;
+		}
+		if (!this.singleColorProgram_.isNull()) {
+			this.chart_.detachShader(this.singleColorProgram_,
+					this.singleColorFragShader_);
+			this.chart_
+					.detachShader(this.singleColorProgram_, this.vertShader_);
+			this.chart_.deleteShader(this.singleColorFragShader_);
+			this.chart_.deleteProgram(this.singleColorProgram_);
+			this.singleColorProgram_.clear();
+		}
+		if (!this.positionProgram_.isNull()) {
+			this.chart_.detachShader(this.positionProgram_,
+					this.positionFragShader_);
+			this.chart_.detachShader(this.positionProgram_, this.vertShader_);
+			this.chart_.deleteShader(this.positionFragShader_);
+			this.chart_.deleteProgram(this.positionProgram_);
+			this.positionProgram_.clear();
 		}
 		this.chart_.detachShader(this.seriesProgram_, this.fragShader_);
 		this.chart_.detachShader(this.seriesProgram_, this.vertShader_);
@@ -601,20 +1369,30 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.chart_.deleteProgram(this.meshProgram_);
 			this.meshProgram_.clear();
 		}
+		if (!this.isoLineProgram_.isNull()) {
+			this.chart_.detachShader(this.isoLineProgram_,
+					this.isoLineFragShader_);
+			this.chart_.detachShader(this.isoLineProgram_,
+					this.isoLineVertexShader_);
+			this.chart_.deleteShader(this.isoLineFragShader_);
+			this.chart_.deleteShader(this.isoLineVertexShader_);
+			this.chart_.deleteProgram(this.isoLineProgram_);
+			this.isoLineProgram_.clear();
+		}
 		for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
-			if (!this.vertexPosBuffers_.get(i).getJsRef().equals("")) {
+			if (!this.vertexPosBuffers_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.vertexPosBuffers_.get(i));
 				this.vertexPosBuffers_.get(i).clear();
 			}
 		}
 		for (int i = 0; i < this.vertexSizeBuffers_.size(); i++) {
-			if (this.vertexSizeBuffers_.get(i).isNull()) {
+			if (!this.vertexSizeBuffers_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.vertexSizeBuffers_.get(i));
 				this.vertexSizeBuffers_.get(i).clear();
 			}
 		}
 		for (int i = 0; i < this.vertexPosBuffers2_.size(); i++) {
-			if (this.vertexPosBuffers2_.get(i).isNull()) {
+			if (!this.vertexPosBuffers2_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.vertexPosBuffers2_.get(i));
 				this.vertexPosBuffers2_.get(i).clear();
 				this.chart_.deleteBuffer(this.vertexColorBuffers2_.get(i));
@@ -622,25 +1400,31 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			}
 		}
 		for (int i = 0; i < this.vertexSizeBuffers2_.size(); i++) {
-			if (this.vertexSizeBuffers2_.get(i).isNull()) {
+			if (!this.vertexSizeBuffers2_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.vertexSizeBuffers2_.get(i));
 				this.vertexSizeBuffers2_.get(i).clear();
 			}
 		}
+		for (int i = 0; i < this.isoLineBuffers_.size(); ++i) {
+			if (!this.isoLineBuffers_.get(i).isNull()) {
+				this.chart_.deleteBuffer(this.isoLineBuffers_.get(i));
+				this.isoLineBuffers_.get(i).clear();
+			}
+		}
 		for (int i = 0; i < this.indexBuffers_.size(); i++) {
-			if (this.indexBuffers_.get(i).isNull()) {
+			if (!this.indexBuffers_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.indexBuffers_.get(i));
 				this.indexBuffers_.get(i).clear();
 			}
 		}
 		for (int i = 0; i < this.overlayLinesBuffers_.size(); i++) {
-			if (this.overlayLinesBuffers_.get(i).isNull()) {
+			if (!this.overlayLinesBuffers_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.overlayLinesBuffers_.get(i));
 				this.overlayLinesBuffers_.get(i).clear();
 			}
 		}
 		for (int i = 0; i < this.colormapTexBuffers_.size(); i++) {
-			if (this.colormapTexBuffers_.get(i).isNull()) {
+			if (!this.colormapTexBuffers_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.colormapTexBuffers_.get(i));
 				this.colormapTexBuffers_.get(i).clear();
 			}
@@ -654,12 +1438,25 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.vertexColorBuffers2_.clear();
 		this.indexBuffers_.clear();
 		this.indexBufferSizes_.clear();
+		this.indexBufferSizes2_.clear();
 		this.overlayLinesBuffers_.clear();
+		this.overlayLinesBuffers2_.clear();
 		this.lineBufferSizes_.clear();
+		this.lineBufferSizes2_.clear();
 		this.colormapTexBuffers_.clear();
-		if (this.colormapTexture_.isNull()) {
+		this.isoLineBuffers_.clear();
+		this.isoLineBufferSizes_.clear();
+		if (!this.colormapTexture_.isNull()) {
 			this.chart_.deleteTexture(this.colormapTexture_);
 			this.colormapTexture_.clear();
+		}
+		if (!this.isoLineColorMapTexture_.isNull()) {
+			this.chart_.deleteTexture(this.isoLineColorMapTexture_);
+			this.isoLineColorMapTexture_.clear();
+		}
+		if (!this.pointSpriteTexture_.isNull()) {
+			this.chart_.deleteTexture(this.pointSpriteTexture_);
+			this.pointSpriteTexture_.clear();
 		}
 	}
 
@@ -670,6 +1467,9 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			final java.nio.ByteBuffer coloredPtsColor);
 
 	abstract void surfaceDataFromModel(
+			final List<java.nio.ByteBuffer> simplePtsArrays);
+
+	protected abstract void barDataFromModel(
 			final List<java.nio.ByteBuffer> simplePtsArrays);
 
 	protected abstract void barDataFromModel(
@@ -780,6 +1580,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					"uCMatrix");
 			this.TexSampler_ = this.chart_.getUniformLocation(
 					this.seriesProgram_, "uSampler");
+			this.pointSpriteUniform_ = this.chart_.getUniformLocation(
+					this.seriesProgram_, "uPointSprite");
+			this.vpHeightUniform_ = this.chart_.getUniformLocation(
+					this.seriesProgram_, "uVPHeight");
 			this.offset_ = this.chart_.getUniformLocation(this.seriesProgram_,
 					"uOffset");
 			this.scaleFactor_ = this.chart_.getUniformLocation(
@@ -812,6 +1616,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					this.colSeriesProgram_, "uPMatrix");
 			this.cMatrix2_ = this.chart_.getUniformLocation(
 					this.colSeriesProgram_, "uCMatrix");
+			this.pointSpriteUniform2_ = this.chart_.getUniformLocation(
+					this.colSeriesProgram_, "uPointSprite");
+			this.vpHeightUniform2_ = this.chart_.getUniformLocation(
+					this.colSeriesProgram_, "uVPHeight");
 			break;
 		case SurfaceSeries3D:
 			this.fragShader_ = this.chart_
@@ -840,6 +1648,84 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					"uOffset");
 			this.scaleFactor_ = this.chart_.getUniformLocation(
 					this.seriesProgram_, "uScaleFactor");
+			this.minPtUniform_ = this.chart_.getUniformLocation(
+					this.seriesProgram_, "uMinPt");
+			this.maxPtUniform_ = this.chart_.getUniformLocation(
+					this.seriesProgram_, "uMaxPt");
+			this.dataMinPtUniform_ = this.chart_.getUniformLocation(
+					this.seriesProgram_, "uDataMinPt");
+			this.dataMaxPtUniform_ = this.chart_.getUniformLocation(
+					this.seriesProgram_, "uDataMaxPt");
+			if (this.chart_.isIntersectionLinesEnabled()
+					|| this.isClippingLinesEnabled()
+					|| !this.chart_.intersectionPlanes_.isEmpty()) {
+				this.singleColorFragShader_ = this.chart_
+						.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
+				this.chart_.shaderSource(this.singleColorFragShader_,
+						surfFragSingleColorShaderSrc);
+				this.chart_.compileShader(this.singleColorFragShader_);
+				this.singleColorProgram_ = this.chart_.createProgram();
+				this.chart_.attachShader(this.singleColorProgram_,
+						this.vertShader_);
+				this.chart_.attachShader(this.singleColorProgram_,
+						this.singleColorFragShader_);
+				this.chart_.linkProgram(this.singleColorProgram_);
+				this.chart_.useProgram(this.singleColorProgram_);
+				this.singleColor_vertexPosAttr_ = this.chart_
+						.getAttribLocation(this.singleColorProgram_,
+								"aVertexPosition");
+				this.singleColor_mvMatrixUniform_ = this.chart_
+						.getUniformLocation(this.singleColorProgram_,
+								"uMVMatrix");
+				this.singleColor_pMatrix_ = this.chart_.getUniformLocation(
+						this.singleColorProgram_, "uPMatrix");
+				this.singleColor_cMatrix_ = this.chart_.getUniformLocation(
+						this.singleColorProgram_, "uCMatrix");
+				this.singleColorUniform_ = this.chart_.getUniformLocation(
+						this.singleColorProgram_, "uColor");
+				this.singleColor_minPtUniform_ = this.chart_
+						.getUniformLocation(this.singleColorProgram_, "uMinPt");
+				this.singleColor_maxPtUniform_ = this.chart_
+						.getUniformLocation(this.singleColorProgram_, "uMaxPt");
+				this.singleColor_dataMinPtUniform_ = this.chart_
+						.getUniformLocation(this.singleColorProgram_,
+								"uDataMinPt");
+				this.singleColor_dataMaxPtUniform_ = this.chart_
+						.getUniformLocation(this.singleColorProgram_,
+								"uDataMaxPt");
+				this.singleColor_marginUniform_ = this.chart_
+						.getUniformLocation(this.singleColorProgram_, "uMargin");
+				this.positionFragShader_ = this.chart_
+						.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
+				this.chart_.shaderSource(this.positionFragShader_,
+						surfFragPosShaderSrc);
+				this.chart_.compileShader(this.positionFragShader_);
+				this.positionProgram_ = this.chart_.createProgram();
+				this.chart_.attachShader(this.positionProgram_,
+						this.vertShader_);
+				this.chart_.attachShader(this.positionProgram_,
+						this.positionFragShader_);
+				this.chart_.linkProgram(this.positionProgram_);
+				this.chart_.useProgram(this.positionProgram_);
+				this.position_vertexPosAttr_ = this.chart_.getAttribLocation(
+						this.positionProgram_, "aVertexPosition");
+				this.position_mvMatrixUniform_ = this.chart_
+						.getUniformLocation(this.positionProgram_, "uMVMatrix");
+				this.position_pMatrix_ = this.chart_.getUniformLocation(
+						this.positionProgram_, "uPMatrix");
+				this.position_cMatrix_ = this.chart_.getUniformLocation(
+						this.positionProgram_, "uCMatrix");
+				this.position_marginUniform_ = this.chart_.getUniformLocation(
+						this.positionProgram_, "uMargin");
+				this.position_minPtUniform_ = this.chart_.getUniformLocation(
+						this.positionProgram_, "uMinPt");
+				this.position_maxPtUniform_ = this.chart_.getUniformLocation(
+						this.positionProgram_, "uMaxPt");
+				this.position_dataMinPtUniform_ = this.chart_
+						.getUniformLocation(this.positionProgram_, "uDataMinPt");
+				this.position_dataMaxPtUniform_ = this.chart_
+						.getUniformLocation(this.positionProgram_, "uDataMaxPt");
+			}
 			break;
 		}
 		;
@@ -868,6 +1754,47 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					this.meshProgram_, "uCMatrix");
 			this.mesh_colorUniform_ = this.chart_.getUniformLocation(
 					this.meshProgram_, "uColor");
+			this.mesh_minPtUniform_ = this.chart_.getUniformLocation(
+					this.meshProgram_, "uMinPt");
+			this.mesh_maxPtUniform_ = this.chart_.getUniformLocation(
+					this.meshProgram_, "uMaxPt");
+			this.mesh_dataMinPtUniform_ = this.chart_.getUniformLocation(
+					this.meshProgram_, "uDataMinPt");
+			this.mesh_dataMaxPtUniform_ = this.chart_.getUniformLocation(
+					this.meshProgram_, "uDataMaxPt");
+		}
+		if (this.seriesType_ == Series3DType.SurfaceSeries3D
+				&& this.isoLineHeights_.size() > 0) {
+			this.isoLineFragShader_ = this.chart_
+					.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
+			this.chart_.shaderSource(this.isoLineFragShader_,
+					isoLineFragShaderSrc);
+			this.chart_.compileShader(this.isoLineFragShader_);
+			this.isoLineVertexShader_ = this.chart_
+					.createShader(WGLWidget.GLenum.VERTEX_SHADER);
+			this.chart_.shaderSource(this.isoLineVertexShader_,
+					isoLineVertexShaderSrc);
+			this.chart_.compileShader(this.isoLineVertexShader_);
+			this.isoLineProgram_ = this.chart_.createProgram();
+			this.chart_.attachShader(this.isoLineProgram_,
+					this.isoLineVertexShader_);
+			this.chart_.attachShader(this.isoLineProgram_,
+					this.isoLineFragShader_);
+			this.chart_.linkProgram(this.isoLineProgram_);
+			this.isoLineVertexPosAttr_ = this.chart_.getAttribLocation(
+					this.isoLineProgram_, "aVertexPosition");
+			this.isoLine_mvMatrixUniform_ = this.chart_.getUniformLocation(
+					this.isoLineProgram_, "uMVMatrix");
+			this.isoLine_pMatrix_ = this.chart_.getUniformLocation(
+					this.isoLineProgram_, "uPMatrix");
+			this.isoLine_cMatrix_ = this.chart_.getUniformLocation(
+					this.isoLineProgram_, "uCMatrix");
+			this.isoLine_TexSampler_ = this.chart_.getUniformLocation(
+					this.isoLineProgram_, "uSampler");
+			this.isoLine_offset_ = this.chart_.getUniformLocation(
+					this.isoLineProgram_, "uOffset");
+			this.isoLine_scaleFactor_ = this.chart_.getUniformLocation(
+					this.isoLineProgram_, "uScaleFactor");
 		}
 	}
 
@@ -953,6 +1880,17 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					this.vertexPosBuffers_);
 			this.vertexPosBufferSizes_
 					.add(simplePtsArrays.get(i).capacity() / 4);
+		}
+		for (int i = 0; i < this.isoLineHeights_.size(); ++i) {
+			List<Float> lines = new ArrayList<Float>();
+			this.linesForIsoLevel(this.isoLineHeights_.get(i), lines);
+			java.nio.ByteBuffer buff = WebGLUtils.newByteBuffer(4 * (lines
+					.size()));
+			for (int j = 0; j < lines.size(); ++j) {
+				buff.putFloat(lines.get(j));
+			}
+			this.loadBinaryResource(buff, this.isoLineBuffers_);
+			this.isoLineBufferSizes_.add(lines.size());
 		}
 		for (int i = 0; i < simplePtsArrays.size(); i++) {
 			this.indexBuffers_.add(this.chart_.createBuffer());
@@ -1323,12 +2261,332 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		;
 	}
 
+	void paintGLIndex(int index) {
+		this.paintGLIndex(index, 0.0, 0.0, 0.0);
+	}
+
+	void paintGLIndex(int index, double marginX, double marginY, double marginZ) {
+		if (this.hidden_) {
+			return;
+		}
+		if (this.seriesType_ != Series3DType.SurfaceSeries3D
+				|| this.chart_.getType() != ChartType.ScatterPlot) {
+			return;
+		}
+		double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
+		double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
+		double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
+		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
+		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+		this.chart_.disable(WGLWidget.GLenum.CULL_FACE);
+		this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
+		for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
+			this.chart_.useProgram(this.singleColorProgram_);
+			this.chart_.uniformMatrix4(this.singleColor_cMatrix_, this.chart_
+					.getJsMatrix());
+			this.chart_.uniform3fv(this.singleColor_minPtUniform_,
+					this.jsMinPt_);
+			this.chart_.uniform3fv(this.singleColor_maxPtUniform_,
+					this.jsMaxPt_);
+			this.chart_.uniform3f(this.singleColor_dataMinPtUniform_, xMin,
+					yMin, zMin);
+			this.chart_.uniform3f(this.singleColor_dataMaxPtUniform_, xMax,
+					yMax, zMax);
+			this.chart_.uniform3f(this.singleColor_marginUniform_, marginX,
+					marginY, marginZ);
+			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.vertexPosBuffers_.get(i));
+			this.chart_.vertexAttribPointer(this.singleColor_vertexPosAttr_, 3,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this.chart_
+					.enableVertexAttribArray(this.singleColor_vertexPosAttr_);
+			float r = (index >> 16 & 0xff) / 255.0f;
+			float g = (index >> 8 & 0xff) / 255.0f;
+			float b = (index & 0xff) / 255.0f;
+			this.chart_.uniform3f(this.singleColorUniform_, r, g, b);
+			this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
+					this.indexBuffers_.get(i));
+			this.chart_.drawElements(WGLWidget.GLenum.TRIANGLE_STRIP,
+					this.indexBufferSizes_.get(i),
+					WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+			this.chart_
+					.disableVertexAttribArray(this.singleColor_vertexPosAttr_);
+		}
+		this.chart_.enable(WGLWidget.GLenum.CULL_FACE);
+		this.chart_.disable(WGLWidget.GLenum.DEPTH_TEST);
+	}
+
+	void paintGLPositions() {
+		this.paintGLPositions(0.0, 0.0, 0.0);
+	}
+
+	void paintGLPositions(double marginX, double marginY, double marginZ) {
+		if (this.hidden_) {
+			return;
+		}
+		if (this.seriesType_ != Series3DType.SurfaceSeries3D
+				|| this.chart_.getType() != ChartType.ScatterPlot) {
+			return;
+		}
+		double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
+		double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
+		double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
+		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
+		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+		this.chart_.disable(WGLWidget.GLenum.CULL_FACE);
+		this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
+		for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
+			this.chart_.useProgram(this.positionProgram_);
+			this.chart_.uniformMatrix4(this.position_cMatrix_, this.chart_
+					.getJsMatrix());
+			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.vertexPosBuffers_.get(i));
+			this.chart_.uniform3fv(this.position_minPtUniform_, this.jsMinPt_);
+			this.chart_.uniform3fv(this.position_maxPtUniform_, this.jsMaxPt_);
+			this.chart_.uniform3f(this.position_dataMinPtUniform_, xMin, yMin,
+					zMin);
+			this.chart_.uniform3f(this.position_dataMaxPtUniform_, xMax, yMax,
+					zMax);
+			this.chart_.uniform3f(this.position_marginUniform_, marginX,
+					marginY, marginZ);
+			this.chart_.vertexAttribPointer(this.position_vertexPosAttr_, 3,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this.chart_.enableVertexAttribArray(this.position_vertexPosAttr_);
+			this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
+					this.indexBuffers_.get(i));
+			this.chart_.drawElements(WGLWidget.GLenum.TRIANGLE_STRIP,
+					this.indexBufferSizes_.get(i),
+					WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+			this.chart_.disableVertexAttribArray(this.position_vertexPosAttr_);
+		}
+		this.chart_.enable(WGLWidget.GLenum.CULL_FACE);
+		this.chart_.disable(WGLWidget.GLenum.DEPTH_TEST);
+	}
+
+	private double rayTriangleIntersect(final javax.vecmath.GVector re,
+			final javax.vecmath.GVector rd, final javax.vecmath.GVector camera,
+			final javax.vecmath.GVector v0, final javax.vecmath.GVector v1,
+			final javax.vecmath.GVector v2, final javax.vecmath.GVector point) {
+		javax.vecmath.GVector e1 = new javax.vecmath.GVector(WebGLUtils
+				.subtract(v1, v0));
+		javax.vecmath.GVector e2 = new javax.vecmath.GVector(WebGLUtils
+				.subtract(v2, v0));
+		javax.vecmath.GVector tr = new javax.vecmath.GVector(WebGLUtils
+				.subtract(re, v0));
+		javax.vecmath.GVector P = WebGLUtils.cross(rd, e2);
+		javax.vecmath.GVector Q = WebGLUtils.cross(tr, e1);
+		double m = P.dot(e1);
+		double t = Q.dot(e2) / m;
+		if (t < 0) {
+			return Double.POSITIVE_INFINITY;
+		}
+		double gamma = Q.dot(rd) / m;
+		if (gamma < 0 || gamma > 1) {
+			return Double.POSITIVE_INFINITY;
+		}
+		double beta = P.dot(tr) / m;
+		if (beta < 0 || beta > 1 - gamma) {
+			return Double.POSITIVE_INFINITY;
+		}
+		point.setElement(0, re.getElement(0) + rd.getElement(0) * t);
+		point.setElement(1, re.getElement(1) + rd.getElement(1) * t);
+		point.setElement(2, re.getElement(2) + rd.getElement(2) * t);
+		double distance = new javax.vecmath.GVector(WebGLUtils.subtract(point,
+				camera)).norm();
+		return distance;
+	}
+
+	private void drawIsoLines() {
+		this.chart_.useProgram(this.isoLineProgram_);
+		this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
+		this.chart_.uniformMatrix4(this.isoLine_cMatrix_, this.chart_
+				.getJsMatrix());
+		this.chart_.lineWidth(1.0);
+		this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
+		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
+				this.isoLineColorMapTexture_);
+		this.chart_.uniform1i(this.isoLine_TexSampler_, 0);
+		for (int i = 0; i < this.isoLineHeights_.size(); ++i) {
+			if (this.isoLineBufferSizes_.get(i) == 0) {
+				continue;
+			}
+			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.isoLineBuffers_.get(i));
+			this.chart_.vertexAttribPointer(this.isoLineVertexPosAttr_, 3,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this.chart_.enableVertexAttribArray(this.isoLineVertexPosAttr_);
+			this.chart_.drawArrays(WGLWidget.GLenum.LINES, 0,
+					this.isoLineBufferSizes_.get(i) / 3);
+			this.chart_.disableVertexAttribArray(this.isoLineVertexPosAttr_);
+		}
+	}
+
+	private void linesForIsoLevel(double z, final List<Float> result) {
+		int Nx = this.getNbXPoints();
+		int Ny = this.getNbYPoints();
+		double minZ = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+		double maxZ = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+		double scaledZ = (z - minZ) / (maxZ - minZ);
+		List<java.nio.ByteBuffer> simplePtsArrays = new ArrayList<java.nio.ByteBuffer>();
+		int nbXaxisBuffers;
+		int nbYaxisBuffers;
+		nbXaxisBuffers = Nx / (SURFACE_SIDE_LIMIT - 1);
+		nbYaxisBuffers = Ny / (SURFACE_SIDE_LIMIT - 1);
+		if (Nx % (SURFACE_SIDE_LIMIT - 1) != 0) {
+			nbXaxisBuffers++;
+		}
+		if (Ny % (SURFACE_SIDE_LIMIT - 1) != 0) {
+			nbYaxisBuffers++;
+		}
+		for (int i = 0; i < nbXaxisBuffers - 1; i++) {
+			for (int j = 0; j < nbYaxisBuffers - 1; j++) {
+				simplePtsArrays
+						.add(WebGLUtils
+								.newByteBuffer(4 * (3 * SURFACE_SIDE_LIMIT * SURFACE_SIDE_LIMIT)));
+			}
+			;
+			simplePtsArrays
+					.add(WebGLUtils
+							.newByteBuffer(4 * (3 * SURFACE_SIDE_LIMIT * (Ny - (nbYaxisBuffers - 1)
+									* (SURFACE_SIDE_LIMIT - 1)))));
+		}
+		for (int j = 0; j < nbYaxisBuffers - 1; j++) {
+			simplePtsArrays.add(WebGLUtils
+					.newByteBuffer(4 * (3 * (Nx - (nbXaxisBuffers - 1)
+							* (SURFACE_SIDE_LIMIT - 1)) * SURFACE_SIDE_LIMIT)));
+		}
+		simplePtsArrays
+				.add(WebGLUtils
+						.newByteBuffer(4 * (3 * (Nx - (nbXaxisBuffers - 1)
+								* (SURFACE_SIDE_LIMIT - 1)) * (Ny - (nbYaxisBuffers - 1)
+								* (SURFACE_SIDE_LIMIT - 1)))));
+		this.surfaceDataFromModel(simplePtsArrays);
+		for (int i = 0; i < simplePtsArrays.size(); i++) {
+			int Nx_patch = SURFACE_SIDE_LIMIT;
+			int Ny_patch = SURFACE_SIDE_LIMIT;
+			if ((i + 1) % nbYaxisBuffers == 0) {
+				Ny_patch = Ny - (nbYaxisBuffers - 1) * (SURFACE_SIDE_LIMIT - 1);
+			}
+			if ((int) i >= (nbXaxisBuffers - 1) * nbYaxisBuffers) {
+				Nx_patch = Nx - (nbXaxisBuffers - 1) * (SURFACE_SIDE_LIMIT - 1);
+			}
+			java.nio.IntBuffer vertexIndices = java.nio.IntBuffer
+					.allocate((Nx_patch - 1) * (Ny_patch + 1) * 2);
+			this.generateVertexIndices(vertexIndices, Nx_patch, Ny_patch);
+			for (int j = 0; j < vertexIndices.capacity() - 2; ++j) {
+				if (vertexIndices.get(j) == vertexIndices.get(j + 1)
+						|| vertexIndices.get(j + 1) == vertexIndices.get(j + 2)
+						|| vertexIndices.get(j) == vertexIndices.get(j + 2)) {
+					continue;
+				}
+				javax.vecmath.GVector a = new javax.vecmath.GVector(
+						new double[] {
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j) * 3)),
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j) * 3 + 1)),
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j) * 3 + 2)) });
+				javax.vecmath.GVector b = new javax.vecmath.GVector(
+						new double[] {
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j + 1) * 3)),
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j + 1) * 3 + 1)),
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j + 1) * 3 + 2)) });
+				javax.vecmath.GVector c = new javax.vecmath.GVector(
+						new double[] {
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j + 2) * 3)),
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j + 2) * 3 + 1)),
+								simplePtsArrays.get(i).getFloat(
+										4 * (vertexIndices.get(j + 2) * 3 + 2)) });
+				List<javax.vecmath.GVector> intersections = new ArrayList<javax.vecmath.GVector>();
+				if (a.getElement(2) >= scaledZ && b.getElement(2) < scaledZ
+						|| a.getElement(2) < scaledZ
+						&& b.getElement(2) >= scaledZ) {
+					double factor = (scaledZ - a.getElement(2))
+							/ (b.getElement(2) - a.getElement(2));
+					javax.vecmath.GVector d = new javax.vecmath.GVector(
+							WebGLUtils.subtract(b, a));
+					javax.vecmath.GVector e = new javax.vecmath.GVector(
+							WebGLUtils.multiply(d, factor));
+					javax.vecmath.GVector f = new javax.vecmath.GVector(
+							WebGLUtils.add(a, e));
+					intersections.add(f);
+				}
+				if (b.getElement(2) >= scaledZ && c.getElement(2) < scaledZ
+						|| b.getElement(2) < scaledZ
+						&& c.getElement(2) >= scaledZ) {
+					double factor = (scaledZ - b.getElement(2))
+							/ (c.getElement(2) - b.getElement(2));
+					javax.vecmath.GVector d = new javax.vecmath.GVector(
+							WebGLUtils.subtract(c, b));
+					javax.vecmath.GVector e = new javax.vecmath.GVector(
+							WebGLUtils.multiply(d, factor));
+					javax.vecmath.GVector f = new javax.vecmath.GVector(
+							WebGLUtils.add(b, e));
+					intersections.add(f);
+				}
+				if (intersections.size() < 2
+						&& (c.getElement(2) >= scaledZ
+								&& a.getElement(2) < scaledZ || c.getElement(2) < scaledZ
+								&& a.getElement(2) >= scaledZ)) {
+					double factor = (scaledZ - c.getElement(2))
+							/ (a.getElement(2) - c.getElement(2));
+					javax.vecmath.GVector d = new javax.vecmath.GVector(
+							WebGLUtils.subtract(a, c));
+					javax.vecmath.GVector e = new javax.vecmath.GVector(
+							WebGLUtils.multiply(d, factor));
+					javax.vecmath.GVector f = new javax.vecmath.GVector(
+							WebGLUtils.add(c, e));
+					intersections.add(f);
+				}
+				if (intersections.size() == 2) {
+					result.add((float) intersections.get(0).getElement(0));
+					result.add((float) intersections.get(0).getElement(1));
+					result.add((float) intersections.get(0).getElement(2));
+					result.add((float) intersections.get(1).getElement(0));
+					result.add((float) intersections.get(1).getElement(1));
+					result.add((float) intersections.get(1).getElement(2));
+				}
+			}
+		}
+	}
+
+	private WGLWidget.Texture getIsoLineColorMapTexture() {
+		WPaintDevice cpd = null;
+		if (this.isoLineColorMap_ == null) {
+			return this.getColorTexture();
+		} else {
+			cpd = this.chart_.createPaintDevice(new WLength(1), new WLength(
+					1024));
+			WPainter painter = new WPainter(cpd);
+			this.isoLineColorMap_.createStrip(painter);
+			painter.end();
+		}
+		WGLWidget.Texture tex = this.chart_.createTexture();
+		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D, tex);
+		this.chart_.pixelStorei(WGLWidget.GLenum.UNPACK_FLIP_Y_WEBGL, 1);
+		this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
+				WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,
+				WGLWidget.GLenum.UNSIGNED_BYTE, cpd);
+		return tex;
+	}
+
 	private List<Integer> vertexPosBufferSizes_;
 	private List<Integer> vertexPosBuffer2Sizes_;
 	private List<Integer> indexBufferSizes_;
 	private List<Integer> lineBufferSizes_;
 	private List<Integer> indexBufferSizes2_;
 	private List<Integer> lineBufferSizes2_;
+	private List<Integer> isoLineBufferSizes_;
+	private List<Double> isoLineHeights_;
+	private WAbstractColorMap isoLineColorMap_;
 	private List<WGLWidget.Buffer> vertexPosBuffers_;
 	private List<WGLWidget.Buffer> vertexPosBuffers2_;
 	private List<WGLWidget.Buffer> vertexSizeBuffers_;
@@ -1339,49 +2597,115 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	private List<WGLWidget.Buffer> overlayLinesBuffers_;
 	private List<WGLWidget.Buffer> overlayLinesBuffers2_;
 	private List<WGLWidget.Buffer> colormapTexBuffers_;
+	private List<WGLWidget.Buffer> isoLineBuffers_;
 	private List<WMemoryResource> binaryResources_;
 	private WGLWidget.Shader fragShader_;
 	private WGLWidget.Shader colFragShader_;
 	private WGLWidget.Shader meshFragShader_;
+	private WGLWidget.Shader singleColorFragShader_;
+	private WGLWidget.Shader positionFragShader_;
+	private WGLWidget.Shader isoLineFragShader_;
 	private WGLWidget.Shader vertShader_;
 	private WGLWidget.Shader colVertShader_;
 	private WGLWidget.Shader meshVertShader_;
+	private WGLWidget.Shader isoLineVertexShader_;
 	private WGLWidget.Program seriesProgram_;
 	private WGLWidget.Program colSeriesProgram_;
 	private WGLWidget.Program meshProgram_;
+	private WGLWidget.Program singleColorProgram_;
+	private WGLWidget.Program positionProgram_;
+	private WGLWidget.Program isoLineProgram_;
 	private WGLWidget.AttribLocation vertexPosAttr_;
 	private WGLWidget.AttribLocation vertexPosAttr2_;
+	private WGLWidget.AttribLocation singleColor_vertexPosAttr_;
+	private WGLWidget.AttribLocation position_vertexPosAttr_;
 	private WGLWidget.AttribLocation meshVertexPosAttr_;
+	private WGLWidget.AttribLocation isoLineVertexPosAttr_;
 	private WGLWidget.AttribLocation vertexSizeAttr_;
 	private WGLWidget.AttribLocation vertexSizeAttr2_;
 	private WGLWidget.AttribLocation vertexColAttr2_;
 	private WGLWidget.AttribLocation barTexCoordAttr_;
 	private WGLWidget.UniformLocation mvMatrixUniform_;
 	private WGLWidget.UniformLocation mvMatrixUniform2_;
+	private WGLWidget.UniformLocation singleColor_mvMatrixUniform_;
+	private WGLWidget.UniformLocation position_mvMatrixUniform_;
 	private WGLWidget.UniformLocation mesh_mvMatrixUniform_;
+	private WGLWidget.UniformLocation isoLine_mvMatrixUniform_;
 	private WGLWidget.UniformLocation pMatrix_;
 	private WGLWidget.UniformLocation pMatrix2_;
+	private WGLWidget.UniformLocation singleColor_pMatrix_;
+	private WGLWidget.UniformLocation position_pMatrix_;
 	private WGLWidget.UniformLocation mesh_pMatrix_;
+	private WGLWidget.UniformLocation isoLine_pMatrix_;
 	private WGLWidget.UniformLocation cMatrix_;
 	private WGLWidget.UniformLocation cMatrix2_;
+	private WGLWidget.UniformLocation singleColor_cMatrix_;
+	private WGLWidget.UniformLocation position_cMatrix_;
 	private WGLWidget.UniformLocation mesh_cMatrix_;
+	private WGLWidget.UniformLocation isoLine_cMatrix_;
 	private WGLWidget.UniformLocation TexSampler_;
+	private WGLWidget.UniformLocation isoLine_TexSampler_;
 	private WGLWidget.UniformLocation mesh_colorUniform_;
+	private WGLWidget.UniformLocation singleColorUniform_;
+	private WGLWidget.UniformLocation pointSpriteUniform_;
+	private WGLWidget.UniformLocation pointSpriteUniform2_;
+	private WGLWidget.UniformLocation vpHeightUniform_;
+	private WGLWidget.UniformLocation vpHeightUniform2_;
 	private WGLWidget.UniformLocation offset_;
+	private WGLWidget.UniformLocation isoLine_offset_;
 	private WGLWidget.UniformLocation scaleFactor_;
+	private WGLWidget.UniformLocation isoLine_scaleFactor_;
+	private WGLWidget.UniformLocation minPtUniform_;
+	private WGLWidget.UniformLocation mesh_minPtUniform_;
+	private WGLWidget.UniformLocation singleColor_minPtUniform_;
+	private WGLWidget.UniformLocation position_minPtUniform_;
+	private WGLWidget.UniformLocation maxPtUniform_;
+	private WGLWidget.UniformLocation mesh_maxPtUniform_;
+	private WGLWidget.UniformLocation singleColor_maxPtUniform_;
+	private WGLWidget.UniformLocation position_maxPtUniform_;
+	private WGLWidget.UniformLocation dataMinPtUniform_;
+	private WGLWidget.UniformLocation mesh_dataMinPtUniform_;
+	private WGLWidget.UniformLocation singleColor_dataMinPtUniform_;
+	private WGLWidget.UniformLocation position_dataMinPtUniform_;
+	private WGLWidget.UniformLocation dataMaxPtUniform_;
+	private WGLWidget.UniformLocation mesh_dataMaxPtUniform_;
+	private WGLWidget.UniformLocation singleColor_dataMaxPtUniform_;
+	private WGLWidget.UniformLocation position_dataMaxPtUniform_;
+	private WGLWidget.UniformLocation singleColor_marginUniform_;
+	private WGLWidget.UniformLocation position_marginUniform_;
 	private WGLWidget.Texture colormapTexture_;
-	private static final String barFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec2 vTextureCoord;\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  if (vPos.x < 0.0 || vPos.x > 1.0 ||      vPos.y < 0.0 || vPos.y > 1.0 ||      vPos.z < 0.0 || vPos.z > 1.0) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t) );\n}\n";
+	private WGLWidget.Texture isoLineColorMapTexture_;
+	private WGLWidget.Texture pointSpriteTexture_;
+	private List<Float> minPt_;
+	private List<Float> maxPt_;
+	WGLWidget.JavaScriptVector jsMinPt_;
+	WGLWidget.JavaScriptVector jsMaxPt_;
+	private boolean minPtChanged_;
+	private boolean maxPtChanged_;
+	private JSlot changeClippingMinX_;
+	private JSlot changeClippingMaxX_;
+	private JSlot changeClippingMinY_;
+	private JSlot changeClippingMaxY_;
+	private JSlot changeClippingMinZ_;
+	private JSlot changeClippingMaxZ_;
+	private boolean clippingLinesEnabled_;
+	private WColor clippingLinesColor_;
+	private static final String barFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec2 vTextureCoord;\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t) );\n}\n";
 	private static final String barVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec2 vTextureCoord;\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vTextureCoord = aTextureCoord;\n  vPos = aVertexPosition;\n}\n";
-	private static final String colBarFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec3 vPos;\nvarying vec4 vColor;\n\nvoid main(void) {\n  if (vPos.x < 0.0 || vPos.x > 1.0 ||      vPos.y < 0.0 || vPos.y > 1.0 ||      vPos.z < 0.0 || vPos.z > 1.0) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
+	private static final String colBarFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec3 vPos;\nvarying vec4 vColor;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
 	private static final String colBarVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute vec4 aVertexColor;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vColor = aVertexColor/255.0;\n  vPos = aVertexPosition;\n}\n";
-	private static final String ptFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying float x, y, z;\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\n\nvoid main(void) {\n  if (x < 0.0 || x > 1.0 ||      y < 0.0 || y > 1.0 ||      z < 0.0 || z > 1.0) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (z - uOffset) ) );\n}\n";
-	private static final String ptVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying float x, y, z;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  x = aVertexPosition.x;\n  y = aVertexPosition.y;\n  z = aVertexPosition.z;\n  gl_PointSize = aPointSize;\n}\n";
-	private static final String colPtFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nvarying vec4 vColor;\nvarying float x, y, z;\n\nvoid main(void) {\n  if (x < 0.0 || x > 1.0 ||      y < 0.0 || y > 1.0 ||      z < 0.0 || z > 1.0) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
-	private static final String colPtVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\nattribute vec4 aColor;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec4 vColor;\nvarying float x, y, z;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vColor = aColor/255.0;\n  x = aVertexPosition.x;\n  y = aVertexPosition.y;\n  z = aVertexPosition.z;\n  gl_PointSize = aPointSize;\n}\n";
-	private static final String surfFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying float x, y, z;\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\n\nvoid main(void) {\n  if (x < 0.0 || x > 1.0 ||      y < 0.0 || y > 1.0 ||      z < 0.0 || z > 1.0) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (z - uOffset) ) );\n}\n";
-	private static final String surfVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying float x, y, z;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  x = aVertexPosition.x;\n  y = aVertexPosition.y;\n  z = aVertexPosition.z;\n}\n";
-	private static final String meshFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec4 uColor;\n\nvoid main(void) {\n  if (vPos.x < 0.0 || vPos.x > 1.0 ||      vPos.y < 0.0 || vPos.y > 1.0 ||      vPos.z < 0.0 || vPos.z > 1.0) {\n    discard;\n  }\n  gl_FragColor = uColor/255.0;\n}\n";
+	private static final String ptFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\nuniform sampler2D uPointSprite;\nuniform float uOffset;\nuniform float uScaleFactor;\nuniform float uVPHeight;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  vec2 texCoord = gl_PointCoord - vec2(0.0, 1.0 / uVPHeight) * 0.50;\n  texCoord.y = 1.0 - texCoord.y;\n  if (texture2D(uPointSprite, texCoord).w < 0.5) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (vPos.z - uOffset) ) );\n}\n";
+	private static final String ptVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vPos = aVertexPosition;\n  gl_PointSize = aPointSize;\n}\n";
+	private static final String colPtFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\nuniform sampler2D uPointSprite;\nvarying vec4 vColor;\nvarying vec3 vPos;\nuniform float uVPHeight;\n\nvoid main(void) {\n  if (any(lessThan(vPos, vec3(0.0, 0.0, 0.0))) ||      any(greaterThan(vPos, vec3(1.0, 1.0, 1.0)))) {\n    discard;\n  }\n  vec2 texCoord = gl_PointCoord - vec2(0.0, 1.0 / uVPHeight) * 0.25;\n  texCoord.y = 1.0 - texCoord.y;\n  if (texture2D(uPointSprite, texCoord).w < 0.5) {\n    discard;\n  }\n  gl_FragColor = vColor;\n}\n";
+	private static final String colPtVertexShaderSrc = "attribute vec3 aVertexPosition;\nattribute float aPointSize;\nattribute vec4 aColor;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec4 vColor;\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vColor = aColor/255.0;\n  vPos = aVertexPosition;\n  gl_PointSize = aPointSize;\n}\n";
+	private static final String surfFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (vPos.z - uOffset) ) );\n}\n";
+	private static final String surfFragSingleColorShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec3 uMargin;\nuniform vec3 uColor;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  minPt = minPt - uMargin;\n  maxPt = maxPt + uMargin;\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  if (any(lessThan(vPos, minPt + uMargin / 2.0)) ||        any(greaterThan(vPos, maxPt - uMargin / 2.0))) {\n      gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n  } else {\n    gl_FragColor = vec4(uColor, 1.0);\n  }\n}\n";
+	private static final String surfFragPosShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec3 uMargin;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  minPt = minPt - uMargin;\n  maxPt = maxPt + uMargin;\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  gl_FragColor = vec4(vPos, 1.0);\n}\n";
+	private static final String surfVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvarying vec3 vPos;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vPos = aVertexPosition;\n}\n";
+	private static final String meshFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform vec4 uColor;\nuniform vec3 uMinPt;\nuniform vec3 uMaxPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n\nvoid main(void) {\n  vec3 minPt = max((uMinPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(0.0));\n  vec3 maxPt = min((uMaxPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), vec3(1.0));\n  if (any(lessThan(vPos, minPt)) ||      any(greaterThan(vPos, maxPt))) {\n    discard;\n  }\n  gl_FragColor = uColor/255.0;\n}\n";
 	private static final String meshVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n  vPos = aVertexPosition;\n}\n";
+	private static final String isoLineFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nuniform sampler2D uSampler;\nuniform float uOffset;\nuniform float uScaleFactor;\n\nvarying vec3 vPos;\n\nvoid main(void) {\n  if (any(lessThan(vPos.xy, vec2(0.0, 0.0))) ||      any(greaterThan(vPos.xy, vec2(1.0, 1.0)))) {\n    discard;\n  }\n  gl_FragColor = texture2D(uSampler, vec2(0.0, uScaleFactor * (vPos.z - uOffset) ) );\n}\n";
+	private static final String isoLineVertexShaderSrc = "attribute vec3 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  float z = (uCMatrix[1][2] > 0.0) ? 0.0 : 1.0;\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(aVertexPosition.xy, z, 1.0);\n  vPos = aVertexPosition;\n}\n";
 
 	static void push(final java.nio.ByteBuffer vec, float x, float y, float z) {
 		vec.putFloat(x);
@@ -1393,5 +2717,21 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		vec.put(x);
 		vec.put(y);
 		vec.put(z);
+	}
+
+	static int axisToIndex(Axis axis) {
+		if (axis == Axis.XAxis_3D) {
+			return 0;
+		} else {
+			if (axis == Axis.YAxis_3D) {
+				return 1;
+			} else {
+				if (axis == Axis.ZAxis_3D) {
+					return 2;
+				} else {
+					throw new WException("Invalid axis for 3D chart");
+				}
+			}
+		}
 	}
 }

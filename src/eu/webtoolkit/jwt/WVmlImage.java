@@ -54,13 +54,18 @@ public class WVmlImage implements WVectorImage {
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();
 		this.currentShadow_ = new WShadow();
+		this.fontMetrics_ = null;
 		this.activePaths_ = new ArrayList<WVmlImage.ActivePath>();
 		this.rendered_ = new StringWriter();
 		this.currentRect_ = null;
 	}
 
 	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
-		return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+		if (ServerSideFontMetrics.isAvailable()) {
+			return EnumSet.of(WPaintDevice.FeatureFlag.HasFontMetrics);
+		} else {
+			return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+		}
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
@@ -169,7 +174,7 @@ public class WVmlImage implements WVectorImage {
 			this.processClipping();
 		}
 		WTransform transform = this.getPainter().getCombinedTransform();
-		WRectF bbox = transformBbox(transform, path.getControlPointRect());
+		WRectF bbox = transform.map(path.getControlPointRect());
 		int thisPath = -1;
 		if (!this.activePaths_.isEmpty()) {
 			for (int i = 0; i < this.activePaths_.size(); ++i) {
@@ -377,7 +382,11 @@ public class WVmlImage implements WVectorImage {
 
 	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new WException("WVmlImage::measureText() not supported");
+		if (!(this.fontMetrics_ != null)) {
+			this.fontMetrics_ = new ServerSideFontMetrics();
+		}
+		return this.fontMetrics_.measureText(this.getPainter().getFont(), text,
+				maxWidth, wordWrap);
 	}
 
 	public final WTextItem measureText(final CharSequence text) {
@@ -389,7 +398,10 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new WException("WVmlImage::fontMetrics() not supported");
+		if (!(this.fontMetrics_ != null)) {
+			this.fontMetrics_ = new ServerSideFontMetrics();
+		}
+		return this.fontMetrics_.fontMetrics(this.getPainter().getFont());
 	}
 
 	public void init() {
@@ -449,6 +461,7 @@ public class WVmlImage implements WVectorImage {
 	private WBrush currentBrush_;
 	private WPen currentPen_;
 	private WShadow currentShadow_;
+	private ServerSideFontMetrics fontMetrics_;
 
 	static class ActivePath {
 		private static Logger logger = LoggerFactory
@@ -729,24 +742,5 @@ public class WVmlImage implements WVectorImage {
 
 	static double norm(final WPointF p) {
 		return Math.sqrt(p.getX() * p.getX() + p.getY() * p.getY());
-	}
-
-	static WRectF transformBbox(final WTransform t, final WRectF r) {
-		double minX;
-		double minY;
-		double maxX;
-		double maxY;
-		WPointF p = t.map(r.getTopLeft());
-		minX = maxX = p.getX();
-		minY = maxY = p.getY();
-		for (int i = 0; i < 3; ++i) {
-			WPointF p2 = t.map(i == 0 ? r.getBottomLeft() : i == 1 ? r
-					.getTopRight() : r.getBottomRight());
-			minX = Math.min(minX, p2.getX());
-			maxX = Math.max(maxX, p2.getX());
-			minY = Math.min(minY, p2.getY());
-			maxY = Math.max(maxY, p2.getY());
-		}
-		return new WRectF(minX, minY, maxX - minX, maxY - minY);
 	}
 }

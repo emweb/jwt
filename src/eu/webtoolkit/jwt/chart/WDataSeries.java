@@ -808,7 +808,7 @@ public class WDataSeries {
 	 * This method uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle)
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * WCartesianChart#initLayout()} first.
 	 * <p>
 	 * 
@@ -833,7 +833,7 @@ public class WDataSeries {
 	 * This method uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle)
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * WCartesianChart#initLayout()} first.
 	 * <p>
 	 * 

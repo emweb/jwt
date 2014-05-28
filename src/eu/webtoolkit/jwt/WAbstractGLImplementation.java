@@ -267,6 +267,9 @@ abstract class WAbstractGLImplementation extends WObject {
 	public abstract void uniform1fv(final WGLWidget.UniformLocation location,
 			float[] value);
 
+	public abstract void uniform1fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v);
+
 	public abstract void uniform1i(final WGLWidget.UniformLocation location,
 			int x);
 
@@ -278,6 +281,9 @@ abstract class WAbstractGLImplementation extends WObject {
 
 	public abstract void uniform2fv(final WGLWidget.UniformLocation location,
 			float[] value);
+
+	public abstract void uniform2fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v);
 
 	public abstract void uniform2i(final WGLWidget.UniformLocation location,
 			int x, int y);
@@ -291,6 +297,9 @@ abstract class WAbstractGLImplementation extends WObject {
 	public abstract void uniform3fv(final WGLWidget.UniformLocation location,
 			float[] value);
 
+	public abstract void uniform3fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v);
+
 	public abstract void uniform3i(final WGLWidget.UniformLocation location,
 			int x, int y, int z);
 
@@ -302,6 +311,9 @@ abstract class WAbstractGLImplementation extends WObject {
 
 	public abstract void uniform4fv(final WGLWidget.UniformLocation location,
 			float[] value);
+
+	public abstract void uniform4fv(final WGLWidget.UniformLocation location,
+			final WGLWidget.JavaScriptVector v);
 
 	public abstract void uniform4i(final WGLWidget.UniformLocation location,
 			int x, int y, int z, int w);
@@ -358,11 +370,20 @@ abstract class WAbstractGLImplementation extends WObject {
 
 	public abstract void viewport(int x, int y, int width, int height);
 
-	public abstract WGLWidget.JavaScriptMatrix4x4 getCreateJavaScriptMatrix4();
+	public abstract void initJavaScriptMatrix4(
+			final WGLWidget.JavaScriptMatrix4x4 jsm);
 
 	public abstract void setJavaScriptMatrix4(
 			final WGLWidget.JavaScriptMatrix4x4 jsm,
 			final javax.vecmath.Matrix4f m);
+
+	public abstract void initJavaScriptVector(
+			final WGLWidget.JavaScriptVector jsv);
+
+	public abstract void setJavaScriptVector(
+			final WGLWidget.JavaScriptVector jsv, final List<Float> v);
+
+	public abstract void setClientSideMouseHandler(final String handlerCode);
 
 	public abstract void setClientSideLookAtHandler(
 			final WGLWidget.JavaScriptMatrix4x4 m, double ctrX, double ctrY,
@@ -399,11 +420,13 @@ abstract class WAbstractGLImplementation extends WObject {
 		repaintGL(EnumSet.of(whic, which));
 	}
 
-	public static void enableClientErrorChecks(boolean enable) {
-		debugging_ = enable;
+	public void enableClientErrorChecks(boolean enable) {
+		this.debugging_ = enable;
 	}
 
 	public abstract void injectJS(final String jsString);
+
+	public abstract void restoreContext(final String jsRef);
 
 	public abstract void render(final String jsRef, EnumSet<RenderFlag> flags);
 
@@ -428,6 +451,7 @@ abstract class WAbstractGLImplementation extends WObject {
 		this.updatePaintGL_ = false;
 		this.renderWidth_ = 0;
 		this.renderHeight_ = 0;
+		this.debugging_ = false;
 		this.webglNotAvailable_ = new JSignal(this, "webglNotAvailable");
 		this.webglNotAvailable_.addListener(this.glInterface_,
 				new Signal.Listener() {
@@ -445,6 +469,6 @@ abstract class WAbstractGLImplementation extends WObject {
 	protected int renderWidth_;
 	protected int renderHeight_;
 	protected boolean sizeChanged_;
-	protected static boolean debugging_ = true;
+	protected boolean debugging_;
 	protected JSignal webglNotAvailable_;
 }

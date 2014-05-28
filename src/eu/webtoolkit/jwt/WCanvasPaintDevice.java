@@ -59,6 +59,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentShadow_ = new WShadow();
 		this.currentFont_ = new WFont();
 		this.pathTranslation_ = new WPointF();
+		this.fontMetrics_ = null;
 		this.js_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
 		this.images_ = new ArrayList<String>();
@@ -122,7 +123,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
-		return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+		if (ServerSideFontMetrics.isAvailable()) {
+			return EnumSet.of(WPaintDevice.FeatureFlag.HasFontMetrics);
+		} else {
+			return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+		}
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
@@ -444,7 +449,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
-		throw new WException("WCanvasPaintDevice::measureText() not supported");
+		if (!(this.fontMetrics_ != null)) {
+			this.fontMetrics_ = new ServerSideFontMetrics();
+		}
+		return this.fontMetrics_.measureText(this.getPainter().getFont(), text,
+				maxWidth, wordWrap);
 	}
 
 	public final WTextItem measureText(final CharSequence text) {
@@ -456,8 +465,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public WFontMetrics getFontMetrics() {
-		throw new WException(
-				"WCanvasPaintDevice::fontMetrics() not (yet?) supported");
+		if (!(this.fontMetrics_ != null)) {
+			this.fontMetrics_ = new ServerSideFontMetrics();
+		}
+		return this.fontMetrics_.fontMetrics(this.getPainter().getFont());
 	}
 
 	public void init() {
@@ -564,6 +575,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WPointF pathTranslation_;
 	private AlignmentFlag currentTextHAlign_;
 	private AlignmentFlag currentTextVAlign_;
+	private ServerSideFontMetrics fontMetrics_;
 	private StringWriter js_;
 	private List<DomElement> textElements_;
 	private List<String> images_;

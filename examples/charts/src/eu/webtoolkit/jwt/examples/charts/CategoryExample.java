@@ -9,6 +9,7 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WPaintedWidget.Method;
 import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableView;
@@ -66,14 +67,13 @@ public class CategoryExample extends WContainerWidget {
          * Create the category chart.
          */
         WCartesianChart chart = new WCartesianChart(this);
+        // chart.setPreferredMethod(Method.PngImage);
         chart.setModel(model); // set the model
         chart.setXSeriesColumn(0); // set the column that holds the categories
         chart.setLegendEnabled(true); // enable the legend
-
-        // Provide space for the X and Y axis and title.
-        chart.setPlotAreaPadding(100, Side.Left);
-        chart.setPlotAreaPadding(50, Side.Top, Side.Bottom);
         chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
+
+        chart.setAutoLayoutEnabled();
 
         /*
          * Add all (but first) column as bar series

@@ -93,8 +93,11 @@ class WLegend {
 		return this.legendBackground_;
 	}
 
-	public void setLegendColumns(int columns, final WLength columnWidth) {
+	public void setLegendColumns(int columns) {
 		this.legendColumns_ = columns;
+	}
+
+	public void setLegendColumnWidth(final WLength columnWidth) {
 		this.legendColumnWidth_ = columnWidth;
 	}
 

@@ -106,9 +106,7 @@ public class TimeSeriesExample extends WContainerWidget {
         // DateScale
         chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
 
-        // Provide space for the X and Y axis and title.
-        chart.setPlotAreaPadding(100, Side.Left);
-        chart.setPlotAreaPadding(50, Side.Top, Side.Bottom);
+        chart.setAutoLayoutEnabled();
 
         /*
          * Add first two columns as line series

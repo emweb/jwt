@@ -283,8 +283,6 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WCartesian3DChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesian3DChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">CategoryChart</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">setRenderOptions</span><span class="o">(</span><span class="n">EnumSet</span>
-            <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WGLWidget</span><span class="o">.</span><span class="na">RenderOption</span><span class="o">.</span><span class="na">ClientSideRendering</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WCssDecorationStyle</span> <span class="n">style</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCssDecorationStyle</span><span class="o">();</span>
     <span class="n">style</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="k">new</span> <span class="n">WBorder</span><span class="o">(</span><span class="n">WBorder</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">Solid</span><span class="o">,</span> <span class="n">WBorder</span><span class="o">.</span><span class="na">Width</span><span class="o">.</span><span class="na">Medium</span><span class="o">,</span>
             <span class="n">WColor</span><span class="o">.</span><span class="na">black</span><span class="o">));</span>
@@ -467,6 +465,18 @@
 <span class="o">}</span>
 
 <span class="kd">public</span> <span class="nf">PlaneData</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbXpts</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nbYpts</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">(</span><span class="n">nbXpts</span><span class="o">,</span> <span class="n">nbYpts</span><span class="o">,</span> <span class="o">(</span><span class="n">WObject</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="n">HorizontalPlaneData</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbXpts</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nbYpts</span><span class="o">,</span> <span class="n">WObject</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">nbXpts</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">nbYpts</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">parent</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">xStart_</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">xEnd_</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">yStart_</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">yEnd_</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="nf">HorizontalPlaneData</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbXpts</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nbYpts</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">this</span><span class="o">(</span><span class="n">nbXpts</span><span class="o">,</span> <span class="n">nbYpts</span><span class="o">,</span> <span class="o">(</span><span class="n">WObject</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
 <span class="o">}</span>
 
@@ -2013,8 +2023,6 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WCartesian3DChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesian3DChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">ScatterPlot</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">setRenderOptions</span><span class="o">(</span><span class="n">EnumSet</span>
-            <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WGLWidget</span><span class="o">.</span><span class="na">RenderOption</span><span class="o">.</span><span class="na">ClientSideRendering</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WCssDecorationStyle</span> <span class="n">style</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCssDecorationStyle</span><span class="o">();</span>
     <span class="n">style</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="k">new</span> <span class="n">WBorder</span><span class="o">(</span><span class="n">WBorder</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">Solid</span><span class="o">,</span> <span class="n">WBorder</span><span class="o">.</span><span class="na">Width</span><span class="o">.</span><span class="na">Medium</span><span class="o">,</span>
             <span class="n">WColor</span><span class="o">.</span><span class="na">black</span><span class="o">));</span>
@@ -2029,6 +2037,8 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;X&quot;</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;Y&quot;</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;Z&quot;</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setIntersectionLinesEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setIntersectionLinesColor</span><span class="o">(</span><span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">255</span><span class="o">,</span> <span class="mi">255</span><span class="o">));</span>
     <span class="n">WStandardItemModel</span> <span class="n">model1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SombreroData</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">WGridData</span> <span class="n">dataset1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WGridData</span><span class="o">(</span><span class="n">model1</span><span class="o">);</span>
     <span class="n">dataset1</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">SurfaceSeries3D</span><span class="o">);</span>
@@ -2062,9 +2072,15 @@
     <span class="n">WStandardItemModel</span> <span class="n">model3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SpiralData</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">WScatterData</span> <span class="n">dataset3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WScatterData</span><span class="o">(</span><span class="n">model3</span><span class="o">);</span>
     <span class="n">dataset3</span><span class="o">.</span><span class="na">setPointSize</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+    <span class="n">WStandardItemModel</span> <span class="n">model4</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HorizontalPlaneData</span><span class="o">(</span><span class="mi">20</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+    <span class="n">WEquidistantGridData</span> <span class="n">dataset4</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WEquidistantGridData</span><span class="o">(</span><span class="n">model4</span><span class="o">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">,</span>
+            <span class="mf">1.0f</span><span class="o">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">,</span> <span class="mf">1.0f</span><span class="o">);</span>
+    <span class="n">dataset4</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">SurfaceSeries3D</span><span class="o">);</span>
+    <span class="n">dataset4</span><span class="o">.</span><span class="na">setSurfaceMeshEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">dataset1</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">dataset2</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">dataset3</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">addDataSeries</span><span class="o">(</span><span class="n">dataset4</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setAlternativeContent</span><span class="o">(</span><span class="k">new</span> <span class="n">WImage</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span>
             <span class="s">&quot;pics/numericalChartScreenshot.png&quot;</span><span class="o">)));</span>
 <span class="o">}</span>

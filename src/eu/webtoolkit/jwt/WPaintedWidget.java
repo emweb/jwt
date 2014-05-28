@@ -387,6 +387,22 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 */
 	protected abstract void paintEvent(WPaintDevice paintDevice);
 
+	/**
+	 * Creates a paint device.
+	 * <p>
+	 * Although it&apos;s usually not necessary to call this function, you may
+	 * want to reimplement this function to customize or specialize the device
+	 * used for painting the widget.
+	 */
+	protected WPaintDevice getCreatePaintDevice() {
+		(this).isCreatePainter();
+		if (this.painter_ != null) {
+			return this.painter_.createPaintDevice(true);
+		} else {
+			return null;
+		}
+	}
+
 	DomElementType getDomElementType() {
 		if (this.isInline()
 				&& WApplication.getInstance().getEnvironment().agentIsIElt(9)) {

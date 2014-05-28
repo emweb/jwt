@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * colored strip or as a legend, this range is what will be presented, even if
  * the colormap has the ability to convert values outside this range.
  */
-public abstract class WAbstractColorMap {
+public abstract class WAbstractColorMap extends WObject {
 	private static Logger logger = LoggerFactory
 			.getLogger(WAbstractColorMap.class);
 
@@ -42,12 +42,23 @@ public abstract class WAbstractColorMap {
 	 * range of the colormap. The default value for tickSpacing is 2 and the
 	 * default label format is 2 decimal points.
 	 */
-	public WAbstractColorMap(double min, double max) {
+	public WAbstractColorMap(double min, double max, WObject parent) {
+		super(parent);
 		this.min_ = min;
 		this.max_ = max;
 		this.tickSpacing_ = 2;
 		this.format_ = new WString("0.00");
 		this.labelFont_ = new WFont();
+	}
+
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls {@link #WAbstractColorMap(double min, double max, WObject parent)
+	 * this(min, max, (WObject)null)}
+	 */
+	public WAbstractColorMap(double min, double max) {
+		this(min, max, (WObject) null);
 	}
 
 	/**

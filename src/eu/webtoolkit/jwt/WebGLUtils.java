@@ -9,6 +9,8 @@ import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
+import javax.vecmath.GVector;
+import javax.vecmath.GMatrix;
 
 import eu.webtoolkit.jwt.utils.MathUtils;
 
@@ -309,4 +311,86 @@ public class WebGLUtils {
 	    frustum(M, -halfWidth, halfWidth, -halfHeight, halfHeight,
 	      nearPlane, farPlane);
 	  }
+
+      public static GVector subtract(GVector v1, GVector v2)
+      {
+	  if (v1.getSize() != v2.getSize()) {
+	    assert(v1.getSize() == 3 || v2.getSize() == 3);
+	    assert(v1.getSize() == 4 || v2.getSize() == 4);
+	    v1 = vec4ToVec3(v1);
+	    v2 = vec4ToVec3(v2);
+	  }
+          GVector result = new GVector(v1.getSize());
+          result.sub(v1, v2);
+          return result;
+      }
+
+      public static GVector add(GVector v1, GVector v2)
+      {
+	  if (v1.getSize() != v2.getSize()) {
+	    assert(v1.getSize() == 3 || v2.getSize() == 3);
+	    assert(v1.getSize() == 4 || v2.getSize() == 4);
+	    v1 = vec4ToVec3(v1);
+	    v2 = vec4ToVec3(v2);
+	  }
+          GVector result = new GVector(v1.getSize());
+          result.add(v1, v2);
+          return result;
+      }
+
+      public static Matrix4f multiply(Matrix4f m1, Matrix4f m2)
+      {
+	Matrix4f result = new Matrix4f();
+	result.mul(m1, m2);
+	return result;
+      }
+
+      public static GVector multiply(GVector v, double scalar)
+      {
+          GVector result = new GVector(v.getSize());
+          result.scale(scalar, v);
+          return result;
+      }
+
+      public static GVector multiply(Matrix4f M, GVector v)
+      {
+          assert(v.getSize() == 4);
+          GVector result = new GVector(4);
+          GMatrix gM = new GMatrix(4, 4);
+          gM.set(M);
+          result.mul(gM, v);
+          return result;
+      }
+
+      public static GVector normalize(GVector v)
+      {
+	  GVector result = new GVector(v.getSize());
+	  result.normalize(v);
+	  return result;
+      }
+
+      public static GVector cross(GVector v1, GVector v2)
+      {
+	assert(v1.getSize() == 3 && v2.getSize() == 3);
+	GVector result = new GVector(3);
+	result.setElement(0, v1.getElement(1) * v2.getElement(2) - v1.getElement(2) * v2.getElement(1));
+	result.setElement(1, v1.getElement(2) * v2.getElement(0) - v1.getElement(0) * v2.getElement(2));
+	result.setElement(2, v1.getElement(0) * v2.getElement(1) - v1.getElement(1) * v2.getElement(0));
+	return result;
+      }
+
+      public static GVector vec4ToVec3(GVector v)
+      {
+	  if (v.getSize() == 4) {
+	      GVector result = new GVector(3);
+	      double w = v.getElement(3);
+	      result.setElement(0, v.getElement(0) / w);
+	      result.setElement(1, v.getElement(1) / w);
+	      result.setElement(2, v.getElement(2) / w);
+	      return result;
+	  } else {
+	      assert(v.getSize() == 3);
+	      return v;
+	  }
+      }
 }

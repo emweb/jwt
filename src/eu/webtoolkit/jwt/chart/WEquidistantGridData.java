@@ -98,8 +98,7 @@ public class WEquidistantGridData extends WAbstractGridData {
 		this.XMinimum_ = XMinimum;
 		this.deltaX_ = deltaX;
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLContext));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 		}
 	}
 
@@ -132,8 +131,7 @@ public class WEquidistantGridData extends WAbstractGridData {
 		this.YMinimum_ = YMinimum;
 		this.deltaY_ = deltaY;
 		if (this.chart_ != null) {
-			this.chart_.updateChart(EnumSet
-					.of(WCartesian3DChart.ChartUpdates.GLContext));
+			this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
 		}
 	}
 
@@ -366,6 +364,88 @@ public class WEquidistantGridData extends WAbstractGridData {
 				simplePtsArrays.get(bufferIndex).putFloat(
 						(float) ((StringUtils.asNumber(this.model_
 								.getData(i, j)) - zMin) / (zMax - zMin)));
+			}
+		}
+	}
+
+	protected void barDataFromModel(
+			final List<java.nio.ByteBuffer> simplePtsArrays) {
+		final List<WAbstractDataSeries3D> dataseries = this.chart_
+				.getDataSeries();
+		List<WAbstractGridData> prevDataseries = new ArrayList<WAbstractGridData>();
+		boolean first = true;
+		int xDim = 0;
+		int yDim = 0;
+		for (int i = 0; i < dataseries.size(); i++) {
+			if (((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
+					.get(i))
+					: null) != null) {
+				WAbstractGridData griddata = ((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
+						.get(i))
+						: null);
+				if (griddata == this
+						|| griddata.getType() != Series3DType.BarSeries3D) {
+					break;
+				}
+				if (first) {
+					xDim = griddata.getNbXPoints();
+					yDim = griddata.getNbYPoints();
+					first = false;
+				}
+				if (griddata.getNbXPoints() != xDim
+						|| griddata.getNbYPoints() != yDim
+						|| griddata.isHidden()) {
+					continue;
+				}
+				prevDataseries.add(griddata);
+			}
+		}
+		if (!prevDataseries.isEmpty()
+				&& (xDim != this.getNbXPoints() || yDim != this.getNbYPoints())) {
+			throw new WException(
+					"WEquidistantGridData.C: Dimensions of multiple bar-series data do not match");
+		}
+		int Nx = this.model_.getRowCount();
+		int Ny = this.model_.getColumnCount();
+		java.nio.ByteBuffer scaledXAxis = WebGLUtils.newByteBuffer(4 * (Nx));
+		java.nio.ByteBuffer scaledYAxis = WebGLUtils.newByteBuffer(4 * (Ny));
+		double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
+		double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
+		double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
+		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
+		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+		for (int i = 0; i < Nx; i++) {
+			scaledXAxis
+					.putFloat((float) ((xMin + 0.5 + i - xMin) / (xMax - xMin)));
+		}
+		for (int j = 0; j < Ny; j++) {
+			scaledYAxis
+					.putFloat((float) ((yMin + 0.5 + j - yMin) / (yMax - yMin)));
+		}
+		int simpleBufferIndex = 0;
+		int simpleCount = 0;
+		for (int i = 0; i < Nx; i++) {
+			for (int j = 0; j < Ny; j++) {
+				float z0 = (float) this.chart_.toPlotCubeCoords(this
+						.stackAllValues(prevDataseries, i, j), Axis.ZAxis_3D);
+				if (simpleCount == BAR_BUFFER_LIMIT) {
+					simpleBufferIndex++;
+					simpleCount = 0;
+				}
+				simplePtsArrays.get(simpleBufferIndex).putFloat(
+						scaledXAxis.getFloat(4 * (i)));
+				simplePtsArrays.get(simpleBufferIndex).putFloat(
+						scaledYAxis.getFloat(4 * (j)));
+				simplePtsArrays.get(simpleBufferIndex).putFloat(z0);
+				double modelVal = StringUtils.asNumber(this.model_
+						.getData(i, j));
+				if (modelVal <= 0) {
+					modelVal = 0.00001;
+				}
+				simplePtsArrays.get(simpleBufferIndex).putFloat(
+						(float) ((modelVal - zMin) / (zMax - zMin)));
+				simpleCount++;
 			}
 		}
 	}

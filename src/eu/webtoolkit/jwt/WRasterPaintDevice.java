@@ -3,17 +3,22 @@ package eu.webtoolkit.jwt;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.LineBreakMeasurer;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.util.EnumSet;
 import java.util.Iterator;
 
@@ -39,7 +44,6 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	private BufferedImage image;
 	private Graphics2D g2;
 	private Paint penPaint, brushPaint;
-	private boolean fontChanged;
 
 	public WRasterPaintDevice(String format, WLength width, WLength height) {
 		this.width = width;
@@ -364,7 +368,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		case Bold: style |= Font.BOLD; break;
 		}
 	
-		int size = (int) (font.getSizeLength(16).toPixels() / 96.0 * 72.0);
+		int size = (int) (font.getSizeLength(16).toPixels());
 		
 		return new Font(name, style, size);
 	}
@@ -386,31 +390,41 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	@Override
 	public WFontMetrics getFontMetrics() {
-		throw new UnsupportedOperationException("WFontMetrics.getFontMetrics() not yet supported");
+		processChangeFlags();
+		FontMetrics metrics = g2.getFontMetrics(g2.getFont());
+		return new WFontMetrics(painter.getFont(), metrics.getLeading(), metrics.getAscent(), metrics.getDescent());
 	}
 
 
 	@Override
-	public WTextItem measureText(CharSequence text, double maxWidth, boolean wordWrap) {
-		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
-	}
+	public WTextItem measureText(CharSequence text, double maxWidth, boolean wordWrap) {	
+		if (!wordWrap) {
+			processChangeFlags();
+			FontMetrics metrics = g2.getFontMetrics(g2.getFont());
 
+			return new WTextItem(text, metrics.stringWidth(text.toString()));
+		} else {
+			AttributedCharacterIterator paragraph = new AttributedString(text.toString()).getIterator();
+			LineBreakMeasurer lbm = new LineBreakMeasurer(paragraph, g2.getFontRenderContext());
+			TextLayout layout = lbm.nextLayout((float) maxWidth);
+			return new WTextItem(text.subSequence(0, layout.getCharacterCount()), layout.getBounds().getWidth());
+		}
+	}
 
 	@Override
 	public WTextItem measureText(CharSequence text) {
-		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
+		return measureText(text, -1, false);
 	}
 
 
 	@Override
 	public WTextItem measureText(CharSequence text, double maxWidth) {
-		throw new UnsupportedOperationException("WFontMetrics.measureText() not yet supported");
+		return measureText(text, maxWidth, false);
 	}
 
 	@Override
 	public EnumSet<FeatureFlag> getFeatures() {
-		// Later we can implement font metrics.
-		return EnumSet.noneOf(FeatureFlag.class);
+		return EnumSet.of(FeatureFlag.HasFontMetrics, FeatureFlag.CanWordWrap);
 	}
 
 }
