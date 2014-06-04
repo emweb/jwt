@@ -1482,12 +1482,13 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	float stackAllValues(List<WAbstractGridData> dataseries, int i, int j) {
 		float value = 0;
 		for (int k = 0; k < dataseries.size(); k++) {
-			float modelVal = (float) StringUtils.asNumber(dataseries.get(k)
-					.data(i, j));
-			if (modelVal <= 0) {
-				modelVal = zeroBarCompensation;
+			float plotCubeVal = (float) this.chart_.toPlotCubeCoords(
+					StringUtils.asNumber(dataseries.get(k).data(i, j)),
+					Axis.ZAxis_3D);
+			if (plotCubeVal <= 0) {
+				plotCubeVal = zeroBarCompensation;
 			}
-			value += modelVal;
+			value += plotCubeVal;
 		}
 		return value;
 	}

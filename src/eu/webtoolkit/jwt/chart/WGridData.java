@@ -527,8 +527,7 @@ public class WGridData extends WAbstractGridData {
 				if (j >= this.XAbscisColumn_) {
 					colOffset = 1;
 				}
-				float z0 = (float) this.chart_.toPlotCubeCoords(this
-						.stackAllValues(prevDataseries, i, j), Axis.ZAxis_3D);
+				float z0 = this.stackAllValues(prevDataseries, i, j);
 				if (simpleCount == BAR_BUFFER_LIMIT) {
 					simpleBufferIndex++;
 					simpleCount = 0;
@@ -622,8 +621,7 @@ public class WGridData extends WAbstractGridData {
 				if (j >= this.XAbscisColumn_) {
 					colOffset = 1;
 				}
-				float z0 = (float) this.chart_.toPlotCubeCoords(this
-						.stackAllValues(prevDataseries, i, j), Axis.ZAxis_3D);
+				float z0 = this.stackAllValues(prevDataseries, i, j);
 				if ((this.model_.getData(i + rowOffset, j + colOffset,
 						ItemDataRole.MarkerBrushColorRole) == null)) {
 					if (simpleCount == BAR_BUFFER_LIMIT) {

@@ -48,9 +48,8 @@ import org.slf4j.LoggerFactory;
  * WAbstractItemModel#sort()} method. In this way, a view class such as
  * {@link WTreeView} may resort the model as indicated by the user. Use
  * {@link WSortFilterProxyModel#setSortRole(int role) setSortRole()} to indicate
- * on what data role sorting should be done, or reimplement the
- * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
- * lessThan()} method to provide a specialized sorting method.
+ * on what data role sorting should be done, or reimplement the lessThan()
+ * method to provide a specialized sorting method.
  * <p>
  * By default, the proxy does not automatically refilter and resort when the
  * original model changes. Data changes or row additions to the source model are
@@ -371,8 +370,6 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
-	 * 
-	 * @see WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
 	 */
 	public void setSortRole(int role) {
 		this.sortRole_ = role;
@@ -424,8 +421,6 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * model indexes. Therefore it is usually less complicated to manipulate
 	 * directly the source model instead.</i>
 	 * </p>
-	 * 
-	 * @see WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
 	 */
 	public void setDynamicSortFilter(boolean enable) {
 		this.dynamic_ = enable;
@@ -447,9 +442,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * This refilters and resorts the model, and is useful only if you have
 	 * reimplemented
 	 * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
-	 * filterAcceptRow()} and/or
-	 * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
-	 * lessThan()}
+	 * filterAcceptRow()} and/or lessThan()
 	 */
 	public void invalidate() {
 		if (this.getSourceModel() != null) {
@@ -602,8 +595,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * You may want to reimplement this method to provide specialized sorting.
 	 */
-	protected boolean lessThan(final WModelIndex lhs, final WModelIndex rhs) {
-		return this.compare(lhs, rhs) < 0;
+	protected int compare(final WModelIndex lhs, final WModelIndex rhs) {
+		return ObjectUtils.compare(lhs.getData(this.sortRole_), rhs
+				.getData(this.sortRole_));
 	}
 
 	static class Item extends WAbstractProxyModel.BaseItem {
@@ -934,10 +928,5 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 			return CollectionUtils.insertionPoint(item.proxyRowMap_, sourceRow,
 					new WSortFilterProxyModel.Compare(this, item));
 		}
-	}
-
-	private int compare(final WModelIndex lhs, final WModelIndex rhs) {
-		return ObjectUtils.compare(lhs.getData(this.sortRole_), rhs
-				.getData(this.sortRole_));
 	}
 }

@@ -312,7 +312,9 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 			this.connectJavaScript(this.mouseWentOut(), "mouseOut");
 			this.connectJavaScript(this.keyWentDown(), "keyDown");
 			this.connectJavaScript(this.keyWentUp(), "keyUp");
-			this.setValidator(new SpinBoxValidator(this));
+			if (!(this.prefix_.length() == 0) || !(this.suffix_.length() == 0)) {
+				this.setValidator(new SpinBoxValidator(this));
+			}
 		}
 	}
 

@@ -427,8 +427,7 @@ public class WEquidistantGridData extends WAbstractGridData {
 		int simpleCount = 0;
 		for (int i = 0; i < Nx; i++) {
 			for (int j = 0; j < Ny; j++) {
-				float z0 = (float) this.chart_.toPlotCubeCoords(this
-						.stackAllValues(prevDataseries, i, j), Axis.ZAxis_3D);
+				float z0 = this.stackAllValues(prevDataseries, i, j);
 				if (simpleCount == BAR_BUFFER_LIMIT) {
 					simpleBufferIndex++;
 					simpleCount = 0;
@@ -513,8 +512,7 @@ public class WEquidistantGridData extends WAbstractGridData {
 		int coloredCount = 0;
 		for (int i = 0; i < Nx; i++) {
 			for (int j = 0; j < Ny; j++) {
-				float z0 = (float) this.chart_.toPlotCubeCoords(this
-						.stackAllValues(prevDataseries, i, j), Axis.ZAxis_3D);
+				float z0 = this.stackAllValues(prevDataseries, i, j);
 				if ((this.model_.getData(i, j,
 						ItemDataRole.MarkerBrushColorRole) == null)) {
 					if (simpleCount == BAR_BUFFER_LIMIT) {
