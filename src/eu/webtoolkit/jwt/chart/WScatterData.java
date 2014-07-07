@@ -438,13 +438,11 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.chart_.vertexAttribPointer(this.posAttr_, 3,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
 			this.chart_.enableVertexAttribArray(this.posAttr_);
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-				this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-						this.vertexSizeBuffer_);
-				this.chart_.vertexAttribPointer(this.sizeAttr_, 1,
-						WGLWidget.GLenum.FLOAT, false, 0, 0);
-				this.chart_.enableVertexAttribArray(this.sizeAttr_);
-			}
+			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.vertexSizeBuffer_);
+			this.chart_.vertexAttribPointer(this.sizeAttr_, 1,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this.chart_.enableVertexAttribArray(this.sizeAttr_);
 			this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
 			this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 					this.colormapTexture_);
@@ -458,9 +456,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 					this.vertexBufferSize_ / 3);
 			this.chart_.disableVertexAttribArray(this.posAttr_);
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-				this.chart_.disableVertexAttribArray(this.sizeAttr_);
-			}
+			this.chart_.disableVertexAttribArray(this.sizeAttr_);
 		}
 		if (!this.vertexPosBuffer2_.isNull()) {
 			this.chart_.useProgram(this.colShaderProgram_);
@@ -471,13 +467,11 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.chart_.vertexAttribPointer(this.posAttr2_, 3,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
 			this.chart_.enableVertexAttribArray(this.posAttr2_);
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-				this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-						this.vertexSizeBuffer2_);
-				this.chart_.vertexAttribPointer(this.sizeAttr2_, 1,
-						WGLWidget.GLenum.FLOAT, false, 0, 0);
-				this.chart_.enableVertexAttribArray(this.sizeAttr2_);
-			}
+			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+					this.vertexSizeBuffer2_);
+			this.chart_.vertexAttribPointer(this.sizeAttr2_, 1,
+					WGLWidget.GLenum.FLOAT, false, 0, 0);
+			this.chart_.enableVertexAttribArray(this.sizeAttr2_);
 			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.vertexColorBuffer2_);
 			this.chart_.vertexAttribPointer(this.colorAttr2_, 4,
@@ -492,9 +486,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 			this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 					this.vertexBuffer2Size_ / 3);
 			this.chart_.disableVertexAttribArray(this.posAttr2_);
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-				this.chart_.disableVertexAttribArray(this.sizeAttr2_);
-			}
+			this.chart_.disableVertexAttribArray(this.sizeAttr2_);
 			this.chart_.disableVertexAttribArray(this.colorAttr2_);
 		}
 		if (this.droplinesEnabled_) {
@@ -682,14 +674,23 @@ public class WScatterData extends WAbstractDataSeries3D {
 		}
 		if (!this.vertexPosBuffer_.isNull()) {
 			this.chart_.deleteBuffer(this.vertexPosBuffer_);
+			this.vertexSizeBuffer_.clear();
+		}
+		if (!this.vertexSizeBuffer_.isNull()) {
 			this.chart_.deleteBuffer(this.vertexSizeBuffer_);
-			this.vertexPosBuffer_.clear();
+			this.vertexSizeBuffer_.clear();
 		}
 		if (!this.vertexPosBuffer2_.isNull()) {
 			this.chart_.deleteBuffer(this.vertexPosBuffer2_);
-			this.chart_.deleteBuffer(this.vertexSizeBuffer2_);
-			this.chart_.deleteBuffer(this.vertexColorBuffer2_);
 			this.vertexPosBuffer2_.clear();
+		}
+		if (!this.vertexSizeBuffer2_.isNull()) {
+			this.chart_.deleteBuffer(this.vertexSizeBuffer2_);
+			this.vertexSizeBuffer2_.clear();
+		}
+		if (!this.vertexColorBuffer2_.isNull()) {
+			this.chart_.deleteBuffer(this.vertexColorBuffer2_);
+			this.vertexColorBuffer2_.clear();
 		}
 		if (!this.lineVertBuffer_.isNull()) {
 			this.chart_.deleteBuffer(this.lineVertBuffer_);
@@ -842,10 +843,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		this.chart_.linkProgram(this.shaderProgram_);
 		this.posAttr_ = this.chart_.getAttribLocation(this.shaderProgram_,
 				"aVertexPosition");
-		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-			this.sizeAttr_ = this.chart_.getAttribLocation(this.shaderProgram_,
-					"aPointSize");
-		}
+		this.sizeAttr_ = this.chart_.getAttribLocation(this.shaderProgram_,
+				"aPointSize");
 		this.mvMatrixUniform_ = this.chart_.getUniformLocation(
 				this.shaderProgram_, "uMVMatrix");
 		this.pMatrixUniform_ = this.chart_.getUniformLocation(
@@ -877,10 +876,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		this.chart_.linkProgram(this.colShaderProgram_);
 		this.posAttr2_ = this.chart_.getAttribLocation(this.colShaderProgram_,
 				"aVertexPosition");
-		if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-			this.sizeAttr2_ = this.chart_.getAttribLocation(
-					this.colShaderProgram_, "aPointSize");
-		}
+		this.sizeAttr2_ = this.chart_.getAttribLocation(this.colShaderProgram_,
+				"aPointSize");
 		this.colorAttr2_ = this.chart_.getAttribLocation(
 				this.colShaderProgram_, "aColor");
 		this.mvMatrixUniform2_ = this.chart_.getUniformLocation(

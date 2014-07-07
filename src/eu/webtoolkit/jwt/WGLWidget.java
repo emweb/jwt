@@ -692,7 +692,7 @@ public class WGLWidget extends WInteractWidget {
 			ss.append("Wt3_3_2.glMatrix.mat4.multiply(").append(this.jsRef_)
 					.append(",");
 			javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
-			WebGLUtils.renderfv(ss, t, this.arrayType_);
+			WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
 			ss.append(", Wt3_3_2.glMatrix.mat4.create())");
 			copy.jsRef_ = ss.toString();
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
@@ -705,19 +705,17 @@ public class WGLWidget extends WInteractWidget {
 			copy.id_ = this.id_;
 			copy.jsRef_ = this.jsRef_;
 			copy.context_ = this.context_;
-			copy.arrayType_ = this.arrayType_;
 			copy.initialized_ = this.initialized_;
 			Utils.copyList(this.operations_, copy.operations_);
 			Utils.copyList(this.matrices_, copy.matrices_);
 			return copy;
 		}
 
-		private void assignToContext(int id, JsArrayType type, WGLWidget context) {
+		private void assignToContext(int id, WGLWidget context) {
 			this.id_ = id;
 			this.jsRef_ = context.getGlObjJsRef() + ".jsValues["
 					+ String.valueOf(this.id_) + "]";
 			this.context_ = context;
-			this.arrayType_ = type;
 		}
 
 		void initialize() {
@@ -731,7 +729,6 @@ public class WGLWidget extends WInteractWidget {
 		private int id_;
 		private String jsRef_;
 		WGLWidget context_;
-		private JsArrayType arrayType_;
 
 		enum op {
 			TRANSPOSE, INVERT, MULTIPLY;
@@ -909,7 +906,7 @@ public class WGLWidget extends WInteractWidget {
 	 * should specialize the {@link WGLWidget#updateGL() updateGL()} to
 	 * accomodate for this.
 	 */
-	public void initializeGL() {
+	protected void initializeGL() {
 	}
 
 	/**
@@ -923,7 +920,7 @@ public class WGLWidget extends WInteractWidget {
 	 * finishes, the widget is repainted with the cached client-side paint
 	 * function.
 	 */
-	public void resizeGL(int width, int height) {
+	protected void resizeGL(int width, int height) {
 	}
 
 	/**
@@ -964,7 +961,7 @@ public class WGLWidget extends WInteractWidget {
 	 * {@link WGLWidget#repaintGL(EnumSet which) repaintGL()} with the PAINT_GL
 	 * parameter, which will cause the invocation of this method.
 	 */
-	public void paintGL() {
+	protected void paintGL() {
 	}
 
 	/**
@@ -978,7 +975,7 @@ public class WGLWidget extends WInteractWidget {
 	 * you&apos;ve set in intializeGL(). For every server-side invocation of
 	 * this method, the result will be rendered client-side exactly once.
 	 */
-	public void updateGL() {
+	protected void updateGL() {
 	}
 
 	/**
@@ -2710,7 +2707,7 @@ public class WGLWidget extends WInteractWidget {
 			throw new WException(
 					"The given matrix is already associated with a WGLWidget!");
 		}
-		mat.assignToContext(this.jsValues_++, JsArrayType.Float32Array, this);
+		mat.assignToContext(this.jsValues_++, this);
 		this.jsMatrixList_.add(new WGLWidget.jsMatrixMap(mat.getId(),
 				new javax.vecmath.Matrix4f(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
 						0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -3298,7 +3295,7 @@ public class WGLWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WGLWidget",
-				"function(D,g){function E(){for(var c=jQuery.data(g,\"obj\"),d=\"\",l=0;l<c.jsValues.length;l++){d+=l+\":\";for(var o=0;o<c.jsValues[l].length;o++){d+=c.jsValues[l][o];d+=o!==c.jsValues[l].length-1?\",\":\";\"}}return d}jQuery.data(g,\"obj\",this);var w=this,f=D.WT,p=f.glMatrix.vec3,j=f.glMatrix.mat4;this.ctx=null;this.initializeGL=function(){};this.paintGL=function(){};this.resizeGL=function(){};this.updates=[];this.initialized=false;this.preloadingBuffers= this.preloadingTextures=0;this.jsValues=[];this.discoverContext=function(c,d){if(g.getContext){try{this.ctx=g.getContext(\"webgl\",{antialias:d})}catch(l){}if(this.ctx===null)try{this.ctx=g.getContext(\"experimental-webgl\")}catch(o){}if(this.ctx===null){g.parentNode.insertBefore(g.firstChild,g);g.style.display=\"none\";c()}}return this.ctx};if(g.addEventListener){g.addEventListener(\"webglcontextlost\",function(c){c.preventDefault();w.initialized=false},false);g.addEventListener(\"webglcontextrestored\",function(){Wt.emit(g, \"contextRestored\")},false)}var i=null;this.setMouseHandler=function(c){i=c;i.setTarget&&i.setTarget(this)};this.LookAtMouseHandler=function(c,d,l,o,x){function y(b){b=Math.pow(1.2,b);j.translate(e,h);j.scale(e,[b,b,b]);p.negate(h);j.translate(e,h);p.negate(h);w.paintGL()}function B(b){var a=e[5]/p.length([e[1],e[5],e[9]]),m=e[6]/p.length([e[2],e[6],e[10]]);a=Math.atan2(m,a);m=b.x-q.x;var v=b.y-q.y,z=p.create();z[0]=e[0];z[1]=e[4];z[2]=e[8];var r=j.create();j.identity(r);j.translate(r,h);v=v*s;if(Math.abs(a+ v)>=Math.PI/2)v=(a>0?1:-1)*Math.PI/2-a;j.rotate(r,v,z);j.rotate(r,m*F,k);p.negate(h);j.translate(r,h);p.negate(h);j.multiply(e,r,e);w.paintGL();q=b}var e=c,h=d,k=l,s=o,F=x,C=null,t=null,u=null,q=null;this.mouseDown=function(b,a){f.capture(null);f.capture(g);q=f.pageCoordinates(a)};this.mouseUp=function(){if(q!==null)q=null};this.mouseDrag=function(b,a){if(q!==null){b=f.pageCoordinates(a);f.buttons===1&&B(b)}};this.mouseWheel=function(b,a){f.cancelEvent(a);b=f.wheelDelta(a);y(b)};this.touchStart=function(b, a){t=a.touches.length===1?true:false;u=a.touches.length===2?true:false;if(t){f.capture(null);f.capture(g);q=f.pageCoordinates(a.touches[0])}else if(u){b=f.pageCoordinates(a.touches[0]);var m=f.pageCoordinates(a.touches[1]);C=Math.sqrt((b.x-m.x)*(b.x-m.x)+(b.y-m.y)*(b.y-m.y))}else return;a.preventDefault()};this.touchEnd=function(b,a){var m=a.touches.length===0?true:false;t=a.touches.length===1?true:false;u=a.touches.length===2?true:false;m&&this.mouseUp(null,null);if(t||u)this.touchStart(b,a)};this.touchMoved= function(b,a){if(t||u){a.preventDefault();t&&this.mouseDrag(b,a.touches[0]);if(u){b=f.pageCoordinates(a.touches[0]);a=f.pageCoordinates(a.touches[1]);a=Math.sqrt((b.x-a.x)*(b.x-a.x)+(b.y-a.y)*(b.y-a.y));b=a/C;if(!(Math.abs(b-1)<0.05)){b=b>1?1:-1;C=a;y(b)}}}}};this.WalkMouseHandler=function(c,d,l){function o(h){var k=h.x-e.x;h=h.y-e.y;var s=j.create();j.identity(s);j.rotateY(s,k*B);k=p.create();k[0]=0;k[1]=0;k[2]=-y*h;j.translate(s,k);j.multiply(s,x,x);w.paintGL();e=f.pageCoordinates(event)}var x= c,y=d,B=l,e=null;this.mouseDown=function(h,k){f.capture(null);f.capture(g);e=f.pageCoordinates(k)};this.mouseUp=function(){if(e!==null)e=null};this.mouseDrag=function(h,k){if(e!==null){h=f.pageCoordinates(k);o(h)}}};this.mouseDrag=function(c,d){if((this.initialized||!this.ctx)&&i&&i.mouseDrag)i.mouseDrag(c,d)};this.mouseDown=function(c,d){if((this.initialized||!this.ctx)&&i&&i.mouseDown)i.mouseDown(c,d)};this.mouseUp=function(c,d){if((this.initialized||!this.ctx)&&i&&i.mouseUp)i.mouseUp(c,d)};this.mouseWheel= function(c,d){if((this.initialized||!this.ctx)&&i.mouseWheel)i.mouseWheel(c,d)};this.touchStart=function(c,d){if((this.initialized||!this.ctx)&&i.touchStart)i.touchStart(c,d)};this.touchEnd=function(c,d){if((this.initialized||!this.ctx)&&mouseWheel.touchEnd)mouseWheel.touchEnd(c,d)};this.touchMoved=function(c,d){if((this.initialized||!this.ctx)&&mouseWheel.touchMoved)mouseWheel.touchMoved(c,d)};this.handlePreload=function(){if(this.preloadingTextures===0&&this.preloadingBuffers===0){if(this.initialized){var c; for(c in this.updates)this.updates[c]();this.updates=[]}else this.initializeGL();this.resizeGL();this.paintGL()}};g.wtEncodeValue=E;var A=null,n=new Image;n.busy=false;n.onload=function(){g.src=n.src;if(A!=null)n.src=A;else n.busy=false;A=null};n.onerror=n.onload;this.loadImage=function(c){if(n.busy)A=c;else{n.src=c;n.busy=true}}}");
+				"function(D,g){function E(){for(var c=jQuery.data(g,\"obj\"),d=\"\",l=0;l<c.jsValues.length;l++){d+=l+\":\";for(var o=0;o<c.jsValues[l].length;o++){d+=c.jsValues[l][o];d+=o!==c.jsValues[l].length-1?\",\":\";\"}}return d}jQuery.data(g,\"obj\",this);var w=this,f=D.WT,p=f.glMatrix.vec3,j=f.glMatrix.mat4;this.ctx=null;this.initializeGL=function(){};this.paintGL=function(){};this.resizeGL=function(){};this.updates=[];this.initialized=false;this.preloadingBuffers= this.preloadingTextures=0;this.jsValues=[];this.discoverContext=function(c,d){if(g.getContext){try{this.ctx=g.getContext(\"webgl\",{antialias:d})}catch(l){}if(this.ctx===null)try{this.ctx=g.getContext(\"experimental-webgl\",{antialias:d})}catch(o){}if(this.ctx===null){g.parentNode.insertBefore(g.firstChild,g);g.style.display=\"none\";c()}}return this.ctx};if(g.addEventListener){g.addEventListener(\"webglcontextlost\",function(c){c.preventDefault();w.initialized=false},false);g.addEventListener(\"webglcontextrestored\", function(){Wt.emit(g,\"contextRestored\")},false)}var i=null;this.setMouseHandler=function(c){i=c;i.setTarget&&i.setTarget(this)};this.LookAtMouseHandler=function(c,d,l,o,x){function y(b){b=Math.pow(1.2,b);j.translate(e,h);j.scale(e,[b,b,b]);p.negate(h);j.translate(e,h);p.negate(h);w.paintGL()}function B(b){var a=e[5]/p.length([e[1],e[5],e[9]]),m=e[6]/p.length([e[2],e[6],e[10]]);a=Math.atan2(m,a);m=b.x-q.x;var v=b.y-q.y,z=p.create();z[0]=e[0];z[1]=e[4];z[2]=e[8];var r=j.create();j.identity(r);j.translate(r, h);v=v*s;if(Math.abs(a+v)>=Math.PI/2)v=(a>0?1:-1)*Math.PI/2-a;j.rotate(r,v,z);j.rotate(r,m*F,k);p.negate(h);j.translate(r,h);p.negate(h);j.multiply(e,r,e);w.paintGL();q=b}var e=c,h=d,k=l,s=o,F=x,C=null,t=null,u=null,q=null;this.mouseDown=function(b,a){f.capture(null);f.capture(g);q=f.pageCoordinates(a)};this.mouseUp=function(){if(q!==null)q=null};this.mouseDrag=function(b,a){if(q!==null){b=f.pageCoordinates(a);f.buttons===1&&B(b)}};this.mouseWheel=function(b,a){f.cancelEvent(a);b=f.wheelDelta(a); y(b)};this.touchStart=function(b,a){t=a.touches.length===1?true:false;u=a.touches.length===2?true:false;if(t){f.capture(null);f.capture(g);q=f.pageCoordinates(a.touches[0])}else if(u){b=f.pageCoordinates(a.touches[0]);var m=f.pageCoordinates(a.touches[1]);C=Math.sqrt((b.x-m.x)*(b.x-m.x)+(b.y-m.y)*(b.y-m.y))}else return;a.preventDefault()};this.touchEnd=function(b,a){var m=a.touches.length===0?true:false;t=a.touches.length===1?true:false;u=a.touches.length===2?true:false;m&&this.mouseUp(null,null); if(t||u)this.touchStart(b,a)};this.touchMoved=function(b,a){if(t||u){a.preventDefault();t&&this.mouseDrag(b,a.touches[0]);if(u){b=f.pageCoordinates(a.touches[0]);a=f.pageCoordinates(a.touches[1]);a=Math.sqrt((b.x-a.x)*(b.x-a.x)+(b.y-a.y)*(b.y-a.y));b=a/C;if(!(Math.abs(b-1)<0.05)){b=b>1?1:-1;C=a;y(b)}}}}};this.WalkMouseHandler=function(c,d,l){function o(h){var k=h.x-e.x;h=h.y-e.y;var s=j.create();j.identity(s);j.rotateY(s,k*B);k=p.create();k[0]=0;k[1]=0;k[2]=-y*h;j.translate(s,k);j.multiply(s,x,x); w.paintGL();e=f.pageCoordinates(event)}var x=c,y=d,B=l,e=null;this.mouseDown=function(h,k){f.capture(null);f.capture(g);e=f.pageCoordinates(k)};this.mouseUp=function(){if(e!==null)e=null};this.mouseDrag=function(h,k){if(e!==null){h=f.pageCoordinates(k);o(h)}}};this.mouseDrag=function(c,d){if((this.initialized||!this.ctx)&&i&&i.mouseDrag)i.mouseDrag(c,d)};this.mouseDown=function(c,d){if((this.initialized||!this.ctx)&&i&&i.mouseDown)i.mouseDown(c,d)};this.mouseUp=function(c,d){if((this.initialized|| !this.ctx)&&i&&i.mouseUp)i.mouseUp(c,d)};this.mouseWheel=function(c,d){if((this.initialized||!this.ctx)&&i.mouseWheel)i.mouseWheel(c,d)};this.touchStart=function(c,d){if((this.initialized||!this.ctx)&&i.touchStart)i.touchStart(c,d)};this.touchEnd=function(c,d){if((this.initialized||!this.ctx)&&mouseWheel.touchEnd)mouseWheel.touchEnd(c,d)};this.touchMoved=function(c,d){if((this.initialized||!this.ctx)&&mouseWheel.touchMoved)mouseWheel.touchMoved(c,d)};this.handlePreload=function(){if(this.preloadingTextures=== 0&&this.preloadingBuffers===0){if(this.initialized){var c;for(c in this.updates)this.updates[c]();this.updates=[]}else this.initializeGL();this.resizeGL();this.paintGL()}};g.wtEncodeValue=E;var A=null,n=new Image;n.busy=false;n.onload=function(){g.src=n.src;if(A!=null)n.src=A;else n.busy=false;A=null};n.onerror=n.onload;this.loadImage=function(c){if(n.busy)A=c;else{n.src=c;n.busy=true}}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {

@@ -88,6 +88,7 @@ class TreesTables extends TopicWidget {
 		WTemplate result = new TopicTemplate("treestables-TableViews");
 		result.bindWidget("SmallTableView", SmallTableView());
 		result.bindWidget("LargeTableView", LargeTableView());
+		result.bindWidget("ComboDelegateTable", ComboDelegateTable());
 		return result;
 	}
 
@@ -268,6 +269,43 @@ class TreesTables extends TopicWidget {
 				.of(WAbstractItemView.EditTrigger.NoEditTrigger));
 		tableView.resize(new WLength(650), new WLength(400));
 		return tableView;
+	}
+
+	WWidget ComboDelegateTable() {
+		WTableView table = new WTableView();
+		List<WString> options = new ArrayList<WString>();
+		options.add(new WString("apples"));
+		options.add(new WString("pears"));
+		options.add(new WString("bananas"));
+		options.add(new WString("cherries"));
+		WStandardItemModel model = new WStandardItemModel(table);
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 2; j++) {
+				WStandardItem item = new WStandardItem();
+				item.setData(0, ItemDataRole.UserRole);
+				item.setData(options.get(0), ItemDataRole.DisplayRole);
+				item.setFlags(EnumSet.of(ItemFlag.ItemIsEditable));
+				model.setItem(i, j, item);
+			}
+		}
+		table.setModel(model);
+		table.setEditTriggers(EnumSet
+				.of(WAbstractItemView.EditTrigger.SingleClicked));
+		WStringListModel slModel = new WStringListModel(table);
+		slModel.setStringList(options);
+		ComboDelegate customdelegate = new ComboDelegate(slModel);
+		table.setItemDelegate(customdelegate);
+		table.setSortingEnabled(false);
+		table.setColumnResizeEnabled(false);
+		table.setRowHeight(new WLength(40));
+		table.setHeaderHeight(new WLength(0));
+		final int WIDTH = 120;
+		for (int i = 0; i < table.getModel().getColumnCount(); ++i) {
+			table.setColumnWidth(i, new WLength(WIDTH));
+		}
+		table.setWidth(new WLength((WIDTH + 7)
+				* table.getModel().getColumnCount() + 2));
+		return table;
 	}
 
 	WWidget getGitModel() {

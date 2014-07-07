@@ -158,9 +158,10 @@ public interface WPaintDevice {
 	/**
 	 * Draws an arc.
 	 * <p>
-	 * The arc is defined as in
-	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
-	 * WPainter#drawArc()}
+	 * The arc describes the segment of an ellipse enclosed by the rect. The
+	 * segment starts at <code>startAngle</code>, and spans an angle given by
+	 * <code>spanAngle</code>. These angles have as unit degree, and are
+	 * measured counter-clockwise starting from the 3 o&apos;clock position.
 	 * <p>
 	 * The arc must be stroked, filled, and transformed using the current
 	 * painter settings.

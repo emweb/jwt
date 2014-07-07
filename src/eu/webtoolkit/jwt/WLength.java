@@ -105,81 +105,8 @@ public class WLength {
 	 * <p>
 	 * This supports all CSS length formats that have an API counterpart.
 	 */
-	public WLength(String s) {
-		this.auto_ = false;
-		this.unit_ = WLength.Unit.Pixel;
-		this.value_ = -1;
-		if ("auto".equals(s)) {
-			this.auto_ = true;
-			return;
-		}
-		String end = null;
-		{
-			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);
-			this.value_ = 0.0;
-			if (matcher.find()) {
-				end = s.substring(matcher.end());
-				this.value_ = Double.parseDouble(matcher.group().trim());
-			} else {
-				end = s;
-			}
-		}
-		;
-		if (s == end) {
-			logger.error(new StringWriter()
-					.append("cannot parse CSS length: '").append(s).append("'")
-					.toString());
-			this.auto_ = true;
-			return;
-		}
-		String unit = end;
-		unit = unit.trim();
-		if (unit.equals("em")) {
-			this.unit_ = WLength.Unit.FontEm;
-		} else {
-			if (unit.equals("ex")) {
-				this.unit_ = WLength.Unit.FontEx;
-			} else {
-				if (unit.length() == 0 || unit.equals("px")) {
-					this.unit_ = WLength.Unit.Pixel;
-				} else {
-					if (unit.equals("in")) {
-						this.unit_ = WLength.Unit.Inch;
-					} else {
-						if (unit.equals("cm")) {
-							this.unit_ = WLength.Unit.Centimeter;
-						} else {
-							if (unit.equals("mm")) {
-								this.unit_ = WLength.Unit.Millimeter;
-							} else {
-								if (unit.equals("pt")) {
-									this.unit_ = WLength.Unit.Point;
-								} else {
-									if (unit.equals("pc")) {
-										this.unit_ = WLength.Unit.Pica;
-									} else {
-										if (unit.equals("%")) {
-											this.unit_ = WLength.Unit.Percentage;
-										} else {
-											logger
-													.error(new StringWriter()
-															.append(
-																	"unrecognized unit in '")
-															.append(s).append(
-																	"'")
-															.toString());
-											this.auto_ = true;
-											this.value_ = -1;
-											this.unit_ = WLength.Unit.Pixel;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	public WLength(final String str) {
+		this.parseCssString(str);
 	}
 
 	/**
@@ -201,50 +128,6 @@ public class WLength {
 	 * WLength.Unit.Pixel)}
 	 */
 	public WLength(double value) {
-		this(value, WLength.Unit.Pixel);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * This constructor is also used for the implicit conversion of a int to a
-	 * {@link WLength}, assuming a pixel unit.
-	 */
-	public WLength(int value, WLength.Unit unit) {
-		this.auto_ = false;
-		this.value_ = (double) value;
-		this.setUnit(unit);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * Calls {@link #WLength(int value, WLength.Unit unit) this(value,
-	 * WLength.Unit.Pixel)}
-	 */
-	public WLength(int value) {
-		this(value, WLength.Unit.Pixel);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * This constructor is also used for the implicit conversion of a long to a
-	 * {@link WLength}, assuming a pixel unit.
-	 */
-	public WLength(long value, WLength.Unit unit) {
-		this.auto_ = false;
-		this.value_ = (double) value;
-		this.setUnit(unit);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * Calls {@link #WLength(long value, WLength.Unit unit) this(value,
-	 * WLength.Unit.Pixel)}
-	 */
-	public WLength(long value) {
 		this(value, WLength.Unit.Pixel);
 	}
 
@@ -341,6 +224,83 @@ public class WLength {
 
 	private void setUnit(WLength.Unit unit) {
 		this.unit_ = unit;
+	}
+
+	private void parseCssString(String s) {
+		this.auto_ = false;
+		this.unit_ = WLength.Unit.Pixel;
+		this.value_ = -1;
+		if ("auto".equals(s)) {
+			this.auto_ = true;
+			return;
+		}
+		String end = null;
+		{
+			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);
+			this.value_ = 0.0;
+			if (matcher.find()) {
+				end = s.substring(matcher.end());
+				this.value_ = Double.parseDouble(matcher.group().trim());
+			} else {
+				end = s;
+			}
+		}
+		;
+		if (s == end) {
+			logger.error(new StringWriter()
+					.append("cannot parse CSS length: '").append(s).append("'")
+					.toString());
+			this.auto_ = true;
+			return;
+		}
+		String unit = end;
+		unit = unit.trim();
+		if (unit.equals("em")) {
+			this.unit_ = WLength.Unit.FontEm;
+		} else {
+			if (unit.equals("ex")) {
+				this.unit_ = WLength.Unit.FontEx;
+			} else {
+				if (unit.length() == 0 || unit.equals("px")) {
+					this.unit_ = WLength.Unit.Pixel;
+				} else {
+					if (unit.equals("in")) {
+						this.unit_ = WLength.Unit.Inch;
+					} else {
+						if (unit.equals("cm")) {
+							this.unit_ = WLength.Unit.Centimeter;
+						} else {
+							if (unit.equals("mm")) {
+								this.unit_ = WLength.Unit.Millimeter;
+							} else {
+								if (unit.equals("pt")) {
+									this.unit_ = WLength.Unit.Point;
+								} else {
+									if (unit.equals("pc")) {
+										this.unit_ = WLength.Unit.Pica;
+									} else {
+										if (unit.equals("%")) {
+											this.unit_ = WLength.Unit.Percentage;
+										} else {
+											logger
+													.error(new StringWriter()
+															.append(
+																	"unrecognized unit in '")
+															.append(s).append(
+																	"'")
+															.toString());
+											this.auto_ = true;
+											this.value_ = -1;
+											this.unit_ = WLength.Unit.Pixel;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private static String[] unitText = { "em", "ex", "px", "in", "cm", "mm",

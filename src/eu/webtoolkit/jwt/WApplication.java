@@ -173,6 +173,7 @@ public class WApplication extends WObject {
 		this.scriptLibrariesAdded_ = 0;
 		this.theme_ = null;
 		this.styleSheets_ = new ArrayList<WCssStyleSheet>();
+		this.styleSheetsToRemove_ = new ArrayList<WCssStyleSheet>();
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<MetaHeader>();
 		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
@@ -484,7 +485,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * External stylesheets are inserted after the internal style sheet, and can
 	 * therefore override default styles set by widgets in the internal style
-	 * sheet.
+	 * sheet. External stylesheets must have valid link.
 	 * <p>
 	 * If not empty, <code>condition</code> is a string that is used to apply
 	 * the stylesheet to specific versions of IE. Only a limited subset of the
@@ -499,10 +500,15 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getStyleSheet()
+	 * @see WApplication#removeStyleSheet(WLink link)
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void useStyleSheet(final WCssStyleSheet styleSheet,
 			final String condition) {
+		if (styleSheet.getLink().isNull()) {
+			throw new WException(
+					"WApplication::useStyleSheet stylesheet must have valid link!");
+		}
 		boolean display = true;
 		if (condition.length() != 0) {
 			display = false;
@@ -628,6 +634,28 @@ public class WApplication extends WObject {
 	 */
 	public final void useStyleSheet(final WCssStyleSheet styleSheet) {
 		useStyleSheet(styleSheet, "");
+	}
+
+	/**
+	 * Removes an external stylesheet.
+	 * <p>
+	 * 
+	 * @see WApplication#getStyleSheet()
+	 * @see WWidget#setStyleClass(String styleClass)
+	 */
+	public void removeStyleSheet(final WLink link) {
+		for (int i = (int) this.styleSheets_.size() - 1; i > -1; --i) {
+			if (this.styleSheets_.get(i).getLink().equals(link)) {
+				final WCssStyleSheet sheet = this.styleSheets_.get(i);
+				this.styleSheetsToRemove_.add(sheet);
+				if (i > (int) this.styleSheets_.size() + this.styleSheetsAdded_
+						- 1) {
+					this.styleSheetsAdded_--;
+				}
+				this.styleSheets_.remove(0 + i);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -1465,33 +1493,14 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Signal which indicates that the user changes the internal path.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * This signal indicates a change to the internal path, which is usually
+	 * triggered by the user using the browser back/forward buttons.
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
-	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
+	 * The argument contains the new internal path.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public Signal1<String> internalPathChanged() {
@@ -1500,34 +1509,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
-	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
-	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
-	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
-	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#getBookmarkUrl()
+	 * Signal which indicates that an invalid internal path is navigated.
 	 */
 	public Signal1<String> internalPathInvalid() {
 		return this.internalPathInvalid_;
@@ -1761,7 +1743,8 @@ public class WApplication extends WObject {
 					&& handler.getSession() == app.session_) {
 				return;
 			}
-			new WebSession.Handler(app.session_, true);
+			new WebSession.Handler(app.session_,
+					WebSession.Handler.LockOption.TakeLock);
 			this.createdHandler_ = true;
 		}
 
@@ -2911,6 +2894,20 @@ public class WApplication extends WObject {
 		this.quit();
 	}
 
+	/**
+	 * handleJavaScriptError print javaScript errors to log file. You may want
+	 * to overwrite it to render error page for example.
+	 * <p>
+	 * 
+	 * @param errorText
+	 *            the error will usually be in json format. }
+	 */
+	protected void handleJavaScriptError(final String errorText) {
+		logger.error(new StringWriter().append("JavaScript error: ").append(
+				errorText).toString());
+		this.quit();
+	}
+
 	private Signal1<Long> requestTooLarge_;
 
 	static class ScriptLibrary {
@@ -2999,6 +2996,7 @@ public class WApplication extends WObject {
 	int scriptLibrariesAdded_;
 	private WTheme theme_;
 	List<WCssStyleSheet> styleSheets_;
+	List<WCssStyleSheet> styleSheetsToRemove_;
 	int styleSheetsAdded_;
 	List<MetaHeader> metaHeaders_;
 	List<WApplication.MetaLink> metaLinks_;

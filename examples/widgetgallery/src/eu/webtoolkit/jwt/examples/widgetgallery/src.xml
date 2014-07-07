@@ -148,9 +148,9 @@
             <span class="n">toggleB</span><span class="o">.</span><span class="na">enable</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">});</span>
-    <span class="n">table</span><span class="o">.</span><span class="na">getRowAt</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">removeStyleClass</span><span class="o">(</span><span class="s">&quot;info&quot;</span><span class="o">);</span>
     <span class="n">removeB</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">table</span><span class="o">.</span><span class="na">getRowAt</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">removeStyleClass</span><span class="o">(</span><span class="s">&quot;info&quot;</span><span class="o">);</span>
             <span class="n">removeB</span><span class="o">.</span><span class="na">disable</span><span class="o">();</span>
         <span class="o">}</span>
     <span class="o">});</span>
@@ -283,6 +283,9 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WCartesian3DChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesian3DChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">CategoryChart</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setRenderOptions</span><span class="o">(</span><span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+            <span class="n">WGLWidget</span><span class="o">.</span><span class="na">RenderOption</span><span class="o">.</span><span class="na">ClientSideRendering</span><span class="o">,</span>
+            <span class="n">WGLWidget</span><span class="o">.</span><span class="na">RenderOption</span><span class="o">.</span><span class="na">AntiAliasing</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WCssDecorationStyle</span> <span class="n">style</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCssDecorationStyle</span><span class="o">();</span>
     <span class="n">style</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="k">new</span> <span class="n">WBorder</span><span class="o">(</span><span class="n">WBorder</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">Solid</span><span class="o">,</span> <span class="n">WBorder</span><span class="o">.</span><span class="na">Width</span><span class="o">.</span><span class="na">Medium</span><span class="o">,</span>
             <span class="n">WColor</span><span class="o">.</span><span class="na">black</span><span class="o">));</span>
@@ -403,6 +406,109 @@
                     <span class="n">countryName</span><span class="o">).</span><span class="na">arg</span><span class="o">(</span><span class="n">countryCode</span><span class="o">));</span>
         <span class="o">}</span>
     <span class="o">});</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
+  <message id="src-ComboDelegateTable"><![CDATA[
+<div class="highlight"><pre><span class="kd">class</span> <span class="nc">ComboDelegate</span> <span class="kd">extends</span> <span class="n">WItemDelegate</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
+            <span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">ComboDelegate</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="n">ComboDelegate</span><span class="o">(</span><span class="n">WAbstractItemModel</span> <span class="n">items</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">items_</span> <span class="o">=</span> <span class="n">items</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kt">void</span> <span class="nf">setModelData</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">editState</span><span class="o">,</span> <span class="n">WAbstractItemModel</span> <span class="n">model</span><span class="o">,</span>
+            <span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">stringIdx</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">editState</span><span class="o">);</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">index</span><span class="o">,</span> <span class="n">stringIdx</span><span class="o">,</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">UserRole</span><span class="o">);</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">index</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">items_</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">stringIdx</span><span class="o">,</span> <span class="mi">0</span><span class="o">),</span>
+                <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">DisplayRole</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="n">Object</span> <span class="nf">getEditState</span><span class="o">(</span><span class="n">WWidget</span> <span class="n">editor</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">WComboBox</span> <span class="n">combo</span> <span class="o">=</span> <span class="o">(((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span>
+                <span class="o">:</span> <span class="kc">null</span><span class="o">)).</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span> <span class="k">instanceof</span> <span class="n">WComboBox</span> <span class="o">?</span> <span class="o">(</span><span class="n">WComboBox</span><span class="o">)</span> <span class="o">((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span>
+                <span class="o">:</span> <span class="kc">null</span><span class="o">)).</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
+                <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">combo</span><span class="o">.</span><span class="na">getCurrentIndex</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kt">void</span> <span class="nf">setEditState</span><span class="o">(</span><span class="n">WWidget</span> <span class="n">editor</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">WComboBox</span> <span class="n">combo</span> <span class="o">=</span> <span class="o">(((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span>
+                <span class="o">:</span> <span class="kc">null</span><span class="o">)).</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span> <span class="k">instanceof</span> <span class="n">WComboBox</span> <span class="o">?</span> <span class="o">(</span><span class="n">WComboBox</span><span class="o">)</span> <span class="o">((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span>
+                <span class="o">:</span> <span class="kc">null</span><span class="o">)).</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
+                <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">setCurrentIndex</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+    <span class="o">}</span>
+
+    <span class="n">WWidget</span> <span class="nf">createEditor</span><span class="o">(</span><span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">index</span><span class="o">,</span>
+            <span class="n">EnumSet</span><span class="o">&lt;</span><span class="n">ViewItemRenderFlag</span><span class="o">&gt;</span> <span class="n">flags</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
+        <span class="n">WComboBox</span> <span class="n">combo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WComboBox</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">items_</span><span class="o">);</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">setCurrentIndex</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">index</span>
+                <span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">ItemDataRole</span><span class="o">.</span><span class="na">UserRole</span><span class="o">)));</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">ComboDelegate</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">doCloseEditor</span><span class="o">(</span><span class="n">container</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">enterPressed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">ComboDelegate</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">doCloseEditor</span><span class="o">(</span><span class="n">container</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">escapePressed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+                <span class="n">ComboDelegate</span><span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">doCloseEditor</span><span class="o">(</span><span class="n">container</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+        <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="n">WAbstractItemModel</span> <span class="n">items_</span><span class="o">;</span>
+
+    <span class="kt">void</span> <span class="nf">doCloseEditor</span><span class="o">(</span><span class="n">WWidget</span> <span class="n">editor</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">save</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">closeEditor</span><span class="o">().</span><span class="na">trigger</span><span class="o">(</span><span class="n">editor</span><span class="o">,</span> <span class="n">save</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">ComboDelegateTable</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WTableView</span> <span class="n">table</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTableView</span><span class="o">();</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">WString</span><span class="o">&gt;</span> <span class="n">options</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">WString</span><span class="o">&gt;();</span>
+    <span class="n">options</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;apples&quot;</span><span class="o">));</span>
+    <span class="n">options</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;pears&quot;</span><span class="o">));</span>
+    <span class="n">options</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;bananas&quot;</span><span class="o">));</span>
+    <span class="n">options</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;cherries&quot;</span><span class="o">));</span>
+    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardItemModel</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">WStandardItem</span> <span class="n">item</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardItem</span><span class="o">();</span>
+            <span class="n">item</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">UserRole</span><span class="o">);</span>
+            <span class="n">item</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">options</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">DisplayRole</span><span class="o">);</span>
+            <span class="n">item</span><span class="o">.</span><span class="na">setFlags</span><span class="o">(</span><span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">ItemFlag</span><span class="o">.</span><span class="na">ItemIsEditable</span><span class="o">));</span>
+            <span class="n">model</span><span class="o">.</span><span class="na">setItem</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">item</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">model</span><span class="o">);</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setEditTriggers</span><span class="o">(</span><span class="n">EnumSet</span>
+            <span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">WAbstractItemView</span><span class="o">.</span><span class="na">EditTrigger</span><span class="o">.</span><span class="na">SingleClicked</span><span class="o">));</span>
+    <span class="n">WStringListModel</span> <span class="n">slModel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStringListModel</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
+    <span class="n">slModel</span><span class="o">.</span><span class="na">setStringList</span><span class="o">(</span><span class="n">options</span><span class="o">);</span>
+    <span class="n">ComboDelegate</span> <span class="n">customdelegate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ComboDelegate</span><span class="o">(</span><span class="n">slModel</span><span class="o">);</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setItemDelegate</span><span class="o">(</span><span class="n">customdelegate</span><span class="o">);</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setSortingEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setColumnResizeEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setRowHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">40</span><span class="o">));</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setHeaderHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+    <span class="kd">final</span> <span class="kt">int</span> <span class="n">WIDTH</span> <span class="o">=</span> <span class="mi">120</span><span class="o">;</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">table</span><span class="o">.</span><span class="na">getModel</span><span class="o">().</span><span class="na">getColumnCount</span><span class="o">();</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">table</span><span class="o">.</span><span class="na">setColumnWidth</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="n">WIDTH</span><span class="o">));</span>
+    <span class="o">}</span>
+    <span class="n">table</span><span class="o">.</span><span class="na">setWidth</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">((</span><span class="n">WIDTH</span> <span class="o">+</span> <span class="mi">7</span><span class="o">)</span>
+            <span class="o">*</span> <span class="n">table</span><span class="o">.</span><span class="na">getModel</span><span class="o">().</span><span class="na">getColumnCount</span><span class="o">()</span> <span class="o">+</span> <span class="mi">2</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -2023,6 +2129,9 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WCartesian3DChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesian3DChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">ScatterPlot</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setRenderOptions</span><span class="o">(</span><span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+            <span class="n">WGLWidget</span><span class="o">.</span><span class="na">RenderOption</span><span class="o">.</span><span class="na">ClientSideRendering</span><span class="o">,</span>
+            <span class="n">WGLWidget</span><span class="o">.</span><span class="na">RenderOption</span><span class="o">.</span><span class="na">AntiAliasing</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WCssDecorationStyle</span> <span class="n">style</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCssDecorationStyle</span><span class="o">();</span>
     <span class="n">style</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="k">new</span> <span class="n">WBorder</span><span class="o">(</span><span class="n">WBorder</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">Solid</span><span class="o">,</span> <span class="n">WBorder</span><span class="o">.</span><span class="na">Width</span><span class="o">.</span><span class="na">Medium</span><span class="o">,</span>
             <span class="n">WColor</span><span class="o">.</span><span class="na">black</span><span class="o">));</span>

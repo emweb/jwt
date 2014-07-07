@@ -377,6 +377,7 @@ public class WTableView extends WAbstractItemView {
 					}
 				}));
 		this.firstColumn_ = this.lastColumn_ = -1;
+		this.adjustSize();
 	}
 
 	public void setColumnWidth(int column, final WLength width) {
@@ -771,6 +772,16 @@ public class WTableView extends WAbstractItemView {
 		super.render(flags);
 	}
 
+	/**
+	 * Called when rows or columns are inserted/removed.
+	 * <p>
+	 * Override this method when you want to adjust the table&apos;s size when
+	 * columns or rows are inserted or removed. The method is also called when
+	 * the model is reset. The default implementation does nothing.
+	 */
+	protected void adjustSize() {
+	}
+
 	static class ColumnWidget extends WContainerWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(ColumnWidget.class);
@@ -894,6 +905,7 @@ public class WTableView extends WAbstractItemView {
 			return;
 		}
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+		this.adjustSize();
 	}
 
 	private void modelColumnsAboutToBeRemoved(final WModelIndex parent,
@@ -942,6 +954,7 @@ public class WTableView extends WAbstractItemView {
 		}
 		this.resetGeometry();
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
+		this.adjustSize();
 	}
 
 	private void modelRowsInserted(final WModelIndex parent, int start, int end) {
@@ -973,6 +986,7 @@ public class WTableView extends WAbstractItemView {
 						.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
 			}
 		}
+		this.adjustSize();
 	}
 
 	private void modelRowsAboutToBeRemoved(final WModelIndex parent, int start,
@@ -1021,6 +1035,7 @@ public class WTableView extends WAbstractItemView {
 			}
 		}
 		this.computeRenderedArea();
+		this.adjustSize();
 	}
 
 	void modelDataChanged(final WModelIndex topLeft,

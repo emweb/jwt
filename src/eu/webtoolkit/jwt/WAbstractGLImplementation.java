@@ -424,6 +424,8 @@ abstract class WAbstractGLImplementation extends WObject {
 		this.debugging_ = enable;
 	}
 
+	public abstract JsArrayType getArrayType();
+
 	public abstract void injectJS(final String jsString);
 
 	public abstract void restoreContext(final String jsRef);

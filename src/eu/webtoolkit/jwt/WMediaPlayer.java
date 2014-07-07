@@ -888,6 +888,11 @@ public class WMediaPlayer extends WCompositeWidget {
 		return "$('#" + this.getId() + " .jp-jplayer')";
 	}
 
+	public void refresh() {
+		super.refresh();
+		this.render(EnumSet.of(RenderFlag.RenderFull));
+	}
+
 	void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();

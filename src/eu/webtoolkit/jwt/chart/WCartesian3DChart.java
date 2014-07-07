@@ -1132,7 +1132,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * Specialized for chart rendering.
 	 */
-	public void initializeGL() {
+	protected void initializeGL() {
 		if (!this.isViewSet_) {
 			WebGLUtils.lookAt(this.worldTransform_, 0.5, 0.5, 5, 0.5, 0.5, 0.5,
 					0, 1, 0);
@@ -1211,7 +1211,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * Specialized for chart rendering.
 	 */
-	public void paintGL() {
+	protected void paintGL() {
 		this.clearColor(this.background_.getRed() / 255.0, this.background_
 				.getGreen() / 255.0, this.background_.getBlue() / 255.0,
 				this.background_.getAlpha() / 255.0);
@@ -1479,7 +1479,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * Specialized for chart rendering.
 	 */
-	public void updateGL() {
+	protected void updateGL() {
 		if (!EnumUtils.mask(this.updates_, ChartUpdates.GLContext).isEmpty()) {
 			this.deleteAllGLResources();
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
@@ -1548,7 +1548,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * Specialized for chart rendering.
 	 */
-	public void resizeGL(int width, int height) {
+	protected void resizeGL(int width, int height) {
 		this.viewport(0, 0, width, height);
 		double ratio = (double) height / width;
 		this.pMatrix_ = new javax.vecmath.Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
@@ -2641,6 +2641,8 @@ public class WCartesian3DChart extends WGLWidget {
 				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
 				labelPos, EnumSet.of(labelHFlag, labelVFlag));
 		double addOffset = this.XAxis_.getTitleOffset();
+		WFont oldFont = painter.getFont();
+		painter.setFont(this.XAxis_.getTitleFont());
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
 				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.XAxis_
@@ -2708,6 +2710,7 @@ public class WCartesian3DChart extends WGLWidget {
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
 				AlignmentFlag.AlignBottom), this.XAxis_.getTitle());
+		painter.setFont(oldFont);
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
 		painter.setClipPath(clippy);
@@ -2738,6 +2741,7 @@ public class WCartesian3DChart extends WGLWidget {
 				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
 				labelPos, EnumSet.of(labelHFlag, labelVFlag));
 		addOffset = this.YAxis_.getTitleOffset();
+		painter.setFont(this.YAxis_.getTitleFont());
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
 				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.YAxis_
@@ -2805,6 +2809,7 @@ public class WCartesian3DChart extends WGLWidget {
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
 				AlignmentFlag.AlignBottom), this.YAxis_.getTitle());
+		painter.setFont(oldFont);
 		if (labelAngleMirrored) {
 			this.XAxis_.setLabelAngle(oldLabelAngleX);
 			this.YAxis_.setLabelAngle(oldLabelAngleY);
@@ -2852,6 +2857,8 @@ public class WCartesian3DChart extends WGLWidget {
 				labelPos, EnumSet.of(labelHFlag, labelVFlag));
 		double addOffset = this.ZAxis_.getTitleOffset();
 		painter.rotate(-90);
+		WFont oldFont = this.ZAxis_.getTitleFont();
+		painter.setFont(this.ZAxis_.getTitleFont());
 		painter.drawText(new WRectF(-axisWidth, 0, axisWidth, axisHeight
 				- TITLEOFFSET - addOffset), EnumSet.of(
 				AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
@@ -2887,6 +2894,7 @@ public class WCartesian3DChart extends WGLWidget {
 				+ addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
 				EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
 				this.ZAxis_.getTitle());
+		painter.setFont(oldFont);
 		painter.rotate(90);
 		painter.end();
 	}
@@ -3698,7 +3706,7 @@ public class WCartesian3DChart extends WGLWidget {
 	private static final String axisFragmentShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\nvarying float vShowTexture;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCo.s, vTextureCo.t));\n}\n";
 	private static final String fragmentShaderSrc2D = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCo.s, vTextureCo.t));\n}";
 	private static final String vertexShaderSrc2D = "attribute vec3 aVertexPosition;\nattribute vec2 aTextureCo;\n\nvarying vec2 vTextureCo;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCo = aTextureCo;\n}";
-	private static final String intersectionLinesFragmentShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform mat4 uCamera;\nuniform vec4 uColor;\nuniform float uVPwidth;\nuniform float uVPheight;\nuniform sampler2D uPositionSampler;\nuniform sampler2D uMeshIndexSampler;\n\nvoid main(void) {\n  float dx = 1.0/uVPwidth;\n  float dy = 1.0/uVPheight;\n  vec3 pt  = texture2D(uPositionSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 pl  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 pr  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 pb  = texture2D(uPositionSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  vec3 it  = texture2D(uMeshIndexSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 il  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 ir  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 ib  = texture2D(uMeshIndexSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  float scale = length(vec3(uCamera[0][0], uCamera[1][0], uCamera[2][0]));\n  scale = scale > 5.0 ? 5.0 : scale;\n  float totalDistance = 0.0;\n  int count = 0;\n  vec3 white = vec3(1.0);\n  if (il != ir && il != white && ir != white) {\n    count ++;\n    totalDistance += length(pl - pr) * scale;\n  }\n  if (it != ib && it != white && ib != white) {\n    count ++;\n    totalDistance += length(pt - pb) * scale;\n  }\n  float factor = count == 0 ? 0.0 : 1.0 - totalDistance / float(count);\n  factor = smoothstep(0.9, 1.0, factor);\n  gl_FragColor = factor * uColor;\n}";
+	private static final String intersectionLinesFragmentShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform mat4 uCamera;\nuniform vec4 uColor;\nuniform float uVPwidth;\nuniform float uVPheight;\nuniform sampler2D uPositionSampler;\nuniform sampler2D uMeshIndexSampler;\n\nvoid main(void) {\n  float dx = 1.0/uVPwidth;\n  float dy = 1.0/uVPheight;\n  vec3 pt  = texture2D(uPositionSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 pl  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 pr  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 pb  = texture2D(uPositionSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  vec3 it  = texture2D(uMeshIndexSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 il  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 ir  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 ib  = texture2D(uMeshIndexSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  float scale = length(vec3(uCamera[0][0], uCamera[1][0], uCamera[2][0]));\n  scale = scale > 5.0 ? 5.0 : scale;\n  float totalDistance = 0.0;\n  int count = 0;\n  vec3 white = vec3(1.0);\n  if (il != ir && il != white && ir != white) {\n    count ++;\n    totalDistance += length(pl - pr) * scale;\n  }\n  if (it != ib && it != white && ib != white) {\n    count ++;\n    totalDistance += length(pt - pb) * scale;\n  }\n  float factor = count == 0 ? 0.0 : 1.0 - totalDistance / float(count);\n  factor = smoothstep(0.9, 1.0, factor);\n  gl_FragColor = vec4(uColor.rgb, factor);\n}";
 	private static final String clippingPlaneFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform bool uDrawPosition;\nuniform lowp int uClippingAxis;\n\nvoid main(void) {\n  if (uClippingAxis == 0 && (vPos.x <= 0.0 || vPos.x >= 1.0) ||      uClippingAxis == 1 && (vPos.y <= 0.0 || vPos.y >= 1.0) ||      uClippingAxis == 2 && (vPos.z <= 0.0 || vPos.z >= 1.0)) {\n    discard;\n  }\n  if (uDrawPosition) {\n    gl_FragColor = vec4(vPos, 1.0);\n  } else {\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n  }\n}\n";
 	private static final String clippingPlaneVertexShaderSrc = "attribute vec2 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform vec3 uClipPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\nuniform lowp int uClippingAxis;\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  vec3 pos;\n  vec3 clipPt = clamp((uClipPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), 0.0, 1.0);\n  if (uClippingAxis == 0) {\n    pos = vec3(clipPt.x, aVertexPosition);\n  } else if (uClippingAxis == 1) {\n    pos = vec3(aVertexPosition.x, clipPt.y, aVertexPosition.y);\n  } else if (uClippingAxis == 2) {\n    pos = vec3(aVertexPosition, clipPt.z);\n  }\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(pos, 1.0);\n  vPos = pos;\n}\n";
 	private static final double TICKLENGTH = 5.0;

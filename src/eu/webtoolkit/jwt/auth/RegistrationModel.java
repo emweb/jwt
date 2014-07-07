@@ -144,7 +144,11 @@ public class RegistrationModel extends FormBaseModel {
 			if (baseAuth.isEmailVerificationEnabled()) {
 				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailOptional;
 			} else {
-				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
+				if (baseAuth.isEmailVerificationRequired()) {
+					this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailMandatory;
+				} else {
+					this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
+				}
 			}
 		}
 		this.reset();
@@ -269,8 +273,7 @@ public class RegistrationModel extends FormBaseModel {
 			User user = this.getBaseAuth().identifyUser(this.idpIdentity_,
 					this.getUsers());
 			if (user.isValid()) {
-				this.login_.login(user);
-				return true;
+				return this.loginUser(this.login_, user);
 			} else {
 				switch (this.getBaseAuth().getIdentityPolicy()) {
 				case LoginNameIdentity:
@@ -363,7 +366,7 @@ public class RegistrationModel extends FormBaseModel {
 			this.existingUser_.addIdentity(this.idpIdentity_.getProvider(),
 					this.idpIdentity_.getId());
 		}
-		this.login_.login(this.existingUser_);
+		this.loginUser(this.login_, this.existingUser_);
 	}
 
 	/**

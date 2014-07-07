@@ -30,6 +30,7 @@ class PaintedSlider extends WPaintedWidget {
 		this.mouseDownJS_ = new JSlot();
 		this.mouseMovedJS_ = new JSlot();
 		this.mouseUpJS_ = new JSlot();
+		this.handleClickedJS_ = new JSlot();
 		this.setStyleClass("Wt-slider-bg");
 		this.slider_
 				.addStyleClass("Wt-slider-"
@@ -52,6 +53,7 @@ class PaintedSlider extends WPaintedWidget {
 		this.handle_.touchMoved().addListener(this.mouseMovedJS_);
 		this.handle_.mouseWentUp().addListener(this.mouseUpJS_);
 		this.handle_.touchEnded().addListener(this.mouseUpJS_);
+		this.handle_.clicked().addListener(this.handleClickedJS_);
 		slider.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
 				PaintedSlider.this.onSliderClick(e1);
@@ -98,8 +100,8 @@ class PaintedSlider extends WPaintedWidget {
 		StringBuilder computeD = new StringBuilder();
 		computeD.append("var objh = ").append(this.handle_.getJsRef()).append(
 				",").append("objf = ").append(this.fill_.getJsRef())
-				.append(",").append("objb = ").append(this.getJsRef()).append(
-						",").append("page_u = WT.pageCoordinates(event).")
+				.append(",").append("objb = ").append(this.slider_.getJsRef())
+				.append(",").append("page_u = WT.pageCoordinates(event).")
 				.append(u).append(",").append(
 						"widget_page_u = WT.widgetPageCoordinates(objb).")
 				.append(u).append(",").append("pos = page_u - widget_page_u,")
@@ -133,8 +135,7 @@ class PaintedSlider extends WPaintedWidget {
 		} else {
 			mouseMovedJS.append(this.slider_.getMaximum()).append(" - v");
 		}
-		mouseMovedJS.append(";").append(
-				"var f = objb.parentNode.onValueChange;").append(
+		mouseMovedJS.append(";").append("var f = objb.onValueChange;").append(
 				"if (f) f(vs);");
 		if (this.slider_.sliderMoved().needsUpdate(true)) {
 			mouseMovedJS.append(this.slider_.sliderMoved().createCall("vs"));
@@ -155,6 +156,9 @@ class PaintedSlider extends WPaintedWidget {
 				+ (enabled ? mouseMovedJS.toString() : "") + "}");
 		this.mouseUpJS_.setJavaScript("function(obj, event) {"
 				+ (enabled ? mouseUpJS.toString() : "") + "}");
+		this.handleClickedJS_.setJavaScript("function(obj, event) {"
+				+ "Wt3_3_2" + ".cancelEvent(event," + "Wt3_3_2"
+				+ ".CancelPropagate); }");
 		this.update();
 		this.updateSliderPosition();
 	}
@@ -219,10 +223,13 @@ class PaintedSlider extends WPaintedWidget {
 	protected void paintEvent(WPaintDevice paintDevice) {
 		int tickInterval = this.slider_.getTickInterval();
 		int r = this.getRange();
+		if (r == 0) {
+			return;
+		}
 		if (tickInterval == 0) {
 			tickInterval = r / 2;
 		}
-		int numTicks = r / tickInterval + 1;
+		int numTicks = tickInterval == 0 ? 2 : r / tickInterval + 1;
 		if (numTicks < 1) {
 			return;
 		}
@@ -259,6 +266,7 @@ class PaintedSlider extends WPaintedWidget {
 	private JSlot mouseDownJS_;
 	private JSlot mouseMovedJS_;
 	private JSlot mouseUpJS_;
+	private JSlot handleClickedJS_;
 	private WInteractWidget handle_;
 	private WInteractWidget fill_;
 

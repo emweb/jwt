@@ -19,18 +19,3 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Text extends WText {
-	private static Logger logger = LoggerFactory.getLogger(Text.class);
-
-	public Text() {
-		super();
-	}
-
-	public WString getCalculateToolTip() {
-		return new WString("Deferred tooltip");
-	}
-
-	public WString getToolTip() {
-		return this.getCalculateToolTip();
-	}
-}

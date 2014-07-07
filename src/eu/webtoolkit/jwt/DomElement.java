@@ -83,6 +83,7 @@ public class DomElement {
 		this.javaScriptEvenWhenDeleted_ = "";
 		this.var_ = "";
 		this.attributes_ = new HashMap<String, String>();
+		this.removedAttributes_ = new HashSet<String>();
 		this.properties_ = new TreeMap<Property, String>();
 		this.eventHandlers_ = new HashMap<String, DomElement.EventHandler>();
 		this.childrenToAdd_ = new ArrayList<DomElement.ChildInsertion>();
@@ -258,6 +259,7 @@ public class DomElement {
 	public void setAttribute(final String attribute, final String value) {
 		++this.numManipulations_;
 		this.attributes_.put(attribute, value);
+		this.removedAttributes_.remove(attribute);
 	}
 
 	/**
@@ -279,7 +281,9 @@ public class DomElement {
 	 * Removes an attribute.
 	 */
 	public void removeAttribute(final String attribute) {
+		++this.numManipulations_;
 		this.attributes_.remove(attribute);
+		this.removedAttributes_.add(attribute);
 	}
 
 	/**
@@ -1373,6 +1377,7 @@ public class DomElement {
 		assert this.replaced_ == null;
 		assert this.insertBefore_ == null;
 		this.attributes_.clear();
+		this.removedAttributes_.clear();
 		this.eventHandlers_.clear();
 		for (Iterator<Map.Entry<Property, String>> i_it = this.properties_
 				.entrySet().iterator(); i_it.hasNext();) {
@@ -1680,6 +1685,13 @@ public class DomElement {
 				out.append(");\n");
 			}
 		}
+		for (Iterator<String> i_it = this.removedAttributes_.iterator(); i_it
+				.hasNext();) {
+			String i = i_it.next();
+			this.declare(out);
+			out.append(this.var_).append(".removeAttribute('").append(i)
+					.append("');\n");
+		}
 	}
 
 	private void setJavaScriptEvent(final EscapeOStream out, String eventName,
@@ -1848,6 +1860,7 @@ public class DomElement {
 	private String var_;
 	private boolean declared_;
 	private Map<String, String> attributes_;
+	private Set<String> removedAttributes_;
 	private SortedMap<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 

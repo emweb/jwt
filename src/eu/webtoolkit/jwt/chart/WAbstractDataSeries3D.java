@@ -299,17 +299,17 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Set the point sprite used for drawing this dataseries.
 	 * <p>
-	 * This should be a local path to an image, such as a PNG or GIF. Only the
-	 * alpha channel of this image is used: the sprite only decides if a pixel
-	 * in the point appears or not. If the alpha value is 1, the pixel is drawn,
-	 * otherwise it isn&apos;t.
+	 * This should be a local (server side) path to an image, such as a PNG or
+	 * GIF. Only the alpha channel of this image is used: the sprite only
+	 * decides if a pixel in the point appears or not. If the alpha value is
+	 * below 0.5, the pixel is discarded.
 	 * <p>
 	 * For best effect, the point sprite&apos;s width and height should be the
 	 * same as the {@link WAbstractDataSeries3D#getPointSize() getPointSize()},
 	 * and the chart&apos;s antialiasing should be disabled.
 	 * <p>
 	 * Defaults to the empty string, meaning that every pixel of the point will
-	 * be drawn.
+	 * be drawn, yielding a square.
 	 */
 	public void setPointSprite(final String image) {
 		if (!image.equals(this.pointSprite_)) {
@@ -652,7 +652,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 			WColor seriesColor = this.getChartpaletteColor();
 			WPainter painter = new WPainter(cpd);
 			painter.setPen(new WPen(seriesColor));
-			painter.drawLine(0, 0, 1, 1);
+			painter.drawLine(0, 0.5, 1, 0.5);
 			painter.end();
 		} else {
 			cpd = this.chart_.createPaintDevice(new WLength(1), new WLength(
@@ -673,8 +673,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	protected WGLWidget.Texture getPointSpriteTexture() {
 		WGLWidget.Texture tex = this.chart_.createTexture();
 		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D, tex);
-		if (this.pointSprite_.length() != 0
-				&& !WApplication.getInstance().getEnvironment().agentIsIE()) {
+		if (this.pointSprite_.length() != 0) {
 			this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
 					WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,
 					WGLWidget.GLenum.UNSIGNED_BYTE, this.pointSprite_);
@@ -684,7 +683,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 			WColor color = new WColor(255, 255, 255, 255);
 			WPainter painter = new WPainter(cpd);
 			painter.setPen(new WPen(color));
-			painter.drawLine(0, 0, 1, 1);
+			painter.drawLine(0, 0.5, 1, 0.5);
 			painter.end();
 			this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
 					WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,

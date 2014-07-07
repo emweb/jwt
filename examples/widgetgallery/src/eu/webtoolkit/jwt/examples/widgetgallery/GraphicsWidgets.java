@@ -464,6 +464,9 @@ class GraphicsWidgets extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WCartesian3DChart chart = new WCartesian3DChart(container);
 		chart.setType(ChartType.ScatterPlot);
+		chart.setRenderOptions(EnumSet.of(
+				WGLWidget.RenderOption.ClientSideRendering,
+				WGLWidget.RenderOption.AntiAliasing));
 		final WCssDecorationStyle style = new WCssDecorationStyle();
 		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
 				WColor.black));
@@ -531,6 +534,9 @@ class GraphicsWidgets extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WCartesian3DChart chart = new WCartesian3DChart(container);
 		chart.setType(ChartType.CategoryChart);
+		chart.setRenderOptions(EnumSet.of(
+				WGLWidget.RenderOption.ClientSideRendering,
+				WGLWidget.RenderOption.AntiAliasing));
 		final WCssDecorationStyle style = new WCssDecorationStyle();
 		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
 				WColor.black));

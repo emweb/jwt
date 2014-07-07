@@ -34,23 +34,43 @@ public class WSound extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WSound.class);
 
 	/**
-	 * Constructs a sound object that will play the given URL.
+	 * Constructs a sound object.
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>As of JWt 3.1.10, the <code>url</code> must specify an
-	 * MP3 file. </i>
-	 * </p>
+	 * 
+	 * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
 	 */
-	public WSound(final String url, WObject parent) {
+	public WSound(WObject parent) {
 		super(parent);
-		this.url_ = url;
+		this.media_ = new ArrayList<WSound.Source>();
 		this.loops_ = 1;
-		this.sm_ = WApplication.getInstance().getSoundManager();
-		this.sm_.add(this);
 	}
 
 	/**
-	 * Constructs a sound object that will play the given URL.
+	 * Constructs a sound object.
+	 * <p>
+	 * Calls {@link #WSound(WObject parent) this((WObject)null)}
+	 */
+	public WSound() {
+		this((WObject) null);
+	}
+
+	/**
+	 * Constructs a sound object for an MP3 media source.
+	 * <p>
+	 * The <code>url</code> will be assumed to be an MP3 file.
+	 * <p>
+	 * 
+	 * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
+	 */
+	public WSound(final String url, WObject parent) {
+		super(parent);
+		this.media_ = new ArrayList<WSound.Source>();
+		this.loops_ = 1;
+		this.addSource(WMediaPlayer.Encoding.MP3, new WLink(url));
+	}
+
+	/**
+	 * Constructs a sound object for an MP3 media source.
 	 * <p>
 	 * Calls {@link #WSound(String url, WObject parent) this(url,
 	 * (WObject)null)}
@@ -60,13 +80,64 @@ public class WSound extends WObject {
 	}
 
 	/**
-	 * Returns the sound url.
+	 * Constructs a sound object.
 	 * <p>
 	 * 
-	 * @see WSound#WSound(String url, WObject parent)
+	 * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
+	 */
+	public WSound(WMediaPlayer.Encoding encoding, final WLink link,
+			WObject parent) {
+		super(parent);
+		this.media_ = new ArrayList<WSound.Source>();
+		this.loops_ = 1;
+		this.addSource(encoding, link);
+	}
+
+	/**
+	 * Constructs a sound object.
+	 * <p>
+	 * Calls
+	 * {@link #WSound(WMediaPlayer.Encoding encoding, WLink link, WObject parent)
+	 * this(encoding, link, (WObject)null)}
+	 */
+	public WSound(WMediaPlayer.Encoding encoding, final WLink link) {
+		this(encoding, link, (WObject) null);
+	}
+
+	/**
+	 * Adds a media source.
+	 * <p>
+	 * You may add multiple media sources (with different encodings) to allow
+	 * the file to be played in more browsers without needing Flash plugins.
+	 */
+	public void addSource(WMediaPlayer.Encoding encoding, final WLink link) {
+		this.media_.add(new WSound.Source(encoding, link));
+		WApplication.getInstance().getSoundManager().add(this);
+	}
+
+	/**
+	 * Returns the media source (<b>deprecated</b>).
+	 * <p>
+	 * 
+	 * @deprecated use getSource(WMediaPlayer::Encoding) instead.
 	 */
 	public String getUrl() {
-		return this.url_;
+		return this.getSource(WMediaPlayer.Encoding.MP3).getUrl();
+	}
+
+	/**
+	 * Returns the media source.
+	 * <p>
+	 * This returns the link set for a specific encoding, or an empty link if no
+	 * URL was set for that encoding.
+	 */
+	public WLink getSource(WMediaPlayer.Encoding encoding) {
+		for (int i = 0; i < this.media_.size(); ++i) {
+			if (this.media_.get(i).encoding == encoding) {
+				return this.media_.get(i).link;
+			}
+		}
+		return new WLink();
 	}
 
 	/**
@@ -102,7 +173,7 @@ public class WSound extends WObject {
 	 * object.
 	 */
 	public void play() {
-		this.sm_.play(this, this.loops_);
+		WApplication.getInstance().getSoundManager().play(this, this.loops_);
 	}
 
 	/**
@@ -112,10 +183,21 @@ public class WSound extends WObject {
 	 * of the sound to be stopped.
 	 */
 	public void stop() {
-		this.sm_.stop(this);
+		WApplication.getInstance().getSoundManager().stop(this);
 	}
 
-	private String url_;
+	static class Source {
+		private static Logger logger = LoggerFactory.getLogger(Source.class);
+
+		public Source(WMediaPlayer.Encoding anEncoding, WLink aLink) {
+			this.encoding = anEncoding;
+			this.link = aLink;
+		}
+
+		public WMediaPlayer.Encoding encoding;
+		public WLink link;
+	}
+
+	List<WSound.Source> media_;
 	private int loops_;
-	private SoundManager sm_;
 }

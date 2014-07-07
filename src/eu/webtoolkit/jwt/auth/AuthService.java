@@ -340,16 +340,43 @@ public class AuthService {
 	 */
 	public void setEmailVerificationEnabled(boolean enabled) {
 		this.emailVerification_ = enabled;
+		if (!enabled) {
+			this.emailVerificationReq_ = false;
+		}
 	}
 
 	/**
-	 * Returns wheter email verification is configured.
+	 * Returns whether email verification is configured.
 	 * <p>
 	 * 
 	 * @see AuthService#setEmailVerificationEnabled(boolean enabled)
 	 */
 	public boolean isEmailVerificationEnabled() {
 		return this.emailVerification_;
+	}
+
+	/**
+	 * Configure email verificiation to be required for login.
+	 * <p>
+	 * When enabled, a user will not be able to login if the email-address was
+	 * not verified.
+	 */
+	public void setEmailVerificationRequired(boolean enabled) {
+		this.emailVerificationReq_ = enabled;
+		if (enabled) {
+			this.emailVerification_ = true;
+		}
+	}
+
+	/**
+	 * <p>
+	 * \ Returns whether email verification is required for login.
+	 * <p>
+	 * 
+	 * @see AuthService#setEmailVerificationRequired(boolean enabled)
+	 */
+	public boolean isEmailVerificationRequired() {
+		return this.emailVerificationReq_;
 	}
 
 	/**
@@ -648,6 +675,7 @@ public class AuthService {
 	private HashFunction tokenHashFunction_;
 	private int tokenLength_;
 	private boolean emailVerification_;
+	private boolean emailVerificationReq_;
 	private int emailTokenValidity_;
 	private String redirectInternalPath_;
 	private boolean authTokens_;

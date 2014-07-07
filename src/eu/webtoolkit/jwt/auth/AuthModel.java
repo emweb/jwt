@@ -253,7 +253,7 @@ public class AuthModel extends FormBaseModel {
 		if (this.isValid()) {
 			User user = this.getUsers().findWithIdentity(Identity.LoginName,
 					this.valueText(LoginNameField));
-			if (user.isValid()) {
+			if (this.loginUser(login, user)) {
 				Object v = this.getValue(RememberMeField);
 				if (!(v == null) && (Boolean) v == true) {
 					WApplication app = WApplication.getInstance();
@@ -261,11 +261,13 @@ public class AuthModel extends FormBaseModel {
 							this.getBaseAuth().createAuthToken(user), this
 									.getBaseAuth().getAuthTokenValidity() * 60);
 				}
-				login.login(user);
 				return true;
+			} else {
+				return false;
 			}
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	/**

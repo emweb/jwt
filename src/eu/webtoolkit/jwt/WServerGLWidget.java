@@ -1941,13 +1941,13 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	      throw new WException("JavaScriptVector: vector already initialized");
 
 	    List<Float> v = vec.getValue();
-	    js_.append(vec.getJsRef()).append("= new Float32Array([");
+	    js_.append(vec.getJsRef()).append("= [");
 	    for (int i = 0; i < vec.getLength(); i++) {
 	      if (i != 0)
 		js_.append(",");
 	      js_.append(String.valueOf(v.get(i)));
 	    }
-	    js_.append("]);");
+	    js_.append("];");
 
 	    vec.initialize();
 	}
@@ -2090,6 +2090,10 @@ public class WServerGLWidget extends WAbstractGLImplementation {
         	System.out.println(glCtx_.glGetError());
 	}
 
+	@Override
+	public JsArrayType getArrayType() {
+	  return JsArrayType.Array;
+	}
 
 	@Override
 	public void injectJS(String jsString) { // only functional for WClientGLWidget

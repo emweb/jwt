@@ -453,6 +453,9 @@ public class WSlider extends WFormWidget {
 			this.paintedSlider_.setDisabled(disabled);
 		}
 		super.setDisabled(disabled);
+		if (this.paintedSlider_ != null) {
+			this.paintedSlider_.updateState();
+		}
 	}
 
 	public void resize(final WLength width, final WLength height) {

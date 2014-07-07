@@ -991,15 +991,11 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					this.chart_.disable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
 					this.chart_.disableVertexAttribArray(this.vertexPosAttr_);
 				} else {
-					if (!WApplication.getInstance().getEnvironment()
-							.agentIsIE()) {
-						this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-								this.vertexSizeBuffers_.get(i));
-						this.chart_.vertexAttribPointer(this.vertexSizeAttr_,
-								1, WGLWidget.GLenum.FLOAT, false, 0, 0);
-						this.chart_
-								.enableVertexAttribArray(this.vertexSizeAttr_);
-					}
+					this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+							this.vertexSizeBuffers_.get(i));
+					this.chart_.vertexAttribPointer(this.vertexSizeAttr_, 1,
+							WGLWidget.GLenum.FLOAT, false, 0, 0);
+					this.chart_.enableVertexAttribArray(this.vertexSizeAttr_);
 					this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE1);
 					this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 							this.pointSpriteTexture_);
@@ -1009,11 +1005,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 							this.vertexPosBufferSizes_.get(i) / 3);
 					this.chart_.disableVertexAttribArray(this.vertexPosAttr_);
-					if (!WApplication.getInstance().getEnvironment()
-							.agentIsIE()) {
-						this.chart_
-								.disableVertexAttribArray(this.vertexSizeAttr_);
-					}
+					this.chart_.disableVertexAttribArray(this.vertexSizeAttr_);
 				}
 			}
 			if (this.seriesType_ == Series3DType.BarSeries3D
@@ -1076,13 +1068,11 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
 			this.chart_.enableVertexAttribArray(this.vertexColAttr2_);
 			if (this.seriesType_ == Series3DType.PointSeries3D) {
-				if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-					this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-							this.vertexSizeBuffers2_.get(i));
-					this.chart_.vertexAttribPointer(this.vertexSizeAttr2_, 1,
-							WGLWidget.GLenum.FLOAT, false, 0, 0);
-					this.chart_.enableVertexAttribArray(this.vertexSizeAttr2_);
-				}
+				this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+						this.vertexSizeBuffers2_.get(i));
+				this.chart_.vertexAttribPointer(this.vertexSizeAttr2_, 1,
+						WGLWidget.GLenum.FLOAT, false, 0, 0);
+				this.chart_.enableVertexAttribArray(this.vertexSizeAttr2_);
 				this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
 				this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 						this.pointSpriteTexture_);
@@ -1091,9 +1081,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						.getHeight().getValue());
 				this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0,
 						this.vertexPosBuffer2Sizes_.get(i) / 3);
-				if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-					this.chart_.disableVertexAttribArray(this.vertexSizeAttr2_);
-				}
+				this.chart_.disableVertexAttribArray(this.vertexSizeAttr2_);
 			} else {
 				if (this.seriesType_ == Series3DType.BarSeries3D) {
 					this.chart_.bindBuffer(
@@ -1222,21 +1210,33 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						Axis.ZAxis_3D);
 				this.chart_.uniform1f(this.offset_, min);
 				this.chart_.uniform1f(this.scaleFactor_, 1.0 / (max - min));
-				if (this.seriesType_ == Series3DType.SurfaceSeries3D
-						&& this.isoLineHeights_.size() > 0) {
-					this.chart_.useProgram(this.isoLineProgram_);
-					this.chart_.uniform1f(this.isoLine_offset_, min);
-					this.chart_.uniform1f(this.isoLine_scaleFactor_,
-							1.0 / (max - min));
-				}
 			} else {
 				this.chart_.uniform1f(this.offset_, 0.0);
 				this.chart_.uniform1f(this.scaleFactor_, 1.0);
-				if (this.seriesType_ == Series3DType.SurfaceSeries3D
-						&& this.isoLineHeights_.size() > 0) {
-					this.chart_.useProgram(this.isoLineProgram_);
-					this.chart_.uniform1f(this.isoLine_offset_, 0.0);
-					this.chart_.uniform1f(this.isoLine_scaleFactor_, 1.0);
+			}
+			if (this.isoLineHeights_.size() > 0) {
+				this.chart_.useProgram(this.isoLineProgram_);
+				if (this.isoLineColorMap_ != null) {
+					min = this.chart_.toPlotCubeCoords(this.isoLineColorMap_
+							.getMinimum(), Axis.ZAxis_3D);
+					max = this.chart_.toPlotCubeCoords(this.isoLineColorMap_
+							.getMaximum(), Axis.ZAxis_3D);
+					this.chart_.uniform1f(this.isoLine_offset_, min);
+					this.chart_.uniform1f(this.isoLine_scaleFactor_,
+							1.0 / (max - min));
+				} else {
+					if (this.colormap_ != null) {
+						min = this.chart_.toPlotCubeCoords(this.colormap_
+								.getMinimum(), Axis.ZAxis_3D);
+						max = this.chart_.toPlotCubeCoords(this.colormap_
+								.getMaximum(), Axis.ZAxis_3D);
+						this.chart_.uniform1f(this.isoLine_offset_, min);
+						this.chart_.uniform1f(this.isoLine_scaleFactor_,
+								1.0 / (max - min));
+					} else {
+						this.chart_.uniform1f(this.isoLine_offset_, 0.0);
+						this.chart_.uniform1f(this.isoLine_scaleFactor_, 1.0);
+					}
 				}
 			}
 			break;
@@ -1395,6 +1395,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			if (!this.vertexPosBuffers2_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.vertexPosBuffers2_.get(i));
 				this.vertexPosBuffers2_.get(i).clear();
+			}
+		}
+		for (int i = 0; i < this.vertexColorBuffers2_.size(); i++) {
+			if (!this.vertexColorBuffers2_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.vertexColorBuffers2_.get(i));
 				this.vertexColorBuffers2_.get(i).clear();
 			}
@@ -1417,10 +1421,22 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				this.indexBuffers_.get(i).clear();
 			}
 		}
+		for (int i = 0; i < this.indexBuffers2_.size(); i++) {
+			if (!this.indexBuffers2_.get(i).isNull()) {
+				this.chart_.deleteBuffer(this.indexBuffers2_.get(i));
+				this.indexBuffers2_.get(i).clear();
+			}
+		}
 		for (int i = 0; i < this.overlayLinesBuffers_.size(); i++) {
 			if (!this.overlayLinesBuffers_.get(i).isNull()) {
 				this.chart_.deleteBuffer(this.overlayLinesBuffers_.get(i));
 				this.overlayLinesBuffers_.get(i).clear();
+			}
+		}
+		for (int i = 0; i < this.overlayLinesBuffers2_.size(); i++) {
+			if (!this.overlayLinesBuffers2_.get(i).isNull()) {
+				this.chart_.deleteBuffer(this.overlayLinesBuffers2_.get(i));
+				this.overlayLinesBuffers2_.get(i).clear();
 			}
 		}
 		for (int i = 0; i < this.colormapTexBuffers_.size(); i++) {
@@ -1437,6 +1453,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.vertexSizeBuffers2_.clear();
 		this.vertexColorBuffers2_.clear();
 		this.indexBuffers_.clear();
+		this.indexBuffers2_.clear();
 		this.indexBufferSizes_.clear();
 		this.indexBufferSizes2_.clear();
 		this.overlayLinesBuffers_.clear();
@@ -1569,10 +1586,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.chart_.linkProgram(this.seriesProgram_);
 			this.vertexPosAttr_ = this.chart_.getAttribLocation(
 					this.seriesProgram_, "aVertexPosition");
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-				this.vertexSizeAttr_ = this.chart_.getAttribLocation(
-						this.seriesProgram_, "aPointSize");
-			}
+			this.vertexSizeAttr_ = this.chart_.getAttribLocation(
+					this.seriesProgram_, "aPointSize");
 			this.mvMatrixUniform_ = this.chart_.getUniformLocation(
 					this.seriesProgram_, "uMVMatrix");
 			this.pMatrix_ = this.chart_.getUniformLocation(this.seriesProgram_,
@@ -1605,10 +1620,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.chart_.linkProgram(this.colSeriesProgram_);
 			this.vertexPosAttr2_ = this.chart_.getAttribLocation(
 					this.colSeriesProgram_, "aVertexPosition");
-			if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-				this.vertexSizeAttr2_ = this.chart_.getAttribLocation(
-						this.colSeriesProgram_, "aPointSize");
-			}
+			this.vertexSizeAttr2_ = this.chart_.getAttribLocation(
+					this.colSeriesProgram_, "aPointSize");
 			this.vertexColAttr2_ = this.chart_.getAttribLocation(
 					this.colSeriesProgram_, "aColor");
 			this.mvMatrixUniform2_ = this.chart_.getUniformLocation(

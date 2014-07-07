@@ -2257,6 +2257,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						String.valueOf(rotStep)).append("));");
 	}
 
+	public JsArrayType getArrayType() {
+		return JsArrayType.Float32Array;
+	}
+
 	public void injectJS(final String jsString) {
 		this.js_.append(jsString);
 	}

@@ -37,6 +37,8 @@ class WebSession {
 			EntryPointType type, final String favicon, WebRequest request,
 			WEnvironment env) {
 		this.mutex_ = new ReentrantLock();
+		this.eventQueueMutex_ = new ReentrantLock();
+		this.eventQueue_ = new LinkedList<ApplicationEvent>();
 		this.type_ = type;
 		this.favicon_ = favicon;
 		this.state_ = WebSession.State.JustCreated;
@@ -129,7 +131,8 @@ class WebSession {
 	}
 
 	public boolean isAttachThreadToLockedHandler() {
-		Handler.attachThreadToHandler(new WebSession.Handler(this, false));
+		Handler.attachThreadToHandler(new WebSession.Handler(this,
+				WebSession.Handler.LockOption.NoLock));
 		return true;
 	}
 
@@ -196,10 +199,38 @@ class WebSession {
 	}
 
 	public void externalNotify(final WEvent.Impl event) {
+		try {
+			if (this.recursiveEventHandler_ != null) {
+				this.newRecursiveEvent_ = new WEvent.Impl(event);
+				this.recursiveEvent_.signal();
+				while (this.newRecursiveEvent_ != null) {
+					this.recursiveEventDone_.awaitUninterruptibly();
+				}
+			} else {
+				if (this.app_ != null) {
+					this.app_.notify(new WEvent(event));
+				} else {
+					this.notify(new WEvent(event));
+				}
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 	}
 
 	public void notify(final WEvent event) throws IOException {
 		final WebSession.Handler handler = event.impl_.handler;
+		if (event.impl_.function != null) {
+			event.impl_.function.run();
+			;
+			if (event.impl_.handler.getRequest() != null) {
+				this.render(event.impl_.handler);
+			}
+			return;
+		}
+		if (!(handler.getResponse() != null)) {
+			return;
+		}
 		final WebRequest request = handler.getRequest();
 		final WebResponse response = handler.getResponse();
 		if (WebSession.Handler.getInstance() != handler) {
@@ -210,6 +241,12 @@ class WebSession {
 			return;
 		}
 		String requestE = request.getParameter("request");
+		if (requestE != null && requestE.equals("jserror")) {
+			this.app_.handleJavaScriptError(request.getParameter("err"));
+			this.renderer_.setJSSynced(false);
+			this.render(handler);
+			return;
+		}
 		String pageIdE = request.getParameter("pageId");
 		if (pageIdE != null
 				&& !pageIdE.equals(String.valueOf(this.renderer_.getPageId()))) {
@@ -1045,6 +1082,17 @@ class WebSession {
 	static class Handler {
 		private static Logger logger = LoggerFactory.getLogger(Handler.class);
 
+		enum LockOption {
+			NoLock, TryLock, TakeLock;
+
+			/**
+			 * Returns the numerical representation of this enum.
+			 */
+			public int getValue() {
+				return ordinal();
+			}
+		}
+
 		public Handler() {
 			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
@@ -1069,7 +1117,8 @@ class WebSession {
 			this.init();
 		}
 
-		public Handler(WebSession session, boolean takeLock) {
+		public Handler(WebSession session,
+				WebSession.Handler.LockOption lockOption) {
 			this.nextSignal = -1;
 			this.signalOrder = new ArrayList<Integer>();
 			this.prevHandler_ = null;
@@ -1077,8 +1126,15 @@ class WebSession {
 			this.request_ = null;
 			this.response_ = null;
 			this.killed_ = false;
-			if (takeLock) {
+			switch (lockOption) {
+			case NoLock:
+				break;
+			case TakeLock:
 				session.getMutex().lock();
+				break;
+			case TryLock:
+				session.getMutex().tryLock();
+				break;
 			}
 			this.init();
 		}
@@ -1097,6 +1153,7 @@ class WebSession {
 
 		public void release() {
 			if (this.isHaveLock()) {
+				this.session_.processQueuedEvents(this);
 				if (this.session_.triggerUpdate_) {
 					this.session_.pushUpdates();
 				}
@@ -1157,7 +1214,7 @@ class WebSession {
 								.toString());
 				WebSession.Handler
 						.attachThreadToHandler(new WebSession.Handler(session,
-								false));
+								WebSession.Handler.LockOption.NoLock));
 			}
 		}
 
@@ -1252,7 +1309,8 @@ class WebSession {
 			}
 			if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
 					&& this.state_ != WebSession.State.JustCreated
-					&& (requestE != null && (requestE.equals("jsupdate") || requestE
+					&& (requestE != null && (requestE.equals("jsupdate")
+							|| requestE.equals("jserror") || requestE
 							.equals("resource")))) {
 				logger.debug(new StringWriter().append("CSRF: ").append(
 						wtdE != null ? wtdE : "no wtd").append(" != ").append(
@@ -1270,6 +1328,7 @@ class WebSession {
 							this.init(request);
 							if (requestE != null) {
 								if (requestE.equals("jsupdate")
+										|| requestE.equals("jserror")
 										|| requestE.equals("script")) {
 									handler.getResponse().setResponseType(
 											WebRequest.ResponseType.Update);
@@ -1398,7 +1457,8 @@ class WebSession {
 					case ExpectLoad:
 					case Loaded: {
 						if (requestE != null) {
-							if (requestE.equals("jsupdate")) {
+							if (requestE.equals("jsupdate")
+									|| requestE.equals("jserror")) {
 								handler.getResponse().setResponseType(
 										WebRequest.ResponseType.Update);
 							} else {
@@ -1612,6 +1672,12 @@ class WebSession {
 	}
 
 	// public void generateNewSessionId() ;
+	public void queueEvent(final ApplicationEvent event) {
+		this.eventQueueMutex_.lock();
+		this.eventQueue_.addLast(event);
+		this.eventQueueMutex_.unlock();
+	}
+
 	private void handleWebSocketRequest(final WebSession.Handler handler) {
 	}
 
@@ -1648,7 +1714,9 @@ class WebSession {
 	}
 
 	private ReentrantLock mutex_;
+	private ReentrantLock eventQueueMutex_;
 	private static ThreadLocal<WebSession.Handler> threadHandler_ = new ThreadLocal<WebSession.Handler>();
+	private LinkedList<ApplicationEvent> eventQueue_;
 	private EntryPointType type_;
 	private String favicon_;
 	private WebSession.State state_;
@@ -2098,6 +2166,40 @@ class WebSession {
 		}
 	}
 
+	private void processQueuedEvents(final WebSession.Handler handler) {
+		for (;;) {
+			ApplicationEvent event = this.getPopQueuedEvent();
+			if (!event.isEmpty()) {
+				if (!this.isDead()) {
+					this
+							.externalNotify(new WEvent.Impl(handler,
+									event.function));
+					if (this.getApp() != null && this.getApp().isQuited()) {
+						this.kill();
+					}
+				} else {
+					if (event.fallbackFunction != null) {
+						event.fallbackFunction.run();
+					}
+					;
+				}
+			} else {
+				break;
+			}
+		}
+	}
+
+	private ApplicationEvent getPopQueuedEvent() {
+		this.eventQueueMutex_.lock();
+		ApplicationEvent result = new ApplicationEvent();
+		if (!this.eventQueue_.isEmpty()) {
+			result = this.eventQueue_.getFirst();
+			this.eventQueue_.removeFirst();
+		}
+		this.eventQueueMutex_.unlock();
+		return result;
+	}
+
 	private static UploadedFile uf;
 
 	static boolean isAbsoluteUrl(final String url) {
@@ -2122,6 +2224,10 @@ class WebSession {
 	}
 
 	static boolean isEqual(String s1, String s2) {
-		return s1 == s2;
+		if (s1 == null) {
+			return s2 == null;
+		} else {
+			return s1.equals(s2);
+		}
 	}
 }

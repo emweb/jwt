@@ -346,7 +346,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * @see WTestEnvironment#endRequest()
 	 */
 	public void startRequest() {
-		new WebSession.Handler(this.theSession_, true);
+		new WebSession.Handler(this.theSession_,
+				WebSession.Handler.LockOption.TakeLock);
 	}
 
 	/**
@@ -374,7 +375,8 @@ public class WTestEnvironment extends WEnvironment {
 		this.session_ = new WebSession(this.controller_, "testwtd", type, "",
 				(WebRequest) null, this);
 		this.theSession_ = this.session_;
-		new WebSession.Handler(this.theSession_, true);
+		new WebSession.Handler(this.theSession_,
+				WebSession.Handler.LockOption.TakeLock);
 		this.doesAjax_ = true;
 		this.doesCookies_ = true;
 		this.dpiScale_ = 1;

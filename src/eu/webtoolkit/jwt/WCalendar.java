@@ -629,8 +629,10 @@ public class WCalendar extends WCompositeWidget {
 		if (this.isSelected(date)) {
 			styleClass += " Wt-cal-sel";
 		}
-		if ((date == WDate.getCurrentDate() || (date != null && date
-				.equals(WDate.getCurrentDate())))) {
+		WDate currentDate = WDate.getCurrentDate();
+		if (date.getDay() == currentDate.getDay()
+				&& date.getMonth() == currentDate.getMonth()
+				&& date.getYear() == currentDate.getYear()) {
 			if (!this.isSelected(date)) {
 				styleClass += " Wt-cal-now";
 			}

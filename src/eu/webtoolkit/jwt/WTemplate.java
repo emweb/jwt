@@ -967,7 +967,7 @@ public class WTemplate extends WInteractWidget {
 	 * getTemplateText()}.
 	 */
 	public void renderTemplate(final Writer result) throws IOException {
-		this.renderTemplateText(result, this.text_);
+		this.renderTemplateText(result, this.getTemplateText());
 	}
 
 	/**

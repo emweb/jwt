@@ -428,6 +428,26 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Returns the horizontal resolution of the client&apos;s screen.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getScreenHeight()
+	 */
+	public int getScreenWidth() {
+		return this.screenWidth_;
+	}
+
+	/**
+	 * Returns the vertical resolution of the client&apos;s screen.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getScreenWidth()
+	 */
+	public int getScreenHeight() {
+		return this.screenHeight_;
+	}
+
+	/**
 	 * Returns the browser-side DPI scaling factor.
 	 * <p>
 	 * Internet Explorer scales all graphics, fonts and other elements on
@@ -896,6 +916,8 @@ public class WEnvironment {
 	boolean doesCookies_;
 	boolean hashInternalPaths_;
 	WEnvironment.UserAgent agent_;
+	protected int screenWidth_;
+	protected int screenHeight_;
 	double dpiScale_;
 	String queryString_;
 	protected boolean webGLsupported_;
@@ -1233,6 +1255,8 @@ public class WEnvironment {
 				this.publicDeploymentPath_ = "";
 			}
 		}
+		this.screenWidth_ = Integer.parseInt(request.getParameter("scrW"));
+		this.screenHeight_ = Integer.parseInt(request.getParameter("scrH"));
 	}
 
 	boolean agentSupportsAjax() {

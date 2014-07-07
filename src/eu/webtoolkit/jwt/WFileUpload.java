@@ -502,6 +502,9 @@ public class WFileUpload extends WWebWidget {
 					.getInstance()));
 		}
 		if (this.fileUploadTarget_ != null && this.flags_.get(BIT_DO_UPLOAD)) {
+			element
+					.setAttribute("action", this.fileUploadTarget_
+							.generateUrl());
 			element.callMethod("submit()");
 			this.flags_.clear(BIT_DO_UPLOAD);
 			if (containsProgress) {

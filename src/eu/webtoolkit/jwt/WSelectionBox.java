@@ -224,8 +224,8 @@ public class WSelectionBox extends WComboBox {
 							+ "].selected="
 							+ (this.isSelected(i) ? "true" : "false"));
 				}
-				this.selectionChanged_ = false;
 			}
+			this.selectionChanged_ = false;
 		}
 		super.updateDom(element, all);
 	}

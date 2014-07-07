@@ -635,9 +635,9 @@ class Layout extends TopicWidget {
 				toggleB.enable();
 			}
 		});
-		table.getRowAt(1).removeStyleClass("info");
 		removeB.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
+				table.getRowAt(1).removeStyleClass("info");
 				removeB.disable();
 			}
 		});

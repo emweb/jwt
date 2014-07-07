@@ -84,7 +84,7 @@ public abstract class WtServlet extends HttpServlet {
 	private ProgressListener progressListener;
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
 	private int ajaxSessions = 0;
-	private int sessions = 0;
+	private Map<String,WebSession> sessions = new HashMap<String,WebSession>();
 
 	private String redirectSecret_;
 
@@ -306,9 +306,9 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public abstract WApplication createApplication(WEnvironment env);
 
-	synchronized int addSession() {
-		++sessions;
-		return sessions;
+	synchronized int addSession(WebSession session) {
+		sessions.put(session.getSessionId(), session);
+		return sessions.size();
 	}
 
 	synchronized void newAjaxSession() {
@@ -318,8 +318,8 @@ public abstract class WtServlet extends HttpServlet {
 	synchronized int removeSession(WebSession session) {
 		if (session.getEnv().hasAjax())
 			--ajaxSessions;
-		--sessions;
-		return sessions;
+		sessions.remove(session.getSessionId());
+		return sessions.size();
 	}
 
 	/*
@@ -349,7 +349,7 @@ public abstract class WtServlet extends HttpServlet {
 				}
 				
 				wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), request);
-				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession() + ")");
+				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession(wsession) + ")");
 				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
 			}
 	
@@ -458,6 +458,50 @@ public abstract class WtServlet extends HttpServlet {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 
 		return servletApi.isAsyncSupported(handler != null ? handler.getRequest() : null);
+	}
+	
+	/**
+	 * Posts a task to be run within the scope of a session (and using the session lock).
+	 * 
+	 * Rather than taking an #{@link WApplication.UpdateLock} explicitly, which may stall the
+	 * current thread and also creates the risk of a dead lock scenario, it's usually better
+	 * to post the task asynchronously to an application session. This will either run the
+	 * task immediately (within the current thread if the other session is currently unlocked),
+	 * or queue the event to be run (by the thread currently holding the session lock) when
+	 * it is releasing the lock. Multiple posted events to the same session are thus guaranteed to
+	 * be run sequentially in the order they were posted.
+	 * 
+	 * @param app the application instance which needs to be locked
+	 * @param function the task to be run
+	 * @param fallBackFunction the task to be run in case the application has been quit or its session expired.
+	 */
+	public void post(WApplication app, Runnable function, Runnable fallBackFunction) {
+		WebSession wsession = app.getSession();
+		wsession.queueEvent(new ApplicationEvent(wsession.getSessionId(), function, fallBackFunction));
+		WebSession.Handler handler = null;
+		try {
+			handler = new WebSession.Handler(wsession, WebSession.Handler.LockOption.TryLock);
+		} finally {
+			handler.release();			
+		}
+	}
+
+	/**
+	 * Posts a task to be run within the scope of all currently active sessions.
+	 *
+	 * @see post()
+	 * @param function the task to be run
+	 */
+	public void postAll(Runnable function) {
+	        for (WebSession session : sessions.values()) {
+			session.queueEvent(new ApplicationEvent(session.getSessionId(), function));
+			WebSession.Handler handler = null;
+			try {
+				handler = new WebSession.Handler(session, WebSession.Handler.LockOption.TryLock);
+			} finally {
+			        handler.release();
+			}
+		}
 	}
 
     public boolean limitPlainHtmlSessions() {

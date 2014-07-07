@@ -53,6 +53,7 @@ public class WEvent {
 		private static Logger logger = LoggerFactory.getLogger(Impl.class);
 
 		public WebSession.Handler handler;
+		public Runnable function;
 		public boolean renderOnly;
 
 		Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
@@ -64,8 +65,15 @@ public class WEvent {
 			this(aHandler, false);
 		}
 
+		Impl(WebSession.Handler aHandler, final Runnable aFunction) {
+			this.handler = aHandler;
+			this.function = aFunction;
+			this.renderOnly = false;
+		}
+
 		Impl(final WEvent.Impl other) {
 			this.handler = other.handler;
+			this.function = other.function;
 			this.renderOnly = other.renderOnly;
 		}
 

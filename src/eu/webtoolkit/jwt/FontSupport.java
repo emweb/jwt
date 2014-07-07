@@ -225,7 +225,7 @@ class FontSupport {
 		List<String> files = new ArrayList<String>();
 		FileUtils.listFiles(path, files);
 		for (int i = 0; i < files.size(); ++i) {
-			String f = files.get(i).toLowerCase();
+			String f = files.get(i);
 			if (FileUtils.isDirectory(f)) {
 				if (recursive) {
 					this.matchFont(font, fontNames, f, recursive, match);
@@ -245,7 +245,7 @@ class FontSupport {
 	private void matchFont(final WFont font, final List<String> fontNames,
 			final String path, final FontMatch match) {
 		if (path.endsWith(".ttf") || path.endsWith(".ttc")) {
-			String name = FileUtils.leaf(path);
+			String name = FileUtils.leaf(path).toLowerCase();
 			name = name.substring(0, 0 + name.length() - 4);
 			StringUtils.replace(name, ' ', "");
 			List<String> weightVariants = new ArrayList<String>();

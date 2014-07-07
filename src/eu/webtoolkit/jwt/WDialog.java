@@ -637,10 +637,11 @@ public class WDialog extends WPopupWidget {
 				this.impl_.bindEmpty("center-script");
 			}
 		}
-		super.render(flags);
-		if (this.autoFocus_) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+				&& this.autoFocus_) {
 			this.impl_.isSetFirstFocus();
 		}
+		super.render(flags);
 	}
 
 	private WTemplate impl_;

@@ -286,7 +286,8 @@ public class AuthWidget extends WTemplateFormView {
 				break;
 			case EmailConfirmed:
 				this.displayInfo(tr("Wt.Auth.info-email-confirmed"));
-				this.login_.login(result.getUser());
+				User user = result.getUser();
+				this.model_.loginUser(this.login_, user);
 			}
 			if (WApplication.getInstance().getEnvironment().hasAjax()) {
 				WApplication.getInstance().setInternalPath("/");
@@ -294,9 +295,7 @@ public class AuthWidget extends WTemplateFormView {
 			return;
 		}
 		User user = this.model_.processAuthToken();
-		if (user.isValid()) {
-			this.login_.login(user, LoginState.WeakLogin);
-		}
+		this.model_.loginUser(this.login_, user, LoginState.WeakLogin);
 	}
 
 	/**
@@ -411,7 +410,9 @@ public class AuthWidget extends WTemplateFormView {
 	void attemptPasswordLogin() {
 		this.updateModel(this.model_);
 		if (this.model_.validate()) {
-			this.model_.login(this.login_);
+			if (!this.model_.login(this.login_)) {
+				this.updatePasswordLoginView();
+			}
 		} else {
 			this.updatePasswordLoginView();
 		}
@@ -684,14 +685,14 @@ public class AuthWidget extends WTemplateFormView {
 
 	// private void loginThrottle(int delay) ;
 	private void closeDialog() {
-		if (this.messageBox_ != null) {
-			if (this.messageBox_ != null)
-				this.messageBox_.remove();
-			this.messageBox_ = null;
-		} else {
+		if (this.dialog_ != null) {
 			if (this.dialog_ != null)
 				this.dialog_.remove();
 			this.dialog_ = null;
+		} else {
+			if (this.messageBox_ != null)
+				this.messageBox_.remove();
+			this.messageBox_ = null;
 		}
 	}
 
@@ -700,12 +701,14 @@ public class AuthWidget extends WTemplateFormView {
 		if (this.login_.isLoggedIn()) {
 			this.createLoggedInView();
 		} else {
-			if (this.model_.getBaseAuth().isAuthTokensEnabled()) {
-				WApplication.getInstance().removeCookie(
-						this.model_.getBaseAuth().getAuthTokenCookieName());
+			if (this.login_.getState() != LoginState.DisabledLogin) {
+				if (this.model_.getBaseAuth().isAuthTokensEnabled()) {
+					WApplication.getInstance().removeCookie(
+							this.model_.getBaseAuth().getAuthTokenCookieName());
+				}
+				this.model_.reset();
+				this.createLoginView();
 			}
-			this.model_.reset();
-			this.createLoginView();
 		}
 	}
 
@@ -740,7 +743,7 @@ public class AuthWidget extends WTemplateFormView {
 			User user = this.model_.getBaseAuth().identifyUser(identity,
 					this.model_.getUsers());
 			if (user.isValid()) {
-				this.login_.login(user);
+				this.model_.loginUser(this.login_, user);
 			} else {
 				this.registerNewUser(identity);
 			}

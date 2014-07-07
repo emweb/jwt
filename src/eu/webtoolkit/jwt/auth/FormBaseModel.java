@@ -143,6 +143,52 @@ public class FormBaseModel extends WFormModel {
 		return WString.tr("Wt.Auth." + field);
 	}
 
+	/**
+	 * Logs the user in.
+	 * <p>
+	 * Logs in the user, after checking whether the user can actually be logged
+	 * in. A valid user may be refused to login if its account is disabled (see
+	 * {@link User#getStatus() User#getStatus()}) or if it&apos;s email address
+	 * is unconfirmed and email confirmation is required.
+	 * <p>
+	 * Returns whether the user could be logged in.
+	 */
+	public boolean loginUser(final Login login, final User user,
+			LoginState state) {
+		if (!user.isValid()) {
+			return false;
+		}
+		if (user.getStatus() == User.Status.Disabled) {
+			this.setValidation(LoginNameField, new WValidator.Result(
+					WValidator.State.Invalid, WString
+							.tr("Wt.Auth.account-disabled")));
+			login.login(user, LoginState.DisabledLogin);
+			return false;
+		} else {
+			if (this.getBaseAuth().isEmailVerificationRequired()
+					&& user.getEmail().length() == 0) {
+				this.setValidation(LoginNameField, new WValidator.Result(
+						WValidator.State.Invalid, WString
+								.tr("Wt.Auth.email-unverified")));
+				login.login(user, LoginState.DisabledLogin);
+				return false;
+			} else {
+				login.login(user, state);
+				return true;
+			}
+		}
+	}
+
+	/**
+	 * Logs the user in.
+	 * <p>
+	 * Returns {@link #loginUser(Login login, User user, LoginState state)
+	 * loginUser(login, user, LoginState.StrongLogin)}
+	 */
+	public final boolean loginUser(final Login login, final User user) {
+		return loginUser(login, user, LoginState.StrongLogin);
+	}
+
 	protected void setValid(String field) {
 		this.setValid(field, WString.Empty);
 	}

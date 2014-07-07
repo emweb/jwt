@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * This theme implements support for building a JWt web application that uses
  * Twitter Bootstrap as a theme for its (layout and) styling. The theme comes
  * with CSS from Bootstrap version 2.2.2 or version 3.1. Only the CSS components
- * of twitter bootstrap or used, but not the JavaScript (i.e. the functional
+ * of twitter bootstrap are used, but not the JavaScript (i.e. the functional
  * parts), since the functionality is already built-in to the widgets from the
  * library.
  * <p>

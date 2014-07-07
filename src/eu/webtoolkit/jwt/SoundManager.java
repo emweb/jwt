@@ -44,41 +44,46 @@ class SoundManager extends WMediaPlayer {
 	}
 
 	public void add(WSound sound) {
-		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(
-				new WLink(sound.getUrl()))) {
-			this.clearSources();
-			this
-					.addSource(WMediaPlayer.Encoding.MP3, new WLink(sound
-							.getUrl()));
-		}
-	}
-
-	public void remove(WSound sound) {
+		this.setup(sound);
 	}
 
 	public void play(WSound sound, int loops) {
-		if (!this.getSource(WMediaPlayer.Encoding.MP3).equals(
-				new WLink(sound.getUrl()))) {
-			this.clearSources();
-			this
-					.addSource(WMediaPlayer.Encoding.MP3, new WLink(sound
-							.getUrl()));
-		}
+		this.setup(sound);
 		this.setAttributeValue("loops", "");
 		this.setAttributeValue("loops", String.valueOf(loops - 1));
+		this.current_ = sound;
 		super.play();
 	}
 
 	public void stop(WSound sound) {
 		super.stop();
+		this.current_ = null;
 	}
 
 	public boolean isFinished(WSound sound) {
-		if (this.getSource(WMediaPlayer.Encoding.MP3).equals(
-				new WLink(sound.getUrl()))) {
+		if (this.current_ == sound) {
 			return !this.isPlaying();
 		} else {
 			return true;
+		}
+	}
+
+	public void refresh() {
+	}
+
+	private WSound current_;
+
+	private void setup(WSound sound) {
+		for (int i = 0; i < sound.media_.size(); ++i) {
+			final WSound.Source m = sound.media_.get(i);
+			if (!this.getSource(m.encoding).equals(m.link)) {
+				this.clearSources();
+				for (int j = 0; j < sound.media_.size(); ++j) {
+					final WSound.Source m2 = sound.media_.get(j);
+					this.addSource(m2.encoding, m2.link);
+				}
+				break;
+			}
 		}
 	}
 }

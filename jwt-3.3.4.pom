@@ -51,5 +51,11 @@
       <artifactId>slf4j-api</artifactId>
       <version>1.6.4</version>
     </dependency>
+    
+    <dependency>
+      <groupId>java3d</groupId>
+      <artifactId>vecmath</artifactId>
+      <version>1.5.2</version>
+    </dependency>
   </dependencies>
 </project>

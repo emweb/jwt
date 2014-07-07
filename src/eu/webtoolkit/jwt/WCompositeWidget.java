@@ -390,6 +390,10 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.getWebWidget().propagateSetEnabled(enabled);
 	}
 
+	public boolean isSetFirstFocus() {
+		return this.impl_.getWebWidget().isSetFirstFocus();
+	}
+
 	void addChild(WWidget child) {
 		if (child != this.impl_) {
 			this.impl_.addChild(child);

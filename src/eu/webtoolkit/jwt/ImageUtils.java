@@ -45,7 +45,12 @@ class ImageUtils {
 		if (header.isEmpty()) {
 			return new WPoint();
 		} else {
-			return getSize(header);
+			String mimeType = identifyMimeType(header);
+			if (mimeType.equals("image/jpeg")) {
+				return getJpegSize(fileName);
+			} else {
+				return getSize(header);
+			}
 		}
 	}
 
@@ -70,6 +75,32 @@ class ImageUtils {
 				return new WPoint();
 			}
 		}
+	}
+
+	public static WPoint getJpegSize(final String fileName) {
+		List<Byte> header = FileUtils.fileHeader(fileName, 1000);
+		int pos = 2;
+		while (toUnsigned(header.get(pos)) == 0xFF) {
+			if (toUnsigned(header.get(pos + 1)) == 0xC0
+					|| toUnsigned(header.get(pos + 1)) == 0xC1
+					|| toUnsigned(header.get(pos + 1)) == 0xC2
+					|| toUnsigned(header.get(pos + 1)) == 0xC3
+					|| toUnsigned(header.get(pos + 1)) == 0xC9
+					|| toUnsigned(header.get(pos + 1)) == 0xCA
+					|| toUnsigned(header.get(pos + 1)) == 0xCB) {
+				break;
+			}
+			pos += 2 + (toUnsigned(header.get(pos + 2)) << 8)
+					+ toUnsigned(header.get(pos + 3));
+			if (pos + 12 > header.size()) {
+				break;
+			}
+		}
+		int height = toUnsigned(header.get(pos + 5) << 8)
+				+ toUnsigned(header.get(pos + 6));
+		int width = toUnsigned(header.get(pos + 7) << 8)
+				+ toUnsigned(header.get(pos + 8));
+		return new WPoint(width, height);
 	}
 
 	private static final int mimeTypeCount = 10;

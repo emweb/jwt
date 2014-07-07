@@ -217,9 +217,11 @@ public class WStackedWidget extends WContainerWidget {
 	 * <p>
 	 * When <code>autoReverse</code> is set to <code>true</code>, then the
 	 * reverse animation is chosen when the new index precedes the current
-	 * index. This only applies to WAnimation::SlideLeft,
-	 * WAnimation::SlideRight, WAnimation::SlideUp or WAnimation::SlideDown
-	 * transition effects.
+	 * index. This only applies to
+	 * {@link WAnimation.AnimationEffect#SlideInFromLeft},
+	 * {@link WAnimation.AnimationEffect#SlideInFromRight},
+	 * WAnimation::SlideInFromUp or WAnimation::SlideInFromDown transition
+	 * effects.
 	 * <p>
 	 * 
 	 * @see WStackedWidget#setCurrentIndex(int index)

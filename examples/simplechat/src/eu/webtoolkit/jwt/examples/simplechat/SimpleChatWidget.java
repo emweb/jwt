@@ -29,22 +29,18 @@ import eu.webtoolkit.jwt.WWebWidget;
 /**
  * A self-contained chat widget.
  */
-public class SimpleChatWidget extends WContainerWidget {
+public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 	/**
 	 * Create a chat widget that will connect to the given server.
 	 */
 	public SimpleChatWidget(SimpleChatServer server, WContainerWidget parent) {
 		super(parent);
 		server_ = server;
-		app_ = WApplication.getInstance();
 		messageReceived_ = new WSound("sounds/message_received.mp3");
 		user_ = server_.suggestGuest();
-		letLogin();
+		loggedIn_ = false;
 
-		// this widget supports server-side updates its processChatEvent()
-		// method is connected to a slot that is triggered from outside this
-		// session's event loop (usually because another user enters text).
-		app_.enableUpdates();
+		letLogin();
 	}
 
 	public void destroy() {
@@ -62,20 +58,17 @@ public class SimpleChatWidget extends WContainerWidget {
 		clear();
 
 		WVBoxLayout vLayout = new WVBoxLayout();
-		setLayout(vLayout, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
+		setLayout(vLayout);
 
 		WHBoxLayout hLayout = new WHBoxLayout();
 		vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
 
-		hLayout.addWidget(new WLabel("User name:"), 0,
-				AlignmentFlag.AlignMiddle);
-		hLayout.addWidget(userNameEdit_ = new WLineEdit(user_), 0,
-				AlignmentFlag.AlignMiddle);
+		hLayout.addWidget(new WLabel("User name:"), 0, AlignmentFlag.AlignMiddle);
+		hLayout.addWidget(userNameEdit_ = new WLineEdit(user_), 0, AlignmentFlag.AlignMiddle);
 		userNameEdit_.setFocus();
 
 		WPushButton b = new WPushButton("Login");
 		hLayout.addWidget(b, 0, AlignmentFlag.AlignMiddle);
-		hLayout.addStretch(1);
 
 		b.clicked().addListener(this, new Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent arg) {
@@ -100,13 +93,11 @@ public class SimpleChatWidget extends WContainerWidget {
 	 */
 	public boolean startChat(final String user) {
 		if (server_.login(user)) {
-			listener_ = new Signal1.Listener<ChatEvent>() {
-				public void trigger(ChatEvent ce) {
-					processChatEvent(ce);
-				}
-			};
-			server_.chatEvent().addListener(this, listener_);
+			if (server_.connect(this))
+				// Enable server-side updates (in processChatEvent())
+				WApplication.getInstance().enableUpdates();
 
+			loggedIn_ = true;
 			user_ = user;
 
 			clear();
@@ -161,7 +152,7 @@ public class SimpleChatWidget extends WContainerWidget {
 			hLayout.addWidget(b);
 
 			// Add nested layout to vertical layout with stretch = 0
-			vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
+			vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft);
 
 			setLayout(vLayout);
 
@@ -221,11 +212,10 @@ public class SimpleChatWidget extends WContainerWidget {
 	}
 
 	private SimpleChatServer server_;
-	private WApplication app_;
-
 	private JSlot clearInput_ = new JSlot();
 
 	private String user_;
+	private boolean loggedIn_;
 
 	private WLineEdit userNameEdit_;
 	private WText statusMsg_;
@@ -235,8 +225,6 @@ public class SimpleChatWidget extends WContainerWidget {
 	private WTextArea messageEdit_;
 	private WPushButton sendButton_;
 	private WContainerWidget userList_;
-
-	private Signal1.Listener<ChatEvent> listener_;
 
 	private WSound messageReceived_;
 
@@ -290,19 +278,15 @@ public class SimpleChatWidget extends WContainerWidget {
 		userList_.addWidget(new WText(usersStr));
 	}
 
-	/* called from another session */
-	private void processChatEvent(final ChatEvent event) {
+	@Override
+	public void processChatEvent(ChatEvent event) {
 		/*
 		 * This is where the "server-push" happens. This method is called when a
-		 * new event or message needs to be notified to the user. In general, it
-		 * is called from another session.
+		 * new event or message needs to be notified to the user. It is being posted
+		 * from another session, but within the context of this sesssion, i.e.
+		 * with proper locking of this session.
 		 */
-
-		/*
-		 * First, take the lock to safely manipulate the UI outside of the
-		 * normal event loop, by having exclusive access to the session.
-		 */
-		WApplication.UpdateLock lock = app_.getUpdateLock();
+		WApplication.getInstance().triggerUpdate();
 
 		/*
 		 * Format and append the line to the conversation.
@@ -331,23 +315,19 @@ public class SimpleChatWidget extends WContainerWidget {
 		/*
 		 * Little javascript trick to make sure we scroll along with new content
 		 */
-		app_.doJavaScript(messages_.getJsRef() + ".scrollTop += "
+		WApplication.getInstance().doJavaScript(messages_.getJsRef() + ".scrollTop += "
 				+ messages_.getJsRef() + ".scrollHeight;");
 
 		/* If this message belongs to another user, play a received sound */
 		if (event.user() != user_)
 			messageReceived_.play();
-
-		app_.triggerUpdate();
-		
-		lock.release();
 	}
 
 	private void doLogout() {
-		if (listener_ != null) {
-			server_.chatEvent().removeListener(listener_); // do not listen for more events
-			listener_ = null;
-			
+		if (loggedIn_) {
+			loggedIn_ = false;
+			if (server_.disconnect(this))
+				WApplication.getInstance().enableUpdates(false);
 			server_.logout(user_);
 		}
 	}

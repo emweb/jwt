@@ -682,6 +682,23 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	/**
+	 * Returns the anchor of this menu item.
+	 * <p>
+	 * Can be used to add widgets to the menu.
+	 */
+	public WAnchor getAnchor() {
+		for (int i = 0; i < this.getCount(); ++i) {
+			WAnchor result = ((this.getWidget(i)) instanceof WAnchor ? (WAnchor) (this
+					.getWidget(i))
+					: null);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Renders the item as selected or unselected.
 	 * <p>
 	 * The default implementation sets the styleclass for
@@ -796,18 +813,6 @@ public class WMenuItem extends WContainerWidget {
 		if (!this.separator_) {
 			this.setText(text);
 		}
-	}
-
-	private WAnchor getAnchor() {
-		for (int i = 0; i < this.getCount(); ++i) {
-			WAnchor result = ((this.getWidget(i)) instanceof WAnchor ? (WAnchor) (this
-					.getWidget(i))
-					: null);
-			if (result != null) {
-				return result;
-			}
-		}
-		return null;
 	}
 
 	void purgeContents() {

@@ -142,6 +142,8 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.session_.getApp().afterLoadJavaScript_.length() != 0
 				|| this.session_.getApp().serverPushChanged_
 				|| this.session_.getApp().styleSheetsAdded_ != 0
+				|| !this.session_.getApp().styleSheetsToRemove_.isEmpty()
+				|| this.session_.getApp().getStyleSheet().isDirty()
 				|| this.session_.getApp().internalPathIsChanged_
 				|| !(this.collectedJS1_.length() == 0)
 				|| !(this.collectedJS2_.length() == 0)
@@ -313,6 +315,15 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
+	public void setJSSynced(boolean invisibleToo) {
+		this.collectedJS1_.setLength(0);
+		this.collectedJS2_.setLength(0);
+		if (!invisibleToo) {
+			this.collectedJS1_.append(this.invisibleJS_.toString());
+		}
+		this.invisibleJS_.setLength(0);
+	}
+
 	static class CookieValue {
 		private static Logger logger = LoggerFactory
 				.getLogger(CookieValue.class);
@@ -480,8 +491,8 @@ class WebRenderer implements SlotLearnerInterface {
 							conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
 			script
 					.setCondition(
-							"SHOW_STACK",
-							conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessageWithStack);
+							"SHOW_ERROR",
+							conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
 			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
 					.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
@@ -1050,7 +1061,7 @@ class WebRenderer implements SlotLearnerInterface {
 			final WCssStyleSheet sheet) {
 		out.append("Wt3_3_2").append(".addStyleSheet('").append(
 				sheet.getLink().resolveUrl(app)).append("', '").append(
-				sheet.getMedia()).append("');\n");
+				sheet.getMedia()).append("');\n ");
 	}
 
 	private void loadStyleSheets(final StringBuilder out, WApplication app) {
@@ -1058,7 +1069,17 @@ class WebRenderer implements SlotLearnerInterface {
 		for (int i = first; i < app.styleSheets_.size(); ++i) {
 			this.loadStyleSheet(out, app, app.styleSheets_.get(i));
 		}
+		this.removeStyleSheets(out, app);
 		app.styleSheetsAdded_ = 0;
+	}
+
+	private void removeStyleSheets(final StringBuilder out, WApplication app) {
+		for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
+			out.append("Wt3_3_2").append(".removeStyleSheet('").append(
+					app.styleSheetsToRemove_.get(i).getLink().resolveUrl(app))
+					.append("');\n ");
+			app.styleSheetsToRemove_.remove(0 + i);
+		}
 	}
 
 	private int loadScriptLibraries(final StringBuilder out, WApplication app,
@@ -1122,15 +1143,6 @@ class WebRenderer implements SlotLearnerInterface {
 					this.session_.getApp().isUpdatesEnabled()).append(");");
 			this.session_.getApp().serverPushChanged_ = false;
 		}
-	}
-
-	private void setJSSynced(boolean invisibleToo) {
-		this.collectedJS1_.setLength(0);
-		this.collectedJS2_.setLength(0);
-		if (!invisibleToo) {
-			this.collectedJS1_.append(this.invisibleJS_.toString());
-		}
-		this.invisibleJS_.setLength(0);
 	}
 
 	private void renderStyleSheet(final StringBuilder out,

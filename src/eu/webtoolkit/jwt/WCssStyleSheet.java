@@ -140,7 +140,8 @@ public class WCssStyleSheet {
 	 * Adds a CSS rule.
 	 * <p>
 	 * Optionally, you may give a <code>ruleName</code>, which may later be used
-	 * to check if the rule was already defined.
+	 * to check if the rule was already defined. Note: you may not pass the same
+	 * rule to 2 diffrent applications.
 	 * <p>
 	 * 
 	 * @see WCssStyleSheet#isDefined(String ruleName)
@@ -285,4 +286,9 @@ public class WCssStyleSheet {
 	private Set<WCssRule> rulesModified_;
 	private List<String> rulesRemoved_;
 	private Set<String> defined_;
+
+	boolean isDirty() {
+		return !this.rulesAdded_.isEmpty() || !this.rulesModified_.isEmpty()
+				|| !this.rulesRemoved_.isEmpty();
+	}
 }
