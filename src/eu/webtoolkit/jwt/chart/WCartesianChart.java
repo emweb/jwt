@@ -660,6 +660,7 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public void renderLegendIcon(final WPainter painter, final WPointF pos,
 			final WDataSeries series) {
+		WShadow shadow = painter.getShadow();
 		switch (series.getType()) {
 		case BarSeries: {
 			WPainterPath path = new WPainterPath();
@@ -667,10 +668,11 @@ public class WCartesianChart extends WAbstractChart {
 			path.lineTo(-6, -8);
 			path.lineTo(6, -8);
 			path.lineTo(6, 8);
-			painter.setPen(series.getPen());
-			painter.setBrush(series.getBrush());
 			painter.translate(pos.getX() + 7.5, pos.getY());
-			painter.drawPath(path);
+			painter.setShadow(series.getShadow());
+			painter.fillPath(path, series.getBrush());
+			painter.setShadow(shadow);
+			painter.strokePath(path, series.getPen());
 			painter.translate(-(pos.getX() + 7.5), -pos.getY());
 			break;
 		}
@@ -679,17 +681,20 @@ public class WCartesianChart extends WAbstractChart {
 			painter.setPen(series.getPen());
 			double offset = series.getPen().getWidth().equals(new WLength(0)) ? 0.5
 					: 0;
+			painter.setShadow(series.getShadow());
 			painter.drawLine(pos.getX(), pos.getY() + offset, pos.getX() + 16,
 					pos.getY() + offset);
+			painter.setShadow(shadow);
 		}
 		case PointSeries: {
 			WPainterPath path = new WPainterPath();
 			this.drawMarker(series, path);
 			if (!path.isEmpty()) {
 				painter.translate(pos.getX() + 8, pos.getY());
-				painter.setPen(series.getMarkerPen());
-				painter.setBrush(series.getMarkerBrush());
-				painter.drawPath(path);
+				painter.setShadow(series.getShadow());
+				painter.fillPath(path, series.getMarkerBrush());
+				painter.setShadow(shadow);
+				painter.strokePath(path, series.getMarkerPen());
 				painter.translate(-(pos.getX() + 8), -pos.getY());
 			}
 			break;
@@ -718,7 +723,7 @@ public class WCartesianChart extends WAbstractChart {
 		WPen fontPen = painter.getPen();
 		this.renderLegendIcon(painter, pos, series);
 		painter.setPen(fontPen);
-		painter.drawText(pos.getX() + 17, pos.getY() - 10, 100, 20, EnumSet.of(
+		painter.drawText(pos.getX() + 23, pos.getY() - 9, 100, 20, EnumSet.of(
 				AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
 				StringUtils.asString(this.getModel().getHeaderData(
 						series.getModelColumn())));

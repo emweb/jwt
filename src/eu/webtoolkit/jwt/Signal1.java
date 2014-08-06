@@ -101,4 +101,9 @@ public class Signal1<A1> extends AbstractSignal {
 	public void removeListener(Signal.Listener listener) {
 		getImpl(true).removeWrappedListener(listener);
 	}
+	
+	@Override
+	protected int getArgumentCount() {
+		return 1;
+	}
 }

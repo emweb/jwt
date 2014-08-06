@@ -152,4 +152,9 @@ public abstract class JSignal4<A1, A2, A3, A4> extends AbstractJSignal {
 		if (dynamic_ != null)
 			dynamic_.removeListener(listener);
 	}
+	
+	@Override
+	protected int getArgumentCount() {
+		return 4;
+	}
 }

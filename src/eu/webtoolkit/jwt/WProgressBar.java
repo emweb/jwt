@@ -236,6 +236,23 @@ public class WProgressBar extends WInteractWidget {
 		}
 	}
 
+	/**
+	 * Update the progress bar itself.
+	 * <p>
+	 * Will be called whenever the value changes, and changes the width of the
+	 * progress bar accordingly.
+	 * <p>
+	 * You can reimplement this method to apply certain style changes to the
+	 * progress bar according to the value. Don&apos;t forget to call
+	 * {@link WProgressBar#updateBar(DomElement bar) updateBar()} if you still
+	 * want the width to change.
+	 */
+	protected void updateBar(final DomElement bar) {
+		bar.setProperty(Property.PropertyStyleWidth, String.valueOf(this
+				.getPercentage())
+				+ "%");
+	}
+
 	void updateDom(final DomElement element, boolean all) {
 		DomElement bar = null;
 		DomElement label = null;
@@ -260,9 +277,7 @@ public class WProgressBar extends WInteractWidget {
 				label = DomElement.getForUpdate("lbl" + this.getId(),
 						DomElementType.DomElement_DIV);
 			}
-			bar.setProperty(Property.PropertyStyleWidth, String.valueOf(this
-					.getPercentage())
-					+ "%");
+			this.updateBar(bar);
 			WString s = this.getText();
 			removeScript(s);
 			label.setProperty(Property.PropertyInnerHTML, s.toString());

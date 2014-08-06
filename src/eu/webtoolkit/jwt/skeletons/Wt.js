@@ -740,19 +740,30 @@ this.widgetCoordinates = function(obj, e) {
 // Get coordinates of (mouse) event relative to page origin.
 this.pageCoordinates = function(e) {
   if (!e) e = window.event;
+
   var posX = 0, posY = 0;
+
+  // if this is an iframe, offset against the frame's position
+  if (e.target.ownerDocument != document)
+    for (var i=0; i < window.frames.length; i++) {
+      if (e.target.ownerDocument == window.frames[i].document) {
+	var rect = window.frames[i].frameElement.getBoundingClientRect();
+	posX = rect.left;
+	posY = rect.top;
+      }
+    }
   
   if (e.touches && e.touches[0]) {
     return WT.pageCoordinates(e.touches[0]);
   } else if (!WT.isIE && e.changedTouches && e.changedTouches[0]) {
-    posX = e.changedTouches[0].pageX;
-    posY = e.changedTouches[0].pageY;
+    posX += e.changedTouches[0].pageX;
+    posY += e.changedTouches[0].pageY;
   } else if (typeof e.pageX === 'number') {
-    posX = e.pageX; posY = e.pageY;
+    posX += e.pageX; posY = e.pageY;
   } else if (typeof e.clientX === 'number') {
-    posX = e.clientX + document.body.scrollLeft
+    posX += e.clientX + document.body.scrollLeft
       + document.documentElement.scrollLeft;
-    posY = e.clientY + document.body.scrollTop
+    posY += e.clientY + document.body.scrollTop
       + document.documentElement.scrollTop;
   }
 
@@ -1161,16 +1172,10 @@ function mouseUp(e) {
 
 var captureInitialized = false;
 
-function initCapture() {
-  if (captureInitialized)
-    return;
-
-  captureInitialized = true;
-
-  var db = document.body;
-  if (db.addEventListener) {
-    db.addEventListener('mousemove', mouseMove, true);
-    db.addEventListener('mouseup', mouseUp, true);
+function attachMouseHandlers(el) {
+  if (el.addEventListener) {
+    el.addEventListener('mousemove', mouseMove, true);
+    el.addEventListener('mouseup', mouseUp, true);
 
     if (WT.isGecko) {
       window.addEventListener('mouseout', function(e) {
@@ -1180,9 +1185,19 @@ function initCapture() {
 			      }, true);
     }
   } else {
-    db.attachEvent('onmousemove', mouseMove);
-    db.attachEvent('onmouseup', mouseUp);
+    el.attachEvent('onmousemove', mouseMove);
+    el.attachEvent('onmouseup', mouseUp);
   }
+}
+
+function initCapture() {
+  if (captureInitialized)
+    return;
+
+  captureInitialized = true;
+
+  var db = document.body;
+  attachMouseHandlers(db);
 }
 
 this.capture = function(obj) {
@@ -1190,6 +1205,13 @@ this.capture = function(obj) {
 
   if (captureElement && obj)
     return;
+
+  // attach to possible iframes
+  for (var i=0; i < window.frames.length; i++)
+    if (! window.frames[i].document.body.hasMouseHandlers) {
+      attachMouseHandlers(window.frames[i].document.body);
+      window.frames[i].document.body.hasMouseHandlers = true;
+    }
 
   captureElement = obj;
 

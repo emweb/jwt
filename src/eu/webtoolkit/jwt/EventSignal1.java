@@ -100,4 +100,9 @@ public final class EventSignal1<E extends WAbstractEvent> extends AbstractEventS
 		if (dynamic_ != null)
 			dynamic_.removeListener(listener);
 	}
+
+	@Override
+	protected int getArgumentCount() {
+		return 0;
+	}
 }

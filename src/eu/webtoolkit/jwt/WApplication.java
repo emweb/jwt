@@ -147,7 +147,7 @@ public class WApplication extends WObject {
 		this.styleSheet_ = new WCssStyleSheet();
 		this.localizedStrings_ = null;
 		this.locale_ = new Locale("");
-		this.oldInternalPath_ = "";
+		this.renderedInternalPath_ = "";
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.internalPathInvalid_ = new Signal1<String>();
@@ -199,7 +199,8 @@ public class WApplication extends WObject {
 		this.hideLoadJS = new JSlot();
 		this.session_.setApplication(this);
 		this.locale_ = this.getEnvironment().getLocale();
-		this.newInternalPath_ = this.getEnvironment().getInternalPath();
+		this.renderedInternalPath_ = this.newInternalPath_ = this
+				.getEnvironment().getInternalPath();
 		this.internalPathIsChanged_ = false;
 		this.internalPathDefaultValid_ = true;
 		this.internalPathValid_ = true;
@@ -1224,9 +1225,6 @@ public class WApplication extends WObject {
 	 */
 	public void setInternalPath(final String path, boolean emitChange) {
 		this.enableInternalPaths();
-		if (!this.internalPathIsChanged_) {
-			this.oldInternalPath_ = this.newInternalPath_;
-		}
 		if (!this.session_.getRenderer().isPreLearning() && emitChange) {
 			this.changeInternalPath(path);
 		} else {
@@ -2697,7 +2695,8 @@ public class WApplication extends WObject {
 			this.internalPathsEnabled_ = true;
 			this.doJavaScript(this.getJavaScriptClass()
 					+ "._p_.enableInternalPaths("
-					+ WWebWidget.jsStringLiteral(this.newInternalPath_) + ");");
+					+ WWebWidget.jsStringLiteral(this.renderedInternalPath_)
+					+ ");");
 			if (this.session_.isUseUglyInternalPaths()) {
 				logger
 						.warn(new StringWriter()
@@ -2965,7 +2964,7 @@ public class WApplication extends WObject {
 	private WCssStyleSheet styleSheet_;
 	WCombinedLocalizedStrings localizedStrings_;
 	private Locale locale_;
-	String oldInternalPath_;
+	String renderedInternalPath_;
 	String newInternalPath_;
 	Signal1<String> internalPathChanged_;
 	private Signal1<String> internalPathInvalid_;
@@ -3119,7 +3118,7 @@ public class WApplication extends WObject {
 	private boolean changeInternalPath(final String aPath) {
 		String path = StringUtils.prepend(aPath, '/');
 		if (!path.equals(this.getInternalPath())) {
-			this.newInternalPath_ = path;
+			this.renderedInternalPath_ = this.newInternalPath_ = path;
 			this.internalPathValid_ = this.internalPathDefaultValid_;
 			this.internalPathChanged_.trigger(this.newInternalPath_);
 			if (!this.internalPathValid_) {

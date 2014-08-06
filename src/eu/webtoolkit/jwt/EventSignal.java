@@ -67,4 +67,9 @@ public class EventSignal extends AbstractEventSignal {
 	public void addListener(WObject receiver, LearningListener listener) {
 		super.addListener(receiver, listener);
 	}
+
+	@Override
+	protected int getArgumentCount() {
+		return 0;
+	}
 }

@@ -186,10 +186,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_.append(",").append(MathUtils.roundJs(ra.getY(), 3)).append(
 				",true);");
 		this.js_.append("ctx.restore();");
-		if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
+		if (this.painter_.getBrush().getStyle() != BrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
 		}
-		if (this.currentPen_.getStyle() != PenStyle.NoPen) {
+		if (this.painter_.getPen().getStyle() != PenStyle.NoPen) {
 			this.js_.append("ctx.stroke();");
 		}
 	}
@@ -230,8 +230,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public void drawPath(final WPainterPath path) {
 		this.renderStateChanges(false);
 		this.drawPlainPath(this.js_, path);
-		if (this.currentBrush_.getColor().getAlpha() != 255
-				|| this.currentPen_.getColor().getAlpha() != 255) {
+		if (this.painter_.getBrush().getColor().getAlpha() != 255
+				|| this.painter_.getPen().getColor().getAlpha() != 255) {
 			this.finishPath();
 		}
 	}
@@ -473,7 +473,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public void init() {
 		this.currentBrush_ = new WBrush();
+		this.currentNoBrush_ = false;
 		this.currentPen_ = new WPen();
+		this.currentNoPen_ = false;
 		this.currentPen_.setCapStyle(PenCapStyle.FlatCap);
 		this.currentShadow_ = new WShadow();
 		this.currentFont_ = new WFont();
@@ -567,6 +569,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private boolean paintUpdate_;
 	private WCanvasPaintDevice.TextMethod textMethod_;
 	private boolean busyWithPath_;
+	private boolean currentNoPen_;
+	private boolean currentNoBrush_;
 	private WTransform currentTransform_;
 	private WBrush currentBrush_;
 	private WPen currentPen_;
@@ -582,10 +586,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	private void finishPath() {
 		if (this.busyWithPath_) {
-			if (this.currentBrush_.getStyle() != BrushStyle.NoBrush) {
+			if (!this.currentNoBrush_) {
 				this.js_.append("ctx.fill();");
 			}
-			if (this.currentPen_.getStyle() != PenStyle.NoPen) {
+			if (!this.currentNoPen_) {
 				this.js_.append("ctx.stroke();");
 			}
 			this.js_.append('\n');
@@ -656,12 +660,21 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		if (!!this.changeFlags_.isEmpty()) {
 			return;
 		}
+		WApplication app = WApplication.getInstance();
+		boolean slowFirefox = app != null
+				&& app.getEnvironment().agentIsGecko();
+		if (slowFirefox
+				&& app.getEnvironment().getUserAgent().indexOf("Linux") == -1) {
+			slowFirefox = false;
+		}
 		boolean brushChanged = !EnumUtils.mask(this.changeFlags_,
 				WPaintDevice.ChangeFlag.Brush).isEmpty()
-				&& !this.currentBrush_.equals(this.getPainter().getBrush());
+				&& !this.currentBrush_.equals(this.getPainter().getBrush())
+				&& (slowFirefox || this.getPainter().getBrush().getStyle() != BrushStyle.NoBrush);
 		boolean penChanged = !EnumUtils.mask(this.changeFlags_,
 				WPaintDevice.ChangeFlag.Pen).isEmpty()
-				&& !this.currentPen_.equals(this.getPainter().getPen());
+				&& !this.currentPen_.equals(this.getPainter().getPen())
+				&& (slowFirefox || this.getPainter().getPen().getStyle() != PenStyle.NoPen);
 		boolean penColorChanged = penChanged
 				&& (!this.currentPen_.getColor().equals(
 						this.getPainter().getPen().getColor()) || !this.currentPen_
@@ -766,6 +779,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		if (penChanged || brushChanged || shadowChanged) {
 			this.finishPath();
 		}
+		this.currentNoPen_ = this.getPainter().getPen().getStyle() == PenStyle.NoPen;
+		this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
 		if (penChanged) {
 			if (penColorChanged) {
 				if (!this.getPainter().getPen().getGradient().isEmpty()) {

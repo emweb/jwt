@@ -37,7 +37,6 @@ class MarkerRenderIterator extends SeriesIterator {
 		if (series.getMarker() != MarkerType.NoMarker) {
 			this.chart_.drawMarker(series, this.marker_);
 			this.painter_.save();
-			this.painter_.setShadow(series.getShadow());
 			this.needRestore_ = true;
 		} else {
 			this.needRestore_ = false;
@@ -62,14 +61,18 @@ class MarkerRenderIterator extends SeriesIterator {
 				WPen pen = series.getMarkerPen().clone();
 				setPenColor(pen, xIndex, yIndex,
 						ItemDataRole.MarkerPenColorRole);
-				this.painter_.setPen(pen);
 				WBrush brush = series.getMarkerBrush().clone();
 				setBrushColor(brush, xIndex, yIndex,
 						ItemDataRole.MarkerBrushColorRole);
-				this.painter_.setBrush(brush);
 				this.setMarkerSize(this.painter_, xIndex, yIndex, series
 						.getMarkerSize());
-				this.painter_.drawPath(this.marker_);
+				this.painter_.setShadow(series.getShadow());
+				if (series.getMarker() != MarkerType.CrossMarker
+						&& series.getMarker() != MarkerType.XCrossMarker) {
+					this.painter_.fillPath(this.marker_, brush);
+					this.painter_.setShadow(new WShadow());
+				}
+				this.painter_.strokePath(this.marker_, pen);
 				this.painter_.restore();
 			}
 			if (series.getType() != SeriesType.BarSeries) {

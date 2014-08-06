@@ -584,17 +584,20 @@ class WebRenderer implements SlotLearnerInterface {
 				}
 				out.append("window.").append(app.getJavaScriptClass()).append(
 						"LoadWidgetTree = function(){\n");
+				if (app.internalPathsEnabled_) {
+					out
+							.append(app.getJavaScriptClass())
+							.append("._p_.enableInternalPaths(")
+							.append(
+									WWebWidget
+											.jsStringLiteral(app.renderedInternalPath_))
+							.append(");\n");
+				}
 				this.visibleOnly_ = false;
 				this.formObjectsChanged_ = true;
 				this.currentFormObjectsList_ = "";
 				this.collectJavaScript();
 				this.updateLoadIndicator(this.collectedJS1_, app, true);
-				if (app.internalPathsEnabled_) {
-					out.append(app.getJavaScriptClass()).append(
-							"._p_.enableInternalPaths(").append(
-							WWebWidget.jsStringLiteral(app.getInternalPath()))
-							.append(");\n");
-				}
 				logger.debug(new StringWriter().append("js: ").append(
 						this.collectedJS1_.toString()).append(
 						this.collectedJS2_.toString()).toString());
@@ -669,9 +672,9 @@ class WebRenderer implements SlotLearnerInterface {
 				.getConfiguration();
 		WApplication app = this.session_.getApp();
 		if (!app.getEnvironment().hasAjax()
-				&& (app.internalPathIsChanged_ && !app.oldInternalPath_
+				&& (app.internalPathIsChanged_ && !app.renderedInternalPath_
 						.equals(app.newInternalPath_))) {
-			app.oldInternalPath_ = app.newInternalPath_;
+			app.renderedInternalPath_ = app.newInternalPath_;
 			if (this.session_.getState() == WebSession.State.JustCreated
 					&& conf.progressiveBootstrap(app.getEnvironment()
 							.getInternalPath())) {
@@ -1053,6 +1056,7 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append("window.onresize();");
 			this.updateLayout_ = false;
 		}
+		app.renderedInternalPath_ = app.newInternalPath_;
 		this.updateLoadIndicator(out, app, false);
 		out.append('}');
 	}
@@ -1269,6 +1273,7 @@ class WebRenderer implements SlotLearnerInterface {
 			app.afterLoadJavaScript_ = "";
 		}
 		app.internalPathIsChanged_ = false;
+		app.renderedInternalPath_ = app.newInternalPath_;
 	}
 
 	private void setPageVars(final FileServe page) {

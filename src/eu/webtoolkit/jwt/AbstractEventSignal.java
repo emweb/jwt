@@ -484,7 +484,14 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @param javascript the JavaScript function.
 	 */
 	public void addListener(String javascript) {
-		addListener(null, new JavaScriptListener(null, null, "(" + javascript + ")(o,e,a1,a2,a3,a4,a5,a6);"));
+		int argc = getArgumentCount();
+		
+		String js = "(" + javascript + ")(o,e";
+		for (int i = 0; i < argc; ++i)
+		    js += ",a" + (i+1);
+		js += ");";
+		
+		addListener(null, new JavaScriptListener(null, null, js));
 	}
 
 	/**

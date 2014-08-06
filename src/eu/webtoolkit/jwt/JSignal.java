@@ -76,4 +76,9 @@ public class JSignal extends AbstractJSignal {
 	void processDynamic(JavaScriptEvent jsEvent) {
 		trigger();
 	}
+
+	@Override
+	protected int getArgumentCount() {
+		return 0;
+	}
 }

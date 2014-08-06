@@ -1865,9 +1865,14 @@ public class WAxis {
 
 	private double calcAutoNumLabels(Orientation orientation,
 			final WAxis.Segment s) {
-		return s.renderLength
-				/ (orientation == Orientation.Vertical ? AUTO_V_LABEL_PIXELS
-						: AUTO_H_LABEL_PIXELS);
+		if (orientation == Orientation.Horizontal) {
+			return s.renderLength
+					/ Math.max((double) AUTO_H_LABEL_PIXELS, new WLength(this
+							.defaultDateTimeFormat(s).toString().length(),
+							WLength.Unit.FontEm).toPixels());
+		} else {
+			return s.renderLength / AUTO_V_LABEL_PIXELS;
+		}
 	}
 
 	private WString defaultDateTimeFormat(final WAxis.Segment s) {
