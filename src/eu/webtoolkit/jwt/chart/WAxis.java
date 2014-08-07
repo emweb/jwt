@@ -1625,6 +1625,7 @@ public class WAxis {
 			this.renderMaximum = AUTO_MAXIMUM;
 			this.renderLength = AUTO_MAXIMUM;
 			this.renderStart = AUTO_MAXIMUM;
+			this.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
 		}
 	}
 
@@ -1876,6 +1877,10 @@ public class WAxis {
 	}
 
 	private WString defaultDateTimeFormat(final WAxis.Segment s) {
+		if (this.scale_ != AxisScale.DateScale
+				&& this.scale_ != AxisScale.DateTimeScale) {
+			return WString.Empty;
+		}
 		WDate dt = null;
 		if (this.scale_ == AxisScale.DateScale) {
 			dt = WDate.fromJulianDay((int) s.renderMinimum);

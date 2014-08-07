@@ -776,7 +776,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				this.init();
 			}
 		}
-		if (penChanged || brushChanged || shadowChanged) {
+		boolean newNoPen = this.getPainter().getPen().getStyle() == PenStyle.NoPen;
+		boolean newNoBrush = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
+		if (penChanged || brushChanged || shadowChanged
+				|| newNoBrush != this.currentNoBrush_
+				|| newNoPen != this.currentNoPen_) {
 			this.finishPath();
 		}
 		this.currentNoPen_ = this.getPainter().getPen().getStyle() == PenStyle.NoPen;
