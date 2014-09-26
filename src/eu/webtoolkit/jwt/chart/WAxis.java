@@ -974,7 +974,7 @@ public class WAxis {
 							}
 							if (!EnumUtils.mask(this.roundLimits_,
 									AxisValue.MaximumValue).isEmpty()) {
-								if (max.getDay() != 1 && max.getDay() != 1) {
+								if (max.getDay() != 1 && max.getMonth() != 1) {
 									max = new WDate(max.getYear() + 1, 1, 1);
 								}
 							}
@@ -1441,17 +1441,48 @@ public class WAxis {
 		}
 	}
 
+	WAxis() {
+		this.chart_ = null;
+		this.axis_ = Axis.XAxis;
+		this.visible_ = true;
+		this.location_ = AxisValue.MinimumValue;
+		this.scale_ = AxisScale.LinearScale;
+		this.resolution_ = 0.0;
+		this.labelInterval_ = 0;
+		this.labelBasePoint_ = 0;
+		this.labelFormat_ = new WString();
+		this.defaultLabelFormat_ = true;
+		this.gridLines_ = false;
+		this.pen_ = new WPen();
+		this.gridLinesPen_ = new WPen(WColor.gray);
+		this.margin_ = 0;
+		this.labelAngle_ = 0;
+		this.title_ = new WString();
+		this.titleFont_ = new WFont();
+		this.labelFont_ = new WFont();
+		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
+				AxisValue.MaximumValue);
+		this.segmentMargin_ = 40;
+		this.titleOffset_ = 0;
+		this.segments_ = new ArrayList<WAxis.Segment>();
+		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
+				WLength.Unit.Point));
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
+				WLength.Unit.Point));
+		this.segments_.add(new WAxis.Segment());
+	}
+
 	protected void getLabelTicks(final List<WAxis.TickLabel> ticks, int segment) {
 		final WAxis.Segment s = this.segments_.get(segment);
-		int rc;
 		switch (this.scale_) {
 		case CategoryScale: {
-			rc = this.chart_.numberOfCategories(this.axis_);
 			int renderInterval = Math.max(1, (int) this.renderInterval_);
 			if (renderInterval == 1) {
-				ticks.add(new WAxis.TickLabel(-0.5,
+				ticks.add(new WAxis.TickLabel(s.renderMinimum,
 						WAxis.TickLabel.TickLength.Long));
-				for (int i = 0; i < rc; ++i) {
+				for (int i = (int) (s.renderMinimum + 0.5); i < s.renderMaximum; ++i) {
 					ticks.add(new WAxis.TickLabel(i + 0.5,
 							WAxis.TickLabel.TickLength.Long));
 					ticks.add(new WAxis.TickLabel(i,
@@ -1459,7 +1490,7 @@ public class WAxis {
 									.getLabel((double) i)));
 				}
 			} else {
-				for (int i = 0; i < rc; i += renderInterval) {
+				for (int i = (int) (s.renderMinimum + 0.5); i < s.renderMaximum; i += renderInterval) {
 					ticks.add(new WAxis.TickLabel(i,
 							WAxis.TickLabel.TickLength.Long, this
 									.getLabel((double) i)));
@@ -1632,39 +1663,6 @@ public class WAxis {
 	List<WAxis.Segment> segments_;
 	private double renderInterval_;
 
-	WAxis() {
-		this.chart_ = null;
-		this.axis_ = Axis.XAxis;
-		this.visible_ = true;
-		this.location_ = AxisValue.MinimumValue;
-		this.scale_ = AxisScale.LinearScale;
-		this.resolution_ = 0.0;
-		this.labelInterval_ = 0;
-		this.labelBasePoint_ = 0;
-		this.labelFormat_ = new WString();
-		this.defaultLabelFormat_ = true;
-		this.gridLines_ = false;
-		this.pen_ = new WPen();
-		this.gridLinesPen_ = new WPen(WColor.gray);
-		this.margin_ = 0;
-		this.labelAngle_ = 0;
-		this.title_ = new WString();
-		this.titleFont_ = new WFont();
-		this.labelFont_ = new WFont();
-		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
-				AxisValue.MaximumValue);
-		this.segmentMargin_ = 40;
-		this.titleOffset_ = 0;
-		this.segments_ = new ArrayList<WAxis.Segment>();
-		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
-				WLength.Unit.Point));
-		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
-				WLength.Unit.Point));
-		this.segments_.add(new WAxis.Segment());
-	}
-
 	void init(WAbstractChartImplementation chart, Axis axis) {
 		this.chart_ = chart;
 		this.axis_ = axis;
@@ -1691,16 +1689,20 @@ public class WAxis {
 
 	// private boolean (final T m, final T v) ;
 	private void computeRange(final WAxis.Segment segment) {
+		segment.renderMinimum = segment.minimum;
+		segment.renderMaximum = segment.maximum;
+		final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
+		final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
 		if (this.scale_ == AxisScale.CategoryScale) {
 			int rc = this.chart_.numberOfCategories(this.axis_);
 			rc = Math.max(1, rc);
-			segment.renderMinimum = -0.5;
-			segment.renderMaximum = rc - 0.5;
+			if (findMinimum) {
+				segment.renderMinimum = -0.5;
+			}
+			if (findMaximum) {
+				segment.renderMaximum = rc - 0.5;
+			}
 		} else {
-			segment.renderMinimum = segment.minimum;
-			segment.renderMaximum = segment.maximum;
-			final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
-			final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
 			if (findMinimum || findMaximum) {
 				double minimum = Double.MAX_VALUE;
 				double maximum = -Double.MAX_VALUE;

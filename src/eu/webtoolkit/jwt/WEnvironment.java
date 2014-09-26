@@ -430,6 +430,8 @@ public class WEnvironment {
 	/**
 	 * Returns the horizontal resolution of the client&apos;s screen.
 	 * <p>
+	 * Returns -1 if screen width is not known.
+	 * <p>
 	 * 
 	 * @see WEnvironment#getScreenHeight()
 	 */
@@ -439,6 +441,8 @@ public class WEnvironment {
 
 	/**
 	 * Returns the vertical resolution of the client&apos;s screen.
+	 * <p>
+	 * Returns -1 if screen height is not known.
 	 * <p>
 	 * 
 	 * @see WEnvironment#getScreenWidth()
@@ -943,6 +947,8 @@ public class WEnvironment {
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
 		this.hashInternalPaths_ = false;
+		this.screenWidth_ = -1;
+		this.screenHeight_ = -1;
 		this.dpiScale_ = 1;
 		this.queryString_ = "";
 		this.webGLsupported_ = false;
@@ -1156,6 +1162,8 @@ public class WEnvironment {
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
 		this.hashInternalPaths_ = false;
+		this.screenWidth_ = -1;
+		this.screenHeight_ = -1;
 		this.dpiScale_ = 1;
 		this.queryString_ = "";
 		this.webGLsupported_ = false;
@@ -1255,8 +1263,20 @@ public class WEnvironment {
 				this.publicDeploymentPath_ = "";
 			}
 		}
-		this.screenWidth_ = Integer.parseInt(request.getParameter("scrW"));
-		this.screenHeight_ = Integer.parseInt(request.getParameter("scrH"));
+		String scrWE = request.getParameter("scrW");
+		if (scrWE != null) {
+			try {
+				this.screenWidth_ = Integer.parseInt(scrWE);
+			} catch (final NumberFormatException e) {
+			}
+		}
+		String scrHE = request.getParameter("scrH");
+		if (scrHE != null) {
+			try {
+				this.screenHeight_ = Integer.parseInt(scrHE);
+			} catch (final NumberFormatException e) {
+			}
+		}
 	}
 
 	boolean agentSupportsAjax() {

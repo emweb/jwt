@@ -273,13 +273,15 @@ public class WDoubleValidator extends WValidator {
 		StringBuilder js = new StringBuilder();
 		js.append("new Wt3_3_2.WDoubleValidator(").append(this.isMandatory())
 				.append(',');
-		if (this.bottom_ != -Double.MAX_VALUE) {
+		if (this.bottom_ != -Double.MAX_VALUE
+				&& this.bottom_ != -Double.POSITIVE_INFINITY) {
 			js.append(this.bottom_);
 		} else {
 			js.append("null");
 		}
 		js.append(',');
-		if (this.top_ != Double.MAX_VALUE) {
+		if (this.top_ != Double.MAX_VALUE
+				&& this.top_ != Double.POSITIVE_INFINITY) {
 			js.append(this.top_);
 		} else {
 			js.append("null");

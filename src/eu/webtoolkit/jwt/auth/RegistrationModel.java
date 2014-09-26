@@ -141,11 +141,11 @@ public class RegistrationModel extends FormBaseModel {
 		this.idpIdentity_ = new Identity();
 		this.existingUser_ = new User();
 		if (baseAuth.getIdentityPolicy() != IdentityPolicy.EmailAddressIdentity) {
-			if (baseAuth.isEmailVerificationEnabled()) {
-				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailOptional;
+			if (baseAuth.isEmailVerificationRequired()) {
+				this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailMandatory;
 			} else {
-				if (baseAuth.isEmailVerificationRequired()) {
-					this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailMandatory;
+				if (baseAuth.isEmailVerificationEnabled()) {
+					this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailOptional;
 				} else {
 					this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
 				}

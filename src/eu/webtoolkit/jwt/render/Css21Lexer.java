@@ -1,4 +1,4 @@
-// $ANTLR 3.5 src/eu/webtoolkit/jwt/render/Css21.g 2014-08-06 17:11:52
+// $ANTLR 3.5 src/eu/webtoolkit/jwt/render/Css21.g 2014-09-26 12:20:30
 package eu.webtoolkit.jwt.render;
 
 import org.antlr.runtime.*;
@@ -10744,6 +10744,20 @@ public class Css21Lexer extends Lexer {
 		state.failed=false;
 		return success;
 	}
+	public final boolean synpred13_Css21() {
+		state.backtracking++;
+		int start = input.mark();
+		try {
+			synpred13_Css21_fragment(); // can never throw exception
+		} catch (RecognitionException re) {
+			System.err.println("impossible: "+re);
+		}
+		boolean success = !state.failed;
+		input.rewind(start);
+		state.backtracking--;
+		state.failed=false;
+		return success;
+	}
 	public final boolean synpred8_Css21() {
 		state.backtracking++;
 		int start = input.mark();
@@ -10763,20 +10777,6 @@ public class Css21Lexer extends Lexer {
 		int start = input.mark();
 		try {
 			synpred2_Css21_fragment(); // can never throw exception
-		} catch (RecognitionException re) {
-			System.err.println("impossible: "+re);
-		}
-		boolean success = !state.failed;
-		input.rewind(start);
-		state.backtracking--;
-		state.failed=false;
-		return success;
-	}
-	public final boolean synpred13_Css21() {
-		state.backtracking++;
-		int start = input.mark();
-		try {
-			synpred13_Css21_fragment(); // can never throw exception
 		} catch (RecognitionException re) {
 			System.err.println("impossible: "+re);
 		}
@@ -10938,11 +10938,11 @@ public class Css21Lexer extends Lexer {
 		"\1\uffff\1\u008a\1\45\1\35\1\17\1\60\1\27\1\70\1\151\1\10\1\114\1\43\1"+
 		"\uffff\1\u0088\1\33\1\16\1\46\1\22\1\75\1\152\1\15\1\113\1\44\3\uffff"+
 		"\1\154\1\31\1\40\1\156\1\42\2\uffff\1\167\2\uffff\1\77\5\uffff\1\26\1"+
-		"\32\5\uffff\1\12\1\164\1\177\1\146\1\4\1\173\1\142\1\uffff\1\u008e\1\66"+
+		"\32\5\uffff\1\12\1\164\1\177\1\146\1\4\1\173\1\141\1\uffff\1\u008e\1\66"+
 		"\1\u0090\1\uffff\1\u0084\1\110\1\100\1\u0089\1\104\1\uffff\1\47\1\160"+
 		"\1\54\1\uffff\1\163\1\u0082\1\162\1\uffff\1\161\1\0\1\157\2\uffff\1\171"+
 		"\1\165\1\170\1\uffff\1\122\1\u0083\1\134\1\153\1\37\1\155\1\41\1\11\1"+
-		"\176\1\145\1\3\1\172\1\141\1\u008f\1\u0091\1\u0085\1\101\1\u008b\1\105"+
+		"\176\1\145\1\3\1\172\1\142\1\u008f\1\u0091\1\u0085\1\101\1\u008b\1\105"+
 		"\1\50\1\55\1\123\1\135\1\53\1\61\1\25\2\uffff\1\30\1\uffff\1\13\1\5\1"+
 		"\u0080\1\174\1\147\1\143\10\uffff\1\14\1\6\1\u0081\1\175\1\150\1\144\1"+
 		"\u0086\1\u008c\1\102\1\106\3\uffff\1\u0087\1\u008d\1\103\1\107\1\51\1"+
@@ -12603,19 +12603,6 @@ public class Css21Lexer extends Lexer {
 						break;
 
 					case 97 : 
-						int LA197_96 = input.LA(1);
-						 
-						int index197_96 = input.index();
-						input.rewind();
-						s = -1;
-						if ( (synpred2_Css21()) ) {s = 159;}
-						else if ( (true) ) {s = 12;}
-						 
-						input.seek(index197_96);
-						if ( s>=0 ) return s;
-						break;
-
-					case 98 : 
 						int LA197_55 = input.LA(1);
 						 
 						int index197_55 = input.index();
@@ -12625,6 +12612,19 @@ public class Css21Lexer extends Lexer {
 						else if ( (true) ) {s = 12;}
 						 
 						input.seek(index197_55);
+						if ( s>=0 ) return s;
+						break;
+
+					case 98 : 
+						int LA197_96 = input.LA(1);
+						 
+						int index197_96 = input.index();
+						input.rewind();
+						s = -1;
+						if ( (synpred2_Css21()) ) {s = 159;}
+						else if ( (true) ) {s = 12;}
+						 
+						input.seek(index197_96);
 						if ( s>=0 ) return s;
 						break;
 

@@ -307,6 +307,15 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		}
 	}
 
+	/**
+	 * Sets the source model.
+	 * <p>
+	 * The source model provides the actual data for the proxy model.
+	 * <p>
+	 * Ownership of the source model is <i>not</i> transferred.
+	 * <p>
+	 * All signals of the source model are propagated to the proxy model.
+	 */
 	public void setSourceModel(WAbstractItemModel model) {
 		if (this.getSourceModel() != null) {
 			for (int i = 0; i < this.modelConnections_.size(); ++i) {
@@ -526,7 +535,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		WModelIndex sourceIndex = this.mapToSource(index);
 		if ((sourceIndex != null)) {
-			return this.getSourceModel().getFlags(index);
+			return this.getSourceModel().getFlags(sourceIndex);
 		} else {
 			EnumSet<ItemFlag> i = this.newRowFlags_.get(index.getColumn());
 			if (i != null) {

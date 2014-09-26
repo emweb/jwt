@@ -2484,6 +2484,12 @@ class Block {
 		PageState rowEnd = new PageState();
 		rowEnd.y = ps.y;
 		rowEnd.page = ps.page;
+		if (rowHeight == -1) {
+			double height = this.cssHeight(renderer.getFontScale());
+			if (height > 0) {
+				advance(rowEnd, height, renderer);
+			}
+		}
 		x += cellSpacing;
 		for (int i = 0; i < this.children_.size(); ++i) {
 			Block c = this.children_.get(i);

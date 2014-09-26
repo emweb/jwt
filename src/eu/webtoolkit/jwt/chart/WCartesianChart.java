@@ -158,6 +158,9 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	public void remove() {
+		for (int i = 2; i > -1; i--) {
+			;
+		}
 		;
 		super.remove();
 	}
@@ -354,6 +357,19 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WAxis getAxis(Axis axis) {
 		return this.axes_[axis.getValue()];
+	}
+
+	/**
+	 * set and init axis
+	 * <p>
+	 * Will replace the existing (default axis) with user axis.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#getAxis(Axis axis)
+	 */
+	public void setAxis(WAxis waxis, Axis axis) {
+		this.axes_[axis.getValue()] = waxis;
+		this.axes_[axis.getValue()].init(this.interface_, axis);
 	}
 
 	/**
@@ -585,6 +601,10 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	public void paint(final WPainter painter, final WRectF rectangle) {
+		while (!this.getAreas().isEmpty()) {
+			if ((this).getAreas().get(0) != null)
+				(this).getAreas().get(0).remove();
+		}
 		if (!painter.isActive()) {
 			throw new WException(
 					"WCartesianChart::paint(): painter is not active.");
@@ -876,30 +896,31 @@ public class WCartesianChart extends WAbstractChart {
 			if (!(d != null)) {
 				d = this.getCreatePaintDevice();
 			}
-			WMeasurePaintDevice md = new WMeasurePaintDevice(d);
-			WPainter painter = new WPainter(md);
-			this.renderAxes(painter, EnumSet.of(AxisProperty.Line,
-					AxisProperty.Labels));
-			this.renderLegend(painter);
-			WRectF bounds = md.getBoundingRect();
-			final int MARGIN = 5;
-			int corrLeft = (int) Math.max(0.0, rect.getLeft()
-					- bounds.getLeft() + MARGIN);
-			int corrRight = (int) Math.max(0.0, bounds.getRight()
-					- rect.getRight() + MARGIN);
-			int corrTop = (int) Math.max(0.0, rect.getTop() - bounds.getTop()
-					+ MARGIN);
-			int corrBottom = (int) Math.max(0.0, bounds.getBottom()
-					- rect.getBottom() + MARGIN);
-			self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Left)
-					+ corrLeft, EnumSet.of(Side.Left));
-			self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Right)
-					+ corrRight, EnumSet.of(Side.Right));
-			self.setPlotAreaPadding(
-					this.getPlotAreaPadding(Side.Top) + corrTop, EnumSet
-							.of(Side.Top));
-			self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Bottom)
-					+ corrBottom, EnumSet.of(Side.Bottom));
+			{
+				WMeasurePaintDevice md = new WMeasurePaintDevice(d);
+				WPainter painter = new WPainter(md);
+				this.renderAxes(painter, EnumSet.of(AxisProperty.Line,
+						AxisProperty.Labels));
+				this.renderLegend(painter);
+				WRectF bounds = md.getBoundingRect();
+				final int MARGIN = 5;
+				int corrLeft = (int) Math.max(0.0, rect.getLeft()
+						- bounds.getLeft() + MARGIN);
+				int corrRight = (int) Math.max(0.0, bounds.getRight()
+						- rect.getRight() + MARGIN);
+				int corrTop = (int) Math.max(0.0, rect.getTop()
+						- bounds.getTop() + MARGIN);
+				int corrBottom = (int) Math.max(0.0, bounds.getBottom()
+						- rect.getBottom() + MARGIN);
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Left)
+						+ corrLeft, EnumSet.of(Side.Left));
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Right)
+						+ corrRight, EnumSet.of(Side.Right));
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Top)
+						+ corrTop, EnumSet.of(Side.Top));
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Bottom)
+						+ corrBottom, EnumSet.of(Side.Bottom));
+			}
 			if (!(device != null)) {
 				;
 			}
@@ -1305,10 +1326,6 @@ public class WCartesianChart extends WAbstractChart {
 	 * paintEvent()} to paint on the paint device.
 	 */
 	protected void paintEvent(WPaintDevice paintDevice) {
-		while (!this.getAreas().isEmpty()) {
-			if (this.getAreas().get(0) != null)
-				this.getAreas().get(0).remove();
-		}
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing);
 		this.paint(painter);
@@ -1859,12 +1876,17 @@ public class WCartesianChart extends WAbstractChart {
 			painter.restore();
 		}
 		if (!(this.getTitle().length() == 0)) {
-			int x = w / 2;
+			int x = this.getPlotAreaPadding(Side.Left)
+					+ (w - this.getPlotAreaPadding(Side.Left) - this
+							.getPlotAreaPadding(Side.Right)) / 2;
 			painter.save();
 			painter.setFont(this.getTitleFont());
-			painter.drawText(x - 500, 5, 1000, 50, EnumSet.of(
-					AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this
-					.getTitle());
+			final int TITLE_HEIGHT = 50;
+			final int TITLE_PADDING = 20;
+			painter.drawText(x - 500, this.getPlotAreaPadding(Side.Top)
+					- TITLE_HEIGHT - TITLE_PADDING, 1000, TITLE_HEIGHT, EnumSet
+					.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+					this.getTitle());
 			painter.restore();
 		}
 	}

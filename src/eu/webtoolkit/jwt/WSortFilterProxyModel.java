@@ -142,6 +142,15 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
+	/**
+	 * Sets the source model.
+	 * <p>
+	 * The source model provides the actual data for the proxy model.
+	 * <p>
+	 * Ownership of the source model is <i>not</i> transferred.
+	 * <p>
+	 * All signals of the source model are forwarded to the proxy model.
+	 */
 	public void setSourceModel(WAbstractItemModel model) {
 		if (this.getSourceModel() != null) {
 			for (int i = 0; i < this.modelConnections_.size(); ++i) {
@@ -761,6 +770,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private void sourceDataChanged(final WModelIndex topLeft,
 			final WModelIndex bottomRight) {
+		if (!(topLeft != null) || !(bottomRight != null)) {
+			return;
+		}
 		boolean refilter = this.dynamic_
 				&& (this.filterKeyColumn_ >= topLeft.getColumn() && this.filterKeyColumn_ <= bottomRight
 						.getColumn());

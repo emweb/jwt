@@ -204,7 +204,7 @@ public class WCompositeWidget extends WWidget {
 			if (this.getParent() != null) {
 				return this.getParent().isVisible();
 			} else {
-				return this.impl_.isRendered();
+				return false;
 			}
 		}
 	}

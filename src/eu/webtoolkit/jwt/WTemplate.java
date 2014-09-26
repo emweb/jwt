@@ -543,9 +543,12 @@ public class WTemplate extends WInteractWidget {
 	 * Each occurrence of the variable within the template will be substituted
 	 * by its value.
 	 * <p>
-	 * Depending on the <code>textFormat</code>, the <code>value</code> is
-	 * validated according as for a {@link WText}.
 	 * <p>
+	 * <i><b>Note: </b>Depending on the <code>textFormat</code>, the
+	 * <code>value</code> is validated according as for a {@link WText}. The
+	 * default (XHTMLText) filters &quot;active&quot; content, to avoid
+	 * XSS-based security risks.</i>
+	 * </p>
 	 * 
 	 * @see WTemplate#bindWidget(String varName, WWidget widget)
 	 * @see WTemplate#bindInt(String varName, int value)

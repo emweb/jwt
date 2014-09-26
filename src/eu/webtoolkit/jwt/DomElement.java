@@ -1002,12 +1002,8 @@ public class DomElement {
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
 			switch (i.getKey()) {
-			case PropertyText:
 			case PropertyInnerHTML:
 				innerHTML += i.getValue();
-				break;
-			case PropertyScript:
-				innerHTML += "/*<![CDATA[*/\n" + i.getValue() + "\n/* ]]> */";
 				break;
 			case PropertyDisabled:
 				if (i.getValue().equals("true")) {
@@ -1096,10 +1092,6 @@ public class DomElement {
 		} else {
 			if (openingTagOnly) {
 				out.append('>');
-				if (innerHTML.length() != 0) {
-					DomElement self = this;
-					self.childrenHtml_.append(innerHTML);
-				}
 				return;
 			}
 			if (!isSelfClosingTag(renderedType)) {
@@ -1383,7 +1375,6 @@ public class DomElement {
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
 			if (i.getKey() == Property.PropertyInnerHTML
-					|| i.getKey() == Property.PropertyText
 					|| i.getKey() == Property.PropertyTarget) {
 			} else {
 				i_it.remove();
@@ -1515,6 +1506,13 @@ public class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
+				if (this.mode_ == DomElement.Mode.ModeCreate
+						&& (this.type_ == DomElementType.DomElement_DIV
+								&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+								|| !this.childrenToAdd_.isEmpty() || !this.childrenHtml_
+								.isEmpty())) {
+					break;
+				}
 				out.append("Wt3_3_2.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
@@ -1528,17 +1526,6 @@ public class DomElement {
 					out.append(",true");
 				}
 				out.append(");");
-				break;
-			case PropertyScript:
-				out.append(this.var_).append(".innerHTML=");
-				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-					pushed = true;
-				}
-				fastJsStringLiteral(out, escaped, "/*<![CDATA[*/\n"
-						+ i.getValue() + "\n/* ]]> */");
-				out.append(';');
 				break;
 			case PropertyValue:
 				out.append(this.var_).append(".value=");
@@ -1610,16 +1597,6 @@ public class DomElement {
 				break;
 			case PropertyClass:
 				out.append(this.var_).append(".className=");
-				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-					pushed = true;
-				}
-				fastJsStringLiteral(out, escaped, i.getValue());
-				out.append(';');
-				break;
-			case PropertyText:
-				out.append(this.var_).append(".text=");
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1795,15 +1772,28 @@ public class DomElement {
 				this.declare(out);
 				out.append("Wt3_3_2.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-				out.append(this.childrenHtml_.toString());
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 				EscapeOStream js = new EscapeOStream();
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
 					this.childrenToAdd_.get(i).child.asHTML(out, js, timeouts);
 				}
+				String innerHTML = "";
+				{
+					String i = this.properties_.get(Property.PropertyInnerHTML);
+					if (i != null) {
+						innerHTML += i;
+					}
+					i = this.properties_.get(Property.PropertyAddedInnerHTML);
+					if (i != null) {
+						innerHTML += i;
+					}
+				}
+				out.append(innerHTML);
+				out.append(this.childrenHtml_.toString());
 				if (this.type_ == DomElementType.DomElement_DIV
 						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 						&& this.childrenToAdd_.isEmpty()
+						&& innerHTML.length() == 0
 						&& this.childrenHtml_.isEmpty()) {
 					out.append("&nbsp;");
 				}

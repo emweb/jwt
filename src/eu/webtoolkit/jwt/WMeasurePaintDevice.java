@@ -160,8 +160,8 @@ public class WMeasurePaintDevice implements WPaintDevice {
 
 	public void init() {
 		if (!(this.device_.getPainter() != null)) {
-			this.painter_ = new WPainter();
 			this.device_.setPainter(this.painter_);
+			this.device_.init();
 		} else {
 			this.device_.getPainter().save();
 		}
@@ -169,8 +169,8 @@ public class WMeasurePaintDevice implements WPaintDevice {
 
 	public void done() {
 		if (this.painter_ == this.device_.getPainter()) {
+			this.device_.done();
 			this.device_.setPainter((WPainter) null);
-			;
 		} else {
 			this.device_.getPainter().restore();
 		}

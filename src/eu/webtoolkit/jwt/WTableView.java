@@ -87,6 +87,10 @@ import org.slf4j.LoggerFactory;
  * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
  * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
  * signals.
+ * <p>
+ * If a {@link WTableView} is not constrained in height (either by a layout
+ * manager or by {@link WWidget#setHeight(WLength height) WWidget#setHeight()}),
+ * then it will grow according to the size of the model.
  */
 public class WTableView extends WAbstractItemView {
 	private static Logger logger = LoggerFactory.getLogger(WTableView.class);
