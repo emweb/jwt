@@ -889,8 +889,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				|| (int) shader.getId() >= this.shaders_) {
 			return;
 		}
-		this.js_.append("ctx.detachShader(").append(program.getJsRef()).append(
-				",").append(shader.getJsRef()).append(");");
+		this.js_.append("if (").append(program.getJsRef()).append(" && ")
+				.append(shader.getJsRef()).append(") { ctx.detachShader(")
+				.append(program.getJsRef()).append(",").append(
+						shader.getJsRef()).append("); }");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -2153,10 +2155,6 @@ class WClientGLWidget extends WAbstractGLImplementation {
 						"JavaScriptMatrix4x4: associated WGLWidget is not equal to the WGLWidget it's being initialized in");
 			}
 		}
-		if (mat.isInitialized()) {
-			throw new WException(
-					"JavaScriptMatrix4x4: matrix already initialized");
-		}
 		javax.vecmath.Matrix4f m = new javax.vecmath.Matrix4f(mat.getValue());
 		this.js_.append(mat.getJsRef()).append("=");
 		WebGLUtils.renderfv(this.js_, m, JsArrayType.Float32Array);
@@ -2166,7 +2164,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 
 	public void setJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 jsm,
 			final javax.vecmath.Matrix4f m) {
-		this.js_.append("Wt3_3_2.glMatrix.mat4.set(");
+		this.js_.append("Wt3_3_4.glMatrix.mat4.set(");
 		javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
 		WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
 		this.js_.append(", ").append(jsm.getJsRef()).append(");");
@@ -2180,9 +2178,6 @@ class WClientGLWidget extends WAbstractGLImplementation {
 				throw new WException(
 						"JavaScriptVector: associated WGLWidget is not equal to the WGLWidget it's being initialized in");
 			}
-		}
-		if (vec.isInitialized()) {
-			throw new WException("JavaScriptVector: vector already initialized");
 		}
 		List<Float> v = vec.getValue();
 		this.js_.append(vec.getJsRef()).append("= new Float32Array([");
@@ -2295,7 +2290,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	public void render(final String jsRef, EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			StringWriter tmp = new StringWriter();
-			tmp.append("{\nvar o = new Wt3_3_2.WGLWidget(").append(
+			tmp.append("{\nvar o = new Wt3_3_4.WGLWidget(").append(
 					WApplication.getInstance().getJavaScriptClass())
 					.append(",").append(jsRef).append(
 							");\no.discoverContext(function(){").append(

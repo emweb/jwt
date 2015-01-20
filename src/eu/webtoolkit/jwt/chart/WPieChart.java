@@ -72,6 +72,7 @@ public class WPieChart extends WAbstractChart {
 		this.avoidLabelRendering_ = 0.0;
 		this.labelOptions_ = EnumSet.noneOf(LabelOption.class);
 		this.shadow_ = false;
+		this.labelFormat_ = new WString("%.3g%%");
 		this.pie_ = new ArrayList<WPieChart.PieData>();
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Neutral));
 		this.setPlotAreaPadding(5);
@@ -348,6 +349,35 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
+	 * Sets the label format.
+	 * <p>
+	 * Sets a format string which is used to format label (percentage) values.
+	 * <p>
+	 * The format string must be a format string that is accepted by snprintf()
+	 * and which formats one double. If the format string is an empty string,
+	 * then {@link } is used.
+	 * <p>
+	 * The default value is &quot;%.3g%%&quot;.
+	 * <p>
+	 * 
+	 * @see WPieChart#getLabelFormat()
+	 */
+	public void setLabelFormat(final CharSequence format) {
+		this.labelFormat_ = WString.toWString(format);
+		this.update();
+	}
+
+	/**
+	 * Returns the label format string.
+	 * <p>
+	 * 
+	 * @see WPieChart#setLabelFormat(CharSequence format)
+	 */
+	public WString getLabelFormat() {
+		return this.labelFormat_;
+	}
+
+	/**
 	 * Creates a widget which renders the a legend item.
 	 * <p>
 	 * Depending on the passed LabelOption flags, the legend item widget, will
@@ -584,6 +614,7 @@ public class WPieChart extends WAbstractChart {
 	private double avoidLabelRendering_;
 	private EnumSet<LabelOption> labelOptions_;
 	private boolean shadow_;
+	private WString labelFormat_;
 
 	static class PieData {
 		private static Logger logger = LoggerFactory.getLogger(PieData.class);
@@ -1005,13 +1036,21 @@ public class WPieChart extends WAbstractChart {
 			}
 		}
 		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
-			text = new WString(text.toString());
-			String buf = null;
-			buf = String.format("%.3g%%", v / total * 100);
+			String label = "";
+			double u = v / total * 100;
+			String format = this.getLabelFormat().toString();
+			if (format.length() == 0) {
+				label = LocaleUtils.toString(LocaleUtils.getCurrentLocale(), u)
+						+ "%";
+			} else {
+				String buf = null;
+				buf = String.format(format, u);
+				label = buf;
+			}
 			if (!(text.length() == 0)) {
 				text.append(": ");
 			}
-			text.append(buf);
+			text.append(new WString(label));
 		}
 		return text;
 	}

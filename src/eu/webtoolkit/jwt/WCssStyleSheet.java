@@ -224,7 +224,7 @@ public class WCssStyleSheet {
 			boolean all) {
 		if (!all) {
 			for (int i = 0; i < this.rulesRemoved_.size(); ++i) {
-				js.append("Wt3_3_2.removeCssRule(");
+				js.append("Wt3_3_4.removeCssRule(");
 				DomElement.jsStringLiteral(js, this.rulesRemoved_.get(i), '\'');
 				js.append(");");
 			}
@@ -232,7 +232,7 @@ public class WCssStyleSheet {
 			for (Iterator<WCssRule> i_it = this.rulesModified_.iterator(); i_it
 					.hasNext();) {
 				WCssRule i = i_it.next();
-				js.append("{ var d= Wt3_3_2.getCssRule(");
+				js.append("{ var d= Wt3_3_4.getCssRule(");
 				DomElement.jsStringLiteral(js, i.getSelector(), '\'');
 				js.append(");if(d){");
 				DomElement d = DomElement.updateGiven("d",
@@ -252,7 +252,7 @@ public class WCssStyleSheet {
 					: this.rulesAdded_;
 			for (int i = 0; i < toProcess.size(); ++i) {
 				WCssRule rule = toProcess.get(i);
-				js.append("Wt3_3_2.addCss('").append(rule.getSelector())
+				js.append("Wt3_3_4.addCss('").append(rule.getSelector())
 						.append("',");
 				DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
 				js.append(");\n");
@@ -265,7 +265,7 @@ public class WCssStyleSheet {
 			StringBuilder css = new StringBuilder();
 			this.cssText(css, all);
 			if (!(css.length() == 0)) {
-				js.append("Wt3_3_2.addCssText(");
+				js.append("Wt3_3_4.addCssText(");
 				DomElement.jsStringLiteral(js, css.toString(), '\'');
 				js.append(");\n");
 			}

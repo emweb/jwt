@@ -85,6 +85,33 @@ public class WPushButton extends WFormWidget {
 		this(text, (WContainerWidget) null);
 	}
 
+	/**
+	 * Creates a push button with given label text.
+	 */
+	public WPushButton(final CharSequence text, TextFormat format,
+			WContainerWidget parent) {
+		super(parent);
+		this.linkState_ = new WAnchor.LinkState();
+		this.text_ = new WText.RichText();
+		this.icon_ = new WLink();
+		this.flags_ = new BitSet();
+		this.popupMenu_ = null;
+		this.text_.format = TextFormat.PlainText;
+		this.text_.text = WString.toWString(text);
+		this.setTextFormat(format);
+	}
+
+	/**
+	 * Creates a push button with given label text.
+	 * <p>
+	 * Calls
+	 * {@link #WPushButton(CharSequence text, TextFormat format, WContainerWidget parent)
+	 * this(text, format, (WContainerWidget)null)}
+	 */
+	public WPushButton(final CharSequence text, TextFormat format) {
+		this(text, format, (WContainerWidget) null);
+	}
+
 	public void remove() {
 		if (this.popupMenu_ != null) {
 			this.popupMenu_.setButton((WInteractWidget) null);

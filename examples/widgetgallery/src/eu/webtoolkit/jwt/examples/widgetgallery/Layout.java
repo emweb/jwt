@@ -414,7 +414,9 @@ class Layout extends TopicWidget {
 		edit.setValidator(validator);
 		final WPushButton ok = new WPushButton("OK", dialog.getFooter());
 		ok.setDefault(true);
-		ok.disable();
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
+			ok.disable();
+		}
 		WPushButton cancel = new WPushButton("Cancel", dialog.getFooter());
 		dialog.rejectWhenEscapePressed();
 		edit.keyWentUp().addListener(this, new Signal.Listener() {

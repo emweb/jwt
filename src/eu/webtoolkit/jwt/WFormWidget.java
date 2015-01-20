@@ -23,9 +23,10 @@ import org.slf4j.LoggerFactory;
  * An abstract widget that corresponds to an HTML form element.
  * <p>
  * 
- * A WFormWidget may receive focus, can be disabled, and can have a label that
- * acts as proxy for getting focus. It provides signals which reflect changes to
- * its value, or changes to its focus.
+ * A WFormWidget may receive focus (see {@link WFormWidget#isCanReceiveFocus()
+ * isCanReceiveFocus()}), can be disabled, and can have a label that acts as
+ * proxy for getting focus. It provides signals which reflect changes to its
+ * value, or changes to its focus.
  * <p>
  * Form widgets also have built-in support for validation, using
  * {@link WFormWidget#setValidator(WValidator validator) setValidator()}. If the
@@ -51,7 +52,6 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.removeEmptyText_ = null;
 		this.emptyText_ = new WString();
 		this.flags_ = new BitSet();
-		this.tabIndex_ = 0;
 		this.validated_ = new Signal1<WValidator.Result>();
 		this.validationToolTip_ = new WString();
 	}
@@ -210,51 +210,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Gives focus.
-	 * <p>
-	 * Giving focus to an input element only works when JavaScript is enabled.
-	 */
-	public void setFocus() {
-		this.setFocus(true);
-	}
-
-	/**
-	 * Changes focus.
-	 * <p>
-	 * When using <code>focus</code> = <code>false</code>, you can undo a
-	 * previous {@link WFormWidget#setFocus() setFocus()} call.
-	 */
-	public void setFocus(boolean focus) {
-		this.flags_.set(BIT_GOT_FOCUS, focus);
-		this.repaint();
-		WApplication app = WApplication.getInstance();
-		if (focus) {
-			app.setFocus(this.getId(), -1, -1);
-		} else {
-			if (app.getFocus().equals(this.getId())) {
-				app.setFocus("", -1, -1);
-			}
-		}
-	}
-
-	/**
-	 * Returns whether this widget has focus.
-	 */
-	public boolean hasFocus() {
-		return WApplication.getInstance().getFocus().equals(this.getId());
-	}
-
-	public void setTabIndex(int index) {
-		this.tabIndex_ = index;
-		this.flags_.set(BIT_TABINDEX_CHANGED);
-		this.repaint();
-	}
-
-	public int getTabIndex() {
-		return this.tabIndex_;
-	}
-
-	/**
 	 * Sets the element read-only.
 	 * <p>
 	 * A read-only form element cannot be edited, but the contents can still be
@@ -363,20 +318,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Signal emitted when the widget lost focus.
-	 */
-	public EventSignal blurred() {
-		return this.voidEventSignal(BLUR_SIGNAL, true);
-	}
-
-	/**
-	 * Signal emitted when the widget recieved focus.
-	 */
-	public EventSignal focussed() {
-		return this.voidEventSignal(FOCUS_SIGNAL, true);
-	}
-
-	/**
 	 * Signal emitted when the widget is being validated.
 	 * <p>
 	 * This signal may be useful to react to a changed validation state.
@@ -404,12 +345,16 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 	}
 
-	public boolean isSetFirstFocus() {
-		if (this.isVisible() && this.isEnabled()) {
-			this.setFocus();
-			return true;
+	public boolean isCanReceiveFocus() {
+		return true;
+	}
+
+	public int getTabIndex() {
+		int result = super.getTabIndex();
+		if (result == Integer.MIN_VALUE) {
+			return 0;
 		} else {
-			return false;
+			return result;
 		}
 	}
 
@@ -438,22 +383,14 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	private static String SELECT_SIGNAL = "select";
-	private static String FOCUS_SIGNAL = "focus";
-	private static String BLUR_SIGNAL = "blur";
 	private static final int BIT_ENABLED_CHANGED = 0;
-	private static final int BIT_GOT_FOCUS = 1;
-	private static final int BIT_READONLY = 2;
-	private static final int BIT_READONLY_CHANGED = 3;
-	private static final int BIT_TABINDEX_CHANGED = 4;
-	private static final int BIT_JS_OBJECT = 5;
-	private static final int BIT_VALIDATION_CHANGED = 6;
+	private static final int BIT_READONLY = 1;
+	private static final int BIT_READONLY_CHANGED = 2;
+	private static final int BIT_JS_OBJECT = 3;
+	private static final int BIT_VALIDATION_CHANGED = 4;
 	BitSet flags_;
-	private int tabIndex_;
 	private Signal1<WValidator.Result> validated_;
 	private WString validationToolTip_;
-
-	private void undoSetFocus() {
-	}
 
 	void setLabel(WLabel label) {
 		if (this.label_ != null) {
@@ -474,7 +411,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_3_2.validate(o)}");
+						.setJavaScript("function(o){Wt3_3_4.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
@@ -492,7 +429,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_3_2.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_3_4.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			;
@@ -509,7 +446,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_2.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_3_4.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");
@@ -555,22 +492,6 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			this.flags_.clear(BIT_READONLY_CHANGED);
 		}
-		if (this.flags_.get(BIT_TABINDEX_CHANGED) || all) {
-			if (!all || this.tabIndex_ != 0) {
-				element.setProperty(Property.PropertyTabIndex, String
-						.valueOf(this.tabIndex_));
-			}
-			this.flags_.clear(BIT_TABINDEX_CHANGED);
-		}
-		if (this.flags_.get(BIT_GOT_FOCUS)) {
-			WApplication app = WApplication.getInstance();
-			element.callJavaScript("setTimeout(function() {var o = "
-					+ this.getJsRef() + ";if (o) {if (!$(o).hasClass('"
-					+ app.getTheme().getDisabledClass()
-					+ "')) {try { o.focus();} catch (e) {}}}}, "
-					+ (env.agentIsIElt(9) ? "500" : "10") + ");");
-			this.flags_.clear(BIT_GOT_FOCUS);
-		}
 		super.updateDom(element, all);
 		if (this.flags_.get(BIT_VALIDATION_CHANGED)) {
 			if ((this.validationToolTip_.length() == 0)) {
@@ -584,14 +505,10 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	void propagateRenderOk(boolean deep) {
 		this.flags_.clear(BIT_ENABLED_CHANGED);
-		this.flags_.clear(BIT_TABINDEX_CHANGED);
 		this.flags_.clear(BIT_VALIDATION_CHANGED);
 		super.propagateRenderOk(deep);
 	}
 
-	// protected AbstractEventSignal.LearningListener
-	// getStateless(<pointertomember or dependentsizedarray>
-	// methodpointertomember or dependentsizedarray>) ;
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			if (this.flags_.get(BIT_JS_OBJECT)) {

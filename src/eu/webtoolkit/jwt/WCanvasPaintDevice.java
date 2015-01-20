@@ -63,35 +63,29 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
 		this.images_ = new ArrayList<String>();
-		this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
+		this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
 		WApplication app = WApplication.getInstance();
 		if (app != null) {
-			if (app.getEnvironment().agentIsIE()) {
-				this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+			if (app.getEnvironment().agentIsChrome()) {
+				if (app.getEnvironment().getAgent().getValue() <= WEnvironment.UserAgent.Chrome2
+						.getValue()) {
+					this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
+				}
 			} else {
-				if (app.getEnvironment().agentIsChrome()) {
-					if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Chrome2
-							.getValue()
-							&& !app.getEnvironment().agentIsMobileWebKit()) {
-						this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
+				if (app.getEnvironment().agentIsGecko()) {
+					if (app.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.Firefox3_0
+							.getValue()) {
+						this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
+					} else {
+						if (app.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.Firefox3_5
+								.getValue()) {
+							this.textMethod_ = WCanvasPaintDevice.TextMethod.MozText;
+						}
 					}
 				} else {
-					if (app.getEnvironment().agentIsGecko()) {
-						if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_5
-								.getValue()) {
-							this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
-						} else {
-							if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_0
-									.getValue()) {
-								this.textMethod_ = WCanvasPaintDevice.TextMethod.MozText;
-							}
-						}
-					} else {
-						if (app.getEnvironment().agentIsSafari()) {
-							if (app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.Safari4
-									.getValue()) {
-								this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
-							}
+					if (app.getEnvironment().agentIsSafari()) {
+						if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.Safari3) {
+							this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
 						}
 					}
 				}
@@ -492,7 +486,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(final String canvasId, DomElement text) {
-		String canvasVar = "Wt3_3_2.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_3_4.getElement('" + canvasId + "')";
 		StringWriter tmp = new StringWriter();
 		tmp.append("if(").append(canvasVar).append(".getContext){");
 		if (!this.images_.isEmpty()) {
@@ -787,6 +781,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
 		if (penChanged) {
 			if (penColorChanged) {
+				this.currentPen_
+						.setColor(this.getPainter().getPen().getColor());
+				this.currentPen_.setGradient(this.getPainter().getPen()
+						.getGradient());
 				if (!this.getPainter().getPen().getGradient().isEmpty()) {
 					String gradientName = defineGradient(this.getPainter()
 							.getPen().getGradient(), this.js_);
@@ -962,7 +960,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						+ this.pathTranslation_.getY(), 3));
 				break;
 			case ArcR:
-				out.append(',').append(MathUtils.roundJs(s.getX(), 3));
+				out.append(',').append(
+						MathUtils.roundJs(Math.max(0.0, s.getX()), 3));
 				break;
 			case ArcAngleSweep: {
 				WPointF r = normalizedDegreesToRadians(s.getX(), s.getY());

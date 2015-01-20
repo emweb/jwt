@@ -128,7 +128,11 @@ public class WTreeView extends WAbstractItemView {
 		this.renderedNodes_ = new HashMap<WModelIndex, WTreeViewNode>();
 		this.renderedNodesAdded_ = false;
 		this.rootNode_ = null;
+		this.rowHeightRule_ = null;
+		this.rowWidthRule_ = null;
+		this.rowContentsWidthRule_ = null;
 		this.borderColorRule_ = null;
+		this.c0StyleRule_ = null;
 		this.rootIsDecorated_ = true;
 		this.collapsed_ = new Signal1<WModelIndex>(this);
 		this.expanded_ = new Signal1<WModelIndex>(this);
@@ -158,16 +162,6 @@ public class WTreeView extends WAbstractItemView {
 			}
 		}
 		this.setColumnBorder(WColor.white);
-		this.addCssRule("#" + this.getId() + " .cwidth", "");
-		this.rowHeightRule_ = new WCssTemplateRule("#" + this.getId() + " .rh",
-				this);
-		app.getStyleSheet().addRule(this.rowHeightRule_);
-		this.rowWidthRule_ = new WCssTemplateRule("#" + this.getId()
-				+ " .Wt-tv-row", this);
-		app.getStyleSheet().addRule(this.rowWidthRule_);
-		this.rowContentsWidthRule_ = new WCssTemplateRule("#" + this.getId()
-				+ " .Wt-tv-rowc", this);
-		app.getStyleSheet().addRule(this.rowContentsWidthRule_);
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -212,6 +206,7 @@ public class WTreeView extends WAbstractItemView {
 					node.doCollapse();
 				}
 			} else {
+				int height = this.subTreeHeight(index);
 				if (expanded) {
 					this.expandedSet_.add(index);
 				} else {
@@ -220,7 +215,6 @@ public class WTreeView extends WAbstractItemView {
 				if (w != null) {
 					RowSpacer spacer = ((w) instanceof RowSpacer ? (RowSpacer) (w)
 							: null);
-					int height = this.subTreeHeight(index);
 					int diff = this.subTreeHeight(index) - height;
 					spacer.setRows(spacer.getRows() + diff);
 					spacer.getNode().adjustChildrenHeight(diff);
@@ -505,8 +499,10 @@ public class WTreeView extends WAbstractItemView {
 
 	public void setRowHeight(final WLength rowHeight) {
 		super.setRowHeight(rowHeight);
-		this.rowHeightRule_.getTemplateWidget().setHeight(rowHeight);
-		this.rowHeightRule_.getTemplateWidget().setLineHeight(rowHeight);
+		if (this.rowHeightRule_ != null) {
+			this.rowHeightRule_.getTemplateWidget().setHeight(rowHeight);
+			this.rowHeightRule_.getTemplateWidget().setLineHeight(rowHeight);
+		}
 		if (!WApplication.getInstance().getEnvironment().hasAjax()
 				&& !this.getHeight().isAuto()) {
 			this.viewportHeight_ = (int) (this.contentsContainer_.getHeight()
@@ -573,7 +569,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_3_2.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_3_4.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -698,6 +694,41 @@ public class WTreeView extends WAbstractItemView {
 												e4, e5);
 									}
 								});
+				this.addCssRule("#" + this.getId() + " .cwidth", "");
+				WApplication app = WApplication.getInstance();
+				this.rowHeightRule_ = new WCssTemplateRule("#" + this.getId()
+						+ " .rh", this);
+				app.getStyleSheet().addRule(this.rowHeightRule_);
+				this.rowHeightRule_.getTemplateWidget().setHeight(
+						this.getRowHeight());
+				this.rowHeightRule_.getTemplateWidget().setLineHeight(
+						this.getRowHeight());
+				this.rowWidthRule_ = new WCssTemplateRule("#" + this.getId()
+						+ " .Wt-tv-row", this);
+				app.getStyleSheet().addRule(this.rowWidthRule_);
+				this.rowContentsWidthRule_ = new WCssTemplateRule("#"
+						+ this.getId() + " .Wt-tv-rowc", this);
+				app.getStyleSheet().addRule(this.rowContentsWidthRule_);
+				if (app.getEnvironment().hasAjax()) {
+					this.contentsContainer_
+							.scrolled()
+							.addListener(
+									"function(obj, event) {if (obj.sb) return;obj.sb = true;"
+											+ this.headerContainer_.getJsRef()
+											+ ".scrollLeft=obj.scrollLeft;var t = "
+											+ this.contents_.getJsRef()
+											+ ".firstChild;var h = "
+											+ this.headers_.getJsRef()
+											+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';obj.sb = false;}");
+				}
+				this.c0StyleRule_ = this.addCssRule("#" + this.getId()
+						+ " li .none",
+						"width: auto;text-overflow: ellipsis;overflow: hidden");
+				if (this.columns_.size() > 0) {
+					final WAbstractItemView.ColumnInfo ci = this.columnInfo(0);
+					this.c0StyleRule_.setSelector("#" + this.getId() + " li ."
+							+ ci.getStyleClass());
+				}
 			}
 		}
 		while (this.renderState_ != WAbstractItemView.RenderState.RenderOk) {
@@ -738,8 +769,7 @@ public class WTreeView extends WAbstractItemView {
 		this.saveExtraHeaderWidgets();
 		this.setup();
 		this.defineJavaScript();
-		this.rerenderHeader();
-		this.rerenderTree();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerender);
 		super.enableAjax();
 	}
 
@@ -750,8 +780,8 @@ public class WTreeView extends WAbstractItemView {
 	private WCssTemplateRule rowHeightRule_;
 	private WCssTemplateRule rowWidthRule_;
 	private WCssTemplateRule rowContentsWidthRule_;
-	private WCssTemplateRule c0WidthRule_;
 	private WCssRule borderColorRule_;
+	private WCssRule c0StyleRule_;
 	private boolean rootIsDecorated_;
 	boolean column1Fixed_;
 	Signal1<WModelIndex> collapsed_;
@@ -777,9 +807,10 @@ public class WTreeView extends WAbstractItemView {
 		if (column == 0) {
 			ci.width = WLength.Auto;
 			ci.styleRule.getTemplateWidget().resize(WLength.Auto, WLength.Auto);
-			(this).addCssRule(
-					"#" + this.getId() + " li ." + ci.getStyleClass(),
-					"width: auto;text-overflow: ellipsis;overflow: hidden");
+			if (this.c0StyleRule_ != null) {
+				this.c0StyleRule_.setSelector("#" + this.getId() + " li ."
+						+ ci.getStyleClass());
+			}
 		}
 		return ci;
 	}
@@ -790,7 +821,7 @@ public class WTreeView extends WAbstractItemView {
 			return;
 		}
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
-		this.setJavaScriptMember(" WTreeView", "new Wt3_3_2.WTreeView("
+		this.setJavaScriptMember(" WTreeView", "new Wt3_3_4.WTreeView("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
@@ -912,16 +943,6 @@ public class WTreeView extends WAbstractItemView {
 							WTreeView.this.onViewportChange(e1);
 						}
 					});
-			this.contentsContainer_
-					.scrolled()
-					.addListener(
-							"function(obj, event) {if (obj.sb) return;obj.sb = true;"
-									+ this.headerContainer_.getJsRef()
-									+ ".scrollLeft=obj.scrollLeft;var t = "
-									+ this.contents_.getJsRef()
-									+ ".firstChild;var h = "
-									+ this.headers_.getJsRef()
-									+ ";h.style.width = (t.offsetWidth - 1) + 'px';h.style.width = t.offsetWidth + 'px';obj.sb = false;}");
 			this.contentsContainer_.addWidget(this.contents_);
 			layout.addWidget(this.headerContainer_);
 			layout.addWidget(this.contentsContainer_, 1);
@@ -2002,6 +2023,6 @@ public class WTreeView extends WAbstractItemView {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTreeView",
-				"function(k,d,i,x,r,B){function p(b){var a=-1,c=null,e=false,g=false,h=null;for(b=f.target(b);b&&b!=d;){if(f.hasTag(b,\"LI\")){if(a==-1)a=0;c=b.id;break}else if(b.className.indexOf(\"Wt-tv-c\")==0){if(b.className.indexOf(\"Wt-tv-c\")==0)a=b.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(b.getAttribute(\"drop\")===\"true\")g=true;h=b}if($(b).hasClass(B))e=true;b=b.parentNode}return{columnId:a,nodeId:c,selected:e,drop:g,el:h}}function y(){if(s&& z)if(!f.isHidden(d)){s=false;var b=u.firstChild,a=o.firstChild,c=0,e=0,g=o.lastChild.className.split(\" \")[0];e=f.getCssRule(\"#\"+d.id+\" .\"+g);if(r)a=a.firstChild;for(var h=0,l=a.childNodes.length;h<l;++h)if(a.childNodes[h].className){var j=a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")c+=f.pxself(j,\"width\")+7}if(!r){if(f.isIE&&$(document.body).hasClass(\"Wt-rtl\"))if(h=f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\"))h.style.width=c+\"px\";if(e.style.width)$(d).find(\".Wt-headerdiv .\"+ g).css(\"width\",e.style.width);else{g=d.scrollWidth-a.offsetWidth-9-15;if(g>0)e.style.width=g+\"px\"}}e=c+f.pxself(e,\"width\")+(f.isIE6?10:7);if(r){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=c+\"px\";k.layouts2.adjust();f.isIE&&setTimeout(function(){$(d).find(\".Wt-tv-rowc\").css(\"width\",c+\"px\").css(\"width\",\"\")},0);d.changed=true}else{o.style.width=b.style.width=e+\"px\";a.style.width=c+\"px\"}}}jQuery.data(d,\"obj\",this);var u=i.firstChild,o=x.firstChild,v=this,f=k.WT,z=false;this.click=function(b, a){var c=p(a);c.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(b,a){var c=p(a);c.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(b,a){f.capture(null);var c=p(a);if(c.columnId!=-1){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&&c.selected&&k._p_.dragStart(d, a)}};this.mouseUp=function(b,a){var c=p(a);c.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"mouseup\",\"\",\"\")};this.rootClick=function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"clicked\",\"\",\"\")};this.rootDblclick=function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"dblclicked\",\"\",\"\")};this.rootMouseDown=function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"mousedown\",\"\",\"\")};this.rootMouseUp=function(b,a){k.emit(d, {name:\"itemEvent\",eventObject:b,event:a},\"\",\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(b,a){var c=b.parentNode.className.split(\" \")[0];if(c){var e=f.getCssRule(\"#\"+d.id+\" .\"+c),g=f.pxself(e,\"width\"),h=-g,l=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var w=h;h=-l;l=-w}new f.SizeHandle(f,\"h\",b.offsetWidth,d.offsetHeight,h,l,\"Wt-hsh2\",function(m){m=g+(j?-m:m);var q=c.substring(7)*1;e.style.width=m+\"px\";v.adjustColumns();k.emit(d,\"columnResized\",q,parseInt(m))},b,d,a,-2,-1)}};var s=false;this.adjustColumns= function(){if(!s){s=true;setTimeout(y,0)}};var n=null;d.handleDragDrop=function(b,a,c,e,g){if(n){n.className=n.classNameOrig;n=null}if(b!=\"end\"){var h=p(c);if(!h.selected&&h.drop&&h.columnId!=-1)if(b==\"drop\")k.emit(d,{name:\"itemEvent\",eventObject:a,event:c},h.nodeId+\":\"+h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.wtResize=function(){z=true;y();var b=$(d),a,c=null,e=f.pxself(d,\"width\");if(e==0)e= d.clientWidth;else if(f.boxSizing(d)){e-=f.px(d,\"borderLeftWidth\");e-=f.px(d,\"borderRightWidth\")}var g=i.offsetWidth-i.clientWidth;if(g>50)g=0;if(i.clientWidth>0)e-=g;if(b.hasClass(\"column1\")){a=b.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);c=f.pxself(a,\"width\")}if((!f.isIE||e>100)&&(e!=i.tw||c!=i.c0w||d.changed)){var h=!d.changed;i.tw=e;i.c0w=c;a=b.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);var l= u.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),w=j.style.width==l.offsetWidth+1+\"px\",m=o.firstChild;j.style.width=e+\"px\";i.style.width=e+g+\"px\";if(!$(document.body).hasClass(\"Wt-rtl\")){x.style.marginRight=g+\"px\";$(\"#\"+d.id+\" .Wt-scroll\").css(\"marginRight\",g+\"px\")}if(c!=null){c=e-c-(f.isIE6?10:7);if(c>0){var q=Math.min(c,f.pxself(f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));e-=c-q;o.style.width=e+\"px\";l.style.width=e+\"px\";f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width=q+\"px\";f.isIE&&setTimeout(function(){b.find(\" .Wt-tv-row\").css(\"width\", q+\"px\").css(\"width\",\"\")},0)}}else if(w){o.style.width=j.style.width;l.style.width=j.style.width}else o.style.width=l.offsetWidth+\"px\";if(!r&&l.offsetWidth-m.offsetWidth>=7)a.style.width=l.offsetWidth-m.offsetWidth-7+\"px\";d.changed=false;h&&v.adjustColumns()}};this.scrollTo=function(b,a,c,e){if(a!=-1){a*=c;b=i.scrollTop;var g=i.clientHeight;if(e==0)if(b+g<a)e=1;else if(a<b)e=2;switch(e){case 1:i.scrollTop=a;break;case 2:i.scrollTop=a-(g-c);break;case 3:i.scrollTop=a-(g-c)/2;break}window.fakeEvent= {object:i};i.onscroll(window.fakeEvent);window.fakeEvent=null}};var t;this.setRowHeight=function(b){t=b};var A=function(){if(t!=0)u.children[0].children[0].style.backgroundPosition=\"0px \"+Math.floor(i.scrollTop/(2*t))*2*t+\"px\"};if(i.addEventListener)i.addEventListener(\"scroll\",A);else i.attachEvent&&i.attachEvent(\"onscroll\",A);v.adjustColumns()}");
+				"function(k,d,i,x,r,B){function p(b){var a=-1,c=null,e=false,g=false,h=null;for(b=f.target(b);b&&b!=d;){if(f.hasTag(b,\"LI\")){if(a==-1)a=0;c=b.id;break}else if(b.className.indexOf(\"Wt-tv-c\")==0){if(b.className.indexOf(\"Wt-tv-c\")==0)a=b.className.split(\" \")[0].substring(7)*1;else if(a==-1)a=0;if(b.getAttribute(\"drop\")===\"true\")g=true;h=b}if($(b).hasClass(B))e=true;b=b.parentNode}return{columnId:a,nodeId:c,selected:e,drop:g,el:h}}function y(){if(s&& z)if(!f.isHidden(d)){s=false;var b=u.firstChild,a=o.firstChild,c=0,e=0,g=o.lastChild.className.split(\" \")[0];e=f.getCssRule(\"#\"+d.id+\" .\"+g);if(r)a=a.firstChild;for(var h=0,l=a.childNodes.length;h<l;++h)if(a.childNodes[h].className){var j=a.childNodes[h].className.split(\" \")[0];j=f.getCssRule(\"#\"+d.id+\" .\"+j);if(j.style.display!=\"none\")c+=f.pxself(j,\"width\")+7}if(!r){if(f.isIE&&$(document.body).hasClass(\"Wt-rtl\"))if(h=f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\"))h.style.width=c+\"px\";if(e.style.width)$(d).find(\".Wt-headerdiv .\"+ g).css(\"width\",e.style.width);else{g=d.scrollWidth-a.offsetWidth-9-15;if(g>0)e.style.width=g+\"px\"}}if(e.style.width!=\"auto\"){e=c+f.pxself(e,\"width\")+(f.isIE6?10:7);if(r){j=f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\");j.style.width=c+\"px\";k.layouts2.adjust();f.isIE&&setTimeout(function(){$(d).find(\".Wt-tv-rowc\").css(\"width\",c+\"px\").css(\"width\",\"\")},0);d.changed=true}else{o.style.width=b.style.width=e+\"px\";a.style.width=c+\"px\"}}}}jQuery.data(d,\"obj\",this);var u=i.firstChild,o=x.firstChild,v=this,f=k.WT,z= false;this.click=function(b,a){var c=p(a);c.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"clicked\",\"\",\"\")};this.dblClick=function(b,a){var c=p(a);c.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"dblclicked\",\"\",\"\")};this.mouseDown=function(b,a){f.capture(null);var c=p(a);if(c.columnId!=-1){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"mousedown\",\"\",\"\");d.getAttribute(\"drag\")===\"true\"&& c.selected&&k._p_.dragStart(d,a)}};this.mouseUp=function(b,a){var c=p(a);c.columnId!=-1&&k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},c.nodeId+\":\"+c.columnId,\"mouseup\",\"\",\"\")};this.rootClick=function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"clicked\",\"\",\"\")};this.rootDblclick=function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"dblclicked\",\"\",\"\")};this.rootMouseDown=function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"mousedown\",\"\",\"\")};this.rootMouseUp= function(b,a){k.emit(d,{name:\"itemEvent\",eventObject:b,event:a},\"\",\"mouseup\",\"\",\"\")};this.resizeHandleMDown=function(b,a){var c=b.parentNode.className.split(\" \")[0];if(c){var e=f.getCssRule(\"#\"+d.id+\" .\"+c),g=f.pxself(e,\"width\"),h=-g,l=1E4,j=$(document.body).hasClass(\"Wt-rtl\");if(j){var w=h;h=-l;l=-w}new f.SizeHandle(f,\"h\",b.offsetWidth,d.offsetHeight,h,l,\"Wt-hsh2\",function(m){m=g+(j?-m:m);var q=c.substring(7)*1;e.style.width=m+\"px\";v.adjustColumns();k.emit(d,\"columnResized\",q,parseInt(m))},b,d,a, -2,-1)}};var s=false;this.adjustColumns=function(){if(!s){s=true;setTimeout(y,0)}};var n=null;d.handleDragDrop=function(b,a,c,e,g){if(n){n.className=n.classNameOrig;n=null}if(b!=\"end\"){var h=p(c);if(!h.selected&&h.drop&&h.columnId!=-1)if(b==\"drop\")k.emit(d,{name:\"itemEvent\",eventObject:a,event:c},h.nodeId+\":\"+h.columnId,\"drop\",e,g);else{a.className=\"Wt-valid-drop\";n=h.el;n.classNameOrig=n.className;n.className+=\" Wt-drop-site\"}else a.className=\"\"}};this.wtResize=function(){z=true;y();var b=$(d),a, c=null,e=f.pxself(d,\"width\");if(e==0)e=d.clientWidth;else if(f.boxSizing(d)){e-=f.px(d,\"borderLeftWidth\");e-=f.px(d,\"borderRightWidth\")}var g=i.offsetWidth-i.clientWidth;if(g>50)g=0;if(i.clientWidth>0)e-=g;if(b.hasClass(\"column1\")){a=b.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0];a=f.getCssRule(\"#\"+d.id+\" .\"+a);c=f.pxself(a,\"width\")}if((!f.isIE||e>100)&&(e!=i.tw||c!=i.c0w||d.changed)){var h=!d.changed;i.tw=e;i.c0w=c;a=b.find(\".Wt-headerdiv\").get(0).lastChild.className.split(\" \")[0]; a=f.getCssRule(\"#\"+d.id+\" .\"+a);var l=u.firstChild,j=f.getCssRule(\"#\"+d.id+\" .cwidth\"),w=j.style.width==l.offsetWidth+1+\"px\",m=o.firstChild;j.style.width=e+\"px\";i.style.width=e+g+\"px\";if(!$(document.body).hasClass(\"Wt-rtl\")){x.style.marginRight=g+\"px\";$(\"#\"+d.id+\" .Wt-scroll\").css(\"marginRight\",g+\"px\")}if(c!=null){c=e-c-(f.isIE6?10:7);if(c>0){var q=Math.min(c,f.pxself(f.getCssRule(\"#\"+d.id+\" .Wt-tv-rowc\"),\"width\"));e-=c-q;o.style.width=e+\"px\";l.style.width=e+\"px\";f.getCssRule(\"#\"+d.id+\" .Wt-tv-row\").style.width= q+\"px\";f.isIE&&setTimeout(function(){b.find(\" .Wt-tv-row\").css(\"width\",q+\"px\").css(\"width\",\"\")},0)}}else if(w){o.style.width=j.style.width;l.style.width=j.style.width}else o.style.width=l.offsetWidth+\"px\";if(!r&&l.offsetWidth-m.offsetWidth>=7)a.style.width=l.offsetWidth-m.offsetWidth-7+\"px\";d.changed=false;h&&v.adjustColumns()}};this.scrollTo=function(b,a,c,e){if(a!=-1){a*=c;b=i.scrollTop;var g=i.clientHeight;if(e==0)if(b+g<a)e=1;else if(a<b)e=2;switch(e){case 1:i.scrollTop=a;break;case 2:i.scrollTop= a-(g-c);break;case 3:i.scrollTop=a-(g-c)/2;break}window.fakeEvent={object:i};i.onscroll(window.fakeEvent);window.fakeEvent=null}};var t;this.setRowHeight=function(b){t=b};var A=function(){if(t!=0)u.children[0].children[0].style.backgroundPosition=\"0px \"+Math.floor(i.scrollTop/(2*t))*2*t+\"px\"};if(i.addEventListener)i.addEventListener(\"scroll\",A);else i.attachEvent&&i.attachEvent(\"onscroll\",A);v.adjustColumns()}");
 	}
 }

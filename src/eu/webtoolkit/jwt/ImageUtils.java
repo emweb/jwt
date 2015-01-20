@@ -92,7 +92,7 @@ class ImageUtils {
 			}
 			pos += 2 + (toUnsigned(header.get(pos + 2)) << 8)
 					+ toUnsigned(header.get(pos + 3));
-			if (pos + 12 > header.size()) {
+			if (pos + 12 > (int) header.size()) {
 				break;
 			}
 		}

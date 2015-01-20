@@ -250,20 +250,18 @@ public class WGoogleMap extends WCompositeWidget {
 	public void addMarker(final WGoogleMap.Coordinate pos) {
 		StringWriter strm = new StringWriter();
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			strm
-					.append(
-							"var marker = new google.maps.Marker(new google.maps.LatLng(")
-					.append(String.valueOf(pos.getLatitude())).append(", ")
-					.append(String.valueOf(pos.getLongitude())).append("));")
-					.append(this.getJsRef()).append(".map.addOverlay(marker);");
+			strm.append("var marker = ");
+			write(strm, pos);
+			strm.append(";").append(this.getJsRef()).append(
+					".map.addOverlay(marker);");
 		} else {
-			strm.append("var position = new google.maps.LatLng(").append(
-					String.valueOf(pos.getLatitude())).append(", ").append(
-					String.valueOf(pos.getLongitude())).append(");").append(
-					"var marker = new google.maps.Marker({").append(
-					"position: position,").append("map: ").append(
-					this.getJsRef()).append(".map").append("});").append(
-					this.getJsRef()).append(".map.overlays.push(marker);");
+			strm.append("var position = ");
+			write(strm, pos);
+			strm.append(";").append("var marker = new google.maps.Marker({")
+					.append("position: position,").append("map: ").append(
+							this.getJsRef()).append(".map").append("});")
+					.append(this.getJsRef()).append(
+							".map.overlays.push(marker);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -283,11 +281,9 @@ public class WGoogleMap extends WCompositeWidget {
 		StringWriter strm = new StringWriter();
 		strm.append("var waypoints = [];");
 		for (int i = 0; i < points.size(); ++i) {
-			strm.append("waypoints[").append(String.valueOf(i)).append(
-					"] = new google.maps.LatLng(").append(
-					String.valueOf(points.get(i).getLatitude())).append(", ")
-					.append(String.valueOf(points.get(i).getLongitude()))
-					.append(");");
+			strm.append("waypoints[").append(String.valueOf(i)).append("] = ");
+			write(strm, points.get(i));
+			strm.append(";");
 		}
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("var poly = new google.maps.Polyline(waypoints, \"")
@@ -361,14 +357,11 @@ public class WGoogleMap extends WCompositeWidget {
 			StringWriter strm = new StringWriter();
 			double strokeOpacity = strokeColor.getAlpha() / 255.0;
 			double fillOpacity = fillColor.getAlpha() / 255.0;
+			strm.append("var mapLocal = ").append(this.getJsRef() + ".map;")
+					.append("var latLng = ");
+			write(strm, center);
 			strm
-					.append("var mapLocal = ")
-					.append(this.getJsRef() + ".map;")
-					.append("var latLng  = new google.maps.LatLng(")
-					.append(String.valueOf(center.getLatitude()))
-					.append(",")
-					.append(String.valueOf(center.getLongitude()))
-					.append(");")
+					.append(";")
 					.append(
 							"var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
 					.append(String.valueOf(radius)).append(
@@ -408,14 +401,14 @@ public class WGoogleMap extends WCompositeWidget {
 			throw new UnsupportedOperationException(
 					"WGoogleMap::addIconMarker is not supported in the Google Maps API v2.");
 		} else {
-			strm.append("var position = new google.maps.LatLng(").append(
-					String.valueOf(pos.getLatitude())).append(", ").append(
-					String.valueOf(pos.getLongitude())).append(");").append(
-					"var marker = new google.maps.Marker({").append(
-					"position: position,").append("icon: \"").append(iconURL)
-					.append("\",").append("map: ").append(this.getJsRef())
-					.append(".map").append("});").append(this.getJsRef())
-					.append(".map.overlays.push(marker);");
+			strm.append("var position = ");
+			write(strm, pos);
+			strm.append(";").append("var marker = new google.maps.Marker({")
+					.append("position: position,").append("icon: \"").append(
+							iconURL).append("\",").append("map: ").append(
+							this.getJsRef()).append(".map").append("});")
+					.append(this.getJsRef()).append(
+							".map.overlays.push(marker);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -448,9 +441,9 @@ public class WGoogleMap extends WCompositeWidget {
 	public void openInfoWindow(final WGoogleMap.Coordinate pos,
 			final CharSequence myHtml) {
 		StringWriter strm = new StringWriter();
-		strm.append("var pos = new google.maps.LatLng(").append(
-				String.valueOf(pos.getLatitude())).append(", ").append(
-				String.valueOf(pos.getLongitude())).append(");");
+		strm.append("var pos = ");
+		write(strm, pos);
+		strm.append(";");
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append(this.getJsRef()).append(".map.openInfoWindow(pos, ")
 					.append(WWebWidget.jsStringLiteral(myHtml)).append(");");
@@ -471,10 +464,9 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void setCenter(final WGoogleMap.Coordinate center) {
 		StringWriter strm = new StringWriter();
-		strm.append(this.getJsRef()).append(
-				".map.setCenter(new google.maps.LatLng(").append(
-				String.valueOf(center.getLatitude())).append(", ").append(
-				String.valueOf(center.getLongitude())).append("));");
+		strm.append(this.getJsRef()).append(".map.setCenter(");
+		write(strm, center);
+		strm.append(");");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -483,12 +475,10 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void setCenter(final WGoogleMap.Coordinate center, int zoom) {
 		StringWriter strm = new StringWriter();
-		strm.append(this.getJsRef()).append(
-				".map.setCenter(new google.maps.LatLng(").append(
-				String.valueOf(center.getLatitude())).append(", ").append(
-				String.valueOf(center.getLongitude())).append(")); ").append(
-				this.getJsRef()).append(".map.setZoom(").append(
-				String.valueOf(zoom)).append(");");
+		strm.append(this.getJsRef()).append(".map.setCenter(");
+		write(strm, center);
+		strm.append("); ").append(this.getJsRef()).append(".map.setZoom(")
+				.append(String.valueOf(zoom)).append(");");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -500,10 +490,9 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void panTo(final WGoogleMap.Coordinate center) {
 		StringWriter strm = new StringWriter();
-		strm.append(this.getJsRef()).append(
-				".map.panTo(new google.maps.LatLng(").append(
-				String.valueOf(center.getLatitude())).append(", ").append(
-				String.valueOf(center.getLongitude())).append("));");
+		strm.append(this.getJsRef()).append(".map.panTo(");
+		write(strm, center);
+		strm.append(");");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -522,23 +511,17 @@ public class WGoogleMap extends WCompositeWidget {
 				.max(topLeft.getLatitude(), rightBottom.getLatitude()), Math
 				.max(topLeft.getLongitude(), rightBottom.getLongitude()));
 		StringWriter strm = new StringWriter();
-		strm
-				.append(
-						"var bbox = new google.maps.LatLngBounds(new google.maps.LatLng(")
-				.append(String.valueOf(topLeftC.getLatitude())).append(", ")
-				.append(String.valueOf(topLeftC.getLongitude())).append("), ")
-				.append("new google.maps.LatLng(").append(
-						String.valueOf(rightBottomC.getLatitude()))
-				.append(", ").append(
-						String.valueOf(rightBottomC.getLongitude())).append(
-						"));");
+		strm.append("var bbox = new google.maps.LatLngBounds(");
+		write(strm, topLeftC);
+		strm.append(", ");
+		write(strm, rightBottomC);
+		strm.append(");");
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("var zooml = ").append(this.getJsRef()).append(
 					".map.getBoundsZoomLevel(bbox);").append(this.getJsRef())
-					.append(".map.setCenter(new google.maps.LatLng(").append(
-							String.valueOf(center.getLatitude())).append(", ")
-					.append(String.valueOf(center.getLongitude())).append(
-							"), zooml);");
+					.append(".map.setCenter(");
+			write(strm, center);
+			strm.append(", zooml);");
 		} else {
 			strm.append(this.getJsRef()).append(".map.fitBounds(bbox);");
 		}
@@ -950,4 +933,12 @@ public class WGoogleMap extends WCompositeWidget {
 
 	private WGoogleMap.ApiVersion apiVersion_;
 	private static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
+
+	static void write(final StringWriter os, final WGoogleMap.Coordinate c) {
+		char[] b1 = new char[35];
+		char[] b2 = new char[35];
+		os.append("new google.maps.LatLng(").append(
+				MathUtils.roundJs(c.getLatitude(), 15)).append(",").append(
+				MathUtils.roundJs(c.getLongitude(), 15)).append(")");
+	}
 }

@@ -45,6 +45,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
 		this.text_ = new WText.RichText();
+		this.naked_ = true;
 		this.stateChanged_ = false;
 		this.textChanged_ = false;
 		this.text_.format = TextFormat.PlainText;
@@ -70,6 +71,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
 		this.text_ = new WText.RichText();
+		this.naked_ = false;
 		this.stateChanged_ = false;
 		this.textChanged_ = false;
 		this.text_.format = TextFormat.PlainText;
@@ -307,6 +309,10 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				input.setProperty(Property.PropertyReadOnly, v);
 				element.removeProperty(Property.PropertyReadOnly);
 			}
+			v = input.getAttribute("title");
+			if (v.length() != 0) {
+				element.setAttribute("title", v);
+			}
 		}
 		if (this.stateChanged_ || all) {
 			input.setProperty(Property.PropertyChecked,
@@ -432,7 +438,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	DomElementType getDomElementType() {
-		if (!(this.text_.text.length() == 0)) {
+		if (!this.naked_) {
 			return DomElementType.DomElement_LABEL;
 		} else {
 			return DomElementType.DomElement_INPUT;
@@ -461,6 +467,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	private static String CHECKED_SIGNAL = "M_checked";
 	private static String UNCHECKED_SIGNAL = "M_unchecked";
 	private WText.RichText text_;
+	private boolean naked_;
 	boolean stateChanged_;
 	private boolean textChanged_;
 	private CheckState prevState_;

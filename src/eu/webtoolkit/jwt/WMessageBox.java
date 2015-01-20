@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
  * {@link WWidget#show() WWidget#show()} method, which blocks the current thread
  * until the user has processed the messabebox. Since this uses the
  * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, it suffers from
- * the same scalability issues. See documentation of {@link WDialog} for more
- * details.
+ * the same scalability issues as well as limitations. See documentation of
+ * {@link WDialog} for more details.
  * <p>
  * This will show a message box that looks like this:
  * <p>
@@ -366,8 +366,33 @@ public class WMessageBox extends WDialog {
 		return this.defaultButton_;
 	}
 
-	// public void setEscapeButton(WPushButton button) ;
-	// public void setEscapeButton(StandardButton button) ;
+	/**
+	 * Sets the escape button.
+	 * <p>
+	 * The escape button is pressed when the user presses escapes.
+	 * <p>
+	 * If no escape button is set, JWt will take a button that is associated
+	 * with a {@link StandardButton#Cancel} or {@link StandardButton#No} result.
+	 */
+	public void setEscapeButton(WPushButton button) {
+		this.escapeButton_ = button;
+	}
+
+	/**
+	 * Sets the escape button.
+	 * <p>
+	 * The escape button is pressed when the user presses escapes.
+	 * <p>
+	 * If no escape button is set, JWt will take a button that is associated
+	 * with a {@link StandardButton#Cancel} or {@link StandardButton#No} result.
+	 */
+	public void setEscapeButton(StandardButton button) {
+		WPushButton b = this.getButton(button);
+		if (b != null) {
+			this.setEscapeButton(b);
+		}
+	}
+
 	/**
 	 * Returns the escape button.
 	 * <p>

@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.3.3</title>
+<title>JWt 3.3.4</title>
 </head>
 <body>
 
@@ -24,6 +24,75 @@ This page lists important notes on migrating existing applications to
 newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 3.3.4 (Oct ?, 2014)</h2>
+
+<p>
+  This release has a focus on bug fixes but also one or two new new features,
+  of which the following are the most notable:
+</p>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/WIdentityProxyModel.html">WIdentityProxyModel</a>
+  </dt>
+  <dd>
+    This new proxy model simply forwards the structure of the source
+    model, without any transformation, and can be used for
+    implementing proxy models that reimplement data(), but retain all
+    other characteristics of the source model.
+  </dd>
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#setAxis(eu.webtoolkit.jwt.chart.WAxis,%20eu.webtoolkit.jwt.chart.Axis)">Chart::WCartesianChart::setAxis()</a>
+  </dt>
+  <dd>
+    Up till now, a chart axis was a value class, but this has been
+    changed now: an axis is now a polymorphic class and its behaviour
+    can now be extended (e.g. to change the way its labels are being
+    defined).
+  </dd>  
+
+  <dt>
+    <a href="eu/webtoolkit/jwt/chart/WAbstractChart.html#setAutoLayoutEnabled(boolean)">Chart::WAbstractChart::setAutoLayoutEnabled()</a>
+  </dt>
+  <dd>
+    Until now, you were responsible for configuring the padding around
+    the chart area to accomodate for axis labels, titles, and
+    legend. While this is still the default behaviour, we added an
+    option to let the chart derive the required padding (using
+    approximate font-metrics available server-side).
+  </dd>
+
+  <dt>
+    Several new features in 3D charts.
+  </dt>
+  <dd>
+    <ul>
+      <li><a href="eu/webtoolkit/jwt/chart/WAbstractDataSeries3D.html#setPointSprite(java.lang.String)">
+	  setPointSprite()</a>: ability to define sprites for drawing
+	  a data series</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WAbstractGridData.html#pickSurface(int,%20int)">pickSurface()</a>:
+	find out which points on a surface are under a given pixel</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WAbstractGridData.html#pickBar(int,%20int)">pickBar()</a>:
+	find out which points on a bar on are under a given pixel.</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WAbstractGridData.html#setIsoLevels(java.util.List)">
+	  setIsoLevels()</a>:
+	draw iso lines (on the ground plane of the chart) corresponding
+	to selected z values.</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WAbstractGridData.html#setClippingLinesEnabled(boolean)">
+	  setClippingLinesEnabled()</a>:
+	ability to clip and optionally draw clipping planes
+      </li>
+      <li>
+	<a href="eu/webtoolkit/jwt/chart/WCartesian3DChart.html#setIntersectionLinesEnabled()">
+	  setIntersectionsEnabled()</a>:
+	ability to draw surface-surface intersection lines.
+      </li>
+    </ul>
+  </dd>
+</dl>
+
+<hr>
 
 <h2>Release 3.3.3 (May 27, 2014)</h2>
 

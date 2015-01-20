@@ -346,6 +346,26 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_ != null ? this.impl_.isLoaded() : true;
 	}
 
+	public void setCanReceiveFocus(boolean enabled) {
+		this.impl_.setCanReceiveFocus(enabled);
+	}
+
+	public boolean isCanReceiveFocus() {
+		return this.impl_.isCanReceiveFocus();
+	}
+
+	public void setFocus(boolean focus) {
+		this.impl_.setFocus(true);
+	}
+
+	public boolean isSetFirstFocus() {
+		return this.impl_.getWebWidget().isSetFirstFocus();
+	}
+
+	public boolean hasFocus() {
+		return this.impl_.hasFocus();
+	}
+
 	public void setTabIndex(int index) {
 		this.impl_.setTabIndex(index);
 	}
@@ -388,10 +408,6 @@ public class WCompositeWidget extends WWidget {
 
 	public void propagateSetEnabled(boolean enabled) {
 		this.impl_.getWebWidget().propagateSetEnabled(enabled);
-	}
-
-	public boolean isSetFirstFocus() {
-		return this.impl_.getWebWidget().isSetFirstFocus();
 	}
 
 	void addChild(WWidget child) {
@@ -477,8 +493,10 @@ public class WCompositeWidget extends WWidget {
 
 	void getSDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.needsToBeRendered()) {
-			this.render(this.impl_.isRendered() ? RenderFlag.RenderUpdate
-					: RenderFlag.RenderFull);
+			this
+					.render(this.impl_.isRendered()
+							|| !WWebWidget.canOptimizeUpdates() ? RenderFlag.RenderUpdate
+							: RenderFlag.RenderFull);
 		}
 		this.impl_.getSDomChanges(result, app);
 	}

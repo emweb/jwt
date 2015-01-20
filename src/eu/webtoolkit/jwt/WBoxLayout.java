@@ -52,12 +52,16 @@ import org.slf4j.LoggerFactory;
  * automatically show scrollbars for widgets inserted in the layout to cope with
  * a size set by the layout manager that is smaller than the preferred size.
  * <p>
- * When the container of a layout manager has a maximum size set using
+ * When the container of a layout manager does not have a defined size (by
+ * having an explicit size, or by being inside a layout manager), or has has
+ * only a maximum size set using
  * {@link WWidget#setMaximumSize(WLength width, WLength height)
  * WWidget#setMaximumSize()}, then the size of the container will be based on
  * the preferred size of the contents, up to this maximum size, instead of the
  * default behaviour of constraining the size of the children based on the size
- * of the container.
+ * of the container. Note that because of the CSS defaults, a WContainer has by
+ * default no height, but inherits the width of its parent widget. The width is
+ * thus by default defined.
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see

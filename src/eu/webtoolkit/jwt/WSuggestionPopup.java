@@ -636,8 +636,8 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * Creates a standard replacer JavaScript function.
 	 * <p>
 	 * This returns a JavaScript function that provides a standard
-	 * implementation for the matching input, based on the given
-	 * <code>options</code>.
+	 * implementation for reacting to a match activation, editing the line edit
+	 * text.
 	 */
 	public static String generateReplacerJS(
 			final WSuggestionPopup.Options options) {
@@ -927,7 +927,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		app.loadJavaScript(THIS_JS, wtjs2());
 		String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
 		this.setJavaScriptMember(" WSuggestionPopup",
-				"new Wt3_3_2.WSuggestionPopup(" + app.getJavaScriptClass()
+				"new Wt3_3_4.WSuggestionPopup(" + app.getJavaScriptClass()
 						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
 						+ this.matcherJS_ + ","
 						+ String.valueOf(Math.max(0, this.filterLength_)) + ","
@@ -961,7 +961,7 @@ public class WSuggestionPopup extends WPopupWidget {
 
 	static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_3_2.WSuggestionPopupStdMatcher(").append(
+		s.append("new Wt3_3_4.WSuggestionPopupStdMatcher(").append(
 				WWebWidget.jsStringLiteral(options.highlightBeginTag)).append(
 				", ").append(
 				WWebWidget.jsStringLiteral(options.highlightEndTag)).append(

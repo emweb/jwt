@@ -112,7 +112,7 @@ public class FormBaseModel extends WFormModel {
 	 * @see FormBaseModel#addPasswordAuth(AbstractPasswordService auth)
 	 */
 	public void addOAuth(OAuthService auth) {
-		this.oAuth_.add(auth);
+		CollectionUtils.add(this.oAuth_, auth);
 	}
 
 	/**
@@ -122,7 +122,9 @@ public class FormBaseModel extends WFormModel {
 	 * @see FormBaseModel#addOAuth(OAuthService auth)
 	 */
 	public void addOAuth(final List<OAuthService> auth) {
-		this.oAuth_.addAll(auth);
+		for (int i = 0; i < auth.size(); ++i) {
+			this.addOAuth(auth);
+		}
 	}
 
 	/**

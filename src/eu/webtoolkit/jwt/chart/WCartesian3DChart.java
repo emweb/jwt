@@ -1142,10 +1142,12 @@ public class WCartesian3DChart extends WGLWidget {
 			WebGLUtils.rotate(this.worldTransform_, 5.0, 0.0, 1.0, 0.0);
 			WebGLUtils.scale(this.worldTransform_, (float) 1.8);
 			WebGLUtils.translate(this.worldTransform_, -0.5, -0.5, -0.5);
+			this.isViewSet_ = true;
+		}
+		if (!this.isRestoringContext()) {
 			this.initJavaScriptMatrix4(this.jsMatrix_);
 			this.setClientSideLookAtHandler(this.jsMatrix_, 0.5, 0.5, 0.5, 0,
 					1, 0, 0.005, 0.005);
-			this.isViewSet_ = true;
 		}
 		double ratio = this.getHeight().getValue() / this.getWidth().getValue();
 		WebGLUtils
@@ -1950,10 +1952,14 @@ public class WCartesian3DChart extends WGLWidget {
 		this.cubeTexCoords_.clear();
 		this.deleteBuffer(this.axisTexCoordsHoriz_);
 		this.axisTexCoordsHoriz_.clear();
-		this.detachShader(this.cubeProgram_, this.fragmentShader_);
-		this.detachShader(this.cubeProgram_, this.vertexShader_);
-		this.detachShader(this.axisProgram_, this.fragmentShader2_);
-		this.detachShader(this.axisProgram_, this.vertexShader2_);
+		if (!this.cubeProgram_.isNull()) {
+			this.detachShader(this.cubeProgram_, this.fragmentShader_);
+			this.detachShader(this.cubeProgram_, this.vertexShader_);
+		}
+		if (!this.axisProgram_.isNull()) {
+			this.detachShader(this.axisProgram_, this.fragmentShader2_);
+			this.detachShader(this.axisProgram_, this.vertexShader2_);
+		}
 		this.deleteShader(this.fragmentShader_);
 		this.deleteShader(this.vertexShader_);
 		this.deleteShader(this.fragmentShader2_);

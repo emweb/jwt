@@ -321,6 +321,13 @@ public abstract class WtServlet extends HttpServlet {
 		sessions.remove(session.getSessionId());
 		return sessions.size();
 	}
+	
+
+	synchronized void removeSession(String sessionId) {
+		WebSession session = sessions.get(sessionId);
+		if (session != null)
+			removeSession(session);
+	}
 
 	/*
 	 * Actual request handling, may be within an async call depending on the servlet API.

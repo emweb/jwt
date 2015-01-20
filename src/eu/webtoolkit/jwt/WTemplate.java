@@ -420,8 +420,7 @@ public class WTemplate extends WInteractWidget {
 		this.previouslyRendered_ = null;
 		this.newlyRendered_ = null;
 		this.functions_ = new HashMap<String, WTemplate.Function>();
-		this.strings_ = new HashMap<String, String>();
-		this.nestedTemplates_ = new HashMap<String, WString>();
+		this.strings_ = new HashMap<String, WString>();
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
@@ -457,8 +456,7 @@ public class WTemplate extends WInteractWidget {
 		this.previouslyRendered_ = null;
 		this.newlyRendered_ = null;
 		this.functions_ = new HashMap<String, WTemplate.Function>();
-		this.strings_ = new HashMap<String, String>();
-		this.nestedTemplates_ = new HashMap<String, WString>();
+		this.strings_ = new HashMap<String, WString>();
 		this.widgets_ = new HashMap<String, WWidget>();
 		this.conditions_ = new HashSet<String>();
 		this.text_ = new WString();
@@ -570,9 +568,9 @@ public class WTemplate extends WInteractWidget {
 				v = escapeText(v, true);
 			}
 		}
-		String i = this.strings_.get(varName);
-		if (i == null || !i.equals(v.toString())) {
-			this.strings_.put(varName, v.toString());
+		WString i = this.strings_.get(varName);
+		if (i == null || !i.equals(v)) {
+			this.strings_.put(varName, v);
 			this.changed_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
@@ -639,11 +637,11 @@ public class WTemplate extends WInteractWidget {
 			this.widgets_.put(varName, widget);
 			this.strings_.remove(varName);
 		} else {
-			String j = this.strings_.get(varName);
-			if (j != null && j.length() == 0) {
+			WString j = this.strings_.get(varName);
+			if (j != null && (j.length() == 0)) {
 				return;
 			}
-			this.strings_.put(varName, "");
+			this.strings_.put(varName, new WString());
 		}
 		this.changed_ = true;
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
@@ -770,7 +768,7 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public void resolveString(final String varName, final List<WString> args,
 			final Writer result) throws IOException {
-		String i = this.strings_.get(varName);
+		WString i = this.strings_.get(varName);
 		if (i != null) {
 			result.append(i);
 		} else {
@@ -839,12 +837,12 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * <pre>
 	 * {@code
-	 *    if (Widget known = super.resolveWidget(varName)) {
+	 *    if (WWidget known = super.resolveWidget(varName)) {
 	 *      return known;
 	 *    } else {
 	 *      if (varName == "age-input") {
-	 *        WWidget *w = new WLineEdit(); // widget only created when used
-	 *        bind(varName, w);
+	 *        WWidget w = new WLineEdit(); // widget only created when used
+	 *        bindWidget(varName, w);
 	 *        return w;
 	 *      }
 	 *    }
@@ -1306,8 +1304,7 @@ public class WTemplate extends WInteractWidget {
 	private Set<WWidget> previouslyRendered_;
 	private List<WWidget> newlyRendered_;
 	private Map<String, WTemplate.Function> functions_;
-	private Map<String, String> strings_;
-	private Map<String, WString> nestedTemplates_;
+	private Map<String, WString> strings_;
 	private Map<String, WWidget> widgets_;
 	private Set<String> conditions_;
 	private WString text_;

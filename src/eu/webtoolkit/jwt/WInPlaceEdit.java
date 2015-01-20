@@ -120,6 +120,36 @@ public class WInPlaceEdit extends WCompositeWidget {
 	}
 
 	/**
+	 * Creates an in-place edit with the given text.
+	 * <p>
+	 * The first parameter configures whether buttons are available in edit
+	 * mode.
+	 * <p>
+	 * 
+	 * @see WInPlaceEdit#setButtonsEnabled(boolean enabled)
+	 */
+	public WInPlaceEdit(boolean buttons, final CharSequence text,
+			WContainerWidget parent) {
+		super(parent);
+		this.valueChanged_ = new Signal1<WString>(this);
+		this.c2_ = new AbstractSignal.Connection();
+		this.create();
+		this.setText(text);
+		this.setButtonsEnabled(buttons);
+	}
+
+	/**
+	 * Creates an in-place edit with the given text.
+	 * <p>
+	 * Calls
+	 * {@link #WInPlaceEdit(boolean buttons, CharSequence text, WContainerWidget parent)
+	 * this(buttons, text, (WContainerWidget)null)}
+	 */
+	public WInPlaceEdit(boolean buttons, final CharSequence text) {
+		this(buttons, text, (WContainerWidget) null);
+	}
+
+	/**
 	 * Returns the current value.
 	 * <p>
 	 * 

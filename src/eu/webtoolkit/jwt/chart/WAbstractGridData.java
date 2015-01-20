@@ -905,6 +905,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	}
 
 	public void initializeGL() {
+		this.chart_.initJavaScriptVector(this.jsMinPt_);
+		this.chart_.initJavaScriptVector(this.jsMaxPt_);
 	}
 
 	public void paintGL() {
@@ -1185,6 +1187,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.initShaders();
 		if (!this.jsMinPt_.isInitialized()) {
 			this.chart_.initJavaScriptVector(this.jsMinPt_);
+		}
+		if (!this.jsMaxPt_.isInitialized()) {
 			this.chart_.initJavaScriptVector(this.jsMaxPt_);
 		}
 		if (this.minPtChanged_) {
@@ -1345,8 +1349,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.chart_.deleteProgram(this.positionProgram_);
 			this.positionProgram_.clear();
 		}
-		this.chart_.detachShader(this.seriesProgram_, this.fragShader_);
-		this.chart_.detachShader(this.seriesProgram_, this.vertShader_);
+		if (!this.seriesProgram_.isNull()) {
+			this.chart_.detachShader(this.seriesProgram_, this.fragShader_);
+			this.chart_.detachShader(this.seriesProgram_, this.vertShader_);
+		}
 		this.chart_.deleteShader(this.fragShader_);
 		this.chart_.deleteShader(this.vertShader_);
 		this.chart_.deleteProgram(this.seriesProgram_);

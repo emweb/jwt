@@ -356,9 +356,16 @@ public abstract class WWebWidget extends WWidget {
 		if (canOptimizeUpdates() && disabled == this.flags_.get(BIT_DISABLED)) {
 			return;
 		}
+		boolean wasEnabled = this.isEnabled();
 		this.flags_.set(BIT_DISABLED, disabled);
 		this.flags_.set(BIT_DISABLED_CHANGED);
-		this.propagateSetEnabled(!disabled);
+		boolean shouldBeEnabled = !disabled;
+		if (shouldBeEnabled && this.getParent() != null) {
+			shouldBeEnabled = this.getParent().isEnabled();
+		}
+		if (shouldBeEnabled != wasEnabled) {
+			this.propagateSetEnabled(shouldBeEnabled);
+		}
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
 		this.repaint();
@@ -673,28 +680,6 @@ public abstract class WWebWidget extends WWidget {
 		return this.flags_.get(BIT_LOADED);
 	}
 
-	public void setTabIndex(int index) {
-		if (this.children_ != null) {
-			for (int i = 0; i < this.children_.size(); ++i) {
-				WWidget c = this.children_.get(i);
-				c.setTabIndex(index);
-			}
-		}
-	}
-
-	public int getTabIndex() {
-		if (this.children_ != null) {
-			int result = 0;
-			for (int i = 0; i < this.children_.size(); ++i) {
-				WWidget c = this.children_.get(i);
-				result = Math.max(result, c.getTabIndex());
-			}
-			return result;
-		} else {
-			return 0;
-		}
-	}
-
 	int getZIndex() {
 		if (this.layoutImpl_ != null) {
 			return this.layoutImpl_.zIndex_;
@@ -804,7 +789,7 @@ public abstract class WWebWidget extends WWidget {
 		return stub;
 	}
 
-	public DomElement createActualElement(WWidget self, WApplication app) {
+	DomElement createActualElement(WWidget self, WApplication app) {
 		this.flags_.clear(BIT_STUBBED);
 		DomElement result = this.createDomElement(app);
 		app.getTheme().apply(self, result,
@@ -1001,13 +986,87 @@ public abstract class WWebWidget extends WWidget {
 		return this.flags_.get(WWebWidget.BIT_RENDERED);
 	}
 
+	public void setCanReceiveFocus(boolean enabled) {
+		this.setTabIndex(enabled ? 0 : Integer.MIN_VALUE);
+	}
+
+	public boolean isCanReceiveFocus() {
+		if (this.otherImpl_ != null) {
+			return this.otherImpl_.tabIndex_ != Integer.MIN_VALUE;
+		} else {
+			return false;
+		}
+	}
+
 	public boolean isSetFirstFocus() {
-		for (int i = 0; i < this.getChildren().size(); i++) {
-			if (this.getChildren().get(i).isSetFirstFocus()) {
+		if (this.isVisible() && this.isEnabled()) {
+			if (this.isCanReceiveFocus()) {
+				this.setFocus(true);
 				return true;
 			}
+			for (int i = 0; i < this.getChildren().size(); i++) {
+				if (this.getChildren().get(i).isSetFirstFocus()) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return false;
 		}
-		return false;
+	}
+
+	public void setFocus(boolean focus) {
+		this.flags_.set(BIT_GOT_FOCUS, focus);
+		this.repaint();
+		WApplication app = WApplication.getInstance();
+		if (focus) {
+			app.setFocus(this.getId(), -1, -1);
+		} else {
+			if (app.getFocus().equals(this.getId())) {
+				app.setFocus("", -1, -1);
+			}
+		}
+	}
+
+	public boolean hasFocus() {
+		return WApplication.getInstance().getFocus().equals(this.getId());
+	}
+
+	public void setTabIndex(int index) {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
+		}
+		this.otherImpl_.tabIndex_ = index;
+		this.flags_.set(BIT_TABINDEX_CHANGED);
+		this.repaint();
+	}
+
+	public int getTabIndex() {
+		if (!(this.otherImpl_ != null)) {
+			return this.isCanReceiveFocus() ? 0 : Integer.MIN_VALUE;
+		} else {
+			return this.otherImpl_.tabIndex_;
+		}
+	}
+
+	/**
+	 * Signal emitted when the widget lost focus.
+	 * <p>
+	 * This signals is only emitted for a widget that
+	 * {@link WWebWidget#isCanReceiveFocus() isCanReceiveFocus()}
+	 */
+	public EventSignal blurred() {
+		return this.voidEventSignal(BLUR_SIGNAL, true);
+	}
+
+	/**
+	 * Signal emitted when the widget recieved focus.
+	 * <p>
+	 * This signals is only emitted for a widget that
+	 * {@link WWebWidget#isCanReceiveFocus() isCanReceiveFocus()}
+	 */
+	public EventSignal focussed() {
+		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
 	void repaint(EnumSet<RepaintFlag> flags) {
@@ -1141,7 +1200,7 @@ public abstract class WWebWidget extends WWidget {
 						app
 								.addAutoJavaScript("{var w = "
 										+ this.getJsRef()
-										+ ";if (w && !Wt3_3_2.isHidden(w)) {var i = Wt3_3_2.getElement('"
+										+ ";if (w && !Wt3_3_4.isHidden(w)) {var i = Wt3_3_4.getElement('"
 										+ i.getId()
 										+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1355,7 +1414,7 @@ public abstract class WWebWidget extends WWidget {
 						String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true"
 								: "false";
 						element
-								.callJavaScript("Wt3_3_2.toolTip("
+								.callJavaScript("Wt3_3_4.toolTip("
 										+ app.getJavaScriptClass()
 										+ ","
 										+ jsStringLiteral(this.getId())
@@ -1427,7 +1486,7 @@ public abstract class WWebWidget extends WWidget {
 						final String js = this.transientImpl_.childRemoveChanges_
 								.get(i);
 						if (js.charAt(0) == '_') {
-							element.callJavaScript("Wt3_3_2.remove('"
+							element.callJavaScript("Wt3_3_4.remove('"
 									+ js.substring(1) + "');", true);
 						} else {
 							element.callJavaScript(js, true);
@@ -1617,7 +1676,7 @@ public abstract class WWebWidget extends WWidget {
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_3_2")
+							.append("Wt3_3_4")
 							.append(".animateDisplay('")
 							.append(this.getId())
 							.append("',")
@@ -1648,7 +1707,7 @@ public abstract class WWebWidget extends WWidget {
 				} else {
 					StringBuilder ss = new StringBuilder();
 					ss
-							.append("Wt3_3_2")
+							.append("Wt3_3_4")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1702,6 +1761,30 @@ public abstract class WWebWidget extends WWidget {
 			}
 		}
 		this.flags_.clear(BIT_HIDDEN_CHANGED);
+		if (this.flags_.get(BIT_GOT_FOCUS)) {
+			if (!(app != null)) {
+				app = WApplication.getInstance();
+			}
+			final WEnvironment env = app.getEnvironment();
+			element.callJavaScript("setTimeout(function() {var o = "
+					+ this.getJsRef() + ";if (o) {if (!$(o).hasClass('"
+					+ app.getTheme().getDisabledClass()
+					+ "')) {try { o.focus();} catch (e) {}}}}, "
+					+ (env.agentIsIElt(9) ? "500" : "10") + ");");
+			this.flags_.clear(BIT_GOT_FOCUS);
+		}
+		if (this.flags_.get(BIT_TABINDEX_CHANGED) || all) {
+			if (this.otherImpl_ != null
+					&& this.otherImpl_.tabIndex_ != Integer.MIN_VALUE) {
+				element.setProperty(Property.PropertyTabIndex, String
+						.valueOf(this.otherImpl_.tabIndex_));
+			} else {
+				if (!all) {
+					element.removeAttribute("tabindex");
+				}
+			}
+			this.flags_.clear(BIT_TABINDEX_CHANGED);
+		}
 		this.renderOk();
 		;
 		this.transientImpl_ = null;
@@ -1723,6 +1806,7 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.clear(BIT_HEIGHT_CHANGED);
 		this.flags_.clear(BIT_DISABLED_CHANGED);
 		this.flags_.clear(BIT_ZINDEX_CHANGED);
+		this.flags_.clear(BIT_TABINDEX_CHANGED);
 		this.renderOk();
 		if (deep && this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
@@ -1842,7 +1926,10 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	protected WWidget getSelfWidget() {
+	// protected AbstractEventSignal.LearningListener
+	// getStateless(<pointertomember or dependentsizedarray>
+	// methodpointertomember or dependentsizedarray>) ;
+	WWidget getSelfWidget() {
 		WWidget p = null;
 		WWidget p_parent = this;
 		do {
@@ -1918,6 +2005,10 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_CONTAINS_LAYOUT = 26;
 	private static final int BIT_ZINDEX_CHANGED = 27;
 	private static final int BIT_TOOLTIP_DEFERRED = 28;
+	private static final int BIT_GOT_FOCUS = 29;
+	private static final int BIT_TABINDEX_CHANGED = 30;
+	private static String FOCUS_SIGNAL = "focus";
+	private static String BLUR_SIGNAL = "blur";
 
 	private void loadToolTip() {
 		if (!(this.lookImpl_.toolTip_ != null)) {
@@ -2072,6 +2163,7 @@ public abstract class WWebWidget extends WWidget {
 		public List<WWebWidget.OtherImpl.Member> jsMembers_;
 		public List<WWebWidget.OtherImpl.JavaScriptStatement> jsStatements_;
 		public JSignal2<Integer, Integer> resized_;
+		public int tabIndex_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 		public Signal childrenChanged_;
@@ -2082,6 +2174,7 @@ public abstract class WWebWidget extends WWidget {
 			this.jsMembers_ = null;
 			this.jsStatements_ = null;
 			this.resized_ = null;
+			this.tabIndex_ = Integer.MIN_VALUE;
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
 			this.childrenChanged_ = new Signal(self);
@@ -2128,10 +2221,11 @@ public abstract class WWebWidget extends WWidget {
 					this.flags_.clear(BIT_STUBBED);
 					DomElement stub = DomElement.getForUpdate(this,
 							DomElementType.DomElement_SPAN);
+					WWidget self = this.getSelfWidget();
 					this.setRendered(true);
-					this.render(EnumSet.of(RenderFlag.RenderFull));
+					self.render(EnumSet.of(RenderFlag.RenderFull));
 					DomElement realElement = this.createDomElement(app);
-					app.getTheme().apply(this.getSelfWidget(), realElement, 0);
+					app.getTheme().apply(self, realElement, 0);
 					stub.unstubWith(realElement, !this.flags_
 							.get(BIT_HIDE_WITH_OFFSETS));
 					result.add(stub);
@@ -2338,6 +2432,9 @@ public abstract class WWebWidget extends WWidget {
 				: WString.Empty;
 	}
 
+	private void undoSetFocus() {
+	}
+
 	void setRendered(boolean rendered) {
 		if (rendered) {
 			this.flags_.set(BIT_RENDERED);
@@ -2488,7 +2585,7 @@ public abstract class WWebWidget extends WWidget {
 		parentResized(parent, EnumSet.of(direction, directions));
 	}
 
-	protected void containsLayout() {
+	void containsLayout() {
 		if (!this.flags_.get(BIT_CONTAINS_LAYOUT)) {
 			this.flags_.set(BIT_CONTAINS_LAYOUT);
 			WWebWidget p = this.getParentWebWidget();
@@ -2507,7 +2604,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"animateDisplay",
-				"function(D,E,F,G,H){var j=this,C=function(w,m,q,o,n){var I=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],J=[0,1,3,2,4,5],r=j.vendorPrefix(j.styleAttribute(\"animation\")),s=j.vendorPrefix(j.styleAttribute(\"transition\")),x=j.vendorPrefix(j.styleAttribute(\"transform\")),g=$(\"#\"+w),a=g.get(0),K=r==\"Webkit\"?\"webkitAnimationEnd\":\"animationend\",t=s==\"Webkit\"?\"webkitTransitionEnd\":\"transitionend\";if(g.css(\"display\")!==n){var p=a.parentNode;if(p.wtAnimateChild)p.wtAnimateChild(j, g.get(0),m,q,o,{display:n});else{function y(){d(a,{animationDuration:o+\"ms\"},h);var b;switch(l){case 5:b=\"pop\";break;case 1:b=e?\"slide\":\"slide reverse\";break;case 2:b=e?\"slide reverse\":\"slide\";break}b+=e?\" out\":\" in\";if(m&256)b+=\" fade\";e||u();g.addClass(b);g.one(K,function(){g.removeClass(b);if(e)a.style.display=n;d(a,h)})}function M(){z(\"width\",l==1?\"left\":\"right\",l==1,\"X\")}function N(){z(\"height\",l==4?\"top\":\"bottom\",l==4,\"Y\")}function z(b,i,k,f){e||u();b=j.px(a,b);i=(j.px(a,i)+b)*(k?-1:1);var c; if(e){d(a,{transform:\"translate\"+f+\"(0px)\"},h);c=i}else{d(a,{transform:\"translate\"+f+\"(\"+i+\"px)\"},h);c=0}if(m&256)d(a,{opacity:e?1:0},h);setTimeout(function(){d(a,{transition:\"all \"+o+\"ms \"+v,transform:\"translate\"+f+\"(\"+c+\"px)\"},h);if(m&256)d(a,{opacity:e?0:1});g.one(t,function(){if(e)a.style.display=n;d(a,h);A()})},0)}function O(){var b,i,k={},f;if(e){i=g.height()+\"px\";d(a,{height:i,overflow:\"hidden\"},h);if(l==4&&a.childNodes.length==1){f=a.firstChild;d(f,{transform:\"translateY(0)\"},k);j.hasTag(f, \"TABLE\")||d(f,{display:\"block\"},k)}b=\"0px\"}else{var c=$(p),B={};d(p,{height:c.height()+\"px\",overflow:\"hidden\"},B);u();if(g.height()==0)a.style.height=\"auto\";b=g.height()+\"px\";d(a,{height:\"0px\",overflow:\"hidden\"},h);d(p,B);if(l==4){d(a,{WebkitBackfaceVisibility:\"visible\"},h);a.scrollTop=1E3}}if(m&256)d(a,{opacity:e?1:0},h);setTimeout(function(){d(a,{transition:\"all \"+o+\"ms \"+v,height:b},h);if(m&256)d(a,{opacity:e?0:1});f&&d(f,{transition:\"all \"+o+\"ms \"+v,transform:\"translateY(-\"+i+\")\"},k);g.one(t, function(){if(e)a.style.display=n;d(a,h);if(l==4){a.scrollTop=0;f&&d(f,k)}A()})},0)}function u(){a.style.display=n;a.wtPosition&&a.wtPosition();window.onshow&&window.onshow()}function A(){a.wtAnimatedHidden&&a.wtAnimatedHidden(e);g.removeClass(\"animating\");Wt.layouts2&&Wt.layouts2.setElementDirty(a)}function d(b,i,k){var f;for(f in i){var c=f;if(c==\"animationDuration\"&&r!=\"\")c=r+c.substring(0,1).toUpperCase()+c.substring(1);else if(c==\"transform\"&&x!=\"\")c=x+c.substring(0,1).toUpperCase()+c.substring(1); else if(c==\"transition\"&&s!=\"\")c=s+c.substring(0,1).toUpperCase()+c.substring(1);if(k&&typeof k[c]===\"undefined\")k[c]=b.style[c];b.style[c]=i[f]}}if(g.hasClass(\"animating\"))$(a).one(t,function(){C(w,m,q,o,n)});else{g.addClass(\"animating\");var l=m&255,e=n===\"none\",v=I[e?J[q]:q],h={};setTimeout(function(){var b=g.css(\"position\");b=b===\"absolute\"||b===\"fixed\";switch(l){case 4:case 3:b?N():O();break;case 1:case 2:b?M():y();break;case 0:case 5:y();break}},0)}}}};C(D,E,F,G,H)}");
+				"function(D,E,F,G,H){var j=this,C=function(x,m,q,o,n){var I=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],J=[0,1,3,2,4,5],r=j.vendorPrefix(j.styleAttribute(\"animation\")),s=j.vendorPrefix(j.styleAttribute(\"transition\")),y=j.vendorPrefix(j.styleAttribute(\"transform\")),g=$(\"#\"+x),a=g.get(0),K=r==\"Webkit\"?\"webkitAnimationEnd\":\"animationend\",t=s==\"Webkit\"?\"webkitTransitionEnd\":\"transitionend\";if(g.css(\"display\")!==n){var p=a.parentNode;if(p.wtAnimateChild)p.wtAnimateChild(j, g.get(0),m,q,o,{display:n});else{function z(){d(a,{animationDuration:o+\"ms\"},h);var b;switch(l){case 5:b=\"pop\";break;case 1:b=e?\"slide\":\"slide reverse\";break;case 2:b=e?\"slide reverse\":\"slide\";break}b+=e?\" out\":\" in\";if(m&256)b+=\" fade\";e||u();g.addClass(b);g.one(K,function(){g.removeClass(b);if(e)a.style.display=n;d(a,h);v()})}function M(){A(\"width\",l==1?\"left\":\"right\",l==1,\"X\")}function N(){A(\"height\",l==4?\"top\":\"bottom\",l==4,\"Y\")}function A(b,i,k,f){e||u();b=j.px(a,b);i=(j.px(a,i)+b)*(k?-1:1); var c;if(e){d(a,{transform:\"translate\"+f+\"(0px)\"},h);c=i}else{d(a,{transform:\"translate\"+f+\"(\"+i+\"px)\"},h);c=0}if(m&256)d(a,{opacity:e?1:0},h);setTimeout(function(){d(a,{transition:\"all \"+o+\"ms \"+w,transform:\"translate\"+f+\"(\"+c+\"px)\"},h);if(m&256)d(a,{opacity:e?0:1});g.one(t,function(){if(e)a.style.display=n;d(a,h);v()})},0)}function O(){var b,i,k={},f;if(e){i=g.height()+\"px\";d(a,{height:i,overflow:\"hidden\"},h);if(l==4&&a.childNodes.length==1){f=a.firstChild;d(f,{transform:\"translateY(0)\"},k);j.hasTag(f, \"TABLE\")||d(f,{display:\"block\"},k)}b=\"0px\"}else{var c=$(p),B={};d(p,{height:c.height()+\"px\",overflow:\"hidden\"},B);u();if(g.height()==0)a.style.height=\"auto\";b=g.height()+\"px\";d(a,{height:\"0px\",overflow:\"hidden\"},h);d(p,B);if(l==4){d(a,{WebkitBackfaceVisibility:\"visible\"},h);a.scrollTop=1E3}}if(m&256)d(a,{opacity:e?1:0},h);i=a.clientHeight;setTimeout(function(){d(a,{transition:\"all \"+o+\"ms \"+w,height:b},h);if(m&256)d(a,{opacity:e?0:1});f&&d(f,{transition:\"all \"+o+\"ms \"+w,transform:\"translateY(-\"+i+ \")\"},k);g.one(t,function(){if(e)a.style.display=n;d(a,h);if(l==4){a.scrollTop=0;f&&d(f,k)}v()})},0)}function u(){a.style.display=n;a.wtPosition&&a.wtPosition();window.onshow&&window.onshow()}function v(){a.wtAnimatedHidden&&a.wtAnimatedHidden(e);g.removeClass(\"animating\");Wt.layouts2&&Wt.layouts2.setElementDirty(a)}function d(b,i,k){var f;for(f in i){var c=f;if(c==\"animationDuration\"&&r!=\"\")c=r+c.substring(0,1).toUpperCase()+c.substring(1);else if(c==\"transform\"&&y!=\"\")c=y+c.substring(0,1).toUpperCase()+ c.substring(1);else if(c==\"transition\"&&s!=\"\")c=s+c.substring(0,1).toUpperCase()+c.substring(1);if(k&&typeof k[c]===\"undefined\")k[c]=b.style[c];b.style[c]=i[f]}}if(g.hasClass(\"animating\"))$(a).one(t,function(){C(x,m,q,o,n)});else{g.addClass(\"animating\");var l=m&255,e=n===\"none\",w=I[e?J[q]:q],h={};setTimeout(function(){var b=g.css(\"position\");b=b===\"absolute\"||b===\"fixed\";switch(l){case 4:case 3:b?N():O();break;case 1:case 2:b?M():z();break;case 0:case 5:z();break}},0)}}}};C(D,E,F,G,H)}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
@@ -2521,7 +2618,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"toolTip",
-				"function(k,l,m,r,s,t){var c=$(\"#\"+l),d=c.get(0),n=k.WT,f=d.toolTip;if(!f)d.toolTip=new (function(){function u(){$(\"#\"+l+\":hover\").length||o()}function v(){g=true;k.emit(d,\"Wt-loadToolTip\")}function o(){clearTimeout(h);if(a){$(a).remove();a=null;clearInterval(i);i=null}}function p(b){clearTimeout(h);j=n.pageCoordinates(b);a||(h=setTimeout(function(){d.toolTip.showToolTip()},w))}var h=null,i=null,j=null,a=null,w=500,g=false,e=m;this.setToolTipText= function(b){e=b;if(g){this.showToolTip();waitingforText=false}};this.showToolTip=function(){r&&!e&&!g&&v();if(e){a=document.createElement(\"div\");a.className=s;a.innerHTML=e;outerDiv=document.createElement(\"div\");outerDiv.className=t;document.body.appendChild(outerDiv);outerDiv.appendChild(a);var b=j.x,q=j.y;n.fitToWindow(outerDiv,b+10,q+10,b-10,q-10)}i=setInterval(function(){u()},200)};c.mouseenter(p);c.mousemove(p);c.mouseleave(o)});f&&f.setToolTipText(m)}");
+				"function(k,l,m,r,s,t){var c=$(\"#\"+l),d=c.get(0),n=k.WT,g=d.toolTip;if(!g)d.toolTip=new (function(){function u(){$(\"#\"+l+\":hover\").length||o()}function v(){h=true;k.emit(d,\"Wt-loadToolTip\")}function o(){clearTimeout(e);if(a){$(a).parent().remove();a=null;clearInterval(i);i=null}}function p(b){clearTimeout(e);j=n.pageCoordinates(b);a||(e=setTimeout(function(){d.toolTip.showToolTip()},w))}var e=null,i=null,j=null,a=null,w=500,h=false,f=m;this.setToolTipText= function(b){f=b;if(h){this.showToolTip();clearTimeout(e);waitingforText=false}};this.showToolTip=function(){r&&!f&&!h&&v();if(f){a=document.createElement(\"div\");a.className=s;a.innerHTML=f;outerDiv=document.createElement(\"div\");outerDiv.className=t;document.body.appendChild(outerDiv);outerDiv.appendChild(a);var b=j.x,q=j.y;n.fitToWindow(outerDiv,b+10,q+10,b-10,q-10)}i=setInterval(function(){u()},200)};c.mouseenter(p);c.mousemove(p);c.mouseleave(o)});g&&g.setToolTipText(m)}");
 	}
 
 	static WLength nonNegative(final WLength w) {

@@ -494,7 +494,11 @@ public class WStandardItemModel extends WAbstractItemModel {
 			Orientation orientation) {
 		final List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
 				: this.rowHeaderFlags_;
-		return fl.get(section);
+		if (section >= (int) fl.size()) {
+			return EnumSet.noneOf(HeaderFlag.class);
+		} else {
+			return fl.get(section);
+		}
 	}
 
 	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
@@ -519,9 +523,12 @@ public class WStandardItemModel extends WAbstractItemModel {
 		if (role == ItemDataRole.LevelRole) {
 			return 0;
 		}
-		final Map<Integer, Object> d = orientation == Orientation.Horizontal ? this.columnHeaderData_
-				.get(section)
-				: this.rowHeaderData_.get(section);
+		final List<Map<Integer, Object>> headerData = orientation == Orientation.Horizontal ? this.columnHeaderData_
+				: this.rowHeaderData_;
+		if (section >= (int) headerData.size()) {
+			return null;
+		}
+		final Map<Integer, Object> d = headerData.get(section);
 		Object i = d.get(role);
 		if (i != null) {
 			Object result = i;

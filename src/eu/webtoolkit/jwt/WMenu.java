@@ -558,8 +558,10 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Adds a separator the menu.
 	 */
-	public void addSeparator() {
-		this.addItem(new WMenuItem(true, WString.Empty));
+	public WMenuItem getAddSeparator() {
+		WMenuItem item = new WMenuItem(true, WString.Empty);
+		this.addItem(item);
+		return item;
 	}
 
 	/**
@@ -698,6 +700,8 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Returns the list of menu items in this menu.
 	 * <p>
+	 * 
+	 * @see WMenu#itemAt(int index)
 	 */
 	public List<WMenuItem> getItems() {
 		List<WMenuItem> result = new ArrayList<WMenuItem>();
@@ -984,20 +988,41 @@ public class WMenu extends WCompositeWidget {
 		return this.contentsStack_;
 	}
 
+	/**
+	 * Returns the item count.
+	 */
 	public int getCount() {
 		return this.getUl().getCount();
 	}
 
+	/**
+	 * Returns the item by index.
+	 * <p>
+	 * 
+	 * @see WMenu#indexOf(WMenuItem item)
+	 */
 	public WMenuItem itemAt(int index) {
 		return ((this.getUl().getWidget(index)) instanceof WMenuItem ? (WMenuItem) (this
 				.getUl().getWidget(index))
 				: null);
 	}
 
+	/**
+	 * Returns the index of an item.
+	 * <p>
+	 * 
+	 * @see WMenu#itemAt(int index)
+	 */
 	int indexOf(WMenuItem item) {
 		return this.getUl().getIndexOf(item);
 	}
 
+	/**
+	 * Returns the parent item (for a submenu).
+	 * <p>
+	 * This is the item with which this menu is associated as a submenu (if
+	 * any).
+	 */
 	public WMenuItem getParentItem() {
 		return this.parentItem_;
 	}

@@ -139,7 +139,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"Wt3_3_2.remove('" + this.popup_.getId() + "');");
+				"Wt3_3_4.remove('" + this.popup_.getId() + "');");
 		super.remove();
 	}
 
@@ -502,7 +502,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	private void onPopupHidden() {
-		this.forEdit_.setFocus();
+		this.forEdit_.setFocus(true);
 		this.popupClosed();
 	}
 }

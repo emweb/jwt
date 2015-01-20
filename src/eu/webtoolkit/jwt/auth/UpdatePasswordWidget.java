@@ -72,7 +72,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 			this.authModel_.configureThrottling(okButton);
 			WLineEdit password = (WLineEdit) this
 					.resolveWidget(AuthModel.PasswordField);
-			password.setFocus();
+			password.setFocus(true);
 		}
 		this.updateView(this.registrationModel_);
 		WLineEdit password = (WLineEdit) this
@@ -84,7 +84,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this.registrationModel_.validatePasswordsMatchJS(password, password2,
 				password2Info);
 		if (!(this.authModel_ != null)) {
-			password.setFocus();
+			password.setFocus(true);
 		}
 		okButton.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {

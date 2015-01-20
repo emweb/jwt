@@ -643,7 +643,7 @@ public class WCssTheme extends WTheme {
 
 	public String utilityCssClass(int utilityCssClassRole) {
 		switch (utilityCssClassRole) {
-		case UtilityCssClassRole.ToolTipInner:
+		case UtilityCssClassRole.ToolTipOuter:
 			return "Wt-tooltip";
 		default:
 			return "";
@@ -667,7 +667,7 @@ public class WCssTheme extends WTheme {
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_3_2.setValidationState(").append(widget.getJsRef())
+			js.append("Wt3_3_4.setValidationState(").append(widget.getJsRef())
 					.append(",").append(
 							validation.getState() == WValidator.State.Valid ? 1
 									: 0).append(",").append(

@@ -61,7 +61,7 @@ public class PasswordPromptDialog extends WDialog {
 		this.impl_.updateViewField(this.model_, AuthModel.LoginNameField);
 		WLineEdit passwordEdit = new WLineEdit();
 		passwordEdit.setEchoMode(WLineEdit.EchoMode.Password);
-		passwordEdit.setFocus();
+		passwordEdit.setFocus(true);
 		this.impl_.bindWidget(AuthModel.PasswordField, passwordEdit);
 		this.impl_.updateViewField(this.model_, AuthModel.PasswordField);
 		WPushButton okButton = new WPushButton(tr("Wt.WMessageBox.Ok"));

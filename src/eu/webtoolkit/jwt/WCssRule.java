@@ -47,6 +47,18 @@ public abstract class WCssRule extends WObject {
 	}
 
 	/**
+	 * Sets the selector.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The selector can only be changed as long as the rule
+	 * hasn&apos;t been rendered. </i>
+	 * </p>
+	 */
+	public void setSelector(final String selector) {
+		this.selector_ = selector;
+	}
+
+	/**
 	 * Returns the selector.
 	 */
 	public String getSelector() {

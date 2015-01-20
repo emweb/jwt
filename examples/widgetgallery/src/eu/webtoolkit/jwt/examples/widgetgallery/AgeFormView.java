@@ -48,7 +48,7 @@ class AgeFormView extends WTemplateFormView {
 			this.updateView(this.model_);
 			WLineEdit viewField = (WLineEdit) this
 					.resolveWidget(AgeFormModel.AgeField);
-			viewField.setFocus();
+			viewField.setFocus(true);
 		}
 	}
 

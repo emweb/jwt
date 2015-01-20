@@ -46,7 +46,7 @@ public class WLength {
 		 */
 		Pixel,
 		/**
-		 * Inche.
+		 * Inch.
 		 */
 		Inch,
 		/**

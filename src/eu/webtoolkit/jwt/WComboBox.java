@@ -471,6 +471,29 @@ public class WComboBox extends WFormWidget {
 		}
 	}
 
+	private void saveSelection() {
+		if (this.currentIndex_ >= 0) {
+			this.currentIndexRaw_ = this.model_.toRawIndex(this.model_
+					.getIndex(this.currentIndex_, this.modelColumn_));
+		} else {
+			this.currentIndexRaw_ = null;
+		}
+	}
+
+	private void restoreSelection() {
+		if (this.currentIndexRaw_ != null) {
+			WModelIndex m = this.model_.fromRawIndex(this.currentIndexRaw_);
+			if ((m != null)) {
+				this.currentIndex_ = m.getRow();
+			} else {
+				this.currentIndex_ = -1;
+			}
+		} else {
+			this.currentIndex_ = -1;
+		}
+		this.currentIndexRaw_ = null;
+	}
+
 	private boolean isSupportsNoSelection() {
 		return false;
 	}
@@ -613,31 +636,5 @@ public class WComboBox extends WFormWidget {
 
 	boolean isSelected(int index) {
 		return index == this.currentIndex_;
-	}
-
-	void dummy() {
-	}
-
-	protected void saveSelection() {
-		if (this.currentIndex_ >= 0) {
-			this.currentIndexRaw_ = this.model_.toRawIndex(this.model_
-					.getIndex(this.currentIndex_, this.modelColumn_));
-		} else {
-			this.currentIndexRaw_ = null;
-		}
-	}
-
-	protected void restoreSelection() {
-		if (this.currentIndexRaw_ != null) {
-			WModelIndex m = this.model_.fromRawIndex(this.currentIndexRaw_);
-			if ((m != null)) {
-				this.currentIndex_ = m.getRow();
-			} else {
-				this.currentIndex_ = -1;
-			}
-		} else {
-			this.currentIndex_ = -1;
-		}
-		this.currentIndexRaw_ = null;
 	}
 }

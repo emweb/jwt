@@ -458,8 +458,8 @@ public abstract class WWidget extends WObject {
 		}
 		String side = orientation == Orientation.Horizontal ? ".Horizontal"
 				: ".Vertical";
-		this.doJavaScript("Wt3_3_2.positionAtWidget('" + this.getId() + "','"
-				+ widget.getId() + "',Wt3_3_2" + side + ");");
+		this.doJavaScript("Wt3_3_4.positionAtWidget('" + this.getId() + "','"
+				+ widget.getId() + "',Wt3_3_4" + side + ");");
 	}
 
 	/**
@@ -1037,7 +1037,7 @@ public abstract class WWidget extends WObject {
 	 * @see WWidget#isRendered()
 	 */
 	public String getJsRef() {
-		return "Wt3_3_2.$('" + this.getId() + "')";
+		return "Wt3_3_4.$('" + this.getId() + "')";
 	}
 
 	/**
@@ -1139,23 +1139,74 @@ public abstract class WWidget extends WObject {
 	public abstract boolean isLoaded();
 
 	/**
+	 * Sets whether the widget can receive focus.
+	 * <p>
+	 * By default, only form widgets (descendants of {@link WFormWidget}),
+	 * anchors ({@link WAnchor}) and buttons ({@link WPushButton}) can receive
+	 * focus.
+	 * <p>
+	 * Any other widget can be configured to receive focus however.
+	 */
+	public abstract void setCanReceiveFocus(boolean enabled);
+
+	/**
+	 * Returns whether the widget can receive focus.
+	 * <p>
+	 * 
+	 * @see WWidget#setCanReceiveFocus(boolean enabled)
+	 */
+	public abstract boolean isCanReceiveFocus();
+
+	/**
+	 * Sets focus.
+	 * <p>
+	 * This only has an effect for a widget which can receive focus, and is
+	 * equivalent to setFocus(true).
+	 * <p>
+	 * 
+	 * @see WWidget#setCanReceiveFocus(boolean enabled)
+	 */
+	public void setFocus() {
+		this.setFocus(true);
+	}
+
+	/**
+	 * Sets focus.
+	 * <p>
+	 * When using <code>focus</code> = <code>false</code>, you can undo a
+	 * previous {@link WWidget#setFocus() setFocus()} call.
+	 */
+	public abstract void setFocus(boolean focus);
+
+	/**
+	 * Set focus on the widget&apos;s first descendant.
+	 * <p>
+	 * Set focus on the widget itself, or on a first descendant which can
+	 * receive focus.
+	 * <p>
+	 * Returns whether focus could be set.
+	 */
+	public abstract boolean isSetFirstFocus();
+
+	/**
+	 * Returns whether the widget currently has the focus.
+	 */
+	public abstract boolean hasFocus();
+
+	/**
 	 * Sets the tab index.
 	 * <p>
-	 * For widgets that receive focus, focus is passed on to the next widget in
-	 * the <i>tabbing chain</i> based on their tab index. When the user
-	 * navigates through form widgets using the keyboard, widgets receive focus
-	 * starting from the element with the lowest tab index to elements with the
-	 * highest tab index.
-	 * <p>
-	 * A tab index only applies to widgets than can receive focus (which are
-	 * {@link WFormWidget}, {@link WAnchor}, {@link WPushButton}), but setting a
-	 * tab index on any other type of widget will propagate to its contained
-	 * form widgets.
+	 * For widgets that receive focus ({@link WWidget#isCanReceiveFocus()
+	 * isCanReceiveFocus()}), focus is passed on to the next widget in the
+	 * <i>tabbing chain</i> based on their tab index. When the user navigates
+	 * through form widgets using the keyboard, widgets receive focus starting
+	 * from the element with the lowest tab index to elements with the highest
+	 * tab index.
 	 * <p>
 	 * Widgets with a same tab index will receive focus in the same order as
 	 * they are inserted in the widget tree.
 	 * <p>
-	 * The default tab index is 0.
+	 * The default tab index is 0 (for a widget that can receive focus).
 	 * <p>
 	 */
 	public abstract void setTabIndex(int index);
@@ -1243,6 +1294,9 @@ public abstract class WWidget extends WObject {
 	 */
 	public abstract WWidget find(final String name);
 
+	/**
+	 * Finds a descendent widget by id.
+	 */
 	public abstract WWidget findById(final String id);
 
 	/**
@@ -1436,20 +1490,8 @@ public abstract class WWidget extends WObject {
 		return false;
 	}
 
-	/**
-	 * Set focus on the widget&apos;s first descendant.
-	 * <p>
-	 * Set focus on the widget itself, or on a first descendant, which ever is
-	 * applicable.
-	 * <p>
-	 * Returns whether focus could be set.
-	 */
-	public boolean isSetFirstFocus() {
-		return false;
-	}
-
 	static String WT_RESIZE_JS = "wtResize";
-	protected static String WT_GETPS_JS = "wtGetPS";
+	static String WT_GETPS_JS = "wtGetPS";
 
 	/**
 	 * Sets the widget to be aware of its size set by a layout manager.
@@ -1787,8 +1829,7 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	protected void scheduleRerender(boolean laterOnly,
-			EnumSet<RepaintFlag> flags) {
+	void scheduleRerender(boolean laterOnly, EnumSet<RepaintFlag> flags) {
 		if (!this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.set(BIT_NEED_RERENDER);
 			WApplication.getInstance().getSession().getRenderer().needUpdate(
@@ -1810,12 +1851,12 @@ public abstract class WWidget extends WObject {
 		}
 	}
 
-	protected final void scheduleRerender(boolean laterOnly, RepaintFlag flag,
+	final void scheduleRerender(boolean laterOnly, RepaintFlag flag,
 			RepaintFlag... flags) {
 		scheduleRerender(laterOnly, EnumSet.of(flag, flags));
 	}
 
-	protected final void scheduleRerender(boolean laterOnly) {
+	final void scheduleRerender(boolean laterOnly) {
 		scheduleRerender(laterOnly, EnumSet.noneOf(RepaintFlag.class));
 	}
 

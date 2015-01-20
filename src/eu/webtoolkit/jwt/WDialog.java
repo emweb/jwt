@@ -58,8 +58,12 @@ import org.slf4j.LoggerFactory;
  * requests from any other session. In practical terms, this means you must not
  * use {@link WDialog#exec(WAnimation animation) exec()}, unless your
  * application will never be used by more concurrent users than the amount of
- * threads in your threadpool (like on some intranets or extranets). This
- * functionality is only available on Servlet 3.0 compatible servlet containers.
+ * threads in your threadpool (like on some intranets or extranets). Using
+ * {@link WDialog#exec(WAnimation animation) exec()} is not supported from
+ * outside the regular event loop (i.e. when taking a lock on a session using
+ * {@link WApplication#getUpdateLock() WApplication#getUpdateLock()} or by
+ * posting an event using WServer::post()). This functionality is only available
+ * on Servlet 3.0 compatible servlet containers.
  * <p>
  * Use {@link WDialog#setModal(boolean modal) setModal(false)} to create a
  * non-modal dialog. A non-modal dialog does not block the underlying user
@@ -127,6 +131,10 @@ public class WDialog extends WPopupWidget {
 	 */
 	public WDialog(WObject parent) {
 		super(new WTemplate(tr("Wt.WDialog.template")), parent);
+		this.moved_ = new JSignal2<Integer, Integer>(this, "moved") {
+		};
+		this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
+		};
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
 		this.escapeConnection2_ = new AbstractSignal.Connection();
@@ -153,6 +161,10 @@ public class WDialog extends WPopupWidget {
 	 */
 	public WDialog(final CharSequence windowTitle, WObject parent) {
 		super(new WTemplate(tr("Wt.WDialog.template")), parent);
+		this.moved_ = new JSignal2<Integer, Integer>(this, "moved") {
+		};
+		this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
+		};
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
 		this.escapeConnection2_ = new AbstractSignal.Connection();
@@ -462,11 +474,11 @@ public class WDialog extends WPopupWidget {
 				this
 						.setJavaScriptMember(
 								" Resizable",
-								"(new Wt3_3_2.Resizable(Wt3_3_2,"
+								"(new Wt3_3_4.Resizable(Wt3_3_4,"
 										+ this.getJsRef()
-										+ ")).onresize(function(w, h) {var obj = $('#"
+										+ ")).onresize(function(w, h, done) {var obj = $('#"
 										+ this.getId()
-										+ "').data('obj');if (obj) obj.onresize(w, h); });");
+										+ "').data('obj');if (obj) obj.onresize(w, h, done); });");
 			}
 		}
 	}
@@ -606,6 +618,28 @@ public class WDialog extends WPopupWidget {
 		this.impl_.resolveWidget("layout").setMaximumSize(w, h);
 	}
 
+	/**
+	 * Signal emitted when the dialog is being resized by the user.
+	 * <p>
+	 * The information passed are the new width and height.
+	 * <p>
+	 * 
+	 * @see WDialog#setResizable(boolean resizable)
+	 */
+	public JSignal2<Integer, Integer> resized() {
+		return this.resized_;
+	}
+
+	/**
+	 * Signal emitted when the dialog is being moved by the user.
+	 * <p>
+	 * The information passed are the new x and y position (relative to the
+	 * window).
+	 */
+	public JSignal2<Integer, Integer> moved() {
+		return this.moved_;
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
@@ -622,10 +656,24 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_3_2.WDialog(" + app.getJavaScriptClass()
-					+ "," + this.getJsRef() + "," + this.titleBar_.getJsRef()
-					+ "," + (centerX ? "1" : "0") + "," + (centerY ? "1" : "0")
-					+ ");");
+			this
+					.doJavaScript("new Wt3_3_4.WDialog("
+							+ app.getJavaScriptClass()
+							+ ","
+							+ this.getJsRef()
+							+ ","
+							+ this.titleBar_.getJsRef()
+							+ ","
+							+ (centerX ? "1" : "0")
+							+ ","
+							+ (centerY ? "1" : "0")
+							+ ","
+							+ (this.moved_.isConnected() ? '"' + this.moved_
+									.getName() + '"' : "null")
+							+ ","
+							+ (this.resized_.isConnected() ? '"' + this.resized_
+									.getName() + '"'
+									: "null") + ");");
 			if (!app.getEnvironment().agentIsIElt(9)) {
 				String js = WString.tr("Wt.WDialog.CenterJS").toString();
 				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
@@ -636,6 +684,14 @@ public class WDialog extends WPopupWidget {
 			} else {
 				this.impl_.bindEmpty("center-script");
 			}
+		}
+		if (!this.isModal()) {
+			this.getTitleBar().clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							WDialog.this.bringToFront();
+						}
+					});
 		}
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
 				&& this.autoFocus_) {
@@ -654,6 +710,8 @@ public class WDialog extends WPopupWidget {
 	private boolean resizable_;
 	private boolean escapeIsReject_;
 	private boolean autoFocus_;
+	private JSignal2<Integer, Integer> moved_;
+	private JSignal2<Integer, Integer> resized_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
@@ -761,6 +819,13 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
+	private void bringToFront() {
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').bringToFront()");
+		DialogCover c = this.getCover();
+		c.bringToFront(this);
+	}
+
 	private DialogCover getCover() {
 		WApplication app = WApplication.getInstance();
 		if (app.getDomRoot() != null) {
@@ -780,6 +845,6 @@ public class WDialog extends WPopupWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDialog",
-				"function(h,a,f,i,j){function n(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-k+\"px\";a.style.top=d.px(a,\"top\")+b.y-l+\"px\";a.style.right=\"\";a.style.bottom=\"\";k=b.x;l=b.y}}function o(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width= Math.max(0,c)+\"px\";m.centerDialog()}function p(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";m.centerDialog();a.wtResize&&a.wtResize(a,c,e)}function q(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var m=this,g=$(a).find(\".dialog-layout\").get(0),d=h.WT,k,l;if(f){f.onmousedown=function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);k=b.x;l=b.y;f.onmousemove=n};f.onmouseup=function(){f.onmousemove=null;d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a= f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\"}};this.onresize=function(b,c){i=j=false;p(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0, 0);h.layouts2.scheduleAdjust()};g.wtResize=o;a.wtPosition=q;if(a.style.width!=\"\")g.style.width=d.parsePx(a.style.width)>0?a.style.width:a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=d.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";m.centerDialog()}");
+				"function(h,a,f,i,j,r,s){function t(){if(r){var b=d.pxself(a,\"left\"),c=d.pxself(a,\"top\");if(b!=k||c!=l){k=b;l=c;h.emit(a,r,k,l)}}}function u(b,c){if(!v&&s)if(b!=m||c!=n){m=b;n=c;h.emit(a,s,m,n)}}function w(b){var c=b||window.event;b=d.pageCoordinates(c);c=d.windowCoordinates(c);var e=d.windowSize();if(c.x>0&&c.x<e.x&&c.y>0&&c.y<e.y){i=j=false;a.style.left=d.px(a,\"left\")+b.x-o+\"px\";a.style.top=d.px(a,\"top\")+b.y-p+\"px\";a.style.right=\"\";a.style.bottom= \"\";o=b.x;p=b.y}}function x(b,c,e){if(a.style.position==\"\")a.style.position=d.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";a.style.height=Math.max(0,e)+\"px\";a.style.width=Math.max(0,c)+\"px\";u(c,e);q.centerDialog()}function y(b,c,e){if(c>0)g.style.width=c+\"px\";if(e>0)g.style.height=e+\"px\";q.centerDialog();a.wtResize&&a.wtResize(a,c,e)}function z(){h.layouts2.adjust()}jQuery.data(a,\"obj\",this);var q=this,g=$(a).find(\".dialog-layout\").get(0),d=h.WT,o,p,k=-1,l=-1,m=-1,n=-1,v=false;if(f){f.onmousedown= function(b){b=b||window.event;d.capture(f);b=d.pageCoordinates(b);o=b.x;p=b.y;f.onmousemove=w};f.onmouseup=function(){f.onmousemove=null;t();d.capture(null)}}this.centerDialog=function(){if(a.parentNode==null)a=f=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){var b=d.windowSize(),c=a.offsetWidth,e=a.offsetHeight;if(i){a.style.left=Math.round((b.x-c)/2+(d.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(j){a.style.top=Math.round((b.y-e)/2+(d.isIE6? document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility=\"visible\";t()}};this.bringToFront=function(){var b=0;$(\".Wt-dialog, .modal, .modal-dialog\").each(function(c,e){b=Math.max(b,$(e).css(\"z-index\"))});if(b>a.style.zIndex)a.style.zIndex=b+1};this.onresize=function(b,c,e){i=j=false;v=!e;y(a,b,c);jQuery.data(g.firstChild,\"layout\").setMaxSize(0,0);h.layouts2.scheduleAdjust();e&&u(b,c)};g.wtResize=x;a.wtPosition=z;if(a.style.width!=\"\")g.style.width= d.parsePx(a.style.width)>0?a.style.width:a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=d.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";q.centerDialog()}");
 	}
 }

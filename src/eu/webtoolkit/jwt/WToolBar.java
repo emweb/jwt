@@ -144,6 +144,26 @@ public class WToolBar extends WCompositeWidget {
 		addWidget(widget, AlignmentFlag.AlignLeft);
 	}
 
+	public void removeWidget(WWidget widget) {
+		WWidget p = widget.getParent();
+		if (p == this.impl_) {
+			this.impl_.removeWidget(widget);
+		} else {
+			int i = this.impl_.getIndexOf(p);
+			if (i >= 0) {
+				WContainerWidget cw = ((p) instanceof WContainerWidget ? (WContainerWidget) (p)
+						: null);
+				if (cw != null) {
+					cw.removeWidget(widget);
+					if (cw.getCount() == 0) {
+						if (cw != null)
+							cw.remove();
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * Adds a separator.
 	 * <p>
@@ -235,15 +255,17 @@ public class WToolBar extends WCompositeWidget {
 				this.setStyleClass("btn-group");
 			} else {
 				this.setStyleClass("btn-toolbar");
-				WContainerWidget group = new WContainerWidget();
-				group.setStyleClass("btn-group");
-				while (this.impl_.getCount() > 0) {
-					WWidget w = this.impl_.getWidget(0);
-					this.impl_.removeWidget(w);
-					group.addWidget(w);
+				if (this.impl_.getCount() > 0) {
+					WContainerWidget group = new WContainerWidget();
+					group.setStyleClass("btn-group");
+					while (this.impl_.getCount() > 0) {
+						WWidget w = this.impl_.getWidget(0);
+						this.impl_.removeWidget(w);
+						group.addWidget(w);
+					}
+					this.impl_.addWidget(group);
+					this.lastGroup_ = group;
 				}
-				this.impl_.addWidget(group);
-				this.lastGroup_ = group;
 			}
 		}
 	}

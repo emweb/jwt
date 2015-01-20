@@ -61,7 +61,14 @@ public class WBootstrapTheme extends WTheme {
 	 * @see WBootstrapTheme#setVersion(WBootstrapTheme.Version version)
 	 */
 	public enum Version {
-		Version2(2), Version3(3);
+		/**
+		 * Bootstrap 2.
+		 */
+		Version2(2),
+		/**
+		 * Bootstrap 3.
+		 */
+		Version3(3);
 
 		private int value;
 
@@ -381,7 +388,7 @@ public class WBootstrapTheme extends WTheme {
 					element.addPropertyWord(Property.PropertyClass, "modal");
 				} else {
 					element.addPropertyWord(Property.PropertyClass,
-							"modal-dialog");
+							"modal-dialog Wt-dialog");
 				}
 				return;
 			}
@@ -619,7 +626,7 @@ public class WBootstrapTheme extends WTheme {
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_3_2.setValidationState(").append(widget.getJsRef())
+			js.append("Wt3_3_4.setValidationState(").append(widget.getJsRef())
 					.append(",").append(
 							validation.getState() == WValidator.State.Valid ? 1
 									: 0).append(",").append(

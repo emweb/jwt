@@ -260,15 +260,10 @@ public class WTableView extends WAbstractItemView {
 			layout.setRowStretch(1, 1);
 			layout.setColumnStretch(1, 1);
 			this.impl_.setLayout(layout);
-			app.addAutoJavaScript("{var obj = $('#" + this.getId()
-					+ "').data('obj');if (obj) obj.autoJavaScript();}");
-			this.connectObjJS(this.canvas_.mouseWentDown(), "mouseDown");
-			final AbstractEventSignal ccScrolled = this.contentsContainer_
-					.scrolled();
-			this.connectObjJS(ccScrolled, "onContentsContainerScroll");
 		} else {
 			this.plainTable_ = new WTable();
 			this.plainTable_.setStyleClass("Wt-plaintable");
+			this.plainTable_.setAttributeValue("style", "table-layout: fixed;");
 			this.plainTable_.setHeaderCount(1);
 			this.impl_.addWidget(this.plainTable_);
 			this.resize(this.getWidth(), this.getHeight());
@@ -439,10 +434,9 @@ public class WTableView extends WAbstractItemView {
 		int renderedRowCount = this.getModel() != null ? this.getLastRow()
 				- this.getFirstRow() + 1 : 0;
 		super.setRowHeight(rowHeight);
-		String lh = "line-height: " + rowHeight.getCssText();
 		if (this.isAjaxMode()) {
-			this.canvas_.setAttributeValue("style", lh);
-			this.headerColumnsCanvas_.setAttributeValue("style", lh);
+			this.canvas_.setLineHeight(rowHeight);
+			this.headerColumnsCanvas_.setLineHeight(rowHeight);
 			if (this.getModel() != null) {
 				double ch = this.getCanvasHeight();
 				this.canvas_.resize(this.canvas_.getWidth(), new WLength(ch));
@@ -451,8 +445,7 @@ public class WTableView extends WAbstractItemView {
 				this.setRenderedHeight(th);
 			}
 		} else {
-			this.plainTable_.setAttributeValue("style", lh
-					+ ";table-layout: fixed;");
+			this.plainTable_.setLineHeight(rowHeight);
 			this.resize(this.getWidth(), this.getHeight());
 		}
 		this.updateTableBackground();
@@ -687,6 +680,12 @@ public class WTableView extends WAbstractItemView {
 		}
 	}
 
+	/**
+	 * Returns the model index corresponding to a widget.
+	 * <p>
+	 * This returns the model index for the item that is or contains the given
+	 * widget.
+	 */
 	public WModelIndex getModelIndexAt(WWidget widget) {
 		for (WWidget w = widget; w != null; w = w.getParent()) {
 			if (w.hasStyleClass("Wt-tv-c")) {
@@ -765,6 +764,8 @@ public class WTableView extends WAbstractItemView {
 				case NeedRerenderData:
 					this.rerenderData();
 					break;
+				case NeedUpdateModelIndexes:
+					this.updateModelIndexes();
 				case NeedAdjustViewPort:
 					this.adjustToViewport();
 					break;
@@ -1032,11 +1033,10 @@ public class WTableView extends WAbstractItemView {
 						.getSpannerCount(Side.Bottom)
 						+ toRemove);
 			}
-		} else {
-			if (start <= this.getLastRow()) {
-				this
-						.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
-			}
+		}
+		if (start <= this.getLastRow()) {
+			this
+					.scheduleRerender(WAbstractItemView.RenderState.NeedUpdateModelIndexes);
 		}
 		this.computeRenderedArea();
 		this.adjustSize();
@@ -1898,7 +1898,7 @@ public class WTableView extends WAbstractItemView {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTableView.js", wtjs1());
-		this.setJavaScriptMember(" WTableView", "new Wt3_3_2.WTableView("
+		this.setJavaScriptMember(" WTableView", "new Wt3_3_4.WTableView("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 				+ this.contentsContainer_.getJsRef() + ","
 				+ this.headerContainer_.getJsRef() + ","
@@ -1913,6 +1913,14 @@ public class WTableView extends WAbstractItemView {
 							"o.scrollTopSet = true;").append("}").append("}");
 			this.contentsContainer_.setJavaScriptMember(WT_RESIZE_JS, s
 					.toString());
+		}
+		if (this.canvas_ != null) {
+			app.addAutoJavaScript("{var obj = $('#" + this.getId()
+					+ "').data('obj');if (obj) obj.autoJavaScript();}");
+			this.connectObjJS(this.canvas_.mouseWentDown(), "mouseDown");
+			final AbstractEventSignal ccScrolled = this.contentsContainer_
+					.scrolled();
+			this.connectObjJS(ccScrolled, "onContentsContainerScroll");
 		}
 	}
 
@@ -1972,6 +1980,47 @@ public class WTableView extends WAbstractItemView {
 		this.table_.setWidth(new WLength(totalRendered));
 	}
 
+	private void updateModelIndexes() {
+		int row1 = this.getFirstRow();
+		int row2 = this.getLastRow();
+		int col1 = this.getFirstColumn();
+		int col2 = this.getLastColumn();
+		for (int i = row1; i <= row2; ++i) {
+			int renderedRow = i - this.getFirstRow();
+			int rhc = this.isAjaxMode() ? this.getRowHeaderCount() : 0;
+			for (int j = 0; j < rhc; ++j) {
+				int renderedColumn = j;
+				WModelIndex index = this.getModel().getIndex(i, j,
+						this.getRootIndex());
+				this.updateModelIndex(index, renderedRow, renderedColumn);
+			}
+			for (int j = col1; j <= col2; ++j) {
+				int renderedColumn = rhc + j - this.getFirstColumn();
+				WModelIndex index = this.getModel().getIndex(i, j,
+						this.getRootIndex());
+				this.updateModelIndex(index, renderedRow, renderedColumn);
+			}
+		}
+	}
+
+	private void updateModelIndex(final WModelIndex index, int renderedRow,
+			int renderedColumn) {
+		WContainerWidget parentWidget;
+		int wIndex;
+		if (this.isAjaxMode()) {
+			parentWidget = this.columnContainer(renderedColumn);
+			wIndex = renderedRow;
+		} else {
+			parentWidget = this.plainTable_.getElementAt(renderedRow + 1,
+					renderedColumn);
+			wIndex = 0;
+		}
+		WAbstractItemDelegate itemDelegate = this.getItemDelegate(index
+				.getColumn());
+		WWidget widget = parentWidget.getWidget(wIndex);
+		itemDelegate.updateModelIndex(widget, index);
+	}
+
 	private void onDropEvent(int renderedRow, int columnId, String sourceId,
 			String mimeType, WMouseEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
@@ -2012,6 +2061,6 @@ public class WTableView extends WAbstractItemView {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTableView",
-				"function(q,g,d,l,r,H){function D(a){return I?f.isGecko?-a.scrollLeft:a.scrollWidth-a.clientWidth-a.scrollLeft:a.scrollLeft}function w(a){var b=-1,c=-1,e=false,k=false,h=null;for(a=f.target(a);a;){var i=$(a);if(i.hasClass(\"Wt-tv-contents\"))break;else if(i.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")k=true;if(i.hasClass(H))e=true;h=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;c=i.index();break}a=a.parentNode}return{columnId:b, rowIdx:c,selected:e,drop:k,el:h}}function E(){return f.pxself(d.firstChild,\"lineHeight\")}function x(a){var b,c,e=a.parentNode.childNodes;b=0;for(c=e.length;b<c;++b)if(e[b]==a)return b;return-1}function J(a,b){var c=$(document.body).hasClass(\"Wt-rtl\");if(c)b=-b;var e=a.className.split(\" \")[0],k=e.substring(7)*1,h=a.parentNode,i=h.parentNode!==l,j=i?r.firstChild:d.firstChild,m=j.firstChild;e=$(j).find(\".\"+e).get(0);var n=a.nextSibling,o=e.nextSibling,t=f.pxself(a,\"width\")-1+b,v=f.pxself(h,\"width\")+ b+\"px\";h.style.width=j.style.width=m.style.width=v;if(i){r.style.width=v;r.firstChild.style.width=v;d.style.left=v;l.style.left=v}a.style.width=t+1+\"px\";e.style.width=t+7+\"px\";for(q.layouts2.adjust(g.childNodes[0].id,[[1,1]]);n;n=n.nextSibling)if(o){if(c)o.style.right=f.pxself(o,\"right\")+b+\"px\";else o.style.left=f.pxself(o,\"left\")+b+\"px\";o=o.nextSibling}q.emit(g,\"columnResized\",k,parseInt(t));K.autoJavaScript()}jQuery.data(g,\"obj\",this);var K=this,f=q.WT,I=$(document.body).hasClass(\"Wt-rtl\"),y=0, z=0,A=0,B=0,C=false,u=0,p=0,F=0,G=0;l.onscroll=function(){d.scrollLeft=l.scrollLeft;this.onContentsContainerScroll()};this.onContentsContainerScroll=function(){p=l.scrollLeft=d.scrollLeft;u=r.scrollTop=d.scrollTop;if(!(d.scrollTop==0&&f.isAndroid))if(d.clientWidth&&d.clientHeight&&!C&&(d.scrollTop<A||d.scrollTop>B||d.scrollLeft<y||d.scrollLeft>z))q.emit(g,\"scrolled\",D(d),d.scrollTop,d.clientWidth,d.clientHeight)};d.wtResize=function(a,b,c){if(b-F>(z-y)/2||c-G>(B-A)/2){F=b;G=c;b=a.clientHeight==a.firstChild.clientHeight? -1:a.clientHeight;q.emit(g,\"scrolled\",D(a),a.scrollTop,a.clientWidth,b)}};this.mouseDown=function(a,b){f.capture(null);a=w(b);g.getAttribute(\"drag\")===\"true\"&&a.selected&&q._p_.dragStart(g,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode,e=-(f.pxself(c,\"width\")-1),k=1E4;if($(document.body).hasClass(\"Wt-rtl\")){var h=e;e=-k;k=-h}new f.SizeHandle(f,\"h\",a.offsetWidth,g.offsetHeight,e,k,\"Wt-hsh2\",function(i){J(c,i)},a,g,b,-2,-1)};this.scrolled=function(a,b,c,e){y=a;z=b;A=c;B=e};this.resetScroll= function(){l.scrollLeft=p;d.scrollLeft=p;d.scrollTop=u;r.scrollTop=u};this.setScrollToPending=function(){C=true};this.scrollToPx=function(a,b){u=b;p=a;this.resetScroll()};this.scrollTo=function(a,b,c){C=false;if(b!=-1){a=d.scrollTop;var e=d.clientHeight;if(c==0)if(a+e<b)c=1;else if(b<a)c=2;switch(c){case 1:d.scrollTop=b;break;case 2:d.scrollTop=b-(e-E());break;case 3:d.scrollTop=b-(e-E())/2;break}d.onscroll()}};var s=null;g.handleDragDrop=function(a,b,c,e,k){if(s){s.className=s.classNameOrig;s=null}if(a!= \"end\"){var h=w(c);if(!h.selected&&h.drop)if(a==\"drop\")q.emit(g,{name:\"dropEvent\",eventObject:b,event:c},h.rowIdx,h.columnId,e,k);else{b.className=\"Wt-valid-drop\";s=h.el;s.classNameOrig=s.className;s.className+=\" Wt-drop-site\"}else b.className=\"\"}};g.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){f.cancelEvent(b);var c=w(b);if(c.el){a=c.el.parentNode;c=x(c.el);var e=x(a),k=a.parentNode.childNodes.length,h=a.childNodes.length;b=b.shiftKey;for(var i=false,j=c,m;;){for(;b?j>=0:j<h;j=b?j- 1:j+1)for(m=j==c&&!i?b?e-1:e+1:b?k-1:0;b?m>=0:m<k;m=b?m-1:m+1){if(j==c&&m==e)return;a=a.parentNode.childNodes[m];var n=$(a.childNodes[j]).find(\":input\");if(n.size()>0){setTimeout(function(){n.focus();n.select()},0);return}}j=b?h-1:0;i=true}}}else if(b.keyCode>=37&&b.keyCode<=40){i=f.target(b);function o(t){return f.hasTag(t,\"INPUT\")&&t.type==\"text\"||f.hasTag(t,\"TEXTAREA\")}if(!f.hasTag(i,\"SELECT\")){c=w(b);if(c.el){a=c.el.parentNode;c=x(c.el);e=x(a);k=a.parentNode.childNodes.length;h=a.childNodes.length; switch(b.keyCode){case 39:if(o(i)){j=f.getSelectionRange(i);if(j.start!=i.value.length)return}e++;break;case 38:c--;break;case 37:if(o(i)){j=f.getSelectionRange(i);if(j.start!=0)return}e--;break;case 40:c++;break;default:return}f.cancelEvent(b);if(c>-1&&c<h&&e>-1&&e<k){a=a.parentNode.childNodes[e];n=$(a.childNodes[c]).find(\":input\");n.size()>0&&setTimeout(function(){n.focus()},0)}}}}};this.autoJavaScript=function(){if(g.parentNode==null){g=d=l=null;this.autoJavaScript=function(){}}else if(!f.isHidden(g)){if(!f.isIE&& (u!=d.scrollTop||p!=d.scrollLeft)){if(typeof p===\"undefined\")if(b&&f.isGecko)l.scrollLeft=d.scrollLeft=p=0;else p=d.scrollLeft;else l.scrollLeft=d.scrollLeft=p;r.scrollTop=d.scrollTop=u}b=g.offsetWidth-f.px(g,\"borderLeftWidth\")-f.px(g,\"borderRightWidth\");var a=d.offsetWidth-d.clientWidth;b-=r.clientWidth;if(b>200&&b!=d.tw){d.tw=b;d.style.width=b+\"px\";l.style.width=b+\"px\"}var b=$(document.body).hasClass(\"Wt-rtl\");if(b)l.style.marginLeft=a+\"px\";else l.style.marginRight=a+\"px\";a=d.offsetHeight-d.clientHeight; if((b=r.style)&&b.marginBottom!==a+\"px\"){b.marginBottom=a+\"px\";q.layouts2.adjust(g.childNodes[0].id,[[1,0]])}}}}");
+				"function(q,g,d,l,r,I){function D(a){return J?f.isGecko?-a.scrollLeft:a.scrollWidth-a.clientWidth-a.scrollLeft:a.scrollLeft}function w(a){var b=-1,c=-1,e=false,k=false,h=null;for(a=f.target(a);a;){var i=$(a);if(i.hasClass(\"Wt-tv-contents\"))break;else if(i.hasClass(\"Wt-tv-c\")){if(a.getAttribute(\"drop\")===\"true\")k=true;if(i.hasClass(I))e=true;h=a;a=a.parentNode;b=a.className.split(\" \")[0].substring(7)*1;c=i.index();break}a=a.parentNode}return{columnId:b, rowIdx:c,selected:e,drop:k,el:h}}function E(){return f.pxself(d.firstChild,\"lineHeight\")}function x(a){var b,c,e=a.parentNode.childNodes;b=0;for(c=e.length;b<c;++b)if(e[b]==a)return b;return-1}function K(a,b){var c=$(document.body).hasClass(\"Wt-rtl\");if(c)b=-b;var e=a.className.split(\" \")[0],k=e.substring(7)*1,h=a.parentNode,i=h.parentNode!==l,j=i?r.firstChild:d.firstChild,m=j.firstChild;e=$(j).find(\".\"+e).get(0);var n=a.nextSibling,o=e.nextSibling,t=f.pxself(a,\"width\")-1+b,v=f.pxself(h,\"width\")+ b+\"px\";h.style.width=j.style.width=m.style.width=v;if(i){r.style.width=v;r.firstChild.style.width=v;d.style.left=v;l.style.left=v}a.style.width=t+1+\"px\";e.style.width=t+7+\"px\";for(q.layouts2.adjust(g.childNodes[0].id,[[1,1]]);n;n=n.nextSibling)if(o){if(c)o.style.right=f.pxself(o,\"right\")+b+\"px\";else o.style.left=f.pxself(o,\"left\")+b+\"px\";o=o.nextSibling}q.emit(g,\"columnResized\",k,parseInt(t));F.autoJavaScript()}jQuery.data(g,\"obj\",this);var F=this,f=q.WT,J=$(document.body).hasClass(\"Wt-rtl\"),y=0, z=0,A=0,B=0,C=false,u=0,p=0,G=0,H=0;l.onscroll=function(){d.scrollLeft=l.scrollLeft;F.onContentsContainerScroll()};this.onContentsContainerScroll=function(){p=l.scrollLeft=d.scrollLeft;u=r.scrollTop=d.scrollTop;if(!(d.scrollTop==0&&f.isAndroid))if(d.clientWidth&&d.clientHeight&&!C&&(d.scrollTop<A||d.scrollTop>B||d.scrollLeft<y||d.scrollLeft>z))q.emit(g,\"scrolled\",D(d),d.scrollTop,d.clientWidth,d.clientHeight)};d.wtResize=function(a,b,c){if(b-G>(z-y)/2||c-H>(B-A)/2){G=b;H=c;b=a.clientHeight==a.firstChild.clientHeight? -1:a.clientHeight;q.emit(g,\"scrolled\",D(a),a.scrollTop,a.clientWidth,b)}};this.mouseDown=function(a,b){f.capture(null);a=w(b);g.getAttribute(\"drag\")===\"true\"&&a.selected&&q._p_.dragStart(g,b)};this.resizeHandleMDown=function(a,b){var c=a.parentNode,e=-(f.pxself(c,\"width\")-1),k=1E4;if($(document.body).hasClass(\"Wt-rtl\")){var h=e;e=-k;k=-h}new f.SizeHandle(f,\"h\",a.offsetWidth,g.offsetHeight,e,k,\"Wt-hsh2\",function(i){K(c,i)},a,g,b,-2,-1)};this.scrolled=function(a,b,c,e){y=a;z=b;A=c;B=e};this.resetScroll= function(){l.scrollLeft=p;d.scrollLeft=p;d.scrollTop=u;r.scrollTop=u};this.setScrollToPending=function(){C=true};this.scrollToPx=function(a,b){u=b;p=a;this.resetScroll()};this.scrollTo=function(a,b,c){C=false;if(b!=-1){a=d.scrollTop;var e=d.clientHeight;if(c==0)if(a+e<b)c=1;else if(b<a)c=2;switch(c){case 1:d.scrollTop=b;break;case 2:d.scrollTop=b-(e-E());break;case 3:d.scrollTop=b-(e-E())/2;break}d.onscroll()}};var s=null;g.handleDragDrop=function(a,b,c,e,k){if(s){s.className=s.classNameOrig;s=null}if(a!= \"end\"){var h=w(c);if(!h.selected&&h.drop)if(a==\"drop\")q.emit(g,{name:\"dropEvent\",eventObject:b,event:c},h.rowIdx,h.columnId,e,k);else{b.className=\"Wt-valid-drop\";s=h.el;s.classNameOrig=s.className;s.className+=\" Wt-drop-site\"}else b.className=\"\"}};g.onkeydown=function(a){var b=a||window.event;if(b.keyCode==9){f.cancelEvent(b);var c=w(b);if(c.el){a=c.el.parentNode;c=x(c.el);var e=x(a),k=a.parentNode.childNodes.length,h=a.childNodes.length;b=b.shiftKey;for(var i=false,j=c,m;;){for(;b?j>=0:j<h;j=b?j- 1:j+1)for(m=j==c&&!i?b?e-1:e+1:b?k-1:0;b?m>=0:m<k;m=b?m-1:m+1){if(j==c&&m==e)return;a=a.parentNode.childNodes[m];var n=$(a.childNodes[j]).find(\":input\");if(n.size()>0){setTimeout(function(){n.focus();n.select()},0);return}}j=b?h-1:0;i=true}}}else if(b.keyCode>=37&&b.keyCode<=40){i=f.target(b);function o(t){return f.hasTag(t,\"INPUT\")&&t.type==\"text\"||f.hasTag(t,\"TEXTAREA\")}if(!f.hasTag(i,\"SELECT\")){c=w(b);if(c.el){a=c.el.parentNode;c=x(c.el);e=x(a);k=a.parentNode.childNodes.length;h=a.childNodes.length; switch(b.keyCode){case 39:if(o(i)){j=f.getSelectionRange(i);if(j.start!=i.value.length)return}e++;break;case 38:c--;break;case 37:if(o(i)){j=f.getSelectionRange(i);if(j.start!=0)return}e--;break;case 40:c++;break;default:return}f.cancelEvent(b);if(c>-1&&c<h&&e>-1&&e<k){a=a.parentNode.childNodes[e];n=$(a.childNodes[c]).find(\":input\");n.size()>0&&setTimeout(function(){n.focus()},0)}}}}};this.autoJavaScript=function(){if(g.parentNode==null){g=d=l=null;this.autoJavaScript=function(){}}else if(!f.isHidden(g)){if(!f.isIE&& (u!=d.scrollTop||p!=d.scrollLeft)){if(typeof p===\"undefined\")if(b&&f.isGecko)l.scrollLeft=d.scrollLeft=p=0;else p=d.scrollLeft;else l.scrollLeft=d.scrollLeft=p;r.scrollTop=d.scrollTop=u}b=g.offsetWidth-f.px(g,\"borderLeftWidth\")-f.px(g,\"borderRightWidth\");var a=d.offsetWidth-d.clientWidth;b-=r.clientWidth;if(b>200&&b!=d.tw){d.tw=b;d.style.width=b+\"px\";l.style.width=b+\"px\"}var b=$(document.body).hasClass(\"Wt-rtl\");if(b)l.style.marginLeft=a+\"px\";else l.style.marginRight=a+\"px\";a=d.offsetHeight-d.clientHeight; if((b=r.style)&&b.marginBottom!==a+\"px\"){b.marginBottom=a+\"px\";q.layouts2.adjust(g.childNodes[0].id,[[1,0]])}}}}");
 	}
 }

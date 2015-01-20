@@ -360,9 +360,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * set and init axis
-	 * <p>
-	 * Will replace the existing (default axis) with user axis.
+	 * Sets an axis.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#getAxis(Axis axis)

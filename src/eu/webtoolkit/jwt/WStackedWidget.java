@@ -95,8 +95,8 @@ public class WStackedWidget extends WContainerWidget {
 	 * @see WStackedWidget#getCurrentIndex()
 	 */
 	public WWidget getCurrentWidget() {
-		if (this.getCurrentIndex() >= 0) {
-			return this.getWidget(this.getCurrentIndex());
+		if (this.currentIndex_ >= 0 && this.currentIndex_ < this.getCount()) {
+			return this.getWidget(this.currentIndex_);
 		} else {
 			return null;
 		}
@@ -154,9 +154,11 @@ public class WStackedWidget extends WContainerWidget {
 			}
 			this.loadAnimateJS();
 			WWidget previous = this.getCurrentWidget();
-			this.doJavaScript("$('#" + this.getId()
-					+ "').data('obj').adjustScroll("
-					+ this.getWidget(this.currentIndex_).getJsRef() + ");");
+			if (previous != null) {
+				this.doJavaScript("$('#" + this.getId()
+						+ "').data('obj').adjustScroll(" + previous.getJsRef()
+						+ ");");
+			}
 			this.setJavaScriptMember("wtAutoReverse", autoReverse ? "true"
 					: "false");
 			if (previous != null) {
@@ -253,9 +255,10 @@ public class WStackedWidget extends WContainerWidget {
 	void removeChild(WWidget child) {
 		super.removeChild(child);
 		if (this.currentIndex_ >= this.getCount()) {
-			this.currentIndex_ = -1;
 			if (this.getCount() > 0) {
 				this.setCurrentIndex(this.getCount() - 1);
+			} else {
+				this.currentIndex_ = -1;
 			}
 		}
 	}
@@ -297,7 +300,7 @@ public class WStackedWidget extends WContainerWidget {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WStackedWidget.js", wtjs1());
 			this.setJavaScriptMember(" WStackedWidget",
-					"new Wt3_3_2.WStackedWidget(" + app.getJavaScriptClass()
+					"new Wt3_3_4.WStackedWidget(" + app.getJavaScriptClass()
 							+ "," + this.getJsRef() + ");");
 			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
 					+ "').data('obj').wtResize");

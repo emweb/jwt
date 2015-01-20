@@ -785,10 +785,16 @@ public class WAxis {
 		return this.titleFont_;
 	}
 
+	/**
+	 * Sets the offset from the axis for the title label.
+	 */
 	public void setTitleOffset(double offset) {
 		this.titleOffset_ = offset;
 	}
 
+	/**
+	 * Returns the title offset.
+	 */
 	public double getTitleOffset() {
 		return this.titleOffset_;
 	}
@@ -819,6 +825,14 @@ public class WAxis {
 		return this.labelFont_;
 	}
 
+	/**
+	 * Returns the label for a value.
+	 * <p>
+	 * This returns the label text that corresponds to a given value.
+	 * <p>
+	 * The default implementation uses the {@link WAxis#getLabelFormat()
+	 * getLabelFormat()} to properly represent the value.
+	 */
 	public WString getLabel(double u) {
 		String buf = null;
 		WString text = new WString();
@@ -861,7 +875,7 @@ public class WAxis {
 		return this.segmentMargin_;
 	}
 
-	public boolean prepareRender(Orientation orientation, double length) {
+	boolean prepareRender(Orientation orientation, double length) {
 		double totalRenderRange = 0;
 		for (int i = 0; i < this.segments_.size(); ++i) {
 			final WAxis.Segment s = this.segments_.get(i);
@@ -1338,6 +1352,12 @@ public class WAxis {
 				labelPos, EnumSet.of(labelFlag, labelFlags));
 	}
 
+	/**
+	 * Returns the positions for grid lines on this axis.
+	 * <p>
+	 * This returns a list of logical values at which a grid line should be
+	 * drawn on this axis.
+	 */
 	public List<Double> getGridLinePositions() {
 		List<Double> pos = new ArrayList<Double>();
 		for (int segment = 0; segment < this.segments_.size(); ++segment) {
@@ -1407,14 +1427,20 @@ public class WAxis {
 		painter.setPen(oldPen);
 	}
 
-	public void setRenderMirror(boolean enable) {
+	void setRenderMirror(boolean enable) {
 		this.renderingMirror_ = enable;
 	}
 
+	/**
+	 * Represents a label/tick on the axis.
+	 */
 	static class TickLabel {
 		private static Logger logger = LoggerFactory.getLogger(TickLabel.class);
 
-		enum TickLength {
+		/**
+		 * Enumeration for a tick type.
+		 */
+		public enum TickLength {
 			Zero, Short, Long;
 
 			/**
@@ -1425,10 +1451,22 @@ public class WAxis {
 			}
 		}
 
+		/**
+		 * Position on the axis.
+		 */
 		public double u;
+		/**
+		 * Tick length.
+		 */
 		public WAxis.TickLabel.TickLength tickLength;
+		/**
+		 * Label text.
+		 */
 		public WString label;
 
+		/**
+		 * Creates a label tick.
+		 */
 		public TickLabel(double v, WAxis.TickLabel.TickLength length,
 				final CharSequence l) {
 			this.u = v;
@@ -1436,6 +1474,13 @@ public class WAxis {
 			this.label = WString.toWString(l);
 		}
 
+		/**
+		 * Creates a label tick.
+		 * <p>
+		 * Calls
+		 * {@link #TickLabel(double v, WAxis.TickLabel.TickLength length, CharSequence l)
+		 * this(v, length, new WString())}
+		 */
 		public TickLabel(double v, WAxis.TickLabel.TickLength length) {
 			this(v, length, new WString());
 		}
@@ -1474,6 +1519,9 @@ public class WAxis {
 		this.segments_.add(new WAxis.Segment());
 	}
 
+	/**
+	 * Returns the label (and ticks) information for this axis.
+	 */
 	protected void getLabelTicks(final List<WAxis.TickLabel> ticks, int segment) {
 		final WAxis.Segment s = this.segments_.get(segment);
 		switch (this.scale_) {

@@ -54,6 +54,8 @@ class DialogCover extends WContainerWidget {
 		if (this.dialogs_.isEmpty()) {
 			if (this != null)
 				this.remove();
+		} else {
+			this.scheduleRender();
 		}
 	}
 
@@ -72,6 +74,13 @@ class DialogCover extends WContainerWidget {
 
 	public boolean isTopDialogRendered(WDialog dialog) {
 		return dialog.getId().equals(this.topDialogId_);
+	}
+
+	public void bringToFront(WDialog dialog) {
+		if (this.dialogs_.remove(dialog)) {
+			this.dialogs_.add(dialog);
+			this.scheduleRender();
+		}
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {

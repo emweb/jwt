@@ -624,6 +624,23 @@ public class WAnchor extends WContainerWidget {
 		return this.linkState_.target;
 	}
 
+	public boolean isCanReceiveFocus() {
+		return true;
+	}
+
+	public int getTabIndex() {
+		int result = super.getTabIndex();
+		if (result == Integer.MIN_VALUE) {
+			return 0;
+		} else {
+			return result;
+		}
+	}
+
+	public boolean isSetFirstFocus() {
+		return false;
+	}
+
 	private static final int BIT_LINK_CHANGED = 0;
 	private static final int BIT_TARGET_CHANGED = 1;
 
@@ -668,7 +685,7 @@ public class WAnchor extends WContainerWidget {
 			url = app.encodeUntrustedUrl(url);
 			String href = url;
 			element.setAttribute("href", href);
-			return !app.getEnvironment().hashInternalPaths()
+			return !app.getEnvironment().isInternalPathUsingFragments()
 					&& href.indexOf("://") == -1 && href.charAt(0) != '/';
 		}
 		return false;

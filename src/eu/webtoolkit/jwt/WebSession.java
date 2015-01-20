@@ -773,14 +773,14 @@ class WebSession {
 		} else {
 			if (this.isUseUglyInternalPaths()) {
 				return baseUrl + "?_="
-						+ DomElement.urlEncodeS(internalPath, "#");
+						+ DomElement.urlEncodeS(internalPath, "#/");
 			} else {
 				if (this.applicationName_.length() == 0) {
 					return baseUrl
 							+ DomElement.urlEncodeS(internalPath.substring(1),
-									"#");
+									"#/");
 				} else {
-					return baseUrl + DomElement.urlEncodeS(internalPath, "#");
+					return baseUrl + DomElement.urlEncodeS(internalPath, "#/");
 				}
 			}
 		}
@@ -864,7 +864,7 @@ class WebSession {
 					.getInternalPath() : this.env_.getInternalPath();
 			if (this.isUseUglyInternalPaths()) {
 				if (internalPath.length() > 1) {
-					url = "?_=" + DomElement.urlEncodeS(internalPath, "#");
+					url = "?_=" + DomElement.urlEncodeS(internalPath, "#/");
 				}
 				if (isAbsoluteUrl(this.applicationUrl_)) {
 					url = this.applicationUrl_ + url;
@@ -927,7 +927,7 @@ class WebSession {
 					}
 					return dp + url;
 				} else {
-					if (this.env_.hashInternalPaths()) {
+					if (this.env_.isInternalPathUsingFragments()) {
 						return url;
 					} else {
 						String rel = "";
@@ -1977,7 +1977,7 @@ class WebSession {
 						if (hashE != null) {
 							this.changeInternalPath(hashE, handler
 									.getResponse());
-							this.app_.doJavaScript("Wt3_3_2.scrollIntoView("
+							this.app_.doJavaScript("Wt3_3_4.scrollIntoView("
 									+ WWebWidget.jsStringLiteral(hashE) + ");");
 						} else {
 							this.changeInternalPath("", handler.getResponse());
@@ -2176,6 +2176,9 @@ class WebSession {
 									event.function));
 					if (this.getApp() != null && this.getApp().isQuited()) {
 						this.kill();
+					}
+					if (this.isDead()) {
+						this.getController().removeSession(event.sessionId);
 					}
 				} else {
 					if (event.fallbackFunction != null) {

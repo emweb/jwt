@@ -746,12 +746,15 @@ this.pageCoordinates = function(e) {
   var target = e.target || e.srcElement;
 
   // if this is an iframe, offset against the frame's position
-  if (target.ownerDocument != document)
+  if (target && (target.ownerDocument != document))
     for (var i=0; i < window.frames.length; i++) {
       if (target.ownerDocument == window.frames[i].document) {
-	var rect = window.frames[i].frameElement.getBoundingClientRect();
-	posX = rect.left;
-	posY = rect.top;
+        try{
+          var rect = window.frames[i].frameElement.getBoundingClientRect();
+          posX = rect.left;
+          posY = rect.top;
+        }catch (e) {
+        }
       }
     }
   
@@ -1210,9 +1213,12 @@ this.capture = function(obj) {
 
   // attach to possible iframes
   for (var i=0; i < window.frames.length; i++)
-    if (! window.frames[i].document.body.hasMouseHandlers) {
-      attachMouseHandlers(window.frames[i].document.body);
-      window.frames[i].document.body.hasMouseHandlers = true;
+    try{
+      if (! window.frames[i].document.body.hasMouseHandlers) {
+        attachMouseHandlers(window.frames[i].document.body);
+        window.frames[i].document.body.hasMouseHandlers = true;
+      }
+    }catch (e) {
     }
 
   captureElement = obj;
@@ -2116,8 +2122,8 @@ function initDragDrop() {
 }
 
 function dragStart(obj, e) {
-  if (WT.button(e) === 2) //Ignore drags with rith click.
-      return true;
+  if (e.ctrlKey || WT.button(e) > 1) //Ignore drags with rigth click.
+    return true;
   var t = WT.target(e);
   if (t) {
     /*

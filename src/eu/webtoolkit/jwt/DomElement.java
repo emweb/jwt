@@ -381,11 +381,9 @@ public class DomElement {
 		if (isExposed || anchorClick || jsCode.length() != 0) {
 			js.append("var e=event||window.event,");
 			js.append("o=this;");
-			js
-					.append("var a1 = null, a2 = null, a3 = null, a4 = null, a5 = null, a6 = null;");
 			if (anchorClick) {
 				js
-						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_2.button(e) > 1))return true;else{");
+						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_4.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -462,8 +460,6 @@ public class DomElement {
 				code.append("if(").append(actions.get(i).jsCondition).append(
 						"){");
 			}
-			code
-					.append("var a1 = null, a2 = null, a3 = null, a4 = null, a5 = null, a6 = null;");
 			code.append(actions.get(i).jsCode);
 			if (actions.get(i).exposed) {
 				code.append(WApplication.getInstance().getJavaScriptClass())
@@ -509,7 +505,7 @@ public class DomElement {
 	public void callMethod(final String method) {
 		++this.numManipulations_;
 		if (this.var_.length() == 0) {
-			this.javaScript_.append("Wt3_3_2").append(".$('").append(this.id_)
+			this.javaScript_.append("Wt3_3_4").append(".$('").append(this.id_)
 					.append("').");
 		} else {
 			this.javaScript_.append(this.var_).append('.');
@@ -571,7 +567,7 @@ public class DomElement {
 	 * Removes the element.
 	 */
 	public void removeFromParent() {
-		this.callJavaScript("Wt3_3_2.remove('" + this.getId() + "');", true);
+		this.callJavaScript("Wt3_3_4.remove('" + this.getId() + "');", true);
 	}
 
 	/**
@@ -685,7 +681,7 @@ public class DomElement {
 				if (this.removeAllChildren_ >= 0) {
 					this.declare(out);
 					if (this.removeAllChildren_ == 0) {
-						out.append("Wt3_3_2").append(".setHtml(").append(
+						out.append("Wt3_3_4").append(".setHtml(").append(
 								this.var_).append(", '');\n");
 					} else {
 						out.append("$(").append(this.var_).append(
@@ -720,22 +716,22 @@ public class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_3_2.hide('").append(this.id_).append(
+						out.append("Wt3_3_4.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_3_2.show('").append(this.id_)
+							out.append("Wt3_3_4.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_3_2.inline('" + this.id_
+								out.append("Wt3_3_4.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_3_2.block('" + this.id_
+									out.append("Wt3_3_4.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -750,7 +746,7 @@ public class DomElement {
 				}
 			}
 			if (this.unwrapped_) {
-				out.append("Wt3_3_2.unwrap('").append(this.id_).append("');\n");
+				out.append("Wt3_3_4.unwrap('").append(this.id_).append("');\n");
 			}
 			this.processEvents(app);
 			this.processProperties(app);
@@ -763,7 +759,7 @@ public class DomElement {
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_3_2.unstub(").append(this.var_).append(',')
+					out.append("Wt3_3_4.unstub(").append(this.var_).append(',')
 							.append(varr).append(',').append(
 									this.hideWithDisplay_ ? 1 : 0).append(
 									");\n");
@@ -784,7 +780,7 @@ public class DomElement {
 			}
 			if (!this.childrenToSave_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_3_2").append(".saveReparented(").append(
+				out.append("Wt3_3_4").append(".saveReparented(").append(
 						this.var_).append(");");
 			}
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
@@ -844,7 +840,7 @@ public class DomElement {
 		DomElement.EventHandler clickEvent = this.eventHandlers_
 				.get(WInteractWidget.CLICK_SIGNAL);
 		boolean needButtonWrap = !app.getEnvironment().hasAjax()
-				&& clickEvent != null && clickEvent.jsCode.length() != 0
+				&& clickEvent != null && clickEvent.signalName.length() != 0
 				&& !app.getEnvironment().agentIsSpiderBot();
 		boolean isSubmit = needButtonWrap;
 		DomElementType renderedType = this.type_;
@@ -933,6 +929,15 @@ public class DomElement {
 				String i = this.properties_.get(Property.PropertyDisabled);
 				if (i != null && i.equals("true")) {
 					out.append(" disabled=\"disabled\"");
+				}
+				for (Iterator<Map.Entry<String, String>> j_it = this.attributes_
+						.entrySet().iterator(); j_it.hasNext();) {
+					Map.Entry<String, String> j = j_it.next();
+					if (j.getKey().equals("title")) {
+						out.append(' ').append(j.getKey()).append('=');
+						fastHtmlAttributeValue(out, attributeValues, j
+								.getValue());
+					}
 				}
 				if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror
 						&& !app.getEnvironment().agentIsWebKit()
@@ -1176,7 +1181,7 @@ public class DomElement {
 	public void declare(final EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append(
-					"=Wt3_3_2.$('").append(this.id_).append("');\n");
+					"=Wt3_3_4.$('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -1452,7 +1457,7 @@ public class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_3_2.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_3_4.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1468,7 +1473,7 @@ public class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringBuilder expr = new StringBuilder();
-					expr.append("Wt3_3_2.IEwidth(this,");
+					expr.append("Wt3_3_4.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1513,7 +1518,7 @@ public class DomElement {
 								.isEmpty())) {
 					break;
 				}
-				out.append("Wt3_3_2.setHtml(").append(this.var_).append(',');
+				out.append("Wt3_3_4.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1678,7 +1683,7 @@ public class DomElement {
 		out.append("function f").append(fid).append("(event) { ");
 		if (globalUnfocused) {
 			out
-					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_2.hasTag(t,'DIV') ||Wt3_3_2.hasTag(t,'BODY') ||Wt3_3_2.hasTag(t,'HTML'))) {");
+					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_4.hasTag(t,'DIV') ||Wt3_3_4.hasTag(t,'BODY') ||Wt3_3_4.hasTag(t,'HTML'))) {");
 		}
 		out.append(handler.jsCode);
 		if (globalUnfocused) {
@@ -1748,7 +1753,7 @@ public class DomElement {
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_3_2.insertAt(").append(parentVar).append(
+				insertJS.append("Wt3_3_4.insertAt(").append(parentVar).append(
 						",").append(this.var_).append(",").append(pos).append(
 						");");
 			} else {
@@ -1770,7 +1775,7 @@ public class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| !this.childrenHtml_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_3_2.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_3_4.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 				EscapeOStream js = new EscapeOStream();
@@ -1924,7 +1929,7 @@ public class DomElement {
 			"textDecoration", "whiteSpace", "tableLayout", "borderSpacing",
 			"border-collapse", "pageBreakBefore", "pageBreakAfter", "zoom",
 			"visibility", "display", "boxSizing" };
-	private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
+	private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`/";
 
 	static char hexLookup(int n) {
 		return "0123456789abcdef".charAt(n & 0xF);

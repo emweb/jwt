@@ -452,14 +452,32 @@ public class WTable extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
+	/**
+	 * Creates a table cell.
+	 * <p>
+	 * You may want to override this method if you want your table to contain
+	 * specialized cells.
+	 */
 	protected WTableCell createCell(int row, int column) {
 		return new WTableCell();
 	}
 
+	/**
+	 * Creates a table row.
+	 * <p>
+	 * You may want to override this method if you want your table to contain
+	 * specialized rows.
+	 */
 	protected WTableRow createRow(int row) {
 		return new WTableRow();
 	}
 
+	/**
+	 * Creates a table column.
+	 * <p>
+	 * You may want to override this method if you want your table to contain
+	 * specialized columns.
+	 */
 	protected WTableColumn createColumn(int column) {
 		return new WTableColumn();
 	}

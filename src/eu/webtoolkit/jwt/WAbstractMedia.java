@@ -155,11 +155,6 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		this.readyState_ = WAbstractMedia.ReadyState.HaveNothing;
 		this.setInline(false);
 		this.setFormObject(true);
-		WApplication app = WApplication.getInstance();
-		app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
-		this.setJavaScriptMember(" WAbstractMedia",
-				"new Wt3_3_2.WAbstractMedia(" + app.getJavaScriptClass() + ","
-						+ this.getJsRef() + ");");
 	}
 
 	/**
@@ -315,6 +310,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * JavaScript must be available for this function to work.
 	 */
 	public void play() {
+		this.loadJavaScript();
 		this
 				.doJavaScript("jQuery.data(" + this.getJsRef()
 						+ ", 'obj').play();");
@@ -326,6 +322,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * JavaScript must be available for this function to work.
 	 */
 	public void pause() {
+		this.loadJavaScript();
 		this.doJavaScript("jQuery.data(" + this.getJsRef()
 				+ ", 'obj').pause();");
 	}
@@ -426,7 +423,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		if (this.mediaId_.length() == 0) {
 			return "null";
 		} else {
-			return "Wt3_3_2.getElement('" + this.mediaId_ + "')";
+			return "Wt3_3_4.getElement('" + this.mediaId_ + "')";
 		}
 	}
 
@@ -437,7 +434,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			this.updateMediaDom(media, false);
 			if (this.sourcesChanged_) {
 				for (int i = 0; i < this.sourcesRendered_; ++i) {
-					media.callJavaScript("Wt3_3_2.remove('" + this.mediaId_
+					media.callJavaScript("Wt3_3_4.remove('" + this.mediaId_
 							+ "s" + String.valueOf(i) + "');", true);
 				}
 				this.sourcesRendered_ = 0;
@@ -459,6 +456,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	}
 
 	DomElement createDomElement(WApplication app) {
+		this.loadJavaScript();
 		DomElement result = null;
 		if (this.isInLayout()) {
 			this.setJavaScriptMember(WT_RESIZE_JS, "function() {}");
@@ -536,7 +534,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_3_2.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_3_4.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
@@ -614,8 +612,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 					this.readyState_ = intToReadyState(Integer
 							.parseInt(attributes.get(5)));
 				} catch (final RuntimeException e) {
-					throw new WException("WAbstractMedia: error parsing: "
-							+ formData.values[0] + ": " + e.toString());
+					this.readyState_ = WAbstractMedia.ReadyState.HaveNothing;
 				}
 			} else {
 				throw new WException("WAbstractMedia: error parsing: "
@@ -670,7 +667,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_3_2.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_3_4.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 		} else {
 			element.setAttribute("onerror", "");
 		}
@@ -696,6 +693,16 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	private static String ENDED_SIGNAL = "ended";
 	private static String TIMEUPDATED_SIGNAL = "timeupdate";
 	private static String VOLUMECHANGED_SIGNAL = "volumechange";
+
+	private void loadJavaScript() {
+		if (this.getJavaScriptMember(" WAbstractMedia").length() == 0) {
+			WApplication app = WApplication.getInstance();
+			app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
+			this.setJavaScriptMember(" WAbstractMedia",
+					"new Wt3_3_4.WAbstractMedia(" + app.getJavaScriptClass()
+							+ "," + this.getJsRef() + ");");
+		}
+	}
 
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(

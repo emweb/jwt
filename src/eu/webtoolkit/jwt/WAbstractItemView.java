@@ -941,8 +941,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The default column width is 150 pixels.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>The height must be specified in
-	 * {@link WLength.Unit#Pixel} units.
+	 * <i><b>Note: </b>The width must be specified in {@link WLength.Unit#Pixel}
+	 * units.
 	 * <p>
 	 * The actual space occupied by each column is the column width augmented by
 	 * 7 pixels for internal padding and a border. </i>
@@ -1013,6 +1013,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Sets the header height.
 	 * <p>
 	 * The default value is 20 pixels.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The height must be specified in
+	 * {@link WLength.Unit#Pixel} units. </i>
+	 * </p>
 	 */
 	public void setHeaderHeight(final WLength height) {
 		this.headerLineHeight_ = height;
@@ -1589,6 +1594,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		return this.rowHeaderCount_ == 1;
 	}
 
+	public void setObjectName(final String name) {
+		super.setObjectName(name);
+		this.headerHeightRule_.setSelector("#" + this.getId() + " .headerrh");
+		for (int i = 0; i < this.columns_.size(); ++i) {
+			final WAbstractItemView.ColumnInfo ci = this.columns_.get(i);
+			ci.styleRule.setSelector("#" + this.getId() + " ."
+					+ ci.getStyleClass());
+		}
+	}
+
 	/**
 	 * Creates a new item view.
 	 */
@@ -1828,8 +1843,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	enum RenderState {
-		RenderOk(0), NeedAdjustViewPort(1), NeedRerenderData(2), NeedRerenderHeader(
-				3), NeedRerender(4);
+		RenderOk(0), NeedAdjustViewPort(1), NeedUpdateModelIndexes(2), NeedRerenderData(
+				3), NeedRerenderHeader(4), NeedRerender(5);
 
 		private int value;
 

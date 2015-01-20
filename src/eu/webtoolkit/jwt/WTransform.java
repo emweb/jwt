@@ -253,6 +253,12 @@ public class WTransform {
 		ty = this.m_[M21] * x + this.m_[M22] * y + this.m_[M23];
 	}
 
+	/**
+	 * Applies the transformation to a rectangle.
+	 * <p>
+	 * Since the rectangle is aligned with X and Y axes, this may increase the
+	 * size of the rectangle even for a transformation that only rotates.
+	 */
 	public WRectF map(final WRectF rect) {
 		double minX;
 		double minY;

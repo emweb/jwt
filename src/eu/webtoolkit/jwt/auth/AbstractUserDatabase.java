@@ -217,6 +217,16 @@ public abstract class AbstractUserDatabase {
 	}
 
 	/**
+	 * Sets the user status.
+	 * <p>
+	 * This sets the status for a user (if supported).
+	 */
+	public void setStatus(final User user, User.Status status) {
+		logger.error(new StringWriter().append(
+				new Require("setStatus()").toString()).toString());
+	}
+
+	/**
 	 * Sets a new user password.
 	 * <p>
 	 * This updates the password for a user.

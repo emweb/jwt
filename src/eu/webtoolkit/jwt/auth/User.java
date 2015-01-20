@@ -277,6 +277,17 @@ public class User {
 	}
 
 	/**
+	 * Sets the account status.
+	 * <p>
+	 * 
+	 * @see AbstractUserDatabase#setStatus(User user, User.Status status)
+	 */
+	public void setStatus(User.Status status) {
+		this.checkValid();
+		this.db_.setStatus(this, status);
+	}
+
+	/**
 	 * Returns the email token.
 	 * <p>
 	 * 

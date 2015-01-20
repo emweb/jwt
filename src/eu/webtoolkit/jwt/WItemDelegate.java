@@ -429,7 +429,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		});
 		lineEdit.escapePressed().preventPropagation();
 		if (!EnumUtils.mask(flags, ViewItemRenderFlag.RenderFocused).isEmpty()) {
-			lineEdit.setFocus();
+			lineEdit.setFocus(true);
 		}
 		WApplication app = WApplication.getInstance();
 		if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror) {

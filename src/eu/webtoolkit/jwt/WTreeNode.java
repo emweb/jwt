@@ -524,7 +524,6 @@ public class WTreeNode extends WCompositeWidget {
 			if (this.getParentNode() != null && this.childNodes_.isEmpty()) {
 				this.getParentNode().resetLearnedSlots();
 				this.update();
-				return;
 			}
 			if (this.loadPolicy_ == WTreeNode.LoadPolicy.NextLevelLoading) {
 				this.loadGrandChildren();
@@ -737,12 +736,10 @@ public class WTreeNode extends WCompositeWidget {
 	protected void doExpand() {
 		this.wasCollapsed_ = !this.isExpanded();
 		this.collapsed_ = false;
-		if (!this.childNodes_.isEmpty()) {
-			this.expandIcon_.setState(1);
-			this.getChildContainer().show();
-			if (this.labelIcon_ != null) {
-				this.labelIcon_.setState(1);
-			}
+		this.expandIcon_.setState(1);
+		this.getChildContainer().show();
+		if (this.labelIcon_ != null) {
+			this.labelIcon_.setState(1);
 		}
 		for (int i = 0; i < this.childNodes_.size(); ++i) {
 			this.childNodes_.get(i).doCollapse();

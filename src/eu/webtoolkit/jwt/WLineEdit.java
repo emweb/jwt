@@ -831,7 +831,7 @@ public class WLineEdit extends WFormWidget {
 		app.loadJavaScript("js/WLineEdit.js", wtjs1());
 		String space = "";
 		space += this.spaceChar_;
-		String jsObj = "new Wt3_3_2.WLineEdit("
+		String jsObj = "new Wt3_3_4.WLineEdit("
 				+ app.getJavaScriptClass()
 				+ ","
 				+ this.getJsRef()

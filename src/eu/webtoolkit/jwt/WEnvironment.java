@@ -245,7 +245,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_3_2";
+		return "Wt3_3_4";
 	}
 
 	/**
@@ -423,7 +423,13 @@ public class WEnvironment {
 		return this.doesAjax_;
 	}
 
-	public boolean isWebGL() {
+	/**
+	 * Returns whether the browser has support for WebGL.
+	 * <p>
+	 * Support for WebGL is required for client-side rendering of
+	 * {@link WGLWidget}.
+	 */
+	public boolean hasWebGL() {
 		return this.webGLsupported_;
 	}
 
@@ -676,7 +682,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.3.2";
+		return "3.3.4";
 	}
 
 	// public void libraryVersion(final bad java simple ref int series, final
@@ -884,8 +890,14 @@ public class WEnvironment {
 		return this.session_.getController();
 	}
 
-	public boolean hashInternalPaths() {
-		return this.hashInternalPaths_;
+	/**
+	 * Returns whether internal paths are implemented using URI fragments.
+	 * <p>
+	 * This may be the case for older non-HTML5 browsers which do not support
+	 * HTML5 History APIs.
+	 */
+	public boolean isInternalPathUsingFragments() {
+		return this.internalPathUsingFragments_;
 	}
 
 	/**
@@ -918,17 +930,17 @@ public class WEnvironment {
 	WebSession session_;
 	boolean doesAjax_;
 	boolean doesCookies_;
-	boolean hashInternalPaths_;
+	boolean internalPathUsingFragments_;
 	WEnvironment.UserAgent agent_;
-	protected int screenWidth_;
-	protected int screenHeight_;
+	int screenWidth_;
+	int screenHeight_;
 	double dpiScale_;
 	String queryString_;
-	protected boolean webGLsupported_;
+	boolean webGLsupported_;
 	Map<String, String[]> parameters_;
 	Map<String, String> cookies_;
 	Locale locale_;
-	protected int timeZoneOffset_;
+	int timeZoneOffset_;
 	String host_;
 	String userAgent_;
 	String urlScheme_;
@@ -946,7 +958,7 @@ public class WEnvironment {
 		this.session_ = null;
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
-		this.hashInternalPaths_ = false;
+		this.internalPathUsingFragments_ = false;
 		this.screenWidth_ = -1;
 		this.screenHeight_ = -1;
 		this.dpiScale_ = 1;
@@ -1036,22 +1048,26 @@ public class WEnvironment {
 			}
 		}
 		if (this.userAgent_.indexOf("Chrome") != -1) {
-			if (this.userAgent_.indexOf("Chrome/0.") != -1) {
-				this.agent_ = WEnvironment.UserAgent.Chrome0;
+			if (this.userAgent_.indexOf("Android") != -1) {
+				this.agent_ = WEnvironment.UserAgent.MobileWebKitAndroid;
 			} else {
-				if (this.userAgent_.indexOf("Chrome/1.") != -1) {
-					this.agent_ = WEnvironment.UserAgent.Chrome1;
+				if (this.userAgent_.indexOf("Chrome/0.") != -1) {
+					this.agent_ = WEnvironment.UserAgent.Chrome0;
 				} else {
-					if (this.userAgent_.indexOf("Chrome/2.") != -1) {
-						this.agent_ = WEnvironment.UserAgent.Chrome2;
+					if (this.userAgent_.indexOf("Chrome/1.") != -1) {
+						this.agent_ = WEnvironment.UserAgent.Chrome1;
 					} else {
-						if (this.userAgent_.indexOf("Chrome/3.") != -1) {
-							this.agent_ = WEnvironment.UserAgent.Chrome3;
+						if (this.userAgent_.indexOf("Chrome/2.") != -1) {
+							this.agent_ = WEnvironment.UserAgent.Chrome2;
 						} else {
-							if (this.userAgent_.indexOf("Chrome/4.") != -1) {
-								this.agent_ = WEnvironment.UserAgent.Chrome4;
+							if (this.userAgent_.indexOf("Chrome/3.") != -1) {
+								this.agent_ = WEnvironment.UserAgent.Chrome3;
 							} else {
-								this.agent_ = WEnvironment.UserAgent.Chrome5;
+								if (this.userAgent_.indexOf("Chrome/4.") != -1) {
+									this.agent_ = WEnvironment.UserAgent.Chrome4;
+								} else {
+									this.agent_ = WEnvironment.UserAgent.Chrome5;
+								}
 							}
 						}
 					}
@@ -1161,7 +1177,7 @@ public class WEnvironment {
 		this.session_ = session;
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
-		this.hashInternalPaths_ = false;
+		this.internalPathUsingFragments_ = false;
 		this.screenWidth_ = -1;
 		this.screenHeight_ = -1;
 		this.dpiScale_ = 1;
@@ -1236,7 +1252,7 @@ public class WEnvironment {
 		this.session_.getController().newAjaxSession();
 		this.doesCookies_ = request.getHeaderValue("Cookie") != null;
 		if (!(request.getParameter("htmlHistory") != null)) {
-			this.hashInternalPaths_ = true;
+			this.internalPathUsingFragments_ = true;
 		}
 		String scaleE = request.getParameter("scale");
 		try {

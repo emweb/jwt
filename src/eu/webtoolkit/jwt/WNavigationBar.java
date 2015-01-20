@@ -21,6 +21,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A navigation bar.
+ * <p>
+ * 
+ * <p>
+ * <i><b>Note: </b>{@link WNavigationBar} is currently only styled in the
+ * Bootstrap themes. </i>
+ * </p>
  */
 public class WNavigationBar extends WTemplate {
 	private static Logger logger = LoggerFactory

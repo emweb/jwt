@@ -365,12 +365,12 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#registerNewUser()
 	 */
 	public WWidget createRegistrationView(final Identity id) {
-		this.registrationModel_ = this.getCreateRegistrationModel();
+		RegistrationModel model = this.getRegistrationModel();
 		if (id.isValid()) {
-			this.registrationModel_.registerIdentified(id);
+			model.registerIdentified(id);
 		}
 		RegistrationWidget w = new RegistrationWidget(this);
-		w.setModel(this.registrationModel_);
+		w.setModel(model);
 		return w;
 	}
 
@@ -388,9 +388,8 @@ public class AuthWidget extends WTemplateFormView {
 	 */
 	public WWidget createUpdatePasswordView(final User user,
 			boolean promptPassword) {
-		return new UpdatePasswordWidget(user,
-				this.getCreateRegistrationModel(), promptPassword ? this.model_
-						: null);
+		return new UpdatePasswordWidget(user, this.getRegistrationModel(),
+				promptPassword ? this.model_ : null);
 	}
 
 	/**
@@ -600,17 +599,17 @@ public class AuthWidget extends WTemplateFormView {
 	}
 
 	/**
-	 * Creates a registration model.
+	 * Returns the registration model.
 	 * <p>
-	 * This method creates a registration model.
+	 * Calls {@link AuthWidget#getCreateRegistrationModel()
+	 * getCreateRegistrationModel()} or resets a previously created one.
 	 * <p>
 	 * 
 	 * @see AuthWidget#registerNewUser()
 	 */
-	protected RegistrationModel getCreateRegistrationModel() {
+	protected RegistrationModel getRegistrationModel() {
 		if (!(this.registrationModel_ != null)) {
-			this.registrationModel_ = new RegistrationModel(this.model_
-					.getBaseAuth(), this.model_.getUsers(), this.login_, this);
+			this.registrationModel_ = this.getCreateRegistrationModel();
 			if (this.model_.getPasswordAuth() != null) {
 				this.registrationModel_.addPasswordAuth(this.model_
 						.getPasswordAuth());
@@ -622,11 +621,32 @@ public class AuthWidget extends WTemplateFormView {
 		return this.registrationModel_;
 	}
 
+	/**
+	 * Creates a registration model.
+	 * <p>
+	 * This method creates a registration model. The default implementation
+	 * creates a RegistrationModel() but you may want to reimplement this
+	 * function to return a specialized registration model (complementing a
+	 * specialized registration view).
+	 * <p>
+	 * 
+	 * @see AuthWidget#registerNewUser()
+	 */
+	protected RegistrationModel getCreateRegistrationModel() {
+		RegistrationModel result = new RegistrationModel(this.model_
+				.getBaseAuth(), this.model_.getUsers(), this.login_, this);
+		if (this.model_.getPasswordAuth() != null) {
+			result.addPasswordAuth(this.model_.getPasswordAuth());
+		}
+		result.addOAuth(this.model_.getOAuth());
+		return result;
+	}
+
 	protected WFormWidget createFormWidget(String field) {
 		WFormWidget result = null;
 		if (field == AuthModel.LoginNameField) {
 			result = new WLineEdit();
-			result.setFocus();
+			result.setFocus(true);
 		} else {
 			if (field == AuthModel.PasswordField) {
 				WLineEdit p = new WLineEdit();

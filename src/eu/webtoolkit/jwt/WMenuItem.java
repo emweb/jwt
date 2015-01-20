@@ -65,9 +65,9 @@ public class WMenuItem extends WContainerWidget {
 	 * <p>
 	 * The optional contents is a widget that will be shown in the {@link WMenu}
 	 * contents stack when the item is selected. For this widget, a load
-	 * <code>policy</code> can be indicated which specifies whether the contents
-	 * widgets is transmitted only when it the item is activated for the first
-	 * time (LazyLoading) or transmitted prior to first rendering.
+	 * <code>policy</code> specifies whether the contents widgets is transmitted
+	 * only when it the item is activated for the first time (LazyLoading) or
+	 * transmitted prior to first rendering.
 	 * <p>
 	 * If the menu supports internal path navigation, then a default
 	 * {@link WMenuItem#getPathComponent() getPathComponent()} will be derived
@@ -352,6 +352,7 @@ public class WMenuItem extends WContainerWidget {
 		if (a != null) {
 			a.setLink(link);
 		}
+		this.customLink_ = true;
 	}
 
 	/**
@@ -527,6 +528,12 @@ public class WMenuItem extends WContainerWidget {
 		return this.data_;
 	}
 
+	/**
+	 * Returns the checkbox for a checkable item.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setCheckable(boolean checkable)
+	 */
 	public WCheckBox getCheckBox() {
 		return this.checkBox_;
 	}
@@ -587,15 +594,53 @@ public class WMenuItem extends WContainerWidget {
 		}
 	}
 
+	/**
+	 * Returns the menu that contains this item.
+	 */
 	public WMenu getParentMenu() {
 		return this.menu_;
 	}
 
 	/**
+	 * Sets the contents widget for this item.
+	 * <p>
+	 * The contents is a widget that will be shown in the {@link WMenu} contents
+	 * stack when the item is selected. For this widget, the load
+	 * <code>policy</code> specifies whether the contents widgets is transmitted
+	 * only when it the item is activated for the first time (LazyLoading) or
+	 * transmitted prior to first rendering.
+	 */
+	public void setContents(WWidget contents, WMenuItem.LoadPolicy policy) {
+		if (this.contents_ != null)
+			this.contents_.remove();
+		this.contents_ = contents;
+		if (contents != null && policy != WMenuItem.LoadPolicy.PreLoading) {
+			this.contents_ = contents;
+			if (!(this.contentsContainer_ != null)) {
+				this.contentsContainer_ = new WContainerWidget();
+				this.contentsContainer_.setJavaScriptMember("wtResize",
+						StdWidgetItemImpl.getChildrenResizeJS());
+				this.contentsContainer_.resize(WLength.Auto, new WLength(100,
+						WLength.Unit.Percentage));
+			}
+		}
+	}
+
+	/**
+	 * Sets the contents widget for this item.
+	 * <p>
+	 * Calls {@link #setContents(WWidget contents, WMenuItem.LoadPolicy policy)
+	 * setContents(contents, WMenuItem.LoadPolicy.LazyLoading)}
+	 */
+	public final void setContents(WWidget contents) {
+		setContents(contents, WMenuItem.LoadPolicy.LazyLoading);
+	}
+
+	/**
 	 * Returns the contents widget for this item.
 	 * <p>
-	 * The contents widget is the widget in the {@link WStackedWidget}
-	 * associated with this item.
+	 * 
+	 * @see WMenuItem#setContents(WWidget contents, WMenuItem.LoadPolicy policy)
 	 */
 	public WWidget getContents() {
 		if (this.contentsContainer_ != null) {
@@ -663,7 +708,7 @@ public class WMenuItem extends WContainerWidget {
 	 * Returns whether this item is a separator.
 	 * <p>
 	 * 
-	 * @see WMenu#addSeparator()
+	 * @see WMenu#getAddSeparator()
 	 */
 	public boolean isSeparator() {
 		return this.separator_;
@@ -774,6 +819,7 @@ public class WMenuItem extends WContainerWidget {
 	private boolean separator_;
 	private boolean selectable_;
 	private boolean signalsConnected_;
+	private boolean customLink_;
 	private Signal1<WMenuItem> triggered_;
 	private AbstractSignal.Connection contentsDestroyedConnection_;
 	private String pathComponent_;
@@ -783,8 +829,9 @@ public class WMenuItem extends WContainerWidget {
 
 	private void create(final String iconPath, final CharSequence text,
 			WWidget contents, WMenuItem.LoadPolicy policy) {
+		this.customLink_ = false;
 		this.contentsContainer_ = null;
-		this.contents_ = contents;
+		this.contents_ = null;
 		this.menu_ = null;
 		this.customPathComponent_ = false;
 		this.internalPathEnabled_ = true;
@@ -795,13 +842,15 @@ public class WMenuItem extends WContainerWidget {
 		this.checkBox_ = null;
 		this.subMenu_ = null;
 		this.data_ = null;
-		if (this.contents_ != null && policy != WMenuItem.LoadPolicy.PreLoading) {
-			this.contentsContainer_ = new WContainerWidget();
-			this.contentsContainer_.setJavaScriptMember("wtResize",
-					StdWidgetItemImpl.getChildrenResizeJS());
-			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
-					WLength.Unit.Percentage));
+		if (contents != null && contents.getParent() != null) {
+			WContainerWidget cw = ((contents.getParent()) instanceof WContainerWidget ? (WContainerWidget) (contents
+					.getParent())
+					: null);
+			if (cw != null) {
+				cw.removeWidget(contents);
+			}
 		}
+		this.setContents(contents);
 		if (!this.separator_) {
 			new WAnchor(this);
 			this.updateInternalPath();
@@ -834,7 +883,7 @@ public class WMenuItem extends WContainerWidget {
 			}
 		} else {
 			WAnchor a = this.getAnchor();
-			if (a != null) {
+			if (a != null && !this.customLink_) {
 				if (WApplication.getInstance().getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 					a.setLink(new WLink("#"));
 				} else {
@@ -887,7 +936,7 @@ public class WMenuItem extends WContainerWidget {
 	private void connectSignals() {
 		if (!this.signalsConnected_) {
 			this.signalsConnected_ = true;
-			if (this.isContentsLoaded()) {
+			if (!(this.contents_ != null) || this.isContentsLoaded()) {
 				// this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
 			}
 			WAnchor a = this.getAnchor();

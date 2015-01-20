@@ -575,6 +575,7 @@ public class WCalendar extends WCompositeWidget {
 							: null);
 					if (iw != null && iw != w) {
 						if (this.clicked().isConnected()
+								|| this.selectionMode_ == SelectionMode.ExtendedSelection
 								|| this.selectionMode_ != SelectionMode.ExtendedSelection
 								&& this.singleClickSelect_
 								&& this.activated().isConnected()) {
@@ -583,7 +584,8 @@ public class WCalendar extends WCompositeWidget {
 						}
 						if (this.selectionMode_ != SelectionMode.ExtendedSelection
 								&& !this.singleClickSelect_
-								&& this.activated().isConnected()) {
+								&& (this.activated().isConnected() || this
+										.selectionChanged().isConnected())) {
 							this.cellDblClickMapper_.mapConnect(iw
 									.doubleClicked(), new WCalendar.Coordinate(
 									i, j));
@@ -654,6 +656,11 @@ public class WCalendar extends WCompositeWidget {
 		return this.selection_.contains(d) != false;
 	}
 
+	protected void enableAjax() {
+		super.enableAjax();
+		this.monthEdit_.enable();
+	}
+
 	private SelectionMode selectionMode_;
 	private boolean singleClickSelect_;
 	private int currentYear_;
@@ -700,11 +707,6 @@ public class WCalendar extends WCompositeWidget {
 		this.firstDayOfWeek_ = 1;
 		this.cellClickMapper_ = null;
 		this.cellDblClickMapper_ = null;
-		this.clicked().addListener(this, new Signal1.Listener<WDate>() {
-			public void trigger(WDate e1) {
-				WCalendar.this.selectInCurrentMonth(e1);
-			}
-		});
 		WDate currentDay = WDate.getCurrentDate();
 		this.currentYear_ = currentDay.getYear();
 		this.currentMonth_ = currentDay.getMonth();
@@ -756,6 +758,8 @@ public class WCalendar extends WCompositeWidget {
 						WCalendar.this.monthChanged(e1);
 					}
 				});
+		this.monthEdit_.setDisabled(!WApplication.getInstance()
+				.getEnvironment().hasAjax());
 		this.yearEdit_ = new WInPlaceEdit("");
 		this.yearEdit_.setButtonsEnabled(false);
 		this.yearEdit_.getLineEdit().setTextSize(4);
@@ -825,14 +829,12 @@ public class WCalendar extends WCompositeWidget {
 				} else {
 					this.selection_.add(d);
 				}
-				this.selectionChanged().trigger();
-				this.renderMonth();
 			} else {
 				this.selection_.clear();
 				this.selection_.add(d);
-				this.selectionChanged().trigger();
-				this.renderMonth();
 			}
+			this.renderMonth();
+			this.selectionChanged().trigger();
 		}
 	}
 
@@ -847,6 +849,7 @@ public class WCalendar extends WCompositeWidget {
 		if (this.isInvalid(d)) {
 			return;
 		}
+		this.selectInCurrentMonth(d);
 		this.clicked().trigger(d);
 		if (this.selectionMode_ != SelectionMode.ExtendedSelection
 				&& this.singleClickSelect_) {

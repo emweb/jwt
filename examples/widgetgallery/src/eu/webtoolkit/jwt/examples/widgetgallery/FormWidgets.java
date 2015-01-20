@@ -1027,7 +1027,7 @@ class FormWidgets extends TopicWidget {
 				.tr("appendedDropdownButton-template"));
 		WPopupMenu popup = new WPopupMenu();
 		popup.addItem("Choose a button type");
-		popup.addSeparator();
+		popup.getAddSeparator();
 		popup.addItem("One-time hit button").setLink(new WLink("#one-time"));
 		popup.addItem("Navigation button").setLink(new WLink("#navigation"));
 		popup.addItem("Button style").setLink(new WLink("#style"));
@@ -1181,7 +1181,7 @@ class FormWidgets extends TopicWidget {
 									+ " days, we will be celebrating your next anniversary!</p>");
 					out.setStyleClass("alert alert-success");
 				} else {
-					dateEdit.setFocus();
+					dateEdit.setFocus(true);
 					out.setText(result.getMessage());
 					out.setStyleClass("alert alert-danger");
 				}

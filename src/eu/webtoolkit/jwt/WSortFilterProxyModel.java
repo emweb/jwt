@@ -926,6 +926,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private void rebuildSourceRowMap(WSortFilterProxyModel.Item item) {
+		for (int i = 0; i < item.sourceRowMap_.size(); ++i) {
+			item.sourceRowMap_.set(i, -1);
+		}
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
 			item.sourceRowMap_.set(item.proxyRowMap_.get(i), i);
 		}
