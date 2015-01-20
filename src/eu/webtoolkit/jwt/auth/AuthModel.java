@@ -253,13 +253,14 @@ public class AuthModel extends FormBaseModel {
 		if (this.isValid()) {
 			User user = this.getUsers().findWithIdentity(Identity.LoginName,
 					this.valueText(LoginNameField));
+			Object v = this.getValue(RememberMeField);
+			AuthService s = this.getBaseAuth();
 			if (this.loginUser(login, user)) {
-				Object v = this.getValue(RememberMeField);
 				if (!(v == null) && (Boolean) v == true) {
 					WApplication app = WApplication.getInstance();
-					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
-							this.getBaseAuth().createAuthToken(user), this
-									.getBaseAuth().getAuthTokenValidity() * 60);
+					app.setCookie(s.getAuthTokenCookieName(), s
+							.createAuthToken(user),
+							s.getAuthTokenValidity() * 60);
 				}
 				return true;
 			} else {

@@ -134,6 +134,13 @@ public class WDate implements Comparable<WDate> {
 				|| c.get(Calendar.MINUTE) != minute
 				|| c.get(Calendar.SECOND) != second
 				|| c.get(Calendar.MILLISECOND) != millisecond) {
+			System.err.println("year: " + c.get(Calendar.YEAR) + " = " + year +
+				" month: " + (c.get(Calendar.MONTH) + 1) + " = " + month +
+				" day: " + c.get(Calendar.DATE) + " = " + day +
+				" hour: " + c.get(Calendar.HOUR_OF_DAY) + " = " + hour +
+				" minute: " + c.get(Calendar.MINUTE) + " = " + minute +
+				" second: " + c.get(Calendar.SECOND) + " = " + second +
+				" millisecond: " + c.get(Calendar.MILLISECOND) + " = " + millisecond);
 			throw new IllegalArgumentException("Illegal WDate");
 		}
 

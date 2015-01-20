@@ -540,7 +540,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			this
 					.clicked()
 					.addListener(
-							"function(o,e) { Wt3_3_4.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_3_4.WPopupWidget.popupClicked = null;}");
+							"function(o,e) {  if (Wt3_3_4.WPopupWidget) {Wt3_3_4.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_3_4.WPopupWidget.popupClicked = null; }}");
 			this.clicked().preventPropagation();
 		}
 		super.setPopup(popup);
@@ -691,8 +691,8 @@ public abstract class WInteractWidget extends WWebWidget {
 			}
 			if (mouseDrag != null) {
 				actions.add(new DomElement.EventAction("Wt3_3_4.buttons",
-						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
-						mouseDrag.isExposedSignal()));
+						mouseDrag.getJavaScript() + "Wt3_3_4.drag(e);",
+						mouseDrag.encodeCmd(), mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
 			}
 			element.setEvent("mousemove", actions);
@@ -707,6 +707,9 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateMouseClick) {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
+			if (mouseDrag != null) {
+				js.append("if (Wt3_3_4.dragged()) return;");
+			}
 			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
 				if (mouseClick != null) {
 					if (mouseClick.isDefaultActionPrevented()

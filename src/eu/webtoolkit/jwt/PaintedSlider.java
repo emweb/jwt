@@ -147,8 +147,8 @@ class PaintedSlider extends WPaintedWidget {
 				.append("if (down != null && down != '') {").append(
 						computeD.toString()).append("d += ").append(
 						this.slider_.getHandleWidth() / 2).append(";").append(
-						this.sliderReleased_.createCall("d")).append(
-						"obj.removeAttribute('down');").append("}");
+						this.sliderReleased_.createCall("Math.round(d)"))
+				.append("obj.removeAttribute('down');").append("}");
 		boolean enabled = !this.slider_.isDisabled();
 		this.mouseDownJS_.setJavaScript("function(obj, event) {"
 				+ (enabled ? mouseDownJS.toString() : "") + "}");

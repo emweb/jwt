@@ -1287,7 +1287,11 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	private void modelRowsRemoved(final WModelIndex parent, int start, int end) {
-		this.renderedRowsChanged(this.firstRemovedRow_, -this.removedHeight_);
+		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
+				&& this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
+			this.renderedRowsChanged(this.firstRemovedRow_,
+					-this.removedHeight_);
+		}
 	}
 
 	void modelDataChanged(final WModelIndex topLeft,

@@ -1770,10 +1770,21 @@ public class DomElement {
 	private void renderInnerHtmlJS(final EscapeOStream out, WApplication app) {
 		if (!this.childrenHtml_.isEmpty() || this.wasEmpty_
 				&& this.canWriteInnerHTML(app)) {
+			String innerHTML = "";
+			if (!this.properties_.isEmpty()) {
+				String i = this.properties_.get(Property.PropertyInnerHTML);
+				if (i != null) {
+					innerHTML += i;
+				}
+				i = this.properties_.get(Property.PropertyAddedInnerHTML);
+				if (i != null) {
+					innerHTML += i;
+				}
+			}
 			if (this.type_ == DomElementType.DomElement_DIV
 					&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 					|| !this.childrenToAdd_.isEmpty()
-					|| !this.childrenHtml_.isEmpty()) {
+					|| !this.childrenHtml_.isEmpty() || innerHTML.length() != 0) {
 				this.declare(out);
 				out.append("Wt3_3_4.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1781,17 +1792,6 @@ public class DomElement {
 				EscapeOStream js = new EscapeOStream();
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
 					this.childrenToAdd_.get(i).child.asHTML(out, js, timeouts);
-				}
-				String innerHTML = "";
-				{
-					String i = this.properties_.get(Property.PropertyInnerHTML);
-					if (i != null) {
-						innerHTML += i;
-					}
-					i = this.properties_.get(Property.PropertyAddedInnerHTML);
-					if (i != null) {
-						innerHTML += i;
-					}
 				}
 				out.append(innerHTML);
 				out.append(this.childrenHtml_.toString());
