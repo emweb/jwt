@@ -26,35 +26,73 @@ public class WTime {
 	private static class BuildState {
 		int i;
 	}
-
+	
+	/**
+	* Construct a time given hour, minutes.
+	*
+	* m arange 0-59 A duration can be positive or negative depending on the sign of h.
+	* 
+	* When the time is invalid, isValid() is set to false.
+	*/
 	public WTime(int hours, int minutes) {
 		this(hours, minutes, 0, 0);
 	}
-
+	/**
+	* Construct a time given hour, minutes, seconds.
+	*
+	* m and s have range 0-59 A duration can be positive or negative depending on the sign of h.
+	* 
+	* When the time is invalid, isValid() is set to false.
+	*/
 	public WTime(int h, int m, int s) {
 		this(h, m, s, 0);
 	}
 
+	/**
+	* Construct a time given hour, minutes, seconds, and milliseconds.
+	*
+	* m and s have range 0-59, and ms has range 0-999. A duration can be positive or negative depending on the sign of h.
+	* 
+	* When the time is invalid, isValid() is set to false.
+	*/
 	public WTime(int h, int m, int s, int ms) {
 		this();
 		setHMS(h, m, s, ms);
 	}
 
+	/**
+	 * Create time from unix timestamp
+	 * @param ms
+	 */
 	public WTime(long ms)
 	{
 		this();
 		this.valid_ = true;
-		this.time_ = ms;
+		this.null_ = false;
+		this.time_ = ms % (1000 * 60 * 60 * 24);
 	}
 	
+	/**
+	 * Construct a Null time.
+
+	 * <p>
+	 * A time for which isNull() returns true. A Null time is also invalid.
+
+	 */
 	public WTime() {
 		this.time_ = 0;
 		this.null_ = false;
 		this.valid_ = false;
 	}
-
-	private boolean setHMS(int h, int m, int s, int ms) {
-		this.null_ = false;
+	
+	/*
+	 * Sets the time.
+	 * 
+	 * m and s have range 0-59, and ms has range 0-999.
+	 * When the time is invalid, isValid() is set to false.
+	 */
+	 private boolean setHMS(int h, int m, int s, int ms) {
+	 this.null_ = false;
 
 		if (m >= 0 && m <= 59 && s >= 0 && s <= 59 && ms >= 0 && ms <= 999) {
 			valid_ = true;
@@ -76,37 +114,58 @@ public class WTime {
 		return valid_;
 	}
 	
+	 /*
+	  * Returns the hour
+	  */
 	public int getHour()
 	{
 		return (int)time_ / (1000 * 60 * 60);
 	}
 	
+	/*
+	 * Returns the hour in AM/PM format
+	 */
 	public int getPmHour()
 	{
 		int result = getHour() % 12;
 		return result != 0 ? result : 12;
 	}
 	
+	/*
+	 * Return the minute
+	 */
 	public int getMinute()
 	{
 		return Math.abs((int)time_ / (1000 * 60 )) % 60;
 	}
 	
+	/* 
+	 * Return the second
+	 */
 	public int getSecond()
 	{
 		return Math.abs((int)time_ / (1000)) % 60;
 	}
 	
+	/*
+	 * Return the millisecond
+	 */
 	public int getMsec()
 	{
 		return Math.abs((int)time_) % 1000;
 	}
 	
+	/* 
+	 * Returns the number of seconds until t
+	 */
 	public long secsTo(WTime t)
 	{
 		return msecsTo(t) / 1000;
 	}
 
+	/*
+	 * Returns the number of milliseconds until t
+	 */
 	public long msecsTo(WTime t)
 	{
 		if(isValid() && t.isValid())
@@ -114,14 +173,34 @@ public class WTime {
 		return 0;
 	}
 	
+	/*
+	 * Return the default format of the time 
+	 * HH:mm:ss
+	 */
 	public static String getDefaultFormat() {
 		return "HH:mm:ss";
 	}
 
+	/*
+	 * Parses a string to a time using a default format.
+	 * 
+	 * The default format is "hh:mm:ss". For example, a time specified as: 
+	 * "22:55:15" 
+	 * will be parsed as a time that equals a time constructed as:
+	 * WTime d(22,55,15);
+	 * When the time could not be parsed or is not valid, an invalid time is returned (for which isValid() returns false).
+	 */
 	public static WTime fromString(String text) {
 		return fromString(text, getDefaultFormat());
 	}
-	
+	/*
+	 * Parses a string to a time using a specified format.
+	 * 
+	 * The format follows the same syntax as used by toString(const WString& format).
+	 * When the time could not be parsed or is not valid, an invalid time is returned (for which isValid() returns false).
+	 * 
+	 * @see #toString()
+	 */
 	public static WTime fromString(String v, String format) {
 		String f = format;
 
@@ -219,7 +298,7 @@ public class WTime {
 			++parse.s;
 			return CharState.CharHandled;
 
-		case 'z':
+		case 'S':
 			if (parse.z == 0)
 				if (!parseLast(v, parse, format))
 					return CharState.CharInvalid;
@@ -374,6 +453,12 @@ public class WTime {
 		return true;
 	}
 
+	/*
+	 * Formats this time to a string using a specified format.
+	 * 
+	 * @see SimpleDateFormat
+	 * 
+	 */
 	public String toString(String format) {
 		StringBuilder result = new StringBuilder();
 		String f = format + "000";
@@ -452,13 +537,17 @@ public class WTime {
 		return "";
 	}
 	
+	/*
+	 * Reports the current time (UTC clock).
+	 * 
+	 * This method returns the time as indicated by the system clock of the server, in UTC.
+	 */
 	public static WTime getCurrentServerTime() {
-		return new WTime(System.currentTimeMillis() % (1000 * 60 * 60 * 24)); 	
+		return new WTime(System.currentTimeMillis()); 	
 	}
 	
 	private boolean writeSpecial(String f, BuildState state, StringBuilder result,
 			boolean useAMPM, int zoneOffset) {
-
 		  switch (f.charAt(state.i)) {
 		    case '+':
 		      if (f.charAt(state.i + 1) == 'h' || f.charAt(state.i + 1) == 'H') {
@@ -518,9 +607,9 @@ public class WTime {
 		          return true;
 		        }
 
-		      case 'z':
-		        if (f.substring(state.i + 1, state.i + 1 + 2) == "zz") {
-		          state.i += 2;
+		      case 'S':
+		        if (f.substring(state.i + 1, state.i + 3) == "SSS") {
+		          state.i += 3;
 		          result.append(String.format("%02d", getMsec()));
 		        } else
 		          result.append(getMsec());
@@ -545,14 +634,30 @@ public class WTime {
 
 	}
 
+	/**
+	 * Returns the string format of the time using the default format
+	 */
 	public String toString() {
 		return toString(getDefaultFormat());
 	}
 
+	/*
+	 * Returns true if time is valid time
+	 */
 	public boolean isValid() {
 		return valid_;
 	}
+	
+	/*
+	 * Returns true if time is not null
+	 */
+	public boolean isNull() {
+		return null_;
+	}
 
+	/*
+	 * Converts the format to a regular expression
+	 */
 	public static RegExpInfo formatToRegExp(String format) {
 
 		RegExpInfo result = new RegExpInfo();
@@ -585,7 +690,7 @@ public class WTime {
 			case 's':
 				i = formatSecondToRegExp(result, f, i);
 				break;
-			case 'z':
+			case 'S':
 				i = formatMSecondToRegExp(result, f, i);
 				break;
 			case 'Z':
@@ -709,12 +814,11 @@ public class WTime {
 		}
 
 		if (sf.equals("HH") || (sf.equals("hh") && !ap)) { // Hour with leading 0 0-23
-			result.regexp += "(([0-1]?[0-9])|([2][0-3]))";
+			result.regexp += "(([0-1][0-9])|([2][0-3]))";
 		} else if (sf.equals("hh") && ap) { // Hour with leading 0 01-12
-			result.regexp += "(0|[1-9]|[1][012])";
-		} else if (sf.equals("H") || (sf.equals("h") && !ap)) { // Hour without leading 0
-													// 0-23
-			result.regexp += "(0|[1-9]|[1][012])";
+			result.regexp += "(0[1-9]|[1][012])";
+		} else if (sf.equals("H") || (sf.equals("h") && !ap)) { // Hour without leading 0 0-23
+			result.regexp += "(0|[1-9]|[1][0-9]|2[0-3])";
 		} else if (sf.equals("h") && ap) { // Hour without leading 0 0-12
 			result.regexp += "([1-9]|1[012])";
 		}
