@@ -714,6 +714,15 @@ public class AuthWidget extends WTemplateFormView {
 				this.messageBox_.remove();
 			this.messageBox_ = null;
 		}
+		if (this.basePath_.length() != 0) {
+			WApplication app = WApplication.getInstance();
+			if (app.internalPathMatches(this.basePath_)) {
+				String ap = app.internalSubPath(this.basePath_);
+				if (ap.equals("register/")) {
+					app.setInternalPath(this.basePath_, false);
+				}
+			}
+		}
 	}
 
 	private void onLoginChange() {
@@ -741,7 +750,7 @@ public class AuthWidget extends WTemplateFormView {
 			WApplication app = WApplication.getInstance();
 			if (app.internalPathMatches(this.basePath_)) {
 				String ap = app.internalSubPath(this.basePath_);
-				if (ap.equals("register")) {
+				if (ap.equals("register/")) {
 					this.registerNewUser();
 					return true;
 				}

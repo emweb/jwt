@@ -26,10 +26,18 @@ class CombinedStyleSheet implements StyleSheet {
 	public CombinedStyleSheet() {
 		super();
 		this.sheets_ = new ArrayList<StyleSheet>();
+		this.sheets_not_owned_ = new HashSet<StyleSheet>();
 	}
 
-	public void use(StyleSheet sh) {
+	public void use(StyleSheet sh, boolean noFree) {
 		this.sheets_.add(sh);
+		if (noFree) {
+			this.sheets_not_owned_.add(sh);
+		}
+	}
+
+	public final void use(StyleSheet sh) {
+		use(sh, false);
 	}
 
 	public int getRulesetSize() {
@@ -51,4 +59,5 @@ class CombinedStyleSheet implements StyleSheet {
 	}
 
 	private List<StyleSheet> sheets_;
+	private Set<StyleSheet> sheets_not_owned_;
 }

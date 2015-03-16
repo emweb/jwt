@@ -163,6 +163,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * @see WAbstractItemView#setRootIndex(WModelIndex rootIndex)
 	 */
 	public void setModel(WAbstractItemModel model) {
+		if (!this.columnWidthChanged_.isConnected()) {
+			this.columnWidthChanged_.addListener(this,
+					new Signal2.Listener<Integer, Integer>() {
+						public void trigger(Integer e1, Integer e2) {
+							WAbstractItemView.this.updateColumnWidth(e1, e2);
+						}
+					});
+		}
 		boolean isReset = false;
 		if (this.model_ != null) {
 			for (int i = 0; i < this.modelConnections_.size(); ++i) {
@@ -1605,6 +1613,52 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Event signal emitted when a keyboard key is pushed down.
+	 * <p>
+	 * The keyWentDown signal is the first signal emitted when a key is pressed
+	 * (before the keyPressed signal). Unlike
+	 * {@link WAbstractItemView#keyPressed() keyPressed()} however it is also
+	 * emitted for modifier keys (such as &quot;shift&quot;,
+	 * &quot;control&quot;, ...) or keyboard navigation keys that do not have a
+	 * corresponding character.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#keyPressed()
+	 * @see WAbstractItemView#keyWentUp()
+	 */
+	public EventSignal1<WKeyEvent> keyWentDown() {
+		return this.impl_.keyWentDown();
+	}
+
+	/**
+	 * Event signal emitted when a &quot;character&quot; was entered.
+	 * <p>
+	 * The keyPressed signal is emitted when a key is pressed, and a character
+	 * is entered. Unlike {@link WAbstractItemView#keyWentDown() keyWentDown()},
+	 * it is emitted only for key presses that result in a character being
+	 * entered, and thus not for modifier keys or keyboard navigation keys.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#keyWentDown()
+	 */
+	public EventSignal1<WKeyEvent> keyPressed() {
+		return this.impl_.keyPressed();
+	}
+
+	/**
+	 * Event signal emitted when a keyboard key is released.
+	 * <p>
+	 * This is the counter-part of the {@link WAbstractItemView#keyWentDown()
+	 * keyWentDown()} event. Every key-down has its corresponding key-up.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#keyWentDown()
+	 */
+	public EventSignal1<WKeyEvent> keyWentUp() {
+		return this.impl_.keyWentUp();
+	}
+
+	/**
 	 * Creates a new item view.
 	 */
 	protected WAbstractItemView(WContainerWidget parent) {
@@ -1654,6 +1708,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.editOptions_ = EnumSet
 				.of(WAbstractItemView.EditOption.SingleEditor);
 		this.setImplementation(this.impl_);
+		this.impl_.setCanReceiveFocus(true);
 		this.setItemDelegate(new WItemDelegate(this));
 		this.setHeaderItemDelegate(new WItemDelegate(this));
 		WApplication app = WApplication.getInstance();
@@ -1684,12 +1739,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.columnResize_ = false;
 		}
 		this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
-		this.columnWidthChanged_.addListener(this,
-				new Signal2.Listener<Integer, Integer>() {
-					public void trigger(Integer e1, Integer e2) {
-						WAbstractItemView.this.updateColumnWidth(e1, e2);
-					}
-				});
 		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
 				+ " .headerrh", this);
 		app.getStyleSheet().addRule(this.headerHeightRule_);

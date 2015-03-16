@@ -101,6 +101,7 @@ public class WTreeTableNode extends WTreeNode {
 		widget.setInline(false);
 		widget.setFloatSide(Side.Left);
 		widget.resize(this.columnWidth(column + 1), WLength.Auto);
+		widget.setMinimumSize(WLength.Auto, new WLength(1));
 		if (column == (int) this.columnWidgets_.size() - 1) {
 			this.row_.addWidget(widget);
 		} else {

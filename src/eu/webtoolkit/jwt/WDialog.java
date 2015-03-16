@@ -600,7 +600,9 @@ public class WDialog extends WPopupWidget {
 
 	public void positionAt(WWidget widget, Orientation orientation) {
 		this.setPositionScheme(PositionScheme.Absolute);
-		this.setOffsets(new WLength(0), EnumSet.of(Side.Left, Side.Top));
+		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
+			this.setOffsets(new WLength(0), EnumSet.of(Side.Left, Side.Top));
+		}
 		super.positionAt(widget, orientation);
 	}
 
@@ -686,10 +688,10 @@ public class WDialog extends WPopupWidget {
 			}
 		}
 		if (!this.isModal()) {
-			this.getTitleBar().clicked().addListener(this,
+			this.impl_.mouseWentDown().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
-							WDialog.this.bringToFront();
+							WDialog.this.bringToFront(e1);
 						}
 					});
 		}
@@ -785,6 +787,7 @@ public class WDialog extends WPopupWidget {
 		layout.addWidget(this.contents_, 1);
 		if (app.getEnvironment().hasAjax()) {
 			this.setAttributeValue("style", "visibility: hidden");
+			this.impl_.setMargin(new WLength(0), Side.All);
 			if (!app.getEnvironment().agentIsIElt(9)) {
 				this.setPositionScheme(PositionScheme.Fixed);
 			}
@@ -819,11 +822,14 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
-	private void bringToFront() {
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').bringToFront()");
-		DialogCover c = this.getCover();
-		c.bringToFront(this);
+	private void bringToFront(final WMouseEvent e) {
+		if (e.getButton() == WMouseEvent.Button.LeftButton
+				&& e.getModifiers().equals(KeyboardModifier.NoModifier)) {
+			this.doJavaScript("jQuery.data(" + this.getJsRef()
+					+ ", 'obj').bringToFront()");
+			DialogCover c = this.getCover();
+			c.bringToFront(this);
+		}
 	}
 
 	private DialogCover getCover() {

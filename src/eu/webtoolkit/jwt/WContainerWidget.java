@@ -1134,6 +1134,13 @@ public class WContainerWidget extends WInteractWidget {
 				return new StdGridLayoutImpl2(l, l.getGrid());
 			}
 		}
+		{
+			WFitLayout l = ((item) instanceof WFitLayout ? (WFitLayout) (item)
+					: null);
+			if (l != null) {
+				return new StdGridLayoutImpl2(l, l.getGrid());
+			}
+		}
 		assert false;
 		return null;
 	}

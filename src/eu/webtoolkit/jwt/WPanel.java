@@ -421,6 +421,11 @@ public class WPanel extends WCompositeWidget {
 	// private void setJsSize() ;
 	private void toggleCollapse() {
 		this.setCollapsed(!this.isCollapsed());
+		if (this.isCollapsed()) {
+			this.collapsed_.trigger();
+		} else {
+			this.expanded_.trigger();
+		}
 	}
 
 	private void doExpand() {

@@ -2138,7 +2138,7 @@
     <span class="n">style</span><span class="o">.</span><span class="na">setBorder</span><span class="o">(</span><span class="k">new</span> <span class="n">WBorder</span><span class="o">(</span><span class="n">WBorder</span><span class="o">.</span><span class="na">Style</span><span class="o">.</span><span class="na">Solid</span><span class="o">,</span> <span class="n">WBorder</span><span class="o">.</span><span class="na">Width</span><span class="o">.</span><span class="na">Medium</span><span class="o">,</span>
             <span class="n">WColor</span><span class="o">.</span><span class="na">black</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setDecorationStyle</span><span class="o">(</span><span class="n">style</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">600</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">600</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">900</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">700</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setGridEnabled</span><span class="o">(</span><span class="n">Plane</span><span class="o">.</span><span class="na">XY_Plane</span><span class="o">,</span> <span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setGridEnabled</span><span class="o">(</span><span class="n">Plane</span><span class="o">.</span><span class="na">XY_Plane</span><span class="o">,</span> <span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setGridEnabled</span><span class="o">(</span><span class="n">Plane</span><span class="o">.</span><span class="na">XZ_Plane</span><span class="o">,</span> <span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
@@ -4687,6 +4687,59 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;some text&quot;</span><span class="o">);</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
+  <message id="src-TimeEdit"><![CDATA[
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">TimeEdit</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WTemplate</span> <span class="n">form</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;timeEdit-template&quot;</span><span class="o">));</span>
+    <span class="n">form</span><span class="o">.</span><span class="na">addFunction</span><span class="o">(</span><span class="s">&quot;id&quot;</span><span class="o">,</span> <span class="n">WTemplate</span><span class="o">.</span><span class="na">Functions</span><span class="o">.</span><span class="na">id</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">WTimeEdit</span> <span class="n">de1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTimeEdit</span><span class="o">();</span>
+    <span class="n">form</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;from&quot;</span><span class="o">,</span> <span class="n">de1</span><span class="o">);</span>
+    <span class="n">de1</span><span class="o">.</span><span class="na">setTime</span><span class="o">(</span><span class="n">WTime</span><span class="o">.</span><span class="na">getCurrentServerTime</span><span class="o">());</span>
+    <span class="kd">final</span> <span class="n">WTimeEdit</span> <span class="n">de2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTimeEdit</span><span class="o">();</span>
+    <span class="n">form</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;to&quot;</span><span class="o">,</span> <span class="n">de2</span><span class="o">);</span>
+    <span class="n">de2</span><span class="o">.</span><span class="na">setFormat</span><span class="o">(</span><span class="s">&quot;HH:mm:ss&quot;</span><span class="o">);</span>
+    <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Save&quot;</span><span class="o">);</span>
+    <span class="n">form</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;save&quot;</span><span class="o">,</span> <span class="n">button</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">();</span>
+    <span class="n">form</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;out&quot;</span><span class="o">,</span> <span class="n">out</span><span class="o">);</span>
+    <span class="n">de1</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">de1</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">==</span> <span class="n">WValidator</span><span class="o">.</span><span class="na">State</span><span class="o">.</span><span class="na">Valid</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Time picker 1 is changed.&quot;</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="n">de2</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">de1</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">==</span> <span class="n">WValidator</span><span class="o">.</span><span class="na">State</span><span class="o">.</span><span class="na">Valid</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Time picker 2 is changed.&quot;</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="n">button</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">de1</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">de2</span><span class="o">.</span><span class="na">getText</span><span class="o">().</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;You should enter two time!&quot;</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="kt">int</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">de1</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">secsTo</span><span class="o">(</span><span class="n">de2</span><span class="o">.</span><span class="na">getTime</span><span class="o">())</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">secs</span> <span class="o">&lt;=</span> <span class="mi">3600</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;This is a really small range of time&quot;</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">secs</span> <span class="o">&gt;</span> <span class="mi">3600</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">out</span>
+                                <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
+                                        <span class="s">&quot;So, you want to be delivered between {1} and {2} ?...&quot;</span><span class="o">)</span>
+                                        <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">de1</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">toString</span><span class="o">()).</span><span class="na">arg</span><span class="o">(</span>
+                                                <span class="n">de2</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">toString</span><span class="o">()));</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Invalid period!&quot;</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>

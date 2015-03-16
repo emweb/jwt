@@ -144,6 +144,7 @@ public class WApplication extends WObject {
 		this.closeMessage_ = new WString();
 		this.titleChanged_ = false;
 		this.closeMessageChanged_ = false;
+		this.localeChanged_ = false;
 		this.styleSheet_ = new WCssStyleSheet();
 		this.localizedStrings_ = null;
 		this.locale_ = new Locale("");
@@ -912,6 +913,7 @@ public class WApplication extends WObject {
 	 */
 	public void setLocale(final Locale locale) {
 		this.locale_ = locale;
+		this.localeChanged_ = true;
 		this.refresh();
 	}
 
@@ -2957,6 +2959,7 @@ public class WApplication extends WObject {
 	private WString closeMessage_;
 	boolean titleChanged_;
 	boolean closeMessageChanged_;
+	boolean localeChanged_;
 	private WContainerWidget widgetRoot_;
 	WContainerWidget domRoot_;
 	WContainerWidget domRoot2_;

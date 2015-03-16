@@ -224,7 +224,7 @@ public abstract class WTextRenderer {
 			Block docBlock = new Block(doc, (Block) null);
 			CombinedStyleSheet styles = new CombinedStyleSheet();
 			if (this.styleSheet_ != null) {
-				styles.use(this.styleSheet_);
+				styles.use(this.styleSheet_, true);
 			}
 			StringBuilder ss = new StringBuilder();
 			docBlock.collectStyles(ss);

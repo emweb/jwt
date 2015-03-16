@@ -157,7 +157,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	}
 
 	void setFormData(final WObject.FormData formData) {
-		if (this.stateChanged_ || this.isReadOnly()) {
+		if (this.flags_.get(BIT_STATE_CHANGED) || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {

@@ -123,7 +123,7 @@ public class FormBaseModel extends WFormModel {
 	 */
 	public void addOAuth(final List<OAuthService> auth) {
 		for (int i = 0; i < auth.size(); ++i) {
-			this.addOAuth(auth);
+			this.addOAuth(auth.get(i));
 		}
 	}
 

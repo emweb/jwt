@@ -233,8 +233,12 @@ public abstract class OAuthService {
 	 */
 	public String encodeState(final String url) {
 		String msg = this.impl_.secret_ + url;
-		String hash = Utils.base64Encode(Utils.md5(msg));
-		return hash + "|" + url;
+		String hash = new String(Utils.sha1(msg));
+		String b = Utils.base64Encode(hash + "|" + url);
+		b = StringUtils.replace(b, "+", "-");
+		b = StringUtils.replace(b, "/", "_");
+		b = StringUtils.replace(b, "=", ".");
+		return b;
 	}
 
 	/**
@@ -245,9 +249,14 @@ public abstract class OAuthService {
 	 * {@link OAuthService#encodeState(String url) encodeState()}.
 	 */
 	public String decodeState(final String state) {
-		int i = state.indexOf('|');
+		String s = state;
+		s = StringUtils.replace(s, "-", "+");
+		s = StringUtils.replace(s, "_", "/");
+		s = StringUtils.replace(s, ".", "=");
+		s = Utils.base64DecodeS(s);
+		int i = s.indexOf('|');
 		if (i != -1) {
-			String url = state.substring(i + 1);
+			String url = s.substring(i + 1);
 			String check = this.encodeState(url);
 			if (check.equals(state)) {
 				return url;

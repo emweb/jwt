@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.io.IOException;
 
 import eu.webtoolkit.jwt.utils.LocaleUtils;
 
@@ -235,11 +236,11 @@ public class StringUtils {
 		}
 	}
 
-	static String replace(String s, char c, String r) {
+	public static String replace(String s, char c, String r) {
 		return s.replaceAll("\\Q" + c + "\\E", r);
 	}
 
-	static String replace(String s, String c, String r) {
+	public static String replace(String s, String c, String r) {
 		return s.replaceAll("\\Q" + c + "\\E", r);
 	}
 

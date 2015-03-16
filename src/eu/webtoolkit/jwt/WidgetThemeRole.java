@@ -37,6 +37,7 @@ public class WidgetThemeRole {
 	public final static int DialogContent = 205;
 	public final static int TableViewRowContainerRole = 300;
 	public final static int DatePickerPopupRole = 400;
+	public final static int TimePickerPopupRole = 410;
 	public final static int PanelTitleBarRole = 500;
 	public final static int PanelCollapseButtonRole = 501;
 	public final static int PanelTitleRole = 502;

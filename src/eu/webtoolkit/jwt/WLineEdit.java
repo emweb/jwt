@@ -395,6 +395,17 @@ public class WLineEdit extends WFormWidget {
 	}
 
 	/**
+	 * Selects length characters starting from the start position.
+	 * <p>
+	 */
+	public void setSelection(int start, int length) {
+		String s = String.valueOf(start);
+		String e = String.valueOf(start + length);
+		this.doJavaScript("Wt3_3_4.setSelectionRange(" + this.getJsRef() + ","
+				+ s + "," + e + ")");
+	}
+
+	/**
 	 * Returns the current cursor position.
 	 * <p>
 	 * Returns -1 if the widget does not have the focus.
@@ -662,6 +673,25 @@ public class WLineEdit extends WFormWidget {
 		}
 	}
 
+	/**
+	 * Event signal emitted when the text in the input field changed.
+	 * <p>
+	 * This signal is emitted whenever the text contents has changed. Unlike the
+	 * {@link WFormWidget#changed() WFormWidget#changed()} signal, the signal is
+	 * fired on every change, not only when the focus is lost. Unlike the
+	 * {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()} signal,
+	 * this signal is fired also for other events that change the text, such as
+	 * paste actions.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyPressed()
+	 * @see WFormWidget#changed()
+	 */
+	public EventSignal textInput() {
+		return this.voidEventSignal(INPUT_SIGNAL, true);
+	}
+
+	private static String INPUT_SIGNAL = "input";
 	private String content_;
 	private String displayContent_;
 	private int textSize_;

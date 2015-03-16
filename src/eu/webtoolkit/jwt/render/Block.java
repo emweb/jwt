@@ -626,6 +626,7 @@ class Block {
 			if (this.children_.get(i).type_ == DomElementType.DomElement_STYLE) {
 				ss.append(RenderUtils
 						.nodeValueToString(this.children_.get(i).node_));
+				;
 				this.children_.remove(0 + i);
 				--i;
 			} else {

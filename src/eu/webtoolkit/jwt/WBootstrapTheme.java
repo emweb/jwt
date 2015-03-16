@@ -270,6 +270,9 @@ public class WBootstrapTheme extends WTheme {
 		case WidgetThemeRole.DatePickerPopupRole:
 			child.addStyleClass("Wt-datepicker");
 			break;
+		case WidgetThemeRole.TimePickerPopupRole:
+			child.addStyleClass("Wt-timepicker");
+			break;
 		case WidgetThemeRole.PanelTitleBarRole:
 			child.addStyleClass(this.getClassAccordionHeading());
 			break;
@@ -648,7 +651,7 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	public boolean canBorderBoxElement(final DomElement element) {
-		return true;
+		return element.getType() != DomElementType.DomElement_INPUT;
 	}
 
 	private WBootstrapTheme.Version version_;

@@ -304,7 +304,8 @@ public class WButtonGroup extends WObject {
 			final String value = formData.values[0];
 			for (int i = 0; i < this.buttons_.size(); ++i) {
 				if (value.equals(this.buttons_.get(i).button.getId())) {
-					if (this.buttons_.get(i).button.stateChanged_) {
+					if (this.buttons_.get(i).button.flags_
+							.get(WAbstractToggleButton.BIT_STATE_CHANGED)) {
 						return;
 					}
 					this.uncheckOthers(this.buttons_.get(i).button);

@@ -166,7 +166,7 @@ public class WTreeTable extends WCompositeWidget {
 	 */
 	public void setTreeRoot(WTreeTableNode root, final CharSequence h) {
 		this.tree_.setTreeRoot(root);
-		this.header(0).setText(h);
+		this.header(0).setText((h.length() == 0) ? "&nbsp;" : h);
 		root.setTable(this);
 	}
 

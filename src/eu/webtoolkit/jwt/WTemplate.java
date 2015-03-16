@@ -413,6 +413,45 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	/**
+	 * Enumeration that indicates how a widget&apos;s ID may be set.
+	 * <p>
+	 * 
+	 * @see WTemplate#setWidgetIdMode(WTemplate.WidgetIdMode mode)
+	 */
+	public enum WidgetIdMode {
+		/**
+		 * <p>
+		 * Do not set the widget ID.
+		 */
+		SetNoWidgetId,
+		/**
+		 * <p>
+		 * Use {@link WObject#setObjectName(String name)
+		 * WObject#setObjectName()} to prefix the ID with the varName. This is a
+		 * safe choice since {@link } still guarantees that the IDs are unique.
+		 */
+		SetWidgetObjectName,
+		/**
+		 * <p>
+		 * Use {@link WWebWidget#setId(String id) WWebWidget#setId()} to set the
+		 * ID as the varName.
+		 * <p>
+		 * <p>
+		 * <i><b>Warning:</b>You must be careful that there are no two widgets
+		 * with the same ID in yor application. </i>
+		 * </p>
+		 */
+		SetWidgetId;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	/**
 	 * Creates a template widget.
 	 */
 	public WTemplate(WContainerWidget parent) {
@@ -427,6 +466,7 @@ public class WTemplate extends WInteractWidget {
 		this.errorText_ = "";
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
+		this.widgetIdMode_ = WTemplate.WidgetIdMode.SetNoWidgetId;
 		this.plainTextNewLineEscStream_ = new EscapeOStream();
 		this.plainTextNewLineEscStream_
 				.pushEscape(EscapeOStream.RuleSet.PlainTextNewLines);
@@ -463,6 +503,7 @@ public class WTemplate extends WInteractWidget {
 		this.errorText_ = "";
 		this.encodeInternalPaths_ = false;
 		this.changed_ = false;
+		this.widgetIdMode_ = WTemplate.WidgetIdMode.SetNoWidgetId;
 		this.plainTextNewLineEscStream_ = new EscapeOStream();
 		this.plainTextNewLineEscStream_
 				.pushEscape(EscapeOStream.RuleSet.PlainTextNewLines);
@@ -533,6 +574,17 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public final void setTemplateText(final CharSequence text) {
 		setTemplateText(text, TextFormat.XHTMLText);
+	}
+
+	// public void setWidgetIdMode(WTemplate.WidgetIdMode mode) ;
+	/**
+	 * Returns how the varName is reflected on a bound widget.
+	 * <p>
+	 * 
+	 * @see WTemplate#setWidgetIdMode(WTemplate.WidgetIdMode mode)
+	 */
+	public WTemplate.WidgetIdMode getWidgetIdMode() {
+		return this.widgetIdMode_;
 	}
 
 	/**
@@ -636,6 +688,15 @@ public class WTemplate extends WInteractWidget {
 			widget.setParentWidget(this);
 			this.widgets_.put(varName, widget);
 			this.strings_.remove(varName);
+			switch (this.widgetIdMode_) {
+			case SetNoWidgetId:
+				break;
+			case SetWidgetObjectName:
+				widget.setObjectName(varName);
+				break;
+			case SetWidgetId:
+				widget.setId(varName);
+			}
 		} else {
 			WString j = this.strings_.get(varName);
 			if (j != null && (j.length() == 0)) {
@@ -733,6 +794,13 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public boolean conditionValue(final String name) {
 		return this.conditions_.contains(name) != false;
+	}
+
+	/**
+	 * Returns the set of conditions set to true.
+	 */
+	public Set<String> getConditionsSet() {
+		return this.conditions_;
 	}
 
 	/**
@@ -1311,6 +1379,7 @@ public class WTemplate extends WInteractWidget {
 	private String errorText_;
 	private boolean encodeInternalPaths_;
 	private boolean changed_;
+	private WTemplate.WidgetIdMode widgetIdMode_;
 
 	private static int parseArgs(final String text, int pos,
 			final List<WString> result) {

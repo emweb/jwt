@@ -260,7 +260,47 @@ public enum Key {
 	/**
 	 * &apos;Z&apos; key
 	 */
-	Key_Z('Z');
+	Key_Z('Z'),
+	/**
+	 * &apos;1&apos; key
+	 */
+	Key_1('1'),
+	/**
+	 * &apos;2&apos; key
+	 */
+	Key_2('2'),
+	/**
+	 * &apos;3&apos; key
+	 */
+	Key_3('3'),
+	/**
+	 * &apos;4&apos; key
+	 */
+	Key_4('4'),
+	/**
+	 * &apos;5&apos; key
+	 */
+	Key_5('5'),
+	/**
+	 * &apos;6&apos; key
+	 */
+	Key_6('6'),
+	/**
+	 * &apos;7&apos; key
+	 */
+	Key_7('7'),
+	/**
+	 * &apos;8&apos; key
+	 */
+	Key_8('8'),
+	/**
+	 * &apos;9&apos; key
+	 */
+	Key_9('9'),
+	/**
+	 * &apos;0&apos; key
+	 */
+	Key_0('0');
 
 	private int value;
 

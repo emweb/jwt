@@ -114,6 +114,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.barMargin_ = 0;
 		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
+		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.init();
 	}
@@ -143,6 +144,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.barMargin_ = 0;
 		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
+		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.init();
 	}
@@ -254,6 +256,24 @@ public class WCartesianChart extends WAbstractChart {
 		if (this.XSeriesColumn_ != modelColumn) {
 			this.XSeriesColumn_ = modelColumn;
 			this.update();
+		}
+	}
+
+	/**
+	 * set the pen used to render the labels
+	 * <p>
+	 * This method overwrites the pen for all axes
+	 * <p>
+	 * 
+	 * @see WAxis#setTextPen(WPen pen)
+	 */
+	public void setTextPen(final WPen pen) {
+		if (pen.equals(this.textPen_)) {
+			return;
+		}
+		this.textPen_ = pen;
+		for (int i = 0; i < 3; ++i) {
+			this.axes_[i].setTextPen(pen);
 		}
 	}
 
@@ -1213,6 +1233,7 @@ public class WCartesianChart extends WAbstractChart {
 	private double barMargin_;
 	private WLegend legend_;
 	private int axisPadding_;
+	private WPen textPen_;
 	private int width_;
 	private int height_;
 	WRectF chartArea_;
@@ -1409,8 +1430,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * paintEvent()} to paint on the paint device.
 	 */
 	protected void renderLabel(final WPainter painter, final CharSequence text,
-			final WPointF p, final WColor color, EnumSet<AlignmentFlag> flags,
-			double angle, int margin) {
+			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
+			int margin) {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -1475,9 +1496,8 @@ public class WCartesianChart extends WAbstractChart {
 		default:
 			break;
 		}
-		WPen pen = new WPen(color);
 		WPen oldPen = painter.getPen();
-		painter.setPen(pen);
+		painter.setPen(this.textPen_);
 		if (angle == 0) {
 			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
 					rHorizontalAlign, rVerticalAlign), text);
@@ -1993,11 +2013,48 @@ public class WCartesianChart extends WAbstractChart {
 			if (vertical) {
 				double u = axisStart.getX();
 				if (chartVertical) {
-					this.renderLabel(painter, axis.getTitle(), new WPointF(u
-							+ (labelHFlag == AlignmentFlag.AlignRight ? 15
-									: -15), this.chartArea_.getTop() - 8),
-							WColor.black, EnumSet.of(labelHFlag,
-									AlignmentFlag.AlignBottom), 0, 0);
+					if (axis.getTitleOrientation() == Orientation.Horizontal) {
+						this
+								.renderLabel(
+										painter,
+										axis.getTitle(),
+										new WPointF(
+												u
+														+ (labelHFlag == AlignmentFlag.AlignRight ? 15
+																: -15),
+												this.chartArea_.getTop() - 8),
+										EnumSet.of(labelHFlag,
+												AlignmentFlag.AlignBottom), 0,
+										10);
+					} else {
+						if (axis.getId() == Axis.YAxis) {
+							this
+									.renderLabel(
+											painter,
+											axis.getTitle(),
+											new WPointF(
+													axisStart.getX() - 40,
+													(this.chartArea_
+															.getBottom() + this.chartArea_
+															.getTop()) / 2),
+											EnumSet.of(AlignmentFlag.AlignLeft,
+													AlignmentFlag.AlignBottom),
+											90, 0);
+						} else {
+							this
+									.renderLabel(
+											painter,
+											axis.getTitle(),
+											new WPointF(
+													axisEnd.getX() + 50,
+													(this.chartArea_
+															.getBottom() + this.chartArea_
+															.getTop()) / 2),
+											EnumSet.of(AlignmentFlag.AlignLeft,
+													AlignmentFlag.AlignBottom),
+											90, 0);
+						}
+					}
 				} else {
 					this
 							.renderLabel(
@@ -2008,26 +2065,25 @@ public class WCartesianChart extends WAbstractChart {
 													+ (labelHFlag == AlignmentFlag.AlignRight ? -40
 															: +40),
 											this.chartArea_.getCenter().getY()),
-									WColor.black,
 									EnumSet
 											.of(
 													labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
 															: AlignmentFlag.AlignRight,
 													AlignmentFlag.AlignMiddle),
-									0, 0);
+									0, 20);
 				}
 			} else {
 				double u = axisStart.getY();
 				if (chartVertical) {
 					this.renderLabel(painter, axis.getTitle(), new WPointF(
 							this.chartArea_.getCenter().getX(), u + 22),
-							WColor.black, EnumSet.of(AlignmentFlag.AlignTop,
-									AlignmentFlag.AlignCenter), 0, 0);
+							EnumSet.of(AlignmentFlag.AlignTop,
+									AlignmentFlag.AlignCenter), 0, 10);
 				} else {
 					this.renderLabel(painter, axis.getTitle(), new WPointF(
-							this.chartArea_.getRight(), u), WColor.black,
-							EnumSet.of(AlignmentFlag.AlignTop,
-									AlignmentFlag.AlignLeft), 0, 8);
+							this.chartArea_.getRight(), u), EnumSet.of(
+							AlignmentFlag.AlignTop, AlignmentFlag.AlignLeft),
+							0, 8);
 				}
 			}
 			painter.setFont(oldFont2);

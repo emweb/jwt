@@ -53,11 +53,13 @@ public class WEvent {
 		private static Logger logger = LoggerFactory.getLogger(Impl.class);
 
 		public WebSession.Handler handler;
+		public WebResponse response;
 		public Runnable function;
 		public boolean renderOnly;
 
 		Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
 			this.handler = aHandler;
+			this.response = null;
 			this.renderOnly = doRenderOnly;
 		}
 
@@ -67,18 +69,27 @@ public class WEvent {
 
 		Impl(WebSession.Handler aHandler, final Runnable aFunction) {
 			this.handler = aHandler;
+			this.response = null;
 			this.function = aFunction;
 			this.renderOnly = false;
 		}
 
 		Impl(final WEvent.Impl other) {
 			this.handler = other.handler;
+			this.response = other.response;
 			this.function = other.function;
 			this.renderOnly = other.renderOnly;
 		}
 
+		Impl(WebResponse aResponse) {
+			this.handler = null;
+			this.response = aResponse;
+			this.renderOnly = true;
+		}
+
 		Impl() {
 			this.handler = null;
+			this.response = null;
 		}
 	}
 

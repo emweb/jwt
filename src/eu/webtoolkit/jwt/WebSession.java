@@ -219,7 +219,16 @@ class WebSession {
 	}
 
 	public void notify(final WEvent event) throws IOException {
-		final WebSession.Handler handler = event.impl_.handler;
+		if (event.impl_.response != null) {
+			try {
+				this.renderer_.serveResponse(event.impl_.response);
+			} catch (final RuntimeException e) {
+				logger.error(new StringWriter().append(
+						"Exception in WApplication::notify()").append(
+						e.toString()).toString());
+			}
+			return;
+		}
 		if (event.impl_.function != null) {
 			event.impl_.function.run();
 			;
@@ -228,6 +237,7 @@ class WebSession {
 			}
 			return;
 		}
+		final WebSession.Handler handler = event.impl_.handler;
 		if (!(handler.getResponse() != null)) {
 			return;
 		}
@@ -560,43 +570,6 @@ class WebSession {
 			}
 		case Dead:
 			break;
-		}
-	}
-
-	public void pushUpdates() {
-		try {
-			this.triggerUpdate_ = false;
-			if (!(this.app_ != null) || !this.renderer_.isDirty()) {
-				logger.debug(new StringWriter().append(
-						"pushUpdates(): nothing to do").toString());
-				return;
-			}
-			this.updatesPending_ = true;
-			if (this.canWriteAsyncResponse_) {
-				if (this.asyncResponse_.isWebSocketRequest()
-						&& this.asyncResponse_.isWebSocketMessagePending()) {
-					logger.debug(new StringWriter().append(
-							"pushUpdates(): web socket message pending")
-							.toString());
-					return;
-				}
-				if (this.asyncResponse_.isWebSocketRequest()) {
-				} else {
-					this.asyncResponse_
-							.setResponseType(WebRequest.ResponseType.Update);
-					this.renderer_.serveResponse(this.asyncResponse_);
-				}
-				this.updatesPending_ = false;
-				if (!this.asyncResponse_.isWebSocketRequest()) {
-					this.asyncResponse_.flush();
-					this.asyncResponse_ = null;
-					this.canWriteAsyncResponse_ = false;
-				}
-			} else {
-				this.updatesPendingEvent_.signal();
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
 		}
 	}
 
@@ -1760,6 +1733,47 @@ class WebSession {
 	private List<WObject> emitStack_;
 	private WebSession.Handler recursiveEventHandler_;
 
+	private void pushUpdates() {
+		try {
+			logger.debug(new StringWriter().append("pushUpdates()").toString());
+			this.triggerUpdate_ = false;
+			if (!(this.app_ != null) || !this.renderer_.isDirty()) {
+				logger.debug(new StringWriter().append(
+						"pushUpdates(): nothing to do").toString());
+				return;
+			}
+			this.updatesPending_ = true;
+			if (this.canWriteAsyncResponse_) {
+				if (this.asyncResponse_.isWebSocketRequest()
+						&& this.asyncResponse_.isWebSocketMessagePending()) {
+					logger.debug(new StringWriter().append(
+							"pushUpdates(): web socket message pending")
+							.toString());
+					return;
+				}
+				if (this.asyncResponse_.isWebSocketRequest()) {
+				} else {
+					this.asyncResponse_
+							.setResponseType(WebRequest.ResponseType.Update);
+					this.app_.notify(new WEvent(new WEvent.Impl(
+							this.asyncResponse_)));
+				}
+				this.updatesPending_ = false;
+				if (!this.asyncResponse_.isWebSocketRequest()) {
+					this.asyncResponse_.flush();
+					this.asyncResponse_ = null;
+					this.canWriteAsyncResponse_ = false;
+				}
+			} else {
+				logger.debug(new StringWriter().append(
+						"pushUpdates(): cannot write now").toString());
+				this.updatesPendingEvent_.signal();
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
+
 	// private WResource decodeResource(final String resourceId) ;
 	private AbstractEventSignal decodeSignal(final String signalId,
 			boolean checkExposed) {
@@ -1807,6 +1821,7 @@ class WebSession {
 	}
 
 	private void render(final WebSession.Handler handler) throws IOException {
+		logger.debug(new StringWriter().append("render()").toString());
 		try {
 			if (!this.env_.hasAjax()) {
 				try {
@@ -1822,13 +1837,13 @@ class WebSession {
 				this.kill();
 			}
 			if (handler.getResponse() != null) {
+				this.updatesPending_ = false;
 				this.serveResponse(handler);
 			}
 		} catch (final RuntimeException e) {
 			handler.flushResponse();
 			throw e;
 		}
-		this.updatesPending_ = false;
 	}
 
 	private void serveError(int status, final WebSession.Handler handler,

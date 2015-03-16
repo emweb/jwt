@@ -154,6 +154,10 @@ public class WSelectionBox extends WComboBox {
 	 * @see WComboBox#getCurrentIndex()
 	 */
 	public Set<Integer> getSelectedIndexes() {
+		if (this.selectionMode_ != SelectionMode.ExtendedSelection) {
+			throw new WException(
+					"WSelectionBox::setSelectedIndexes() can only be used for an ExtendedSelection mode");
+		}
 		return this.selection_;
 	}
 

@@ -45,9 +45,9 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
 		this.text_ = new WText.RichText();
-		this.naked_ = true;
-		this.stateChanged_ = false;
-		this.textChanged_ = false;
+		this.flags_ = new BitSet();
+		this.flags_.set(BIT_NAKED);
+		this.flags_.set(BIT_WORD_WRAP);
 		this.text_.format = TextFormat.PlainText;
 	}
 
@@ -71,11 +71,10 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		super(parent);
 		this.state_ = CheckState.Unchecked;
 		this.text_ = new WText.RichText();
-		this.naked_ = false;
-		this.stateChanged_ = false;
-		this.textChanged_ = false;
+		this.flags_ = new BitSet();
 		this.text_.format = TextFormat.PlainText;
 		this.text_.text = WString.toWString(text);
+		this.flags_.set(BIT_WORD_WRAP);
 	}
 
 	/**
@@ -106,7 +105,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			return;
 		}
 		this.text_.setText(text);
-		this.textChanged_ = true;
+		this.flags_.set(BIT_TEXT_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
@@ -236,10 +235,42 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 
 	public void refresh() {
 		if (this.text_.text.refresh()) {
-			this.textChanged_ = true;
+			this.flags_.set(BIT_TEXT_CHANGED);
 			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
+	}
+
+	/**
+	 * Configures word wrapping.
+	 * <p>
+	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
+	 * lines, creating a multi-line text. When <code>wordWrap</code> is
+	 * <code>false</code>, the text will displayed on a single line, unless the
+	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
+	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
+	 * <p>
+	 * The default value is <code>false</code>.
+	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#isWordWrap()
+	 */
+	public void setWordWrap(boolean wordWrap) {
+		if (this.flags_.get(BIT_WORD_WRAP) != wordWrap) {
+			this.flags_.set(BIT_WORD_WRAP, wordWrap);
+			this.flags_.set(BIT_WORD_WRAP_CHANGED);
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+		}
+	}
+
+	/**
+	 * Returns whether word wrapping is on.
+	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#setWordWrap(boolean wordWrap)
+	 */
+	public boolean isWordWrap() {
+		return this.flags_.get(BIT_WORD_WRAP);
 	}
 
 	CheckState state_;
@@ -314,7 +345,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				element.setAttribute("title", v);
 			}
 		}
-		if (this.stateChanged_ || all) {
+		if (this.flags_.get(BIT_STATE_CHANGED) || all) {
 			input.setProperty(Property.PropertyChecked,
 					this.state_ == CheckState.Unchecked ? "false" : "true");
 			if (this.supportsIndeterminate(env)) {
@@ -328,7 +359,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 								this.state_ == CheckState.PartiallyChecked ? "0.5"
 										: "");
 			}
-			this.stateChanged_ = false;
+			this.flags_.clear(BIT_STATE_CHANGED);
 		}
 		List<DomElement.EventAction> changeActions = new ArrayList<DomElement.EventAction>();
 		if (needUpdateChangeSignal || piggyBackChangeOnClick
@@ -384,10 +415,16 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			}
 		}
 		if (span != null) {
-			if (all || this.textChanged_) {
+			if (all || this.flags_.get(BIT_TEXT_CHANGED)) {
 				span.setProperty(Property.PropertyInnerHTML, this.text_
 						.getFormattedText());
-				this.textChanged_ = false;
+				if (all || this.flags_.get(BIT_WORD_WRAP_CHANGED)) {
+					span.setProperty(Property.PropertyStyleWhiteSpace,
+							this.flags_.get(BIT_WORD_WRAP) ? "normal"
+									: "nowrap");
+					this.flags_.clear(BIT_WORD_WRAP_CHANGED);
+				}
+				this.flags_.clear(BIT_TEXT_CHANGED);
 			}
 		}
 		if (element != input) {
@@ -407,7 +444,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	void setFormData(final WObject.FormData formData) {
-		if (this.stateChanged_ || this.isReadOnly()) {
+		if (this.flags_.get(BIT_STATE_CHANGED) || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
@@ -425,7 +462,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	void propagateRenderOk(boolean deep) {
-		this.stateChanged_ = false;
+		this.flags_.clear(BIT_STATE_CHANGED);
 		EventSignal check = this.voidEventSignal(CHECKED_SIGNAL, false);
 		if (check != null) {
 			check.updateOk();
@@ -438,7 +475,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	}
 
 	DomElementType getDomElementType() {
-		if (!this.naked_) {
+		if (!this.flags_.get(BIT_NAKED)) {
 			return DomElementType.DomElement_LABEL;
 		} else {
 			return DomElementType.DomElement_INPUT;
@@ -467,9 +504,12 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	private static String CHECKED_SIGNAL = "M_checked";
 	private static String UNCHECKED_SIGNAL = "M_unchecked";
 	private WText.RichText text_;
-	private boolean naked_;
-	boolean stateChanged_;
-	private boolean textChanged_;
+	private static final int BIT_NAKED = 0;
+	static final int BIT_STATE_CHANGED = 1;
+	private static final int BIT_TEXT_CHANGED = 2;
+	private static final int BIT_WORD_WRAP_CHANGED = 3;
+	private static final int BIT_WORD_WRAP = 4;
+	BitSet flags_;
 	private CheckState prevState_;
 
 	private void undoSetChecked() {
@@ -485,7 +525,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 			return;
 		}
 		this.state_ = state;
-		this.stateChanged_ = true;
+		this.flags_.set(BIT_STATE_CHANGED);
 		this.repaint();
 	}
 }

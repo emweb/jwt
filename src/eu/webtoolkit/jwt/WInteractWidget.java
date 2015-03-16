@@ -727,10 +727,8 @@ public abstract class WInteractWidget extends WWebWidget {
 						}
 					}
 				}
-				js.append("if(o.wtClickTimeout) {").append(
-						"clearTimeout(o.wtClickTimeout);").append(
-						"o.wtClickTimeout = null;");
-				js.append(mouseDblClick.getJavaScript());
+				js.append("if(Wt3_3_4.isDblClick(o, e)) {").append(
+						mouseDblClick.getJavaScript());
 				if (mouseDblClick.isExposedSignal()) {
 					js.append(app.getJavaScriptClass()).append(
 							"._p_.update(o,'")
@@ -739,7 +737,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				mouseDblClick.updateOk();
 				js
-						.append("}else{if (Wt3_3_4.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null;");
+						.append("}else{if (Wt3_3_4.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {

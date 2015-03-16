@@ -471,7 +471,7 @@ class GraphicsWidgets extends TopicWidget {
 		style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium,
 				WColor.black));
 		chart.setDecorationStyle(style);
-		chart.resize(new WLength(600), new WLength(600));
+		chart.resize(new WLength(900), new WLength(700));
 		chart.setGridEnabled(Plane.XY_Plane, Axis.XAxis_3D, true);
 		chart.setGridEnabled(Plane.XY_Plane, Axis.YAxis_3D, true);
 		chart.setGridEnabled(Plane.XZ_Plane, Axis.XAxis_3D, true);

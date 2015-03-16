@@ -1377,20 +1377,21 @@ public abstract class WWebWidget extends WWidget {
 			this.flags_.clear(BIT_FLOAT_SIDE_CHANGED);
 		}
 		if (this.layoutImpl_ != null) {
-			if (this.flags_.get(BIT_MARGINS_CHANGED) || all) {
-				if (!all || this.layoutImpl_.margin_[0].getValue() != 0) {
+			boolean changed = this.flags_.get(BIT_MARGINS_CHANGED);
+			if (changed || all) {
+				if (changed || this.layoutImpl_.margin_[0].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginTop,
 							this.layoutImpl_.margin_[0].getCssText());
 				}
-				if (!all || this.layoutImpl_.margin_[1].getValue() != 0) {
+				if (changed || this.layoutImpl_.margin_[1].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginRight,
 							this.layoutImpl_.margin_[1].getCssText());
 				}
-				if (!all || this.layoutImpl_.margin_[2].getValue() != 0) {
+				if (changed || this.layoutImpl_.margin_[2].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginBottom,
 							this.layoutImpl_.margin_[2].getCssText());
 				}
-				if (!all || this.layoutImpl_.margin_[3].getValue() != 0) {
+				if (changed || this.layoutImpl_.margin_[3].getValue() != 0) {
 					element.setProperty(Property.PropertyStyleMarginLeft,
 							this.layoutImpl_.margin_[3].getCssText());
 				}

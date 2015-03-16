@@ -238,6 +238,25 @@ public class WTextArea extends WFormWidget {
 		this.setText(value);
 	}
 
+	/**
+	 * Event signal emitted when the text in the input field changed.
+	 * <p>
+	 * This signal is emitted whenever the text contents has changed. Unlike the
+	 * {@link WFormWidget#changed() WFormWidget#changed()} signal, the signal is
+	 * fired on every change, not only when the focus is lost. Unlike the
+	 * {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()} signal,
+	 * this signal is fired also for other events that change the text, such as
+	 * paste actions.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyPressed()
+	 * @see WFormWidget#changed()
+	 */
+	public EventSignal textInput() {
+		return this.voidEventSignal(INPUT_SIGNAL, true);
+	}
+
+	private static String INPUT_SIGNAL = "input";
 	private String content_;
 	private int cols_;
 	private int rows_;

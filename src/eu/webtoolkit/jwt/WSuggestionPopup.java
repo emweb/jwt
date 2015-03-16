@@ -309,6 +309,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.filtering_ = false;
 		this.defaultValue_ = -1;
 		this.isDropDownIconUnfiltered_ = false;
+		this.currentItem_ = -1;
 		this.matcherJS_ = generateMatcherJS(options);
 		this.replacerJS_ = generateReplacerJS(options);
 		this.filterModel_ = new Signal1<String>(this);
@@ -349,6 +350,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.filtering_ = false;
 		this.defaultValue_ = -1;
 		this.isDropDownIconUnfiltered_ = false;
+		this.currentItem_ = -1;
 		this.matcherJS_ = matcherJS;
 		this.replacerJS_ = replacerJS;
 		this.filterModel_ = new Signal1<String>();
@@ -735,6 +737,17 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.isDropDownIconUnfiltered_ = isUnfiltered;
 	}
 
+	/**
+	 * return the last activated index
+	 * <p>
+	 * 
+	 * @return -1 if never activated
+	 * @see WSuggestionPopup#activated()
+	 */
+	public int getCurrentItem() {
+		return this.currentItem_;
+	}
+
 	private WContainerWidget impl_;
 	private WAbstractItemModel model_;
 	private int modelColumn_;
@@ -742,6 +755,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	private boolean filtering_;
 	private int defaultValue_;
 	private boolean isDropDownIconUnfiltered_;
+	private int currentItem_;
 	private String matcherJS_;
 	private String replacerJS_;
 	private Signal1<String> filterModel_;
@@ -799,13 +813,20 @@ public class WSuggestionPopup extends WPopupWidget {
 		if (edit == null) {
 			logger.error(new StringWriter()
 					.append("activate from bogus editor").toString());
+			this.currentItem_ = -1;
+			return;
 		}
 		for (int i = 0; i < this.impl_.getCount(); ++i) {
 			if (this.impl_.getWidget(i).getId().equals(itemId)) {
+				this.currentItem_ = i;
 				this.activated_.trigger(i, edit);
+				if (edit != null) {
+					edit.changed().trigger();
+				}
 				return;
 			}
 		}
+		this.currentItem_ = -1;
 		logger.error(new StringWriter().append("activate for bogus item")
 				.toString());
 	}

@@ -88,7 +88,7 @@ class LabelRenderIterator extends SeriesIterator {
 						AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom));
 				p.setY(p.getY() - 3);
 			}
-			this.chart_.renderLabel(this.painter_, text, p, c, alignment, 0, 3);
+			this.chart_.renderLabel(this.painter_, text, p, alignment, 0, 3);
 		}
 	}
 

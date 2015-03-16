@@ -622,6 +622,34 @@ public class WAxis {
 	}
 
 	/**
+	 * Sets the title orientation.
+	 * <p>
+	 * Sets the orientation used for displaying the title.
+	 * <p>
+	 * The default value is Horizontal
+	 * <p>
+	 * 
+	 * @see WAxis#getTitleOrientation()
+	 */
+	public void setTitleOrientation(final Orientation orientation) {
+		if (!ChartUtils.equals(this.titleOrientation_, orientation)) {
+			this.titleOrientation_ = orientation;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the title orientation.
+	 * <p>
+	 * 
+	 * @see WAxis#setTitleOrientation(Orientation orientation)
+	 */
+	public Orientation getTitleOrientation() {
+		return this.titleOrientation_;
+	}
+
+	/**
 	 * Sets whether gridlines are displayed for this axis.
 	 * <p>
 	 * When <i>enabled</i>, gird lines are drawn for each tick on this axis,
@@ -663,6 +691,24 @@ public class WAxis {
 	public void setPen(final WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
 			this.pen_ = pen;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Changes the pen used for rendering labels for this axis.
+	 * <p>
+	 * The default value is a black pen of 0 width.
+	 * <p>
+	 * 
+	 * @see WAxis#setGridLinesPen(WPen pen)
+	 * @see WAxis#setPen(WPen pen)
+	 * @see WCartesianChart#setTextPen(WPen pen)
+	 */
+	public void setTextPen(final WPen pen) {
+		if (!ChartUtils.equals(this.textPen_, pen)) {
+			this.textPen_ = pen;
 			update();
 		}
 		;
@@ -1080,11 +1126,11 @@ public class WAxis {
 											if (min.getHour() % interval != 0) {
 												int h = roundDown(
 														min.getHour(), interval);
-												min.setTime(h, 0);
+												min.setTime(new WTime(h, 0));
 											} else {
 												if (min.getMinute() != 0) {
-													min.setTime(min.getHour(),
-															0);
+													min.setTime(new WTime(min
+															.getHour(), 0));
 												}
 											}
 										}
@@ -1092,13 +1138,14 @@ public class WAxis {
 												AxisValue.MaximumValue)
 												.isEmpty()) {
 											if (max.getMinute() != 0) {
-												max.setTime(max.getHour(), 0);
+												max.setTime(new WTime(max
+														.getHour(), 0));
 												max = max.addSeconds(60 * 60);
 											}
 											if (max.getHour() % interval != 0) {
 												int h = roundDown(
 														max.getHour(), interval);
-												max.setTime(h, 0);
+												max.setTime(new WTime(h, 0));
 												max = max
 														.addSeconds(interval * 60 * 60);
 											}
@@ -1139,13 +1186,16 @@ public class WAxis {
 													int m = roundDown(min
 															.getMinute(),
 															interval);
-													min.setTime(min.getHour(),
-															m);
+													min.setTime(new WTime(min
+															.getHour(), m));
 												} else {
 													if (min.getSecond() != 0) {
-														min.setTime(min
-																.getHour(), min
-																.getMinute());
+														min
+																.setTime(new WTime(
+																		min
+																				.getHour(),
+																		min
+																				.getMinute()));
 													}
 												}
 											}
@@ -1154,16 +1204,17 @@ public class WAxis {
 													AxisValue.MaximumValue)
 													.isEmpty()) {
 												if (max.getSecond() != 0) {
-													max.setTime(max.getHour(),
-															max.getMinute());
+													max.setTime(new WTime(max
+															.getHour(), max
+															.getMinute()));
 													max = max.addSeconds(60);
 												}
 												if (max.getMinute() % interval != 0) {
 													int m = roundDown(max
 															.getMinute(),
 															interval);
-													max.setTime(max.getHour(),
-															m);
+													max.setTime(new WTime(max
+															.getHour(), m));
 													max = max
 															.addSeconds(interval * 60);
 												}
@@ -1333,7 +1384,7 @@ public class WAxis {
 						labelP = new WPointF(p.getX(), p.getY() + labelPos);
 					}
 					this.renderLabel(painter, ticks.get(i).label, labelP,
-							WColor.black, labelFlags, this.getLabelAngle(), 3);
+							labelFlags, this.getLabelAngle(), 3);
 				}
 			}
 			if (!ticksPath.isEmpty()) {
@@ -1373,8 +1424,8 @@ public class WAxis {
 	}
 
 	public void renderLabel(final WPainter painter, final CharSequence text,
-			final WPointF p, final WColor color, EnumSet<AlignmentFlag> flags,
-			double angle, int margin) {
+			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
+			int margin) {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -1409,9 +1460,8 @@ public class WAxis {
 		default:
 			break;
 		}
-		WPen pen = new WPen(color);
 		WPen oldPen = painter.getPen();
-		painter.setPen(pen);
+		painter.setPen(this.textPen_);
 		if (angle == 0) {
 			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
 					horizontalAlign, verticalAlign), text);
@@ -1509,6 +1559,8 @@ public class WAxis {
 				AxisValue.MaximumValue);
 		this.segmentMargin_ = 40;
 		this.titleOffset_ = 0;
+		this.textPen_ = new WPen(WColor.black);
+		this.titleOrientation_ = Orientation.Horizontal;
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
@@ -1683,6 +1735,8 @@ public class WAxis {
 	private EnumSet<AxisValue> roundLimits_;
 	private double segmentMargin_;
 	private double titleOffset_;
+	private WPen textPen_;
+	private Orientation titleOrientation_;
 	private boolean renderingMirror_;
 
 	static class Segment {
@@ -1719,7 +1773,7 @@ public class WAxis {
 			if (this.chart_.getChartType() == ChartType.CategoryChart) {
 				this.scale_ = AxisScale.CategoryScale;
 			} else {
-				if (this.scale_ != AxisScale.DateScale) {
+				if (this.scale_ == AxisScale.CategoryScale) {
 					this.scale_ = AxisScale.LinearScale;
 				}
 			}

@@ -134,8 +134,8 @@ public class WTabWidget extends WCompositeWidget {
 			break;
 		}
 		WMenuItem result = new WMenuItem(label, child, policy);
-		this.menu_.addItem(result);
 		this.contentsWidgets_.add(child);
+		this.menu_.addItem(result);
 		return result;
 	}
 
@@ -448,6 +448,50 @@ public class WTabWidget extends WCompositeWidget {
 	 */
 	public WStackedWidget getContentsStack() {
 		return this.menu_.getContentsStack();
+	}
+
+	/**
+	 * Sets how overflow of contained children must be handled.
+	 * <p>
+	 * This is an alternative (CSS-ish) way to configure scroll bars on a
+	 * container widget, compared to wrapping inside a {@link WScrollArea}.
+	 * <p>
+	 * Unlike {@link WScrollArea}, horizontal scrolling does not work reliably
+	 * when the container widget is inserted in a layout manager: the layout
+	 * manager will overflow rather than use scrollbars for this this widget. A
+	 * solution then is to use {@link WScrollArea} instead.
+	 * <p>
+	 * 
+	 * @see WScrollArea
+	 */
+	public void setOverflow(WContainerWidget.Overflow value,
+			EnumSet<Orientation> orientation) {
+		this.layout_.setOverflow(value, orientation);
+	}
+
+	/**
+	 * Sets how overflow of contained children must be handled.
+	 * <p>
+	 * Calls
+	 * {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+	 * setOverflow(value, EnumSet.of(orientatio, orientation))}
+	 */
+	public final void setOverflow(WContainerWidget.Overflow value,
+			Orientation orientatio, Orientation... orientation) {
+		setOverflow(value, EnumSet.of(orientatio, orientation));
+	}
+
+	/**
+	 * Sets how overflow of contained children must be handled.
+	 * <p>
+	 * Calls
+	 * {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+	 * setOverflow(value, EnumSet.of (Orientation.Horizontal,
+	 * Orientation.Vertical))}
+	 */
+	public final void setOverflow(WContainerWidget.Overflow value) {
+		setOverflow(value, EnumSet.of(Orientation.Horizontal,
+				Orientation.Vertical));
 	}
 
 	private Signal1<Integer> currentChanged_;

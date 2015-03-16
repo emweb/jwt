@@ -174,6 +174,8 @@ public class WStringListModel extends WAbstractListModel {
 			;
 		}
 		this.flags_.set(row, flags);
+		this.dataChanged()
+				.trigger(this.getIndex(row, 0), this.getIndex(row, 0));
 	}
 
 	/**

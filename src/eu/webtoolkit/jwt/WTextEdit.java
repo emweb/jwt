@@ -59,6 +59,7 @@ public class WTextEdit extends WTextArea {
 	public WTextEdit(WContainerWidget parent) {
 		super(parent);
 		this.onChange_ = new JSignal(this, "change");
+		this.onRender_ = new JSignal(this, "render");
 		this.contentChanged_ = false;
 		this.configurationSettings_ = new HashMap<String, Object>();
 		this.init();
@@ -82,6 +83,7 @@ public class WTextEdit extends WTextArea {
 	public WTextEdit(final String text, WContainerWidget parent) {
 		super(text, parent);
 		this.onChange_ = new JSignal(this, "change");
+		this.onRender_ = new JSignal(this, "render");
 		this.contentChanged_ = false;
 		this.configurationSettings_ = new HashMap<String, Object>();
 		this.init();
@@ -308,6 +310,19 @@ public class WTextEdit extends WTextArea {
 		super.resize(width, height);
 	}
 
+	/**
+	 * Signal emitted when rendered.
+	 * <p>
+	 * A text edit is instantiated asynchronously as it depends on additional
+	 * JavaScript libraries and initialization. This signal is emitted when the
+	 * component is initialized. The underlying TinyMCE editor component is
+	 * accessible as {@link WWidget#getJsRef() WWidget#getJsRef()} +
+	 * &quot;.ed&quot;.
+	 */
+	public JSignal rendered() {
+		return this.onRender_;
+	}
+
 	String renderRemoveJs() {
 		if (this.isRendered()) {
 			return this.getJsRef() + ".ed.remove();Wt3_3_4.remove('"
@@ -383,6 +398,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	private JSignal onChange_;
+	private JSignal onRender_;
 	private int version_;
 	private boolean contentChanged_;
 	private Map<String, Object> configurationSettings_;

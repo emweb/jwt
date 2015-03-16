@@ -25,6 +25,7 @@ class WIcon extends WInteractWidget {
 	public WIcon(WContainerWidget parent) {
 		super(parent);
 		this.name_ = "";
+		this.iconChanged_ = false;
 	}
 
 	public WIcon() {
@@ -47,7 +48,7 @@ class WIcon extends WInteractWidget {
 			this.iconChanged_ = true;
 			this.repaint();
 			if (this.name_.length() != 0) {
-				this.loadIconFont();
+				loadIconFont();
 			}
 		}
 	}
@@ -68,6 +69,13 @@ class WIcon extends WInteractWidget {
 		} else {
 			return 1;
 		}
+	}
+
+	public static void loadIconFont() {
+		WApplication app = WApplication.getInstance();
+		String fontDir = WApplication.getRelativeResourcesUrl()
+				+ "font-awesome/";
+		app.useStyleSheet(new WLink(fontDir + "css/font-awesome.min.css"));
 	}
 
 	void updateDom(final DomElement element, boolean all) {
@@ -96,11 +104,4 @@ class WIcon extends WInteractWidget {
 
 	private String name_;
 	private boolean iconChanged_;
-
-	private void loadIconFont() {
-		WApplication app = WApplication.getInstance();
-		String fontDir = WApplication.getRelativeResourcesUrl()
-				+ "font-awesome/";
-		app.useStyleSheet(new WLink(fontDir + "css/font-awesome.min.css"));
-	}
 }

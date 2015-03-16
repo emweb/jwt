@@ -64,7 +64,11 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void setRendered(boolean how) {
-		this.rendered_ = how;
+		if (this.rendered_ != how) {
+			logger.debug(new StringWriter().append("setRendered: ").append(
+					String.valueOf(how)).toString());
+			this.rendered_ = how;
+		}
 	}
 
 	public void needUpdate(WWidget w, boolean laterOnly) {
@@ -173,6 +177,11 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			break;
 		case Script:
+			boolean hybridPage = this.session_.isProgressiveBoot()
+					|| this.session_.getEnv().hasAjax();
+			if (!hybridPage) {
+				this.setRendered(false);
+			}
 			this.serveMainscript(response);
 			break;
 		}
@@ -316,6 +325,8 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void setJSSynced(boolean invisibleToo) {
+		logger.debug(new StringWriter().append("setJSSynced: ").append(
+				String.valueOf(invisibleToo)).toString());
 		this.collectedJS1_.setLength(0);
 		this.collectedJS2_.setLength(0);
 		if (!invisibleToo) {
@@ -440,7 +451,7 @@ class WebRenderer implements SlotLearnerInterface {
 					this.collectedJS2_.toString()).toString());
 			out.append(this.collectedJS1_.toString()).append(
 					this.collectedJS2_.toString());
-			if (response.isWebSocketRequest() || response.isWebSocketMessage()) {
+			if (response.isWebSocketMessage()) {
 				this.setJSSynced(false);
 			}
 		}
@@ -660,7 +671,7 @@ class WebRenderer implements SlotLearnerInterface {
 		StringBuilder out = new StringBuilder();
 		this.streamBootContent(response, boot, false);
 		boot.stream(out);
-		this.rendered_ = false;
+		this.setRendered(false);
 		response.out().append(out.toString());
 	}
 
@@ -697,7 +708,7 @@ class WebRenderer implements SlotLearnerInterface {
 		WWebWidget mainWebWidget = app.domRoot_;
 		this.visibleOnly_ = true;
 		DomElement mainElement = mainWebWidget.createSDomElement(app);
-		this.rendered_ = true;
+		this.setRendered(true);
 		this.setJSSynced(true);
 		StringBuilder styleSheets = new StringBuilder();
 		if (app.getTheme() != null) {
@@ -760,7 +771,7 @@ class WebRenderer implements SlotLearnerInterface {
 			EscapeOStream js = new EscapeOStream();
 			EscapeOStream eout = new EscapeOStream(out);
 			mainElement.asHTML(eout, js, timeouts);
-			app.afterLoadJavaScript_ = js.toString() + app.afterLoadJavaScript_;
+			this.invisibleJS_.append(js.toString());
 			;
 			app.domRoot_.doneRerender();
 		}
@@ -858,6 +869,7 @@ class WebRenderer implements SlotLearnerInterface {
 		out.append(app.getJavaScriptClass()).append("._p_.setFormObjects([")
 				.append(this.currentFormObjectsList_).append("]);\n");
 		this.formObjectsChanged_ = false;
+		this.setRendered(true);
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
 		logger.debug(new StringWriter().append("js: ").append(
@@ -1251,9 +1263,18 @@ class WebRenderer implements SlotLearnerInterface {
 						WString.toWString(app.getCloseMessage())
 								.getJsStringLiteral()).append(");\n");
 			}
+			if (app.localeChanged_) {
+				js.append(app.getJavaScriptClass()).append("._p_.setLocale(")
+						.append(
+								WString.toWString(
+										new WString(app.getLocale()
+												.getLanguage()))
+										.getJsStringLiteral()).append(");\n");
+			}
 		}
 		app.titleChanged_ = false;
 		app.closeMessageChanged_ = false;
+		app.localeChanged_ = false;
 		if (js != null) {
 			int librariesLoaded = this.loadScriptLibraries(js, app);
 			app.streamAfterLoadJavaScript(js);

@@ -837,7 +837,7 @@ public class WGoogleMap extends WCompositeWidget {
 			String googlekey = localhost_key;
 			googlekey = WApplication.readConfigurationProperty(
 					"google_api_key", googlekey);
-			final String gmuri = "http://www.google.com/jsapi?key=" + googlekey;
+			final String gmuri = "//www.google.com/jsapi?key=" + googlekey;
 			app.require(gmuri, "google");
 			String initFunction = app.getJavaScriptClass()
 					+ ".init_google_maps_" + this.getId();

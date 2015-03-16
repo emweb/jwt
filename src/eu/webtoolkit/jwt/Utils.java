@@ -11,15 +11,26 @@ public class Utils {
 	 *
 	 * This utility function computes an MD5 hash, and returns the hash value.
 	 */
-	public static byte[] md5(String msg) {
-		try {
-			MessageDigest d = MessageDigest.getInstance("MD5");
-			return d.digest(msg.getBytes());
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return null;
+  public static byte[] md5(String msg) {
+	try {
+	  MessageDigest d = MessageDigest.getInstance("MD5");
+	  return d.digest(msg.getBytes());
+	} catch (NoSuchAlgorithmException e) {
+	  e.printStackTrace();
 	}
+	return null;
+  }
+	
+	public static byte[] sha1(String input) {
+	  try {
+		MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+		return mDigest.digest(input.getBytes());
+	  } catch (NoSuchAlgorithmException e) {
+		e.printStackTrace();
+	  }
+	  return null;
+	}
+	
 
 	/** Performs url encoding (aka percentage encoding).
 	 *
@@ -64,6 +75,7 @@ public class Utils {
 		return result.toString();
 	}
 	
+
 	/** Performs Base64-encoding of data.
 	 */
 	public static String base64Encode(String s) {
@@ -84,6 +96,14 @@ public class Utils {
 		return Base64.decode(s.getBytes("US-ASCII"));
 	}
 	
+	public static String base64DecodeS(String s) {
+	  try {
+		return new String(Base64.decode(s.getBytes("US-ASCII")), "US-ASCII");
+	  } catch(IOException e) {
+		return "";
+	  }
+	}
+
 	/** An enumeration for HTML encoding flags.
 	 */
 	public enum HtmlEncodingFlag
