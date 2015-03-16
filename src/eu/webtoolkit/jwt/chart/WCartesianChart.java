@@ -2033,26 +2033,46 @@ public class WCartesianChart extends WAbstractChart {
 											painter,
 											axis.getTitle(),
 											new WPointF(
-													axisStart.getX() - 40,
-													(this.chartArea_
-															.getBottom() + this.chartArea_
-															.getTop()) / 2),
-											EnumSet.of(AlignmentFlag.AlignLeft,
-													AlignmentFlag.AlignBottom),
-											90, 0);
+													u
+															+ (labelHFlag == AlignmentFlag.AlignRight ? -40
+																	: +40),
+													this.chartArea_.getCenter()
+															.getY()
+															+ axis.getTitle()
+																	.toString()
+																	.length()
+															* titleFont
+																	.getSize()
+																	.getValue()),
+											EnumSet
+													.of(
+															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
+																	: AlignmentFlag.AlignRight,
+															AlignmentFlag.AlignMiddle),
+											90, 20);
 						} else {
 							this
 									.renderLabel(
 											painter,
 											axis.getTitle(),
 											new WPointF(
-													axisEnd.getX() + 50,
-													(this.chartArea_
-															.getBottom() + this.chartArea_
-															.getTop()) / 2),
-											EnumSet.of(AlignmentFlag.AlignLeft,
-													AlignmentFlag.AlignBottom),
-											90, 0);
+													u
+															+ (labelHFlag == AlignmentFlag.AlignRight ? -40
+																	: +40),
+													this.chartArea_.getCenter()
+															.getY()
+															+ axis.getTitle()
+																	.toString()
+																	.length()
+															* titleFont
+																	.getSize()
+																	.getValue()),
+											EnumSet
+													.of(
+															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignRight
+																	: AlignmentFlag.AlignLeft,
+															AlignmentFlag.AlignMiddle),
+											90, 20);
 						}
 					}
 				} else {

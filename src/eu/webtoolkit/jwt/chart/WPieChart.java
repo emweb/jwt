@@ -1031,8 +1031,8 @@ public class WPieChart extends WAbstractChart {
 		WString text = new WString();
 		if (!EnumUtils.mask(options, LabelOption.TextLabel).isEmpty()) {
 			if (this.labelsColumn_ != -1) {
-				text = StringUtils.asString(this.getModel().getData(index,
-						this.labelsColumn_));
+				text.append(StringUtils.asString(this.getModel().getData(index,
+						this.labelsColumn_)));
 			}
 		}
 		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
