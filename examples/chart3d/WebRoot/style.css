@@ -1,0 +1,33 @@
+.selectedRange {
+    position: absolute;
+    display: none;
+    border: 1px solid red;
+    z-index: 9999;
+}
+
+.selectable-area {
+    position: relative;
+}
+
+.settings-column {
+    margin-right: 50px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+body {
+    margin: 20px;
+}
+
+.slider-label {
+    display: inline-block;
+    width: 40px;
+}
+
+.camera-tooltip {
+    text-align: left;
+}
+
+.camera-tooltip * {
+    text-align: left;
+}
