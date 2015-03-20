@@ -243,7 +243,11 @@ public class WTreeView extends WAbstractItemView {
 	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
-	 * @see WTreeView#expand(WModelIndex index)
+	 * @see WTreeView#expand(WModelIndex index) <p>
+	 *      <i><b>Note: </b>until 3.3.4, selection was removed from within nodes
+	 *      that were collapsed. This (inconsistent) behavior has been removed
+	 *      in 3.3.4. </i>
+	 *      </p>
 	 */
 	public void collapse(final WModelIndex index) {
 		this.setExpanded(index, false);
@@ -1433,32 +1437,6 @@ public class WTreeView extends WAbstractItemView {
 
 	void setCollapsed(final WModelIndex index) {
 		this.expandedSet_.remove(index);
-		boolean selectionHasChanged = false;
-		final SortedSet<WModelIndex> selection = this.getSelectionModel().selection_;
-		SortedSet<WModelIndex> toDeselect = new TreeSet<WModelIndex>();
-		for (Iterator<WModelIndex> it_it = selection.tailSet(index).iterator(); it_it
-				.hasNext();) {
-			WModelIndex it = it_it.next();
-			WModelIndex i = it;
-			if ((i == index || (i != null && i.equals(index)))) {
-			} else {
-				if (WModelIndex.isAncestor(i, index)) {
-					toDeselect.add(i);
-				} else {
-					break;
-				}
-			}
-		}
-		for (Iterator<WModelIndex> it_it = toDeselect.iterator(); it_it
-				.hasNext();) {
-			WModelIndex it = it_it.next();
-			if (this.internalSelect(it, SelectionFlag.Deselect)) {
-				selectionHasChanged = true;
-			}
-		}
-		if (selectionHasChanged) {
-			this.selectionChanged().trigger();
-		}
 	}
 
 	private int getCalcOptimalFirstRenderedRow() {

@@ -1627,6 +1627,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * @see WAbstractItemView#keyWentUp()
 	 */
 	public EventSignal1<WKeyEvent> keyWentDown() {
+		this.impl_.setCanReceiveFocus(true);
 		return this.impl_.keyWentDown();
 	}
 
@@ -1642,6 +1643,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * @see WAbstractItemView#keyWentDown()
 	 */
 	public EventSignal1<WKeyEvent> keyPressed() {
+		this.impl_.setCanReceiveFocus(true);
 		return this.impl_.keyPressed();
 	}
 
@@ -1655,6 +1657,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * @see WAbstractItemView#keyWentDown()
 	 */
 	public EventSignal1<WKeyEvent> keyWentUp() {
+		this.impl_.setCanReceiveFocus(true);
 		return this.impl_.keyWentUp();
 	}
 
@@ -1708,7 +1711,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.editOptions_ = EnumSet
 				.of(WAbstractItemView.EditOption.SingleEditor);
 		this.setImplementation(this.impl_);
-		this.impl_.setCanReceiveFocus(true);
 		this.setItemDelegate(new WItemDelegate(this));
 		this.setHeaderItemDelegate(new WItemDelegate(this));
 		WApplication app = WApplication.getInstance();

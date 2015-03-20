@@ -305,6 +305,8 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	/**
 	 * Signal emitted when the value was changed.
+	 * <p>
+	 * For a keyboard input, the signal is only emitted when the focus is lost
 	 */
 	public EventSignal changed() {
 		return this.voidEventSignal(CHANGE_SIGNAL, true);
