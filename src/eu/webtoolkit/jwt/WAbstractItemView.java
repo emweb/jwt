@@ -788,6 +788,20 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Clears the selection.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#setSelectedIndexes(SortedSet indexes)
+	 */
+	public void clearSelection() {
+		final SortedSet<WModelIndex> nodes = this.selectionModel_.selection_;
+		while (!nodes.isEmpty()) {
+			WModelIndex i = nodes.iterator().next();
+			this.internalSelect(i, SelectionFlag.Deselect);
+		}
+	}
+
+	/**
 	 * Selects a single item.
 	 * <p>
 	 * 
@@ -2634,14 +2648,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private final void selectionHandleClick(final WModelIndex index,
 			KeyboardModifier modifier, KeyboardModifier... modifiers) {
 		selectionHandleClick(index, EnumSet.of(modifier, modifiers));
-	}
-
-	private void clearSelection() {
-		final SortedSet<WModelIndex> nodes = this.selectionModel_.selection_;
-		while (!nodes.isEmpty()) {
-			WModelIndex i = nodes.iterator().next();
-			this.internalSelect(i, SelectionFlag.Deselect);
-		}
 	}
 
 	private void extendSelection(final WModelIndex index) {

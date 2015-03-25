@@ -850,7 +850,7 @@ public class WMenuItem extends WContainerWidget {
 				cw.removeWidget(contents);
 			}
 		}
-		this.setContents(contents);
+		this.setContents(contents, policy);
 		if (!this.separator_) {
 			new WAnchor(this);
 			this.updateInternalPath();

@@ -59,6 +59,11 @@ public class WMeasurePaintDevice implements WPaintDevice {
 	}
 
 	public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
+		if (this.device_.getPainter() != this.painter_
+				&& !EnumUtils.mask(flags, WPaintDevice.ChangeFlag.Font)
+						.isEmpty()) {
+			this.device_.getPainter().setFont(this.painter_.getFont());
+		}
 		this.device_.setChanged(flags);
 	}
 

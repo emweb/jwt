@@ -634,9 +634,8 @@ class WTreeViewNode extends WTemplate {
 						.getWidget(0))
 						: null);
 			}
-			if (current != null) {
-				row.removeWidget(current);
-			}
+			if (current != null)
+				current.remove();
 			row.insertWidget(column - 1, newW);
 		}
 		if (!WApplication.getInstance().getEnvironment().hasAjax()) {

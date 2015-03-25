@@ -205,6 +205,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
 	 * setAutoLayoutEnabled()}.
 	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
 	 */
 	public void setPlotAreaPadding(int padding, EnumSet<Side> sides) {
 		if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
