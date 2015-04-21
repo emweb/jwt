@@ -1143,6 +1143,9 @@ class WebSession {
 			return this.session_.getMutex().isHeldByCurrentThread();
 		}
 
+		public void unlock() {
+		}
+
 		public void flushResponse() {
 			if (this.response_ != null) {
 				this.response_.flush();
@@ -1444,6 +1447,8 @@ class WebSession {
 								} else {
 									if (requestE.equals("style")) {
 										this.flushBootStyleResponse();
+										String page = request
+												.getParameter("page");
 										boolean ios5 = this.env_
 												.agentIsMobileWebKit()
 												&& (this.env_.getUserAgent()

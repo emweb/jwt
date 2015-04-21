@@ -17,7 +17,10 @@ public class BCryptHashFunction extends HashFunction {
 
 	@Override
 	public String compute(String msg, String salt) {
-		return BCrypt.hashpw(msg, BCrypt.gensalt());
+		if (salt == null || salt.isEmpty() || salt.charAt(0) != '$')
+			return BCrypt.hashpw(msg, BCrypt.gensalt());
+		else
+			return BCrypt.hashpw(msg, salt);
 	}
 	
 	@Override

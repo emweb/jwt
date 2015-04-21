@@ -613,7 +613,10 @@ public class WPushButton extends WFormWidget {
 	}
 
 	void propagateRenderOk(boolean deep) {
-		this.flags_.clear();
+		this.flags_.clear(BIT_TEXT_CHANGED);
+		this.flags_.clear(BIT_ICON_CHANGED);
+		this.flags_.clear(BIT_LINK_CHANGED);
+		this.flags_.clear(BIT_CHECKED_CHANGED);
 		super.propagateRenderOk(deep);
 	}
 

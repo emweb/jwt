@@ -748,6 +748,10 @@ public class WSuggestionPopup extends WPopupWidget {
 		return this.currentItem_;
 	}
 
+	public void setValueRole(int role) {
+		this.valueRole_ = role;
+	}
+
 	private WContainerWidget impl_;
 	private WAbstractItemModel model_;
 	private int modelColumn_;
@@ -756,6 +760,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	private int defaultValue_;
 	private boolean isDropDownIconUnfiltered_;
 	private int currentItem_;
+	private int valueRole_;
 	private String matcherJS_;
 	private String replacerJS_;
 	private Signal1<String> filterModel_;
@@ -859,7 +864,7 @@ public class WSuggestionPopup extends WPopupWidget {
 					: TextFormat.PlainText;
 			WAnchor anchor = new WAnchor(line);
 			WText value = new WText(StringUtils.asString(d), format, anchor);
-			Object d2 = index.getData(ItemDataRole.UserRole);
+			Object d2 = index.getData(this.valueRole_);
 			if ((d2 == null)) {
 				d2 = d;
 			}
