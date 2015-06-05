@@ -304,7 +304,7 @@ public class WTableRow extends WObject {
 		cell.row_ = this;
 		cell.column_ = column;
 		cell.setParentWidget(this.table_);
-		this.cells_.get(this.cells_.size() - 1).cell = cell;
+		this.cells_.get(column).cell = cell;
 		for (int i = column; i < this.cells_.size(); ++i) {
 			this.cells_.get(i).cell.column_ = i;
 		}

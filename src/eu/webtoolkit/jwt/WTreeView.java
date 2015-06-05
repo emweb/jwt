@@ -124,6 +124,7 @@ public class WTreeView extends WAbstractItemView {
 	 */
 	public WTreeView(WContainerWidget parent) {
 		super(parent);
+		this.skipNextMouseEvent_ = false;
 		this.expandedSet_ = new TreeSet<WModelIndex>();
 		this.renderedNodes_ = new HashMap<WModelIndex, WTreeViewNode>();
 		this.renderedNodesAdded_ = false;
@@ -777,6 +778,7 @@ public class WTreeView extends WAbstractItemView {
 		super.enableAjax();
 	}
 
+	private boolean skipNextMouseEvent_;
 	SortedSet<WModelIndex> expandedSet_;
 	private HashMap<WModelIndex, WTreeViewNode> renderedNodes_;
 	private boolean renderedNodesAdded_;
@@ -876,7 +878,6 @@ public class WTreeView extends WAbstractItemView {
 				(WTreeViewNode) null);
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.connectObjJS(this.rootNode_.clicked(), "click");
-			this.rootNode_.clicked().preventPropagation();
 			if (firstTime) {
 				this.connectObjJS(this.contentsContainer_.clicked(),
 						"rootClick");
@@ -885,7 +886,6 @@ public class WTreeView extends WAbstractItemView {
 					WAbstractItemView.EditTrigger.DoubleClicked).isEmpty()
 					|| this.doubleClicked().isConnected()) {
 				this.connectObjJS(this.rootNode_.doubleClicked(), "dblClick");
-				this.rootNode_.doubleClicked().preventPropagation();
 				if (firstTime) {
 					this.connectObjJS(this.contentsContainer_.doubleClicked(),
 							"rootDblClick");
@@ -893,14 +893,12 @@ public class WTreeView extends WAbstractItemView {
 			}
 			if (this.mouseWentDown().isConnected() || this.dragEnabled_) {
 				this.connectObjJS(this.rootNode_.mouseWentDown(), "mouseDown");
-				this.rootNode_.mouseWentDown().preventPropagation();
 				if (firstTime) {
 					this.connectObjJS(this.contentsContainer_.mouseWentDown(),
 							"rootMouseDown");
 				}
 			}
 			if (this.mouseWentUp().isConnected()) {
-				this.rootNode_.mouseWentUp().preventPropagation();
 				this.connectObjJS(this.rootNode_.mouseWentUp(), "mouseUp");
 				if (firstTime) {
 					this.connectObjJS(this.contentsContainer_.mouseWentUp(),
@@ -1133,7 +1131,8 @@ public class WTreeView extends WAbstractItemView {
 									: parentNode.getChildContainer().getCount();
 							int parentRowCount = this.getModel().getRowCount(
 									parent);
-							int nodesToAdd = Math.min(count, maxRenderHeight);
+							int nodesToAdd = Math.max(0, Math.min(count,
+									maxRenderHeight));
 							WTreeViewNode first = null;
 							for (int i = 0; i < nodesToAdd; ++i) {
 								WTreeViewNode n = new WTreeViewNode(this, this
@@ -1394,17 +1393,25 @@ public class WTreeView extends WAbstractItemView {
 				}
 			}
 		}
+		if (this.skipNextMouseEvent_) {
+			this.skipNextMouseEvent_ = false;
+			return;
+		}
 		if (type.equals("clicked")) {
 			this.handleClick(index, event);
+			this.skipNextMouseEvent_ = true;
 		} else {
 			if (type.equals("dblclicked")) {
 				this.handleDoubleClick(index, event);
+				this.skipNextMouseEvent_ = true;
 			} else {
 				if (type.equals("mousedown")) {
 					this.mouseWentDown().trigger(index, event);
+					this.skipNextMouseEvent_ = true;
 				} else {
 					if (type.equals("mouseup")) {
 						this.mouseWentUp().trigger(index, event);
+						this.skipNextMouseEvent_ = true;
 					} else {
 						if (type.equals("drop")) {
 							WDropEvent e = new WDropEvent(WApplication

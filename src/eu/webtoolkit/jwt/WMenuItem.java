@@ -708,7 +708,7 @@ public class WMenuItem extends WContainerWidget {
 	 * Returns whether this item is a separator.
 	 * <p>
 	 * 
-	 * @see WMenu#getAddSeparator()
+	 * @see WMenu#addSeparator()
 	 */
 	public boolean isSeparator() {
 		return this.separator_;

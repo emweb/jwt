@@ -35,34 +35,11 @@ public class WFitLayout extends WLayout {
 	public WFitLayout(WWidget parent) {
 		super();
 		this.grid_ = new Grid();
-		{
-			int insertPos = 0;
-			for (int ii = 0; ii < 1; ++ii)
-				this.grid_.columns_.add(insertPos + ii, new Grid.Section(0));
-		}
-		;
-		{
-			int insertPos = 0;
-			for (int ii = 0; ii < 1; ++ii)
-				this.grid_.rows_.add(insertPos + ii, new Grid.Section(0));
-		}
-		;
-		{
-			int insertPos = 0;
-			for (int ii = 0; ii < 1; ++ii)
-				this.grid_.items_.add(insertPos + ii,
-						new ArrayList<Grid.Item>());
-		}
-		;
-		for (int i = 0; i < 1; ++i) {
-			final List<Grid.Item> items = this.grid_.items_.get(i);
-			{
-				int insertPos = 0;
-				for (int ii = 0; ii < 1; ++ii)
-					items.add(insertPos + ii, new Grid.Item());
-			}
-			;
-		}
+		this.grid_.columns_.add(new Grid.Section(0));
+		this.grid_.rows_.add(new Grid.Section(0));
+		List<Grid.Item> items = new ArrayList<Grid.Item>();
+		items.add(new Grid.Item());
+		this.grid_.items_.add(items);
 		if (parent != null) {
 			this.setLayoutInParent(parent);
 		}
@@ -75,6 +52,12 @@ public class WFitLayout extends WLayout {
 	 */
 	public WFitLayout() {
 		this((WWidget) null);
+	}
+
+	public static void fitWidget(WContainerWidget container, WWidget widget) {
+		WFitLayout l = new WFitLayout();
+		container.setLayout(l);
+		l.addWidget(widget);
 	}
 
 	public void addItem(WLayoutItem item) {

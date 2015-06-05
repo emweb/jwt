@@ -524,9 +524,8 @@ public class WText extends WInteractWidget {
 				if (app.getSession().hasSessionIdInUrl()) {
 					options.add(RefEncoderOption.EncodeRedirectTrampoline);
 				}
-				WString result = this.text_.text;
-				RefEncoder.EncodeRefs(result, options);
-				return result.toString();
+				return RefEncoder.EncodeRefs(this.text_.text, options)
+						.toString();
 			} else {
 				return this.text_.text.toString();
 			}

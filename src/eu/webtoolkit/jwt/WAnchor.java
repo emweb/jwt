@@ -608,8 +608,8 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#getTarget()
 	 */
 	public void setTarget(AnchorTarget target) {
-		if (this.linkState_.target != target) {
-			this.linkState_.target = target;
+		if (this.linkState_.link.getTarget() != target) {
+			this.linkState_.link.setTarget(target);
 			this.flags_.set(BIT_TARGET_CHANGED);
 		}
 	}
@@ -621,7 +621,7 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setTarget(AnchorTarget target)
 	 */
 	public AnchorTarget getTarget() {
-		return this.linkState_.target;
+		return this.linkState_.link.getTarget();
 	}
 
 	public boolean isCanReceiveFocus() {
@@ -649,12 +649,10 @@ public class WAnchor extends WContainerWidget {
 
 		public LinkState() {
 			this.link = new WLink();
-			this.target = AnchorTarget.TargetSelf;
 			this.clickJS = null;
 		}
 
 		public WLink link;
-		public AnchorTarget target;
 		public JSlot clickJS;
 	}
 
@@ -675,7 +673,7 @@ public class WAnchor extends WContainerWidget {
 			element.removeAttribute("href");
 		} else {
 			String url = linkState.link.resolveUrl(app);
-			if (linkState.target == AnchorTarget.TargetSelf) {
+			if (linkState.link.getTarget() == AnchorTarget.TargetSelf) {
 				linkState.clickJS = linkState.link.manageInternalPathChange(
 						app, widget, linkState.clickJS);
 			} else {
@@ -693,7 +691,7 @@ public class WAnchor extends WContainerWidget {
 
 	static void renderHTarget(final WAnchor.LinkState linkState,
 			final DomElement element, boolean all) {
-		switch (linkState.target) {
+		switch (linkState.link.getTarget()) {
 		case TargetSelf:
 			if (!all) {
 				element.setProperty(Property.PropertyTarget, "_self");

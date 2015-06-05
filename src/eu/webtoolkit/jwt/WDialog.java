@@ -695,8 +695,9 @@ public class WDialog extends WPopupWidget {
 				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
 				StringUtils.replace(js, "$centerX", centerX ? "1" : "0");
 				StringUtils.replace(js, "$centerY", centerY ? "1" : "0");
-				this.impl_.bindString("center-script", "<script>" + js
-						+ "</script>", TextFormat.XHTMLUnsafeText);
+				this.impl_.bindString("center-script", "<script>"
+						+ Utils.htmlEncode(js) + "</script>",
+						TextFormat.XHTMLUnsafeText);
 			} else {
 				this.impl_.bindEmpty("center-script");
 			}

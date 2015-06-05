@@ -48,6 +48,7 @@ public class WDoubleValidator extends WValidator {
 		super(parent);
 		this.bottom_ = -Double.MAX_VALUE;
 		this.top_ = Double.MAX_VALUE;
+		this.ignoreTrailingSpaces_ = false;
 		this.tooSmallText_ = new WString();
 		this.tooLargeText_ = new WString();
 		this.nanText_ = new WString();
@@ -73,6 +74,7 @@ public class WDoubleValidator extends WValidator {
 		super(parent);
 		this.bottom_ = bottom;
 		this.top_ = top;
+		this.ignoreTrailingSpaces_ = false;
 		this.tooSmallText_ = new WString();
 		this.tooLargeText_ = new WString();
 		this.nanText_ = new WString();
@@ -145,9 +147,13 @@ public class WDoubleValidator extends WValidator {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
+		String text = input;
+		if (this.ignoreTrailingSpaces_) {
+			text = text.trim();
+		}
 		try {
 			double i = LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(),
-					input);
+					text);
 			if (i < this.bottom_) {
 				return new WValidator.Result(WValidator.State.Invalid, this
 						.getInvalidTooSmallText());
@@ -268,11 +274,34 @@ public class WDoubleValidator extends WValidator {
 		}
 	}
 
+	/**
+	 * If true the validator will ignore trailing spaces.
+	 * <p>
+	 * 
+	 * @see WDoubleValidator#isIgnoreTrailingSpaces()
+	 */
+	public void setIgnoreTrailingSpaces(boolean b) {
+		if (this.ignoreTrailingSpaces_ != b) {
+			this.ignoreTrailingSpaces_ = b;
+			this.repaint();
+		}
+	}
+
+	/**
+	 * Indicates whether the validator should ignore the trailing spaces.
+	 * <p>
+	 * 
+	 * @see WDoubleValidator#setIgnoreTrailingSpaces(boolean b)
+	 */
+	public boolean isIgnoreTrailingSpaces() {
+		return this.ignoreTrailingSpaces_;
+	}
+
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
 		js.append("new Wt3_3_4.WDoubleValidator(").append(this.isMandatory())
-				.append(',');
+				.append(',').append(this.ignoreTrailingSpaces_).append(',');
 		if (this.bottom_ != -Double.MAX_VALUE
 				&& this.bottom_ != -Double.POSITIVE_INFINITY) {
 			js.append(this.bottom_);
@@ -307,6 +336,7 @@ public class WDoubleValidator extends WValidator {
 
 	private double bottom_;
 	private double top_;
+	private boolean ignoreTrailingSpaces_;
 	private WString tooSmallText_;
 	private WString tooLargeText_;
 	private WString nanText_;
@@ -320,6 +350,6 @@ public class WDoubleValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDoubleValidator",
-				"function(f,b,c,d,e,g,h,i,j){this.validate=function(a){function k(l){return l.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")}a=String(a);if(a.length==0)return f?{valid:false,message:g}:{valid:true};if(e!=\"\")a=a.replace(new RegExp(k(e),\"g\"),\"\");if(d!=\".\")a=a.replace(d,\".\");a=Number(a);if(isNaN(a))return{valid:false,message:h};if(b!==null)if(a<b)return{valid:false,message:i};if(c!==null)if(a>c)return{valid:false,message:j}; return{valid:true}}}");
+				"function(h,b,c,d,e,f,i,g,j,k){this.validate=function(a){function l(m){return m.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")}a=String(a);if(b)a=a.trim();if(a.length==0)return h?{valid:false,message:i}:{valid:true};if(f!=\"\")a=a.replace(new RegExp(l(f),\"g\"),\"\");if(e!=\".\")a=a.replace(e,\".\");if(a.indexOf(\" \")>=0&&!b)return{valid:false,message:g};a=Number(a);if(isNaN(a))return{valid:false,message:g};if(c!==null)if(a<c)return{valid:false, message:j};if(d!==null)if(a>d)return{valid:false,message:k};return{valid:true}}}");
 	}
 }

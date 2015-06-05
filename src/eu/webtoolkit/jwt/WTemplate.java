@@ -838,7 +838,7 @@ public class WTemplate extends WInteractWidget {
 			final Writer result) throws IOException {
 		WString i = this.strings_.get(varName);
 		if (i != null) {
-			result.append(i);
+			result.append(i.toString());
 		} else {
 			WWidget w = this.resolveWidget(varName);
 			if (w != null) {
@@ -924,6 +924,27 @@ public class WTemplate extends WInteractWidget {
 		} else {
 			return null;
 		}
+	}
+
+	public List<WWidget> getWidgets() {
+		List<WWidget> result = new ArrayList<WWidget>();
+		for (Iterator<Map.Entry<String, WWidget>> j_it = this.widgets_
+				.entrySet().iterator(); j_it.hasNext();) {
+			Map.Entry<String, WWidget> j = j_it.next();
+			result.add(j.getValue());
+		}
+		return result;
+	}
+
+	public String varName(WWidget w) {
+		for (Iterator<Map.Entry<String, WWidget>> j_it = this.widgets_
+				.entrySet().iterator(); j_it.hasNext();) {
+			Map.Entry<String, WWidget> j = j_it.next();
+			if (j.getValue() == w) {
+				return j.getKey();
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -1058,25 +1079,7 @@ public class WTemplate extends WInteractWidget {
 	public boolean renderTemplateText(final Writer result,
 			final CharSequence templateText) throws IOException {
 		this.errorText_ = "";
-		String text = "";
-		WApplication app = WApplication.getInstance();
-		if (app != null
-				&& (this.encodeInternalPaths_ || app.getSession()
-						.hasSessionIdInUrl())) {
-			EnumSet<RefEncoderOption> options = EnumSet
-					.noneOf(RefEncoderOption.class);
-			if (this.encodeInternalPaths_) {
-				options.add(RefEncoderOption.EncodeInternalPaths);
-			}
-			if (app.getSession().hasSessionIdInUrl()) {
-				options.add(RefEncoderOption.EncodeRedirectTrampoline);
-			}
-			WString t = WString.toWString(templateText);
-			RefEncoder.EncodeRefs(t, options);
-			text = t.toString();
-		} else {
-			text = templateText.toString();
-		}
+		String text = templateText.toString();
 		int lastPos = 0;
 		List<WString> args = new ArrayList<WString>();
 		List<String> conditions = new ArrayList<String>();
@@ -1255,9 +1258,25 @@ public class WTemplate extends WInteractWidget {
 						previouslyRendered.remove(w);
 					}
 				}
-				element
-						.setProperty(Property.PropertyInnerHTML, html
-								.toString());
+				String text = "";
+				WApplication app = WApplication.getInstance();
+				if (app != null
+						&& (this.encodeInternalPaths_ || app.getSession()
+								.hasSessionIdInUrl())) {
+					EnumSet<RefEncoderOption> options = EnumSet
+							.noneOf(RefEncoderOption.class);
+					if (this.encodeInternalPaths_) {
+						options.add(RefEncoderOption.EncodeInternalPaths);
+					}
+					if (app.getSession().hasSessionIdInUrl()) {
+						options.add(RefEncoderOption.EncodeRedirectTrampoline);
+					}
+					text = RefEncoder.EncodeRefs(new WString(html.toString()),
+							options).toString();
+				} else {
+					text = html.toString();
+				}
+				element.setProperty(Property.PropertyInnerHTML, text);
 				this.changed_ = false;
 				for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it
 						.hasNext();) {

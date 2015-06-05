@@ -137,9 +137,9 @@ public class PasswordService implements AbstractPasswordService {
 	}
 
 	/**
-	 * Sets a validator which computes password strenght.
+	 * Sets a validator which computes password strength.
 	 * <p>
-	 * The default password strenght validator is <code>null</code>.
+	 * The default password strength validator is <code>null</code>.
 	 * <p>
 	 * The service takes ownership of the validator.
 	 */

@@ -586,6 +586,12 @@ public class WFileUpload extends WWebWidget {
 				this.updateSignalConnection(input, change, "change", true);
 			}
 			form.addChild(input);
+			this
+					.doJavaScript("window.addEventListener('message', function(event) {if ("
+							+ this.getJsRef()
+							+ ".action.indexOf(event.origin) === 0) {"
+							+ app.getJavaScriptClass()
+							+ "._p_.update(null, event.data, null, true);}}, false);");
 		} else {
 			result.setAttribute("type", "file");
 			if (this.flags_.get(BIT_MULTIPLE)) {

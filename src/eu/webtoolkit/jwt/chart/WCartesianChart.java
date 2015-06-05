@@ -1750,9 +1750,35 @@ public class WCartesianChart extends WAbstractChart {
 		boolean vertical = this.getOrientation() == Orientation.Vertical;
 		int w = vertical ? this.width_ : this.height_;
 		int h = vertical ? this.height_ : this.width_;
-		final int margin = 10;
+		int margin;
 		if (this.isLegendEnabled()) {
 			painter.save();
+			WPaintDevice device = this.getCreatePaintDevice();
+			WAxis caxis = null;
+			Orientation titleOrientation = Orientation.Horizontal;
+			if (this.getLegendSide() == Side.Right
+					&& this.axes_[Axis.Y2Axis.getValue()].isVisible()) {
+				caxis = this.axes_[Axis.Y2Axis.getValue()];
+				if (caxis.getTitleOrientation() == Orientation.Vertical) {
+					titleOrientation = Orientation.Vertical;
+				}
+			} else {
+				if (this.getLegendSide() == Side.Left) {
+					caxis = this.axes_[Axis.YAxis.getValue()];
+					if (caxis.getTitleOrientation() == Orientation.Vertical) {
+						titleOrientation = Orientation.Vertical;
+					}
+				}
+			}
+			if (titleOrientation == Orientation.Vertical) {
+				margin = (int) (caxis.calcTitleSize(device,
+						Orientation.Vertical) + this.axes_[Axis.Y2Axis
+						.getValue()].calcMaxTickLabelSize(device,
+						Orientation.Horizontal));
+			} else {
+				margin = 20;
+			}
+			;
 			int numSeriesWithLegend = 0;
 			for (int i = 0; i < this.getSeries().size(); ++i) {
 				if (this.getSeries().get(i).isLegendEnabled()) {
@@ -1874,8 +1900,13 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			painter.setPen(this.getLegendBorder());
 			painter.setBrush(this.getLegendBackground());
-			painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
-					+ margin, legendHeight + margin);
+			if (this.getLegendSide() == Side.Right) {
+				painter.drawRect(x - margin / 2, y - margin / 2, legendWidth,
+						legendHeight + margin);
+			} else {
+				painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
+						+ margin, legendHeight + margin);
+			}
 			painter.setPen(new WPen());
 			painter.setFont(this.getLegendFont());
 			int item = 0;
@@ -1900,10 +1931,10 @@ public class WCartesianChart extends WAbstractChart {
 			painter.save();
 			painter.setFont(this.getTitleFont());
 			final int TITLE_HEIGHT = 50;
-			final int TITLE_PADDING = 20;
+			final int TITLE_PADDING = 10;
 			painter.drawText(x - 500, this.getPlotAreaPadding(Side.Top)
 					- TITLE_HEIGHT - TITLE_PADDING, 1000, TITLE_HEIGHT, EnumSet
-					.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+					.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
 					this.getTitle());
 			painter.restore();
 		}
@@ -2028,62 +2059,74 @@ public class WCartesianChart extends WAbstractChart {
 										10);
 					} else {
 						if (axis.getId() == Axis.YAxis) {
+							WPaintDevice device = this.getCreatePaintDevice();
+							double size = axis.calcMaxTickLabelSize(device,
+									Orientation.Horizontal);
+							double titleSize = axis.calcTitleSize(device,
+									Orientation.Horizontal);
+							double titleSizeW = axis.calcTitleSize(device,
+									Orientation.Vertical);
+							;
 							this
 									.renderLabel(
 											painter,
 											axis.getTitle(),
 											new WPointF(
 													u
-															+ (labelHFlag == AlignmentFlag.AlignRight ? -40
-																	: +40),
+															+ (labelHFlag == AlignmentFlag.AlignRight ? -(size + titleSizeW)
+																	: +(size + titleSizeW)),
 													this.chartArea_.getCenter()
 															.getY()
-															+ axis.getTitle()
-																	.toString()
-																	.length()
-															* titleFont
-																	.getSize()
-																	.getValue()),
+															+ titleSize / 2),
 											EnumSet
 													.of(
 															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
 																	: AlignmentFlag.AlignRight,
 															AlignmentFlag.AlignMiddle),
-											90, 20);
+											90, 10);
 						} else {
+							WPaintDevice device = this.getCreatePaintDevice();
+							double size = axis.calcMaxTickLabelSize(device,
+									Orientation.Horizontal);
+							double titleSize = axis.calcTitleSize(device,
+									Orientation.Horizontal);
+							double titleSizeW = axis.calcTitleSize(device,
+									Orientation.Vertical);
+							;
 							this
 									.renderLabel(
 											painter,
 											axis.getTitle(),
 											new WPointF(
 													u
-															+ (labelHFlag == AlignmentFlag.AlignRight ? -40
-																	: +40),
+															+ (labelHFlag == AlignmentFlag.AlignRight ? -(size + titleSizeW)
+																	: +(size + titleSizeW)),
 													this.chartArea_.getCenter()
 															.getY()
-															+ axis.getTitle()
-																	.toString()
-																	.length()
-															* titleFont
-																	.getSize()
-																	.getValue()),
+															+ titleSize / 2),
 											EnumSet
 													.of(
 															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignRight
 																	: AlignmentFlag.AlignLeft,
 															AlignmentFlag.AlignMiddle),
-											90, 20);
+											90, 10);
 						}
 					}
 				} else {
+					WPaintDevice device = this.getCreatePaintDevice();
+					double titleSize = axis.calcTitleSize(device,
+							Orientation.Vertical);
+					double size = axis.calcMaxTickLabelSize(device,
+							Orientation.Vertical);
+					;
 					this
 							.renderLabel(
 									painter,
 									axis.getTitle(),
 									new WPointF(
 											u
-													+ (labelHFlag == AlignmentFlag.AlignRight ? -40
-															: +40),
+													+ (labelHFlag == AlignmentFlag.AlignRight ? -(20 + size + titleSize)
+															: +(20 + size + titleSize)),
 											this.chartArea_.getCenter().getY()),
 									EnumSet
 											.of(

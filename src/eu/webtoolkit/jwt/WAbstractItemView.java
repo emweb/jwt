@@ -1546,6 +1546,28 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Signal emitted when a mouse button is pressed on a header item
+	 * <p>
+	 * The argument that is passed is the column number.
+	 * <p>
+	 */
+	public Signal2<Integer, WMouseEvent> headerMouseWentDown() {
+		return this.headerMouseWentDown_;
+	}
+
+	/**
+	 * Signal emitted when a mouse button is released on a header item
+	 * <p>
+	 * The argument that is passed is the column number.
+	 * <p>
+	 * 
+	 * @see WAbstractItemView#headerMouseWentDown()
+	 */
+	public Signal2<Integer, WMouseEvent> headerMouseWentUp() {
+		return this.headerMouseWentUp_;
+	}
+
+	/**
 	 * {@link } when scrolling.
 	 * <p>
 	 * <p>
@@ -1712,8 +1734,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.alternatingRowColors_ = false;
 		this.resizeHandleMDownJS_ = new JSlot();
 		this.editedItems_ = new HashMap<WModelIndex, WAbstractItemView.Editor>();
-		this.headerDblClicked_ = new Signal2<Integer, WMouseEvent>(this);
 		this.headerClicked_ = new Signal2<Integer, WMouseEvent>(this);
+		this.headerDblClicked_ = new Signal2<Integer, WMouseEvent>(this);
+		this.headerMouseWentDown_ = new Signal2<Integer, WMouseEvent>(this);
+		this.headerMouseWentUp_ = new Signal2<Integer, WMouseEvent>(this);
 		this.clicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
@@ -2101,13 +2125,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			sortIcon.setObjectName("sort");
 			sortIcon.setInline(false);
 			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
-			sortIcon.clicked().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent event) {
-							WAbstractItemView.this.handleHeaderClicked(info.id,
-									event);
-						}
-					});
 			if (this.currentSortColumn_ == column) {
 				sortIcon
 						.setStyleClass(info.sortOrder == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
@@ -2143,22 +2160,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		i.setInline(false);
 		i.addStyleClass("Wt-label");
 		contents.addWidget(i);
-		WInteractWidget ww = ((i) instanceof WInteractWidget ? (WInteractWidget) (i)
-				: null);
-		if (ww != null) {
-			ww.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-				public void trigger(WMouseEvent event) {
-					WAbstractItemView.this.handleHeaderClicked(info.id, event);
-				}
-			});
-			ww.doubleClicked().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
-						public void trigger(WMouseEvent event) {
-							WAbstractItemView.this.handleHeaderDblClicked(
-									info.id, event);
-						}
-					});
-		}
 		int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
 		contents.setMargin(new WLength(headerLevel
 				* this.headerLineHeight_.toPixels()), EnumSet.of(Side.Top));
@@ -2220,6 +2221,32 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (extraW != null) {
 			main.addWidget(extraW);
 		}
+		main.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
+			public void trigger(WMouseEvent event) {
+				WAbstractItemView.this.handleHeaderClicked(info.id, event);
+			}
+		});
+		main.mouseWentDown().addListener(this,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent event) {
+						WAbstractItemView.this.handleHeaderMouseDown(info.id,
+								event);
+					}
+				});
+		main.mouseWentUp().addListener(this,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent event) {
+						WAbstractItemView.this.handleHeaderMouseUp(info.id,
+								event);
+					}
+				});
+		main.doubleClicked().addListener(this,
+				new Signal1.Listener<WMouseEvent>() {
+					public void trigger(WMouseEvent event) {
+						WAbstractItemView.this.handleHeaderDblClicked(info.id,
+								event);
+					}
+				});
 		String sc = StringUtils.asString(
 				index.getData(ItemDataRole.StyleClassRole)).toString();
 		if (sc.length() != 0) {
@@ -2541,8 +2568,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private boolean alternatingRowColors_;
 	private JSlot resizeHandleMDownJS_;
 	private Map<WModelIndex, WAbstractItemView.Editor> editedItems_;
-	private Signal2<Integer, WMouseEvent> headerDblClicked_;
 	private Signal2<Integer, WMouseEvent> headerClicked_;
+	private Signal2<Integer, WMouseEvent> headerDblClicked_;
+	private Signal2<Integer, WMouseEvent> headerMouseWentDown_;
+	private Signal2<Integer, WMouseEvent> headerMouseWentUp_;
 	private Signal2<WModelIndex, WMouseEvent> clicked_;
 	private Signal2<WModelIndex, WMouseEvent> doubleClicked_;
 	private Signal2<WModelIndex, WMouseEvent> mouseWentDown_;
@@ -2703,6 +2732,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				this.stopAcceptDrops(acceptMimeTypes.get(i));
 			}
 		}
+	}
+
+	private void handleHeaderMouseDown(int columnid, WMouseEvent event) {
+		this.headerMouseWentDown_.trigger(this.columnById(columnid), event);
+	}
+
+	private void handleHeaderMouseUp(int columnid, WMouseEvent event) {
+		this.headerMouseWentUp_.trigger(this.columnById(columnid), event);
 	}
 
 	private void handleHeaderClicked(int columnid, WMouseEvent event) {

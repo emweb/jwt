@@ -460,7 +460,7 @@ public class WPushButton extends WFormWidget {
 	 * default target is TargetSelf.
 	 */
 	public void setLinkTarget(AnchorTarget target) {
-		this.linkState_.target = target;
+		this.linkState_.link.setTarget(target);
 	}
 
 	/**
@@ -470,7 +470,7 @@ public class WPushButton extends WFormWidget {
 	 * @see WPushButton#setLinkTarget(AnchorTarget target)
 	 */
 	public AnchorTarget getLinkTarget() {
-		return this.linkState_.target;
+		return this.linkState_.link.getTarget();
 	}
 
 	/**
@@ -695,7 +695,7 @@ public class WPushButton extends WFormWidget {
 								.getInternalPath()) + ",true);}");
 			} else {
 				String url = this.linkState_.link.resolveUrl(app);
-				if (this.linkState_.target == AnchorTarget.TargetNewWindow) {
+				if (this.linkState_.link.getTarget() == AnchorTarget.TargetNewWindow) {
 					this.linkState_.clickJS
 							.setJavaScript("function(){window.open("
 									+ jsStringLiteral(url) + ");}");

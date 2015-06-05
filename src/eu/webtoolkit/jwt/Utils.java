@@ -223,7 +223,7 @@ public class Utils {
 				break;
 			}
 		}
-		
+		 
 		return s.substring(0, end);
 	}
 
@@ -249,5 +249,11 @@ public class Utils {
 
 	public static int hexToInt(String s) {
 		return Integer.parseInt(s, 16);
+	}
+
+	public static String createDataUrl(byte[] data, String mimeType) {
+	  String url = "data:"+mimeType+";base64,";
+	  String datab64 = base64Encode(data);
+	  return url+datab64;
 	}
 }

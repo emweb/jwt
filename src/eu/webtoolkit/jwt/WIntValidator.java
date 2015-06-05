@@ -50,6 +50,7 @@ public class WIntValidator extends WValidator {
 		super(parent);
 		this.bottom_ = Integer.MIN_VALUE;
 		this.top_ = Integer.MAX_VALUE;
+		this.ignoreTrailingSpaces_ = false;
 		this.tooSmallText_ = new WString();
 		this.tooLargeText_ = new WString();
 		this.nanText_ = new WString();
@@ -73,6 +74,7 @@ public class WIntValidator extends WValidator {
 		super(parent);
 		this.bottom_ = bottom;
 		this.top_ = top;
+		this.ignoreTrailingSpaces_ = false;
 		this.tooSmallText_ = new WString();
 		this.tooLargeText_ = new WString();
 		this.nanText_ = new WString();
@@ -146,6 +148,9 @@ public class WIntValidator extends WValidator {
 			return super.validate(input);
 		}
 		String text = input;
+		if (this.ignoreTrailingSpaces_) {
+			text = text.trim();
+		}
 		try {
 			int i = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(), text);
 			if (i < this.bottom_) {
@@ -268,6 +273,29 @@ public class WIntValidator extends WValidator {
 		}
 	}
 
+	/**
+	 * If true the validator will ignore trailing spaces.
+	 * <p>
+	 * 
+	 * @see WIntValidator#isIgnoreTrailingSpaces()
+	 */
+	public void setIgnoreTrailingSpaces(boolean b) {
+		if (this.ignoreTrailingSpaces_ != b) {
+			this.ignoreTrailingSpaces_ = b;
+			this.repaint();
+		}
+	}
+
+	/**
+	 * Indicates whether the validator should ignore the trailing spaces.
+	 * <p>
+	 * 
+	 * @see WIntValidator#setIgnoreTrailingSpaces(boolean b)
+	 */
+	public boolean isIgnoreTrailingSpaces() {
+		return this.ignoreTrailingSpaces_;
+	}
+
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
@@ -305,6 +333,7 @@ public class WIntValidator extends WValidator {
 
 	private int bottom_;
 	private int top_;
+	private boolean ignoreTrailingSpaces_;
 	private WString tooSmallText_;
 	private WString tooLargeText_;
 	private WString nanText_;

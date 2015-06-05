@@ -27,4 +27,8 @@ public class BCryptHashFunction extends HashFunction {
 	public boolean verify(String msg, String salt, String hash) {
 		return BCrypt.checkpw(msg, hash);
 	}
+	
+	public static void main(String [] args) {
+		System.err.println(BCrypt.gensalt(12));
+	}
 }

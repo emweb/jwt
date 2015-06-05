@@ -292,6 +292,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	protected WValidator.Result getValidateRange() {
 		final WDoubleValidator validator = new WDoubleValidator();
 		validator.setRange(this.min_, this.max_);
+		String badRangeText = WString.tr("Wt.WDoubleValidator.BadRange")
+				.toString();
+		StringUtils.replace(badRangeText, "{1}", "{1}"
+				+ this.getSuffix().toString());
+		StringUtils.replace(badRangeText, "{2}", "{2}"
+				+ this.getSuffix().toString());
+		validator.setInvalidTooLargeText(new WString(badRangeText));
+		validator.setInvalidTooSmallText(new WString(badRangeText));
 		return validator.validate(new WString("{1}").arg(this.value_)
 				.toString());
 	}

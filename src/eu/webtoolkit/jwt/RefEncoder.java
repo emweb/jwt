@@ -27,10 +27,10 @@ class RefEncoder extends XHtmlFilter {
 		this.options = options;
 	}
 
-	static void EncodeRefs(CharSequence text, EnumSet<RefEncoderOption> options) {
-		try {
-			WString wText = WString.toWString(text);
+	static WString EncodeRefs(CharSequence text, EnumSet<RefEncoderOption> options) {
+		WString wText = WString.toWString(text);
 
+		try {
 			RefEncoder encoder = new RefEncoder(options);
 			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
 			parser.setBuilder(encoder);
@@ -43,7 +43,7 @@ class RefEncoder extends XHtmlFilter {
 			String filtered = encoder.result();
 
 			// 6 and 7 correct for respectively <span> and </span>
-			wText.set(filtered.substring(6, filtered.length() - 7));
+			return new WString(filtered.substring(6, filtered.length() - 7));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -53,6 +53,8 @@ class RefEncoder extends XHtmlFilter {
 		} catch (XMLException e) {
 			logger.error("Error reading XHTML string: " + e.getMessage());
 		}
+
+		return wText;
 	}
 
 	private String currentTag, aClass;

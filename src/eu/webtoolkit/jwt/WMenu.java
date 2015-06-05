@@ -558,7 +558,7 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Adds a separator the menu.
 	 */
-	public WMenuItem getAddSeparator() {
+	public WMenuItem addSeparator() {
 		WMenuItem item = new WMenuItem(true, WString.Empty);
 		this.addItem(item);
 		return item;
