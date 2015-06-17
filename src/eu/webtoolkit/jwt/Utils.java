@@ -1,6 +1,7 @@
 package eu.webtoolkit.jwt;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
@@ -11,24 +12,28 @@ public class Utils {
 	 *
 	 * This utility function computes an MD5 hash, and returns the hash value.
 	 */
-  public static byte[] md5(String msg) {
-	try {
-	  MessageDigest d = MessageDigest.getInstance("MD5");
-	  return d.digest(msg.getBytes());
-	} catch (NoSuchAlgorithmException e) {
-	  e.printStackTrace();
+	public static byte[] md5(String msg) {
+		try {
+			MessageDigest d = MessageDigest.getInstance("MD5");
+			return d.digest(msg.getBytes("UTF-8"));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
-	return null;
-  }
 	
 	public static byte[] sha1(String input) {
-	  try {
-		MessageDigest mDigest = MessageDigest.getInstance("SHA1");
-		return mDigest.digest(input.getBytes());
-	  } catch (NoSuchAlgorithmException e) {
-		e.printStackTrace();
-	  }
-	  return null;
+		try {
+			MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+			return mDigest.digest(input.getBytes("UTF-8"));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+	  	} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	  	return null;
 	}
 	
 
@@ -79,7 +84,12 @@ public class Utils {
 	/** Performs Base64-encoding of data.
 	 */
 	public static String base64Encode(String s) {
-		return base64Encode(s.getBytes());
+		try {
+			return base64Encode(s.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/** Performs Base64-encoding of data.
@@ -93,7 +103,7 @@ public class Utils {
 	 * @throws IOException 
 	 */
 	public static byte[] base64Decode(String s) throws IOException {
-		return Base64.decode(s.getBytes("US-ASCII"));
+		return Base64.decode(s.getBytes("UTF-8"));
 	}
 	
 	public static String base64DecodeS(String s) {

@@ -1753,7 +1753,7 @@ public class WCartesianChart extends WAbstractChart {
 		int margin;
 		if (this.isLegendEnabled()) {
 			painter.save();
-			WPaintDevice device = this.getCreatePaintDevice();
+			WPaintDevice device = painter.getDevice();
 			WAxis caxis = null;
 			Orientation titleOrientation = Orientation.Horizontal;
 			if (this.getLegendSide() == Side.Right
@@ -1770,7 +1770,7 @@ public class WCartesianChart extends WAbstractChart {
 					}
 				}
 			}
-			if (titleOrientation == Orientation.Vertical) {
+			if (titleOrientation == Orientation.Vertical && caxis != null) {
 				margin = (int) (caxis.calcTitleSize(device,
 						Orientation.Vertical) + this.axes_[Axis.Y2Axis
 						.getValue()].calcMaxTickLabelSize(device,
@@ -1778,7 +1778,10 @@ public class WCartesianChart extends WAbstractChart {
 			} else {
 				margin = 20;
 			}
-			;
+			if (caxis != null && titleOrientation == Orientation.Horizontal) {
+				margin += caxis.calcMaxTickLabelSize(device,
+						Orientation.Horizontal);
+			}
 			int numSeriesWithLegend = 0;
 			for (int i = 0; i < this.getSeries().size(); ++i) {
 				if (this.getSeries().get(i).isLegendEnabled()) {
@@ -1900,13 +1903,8 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			painter.setPen(this.getLegendBorder());
 			painter.setBrush(this.getLegendBackground());
-			if (this.getLegendSide() == Side.Right) {
-				painter.drawRect(x - margin / 2, y - margin / 2, legendWidth,
-						legendHeight + margin);
-			} else {
-				painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
-						+ margin, legendHeight + margin);
-			}
+			painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
+					+ margin, legendHeight + margin);
 			painter.setPen(new WPen());
 			painter.setFont(this.getLegendFont());
 			int item = 0;
@@ -2059,14 +2057,13 @@ public class WCartesianChart extends WAbstractChart {
 										10);
 					} else {
 						if (axis.getId() == Axis.YAxis) {
-							WPaintDevice device = this.getCreatePaintDevice();
+							WPaintDevice device = painter.getDevice();
 							double size = axis.calcMaxTickLabelSize(device,
 									Orientation.Horizontal);
 							double titleSize = axis.calcTitleSize(device,
 									Orientation.Horizontal);
 							double titleSizeW = axis.calcTitleSize(device,
 									Orientation.Vertical);
-							;
 							this
 									.renderLabel(
 											painter,
@@ -2085,14 +2082,13 @@ public class WCartesianChart extends WAbstractChart {
 															AlignmentFlag.AlignMiddle),
 											90, 10);
 						} else {
-							WPaintDevice device = this.getCreatePaintDevice();
+							WPaintDevice device = painter.getDevice();
 							double size = axis.calcMaxTickLabelSize(device,
 									Orientation.Horizontal);
 							double titleSize = axis.calcTitleSize(device,
 									Orientation.Horizontal);
 							double titleSizeW = axis.calcTitleSize(device,
 									Orientation.Vertical);
-							;
 							this
 									.renderLabel(
 											painter,
@@ -2113,12 +2109,11 @@ public class WCartesianChart extends WAbstractChart {
 						}
 					}
 				} else {
-					WPaintDevice device = this.getCreatePaintDevice();
+					WPaintDevice device = painter.getDevice();
 					double titleSize = axis.calcTitleSize(device,
 							Orientation.Vertical);
 					double size = axis.calcMaxTickLabelSize(device,
 							Orientation.Vertical);
-					;
 					this
 							.renderLabel(
 									painter,

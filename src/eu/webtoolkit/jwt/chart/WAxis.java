@@ -1630,10 +1630,10 @@ public class WAxis {
 		this.textPen_ = new WPen(WColor.black);
 		this.titleOrientation_ = Orientation.Horizontal;
 		this.segments_ = new ArrayList<WAxis.Segment>();
-		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
 				WLength.Unit.Point));
-		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
 				WLength.Unit.Point));
 		this.segments_.add(new WAxis.Segment());

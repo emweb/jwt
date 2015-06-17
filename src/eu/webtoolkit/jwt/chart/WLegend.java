@@ -32,7 +32,7 @@ class WLegend {
 		this.legendFont_ = new WFont();
 		this.legendBorder_ = new WPen(PenStyle.NoPen);
 		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
-		this.legendFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.legendFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.legendFont_.setSize(WFont.Size.FixedSize, new WLength(10,
 				WLength.Unit.Point));
 	}

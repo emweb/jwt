@@ -29,7 +29,7 @@ class RefEncoder extends XHtmlFilter {
 
 	static WString EncodeRefs(CharSequence text, EnumSet<RefEncoderOption> options) {
 		WString wText = WString.toWString(text);
-
+		
 		try {
 			RefEncoder encoder = new RefEncoder(options);
 			IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
@@ -80,7 +80,7 @@ class RefEncoder extends XHtmlFilter {
 						url = app.getBookmarkUrl(path);
 
 						super.addAttribute("onclick", nsPrefix, nsURI, WEnvironment.getJavaScriptWtScope()
-							+ ".navigateInternalPath(event, " + WWebWidget.jsStringLiteral(path) + ");", type);
+							+ ".navigateInternalPath(event, " + WWebWidget.jsStringLiteral(path) + ");", type, true);
 
 						addClass = "Wt-rr";
 					} else {

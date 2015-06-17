@@ -20,7 +20,7 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	protected static Map<String, Integer> xhtmlEntities = new HashMap<String, Integer>();
 	protected EscapeOStream writer = new EscapeOStream();
 	protected boolean tagOpen = false;
-	private boolean defaultResolveToUnicode;
+	private boolean resolveToUnicode;
 	
 	static {
 		xhtmlEntities.put("quot" , 34);
@@ -279,7 +279,7 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	
 	public XHtmlFilter(boolean resolveToUnicode) {
 		super();
-		this.defaultResolveToUnicode = resolveToUnicode;
+		this.resolveToUnicode = resolveToUnicode;
 	}
 
 	public void addExternalEntity(String name, String publicID, String systemID) {
@@ -289,7 +289,7 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	}
 
 	public Reader getEntity(IXMLReader xmlReader, String name) throws XMLParseException {
-		return getEntity(xmlReader, name, defaultResolveToUnicode);
+		return getEntity(xmlReader, name, resolveToUnicode);
 	}
 	
 	public Reader getEntity(IXMLReader xmlReader, String name, boolean resolveToUnicode) {
@@ -320,10 +320,16 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	}
 
 	public void addAttribute(String key, String nsPrefix, String nsURI, String value, String type) throws Exception {
+		addAttribute(key, nsPrefix, nsURI, value, type, resolveToUnicode);
+	}
+
+	public void addAttribute(String key, String nsPrefix, String nsURI, String value, String type, boolean encode) throws Exception {
 		writer.append(' ' + key + "=\"");
-		writer.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
+		if (encode)
+			writer.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 		writer.append(value);
-		writer.popEscape();
+		if (encode)
+			writer.popEscape();
 		writer.append('"');
 	}
 
@@ -340,7 +346,11 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	        	tagOpen = false;
 	        }
 
+	        if (resolveToUnicode)
+	        	writer.pushEscape(EscapeOStream.RuleSet.PlainText);
 	        writer.append(new String(buf, 0, size));
+	        if (resolveToUnicode)
+	        	writer.popEscape();
 	    }
 	}
 

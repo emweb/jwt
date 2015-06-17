@@ -90,6 +90,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	public WCheckBox(WContainerWidget parent) {
 		super(parent);
 		this.triState_ = false;
+		this.partialStateSelectable_ = false;
 		this.setFormObject(true);
 	}
 
@@ -109,6 +110,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	public WCheckBox(final CharSequence text, WContainerWidget parent) {
 		super(text, parent);
 		this.triState_ = false;
+		this.partialStateSelectable_ = false;
 		this.setFormObject(true);
 	}
 
@@ -135,8 +137,7 @@ public class WCheckBox extends WAbstractToggleButton {
 		if (this.triState_) {
 			if (!this.supportsIndeterminate(WApplication.getInstance()
 					.getEnvironment())) {
-				this.changed().addListener(
-						"function(obj, e) { obj.style.opacity=''; }");
+				this.updateJSlot();
 			}
 		}
 	}
@@ -148,6 +149,31 @@ public class WCheckBox extends WAbstractToggleButton {
 	 */
 	public final void setTristate() {
 		setTristate(true);
+	}
+
+	/**
+	 * enable or disable cycling throught partial state
+	 * <p>
+	 * 
+	 * @see WCheckBox#isPartialStateSelectable()
+	 */
+	public void setPartialStateSelectable(boolean t) {
+		if (t && !this.isTristate()) {
+			this.setTristate(true);
+		}
+		this.partialStateSelectable_ = t;
+		this.updateJSlot();
+		this.updateNextState();
+	}
+
+	/**
+	 * return partial state cycling
+	 * <p>
+	 * 
+	 * @see WCheckBox#setPartialStateSelectable(boolean t)
+	 */
+	public boolean isPartialStateSelectable() {
+		return this.partialStateSelectable_;
 	}
 
 	/**
@@ -168,6 +194,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	 */
 	public void setCheckState(CheckState state) {
 		super.setCheckState(state);
+		this.updateNextState();
 	}
 
 	/**
@@ -187,5 +214,60 @@ public class WCheckBox extends WAbstractToggleButton {
 		}
 	}
 
+	protected void updateJSlot() {
+		JSlot slot = null;
+		String partialOn = "";
+		String partialOff = "";
+		if (!this.supportsIndeterminate(WApplication.getInstance()
+				.getEnvironment())) {
+			partialOff = "obj.style.opacity='';";
+			partialOn = "obj.style.opacity='0.5';";
+			if (this.triState_ && !this.partialStateSelectable_) {
+				slot = new JSlot("function(obj, e) { " + partialOff + "}", this);
+			}
+		} else {
+			partialOn = "obj.indeterminate=true;";
+			partialOff = "obj.indeterminate=false;";
+		}
+		if (this.partialStateSelectable_) {
+			StringWriter ss = new StringWriter();
+			ss.append("function(obj, e) {\n").append(
+					"if(obj.nextState == 'c'){\n").append("obj.checked=true;")
+					.append(partialOff).append(" obj.nextState='u';").append(
+							"} else if( obj.nextState=='i') {\n").append(
+							"obj.nextState='c';").append(partialOn).append(
+							" } else if( obj.nextState=='u') {\n").append(
+							"obj.nextState='i';").append("obj.checked=false;")
+					.append(partialOff).append(" } else obj.nextState='i';")
+					.append("}");
+			slot = new JSlot(ss.toString(), this);
+		}
+		if (slot != null) {
+			this.changed().addListener(slot);
+		}
+	}
+
+	protected void updateNextState() {
+		String nextState = "";
+		switch (this.state_) {
+		case Checked:
+			nextState = "u";
+			break;
+		case Unchecked:
+			nextState = "i";
+			break;
+		case PartiallyChecked:
+			nextState = "c";
+			break;
+		}
+		if (this.partialStateSelectable_) {
+			this.doJavaScript(this.getJsRef() + ".nextState='" + nextState
+					+ "'");
+		} else {
+			this.doJavaScript(this.getJsRef() + ".nextState=null");
+		}
+	}
+
 	private boolean triState_;
+	private boolean partialStateSelectable_;
 }
