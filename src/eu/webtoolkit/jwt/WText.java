@@ -202,10 +202,12 @@ public class WText extends WInteractWidget {
 	 * @see WText#setText(CharSequence text)
 	 */
 	public boolean setText(final CharSequence text) {
-		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
+		boolean unChanged = canOptimizeUpdates()
+				&& text.equals(this.text_.text);
+		boolean ok = this.text_.setText(text);
+		if (canOptimizeUpdates() && unChanged) {
 			return true;
 		}
-		boolean ok = this.text_.setText(text);
 		this.flags_.set(BIT_TEXT_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return ok;

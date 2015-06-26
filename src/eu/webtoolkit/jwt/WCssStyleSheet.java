@@ -193,7 +193,9 @@ public class WCssStyleSheet {
 	}
 
 	void ruleModified(WCssRule rule) {
-		this.rulesModified_.add(rule);
+		if (this.rulesAdded_.indexOf(rule) == -1) {
+			this.rulesModified_.add(rule);
+		}
 	}
 
 	public void cssText(final StringBuilder out, boolean all) {

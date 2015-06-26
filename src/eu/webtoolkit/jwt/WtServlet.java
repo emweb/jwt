@@ -489,7 +489,7 @@ public abstract class WtServlet extends HttpServlet {
 		try {
 			handler = new WebSession.Handler(wsession, WebSession.Handler.LockOption.TryLock);
 		} finally {
-			handler.release();			
+			handler.release();
 		}
 	}
 
@@ -500,13 +500,13 @@ public abstract class WtServlet extends HttpServlet {
 	 * @param function the task to be run
 	 */
 	public void postAll(Runnable function) {
-	        for (WebSession session : sessions.values()) {
+		for (WebSession session : sessions.values()) {
 			session.queueEvent(new ApplicationEvent(session.getSessionId(), function));
 			WebSession.Handler handler = null;
 			try {
 				handler = new WebSession.Handler(session, WebSession.Handler.LockOption.TryLock);
 			} finally {
-			        handler.release();
+				handler.release();
 			}
 		}
 	}
