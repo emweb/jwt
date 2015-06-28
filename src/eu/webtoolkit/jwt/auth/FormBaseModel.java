@@ -30,15 +30,22 @@ public class FormBaseModel extends WFormModel {
 	private static Logger logger = LoggerFactory.getLogger(FormBaseModel.class);
 
 	/**
+	 * {@link Login} name field.
+	 */
+	public static final String LoginNameField = "user-name";
+
+	/**
 	 * Constructor.
 	 */
-	public FormBaseModel(AuthService baseAuth, AbstractUserDatabase users,
-			WObject parent) {
+	public FormBaseModel(final AuthService baseAuth,
+			final AbstractUserDatabase users, WObject parent) {
 		super(parent);
 		this.baseAuth_ = baseAuth;
 		this.users_ = users;
 		this.passwordAuth_ = null;
 		this.oAuth_ = new ArrayList<OAuthService>();
+		WApplication app = WApplication.getInstance();
+		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthStrings_xml);
 	}
 
 	/**
@@ -48,7 +55,8 @@ public class FormBaseModel extends WFormModel {
 	 * {@link #FormBaseModel(AuthService baseAuth, AbstractUserDatabase users, WObject parent)
 	 * this(baseAuth, users, (WObject)null)}
 	 */
-	public FormBaseModel(AuthService baseAuth, AbstractUserDatabase users) {
+	public FormBaseModel(final AuthService baseAuth,
+			final AbstractUserDatabase users) {
 		this(baseAuth, users, (WObject) null);
 	}
 
@@ -104,7 +112,7 @@ public class FormBaseModel extends WFormModel {
 	 * @see FormBaseModel#addPasswordAuth(AbstractPasswordService auth)
 	 */
 	public void addOAuth(OAuthService auth) {
-		this.oAuth_.add(auth);
+		CollectionUtils.add(this.oAuth_, auth);
 	}
 
 	/**
@@ -113,8 +121,10 @@ public class FormBaseModel extends WFormModel {
 	 * 
 	 * @see FormBaseModel#addOAuth(OAuthService auth)
 	 */
-	public void addOAuth(List<OAuthService> auth) {
-		this.oAuth_.addAll(auth);
+	public void addOAuth(final List<OAuthService> auth) {
+		for (int i = 0; i < auth.size(); ++i) {
+			this.addOAuth(auth.get(i));
+		}
 	}
 
 	/**
@@ -135,17 +145,65 @@ public class FormBaseModel extends WFormModel {
 		return WString.tr("Wt.Auth." + field);
 	}
 
-	protected void setValid(String field) {
-		this.setValidation(field, new WValidator.Result(WValidator.State.Valid,
-				WString.tr("Wt.Auth.valid")));
+	/**
+	 * Logs the user in.
+	 * <p>
+	 * Logs in the user, after checking whether the user can actually be logged
+	 * in. A valid user may be refused to login if its account is disabled (see
+	 * {@link User#getStatus() User#getStatus()}) or if it&apos;s email address
+	 * is unconfirmed and email confirmation is required.
+	 * <p>
+	 * Returns whether the user could be logged in.
+	 */
+	public boolean loginUser(final Login login, final User user,
+			LoginState state) {
+		if (!user.isValid()) {
+			return false;
+		}
+		if (user.getStatus() == User.Status.Disabled) {
+			this.setValidation(LoginNameField, new WValidator.Result(
+					WValidator.State.Invalid, WString
+							.tr("Wt.Auth.account-disabled")));
+			login.login(user, LoginState.DisabledLogin);
+			return false;
+		} else {
+			if (this.getBaseAuth().isEmailVerificationRequired()
+					&& user.getEmail().length() == 0) {
+				this.setValidation(LoginNameField, new WValidator.Result(
+						WValidator.State.Invalid, WString
+								.tr("Wt.Auth.email-unverified")));
+				login.login(user, LoginState.DisabledLogin);
+				return false;
+			} else {
+				login.login(user, state);
+				return true;
+			}
+		}
 	}
 
-	private AuthService baseAuth_;
-	private AbstractUserDatabase users_;
+	/**
+	 * Logs the user in.
+	 * <p>
+	 * Returns {@link #loginUser(Login login, User user, LoginState state)
+	 * loginUser(login, user, LoginState.StrongLogin)}
+	 */
+	public final boolean loginUser(final Login login, final User user) {
+		return loginUser(login, user, LoginState.StrongLogin);
+	}
+
+	protected void setValid(String field) {
+		this.setValid(field, WString.Empty);
+	}
+
+	protected void setValid(String field, final CharSequence message) {
+		this.setValidation(field,
+				new WValidator.Result(WValidator.State.Valid,
+						(message.length() == 0) ? WString.tr("Wt.Auth.valid")
+								: message));
+	}
+
+	private final AuthService baseAuth_;
+	private final AbstractUserDatabase users_;
 	private AbstractPasswordService passwordAuth_;
 	private List<OAuthService> oAuth_;
-	/**
-	 * {@link Login} name field.
-	 */
-	public static final String LoginNameField = "user-name";
 }

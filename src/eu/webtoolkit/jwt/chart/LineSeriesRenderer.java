@@ -23,9 +23,10 @@ class LineSeriesRenderer extends SeriesRenderer {
 	private static Logger logger = LoggerFactory
 			.getLogger(LineSeriesRenderer.class);
 
-	public LineSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
-			SeriesRenderIterator it) {
-		super(renderer, series, it);
+	public LineSeriesRenderer(final WCartesianChart chart,
+			final WPainter painter, final WDataSeries series,
+			final SeriesRenderIterator it) {
+		super(chart, painter, series, it);
 		this.curveLength_ = 0;
 		this.curve_ = new WPainterPath();
 		this.fill_ = new WPainterPath();
@@ -34,9 +35,9 @@ class LineSeriesRenderer extends SeriesRenderer {
 		this.c_ = new WPointF();
 	}
 
-	public void addValue(double x, double y, double stacky, WModelIndex xIndex,
-			WModelIndex yIndex) {
-		WPointF p = this.renderer_.map(x, y, this.series_.getAxis(), this.it_
+	public void addValue(double x, double y, double stacky,
+			final WModelIndex xIndex, final WModelIndex yIndex) {
+		WPointF p = this.chart_.map(x, y, this.series_.getAxis(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		if (this.curveLength_ == 0) {
 			this.curve_.moveTo(this.hv(p));
@@ -86,17 +87,15 @@ class LineSeriesRenderer extends SeriesRenderer {
 							new WBrush(BrushStyle.NoBrush))) {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
-				this.renderer_.getPainter().setShadow(this.series_.getShadow());
-				this.renderer_.getPainter().fillPath(this.fill_,
-						this.series_.getBrush());
+				this.painter_.setShadow(this.series_.getShadow());
+				this.painter_.fillPath(this.fill_, this.series_.getBrush());
 			}
 			if (this.series_.getFillRange() == FillRangeType.NoFill) {
-				this.renderer_.getPainter().setShadow(this.series_.getShadow());
+				this.painter_.setShadow(this.series_.getShadow());
 			} else {
-				this.renderer_.getPainter().setShadow(new WShadow());
+				this.painter_.setShadow(new WShadow());
 			}
-			this.renderer_.getPainter().strokePath(this.curve_,
-					this.series_.getPen());
+			this.painter_.strokePath(this.curve_, this.series_.getPen());
 		}
 		this.curveLength_ = 0;
 		this.curve_.assign(new WPainterPath());
@@ -111,19 +110,20 @@ class LineSeriesRenderer extends SeriesRenderer {
 	private WPointF p0;
 	private WPointF c_;
 
-	private static double dist(WPointF p1, WPointF p2) {
+	private static double dist(final WPointF p1, final WPointF p2) {
 		double dx = p2.getX() - p1.getX();
 		double dy = p2.getY() - p1.getY();
 		return Math.sqrt(dx * dx + dy * dy);
 	}
 
-	private static void computeC(WPointF p, WPointF p1, WPointF c) {
+	private static void computeC(final WPointF p, final WPointF p1,
+			final WPointF c) {
 		c.setX(p.getX() + 0.3 * (p1.getX() - p.getX()));
 		c.setY(p.getY() + 0.3 * (p1.getY() - p.getY()));
 	}
 
-	private static void computeC(WPointF p_1, WPointF p0, WPointF p1,
-			WPointF c1, WPointF c2) {
+	private static void computeC(final WPointF p_1, final WPointF p0,
+			final WPointF p1, final WPointF c1, final WPointF c2) {
 		double m1x = (p_1.getX() + p0.getX()) / 2.0;
 		double m1y = (p_1.getY() + p0.getY()) / 2.0;
 		double m2x = (p0.getX() + p1.getX()) / 2.0;
@@ -142,17 +142,17 @@ class LineSeriesRenderer extends SeriesRenderer {
 		FillRangeType fr = this.series_.getFillRange();
 		switch (fr) {
 		case MinimumValueFill:
-			return new WPointF(this.renderer_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
 					this.it_.getCurrentXSegment(),
-					this.it_.getCurrentYSegment()).getX(), this.renderer_
-					.getChartArea().getBottom());
+					this.it_.getCurrentYSegment()).getX(),
+					this.chart_.chartArea_.getBottom());
 		case MaximumValueFill:
-			return new WPointF(this.renderer_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
 					this.it_.getCurrentXSegment(),
-					this.it_.getCurrentYSegment()).getX(), this.renderer_
-					.getChartArea().getTop());
+					this.it_.getCurrentYSegment()).getX(),
+					this.chart_.chartArea_.getTop());
 		case ZeroValueFill:
-			return new WPointF(this.renderer_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
 					this.it_.getCurrentXSegment(), this.it_
 							.getCurrentYSegment()));
 		default:

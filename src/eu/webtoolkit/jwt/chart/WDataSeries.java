@@ -379,7 +379,7 @@ public class WDataSeries {
 	 * @see WChartPalette#getStrokePen(int index)
 	 * @see WChartPalette#getBorderPen(int index)
 	 */
-	public void setPen(WPen pen) {
+	public void setPen(final WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
 			this.pen_ = pen;
 			update();
@@ -428,7 +428,7 @@ public class WDataSeries {
 	 * 
 	 * @see WChartPalette#getBrush(int index)
 	 */
-	public void setBrush(WBrush brush) {
+	public void setBrush(final WBrush brush) {
 		if (!ChartUtils.equals(this.brush_, brush)) {
 			this.brush_ = brush;
 			update();
@@ -460,7 +460,7 @@ public class WDataSeries {
 	/**
 	 * Sets a shadow used for stroking lines for this series.
 	 */
-	public void setShadow(WShadow shadow) {
+	public void setShadow(final WShadow shadow) {
 		if (!ChartUtils.equals(this.shadow_, shadow)) {
 			this.shadow_ = shadow;
 			update();
@@ -544,7 +544,7 @@ public class WDataSeries {
 	 * 
 	 * @see WDataSeries#setMarker(MarkerType marker)
 	 */
-	public void setCustomMarker(WPainterPath path) {
+	public void setCustomMarker(final WPainterPath path) {
 		if (!ChartUtils.equals(this.marker_, MarkerType.CustomMarker)) {
 			this.marker_ = MarkerType.CustomMarker;
 			update();
@@ -607,7 +607,7 @@ public class WDataSeries {
 	 * @see WDataSeries#setPen(WPen pen)
 	 * @see WDataSeries#setMarkerBrush(WBrush brush)
 	 */
-	public void setMarkerPen(WPen pen) {
+	public void setMarkerPen(final WPen pen) {
 		if (!ChartUtils.equals(this.markerPen_, pen)) {
 			this.markerPen_ = pen;
 			update();
@@ -642,7 +642,7 @@ public class WDataSeries {
 	 * @see WDataSeries#setBrush(WBrush brush)
 	 * @see WDataSeries#setMarkerPen(WPen pen)
 	 */
-	public void setMarkerBrush(WBrush brush) {
+	public void setMarkerBrush(final WBrush brush) {
 		if (!ChartUtils.equals(this.markerBrush_, brush)) {
 			this.markerBrush_ = brush;
 			update();
@@ -748,7 +748,7 @@ public class WDataSeries {
 	 * 
 	 * @see WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
 	 */
-	public void setLabelColor(WColor color) {
+	public void setLabelColor(final WColor color) {
 		if (!ChartUtils.equals(this.labelColor_, color)) {
 			this.labelColor_ = color;
 			update();
@@ -808,13 +808,13 @@ public class WDataSeries {
 	 * This method uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle)
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * WCartesianChart#initLayout()} first.
 	 * <p>
 	 * 
 	 * @see WDataSeries#mapToDevice(Object xValue, Object yValue, int segment)
 	 */
-	public WPointF mapFromDevice(WPointF deviceCoordinates) {
+	public WPointF mapFromDevice(final WPointF deviceCoordinates) {
 		if (this.chart_ != null) {
 			return this.chart_.mapFromDevice(deviceCoordinates, this.axis_);
 		} else {
@@ -833,13 +833,14 @@ public class WDataSeries {
 	 * This method uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle)
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * WCartesianChart#initLayout()} first.
 	 * <p>
 	 * 
 	 * @see WDataSeries#mapFromDevice(WPointF deviceCoordinates)
 	 */
-	public WPointF mapToDevice(Object xValue, Object yValue, int segment) {
+	public WPointF mapToDevice(final Object xValue, final Object yValue,
+			int segment) {
 		if (this.chart_ != null) {
 			return this.chart_.mapToDevice(xValue, yValue, this.axis_, segment);
 		} else {
@@ -853,7 +854,7 @@ public class WDataSeries {
 	 * Returns {@link #mapToDevice(Object xValue, Object yValue, int segment)
 	 * mapToDevice(xValue, yValue, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue) {
+	public final WPointF mapToDevice(final Object xValue, final Object yValue) {
 		return mapToDevice(xValue, yValue, 0);
 	}
 
@@ -880,7 +881,7 @@ public class WDataSeries {
 	private boolean hidden_;
 	private WPainterPath customMarker_;
 
-	// private boolean (T m, T v) ;
+	// private boolean (final T m, final T v) ;
 	void setChart(WCartesianChart chart) {
 		this.chart_ = chart;
 	}

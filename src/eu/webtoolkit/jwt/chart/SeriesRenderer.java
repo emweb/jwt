@@ -24,16 +24,20 @@ abstract class SeriesRenderer {
 			.getLogger(SeriesRenderer.class);
 
 	public abstract void addValue(double x, double y, double stacky,
-			WModelIndex xIndex, WModelIndex yIndex);
+			final WModelIndex xIndex, final WModelIndex yIndex);
 
 	public abstract void paint();
 
-	protected WChart2DRenderer renderer_;
-	protected WDataSeries series_;
+	protected final WCartesianChart chart_;
+	protected final WPainter painter_;
+	protected final WDataSeries series_;
+	protected final SeriesRenderIterator it_;
 
-	protected SeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
-			SeriesRenderIterator it) {
-		this.renderer_ = renderer;
+	protected SeriesRenderer(final WCartesianChart chart,
+			final WPainter painter, final WDataSeries series,
+			final SeriesRenderIterator it) {
+		this.chart_ = chart;
+		this.painter_ = painter;
 		this.series_ = series;
 		this.it_ = it;
 	}
@@ -42,13 +46,11 @@ abstract class SeriesRenderer {
 		return Math.floor(u) + 0.5;
 	}
 
-	protected WPointF hv(WPointF p) {
-		return this.renderer_.hv(p);
+	protected WPointF hv(final WPointF p) {
+		return this.chart_.hv(p);
 	}
 
 	protected WPointF hv(double x, double y) {
-		return this.renderer_.hv(x, y);
+		return this.chart_.hv(x, y);
 	}
-
-	protected SeriesRenderIterator it_;
 }

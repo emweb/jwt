@@ -28,11 +28,15 @@ import org.slf4j.LoggerFactory;
  */
 public enum MetaHeaderType {
 	/**
-	 * A normal meta header defining a document property.
+	 * Of the form &lt;meta name=... content=... &gt;.
 	 */
 	MetaName,
 	/**
-	 * A http-equiv meta header defining a HTTP header.
+	 * Of the form &lt;meta property=... content=... &gt;.
+	 */
+	MetaProperty,
+	/**
+	 * Of the form &lt;meta http-equiv=... content=... &gt;.
 	 */
 	MetaHttpHeader;
 

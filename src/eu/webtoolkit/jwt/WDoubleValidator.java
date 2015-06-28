@@ -40,6 +40,9 @@ public class WDoubleValidator extends WValidator {
 
 	/**
 	 * Creates a new double validator that accepts any double.
+	 * <p>
+	 * The validator will accept numbers using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WDoubleValidator(WObject parent) {
 		super(parent);
@@ -62,6 +65,9 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Creates a new double validator that accepts double within the given
 	 * range.
+	 * <p>
+	 * The validator will accept numbers using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WDoubleValidator(double bottom, double top, WObject parent) {
 		super(parent);
@@ -135,13 +141,13 @@ public class WDoubleValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a double within the valid range.
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
-		String text = input;
 		try {
-			double i = Double.parseDouble(text);
+			double i = LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(),
+					input);
 			if (i < this.bottom_) {
 				return new WValidator.Result(WValidator.State.Invalid, this
 						.getInvalidTooSmallText());
@@ -153,19 +159,19 @@ public class WDoubleValidator extends WValidator {
 					return new WValidator.Result(WValidator.State.Valid);
 				}
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return new WValidator.Result(WValidator.State.Invalid, this
 					.getInvalidNotANumberText());
 		}
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Sets the message to display when the input is not a number.
 	 * <p>
 	 * The default value is &quot;Must be a number.&quot;
 	 */
-	public void setInvalidNotANumberText(CharSequence text) {
+	public void setInvalidNotANumberText(final CharSequence text) {
 		this.nanText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -192,7 +198,7 @@ public class WDoubleValidator extends WValidator {
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be larger than {1}&quot;.
 	 */
-	public void setInvalidTooSmallText(CharSequence text) {
+	public void setInvalidTooSmallText(final CharSequence text) {
 		this.tooSmallText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -231,7 +237,7 @@ public class WDoubleValidator extends WValidator {
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be smaller than {2}&quot;.
 	 */
-	public void setInvalidTooLargeText(CharSequence text) {
+	public void setInvalidTooLargeText(final CharSequence text) {
 		this.tooLargeText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -251,7 +257,7 @@ public class WDoubleValidator extends WValidator {
 			if (this.top_ == Double.MAX_VALUE) {
 				return new WString();
 			} else {
-				if (this.bottom_ == -Integer.MAX_VALUE) {
+				if (this.bottom_ == -Double.MAX_VALUE) {
 					return WString.tr("Wt.WDoubleValidator.TooLarge").arg(
 							this.top_);
 				} else {
@@ -265,28 +271,37 @@ public class WDoubleValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WDoubleValidator(").append(
-				this.isMandatory() ? "true" : "false").append(",");
-		if (this.bottom_ != -Double.MAX_VALUE) {
-			js.append(String.valueOf(this.bottom_));
+		js.append("new Wt3_3_4.WDoubleValidator(").append(this.isMandatory())
+				.append(',');
+		if (this.bottom_ != -Double.MAX_VALUE
+				&& this.bottom_ != -Double.POSITIVE_INFINITY) {
+			js.append(this.bottom_);
 		} else {
 			js.append("null");
 		}
 		js.append(',');
-		if (this.top_ != Double.MAX_VALUE) {
-			js.append(String.valueOf(this.top_));
+		if (this.top_ != Double.MAX_VALUE
+				&& this.top_ != Double.POSITIVE_INFINITY) {
+			js.append(this.top_);
 		} else {
 			js.append("null");
 		}
-		js.append(',').append(
-				WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidNotANumberText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooSmallText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooLargeText())
-						.getJsStringLiteral()).append(");");
+		js.append(",").append(
+				WWebWidget.jsStringLiteral(LocaleUtils
+						.getDecimalPoint(LocaleUtils.getCurrentLocale())))
+				.append(",").append(
+						WWebWidget.jsStringLiteral(LocaleUtils
+								.getGroupSeparator(LocaleUtils
+										.getCurrentLocale()))).append(',')
+				.append(
+						WString.toWString(this.getInvalidBlankText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidNotANumberText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooSmallText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooLargeText())
+								.getJsStringLiteral()).append(");");
 		return js.toString();
 	}
 
@@ -305,6 +320,6 @@ public class WDoubleValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDoubleValidator",
-				"function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a))return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}");
+				"function(f,b,c,d,e,g,h,i,j){this.validate=function(a){function k(l){return l.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")}a=String(a);if(a.length==0)return f?{valid:false,message:g}:{valid:true};if(e!=\"\")a=a.replace(new RegExp(k(e),\"g\"),\"\");if(d!=\".\")a=a.replace(d,\".\");a=Number(a);if(isNaN(a))return{valid:false,message:h};if(b!==null)if(a<b)return{valid:false,message:i};if(c!==null)if(a>c)return{valid:false,message:j}; return{valid:true}}}");
 	}
 }

@@ -28,17 +28,21 @@ class OAuthRedirectEndpoint extends WResource {
 		this.process_ = process;
 	}
 
-	public void sendError(WebResponse response) throws IOException {
+	public void sendError(final WebResponse response) throws IOException {
 		response.setStatus(500);
 		Writer o = response.out();
 		o.append("<html><body>OAuth error</body></html>");
 	}
 
-	public void handleRequest(WebRequest request, WebResponse response)
-			throws IOException {
+	public void handleRequest(final WebRequest request,
+			final WebResponse response) throws IOException {
 		response.setContentType("text/html; charset=UTF-8");
 		String stateE = request.getParameter("state");
 		if (!(stateE != null) || !stateE.equals(this.process_.oAuthState_)) {
+			logger.error(new StringWriter().append(
+					WString.tr("Wt.Auth.OAuthService.invalid-state")).append(
+					", state: ").append(stateE != null ? stateE : "(empty)")
+					.toString());
 			this.process_.setError(WString
 					.tr("Wt.Auth.OAuthService.invalid-state"));
 			this.sendError(response);
@@ -46,6 +50,8 @@ class OAuthRedirectEndpoint extends WResource {
 		}
 		String errorE = request.getParameter("error");
 		if (errorE != null) {
+			logger.error(new StringWriter().append(
+					WString.tr("Wt.Auth.OAuthService." + errorE)).toString());
 			this.process_
 					.setError(WString.tr("Wt.Auth.OAuthService." + errorE));
 			this.sendError(response);
@@ -53,6 +59,10 @@ class OAuthRedirectEndpoint extends WResource {
 		}
 		String codeE = request.getParameter("code");
 		if (!(codeE != null)) {
+			logger
+					.error(new StringWriter().append(
+							WString.tr("Wt.Auth.OAuthService.missing-code"))
+							.toString());
 			this.process_.setError(WString
 					.tr("Wt.Auth.OAuthService.missing-code"));
 			this.sendError(response);
@@ -62,7 +72,7 @@ class OAuthRedirectEndpoint extends WResource {
 		this.sendResponse(response);
 	}
 
-	public void sendResponse(WebResponse response) throws IOException {
+	public void sendResponse(final WebResponse response) throws IOException {
 		Writer o = response.out();
 		WApplication app = WApplication.getInstance();
 		String appJs = app.getJavaScriptClass();

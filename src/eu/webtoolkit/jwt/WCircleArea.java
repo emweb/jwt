@@ -63,14 +63,14 @@ public class WCircleArea extends WAbstractArea {
 	/**
 	 * Sets the center.
 	 */
-	public void setCenter(WPoint point) {
+	public void setCenter(final WPoint point) {
 		this.setCenter(point.getX(), point.getY());
 	}
 
 	/**
 	 * Sets the center.
 	 */
-	public void setCenter(WPointF point) {
+	public void setCenter(final WPointF point) {
 		this.setCenter((int) point.getX(), (int) point.getY());
 	}
 
@@ -116,13 +116,13 @@ public class WCircleArea extends WAbstractArea {
 	private int y_;
 	private int r_;
 
-	void updateDom(DomElement element, boolean all) {
+	protected boolean updateDom(final DomElement element, boolean all) {
 		element.setAttribute("shape", "circle");
 		StringWriter coords = new StringWriter();
 		coords.append(String.valueOf(this.x_)).append(',').append(
 				String.valueOf(this.y_)).append(',').append(
 				String.valueOf(this.r_));
 		element.setAttribute("coords", coords.toString());
-		super.updateDom(element, all);
+		return super.updateDom(element, all);
 	}
 }

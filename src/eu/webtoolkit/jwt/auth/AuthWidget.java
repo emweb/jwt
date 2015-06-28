@@ -78,8 +78,9 @@ public class AuthWidget extends WTemplateFormView {
 	 * Authentication services need to be configured in the
 	 * {@link AuthWidget#getModel() getModel()}.
 	 */
-	public AuthWidget(AuthService baseAuth, AbstractUserDatabase users,
-			Login login, WContainerWidget parent) {
+	public AuthWidget(final AuthService baseAuth,
+			final AbstractUserDatabase users, final Login login,
+			WContainerWidget parent) {
 		super(WString.Empty, parent);
 		this.model_ = new AuthModel(baseAuth, users, this);
 		this.login_ = login;
@@ -94,8 +95,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * {@link #AuthWidget(AuthService baseAuth, AbstractUserDatabase users, Login login, WContainerWidget parent)
 	 * this(baseAuth, users, login, (WContainerWidget)null)}
 	 */
-	public AuthWidget(AuthService baseAuth, AbstractUserDatabase users,
-			Login login) {
+	public AuthWidget(final AuthService baseAuth,
+			final AbstractUserDatabase users, final Login login) {
 		this(baseAuth, users, login, (WContainerWidget) null);
 	}
 
@@ -110,7 +111,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * You need to call {@link AuthWidget#setModel(AuthModel model) setModel()}
 	 * to configure a model for this view.
 	 */
-	public AuthWidget(Login login, WContainerWidget parent) {
+	public AuthWidget(final Login login, WContainerWidget parent) {
 		super(WString.Empty, parent);
 		this.model_ = null;
 		this.login_ = login;
@@ -124,7 +125,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * Calls {@link #AuthWidget(Login login, WContainerWidget parent)
 	 * this(login, (WContainerWidget)null)}
 	 */
-	public AuthWidget(Login login) {
+	public AuthWidget(final Login login) {
 		this(login, (WContainerWidget) null);
 	}
 
@@ -174,7 +175,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * the oauth process.</li>
 	 * </ul>
 	 */
-	public void setInternalBasePath(String basePath) {
+	public void setInternalBasePath(final String basePath) {
 		this.basePath_ = StringUtils.append(StringUtils.prepend(basePath, '/'),
 				'/');
 		;
@@ -231,7 +232,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * {@link AuthWidget#showDialog(CharSequence title, WWidget contents)
 	 * showDialog()}.
 	 */
-	public void registerNewUser(Identity oauth) {
+	public void registerNewUser(final Identity oauth) {
 		this.showDialog(tr("Wt.Auth.registration"), this
 				.createRegistrationView(oauth));
 	}
@@ -263,7 +264,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#letUpdatePassword(User user, boolean promptPassword)
 	 */
 	public void processEnvironment() {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (this.registrationEnabled_) {
 			if (this.handleRegistrationPath(env.getInternalPath())) {
 				return;
@@ -285,15 +286,16 @@ public class AuthWidget extends WTemplateFormView {
 				break;
 			case EmailConfirmed:
 				this.displayInfo(tr("Wt.Auth.info-email-confirmed"));
-				this.login_.login(result.getUser());
+				User user = result.getUser();
+				this.model_.loginUser(this.login_, user);
 			}
-			WApplication.getInstance().setInternalPath("/");
+			if (WApplication.getInstance().getEnvironment().hasAjax()) {
+				WApplication.getInstance().setInternalPath("/");
+			}
 			return;
 		}
 		User user = this.model_.processAuthToken();
-		if (user.isValid()) {
-			this.login_.login(user, LoginState.WeakLogin);
-		}
+		this.model_.loginUser(this.login_, user, LoginState.WeakLogin);
 	}
 
 	/**
@@ -307,7 +309,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * {@link AuthWidget#showDialog(CharSequence title, WWidget contents)
 	 * showDialog()}.
 	 */
-	public void letUpdatePassword(User user, boolean promptPassword) {
+	public void letUpdatePassword(final User user, boolean promptPassword) {
 		this.showDialog(tr("Wt.Auth.updatepassword"), this
 				.createUpdatePasswordView(user, promptPassword));
 	}
@@ -362,17 +364,13 @@ public class AuthWidget extends WTemplateFormView {
 	 * 
 	 * @see AuthWidget#registerNewUser()
 	 */
-	public WWidget createRegistrationView(Identity id) {
-		if (!(this.registrationModel_ != null)) {
-			this.registrationModel_ = this.getCreateRegistrationModel();
-		} else {
-			this.registrationModel_.reset();
-		}
+	public WWidget createRegistrationView(final Identity id) {
+		RegistrationModel model = this.getRegistrationModel();
 		if (id.isValid()) {
-			this.registrationModel_.registerIdentified(id);
+			model.registerIdentified(id);
 		}
 		RegistrationWidget w = new RegistrationWidget(this);
-		w.setModel(this.registrationModel_);
+		w.setModel(model);
 		return w;
 	}
 
@@ -388,10 +386,10 @@ public class AuthWidget extends WTemplateFormView {
 	 * 
 	 * @see AuthWidget#letUpdatePassword(User user, boolean promptPassword)
 	 */
-	public WWidget createUpdatePasswordView(User user, boolean promptPassword) {
-		return new UpdatePasswordWidget(user,
-				this.getCreateRegistrationModel(), promptPassword ? this.model_
-						: null);
+	public WWidget createUpdatePasswordView(final User user,
+			boolean promptPassword) {
+		return new UpdatePasswordWidget(user, this.getRegistrationModel(),
+				promptPassword ? this.model_ : null);
 	}
 
 	/**
@@ -404,20 +402,22 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * The default implementation instantiates a {@link PasswordPromptDialog}.
 	 */
-	public WDialog createPasswordPromptDialog(Login login) {
+	public WDialog createPasswordPromptDialog(final Login login) {
 		return new PasswordPromptDialog(login, this.model_);
 	}
 
 	void attemptPasswordLogin() {
 		this.updateModel(this.model_);
 		if (this.model_.validate()) {
-			this.model_.login(this.login_);
+			if (!this.model_.login(this.login_)) {
+				this.updatePasswordLoginView();
+			}
 		} else {
 			this.updatePasswordLoginView();
 		}
 	}
 
-	void displayError(CharSequence m) {
+	void displayError(final CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
 		WMessageBox box = new WMessageBox(tr("Wt.Auth.error"), m, Icon.NoIcon,
@@ -432,7 +432,7 @@ public class AuthWidget extends WTemplateFormView {
 		this.messageBox_ = box;
 	}
 
-	void displayInfo(CharSequence m) {
+	void displayInfo(final CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
 		WMessageBox box = new WMessageBox(tr("Wt.Auth.notice"), m, Icon.NoIcon,
@@ -461,13 +461,13 @@ public class AuthWidget extends WTemplateFormView {
 		if (this.created_) {
 			return;
 		}
-		this.created_ = true;
 		this.login_.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				AuthWidget.this.onLoginChange();
 			}
 		});
 		this.onLoginChange();
+		this.created_ = true;
 	}
 
 	/**
@@ -496,7 +496,7 @@ public class AuthWidget extends WTemplateFormView {
 	 */
 	protected void createLoggedInView() {
 		this.setTemplateText(tr("Wt.Auth.template.logged-in"));
-		this.bindString("user-name", this.login_.getUser().identity(
+		this.bindString("user-name", this.login_.getUser().getIdentity(
 				Identity.LoginName));
 		WPushButton logout = new WPushButton(tr("Wt.Auth.logout"));
 		logout.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
@@ -573,7 +573,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * When the central widget is deleted, it deletes the dialog.
 	 */
-	protected WDialog showDialog(CharSequence title, WWidget contents) {
+	protected WDialog showDialog(final CharSequence title, WWidget contents) {
 		if (this.dialog_ != null)
 			this.dialog_.remove();
 		this.dialog_ = null;
@@ -586,6 +586,7 @@ public class AuthWidget extends WTemplateFormView {
 							AuthWidget.this.closeDialog();
 						}
 					});
+			this.dialog_.getFooter().hide();
 			if (!WApplication.getInstance().getEnvironment().hasAjax()) {
 				this.dialog_.setMargin(new WLength("-21em"), EnumSet
 						.of(Side.Left));
@@ -598,9 +599,35 @@ public class AuthWidget extends WTemplateFormView {
 	}
 
 	/**
+	 * Returns the registration model.
+	 * <p>
+	 * Calls {@link AuthWidget#getCreateRegistrationModel()
+	 * getCreateRegistrationModel()} or resets a previously created one.
+	 * <p>
+	 * 
+	 * @see AuthWidget#registerNewUser()
+	 */
+	protected RegistrationModel getRegistrationModel() {
+		if (!(this.registrationModel_ != null)) {
+			this.registrationModel_ = this.getCreateRegistrationModel();
+			if (this.model_.getPasswordAuth() != null) {
+				this.registrationModel_.addPasswordAuth(this.model_
+						.getPasswordAuth());
+			}
+			this.registrationModel_.addOAuth(this.model_.getOAuth());
+		} else {
+			this.registrationModel_.reset();
+		}
+		return this.registrationModel_;
+	}
+
+	/**
 	 * Creates a registration model.
 	 * <p>
-	 * This method creates a registration model.
+	 * This method creates a registration model. The default implementation
+	 * creates a RegistrationModel() but you may want to reimplement this
+	 * function to return a specialized registration model (complementing a
+	 * specialized registration view).
 	 * <p>
 	 * 
 	 * @see AuthWidget#registerNewUser()
@@ -619,7 +646,7 @@ public class AuthWidget extends WTemplateFormView {
 		WFormWidget result = null;
 		if (field == AuthModel.LoginNameField) {
 			result = new WLineEdit();
-			result.setFocus();
+			result.setFocus(true);
 		} else {
 			if (field == AuthModel.PasswordField) {
 				WLineEdit p = new WLineEdit();
@@ -649,7 +676,7 @@ public class AuthWidget extends WTemplateFormView {
 
 	private AuthModel model_;
 	private RegistrationModel registrationModel_;
-	private Login login_;
+	private final Login login_;
 	private String basePath_;
 	private boolean registrationEnabled_;
 	private boolean created_;
@@ -662,33 +689,39 @@ public class AuthWidget extends WTemplateFormView {
 		this.created_ = false;
 		this.dialog_ = null;
 		this.messageBox_ = null;
-		this.addFunction("id", WTemplate.Functions.id);
-		this.addFunction("tr", WTemplate.Functions.tr);
 		WApplication app = WApplication.getInstance();
-		app.useStyleSheet(WApplication.getResourcesUrl() + "form.css");
 		app.internalPathChanged().addListener(this,
 				new Signal1.Listener<String>() {
 					public void trigger(String e1) {
 						AuthWidget.this.onPathChange(e1);
 					}
 				});
-		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Auth_xml);
+		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}
 
 	private void logout() {
-		this.login_.logout();
+		this.model_.logout(this.login_);
 	}
 
 	// private void loginThrottle(int delay) ;
 	private void closeDialog() {
-		if (this.messageBox_ != null) {
-			if (this.messageBox_ != null)
-				this.messageBox_.remove();
-			this.messageBox_ = null;
-		} else {
+		if (this.dialog_ != null) {
 			if (this.dialog_ != null)
 				this.dialog_.remove();
 			this.dialog_ = null;
+		} else {
+			if (this.messageBox_ != null)
+				this.messageBox_.remove();
+			this.messageBox_ = null;
+		}
+		if (this.basePath_.length() != 0) {
+			WApplication app = WApplication.getInstance();
+			if (app.internalPathMatches(this.basePath_)) {
+				String ap = app.internalSubPath(this.basePath_);
+				if (ap.equals("register/")) {
+					app.setInternalPath(this.basePath_, false);
+				}
+			}
 		}
 	}
 
@@ -697,25 +730,27 @@ public class AuthWidget extends WTemplateFormView {
 		if (this.login_.isLoggedIn()) {
 			this.createLoggedInView();
 		} else {
-			if (this.model_.getBaseAuth().isAuthTokensEnabled()) {
-				WApplication.getInstance().removeCookie(
-						this.model_.getBaseAuth().getAuthTokenCookieName());
+			if (this.login_.getState() != LoginState.DisabledLogin) {
+				if (this.model_.getBaseAuth().isAuthTokensEnabled()) {
+					WApplication.getInstance().removeCookie(
+							this.model_.getBaseAuth().getAuthTokenCookieName());
+				}
+				this.model_.reset();
+				this.createLoginView();
 			}
-			this.model_.reset();
-			this.createLoginView();
 		}
 	}
 
-	private void onPathChange(String path) {
+	private void onPathChange(final String path) {
 		this.handleRegistrationPath(path);
 	}
 
-	private boolean handleRegistrationPath(String path) {
+	private boolean handleRegistrationPath(final String path) {
 		if (this.basePath_.length() != 0) {
 			WApplication app = WApplication.getInstance();
 			if (app.internalPathMatches(this.basePath_)) {
 				String ap = app.internalSubPath(this.basePath_);
-				if (ap.equals("register")) {
+				if (ap.equals("register/")) {
 					this.registerNewUser();
 					return true;
 				}
@@ -725,7 +760,7 @@ public class AuthWidget extends WTemplateFormView {
 	}
 
 	// private void oAuthStateChange(OAuthProcess process) ;
-	private void oAuthDone(OAuthProcess oauth, Identity identity) {
+	private void oAuthDone(OAuthProcess oauth, final Identity identity) {
 		if (identity.isValid()) {
 			logger.warn(new StringWriter().append("secure:").append(
 					oauth.getService().getName()).append(": identified: as ")
@@ -737,7 +772,7 @@ public class AuthWidget extends WTemplateFormView {
 			User user = this.model_.getBaseAuth().identifyUser(identity,
 					this.model_.getUsers());
 			if (user.isValid()) {
-				this.login_.login(user);
+				this.model_.loginUser(this.login_, user);
 			} else {
 				this.registerNewUser(identity);
 			}

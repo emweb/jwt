@@ -30,10 +30,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * WSpinBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * See {@link WAbstractSpinBox}.
- * <p>
  * 
  * @see WDoubleSpinBox <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the
@@ -56,7 +52,8 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.min_ = 0;
 		this.max_ = 99;
 		this.step_ = 1;
-		this.valueChanged_ = new Signal1<Integer>();
+		this.valueChanged_ = new Signal1<Integer>(this);
+		this.setValidator(this.createValidator());
 		this.setValue(0);
 	}
 
@@ -77,8 +74,14 @@ public class WSpinBox extends WAbstractSpinBox {
 	 */
 	public void setMinimum(int minimum) {
 		this.min_ = minimum;
+		WIntValidator v = ((this.getValidator()) instanceof WIntValidator ? (WIntValidator) (this
+				.getValidator())
+				: null);
+		if (v != null) {
+			v.setBottom(this.min_);
+		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -98,8 +101,14 @@ public class WSpinBox extends WAbstractSpinBox {
 	 */
 	public void setMaximum(int maximum) {
 		this.max_ = maximum;
+		WIntValidator v = ((this.getValidator()) instanceof WIntValidator ? (WIntValidator) (this
+				.getValidator())
+				: null);
+		if (v != null) {
+			v.setTop(this.max_);
+		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -120,10 +129,8 @@ public class WSpinBox extends WAbstractSpinBox {
 	 * @see WSpinBox#setMaximum(int maximum)
 	 */
 	public void setRange(int minimum, int maximum) {
-		this.min_ = minimum;
-		this.max_ = maximum;
-		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.setMinimum(minimum);
+		this.setMaximum(maximum);
 	}
 
 	/**
@@ -134,7 +141,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setSingleStep(int step) {
 		this.step_ = step;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -155,7 +162,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	public void setValue(int value) {
 		if (this.value_ != value) {
 			this.value_ = value;
-			this.setText(this.getTextFromValue().toString());
+			this.setText(this.getTextFromValue());
 		}
 	}
 
@@ -179,7 +186,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		return this.valueChanged_;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (this.isNativeControl()) {
 				element.setAttribute("min", String.valueOf(this.min_));
@@ -202,6 +209,7 @@ public class WSpinBox extends WAbstractSpinBox {
 				}
 			});
 		}
+		super.signalConnectionsChanged();
 	}
 
 	String getJsMinMaxStep() {
@@ -213,22 +221,25 @@ public class WSpinBox extends WAbstractSpinBox {
 		return 0;
 	}
 
-	boolean parseNumberValue(String text) {
+	boolean parseNumberValue(final String text) {
 		try {
-			this.value_ = Integer.parseInt(text);
+			this.value_ = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(),
+					text);
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return false;
 		}
 	}
 
-	WString getTextFromValue() {
+	protected String getTextFromValue() {
 		if (this.isNativeControl()) {
-			return new WString(String.valueOf(this.value_));
+			return LocaleUtils.toString(LocaleUtils.getCurrentLocale(),
+					this.value_);
 		} else {
 			String text = this.getPrefix().toString()
-					+ String.valueOf(this.value_) + this.getSuffix().toString();
-			return new WString(text);
+					+ LocaleUtils.toString(LocaleUtils.getCurrentLocale(),
+							this.value_) + this.getSuffix().toString();
+			return text;
 		}
 	}
 
@@ -236,6 +247,13 @@ public class WSpinBox extends WAbstractSpinBox {
 		WIntValidator validator = new WIntValidator();
 		validator.setRange(this.min_, this.max_);
 		return validator;
+	}
+
+	protected WValidator.Result getValidateRange() {
+		final WIntValidator validator = new WIntValidator();
+		validator.setRange(this.min_, this.max_);
+		return validator.validate(new WString("{1}").arg(this.value_)
+				.toString());
 	}
 
 	private int value_;

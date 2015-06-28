@@ -208,7 +208,7 @@ public class WGridLayout extends WLayout {
 		columnSpan = Math.max(1, columnSpan);
 		rowSpan = Math.max(1, rowSpan);
 		this.expand(row, column, rowSpan, columnSpan);
-		Grid.Item gridItem = this.grid_.items_.get(row).get(column);
+		final Grid.Item gridItem = this.grid_.items_.get(row).get(column);
 		if (gridItem.item_ != null) {
 			WLayoutItem oldItem = gridItem.item_;
 			gridItem.item_ = null;
@@ -613,7 +613,7 @@ public class WGridLayout extends WLayout {
 	 * width it would be given by the layout manager.
 	 */
 	public void setColumnResizable(int column, boolean enabled,
-			WLength initialSize) {
+			final WLength initialSize) {
 		this.expand(0, column, 0, 1);
 		this.grid_.columns_.get(column).resizable_ = enabled;
 		this.grid_.columns_.get(column).initialSize_ = initialSize;
@@ -669,7 +669,8 @@ public class WGridLayout extends WLayout {
 	 * ), then this size is used for the height of the row, overriding the
 	 * height it would be given by the layout manager.
 	 */
-	public void setRowResizable(int row, boolean enabled, WLength initialSize) {
+	public void setRowResizable(int row, boolean enabled,
+			final WLength initialSize) {
 		this.expand(row, 0, 1, 0);
 		this.grid_.rows_.get(row).resizable_ = enabled;
 		this.grid_.rows_.get(row).initialSize_ = initialSize;
@@ -750,9 +751,8 @@ public class WGridLayout extends WLayout {
 			}
 			;
 			for (int i = 0; i < extraRows; ++i) {
-				List<Grid.Item> items = this.grid_.items_.get(this.grid_.items_
-						.size()
-						- extraRows + i);
+				final List<Grid.Item> items = this.grid_.items_
+						.get(this.grid_.items_.size() - extraRows + i);
 				{
 					int insertPos = items.size();
 					for (int ii = 0; ii < newColumnCount; ++ii)

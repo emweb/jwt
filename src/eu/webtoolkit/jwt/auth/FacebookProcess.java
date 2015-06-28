@@ -23,11 +23,11 @@ class FacebookProcess extends OAuthProcess {
 	private static Logger logger = LoggerFactory
 			.getLogger(FacebookProcess.class);
 
-	public FacebookProcess(FacebookService auth, String scope) {
+	public FacebookProcess(final FacebookService auth, final String scope) {
 		super(auth, scope);
 	}
 
-	public void getIdentity(OAuthAccessToken token) {
+	public void getIdentity(final OAuthAccessToken token) {
 		HttpClient client = new HttpClient(this);
 		client.setTimeout(15);
 		client.setMaximumResponseSize(10 * 1024);
@@ -41,7 +41,7 @@ class FacebookProcess extends OAuthProcess {
 				+ token.getValue());
 	}
 
-	private void handleMe(Exception err, HttpMessage response) {
+	private void handleMe(Exception err, final HttpMessage response) {
 		if (err == null && response.getStatus() == 200) {
 			com.google.gson.JsonObject me = new com.google.gson.JsonObject();
 			try {

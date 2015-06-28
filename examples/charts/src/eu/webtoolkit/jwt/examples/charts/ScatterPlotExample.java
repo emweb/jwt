@@ -58,8 +58,7 @@ public class ScatterPlotExample extends WContainerWidget {
         chart.getAxis(Axis.YAxis).setLabelFormat("%.1f");
 
         // Provide space for the X and Y axis and title.
-        chart.setPlotAreaPadding(100, Side.Left);
-        chart.setPlotAreaPadding(50, Side.Top, Side.Bottom);
+        chart.setAutoLayoutEnabled();
 
         WDataSeries s = new WDataSeries(1, SeriesType.CurveSeries);
         s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));

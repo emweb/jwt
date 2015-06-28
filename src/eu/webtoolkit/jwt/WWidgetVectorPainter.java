@@ -29,7 +29,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		this.renderType_ = renderType;
 	}
 
-	public WPaintDevice getPaintDevice(boolean paintUpdate) {
+	public WVectorImage createPaintDevice(boolean paintUpdate) {
 		if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
 			return new WSvgImage(new WLength(this.widget_.renderWidth_),
 					new WLength(this.widget_.renderHeight_), (WObject) null,
@@ -40,6 +40,10 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		}
 	}
 
+	public WPaintDevice getPaintDevice(boolean paintUpdate) {
+		return this.createPaintDevice(paintUpdate);
+	}
+
 	public void createContents(DomElement canvas, WPaintDevice device) {
 		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
 				: null);
@@ -48,12 +52,13 @@ class WWidgetVectorPainter extends WWidgetPainter {
 		;
 	}
 
-	public void updateContents(List<DomElement> result, WPaintDevice device) {
+	public void updateContents(final List<DomElement> result,
+			WPaintDevice device) {
 		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
 				: null);
 		if (!EnumUtils.mask(this.widget_.repaintFlags_, PaintFlag.PaintUpdate)
 				.isEmpty()) {
-			DomElement painter = DomElement.updateGiven("Wt3_2_3.getElement('p"
+			DomElement painter = DomElement.updateGiven("Wt3_3_4.getElement('p"
 					+ this.widget_.getId() + "').firstChild",
 					DomElementType.DomElement_DIV);
 			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice

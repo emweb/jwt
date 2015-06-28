@@ -195,7 +195,7 @@ public class FileEditDialog extends WDialog {
 
             m.setData(modelRow, 1, nameEdit_.getText());
             m.setData(modelRow, 2, typeEdit_.getCurrentText());
-            m.setData(modelRow, 3, Integer.parseInt(sizeEdit_.getText()));
+            m.setData(modelRow, 3, StringUtils.asNumber(sizeEdit_.getText()));
             m.setData(modelRow, 4, createdPicker_.getDate());
             m.setData(modelRow, 5, modifiedPicker_.getDate());
         }

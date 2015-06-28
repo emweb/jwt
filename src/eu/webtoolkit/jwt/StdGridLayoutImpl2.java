@@ -23,10 +23,11 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 	private static Logger logger = LoggerFactory
 			.getLogger(StdGridLayoutImpl2.class);
 
-	public StdGridLayoutImpl2(WLayout layout, Grid grid) {
+	public StdGridLayoutImpl2(WLayout layout, final Grid grid) {
 		super(layout);
 		this.grid_ = grid;
 		this.needAdjust_ = false;
+		this.needRemeasure_ = false;
 		this.needConfigUpdate_ = false;
 		this.addedItems_ = new ArrayList<WLayoutItem>();
 		this.removedItems_ = new ArrayList<String>();
@@ -42,6 +43,10 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			app.doJavaScript("$(window).load(function() { "
 					+ app.getJavaScriptClass() + ".layouts2.scheduleAdjust();"
 					+ "});");
+			WApplication.getInstance().addAutoJavaScript(
+					"if(" + app.getJavaScriptClass() + ".layouts2) "
+							+ app.getJavaScriptClass()
+							+ ".layouts2.adjustNow();");
 		}
 	}
 
@@ -84,7 +89,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 
 	public DomElement createDomElement(boolean fitWidth, boolean fitHeight,
 			WApplication app) {
-		this.needAdjust_ = this.needConfigUpdate_ = false;
+		this.needAdjust_ = this.needConfigUpdate_ = this.needRemeasure_ = false;
 		this.addedItems_.clear();
 		this.removedItems_.clear();
 		final int colCount = this.grid_.columns_.size();
@@ -102,7 +107,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 		StringBuilder js = new StringBuilder();
 		js.append(app.getJavaScriptClass()).append(
-				".layouts2.add(new Wt3_2_3.StdLayout2(").append(
+				".layouts2.add(new Wt3_3_4.StdLayout2(").append(
 				app.getJavaScriptClass()).append(",'").append(this.getId())
 				.append("',");
 		if (this.getLayout().getParentLayout() != null) {
@@ -113,9 +118,9 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			js.append("null,");
 		}
 		boolean progressive = !app.getEnvironment().hasAjax();
-		js.append(fitWidth ? "1" : "0").append(",").append(
-				fitHeight ? "1" : "0").append(",").append(
-				progressive ? "1" : "0").append(",");
+		js.append(fitWidth ? '1' : '0').append(",").append(
+				fitHeight ? '1' : '0').append(",").append(
+				progressive ? '1' : '0').append(",");
 		js.append(maxWidth).append(",").append(maxHeight).append(",[").append(
 				this.grid_.horizontalSpacing_).append(",").append(margin[3])
 				.append(",").append(margin[1]).append("],[").append(
@@ -154,8 +159,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 					double pct = totalColStretch == 0 ? 100.0 / colCount
 							: 100.0 * stretch / totalColStretch;
 					StringBuilder ss = new StringBuilder();
-					ss.append("width:").append(MathUtils.round(pct, 2)).append(
-							"%;");
+					ss.append("width:").append(MathUtils.roundCss(pct, 2))
+							.append("%;");
 					c.setProperty(Property.PropertyStyle, ss.toString());
 				}
 				table.addChild(c);
@@ -177,7 +182,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			boolean rowVisible = false;
 			int prevColumnWithItem = -1;
 			for (int col = 0; col < colCount; ++col) {
-				Grid.Item item = this.grid_.items_.get(row).get(col);
+				final Grid.Item item = this.grid_.items_.get(row).get(col);
 				if (!overSpanned.get(row * colCount + col)) {
 					for (int i = 0; i < item.rowSpan_; ++i) {
 						for (int j = 0; j < item.colSpan_; ++j) {
@@ -229,7 +234,6 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 								int tmp = padding[1];
 								padding[1] = padding[3];
 								padding[3] = tmp;
-								;
 							}
 							if (padding[0] == padding[1]
 									&& padding[0] == padding[2]
@@ -286,7 +290,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 					}
 					if (table != null) {
 						if (c != null) {
-							if (!app.getEnvironment().agentIsIE()) {
+							if (!app.getEnvironment().agentIsIElt(9)) {
 								c.setProperty(Property.PropertyStyleBoxSizing,
 										"border-box");
 							}
@@ -311,11 +315,12 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 									itd.setProperty(Property.PropertyStyle,
 											"height:100%;");
 								}
+								boolean haveMinWidth = c.getProperty(
+										Property.PropertyStyleMinWidth)
+										.length() != 0;
 								itd.addChild(c);
 								if (app.getEnvironment().agentIsIElt(9)) {
-									if (c.getProperty(
-											Property.PropertyStyleMinWidth)
-											.length() != 0) {
+									if (haveMinWidth) {
 										DomElement spacer = DomElement
 												.createNew(DomElementType.DomElement_DIV);
 										spacer
@@ -357,11 +362,11 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 							default:
 								break;
 							}
+							boolean haveMinWidth = c.getProperty(
+									Property.PropertyStyleMinWidth).length() != 0;
 							td.addChild(c);
 							if (app.getEnvironment().agentIsIElt(9)) {
-								if (c.getProperty(
-										Property.PropertyStyleMinWidth)
-										.length() != 0) {
+								if (haveMinWidth) {
 									DomElement spacer = DomElement
 											.createNew(DomElementType.DomElement_DIV);
 									spacer
@@ -399,7 +404,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		return div;
 	}
 
-	public void updateDom(DomElement parent) {
+	public void updateDom(final DomElement parent) {
 		WApplication app = WApplication.getInstance();
 		if (this.needConfigUpdate_) {
 			this.needConfigUpdate_ = false;
@@ -412,7 +417,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			}
 			this.addedItems_.clear();
 			for (int i = 0; i < this.removedItems_.size(); ++i) {
-				parent.callJavaScript("Wt3_2_3.remove('"
+				parent.callJavaScript("Wt3_3_4.remove('"
 						+ this.removedItems_.get(i) + "');", true);
 			}
 			this.removedItems_.clear();
@@ -423,6 +428,15 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 					"',");
 			this.streamConfig(js, app);
 			js.append(");");
+			app.doJavaScript(js.toString());
+			this.needRemeasure_ = false;
+			this.needAdjust_ = false;
+		}
+		if (this.needRemeasure_) {
+			this.needRemeasure_ = false;
+			StringBuilder js = new StringBuilder();
+			js.append(app.getJavaScriptClass()).append(".layouts2.setDirty('")
+					.append(this.getId()).append("');");
 			app.doJavaScript(js.toString());
 		}
 		if (this.needAdjust_) {
@@ -466,7 +480,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 	}
 
-	public void setHint(String name, String value) {
+	public void setHint(final String name, final String value) {
 		logger.error(new StringWriter().append("unrecognized hint '").append(
 				name).append("'").toString());
 	}
@@ -476,7 +490,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		final int rowCount = this.grid_.rows_.size();
 		for (int row = 0; row < rowCount; ++row) {
 			for (int col = 0; col < colCount; ++col) {
-				if (this.grid_.items_.get(row).get(col).item_ == item) {
+				if (this.grid_.items_.get(row).get(col).item_ == item
+						&& !this.grid_.items_.get(row).get(col).update_) {
 					this.grid_.items_.get(row).get(col).update_ = true;
 					this.needAdjust_ = true;
 					return true;
@@ -484,6 +499,15 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			}
 		}
 		return false;
+	}
+
+	public boolean isParentResized() {
+		if (!this.needRemeasure_) {
+			this.needRemeasure_ = true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	void containerAddWidgets(WContainerWidget container) {
@@ -500,8 +524,9 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 	}
 
-	private Grid grid_;
+	private final Grid grid_;
 	private boolean needAdjust_;
+	private boolean needRemeasure_;
 	private boolean needConfigUpdate_;
 	private List<WLayoutItem> addedItems_;
 	private List<String> removedItems_;
@@ -569,7 +594,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		return minWidth;
 	}
 
-	private static int pixelSize(WLength size) {
+	private static int pixelSize(final WLength size) {
 		if (size.getUnit() == WLength.Unit.Percentage) {
 			return 0;
 		} else {
@@ -577,8 +602,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 	}
 
-	private void streamConfig(StringBuilder js, List<Grid.Section> sections,
-			boolean rows, WApplication app) {
+	private void streamConfig(final StringBuilder js,
+			final List<Grid.Section> sections, boolean rows, WApplication app) {
 		js.append("[");
 		for (int i = 0; i < sections.size(); ++i) {
 			if (i != 0) {
@@ -588,7 +613,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			if (sections.get(i).resizable_) {
 				SizeHandle.loadJavaScript(app);
 				js.append("[");
-				WLength size = sections.get(i).initialSize_;
+				final WLength size = sections.get(i).initialSize_;
 				if (size.isAuto()) {
 					js.append("-1");
 				} else {
@@ -612,7 +637,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		js.append("]");
 	}
 
-	private void streamConfig(StringBuilder js, WApplication app) {
+	private void streamConfig(final StringBuilder js, WApplication app) {
 		js.append("{ rows:");
 		this.streamConfig(js, this.grid_.rows_, true, app);
 		js.append(", cols:");
@@ -622,7 +647,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		final int rowCount = this.grid_.rows_.size();
 		for (int row = 0; row < rowCount; ++row) {
 			for (int col = 0; col < colCount; ++col) {
-				Grid.Item item = this.grid_.items_.get(row).get(col);
+				final Grid.Item item = this.grid_.items_.get(row).get(col);
 				AlignmentFlag hAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 						item.alignment_, AlignmentFlag.AlignHorizontalMask));
 				AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -671,7 +696,13 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 						}
 						js.append("align:").append((int) align).append(",");
 					}
-					js.append("id:'").append(id).append("'").append("}");
+					js
+							.append("dirty:")
+							.append(
+									this.grid_.items_.get(row).get(col).update_ ? 2
+											: 0).append(",id:'").append(id)
+							.append("'").append("}");
+					this.grid_.items_.get(row).get(col).update_ = 0 != 0;
 				} else {
 					js.append("null");
 				}
@@ -682,9 +713,6 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 
 	private DomElement createElement(WLayoutItem item, WApplication app) {
 		DomElement c = getImpl(item).createDomElement(true, true, app);
-		if (app.getEnvironment().agentIsIElt(9)) {
-			c.setProperty(Property.PropertyStylePosition, "absolute");
-		}
 		c.setProperty(Property.PropertyStyleVisibility, "hidden");
 		return c;
 	}
@@ -694,14 +722,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"StdLayout2",
-				"function(z,C,J,M,R,K,s,E,x,v,w){function A(a,b){var d=q[b],g=b?a.scrollHeight:a.scrollWidth,h=b?a.clientHeight:a.clientWidth;b=b?a.offsetHeight:a.offsetWidth;if(h>=1E6)h-=1E6;if(g>=1E6)g-=1E6;if(b>=1E6)b-=1E6;if(g===0)g=f.pxself(a,d.size);if(f.isIE&&(f.hasTag(a,\"BUTTON\")||f.hasTag(a,\"TEXTAREA\")||f.hasTag(a,\"INPUT\")||f.hasTag(a,\"SELECT\")))g=h;if(g>b)if(f.pxself(a,d.size)==0)g=0;else{var o=false;$(a).find(\".Wt-popup\").each(function(){if(this.style.display!= \"none\")o=true});if(o)g=0}if(!f.isOpera&&!f.isGecko)g+=f.px(a,\"border\"+d.Left+\"Width\")+f.px(a,\"border\"+d.Right+\"Width\");g+=f.px(a,\"margin\"+d.Left)+f.px(a,\"margin\"+d.Right);if(!f.boxSizing(a)&&!f.isIE)g+=f.px(a,\"padding\"+d.Left)+f.px(a,\"padding\"+d.Right);if(g<b)g=b;return Math.round(g)}function u(a,b){b=q[b];if(a.style.display==\"none\")return 0;else if(a[\"layoutMin\"+b.Size])return a[\"layoutMin\"+b.Size];else{var d=f.px(a,\"min\"+b.Size);f.boxSizing(a)||(d+=f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right)); return d}}function H(a,b){b=q[b];var d=f.px(a,\"margin\"+b.Left)+f.px(a,\"margin\"+b.Right);if(!f.boxSizing(a)&&!(f.isIE&&!f.isIElt9&&f.hasTag(a,\"BUTTON\")))d+=f.px(a,\"border\"+b.Left+\"Width\")+f.px(a,\"border\"+b.Right+\"Width\")+f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right);return d}function I(a,b){b=q[b];return f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right)}function V(a,b){if(f.boxSizing(a)){b=q[b];return f.px(a,\"border\"+b.Left+\"Width\")+f.px(a,\"border\"+b.Right+\"Width\")+f.px(a,\"padding\"+b.Left)+f.px(a, \"padding\"+b.Right)}else return 0}function S(a,b){b=q[b];return Math.round(f.px(a,\"border\"+b.Left+\"Width\")+f.px(a,\"border\"+b.Right+\"Width\")+f.px(a,\"margin\"+b.Left)+f.px(a,\"margin\"+b.Right)+f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right))}function N(a,b){T=a.dirty=true;b&&z.layouts2.scheduleAdjust()}function y(a,b,d){if(a.style[b]!==d){a.style[b]=d;return true}else return false}function ba(a,b,d){b=q[a];var g=q[a^1],h=b.measures,o=b.config.length,m=g.config.length;if(T||L){if(d&&typeof b.minSize== \"undefined\"){b.minSize=f.px(d,\"min\"+b.Size);if(b.minSize>0)b.minSize-=V(d,a)}h=h.slice();if(h.length==5){h[0]=h[0].slice();h[1]=h[1].slice()}var B=[],e=[],j=0,t=0,i,n;for(i=0;i<o;++i){var p=0,l=b.config[i][2],F=true;for(n=0;n<m;++n){var c=b.getItem(i,n);if(c){if(!c.w||a==0&&c.dirty){var k=$(\"#\"+c.id),r=k.get(0);if(r!=c.w){c.w=r;k.find(\"img\").add(k.filter(\"img\")).bind(\"load\",{item:c},function(X){N(X.data.item,true)});c.w.style[b.left]=c.w.style[g.left]=\"-1000000px\"}}if(!K&&c.w.style.position!=\"absolute\"){c.w.style.position= \"absolute\";c.w.style.visibility=\"hidden\";if(!c.w.wtResize&&!f.isIElt9){c.w.style.boxSizing=\"border-box\";if(k=f.cssPrefix(\"BoxSizing\"))c.w.style[k+\"BoxSizing\"]=\"border-box\"}}if(!c.ps)c.ps=[];if(!c.ms)c.ms=[];if(!c.size)c.size=[];if(!c.psize)c.psize=[];if(!c.fs)c.fs=[];if($(c.w).hasClass(\"Wt-hidden\"))c.ps[a]=c.ms[a]=0;else{k=!c.set;if(!c.set)c.set=[false,false];if(c.w){if(f.isIE)c.w.style.visibility=\"\";if(c.dirty||L){r=u(c.w,a);if(r>l)l=r;c.ms[a]=r;if(!c.set[a])if(a==0||!k){k=f.pxself(c.w,b.size);c.fs[a]= k?k+H(c.w,a):0}else{k=Math.round(f.px(c.w,b.size));c.fs[a]=k>Math.max(V(c.w,a),r)?k+H(c.w,a):0}k=c.fs[a];if(c.layout){if(k==0)k=c.ps[a]}else{if(c.wasLayout){c.wasLayout=false;c.set=[false,false];y(c.w,q[0].size,\"\");y(c.w,q[1].size,\"\")}r=A(c.w,a);var D=typeof c.ps[a]!==\"undefined\"&&b.config[i][0]>0&&c.set[a];k=c.set[a]&&r>=c.psize[a]-4&&r<=c.psize[a]+4||D?Math.max(k,c.ps[a]):Math.max(k,r)}c.ps[a]=k;if(!c.span||c.span[a]==1)if(k>p)p=k}else if(!c.span||c.span[a]==1){if(c.ps[a]>p)p=c.ps[a];if(c.ms[a]> l)l=c.ms[a]}if(c.w.style.display!==\"none\"||f.hasTag(c.w,\"TEXTAREA\")&&c.w.wtResize)F=false}}}}if(F)l=p=-1;else if(l>p)p=l;B[i]=p;e[i]=l;if(l>-1){j+=p;t+=l}}g=0;k=true;m=false;for(i=0;i<o;++i)if(e[i]>-1){if(k){g+=b.margins[1];k=false}else{g+=b.margins[0];if(m)g+=4}m=b.config[i][1]!==0}k||(g+=b.margins[2]);j+=g;t+=g;b.measures=[B,e,j,t,g];if(L||h[2]!=b.measures[2])O.updateSizeInParent(a);d&&b.minSize==0&&h[3]!=b.measures[3]&&d.parentNode.className!=\"Wt-domRoot\"&&y(d,\"min\"+b.Size,b.measures[3]+\"px\")&& O.ancestor&&O.ancestor.setContentsDirty(d);d&&a==0&&d&&f.hasTag(d,\"TD\")&&y(d,b.size,b.measures[2]+\"px\")}}function ca(a,b,d){a=q[a];if(U)d=-d;if(a.config[b][0]>0&&a.config[b+1][0]==0){++b;d=-d}a.fixedSize[b]=a.sizes[b]+d;z.layouts2.scheduleAdjust()}function da(a,b,d){var g=b.di,h=q[a],o=q[a^1],m,B=f.getElement(C),e;for(e=g-1;e>=0;--e)if(h.sizes[e]>=0){m=-(h.sizes[e]-h.measures[1][e]);break}g=h.sizes[g]-h.measures[1][g];if(U){var j=m;m=-g;g=-j}new f.SizeHandle(f,h.resizeDir,f.pxself(b,h.size),f.pxself(b, o.size),m,g,h.resizerClass,function(t){ca(a,e,t)},b,B,d,0,0)}function ea(a,b){var d=q[a],g=q[a^1],h=d.measures,o=0,m=false,B=false,e=false,j=Y?b.parentNode:null;if(d.maxSize===0)if(j){var t=f.css(j,\"position\");if(t===\"absolute\")o=f.pxself(j,d.size);if(o===0){if(!d.initialized){if(a===0&&(t===\"absolute\"||t===\"fixed\")){j.style.display=\"none\";o=j.clientWidth;j.style.display=\"\"}o=a?j.clientHeight:j.clientWidth;m=true;if(a==0&&o==0&&f.isIElt9){o=j.offsetWidth;m=false}var i;if((f.hasTag(j,\"TD\")||f.hasTag(j, \"TH\"))&&!(f.isIE&&!f.isIElt9)){e=0;i=1}else{e=d.minSize?d.minSize:h[3];i=0}if(f.isIElt9&&o==i||o==e+I(j,a))d.maxSize=999999}if(o===0&&d.maxSize===0){o=a?j.clientHeight:j.clientWidth;m=true}}}else{o=f.pxself(b,d.size);B=true}var n=0;if(j&&j.wtGetPS&&a==1)n=j.wtGetPS(j,b,a,0);e=h[2];if(e<d.minSize)e=d.minSize;if(d.maxSize)if(e+n<d.maxSize){y(j,d.size,e+n+V(j,a)+\"px\")&&z.layouts2.remeasure();o=e+n;e=B=true}else{o=d.maxSize;m=false}d.cSize=o;if(a==1&&j&&j.wtResize){i=g.cSize;e=d.cSize;j.wtResize(j,Math.round(i), Math.round(e))}o-=n;if(!B){B=0;if(typeof d.cPadding===\"undefined\"){B=m?I(j,a):V(j,a);d.cPadding=B}else B=d.cPadding;o-=B}d.initialized=true;if(!(j&&o<=0)){if(o<h[3]-n)o=h[3]-n;m=[];j=d.config.length;B=g.config.length;for(e=0;e<j;++e)d.stretched[e]=false;if(o>=h[3]-n){n=o-h[4];i=[];var p=[0,0],l=[0,0],F=0;for(e=0;e<j;++e)if(h[1][e]>-1){var c=-1;if(typeof d.fixedSize[e]!==\"undefined\")c=d.fixedSize[e];else if(d.config[e][1]!==0&&d.config[e][1][0]>=0){c=d.config[e][1][0];if(d.config[e][1][1])c=(o-h[4])* c/100}if(c>=0){i[e]=-1;m[e]=c;n-=m[e]}else{if(d.config[e][0]>0){c=1;i[e]=d.config[e][0];F+=i[e]}else{c=0;i[e]=0}p[c]+=h[1][e];l[c]+=h[0][e];m[e]=h[0][e]}}else i[e]=-2;if(F==0){for(e=0;e<j;++e)if(i[e]==0){i[e]=1;++F}l[1]=l[0];p[1]=p[0];l[0]=0;p[0]=0}if(n>l[0]+p[1]){n-=l[0];if(n>l[1]){if(d.fitSize){n-=l[1];n=n/F;for(e=0;e<j;++e)if(i[e]>0){m[e]+=Math.round(i[e]*n);d.stretched[e]=true}}}else{c=1;if(n<p[c])n=p[c];n=l[c]-p[c]>0?(n-p[c])/(l[c]-p[c]):0;for(e=0;e<j;++e)if(i[e]>0){p=h[0][e]-h[1][e];m[e]=h[1][e]+ Math.round(p*n)}}}else{for(e=0;e<j;++e)if(i[e]>0)m[e]=h[1][e];n-=p[1];c=0;if(n<p[c])n=p[c];n=l[c]-p[c]>0?(n-p[c])/(l[c]-p[c]):0;for(e=0;e<j;++e)if(i[e]==0){p=h[0][e]-h[1][e];m[e]=h[1][e]+Math.round(p*n)}}}else m=h[1];d.sizes=m;h=0;n=true;l=false;for(e=0;e<j;++e)if(m[e]>-1){if(p=l){i=C+\"-rs\"+a+\"-\"+e;l=f.getElement(i);if(!l){l=document.createElement(\"div\");l.setAttribute(\"id\",i);l.di=e;l.style.position=\"absolute\";l.style[g.left]=g.margins[1]+\"px\";l.style[d.size]=d.margins[0]+\"px\";l.className=d.handleClass; b.insertBefore(l,b.firstChild);l.onmousedown=l.ontouchstart=function(X){da(a,this,X||window.event)}}h+=2;y(l,d.left,h+\"px\");h+=2}l=d.config[e][1]!==0;if(n){h+=d.margins[1];n=false}else h+=d.margins[0];for(F=0;F<B;++F)if((c=d.getItem(e,F))&&c.w){i=c.w;t=m[e];if(c.span){var k,r=l;for(k=1;k<c.span[a];++k){if(r)t+=4;r=d.config[e+r][1]!==0;t+=d.margins[0];t+=m[e+k]}}var D;y(i,\"visibility\",\"\");r=c.align>>d.alignBits&15;k=c.ps[a];if(t<k)r=0;if(r){switch(r){case 1:D=h;break;case 4:D=h+(t-k)/2;break;case 2:D= h+(t-k);break}if(c.layout){y(i,d.size,k+\"px\")&&N(c);c.set[a]=true}else if(t>=k&&c.set[a]){y(i,d.size,k+\"px\")&&N(c);c.set[a]=false}c.size[a]=k;c.psize[a]=k}else{D=H(c.w,a);r=t;if(f.isIElt9||!f.hasTag(i,\"BUTTON\")&&!f.hasTag(i,\"INPUT\")&&!f.hasTag(i,\"SELECT\")&&!f.hasTag(i,\"TEXTAREA\"))r=Math.max(0,r-D);D=false;if(f.isIE&&f.hasTag(i,\"BUTTON\"))D=true;if(D||t!=k||c.layout){y(i,d.size,r+\"px\")&&N(c);c.set[a]=true}else if(c.fs[a])a==0&&y(i,d.size,c.fs[a]+\"px\");else{y(i,d.size,\"\")&&N(c);c.set[a]=false}D=h;c.size[a]= r;c.psize[a]=t}if(K)if(p){y(i,d.left,\"4px\");t=f.css(i,\"position\");if(t!==\"absolute\")i.style.position=\"relative\"}else y(i,d.left,\"0px\");else y(i,d.left,D+\"px\");if(a==1){i.wtResize&&i.wtResize(i,Math.round(c.size[0]),Math.round(c.size[1]),c);c.dirty=false}}h+=m[e]}$(b).children(\".\"+g.handleClass).css(d.size,o-d.margins[2]-d.margins[1]+\"px\")}}var f=z.WT;this.ancestor=null;this.descendants=[];var O=this,G=w,T=false,L=true,Y=false,W=null,P=null,Z=false,Q=[],aa=false,U=$(document.body).hasClass(\"Wt-rtl\"), q=[{initialized:false,config:G.cols,margins:x,maxSize:s,measures:[],sizes:[],stretched:[],fixedSize:[],Left:U?\"Right\":\"Left\",left:U?\"right\":\"left\",Right:U?\"Left\":\"Right\",Size:\"Width\",size:\"width\",alignBits:0,getItem:function(a,b){return G.items[b*q[0].config.length+a]},handleClass:\"Wt-vrh2\",resizeDir:\"h\",resizerClass:\"Wt-hsh2\",fitSize:M},{initialized:false,config:G.rows,margins:v,maxSize:E,measures:[],sizes:[],stretched:[],fixedSize:[],Left:\"Top\",left:\"top\",Right:\"Bottom\",Size:\"Height\",size:\"height\", alignBits:4,getItem:function(a,b){return G.items[a*q[0].config.length+b]},handleClass:\"Wt-hrh2\",resizeDir:\"v\",resizerClass:\"Wt-vsh2\",fitSize:R}];jQuery.data(document.getElementById(C),\"layout\",this);this.updateSizeInParent=function(a){if(W){var b=q[a].measures[2];if(aa){var d=f.getElement(C);if(!d)return;d=d;for(var g=d.parentNode;;){if(g.wtGetPS)b=g.wtGetPS(g,d,a,b);b+=S(g,a);if(g==P)break;d=g;g=d.parentNode}}else b+=Q[a];W.setChildSize(P,a,b)}};this.setConfig=function(a){var b=G;G=a;q[0].config= G.cols;q[1].config=G.rows;q[0].stretched=[];q[1].stretched=[];var d;a=0;for(d=b.items.length;a<d;++a){var g=b.items[a];if(g){g.set[0]&&y(g.w,q[0].size,\"\");g.set[1]&&y(g.w,q[1].size,\"\");if(g.layout){O.setChildSize(g.w,0,g.ps[0]);O.setChildSize(g.w,1,g.ps[1])}}}L=true;z.layouts2.scheduleAdjust()};this.getId=function(){return C};this.setItemsDirty=function(a){var b,d,g=q[0].config.length;b=0;for(d=a.length;b<d;++b){var h=G.items[a[b][0]*g+a[b][1]];h.dirty=true;if(h.layout){h.layout=false;h.wasLayout= true;z.layouts2.setChildLayoutsDirty(O,h.w)}}T=true};this.setDirty=function(){L=true};this.setChildSize=function(a,b,d){var g,h,o=q[0].config.length;g=0;for(h=G.items.length;g<h;++g){var m=G.items[g];if(m&&m.id==a.id){if(!q[b].stretched[b===0?g%o:g/o]){if(!m.ps)m.ps=[];m.ps[b]=d}m.layout=true;N(m);break}}};this.measure=function(a){var b=f.getElement(C);if(b)if(!f.isHidden(b)){if(!Z){Z=true;if(Y=J==null){var d=b;d=d.parentNode;for(Q=[0,0];;){Q[0]+=S(d,0);Q[1]+=S(d,1);if(d.wtGetPS)aa=true;var g=jQuery.data(d.parentNode, \"layout\");if(g){W=g;P=d;break}d=d;d=d.parentNode;if(d.childNodes.length!=1&&!d.wtGetPS)break}}else{W=jQuery.data(document.getElementById(J),\"layout\");P=b;Q[0]=S(P,0);Q[1]=S(P,1)}}if(T||L)ba(a,b,Y?b.parentNode:null);if(a==1)T=L=false}};this.setMaxSize=function(a,b){q[0].maxSize=a;q[1].maxSize=b};this.apply=function(a){var b=f.getElement(C);if(!b)return false;if(f.isHidden(b))return true;ea(a,b);return true};this.contains=function(a){var b=f.getElement(C);a=f.getElement(a.getId());return b&&a?f.contains(b, a):false};this.WT=f}");
-	}
-
-	static WJavaScriptPreamble wtjs2() {
-		return new WJavaScriptPreamble(JavaScriptScope.WtClassScope,
-				JavaScriptObjectType.JavaScriptPrototype,
-				"StdLayout2.prototype.initResize",
-				"function(){this.resizeInitialized=true}");
+				"function(F,D,K,U,V,W,Z,q,E,z,A){function x(a){var b,c;b=0;for(c=C.items.length;b<c;++b){var e=C.items[b];if(e&&e.id==a)return e}return null}function B(a,b,c,e){function i(h){return h==\"visible\"||h==\"none\"}var l=s[b],k=b?a.scrollHeight:a.scrollWidth,u,d;if(b==0){var j=f.pxself(a,l.left);if(k+j>e.clientWidth||k+j==e.clientWidth&&f.isGecko&&e.parentNode.parentNode.style.visibility===\"hidden\"){u=a.style[l.left];v(a,l.left,\"-1000000px\");k=b?a.scrollHeight: a.scrollWidth}}e=b?a.clientHeight:a.clientWidth;if(f.isGecko&&!a.style[l.size]&&b==0&&i(f.css(a,\"overflow\"))){d=a.style[l.size];v(a,l.size,\"\")}j=b?a.offsetHeight:a.offsetWidth;u&&v(a,l.left,u);d&&v(a,l.size,d);if(e>=1E6)e-=1E6;if(k>=1E6)k-=1E6;if(j>=1E6)j-=1E6;if(k===0){k=f.pxself(a,l.size);if(k!==0&&!f.isOpera&&!f.isGecko)k-=f.px(a,\"border\"+l.Left+\"Width\")+f.px(a,\"border\"+l.Right+\"Width\")}if(f.isIE&&(f.hasTag(a,\"BUTTON\")||f.hasTag(a,\"TEXTAREA\")||f.hasTag(a,\"INPUT\")||f.hasTag(a,\"SELECT\")))k=e;if(k> j)if(f.pxself(a,l.size)==0)k=e;else{var m=false;$(a).find(\".Wt-popup\").each(function(){if(this.style.display!==\"none\")m=true});if(m)k=e}d=f.px(a,\"border\"+l.Left+\"Width\")+f.px(a,\"border\"+l.Right+\"Width\");u=j-(e+d)!=0;if(c)return[k,scrollBar];if(f.isGecko&&b==0&&a.getBoundingClientRect().width!=Math.ceil(a.getBoundingClientRect().width))k+=1;if(!f.boxSizing(a)&&!f.isOpera)k+=d;k+=f.px(a,\"margin\"+l.Left)+f.px(a,\"margin\"+l.Right);if(!f.boxSizing(a)&&!f.isIE)k+=f.px(a,\"padding\"+l.Left)+f.px(a,\"padding\"+ l.Right);k+=j-(e+d);if(k<j)k=j;a=f.px(a,\"max\"+l.Size);if(a>0)k=Math.min(a,k);return[Math.round(k),u]}function y(a,b){b=s[b];if(a.style.display===\"none\")return 0;else if(a[\"layoutMin\"+b.Size])return a[\"layoutMin\"+b.Size];else{var c=f.px(a,\"min\"+b.Size);f.boxSizing(a)||(c+=f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right));return c}}function O(a,b){b=s[b];var c=f.px(a,\"margin\"+b.Left)+f.px(a,\"margin\"+b.Right);if(!f.boxSizing(a)&&!(f.isIE&&!f.isIElt9&&f.hasTag(a,\"BUTTON\")))c+=f.px(a,\"border\"+b.Left+ \"Width\")+f.px(a,\"border\"+b.Right+\"Width\")+f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right);return c}function M(a,b){b=s[b];return f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right)}function ga(a,b){if(f.boxSizing(a)){b=s[b];return f.px(a,\"border\"+b.Left+\"Width\")+f.px(a,\"border\"+b.Right+\"Width\")+f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right)}else return 0}function aa(a,b){b=s[b];return Math.round(f.px(a,\"border\"+b.Left+\"Width\")+f.px(a,\"border\"+b.Right+\"Width\")+f.px(a,\"margin\"+b.Left)+f.px(a, \"margin\"+b.Right)+f.px(a,\"padding\"+b.Left)+f.px(a,\"padding\"+b.Right))}function X(a,b,c){a.dirty=Math.max(a.dirty,b);P=true;c&&F.layouts2.scheduleAdjust()}function v(a,b,c){if(a.style[b]!==c){a.style[b]=c;return true}else return false}function ma(a){return a.style.display===\"none\"&&!a.ed||$(a).hasClass(\"Wt-hidden\")}function ta(a,b,c){var e=s[a],i=e.config.length,l=s[a^1].config.length,k=e.measures.slice();if(k.length==5){k[0]=k[0].slice();k[1]=k[1].slice()}if(P){if(c&&typeof e.minSize==\"undefined\"){e.minSize= f.px(c,\"min\"+e.Size);if(e.minSize>0)e.minSize-=ga(c,a)}var u=[],d=[],j=0,m=0,h,G,r=false;for(h=0;h<i;++h){var p=0,t=e.config[h][2],o=true;for(G=0;G<l;++G){var g=e.getItem(h,G);if(g){if(!g.w||a==0&&g.dirty>1){var n=$(\"#\"+g.id),w=n.get(0);if(!w){e.setItem(h,G,null);continue}if(w!=g.w){g.w=w;n.find(\"img\").add(n.filter(\"img\")).bind(\"load\",{item:g},function(S){X(S.data.item,1,true)})}}if(!W&&g.w.style.position!=\"absolute\"){g.w.style.position=\"absolute\";g.w.style.visibility=\"hidden\"}if(!g.ps)g.ps=[];if(!g.sc)g.sc= [];if(!g.ms)g.ms=[];if(!g.size)g.size=[];if(!g.psize)g.psize=[];if(!g.fs)g.fs=[];if(!g.margin)g.margin=[];n=!g.set;if(!g.set)g.set=[false,false];if(ma(g.w))g.ps[a]=g.ms[a]=0;else if(g.w){if(f.isIE)g.w.style.visibility=\"\";if(g.dirty){if(g.dirty>1){w=y(g.w,a);g.ms[a]=w}else w=g.ms[a];if(w>t)t=w;if(g.dirty>1)g.margin[a]=O(g.w,a);if(!g.set[a])if(a==0||!n){n=f.pxself(g.w,e.size);g.fs[a]=n?n+g.margin[a]:0}else{n=Math.round(f.px(g.w,e.size));g.fs[a]=n>Math.max(ga(g.w,a),w)?n+g.margin[a]:0}n=g.fs[a];if(g.layout){if(n== 0)n=g.ps[a];g.ps[a]=n}else{if(g.wasLayout){g.wasLayout=false;g.set=[false,false];g.ps=[];g.w.wtResize&&g.w.wtResize(g.w,-1,-1,true);v(g.w,s[1].size,\"\")}w=B(g.w,a,false,b);var H=w[0],ba=g.set[a];if(ba)if(g.psize[a]>8)ba=H>=g.psize[a]-4&&H<=g.psize[a]+4;var ca=typeof g.ps[a]!==\"undefined\"&&e.config[h][0]>0&&g.set[a];n=ba||ca?Math.max(n,g.ps[a]):Math.max(n,H);g.ps[a]=n;g.sc[a]=w[1]}if(!g.span||g.span[a]==1){if(n>p)p=n}else r=true}else if(!g.span||g.span[a]==1){if(g.ps[a]>p)p=g.ps[a];if(g.ms[a]>t)t=g.ms[a]}else r= true;if(!ma(g.w)&&(!g.span||g.span[a]==1))o=false}}}if(o)t=p=-1;else if(t>p)p=t;u[h]=p;d[h]=t;if(t>-1){j+=p;m+=t}}if(r){function ha(S,ia){for(h=0;h<i;++h)for(G=0;G<l;++G){var Y=e.getItem(h,G);if(Y&&Y.span&&Y.span[a]>1){var da=S(Y),ja=0,ka=0,I;for(I=0;I<Y.span[a];++I){var Q=ia[h+I];if(Q!=-1){da-=Q;++ja;if(e.config[h+I][0]>0)ka+=e.config[h+I][0]}}if(da>=0)if(ja>0){if(ka>0)ja=ka;for(I=0;I<Y.span[a];++I){Q=ia[h+I];if(Q!=-1){Q=ka>0?e.config[h+I][0]:1;if(Q>0){var qa=Math.round(da/Q);da-=qa;ja-=Q;ia[h+I]+= qa}}}}else ia[h]=da}}}ha(function(S){return S.ps[a]},u);ha(function(S){return S.ms[a]},d)}b=0;n=true;r=false;for(h=0;h<i;++h)if(d[h]>-1){if(n){b+=e.margins[1];n=false}else{b+=e.margins[0];if(r)b+=4}r=e.config[h][1]!==0}n||(b+=e.margins[2]);j+=b;m+=b;e.measures=[u,d,j,m,b]}if(ea||k[2]!=e.measures[2])ra.updateSizeInParent(a);c&&e.minSize==0&&k[3]!=e.measures[3]&&c.parentNode.className!=\"Wt-domRoot\"&&v(c,\"min\"+e.Size,e.measures[3]+\"px\");c&&a==0&&c&&f.hasTag(c,\"TD\")&&v(c,e.size,e.measures[2]+\"px\")}function ua(a, b,c){a=s[a];if(fa)c=-c;if(a.config[b][0]>0&&a.config[b+1][0]==0){++b;c=-c}a.fixedSize[b]=a.sizes[b]+c;F.layouts2.scheduleAdjust()}function va(a,b,c){var e=b.di,i=s[a],l=s[a^1],k,u=f.getElement(D),d;for(d=e-1;d>=0;--d)if(i.sizes[d]>=0){k=-(i.sizes[d]-i.measures[1][d]);break}e=i.sizes[e]-i.measures[1][e];if(fa){var j=k;k=-e;e=-j}new f.SizeHandle(f,i.resizeDir,f.pxself(b,i.size),f.pxself(b,l.size),k,e,i.resizerClass,function(m){ua(a,d,m)},b,u,c,0,0)}function wa(a,b){return b==0?a[b][1]!==0:a[b-1][1]!== 0||a[b][1]!==0}function xa(a,b){var c=s[a],e=s[a^1],i=c.measures,l=0,k=false,u=false,d=false,j=la?b.parentNode:null;if(c.maxSize===0)if(j){var m=f.css(j,\"position\");if(m===\"absolute\")l=f.pxself(j,c.size);if(l===0){if(!c.initialized){if(a===0&&(m===\"absolute\"||m===\"fixed\")){j.style.display=\"none\";l=j.clientWidth;j.style.display=\"\"}l=a?j.clientHeight:j.clientWidth;k=true;if(a==0&&l==0&&f.isIElt9){l=j.offsetWidth;k=false}var h;if((f.hasTag(j,\"TD\")||f.hasTag(j,\"TH\")||$(j.parentNode).hasClass(\"Wt-domRoot\"))&& !(f.isIE&&!f.isIElt9)){d=0;h=1}else{d=c.minSize?c.minSize:i[3];h=0}function G(ca,ha){return ca-ha<=1}if(f.isIElt9&&G(l,h)||G(l,d+M(j,a)))c.maxSize=999999}if(l===0&&c.maxSize===0){l=a?j.clientHeight:j.clientWidth;k=true}}}else{l=f.pxself(b,c.size);u=true}else if(c.sizeSet){l=f.pxself(j,c.size);u=true}var r=0;if(j&&j.wtGetPS&&a==1)r=j.wtGetPS(j,b,a,0);d=i[2];if(d<c.minSize)d=c.minSize;if(c.maxSize&&!c.sizeSet){l=Math.min(d,c.maxSize)+r;v(j,c.size,l+ga(j,a)+\"px\")&&N&&N.setElDirty(J);l=l;d=u=true}c.cSize= l;if(a==1&&j&&j.wtResize){h=e.cSize;d=c.cSize;j.wtResize(j,Math.round(h),Math.round(d),true)}l-=r;if(!u){u=0;if(typeof c.cPadding===\"undefined\"){u=k?M(j,a):ga(j,a);c.cPadding=u}else u=c.cPadding;l-=u}c.initialized=true;if(!(j&&l<=0)){if(l<i[3]-r)l=i[3]-r;j=[];k=c.config.length;u=e.config.length;for(d=0;d<k;++d)c.stretched[d]=false;if(l>=i[3]-r){r=l-i[4];h=[];var p=[0,0],t=[0,0],o=0;for(d=0;d<k;++d)if(i[1][d]>-1){m=-1;if(typeof c.fixedSize[d]!==\"undefined\"&&!wa(c.config,d))c.fixedSize[d]=undefined; if(typeof c.fixedSize[d]!==\"undefined\"&&(d+1==k||i[1][d+1]>-1))m=c.fixedSize[d];else if(c.config[d][1]!==0&&c.config[d][1][0]>=0){m=c.config[d][1][0];if(c.config[d][1][1])m=(l-i[4])*m/100}if(m>=0){h[d]=-1;j[d]=m;r-=j[d]}else{if(c.config[d][0]>0){m=1;h[d]=c.config[d][0];o+=h[d]}else{m=0;h[d]=0}p[m]+=i[1][d];t[m]+=i[0][d];j[d]=i[0][d]}}else{h[d]=-2;j[d]=-1}if(c.fixedSize.length>k)c.fixedSize.length=k;if(o==0){for(d=0;d<k;++d)if(h[d]==0){h[d]=1;++o}t[1]=t[0];p[1]=p[0];t[0]=0;p[0]=0}if(r>t[0]+p[1]){r-= t[0];if(r>t[1]){if(c.fitSize){r-=t[1];r=r/o;for(d=0;d<k;++d)if(h[d]>0){j[d]+=Math.round(h[d]*r);c.stretched[d]=true}}}else{m=1;if(r<p[m])r=p[m];r=t[m]-p[m]>0?(r-p[m])/(t[m]-p[m]):0;for(d=0;d<k;++d)if(h[d]>0){p=i[0][d]-i[1][d];j[d]=i[1][d]+Math.round(p*r)}}}else{for(d=0;d<k;++d)if(h[d]>0)j[d]=i[1][d];r-=p[1];m=0;if(r<p[m])r=p[m];r=t[m]-p[m]>0?(r-p[m])/(t[m]-p[m]):0;for(d=0;d<k;++d)if(h[d]==0){p=i[0][d]-i[1][d];j[d]=i[1][d]+Math.round(p*r)}}}else j=i[1];c.sizes=j;i=c.margins[1];r=true;p=false;for(d= 0;d<k;++d){if(j[d]>-1){var g=p;if(p){p=D+\"-rs\"+a+\"-\"+d;h=f.getElement(p);if(!h){c.resizeHandles[d]=p;h=document.createElement(\"div\");h.setAttribute(\"id\",p);h.di=d;h.style.position=\"absolute\";h.style[e.left]=e.margins[1]+\"px\";h.style[c.size]=c.margins[0]+\"px\";if(e.cSize)h.style[e.size]=e.cSize-e.margins[2]-e.margins[1]+\"px\";h.className=c.handleClass;b.insertBefore(h,b.firstChild);h.onmousedown=h.ontouchstart=function(ca){va(a,this,ca||window.event)}}i+=2;v(h,c.left,i+\"px\");i+=2}else if(c.resizeHandles[d]){h= f.getElement(c.resizeHandles[d]);h.parentNode.removeChild(h);c.resizeHandles[d]=undefined}p=c.config[d][1]!==0;if(r)r=false;else i+=c.margins[0]}for(t=0;t<u;++t)if((o=c.getItem(d,t))&&o.w){h=o.w;m=Math.max(j[d],0);if(o.span){var n,w=p;for(n=1;n<o.span[a];++n){if(d+n>=j.length)break;if(w)m+=4;w=c.config[d+n][1]!==0;if(j[d+n-1]>-1&&j[d+n]>-1)m+=c.margins[0];m+=j[d+n]}}var H;v(h,\"visibility\",\"\");w=o.align>>c.alignBits&15;n=o.ps[a];if(m<n)w=0;if(w){switch(w){case 1:H=i;break;case 4:H=i+(m-n)/2;break; case 2:H=i+(m-n);break}n-=o.margin[a];if(o.layout){v(h,c.size,n+\"px\")&&X(o,1);o.set[a]=true}else if(m>=n&&o.set[a]){v(h,c.size,n+\"px\")&&X(o,1);o.set[a]=false}o.size[a]=n;o.psize[a]=n}else{H=o.margin[a];w=Math.max(0,m-H);var ba=a==0&&o.sc[a];if(!ma(h)&&(ba||m!=n||o.layout)){if(v(h,c.size,w+\"px\")){if(!f.isIE&&(f.hasTag(h,\"TEXTAREA\")||f.hasTag(h,\"INPUT\"))){v(h,\"margin-\"+c.left,o.margin[a]/2+\"px\");v(h,\"margin-\"+e.left,o.margin[!a]/2+\"px\")}X(o,1);o.set[a]=true}}else if(o.fs[a])a==0&&v(h,c.size,o.fs[a]- H+\"px\");else{v(h,c.size,\"\")&&X(o,1);if(o.set)o.set[a]=false}H=i;o.size[a]=w;o.psize[a]=m}if(W)if(g){v(h,c.left,\"4px\");m=f.css(h,\"position\");if(m!==\"absolute\")h.style.position=\"relative\"}else v(h,c.left,\"0px\");else v(h,c.left,H+\"px\");if(a==1){if(h.wtResize)h.wtResize(h,o.set[0]?Math.round(o.size[0]):-1,o.set[1]?Math.round(o.size[1]):-1,true);o.dirty=0}}if(j[d]>-1)i+=j[d]}if(c.resizeHandles.length>k){for(g=k;g<c.resizeHandles.length;g++)if(c.resizeHandles[g]){h=f.getElement(c.resizeHandles[g]);h.parentNode.removeChild(h)}c.resizeHandles.length= k}$(b).children(\".\"+e.handleClass).css(c.size,l-c.margins[2]-c.margins[1]+\"px\")}}function na(){var a=f.getElement(D);la=K==null;J=N=null;sa=oa=true;T=[];pa=false;if(la){var b=a;b=b.parentNode;for(T=[0,0];b!=document;){T[0]+=aa(b,0);T[1]+=aa(b,1);if(b.wtGetPS)pa=true;var c=jQuery.data(b.parentNode,\"layout\");if(c){J=b;N=c;break}b=b;b=b.parentNode;if(b.childNodes.length!=1&&!b.wtGetPS)oa=false}a=a.parentNode;for(b=0;b<2;++b)s[b].sizeSet=f.pxself(a,s[b].size)!=0}else{N=jQuery.data(document.getElementById(K), \"layout\");J=a;T[0]=aa(J,0);T[1]=aa(J,1)}}var f=F.WT;this.descendants=[];var ra=this,C=A,P=true,ea=true,la,N,J,oa,sa=false,T,pa,fa=$(document.body).hasClass(\"Wt-rtl\"),s=[{initialized:false,config:C.cols,margins:E,maxSize:Z,measures:[],sizes:[],stretched:[],fixedSize:[],Left:fa?\"Right\":\"Left\",left:fa?\"right\":\"left\",Right:fa?\"Left\":\"Right\",Size:\"Width\",size:\"width\",alignBits:0,getItem:function(a,b){return C.items[b*s[0].config.length+a]},setItem:function(a,b,c){C.items[b*s[0].config.length+a]=c},handleClass:\"Wt-vrh2\", resizeDir:\"h\",resizerClass:\"Wt-hsh2\",fitSize:U,resizeHandles:[]},{initialized:false,config:C.rows,margins:z,maxSize:q,measures:[],sizes:[],stretched:[],fixedSize:[],Left:\"Top\",left:\"top\",Right:\"Bottom\",Size:\"Height\",size:\"height\",alignBits:4,getItem:function(a,b){return C.items[a*s[0].config.length+b]},setItem:function(a,b,c){C.items[a*s[0].config.length+b]=c},handleClass:\"Wt-hrh2\",resizeDir:\"v\",resizerClass:\"Wt-vsh2\",fitSize:V,resizeHandles:[]}];jQuery.data(document.getElementById(D),\"layout\",this); this.updateSizeInParent=function(a){if(N&&J.id){var b=f.$(J.id);if(b){if(J!=b)if(N=jQuery.data(b.parentNode,\"layout\"))J=b;else na()}else na()}if(N)if(oa){var c=s[a];b=c.measures[2];if(c.maxSize>0)b=Math.min(c.maxSize,b);if(pa){c=f.getElement(D);if(!c)return;for(var e=c,i=e.parentNode;;){if(i.wtGetPS)b=i.wtGetPS(i,e,a,b);b+=aa(i,a);if(i==J)break;if(a==1&&i==c.parentNode&&!i.lh&&i.offsetHeight>b)b=i.offsetHeight;e=i;i=e.parentNode}}else b+=T[a];N.setChildSize(J,a,b)}};this.setConfig=function(a){var b= C;C=a;s[0].config=C.cols;s[1].config=C.rows;s[0].stretched=[];s[1].stretched=[];var c;a=0;for(c=b.items.length;a<c;++a){var e=b.items[a];if(e){var i=x(e.id);if(i){i.ps=e.ps;i.sc=e.sc;i.ms=e.ms;i.size=e.size;i.psize=e.psize;i.fs=e.fs;i.margin=e.margin;i.set=e.set}else if(e.set){e.set[0]&&v(e.w,s[0].size,\"\");e.set[1]&&v(e.w,s[1].size,\"\")}}}P=ea=true;F.layouts2.scheduleAdjust()};this.getId=function(){return D};this.setElDirty=function(a){if(a=x(a.id)){a.dirty=2;P=true;F.layouts2.scheduleAdjust()}};this.setItemsDirty= function(a){var b,c,e=s[0].config.length;b=0;for(c=a.length;b<c;++b){var i=C.items[a[b][0]*e+a[b][1]];if(i){i.dirty=2;if(i.layout){i.layout=false;i.wasLayout=true;F.layouts2.setChildLayoutsDirty(ra,i.w)}}}P=true};this.setDirty=function(){ea=true};this.setAllDirty=function(){var a,b;a=0;for(b=C.items.length;a<b;++a){var c=C.items[a];if(c)c.dirty=2}P=true};this.setChildSize=function(a,b,c){var e=s[0].config.length,i=s[b],l;if(a=x(a.id)){e=b===0?l%e:l/e;if(a.align>>i.alignBits&15||!i.stretched[e]){if(!a.ps)a.ps= [];a.ps[b]=c}a.layout=true;X(a,1)}};this.measure=function(a){var b=f.getElement(D);if(b)if(!f.isHidden(b)){sa||na();if(P||ea)ta(a,b,la?b.parentNode:null);if(a==1)P=ea=false}};this.setMaxSize=function(a,b){s[0].maxSize=a;s[1].maxSize=b};this.apply=function(a){var b=f.getElement(D);if(!b)return false;if(f.isHidden(b))return true;xa(a,b);return true};this.contains=function(a){var b=f.getElement(D);a=f.getElement(a.getId());return b&&a?f.contains(b,a):false};this.WT=f}");
 	}
 
 	static WJavaScriptPreamble appjs1() {
@@ -709,7 +730,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 				JavaScriptScope.ApplicationScope,
 				JavaScriptObjectType.JavaScriptObject,
 				"layouts2",
-				"new (function(){var z=[],C=false,J=this,M=false;this.find=function(s){return jQuery.data(document.getElementById(s),\"layout\")};this.setDirty=function(s){(s=jQuery.data(s,\"layout\"))&&s.setDirty()};this.setChildLayoutsDirty=function(s,E){var x,v;x=0;for(v=s.descendants.length;x<v;++x){var w=s.descendants[x];if(E){var A=s.WT.getElement(w.getId());if(A&&!s.WT.contains(E,A))continue}w.setDirty()}};this.add=function(s){function E(x,v){var w,A;w=0;for(A= x.length;w<A;++w){var u=x[w];if(u.getId()==v.getId()){x[w]=v;v.descendants=u.descendants;return}else if(u.contains(v)){E(u.descendants,v);return}else if(v.contains(u)){v.descendants.push(u);x.splice(w,1);--w;--A}}x.push(v)}E(z,s);J.scheduleAdjust()};var R=false,K=false;this.scheduleAdjust=function(){if(!R){R=true;setTimeout(function(){J.adjust()},0)}};this.adjust=function(s,E){function x(w,A){var u,H;u=0;for(H=w.length;u<H;++u){var I=w[u];x(I.descendants,A);A==1&&M&&I.setDirty();I.measure(A)}}function v(w, A){var u,H;u=0;for(H=w.length;u<H;++u){var I=w[u];if(I.apply(A))v(I.descendants,A);else{w.splice(u,1);--u;--H}}}if(s){(s=this.find(s))&&s.setItemsDirty(E);J.scheduleAdjust()}else{R=false;if(!C){C=true;K=false;x(z,0);v(z,0);x(z,1);v(z,1);if(K){x(z,0);v(z,0);x(z,1);v(z,1)}M=K=C=false}}};this.updateConfig=function(s,E){(s=this.find(s))&&s.setConfig(E)};this.remeasure=function(){K=true};window.onresize=function(){M=true;J.scheduleAdjust()};window.onshow=function(){M=true;J.adjust()}})");
+				"new (function(){var F=[],D=false,K=this,U=false;this.find=function(q){return(q=document.getElementById(q))?jQuery.data(q,\"layout\"):null};this.setDirty=function(q){if(q=this.find(q)){q.setDirty();K.scheduleAdjust()}};this.setElementDirty=function(q){var E=q;for(q=q.parentNode;q&&q!=document.body;){var z=jQuery.data(q,\"layout\");z&&z.setElDirty(E);E=q;q=q.parentNode}};this.setChildLayoutsDirty=function(q,E){var z,A;z=0;for(A=q.descendants.length;z< A;++z){var x=q.descendants[z];if(E){var B=q.WT.getElement(x.getId());if(B&&!q.WT.contains(E,B))continue}x.setDirty()}};this.add=function(q){function E(z,A){var x,B;x=0;for(B=z.length;x<B;++x){var y=z[x];if(y.getId()==A.getId()){z[x]=A;A.descendants=y.descendants;return}else if(y.contains(A)){E(y.descendants,A);return}else if(A.contains(y)){A.descendants.push(y);z.splice(x,1);--x;--B}}z.push(A)}E(F,q);K.scheduleAdjust()};var V=false,W=0;this.scheduleAdjust=function(q){if(q)U=true;if(!V){if(D)++W;else W= 0;if(!(W>=6)){V=true;setTimeout(function(){K.adjust()},0)}}};this.adjust=function(q,E){function z(x,B){var y,O;y=0;for(O=x.length;y<O;++y){var M=x[y];z(M.descendants,B);if(B==1&&U)M.setDirty();else B==0&&M.setAllDirty();M.measure(B)}}function A(x,B){var y,O;y=0;for(O=x.length;y<O;++y){var M=x[y];if(M.apply(B))A(M.descendants,B);else{x.splice(y,1);--y;--O}}}if(q){(q=this.find(q))&&q.setItemsDirty(E);K.scheduleAdjust()}else{V=false;if(!D){D=true;z(F,0);A(F,0);z(F,1);A(F,1);U=D=false}}};this.updateConfig= function(q,E){(q=this.find(q))&&q.setConfig(E)};this.adjustNow=function(){V&&K.adjust()};var Z=null;window.onresize=function(){clearTimeout(Z);Z=setTimeout(function(){Z=null;K.scheduleAdjust(true)},20)};window.onshow=function(){U=true;K.adjust()}})");
 	}
 
 	static WJavaScriptPreamble wtjs10() {
@@ -717,13 +738,13 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"ChildrenResize",
-				"function(a,e,c){function f(h){var i=b.px(h,\"marginTop\");i+=b.px(h,\"marginBottom\");if(!b.boxSizing(h)){i+=b.px(h,\"borderTopWidth\");i+=b.px(h,\"borderBottomWidth\");i+=b.px(h,\"paddingTop\");i+=b.px(h,\"paddingBottom\")}return i}var b=this;a.style.height=c+\"px\";if(b.boxSizing(a)){c-=b.px(a,\"marginTop\");c-=b.px(a,\"marginBottom\");c-=b.px(a,\"borderTopWidth\");c-=b.px(a,\"borderBottomWidth\");c-=b.px(a,\"paddingTop\");c-=b.px(a,\"paddingBottom\");e-=b.px(a, \"marginLeft\");e-=b.px(a,\"marginRight\");e-=b.px(a,\"borderLeftWidth\");e-=b.px(a,\"borderRightWidth\");e-=b.px(a,\"paddingLeft\");e-=b.px(a,\"paddingRight\")}var g,k,d;g=0;for(k=a.childNodes.length;g<k;++g){d=a.childNodes[g];if(d.nodeType==1){var j=c-f(d);if(j>0)if(d.wtResize)d.wtResize(d,e,j);else{j=j+\"px\";if(d.style.height!=j)d.style.height=j}}}}");
+				"function(a,f,c,e){function i(j){var k=b.px(j,\"marginTop\");k+=b.px(j,\"marginBottom\");if(!b.boxSizing(j)){k+=b.px(j,\"borderTopWidth\");k+=b.px(j,\"borderBottomWidth\");k+=b.px(j,\"paddingTop\");k+=b.px(j,\"paddingBottom\")}return k}var b=this,h=c>=0;a.lh=h&&e;a.style.height=h?c+\"px\":\"\";if(b.boxSizing(a)){c-=b.px(a,\"marginTop\");c-=b.px(a,\"marginBottom\");c-=b.px(a,\"borderTopWidth\");c-=b.px(a,\"borderBottomWidth\");c-=b.px(a,\"paddingTop\");c-=b.px(a,\"paddingBottom\"); f-=b.px(a,\"marginLeft\");f-=b.px(a,\"marginRight\");f-=b.px(a,\"borderLeftWidth\");f-=b.px(a,\"borderRightWidth\");f-=b.px(a,\"paddingLeft\");f-=b.px(a,\"paddingRight\")}var g,m,d;g=0;for(m=a.childNodes.length;g<m;++g){d=a.childNodes[g];if(d.nodeType==1)if(h){var l=c-i(d);if(l>0){if(d.offsetTop>0){var n=b.css(d,\"overflow\");if(n===\"visible\"||n===\"\")d.style.overflow=\"auto\"}if(d.wtResize)d.wtResize(d,f,l,e);else{l=l+\"px\";if(d.style.height!=l){d.style.height=l;d.lh=e}}}}else if(d.wtResize)d.wtResize(d,f,-1);else{d.style.height= \"\";d.lh=false}}}");
 	}
 
 	static WJavaScriptPreamble wtjs11() {
 		return new WJavaScriptPreamble(JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction, "ChildrenGetPS",
-				"function(a,e,c,f){return f}");
+				"function(a,f,c,e){return e}");
 	}
 
 	static WJavaScriptPreamble wtjs12() {
@@ -731,7 +752,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"LastResize",
-				"function(a,e,c){var f=this;a.style.height=c+\"px\";a=a.lastChild;var b=a.previousSibling;c-=b.offsetHeight+f.px(b,\"marginTop\")+f.px(b,\"marginBottom\");if(c>0)if(a.wtResize)a.wtResize(a,e,c);else a.style.height=c+\"px\"}");
+				"function(a,f,c,e){var i=this,b=c>=0;a.lh=b&&e;a.style.height=b?c+\"px\":\"\";a=a.lastChild;var h=a.previousSibling;if(b){c-=h.offsetHeight+i.px(h,\"marginTop\")+i.px(h,\"marginBottom\");if(c>0)if(a.wtResize)a.wtResize(a,f,c,e);else{a.style.height=c+\"px\";a.lh=e}}else if(a.wtResize)a.wtResize(a,-1,-1);else{a.style.height=\"\";a.lh=false}}");
 	}
 
 	static WJavaScriptPreamble wtjs13() {
@@ -739,6 +760,6 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"LastGetPS",
-				"function(a,e,c,f){var b=this,g,k;g=0;for(k=a.childNodes.length;g<k;++g){var d=a.childNodes[g];if(d!=e)if(c===0)f=Math.max(f,d.offsetWidth);else f+=d.offsetHeight+b.px(d,\"marginTop\")+b.px(d,\"marginBottom\")}return f}");
+				"function(a,f,c,e){var i=this,b,h;b=0;for(h=a.childNodes.length;b<h;++b){var g=a.childNodes[b];if(g!=f){var m=i.css(g,\"position\");if(m!=\"absolute\"&&m!=\"fixed\")if(c===0)e=Math.max(e,g.offsetWidth);else e+=g.offsetHeight+i.px(g,\"marginTop\")+i.px(g,\"marginBottom\")}}return e}");
 	}
 }

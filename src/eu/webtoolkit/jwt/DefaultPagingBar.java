@@ -26,6 +26,7 @@ class DefaultPagingBar extends WContainerWidget {
 	public DefaultPagingBar(WAbstractItemView view) {
 		super();
 		this.view_ = view;
+		this.view_.addStyleClass("Wt-itemview-paged");
 		this.setStyleClass("Wt-pagingbar");
 		this.firstButton_ = new WPushButton(
 				tr("Wt.WAbstractItemView.PageBar.First"), this);

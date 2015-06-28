@@ -22,6 +22,8 @@ class RefEncoder extends XHtmlFilter {
 	private EnumSet<RefEncoderOption> options;
 
 	public RefEncoder(EnumSet<RefEncoderOption> options) {
+		super(false);
+
 		this.options = options;
 	}
 

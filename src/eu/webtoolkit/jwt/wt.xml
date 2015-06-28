@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <messages>
+  <message id="Wt.QuittedMessage">
+    The application has stopped running, would you like to restart?
+  </message>
+
   <message id="Wt.WAbstractItemView.PageIOfN"><b>{1}</b> of <b>{2}</b></message>
   <message id="Wt.WAbstractItemView.PageBar.First">&#x00ab; First</message>
   <message id="Wt.WAbstractItemView.PageBar.Previous">&#x2039; Previous</message>
@@ -65,7 +69,7 @@
   <message id="Wt.WDateTime.months">{1} months</message>
   <message id="Wt.WDateTime.year">one year</message>
   <message id="Wt.WDateTime.years">{1} years</message>
-  <message id="Wt.WDateTime.null">Null</message>
+  <message id="Wt.WDateTime.null"></message>
 
   <message id="Wt.WDateValidator.DateTooEarly">The date must be after {1}</message>
   <message id="Wt.WDateValidator.DateTooLate">The date must be before {1}</message>
@@ -75,7 +79,6 @@
   <message id="Wt.WDefaultLoadingIndicator.Loading">Loading...</message>
 
   <message id="Wt.WDialog.template">
-    ${shadow-x1-x2}
     ${center-script}
     ${layout}
   </message>
@@ -208,5 +211,37 @@
 	<li>${title}</li>
       </ul>
     </div>
+  </message>
+
+  <message id="Wt.WNavigationBar.template">
+    <div class="navbar-inner">
+      <div class="container">
+	${collapse-button}
+	${expand-button}
+	${title-link}
+	${contents}
+      </div>
+    </div>
+  </message>
+
+  <message id="Wt.WNavigationBar.expand-button">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </message>
+
+  <message id="Wt.WTreeViewNode.template">
+    <div class="Wt-item ${trunk-class} ${selected}">
+      ${cols-row}${expand}${no-expand}${col0}
+    </div>
+    ${children}
+  </message>
+
+  <message id="Wt.WTreeNode.template">
+    <div class="Wt-item ${trunk-class} ${selected}">
+      ${cols-row}${expand}${label-area}
+    </div>
+    <div style="clear: both"></div>
+    ${children}
   </message>
 </messages>

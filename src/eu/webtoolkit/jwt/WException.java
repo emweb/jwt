@@ -28,7 +28,7 @@ public class WException extends RuntimeException {
 	/**
 	 * Creates an exception.
 	 */
-	public WException(String what) {
+	public WException(final String what) {
 		super();
 		this.what_ = what;
 	}
@@ -36,7 +36,7 @@ public class WException extends RuntimeException {
 	/**
 	 * Creates an exception.
 	 */
-	public WException(String what, RuntimeException wrapped) {
+	public WException(final String what, final RuntimeException wrapped) {
 		super();
 		this.what_ = what + "\nCaused by exception: " + wrapped.toString();
 	}
@@ -51,7 +51,7 @@ public class WException extends RuntimeException {
 	/**
 	 * Sets the message.
 	 */
-	public void setMessage(String message) {
+	public void setMessage(final String message) {
 		this.what_ = message;
 	}
 

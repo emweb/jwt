@@ -60,10 +60,11 @@ import org.slf4j.LoggerFactory;
  * <h3>CSS</h3>
  * <p>
  * This widget corresponds to the HTML
- * <code>&lt;input type=&quot;radio&quot;&gt;</code> tag. Depending on whether a
- * text is included, it may be nested in a <code>&lt;span&gt;</code> tag which
- * also includes a rendered {@link WLabel}. This widget does not provide
- * styling, and can be styled using inline or external CSS as appropriate.
+ * <code>&lt;input type=&quot;radio&quot;&gt;</code> tag. When a label is
+ * specified, the input element is nested in a <code>&lt;label&gt;</code>.
+ * <p>
+ * This widget does not provide styling, and can be styled using inline or
+ * external CSS as appropriate.
  * <p>
  * 
  * @see WAbstractToggleButton
@@ -94,7 +95,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	/**
 	 * Creates an unchecked radio button with given text and optional parent.
 	 */
-	public WRadioButton(CharSequence text, WContainerWidget parent) {
+	public WRadioButton(final CharSequence text, WContainerWidget parent) {
 		super(text, parent);
 		this.buttonGroup_ = null;
 		this.setFormObject(true);
@@ -106,7 +107,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	 * Calls {@link #WRadioButton(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WRadioButton(CharSequence text) {
+	public WRadioButton(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -138,7 +139,7 @@ public class WRadioButton extends WAbstractToggleButton {
 		this.buttonGroup_ = group;
 	}
 
-	void updateInput(DomElement input, boolean all) {
+	void updateInput(final DomElement input, boolean all) {
 		if (all) {
 			input.setAttribute("type", "radio");
 			if (this.buttonGroup_ != null) {
@@ -148,19 +149,19 @@ public class WRadioButton extends WAbstractToggleButton {
 		}
 	}
 
-	void getFormObjects(Map<String, WObject> formObjects) {
+	void getFormObjects(final Map<String, WObject> formObjects) {
 		if (this.buttonGroup_ != null) {
 			formObjects.put(this.buttonGroup_.getId(), this.buttonGroup_);
 		}
 		super.getFormObjects(formObjects);
 	}
 
-	void setFormData(WObject.FormData formData) {
-		if (this.stateChanged_ || this.isReadOnly()) {
+	void setFormData(final WObject.FormData formData) {
+		if (this.flags_.get(BIT_STATE_CHANGED) || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			if (value.equals(this.getId())) {
 				if (this.buttonGroup_ != null) {
 					this.buttonGroup_.uncheckOthers(this);

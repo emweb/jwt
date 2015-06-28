@@ -81,7 +81,7 @@ public class WRectArea extends WAbstractArea {
 	 * <p>
 	 * The <code>rect</code> argument is in pixel units.
 	 */
-	public WRectArea(WRectF rect) {
+	public WRectArea(final WRectF rect) {
 		super();
 		this.x_ = (int) rect.getX();
 		this.y_ = (int) rect.getY();
@@ -154,7 +154,7 @@ public class WRectArea extends WAbstractArea {
 	private int width_;
 	private int height_;
 
-	void updateDom(DomElement element, boolean all) {
+	protected boolean updateDom(final DomElement element, boolean all) {
 		element.setAttribute("shape", "rect");
 		StringWriter coords = new StringWriter();
 		if (this.x_ == 0 && this.y_ == 0 && this.width_ == 0
@@ -167,6 +167,6 @@ public class WRectArea extends WAbstractArea {
 					String.valueOf(this.y_ + this.height_));
 		}
 		element.setAttribute("coords", coords.toString());
-		super.updateDom(element, all);
+		return super.updateDom(element, all);
 	}
 }

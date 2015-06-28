@@ -97,6 +97,16 @@ public class EscapeOStream {
 	}
 
 
+	public EscapeOStream append(boolean repeat) {
+		try {
+			sink_.append(repeat ? "true" : "false");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+
+
 	public boolean isEmpty() {
 		return sink_.toString().length() == 0;
 	}

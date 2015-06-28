@@ -370,12 +370,12 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.setImplementation(impl);
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WMediaPlayer.js", wtjs1());
-		String res = WApplication.getResourcesUrl() + "jPlayer/";
+		String res = WApplication.getRelativeResourcesUrl() + "jPlayer/";
 		if (!app.getEnvironment().hasAjax()) {
 			app.require(res + "jquery.min.js");
 		}
 		if (app.require(res + "jquery.jplayer.min.js")) {
-			app.useStyleSheet(res + "skin/jplayer.blue.monday.css");
+			app.useStyleSheet(new WLink(res + "skin/jplayer.blue.monday.css"));
 		}
 		if (this.mediaType_ == WMediaPlayer.MediaType.Video) {
 			this.setVideoSize(480, 270);
@@ -510,7 +510,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * 
 	 * @see WMediaPlayer.TextId#Title
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		this.title_ = WString.toWString(title);
 		if (this.display_[WMediaPlayer.TextId.Title.getValue()] != null) {
 			this.display_[WMediaPlayer.TextId.Title.getValue()]
@@ -535,12 +535,12 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * You may pass a null <code>link</code> if you want to indicate the media
 	 * types you will use (later) without already loading data.
 	 */
-	public void addSource(WMediaPlayer.Encoding encoding, WLink link) {
+	public void addSource(WMediaPlayer.Encoding encoding, final WLink link) {
 		this.media_.add(new WMediaPlayer.Source());
 		this.media_.get(this.media_.size() - 1).link = link;
 		this.media_.get(this.media_.size() - 1).encoding = encoding;
 		this.mediaUpdated_ = true;
-		this.askRerender();
+		this.scheduleRender();
 	}
 
 	/**
@@ -569,7 +569,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	public void clearSources() {
 		this.media_.clear();
 		this.mediaUpdated_ = true;
-		this.askRerender();
+		this.scheduleRender();
 	}
 
 	/**
@@ -696,7 +696,12 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * @see WMediaPlayer#seek(double time)
 	 */
 	public void play() {
-		this.playerDo("play");
+		if (this.isRendered()) {
+			this.doJavaScript("setTimeout(function(){" + this.getJsPlayerRef()
+					+ ".jPlayer('play'); }, 0);");
+		} else {
+			this.playerDo("play");
+		}
 	}
 
 	/**
@@ -756,10 +761,20 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * The default value is 0.8
 	 */
 	public void setVolume(double volume) {
+		this.status_.volume = volume;
 		this.playerDo("volume", String.valueOf(volume));
 	}
 
-	// public double getVolume() ;
+	/**
+	 * Returns the volume.
+	 * <p>
+	 * 
+	 * @see WMediaPlayer#setVolume(double volume)
+	 */
+	public double getVolume() {
+		return this.status_.volume;
+	}
+
 	/**
 	 * Mutes or unmutes the playback volume.
 	 * <p>
@@ -873,7 +888,12 @@ public class WMediaPlayer extends WCompositeWidget {
 		return "$('#" + this.getId() + " .jp-jplayer')";
 	}
 
-	void setFormData(WObject.FormData formData) {
+	public void refresh() {
+		super.refresh();
+		this.render(EnumSet.of(RenderFlag.RenderFull));
+	}
+
+	void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
@@ -896,7 +916,7 @@ public class WMediaPlayer extends WCompositeWidget {
 					this.updateProgressBarState(WMediaPlayer.BarControlId.Time);
 					this
 							.updateProgressBarState(WMediaPlayer.BarControlId.Volume);
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					throw new WException("WMediaPlayer: error parsing: "
 							+ formData.values[0] + ": " + e.toString());
 				}
@@ -907,18 +927,18 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		WApplication app = WApplication.getInstance();
 		if (this.mediaUpdated_) {
 			StringBuilder ss = new StringBuilder();
-			ss.append("{");
+			ss.append('{');
 			boolean first = true;
 			for (int i = 0; i < this.media_.size(); ++i) {
 				if (this.media_.get(i).link.isNull()) {
 					continue;
 				}
 				if (!first) {
-					ss.append(",");
+					ss.append(',');
 				}
 				String url = app.resolveRelativeUrl(this.media_.get(i).link
 						.getUrl());
@@ -926,11 +946,11 @@ public class WMediaPlayer extends WCompositeWidget {
 						.append(": ").append(WWebWidget.jsStringLiteral(url));
 				first = false;
 			}
-			ss.append("}");
+			ss.append('}');
 			if (!!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 				this.playerDo("setMedia", ss.toString());
 			} else {
-				this.initialJs_ = ".jPlayer('setMedia', " + ss.toString() + ")"
+				this.initialJs_ = ".jPlayer('setMedia', " + ss.toString() + ')'
 						+ this.initialJs_;
 			}
 			this.mediaUpdated_ = false;
@@ -943,17 +963,17 @@ public class WMediaPlayer extends WCompositeWidget {
 			ss.append(this.getJsPlayerRef()).append(".jPlayer({").append(
 					"ready: function () {");
 			if (this.initialJs_.length() != 0) {
-				ss.append("$(this)").append(this.initialJs_).append(";");
+				ss.append("$(this)").append(this.initialJs_).append(';');
 			}
 			this.initialJs_ = "";
 			ss.append("},").append("swfPath: \"").append(
-					WApplication.getResourcesUrl() + "jPlayer\",").append(
-					"supplied: \"");
+					WApplication.getResourcesUrl()).append("jPlayer\",")
+					.append("supplied: \"");
 			boolean first = true;
 			for (int i = 0; i < this.media_.size(); ++i) {
 				if (this.media_.get(i).encoding != WMediaPlayer.Encoding.PosterImage) {
 					if (!first) {
-						ss.append(",");
+						ss.append(',');
 					}
 					ss
 							.append(mediaNames[this.media_.get(i).encoding
@@ -1006,9 +1026,9 @@ public class WMediaPlayer extends WCompositeWidget {
 				ss.append("seekBar:\"#").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Time
 								.getValue()].getId()).append("\", ").append(
-						"playBar:\"#").append(
+						"playBar:\"#bar").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Time
-								.getValue()].getId()).append(" .Wt-pgb-bar\"");
+								.getValue()].getId()).append("\"");
 				first = false;
 			}
 			if (this.progressBar_[WMediaPlayer.BarControlId.Volume.getValue()] != null) {
@@ -1018,14 +1038,14 @@ public class WMediaPlayer extends WCompositeWidget {
 				ss.append("volumeBar:\"#").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Volume
 								.getValue()].getId()).append("\", ").append(
-						"volumeBarValue:\"#").append(
+						"volumeBarValue:\"#bar").append(
 						this.progressBar_[WMediaPlayer.BarControlId.Volume
-								.getValue()].getId()).append(" .Wt-pgb-bar\"");
+								.getValue()].getId()).append("\"");
 				first = false;
 			}
-			ss.append("}").append("});");
-			ss.append("new Wt3_2_3.WMediaPlayer(").append(
-					app.getJavaScriptClass()).append(",").append(
+			ss.append('}').append("});");
+			ss.append("new Wt3_3_4.WMediaPlayer(").append(
+					app.getJavaScriptClass()).append(',').append(
 					this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());
 			this.boundSignals_ = 0;
@@ -1038,7 +1058,7 @@ public class WMediaPlayer extends WCompositeWidget {
 						.append("', function(o, e) { ").append(
 								this.signals_.get(i).createCall()).append("})");
 			}
-			ss.append(";");
+			ss.append(';');
 			this.doJavaScript(ss.toString());
 			this.boundSignals_ = this.signals_.size();
 		}
@@ -1137,7 +1157,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	private void addAnchor(WTemplate t, WMediaPlayer.ButtonControlId id,
-			String bindId, String styleClass, String altText) {
+			String bindId, final String styleClass, final String altText) {
 		String text = "";
 		if (altText.length() == 0) {
 			text = styleClass.substring(3);
@@ -1156,12 +1176,12 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	private final void addAnchor(WTemplate t, WMediaPlayer.ButtonControlId id,
-			String bindId, String styleClass) {
+			String bindId, final String styleClass) {
 		addAnchor(t, id, bindId, styleClass, "");
 	}
 
 	private void addText(WTemplate t, WMediaPlayer.TextId id, String bindId,
-			String styleClass) {
+			final String styleClass) {
 		WText text = new WText();
 		text.setInline(false);
 		if (styleClass.length() != 0) {
@@ -1172,7 +1192,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	}
 
 	private void addProgressBar(WTemplate t, WMediaPlayer.BarControlId id,
-			String bindId, String styleClass, String valueStyleClass) {
+			String bindId, final String styleClass, final String valueStyleClass) {
 		WProgressBar progressBar = new WProgressBar();
 		progressBar.setStyleClass(styleClass);
 		progressBar.setValueStyleClass(valueStyleClass);
@@ -1189,7 +1209,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 		JSignal result;
 		this.signals_.add(result = new JSignal(this, name, true));
-		this.askRerender();
+		this.scheduleRender();
 		return result;
 	}
 
@@ -1218,7 +1238,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 	}
 
-	private void playerDo(String method, String args) {
+	private void playerDo(final String method, final String args) {
 		StringBuilder ss = new StringBuilder();
 		ss.append(".jPlayer('").append(method).append('\'');
 		if (args.length() != 0) {
@@ -1228,15 +1248,15 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.playerDoRaw(ss.toString());
 	}
 
-	private final void playerDo(String method) {
+	private final void playerDo(final String method) {
 		playerDo(method, "");
 	}
 
-	private void playerDoData(String method, String args) {
+	private void playerDoData(final String method, final String args) {
 		this.playerDoRaw(".data('jPlayer')." + method + "(" + args + ")");
 	}
 
-	private void playerDoRaw(String jqueryMethod) {
+	private void playerDoRaw(final String jqueryMethod) {
 		StringBuilder ss = new StringBuilder();
 		if (this.isRendered()) {
 			ss.append(this.getJsPlayerRef());
@@ -1252,6 +1272,12 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 	}
 
+	private static String LOAD_STARTED_SIGNAL = "jPlayer_loadstart.Wt";
+	private static String TIME_UPDATED_SIGNAL = "jPlayer_timeupdate.Wt";
+	private static String PLAYBACK_STARTED_SIGNAL = "jPlayer_play.Wt";
+	private static String PLAYBACK_PAUSED_SIGNAL = "jPlayer_pause.Wt";
+	private static String ENDED_SIGNAL = "jPlayer_ended.Wt";
+	private static String VOLUME_CHANGED_SIGNAL = "jPlayer_volumechange.Wt";
 	private static String[] mediaNames = { "poster", "mp3", "m4a", "oga",
 			"wav", "webma", "fla", "m4v", "ogv", "webmv", "flv" };
 	private static String[] media = { "audio", "video" };
@@ -1280,11 +1306,4 @@ public class WMediaPlayer extends WCompositeWidget {
 			throw new WException("Invalid readystate");
 		}
 	}
-
-	private static String LOAD_STARTED_SIGNAL = "jPlayer_loadstart.Wt";
-	private static String TIME_UPDATED_SIGNAL = "jPlayer_timeupdate.Wt";
-	private static String PLAYBACK_STARTED_SIGNAL = "jPlayer_play.Wt";
-	private static String PLAYBACK_PAUSED_SIGNAL = "jPlayer_pause.Wt";
-	private static String ENDED_SIGNAL = "jPlayer_ended.Wt";
-	private static String VOLUME_CHANGED_SIGNAL = "jPlayer_volumechange.Wt";
 }

@@ -50,7 +50,7 @@ public class Token {
 	/**
 	 * Constructor.
 	 */
-	public Token(String hash, WDate expirationTime) {
+	public Token(final String hash, final WDate expirationTime) {
 		this.hash_ = hash;
 		this.expirationTime_ = expirationTime;
 	}

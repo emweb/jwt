@@ -98,7 +98,7 @@ public class WScrollBar extends WObject {
 	private int value_;
 	private boolean valueSet_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.valueSet_) {
 			String side = this.orientation_ == Orientation.Horizontal ? "Left"
 					: "Top";
@@ -109,9 +109,9 @@ public class WScrollBar extends WObject {
 		if (this.tiesChanged_ || all) {
 			String jsCode = "";
 			for (int i = 0; i < this.ties_.size(); ++i) {
-				String tieElement = "Wt3_2_3.getElement('"
+				String tieElement = "Wt3_3_4.getElement('"
 						+ this.ties_.get(i).scrollArea_.getId() + "')";
-				String scrollElement = "Wt3_2_3.getElement('"
+				String scrollElement = "Wt3_3_4.getElement('"
 						+ this.scrollArea_.getId() + "')";
 				String side = this.orientation_ == Orientation.Horizontal ? "Left"
 						: "Top";

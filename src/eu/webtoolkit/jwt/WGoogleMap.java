@@ -162,7 +162,7 @@ public class WGoogleMap extends WCompositeWidget {
 		 * <p>
 		 * The calculation uses a sphere. Results can be out by 0.3%.
 		 */
-		public double distanceTo(WGoogleMap.Coordinate rhs) {
+		public double distanceTo(final WGoogleMap.Coordinate rhs) {
 			final double lat1 = this.lat_ * 3.14159265358979323846 / 180.0;
 			final double lat2 = rhs.getLatitude() * 3.14159265358979323846 / 180.0;
 			final double deltaLong = (rhs.getLongitude() - this.lon_) * 3.14159265358979323846 / 180.0;
@@ -247,23 +247,21 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Adds a marker overlay to the map.
 	 */
-	public void addMarker(WGoogleMap.Coordinate pos) {
+	public void addMarker(final WGoogleMap.Coordinate pos) {
 		StringWriter strm = new StringWriter();
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			strm
-					.append(
-							"var marker = new google.maps.Marker(new google.maps.LatLng(")
-					.append(String.valueOf(pos.getLatitude())).append(", ")
-					.append(String.valueOf(pos.getLongitude())).append("));")
-					.append(this.getJsRef()).append(".map.addOverlay(marker);");
+			strm.append("var marker = ");
+			write(strm, pos);
+			strm.append(";").append(this.getJsRef()).append(
+					".map.addOverlay(marker);");
 		} else {
-			strm.append("var position = new google.maps.LatLng(").append(
-					String.valueOf(pos.getLatitude())).append(", ").append(
-					String.valueOf(pos.getLongitude())).append(");").append(
-					"var marker = new google.maps.Marker({").append(
-					"position: position,").append("map: ").append(
-					this.getJsRef()).append(".map").append("});").append(
-					this.getJsRef()).append(".map.overlays.push(marker);");
+			strm.append("var position = ");
+			write(strm, pos);
+			strm.append(";").append("var marker = new google.maps.Marker({")
+					.append("position: position,").append("map: ").append(
+							this.getJsRef()).append(".map").append("});")
+					.append(this.getJsRef()).append(
+							".map.overlays.push(marker);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -274,8 +272,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * Specify a value between 0.0 and 1.0 for the opacity or set the alpha
 	 * value in the color.
 	 */
-	public void addPolyline(List<WGoogleMap.Coordinate> points, WColor color,
-			int width, double opacity) {
+	public void addPolyline(final List<WGoogleMap.Coordinate> points,
+			final WColor color, int width, double opacity) {
 		if (opacity == 1.0) {
 			opacity = color.getAlpha() / 255.0;
 		}
@@ -283,11 +281,9 @@ public class WGoogleMap extends WCompositeWidget {
 		StringWriter strm = new StringWriter();
 		strm.append("var waypoints = [];");
 		for (int i = 0; i < points.size(); ++i) {
-			strm.append("waypoints[").append(String.valueOf(i)).append(
-					"] = new google.maps.LatLng(").append(
-					String.valueOf(points.get(i).getLatitude())).append(", ")
-					.append(String.valueOf(points.get(i).getLongitude()))
-					.append(");");
+			strm.append("waypoints[").append(String.valueOf(i)).append("] = ");
+			write(strm, points.get(i));
+			strm.append(";");
 		}
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("var poly = new google.maps.Polyline(waypoints, \"")
@@ -317,7 +313,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
 	 * addPolyline(points, WColor.red, 2, 1.0)}
 	 */
-	public final void addPolyline(List<WGoogleMap.Coordinate> points) {
+	public final void addPolyline(final List<WGoogleMap.Coordinate> points) {
 		addPolyline(points, WColor.red, 2, 1.0);
 	}
 
@@ -328,8 +324,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
 	 * addPolyline(points, color, 2, 1.0)}
 	 */
-	public final void addPolyline(List<WGoogleMap.Coordinate> points,
-			WColor color) {
+	public final void addPolyline(final List<WGoogleMap.Coordinate> points,
+			final WColor color) {
 		addPolyline(points, color, 2, 1.0);
 	}
 
@@ -340,8 +336,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addPolyline(List points, WColor color, int width, double opacity)
 	 * addPolyline(points, color, width, 1.0)}
 	 */
-	public final void addPolyline(List<WGoogleMap.Coordinate> points,
-			WColor color, int width) {
+	public final void addPolyline(final List<WGoogleMap.Coordinate> points,
+			final WColor color, int width) {
 		addPolyline(points, color, width, 1.0);
 	}
 
@@ -352,8 +348,8 @@ public class WGoogleMap extends WCompositeWidget {
 	 * strokeColor and fillColor. This feature is only supported by the Google
 	 * Maps API version 3.
 	 */
-	public void addCircle(WGoogleMap.Coordinate center, double radius,
-			WColor strokeColor, int strokeWidth, WColor fillColor) {
+	public void addCircle(final WGoogleMap.Coordinate center, double radius,
+			final WColor strokeColor, int strokeWidth, final WColor fillColor) {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			throw new UnsupportedOperationException(
 					"WGoogleMap::addCircle is not supported in the Google Maps API v2.");
@@ -361,14 +357,11 @@ public class WGoogleMap extends WCompositeWidget {
 			StringWriter strm = new StringWriter();
 			double strokeOpacity = strokeColor.getAlpha() / 255.0;
 			double fillOpacity = fillColor.getAlpha() / 255.0;
+			strm.append("var mapLocal = ").append(this.getJsRef() + ".map;")
+					.append("var latLng = ");
+			write(strm, center);
 			strm
-					.append("var mapLocal = ")
-					.append(this.getJsRef() + ".map;")
-					.append("var latLng  = new google.maps.LatLng(")
-					.append(String.valueOf(center.getLatitude()))
-					.append(",")
-					.append(String.valueOf(center.getLongitude()))
-					.append(");")
+					.append(";")
 					.append(
 							"var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
 					.append(String.valueOf(radius)).append(
@@ -393,28 +386,29 @@ public class WGoogleMap extends WCompositeWidget {
 	 * {@link #addCircle(WGoogleMap.Coordinate center, double radius, WColor strokeColor, int strokeWidth, WColor fillColor)
 	 * addCircle(center, radius, strokeColor, strokeWidth, new WColor())}
 	 */
-	public final void addCircle(WGoogleMap.Coordinate center, double radius,
-			WColor strokeColor, int strokeWidth) {
+	public final void addCircle(final WGoogleMap.Coordinate center,
+			double radius, final WColor strokeColor, int strokeWidth) {
 		addCircle(center, radius, strokeColor, strokeWidth, new WColor());
 	}
 
 	/**
 	 * Adds a icon marker overlay to the map.
 	 */
-	public void addIconMarker(WGoogleMap.Coordinate pos, String iconURL) {
+	public void addIconMarker(final WGoogleMap.Coordinate pos,
+			final String iconURL) {
 		StringWriter strm = new StringWriter();
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			throw new UnsupportedOperationException(
 					"WGoogleMap::addIconMarker is not supported in the Google Maps API v2.");
 		} else {
-			strm.append("var position = new google.maps.LatLng(").append(
-					String.valueOf(pos.getLatitude())).append(", ").append(
-					String.valueOf(pos.getLongitude())).append(");").append(
-					"var marker = new google.maps.Marker({").append(
-					"position: position,").append("icon: \"").append(iconURL)
-					.append("\",").append("map: ").append(this.getJsRef())
-					.append(".map").append("});").append(this.getJsRef())
-					.append(".map.overlays.push(marker);");
+			strm.append("var position = ");
+			write(strm, pos);
+			strm.append(";").append("var marker = new google.maps.Marker({")
+					.append("position: position,").append("icon: \"").append(
+							iconURL).append("\",").append("map: ").append(
+							this.getJsRef()).append(".map").append("});")
+					.append(this.getJsRef()).append(
+							".map.overlays.push(marker);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -444,11 +438,12 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Opens a text bubble with html text at a specific location.
 	 */
-	public void openInfoWindow(WGoogleMap.Coordinate pos, CharSequence myHtml) {
+	public void openInfoWindow(final WGoogleMap.Coordinate pos,
+			final CharSequence myHtml) {
 		StringWriter strm = new StringWriter();
-		strm.append("var pos = new google.maps.LatLng(").append(
-				String.valueOf(pos.getLatitude())).append(", ").append(
-				String.valueOf(pos.getLongitude())).append(");");
+		strm.append("var pos = ");
+		write(strm, pos);
+		strm.append(";");
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append(this.getJsRef()).append(".map.openInfoWindow(pos, ")
 					.append(WWebWidget.jsStringLiteral(myHtml)).append(");");
@@ -467,26 +462,23 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Sets the map view to the given center.
 	 */
-	public void setCenter(WGoogleMap.Coordinate center) {
+	public void setCenter(final WGoogleMap.Coordinate center) {
 		StringWriter strm = new StringWriter();
-		strm.append(this.getJsRef()).append(
-				".map.setCenter(new google.maps.LatLng(").append(
-				String.valueOf(center.getLatitude())).append(", ").append(
-				String.valueOf(center.getLongitude())).append("));");
+		strm.append(this.getJsRef()).append(".map.setCenter(");
+		write(strm, center);
+		strm.append(");");
 		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
 	 * Sets the map view to the given center and zoom level.
 	 */
-	public void setCenter(WGoogleMap.Coordinate center, int zoom) {
+	public void setCenter(final WGoogleMap.Coordinate center, int zoom) {
 		StringWriter strm = new StringWriter();
-		strm.append(this.getJsRef()).append(
-				".map.setCenter(new google.maps.LatLng(").append(
-				String.valueOf(center.getLatitude())).append(", ").append(
-				String.valueOf(center.getLongitude())).append(")); ").append(
-				this.getJsRef()).append(".map.setZoom(").append(
-				String.valueOf(zoom)).append(");");
+		strm.append(this.getJsRef()).append(".map.setCenter(");
+		write(strm, center);
+		strm.append("); ").append(this.getJsRef()).append(".map.setZoom(")
+				.append(String.valueOf(zoom)).append(");");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -496,20 +488,19 @@ public class WGoogleMap extends WCompositeWidget {
 	 * If the point is already visible in the current map view, change the
 	 * center in a smooth animation.
 	 */
-	public void panTo(WGoogleMap.Coordinate center) {
+	public void panTo(final WGoogleMap.Coordinate center) {
 		StringWriter strm = new StringWriter();
-		strm.append(this.getJsRef()).append(
-				".map.panTo(new google.maps.LatLng(").append(
-				String.valueOf(center.getLatitude())).append(", ").append(
-				String.valueOf(center.getLongitude())).append("));");
+		strm.append(this.getJsRef()).append(".map.panTo(");
+		write(strm, center);
+		strm.append(");");
 		this.doGmJavaScript(strm.toString());
 	}
 
 	/**
 	 * Zooms the map to a region defined by a bounding box.
 	 */
-	public void zoomWindow(WGoogleMap.Coordinate topLeft,
-			WGoogleMap.Coordinate rightBottom) {
+	public void zoomWindow(final WGoogleMap.Coordinate topLeft,
+			final WGoogleMap.Coordinate rightBottom) {
 		final WGoogleMap.Coordinate center = new WGoogleMap.Coordinate((topLeft
 				.getLatitude() + rightBottom.getLatitude()) / 2.0, (topLeft
 				.getLongitude() + rightBottom.getLongitude()) / 2.0);
@@ -520,23 +511,17 @@ public class WGoogleMap extends WCompositeWidget {
 				.max(topLeft.getLatitude(), rightBottom.getLatitude()), Math
 				.max(topLeft.getLongitude(), rightBottom.getLongitude()));
 		StringWriter strm = new StringWriter();
-		strm
-				.append(
-						"var bbox = new google.maps.LatLngBounds(new google.maps.LatLng(")
-				.append(String.valueOf(topLeftC.getLatitude())).append(", ")
-				.append(String.valueOf(topLeftC.getLongitude())).append("), ")
-				.append("new google.maps.LatLng(").append(
-						String.valueOf(rightBottomC.getLatitude()))
-				.append(", ").append(
-						String.valueOf(rightBottomC.getLongitude())).append(
-						"));");
+		strm.append("var bbox = new google.maps.LatLngBounds(");
+		write(strm, topLeftC);
+		strm.append(", ");
+		write(strm, rightBottomC);
+		strm.append(");");
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("var zooml = ").append(this.getJsRef()).append(
 					".map.getBoundsZoomLevel(bbox);").append(this.getJsRef())
-					.append(".map.setCenter(new google.maps.LatLng(").append(
-							String.valueOf(center.getLatitude())).append(", ")
-					.append(String.valueOf(center.getLongitude())).append(
-							"), zooml);");
+					.append(".map.setCenter(");
+			write(strm, center);
+			strm.append(", zooml);");
 		} else {
 			strm.append(this.getJsRef()).append(".map.fitBounds(bbox);");
 		}
@@ -846,13 +831,13 @@ public class WGoogleMap extends WCompositeWidget {
 	private JSignal1<WGoogleMap.Coordinate> doubleClicked_;
 	private JSignal1<WGoogleMap.Coordinate> mouseMoved_;
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
 			String googlekey = localhost_key;
 			googlekey = WApplication.readConfigurationProperty(
 					"google_api_key", googlekey);
-			final String gmuri = "http://www.google.com/jsapi?key=" + googlekey;
+			final String gmuri = "//www.google.com/jsapi?key=" + googlekey;
 			app.require(gmuri, "google");
 			String initFunction = app.getJavaScriptClass()
 					+ ".init_google_maps_" + this.getId();
@@ -867,14 +852,14 @@ public class WGoogleMap extends WCompositeWidget {
 				this
 						.setJavaScriptMember(
 								WT_RESIZE_JS,
-								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
+								"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
 			} else {
 				strm
 						.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
 				this
 						.setJavaScriptMember(
 								WT_RESIZE_JS,
-								"function(self, w, h) {self.style.width=w + 'px';self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
+								"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
 			}
 			strm.append("self.map = map;");
 			this.streamJSListener(this.clicked_, "click", strm);
@@ -891,8 +876,8 @@ public class WGoogleMap extends WCompositeWidget {
 					.append(";}, 0)};")
 					.append("google.load(\"maps\", \"")
 					.append(
-							this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? "2"
-									: "3").append(
+							this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2'
+									: '3').append(
 							"\", {other_params:\"sensor=false\", callback: ")
 					.append(initFunction).append("});").append("}");
 			this.additions_.clear();
@@ -908,7 +893,7 @@ public class WGoogleMap extends WCompositeWidget {
 	 * WCompositeWidget#doJavaScript()} but delays the javascript until the map
 	 * has been loaded.
 	 */
-	protected void doGmJavaScript(String jscode) {
+	protected void doGmJavaScript(final String jscode) {
 		if (this.isRendered()) {
 			this.doJavaScript(jscode);
 		} else {
@@ -918,8 +903,8 @@ public class WGoogleMap extends WCompositeWidget {
 
 	private List<String> additions_;
 
-	private void streamJSListener(JSignal1<WGoogleMap.Coordinate> signal,
-			String signalName, StringBuilder strm) {
+	private void streamJSListener(final JSignal1<WGoogleMap.Coordinate> signal,
+			String signalName, final StringBuilder strm) {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("google.maps.Event.addListener(map, \"").append(
 					signalName).append(
@@ -938,7 +923,7 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 	}
 
-	private void setMapOption(String option, String value) {
+	private void setMapOption(final String option, final String value) {
 		StringWriter strm = new StringWriter();
 		strm.append("var option = {").append(option).append(" :").append(value)
 				.append("};").append(this.getJsRef()).append(
@@ -947,5 +932,13 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	private WGoogleMap.ApiVersion apiVersion_;
-	static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
+	private static final String localhost_key = "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
+
+	static void write(final StringWriter os, final WGoogleMap.Coordinate c) {
+		char[] b1 = new char[35];
+		char[] b2 = new char[35];
+		os.append("new google.maps.LatLng(").append(
+				MathUtils.roundJs(c.getLatitude(), 15)).append(",").append(
+				MathUtils.roundJs(c.getLongitude(), 15)).append(")");
+	}
 }

@@ -24,56 +24,59 @@ class WidgetGallery extends WContainerWidget {
 
 	public WidgetGallery() {
 		super();
+		this.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+		this.navigation_ = new WNavigationBar();
+		this.navigation_.addStyleClass("main-nav");
+		this.navigation_.setTitle("Wt Widget Gallery", new WLink(
+				"http://www.webtoolkit.eu/widgets"));
+		this.navigation_.setResponsive(true);
 		this.contentsStack_ = new WStackedWidget();
-		this.contentsStack_.setOverflow(WContainerWidget.Overflow.OverflowAuto);
-		this.contentsStack_.setStyleClass("contents");
-		EventDisplayer eventDisplayer = new EventDisplayer(
-				(WContainerWidget) null);
-		WMenu menu = new WMenu(this.contentsStack_, Orientation.Vertical,
-				(WContainerWidget) null);
-		menu.setRenderAsList(true);
-		menu.setStyleClass("menu");
+		WAnimation animation = new WAnimation(WAnimation.AnimationEffect.Fade,
+				WAnimation.TimingFunction.Linear, 200);
+		this.contentsStack_.setTransitionAnimation(animation, true);
+		WMenu menu = new WMenu(this.contentsStack_, (WContainerWidget) null);
 		menu.setInternalPathEnabled();
 		menu.setInternalBasePath("/");
-		this.addToMenu(menu, "Basics", new BasicControls(eventDisplayer));
-		this.addToMenu(menu, "Form Widgets", new FormWidgets(eventDisplayer));
-		this.addToMenu(menu, "Form Validators", new Validators(eventDisplayer));
-		this.addToMenu(menu, "Vector Graphics", new GraphicsWidgets(
-				eventDisplayer));
-		this.addToMenu(menu, "Special Purpose", new SpecialPurposeWidgets(
-				eventDisplayer));
-		this.addToMenu(menu, "Dialogs", new DialogWidgets(eventDisplayer));
-		this.addToMenu(menu, "Charts", new ChartWidgets(eventDisplayer));
-		this.addToMenu(menu, "MVC Widgets", new MvcWidgets(eventDisplayer));
-		this.addToMenu(menu, "Events", new EventsDemo(eventDisplayer));
-		this.addToMenu(menu, "Style and Layout",
-				new StyleLayout(eventDisplayer));
-		WHBoxLayout horizLayout = new WHBoxLayout(this);
-		WVBoxLayout vertLayout = new WVBoxLayout();
-		horizLayout.addWidget(menu, 0);
-		horizLayout.addLayout(vertLayout, 1);
-		vertLayout.addWidget(this.contentsStack_, 1);
-		vertLayout.addWidget(eventDisplayer);
-		horizLayout.setResizable(0, true);
+		this.addToMenu(menu, "Layout", new Layout());
+		this.addToMenu(menu, "Forms", new FormWidgets());
+		this.addToMenu(menu, "Navigation", new Navigation());
+		this.addToMenu(menu, "Trees & Tables", new TreesTables())
+				.setPathComponent("trees-tables");
+		this.addToMenu(menu, "Graphics & Charts", new GraphicsWidgets())
+				.setPathComponent("graphics-charts");
+		this.addToMenu(menu, "Media", new Media());
+		this.navigation_.addMenu(menu);
+		WVBoxLayout layout = new WVBoxLayout(this);
+		layout.addWidget(this.navigation_);
+		layout.addWidget(this.contentsStack_, 1);
+		layout.setContentsMargins(0, 0, 0, 0);
 	}
 
+	private WNavigationBar navigation_;
 	private WStackedWidget contentsStack_;
 
-	private void addToMenu(WMenu menu, CharSequence name,
-			ControlsWidget controls) {
-		if (controls.hasSubMenu()) {
-			WSubMenuItem smi = new WSubMenuItem(name, controls);
-			WMenu subMenu = new WMenu(this.contentsStack_,
-					Orientation.Vertical, (WContainerWidget) null);
-			subMenu.setRenderAsList(true);
-			smi.setSubMenu(subMenu);
-			menu.addItem(smi);
-			subMenu.setInternalPathEnabled();
-			subMenu.setInternalBasePath("/" + smi.getPathComponent());
-			subMenu.setStyleClass("menu submenu");
-			controls.populateSubMenu(subMenu);
-		} else {
-			menu.addItem(name, controls);
-		}
+	private WMenuItem addToMenu(WMenu menu, final CharSequence name,
+			TopicWidget topic) {
+		WContainerWidget result = new WContainerWidget();
+		WContainerWidget pane = new WContainerWidget();
+		WVBoxLayout vLayout = new WVBoxLayout(result);
+		vLayout.setContentsMargins(0, 0, 0, 0);
+		vLayout.addWidget(topic);
+		vLayout.addWidget(pane, 1);
+		WHBoxLayout hLayout = new WHBoxLayout(pane);
+		WMenuItem item = new WMenuItem(name, result);
+		menu.addItem(item);
+		WStackedWidget subStack = new WStackedWidget();
+		subStack.addStyleClass("contents");
+		subStack.setOverflow(WContainerWidget.Overflow.OverflowAuto);
+		WMenu subMenu = new WMenu(subStack);
+		subMenu.addStyleClass("nav-pills nav-stacked submenu");
+		subMenu.setWidth(new WLength(200));
+		hLayout.addWidget(subMenu);
+		hLayout.addWidget(subStack, 1);
+		subMenu.setInternalPathEnabled();
+		subMenu.setInternalBasePath("/" + item.getPathComponent());
+		topic.populateSubMenu(subMenu);
+		return item;
 	}
 }

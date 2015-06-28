@@ -72,9 +72,9 @@ public class WPieChart extends WAbstractChart {
 		this.avoidLabelRendering_ = 0.0;
 		this.labelOptions_ = EnumSet.noneOf(LabelOption.class);
 		this.shadow_ = false;
+		this.labelFormat_ = new WString("%.3g%%");
 		this.pie_ = new ArrayList<WPieChart.PieData>();
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Neutral));
-		this.setPreferredMethod(WPaintedWidget.Method.InlineSvgVml);
 		this.setPlotAreaPadding(5);
 	}
 
@@ -160,7 +160,7 @@ public class WPieChart extends WAbstractChart {
 	 * 
 	 * @see WAbstractChart#setPalette(WChartPalette palette)
 	 */
-	public void setBrush(int modelRow, WBrush brush) {
+	public void setBrush(int modelRow, final WBrush brush) {
 		this.pie_.get(modelRow).customBrush = true;
 		this.pie_.get(modelRow).brush = brush;
 		this.update();
@@ -349,6 +349,35 @@ public class WPieChart extends WAbstractChart {
 	}
 
 	/**
+	 * Sets the label format.
+	 * <p>
+	 * Sets a format string which is used to format label (percentage) values.
+	 * <p>
+	 * The format string must be a format string that is accepted by snprintf()
+	 * and which formats one double. If the format string is an empty string,
+	 * then {@link } is used.
+	 * <p>
+	 * The default value is &quot;%.3g%%&quot;.
+	 * <p>
+	 * 
+	 * @see WPieChart#getLabelFormat()
+	 */
+	public void setLabelFormat(final CharSequence format) {
+		this.labelFormat_ = WString.toWString(format);
+		this.update();
+	}
+
+	/**
+	 * Returns the label format string.
+	 * <p>
+	 * 
+	 * @see WPieChart#setLabelFormat(CharSequence format)
+	 */
+	public WString getLabelFormat() {
+		return this.labelFormat_;
+	}
+
+	/**
 	 * Creates a widget which renders the a legend item.
 	 * <p>
 	 * Depending on the passed LabelOption flags, the legend item widget, will
@@ -415,11 +444,11 @@ public class WPieChart extends WAbstractChart {
 	 * data at the data point is not empty. </i>
 	 * </p>
 	 */
-	public void addDataPointArea(WModelIndex index, WAbstractArea area) {
+	public void addDataPointArea(final WModelIndex index, WAbstractArea area) {
 		(this).addArea(area);
 	}
 
-	public void paint(WPainter painter, WRectF rectangle) {
+	public void paint(final WPainter painter, final WRectF rectangle) {
 		double total = 0;
 		if (this.dataColumn_ != -1) {
 			for (int i = 0; i < this.getModel().getRowCount(); ++i) {
@@ -434,8 +463,8 @@ public class WPieChart extends WAbstractChart {
 			throw new WException("WPieChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
-		if (rect.isEmpty()) {
-			rect.assign(painter.getWindow());
+		if ((rect == null) || rect.isEmpty()) {
+			rect = painter.getWindow();
 		}
 		rect.setX(rect.getX() + this.getPlotAreaPadding(Side.Left));
 		rect.setY(rect.getY() + this.getPlotAreaPadding(Side.Top));
@@ -585,6 +614,7 @@ public class WPieChart extends WAbstractChart {
 	private double avoidLabelRendering_;
 	private EnumSet<LabelOption> labelOptions_;
 	private boolean shadow_;
+	private WString labelFormat_;
 
 	static class PieData {
 		private static Logger logger = LoggerFactory.getLogger(PieData.class);
@@ -621,7 +651,8 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	protected void modelColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		if (this.labelsColumn_ >= start) {
 			this.labelsColumn_ += end - start + 1;
 		}
@@ -630,7 +661,8 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+	protected void modelColumnsRemoved(final WModelIndex parent, int start,
+			int end) {
 		boolean needUpdate = false;
 		if (this.labelsColumn_ >= start) {
 			if (this.labelsColumn_ <= end) {
@@ -653,21 +685,23 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelRowsInserted(WModelIndex parent, int start, int end) {
+	protected void modelRowsInserted(final WModelIndex parent, int start,
+			int end) {
 		for (int i = start; i <= end; ++i) {
 			this.pie_.add(0 + i, new WPieChart.PieData());
 		}
 		this.update();
 	}
 
-	protected void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	protected void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		for (int i = end; i >= start; --i) {
 			this.pie_.remove(0 + i);
 		}
 		this.update();
 	}
 
-	protected void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	protected void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if (this.labelsColumn_ >= topLeft.getColumn()
 				&& this.labelsColumn_ <= bottomRight.getColumn()
 				|| this.dataColumn_ >= topLeft.getColumn()
@@ -676,8 +710,16 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
-	private void drawPie(WPainter painter, double cx, double cy, double r,
-			double h, double total) {
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (this.labelsColumn_ >= start && this.labelsColumn_ <= end
+				|| this.dataColumn_ >= start && this.dataColumn_ <= end) {
+			this.update();
+		}
+	}
+
+	private void drawPie(final WPainter painter, double cx, double cy,
+			double r, double h, double total) {
 		if (h > 0) {
 			if (total == 0) {
 				if (this.shadow_) {
@@ -841,8 +883,8 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
-	private void drawSlices(WPainter painter, double cx, double cy, double r,
-			double total, boolean shadow) {
+	private void drawSlices(final WPainter painter, double cx, double cy,
+			double r, double total, boolean shadow) {
 		double currentAngle = this.startAngle_;
 		for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 			double v = StringUtils.asNumber(this.getModel().getData(i,
@@ -918,8 +960,8 @@ public class WPieChart extends WAbstractChart {
 		}
 	}
 
-	private void drawSide(WPainter painter, double pcx, double pcy, double r,
-			double angle, double h) {
+	private void drawSide(final WPainter painter, double pcx, double pcy,
+			double r, double angle, double h) {
 		WPainterPath path = new WPainterPath();
 		path.arcMoveTo(pcx - r, pcy - r, 2 * r, 2 * r, angle);
 		path.lineTo(path.getCurrentPosition().getX(), path.getCurrentPosition()
@@ -931,8 +973,8 @@ public class WPieChart extends WAbstractChart {
 		painter.drawPath(path);
 	}
 
-	private void drawOuter(WPainter painter, double pcx, double pcy, double r,
-			double a1, double a2, double h) {
+	private void drawOuter(final WPainter painter, double pcx, double pcy,
+			double r, double a1, double a2, double h) {
 		WPainterPath path = new WPainterPath();
 		path.arcMoveTo(pcx - r, pcy - r, 2 * r, 2 * r, a1);
 		path.lineTo(path.getCurrentPosition().getX(), path.getCurrentPosition()
@@ -944,7 +986,7 @@ public class WPieChart extends WAbstractChart {
 		painter.drawPath(path);
 	}
 
-	private void setShadow(WPainter painter) {
+	private void setShadow(final WPainter painter) {
 		painter.setShadow(new WShadow(5, 15, new WColor(0, 0, 0, 20), 40));
 	}
 
@@ -975,7 +1017,7 @@ public class WPieChart extends WAbstractChart {
 		return i;
 	}
 
-	private static WBrush darken(WBrush brush) {
+	private static WBrush darken(final WBrush brush) {
 		WBrush result = brush;
 		WColor c = result.getColor();
 		c.setRgb(c.getRed() * 3 / 4, c.getGreen() * 3 / 4, c.getBlue() * 3 / 4,
@@ -989,17 +1031,26 @@ public class WPieChart extends WAbstractChart {
 		WString text = new WString();
 		if (!EnumUtils.mask(options, LabelOption.TextLabel).isEmpty()) {
 			if (this.labelsColumn_ != -1) {
-				text = StringUtils.asString(this.getModel().getData(index,
-						this.labelsColumn_));
+				text.append(StringUtils.asString(this.getModel().getData(index,
+						this.labelsColumn_)));
 			}
 		}
 		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
-			String buf = null;
-			buf = String.format("%.3g%%", v / total * 100);
+			String label = "";
+			double u = v / total * 100;
+			String format = this.getLabelFormat().toString();
+			if (format.length() == 0) {
+				label = LocaleUtils.toString(LocaleUtils.getCurrentLocale(), u)
+						+ "%";
+			} else {
+				String buf = null;
+				buf = String.format(format, u);
+				label = buf;
+			}
 			if (!(text.length() == 0)) {
 				text.append(": ");
 			}
-			text.append(buf);
+			text.append(new WString(label));
 		}
 		return text;
 	}

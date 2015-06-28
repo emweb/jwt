@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
  * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
  * chart has a unique {@link WAxis#getId() getId()} that identifies which of
- * these three axes it is in the enclosing {@link WAxis#getChart() getChart()}.
+ * these three axes it is in the enclosing chart().
  * <p>
  * Use {@link WAxis#setVisible(boolean visible) setVisible()} to change the
  * visibility of an axis, {@link WAxis#setGridLinesEnabled(boolean enabled)
@@ -54,8 +54,9 @@ import org.slf4j.LoggerFactory;
  * rendered in the axis and in bars that cross the break.
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
- * &quot;dd/MM/yyyy&quot; (for {@link AxisScale#DateScale DateScale}). The
- * format may be customized using
+ * a suitable format for {@link AxisScale#DateScale DateScale} or
+ * {@link AxisScale#DateTimeScale DateTimeScale} scales, based on heuristics.
+ * The format may be customized using
  * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The angle
  * of the label text may be changed using
  * {@link WAxis#setLabelAngle(double angle) setLabelAngle()}. By default, all
@@ -68,10 +69,24 @@ public class WAxis {
 	private static Logger logger = LoggerFactory.getLogger(WAxis.class);
 
 	/**
+	 * Constant which indicates automatic minimum calculation.
+	 * <p>
+	 * 
+	 * @see WAxis#setMinimum(double minimum)
+	 */
+	public static final double AUTO_MINIMUM = -Double.MAX_VALUE;
+	/**
+	 * Constant which indicates automatic maximum calculation.
+	 * <p>
+	 * 
+	 * @see WAxis#setMaximum(double maximum)
+	 */
+	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
+
+	/**
 	 * Returns the axis id.
 	 * <p>
 	 * 
-	 * @see WAxis#getChart()
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public Axis getId() {
@@ -175,19 +190,18 @@ public class WAxis {
 	/**
 	 * Sets the minimum value displayed on the axis.
 	 * <p>
-	 * Specify the minimum value to be displayed on the axis. By default, the
-	 * minimum and maximum values are determined automatically so that all the
-	 * data can be displayed.
+	 * By default, the minimum and maximum values are determined automatically
+	 * so that all the data can be displayed.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
+	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMinimum(double minimum) {
-		WAxis.Segment s = this.segments_.get(0);
+		final WAxis.Segment s = this.segments_.get(0);
 		if (!ChartUtils.equals(s.minimum, minimum)) {
 			s.minimum = minimum;
 			update();
@@ -198,6 +212,8 @@ public class WAxis {
 			update();
 		}
 		;
+		this.roundLimits_.remove(AxisValue.MinimumValue);
+		this.update();
 	}
 
 	/**
@@ -205,15 +221,15 @@ public class WAxis {
 	 * <p>
 	 * This returned the minimum value that was set using
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()}, or otherwise the
-	 * automatically calculated minimum.
+	 * automatically calculated (and rounded) minimum.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMaximum()
 	 * @see WAxis#setMinimum(double minimum)
 	 * @see WAxis#setAutoLimits(EnumSet locations)
+	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMinimum() {
 		return !EnumUtils.mask(this.getAutoLimits(), AxisValue.MinimumValue)
@@ -224,19 +240,18 @@ public class WAxis {
 	/**
 	 * Sets the maximum value for the axis displayed on the axis.
 	 * <p>
-	 * Specify the maximum value to be displayed on the axis. By default, the
-	 * minimum and maximum values are determined automatically so that all the
-	 * data can be displayed.
+	 * By default, the minimum and maximum values are determined automatically
+	 * so that all the data can be displayed.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMinimum(double minimum)
+	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMaximum(double maximum) {
-		WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
+		final WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
 		if (!ChartUtils.equals(s.maximum, maximum)) {
 			s.maximum = maximum;
 			update();
@@ -247,6 +262,8 @@ public class WAxis {
 			update();
 		}
 		;
+		this.roundLimits_.remove(AxisValue.MaximumValue);
+		this.update();
 	}
 
 	/**
@@ -254,17 +271,18 @@ public class WAxis {
 	 * <p>
 	 * This returned the maximum value that was set using
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}, or otherwise the
-	 * automatically calculated maximum.
+	 * automatically calculated (and rounded) maximum.
 	 * <p>
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
 	 * 
-	 * @see WAxis#getMinimum()
 	 * @see WAxis#setMaximum(double maximum)
+	 * @see WAxis#setAutoLimits(EnumSet locations)
+	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMaximum() {
-		WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
+		final WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
 		return !EnumUtils.mask(this.getAutoLimits(), AxisValue.MaximumValue)
 				.isEmpty() ? s.renderMaximum : s.maximum;
 	}
@@ -286,6 +304,7 @@ public class WAxis {
 		if (maximum > minimum) {
 			this.segments_.get(0).minimum = minimum;
 			this.segments_.get(this.segments_.size() - 1).maximum = maximum;
+			this.roundLimits_.clear();
 			this.update();
 		}
 	}
@@ -337,6 +356,7 @@ public class WAxis {
 				update();
 			}
 			;
+			this.roundLimits_.add(AxisValue.MinimumValue);
 		}
 		if (!EnumUtils.mask(locations, AxisValue.MaximumValue).isEmpty()) {
 			if (!ChartUtils.equals(this.segments_
@@ -345,6 +365,7 @@ public class WAxis {
 				update();
 			}
 			;
+			this.roundLimits_.add(AxisValue.MaximumValue);
 		}
 	}
 
@@ -382,7 +403,43 @@ public class WAxis {
 	}
 
 	/**
-	 * Specify a range that needs to be omitted from the axis.
+	 * Specifies whether limits should be rounded.
+	 * <p>
+	 * When enabling rounding, this has the effect of rounding down the minimum
+	 * value, or rounding up the maximum value, to the nearest label interval.
+	 * <p>
+	 * By default, rounding is enabled for an auto-calculated limited, and
+	 * disabled for a manually specifed limit.
+	 * <p>
+	 * 
+	 * @see WAxis#setAutoLimits(EnumSet locations)
+	 */
+	public void setRoundLimits(EnumSet<AxisValue> locations) {
+		this.roundLimits_ = EnumSet.copyOf(locations);
+	}
+
+	/**
+	 * Specifies whether limits should be rounded.
+	 * <p>
+	 * Calls {@link #setRoundLimits(EnumSet locations)
+	 * setRoundLimits(EnumSet.of(location, locations))}
+	 */
+	public final void setRoundLimits(AxisValue location, AxisValue... locations) {
+		setRoundLimits(EnumSet.of(location, locations));
+	}
+
+	/**
+	 * Returns whether limits should be rounded.
+	 * <p>
+	 * 
+	 * @see WAxis#setRoundLimits(EnumSet locations)
+	 */
+	public EnumSet<AxisValue> getRoundLimits() {
+		return this.roundLimits_;
+	}
+
+	/**
+	 * Specifies a range that needs to be omitted from the axis.
 	 * <p>
 	 * This is useful to display data with a few outliers which would otherwise
 	 * swamp the chart. This is not done automatically, but instead you need to
@@ -407,6 +464,9 @@ public class WAxis {
 	 * default value is 0.0, and indicates that the interval should be computed
 	 * automatically.
 	 * <p>
+	 * The unit for the label interval is in logical units (i.e. the same as
+	 * minimum or maximum).
+	 * <p>
 	 * 
 	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
@@ -429,6 +489,36 @@ public class WAxis {
 	}
 
 	/**
+	 * Sets a point to be included as one of the labels (if possible).
+	 * <p>
+	 * The given point will be included as one of the labels, by adjusting the
+	 * minimum value on the axis, if that minimum is auto-computed. This is only
+	 * applicable to a Linear scale axis.
+	 * <p>
+	 * The default value is 0.0.
+	 * <p>
+	 * 
+	 * @see WAxis#setRoundLimits(EnumSet locations)
+	 */
+	public void setLabelBasePoint(double labelBasePoint) {
+		if (!ChartUtils.equals(this.labelBasePoint_, labelBasePoint)) {
+			this.labelBasePoint_ = labelBasePoint;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the base point for labels.
+	 * <p>
+	 * 
+	 * @see WAxis#setLabelBasePoint(double labelBasePoint)
+	 */
+	public double getLabelBasePoint() {
+		return this.labelBasePoint_;
+	}
+
+	/**
 	 * Sets the label format.
 	 * <p>
 	 * Sets a format string which is used to format values, both for the axis
@@ -439,26 +529,34 @@ public class WAxis {
 	 * For an axis with a {@link AxisScale#LinearScale LinearScale} or
 	 * {@link AxisScale#LogScale LogScale} scale, the format string must be a
 	 * format string that is accepted by snprintf() and which formats one
-	 * double. If the format string is an empty string, &quot;%.4g&quot; is
-	 * used.
+	 * double. If the format string is an empty string, then {@link } is used.
 	 * <p>
 	 * For an axis with a {@link AxisScale#DateScale DateScale} scale, the
-	 * format string must be a format string accepted by WDate::toString(const
-	 * WString&amp;), to format a date. If the format string is an empty string,
-	 * &quot;dd/MM/yyyy&quot;, &quot;MMM yy&quot; or &quot;yyyy&quot; is used
-	 * depending on the situation.
+	 * format string must be a format string accepted by
+	 * {@link WDate#toString() WDate#toString()}, to format a date. If the
+	 * format string is an empty string, a suitable format is chosen based on
+	 * heuristics.
 	 * <p>
-	 * The default value is an empty string (&quot;&quot;).
+	 * For an axis with a {@link AxisScale#DateTimeScale DateTimeScale} scale,
+	 * the format string must be a format string accepted by
+	 * {@link WDateTime#toString() WDateTime#toString()}, to format a date. If
+	 * the format string is an empty string, a suitable format is chosen based
+	 * on heuristics.
+	 * <p>
+	 * The default value is &quot;%.4g&quot; for a numeric axis, and a suitable
+	 * format for date(time) scales based on a heuristic taking into account the
+	 * current axis range.
 	 * <p>
 	 * 
 	 * @see WAxis#getLabelFormat()
 	 */
-	public void setLabelFormat(CharSequence format) {
+	public void setLabelFormat(final CharSequence format) {
 		if (!ChartUtils.equals(this.labelFormat_, WString.toWString(format))) {
 			this.labelFormat_ = WString.toWString(format);
 			update();
 		}
 		;
+		this.defaultLabelFormat_ = false;
 	}
 
 	/**
@@ -468,7 +566,25 @@ public class WAxis {
 	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
 	public WString getLabelFormat() {
-		return this.labelFormat_;
+		switch (this.scale_) {
+		case CategoryScale:
+			return new WString();
+		case DateScale:
+		case DateTimeScale:
+			if (this.defaultLabelFormat_) {
+				if (!this.segments_.isEmpty()) {
+					final WAxis.Segment s = this.segments_.get(0);
+					return this.defaultDateTimeFormat(s);
+				} else {
+					return this.labelFormat_;
+				}
+			} else {
+				return this.labelFormat_;
+			}
+		default:
+			return this.defaultLabelFormat_ ? new WString("%.4g")
+					: this.labelFormat_;
+		}
 	}
 
 	/**
@@ -478,17 +594,21 @@ public class WAxis {
 	 * corresponds to horizontal text. Note that this option is only supported
 	 * by the InlineSvgVml renderers, but not by HtmlCanvas.
 	 * <p>
-	 * The default value is 0.0 (&quot;horizontal text&quot;).
+	 * The default value is 0.0.
 	 * <p>
 	 * 
 	 * @see WAxis#getLabelAngle()
 	 */
 	public void setLabelAngle(double angle) {
-		if (!ChartUtils.equals(this.labelAngle_, angle)) {
+		if (this.renderingMirror_) {
 			this.labelAngle_ = angle;
-			update();
+		} else {
+			if (!ChartUtils.equals(this.labelAngle_, angle)) {
+				this.labelAngle_ = angle;
+				update();
+			}
+			;
 		}
-		;
 	}
 
 	/**
@@ -502,13 +622,41 @@ public class WAxis {
 	}
 
 	/**
+	 * Sets the title orientation.
+	 * <p>
+	 * Sets the orientation used for displaying the title.
+	 * <p>
+	 * The default value is Horizontal
+	 * <p>
+	 * 
+	 * @see WAxis#getTitleOrientation()
+	 */
+	public void setTitleOrientation(final Orientation orientation) {
+		if (!ChartUtils.equals(this.titleOrientation_, orientation)) {
+			this.titleOrientation_ = orientation;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the title orientation.
+	 * <p>
+	 * 
+	 * @see WAxis#setTitleOrientation(Orientation orientation)
+	 */
+	public Orientation getTitleOrientation() {
+		return this.titleOrientation_;
+	}
+
+	/**
 	 * Sets whether gridlines are displayed for this axis.
 	 * <p>
 	 * When <i>enabled</i>, gird lines are drawn for each tick on this axis,
 	 * using the {@link WAxis#getGridLinesPen() getGridLinesPen()}.
 	 * <p>
 	 * Unlike all other visual aspects of an axis, rendering of the gridlines is
-	 * not controlled by setDisplayEnabled(bool).
+	 * not controlled by setDisplayEnabled().
 	 * <p>
 	 * 
 	 * @see WAxis#setGridLinesPen(WPen pen)
@@ -540,9 +688,27 @@ public class WAxis {
 	 * 
 	 * @see WAxis#setGridLinesPen(WPen pen)
 	 */
-	public void setPen(WPen pen) {
+	public void setPen(final WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
 			this.pen_ = pen;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Changes the pen used for rendering labels for this axis.
+	 * <p>
+	 * The default value is a black pen of 0 width.
+	 * <p>
+	 * 
+	 * @see WAxis#setGridLinesPen(WPen pen)
+	 * @see WAxis#setPen(WPen pen)
+	 * @see WCartesianChart#setTextPen(WPen pen)
+	 */
+	public void setTextPen(final WPen pen) {
+		if (!ChartUtils.equals(this.textPen_, pen)) {
+			this.textPen_ = pen;
 			update();
 		}
 		;
@@ -567,7 +733,7 @@ public class WAxis {
 	 * @see WAxis#setPen(WPen pen)
 	 * @see WAxis#getGridLinesPen()
 	 */
-	public void setGridLinesPen(WPen pen) {
+	public void setGridLinesPen(final WPen pen) {
 		if (!ChartUtils.equals(this.gridLinesPen_, pen)) {
 			this.gridLinesPen_ = pen;
 			update();
@@ -621,7 +787,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getTitle()
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
 			this.title_ = WString.toWString(title);
 			update();
@@ -647,7 +813,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getTitleFont()
 	 */
-	public void setTitleFont(WFont titleFont) {
+	public void setTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.titleFont_, titleFont)) {
 			this.titleFont_ = titleFont;
 			update();
@@ -666,6 +832,20 @@ public class WAxis {
 	}
 
 	/**
+	 * Sets the offset from the axis for the title label.
+	 */
+	public void setTitleOffset(double offset) {
+		this.titleOffset_ = offset;
+	}
+
+	/**
+	 * Returns the title offset.
+	 */
+	public double getTitleOffset() {
+		return this.titleOffset_;
+	}
+
+	/**
 	 * Sets the axis label font.
 	 * <p>
 	 * The default label font is a 10 point Sans Serif font.
@@ -673,7 +853,7 @@ public class WAxis {
 	 * 
 	 * @see WAxis#getLabelFont()
 	 */
-	public void setLabelFont(WFont labelFont) {
+	public void setLabelFont(final WFont labelFont) {
 		if (!ChartUtils.equals(this.labelFont_, labelFont)) {
 			this.labelFont_ = labelFont;
 			update();
@@ -691,33 +871,37 @@ public class WAxis {
 		return this.labelFont_;
 	}
 
-	WString getLabel(double u) {
+	/**
+	 * Returns the label for a value.
+	 * <p>
+	 * This returns the label text that corresponds to a given value.
+	 * <p>
+	 * The default implementation uses the {@link WAxis#getLabelFormat()
+	 * getLabelFormat()} to properly represent the value.
+	 */
+	public WString getLabel(double u) {
 		String buf = null;
 		WString text = new WString();
 		if (this.scale_ == AxisScale.CategoryScale) {
-			if (this.chart_.XSeriesColumn() != -1) {
-				text = StringUtils.asString(this.chart_.getModel().getData(
-						(int) u, this.chart_.XSeriesColumn()));
-			} else {
-				buf = String.format("%.4g", u + 1);
-				text = new WString(buf);
+			text = this.chart_.categoryLabel((int) u, this.axis_);
+			if ((text.length() == 0)) {
+				text = new WString(LocaleUtils.toString(LocaleUtils
+						.getCurrentLocale(), u));
 			}
 		} else {
 			if (this.scale_ == AxisScale.DateScale) {
 				WDate d = WDate.fromJulianDay((int) u);
-				WString format = this.labelFormat_;
-				if ((format.length() == 0)) {
-					return new WString(d.toString("dd/MM/yyyy"));
-				} else {
-					return new WString(d.toString(format.toString()));
-				}
+				WString format = this.getLabelFormat();
+				return new WString(d.toString(format.toString()));
 			} else {
-				String format = this.labelFormat_.toString();
+				String format = this.getLabelFormat().toString();
 				if (format.length() == 0) {
-					format = "%.4g";
+					text = new WString(LocaleUtils.toString(LocaleUtils
+							.getCurrentLocale(), u));
+				} else {
+					buf = String.format(format, u);
+					text = new WString(buf);
 				}
-				buf = String.format(format, u);
-				text = new WString(buf);
 			}
 		}
 		return text;
@@ -729,135 +913,27 @@ public class WAxis {
 	 * 
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
-	public WCartesianChart getChart() {
-		return this.chart_;
-	}
-
-	int getSegmentCount() {
+	public int getSegmentCount() {
 		return (int) this.segments_.size();
 	}
 
-	enum DateTimeUnit {
-		Minutes, Hours, Days, Months, Years;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
-		}
+	public double getSegmentMargin() {
+		return this.segmentMargin_;
 	}
 
-	private WCartesianChart chart_;
-	private Axis axis_;
-	private boolean visible_;
-	private AxisValue location_;
-	private AxisScale scale_;
-	private double resolution_;
-	private double labelInterval_;
-	private WString labelFormat_;
-	private boolean gridLines_;
-	private WPen pen_;
-	private WPen gridLinesPen_;
-	private int margin_;
-	private double labelAngle_;
-	private WString title_;
-	private WFont titleFont_;
-	private WFont labelFont_;
-
-	static class Segment {
-		private static Logger logger = LoggerFactory.getLogger(Segment.class);
-
-		public double minimum;
-		public double maximum;
-		public double renderMinimum;
-		public double renderMaximum;
-		public double renderLength;
-		public double renderStart;
-		public WAxis.DateTimeUnit dateTimeRenderUnit;
-		public int dateTimeRenderInterval;
-
-		public Segment() {
-			this.minimum = AUTO_MINIMUM;
-			this.maximum = AUTO_MAXIMUM;
-			this.renderMinimum = AUTO_MINIMUM;
-			this.renderMaximum = AUTO_MAXIMUM;
-			this.renderLength = AUTO_MAXIMUM;
-			this.renderStart = AUTO_MAXIMUM;
-		}
-	}
-
-	List<WAxis.Segment> segments_;
-	private double renderInterval_;
-
-	WAxis() {
-		this.chart_ = null;
-		this.axis_ = Axis.XAxis;
-		this.visible_ = true;
-		this.location_ = AxisValue.MinimumValue;
-		this.scale_ = AxisScale.LinearScale;
-		this.resolution_ = 0.0;
-		this.labelInterval_ = 0;
-		this.labelFormat_ = new WString();
-		this.gridLines_ = false;
-		this.pen_ = new WPen();
-		this.gridLinesPen_ = new WPen(WColor.gray);
-		this.margin_ = 0;
-		this.labelAngle_ = 0;
-		this.title_ = new WString();
-		this.titleFont_ = new WFont();
-		this.labelFont_ = new WFont();
-		this.segments_ = new ArrayList<WAxis.Segment>();
-		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
-				WLength.Unit.Point));
-		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
-				WLength.Unit.Point));
-		this.segments_.add(new WAxis.Segment());
-	}
-
-	void init(WCartesianChart chart, Axis axis) {
-		this.chart_ = chart;
-		this.axis_ = axis;
-		if (axis == Axis.XAxis) {
-			if (chart.getType() == ChartType.CategoryChart) {
-				this.scale_ = AxisScale.CategoryScale;
-			} else {
-				if (this.scale_ != AxisScale.DateScale) {
-					this.scale_ = AxisScale.LinearScale;
-				}
-			}
-		}
-		if (axis == Axis.Y2Axis) {
-			this.visible_ = false;
-		}
-	}
-
-	private void update() {
-		if (this.chart_ != null) {
-			this.chart_.update();
-		}
-	}
-
-	// private boolean (T m, T v) ;
-	boolean prepareRender(WChart2DRenderer renderer) {
+	boolean prepareRender(Orientation orientation, double length) {
 		double totalRenderRange = 0;
 		for (int i = 0; i < this.segments_.size(); ++i) {
-			WAxis.Segment s = this.segments_.get(i);
-			this.computeRange(renderer, s);
+			final WAxis.Segment s = this.segments_.get(i);
+			this.computeRange(s);
 			totalRenderRange += s.renderMaximum - s.renderMinimum;
 		}
-		boolean vertical = this.axis_ != Axis.XAxis;
 		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0
 				: this.chart_.getAxisPadding();
 		double clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
 				: this.chart_.getAxisPadding();
-		double totalRenderLength = vertical ? renderer.getChartArea()
-				.getHeight() : renderer.getChartArea().getWidth();
-		double totalRenderStart = vertical ? renderer.getChartArea()
-				.getBottom()
-				- clipMin : renderer.getChartArea().getLeft() + clipMin;
+		double totalRenderLength = length;
+		double totalRenderStart = clipMin;
 		final double SEGMENT_MARGIN = 40;
 		totalRenderLength -= SEGMENT_MARGIN * (this.segments_.size() - 1)
 				+ clipMin + clipMax;
@@ -865,16 +941,12 @@ public class WAxis {
 			this.renderInterval_ = 1.0;
 			return false;
 		}
-		int rc = 0;
-		if (this.chart_.getModel() != null) {
-			rc = this.chart_.getModel().getRowCount();
-		}
 		for (int it = 0; it < 2; ++it) {
 			double rs = totalRenderStart;
 			double TRR = totalRenderRange;
 			totalRenderRange = 0;
 			for (int i = 0; i < this.segments_.size(); ++i) {
-				WAxis.Segment s = this.segments_.get(i);
+				final WAxis.Segment s = this.segments_.get(i);
 				double diff = s.renderMaximum - s.renderMinimum;
 				s.renderStart = rs;
 				s.renderLength = diff / TRR * totalRenderLength;
@@ -882,14 +954,17 @@ public class WAxis {
 					this.renderInterval_ = this.labelInterval_;
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
-							double numLabels = this.calcAutoNumLabels(s) / 1.5;
+							double numLabels = this.calcAutoNumLabels(
+									orientation, s) / 1.5;
+							int rc = this.chart_.numberOfCategories(this.axis_);
 							this.renderInterval_ = Math.max(1.0, Math.floor(rc
 									/ numLabels));
 						} else {
 							if (this.scale_ == AxisScale.LogScale) {
 								this.renderInterval_ = 1;
 							} else {
-								double numLabels = this.calcAutoNumLabels(s);
+								double numLabels = this.calcAutoNumLabels(
+										orientation, s);
 								this.renderInterval_ = round125(diff
 										/ numLabels);
 							}
@@ -902,11 +977,23 @@ public class WAxis {
 				}
 				if (this.scale_ == AxisScale.LinearScale) {
 					if (it == 0) {
-						if (s.minimum == AUTO_MINIMUM) {
+						if (!EnumUtils.mask(this.roundLimits_,
+								AxisValue.MinimumValue).isEmpty()) {
 							s.renderMinimum = roundDown125(s.renderMinimum,
 									this.renderInterval_);
+							if (s.renderMinimum <= this.labelBasePoint_
+									&& s.renderMaximum >= this.labelBasePoint_) {
+								double interv = this.labelBasePoint_
+										- s.renderMinimum;
+								interv = this.renderInterval_
+										* 2
+										* Math.ceil(interv
+												/ (this.renderInterval_ * 2));
+								s.renderMinimum = this.labelBasePoint_ - interv;
+							}
 						}
-						if (s.maximum == AUTO_MAXIMUM) {
+						if (!EnumUtils.mask(this.roundLimits_,
+								AxisValue.MaximumValue).isEmpty()) {
 							s.renderMaximum = roundUp125(s.renderMaximum,
 									this.renderInterval_);
 						}
@@ -914,19 +1001,16 @@ public class WAxis {
 				} else {
 					if (this.scale_ == AxisScale.DateScale
 							|| this.scale_ == AxisScale.DateTimeScale) {
-						double daysRange;
 						double daysInterval = 0.0;
 						WDate min = null;
 						WDate max = null;
 						int interval;
 						if (this.scale_ == AxisScale.DateScale) {
-							daysRange = diff;
 							daysInterval = this.renderInterval_;
 							min = WDate.fromJulianDay((int) s.renderMinimum);
 							max = WDate.fromJulianDay((int) s.renderMaximum);
 						} else {
 							if (this.scale_ == AxisScale.DateTimeScale) {
-								daysRange = diff / (60.0 * 60.0 * 24);
 								daysInterval = this.renderInterval_
 										/ (60.0 * 60.0 * 24);
 								min = new WDate(new Date(
@@ -935,15 +1019,24 @@ public class WAxis {
 										(long) (long) s.renderMaximum));
 							}
 						}
+						logger.debug(new StringWriter().append("Range: ")
+								.append(min.toString()).append(", ").append(
+										max.toString()).toString());
 						if (daysInterval > 200) {
 							s.dateTimeRenderUnit = WAxis.DateTimeUnit.Years;
 							interval = Math.max(1,
 									(int) round125(daysInterval / 365));
-							if (min.getDay() != 1 && min.getMonth() != 1) {
-								min = new WDate(min.getYear(), 1, 1);
+							if (!EnumUtils.mask(this.roundLimits_,
+									AxisValue.MinimumValue).isEmpty()) {
+								if (min.getDay() != 1 && min.getMonth() != 1) {
+									min = new WDate(min.getYear(), 1, 1);
+								}
 							}
-							if (max.getDay() != 1 && max.getDay() != 1) {
-								max = new WDate(max.getYear() + 1, 1, 1);
+							if (!EnumUtils.mask(this.roundLimits_,
+									AxisValue.MaximumValue).isEmpty()) {
+								if (max.getDay() != 1 && max.getMonth() != 1) {
+									max = new WDate(max.getYear() + 1, 1, 1);
+								}
 							}
 						} else {
 							if (daysInterval > 20) {
@@ -966,25 +1059,31 @@ public class WAxis {
 										}
 									}
 								}
-								if ((min.getMonth() - 1) % interval != 0) {
-									int m = roundDown(min.getMonth() - 1,
-											interval) + 1;
-									min = new WDate(min.getYear(), m, 1);
-								} else {
-									if (min.getDay() != 1) {
-										min = new WDate(min.getYear(), min
-												.getMonth(), 1);
+								if (!EnumUtils.mask(this.roundLimits_,
+										AxisValue.MinimumValue).isEmpty()) {
+									if ((min.getMonth() - 1) % interval != 0) {
+										int m = roundDown(min.getMonth() - 1,
+												interval) + 1;
+										min = new WDate(min.getYear(), m, 1);
+									} else {
+										if (min.getDay() != 1) {
+											min = new WDate(min.getYear(), min
+													.getMonth(), 1);
+										}
 									}
 								}
-								if (max.getDay() != 1) {
-									max = new WDate(max.getYear(), max
-											.getMonth(), 1).addMonths(1);
-								}
-								if ((max.getMonth() - 1) % interval != 0) {
-									int m = roundDown(max.getMonth() - 1,
-											interval) + 1;
-									max = new WDate(max.getYear(), m, 1)
-											.addMonths(interval);
+								if (!EnumUtils.mask(this.roundLimits_,
+										AxisValue.MaximumValue).isEmpty()) {
+									if (max.getDay() != 1) {
+										max = new WDate(max.getYear(), max
+												.getMonth(), 1).addMonths(1);
+									}
+									if ((max.getMonth() - 1) % interval != 0) {
+										int m = roundDown(max.getMonth() - 1,
+												interval) + 1;
+										max = new WDate(max.getYear(), m, 1)
+												.addMonths(interval);
+									}
 								}
 							} else {
 								if (daysInterval > 0.6) {
@@ -1021,73 +1120,178 @@ public class WAxis {
 												}
 											}
 										}
-										if (min.getHour() % interval != 0) {
-											int h = roundDown(min.getHour(),
-													interval);
-											min.setTime(h, 0);
-										} else {
-											if (min.getMinute() != 0) {
-												min.setTime(min.getHour(), 0);
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MinimumValue)
+												.isEmpty()) {
+											if (min.getHour() % interval != 0) {
+												int h = roundDown(
+														min.getHour(), interval);
+												min.setTime(new WTime(h, 0));
+											} else {
+												if (min.getMinute() != 0) {
+													min.setTime(new WTime(min
+															.getHour(), 0));
+												}
 											}
 										}
-										if (max.getMinute() != 0) {
-											max.setTime(max.getHour(), 0);
-											max = max.addSeconds(60 * 60);
-										}
-										if (max.getHour() % interval != 0) {
-											int h = roundDown(max.getHour(),
-													interval);
-											max.setTime(h, 0);
-											max = max
-													.addSeconds(interval * 60 * 60);
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MaximumValue)
+												.isEmpty()) {
+											if (max.getMinute() != 0) {
+												max.setTime(new WTime(max
+														.getHour(), 0));
+												max = max.addSeconds(60 * 60);
+											}
+											if (max.getHour() % interval != 0) {
+												int h = roundDown(
+														max.getHour(), interval);
+												max.setTime(new WTime(h, 0));
+												max = max
+														.addSeconds(interval * 60 * 60);
+											}
 										}
 									} else {
-										s.dateTimeRenderUnit = WAxis.DateTimeUnit.Minutes;
-										if (minutes < 1.3) {
-											interval = 1;
-										} else {
-											if (minutes < 2.3) {
-												interval = 2;
+										if (minutes > 0.8) {
+											s.dateTimeRenderUnit = WAxis.DateTimeUnit.Minutes;
+											if (minutes < 1.3) {
+												interval = 1;
 											} else {
-												if (minutes < 5.3) {
-													interval = 5;
+												if (minutes < 2.3) {
+													interval = 2;
 												} else {
-													if (minutes < 10.3) {
-														interval = 10;
+													if (minutes < 5.3) {
+														interval = 5;
 													} else {
-														if (minutes < 15.3) {
-															interval = 15;
+														if (minutes < 10.3) {
+															interval = 10;
 														} else {
-															if (minutes < 20.3) {
-																interval = 20;
+															if (minutes < 15.3) {
+																interval = 15;
 															} else {
-																interval = 30;
+																if (minutes < 20.3) {
+																	interval = 20;
+																} else {
+																	interval = 30;
+																}
 															}
 														}
 													}
 												}
 											}
-										}
-										if (min.getMinute() % interval != 0) {
-											int m = roundDown(min.getMinute(),
-													interval);
-											min.setTime(min.getHour(), m);
-										} else {
-											if (min.getSecond() != 0) {
-												min.setTime(min.getHour(), min
-														.getMinute());
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MinimumValue)
+													.isEmpty()) {
+												if (min.getMinute() % interval != 0) {
+													int m = roundDown(min
+															.getMinute(),
+															interval);
+													min.setTime(new WTime(min
+															.getHour(), m));
+												} else {
+													if (min.getSecond() != 0) {
+														min
+																.setTime(new WTime(
+																		min
+																				.getHour(),
+																		min
+																				.getMinute()));
+													}
+												}
 											}
-										}
-										if (max.getSecond() != 0) {
-											max.setTime(max.getHour(), max
-													.getMinute());
-											max = max.addSeconds(60);
-										}
-										if (max.getMinute() % interval != 0) {
-											int m = roundDown(max.getMinute(),
-													interval);
-											max.setTime(max.getHour(), m);
-											max = max.addSeconds(interval * 60);
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MaximumValue)
+													.isEmpty()) {
+												if (max.getSecond() != 0) {
+													max.setTime(new WTime(max
+															.getHour(), max
+															.getMinute()));
+													max = max.addSeconds(60);
+												}
+												if (max.getMinute() % interval != 0) {
+													int m = roundDown(max
+															.getMinute(),
+															interval);
+													max.setTime(new WTime(max
+															.getHour(), m));
+													max = max
+															.addSeconds(interval * 60);
+												}
+											}
+										} else {
+											s.dateTimeRenderUnit = WAxis.DateTimeUnit.Seconds;
+											double seconds = minutes * 60;
+											if (seconds < 1.3) {
+												interval = 1;
+											} else {
+												if (seconds < 2.3) {
+													interval = 2;
+												} else {
+													if (seconds < 5.3) {
+														interval = 5;
+													} else {
+														if (seconds < 10.3) {
+															interval = 10;
+														} else {
+															if (seconds < 15.3) {
+																interval = 15;
+															} else {
+																if (seconds < 20.3) {
+																	interval = 20;
+																} else {
+																	interval = 30;
+																}
+															}
+														}
+													}
+												}
+											}
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MinimumValue)
+													.isEmpty()) {
+												if (min.getSecond() % interval != 0) {
+													int sec = roundDown(min
+															.getSecond(),
+															interval);
+													min.setTime(min.getHour(),
+															min.getMinute(),
+															sec);
+												} else {
+													if (min.getMillisecond() != 0) {
+														min
+																.setTime(
+																		min
+																				.getHour(),
+																		min
+																				.getMinute(),
+																		min
+																				.getSecond());
+													}
+												}
+											}
+											if (!EnumUtils.mask(
+													this.roundLimits_,
+													AxisValue.MaximumValue)
+													.isEmpty()) {
+												if (max.getMillisecond() != 0) {
+													max.setTime(max.getHour(),
+															max.getMinute(),
+															max.getSecond());
+													max = max.addSeconds(1);
+												}
+												if (max.getSecond() % interval != 0) {
+													int sec = roundDown(max
+															.getSecond(),
+															interval);
+													max.setTime(max.getHour(),
+															max.getMinute(),
+															sec);
+													max = max
+															.addSeconds(interval);
+												}
+											}
 										}
 									}
 								}
@@ -1106,38 +1310,508 @@ public class WAxis {
 					}
 				}
 				totalRenderRange += s.renderMaximum - s.renderMinimum;
-				if (this.axis_ == Axis.XAxis) {
-					rs += s.renderLength + SEGMENT_MARGIN;
-				} else {
-					rs -= s.renderLength + SEGMENT_MARGIN;
-				}
+				rs += s.renderLength + SEGMENT_MARGIN;
 			}
 		}
 		return true;
 	}
 
-	private void computeRange(WChart2DRenderer renderer, WAxis.Segment segment) {
-		int rc = 0;
-		if (this.chart_.getModel() != null) {
-			rc = this.chart_.getModel().getRowCount();
+	public void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, EnumSet<AlignmentFlag> labelFlags) {
+		WFont oldFont1 = painter.getFont();
+		painter.setFont(this.labelFont_);
+		boolean vertical = axisStart.getX() == axisEnd.getX();
+		for (int segment = 0; segment < this.getSegmentCount(); ++segment) {
+			final WAxis.Segment s = this.segments_.get(segment);
+			if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()) {
+				painter.setPen(this.getPen());
+				WPointF begin = interpolate(axisStart, axisEnd, s.renderStart);
+				WPointF end = interpolate(axisStart, axisEnd, s.renderStart
+						+ s.renderLength);
+				painter.drawLine(begin, end);
+				boolean rotate = vertical;
+				if (segment != 0) {
+					painter.save();
+					painter.translate(begin);
+					if (rotate) {
+						painter.rotate(90);
+					}
+					painter.drawPath(new TildeStartMarker(
+							(int) this.segmentMargin_));
+					painter.restore();
+				}
+				if (segment != this.getSegmentCount() - 1) {
+					painter.save();
+					painter.translate(end);
+					if (rotate) {
+						painter.rotate(90);
+					}
+					painter.drawPath(new TildeEndMarker(
+							(int) this.segmentMargin_));
+					painter.restore();
+				}
+			}
+			WPainterPath ticksPath = new WPainterPath();
+			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
+			this.getLabelTicks(ticks, segment);
+			for (int i = 0; i < ticks.size(); ++i) {
+				double u = this.mapToDevice(ticks.get(i).u, segment);
+				WPointF p = interpolate(axisStart, axisEnd, Math.floor(u));
+				if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()
+						&& ticks.get(i).tickLength != WAxis.TickLabel.TickLength.Zero) {
+					double ts = tickStart;
+					double te = tickEnd;
+					if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Short) {
+						ts = tickStart / 2;
+						te = tickEnd / 2;
+					}
+					if (vertical) {
+						ticksPath.moveTo(new WPointF(p.getX() + ts, p.getY()));
+						ticksPath.lineTo(new WPointF(p.getX() + te, p.getY()));
+					} else {
+						ticksPath.moveTo(new WPointF(p.getX(), p.getY() + ts));
+						ticksPath.lineTo(new WPointF(p.getX(), p.getY() + te));
+					}
+				}
+				if (!EnumUtils.mask(properties, AxisProperty.Labels).isEmpty()
+						&& !(ticks.get(i).label.length() == 0)) {
+					WPointF labelP = new WPointF();
+					if (vertical) {
+						labelP = new WPointF(p.getX() + labelPos, p.getY());
+					} else {
+						labelP = new WPointF(p.getX(), p.getY() + labelPos);
+					}
+					this.renderLabel(painter, ticks.get(i).label, labelP,
+							labelFlags, this.getLabelAngle(), 3);
+				}
+			}
+			if (!ticksPath.isEmpty()) {
+				painter.strokePath(ticksPath, this.getPen());
+			}
 		}
-		if (this.scale_ == AxisScale.CategoryScale) {
-			rc = Math.max(1, rc);
-			segment.renderMinimum = -0.5;
-			segment.renderMaximum = rc - 0.5;
+		painter.setFont(oldFont1);
+	}
+
+	public final void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, AlignmentFlag labelFlag,
+			AlignmentFlag... labelFlags) {
+		render(painter, properties, axisStart, axisEnd, tickStart, tickEnd,
+				labelPos, EnumSet.of(labelFlag, labelFlags));
+	}
+
+	/**
+	 * Returns the positions for grid lines on this axis.
+	 * <p>
+	 * This returns a list of logical values at which a grid line should be
+	 * drawn on this axis.
+	 */
+	public List<Double> getGridLinePositions() {
+		List<Double> pos = new ArrayList<Double>();
+		for (int segment = 0; segment < this.segments_.size(); ++segment) {
+			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
+			this.getLabelTicks(ticks, segment);
+			for (int i = 0; i < ticks.size(); ++i) {
+				if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
+					pos.add(this.mapToDevice(ticks.get(i).u, segment));
+				}
+			}
+		}
+		return pos;
+	}
+
+	public void renderLabel(final WPainter painter, final CharSequence text,
+			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
+			int margin) {
+		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignHorizontalMask));
+		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignVerticalMask));
+		double width = 1000;
+		double height = 20;
+		WPointF pos = p;
+		double left = pos.getX();
+		double top = pos.getY();
+		switch (horizontalAlign) {
+		case AlignLeft:
+			left += margin;
+			break;
+		case AlignCenter:
+			left -= width / 2;
+			break;
+		case AlignRight:
+			left -= width + margin;
+		default:
+			break;
+		}
+		switch (verticalAlign) {
+		case AlignTop:
+			top += margin;
+			break;
+		case AlignMiddle:
+			top -= height / 2;
+			break;
+		case AlignBottom:
+			top -= height + margin;
+			break;
+		default:
+			break;
+		}
+		WPen oldPen = painter.getPen();
+		painter.setPen(this.textPen_);
+		if (angle == 0) {
+			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
+					horizontalAlign, verticalAlign), text);
 		} else {
-			segment.renderMinimum = segment.minimum;
-			segment.renderMaximum = segment.maximum;
-			final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
-			final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
+			painter.save();
+			painter.translate(pos);
+			painter.rotate(-angle);
+			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
+					width, height), EnumSet.of(horizontalAlign, verticalAlign),
+					text);
+			painter.restore();
+		}
+		painter.setPen(oldPen);
+	}
+
+	void setRenderMirror(boolean enable) {
+		this.renderingMirror_ = enable;
+	}
+
+	/**
+	 * Represents a label/tick on the axis.
+	 */
+	static class TickLabel {
+		private static Logger logger = LoggerFactory.getLogger(TickLabel.class);
+
+		/**
+		 * Enumeration for a tick type.
+		 */
+		public enum TickLength {
+			Zero, Short, Long;
+
+			/**
+			 * Returns the numerical representation of this enum.
+			 */
+			public int getValue() {
+				return ordinal();
+			}
+		}
+
+		/**
+		 * Position on the axis.
+		 */
+		public double u;
+		/**
+		 * Tick length.
+		 */
+		public WAxis.TickLabel.TickLength tickLength;
+		/**
+		 * Label text.
+		 */
+		public WString label;
+
+		/**
+		 * Creates a label tick.
+		 */
+		public TickLabel(double v, WAxis.TickLabel.TickLength length,
+				final CharSequence l) {
+			this.u = v;
+			this.tickLength = length;
+			this.label = WString.toWString(l);
+		}
+
+		/**
+		 * Creates a label tick.
+		 * <p>
+		 * Calls
+		 * {@link #TickLabel(double v, WAxis.TickLabel.TickLength length, CharSequence l)
+		 * this(v, length, new WString())}
+		 */
+		public TickLabel(double v, WAxis.TickLabel.TickLength length) {
+			this(v, length, new WString());
+		}
+	}
+
+	WAxis() {
+		this.chart_ = null;
+		this.axis_ = Axis.XAxis;
+		this.visible_ = true;
+		this.location_ = AxisValue.MinimumValue;
+		this.scale_ = AxisScale.LinearScale;
+		this.resolution_ = 0.0;
+		this.labelInterval_ = 0;
+		this.labelBasePoint_ = 0;
+		this.labelFormat_ = new WString();
+		this.defaultLabelFormat_ = true;
+		this.gridLines_ = false;
+		this.pen_ = new WPen();
+		this.gridLinesPen_ = new WPen(WColor.gray);
+		this.margin_ = 0;
+		this.labelAngle_ = 0;
+		this.title_ = new WString();
+		this.titleFont_ = new WFont();
+		this.labelFont_ = new WFont();
+		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
+				AxisValue.MaximumValue);
+		this.segmentMargin_ = 40;
+		this.titleOffset_ = 0;
+		this.textPen_ = new WPen(WColor.black);
+		this.titleOrientation_ = Orientation.Horizontal;
+		this.segments_ = new ArrayList<WAxis.Segment>();
+		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
+				WLength.Unit.Point));
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
+				WLength.Unit.Point));
+		this.segments_.add(new WAxis.Segment());
+	}
+
+	/**
+	 * Returns the label (and ticks) information for this axis.
+	 */
+	protected void getLabelTicks(final List<WAxis.TickLabel> ticks, int segment) {
+		final WAxis.Segment s = this.segments_.get(segment);
+		switch (this.scale_) {
+		case CategoryScale: {
+			int renderInterval = Math.max(1, (int) this.renderInterval_);
+			if (renderInterval == 1) {
+				ticks.add(new WAxis.TickLabel(s.renderMinimum,
+						WAxis.TickLabel.TickLength.Long));
+				for (int i = (int) (s.renderMinimum + 0.5); i < s.renderMaximum; ++i) {
+					ticks.add(new WAxis.TickLabel(i + 0.5,
+							WAxis.TickLabel.TickLength.Long));
+					ticks.add(new WAxis.TickLabel(i,
+							WAxis.TickLabel.TickLength.Zero, this
+									.getLabel((double) i)));
+				}
+			} else {
+				for (int i = (int) (s.renderMinimum + 0.5); i < s.renderMaximum; i += renderInterval) {
+					ticks.add(new WAxis.TickLabel(i,
+							WAxis.TickLabel.TickLength.Long, this
+									.getLabel((double) i)));
+				}
+			}
+			break;
+		}
+		case LinearScale: {
+			for (int i = 0;; ++i) {
+				double v = s.renderMinimum + this.renderInterval_ * i;
+				if (v - s.renderMaximum > EPSILON * this.renderInterval_) {
+					break;
+				}
+				WString t = new WString();
+				if (i % 2 == 0) {
+					t = this.getLabel(v);
+				}
+				ticks.add(new WAxis.TickLabel(v,
+						i % 2 == 0 ? WAxis.TickLabel.TickLength.Long
+								: WAxis.TickLabel.TickLength.Short, t));
+			}
+			break;
+		}
+		case LogScale: {
+			double v = s.renderMinimum > 0 ? s.renderMinimum : 0.0001;
+			double p = v;
+			int i = 0;
+			for (;; ++i) {
+				if (v - s.renderMaximum > EPSILON * s.renderMaximum) {
+					break;
+				}
+				if (i == 9) {
+					v = p = 10 * p;
+					i = 0;
+				}
+				if (i == 0) {
+					ticks.add(new WAxis.TickLabel(v,
+							WAxis.TickLabel.TickLength.Long, this.getLabel(v)));
+				} else {
+					ticks.add(new WAxis.TickLabel(v,
+							WAxis.TickLabel.TickLength.Short));
+				}
+				v += p;
+			}
+			break;
+		}
+		case DateTimeScale:
+		case DateScale: {
+			WString format = this.getLabelFormat();
+			WDate dt = null;
+			if (this.scale_ == AxisScale.DateScale) {
+				dt = WDate.fromJulianDay((int) s.renderMinimum);
+				if (!(dt != null)) {
+					String exception = "Invalid julian day: "
+							+ String.valueOf(s.renderMinimum);
+					throw new WException(exception);
+				}
+			} else {
+				dt = new WDate(new Date((long) (long) s.renderMinimum));
+			}
+			int interval = s.dateTimeRenderInterval;
+			WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
+			boolean atTick = interval > 1
+					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
+					|| !!EnumUtils.mask(this.roundLimits_,
+							AxisValue.MinimumValue).isEmpty();
+			for (;;) {
+				long dl = this.getDateNumber(dt);
+				if (dl > s.renderMaximum) {
+					break;
+				}
+				WDate next = null;
+				switch (unit) {
+				case Years:
+					next = dt.addYears(interval);
+					break;
+				case Months:
+					next = dt.addMonths(interval);
+					break;
+				case Days:
+					next = dt.addDays(interval);
+					break;
+				case Hours:
+					next = dt.addSeconds(interval * 60 * 60);
+					break;
+				case Minutes:
+					next = dt.addSeconds(interval * 60);
+					break;
+				case Seconds:
+					next = dt.addSeconds(interval);
+					break;
+				}
+				WString text = new WString(dt.toString(format.toString()));
+				if (dl >= s.renderMinimum) {
+					ticks.add(new WAxis.TickLabel((double) dl,
+							WAxis.TickLabel.TickLength.Long, atTick ? text
+									: new WString()));
+				}
+				if (!atTick) {
+					double tl = (this.getDateNumber(next) + dl) / 2;
+					if (tl >= s.renderMinimum && tl <= s.renderMaximum) {
+						ticks.add(new WAxis.TickLabel((double) tl,
+								WAxis.TickLabel.TickLength.Zero, text));
+					}
+				}
+				dt = next;
+			}
+			break;
+		}
+		}
+	}
+
+	enum DateTimeUnit {
+		Seconds, Minutes, Hours, Days, Months, Years;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	private WAbstractChartImplementation chart_;
+	private Axis axis_;
+	private boolean visible_;
+	private AxisValue location_;
+	private AxisScale scale_;
+	private double resolution_;
+	private double labelInterval_;
+	private double labelBasePoint_;
+	private WString labelFormat_;
+	private boolean defaultLabelFormat_;
+	private boolean gridLines_;
+	private WPen pen_;
+	private WPen gridLinesPen_;
+	private int margin_;
+	private double labelAngle_;
+	private WString title_;
+	private WFont titleFont_;
+	private WFont labelFont_;
+	private EnumSet<AxisValue> roundLimits_;
+	private double segmentMargin_;
+	private double titleOffset_;
+	private WPen textPen_;
+	private Orientation titleOrientation_;
+	private boolean renderingMirror_;
+
+	static class Segment {
+		private static Logger logger = LoggerFactory.getLogger(Segment.class);
+
+		public double minimum;
+		public double maximum;
+		public double renderMinimum;
+		public double renderMaximum;
+		public double renderLength;
+		public double renderStart;
+		public WAxis.DateTimeUnit dateTimeRenderUnit;
+		public int dateTimeRenderInterval;
+
+		public Segment() {
+			this.minimum = AUTO_MINIMUM;
+			this.maximum = AUTO_MAXIMUM;
+			this.renderMinimum = AUTO_MINIMUM;
+			this.renderMaximum = AUTO_MAXIMUM;
+			this.renderLength = AUTO_MAXIMUM;
+			this.renderStart = AUTO_MAXIMUM;
+			this.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
+		}
+	}
+
+	List<WAxis.Segment> segments_;
+	private double renderInterval_;
+
+	void init(WAbstractChartImplementation chart, Axis axis) {
+		this.chart_ = chart;
+		this.axis_ = axis;
+		if (axis == Axis.XAxis || this.axis_ == Axis.XAxis_3D
+				|| this.axis_ == Axis.YAxis_3D) {
+			if (this.chart_.getChartType() == ChartType.CategoryChart) {
+				this.scale_ = AxisScale.CategoryScale;
+			} else {
+				if (this.scale_ == AxisScale.CategoryScale) {
+					this.scale_ = AxisScale.LinearScale;
+				}
+			}
+		}
+		if (axis == Axis.Y2Axis) {
+			this.visible_ = false;
+		}
+	}
+
+	private void update() {
+		if (this.chart_ != null) {
+			this.chart_.update();
+		}
+	}
+
+	// private boolean (final T m, final T v) ;
+	private void computeRange(final WAxis.Segment segment) {
+		segment.renderMinimum = segment.minimum;
+		segment.renderMaximum = segment.maximum;
+		final boolean findMinimum = segment.renderMinimum == AUTO_MINIMUM;
+		final boolean findMaximum = segment.renderMaximum == AUTO_MAXIMUM;
+		if (this.scale_ == AxisScale.CategoryScale) {
+			int rc = this.chart_.numberOfCategories(this.axis_);
+			rc = Math.max(1, rc);
+			if (findMinimum) {
+				segment.renderMinimum = -0.5;
+			}
+			if (findMaximum) {
+				segment.renderMaximum = rc - 0.5;
+			}
+		} else {
 			if (findMinimum || findMaximum) {
 				double minimum = Double.MAX_VALUE;
 				double maximum = -Double.MAX_VALUE;
-				ExtremesIterator iterator = new ExtremesIterator(this.axis_,
-						this.scale_);
-				renderer.iterateSeries(iterator);
-				minimum = iterator.getMinimum();
-				maximum = iterator.getMaximum();
+				WAbstractChartImplementation.RenderRange rr = this.chart_
+						.computeRenderRange(this.axis_, this.scale_);
+				minimum = rr.minimum;
+				maximum = rr.maximum;
 				if (minimum == Double.MAX_VALUE) {
 					if (this.scale_ == AxisScale.LogScale) {
 						minimum = 1;
@@ -1203,7 +1877,8 @@ public class WAxis {
 				double resolution = this.resolution_;
 				if (resolution == 0) {
 					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = Math.abs(1E-3 * segment.renderMinimum);
+						resolution = Math.max(1E-3, Math
+								.abs(1E-3 * segment.renderMinimum));
 					} else {
 						if (this.scale_ == AxisScale.DateScale) {
 							resolution = 1;
@@ -1248,7 +1923,7 @@ public class WAxis {
 	void setOtherAxisLocation(AxisValue otherLocation) {
 		if (this.scale_ != AxisScale.LogScale) {
 			for (int i = 0; i < this.segments_.size(); ++i) {
-				WAxis.Segment s = this.segments_.get(i);
+				final WAxis.Segment s = this.segments_.get(i);
 				int borderMin;
 				int borderMax;
 				if (this.scale_ == AxisScale.CategoryScale) {
@@ -1262,213 +1937,12 @@ public class WAxis {
 							: this.chart_.getAxisPadding();
 				}
 				s.renderLength -= borderMin + borderMax;
-				if (this.axis_ == Axis.XAxis) {
-					s.renderStart += borderMin;
-				} else {
-					s.renderStart -= borderMin;
-				}
+				s.renderStart += borderMin;
 			}
 		}
 	}
 
-	static class TickLabel {
-		private static Logger logger = LoggerFactory.getLogger(TickLabel.class);
-
-		enum TickLength {
-			Zero, Short, Long;
-
-			/**
-			 * Returns the numerical representation of this enum.
-			 */
-			public int getValue() {
-				return ordinal();
-			}
-		}
-
-		public double u;
-		public WAxis.TickLabel.TickLength tickLength;
-		public WString label;
-
-		public TickLabel(double v, WAxis.TickLabel.TickLength length,
-				CharSequence l) {
-			this.u = v;
-			this.tickLength = length;
-			this.label = WString.toWString(l);
-		}
-
-		public TickLabel(double v, WAxis.TickLabel.TickLength length) {
-			this(v, length, new WString());
-		}
-	}
-
-	void getLabelTicks(WChart2DRenderer renderer, List<WAxis.TickLabel> ticks,
-			int segment) {
-		WAxis.Segment s = this.segments_.get(segment);
-		int rc = 0;
-		if (this.chart_.getModel() != null) {
-			rc = this.chart_.getModel().getRowCount();
-		}
-		switch (this.scale_) {
-		case CategoryScale: {
-			int renderInterval = Math.max(1, (int) this.renderInterval_);
-			if (renderInterval == 1) {
-				ticks.add(new WAxis.TickLabel(-0.5,
-						WAxis.TickLabel.TickLength.Long));
-				for (int i = 0; i < rc; ++i) {
-					ticks.add(new WAxis.TickLabel(i + 0.5,
-							WAxis.TickLabel.TickLength.Long));
-					ticks.add(new WAxis.TickLabel(i,
-							WAxis.TickLabel.TickLength.Zero, this
-									.getLabel((double) i)));
-				}
-			} else {
-				for (int i = 0; i < rc; i += renderInterval) {
-					ticks.add(new WAxis.TickLabel(i,
-							WAxis.TickLabel.TickLength.Long, this
-									.getLabel((double) i)));
-				}
-			}
-			break;
-		}
-		case LinearScale: {
-			for (int i = 0;; ++i) {
-				double v = s.renderMinimum + this.renderInterval_ * i;
-				if (v - s.renderMaximum > EPSILON * this.renderInterval_) {
-					break;
-				}
-				WString t = new WString();
-				if (i % 2 == 0) {
-					t = this.getLabel(v);
-				}
-				ticks.add(new WAxis.TickLabel(v,
-						i % 2 == 0 ? WAxis.TickLabel.TickLength.Long
-								: WAxis.TickLabel.TickLength.Short, t));
-			}
-			break;
-		}
-		case LogScale: {
-			double v = s.renderMinimum > 0 ? s.renderMinimum : 0.0001;
-			double p = v;
-			int i = 0;
-			for (;; ++i) {
-				if (v - s.renderMaximum > EPSILON * s.renderMaximum) {
-					break;
-				}
-				if (i == 9) {
-					v = p = 10 * p;
-					i = 0;
-				}
-				if (i == 0) {
-					ticks.add(new WAxis.TickLabel(v,
-							WAxis.TickLabel.TickLength.Long, this.getLabel(v)));
-				} else {
-					ticks.add(new WAxis.TickLabel(v,
-							WAxis.TickLabel.TickLength.Short));
-				}
-				v += p;
-			}
-			break;
-		}
-		case DateTimeScale:
-		case DateScale: {
-			WDate dt = null;
-			if (this.scale_ == AxisScale.DateScale) {
-				dt = WDate.fromJulianDay((int) s.renderMinimum);
-				if (!(dt != null)) {
-					String exception = "Invalid julian day: "
-							+ String.valueOf(s.renderMinimum);
-					throw new WException(exception);
-				}
-			} else {
-				dt = new WDate(new Date((long) (long) s.renderMinimum));
-			}
-			int interval = s.dateTimeRenderInterval;
-			WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
-			boolean atTick = interval > 1
-					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue();
-			for (;;) {
-				long dl = this.getDateNumber(dt);
-				if (dl > s.renderMaximum) {
-					break;
-				}
-				WDate next = null;
-				switch (unit) {
-				case Years:
-					next = dt.addYears(interval);
-					break;
-				case Months:
-					next = dt.addMonths(interval);
-					break;
-				case Days:
-					next = dt.addDays(interval);
-					break;
-				case Hours:
-					next = dt.addSeconds(interval * 60 * 60);
-					break;
-				case Minutes:
-					next = dt.addSeconds(interval * 60);
-					break;
-				}
-				WString text = new WString();
-				if (!(this.labelFormat_.length() == 0)) {
-					text = new WString(dt
-							.toString(this.labelFormat_.toString()));
-				} else {
-					if (atTick) {
-						switch (unit) {
-						case Months:
-						case Years:
-						case Days:
-							text = new WString(dt.toString("dd/MM/yy"));
-							break;
-						case Hours:
-							text = new WString(dt.toString("h'h' dd/MM"));
-							break;
-						case Minutes:
-							text = new WString(dt.toString("hh:mm"));
-							break;
-						default:
-							break;
-						}
-					} else {
-						switch (unit) {
-						case Months:
-							text = new WString(dt.toString("MMM yy"));
-							break;
-						case Years:
-							text = new WString(dt.toString("yyyy"));
-							break;
-						case Hours:
-							text = new WString(dt.toString("h'h' dd/MM"));
-							break;
-						case Minutes:
-							text = new WString(dt.toString("hh:mm"));
-							break;
-						default:
-							break;
-						}
-					}
-				}
-				if (dl >= s.renderMinimum) {
-					ticks.add(new WAxis.TickLabel((double) dl,
-							WAxis.TickLabel.TickLength.Long, atTick ? text
-									: new WString()));
-				}
-				if (!atTick) {
-					double tl = (this.getDateNumber(next) + dl) / 2;
-					if (tl >= s.renderMinimum && tl <= s.renderMaximum) {
-						ticks.add(new WAxis.TickLabel((double) tl,
-								WAxis.TickLabel.TickLength.Zero, text));
-					}
-				}
-				dt = next;
-			}
-			break;
-		}
-		}
-	}
-
-	private double getValue(Object v) {
+	private double getValue(final Object v) {
 		switch (this.scale_) {
 		case LinearScale:
 		case LogScale:
@@ -1494,23 +1968,100 @@ public class WAxis {
 		}
 	}
 
-	private double calcAutoNumLabels(WAxis.Segment s) {
-		boolean vertical = this.axis_ != Axis.XAxis == (this.chart_
-				.getOrientation() == Orientation.Vertical);
-		return s.renderLength
-				/ (vertical ? AUTO_V_LABEL_PIXELS : AUTO_H_LABEL_PIXELS);
+	private double calcAutoNumLabels(Orientation orientation,
+			final WAxis.Segment s) {
+		if (orientation == Orientation.Horizontal) {
+			return s.renderLength
+					/ Math.max((double) AUTO_H_LABEL_PIXELS, new WLength(this
+							.defaultDateTimeFormat(s).toString().length(),
+							WLength.Unit.FontEm).toPixels());
+		} else {
+			return s.renderLength / AUTO_V_LABEL_PIXELS;
+		}
+	}
+
+	private WString defaultDateTimeFormat(final WAxis.Segment s) {
+		if (this.scale_ != AxisScale.DateScale
+				&& this.scale_ != AxisScale.DateTimeScale) {
+			return WString.Empty;
+		}
+		WDate dt = null;
+		if (this.scale_ == AxisScale.DateScale) {
+			dt = WDate.fromJulianDay((int) s.renderMinimum);
+			if (!(dt != null)) {
+				String exception = "Invalid julian day: "
+						+ String.valueOf(s.renderMinimum);
+				throw new WException(exception);
+			}
+		} else {
+			dt = new WDate(new Date((long) (long) s.renderMinimum));
+		}
+		int interval = s.dateTimeRenderInterval;
+		WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
+		boolean atTick = interval > 1
+				|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
+				|| !!EnumUtils.mask(this.roundLimits_, AxisValue.MinimumValue)
+						.isEmpty();
+		if (atTick) {
+			switch (unit) {
+			case Months:
+			case Years:
+			case Days:
+				if (dt.getSecond() != 0) {
+					return new WString("dd/MM/yy hh:mm:ss");
+				} else {
+					if (dt.getHour() != 0) {
+						return new WString("dd/MM/yy hh:mm");
+					} else {
+						return new WString("dd/MM/yy");
+					}
+				}
+			case Hours:
+				if (dt.getSecond() != 0) {
+					return new WString("dd/MM hh:mm:ss");
+				} else {
+					if (dt.getMinute() != 0) {
+						return new WString("dd/MM hh:mm");
+					} else {
+						return new WString("h'h' dd/MM");
+					}
+				}
+			case Minutes:
+				if (dt.getSecond() != 0) {
+					return new WString("hh:mm:ss");
+				} else {
+					return new WString("hh:mm");
+				}
+			case Seconds:
+				return new WString("hh:mm:ss");
+			}
+		} else {
+			switch (unit) {
+			case Years:
+				return new WString("yyyy");
+			case Months:
+				return new WString("MMM yy");
+			case Days:
+				return new WString("dd/MM/yy");
+			case Hours:
+				return new WString("h'h' dd/MM");
+			case Minutes:
+				return new WString("hh:mm");
+			case Seconds:
+				return new WString("hh:mm:ss");
+			default:
+				break;
+			}
+		}
+		return WString.Empty;
 	}
 
 	double mapFromDevice(double d) {
 		for (int i = 0; i < this.segments_.size(); ++i) {
-			WAxis.Segment s = this.segments_.get(i);
+			final WAxis.Segment s = this.segments_.get(i);
 			boolean lastSegment = i == this.segments_.size() - 1;
 			if (lastSegment || d < this.mapToDevice(s.renderMaximum, i)) {
-				if (this.axis_ == Axis.XAxis) {
-					d = d - s.renderStart;
-				} else {
-					d = s.renderStart - d;
-				}
+				d = d - s.renderStart;
 				if (this.scale_ != AxisScale.LogScale) {
 					return s.renderMinimum + d
 							* (s.renderMaximum - s.renderMinimum)
@@ -1526,11 +2077,11 @@ public class WAxis {
 		return 0;
 	}
 
-	double mapToDevice(Object value, int segment) {
+	double mapToDevice(final Object value, int segment) {
 		return this.mapToDevice(this.getValue(value), segment);
 	}
 
-	final double mapToDevice(Object value) {
+	final double mapToDevice(final Object value) {
 		return mapToDevice(value, 0);
 	}
 
@@ -1538,7 +2089,7 @@ public class WAxis {
 		if (Double.isNaN(u)) {
 			return u;
 		}
-		WAxis.Segment s = this.segments_.get(segment);
+		final WAxis.Segment s = this.segments_.get(segment);
 		double d;
 		if (this.scale_ != AxisScale.LogScale) {
 			d = (u - s.renderMinimum) / (s.renderMaximum - s.renderMinimum)
@@ -1549,11 +2100,7 @@ public class WAxis {
 					/ (Math.log(s.renderMaximum) - Math.log(s.renderMinimum))
 					* s.renderLength;
 		}
-		if (this.axis_ == Axis.XAxis) {
-			return s.renderStart + d;
-		} else {
-			return s.renderStart - d;
-		}
+		return s.renderStart + d;
 	}
 
 	final double mapToDevice(double u) {
@@ -1572,9 +2119,8 @@ public class WAxis {
 	}
 
 	private static double EPSILON = 1E-3;
-	static final int AXIS_MARGIN = 4;
-	static final int AUTO_V_LABEL_PIXELS = 25;
-	static final int AUTO_H_LABEL_PIXELS = 60;
+	private static final int AUTO_V_LABEL_PIXELS = 25;
+	private static final int AUTO_H_LABEL_PIXELS = 80;
 
 	static double round125(double v) {
 		double n = Math.pow(10, Math.floor(Math.log10(v)));
@@ -1606,18 +2152,23 @@ public class WAxis {
 		return v / factor * factor;
 	}
 
-	/**
-	 * Constant which indicates automatic minimum calculation.
-	 * <p>
-	 * 
-	 * @see WAxis#setMinimum(double minimum)
-	 */
-	public static final double AUTO_MINIMUM = -Double.MAX_VALUE;
-	/**
-	 * Constant which indicates automatic maximum calculation.
-	 * <p>
-	 * 
-	 * @see WAxis#setMaximum(double maximum)
-	 */
-	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
+	static WPointF interpolate(final WPointF p1, final WPointF p2, double u) {
+		double x = p1.getX();
+		if (p2.getX() - p1.getX() > 0) {
+			x += u;
+		} else {
+			if (p2.getX() - p1.getX() < 0) {
+				x -= u;
+			}
+		}
+		double y = p1.getY();
+		if (p2.getY() - p1.getY() > 0) {
+			y += u;
+		} else {
+			if (p2.getY() - p1.getY() < 0) {
+				y -= u;
+			}
+		}
+		return new WPointF(x, y);
+	}
 }

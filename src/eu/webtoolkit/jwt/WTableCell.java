@@ -49,6 +49,20 @@ public class WTableCell extends WContainerWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTableCell.class);
 
 	/**
+	 * Create a table cell.
+	 */
+	public WTableCell() {
+		super((WContainerWidget) null);
+		this.row_ = null;
+		this.column_ = 0;
+		this.rowSpan_ = 1;
+		this.columnSpan_ = 1;
+		this.spanChanged_ = false;
+		this.contentAlignment_ = EnumSet.copyOf(EnumSet.of(
+				AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
+	}
+
+	/**
 	 * Sets the row span.
 	 * <p>
 	 * The row span indicates how many table rows this {@link WTableCell}
@@ -63,7 +77,8 @@ public class WTableCell extends WContainerWidget {
 					this.rowSpan_, this.columnSpan_);
 			this.spanChanged_ = true;
 			this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
-			this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.getTable()
+					.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -92,7 +107,8 @@ public class WTableCell extends WContainerWidget {
 					this.rowSpan_, this.columnSpan_);
 			this.spanChanged_ = true;
 			this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
-			this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.getTable()
+					.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -141,6 +157,15 @@ public class WTableCell extends WContainerWidget {
 		return this.getTable().getColumnAt(this.getColumn());
 	}
 
+	public boolean isVisible() {
+		if (this.row_ != null) {
+			if (this.row_.isHidden()) {
+				return false;
+			}
+		}
+		return super.isVisible();
+	}
+
 	WTableCell(WTableRow row, int column) {
 		super((WContainerWidget) null);
 		this.row_ = row;
@@ -153,13 +178,13 @@ public class WTableCell extends WContainerWidget {
 		this.setParentWidget(row.getTable());
 	}
 
-	private WTableRow row_;
+	WTableRow row_;
 	int column_;
 	private int rowSpan_;
 	private int columnSpan_;
 	private boolean spanChanged_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && this.rowSpan_ != 1 || this.spanChanged_) {
 			element.setProperty(Property.PropertyRowSpan, String
 					.valueOf(this.rowSpan_));

@@ -23,11 +23,10 @@ import org.slf4j.LoggerFactory;
  * A localized string resolver that bundles multiple string resolvers.
  * <p>
  * 
- * This class implements the localized strings interface and delegates
- * {@link WString#tr(String key) WString#tr()} string resolution to one or more
- * string resolvers. You will typically use this class if you want to combine
- * different methods of string resolution (e.g. some from files, and other
- * strings using a database).
+ * This class implements the localized strings interface and delegates {@link }
+ * string resolution to one or more string resolvers. You will typically use
+ * this class if you want to combine different methods of string resolution
+ * (e.g. some from files, and other strings using a database).
  * <p>
  * 
  * @see WApplication#setLocalizedStrings(WLocalizedStrings translator)
@@ -99,7 +98,7 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
 		}
 	}
 
-	public String resolveKey(String key) {
+	public String resolveKey(final String key) {
 		String result = null;
 		for (int i = 0; i < this.localizedStrings_.size(); ++i) {
 			result = this.localizedStrings_.get(i).resolveKey(key);

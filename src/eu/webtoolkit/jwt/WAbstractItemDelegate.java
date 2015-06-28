@@ -90,7 +90,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * The <code>flags</code> parameter indicates options for rendering the
 	 * item.
 	 */
-	public abstract WWidget update(WWidget widget, WModelIndex index,
+	public abstract WWidget update(WWidget widget, final WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags);
 
 	/**
@@ -99,7 +99,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * Returns {@link #update(WWidget widget, WModelIndex index, EnumSet flags)
 	 * update(widget, index, EnumSet.of(flag, flags))}
 	 */
-	public final WWidget update(WWidget widget, WModelIndex index,
+	public final WWidget update(WWidget widget, final WModelIndex index,
 			ViewItemRenderFlag flag, ViewItemRenderFlag... flags) {
 		return update(widget, index, EnumSet.of(flag, flags));
 	}
@@ -115,7 +115,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * <p>
 	 * The default implementation does nothing.
 	 */
-	public void updateModelIndex(WWidget widget, WModelIndex index) {
+	public void updateModelIndex(WWidget widget, final WModelIndex index) {
 	}
 
 	/**
@@ -159,7 +159,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * 
 	 * @see WAbstractItemDelegate#getEditState(WWidget widget)
 	 */
-	public void setEditState(WWidget widget, Object value) {
+	public void setEditState(WWidget widget, final Object value) {
 	}
 
 	/**
@@ -170,7 +170,8 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * 
 	 * @see WValidator#validate(String input)
 	 */
-	public WValidator.State validate(WModelIndex index, Object editState) {
+	public WValidator.State validate(final WModelIndex index,
+			final Object editState) {
 		return WValidator.State.Valid;
 	}
 
@@ -183,8 +184,8 @@ public abstract class WAbstractItemDelegate extends WObject {
 	 * <p>
 	 * The default implementation assumes a read-only delegate does nothing.
 	 */
-	public void setModelData(Object editState, WAbstractItemModel model,
-			WModelIndex index) {
+	public void setModelData(final Object editState, WAbstractItemModel model,
+			final WModelIndex index) {
 	}
 
 	/**

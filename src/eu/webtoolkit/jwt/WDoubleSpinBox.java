@@ -31,10 +31,6 @@ import org.slf4j.LoggerFactory;
  * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
  * widget.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * See {@link WAbstractSpinBox}.
- * <p>
  * 
  * @see WSpinBox <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the
@@ -55,12 +51,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public WDoubleSpinBox(WContainerWidget parent) {
 		super(parent);
+		this.setup_ = false;
 		this.value_ = -1;
 		this.min_ = 0.0;
 		this.max_ = 99.99;
 		this.step_ = 1.0;
 		this.precision_ = 2;
-		this.valueChanged_ = new Signal1<Double>();
+		this.valueChanged_ = new Signal1<Double>(this);
+		this.setValidator(this.createValidator());
 		this.setValue(0.0);
 	}
 
@@ -81,8 +79,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public void setMinimum(double minimum) {
 		this.min_ = minimum;
+		WDoubleValidator v = ((this.getValidator()) instanceof WDoubleValidator ? (WDoubleValidator) (this
+				.getValidator())
+				: null);
+		if (v != null) {
+			v.setBottom(this.min_);
+		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -102,8 +106,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public void setMaximum(double maximum) {
 		this.max_ = maximum;
+		WDoubleValidator v = ((this.getValidator()) instanceof WDoubleValidator ? (WDoubleValidator) (this
+				.getValidator())
+				: null);
+		if (v != null) {
+			v.setTop(this.max_);
+		}
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -124,10 +134,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 * @see WDoubleSpinBox#setMaximum(double maximum)
 	 */
 	public void setRange(double minimum, double maximum) {
-		this.min_ = minimum;
-		this.max_ = maximum;
-		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.setMinimum(minimum);
+		this.setMaximum(maximum);
 	}
 
 	/**
@@ -138,7 +146,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setSingleStep(double step) {
 		this.step_ = step;
 		this.changed_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -160,7 +168,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 */
 	public void setDecimals(int decimals) {
 		this.precision_ = decimals;
-		this.setText(this.getTextFromValue().toString());
+		this.setText(this.getTextFromValue());
 	}
 
 	/**
@@ -185,7 +193,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setValue(double value) {
 		if (this.value_ != value) {
 			this.value_ = value;
-			this.setText(this.getTextFromValue().toString());
+			this.setText(this.getTextFromValue());
 		}
 	}
 
@@ -209,7 +217,12 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		return this.valueChanged_;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	public void refresh() {
+		this.setText(this.getTextFromValue());
+		super.refresh();
+	}
+
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (this.isNativeControl()) {
 				element.setAttribute("min", String.valueOf(this.min_));
@@ -223,6 +236,14 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		super.updateDom(element, all);
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		if (!this.setup_
+				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.setup();
+		}
+	}
+
 	void signalConnectionsChanged() {
 		if (this.valueChanged_.isConnected() && !this.valueChangedConnection_) {
 			this.valueChangedConnection_ = true;
@@ -232,6 +253,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 				}
 			});
 		}
+		super.signalConnectionsChanged();
 	}
 
 	String getJsMinMaxStep() {
@@ -239,27 +261,26 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 				+ "," + String.valueOf(this.step_);
 	}
 
-	boolean parseNumberValue(String text) {
+	boolean parseNumberValue(final String text) {
 		try {
-			char[] buf = new char[30];
-			String currentV = MathUtils.round(this.value_, this.precision_);
-			if (!currentV.equals(text)) {
-				this.value_ = Double.parseDouble(text);
+			if (!this.getTextFromValue().equals(text)) {
+				this.value_ = LocaleUtils.toDouble(LocaleUtils
+						.getCurrentLocale(), text);
 			}
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return false;
 		}
 	}
 
-	WString getTextFromValue() {
-		char[] buf = new char[30];
-		String result = MathUtils.round(this.value_, this.precision_);
+	protected String getTextFromValue() {
+		String result = LocaleUtils.toFixedString(LocaleUtils
+				.getCurrentLocale(), this.value_, this.precision_);
 		if (!this.isNativeControl()) {
 			result = this.getPrefix().toString() + result
 					+ this.getSuffix().toString();
 		}
-		return new WString(result);
+		return result;
 	}
 
 	WValidator createValidator() {
@@ -268,12 +289,26 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 		return validator;
 	}
 
+	protected WValidator.Result getValidateRange() {
+		final WDoubleValidator validator = new WDoubleValidator();
+		validator.setRange(this.min_, this.max_);
+		return validator.validate(new WString("{1}").arg(this.value_)
+				.toString());
+	}
+
+	private boolean setup_;
 	private double value_;
 	private double min_;
 	private double max_;
 	private double step_;
 	private int precision_;
 	private Signal1<Double> valueChanged_;
+
+	private void setup() {
+		this.setup_ = true;
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').setIsDoubleSpinBox(true);");
+	}
 
 	private void onChange() {
 		this.valueChanged_.trigger(this.getValue());

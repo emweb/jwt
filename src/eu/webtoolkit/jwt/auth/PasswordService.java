@@ -63,7 +63,7 @@ public class PasswordService implements AbstractPasswordService {
 		 * A <code>hash</code> may need to be updated if it has been computed
 		 * with a cryptographic method that is being disfavoured.
 		 */
-		public boolean needsUpdate(PasswordHash hash);
+		public boolean needsUpdate(final PasswordHash hash);
 
 		/**
 		 * Computes the password hash for a clear text password.
@@ -72,7 +72,7 @@ public class PasswordService implements AbstractPasswordService {
 		 * user&apos;s password, but which avoids compromising the user&apos;s
 		 * password in case of loss.
 		 */
-		public PasswordHash hashPassword(CharSequence password);
+		public PasswordHash hashPassword(final CharSequence password);
 
 		/**
 		 * Verifies a password against a hash.
@@ -80,7 +80,8 @@ public class PasswordService implements AbstractPasswordService {
 		 * This returns whether the given password matches with the user&apos;s
 		 * credentials stored in the hash.
 		 */
-		public boolean verify(CharSequence password, PasswordHash hash);
+		public boolean verify(final CharSequence password,
+				final PasswordHash hash);
 	}
 
 	/**
@@ -89,7 +90,7 @@ public class PasswordService implements AbstractPasswordService {
 	 * Creates a new password authentication service, which depends on the
 	 * passed basic authentication service.
 	 */
-	public PasswordService(AuthService baseAuth) {
+	public PasswordService(final AuthService baseAuth) {
 		super();
 		this.baseAuth_ = baseAuth;
 		this.verifier_ = null;
@@ -197,13 +198,13 @@ public class PasswordService implements AbstractPasswordService {
 	 * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
 	 * @see PasswordService#getPasswordThrottle(int failedAttempts)
 	 */
-	public int delayForNextAttempt(User user) {
+	public int delayForNextAttempt(final User user) {
 		if (this.attemptThrottling_) {
 			int throttlingNeeded = this.getPasswordThrottle(user
 					.getFailedLoginAttempts());
 			if (throttlingNeeded != 0) {
 				WDate t = user.getLastLoginAttempt();
-				int diff = t.getSecondsTo(new WDate(new Date()));
+				int diff = t.getSecondsTo(WDate.getCurrentDate());
 				if (diff < throttlingNeeded) {
 					return throttlingNeeded - diff;
 				} else {
@@ -231,7 +232,7 @@ public class PasswordService implements AbstractPasswordService {
 	 *      verifier)
 	 * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
 	 */
-	public PasswordResult verifyPassword(User user, String password) {
+	public PasswordResult verifyPassword(final User user, final String password) {
 		AbstractUserDatabase.Transaction t = user.getDatabase()
 				.startTransaction();
 		if (this.delayForNextAttempt(user) > 0) {
@@ -262,7 +263,7 @@ public class PasswordService implements AbstractPasswordService {
 	 * <p>
 	 * This stores a new password for the user in the database.
 	 */
-	public void updatePassword(User user, String password) {
+	public void updatePassword(final User user, final String password) {
 		PasswordHash pwd = this.verifier_.hashPassword(password);
 		user.setPassword(pwd);
 	}
@@ -297,8 +298,8 @@ public class PasswordService implements AbstractPasswordService {
 		}
 	}
 
-	// private PasswordService(PasswordService anon1) ;
-	private AuthService baseAuth_;
+	// private PasswordService(final PasswordService anon1) ;
+	private final AuthService baseAuth_;
 	private PasswordService.AbstractVerifier verifier_;
 	private AbstractPasswordService.AbstractStrengthValidator validator_;
 	private boolean attemptThrottling_;

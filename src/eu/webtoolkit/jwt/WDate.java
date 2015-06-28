@@ -190,6 +190,10 @@ public class WDate implements Comparable<WDate> {
 	public void setTime(int hour, int minute) {
 		this.setTime(hour, minute, 0, 0);
 	}
+	
+	public void setTime(WTime time){
+		this.setTime(time.getHour(), time.getMinute(), time.getSecond(), time.getMsec());
+	}
 
 	/**
 	 * Adds seconds.

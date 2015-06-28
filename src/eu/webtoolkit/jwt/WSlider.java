@@ -40,21 +40,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The non-native slider (HTML4, see
  * {@link WSlider#setNativeControl(boolean nativeControl) setNativeControl()})
- * is styled by the current CSS theme. The look can be overridden using the
- * <code>Wt-slider-[hv]</code> CSS class and the following selectors (shown here
- * for a horizontal slider, the vertical slider is equivalent but using
- * Wt-slider-v instead of Wt-slider-h:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-slider-h .Wt-slider-bg : A background sized with 5px left/right margin
- * .Wt-slider-h .Wt-e         : A west background image (5px width)
- * .Wt-slider-h .Wt-w         : An east background image (5px width)
- * .Wt-slider-h .handle       : The handle (20px width)
- * </pre>
- * 
- * </div>
+ * is styled by the current CSS theme.
  */
 public class WSlider extends WFormWidget {
 	private static Logger logger = LoggerFactory.getLogger(WSlider.class);
@@ -81,6 +67,18 @@ public class WSlider extends WFormWidget {
 	}
 
 	/**
+	 * Do not render ticks.
+	 */
+	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
+			.noneOf(WSlider.TickPosition.class);
+	/**
+	 * Render ticks on both sides.
+	 */
+	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
+			.of(WSlider.TickPosition.TicksAbove,
+					WSlider.TickPosition.TicksBelow);
+
+	/**
 	 * Creates a default horizontal slider.
 	 * <p>
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
@@ -101,7 +99,7 @@ public class WSlider extends WFormWidget {
 		this.maximum_ = 99;
 		this.value_ = 0;
 		this.valueChanged_ = new Signal1<Integer>(this);
-		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
+		this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {
 		};
 		this.paintedSlider_ = null;
 		this.resize(new WLength(150), new WLength(50));
@@ -138,7 +136,7 @@ public class WSlider extends WFormWidget {
 		this.maximum_ = 99;
 		this.value_ = 0;
 		this.valueChanged_ = new Signal1<Integer>(this);
-		this.sliderMoved_ = new JSignal1<Integer>(this, "moved") {
+		this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {
 		};
 		this.paintedSlider_ = null;
 		if (orientation == Orientation.Horizontal) {
@@ -194,7 +192,8 @@ public class WSlider extends WFormWidget {
 	 */
 	public boolean isNativeControl() {
 		if (this.preferNative_) {
-			WEnvironment env = WApplication.getInstance().getEnvironment();
+			final WEnvironment env = WApplication.getInstance()
+					.getEnvironment();
 			if (env.agentIsChrome()
 					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
 							.getValue()
@@ -454,9 +453,12 @@ public class WSlider extends WFormWidget {
 			this.paintedSlider_.setDisabled(disabled);
 		}
 		super.setDisabled(disabled);
+		if (this.paintedSlider_ != null) {
+			this.paintedSlider_.updateState();
+		}
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 		if (this.paintedSlider_ != null) {
 			this.paintedSlider_.sliderResized(width, height);
@@ -467,10 +469,10 @@ public class WSlider extends WFormWidget {
 		return String.valueOf(this.value_);
 	}
 
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 		try {
 			this.value_ = Integer.parseInt(value);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 		}
 	}
 
@@ -483,7 +485,7 @@ public class WSlider extends WFormWidget {
 	 * The mid point for the tick should be at position (x, y). The
 	 * <code>value</code> that corresponds to the tick is also passed.
 	 */
-	protected void paintTick(WPainter painter, int value, int x, int y) {
+	protected void paintTick(final WPainter painter, int value, int x, int y) {
 		if (!this.tickPosition_.isEmpty()) {
 			int h = 0;
 			if (this.orientation_ == Orientation.Horizontal) {
@@ -571,7 +573,7 @@ public class WSlider extends WFormWidget {
 		super.render(flags);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.paintedSlider_ != null) {
 			this.paintedSlider_.doUpdateDom(element, all);
 		} else {
@@ -602,15 +604,15 @@ public class WSlider extends WFormWidget {
 				: DomElementType.DomElement_INPUT;
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.changed_ || this.isReadOnly()) {
 			return;
 		}
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			try {
 				this.value_ = Integer.parseInt(value);
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 			}
 		}
 	}
@@ -642,16 +644,4 @@ public class WSlider extends WFormWidget {
 		this.valueChanged_.trigger(this.value_);
 		this.sliderMoved_.trigger(this.value_);
 	}
-
-	/**
-	 * Do not render ticks.
-	 */
-	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
-			.noneOf(WSlider.TickPosition.class);
-	/**
-	 * Render ticks on both sides.
-	 */
-	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
-			.of(WSlider.TickPosition.TicksAbove,
-					WSlider.TickPosition.TicksBelow);
 }

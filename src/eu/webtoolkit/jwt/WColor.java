@@ -295,17 +295,16 @@ public class WColor {
 				return this.name_.toString();
 			} else {
 				StringWriter tmp = new StringWriter();
-				String buf;
 				if (this.alpha_ != 255 && withAlpha) {
-					tmp.append("rgba(").append(buf = String.valueOf(this.red_));
-					tmp.append(',').append(buf = String.valueOf(this.green_));
-					tmp.append(',').append(buf = String.valueOf(this.blue_));
+					tmp.append("rgba(").append(String.valueOf(this.red_));
+					tmp.append(',').append(String.valueOf(this.green_));
+					tmp.append(',').append(String.valueOf(this.blue_));
 					tmp.append(',').append(
-							MathUtils.round(this.alpha_ / 255., 2)).append(')');
+							MathUtils.roundCss(this.alpha_ / 255., 2)).append(')');
 				} else {
-					tmp.append("rgb(").append(buf = String.valueOf(this.red_));
-					tmp.append(',').append(buf = String.valueOf(this.green_));
-					tmp.append(',').append(buf = String.valueOf(this.blue_))
+					tmp.append("rgb(").append(String.valueOf(this.red_));
+					tmp.append(',').append(String.valueOf(this.green_));
+					tmp.append(',').append(String.valueOf(this.blue_))
 							.append(')');
 				}
 				return tmp.toString();
@@ -313,7 +312,7 @@ public class WColor {
 		}
 	}
 
-	final String getCssText() {
+	public final String getCssText() {
 		return getCssText(false);
 	}
 

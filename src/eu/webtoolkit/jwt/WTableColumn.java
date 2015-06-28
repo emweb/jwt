@@ -27,10 +27,6 @@ import org.slf4j.LoggerFactory;
  * WTable#getColumnAt()} and managing various properties of a single column in a
  * table (it is however not a widget).
  * <p>
- * You cannot access table cells through the column. Instead, to access table
- * cells, see {@link WTable#getElementAt(int row, int column)
- * WTable#getElementAt()}.
- * <p>
  * A table column corresponds to the HTML <code>&lt;col&gt;</code> tag.
  * <p>
  * 
@@ -39,6 +35,21 @@ import org.slf4j.LoggerFactory;
  */
 public class WTableColumn extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WTableColumn.class);
+
+	/**
+	 * Creates a new table column.
+	 * <p>
+	 * Table columns must be added to a table using
+	 * {@link WTable#insertColumn(int column, WTableColumn tableColumn)
+	 * WTable#insertColumn()} before you can access contents in it using
+	 * {@link WTableColumn#elementAt(int row) elementAt()}.
+	 */
+	public WTableColumn() {
+		super();
+		this.width_ = null;
+		this.id_ = null;
+		this.styleClass_ = "";
+	}
 
 	/**
 	 * Returns the table to which this column belongs.
@@ -56,6 +67,8 @@ public class WTableColumn extends WObject {
 	 * Like {@link WTable#getElementAt(int row, int column)
 	 * WTable#getElementAt()}, if the row is beyond the current table
 	 * dimensions, then the table is expanded automatically.
+	 * <p>
+	 * The column must be inserted within a table first.
 	 */
 	public WTableCell elementAt(int row) {
 		return this.table_.getElementAt(row, this.getColumnNum());
@@ -64,8 +77,10 @@ public class WTableColumn extends WObject {
 	/**
 	 * Returns the column number of this column in the table.
 	 * <p>
+	 * Returns -1 if the column is not yet part of a table.
+	 * <p>
 	 * 
-	 * @see WTable#getRowAt(int row)
+	 * @see WTable#getColumnAt(int column)
 	 */
 	public int getColumnNum() {
 		for (int i = 0; i < this.table_.columns_.size(); i++) {
@@ -85,7 +100,7 @@ public class WTableColumn extends WObject {
 	 * @see WTableColumn#getWidth()
 	 * @see WWidget#resize(WLength width, WLength height)
 	 */
-	public void setWidth(WLength width) {
+	public void setWidth(final WLength width) {
 		this.width_ = width;
 		this.table_.repaintColumn(this);
 	}
@@ -109,7 +124,7 @@ public class WTableColumn extends WObject {
 	 * @see WTableColumn#getStyleClass()
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
-	public void setStyleClass(String style) {
+	public void setStyleClass(final String style) {
 		if (WWebWidget.canOptimizeUpdates() && style.equals(this.styleClass_)) {
 			return;
 		}
@@ -137,7 +152,7 @@ public class WTableColumn extends WObject {
 	 * 
 	 * @see WObject#getId()
 	 */
-	public void setId(String id) {
+	public void setId(final String id) {
 		if (!(this.id_ != null)) {
 			this.id_ = "";
 		}
@@ -152,20 +167,12 @@ public class WTableColumn extends WObject {
 		}
 	}
 
-	WTableColumn(WTable table) {
-		super();
-		this.table_ = table;
-		this.width_ = null;
-		this.id_ = null;
-		this.styleClass_ = "";
-	}
-
-	private WTable table_;
+	WTable table_;
 	private WLength width_;
 	private String id_;
 	private String styleClass_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.width_ != null) {
 			element.setProperty(Property.PropertyStyleWidth, this.width_
 					.getCssText());

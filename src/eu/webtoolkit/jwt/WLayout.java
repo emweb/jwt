@@ -173,7 +173,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * rendering its contents. Possible hints are indicated in the reference
 	 * documentation for each layout manager.
 	 */
-	public void setLayoutHint(String name, String value) {
+	public void setLayoutHint(final String name, final String value) {
 		if (this.impl_ != null) {
 			this.impl_.setHint(name, value);
 		} else {
@@ -353,7 +353,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	static class Hint {
 		private static Logger logger = LoggerFactory.getLogger(Hint.class);
 
-		public Hint(String aName, String aValue) {
+		public Hint(final String aName, final String aValue) {
 			this.name = aName;
 			this.value = aValue;
 		}

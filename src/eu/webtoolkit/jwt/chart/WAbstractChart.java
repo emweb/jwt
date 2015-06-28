@@ -118,6 +118,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 						WAbstractChart.this.modelReset();
 					}
 				}));
+		this.modelConnections_.add(this.model_.headerDataChanged().addListener(
+				this, new Signal3.Listener<Orientation, Integer, Integer>() {
+					public void trigger(Orientation e1, Integer e2, Integer e3) {
+						WAbstractChart.this.modelHeaderDataChanged(e1, e2, e3);
+					}
+				}));
 		this.modelChanged();
 	}
 
@@ -141,7 +147,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractChart#getBackground()
 	 */
-	public void setBackground(WBrush background) {
+	public void setBackground(final WBrush background) {
 		if (!ChartUtils.equals(this.background_, background)) {
 			this.background_ = background;
 			update();
@@ -190,10 +196,17 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Set an internal margin for the main plot area.
 	 * <p>
 	 * This configures the area (in pixels) around the plot area that is
-	 * available for axes, labels, and titles. You need to set this
-	 * appropriately so that labels fit inside these margins.
+	 * available for axes, labels, and titles.
 	 * <p>
 	 * The default is dependent on the chart type.
+	 * <p>
+	 * Alternatively, you can configure the chart layout to be computed
+	 * automatically using
+	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
 	 */
 	public void setPlotAreaPadding(int padding, EnumSet<Side> sides) {
 		if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
@@ -233,6 +246,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Returns the internal margin for the main plot area.
 	 * <p>
+	 * This is either the paddings set through
+	 * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
+	 * setPlotAreaPadding()} or computed using
+	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}
+	 * <p>
 	 * 
 	 * @see WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
 	 */
@@ -254,6 +273,41 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	}
 
 	/**
+	 * Configures the chart layout to be automatic.
+	 * <p>
+	 * This configures the plot area so that the space around it is suited for
+	 * the text that is rendered (axis labels and text, the title, and legend).
+	 * <p>
+	 * The default value is <code>false</code>, and the chart layout is set
+	 * manually using values set in
+	 * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
+	 * setPlotAreaPadding()}.
+	 */
+	public void setAutoLayoutEnabled(boolean enabled) {
+		this.autoPadding_ = enabled;
+	}
+
+	/**
+	 * Configures the chart layout to be automatic.
+	 * <p>
+	 * Calls {@link #setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled(true)}
+	 */
+	public final void setAutoLayoutEnabled() {
+		setAutoLayoutEnabled(true);
+	}
+
+	/**
+	 * Returns whether chart layout is computed automatically.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 */
+	public boolean isAutoLayoutEnabled() {
+		return this.autoPadding_;
+	}
+
+	/**
 	 * Set a chart title.
 	 * <p>
 	 * The title is displayed on top of the chart, using the
@@ -264,7 +318,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractChart#getTitle()
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
 			this.title_ = WString.toWString(title);
 			update();
@@ -293,7 +347,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * @see WAbstractChart#getTitleFont()
 	 * @see WAbstractChart#setTitle(CharSequence title)
 	 */
-	public void setTitleFont(WFont titleFont) {
+	public void setTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.titleFont_, titleFont)) {
 			this.titleFont_ = titleFont;
 			update();
@@ -311,7 +365,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		return this.titleFont_;
 	}
 
-	void setAxisTitleFont(WFont titleFont) {
+	void setAxisTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.axisTitleFont_, titleFont)) {
 			this.axisTitleFont_ = titleFont;
 			update();
@@ -330,16 +384,16 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <i>rectangle</i>. When <i>rectangle</i> is a null rectangle, the entire
 	 * painter {@link WPainter#getWindow() window} is used.
 	 */
-	public abstract void paint(WPainter painter, WRectF rectangle);
+	public abstract void paint(final WPainter painter, final WRectF rectangle);
 
 	/**
 	 * Paint the chart in a rectangle of the given painter.
 	 * <p>
 	 * Calls {@link #paint(WPainter painter, WRectF rectangle) paint(painter,
-	 * new WRectF())}
+	 * null)}
 	 */
-	public final void paint(WPainter painter) {
-		paint(painter, new WRectF());
+	public final void paint(final WPainter painter) {
+		paint(painter, null);
 	}
 
 	WAbstractChart(WContainerWidget parent) {
@@ -347,6 +401,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		this.model_ = null;
 		this.background_ = new WBrush(WColor.white);
 		this.palette_ = null;
+		this.autoPadding_ = false;
 		this.title_ = new WString();
 		this.titleFont_ = new WFont();
 		this.axisTitleFont_ = new WFont();
@@ -361,6 +416,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	private WAbstractItemModel model_;
 	private WBrush background_;
 	private WChartPalette palette_;
+	private boolean autoPadding_;
 	private int[] padding_ = new int[4];
 	private WString title_;
 	private WFont titleFont_;
@@ -393,8 +449,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#columnsInserted()
 	 */
-	protected abstract void modelColumnsInserted(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelColumnsInserted(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when colums have been removed from the model.
@@ -402,8 +458,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#columnsRemoved()
 	 */
-	protected abstract void modelColumnsRemoved(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelColumnsRemoved(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when rows have been inserted from the model.
@@ -411,8 +467,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#rowsInserted()
 	 */
-	protected abstract void modelRowsInserted(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelRowsInserted(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when rows have been removed from the model.
@@ -420,8 +476,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#rowsRemoved()
 	 */
-	protected abstract void modelRowsRemoved(WModelIndex parent, int start,
-			int end);
+	protected abstract void modelRowsRemoved(final WModelIndex parent,
+			int start, int end);
 
 	/**
 	 * Method called when data has been changed in the model.
@@ -429,7 +485,16 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * 
 	 * @see WAbstractItemModel#dataChanged()
 	 */
-	protected abstract void modelDataChanged(WModelIndex topLeft,
-			WModelIndex bottomRight);
-	// private void (T m, T v) ;
+	protected abstract void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight);
+
+	/**
+	 * Method called when header data has been changed in the model.
+	 * <p>
+	 * 
+	 * @see WAbstractItemModel#headerDataChanged()
+	 */
+	protected abstract void modelHeaderDataChanged(Orientation orientation,
+			int start, int end);
+	// private void (final T m, final T v) ;
 }

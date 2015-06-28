@@ -28,8 +28,8 @@ class WFileUploadResource extends WResource {
 		this.fileUpload_ = fileUpload;
 	}
 
-	protected void handleRequest(WebRequest request, WebResponse response)
-			throws IOException {
+	protected void handleRequest(final WebRequest request,
+			final WebResponse response) throws IOException {
 		boolean triggerUpdate = false;
 		List<UploadedFile> files = new ArrayList<UploadedFile>();
 		CollectionUtils.findInMultimap(request.getUploadedFiles(), "data",

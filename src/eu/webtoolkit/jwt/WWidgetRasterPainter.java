@@ -28,12 +28,16 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		this.device_ = null;
 	}
 
+	public WRasterPaintDevice createPaintDevice(boolean paintUpdate) {
+		return new WRasterPaintDevice("png", new WLength(
+				this.widget_.renderWidth_), new WLength(
+				this.widget_.renderHeight_));
+	}
+
 	public WPaintDevice getPaintDevice(boolean paintUpdate) {
 		if (!(this.device_ != null) || this.widget_.sizeChanged_) {
 			;
-			this.device_ = new WRasterPaintDevice("png", new WLength(
-					this.widget_.renderWidth_), new WLength(
-					this.widget_.renderHeight_));
+			this.device_ = this.createPaintDevice(paintUpdate);
 		}
 		if (!paintUpdate) {
 			this.device_.clear();
@@ -58,7 +62,8 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		result.addChild(img);
 	}
 
-	public void updateContents(List<DomElement> result, WPaintDevice device) {
+	public void updateContents(final List<DomElement> result,
+			WPaintDevice device) {
 		WResource resource = ((device) instanceof WResource ? (WResource) (device)
 				: null);
 		DomElement img = DomElement.getForUpdate('i' + this.widget_.getId(),

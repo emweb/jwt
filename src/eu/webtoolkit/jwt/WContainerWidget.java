@@ -319,7 +319,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		this.transientImpl_.addedChildren_.add(widget);
 		this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		widget.setParentWidget(this);
 	}
 
@@ -354,7 +354,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 		this.children_.add(0 + i, widget);
 		this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (!(this.transientImpl_ != null)) {
 			this.transientImpl_ = new WWebWidget.TransientImpl();
 		}
@@ -387,7 +387,7 @@ public class WContainerWidget extends WInteractWidget {
 	 */
 	public void removeWidget(WWidget widget) {
 		widget.setParentWidget((WWidget) null);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -447,7 +447,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.contentAlignment_.add(AlignmentFlag.AlignTop);
 		}
 		this.flags_.set(BIT_CONTENT_ALIGNMENT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -467,7 +467,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Setting padding has the effect of adding distance between the widget
 	 * children and the border.
 	 */
-	public void setPadding(WLength length, EnumSet<Side> sides) {
+	public void setPadding(final WLength length, EnumSet<Side> sides) {
 		if (!(this.padding_ != null)) {
 			this.padding_ = new WLength[4];
 			this.padding_[0] = this.padding_[1] = this.padding_[2] = this.padding_[3] = WLength.Auto;
@@ -485,7 +485,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.padding_[3] = length;
 		}
 		this.flags_.set(BIT_PADDINGS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -494,7 +494,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Calls {@link #setPadding(WLength length, EnumSet sides)
 	 * setPadding(length, EnumSet.of(side, sides))}
 	 */
-	public final void setPadding(WLength length, Side side, Side... sides) {
+	public final void setPadding(final WLength length, Side side, Side... sides) {
 		setPadding(length, EnumSet.of(side, sides));
 	}
 
@@ -504,7 +504,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * Calls {@link #setPadding(WLength length, EnumSet sides)
 	 * setPadding(length, Side.All)}
 	 */
-	public final void setPadding(WLength length) {
+	public final void setPadding(final WLength length) {
 		setPadding(length, Side.All);
 	}
 
@@ -571,7 +571,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.overflow_[1] = value;
 		}
 		this.flags_.set(BIT_OVERFLOW_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -690,6 +690,7 @@ public class WContainerWidget extends WInteractWidget {
 		return this.scrollEventSignal(SCROLL_SIGNAL, true);
 	}
 
+	private static String SCROLL_SIGNAL = "scroll";
 	private static final int BIT_CONTENT_ALIGNMENT_CHANGED = 0;
 	private static final int BIT_PADDINGS_CHANGED = 1;
 	private static final int BIT_OVERFLOW_CHANGED = 2;
@@ -714,8 +715,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void rootAsJavaScript(WApplication app, Writer out, boolean all)
-			throws IOException {
+	void rootAsJavaScript(WApplication app, final StringBuilder out, boolean all) {
 		List<WWidget> toAdd = all ? this.children_
 				: this.transientImpl_ != null ? this.transientImpl_.addedChildren_
 						: null;
@@ -777,16 +777,13 @@ public class WContainerWidget extends WInteractWidget {
 
 	void childResized(WWidget child, EnumSet<Orientation> directions) {
 		if (this.layout_ != null) {
-			boolean setUpdate = true;
-			if (setUpdate) {
-				WWidgetItem item = this.layout_.findWidgetItem(child);
-				if (item != null) {
-					if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
-							.getParentLayout().getImpl())
-							: null)).itemResized(item)) {
-						this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
-						this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-					}
+			WWidgetItem item = this.layout_.findWidgetItem(child);
+			if (item != null) {
+				if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
+						.getParentLayout().getImpl())
+						: null)).itemResized(item)) {
+					this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+					this.repaint();
 				}
 			}
 		} else {
@@ -794,7 +791,20 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	protected void parentResized(WWidget parent, EnumSet<Orientation> directions) {
+		if (this.layout_ != null) {
+			if ((((this.layout_.getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (this.layout_
+					.getImpl())
+					: null)).isParentResized()) {
+				this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
+				this.repaint();
+			}
+		} else {
+			super.parentResized(parent, directions);
+		}
+	}
+
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (this.flags_.get(BIT_LAYOUT_NEEDS_RERENDER)) {
@@ -820,8 +830,9 @@ public class WContainerWidget extends WInteractWidget {
 		return result;
 	}
 
-	void createDomChildren(DomElement parent, WApplication app) {
+	void createDomChildren(final DomElement parent, WApplication app) {
 		if (this.layout_ != null) {
+			this.containsLayout();
 			boolean fitWidth = !EnumUtils.mask(this.contentAlignment_,
 					AlignmentFlag.AlignJustify).isEmpty();
 			boolean fitHeight = !!EnumUtils.mask(this.contentAlignment_,
@@ -885,7 +896,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void updateDomChildren(DomElement parent, WApplication app) {
+	void updateDomChildren(final DomElement parent, WApplication app) {
 		if (!app.getSession().getRenderer().isPreLearning()
 				&& !(this.layout_ != null)) {
 			if (parent.getMode() == DomElement.Mode.ModeUpdate) {
@@ -893,7 +904,7 @@ public class WContainerWidget extends WInteractWidget {
 			}
 			if (this.transientImpl_ != null) {
 				List<Integer> orderedInserts = new ArrayList<Integer>();
-				List<WWidget> ac = this.transientImpl_.addedChildren_;
+				final List<WWidget> ac = this.transientImpl_.addedChildren_;
 				for (int i = 0; i < ac.size(); ++i) {
 					orderedInserts.add(this.children_.indexOf(ac.get(i)));
 				}
@@ -928,8 +939,8 @@ public class WContainerWidget extends WInteractWidget {
 	DomElementType getDomElementType() {
 		DomElementType type = this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
-		WContainerWidget p = ((this.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this
-				.getParent())
+		WContainerWidget p = ((this.getParentWebWidget()) instanceof WContainerWidget ? (WContainerWidget) (this
+				.getParentWebWidget())
 				: null);
 		if (p != null && p.isList()) {
 			type = DomElementType.DomElement_LI;
@@ -941,7 +952,7 @@ public class WContainerWidget extends WInteractWidget {
 		return type;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && element.getType() == DomElementType.DomElement_LI
 				&& this.isInline()) {
 			element.setProperty(Property.PropertyStyleDisplay, "inline");
@@ -1039,11 +1050,17 @@ public class WContainerWidget extends WInteractWidget {
 				element.setProperty(Property.PropertyStylePadding,
 						this.padding_[0].getCssText());
 			} else {
-				element.setProperty(Property.PropertyStylePadding,
-						this.padding_[0].getCssText() + " "
-								+ this.padding_[1].getCssText() + " "
-								+ this.padding_[2].getCssText() + " "
-								+ this.padding_[3].getCssText());
+				StringBuilder s = new StringBuilder();
+				for (int i = 0; i < 4; ++i) {
+					if (i != 0) {
+						s.append(' ');
+					}
+					s.append(this.padding_[i].isAuto() ? "0" : this.padding_[i]
+							.getCssText());
+				}
+				element
+						.setProperty(Property.PropertyStylePadding, s
+								.toString());
 			}
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
@@ -1117,6 +1134,13 @@ public class WContainerWidget extends WInteractWidget {
 				return new StdGridLayoutImpl2(l, l.getGrid());
 			}
 		}
+		{
+			WFitLayout l = ((item) instanceof WFitLayout ? (WFitLayout) (item)
+					: null);
+			if (l != null) {
+				return new StdGridLayoutImpl2(l, l.getGrid());
+			}
+		}
 		assert false;
 		return null;
 	}
@@ -1151,7 +1175,7 @@ public class WContainerWidget extends WInteractWidget {
 		} else {
 			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
 		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (deleted) {
 			this.layout_ = null;
 		}
@@ -1164,5 +1188,4 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	private static String[] cssText = { "visible", "auto", "hidden", "scroll" };
-	private static String SCROLL_SIGNAL = "scroll";
 }

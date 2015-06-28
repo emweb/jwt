@@ -71,7 +71,7 @@ public class FacebookService extends OAuthService {
 	/**
 	 * Constructor.
 	 */
-	public FacebookService(AuthService baseAuth) {
+	public FacebookService(final AuthService baseAuth) {
 		super(baseAuth);
 	}
 
@@ -87,7 +87,7 @@ public class FacebookService extends OAuthService {
 			configurationProperty(ClientIdProperty);
 			configurationProperty(ClientSecretProperty);
 			return true;
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			logger.info(new StringWriter().append("not configured: ").append(
 					e.toString()).toString());
 			return false;
@@ -121,7 +121,7 @@ public class FacebookService extends OAuthService {
 	public String getRedirectEndpointPath() {
 		try {
 			return configurationProperty(RedirectEndpointPathProperty);
-		} catch (RuntimeException e) {
+		} catch (final RuntimeException e) {
 			return super.getRedirectEndpointPath();
 		}
 	}
@@ -146,15 +146,15 @@ public class FacebookService extends OAuthService {
 		return Method.Get;
 	}
 
-	public OAuthProcess createProcess(String scope) {
+	public OAuthProcess createProcess(final String scope) {
 		return new FacebookProcess(this, scope);
 	}
 
-	static String RedirectEndpointProperty = "facebook-oauth2-redirect-endpoint";
-	static String RedirectEndpointPathProperty = "facebook-oauth2-redirect-endpoint-path";
-	static String ClientIdProperty = "facebook-oauth2-app-id";
-	static String ClientSecretProperty = "facebook-oauth2-app-secret";
-	static String AuthUrl = "https://www.facebook.com/dialog/oauth";
-	static String TokenUrl = "https://graph.facebook.com/oauth/access_token";
-	static String EmailScope = "email";
+	private static String RedirectEndpointProperty = "facebook-oauth2-redirect-endpoint";
+	private static String RedirectEndpointPathProperty = "facebook-oauth2-redirect-endpoint-path";
+	private static String ClientIdProperty = "facebook-oauth2-app-id";
+	private static String ClientSecretProperty = "facebook-oauth2-app-secret";
+	private static String AuthUrl = "https://www.facebook.com/dialog/oauth";
+	private static String TokenUrl = "https://graph.facebook.com/oauth/access_token";
+	private static String EmailScope = "email";
 }

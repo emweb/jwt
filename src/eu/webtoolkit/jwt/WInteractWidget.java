@@ -448,7 +448,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * @see WWidget#acceptDrops(String mimeType, String hoverStyleClass)
 	 * @see WDropEvent
 	 */
-	public void setDraggable(String mimeType, WWidget dragWidget,
+	public void setDraggable(final String mimeType, WWidget dragWidget,
 			boolean isDragWidgetOnly, WObject sourceObject) {
 		if (dragWidget == null) {
 			dragWidget = this;
@@ -478,7 +478,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * setDraggable(mimeType, (WWidget)null, false, (WObject)null)}
 	 */
-	public final void setDraggable(String mimeType) {
+	public final void setDraggable(final String mimeType) {
 		setDraggable(mimeType, (WWidget) null, false, (WObject) null);
 	}
 
@@ -489,7 +489,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * setDraggable(mimeType, dragWidget, false, (WObject)null)}
 	 */
-	public final void setDraggable(String mimeType, WWidget dragWidget) {
+	public final void setDraggable(final String mimeType, WWidget dragWidget) {
 		setDraggable(mimeType, dragWidget, false, (WObject) null);
 	}
 
@@ -500,7 +500,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * {@link #setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject)null)}
 	 */
-	public final void setDraggable(String mimeType, WWidget dragWidget,
+	public final void setDraggable(final String mimeType, WWidget dragWidget,
 			boolean isDragWidgetOnly) {
 		setDraggable(mimeType, dragWidget, isDragWidgetOnly, (WObject) null);
 	}
@@ -525,7 +525,27 @@ public abstract class WInteractWidget extends WWebWidget {
 		}
 	}
 
-	// public int getMouseOverDelay() ;
+	/**
+	 * Returns the mouse over signal delay.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#setMouseOverDelay(int delay)
+	 */
+	public int getMouseOverDelay() {
+		return this.mouseOverDelay_;
+	}
+
+	public void setPopup(boolean popup) {
+		if (popup && WApplication.getInstance().getEnvironment().hasAjax()) {
+			this
+					.clicked()
+					.addListener(
+							"function(o,e) {  if (Wt3_3_4.WPopupWidget) {Wt3_3_4.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_3_4.WPopupWidget.popupClicked = null; }}");
+			this.clicked().preventPropagation();
+		}
+		super.setPopup(popup);
+	}
+
 	public void load() {
 		if (!this.isDisabled()) {
 			if (this.getParent() != null) {
@@ -543,9 +563,9 @@ public abstract class WInteractWidget extends WWebWidget {
 		return !this.isDisabled() && this.flags_.get(BIT_ENABLED);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		boolean updateKeyDown = false;
-		WApplication app = null;
+		WApplication app = WApplication.getInstance();
 		EventSignal enterPress = this
 				.voidEventSignal(ENTER_PRESS_SIGNAL, false);
 		EventSignal escapePress = this.voidEventSignal(ESCAPE_PRESS_SIGNAL,
@@ -558,19 +578,16 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (updateKeyDown) {
 			List<DomElement.EventAction> actions = new ArrayList<DomElement.EventAction>();
 			if (enterPress != null) {
-				if (enterPress.needsUpdate(all)) {
+				if (enterPress.needsUpdate(true)) {
 					String extraJS = "";
-					if (!(app != null)) {
-						app = WApplication.getInstance();
-					}
-					WEnvironment env = app.getEnvironment();
+					final WEnvironment env = app.getEnvironment();
 					if (((this) instanceof WFormWidget ? (WFormWidget) (this)
 							: null) != null
 							&& !env.agentIsOpera() && !env.agentIsIE()) {
 						extraJS = "var g=this.onchange;this.onchange=function(){this.onchange=g;};";
 					}
 					actions.add(new DomElement.EventAction(
-							"(e.keyCode && e.keyCode == 13)", enterPress
+							"e.keyCode && (e.keyCode == 13)", enterPress
 									.getJavaScript()
 									+ extraJS, enterPress.encodeCmd(),
 							enterPress.isExposedSignal()));
@@ -578,16 +595,16 @@ public abstract class WInteractWidget extends WWebWidget {
 				enterPress.updateOk();
 			}
 			if (escapePress != null) {
-				if (escapePress.needsUpdate(all)) {
+				if (escapePress.needsUpdate(true)) {
 					actions.add(new DomElement.EventAction(
-							"(e.keyCode && e.keyCode == 27)", escapePress
+							"e.keyCode && (e.keyCode == 27)", escapePress
 									.getJavaScript(), escapePress.encodeCmd(),
 							escapePress.isExposedSignal()));
 				}
 				escapePress.updateOk();
 			}
 			if (keyDown != null) {
-				if (keyDown.needsUpdate(all)) {
+				if (keyDown.needsUpdate(true)) {
 					actions.add(new DomElement.EventAction("", keyDown
 							.getJavaScript(), keyDown.encodeCmd(), keyDown
 							.isExposedSignal()));
@@ -617,13 +634,15 @@ public abstract class WInteractWidget extends WWebWidget {
 				&& mouseDown.needsUpdate(all) || updateMouseMove;
 		boolean updateMouseUp = mouseUp != null && mouseUp.needsUpdate(all)
 				|| updateMouseMove;
+		String CheckDisabled = "if($(o).hasClass('"
+				+ app.getTheme().getDisabledClass()
+				+ "')){Wt3_3_4.cancelEvent(e);return;}";
 		if (updateMouseDown) {
-			String js = "";
+			StringBuilder js = new StringBuilder();
+			js.append(CheckDisabled);
 			if (mouseUp != null && mouseUp.isConnected()) {
-				if (!(app != null)) {
-					app = WApplication.getInstance();
-				}
-				js += app.getJavaScriptClass() + "._p_.saveDownPos(event);";
+				js.append(app.getJavaScriptClass()).append(
+						"._p_.saveDownPos(event);");
 			}
 			if (mouseDrag != null
 					&& mouseDrag.isConnected()
@@ -631,34 +650,35 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js += "Wt3_2_3.capture(this);";
+				js.append("Wt3_3_4.capture(this);");
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_2_3.mouseDown(e);";
+				js.append("Wt3_3_4.mouseDown(e);");
 			}
 			if (mouseDown != null) {
-				js += mouseDown.getJavaScript();
-				element.setEvent("mousedown", js, mouseDown.encodeCmd(),
-						mouseDown.isExposedSignal());
+				js.append(mouseDown.getJavaScript());
+				element.setEvent("mousedown", js.toString(), mouseDown
+						.encodeCmd(), mouseDown.isExposedSignal());
 				mouseDown.updateOk();
 			} else {
-				element.setEvent("mousedown", js, "", false);
+				element.setEvent("mousedown", js.toString(), "", false);
 			}
 		}
 		if (updateMouseUp) {
-			String js = "";
+			StringBuilder js = new StringBuilder();
+			js.append(CheckDisabled);
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js += "Wt3_2_3.mouseUp(e);";
+				js.append("Wt3_3_4.mouseUp(e);");
 			}
 			if (mouseUp != null) {
-				js += mouseUp.getJavaScript();
-				element.setEvent("mouseup", js, mouseUp.encodeCmd(), mouseUp
-						.isExposedSignal());
+				js.append(mouseUp.getJavaScript());
+				element.setEvent("mouseup", js.toString(), mouseUp.encodeCmd(),
+						mouseUp.isExposedSignal());
 				mouseUp.updateOk();
 			} else {
-				element.setEvent("mouseup", js, "", false);
+				element.setEvent("mouseup", js.toString(), "", false);
 			}
 		}
 		if (updateMouseMove) {
@@ -670,9 +690,9 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_2_3.buttons",
-						mouseDrag.getJavaScript(), mouseDrag.encodeCmd(),
-						mouseDrag.isExposedSignal()));
+				actions.add(new DomElement.EventAction("Wt3_3_4.buttons",
+						mouseDrag.getJavaScript() + "Wt3_3_4.drag(e);",
+						mouseDrag.encodeCmd(), mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
 			}
 			element.setEvent("mousemove", actions);
@@ -686,17 +706,30 @@ public abstract class WInteractWidget extends WWebWidget {
 				&& mouseDblClick.needsUpdate(all);
 		if (updateMouseClick) {
 			StringBuilder js = new StringBuilder();
-			js
-					.append("if($(o).hasClass('Wt-disabled')){Wt3_2_3.cancelEvent(e);return;}");
+			js.append(CheckDisabled);
+			if (mouseDrag != null) {
+				js.append("if (Wt3_3_4.dragged()) return;");
+			}
 			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
-				js.append("if(window.wtClickTimeout) {").append(
-						"clearTimeout(window.wtClickTimeout);").append(
-						"window.wtClickTimeout = null;");
-				js.append(mouseDblClick.getJavaScript());
-				if (mouseDblClick.isExposedSignal()) {
-					if (!(app != null)) {
-						app = WApplication.getInstance();
+				if (mouseClick != null) {
+					if (mouseClick.isDefaultActionPrevented()
+							|| mouseClick.isPropagationPrevented()) {
+						js.append("Wt3_3_4.cancelEvent(e");
+						if (mouseClick.isDefaultActionPrevented()
+								&& mouseClick.isPropagationPrevented()) {
+							js.append(");");
+						} else {
+							if (mouseClick.isDefaultActionPrevented()) {
+								js.append(",0x2);");
+							} else {
+								js.append(",0x1);");
+							}
+						}
 					}
+				}
+				js.append("if(Wt3_3_4.isDblClick(o, e)) {").append(
+						mouseDblClick.getJavaScript());
+				if (mouseDblClick.isExposedSignal()) {
 					js.append(app.getJavaScriptClass()).append(
 							"._p_.update(o,'")
 							.append(mouseDblClick.encodeCmd()).append(
@@ -704,27 +737,24 @@ public abstract class WInteractWidget extends WWebWidget {
 				}
 				mouseDblClick.updateOk();
 				js
-						.append("}else{if (Wt3_2_3.isIElt9 && document.createEventObject) e = document.createEventObject(e);window.wtClickTimeout = setTimeout(function() {window.wtClickTimeout = null;");
+						.append("}else{if (Wt3_3_4.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
-						if (!(app != null)) {
-							app = WApplication.getInstance();
-						}
 						js.append(app.getJavaScriptClass()).append(
 								"._p_.update(o,'").append(
 								mouseClick.encodeCmd()).append("',e,true);");
 					}
 					mouseClick.updateOk();
 				}
-				js.append("},200);}");
+				final Configuration conf = app.getEnvironment().getServer()
+						.getConfiguration();
+				js.append("},").append(conf.getDoubleClickTimeout()).append(
+						");}");
 			} else {
 				if (mouseClick != null && mouseClick.needsUpdate(all)) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
-						if (!(app != null)) {
-							app = WApplication.getInstance();
-						}
 						js.append(app.getJavaScriptClass()).append(
 								"._p_.update(o,'").append(
 								mouseClick.encodeCmd()).append("',e,true);");
@@ -735,9 +765,6 @@ public abstract class WInteractWidget extends WWebWidget {
 			element.setEvent(CLICK_SIGNAL, js.toString(),
 					mouseClick != null ? mouseClick.encodeCmd() : "");
 			if (mouseDblClick != null) {
-				if (!(app != null)) {
-					app = WApplication.getInstance();
-				}
 				if (app.getEnvironment().agentIsIElt(9)) {
 					element.setEvent("dblclick", "this.onclick()");
 				}
@@ -755,9 +782,6 @@ public abstract class WInteractWidget extends WWebWidget {
 				js.append("o.over=setTimeout(function() {").append(
 						"o.over = null;").append(mouseOver.getJavaScript());
 				if (mouseOver.isExposedSignal()) {
-					if (!(app != null)) {
-						app = WApplication.getInstance();
-					}
 					js.append(app.getJavaScriptClass()).append(
 							"._p_.update(o,'").append(mouseOver.encodeCmd())
 							.append("',e,true);");
@@ -791,11 +815,11 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	void propagateRenderOk(boolean deep) {
-		LinkedList<AbstractEventSignal> other = this.eventSignals();
+		final LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {
 			AbstractEventSignal i = i_it.next();
-			AbstractEventSignal s = i;
+			final AbstractEventSignal s = i;
 			s.updateOk();
 		}
 		super.propagateRenderOk(deep);
@@ -803,16 +827,18 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED, enabled);
-		this.toggleStyleClass("Wt-disabled", !enabled, true);
+		WApplication app = WApplication.getInstance();
+		String disabledClass = app.getTheme().getDisabledClass();
+		this.toggleStyleClass(disabledClass, !enabled, true);
 		super.propagateSetEnabled(enabled);
 	}
 
-	void updateEventSignals(DomElement element, boolean all) {
-		LinkedList<AbstractEventSignal> other = this.eventSignals();
+	void updateEventSignals(final DomElement element, boolean all) {
+		final LinkedList<AbstractEventSignal> other = this.eventSignals();
 		for (Iterator<AbstractEventSignal> i_it = other.iterator(); i_it
 				.hasNext();) {
 			AbstractEventSignal i = i_it.next();
-			AbstractEventSignal s = i;
+			final AbstractEventSignal s = i;
 			if (s.getName() == WInteractWidget.M_CLICK_SIGNAL
 					&& this.flags_.get(BIT_REPAINT_TO_AJAX)) {
 				element.unwrap();
@@ -822,14 +848,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	JSlot dragSlot_;
-	private int mouseOverDelay_;
+	static String M_CLICK_SIGNAL = "M_click";
+	static String CLICK_SIGNAL = "click";
 	private static String KEYDOWN_SIGNAL = "M_keydown";
 	static String KEYPRESS_SIGNAL = "keypress";
 	private static String KEYUP_SIGNAL = "keyup";
 	private static String ENTER_PRESS_SIGNAL = "M_enterpress";
 	private static String ESCAPE_PRESS_SIGNAL = "M_escapepress";
-	static String CLICK_SIGNAL = "click";
-	static String M_CLICK_SIGNAL = "M_click";
 	private static String DBL_CLICK_SIGNAL = "M_dblclick";
 	static String MOUSE_DOWN_SIGNAL = "M_mousedown";
 	static String MOUSE_UP_SIGNAL = "M_mouseup";
@@ -844,4 +869,5 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String GESTURE_START_SIGNAL = "gesturestart";
 	private static String GESTURE_CHANGE_SIGNAL = "gesturechange";
 	private static String GESTURE_END_SIGNAL = "gestureend";
+	private int mouseOverDelay_;
 }

@@ -50,6 +50,7 @@ public class Login extends WObject {
 		super();
 		this.changed_ = new Signal(this);
 		this.user_ = new User();
+		this.state_ = LoginState.LoggedOut;
 	}
 
 	/**
@@ -64,16 +65,24 @@ public class Login extends WObject {
 	 * @see Login#logout()
 	 * @see Login#isLoggedIn()
 	 */
-	public void login(User user, LoginState state) {
-		boolean weakLogin = state == LoginState.WeakLogin;
-		if (!user.equals(this.user_)) {
-			this.user_ = user;
-			this.weakLogin_ = weakLogin;
-			this.changed_.trigger();
+	public void login(final User user, LoginState state) {
+		if (state == LoginState.LoggedOut || !user.isValid()) {
+			this.logout();
+			return;
 		} else {
-			if (this.user_.isValid() && weakLogin != this.weakLogin_) {
-				this.weakLogin_ = weakLogin;
+			if (state != LoginState.DisabledLogin
+					&& user.getStatus() == User.Status.Disabled) {
+				state = LoginState.DisabledLogin;
+			}
+			if (!user.equals(this.user_)) {
+				this.user_ = user;
+				this.state_ = state;
 				this.changed_.trigger();
+			} else {
+				if (state != this.state_) {
+					this.state_ = state;
+					this.changed_.trigger();
+				}
 			}
 		}
 	}
@@ -84,7 +93,7 @@ public class Login extends WObject {
 	 * Calls {@link #login(User user, LoginState state) login(user,
 	 * LoginState.StrongLogin)}
 	 */
-	public final void login(User user) {
+	public final void login(final User user) {
 		login(user, LoginState.StrongLogin);
 	}
 
@@ -96,6 +105,7 @@ public class Login extends WObject {
 	public void logout() {
 		if (this.user_.isValid()) {
 			this.user_ = new User();
+			this.state_ = LoginState.LoggedOut;
 			this.changed_.trigger();
 		}
 	}
@@ -108,19 +118,7 @@ public class Login extends WObject {
 	 * @see Login#logout()
 	 */
 	public LoginState getState() {
-		if (this.user_.isValid()) {
-			if (this.user_.getStatus() == User.Status.Normal) {
-				if (this.weakLogin_) {
-					return LoginState.WeakLogin;
-				} else {
-					return LoginState.StrongLogin;
-				}
-			} else {
-				return LoginState.DisabledLogin;
-			}
-		} else {
-			return LoginState.LoggedOut;
-		}
+		return this.state_;
 	}
 
 	/**
@@ -133,8 +131,7 @@ public class Login extends WObject {
 	 * @see Login#getState()
 	 */
 	public boolean isLoggedIn() {
-		return this.user_.isValid()
-				&& this.user_.getStatus() == User.Status.Normal;
+		return this.user_.isValid() && this.state_ != LoginState.DisabledLogin;
 	}
 
 	/**
@@ -164,5 +161,5 @@ public class Login extends WObject {
 
 	private Signal changed_;
 	private User user_;
-	private boolean weakLogin_;
+	private LoginState state_;
 }

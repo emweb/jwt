@@ -36,23 +36,22 @@ class AreaWidget extends WInteractWidget {
 		super.remove();
 	}
 
-	void repaint(EnumSet<RepaintFlag> flags) {
-		super.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
-	}
-
 	public WAbstractArea getFacade() {
 		return this.facade_;
 	}
 
 	WAbstractArea facade_;
 
-	void updateDom(DomElement element, boolean all) {
-		this.facade_.updateDom(element, all);
+	void updateDom(final DomElement element, boolean all) {
+		boolean needsUrlResolution = this.facade_.updateDom(element, all);
 		super.updateDom(element, all);
 		if (element.getProperty(Property.PropertyStyleCursor).length() != 0
 				&& !WApplication.getInstance().getEnvironment().agentIsGecko()
 				&& element.getAttribute("href").length() == 0) {
 			element.setAttribute("href", "javascript:void(0);");
+		}
+		if (needsUrlResolution) {
+			WAnchor.renderUrlResolution(this, element, all);
 		}
 	}
 

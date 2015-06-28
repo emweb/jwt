@@ -86,7 +86,7 @@ public class WPainterPath {
 	 * Creates an empty path, and sets the current position to
 	 * <code>startPoint</code>.
 	 */
-	public WPainterPath(WPointF startPoint) {
+	public WPainterPath(final WPointF startPoint) {
 		this.isRect_ = false;
 		this.segments_ = new ArrayList<WPainterPath.Segment>();
 		this.moveTo(startPoint);
@@ -95,7 +95,7 @@ public class WPainterPath {
 	/**
 	 * Copy constructor.
 	 */
-	public WPainterPath(WPainterPath path) {
+	public WPainterPath(final WPainterPath path) {
 		this.isRect_ = path.isRect_;
 		this.segments_ = path.segments_;
 	}
@@ -103,7 +103,7 @@ public class WPainterPath {
 	/**
 	 * Assignment method.
 	 */
-	public WPainterPath assign(WPainterPath path) {
+	public WPainterPath assign(final WPainterPath path) {
 		Utils.copyList(path.segments_, this.segments_);
 		this.isRect_ = path.isRect_;
 		return this;
@@ -140,7 +140,7 @@ public class WPainterPath {
 	 * <p>
 	 * Returns <code>true</code> if the paths are exactly the same.
 	 */
-	public boolean equals(WPainterPath path) {
+	public boolean equals(final WPainterPath path) {
 		if (this.segments_.size() != path.segments_.size()) {
 			return false;
 		}
@@ -173,7 +173,7 @@ public class WPainterPath {
 	 * @see WPainterPath#closeSubPath()
 	 * @see WPainterPath#moveTo(double x, double y)
 	 */
-	public void moveTo(WPointF point) {
+	public void moveTo(final WPointF point) {
 		this.moveTo(point.getX(), point.getY());
 	}
 
@@ -209,7 +209,7 @@ public class WPainterPath {
 	 * 
 	 * @see WPainterPath#lineTo(double x, double y)
 	 */
-	public void lineTo(WPointF point) {
+	public void lineTo(final WPointF point) {
 		this.lineTo(point.getX(), point.getY());
 	}
 
@@ -238,7 +238,8 @@ public class WPainterPath {
 	 * @see WPainterPath#cubicTo(double c1x, double c1y, double c2x, double c2y,
 	 *      double endPointx, double endPointy)
 	 */
-	public void cubicTo(WPointF c1, WPointF c2, WPointF endPoint) {
+	public void cubicTo(final WPointF c1, final WPointF c2,
+			final WPointF endPoint) {
 		this.cubicTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), endPoint
 				.getX(), endPoint.getY());
 	}
@@ -328,7 +329,7 @@ public class WPainterPath {
 	 * @see WPainterPath#quadTo(double cx, double cy, double endPointX, double
 	 *      endPointY)
 	 */
-	public void quadTo(WPointF c, WPointF endPoint) {
+	public void quadTo(final WPointF c, final WPointF endPoint) {
 		this.quadTo(c.getX(), c.getY(), endPoint.getX(), endPoint.getY());
 	}
 
@@ -361,7 +362,7 @@ public class WPainterPath {
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
 	 *      startAngle, double sweepLength)
 	 */
-	public void addEllipse(WRectF rect) {
+	public void addEllipse(final WRectF rect) {
 		this.addEllipse(rect.getX(), rect.getY(), rect.getWidth(), rect
 				.getHeight());
 	}
@@ -396,7 +397,7 @@ public class WPainterPath {
 	 * @see WPainterPath#addRect(double x, double y, double width, double
 	 *      height)
 	 */
-	public void addRect(WRectF rectangle) {
+	public void addRect(final WRectF rectangle) {
 		this.addRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(),
 				rectangle.getHeight());
 	}
@@ -423,6 +424,29 @@ public class WPainterPath {
 	}
 
 	/**
+	 * Adds a polygon.
+	 * <p>
+	 * If the first point is different from the current position, the last sub
+	 * path is first closed, otherwise the last sub path is extended with the
+	 * polygon.
+	 * <p>
+	 * 
+	 * @see WPainterPath#moveTo(WPointF point)
+	 * @see WPainterPath#lineTo(WPointF point)
+	 */
+	public void addPolygon(final List<WPointF> points) {
+		if (!points.isEmpty()) {
+			int i = 0;
+			if (!this.getCurrentPosition().equals(points.get(0))) {
+				this.moveTo(points.get(i++));
+			}
+			for (; i < points.size(); ++i) {
+				this.lineTo(points.get(i));
+			}
+		}
+	}
+
+	/**
 	 * Adds a path.
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
@@ -433,7 +457,7 @@ public class WPainterPath {
 	 * 
 	 * @see WPainterPath#connectPath(WPainterPath path)
 	 */
-	public void addPath(WPainterPath path) {
+	public void addPath(final WPainterPath path) {
 		if (!this.getCurrentPosition().equals(path.getBeginPosition())) {
 			this.moveTo(path.getBeginPosition());
 		}
@@ -451,7 +475,7 @@ public class WPainterPath {
 	 * 
 	 * @see WPainterPath#connectPath(WPainterPath path)
 	 */
-	public void connectPath(WPainterPath path) {
+	public void connectPath(final WPainterPath path) {
 		if (!this.getCurrentPosition().equals(path.getBeginPosition())) {
 			this.lineTo(path.getBeginPosition());
 		}
@@ -487,7 +511,7 @@ public class WPainterPath {
 			return this.type_;
 		}
 
-		public boolean equals(WPainterPath.Segment other) {
+		public boolean equals(final WPainterPath.Segment other) {
 			return this.type_ == other.type_ && this.x_ == other.x_
 					&& this.y_ == other.y_;
 		}
@@ -509,7 +533,7 @@ public class WPainterPath {
 
 	WPointF getPositionAtSegment(int index) {
 		if (index > 0) {
-			WPainterPath.Segment s = this.segments_.get(index - 1);
+			final WPainterPath.Segment s = this.segments_.get(index - 1);
 			switch (s.getType()) {
 			case MoveTo:
 			case LineTo:
@@ -533,21 +557,23 @@ public class WPainterPath {
 		return new WPointF(0, 0);
 	}
 
-	boolean asRect(WRectF result) {
+	boolean asRect(final WRectF result) {
 		if (this.isRect_) {
 			if (this.segments_.size() == 4) {
-				result.assign(new WRectF(0, 0, this.segments_.get(0).getX(),
-						this.segments_.get(1).getY()));
+				result.setX(0);
+				result.setY(0);
+				result.setWidth(this.segments_.get(0).getX());
+				result.setHeight(this.segments_.get(1).getY());
 				return true;
 			} else {
 				if (this.segments_.size() == 5
 						&& this.segments_.get(0).getType() == WPainterPath.Segment.Type.MoveTo) {
-					result.assign(new WRectF(this.segments_.get(0).getX(),
-							this.segments_.get(0).getY(), this.segments_.get(1)
-									.getX()
-									- this.segments_.get(0).getX(),
-							this.segments_.get(2).getY()
-									- this.segments_.get(0).getY()));
+					result.setX(this.segments_.get(0).getX());
+					result.setY(this.segments_.get(0).getY());
+					result.setWidth(this.segments_.get(1).getX()
+							- this.segments_.get(0).getX());
+					result.setHeight(this.segments_.get(2).getY()
+							- this.segments_.get(0).getY());
 					return true;
 				} else {
 					return false;
@@ -566,9 +592,9 @@ public class WPainterPath {
 	 * <p>
 	 * The <code>transform</code> is applied to the path first.
 	 */
-	public WRectF getControlPointRect(WTransform transform) {
+	public WRectF getControlPointRect(final WTransform transform) {
 		if (this.isEmpty()) {
-			return new WRectF();
+			return null;
 		} else {
 			boolean identity = transform.isIdentity();
 			double minX;
@@ -578,7 +604,7 @@ public class WPainterPath {
 			minX = minY = Double.MAX_VALUE;
 			maxX = maxY = Double.MIN_VALUE;
 			for (int i = 0; i < this.segments_.size(); ++i) {
-				WPainterPath.Segment s = this.segments_.get(i);
+				final WPainterPath.Segment s = this.segments_.get(i);
 				switch (s.getType()) {
 				case MoveTo:
 				case LineTo:
@@ -603,7 +629,7 @@ public class WPainterPath {
 					break;
 				}
 				case ArcC: {
-					WPainterPath.Segment s2 = this.segments_.get(i + 1);
+					final WPainterPath.Segment s2 = this.segments_.get(i + 1);
 					if (identity) {
 						WPointF tl = new WPointF(s.getX() - s2.getX(), s.getY()
 								- s2.getY());

@@ -23,62 +23,64 @@ class BarSeriesRenderer extends SeriesRenderer {
 	private static Logger logger = LoggerFactory
 			.getLogger(BarSeriesRenderer.class);
 
-	public BarSeriesRenderer(WChart2DRenderer renderer, WDataSeries series,
-			SeriesRenderIterator it, double groupWidth, int numGroups, int group) {
-		super(renderer, series, it);
+	public BarSeriesRenderer(final WCartesianChart chart,
+			final WPainter painter, final WDataSeries series,
+			final SeriesRenderIterator it, double groupWidth, int numGroups,
+			int group) {
+		super(chart, painter, series, it);
 		this.groupWidth_ = groupWidth;
 		this.numGroups_ = numGroups;
 		this.group_ = group;
 	}
 
-	public void addValue(double x, double y, double stacky, WModelIndex xIndex,
-			WModelIndex yIndex) {
+	public void addValue(double x, double y, double stacky,
+			final WModelIndex xIndex, final WModelIndex yIndex) {
 		WPainterPath bar = new WPainterPath();
-		WAxis yAxis = this.renderer_.getChart().getAxis(this.series_.getAxis());
-		WPointF topMid = this.renderer_.map(x, y, yAxis.getId(), this.it_
+		final WAxis yAxis = this.chart_.getAxis(this.series_.getAxis());
+		WPointF topMid = this.chart_.map(x, y, yAxis.getId(), this.it_
 				.getCurrentXSegment(), this.it_.getCurrentYSegment());
-		WPointF bottomMid = this.renderer_.map(x, stacky, yAxis.getId(),
-				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
+		WPointF bottomMid = this.chart_.map(x, stacky, yAxis.getId(), this.it_
+				.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		FillRangeType fr = this.series_.getFillRange();
 		switch (fr) {
 		case MinimumValueFill:
-			bottomMid = new WPointF(this.renderer_.map(x, stacky,
-					yAxis.getId(), this.it_.getCurrentXSegment(),
-					this.it_.getCurrentYSegment()).getX(), this.renderer_
-					.getChartArea().getBottom());
+			bottomMid = new WPointF(this.chart_.map(x, stacky, yAxis.getId(),
+					this.it_.getCurrentXSegment(),
+					this.it_.getCurrentYSegment()).getX(),
+					this.chart_.chartArea_.getBottom());
 			break;
 		case MaximumValueFill:
-			bottomMid = new WPointF(this.renderer_.map(x, stacky,
-					yAxis.getId(), this.it_.getCurrentXSegment(),
-					this.it_.getCurrentYSegment()).getX(), this.renderer_
-					.getChartArea().getTop());
+			bottomMid = new WPointF(this.chart_.map(x, stacky, yAxis.getId(),
+					this.it_.getCurrentXSegment(),
+					this.it_.getCurrentYSegment()).getX(),
+					this.chart_.chartArea_.getTop());
 			break;
 		default:
 			break;
 		}
 		double g = this.numGroups_ + (this.numGroups_ - 1)
-				* this.renderer_.getChart().getBarMargin();
+				* this.chart_.getBarMargin();
 		double width = this.groupWidth_ / g;
 		double left = topMid.getX() - this.groupWidth_ / 2 + this.group_
-				* width * (1 + this.renderer_.getChart().getBarMargin());
+				* width * (1 + this.chart_.getBarMargin());
 		bar.moveTo(this.hv(crisp(left), crisp(topMid.getY())));
 		bar.lineTo(this.hv(crisp(left + width), crisp(topMid.getY())));
 		bar.lineTo(this.hv(crisp(left + width), crisp(bottomMid.getY())));
 		bar.lineTo(this.hv(crisp(left), crisp(bottomMid.getY())));
 		bar.closeSubPath();
-		this.renderer_.getPainter().setShadow(this.series_.getShadow());
+		this.painter_.setShadow(this.series_.getShadow());
 		WBrush brush = this.series_.getBrush().clone();
 		SeriesIterator.setBrushColor(brush, xIndex, yIndex,
 				ItemDataRole.BarBrushColorRole);
-		this.renderer_.getPainter().fillPath(bar, brush);
-		this.renderer_.getPainter().setShadow(new WShadow());
+		this.painter_.fillPath(bar, brush);
+		this.painter_.setShadow(new WShadow());
 		WPen pen = this.series_.getPen().clone();
 		SeriesIterator.setPenColor(pen, xIndex, yIndex,
 				ItemDataRole.BarPenColorRole);
-		this.renderer_.getPainter().strokePath(bar, pen);
+		this.painter_.strokePath(bar, pen);
 		Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
 		if (!(toolTip == null)) {
-			WTransform t = this.renderer_.getPainter().getWorldTransform();
+			WTransform t = this.painter_.getWorldTransform();
 			WPointF tl = t.map(segmentPoint(bar, 0));
 			WPointF tr = t.map(segmentPoint(bar, 1));
 			WPointF br = t.map(segmentPoint(bar, 2));
@@ -115,8 +117,7 @@ class BarSeriesRenderer extends SeriesRenderer {
 				area = poly;
 			}
 			area.setToolTip(StringUtils.asString(toolTip));
-			this.renderer_.getChart().addDataPointArea(this.series_, xIndex,
-					area);
+			this.chart_.addDataPointArea(this.series_, xIndex, area);
 		}
 		double bTopMidY = this.it_.breakY(topMid.getY());
 		double bBottomMidY = this.it_.breakY(bottomMid.getY());
@@ -126,14 +127,12 @@ class BarSeriesRenderer extends SeriesRenderer {
 			breakPath.lineTo(this.hv(left + width + 10, bTopMidY + 1));
 			breakPath.lineTo(this.hv(left + width + 10, bTopMidY - 1));
 			breakPath.lineTo(this.hv(left - 10, bTopMidY - 1));
-			this.renderer_.getPainter().setPen(new WPen(PenStyle.NoPen));
-			this.renderer_.getPainter().setBrush(
-					this.renderer_.getChart().getBackground());
-			this.renderer_.getPainter().drawPath(breakPath);
-			this.renderer_.getPainter().setPen(new WPen());
-			this.renderer_.getPainter().drawLine(
-					this.hv(left - 10, bTopMidY + 10),
-					this.hv(left + width + 10, bTopMidY + 1));
+			this.painter_.setPen(new WPen(PenStyle.NoPen));
+			this.painter_.setBrush(this.chart_.getBackground());
+			this.painter_.drawPath(breakPath);
+			this.painter_.setPen(new WPen());
+			this.painter_.drawLine(this.hv(left - 10, bTopMidY + 10), this.hv(
+					left + width + 10, bTopMidY + 1));
 		}
 		if (bBottomMidY < bottomMid.getY() && bTopMidY >= topMid.getY()) {
 			WPainterPath breakPath = new WPainterPath();
@@ -141,22 +140,20 @@ class BarSeriesRenderer extends SeriesRenderer {
 			breakPath.lineTo(this.hv(left - 10, bBottomMidY - 1));
 			breakPath.lineTo(this.hv(left - 10, bBottomMidY + 1));
 			breakPath.lineTo(this.hv(left + width + 10, bBottomMidY + 1));
-			this.renderer_.getPainter().setBrush(
-					this.renderer_.getChart().getBackground());
-			this.renderer_.getPainter().setPen(new WPen(PenStyle.NoPen));
-			this.renderer_.getPainter().drawPath(breakPath);
-			this.renderer_.getPainter().setPen(new WPen());
-			this.renderer_.getPainter().drawLine(
-					this.hv(left - 10, bBottomMidY - 1),
-					this.hv(left + width + 10, bBottomMidY - 10));
+			this.painter_.setBrush(this.chart_.getBackground());
+			this.painter_.setPen(new WPen(PenStyle.NoPen));
+			this.painter_.drawPath(breakPath);
+			this.painter_.setPen(new WPen());
+			this.painter_.drawLine(this.hv(left - 10, bBottomMidY - 1), this
+					.hv(left + width + 10, bBottomMidY - 10));
 		}
 	}
 
 	public void paint() {
 	}
 
-	private static WPointF segmentPoint(WPainterPath path, int segment) {
-		WPainterPath.Segment s = path.getSegments().get(segment);
+	private static WPointF segmentPoint(final WPainterPath path, int segment) {
+		final WPainterPath.Segment s = path.getSegments().get(segment);
 		return new WPointF(s.getX(), s.getY());
 	}
 

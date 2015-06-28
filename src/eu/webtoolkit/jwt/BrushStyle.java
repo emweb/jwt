@@ -30,7 +30,11 @@ public enum BrushStyle {
 	/**
 	 * Fill with a solid color.
 	 */
-	SolidPattern;
+	SolidPattern,
+	/**
+	 * Fill with a color gradient.
+	 */
+	GradientPattern;
 
 	/**
 	 * Returns the numerical representation of this enum.

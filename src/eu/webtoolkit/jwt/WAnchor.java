@@ -60,12 +60,10 @@ public class WAnchor extends WContainerWidget {
 	 */
 	public WAnchor(WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 	}
 
@@ -88,14 +86,12 @@ public class WAnchor extends WContainerWidget {
 	 * 
 	 * @see WAnchor#setLink(WLink link)
 	 */
-	public WAnchor(WLink link, WContainerWidget parent) {
+	public WAnchor(final WLink link, WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 		this.setLink(link);
 	}
@@ -106,7 +102,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(WLink link, WContainerWidget parent) this(link,
 	 * (WContainerWidget)null)}
 	 */
-	public WAnchor(WLink link) {
+	public WAnchor(final WLink link) {
 		this(link, (WContainerWidget) null);
 	}
 
@@ -118,15 +114,14 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(String ref, WContainerWidget parent) {
+	public WAnchor(final String ref, WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink(WLink.Type.Url, ref);
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
+		this.linkState_.link = new WLink(WLink.Type.Url, ref);
 	}
 
 	/**
@@ -135,7 +130,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(String ref, WContainerWidget parent) this(ref,
 	 * (WContainerWidget)null)}
 	 */
-	public WAnchor(String ref) {
+	public WAnchor(final String ref) {
 		this(ref, (WContainerWidget) null);
 	}
 
@@ -155,12 +150,10 @@ public class WAnchor extends WContainerWidget {
 	 */
 	public WAnchor(WResource resource, WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 		this.setResource(resource);
 	}
@@ -185,14 +178,13 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setLink(WLink link)
 	 * @see WAnchor#setText(CharSequence text)
 	 */
-	public WAnchor(WLink link, CharSequence text, WContainerWidget parent) {
+	public WAnchor(final WLink link, final CharSequence text,
+			WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 		this.setLink(link);
 		this.text_ = new WText(text, this);
@@ -205,7 +197,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link #WAnchor(WLink link, CharSequence text, WContainerWidget parent)
 	 * this(link, text, (WContainerWidget)null)}
 	 */
-	public WAnchor(WLink link, CharSequence text) {
+	public WAnchor(final WLink link, final CharSequence text) {
 		this(link, text, (WContainerWidget) null);
 	}
 
@@ -217,15 +209,15 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, CharSequence text, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(String ref, CharSequence text, WContainerWidget parent) {
+	public WAnchor(final String ref, final CharSequence text,
+			WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink(WLink.Type.Url, ref);
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
+		this.setLink(new WLink(WLink.Type.Url, ref));
 		this.text_ = new WText(text, this);
 	}
 
@@ -236,7 +228,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link #WAnchor(String ref, CharSequence text, WContainerWidget parent)
 	 * this(ref, text, (WContainerWidget)null)}
 	 */
-	public WAnchor(String ref, CharSequence text) {
+	public WAnchor(final String ref, final CharSequence text) {
 		this(ref, text, (WContainerWidget) null);
 	}
 
@@ -254,15 +246,13 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, CharSequence text, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(WResource resource, CharSequence text,
+	public WAnchor(WResource resource, final CharSequence text,
 			WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 		this.setResource(resource);
 		this.text_ = new WText(text, this);
@@ -275,7 +265,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link #WAnchor(WResource resource, CharSequence text, WContainerWidget parent)
 	 * this(resource, text, (WContainerWidget)null)}
 	 */
-	public WAnchor(WResource resource, CharSequence text) {
+	public WAnchor(WResource resource, final CharSequence text) {
 		this(resource, text, (WContainerWidget) null);
 	}
 
@@ -286,14 +276,12 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setLink(WLink link)
 	 * @see WAnchor#setImage(WImage image)
 	 */
-	public WAnchor(WLink link, WImage image, WContainerWidget parent) {
+	public WAnchor(final WLink link, WImage image, WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 		this.setLink(link);
 		this.image_ = image;
@@ -308,7 +296,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(WLink link, WImage image, WContainerWidget parent)
 	 * this(link, image, (WContainerWidget)null)}
 	 */
-	public WAnchor(WLink link, WImage image) {
+	public WAnchor(final WLink link, WImage image) {
 		this(link, image, (WContainerWidget) null);
 	}
 
@@ -320,15 +308,14 @@ public class WAnchor extends WContainerWidget {
 	 *             {@link WAnchor#WAnchor(WLink link, WImage image, WContainerWidget parent)
 	 *             WAnchor()} instead.
 	 */
-	public WAnchor(String ref, WImage image, WContainerWidget parent) {
+	public WAnchor(final String ref, WImage image, WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink(WLink.Type.Url, ref);
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
+		this.linkState_.link = new WLink(WLink.Type.Url, ref);
 		this.image_ = image;
 		if (this.image_ != null) {
 			this.addWidget(this.image_);
@@ -341,7 +328,7 @@ public class WAnchor extends WContainerWidget {
 	 * Calls {@link #WAnchor(String ref, WImage image, WContainerWidget parent)
 	 * this(ref, image, (WContainerWidget)null)}
 	 */
-	public WAnchor(String ref, WImage image) {
+	public WAnchor(final String ref, WImage image) {
 		this(ref, image, (WContainerWidget) null);
 	}
 
@@ -356,12 +343,10 @@ public class WAnchor extends WContainerWidget {
 	 */
 	public WAnchor(WResource resource, WImage image, WContainerWidget parent) {
 		super(parent);
-		this.link_ = new WLink();
+		this.linkState_ = new WAnchor.LinkState();
 		this.text_ = null;
 		this.image_ = null;
-		this.target_ = AnchorTarget.TargetSelf;
 		this.flags_ = new BitSet();
-		this.changeInternalPathJS_ = null;
 		this.setInline(true);
 		this.setResource(resource);
 		this.image_ = image;
@@ -382,11 +367,6 @@ public class WAnchor extends WContainerWidget {
 		this(resource, image, (WContainerWidget) null);
 	}
 
-	public void remove() {
-		;
-		super.remove();
-	}
-
 	/**
 	 * Sets the link.
 	 * <p>
@@ -397,23 +377,23 @@ public class WAnchor extends WContainerWidget {
 	 * <p>
 	 * When the link points to an {@link WLink.Type#InternalPath internal path},
 	 * activating the anchor will change the
-	 * {@link WApplication#isInternalPathValid() application&apos;s internal
-	 * path} or open a new session with the given path as
+	 * {@link WApplication#getBookmarkUrl() application&apos;s internal path} or
+	 * open a new session with the given path as
 	 * {@link WEnvironment#getInternalPath() initial path}). This is the easiest
 	 * way to let the application participate in browser history, and generate
 	 * URLs that are bookmarkable and search engine friendly.
 	 */
-	public void setLink(WLink link) {
-		if (this.link_.getType() != WLink.Type.Resource
-				&& this.link_.equals(link)) {
+	public void setLink(final WLink link) {
+		if (this.linkState_.link.getType() != WLink.Type.Resource
+				&& this.linkState_.link.equals(link)) {
 			return;
 		}
-		this.link_ = link;
+		this.linkState_.link = link;
 		this.flags_.set(BIT_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
-		switch (this.link_.getType()) {
+		this.repaint();
+		switch (this.linkState_.link.getType()) {
 		case Resource:
-			this.link_.getResource().dataChanged().addListener(this,
+			this.linkState_.link.getResource().dataChanged().addListener(this,
 					new Signal.Listener() {
 						public void trigger() {
 							WAnchor.this.resourceChanged();
@@ -435,7 +415,7 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setLink(WLink link)
 	 */
 	public WLink getLink() {
-		return this.link_;
+		return this.linkState_.link;
 	}
 
 	/**
@@ -444,7 +424,7 @@ public class WAnchor extends WContainerWidget {
 	 * 
 	 * @deprecated Use {@link WAnchor#setLink(WLink link) setLink()} instead.
 	 */
-	public void setRef(String url) {
+	public void setRef(final String url) {
 		this.setLink(new WLink(WLink.Type.Url, url));
 	}
 
@@ -454,7 +434,7 @@ public class WAnchor extends WContainerWidget {
 	 * 
 	 * @deprecated Use {@link WAnchor#setLink(WLink link) setLink()} instead.
 	 */
-	public void setRefInternalPath(String path) {
+	public void setRefInternalPath(final String path) {
 		this.setLink(new WLink(WLink.Type.InternalPath, path));
 	}
 
@@ -471,7 +451,22 @@ public class WAnchor extends WContainerWidget {
 		this.setLink(new WLink(resource));
 	}
 
-	// public WResource getResource() ;
+	/**
+	 * Returns the destination resource (<b>deprecated</b>).
+	 * <p>
+	 * Returns <code>null</code> if no resource has been set.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WAnchor#getLink() getLink()} instead.
+	 */
+	public WResource getResource() {
+		if (this.linkState_.link.getType() == WLink.Type.Resource) {
+			return this.linkState_.link.getResource();
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * Sets the label text.
 	 * <p>
@@ -479,7 +474,7 @@ public class WAnchor extends WContainerWidget {
 	 * {@link WContainerWidget#addWidget(WWidget widget)
 	 * WContainerWidget#addWidget()}.
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (!(this.text_ != null)) {
 			this.text_ = new WText(text, this);
 		} else {
@@ -613,8 +608,8 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#getTarget()
 	 */
 	public void setTarget(AnchorTarget target) {
-		if (this.target_ != target) {
-			this.target_ = target;
+		if (this.linkState_.target != target) {
+			this.linkState_.target = target;
 			this.flags_.set(BIT_TARGET_CHANGED);
 		}
 	}
@@ -626,71 +621,116 @@ public class WAnchor extends WContainerWidget {
 	 * @see WAnchor#setTarget(AnchorTarget target)
 	 */
 	public AnchorTarget getTarget() {
-		return this.target_;
+		return this.linkState_.target;
+	}
+
+	public boolean isCanReceiveFocus() {
+		return true;
+	}
+
+	public int getTabIndex() {
+		int result = super.getTabIndex();
+		if (result == Integer.MIN_VALUE) {
+			return 0;
+		} else {
+			return result;
+		}
+	}
+
+	public boolean isSetFirstFocus() {
+		return false;
 	}
 
 	private static final int BIT_LINK_CHANGED = 0;
 	private static final int BIT_TARGET_CHANGED = 1;
-	private WLink link_;
+
+	static class LinkState {
+		private static Logger logger = LoggerFactory.getLogger(LinkState.class);
+
+		public LinkState() {
+			this.link = new WLink();
+			this.target = AnchorTarget.TargetSelf;
+			this.clickJS = null;
+		}
+
+		public WLink link;
+		public AnchorTarget target;
+		public JSlot clickJS;
+	}
+
+	private WAnchor.LinkState linkState_;
 	private WText text_;
 	private WImage image_;
-	private AnchorTarget target_;
 	BitSet flags_;
-	private JSlot changeInternalPathJS_;
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint();
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	static boolean renderHRef(WInteractWidget widget,
+			final WAnchor.LinkState linkState, final DomElement element) {
+		WApplication app = WApplication.getInstance();
+		if (linkState.link.isNull() || widget.isDisabled()) {
+			element.removeAttribute("href");
+		} else {
+			String url = linkState.link.resolveUrl(app);
+			if (linkState.target == AnchorTarget.TargetSelf) {
+				linkState.clickJS = linkState.link.manageInternalPathChange(
+						app, widget, linkState.clickJS);
+			} else {
+				;
+				linkState.clickJS = null;
+			}
+			url = app.encodeUntrustedUrl(url);
+			String href = url;
+			element.setAttribute("href", href);
+			return !app.getEnvironment().isInternalPathUsingFragments()
+					&& href.indexOf("://") == -1 && href.charAt(0) != '/';
+		}
+		return false;
+	}
+
+	static void renderHTarget(final WAnchor.LinkState linkState,
+			final DomElement element, boolean all) {
+		switch (linkState.target) {
+		case TargetSelf:
+			if (!all) {
+				element.setProperty(Property.PropertyTarget, "_self");
+			}
+			break;
+		case TargetThisWindow:
+			element.setProperty(Property.PropertyTarget, "_top");
+			break;
+		case TargetNewWindow:
+			element.setProperty(Property.PropertyTarget, "_blank");
+		}
+	}
+
+	static void renderUrlResolution(WWidget widget, final DomElement element,
+			boolean all) {
+		if (all) {
+			element.setProperty(Property.PropertyClass, StringUtils.addWord(
+					widget.getStyleClass(), "Wt-rr"));
+		} else {
+			element.callJavaScript("$('#" + widget.getId()
+					+ "').addClass('Wt-rr');");
+		}
+	}
+
+	void updateDom(final DomElement element, boolean all) {
 		boolean needsUrlResolution = false;
 		if (this.flags_.get(BIT_LINK_CHANGED) || all) {
-			WApplication app = WApplication.getInstance();
-			if (this.link_.isNull()) {
-				element.removeAttribute("href");
-			} else {
-				String url = this.link_.resolveUrl(app);
-				if (this.target_ == AnchorTarget.TargetSelf) {
-					this.changeInternalPathJS_ = this.link_
-							.manageInternalPathChange(app, this,
-									this.changeInternalPathJS_);
-				} else {
-					;
-					this.changeInternalPathJS_ = null;
-				}
-				url = app.encodeUntrustedUrl(url);
-				String href = resolveRelativeUrl(url);
-				element.setAttribute("href", href);
-				needsUrlResolution = !app.getEnvironment().hashInternalPaths()
-						&& href.indexOf("://") == -1 && href.charAt(0) != '/';
-			}
+			needsUrlResolution = renderHRef(this, this.linkState_, element);
 			this.flags_.clear(BIT_LINK_CHANGED);
 		}
 		if (this.flags_.get(BIT_TARGET_CHANGED) || all) {
-			switch (this.target_) {
-			case TargetSelf:
-				if (!all) {
-					element.setProperty(Property.PropertyTarget, "_self");
-				}
-				break;
-			case TargetThisWindow:
-				element.setProperty(Property.PropertyTarget, "_top");
-				break;
-			case TargetNewWindow:
-				element.setProperty(Property.PropertyTarget, "_blank");
-			}
+			renderHTarget(this.linkState_, element, all);
 			this.flags_.clear(BIT_TARGET_CHANGED);
 		}
 		super.updateDom(element, all);
 		if (needsUrlResolution) {
-			if (all) {
-				element.setProperty(Property.PropertyClass, StringUtils
-						.addWord(this.getStyleClass(), "Wt-rr"));
-			} else {
-				element.callJavaScript("$('#" + this.getId()
-						+ "').addClass('Wt-rr');");
-			}
+			renderUrlResolution(this, element, all);
 		}
 	}
 
@@ -704,10 +744,15 @@ public class WAnchor extends WContainerWidget {
 		super.propagateRenderOk(deep);
 	}
 
+	protected void propagateSetEnabled(boolean enabled) {
+		super.propagateSetEnabled(enabled);
+		this.resourceChanged();
+	}
+
 	protected void enableAjax() {
-		if (this.link_.getType() == WLink.Type.InternalPath) {
+		if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
 			this.flags_.set(BIT_LINK_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 		}
 		super.enableAjax();
 	}

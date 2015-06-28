@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 class GoogleProcess extends OAuthProcess {
 	private static Logger logger = LoggerFactory.getLogger(GoogleProcess.class);
 
-	public GoogleProcess(GoogleService service, String scope) {
+	public GoogleProcess(final GoogleService service, final String scope) {
 		super(service, scope);
 	}
 
-	public void getIdentity(OAuthAccessToken token) {
+	public void getIdentity(final OAuthAccessToken token) {
 		HttpClient client = new HttpClient(this);
 		client.setTimeout(15);
 		client.setMaximumResponseSize(10 * 1024);
@@ -43,7 +43,7 @@ class GoogleProcess extends OAuthProcess {
 		client.get(UserInfoUrl, headers);
 	}
 
-	private void handleMe(Exception err, HttpMessage response) {
+	private void handleMe(Exception err, final HttpMessage response) {
 		if (err == null && response.getStatus() == 200) {
 			logger.info(new StringWriter().append("user info: ").append(
 					response.getBody()).toString());
@@ -72,6 +72,10 @@ class GoogleProcess extends OAuthProcess {
 								email, emailVerified));
 			}
 		} else {
+			logger
+					.error(new StringWriter().append(
+							WString.tr("Wt.Auth.GoogleService.badresponse"))
+							.toString());
 			this.setError(WString.tr("Wt.Auth.GoogleService.badresponse"));
 			if (err == null) {
 				logger.error(new StringWriter().append(

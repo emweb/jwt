@@ -27,6 +27,14 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * @see Signal#addListener(WObject, eu.webtoolkit.jwt.Signal.Listener)
  */
 public class WObject {
+	static class DeletionTracker {
+		DeletionTracker(WObject object) { }
+
+		public boolean isDeleted() {
+			return false;
+		}
+	}
+
 	static class FormData {
 		public FormData(String[] parameters, List<UploadedFile> uploadedFiles) {
 			values = parameters;

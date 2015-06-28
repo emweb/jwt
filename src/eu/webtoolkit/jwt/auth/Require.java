@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 class Require extends WException {
 	private static Logger logger = LoggerFactory.getLogger(Require.class);
 
-	public Require(String method) {
+	public Require(final String method) {
 		super("You need to specialize " + method);
 	}
 
-	public Require(String method, final String function) {
+	public Require(final String method, final String function) {
 		super("You need to specialize " + method + " for " + function);
 	}
 }

@@ -1,8 +1,12 @@
 package eu.webtoolkit.jwt;
 
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.n3.nanoxml.IXMLReader;
+import net.n3.nanoxml.XMLParseException;
 
 public class XmlMessageParser extends XHtmlFilter {
 	private Map<String, String> keyValues = new HashMap<String, String>();
@@ -14,7 +18,7 @@ public class XmlMessageParser extends XHtmlFilter {
 	private final static String KEY_STRING = "id";
 
 	public XmlMessageParser() {
-		super();
+		super(false);
 	}
 
 	public void addExternalEntity(String name, String publicID, String systemID) {
@@ -29,6 +33,12 @@ public class XmlMessageParser extends XHtmlFilter {
 	public void startBuilding(String systemID, int lineNr) throws Exception {
 	}
 
+	@Override
+	public Reader getEntity(IXMLReader xmlReader, String name)
+			throws XMLParseException {
+		return super.getEntity(xmlReader, name, level == MESSAGE_LEVEL);
+	}
+
 	public void addAttribute(String key, String nsPrefix, String nsURI, String value, String type) throws Exception {
 		if (level == MESSAGE_LEVEL && KEY_STRING.equals(key)) 
 			currentKey = value;
@@ -40,6 +50,9 @@ public class XmlMessageParser extends XHtmlFilter {
 	public void addPCData(Reader reader, String systemID, int lineNr) throws Exception {
 		if (level >= MESSAGE_LEVEL)
 			super.addPCData(reader, systemID, lineNr);
+		
+		if (currentKey != null && currentKey.equals("test"))
+			System.err.println(writer.toString());
 	}
 
 	public void elementAttributesProcessed(String name, String nsPrefix, String nsURI) throws Exception {

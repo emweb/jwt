@@ -60,33 +60,46 @@ public class AuthTokenResult {
 	 * <p>
 	 * Creates an authentication token result.
 	 */
-	public AuthTokenResult(AuthTokenResult.Result result, User user,
-			String newToken) {
+	public AuthTokenResult(AuthTokenResult.Result result, final User user,
+			final String newToken, int newTokenValidity) {
 		this.result_ = result;
 		this.user_ = user;
 		this.newToken_ = newToken;
+		this.newTokenValidity_ = newTokenValidity;
 	}
 
 	/**
 	 * Constructor.
 	 * <p>
 	 * Calls
-	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken)
-	 * this(result, new User(), "")}
+	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int newTokenValidity)
+	 * this(result, new User(), "", - 1)}
 	 */
 	public AuthTokenResult(AuthTokenResult.Result result) {
-		this(result, new User(), "");
+		this(result, new User(), "", -1);
 	}
 
 	/**
 	 * Constructor.
 	 * <p>
 	 * Calls
-	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken)
-	 * this(result, user, "")}
+	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int newTokenValidity)
+	 * this(result, user, "", - 1)}
 	 */
-	public AuthTokenResult(AuthTokenResult.Result result, User user) {
-		this(result, user, "");
+	public AuthTokenResult(AuthTokenResult.Result result, final User user) {
+		this(result, user, "", -1);
+	}
+
+	/**
+	 * Constructor.
+	 * <p>
+	 * Calls
+	 * {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int newTokenValidity)
+	 * this(result, user, newToken, - 1)}
+	 */
+	public AuthTokenResult(AuthTokenResult.Result result, final User user,
+			final String newToken) {
+		this(result, user, newToken, -1);
 	}
 
 	/**
@@ -127,7 +140,24 @@ public class AuthTokenResult {
 		}
 	}
 
+	/**
+	 * Returns the validity of the new token.
+	 * <p>
+	 * This returns the token validity in seconds.
+	 * <p>
+	 * 
+	 * @see AuthTokenResult#getNewToken()
+	 */
+	public int getNewTokenValidity() {
+		if (this.user_.isValid()) {
+			return this.newTokenValidity_;
+		} else {
+			throw new WException("AuthTokenResult::newTokenValidity() invalid");
+		}
+	}
+
 	private AuthTokenResult.Result result_;
 	private User user_;
 	private String newToken_;
+	private int newTokenValidity_;
 }

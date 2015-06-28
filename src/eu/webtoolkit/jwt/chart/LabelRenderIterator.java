@@ -23,12 +23,14 @@ class LabelRenderIterator extends SeriesIterator {
 	private static Logger logger = LoggerFactory
 			.getLogger(LabelRenderIterator.class);
 
-	public LabelRenderIterator(WChart2DRenderer renderer) {
+	public LabelRenderIterator(final WCartesianChart chart,
+			final WPainter painter) {
 		super();
-		this.renderer_ = renderer;
+		this.chart_ = chart;
+		this.painter_ = painter;
 	}
 
-	public boolean startSeries(WDataSeries series, double groupWidth,
+	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
 		if (series.isLabelsEnabled(Axis.XAxis)
 				|| series.isLabelsEnabled(Axis.YAxis)) {
@@ -41,32 +43,31 @@ class LabelRenderIterator extends SeriesIterator {
 		}
 	}
 
-	public void newValue(WDataSeries series, double x, double y, double stackY,
-			WModelIndex xIndex, WModelIndex yIndex) {
+	public void newValue(final WDataSeries series, double x, double y,
+			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
 			return;
 		}
 		WString text = new WString();
 		if (series.isLabelsEnabled(Axis.XAxis)) {
-			text = this.renderer_.getChart().getAxis(Axis.XAxis).getLabel(x);
+			text = this.chart_.getAxis(Axis.XAxis).getLabel(x);
 		}
 		if (series.isLabelsEnabled(Axis.YAxis)) {
 			if (!(text.length() == 0)) {
 				text.append(": ");
 			}
-			text.append(this.renderer_.getChart().getAxis(series.getAxis())
-					.getLabel(y - stackY));
+			text.append(this.chart_.getAxis(series.getAxis()).getLabel(
+					y - stackY));
 		}
 		if (!(text.length() == 0)) {
-			WPointF p = this.renderer_.map(x, y, series.getAxis(), this
+			WPointF p = this.chart_.map(x, y, series.getAxis(), this
 					.getCurrentXSegment(), this.getCurrentYSegment());
 			if (series.getType() == SeriesType.BarSeries) {
 				double g = this.numGroups_ + (this.numGroups_ - 1)
-						* this.renderer_.getChart().getBarMargin();
+						* this.chart_.getBarMargin();
 				double width = this.groupWidth_ / g;
 				double left = p.getX() - this.groupWidth_ / 2 + this.group_
-						* width
-						* (1 + this.renderer_.getChart().getBarMargin());
+						* width * (1 + this.chart_.getBarMargin());
 				p = new WPointF(left + width / 2, p.getY());
 			}
 			WColor c = WColor.black;
@@ -87,11 +88,12 @@ class LabelRenderIterator extends SeriesIterator {
 						AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom));
 				p.setY(p.getY() - 3);
 			}
-			this.renderer_.renderLabel(text, p, c, alignment, 0, 3);
+			this.chart_.renderLabel(this.painter_, text, p, alignment, 0, 3);
 		}
 	}
 
-	private WChart2DRenderer renderer_;
+	private final WCartesianChart chart_;
+	private final WPainter painter_;
 	private double groupWidth_;
 	private int numGroups_;
 	private int group_;

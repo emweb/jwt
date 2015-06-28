@@ -61,33 +61,6 @@ import org.slf4j.LoggerFactory;
  * </div></td>
  * </tr>
  * </table>
- * <p>
- * <h3>CSS</h3>
- * <p>
- * The calendar is styled by the current CSS theme. The look can be overridden
- * using the <code>Wt-calendar</code> CSS class and the following selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-cal table       : The table
- * .Wt-cal table.d1    : The table (single letter day headers)
- * .Wt-cal table.d3    : The table (three letter day headers)
- * .Wt-cal table.dlong : The table (long day headers)
- * 
- * .Wt-cal caption	    : The caption (containing the navigation buttons)
- * .Wt-cal-year        : The caption year in-place-edit
- * 
- * .Wt-cal th          : Header cell (week day)
- * 
- * .Wt-cal td          : Day cell
- * .Wt-cal-oom         : Out-of-month day
- * .Wt-cal-oor         : Out-of-range day (day &lt; bottom or day &gt; top)
- * .Wt-cal-sel         : Selected day
- * .Wt-cal-now         : Today day
- * </pre>
- * 
- * </div>
  */
 public class WCalendar extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WCalendar.class);
@@ -133,6 +106,7 @@ public class WCalendar extends WCompositeWidget {
 		this.bottom_ = null;
 		this.top_ = null;
 		this.create();
+		this.impl_.addStyleClass("Wt-calendar");
 	}
 
 	/**
@@ -235,7 +209,7 @@ public class WCalendar extends WCompositeWidget {
 	 * This will emit the {@link WCalendar#currentPageChanged()
 	 * currentPageChanged()} signal if another month is displayed.
 	 */
-	public void browseTo(WDate date) {
+	public void browseTo(final WDate date) {
 		boolean rerender = false;
 		if (this.currentYear_ != date.getYear()) {
 			this.currentYear_ = date.getYear();
@@ -287,7 +261,7 @@ public class WCalendar extends WCompositeWidget {
 	 * in a {@link WCalendar#getSelection() getSelection()} that contains
 	 * exactly one date.
 	 */
-	public void select(WDate date) {
+	public void select(final WDate date) {
 		this.selection_.clear();
 		this.selection_.add(date);
 		this.renderMonth();
@@ -300,7 +274,7 @@ public class WCalendar extends WCompositeWidget {
 	 * {@link WCalendar#getSelection() getSelection()} that contains exactly the
 	 * given dates. In single selection mode, at most one date is set.
 	 */
-	public void select(Set<WDate> dates) {
+	public void select(final Set<WDate> dates) {
 		if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
 			this.selection_ = dates;
 			this.renderMonth();
@@ -362,9 +336,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
-	 * Possible values or 1 to 7, as accepted by
-	 * {@link WDate#getShortDayName(int weekday, boolean localized)
-	 * WDate#getShortDayName()}.
+	 * Possible values or 1 to 7, as accepted by {@link }.
 	 * <p>
 	 * The default value is 1 (&quot;Monday&quot;).
 	 */
@@ -483,11 +455,10 @@ public class WCalendar extends WCompositeWidget {
 	 * {@link WCalendar#selected() selected()} method). This only applies to a
 	 * single-selection calendar.
 	 * <p>
+	 * Instead of enabling single click, you can also listen to the
+	 * {@link WCalendar#clicked() clicked()} signal to process a single click.
+	 * <p>
 	 * 
-	 * @deprecated listen to the {@link WCalendar#clicked() clicked()} signal if
-	 *             you want to react to a single click, or
-	 *             {@link WCalendar#activated() activated()} signal if you want
-	 *             to react to a double click.
 	 * @see WCalendar#setMultipleSelection(boolean multiple)
 	 */
 	public void setSingleClickSelect(boolean single) {
@@ -518,7 +489,7 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * The default bottom is null.
 	 */
-	public void setBottom(WDate bottom) {
+	public void setBottom(final WDate bottom) {
 		if (!(this.bottom_ == bottom || (this.bottom_ != null && this.bottom_
 				.equals(bottom)))) {
 			this.bottom_ = bottom;
@@ -538,7 +509,7 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * The default top is null.
 	 */
-	public void setTop(WDate top) {
+	public void setTop(final WDate top) {
 		if (!(this.top_ == top || (this.top_ != null && this.top_.equals(top)))) {
 			this.top_ = top;
 			this.renderMonth();
@@ -552,7 +523,7 @@ public class WCalendar extends WCompositeWidget {
 		return this.top_;
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needRenderMonth_) {
 			boolean create = this.cellClickMapper_ == null;
 			String buf;
@@ -603,10 +574,22 @@ public class WCalendar extends WCompositeWidget {
 							.getWebWidget())
 							: null);
 					if (iw != null && iw != w) {
-						this.cellClickMapper_.mapConnect(iw.clicked(),
-								new WCalendar.Coordinate(i, j));
-						this.cellDblClickMapper_.mapConnect(iw.doubleClicked(),
-								new WCalendar.Coordinate(i, j));
+						if (this.clicked().isConnected()
+								|| this.selectionMode_ == SelectionMode.ExtendedSelection
+								|| this.selectionMode_ != SelectionMode.ExtendedSelection
+								&& this.singleClickSelect_
+								&& this.activated().isConnected()) {
+							this.cellClickMapper_.mapConnect(iw.clicked(),
+									new WCalendar.Coordinate(i, j));
+						}
+						if (this.selectionMode_ != SelectionMode.ExtendedSelection
+								&& !this.singleClickSelect_
+								&& (this.activated().isConnected() || this
+										.selectionChanged().isConnected())) {
+							this.cellDblClickMapper_.mapConnect(iw
+									.doubleClicked(), new WCalendar.Coordinate(
+									i, j));
+						}
 					}
 					d = d.addDays(1);
 				}
@@ -627,7 +610,7 @@ public class WCalendar extends WCompositeWidget {
 	 * the passed <code>widget</code>, or return a new widget. If you return a
 	 * new widget, the prevoius widget will be deleted.
 	 */
-	protected WWidget renderCell(WWidget widget, WDate date) {
+	protected WWidget renderCell(WWidget widget, final WDate date) {
 		WText t = ((widget) instanceof WText ? (WText) (widget) : null);
 		if (!(t != null)) {
 			t = new WText();
@@ -638,8 +621,7 @@ public class WCalendar extends WCompositeWidget {
 		buf = String.valueOf(date.getDay());
 		t.setText(new WString(buf));
 		String styleClass = "";
-		if (!(this.bottom_ == null) && date.before(this.bottom_)
-				|| !(this.top_ == null) && date.after(this.top_)) {
+		if (this.isInvalid(date)) {
 			styleClass += " Wt-cal-oor";
 		} else {
 			if (date.getMonth() != this.getCurrentMonth()) {
@@ -649,8 +631,10 @@ public class WCalendar extends WCompositeWidget {
 		if (this.isSelected(date)) {
 			styleClass += " Wt-cal-sel";
 		}
-		if ((date == WDate.getCurrentDate() || (date != null && date
-				.equals(WDate.getCurrentDate())))) {
+		WDate currentDate = WDate.getCurrentDate();
+		if (date.getDay() == currentDate.getDay()
+				&& date.getMonth() == currentDate.getMonth()
+				&& date.getYear() == currentDate.getYear()) {
 			if (!this.isSelected(date)) {
 				styleClass += " Wt-cal-now";
 			}
@@ -668,8 +652,13 @@ public class WCalendar extends WCompositeWidget {
 	 * This is a convenience method that can be used when reimplementing
 	 * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
 	 */
-	protected boolean isSelected(WDate d) {
+	protected boolean isSelected(final WDate d) {
 		return this.selection_.contains(d) != false;
+	}
+
+	protected void enableAjax() {
+		super.enableAjax();
+		this.monthEdit_.enable();
 	}
 
 	private SelectionMode selectionMode_;
@@ -718,17 +707,12 @@ public class WCalendar extends WCompositeWidget {
 		this.firstDayOfWeek_ = 1;
 		this.cellClickMapper_ = null;
 		this.cellDblClickMapper_ = null;
-		this.clicked().addListener(this, new Signal1.Listener<WDate>() {
-			public void trigger(WDate e1) {
-				WCalendar.this.selectInCurrentMonth(e1);
-			}
-		});
 		WDate currentDay = WDate.getCurrentDate();
 		this.currentYear_ = currentDay.getYear();
 		this.currentMonth_ = currentDay.getMonth();
 		StringBuilder text = new StringBuilder();
 		text
-				.append("<table class=\"${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><caption>${nav-prev} ${month} ${year} ${nav-next}</caption><tr>");
+				.append("<table class=\"days ${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><tr><th class=\"caption\">${nav-prev}</th><th class=\"caption\"colspan=\"5\">${month} ${year}</th><th class=\"caption\">${nav-next}</th></tr><tr>");
 		for (int j = 0; j < 7; ++j) {
 			text.append("<th title=\"${t").append(j).append(
 					"}\" scope=\"col\">${d").append(j).append("}</th>");
@@ -764,6 +748,7 @@ public class WCalendar extends WCompositeWidget {
 					}
 				});
 		this.monthEdit_ = new WComboBox();
+		this.monthEdit_.setInline(true);
 		for (int i = 0; i < 12; ++i) {
 			this.monthEdit_.addItem(WDate.getLongMonthName(i + 1));
 		}
@@ -773,6 +758,8 @@ public class WCalendar extends WCompositeWidget {
 						WCalendar.this.monthChanged(e1);
 					}
 				});
+		this.monthEdit_.setDisabled(!WApplication.getInstance()
+				.getEnvironment().hasAjax());
 		this.yearEdit_ = new WInPlaceEdit("");
 		this.yearEdit_.setButtonsEnabled(false);
 		this.yearEdit_.getLineEdit().setTextSize(4);
@@ -794,7 +781,7 @@ public class WCalendar extends WCompositeWidget {
 	private void renderMonth() {
 		this.needRenderMonth_ = true;
 		if (this.isRendered()) {
-			this.askRerender();
+			this.scheduleRender();
 		}
 	}
 
@@ -820,7 +807,7 @@ public class WCalendar extends WCompositeWidget {
 				this.emitCurrentPageChanged();
 				this.renderMonth();
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 		}
 	}
 
@@ -833,7 +820,7 @@ public class WCalendar extends WCompositeWidget {
 		return d;
 	}
 
-	private void selectInCurrentMonth(WDate d) {
+	private void selectInCurrentMonth(final WDate d) {
 		if (d.getMonth() == this.currentMonth_
 				&& this.selectionMode_ != SelectionMode.NoSelection) {
 			if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
@@ -842,33 +829,44 @@ public class WCalendar extends WCompositeWidget {
 				} else {
 					this.selection_.add(d);
 				}
-				this.selectionChanged().trigger();
-				this.renderMonth();
 			} else {
 				this.selection_.clear();
 				this.selection_.add(d);
-				this.selectionChanged().trigger();
-				this.renderMonth();
 			}
+			this.renderMonth();
+			this.selectionChanged().trigger();
 		}
+	}
+
+	private boolean isInvalid(final WDate dt) {
+		return !(this.bottom_ == null) && dt.before(this.bottom_)
+				|| !(this.top_ == null) && dt.after(this.top_);
 	}
 
 	private void cellClicked(WCalendar.Coordinate weekday) {
 		WDate dt = this.dateForCell(weekday.i, weekday.j);
-		this.clicked().trigger(
-				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
+		WDate d = new WDate(dt.getYear(), dt.getMonth(), dt.getDay());
+		if (this.isInvalid(d)) {
+			return;
+		}
+		this.selectInCurrentMonth(d);
+		this.clicked().trigger(d);
 		if (this.selectionMode_ != SelectionMode.ExtendedSelection
 				&& this.singleClickSelect_) {
-			this.activated().trigger(
-					new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
+			this.activated().trigger(d);
 		}
 	}
 
 	private void cellDblClicked(WCalendar.Coordinate weekday) {
 		WDate dt = this.dateForCell(weekday.i, weekday.j);
-		this.clicked().trigger(
-				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
-		this.activated().trigger(
-				new WDate(dt.getYear(), dt.getMonth(), dt.getDay()));
+		WDate d = new WDate(dt.getYear(), dt.getMonth(), dt.getDay());
+		if (this.isInvalid(d)) {
+			return;
+		}
+		this.selectInCurrentMonth(d);
+		if (this.selectionMode_ != SelectionMode.ExtendedSelection
+				&& !this.singleClickSelect_) {
+			this.activated().trigger(d);
+		}
 	}
 }

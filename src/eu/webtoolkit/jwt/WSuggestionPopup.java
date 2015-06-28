@@ -46,9 +46,7 @@ import org.slf4j.LoggerFactory;
  * The member methods {@link WSuggestionPopup#clearSuggestions()
  * clearSuggestions()} and
  * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
- * addSuggestion()} manipulate this model. Note that a {@link WStringListModel}
- * does not support {@link ItemDataRole#UserRole} data, so you may need to use a
- * {@link WStandardItemModel} instead.
+ * addSuggestion()} manipulate this model.
  * <p>
  * By default, the popup implements all filtering client-side. To support large
  * datasets, you may enable server-side filtering of suggestions based on the
@@ -59,9 +57,9 @@ import org.slf4j.LoggerFactory;
  * listen to filter notification using the modelFilter() signal. Whenever a
  * filter event is generated you can adjust the model&apos;s content according
  * to the filter (e.g. using a {@link WSortFilterProxyModel}). By using
- * {@link WSuggestionPopup#setMaximumSize(WLength width, WLength height)
- * setMaximumSize()} you can also limit the maximum height of the popup, in
- * which case scrolling is supported (similar to a combo-box).
+ * {@link WCompositeWidget#setMaximumSize(WLength width, WLength height)
+ * WCompositeWidget#setMaximumSize()} you can also limit the maximum height of
+ * the popup, in which case scrolling is supported (similar to a combo-box).
  * <p>
  * The class is initialized with an {@link Options} struct which configures how
  * suggestion filtering and result editing is done. Alternatively, you can
@@ -160,21 +158,6 @@ import org.slf4j.LoggerFactory;
  * </tr>
  * </table>
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The suggestion popup is styled by the current CSS theme. The look can be
- * overridden using the <code>Wt-suggest</code> CSS class and the following
- * selectors:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-suggest .content div : A suggestion element
- * .Wt-suggest .sel :         A selected suggestion element
- * </pre>
- * 
- * </div>
- * <p>
  * When using the DropDownIcon trigger, an additional style class is provided
  * for the edit field: <code>Wt-suggest-dropdown</code>, which renders the icon
  * to the right inside the edit field. This class may be used to customize how
@@ -184,7 +167,7 @@ import org.slf4j.LoggerFactory;
  * <i><b>Note: </b>This widget requires JavaScript support. </i>
  * </p>
  */
-public class WSuggestionPopup extends WCompositeWidget {
+public class WSuggestionPopup extends WPopupWidget {
 	private static Logger logger = LoggerFactory
 			.getLogger(WSuggestionPopup.class);
 
@@ -207,7 +190,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		 * Shows popup when user clicks a drop down icon.
 		 * <p>
 		 * The lineedit is modified to show a drop down icon, and clicking the
-		 * icon shows the suggestions, very much like a WComboCox.
+		 * icon shows the suggestions, very much like a WComboCox. line edit.
 		 */
 		DropDownIcon;
 
@@ -228,6 +211,19 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 */
 	public static class Options {
 		private static Logger logger = LoggerFactory.getLogger(Options.class);
+
+		/**
+		 * Constructor.
+		 */
+		public Options() {
+			this.highlightBeginTag = "";
+			this.highlightEndTag = "";
+			this.listSeparator = 0;
+			this.whitespace = "";
+			this.wordSeparators = "";
+			this.appendReplacedText = "";
+			this.wordStartRegexp = "";
+		}
 
 		/**
 		 * Open tag to highlight a match in a suggestion.
@@ -265,11 +261,12 @@ public class WSuggestionPopup extends WCompositeWidget {
 		 */
 		public String whitespace;
 		/**
-		 * To show suggestions based on matches of the edited value with parts
-		 * of the suggestion.
+		 * Characters that start a word in a suggestion to match against.
 		 * <p>
 		 * For example, &quot; .@&quot; will also match with suggestion text
-		 * after a space, a dot (.) or an at-symbol (@).
+		 * after a space, a dot (.) or an at-symbol (@). Alternatively you may
+		 * also specify this as a regular expression in
+		 * <code>wordStartRegexp</code>.
 		 * <p>
 		 * Used during matching.
 		 */
@@ -281,6 +278,15 @@ public class WSuggestionPopup extends WCompositeWidget {
 		 * Used during replacing.
 		 */
 		public String appendReplacedText;
+		/**
+		 * Regular expression that starts a word in a suggestion to match
+		 * against.
+		 * <p>
+		 * When empty, the value of <code>wordSeparators</code> is used instead.
+		 * <p>
+		 * Used during replacing.
+		 */
+		public String wordStartRegexp;
 	}
 
 	/**
@@ -294,25 +300,27 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * @see WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options
 	 *      options)
 	 */
-	public WSuggestionPopup(WSuggestionPopup.Options options,
-			WContainerWidget parent) {
-		super(parent);
-		this.impl_ = new WTemplate(new WString("${shadow-x1-x2}${contents}"));
+	public WSuggestionPopup(final WSuggestionPopup.Options options,
+			WObject parent) {
+		super(new WContainerWidget(), parent);
 		this.model_ = null;
 		this.modelColumn_ = 0;
 		this.filterLength_ = 0;
 		this.filtering_ = false;
+		this.defaultValue_ = -1;
+		this.isDropDownIconUnfiltered_ = false;
+		this.currentItem_ = -1;
 		this.matcherJS_ = generateMatcherJS(options);
 		this.replacerJS_ = generateReplacerJS(options);
 		this.filterModel_ = new Signal1<String>(this);
 		this.activated_ = new Signal2<Integer, WFormWidget>(this);
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-		this.filter_ = new JSignal1<String>(this.impl_, "filter") {
+		this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {
 		};
-		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
+		this.jactivated_ = new JSignal2<String, String>(this
+				.getImplementation(), "select") {
 		};
 		this.edits_ = new ArrayList<WFormWidget>();
-		this.global_ = false;
 		this.init();
 	}
 
@@ -320,11 +328,11 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * Creates a suggestion popup.
 	 * <p>
 	 * Calls
-	 * {@link #WSuggestionPopup(WSuggestionPopup.Options options, WContainerWidget parent)
-	 * this(options, (WContainerWidget)null)}
+	 * {@link #WSuggestionPopup(WSuggestionPopup.Options options, WObject parent)
+	 * this(options, (WObject)null)}
 	 */
-	public WSuggestionPopup(WSuggestionPopup.Options options) {
-		this(options, (WContainerWidget) null);
+	public WSuggestionPopup(final WSuggestionPopup.Options options) {
+		this(options, (WObject) null);
 	}
 
 	/**
@@ -333,26 +341,27 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * See supra for the expected signature of the matcher and replace
 	 * JavaScript functions.
 	 */
-	public WSuggestionPopup(String matcherJS, String replacerJS,
-			WContainerWidget parent) {
-		super(parent);
-		this.impl_ = new WTemplate(new WString("${shadow-x1-x2}${contents}"));
+	public WSuggestionPopup(final String matcherJS, final String replacerJS,
+			WObject parent) {
+		super(new WContainerWidget(), parent);
 		this.model_ = null;
 		this.modelColumn_ = 0;
 		this.filterLength_ = 0;
 		this.filtering_ = false;
 		this.defaultValue_ = -1;
+		this.isDropDownIconUnfiltered_ = false;
+		this.currentItem_ = -1;
 		this.matcherJS_ = matcherJS;
 		this.replacerJS_ = replacerJS;
 		this.filterModel_ = new Signal1<String>();
 		this.activated_ = new Signal2<Integer, WFormWidget>();
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-		this.filter_ = new JSignal1<String>(this.impl_, "filter") {
+		this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {
 		};
-		this.jactivated_ = new JSignal2<String, String>(this.impl_, "select") {
+		this.jactivated_ = new JSignal2<String, String>(this
+				.getImplementation(), "select") {
 		};
 		this.edits_ = new ArrayList<WFormWidget>();
-		this.global_ = false;
 		this.init();
 	}
 
@@ -360,11 +369,11 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * Creates a suggestion popup with given matcherJS and replacerJS.
 	 * <p>
 	 * Calls
-	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget parent)
-	 * this(matcherJS, replacerJS, (WContainerWidget)null)}
+	 * {@link #WSuggestionPopup(String matcherJS, String replacerJS, WObject parent)
+	 * this(matcherJS, replacerJS, (WObject)null)}
 	 */
-	public WSuggestionPopup(String matcherJS, String replacerJS) {
-		this(matcherJS, replacerJS, (WContainerWidget) null);
+	public WSuggestionPopup(final String matcherJS, final String replacerJS) {
+		this(matcherJS, replacerJS, (WObject) null);
 	}
 
 	/**
@@ -382,7 +391,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 */
 	public void forEdit(WFormWidget edit,
 			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
-		AbstractEventSignal b = edit.keyPressed();
+		final AbstractEventSignal b = edit.keyPressed();
 		this.connectObjJS(b, "editKeyDown");
 		this.connectObjJS(edit.keyWentDown(), "editKeyDown");
 		this.connectObjJS(edit.keyWentUp(), "editKeyUp");
@@ -394,7 +403,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 		if (!EnumUtils.mask(triggers,
 				WSuggestionPopup.PopupTrigger.DropDownIcon).isEmpty()) {
 			edit.addStyleClass("Wt-suggest-dropdown");
-			AbstractEventSignal c = edit.clicked();
+			final AbstractEventSignal c = edit.clicked();
 			this.connectObjJS(c, "editClick");
 			this.connectObjJS(edit.mouseMoved(), "editMouseMove");
 		}
@@ -474,15 +483,28 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * @see WSuggestionPopup#clearSuggestions()
 	 * @see WSuggestionPopup#setModel(WAbstractItemModel model)
 	 */
-	public void addSuggestion(CharSequence suggestionText,
-			CharSequence suggestionValue) {
+	public void addSuggestion(final CharSequence suggestionText,
+			final CharSequence suggestionValue) {
 		int row = this.model_.getRowCount();
 		if (this.model_.insertRow(row)) {
 			this.model_.setData(row, this.modelColumn_, suggestionText,
 					ItemDataRole.DisplayRole);
-			this.model_.setData(row, this.modelColumn_, suggestionValue,
-					ItemDataRole.UserRole);
+			if (!(suggestionValue.length() == 0)) {
+				this.model_.setData(row, this.modelColumn_, suggestionValue,
+						ItemDataRole.UserRole);
+			}
 		}
+	}
+
+	/**
+	 * Adds a new suggestion.
+	 * <p>
+	 * Calls
+	 * {@link #addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
+	 * addSuggestion(suggestionText, WString.Empty)}
+	 */
+	public final void addSuggestion(final CharSequence suggestionText) {
+		addSuggestion(suggestionText, WString.Empty);
 	}
 
 	/**
@@ -569,7 +591,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 */
 	public void setModelColumn(int modelColumn) {
 		this.modelColumn_ = modelColumn;
-		this.content_.clear();
+		this.impl_.clear();
 		this.modelRowsInserted(null, 0, this.model_.getRowCount() - 1);
 	}
 
@@ -607,7 +629,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * implementation for the matching input, based on the given
 	 * <code>options</code>.
 	 */
-	public static String generateMatcherJS(WSuggestionPopup.Options options) {
+	public static String generateMatcherJS(
+			final WSuggestionPopup.Options options) {
 		return instantiateStdMatcher(options) + ".match";
 	}
 
@@ -615,10 +638,11 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * Creates a standard replacer JavaScript function.
 	 * <p>
 	 * This returns a JavaScript function that provides a standard
-	 * implementation for the matching input, based on the given
-	 * <code>options</code>.
+	 * implementation for reacting to a match activation, editing the line edit
+	 * text.
 	 */
-	public static String generateReplacerJS(WSuggestionPopup.Options options) {
+	public static String generateReplacerJS(
+			final WSuggestionPopup.Options options) {
 		return instantiateStdMatcher(options) + ".replace";
 	}
 
@@ -627,13 +651,15 @@ public class WSuggestionPopup extends WCompositeWidget {
 	 * <p>
 	 * When the user has typed this much characters,
 	 * {@link WSuggestionPopup#filterModel() filterModel()} is emitted which
-	 * allows you to filter the model based on the initial input.
+	 * allows you to filter the model based on the initial input. The filtering
+	 * is done as long as the model indicates that results are partial by
+	 * setting a StyleClassRole of &quot;Wt-more-data&quot; on the last item.
 	 * <p>
-	 * The default value is 0, which has the effect of always showing the entire
-	 * model.
+	 * The default value is 0.
 	 * <p>
-	 * A value of -1 indicates that server-side filtering is continuously
-	 * applied, no matter the length of the text input.
+	 * A value of -1 is a equivalent to 0 but filtering is always applied as if
+	 * the last item always has &quot;Wt-more-data&quot; (for backwards
+	 * compatibility)
 	 * <p>
 	 * 
 	 * @see WSuggestionPopup#filterModel()
@@ -691,58 +717,68 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	/**
-	 * Controls how the suggestion popup is positioned.
+	 * Controls how the popup is positioned (<b>deprecated</b>).
 	 * <p>
-	 * When <code>global</code> is <code>true</code>, then the popup will
-	 * position itself globally. This avoids that the popup is affected by
-	 * enclosing parents with overflow settings that clip the popup. This makes
-	 * the popup however no longer follow the popup line edit when this line
-	 * edit moves.
-	 * <p>
-	 * The default is <code>false</code>.
+	 * 
+	 * @deprecated this option is now ignored, since the popup is automatically
+	 *             positioned to behave properly.
 	 */
 	public void setGlobalPopup(boolean global) {
-		this.global_ = global;
 	}
 
-	public void setMaximumSize(WLength width, WLength height) {
-		super.setMaximumSize(width, height);
-		this.content_.setMaximumSize(width, height);
+	/**
+	 * When drop down icon is clicked the popup content will be unfiltered.
+	 * <p>
+	 * 
+	 * @see WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
+	 * @see WSuggestionPopup.PopupTrigger
+	 */
+	public void setDropDownIconUnfiltered(boolean isUnfiltered) {
+		this.isDropDownIconUnfiltered_ = isUnfiltered;
 	}
 
-	public void setMinimumSize(WLength width, WLength height) {
-		super.setMinimumSize(width, height);
-		this.content_.setMinimumSize(width, height);
+	/**
+	 * return the last activated index
+	 * <p>
+	 * 
+	 * @return -1 if never activated
+	 * @see WSuggestionPopup#activated()
+	 */
+	public int getCurrentItem() {
+		return this.currentItem_;
 	}
 
-	private WTemplate impl_;
+	private WContainerWidget impl_;
 	private WAbstractItemModel model_;
 	private int modelColumn_;
 	private int filterLength_;
 	private boolean filtering_;
 	private int defaultValue_;
+	private boolean isDropDownIconUnfiltered_;
+	private int currentItem_;
 	private String matcherJS_;
 	private String replacerJS_;
-	private WContainerWidget content_;
 	private Signal1<String> filterModel_;
 	private Signal2<Integer, WFormWidget> activated_;
 	private List<AbstractSignal.Connection> modelConnections_;
 	private JSignal1<String> filter_;
 	private JSignal2<String, String> jactivated_;
 	private List<WFormWidget> edits_;
-	private boolean global_;
 
 	private void init() {
-		this.setImplementation(this.impl_);
+		this.impl_ = ((this.getImplementation()) instanceof WContainerWidget ? (WContainerWidget) (this
+				.getImplementation())
+				: null);
+		this.impl_.setList(true);
 		this.impl_.setLoadLaterWhenInvisible(false);
-		this.impl_.setStyleClass("Wt-suggest Wt-outset");
-		this.impl_.bindString("shadow-x1-x2", WTemplate.DropShadow_x1_x2);
-		this.impl_.bindWidget("contents",
-				this.content_ = new WContainerWidget());
-		this.content_.setStyleClass("content");
-		this.setAttributeValue("style", "z-index: 10000; display: none");
-		this.setPositionScheme(PositionScheme.Absolute);
-		this.setModel(new WStandardItemModel(0, 1, this));
+		this.setAttributeValue("style",
+				"z-index: 10000; display: none; overflow: auto");
+		this.setModel(new WStringListModel(this));
+		this.impl_.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WSuggestionPopup.this.hide();
+			}
+		});
 		this.filter_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {
 				WSuggestionPopup.this.doFilter(e1);
@@ -762,7 +798,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 		this.filtering_ = false;
 		WApplication.getInstance().doJavaScript(
 				"jQuery.data(" + this.getJsRef() + ", 'obj').filtered("
-						+ WWebWidget.jsStringLiteral(input) + ");");
+						+ WWebWidget.jsStringLiteral(input) + ","
+						+ (this.isPartialResults() ? "1" : "0") + ");");
 	}
 
 	private void doActivate(String itemId, String editId) {
@@ -776,25 +813,33 @@ public class WSuggestionPopup extends WCompositeWidget {
 		if (edit == null) {
 			logger.error(new StringWriter()
 					.append("activate from bogus editor").toString());
+			this.currentItem_ = -1;
+			return;
 		}
-		for (int i = 0; i < this.content_.getCount(); ++i) {
-			if (this.content_.getWidget(i).getId().equals(itemId)) {
+		for (int i = 0; i < this.impl_.getCount(); ++i) {
+			if (this.impl_.getWidget(i).getId().equals(itemId)) {
+				this.currentItem_ = i;
 				this.activated_.trigger(i, edit);
+				if (edit != null) {
+					edit.changed().trigger();
+				}
 				return;
 			}
 		}
+		this.currentItem_ = -1;
 		logger.error(new StringWriter().append("activate for bogus item")
 				.toString());
 	}
 
-	private void connectObjJS(AbstractEventSignal s, String methodName) {
+	private void connectObjJS(final AbstractEventSignal s,
+			final String methodName) {
 		String jsFunction = "function(obj, event) {var o = jQuery.data("
 				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
 				+ "(obj, event);}";
 		s.addListener(jsFunction);
 	}
 
-	private void modelRowsInserted(WModelIndex parent, int start, int end) {
+	private void modelRowsInserted(final WModelIndex parent, int start, int end) {
 		if (this.filterLength_ != 0 && !this.filtering_) {
 			return;
 		}
@@ -806,37 +851,43 @@ public class WSuggestionPopup extends WCompositeWidget {
 		}
 		for (int i = start; i <= end; ++i) {
 			WContainerWidget line = new WContainerWidget();
-			this.content_.insertWidget(i, line);
+			this.impl_.insertWidget(i, line);
 			WModelIndex index = this.model_.getIndex(i, this.modelColumn_);
 			Object d = index.getData();
 			TextFormat format = !EnumUtils.mask(index.getFlags(),
 					ItemFlag.ItemIsXHTMLText).isEmpty() ? TextFormat.XHTMLText
 					: TextFormat.PlainText;
-			WText value = new WText(StringUtils.asString(d), format);
+			WAnchor anchor = new WAnchor(line);
+			WText value = new WText(StringUtils.asString(d), format, anchor);
 			Object d2 = index.getData(ItemDataRole.UserRole);
 			if ((d2 == null)) {
 				d2 = d;
 			}
-			line.addWidget(value);
 			value.setAttributeValue("sug", StringUtils.asString(d2).toString());
+			Object styleclass = index.getData(ItemDataRole.StyleClassRole);
+			if (!(styleclass == null)) {
+				value.setAttributeValue("class", StringUtils.asString(
+						styleclass).toString());
+			}
 		}
 	}
 
-	private void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	private void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		if ((parent != null)) {
 			return;
 		}
 		for (int i = start; i <= end; ++i) {
-			if (start < this.content_.getCount()) {
-				if (this.content_.getWidget(start) != null)
-					this.content_.getWidget(start).remove();
+			if (start < this.impl_.getCount()) {
+				if (this.impl_.getWidget(start) != null)
+					this.impl_.getWidget(start).remove();
 			} else {
 				break;
 			}
 		}
 	}
 
-	private void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	private void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
 		if ((topLeft.getParent() != null)) {
 			return;
 		}
@@ -845,11 +896,15 @@ public class WSuggestionPopup extends WCompositeWidget {
 			return;
 		}
 		for (int i = topLeft.getRow(); i <= bottomRight.getRow(); ++i) {
-			WContainerWidget w = ((this.content_.getWidget(i)) instanceof WContainerWidget ? (WContainerWidget) (this.content_
+			WContainerWidget w = ((this.impl_.getWidget(i)) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
 					.getWidget(i))
 					: null);
-			WText value = ((w.getWidget(0)) instanceof WText ? (WText) (w
-					.getWidget(0)) : null);
+			WAnchor anchor = ((w.getWidget(0)) instanceof WAnchor ? (WAnchor) (w
+					.getWidget(0))
+					: null);
+			WText value = ((anchor.getWidget(0)) instanceof WText ? (WText) (anchor
+					.getWidget(0))
+					: null);
 			WModelIndex index = this.model_.getIndex(i, this.modelColumn_);
 			Object d = index.getData();
 			value.setText(StringUtils.asString(d));
@@ -867,8 +922,23 @@ public class WSuggestionPopup extends WCompositeWidget {
 	}
 
 	private void modelLayoutChanged() {
-		this.content_.clear();
+		this.impl_.clear();
 		this.modelRowsInserted(null, 0, this.model_.getRowCount() - 1);
+	}
+
+	private boolean isPartialResults() {
+		if (this.filterLength_ < 0) {
+			return true;
+		} else {
+			if (this.model_.getRowCount() > 0) {
+				WModelIndex index = this.model_.getIndex(this.model_
+						.getRowCount() - 1, this.modelColumn_);
+				Object styleclass = index.getData(ItemDataRole.StyleClassRole);
+				return StringUtils.asString(styleclass).equals("Wt-more-data");
+			} else {
+				return false;
+			}
+		}
 	}
 
 	private void defineJavaScript() {
@@ -876,16 +946,18 @@ public class WSuggestionPopup extends WCompositeWidget {
 		String THIS_JS = "js/WSuggestionPopup.js";
 		app.loadJavaScript(THIS_JS, wtjs1());
 		app.loadJavaScript(THIS_JS, wtjs2());
+		String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
 		this.setJavaScriptMember(" WSuggestionPopup",
-				"new Wt3_2_3.WSuggestionPopup(" + app.getJavaScriptClass()
+				"new Wt3_3_4.WSuggestionPopup(" + app.getJavaScriptClass()
 						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
 						+ this.matcherJS_ + ","
-						+ String.valueOf(this.filterLength_) + ","
+						+ String.valueOf(Math.max(0, this.filterLength_)) + ","
+						+ String.valueOf(this.isPartialResults()) + ","
 						+ String.valueOf(this.defaultValue_) + ","
-						+ (this.global_ ? "true" : "false") + ");");
+						+ ddUnfiltered + ");");
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}
@@ -897,7 +969,7 @@ public class WSuggestionPopup extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSuggestionPopup",
-				"function(u,f,x,D,r,y,z){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function e(){return f.style.display!=\"none\"}function i(a){d.positionAtWidget(f.id,a.id,d.Vertical,z,true)}function n(a){a=d.target(a||window.event);if(a.className!=\"content\"){for(;a&&!d.hasTag(a,\"DIV\");)a=a.parentNode;a&&p(a)}}function p(a){var b=a.firstChild,k=d.getElement(g),l=b.innerHTML;b=b.getAttribute(\"sug\");k.focus(); x(k,l,b);u.emit(f,\"select\",a.id,k.id);m();g=null}function m(){f.style.display=\"none\";if(g!=null&&A!=null){d.getElement(g).onkeydown=A;A=null}}function B(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(d.hasTag(a,\"DIV\"))if(a.style.display!=\"none\")return a;return null}function G(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop=a.offsetTop} $(\".Wt-domRoot\").add(f);jQuery.data(f,\"obj\",this);var s=this,d=u.WT,o=null,g=null,H=false,I=null,J=null,C=null,E=null,t=false;this.defaultValue=y;var A=null;this.showPopup=function(a){f.style.display=\"\";E=o=null;A=a.onkeydown;a.onkeydown=function(b){s.editKeyDown(this,b||window.event)}};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=d.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a){m();g=a.id;t=true;s.refilter()};this.editClick=function(a,b){if(c(a))if(d.widgetCoordinates(a, b).x>a.offsetWidth-16)if(g!=a.id||!e())s.showAt(a);else{m();g=null}};this.editKeyDown=function(a,b){if(!c(a))return true;if(g!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){g=a.id;t=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){g=a.id;t=true}else{g=null;return true}var k=o?d.getElement(o):null;if(e()&&k)if(b.keyCode==13||b.keyCode==9){p(k);d.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()== \"KEYDOWN\"){H=true;d.cancelEvent(b,d.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&H==true){d.cancelEvent(b);return false}var l=k,q=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?f.clientHeight/k.offsetHeight:1;var j;for(j=0;l&&j<b;++j){var v=B(l,q);if(!v)break;l=v}if(l&&d.hasTag(l,\"DIV\")){k.className=\"\";l.className=\"sel\";o=l.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a){I=a;s.refilter()};this.refilter=function(){var a=o?d.getElement(o):null, b=d.getElement(g),k=D(b),l=f.lastChild.childNodes,q=k(null);E=b.value;if(r!=0)if(q.length<r&&!t){m();return}else{var j=r==-1?q:q.substring(0,r);if(j!=I){if(j!=J){J=j;u.emit(f,\"filter\",j)}if(!t){m();return}}}var v=j=null;q=t&&q.length==0;var w,K;w=0;for(K=l.length;w<K;++w){var h=l[w];if(d.hasTag(h,\"DIV\")){if(h.orig==null)h.orig=h.firstChild.innerHTML;var F=k(h.orig),L=q||F.match;if(F.suggestion!=h.firstChild.innerHTML)h.firstChild.innerHTML=F.suggestion;if(L){if(h.style.display!=\"\")h.style.display= \"\";if(j==null)j=h;if(w==this.defaultValue)v=h}else if(h.style.display!=\"none\")h.style.display=\"none\";if(h.className!=\"\")h.className=\"\"}}if(j==null)m();else{if(!e()){i(b);s.showPopup(b);a=null}if(!a||a.style.display==\"none\"){a=v||j;a.parentNode.scrollTop=0;o=a.id}a.className=\"sel\";G(a)}};this.editKeyUp=function(a,b){if(g!=null)if(c(a))if(!(!e()&&(b.keyCode==13||b.keyCode==9)))if(b.keyCode==27||b.keyCode==37||b.keyCode==39)m();else if(a.value!=E)s.refilter();else(a=o?d.getElement(o):null)&&G(a)};f.lastChild.onclick= n;f.lastChild.onscroll=function(){if(C){clearTimeout(C);var a=d.getElement(g);a&&a.focus()}};this.delayHide=function(a){C=setTimeout(function(){C=null;if(f&&(a==null||g==a.id))m()},300)}}");
+				"function(s,f,y,G,q,t,z,u){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function e(){return f.style.display!=\"none\"}function i(a){f.style.display=\"block\";d.positionAtWidget(f.id,a.id,d.Vertical)}function l(a){a=d.target(a||window.event);if(!d.hasTag(a,\"UL\")){for(;a&&!d.hasTag(a,\"LI\");)a=a.parentNode;a&&p(a)}}function p(a){var b=a.firstChild.firstChild,h=d.getElement(g),k=b.innerHTML;b=b.getAttribute(\"sug\"); h.focus();y(h,k,b);s.emit(f,\"select\",a.id,h.id);m();g=null}function m(){f.style.display=\"none\";if(g!=null&&A!=null){d.getElement(g).onkeydown=A;A=null}}function B(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(d.hasTag(a,\"LI\"))if(a.style.display!=\"none\")return a;return null}function J(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop= a.offsetTop}$(\".Wt-domRoot\").add(f);jQuery.data(f,\"obj\",this);var r=this,d=s.WT,o=null,g=null,K=false,C=null,M=null,N=t,D=null,E=null,v=false;this.defaultValue=z;var A=null;this.showPopup=function(a){f.style.display=\"block\";E=o=null;A=a.onkeydown;a.onkeydown=function(b){r.editKeyDown(this,b||window.event)}};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=d.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a,b){m();g=a.id;v=true;r.refilter(b)};this.editClick=function(a, b){if(c(a))if(d.widgetCoordinates(a,b).x>a.offsetWidth-16)if(g!=a.id||!e())r.showAt(a,\"\");else{m();g=null}};this.editKeyDown=function(a,b){if(!c(a))return true;if(g!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){g=a.id;v=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){g=a.id;v=true}else{g=null;return true}var h=o?d.getElement(o):null;if(e()&&h)if(b.keyCode==13||b.keyCode==9){p(h);d.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38|| b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){K=true;d.cancelEvent(b,d.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&K==true){d.cancelEvent(b);return false}var k=h,F=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?f.clientHeight/h.offsetHeight:1;var n;for(n=0;k&&n<b;++n){var w=B(k,F);if(!w)break;k=w}if(k&&d.hasTag(k,\"LI\")){h.className=\"\";k.className=\"active\";o=k.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a,b){C=a;N=b;r.refilter(E)}; this.refilter=function(a){var b=o?d.getElement(o):null,h=d.getElement(g),k=G(h),F=f.childNodes,n=u&&a!=null?a:k(null);E=u?a:h.value;if(q>0||t)if(n.length<q&&!v){m();return}else{a=N?n:n.substring(0,Math.max(C!==null?C.length:0,q));if(a!=C)if(a!=M){M=a;s.emit(f,\"filter\",a)}}var w=a=null;n=v&&n.length==0;var x,O;x=0;for(O=F.length;x<O;++x){var j=F[x];if(d.hasTag(j,\"LI\")){var H=j.firstChild;if(j.orig==null)j.orig=H.firstChild.innerHTML;var I=k(j.orig),P=n||I.match;if(I.suggestion!=H.firstChild.innerHTML)H.firstChild.innerHTML= I.suggestion;if(P){if(j.style.display!=\"\")j.style.display=\"\";if(a==null)a=j;if(x==this.defaultValue)w=j}else if(j.style.display!=\"none\")j.style.display=\"none\";if(j.className!=\"\")j.className=\"\"}}if(a==null)m();else{if(!e()){i(h);r.showPopup(h);b=null}if(!b||b.style.display==\"none\"){b=w||a;b.parentNode.scrollTop=0;o=b.id}b.className=\"active\";J(b)}};this.editKeyUp=function(a,b){if(g!=null)if(c(a))if(!(!e()&&(b.keyCode==13||b.keyCode==9)))if(b.keyCode==27||b.keyCode==37||b.keyCode==39)m();else if(a.value!= E)r.refilter(a.value);else(a=o?d.getElement(o):null)&&J(a)};f.onclick=l;f.onscroll=function(){if(D){clearTimeout(D);var a=d.getElement(g);a&&a.focus()}};this.delayHide=function(a){D=setTimeout(function(){D=null;if(f&&(a==null||g==a.id))m()},300)}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
@@ -905,12 +977,12 @@ public class WSuggestionPopup extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSuggestionPopupStdMatcher",
-				"function(u,f,x,D,r,y){function z(c){var e=c.value;c=c.selectionStart?c.selectionStart:e.length;for(var i=x?e.lastIndexOf(x,c-1)+1:0;i<c&&D.indexOf(e.charAt(i))!=-1;)++i;return{start:i,end:c}}this.match=function(c){var e=z(c),i=c.value.substring(e.start,e.end),n;n=r.length!=0?\"(^|(?:[\"+r+\"]))\":\"(^)\";n+=\"(\"+i.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";n=new RegExp(n,\"gi\");return function(p){if(!p)return i; var m=false;if(i.length){var B=p.replace(n,\"$1\"+u+\"$2\"+f);if(B!=p){m=true;p=B}}return{match:m,suggestion:p}}};this.replace=function(c,e,i){e=z(c);var n=c.value.substring(0,e.start)+i+y;if(e.end<c.value.length)n+=c.value.substring(e.end,c.value.length);c.value=n;if(c.selectionStart){c.selectionStart=e.start+i.length+y.length;c.selectionEnd=c.selectionStart}}}");
+				"function(s,f,y,G,q,t,z){function u(c){var e=c.value;c=c.selectionStart?c.selectionStart:e.length;for(var i=y?e.lastIndexOf(y,c-1)+1:0;i<c&&G.indexOf(e.charAt(i))!=-1;)++i;return{start:i,end:c}}this.match=function(c){var e=u(c),i=c.value.substring(e.start,e.end),l;l=t.length==0?q.length!=0?\"(^|(?:[\"+q+\"]))\":\"(^)\":\"(\"+t+\")\";l+=\"(\"+i.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";l=new RegExp(l,\"gi\");return function(p){if(!p)return i; var m=false;if(i.length){var B=p.replace(l,\"$1\"+s+\"$2\"+f);if(B!=p){m=true;p=B}}return{match:m,suggestion:p}}};this.replace=function(c,e,i){e=u(c);var l=c.value.substring(0,e.start)+i+z;if(e.end<c.value.length)l+=c.value.substring(e.end,c.value.length);c.value=l;if(c.selectionStart){c.selectionStart=e.start+i.length+z.length;c.selectionEnd=c.selectionStart}}}");
 	}
 
-	static String instantiateStdMatcher(WSuggestionPopup.Options options) {
+	static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_2_3.WSuggestionPopupStdMatcher(").append(
+		s.append("new Wt3_3_4.WSuggestionPopupStdMatcher(").append(
 				WWebWidget.jsStringLiteral(options.highlightBeginTag)).append(
 				", ").append(
 				WWebWidget.jsStringLiteral(options.highlightEndTag)).append(
@@ -923,6 +995,8 @@ public class WSuggestionPopup extends WCompositeWidget {
 		s.append(", ").append(WWebWidget.jsStringLiteral(options.whitespace))
 				.append(", ").append(
 						WWebWidget.jsStringLiteral(options.wordSeparators))
+				.append(", ").append(
+						WWebWidget.jsStringLiteral(options.wordStartRegexp))
 				.append(", ").append(
 						WWebWidget.jsStringLiteral(options.appendReplacedText))
 				.append(")");

@@ -155,11 +155,6 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		this.readyState_ = WAbstractMedia.ReadyState.HaveNothing;
 		this.setInline(false);
 		this.setFormObject(true);
-		WApplication app = WApplication.getInstance();
-		app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
-		this.setJavaScriptMember(" WAbstractMedia",
-				"new Wt3_2_3.WAbstractMedia(" + app.getJavaScriptClass() + ","
-						+ this.getJsRef() + ");");
 	}
 
 	/**
@@ -185,10 +180,10 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * 
 	 * @see WAbstractMedia.Options
 	 */
-	public void setOptions(EnumSet<WAbstractMedia.Options> flags) {
+	public void setOptions(final EnumSet<WAbstractMedia.Options> flags) {
 		this.flags_ = EnumSet.copyOf(flags);
 		this.flagsChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -215,7 +210,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	public void setPreloadMode(WAbstractMedia.PreloadMode mode) {
 		this.preloadMode_ = mode;
 		this.preloadChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -241,7 +236,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			;
 		}
 		this.sources_.clear();
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -254,10 +249,11 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * This method specifies a media source using the URL, the mime type, and
 	 * the media attribute. HTML allows for empty type and media attributes.
 	 */
-	public void addSource(WLink link, String type, String media) {
+	public void addSource(final WLink link, final String type,
+			final String media) {
 		this.sources_.add(new WAbstractMedia.Source(this, link, type, media));
 		this.sourcesChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -266,7 +262,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * Calls {@link #addSource(WLink link, String type, String media)
 	 * addSource(link, "", "")}
 	 */
-	public final void addSource(WLink link) {
+	public final void addSource(final WLink link) {
 		addSource(link, "", "");
 	}
 
@@ -276,7 +272,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * Calls {@link #addSource(WLink link, String type, String media)
 	 * addSource(link, type, "")}
 	 */
-	public final void addSource(WLink link, String type) {
+	public final void addSource(final WLink link, final String type) {
 		addSource(link, type, "");
 	}
 
@@ -314,6 +310,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * JavaScript must be available for this function to work.
 	 */
 	public void play() {
+		this.loadJavaScript();
 		this
 				.doJavaScript("jQuery.data(" + this.getJsRef()
 						+ ", 'obj').play();");
@@ -325,8 +322,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * JavaScript must be available for this function to work.
 	 */
 	public void pause() {
+		this.loadJavaScript();
 		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').pause();}");
+				+ ", 'obj').pause();");
 	}
 
 	/**
@@ -425,18 +423,18 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		if (this.mediaId_.length() == 0) {
 			return "null";
 		} else {
-			return "Wt3_2_3.getElement('" + this.mediaId_ + "')";
+			return "Wt3_3_4.getElement('" + this.mediaId_ + "')";
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.mediaId_.length() != 0) {
 			DomElement media = DomElement.getForUpdate(this.mediaId_,
 					DomElementType.DomElement_DIV);
 			this.updateMediaDom(media, false);
 			if (this.sourcesChanged_) {
 				for (int i = 0; i < this.sourcesRendered_; ++i) {
-					media.callJavaScript("Wt3_2_3.remove('" + this.mediaId_
+					media.callJavaScript("Wt3_3_4.remove('" + this.mediaId_
 							+ "s" + String.valueOf(i) + "');", true);
 				}
 				this.sourcesRendered_ = 0;
@@ -458,6 +456,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	}
 
 	DomElement createDomElement(WApplication app) {
+		this.loadJavaScript();
 		DomElement result = null;
 		if (this.isInLayout()) {
 			this.setJavaScriptMember(WT_RESIZE_JS, "function() {}");
@@ -507,10 +506,10 @@ public abstract class WAbstractMedia extends WInteractWidget {
 				ss
 						.append("v="
 								+ this.getJsMediaRef()
-								+ ";if(v){v.setAttribute('width', w);v.setAttribute('height', h);}");
+								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 			}
 			if (this.alternative_ != null) {
-				ss.append("a=" + this.alternative_.getJsRef() + ";if(a && a.")
+				ss.append("a=" + this.alternative_.getJsRef() + ";if (a && a.")
 						.append(WT_RESIZE_JS).append(")a.")
 						.append(WT_RESIZE_JS).append("(a, w, h);");
 			}
@@ -530,12 +529,12 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		return result;
 	}
 
-	void updateMediaDom(DomElement element, boolean all) {
+	void updateMediaDom(final DomElement element, boolean all) {
 		if (all && this.alternative_ != null) {
 			element
 					.setAttribute(
 							"onerror",
-							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_2_3.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_3_4.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
@@ -586,7 +585,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 
 	abstract DomElement createMediaDomElement();
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
@@ -594,17 +593,17 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			if (attributes.size() == 6) {
 				try {
 					this.volume_ = Double.parseDouble(attributes.get(0));
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					this.volume_ = -1;
 				}
 				try {
 					this.current_ = Double.parseDouble(attributes.get(1));
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					this.current_ = -1;
 				}
 				try {
 					this.duration_ = Double.parseDouble(attributes.get(2));
-				} catch (RuntimeException e) {
+				} catch (final RuntimeException e) {
 					this.duration_ = -1;
 				}
 				this.playing_ = attributes.get(3).equals("0");
@@ -612,9 +611,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 				try {
 					this.readyState_ = intToReadyState(Integer
 							.parseInt(attributes.get(5)));
-				} catch (RuntimeException e) {
-					throw new WException("WAbstractMedia: error parsing: "
-							+ formData.values[0] + ": " + e.toString());
+				} catch (final RuntimeException e) {
+					this.readyState_ = WAbstractMedia.ReadyState.HaveNothing;
 				}
 			} else {
 				throw new WException("WAbstractMedia: error parsing: "
@@ -626,8 +624,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	static class Source extends WObject {
 		private static Logger logger = LoggerFactory.getLogger(Source.class);
 
-		public Source(WAbstractMedia parent, WLink link, String type,
-				String media) {
+		public Source(WAbstractMedia parent, final WLink link,
+				final String type, final String media) {
 			super();
 			this.parent = parent;
 			this.connection = new AbstractSignal.Connection();
@@ -646,8 +644,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 
 		public void resourceChanged() {
 			this.parent.sourcesChanged_ = true;
-			this.parent.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.parent.repaint();
 		}
 
 		public WAbstractMedia parent;
@@ -657,8 +654,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		public WLink link;
 	}
 
-	private void renderSource(DomElement element, WAbstractMedia.Source source,
-			boolean isLast) {
+	private void renderSource(DomElement element,
+			final WAbstractMedia.Source source, boolean isLast) {
 		element.setAttribute("src", resolveRelativeUrl(source.link.getUrl()));
 		if (!source.type.equals("")) {
 			element.setAttribute("type", source.type);
@@ -670,7 +667,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			element
 					.setAttribute(
 							"onerror",
-							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_2_3.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_3_4.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 		} else {
 			element.setAttribute("onerror", "");
 		}
@@ -691,6 +688,21 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	private double duration_;
 	private boolean ended_;
 	private WAbstractMedia.ReadyState readyState_;
+	private static String PLAYBACKSTARTED_SIGNAL = "play";
+	private static String PLAYBACKPAUSED_SIGNAL = "pause";
+	private static String ENDED_SIGNAL = "ended";
+	private static String TIMEUPDATED_SIGNAL = "timeupdate";
+	private static String VOLUMECHANGED_SIGNAL = "volumechange";
+
+	private void loadJavaScript() {
+		if (this.getJavaScriptMember(" WAbstractMedia").length() == 0) {
+			WApplication app = WApplication.getInstance();
+			app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
+			this.setJavaScriptMember(" WAbstractMedia",
+					"new Wt3_3_4.WAbstractMedia(" + app.getJavaScriptClass()
+							+ "," + this.getJsRef() + ");");
+		}
+	}
 
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(
@@ -716,10 +728,4 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			throw new WException("Invalid readystate");
 		}
 	}
-
-	private static String PLAYBACKSTARTED_SIGNAL = "play";
-	private static String PLAYBACKPAUSED_SIGNAL = "pause";
-	private static String ENDED_SIGNAL = "ended";
-	private static String TIMEUPDATED_SIGNAL = "timeupdate";
-	private static String VOLUMECHANGED_SIGNAL = "volumechange";
 }

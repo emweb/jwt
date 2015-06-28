@@ -111,7 +111,7 @@ public class WValidator extends WObject {
 		 * Creates a result with given <code>state</code> and
 		 * <code>message</code>.
 		 */
-		public Result(WValidator.State state, CharSequence message) {
+		public Result(WValidator.State state, final CharSequence message) {
 			this.state_ = state;
 			this.message_ = WString.toWString(message);
 		}
@@ -213,7 +213,7 @@ public class WValidator extends WObject {
 	 * <p>
 	 * The default value is &quot;This field cannot be empty&quot;.
 	 */
-	public void setInvalidBlankText(CharSequence text) {
+	public void setInvalidBlankText(final CharSequence text) {
 		this.mandatoryText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -233,24 +233,13 @@ public class WValidator extends WObject {
 	}
 
 	/**
-	 * This function attempts to change input to be valid according to the
-	 * validator&apos;s rules.
-	 * <p>
-	 * In general the function needs not to change the input into a valid input.
-	 * The default implementation does nothing. But it may help the user in
-	 * getting its input right.
-	 */
-	public void fixup(CharSequence input) {
-	}
-
-	/**
 	 * Validates the given input.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>The signature for this method changed in JWt 3.2.0. </i>
 	 * </p>
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (this.isMandatory()) {
 			if (input.length() == 0) {
 				return new WValidator.Result(WValidator.State.InvalidEmpty,
@@ -260,7 +249,16 @@ public class WValidator extends WObject {
 		return new WValidator.Result(WValidator.State.Valid);
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	/**
+	 * Returns the validator format.
+	 * <p>
+	 * The default implementation returns an empty string.
+	 */
+	public String getFormat() {
+		return "";
+	}
+
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Creates a Javascript object that validates the input.
 	 * <p>

@@ -166,4 +166,9 @@ public abstract class AbstractSignal {
 	 * @param listener a listener that was previously added.
 	 */
 	public abstract void removeListener(Signal.Listener listener);
+	
+	/**
+	 * Returns the number of parameters (excluding an 'event').
+	 */
+	protected abstract int getArgumentCount();
 }

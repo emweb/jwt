@@ -99,7 +99,7 @@ public abstract class WViewWidget extends WWebWidget {
 	public void update() {
 		this.needContentsUpdate_ = true;
 		if (this.isRendered()) {
-			this.askRerender();
+			this.scheduleRender();
 		}
 	}
 
@@ -108,7 +108,7 @@ public abstract class WViewWidget extends WWebWidget {
 		super.load();
 	}
 
-	protected void render(EnumSet<RenderFlag> flags) {
+	public void render(EnumSet<RenderFlag> flags) {
 		if (this.needContentsUpdate_
 				|| !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			if (this.contents_ != null)
@@ -138,7 +138,7 @@ public abstract class WViewWidget extends WWebWidget {
 	 */
 	protected abstract WWidget getRenderView();
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (all && !(this.contents_ != null)) {

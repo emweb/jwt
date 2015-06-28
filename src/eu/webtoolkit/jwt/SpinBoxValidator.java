@@ -28,14 +28,18 @@ class SpinBoxValidator extends WValidator {
 		this.spinBox_ = spinBox;
 	}
 
-	public WValidator.Result validate(String input) {
-		return this.spinBox_.parseValue(input) ? new WValidator.Result(
-				WValidator.State.Valid) : new WValidator.Result(
-				WValidator.State.Invalid);
+	public WValidator.Result validate(final String input) {
+		boolean valid = this.spinBox_.parseValue(input);
+		if (valid) {
+			return this.spinBox_.getValidateRange();
+		} else {
+			return new WValidator.Result(WValidator.State.Invalid);
+		}
 	}
 
 	public String getJavaScriptValidate() {
-		return "jQuery.data(" + this.spinBox_.getJsRef() + ", 'obj');";
+		return "new function() { this.validate = function(t) {return jQuery.data("
+				+ this.spinBox_.getJsRef() + ", 'obj').validate(t);};}";
 	}
 
 	private WAbstractSpinBox spinBox_;

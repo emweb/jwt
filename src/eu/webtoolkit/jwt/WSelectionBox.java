@@ -99,7 +99,7 @@ public class WSelectionBox extends WComboBox {
 	public void setVerticalSize(int items) {
 		this.verticalSize_ = items;
 		this.configChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class WSelectionBox extends WComboBox {
 		if (mode != this.selectionMode_) {
 			this.selectionMode_ = mode;
 			this.configChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 			if (mode == SelectionMode.ExtendedSelection) {
 				this.selection_.clear();
 				if (this.getCurrentIndex() != -1) {
@@ -154,6 +154,10 @@ public class WSelectionBox extends WComboBox {
 	 * @see WComboBox#getCurrentIndex()
 	 */
 	public Set<Integer> getSelectedIndexes() {
+		if (this.selectionMode_ != SelectionMode.ExtendedSelection) {
+			throw new WException(
+					"WSelectionBox::setSelectedIndexes() can only be used for an ExtendedSelection mode");
+		}
 		return this.selection_;
 	}
 
@@ -166,14 +170,14 @@ public class WSelectionBox extends WComboBox {
 	 * 
 	 * @see WSelectionBox#getSelectedIndexes()
 	 */
-	public void setSelectedIndexes(Set<Integer> selection) {
+	public void setSelectedIndexes(final Set<Integer> selection) {
 		if (this.selectionMode_ != SelectionMode.ExtendedSelection) {
 			throw new WException(
 					"WSelectionBox::setSelectedIndexes() can only be used for an ExtendedSelection mode");
 		}
 		this.selection_ = selection;
 		this.selectionChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 	}
 
 	/**
@@ -202,7 +206,7 @@ public class WSelectionBox extends WComboBox {
 		return true;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.configChanged_ || all) {
 			element.setAttribute("size", String.valueOf(this.verticalSize_));
 			if (!all || this.selectionMode_ == SelectionMode.ExtendedSelection) {
@@ -224,13 +228,13 @@ public class WSelectionBox extends WComboBox {
 							+ "].selected="
 							+ (this.isSelected(i) ? "true" : "false"));
 				}
-				this.selectionChanged_ = false;
 			}
+			this.selectionChanged_ = false;
 		}
 		super.updateDom(element, all);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.selectionChanged_) {
 			return;
 		}
@@ -239,12 +243,12 @@ public class WSelectionBox extends WComboBox {
 		} else {
 			this.selection_.clear();
 			for (int j = 0; j < formData.values.length; ++j) {
-				String v = formData.values[j];
+				final String v = formData.values[j];
 				if (v.length() != 0) {
 					try {
 						int i = Integer.parseInt(v);
 						this.selection_.add(i);
-					} catch (NumberFormatException error) {
+					} catch (final NumberFormatException error) {
 						logger.error(new StringWriter().append(
 								"received illegal form value: '").append(v)
 								.append("'").toString());

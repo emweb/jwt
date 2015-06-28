@@ -47,6 +47,18 @@ public abstract class WCssRule extends WObject {
 	}
 
 	/**
+	 * Sets the selector.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The selector can only be changed as long as the rule
+	 * hasn&apos;t been rendered. </i>
+	 * </p>
+	 */
+	public void setSelector(final String selector) {
+		this.selector_ = selector;
+	}
+
+	/**
 	 * Returns the selector.
 	 */
 	public String getSelector() {
@@ -76,14 +88,14 @@ public abstract class WCssRule extends WObject {
 	 */
 	public abstract String getDeclarations();
 
-	boolean updateDomElement(DomElement cssRuleElement, boolean all) {
+	boolean updateDomElement(final DomElement cssRuleElement, boolean all) {
 		return false;
 	}
 
 	/**
 	 * Creates a new CSS rule with given selector.
 	 */
-	protected WCssRule(String selector, WObject parent) {
+	protected WCssRule(final String selector, WObject parent) {
 		super(parent);
 		this.selector_ = selector;
 		this.sheet_ = null;
@@ -95,7 +107,7 @@ public abstract class WCssRule extends WObject {
 	 * Calls {@link #WCssRule(String selector, WObject parent) this(selector,
 	 * (WObject)null)}
 	 */
-	protected WCssRule(String selector) {
+	protected WCssRule(final String selector) {
 		this(selector, (WObject) null);
 	}
 

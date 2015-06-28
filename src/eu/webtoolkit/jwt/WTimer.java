@@ -118,12 +118,11 @@ public class WTimer extends WObject {
 	 * until {@link WTimer#stop() stop()} is called.
 	 */
 	public void start() {
-		if (this.active_) {
-			this.stop();
-		}
-		WApplication app = WApplication.getInstance();
-		if (app != null && app.getTimerRoot() != null) {
-			app.getTimerRoot().addWidget(this.timerWidget_);
+		if (!this.active_) {
+			WApplication app = WApplication.getInstance();
+			if (app != null && app.getTimerRoot() != null) {
+				app.getTimerRoot().addWidget(this.timerWidget_);
+			}
 		}
 		this.active_ = true;
 		this.timeout_ = new Time().add(this.interval_);

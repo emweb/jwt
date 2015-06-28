@@ -59,7 +59,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 		 */
 		Update
 	};
-	
+
+	/**
+	 * Enumeration for a WebSocket read event (not yet implemented).
+	 */
+	public enum ReadEvent {
+	}
+
 	/**
 	 * Progress listener interface.
 	 */
@@ -201,26 +207,25 @@ public class WebRequest extends HttpServletRequestWrapper {
 	/**
 	 * Returns a header value.
 	 * <p>
-	 * Returns the corresponding header value, using {@link #getHeader(String)}, or
-	 * the empty string (""), if the header is not present.
+	 * Returns the corresponding header value, using {@link #getHeader(String)} or 
+	 * <code>null</code> if the header value is not present
 	 * 
 	 * @param header the header name
-	 * @return the header value, or an empty string if the header is not present.
+	 * @return the header value, or <code>null</code>.
 	 */
 	public String getHeaderValue(String header) {
 		if (header.equals("Client-IP"))
 			return getRemoteAddr();
 
-		String result = getHeader(header);
-
-		return result == null ? "" : result;
+		return getHeader(header);
 	}
 	  
 	/**
 	  * Accesses to specific header fields (calls getHeaderValue()).
 	  */
 	public String getUserAgent() {
-		return getHeaderValue("User-Agent");
+		String v = getHeaderValue("User-Agent");
+		return v != null ? v : "";
 	}
 
 	/**
@@ -313,11 +318,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 		files_ = new HashMap<String, List<UploadedFile>>();
 		
 		String[] paramContentType = parameters_.get("contentType"); 
+
 		if (paramContentType != null && paramContentType[0].equals("x-www-form-urlencoded") && this.getContentType() == null) {
 			byte[] buf = new byte[this.getContentLength()];
 			this.getInputStream().read(buf);
 			String[] pairs = new String(buf, "UTF-8").split("\\&");
-		    for (int i = 0; i < pairs.length; i++) {
+
+			for (int i = 0; i < pairs.length; i++) {
 		      String[] fields = {"", ""};
 		      String[] pair = pairs[i].split("=");
 		      for (int j = 0; j < pair.length && j < 2; j++)
@@ -325,7 +332,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		      if (!fields[0].equals(""))
 		    	  parameters_.put(fields[0], new String [] { fields[1] });
 		    }
-		}		
+		}
 	}
 	
 	/**

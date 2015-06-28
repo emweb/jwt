@@ -14,7 +14,7 @@ public class EventSignal extends AbstractEventSignal {
 	private Signal dynamic_;
 
 	EventSignal(String name, WObject sender) {
-		super(name, sender);
+		super(name, sender, true);
 
 		dynamic_ = null;
 	}
@@ -66,5 +66,10 @@ public class EventSignal extends AbstractEventSignal {
 	@Override
 	public void addListener(WObject receiver, LearningListener listener) {
 		super.addListener(receiver, listener);
+	}
+
+	@Override
+	protected int getArgumentCount() {
+		return 0;
 	}
 }

@@ -44,36 +44,65 @@ The ant build file has a separate target to generate maven pom files:
 
 To install the two artifacts in your local repository, do:
 
-    mvn install:install-file -Dfile=dist/jwt-3.2.3.jar -DpomFile=jwt-3.2.3.pom
-    mvn install:install-file -Dfile=dist/jwt-auth-3.2.3.jar -DpomFile=jwt-auth-3.2.3.pom
+    mvn install:install-file -Dfile=dist/jwt-3.3.2.jar -DpomFile=jwt-3.3.2.pom
+    mvn install:install-file -Dfile=dist/jwt-auth-3.3.2.jar -DpomFile=jwt-auth-3.3.2.pom
 
 The corresponding dependency blocks are:
 
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>3.2.3</version>
+      <version>3.3.2</version>
     </dependency>
 
-    <dependency>
-      <groupId>eu.webtoolkit</groupId>
-      <artifactId>jwt-auth</artifactId>
-      <version>3.2.3</version>
-    </dependency>
-    
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
     </dependency>
 
+There are a number of optional dependencies for JWt, needed only depending on what
+features you use
+
+    <!-- optional, for JWT Auth -->
+    <dependency>
+      <groupId>eu.webtoolkit</groupId>
+      <artifactId>jwt-auth</artifactId>
+      <version>3.3.2</version>
+    </dependency>
+
+    <!-- optional, for PDF Rendering -->
+    <dependency>
+      <groupId>com.pdfjet</groupId>
+      <artifactId>pdfjet</artifactId>
+      <version>4.75</version>
+    </dependency>
+
+    <!-- optional, for CSS stylesheet support in XHTML renderer -->
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>3.2</version>
+    </dependency>
+
+    <!-- optional, for server-side WebGL fallback -->
+    <dependency>
+      <groupId>org.jogamp.jogl</groupId>
+      <artifactId>jogl-all</artifactId>
+      <version>2.0-rc11</version>
+    </dependency>
+
+    <!-- optional, for server-side WebGL fallback -->
+    <dependency>
+      <groupId>org.jogamp.gluegen</groupId>
+      <artifactId>gluegen-rt-main</artifactId>
+      <version>2.0-rc11</version>
+    </dependency>
+
+    <!-- may be needed if your J2EE container doesn't provide this -->
     <dependency>
       <groupId>org.apache.geronimo.javamail</groupId>
       <artifactId>geronimo-javamail_1.4_mail</artifactId>
       <version>1.8.1</version>
       <scope>provided</scope>
     </dependency>
-
-(Depending on the J2EE container, javax.mail may be included and provided
-by the container, and then the last dependency for
-org.apache.geronimo.javamail should be dropped)

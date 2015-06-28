@@ -42,16 +42,20 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	 * If <code>authModel</code> is not <code>null</code>, the user also has to
 	 * authenticate first using his current password.
 	 */
-	public UpdatePasswordWidget(User user, RegistrationModel registrationModel,
-			AuthModel authModel, WContainerWidget parent) {
+	public UpdatePasswordWidget(final User user,
+			RegistrationModel registrationModel, AuthModel authModel,
+			WContainerWidget parent) {
 		super(tr("Wt.Auth.template.update-password"), parent);
 		this.user_ = user;
 		this.registrationModel_ = registrationModel;
 		this.authModel_ = authModel;
 		this.registrationModel_.setValue(RegistrationModel.LoginNameField, user
-				.identity(Identity.LoginName));
+				.getIdentity(Identity.LoginName));
 		this.registrationModel_.setReadOnly(RegistrationModel.LoginNameField,
 				true);
+		if (user.getPassword().isEmpty()) {
+			this.authModel_ = null;
+		}
 		if (this.authModel_ != null
 				&& this.authModel_.getBaseAuth().isEmailVerificationEnabled()) {
 			this.registrationModel_.setValue(RegistrationModel.EmailField, user
@@ -63,12 +67,12 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
 		if (this.authModel_ != null) {
 			this.authModel_.setValue(AuthModel.LoginNameField, user
-					.identity(Identity.LoginName));
+					.getIdentity(Identity.LoginName));
 			this.updateViewField(this.authModel_, AuthModel.PasswordField);
 			this.authModel_.configureThrottling(okButton);
 			WLineEdit password = (WLineEdit) this
 					.resolveWidget(AuthModel.PasswordField);
-			password.setFocus();
+			password.setFocus(true);
 		}
 		this.updateView(this.registrationModel_);
 		WLineEdit password = (WLineEdit) this
@@ -80,7 +84,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this.registrationModel_.validatePasswordsMatchJS(password, password2,
 				password2Info);
 		if (!(this.authModel_ != null)) {
-			password.setFocus();
+			password.setFocus(true);
 		}
 		okButton.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
@@ -105,8 +109,8 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	 * {@link #UpdatePasswordWidget(User user, RegistrationModel registrationModel, AuthModel authModel, WContainerWidget parent)
 	 * this(user, registrationModel, authModel, (WContainerWidget)null)}
 	 */
-	public UpdatePasswordWidget(User user, RegistrationModel registrationModel,
-			AuthModel authModel) {
+	public UpdatePasswordWidget(final User user,
+			RegistrationModel registrationModel, AuthModel authModel) {
 		this(user, registrationModel, authModel, (WContainerWidget) null);
 	}
 

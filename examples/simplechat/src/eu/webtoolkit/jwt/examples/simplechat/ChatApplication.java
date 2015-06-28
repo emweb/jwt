@@ -5,6 +5,7 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WLength.Unit;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WString;
@@ -13,8 +14,9 @@ import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 
 public class ChatApplication extends WApplication {
 
-	public ChatApplication(WEnvironment env) {
+	public ChatApplication(WEnvironment env, SimpleChatServer server) {
 		super(env);
+		this.server = server;
 		
 		setCssTheme("polished");
 		
@@ -26,7 +28,7 @@ public class ChatApplication extends WApplication {
 
 		getRoot().addWidget(new WText(WString.tr("introduction")));
 
-		chatWidget = new SimpleChatWidget(theServer, getRoot());
+		chatWidget = new SimpleChatWidget(server, getRoot());
 		chatWidget.setStyleClass("chat");
 
 		getRoot().addWidget(new WText(WString.tr("details")));
@@ -40,7 +42,7 @@ public class ChatApplication extends WApplication {
 			}
 		});
 		
-		useStyleSheet("style/simplechat.css");
+		useStyleSheet(new WLink("style/simplechat.css"));
 	}
 
 	@Override
@@ -50,11 +52,11 @@ public class ChatApplication extends WApplication {
 	}
 
 	private void addChatWidget() {
-		SimpleChatWidget chatWidget2 = new SimpleChatWidget(theServer,
+		SimpleChatWidget chatWidget2 = new SimpleChatWidget(server,
 				WApplication.getInstance().getRoot());
 		chatWidget2.setStyleClass("chat");
 	}
 
-	private static SimpleChatServer theServer = new SimpleChatServer();
+	private SimpleChatServer server;
 	private SimpleChatWidget chatWidget;
 }

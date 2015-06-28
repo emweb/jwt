@@ -51,8 +51,8 @@ public class OAuthAccessToken {
 	/**
 	 * Constructor.
 	 */
-	public OAuthAccessToken(String accessToken, WDate expires,
-			String refreshToken) {
+	public OAuthAccessToken(final String accessToken, final WDate expires,
+			final String refreshToken) {
 		this.accessToken_ = accessToken;
 		this.refreshToken_ = refreshToken;
 		this.expires_ = expires;
@@ -98,13 +98,13 @@ public class OAuthAccessToken {
 		return this.refreshToken_;
 	}
 
-	private String accessToken_;
-	private String refreshToken_;
-	private WDate expires_;
 	/**
 	 * An invalid token constant.
 	 * <p>
 	 * This is a token that is not {@link OAuthAccessToken#isValid() isValid()}.
 	 */
 	public static final OAuthAccessToken Invalid = new OAuthAccessToken();
+	private String accessToken_;
+	private String refreshToken_;
+	private WDate expires_;
 }

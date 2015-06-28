@@ -11,6 +11,7 @@ package eu.webtoolkit.jwt.utils;
 import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.Key;
+import eu.webtoolkit.jwt.ValidationStyleFlag;
 import eu.webtoolkit.jwt.WAnimation.AnimationEffect;
 
 /**
@@ -64,23 +65,52 @@ public class EnumUtils {
 	public static <E extends Enum<E>> E max(E e1, E e2) {
 		return e1.ordinal() > e2.ordinal() ? e1 : e2;
 	}
-
-	public static int valueOf(EnumSet<AnimationEffect> effects) {
+	
+	@SuppressWarnings("unchecked")
+	public static <E extends Enum<E>> int valueOf(EnumSet<E> enumSet) {
+		if (!enumSet.isEmpty()) {
+			Object o = enumSet.iterator().next();
+			
+			if (o instanceof AnimationEffect)
+				return valueOfAnimationEffects(enumSet);
+			else if (o instanceof ValidationStyleFlag)
+				return valueOfValidationStyleFlags(enumSet);
+			else
+				throw new RuntimeException("Not supported valueOf()");
+		} else
+			return 0;
+	}
+	
+	public static <E extends Enum<E>> int valueOfAnimationEffects(EnumSet<E> enumSet) {
 		int result = 0;
-		if (effects.contains(AnimationEffect.SlideInFromLeft))
+
+		if (enumSet.contains(AnimationEffect.SlideInFromLeft))
 			result = 0x1;
-		else if (effects.contains(AnimationEffect.SlideInFromRight))
+		else if (enumSet.contains(AnimationEffect.SlideInFromRight))
 			result = 0x2;
-		else if (effects.contains(AnimationEffect.SlideInFromBottom))
+		else if (enumSet.contains(AnimationEffect.SlideInFromBottom))
 			result = 0x3;
-		else if (effects.contains(AnimationEffect.SlideInFromTop))
+		else if (enumSet.contains(AnimationEffect.SlideInFromTop))
 			result = 0x4;
-		else if (effects.contains(AnimationEffect.Pop))
+		else if (enumSet.contains(AnimationEffect.Pop))
 			result = 0x5;
 		
-		if (effects.contains(AnimationEffect.Fade))
+		if (enumSet.contains(AnimationEffect.Fade))
 			result |= 0x100;
+		
+		return result;
+	}
+	
+	private static <E extends Enum<E>> int valueOfValidationStyleFlags(EnumSet<E> enumSet) {
+		int result = 0;
 
+		// TODO: could replace this with a loop that uses result |= 1 << v.ordinal()
+		
+		if (enumSet.contains(ValidationStyleFlag.ValidationInvalidStyle))
+			result |= 0x1;
+		if (enumSet.contains(ValidationStyleFlag.ValidationValidStyle))
+			result |= 0x2;
+		
 		return result;
 	}
 }

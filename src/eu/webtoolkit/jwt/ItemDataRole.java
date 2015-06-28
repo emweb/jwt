@@ -48,13 +48,15 @@ public class ItemDataRole {
 	public final static int StyleClassRole = 3;
 	/**
 	 * <p>
-	 * Role that indicates the check state. Data for this role should be a
-	 * <code>bool</code>. When the {@link ItemFlag#ItemIsTristate} flag is set
-	 * for the item, data for this role should be of type {@link CheckState}.
+	 * Role that indicates the check state.
+	 * <p>
+	 * Data for this role should be a <code>bool</code>. When the
+	 * {@link ItemFlag#ItemIsTristate} flag is set for the item, data for this
+	 * role should be of type {@link CheckState}.
 	 */
 	public final static int CheckStateRole = 4;
 	/**
-	 * Role for a tooltip.
+	 * Role for a (plain) tooltip.
 	 */
 	public final static int ToolTipRole = 5;
 	/**

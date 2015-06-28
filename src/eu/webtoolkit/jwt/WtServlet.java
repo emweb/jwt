@@ -49,7 +49,7 @@ import eu.webtoolkit.jwt.utils.StreamUtils;
  * notifying the application of an event, or serving a {@link WResource}.
  */
 public abstract class WtServlet extends HttpServlet {
-	private static class BoundSession implements HttpSessionBindingListener {
+	private class BoundSession implements HttpSessionBindingListener {
 		private WebSession session;
 
 		BoundSession(WebSession session) {
@@ -65,6 +65,8 @@ public abstract class WtServlet extends HttpServlet {
 
 		@Override
 		public void valueUnbound(HttpSessionBindingEvent arg0) {
+			logger.info("Session exiting: " + session.getSessionId() + " (#sessions = " + removeSession(session) + ")");
+
 			WApplication app = session.getApp();
 			if (app != null)
 				app.destroy();
@@ -82,7 +84,7 @@ public abstract class WtServlet extends HttpServlet {
 	private ProgressListener progressListener;
 	private Set<String> uploadProgressUrls_ = new HashSet<String>();
 	private int ajaxSessions = 0;
-	private int sessions = 0;
+	private Map<String,WebSession> sessions = new HashMap<String,WebSession>();
 
 	private String redirectSecret_;
 
@@ -98,7 +100,11 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Hybrid_html;
 	static final String JQuery_js;
 	static final String Wt_xml = "/eu/webtoolkit/jwt/wt";
-	public static final String Auth_xml = "/eu/webtoolkit/jwt/auth/auth";
+	public static final String AuthStrings_xml = "/eu/webtoolkit/jwt/auth/auth_strings";
+	static final String AuthCssTheme_xml = "/eu/webtoolkit/jwt/auth/auth_css_theme";
+	static final String AuthBootstrapTheme_xml = "/eu/webtoolkit/jwt/auth/auth_bootstrap_theme";
+	static final String BootstrapTheme_xml = "/eu/webtoolkit/jwt/bootstrap_theme";
+	static final String Bootstrap3Theme_xml = "/eu/webtoolkit/jwt/bootstrap3_theme";
 	
 	private static WtServlet instance;
 
@@ -109,7 +115,7 @@ public abstract class WtServlet extends HttpServlet {
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
 		Boot_js = readFile("/eu/webtoolkit/jwt/skeletons/Boot.min.js");
 		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
-		
+
 		String[][] mimeTypes = {
 				{ "css", "text/css" },
 				{ "gif", "image/gif" },
@@ -177,9 +183,15 @@ public abstract class WtServlet extends HttpServlet {
 		String pathInfo = WebRequest.computePathInfo(request);
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		
-		if (pathInfo !=null) {
+		if (pathInfo != null) {
 			String scriptName = WebRequest.computeScriptName(request);
-			
+
+			String requestPath = scriptName;
+			if (requestPath.endsWith("/") && pathInfo.startsWith("/"))
+				requestPath += pathInfo.substring(1);
+			else
+				requestPath += pathInfo;
+
 			for (WResource staticResource : staticResources) {
 				String staticResourcePath = null;
 				if (!staticResource.getInternalPath().startsWith("/"))
@@ -187,7 +199,7 @@ public abstract class WtServlet extends HttpServlet {
 				else
 					staticResourcePath = staticResource.getInternalPath();
 				
-				if ((scriptName + pathInfo).equals(staticResourcePath)) {
+				if (requestPath.equals(staticResourcePath)) {
 					try {
 						WebRequest webRequest = new WebRequest(request, progressListener);
 						WebResponse webResponse = new WebResponse(response, webRequest);
@@ -294,9 +306,9 @@ public abstract class WtServlet extends HttpServlet {
 	 */
 	public abstract WApplication createApplication(WEnvironment env);
 
-	synchronized int addSession() {
-		++sessions;
-		return sessions;
+	synchronized int addSession(WebSession session) {
+		sessions.put(session.getSessionId(), session);
+		return sessions.size();
 	}
 
 	synchronized void newAjaxSession() {
@@ -306,8 +318,15 @@ public abstract class WtServlet extends HttpServlet {
 	synchronized int removeSession(WebSession session) {
 		if (session.getEnv().hasAjax())
 			--ajaxSessions;
-		--sessions;
-		return sessions;
+		sessions.remove(session.getSessionId());
+		return sessions.size();
+	}
+	
+
+	synchronized void removeSession(String sessionId) {
+		WebSession session = sessions.get(sessionId);
+		if (session != null)
+			removeSession(session);
 	}
 
 	/*
@@ -337,20 +356,24 @@ public abstract class WtServlet extends HttpServlet {
 				}
 				
 				wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), request);
-				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession() + ")");
+				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession(wsession) + ")");
 				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
 			}
 	
 			logger.debug("Handling: (" + jsession.getId() + "): " + request.getRequestURI() + " " + request.getMethod() + " " + request.getScriptName() + " " + request.getPathInfo() + " " + request.getQueryString());
 			
-			WebSession.Handler handler = new WebSession.Handler(wsession, request, response);
-			wsession.handleRequest(handler);
-			handler.release();
-			if (handler.getSession().isDead()) {
+			WebSession.Handler handler = null;
+			try {
+				handler = new WebSession.Handler(wsession, request, response);
+				wsession.handleRequest(handler);
+			} finally {
+				handler.release();
+			}
+
+			if (handler != null && handler.getSession().isDead()) {
 				try {
 					jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, null);
 					jsession.invalidate();
-					logger.info("Session exiting: " + jsession.getId() + " (#sessions = " + removeSession(handler.getSession()) + ")");
 				} catch (IllegalStateException e) {
 					// If session was invalidated by another request...
 				}
@@ -393,29 +416,34 @@ public abstract class WtServlet extends HttpServlet {
 				wsession = bsession.getSession();
 
 			if (wsession != null) {
-				WebSession.Handler handler = new WebSession.Handler(wsession,request, null);
-
-				if (!wsession.isDead() && wsession.getApp() != null) {
-					String requestE = request.getParameter("request");
-
-					WResource resource = null;
-					if (requestE == null && request.getPathInfo().length() != 0)
-						resource = wsession.getApp().
-							decodeExposedResource("/path/" + request.getPathInfo());
-
-					if (resource == null) {
-						String resourceE = request.getParameter("resource");
-						resource = wsession.getApp().
-							decodeExposedResource(resourceE);
-					}
-
-					if (resource != null) {
-						// FIXME, we should do this within app.notify()
-						resource.dataReceived().trigger(current, total);
-					}
-				}
+				WebSession.Handler handler = null;
 				
-				handler.release();
+				try {
+					handler = new WebSession.Handler(wsession,request, null);
+
+					if (!wsession.isDead() && wsession.getApp() != null) {
+						String requestE = request.getParameter("request");
+
+						WResource resource = null;
+						if (requestE == null && request.getPathInfo().length() != 0)
+							resource = wsession.getApp().
+								decodeExposedResource("/path/" + request.getPathInfo());
+
+						if (resource == null) {
+							String resourceE = request.getParameter("resource");
+							resource = wsession.getApp().
+								decodeExposedResource(resourceE);
+						}
+
+						if (resource != null) {
+							// FIXME, we should do this within app.notify()
+							resource.dataReceived().trigger(current, total);
+						}
+					}
+					
+				} finally {
+					handler.release();
+				}
 			}
 		}
 
@@ -437,6 +465,50 @@ public abstract class WtServlet extends HttpServlet {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 
 		return servletApi.isAsyncSupported(handler != null ? handler.getRequest() : null);
+	}
+	
+	/**
+	 * Posts a task to be run within the scope of a session (and using the session lock).
+	 * 
+	 * Rather than taking an #{@link WApplication.UpdateLock} explicitly, which may stall the
+	 * current thread and also creates the risk of a dead lock scenario, it's usually better
+	 * to post the task asynchronously to an application session. This will either run the
+	 * task immediately (within the current thread if the other session is currently unlocked),
+	 * or queue the event to be run (by the thread currently holding the session lock) when
+	 * it is releasing the lock. Multiple posted events to the same session are thus guaranteed to
+	 * be run sequentially in the order they were posted.
+	 * 
+	 * @param app the application instance which needs to be locked
+	 * @param function the task to be run
+	 * @param fallBackFunction the task to be run in case the application has been quit or its session expired.
+	 */
+	public void post(WApplication app, Runnable function, Runnable fallBackFunction) {
+		WebSession wsession = app.getSession();
+		wsession.queueEvent(new ApplicationEvent(wsession.getSessionId(), function, fallBackFunction));
+		WebSession.Handler handler = null;
+		try {
+			handler = new WebSession.Handler(wsession, WebSession.Handler.LockOption.TryLock);
+		} finally {
+			handler.release();			
+		}
+	}
+
+	/**
+	 * Posts a task to be run within the scope of all currently active sessions.
+	 *
+	 * @see post()
+	 * @param function the task to be run
+	 */
+	public void postAll(Runnable function) {
+	        for (WebSession session : sessions.values()) {
+			session.queueEvent(new ApplicationEvent(session.getSessionId(), function));
+			WebSession.Handler handler = null;
+			try {
+				handler = new WebSession.Handler(session, WebSession.Handler.LockOption.TryLock);
+			} finally {
+			        handler.release();
+			}
+		}
 	}
 
     public boolean limitPlainHtmlSessions() {

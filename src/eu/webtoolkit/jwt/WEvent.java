@@ -43,20 +43,23 @@ public class WEvent {
 		return this.impl_.handler.getSession().getEventType(this);
 	}
 
-	WEvent(WEvent.Impl impl) {
+	WEvent(final WEvent.Impl impl) {
 		this.impl_ = impl;
 	}
 
-	WEvent.Impl impl_;
+	final WEvent.Impl impl_;
 
 	static class Impl {
 		private static Logger logger = LoggerFactory.getLogger(Impl.class);
 
-		WebSession.Handler handler;
-		boolean renderOnly;
+		public WebSession.Handler handler;
+		public WebResponse response;
+		public Runnable function;
+		public boolean renderOnly;
 
 		Impl(WebSession.Handler aHandler, boolean doRenderOnly) {
 			this.handler = aHandler;
+			this.response = null;
 			this.renderOnly = doRenderOnly;
 		}
 
@@ -64,25 +67,51 @@ public class WEvent {
 			this(aHandler, false);
 		}
 
+		Impl(WebSession.Handler aHandler, final Runnable aFunction) {
+			this.handler = aHandler;
+			this.response = null;
+			this.function = aFunction;
+			this.renderOnly = false;
+		}
+
+		Impl(final WEvent.Impl other) {
+			this.handler = other.handler;
+			this.response = other.response;
+			this.function = other.function;
+			this.renderOnly = other.renderOnly;
+		}
+
+		Impl(WebResponse aResponse) {
+			this.handler = null;
+			this.response = aResponse;
+			this.renderOnly = true;
+		}
+
 		Impl() {
 			this.handler = null;
+			this.response = null;
 		}
 	}
 
-	static int asInt(String v) {
+	static String concat(final String prefix, int prefixLength, String s2) {
+		return prefix + s2;
+	}
+
+	static int asInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(String v) {
+	static int asUInt(final String v) {
 		return Integer.parseInt(v);
 	}
 
-	static int parseIntParameter(WebRequest request, String name, int ifMissing) {
+	static int parseIntParameter(final WebRequest request, final String name,
+			int ifMissing) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			try {
 				return asInt(p);
-			} catch (NumberFormatException ee) {
+			} catch (final NumberFormatException ee) {
 				logger.error(new StringWriter().append(
 						"Could not cast event property '").append(name).append(
 						": ").append(p).append("' to int").toString());
@@ -93,7 +122,7 @@ public class WEvent {
 		}
 	}
 
-	static String getStringParameter(WebRequest request, String name) {
+	static String getStringParameter(final WebRequest request, final String name) {
 		String p;
 		if ((p = request.getParameter(name)) != null) {
 			return p;
@@ -102,7 +131,7 @@ public class WEvent {
 		}
 	}
 
-	static void decodeTouches(String str, List<Touch> result) {
+	static void decodeTouches(String str, final List<Touch> result) {
 		if (str.length() == 0) {
 			return;
 		}
@@ -122,7 +151,7 @@ public class WEvent {
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}
-		} catch (NumberFormatException ee) {
+		} catch (final NumberFormatException ee) {
 			logger.error(new StringWriter().append(
 					"Could not parse touches array '").append(str).append("'")
 					.toString());

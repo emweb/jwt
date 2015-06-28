@@ -47,7 +47,7 @@ class WTimerWidget extends WInteractWidget {
 	private boolean timerStarted_;
 	private boolean jsRepeat_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (this.timerStarted_
 				|| (!WApplication.getInstance().getEnvironment()
 						.hasJavaScript() || all) && this.timer_.isActive()) {
@@ -65,7 +65,7 @@ class WTimerWidget extends WInteractWidget {
 	String renderRemoveJs() {
 		return "{var obj="
 				+ this.getJsRef()
-				+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_2_3.remove('"
+				+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_3_4.remove('"
 				+ this.getId() + "');}";
 	}
 

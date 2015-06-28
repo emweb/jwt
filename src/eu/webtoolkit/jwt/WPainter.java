@@ -87,8 +87,8 @@ import org.slf4j.LoggerFactory;
  * defined how current local coordinates map onto logical coordinates.
  * <p>
  * The painter provides support for clipping using an arbitrary
- * {@link WPainterPath path}, but not that the VmlImage only has limited support
- * for clipping.
+ * {@link WPainterPath path}, but not that the WVmlImage paint device only has
+ * limited support for clipping.
  * <p>
  * 
  * @see WPaintedWidget#paintEvent(WPaintDevice paintDevice)
@@ -134,8 +134,8 @@ public class WPainter {
 	 */
 	public WPainter() {
 		this.device_ = null;
-		this.viewPort_ = new WRectF();
-		this.window_ = new WRectF();
+		this.viewPort_ = null;
+		this.window_ = null;
 		this.viewTransform_ = new WTransform();
 		this.stateStack_ = new ArrayList<WPainter.State>();
 		this.stateStack_.add(new WPainter.State());
@@ -146,8 +146,8 @@ public class WPainter {
 	 */
 	public WPainter(WPaintDevice device) {
 		this.device_ = null;
-		this.viewPort_ = new WRectF();
-		this.window_ = new WRectF();
+		this.viewPort_ = null;
+		this.window_ = null;
 		this.viewTransform_ = new WTransform();
 		this.stateStack_ = new ArrayList<WPainter.State>();
 		this.begin(device);
@@ -172,11 +172,9 @@ public class WPainter {
 		this.device_ = device;
 		this.device_.setPainter(this);
 		this.device_.init();
-		this.viewPort_.setX(0);
-		this.viewPort_.setY(0);
-		this.viewPort_.setWidth(this.device_.getWidth().getValue());
-		this.viewPort_.setHeight(this.device_.getHeight().getValue());
-		this.window_.assign(this.viewPort_);
+		this.viewPort_ = new WRectF(0, 0, this.device_.getWidth().getValue(),
+				this.device_.getHeight().getValue());
+		this.window_ = this.viewPort_;
 		this.recalculateViewTransform();
 		return true;
 	}
@@ -274,12 +272,9 @@ public class WPainter {
 	 * @see WPainter#drawArc(double x, double y, double width, double height,
 	 *      int startAngle, int spanAngle)
 	 */
-	public void drawArc(WRectF rectangle, int startAngle, int spanAngle) {
-		WBrush oldBrush = this.getBrush().clone();
-		this.setBrush(new WBrush(BrushStyle.NoBrush));
+	public void drawArc(final WRectF rectangle, int startAngle, int spanAngle) {
 		this.device_.drawArc(rectangle.getNormalized(), startAngle / 16.,
 				spanAngle / 16.);
-		this.setBrush(oldBrush);
 	}
 
 	/**
@@ -313,7 +308,7 @@ public class WPainter {
 	 * @see WPainter#drawChord(double x, double y, double width, double height,
 	 *      int startAngle, int spanAngle)
 	 */
-	public void drawChord(WRectF rectangle, int startAngle, int spanAngle) {
+	public void drawChord(final WRectF rectangle, int startAngle, int spanAngle) {
 		WTransform oldTransform = this.getWorldTransform().clone();
 		this.translate(rectangle.getCenter().getX(), rectangle.getCenter()
 				.getY());
@@ -354,7 +349,7 @@ public class WPainter {
 	 * @see WPainter#drawEllipse(double x, double y, double width, double
 	 *      height)
 	 */
-	public void drawEllipse(WRectF rectangle) {
+	public void drawEllipse(final WRectF rectangle) {
 		this.device_.drawArc(rectangle.getNormalized(), 0, 360);
 	}
 
@@ -388,10 +383,11 @@ public class WPainter {
 		 * Create an image which is located at the <i>uri</i>, and which has
 		 * dimensions <i>width</i> x <i>height</i>.
 		 */
-		public Image(String uri, int width, int height) {
-			this.uri_ = uri;
+		public Image(final String url, int width, int height) {
+			this.url_ = "";
 			this.width_ = width;
 			this.height_ = height;
+			this.setUrl(url);
 		}
 
 		/**
@@ -401,39 +397,34 @@ public class WPainter {
 		 * the local filesystem as <i>file</i>. The image dimensions are
 		 * retrieved from the file.
 		 */
-		public Image(String uri, String fileName) {
-			this.uri_ = uri;
-			List<Integer> header = FileUtils.fileHeader(fileName, 25);
-			if (header.size() != 0) {
-				String mimeType = ImageUtils.identifyImageMimeType(header);
-				if (mimeType.equals("image/png")) {
-					this.width_ = (((int) header.get(16) << 8 | (int) header
-							.get(17)) << 8 | (int) header.get(18)) << 8
-							| (int) header.get(19);
-					this.height_ = (((int) header.get(20) << 8 | (int) header
-							.get(21)) << 8 | (int) header.get(22)) << 8
-							| (int) header.get(23);
-				} else {
-					if (mimeType.equals("image/gif")) {
-						this.width_ = (int) header.get(7) << 8
-								| (int) header.get(6);
-						this.height_ = (int) header.get(9) << 8
-								| (int) header.get(8);
-					} else {
-						throw new WException("'" + fileName
-								+ "': unsupported file format");
-					}
+		public Image(final String url, final String fileName) {
+			this.url_ = "";
+			this.setUrl(url);
+			if (DataUri.isDataUri(url)) {
+				DataUri uri = new DataUri(url);
+				WPoint size = ImageUtils.getSize(uri.data);
+				if (size.getX() == 0 || size.getY() == 0) {
+					throw new WException("data url: (" + uri.mimeType
+							+ "): could not determine image size");
 				}
+				this.width_ = size.getX();
+				this.height_ = size.getY();
 			} else {
-				throw new WException("'" + fileName + "': could not read");
+				WPoint size = ImageUtils.getSize(fileName);
+				if (size.getX() == 0 || size.getY() == 0) {
+					throw new WException("'" + fileName
+							+ "': could not determine image size");
+				}
+				this.width_ = size.getX();
+				this.height_ = size.getY();
 			}
 		}
 
 		/**
-		 * Returns the uri.
+		 * Returns the url.
 		 */
 		public String getUri() {
-			return this.uri_;
+			return this.url_;
 		}
 
 		/**
@@ -450,9 +441,13 @@ public class WPainter {
 			return this.height_;
 		}
 
-		private String uri_;
+		private String url_;
 		private int width_;
 		private int height_;
+
+		private void setUrl(final String url) {
+			this.url_ = url;
+		}
 	}
 
 	/**
@@ -463,7 +458,7 @@ public class WPainter {
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 */
-	public void drawImage(WPointF point, WPainter.Image image) {
+	public void drawImage(final WPointF point, final WPainter.Image image) {
 		this.drawImage(new WRectF(point.getX(), point.getY(), image.getWidth(),
 				image.getHeight()), image, new WRectF(0, 0, image.getWidth(),
 				image.getHeight()));
@@ -477,7 +472,8 @@ public class WPainter {
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 */
-	public void drawImage(WPointF point, WPainter.Image image, WRectF sourceRect) {
+	public void drawImage(final WPointF point, final WPainter.Image image,
+			final WRectF sourceRect) {
 		this.drawImage(new WRectF(point.getX(), point.getY(), sourceRect
 				.getWidth(), sourceRect.getHeight()), image, sourceRect);
 	}
@@ -490,7 +486,7 @@ public class WPainter {
 	 * <p>
 	 * This is an overloaded method provided for convenience.
 	 */
-	public void drawImage(WRectF rect, WPainter.Image image) {
+	public void drawImage(final WRectF rect, final WPainter.Image image) {
 		this.drawImage(rect, image, new WRectF(0, 0, image.getWidth(), image
 				.getHeight()));
 	}
@@ -502,7 +498,8 @@ public class WPainter {
 	 * <code>rect</code> (If necessary, the image is scaled to fit into the
 	 * rectangle).
 	 */
-	public void drawImage(WRectF rect, WPainter.Image image, WRectF sourceRect) {
+	public void drawImage(final WRectF rect, final WPainter.Image image,
+			final WRectF sourceRect) {
 		this.device_.drawImage(rect.getNormalized(), image.getUri(), image
 				.getWidth(), image.getHeight(), sourceRect.getNormalized());
 	}
@@ -514,8 +511,8 @@ public class WPainter {
 	 * (<i>sx</i>, <i>sy</i>) and size <i>sw</i> x <code>sh</code> from an image
 	 * to the location (<i>x</i>, <code>y</code>).
 	 */
-	public void drawImage(double x, double y, WPainter.Image image, double sx,
-			double sy, double sw, double sh) {
+	public void drawImage(double x, double y, final WPainter.Image image,
+			double sx, double sy, double sw, double sh) {
 		if (sw <= 0) {
 			sw = image.getWidth() - sx;
 		}
@@ -533,7 +530,7 @@ public class WPainter {
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
 	 * drawImage(x, y, image, 0, 0, - 1, - 1)}
 	 */
-	public final void drawImage(double x, double y, WPainter.Image image) {
+	public final void drawImage(double x, double y, final WPainter.Image image) {
 		drawImage(x, y, image, 0, 0, -1, -1);
 	}
 
@@ -544,7 +541,7 @@ public class WPainter {
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
 	 * drawImage(x, y, image, sx, 0, - 1, - 1)}
 	 */
-	public final void drawImage(double x, double y, WPainter.Image image,
+	public final void drawImage(double x, double y, final WPainter.Image image,
 			double sx) {
 		drawImage(x, y, image, sx, 0, -1, -1);
 	}
@@ -556,7 +553,7 @@ public class WPainter {
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
 	 * drawImage(x, y, image, sx, sy, - 1, - 1)}
 	 */
-	public final void drawImage(double x, double y, WPainter.Image image,
+	public final void drawImage(double x, double y, final WPainter.Image image,
 			double sx, double sy) {
 		drawImage(x, y, image, sx, sy, -1, -1);
 	}
@@ -568,7 +565,7 @@ public class WPainter {
 	 * {@link #drawImage(double x, double y, WPainter.Image image, double sx, double sy, double sw, double sh)
 	 * drawImage(x, y, image, sx, sy, sw, - 1)}
 	 */
-	public final void drawImage(double x, double y, WPainter.Image image,
+	public final void drawImage(double x, double y, final WPainter.Image image,
 			double sx, double sy, double sw) {
 		drawImage(x, y, image, sx, sy, sw, -1);
 	}
@@ -582,7 +579,7 @@ public class WPainter {
 	 * @see WPainter#drawLine(WPointF p1, WPointF p2)
 	 * @see WPainter#drawLine(double x1, double y1, double x2, double y2)
 	 */
-	public void drawLine(WLineF line) {
+	public void drawLine(final WLineF line) {
 		this.drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
 	}
 
@@ -595,7 +592,7 @@ public class WPainter {
 	 * @see WPainter#drawLine(WLineF line)
 	 * @see WPainter#drawLine(double x1, double y1, double x2, double y2)
 	 */
-	public void drawLine(WPointF p1, WPointF p2) {
+	public void drawLine(final WPointF p1, final WPointF p2) {
 		this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 
@@ -643,7 +640,7 @@ public class WPainter {
 	 * <p>
 	 * Draws the lines given in the vector.
 	 */
-	public void drawLinesLine(List<WLineF> lines) {
+	public void drawLinesLine(final List<WLineF> lines) {
 		for (int i = 0; i < lines.size(); ++i) {
 			this.drawLine(lines.get(i));
 		}
@@ -656,7 +653,7 @@ public class WPainter {
 	 * endpoints. The vector should hold a number of points that is a multiple
 	 * of two.
 	 */
-	public void drawLinesPoint(List<WPointF> pointPairs) {
+	public void drawLinesPoint(final List<WPointF> pointPairs) {
 		for (int i = 0; i < pointPairs.size() / 2; ++i) {
 			this.drawLine(pointPairs.get(i * 2), pointPairs.get(i * 2 + 1));
 		}
@@ -671,7 +668,7 @@ public class WPainter {
 	 * @see WPainter#strokePath(WPainterPath path, WPen p)
 	 * @see WPainter#fillPath(WPainterPath path, WBrush b)
 	 */
-	public void drawPath(WPainterPath path) {
+	public void drawPath(final WPainterPath path) {
 		this.device_.drawPath(path);
 	}
 
@@ -694,7 +691,7 @@ public class WPainter {
 	 * @see WPainter#drawPie(double x, double y, double width, double height,
 	 *      int startAngle, int spanAngle)
 	 */
-	public void drawPie(WRectF rectangle, int startAngle, int spanAngle) {
+	public void drawPie(final WRectF rectangle, int startAngle, int spanAngle) {
 		WTransform oldTransform = this.getWorldTransform().clone();
 		this.translate(rectangle.getCenter().getX(), rectangle.getCenter()
 				.getY());
@@ -732,7 +729,7 @@ public class WPainter {
 	 * 
 	 * @see WPainter#drawPoint(double x, double y)
 	 */
-	public void drawPoint(WPointF point) {
+	public void drawPoint(final WPointF point) {
 		this.drawPoint(point.getX(), point.getY());
 	}
 
@@ -820,7 +817,7 @@ public class WPainter {
 	 * 
 	 * @see WPainter#drawRect(double x, double y, double width, double height)
 	 */
-	public void drawRect(WRectF rectangle) {
+	public void drawRect(final WRectF rectangle) {
 		this.drawRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(),
 				rectangle.getHeight());
 	}
@@ -865,7 +862,7 @@ public class WPainter {
 	 * 
 	 * @see WPainter#drawRect(WRectF rectangle)
 	 */
-	public void drawRects(List<WRectF> rectangles) {
+	public void drawRects(final List<WRectF> rectangles) {
 		for (int i = 0; i < rectangles.size(); ++i) {
 			this.drawRect(rectangles.get(i));
 		}
@@ -903,9 +900,9 @@ public class WPainter {
 	 * Top vertical alignments. </i>
 	 * </p>
 	 */
-	public void drawText(WRectF rectangle,
+	public void drawText(final WRectF rectangle,
 			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
-			CharSequence text) {
+			final CharSequence text) {
 		if (textFlag == TextFlag.TextSingleLine) {
 			this.drawText(rectangle, alignmentFlags, text);
 		} else {
@@ -942,8 +939,8 @@ public class WPainter {
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
 	 *      textFlag, CharSequence text)
 	 */
-	public void drawText(WRectF rectangle, EnumSet<AlignmentFlag> flags,
-			CharSequence text) {
+	public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> flags,
+			final CharSequence text) {
 		if (!!EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
 			flags.add(AlignmentFlag.AlignTop);
 		}
@@ -965,7 +962,7 @@ public class WPainter {
 	 *      text)
 	 */
 	public void drawText(double x, double y, double width, double height,
-			EnumSet<AlignmentFlag> flags, CharSequence text) {
+			EnumSet<AlignmentFlag> flags, final CharSequence text) {
 		this.drawText(new WRectF(x, y, width, height), flags, text);
 	}
 
@@ -983,7 +980,7 @@ public class WPainter {
 	 */
 	public void drawText(double x, double y, double width, double height,
 			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
-			CharSequence text) {
+			final CharSequence text) {
 		this.drawText(new WRectF(x, y, width, height), alignmentFlags,
 				textFlag, text);
 	}
@@ -998,7 +995,7 @@ public class WPainter {
 	 * @see WPainter#drawPath(WPainterPath path)
 	 * @see WPainter#strokePath(WPainterPath path, WPen p)
 	 */
-	public void fillPath(WPainterPath path, WBrush b) {
+	public void fillPath(final WPainterPath path, final WBrush b) {
 		WBrush oldBrush = this.getBrush().clone();
 		WPen oldPen = this.getPen().clone();
 		this.setBrush(b);
@@ -1017,7 +1014,7 @@ public class WPainter {
 	 * 
 	 * @see WPainter#drawRect(WRectF rectangle)
 	 */
-	public void fillRect(WRectF rectangle, WBrush b) {
+	public void fillRect(final WRectF rectangle, final WBrush b) {
 		WBrush oldBrush = this.getBrush().clone();
 		WPen oldPen = this.getPen().clone();
 		this.setBrush(b);
@@ -1036,7 +1033,7 @@ public class WPainter {
 	 * @see WPainter#fillRect(WRectF rectangle, WBrush b)
 	 */
 	public void fillRect(double x, double y, double width, double height,
-			WBrush brush) {
+			final WBrush brush) {
 		this.fillRect(new WRectF(x, y, width, height), brush);
 	}
 
@@ -1050,7 +1047,7 @@ public class WPainter {
 	 * @see WPainter#drawPath(WPainterPath path)
 	 * @see WPainter#fillPath(WPainterPath path, WBrush b)
 	 */
-	public void strokePath(WPainterPath path, WPen p) {
+	public void strokePath(final WPainterPath path, final WPen p) {
 		WBrush oldBrush = this.getBrush().clone();
 		WPen oldPen = this.getPen().clone();
 		this.setBrush(new WBrush());
@@ -1074,7 +1071,7 @@ public class WPainter {
 	 * 
 	 * @see WPainter.RenderHint#LowQualityShadows
 	 */
-	public void setShadow(WShadow shadow) {
+	public void setShadow(final WShadow shadow) {
 		if (!this.getShadow().equals(shadow)) {
 			this.getS().currentShadow_ = shadow;
 			this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Shadow));
@@ -1100,7 +1097,7 @@ public class WPainter {
 	 * @see WPainter#getBrush()
 	 * @see WPainter#setPen(WPen p)
 	 */
-	public void setBrush(WBrush b) {
+	public void setBrush(final WBrush b) {
 		if (!this.getBrush().equals(b)) {
 			this.getS().currentBrush_ = b;
 			this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Brush));
@@ -1138,7 +1135,7 @@ public class WPainter {
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
 	 *      textFlag, CharSequence text)
 	 */
-	public void setFont(WFont f) {
+	public void setFont(final WFont f) {
 		if (!this.getFont().equals(f)) {
 			this.getS().currentFont_ = f;
 			this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Font));
@@ -1154,7 +1151,7 @@ public class WPainter {
 	 * @see WPainter#getPen()
 	 * @see WPainter#setBrush(WBrush b)
 	 */
-	public void setPen(WPen p) {
+	public void setPen(final WPen p) {
 		if (!this.getPen().equals(p)) {
 			this.getS().currentPen_ = p;
 			this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Pen));
@@ -1205,8 +1202,13 @@ public class WPainter {
 	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
 	 * setClipPath()}.
 	 * <p>
-	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer. Only
+	 * clipping with a rectangle is supported for the VML renderer (see
+	 * {@link WPainterPath#addRect(WRectF rectangle) WPainterPath#addRect()}).
+	 * The rectangle must, after applying the combined transformation system, be
+	 * aligned with the window.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#hasClipping()
 	 * @see WPainter#setClipPath(WPainterPath clipPath)
@@ -1224,8 +1226,9 @@ public class WPainter {
 	/**
 	 * Returns whether clipping is enabled.
 	 * <p>
-	 * <code>Note:</code> Clipping is not supported for the VML renderer.
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#setClipping(boolean enable)
 	 * @see WPainter#setClipPath(WPainterPath clipPath)
@@ -1242,16 +1245,14 @@ public class WPainter {
 	 * {@link WPainter#setClipping(boolean enable) setClipping()}. The path is
 	 * specified in local coordinates.
 	 * <p>
-	 * <i>Note: Only clipping with a rectangle is supported for the VML renderer
-	 * (see {@link WPainterPath#addRect(WRectF rectangle)
-	 * WPainterPath#addRect()}). The rectangle must, after applying the combined
-	 * transformation system, be aligned with the window.</i>
 	 * <p>
+	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
+	 * </p>
 	 * 
 	 * @see WPainter#getClipPath()
 	 * @see WPainter#setClipping(boolean enable)
 	 */
-	public void setClipPath(WPainterPath clipPath) {
+	public void setClipPath(final WPainterPath clipPath) {
 		this.getS().clipPath_.assign(clipPath);
 		this.getS().clipPathTransform_.assign(this.getCombinedTransform());
 		if (this.getS().clipping_ && this.device_ != null) {
@@ -1339,7 +1340,7 @@ public class WPainter {
 	 * @see WPainter#scale(double sx, double sy)
 	 * @see WPainter#resetTransform()
 	 */
-	public void translate(WPointF p) {
+	public void translate(final WPointF p) {
 		this.translate(p.getX(), p.getY());
 	}
 
@@ -1377,7 +1378,7 @@ public class WPainter {
 	 * @see WPainter#translate(double dx, double dy)
 	 * @see WPainter#resetTransform()
 	 */
-	public void setWorldTransform(WTransform matrix, boolean combine) {
+	public void setWorldTransform(final WTransform matrix, boolean combine) {
 		if (combine) {
 			this.getS().worldTransform_.multiplyAndAssign(matrix);
 		} else {
@@ -1395,7 +1396,7 @@ public class WPainter {
 	 * Calls {@link #setWorldTransform(WTransform matrix, boolean combine)
 	 * setWorldTransform(matrix, false)}
 	 */
-	public final void setWorldTransform(WTransform matrix) {
+	public final void setWorldTransform(final WTransform matrix) {
 		setWorldTransform(matrix, false);
 	}
 
@@ -1443,10 +1444,10 @@ public class WPainter {
 		if (this.stateStack_.size() > 1) {
 			EnumSet<WPaintDevice.ChangeFlag> flags = EnumSet
 					.noneOf(WPaintDevice.ChangeFlag.class);
-			WPainter.State last = this.stateStack_
-					.get(this.stateStack_.size() - 1);
-			WPainter.State next = this.stateStack_
-					.get(this.stateStack_.size() - 2);
+			final WPainter.State last = this.stateStack_.get(this.stateStack_
+					.size() - 1);
+			final WPainter.State next = this.stateStack_.get(this.stateStack_
+					.size() - 2);
 			if (!last.worldTransform_.equals(next.worldTransform_)) {
 				flags.add(WPaintDevice.ChangeFlag.Transform);
 			}
@@ -1492,8 +1493,8 @@ public class WPainter {
 	 * @see WPainter#getViewPort()
 	 * @see WPainter#setWindow(WRectF window)
 	 */
-	public void setViewPort(WRectF viewPort) {
-		this.viewPort_.assign(viewPort);
+	public void setViewPort(final WRectF viewPort) {
+		this.viewPort_ = viewPort;
 		this.recalculateViewTransform();
 	}
 
@@ -1533,8 +1534,8 @@ public class WPainter {
 	 * @see WPainter#getWindow()
 	 * @see WPainter#setViewPort(WRectF viewPort)
 	 */
-	public void setWindow(WRectF window) {
-		this.window_.assign(window);
+	public void setWindow(final WRectF window) {
+		this.window_ = window;
 		this.recalculateViewTransform();
 	}
 
@@ -1582,10 +1583,10 @@ public class WPainter {
 		return this.getS().clipPathTransform_;
 	}
 
-	WLength normalizedPenWidth(WLength penWidth, boolean correctCosmetic) {
+	WLength normalizedPenWidth(final WLength penWidth, boolean correctCosmetic) {
 		double w = penWidth.getValue();
 		if (w == 0 && correctCosmetic) {
-			WTransform t = this.getCombinedTransform();
+			final WTransform t = this.getCombinedTransform();
 			if (!t.isIdentity()) {
 				WTransform.TRSRDecomposition d = new WTransform.TRSRDecomposition();
 				t.decomposeTranslateRotateScaleRotate(d);
@@ -1596,7 +1597,7 @@ public class WPainter {
 			return new WLength(w, WLength.Unit.Pixel);
 		} else {
 			if (w != 0 && !correctCosmetic) {
-				WTransform t = this.getCombinedTransform();
+				final WTransform t = this.getCombinedTransform();
 				if (!t.isIdentity()) {
 					WTransform.TRSRDecomposition d = new WTransform.TRSRDecomposition();
 					t.decomposeTranslateRotateScaleRotate(d);
@@ -1609,6 +1610,7 @@ public class WPainter {
 		}
 	}
 
+	// private WPainter(final WPainter anon1) ;
 	private WPaintDevice device_;
 	private WRectF viewPort_;
 	private WRectF window_;
@@ -1676,6 +1678,6 @@ public class WPainter {
 					.of(WPaintDevice.ChangeFlag.Transform));
 		}
 	}
-	// private void drawMultilineText(WRectF rect, EnumSet<AlignmentFlag>
-	// alignmentFlags, CharSequence text) ;
+	// private void drawMultilineText(final WRectF rect, EnumSet<AlignmentFlag>
+	// alignmentFlags, final CharSequence text) ;
 }

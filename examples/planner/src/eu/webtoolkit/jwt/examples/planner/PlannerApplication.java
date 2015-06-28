@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WCombinedLocalizedStrings;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WEvent;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WStdLocalizedStrings;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
@@ -47,7 +48,7 @@ public class PlannerApplication extends WApplication {
 	    setLocalizedStrings(cls);
 	    
 	    //set the css stylesheet
-	    useStyleSheet("style/planner.css");
+	    useStyleSheet(new WLink("style/planner.css"));
 
 	    //construct a login widget
 	    LoginWidget login = new LoginWidget(getRoot());

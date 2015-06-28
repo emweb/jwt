@@ -10,6 +10,13 @@
 }
 
 /*
+ * Wt-disabled
+ */
+span.Wt-disabled, fieldset.Wt-disabled legend {
+    color: gray;
+}
+
+/*
  * Effects
  */
 .Wt-animated {
@@ -21,49 +28,13 @@
  */
 .Wt-outset {
     border: 1px solid white;
-    position: relative;
-    margin: 6px;
-}
-
-.Wt-outset .Wt-x1, .Wt-outset .Wt-x1a,
-.Wt-outset .Wt-x2, .Wt-outset .Wt-x2a {
-    background:transparent url(dropshadow.png) no-repeat scroll 0 0;
-    position:absolute;
-    height:100%;
-    width:100%;
-}
-
-.Wt-outset .Wt-x1 {
-    background-position:0 0;
-    bottom:0;
-    left:-7px;
-    padding:0 0 2px 0;
-    top:-7px;
-    z-index:-2;
-}
-
-.Wt-outset .Wt-x1 .Wt-x1a {
-    background-position:100% 0;
-    height: 12px;
-    right:-14px;
-    top:0;
-    width:14px;
-}
-
-.Wt-outset .Wt-x2 {
-    background-position:100% 100%;
-    bottom:-7px;
-    padding:2px 0 0 0;
-    right:-7px;
-    z-index:-1;
-}
-
-.Wt-outset .Wt-x2 .Wt-x2a {
-    background-position:0 100%;
-    bottom:0;
-    height:12px;
-    left:-14px;
-    width:14px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
 }
 
 /*
@@ -138,9 +109,10 @@
     width: 70px;
 }
 
-.Wt-cal caption {
+.Wt-cal th.caption {
     margin: 0;
     padding: 0;
+    border: 0;
     background: #6880A0 url(title-gradient.png) repeat-x scroll 0 -20px;
     color: #fff;
     font: bold 13px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
@@ -151,6 +123,7 @@
     cursor: pointer; cursor: hand;
     font: bold 20px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
     vertical-align: middle;
+    display: block;
 }
 
 .Wt-cal caption select {
@@ -209,6 +182,16 @@
 }
 
 /*
+ * WDateEdit
+ */
+.Wt-dateedit {
+    background-image: url('../../calendar_edit.png');
+    background-repeat: no-repeat;
+    background-position: right top;
+    padding-right: 40px;
+}
+
+/*
  * WDatePicker
  */
 .Wt-datepicker {
@@ -216,10 +199,18 @@
 }
 
 /*
+ * Wt-dateedit
+ */
+.Wt-dateedit::-ms-clear {
+    display:none
+}
+
+/*
  * WDialog
  */
 .Wt-dialog {
     background-color: white;
+    padding: 1px;
 }
 
 .Wt-dialog .titlebar {
@@ -246,61 +237,69 @@
     background-position: right -13px;
 }
 
-.Wt-dialog .body {
+.Wt-dialog .body, .Wt-dialog .footer {
     padding: 4px 6px;
+}
+
+.Wt-dialog .footer {
+    text-align: right;
+}
+
+.Wt-dialog .footer button {
+    padding: 1px 4px 1px;
+    margin: 2px;
+}
+
+.Wt-dialog .titlebar h4 {
+    margin: 0px 2px;
+    font-size: 110%;
 }
 
 /*
  * WMessageBox
  */
-.Wt-msgbox-buttons button {
-    padding: 1px 4px 1px;
-    margin: 2px;
+.Wt-dialog .Wt-msgbox-icon {
+    display: block;
+    float: left;
+    margin: 0px 15px -15px;
+    width: 25px;
+    height: 35px;
+}
+
+.Wt-dialog .Wt-msgbox-body {
+    padding: 10px;
+}
+
+.Wt-dialog .Wt-msgbox-text {
+    overflow: auto;
 }
 
 /*
  * WGridLayout
  */
 
-.Wt-hrh div, .Wt-vsh, .Wt-hrh2, .Wt-vsh2 {
+.Wt-hrh2, .Wt-vsh2 {
     cursor: row-resize;
 }
 
-.Wt-hrh div, .Wt-vsh {
-    margin: 2px;
-}
-
-.Wt-vrh div, .Wt-hsh, .Wt-vrh2, .Wt-hsh2 {
+.Wt-vrh2, .Wt-hsh2 {
     cursor: col-resize;
 }
 
-.Wt-vrh div, .Wt-hsh {
-    margin: 0px 2px;
+.Wt-hrh2 {
+    background: url(splitter-v.png) no-repeat 50% 50% #EEE;
 }
 
-.Wt-hrh div, .Wt-hrh2 {
-    background: url(splitter-v.png) no-repeat 50% 50%;
+.Wt-vrh2 {
+    background: url(splitter-h.png) no-repeat 50% 50% #EEE;
 }
 
-.Wt-vrh div, .Wt-vrh2 {
-    background: url(splitter-h.png) no-repeat 50% 50%;
-}
-
-.Wt-hrh div, .Wt-vrh div, .Wt-vrh2 {
-    background-color: #EEEEEE;
-}
-
-.Wt-hsh, .Wt-vsh, .Wt-hsh2, .Wt-vsh2 {
+.Wt-hsh2, .Wt-vsh2 {
     background-color: #8ea2bd;
 }
 
-.Wt-hrh div:hover, .Wt-vrh div:hover,
 .Wt-vrh2:hover, .Wt-hrh2:hover {
     background-color: #8ea2bd;
-}
-
-.Wt-chwrap {
-    position: relative;
 }
 
 /*
@@ -325,13 +324,37 @@
 }
 
 .Wt-panel .body {
+    clear: left;
     padding: 4px 6px;
+}
+
+/*
+ * Icons, check-boxes in WMenuItem
+ */
+.Wt-icon {
+    display: inline-block;
+    margin-right: 8px;
+    background-repeat: no-repeat;
+    background-position: center left;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: text-top;
+}
+
+.Wt-chkbox {
+    margin-left: 2px;
+    margin-right: 10px;
+    display: inline-block;
+    width: 12px;
 }
 
 /*
  * WPopupMenu
  */
 .Wt-popupmenu {
+    position: absolute;
+    display: none;
     background: #FAFAFA;
     font: normal 13px/22px "Trebuchet MS", Verdana, Arial, Helvetica,
       sans-serif;
@@ -339,28 +362,39 @@
     z-index: 200;
     cursor: default;
     white-space: nowrap;
+    list-style: none;
+    padding: 0px;
+    margin: 0;
 }
 
-.Wt-popupmenu .content {
-    overflow-y: auto;
-    overflow-x: hidden;
+.Wt-popupmenu li {
+    padding: 2px 10px;
 }
 
-.Wt-popupmenu .Wt-item, .Wt-popupmenu .Wt-selected {
-    padding: 2px 0px;
+.Wt-popupmenu li a {
+    display: block;
 }
 
-.Wt-popupmenu .Wt-item input, .Wt-popupmenu .Wt-selected input {
-    margin-left: 4px;
+.Wt-popupmenu .Wt-padded {
+    margin-right: 3px;
+    margin-left: 24px;
+    padding-right: 24px;
 }
 
-.Wt-popupmenu .Wt-selected {
+.Wt-popupmenu .active {
     background: #6880A0;
     color: white;
 }
 
-.Wt-popupmenu .Wt-disabled {
-    color: #AAAAAA;
+.Wt-popupmenu .Wt-disabled, .Wt-popupmenu .Wt-disable.active {
+    background: transparent;
+    color: #888;
+}
+
+.Wt-popupmenu .submenu {
+    background-image: url(../../right-arrow.gif);
+    background-repeat: no-repeat;
+    background-position: right center;
 }
 
 .Wt-popupmenu .Wt-separator {
@@ -368,6 +402,12 @@
     border-bottom: 1px solid #DDDDDD;
     margin: 0px 3px;
     line-height: 0px;
+    padding: 0;
+}
+
+.Wt-popupmenu .Wt-sectheader, .Wt-popupmenu .Wt-sectheader.active {
+    background: transparent;
+    color: #888;
 }
 
 /*
@@ -409,21 +449,40 @@
  * WPushButton
  */
 .Wt-btn:hover {
-    border-color:#99CCFF #6699EE #6699EE #77AAFF;
+    border-color:#9CF #69E #69E #7AF;
 }
 
 .Wt-btn {
     background: transparent url(gradient.png) repeat-x scroll 0 0;
-    border: 1px outset #CCCCCC;
-    cursor: pointer;
+    border: 1px outset #CCC;
+    cursor: pointer; cursor: hand;
     font-size: small;
     margin: 0px 2px;
     padding: 2px 5px;
     text-decoration: none;
 }
 
+.Wt-btn img {
+    vertical-align: middle;
+}
+
+.Wt-btn.with-label img {
+    padding-right: 10px;
+}
+
 .Wt-btn:active {
-    border: 1px inset #CCCCCC;
+    border: 1px inset #CCC;
+}
+
+.Wt-btn[disabled] {
+    border: 1px outset #CCC;
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+.Wt-btn-default {
+    font-weight: bold;
+    border: 1px outset #37E;
 }
 
 /*
@@ -563,17 +622,17 @@
       sans-serif;
     color: #515B66;
     cursor: default;
-}
-
-.Wt-suggest .content {
     overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 1px;
 }
 
-.Wt-suggest .content div {
+.Wt-suggest li {
     padding: 0px 3px;
 }
 
-.Wt-suggest .sel {
+.Wt-suggest .active {
     background: #6880A0;
     color: white;
 }
@@ -594,12 +653,16 @@
     padding-right: 16px;
 }
 
-.Wt-spinbox-up {
+.Wt-spinbox.up {
     background-image: url('../default/spin-buttons-up.png');
 }
 
-.Wt-spinbox-dn {
+.Wt-spinbox.dn {
     background-image: url('../default/spin-buttons-dn.png');
+}
+
+.Wt-spinbox::-ms-clear {
+    display: none
 }
 
 /*
@@ -607,9 +670,6 @@
  */
 .Wt-tabs {
     border-bottom: 1px solid gray;
-}
-
-.Wt-tabs ul {
     padding: 3px 3px 0px;
     font: bold 12px Verdana;
     list-style-type: none;
@@ -617,17 +677,12 @@
 }
 
 .Wt-tabs li {
-    display: inline;
-    white-space: nowrap;
-    margin: 0;
-}
-
-.Wt-tabs .item, .Wt-tabs .itemselected,
-.Wt-tabs .citem, .Wt-tabs .citemselected {
+    cursor: pointer; cursor: hand;
     display: block;
+    white-space: nowrap;
     float: left;
     padding: 2px 6px 3px;
-    margin-right: 3px;
+    margin: 0px 3px 0px;
     border: 1px solid gray;
     border-bottom: none;
     background: #6880A0 url(title-gradient.png) repeat-x scroll 0 -20px;
@@ -635,8 +690,7 @@
     height: 16px;
 }
 
-body.Wt-rtl .Wt-tabs .item, body.Wt-rtl .Wt-tabs .itemselected,
-body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
+body.Wt-rtl .Wt-tabs li {
     float: right;
 }
 
@@ -653,24 +707,22 @@ body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
     background: transparent;
 }
 
-.Wt-tabs li:hover .item, .Wt-tabs .itemselected,
-.Wt-tabs li:hover .citem, .Wt-tabs .citemselected,
-.Wt-tabs li:hover a {
+.Wt-tabs li:hover, .Wt-tabs .itemselected {
     background: white;
     color: black;
     border-bottom: 1px solid white;
     margin-bottom: -1px;
 }
 
-.Wt-tabs li .itemselected a, .Wt-tabs li .itemselected button {
+.Wt-tabs li.active a, .Wt-tabs li.active button {
     background: white;
     color: black;
 }
 
-.Wt-tabs .Wt-closeicon, .Wt-tabs span.citemselected .Wt-closeicon {
+.Wt-tabs .closeicon {
     background: transparent url(closeicons-tab.png) no-repeat scroll right top;
     height: 16px;
-    display: inline-block;
+    float: right;
     background-position: right 3px;
     border-width: 3px 0px 0px 0px;
     padding: 0px 6px 0px 7px;
@@ -679,7 +731,7 @@ body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
     vertical-align: top;
 }
 
-.Wt-tabs .Wt-closeicon:hover, .Wt-tabs span.citemselected .Wt-closeicon:hover {
+.Wt-tabs .closeicon:hover {
     background-position: right -10px;
 }
 
@@ -691,7 +743,7 @@ body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
  */
 .Wt-tooltip {
     position: absolute;
-    max-width: 1000px;
+    max-width: 700px;
     background-color: #ffffcc;
     border: 1px solid black;
     padding: 1px 2px;
@@ -704,45 +756,46 @@ body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
  * WTree(node)
  */
 .Wt-tree {
-    table-layout: fixed;
     font-family: verdana,helvetica,tahoma,sans-serif;
     font-size: 9pt;
     cursor: default;
     white-space: nowrap;
 }
 
+.Wt-tree ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style: none;
+}
+
+body.Wt-rtl .Wt-tree ul {
+    padding-right: 20px;
+    padding-left: 0px;
+}
+
 /* nodes */
-.Wt-tree .Wt-trunk {
-    width: 19px;
-    padding: 0px;
+
+.Wt-tree div.Wt-root {
+    display: none;
 }
 
-.Wt-tree .Wt-end {
-    width: 19px;
-    padding: 0px;
+.Wt-tree ul.Wt-root {
+    padding-left: 0px;
 }
 
-.Wt-tree .Wt-expand {
-    width: 19px;
-    height: 18px;
-    padding: 0px;
+body.Wt-rtl .Wt-tree ul.Wt-root {
+    padding-right: 0px;
 }
 
-.Wt-tree .Wt-collapse {
-    width: 19px;
-    height: 18px;
-    padding: 0px;
-}
-
-.Wt-tree .Wt-noexpand {
-    width: 19px;
-    height: 18px;
+.Wt-tree .Wt-ctrl {
+    float: left;
     display: block;
-    padding: 0px;
+    width: 19px;
+    height: 17px;
 }
 
-.Wt-sentinel {
-    table-layout: auto;
+body.Wt-rtl .Wt-tree .Wt-ctrl {
+    float: right;
 }
 
 .Wt-treetable {
@@ -760,6 +813,26 @@ body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
     white-space: nowrap;
     text-overflow: ellipsis;
     padding: 3px 0px 3px 3px;
+}
+
+.Wt-sbspacer {
+    float: right;
+    width: 16px;
+    height: 1px;
+    border: 0px;
+    display: none;
+}
+
+body.Wt-rtl .Wt-sbspacer {
+    float: left;
+}
+
+.Wt-tree .cols-row {
+    float: right;
+}
+
+body.Wt-rtl .Wt-tree .cols-row {
+    float: left;
 }
 
 /* selection */
@@ -785,20 +858,29 @@ body.Wt-rtl .Wt-tabs .citem, body.Wt-rtl .Wt-tabs .citemselected {
     width: 100%;
 }
 
-.Wt-itemview div.Wt-tv-rh {
+.Wt-itemview .Wt-tv-rh {
     float: right;
     width: 4px;
     cursor: col-resize;
 }
 
-body.Wt-rtl .Wt-itemview div.Wt-tv-rh {
+.Wt-itemview .Wt-disabled .Wt-tv-rh {
+    cursor: default;
+}
+
+body.Wt-rtl .Wt-itemview .Wt-tv-rh {
     float: left;
 }
 
-.Wt-itemview div.Wt-tv-no-rh {
+.Wt-itemview .Wt-tv-no-rh {
     width: 0px;
     margin-left: 4px;
     cursor: default;
+}
+
+body.Wt-rtl .Wt-itemview .Wt-tv-no-rh {
+    margin-left: 0px;
+    margin-right: 4px;
 }
 
 /* sort handles */
@@ -807,8 +889,12 @@ body.Wt-rtl .Wt-itemview div.Wt-tv-rh {
     width: 16px;
     height: 16px;
     padding-bottom: 6px;
-    cursor: pointer;
-    cursor:hand;
+    cursor: pointer; cursor: hand;
+}
+
+.Wt-itemview .Wt-disabled .Wt-tv-sh {
+    background: url(sort-arrow-disabled.gif) no-repeat 0 6px;
+    cursor: default;
 }
 
 body.Wt-rtl .Wt-itemview .Wt-tv-sh {
@@ -846,6 +932,10 @@ body.Wt-rtl .Wt-itemview .Wt-tv-sh {
     white-space: nowrap;
 }
 
+.Wt-itemview .Wt-header .Wt-disabled .Wt-label {
+    color: gray;
+}
+
 .Wt-itemview .Wt-header .Wt-wwrap .Wt-label {
     overflow: visible;
     white-space: normal;
@@ -853,6 +943,10 @@ body.Wt-rtl .Wt-itemview .Wt-tv-sh {
 
 .Wt-itemview .Wt-tv-rh:hover {
     background-color: #DDDDDD;
+}
+
+.Wt-itemview .Wt-disabled .Wt-tv-rh:hover {
+    background-color: transparent;
 }
 
 .Wt-itemview .Wt-tv-sh-none {
@@ -933,14 +1027,12 @@ body.Wt-rtl .Wt-tableview .Wt-tv-br {
     border-left: 1px solid #dcdfe8;
 }
 
-/* borders */
 body.Wt-ltr .Wt-tableview .Wt-tv-contents .Wt-tv-c,
 body.Wt-ltr .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
     border-right: 0px;
     margin-right: 1px;
 }
 
-/* borders */
 body.Wt-rtl .Wt-tableview .Wt-tv-contents .Wt-tv-c,
 body.Wt-rtl .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
     border-left: 0px;
@@ -952,18 +1044,23 @@ body.Wt-rtl .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
  */
 
 /* Layout styling */
-.Wt-treeview table {
-    width: 100%;
+.Wt-treeview ul {
+    margin: 0px;
+    padding-left: 20px;
+    list-style: none;
 }
 
-.Wt-treeview .c1 {
-    width: 100%;
-    overflow: hidden;
+body.Wt-rtl .Wt-treeview ul {
+    padding-left: 0px;
+    padding-right: 20px;
 }
 
-.Wt-treeview .c0 {
-    width: 19px;
-    vertical-align: middle;
+.Wt-treeview ul.Wt-tv-root {
+    padding-left: 0px;
+}
+
+body.Wt-rtl .Wt-treeview ul.Wt-tv-root {
+    padding-right: 0px;
 }
 
 .Wt-treeview .Wt-tv-row {
@@ -976,7 +1073,8 @@ body.Wt-rtl .Wt-treeview .Wt-tv-row {
 }
 
 .Wt-treeview .Wt-tv-row .Wt-tv-c {
-    display: block; float: left;
+    display: block;
+    float: left;
     padding: 0px 3px;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -984,10 +1082,6 @@ body.Wt-rtl .Wt-treeview .Wt-tv-row {
 
 body.Wt-rtl .Wt-treeview .Wt-tv-row .Wt-tv-c {
     float: right;
-}
-
-.Wt-treeview .Wt-tv-c {
-    padding: 0px 3px;
 }
 
 .Wt-treeview img.icon, .Wt-treeview input.icon {
@@ -1002,17 +1096,6 @@ body.Wt-ltr .Wt-treeview input.icon {
 body.Wt-rtl .Wt-treeview img.icon,
 body.Wt-rtl .Wt-treeview input.icon {
     margin: 0px 0px 2px 3px;
-}
-
-.Wt-treeview .Wt-tv-node img.w0 {
-    width: 0px;
-    margin: 0px;
-}
-
-.Wt-treeview .Wt-tv-node .c0 img,
-.Wt-treeview .Wt-tv-node .c0 input {
-    margin-right: 0px;
-    margin: -4px 0px;
 }
 
 body.Wt-ltr .Wt-treeview .Wt-header .Wt-tv-c {
@@ -1040,39 +1123,34 @@ body.Wt-rtl .Wt-treeview .Wt-header .Wt-tv-c {
 }
 
 /* nodes */
-.Wt-treeview .Wt-tv-node {
-    table-layout: fixed;
-}
-
-.Wt-treeview .Wt-trunk {
-}
-
-.Wt-treeview .Wt-end {
-}
-
-.Wt-treeview .Wt-expand {
+.Wt-treeview .Wt-ctrl {
     width: 19px;
     height: 18px;
-    background: url(nav-plus.png) no-repeat 0 center;
+    float: left;
 }
 
-body.Wt-rtl .Wt-treeview .Wt-expand {
-    background: url(nav-plus-rtl.png) no-repeat 0 center;
+body.Wt-rtl .Wt-treeview .Wt-ctrl {
+    float: right;
 }
 
-.Wt-treeview .Wt-collapse {
-    width: 19px;
-    height: 18px;
-    background: url(nav-minus.png) no-repeat 0 center;
+.Wt-treeview .Wt-ctrl.expand {
+    background-image: url(nav-plus.png);
+    background-repeat: no-repeat;
+    background-position: 0 center;
 }
 
-body.Wt-rtl .Wt-treeview .Wt-collapse {
-    background: url(nav-minus-rtl.png) no-repeat 0 center;
+body.Wt-rtl .Wt-treeview .Wt-ctrl.expand {
+    background-image: url(nav-plus-rtl.png);
 }
 
-.Wt-treeview .Wt-noexpand {
-    width: 19px;
-    height: 18px;
+.Wt-treeview .Wt-ctrl.collapse {
+    background-image: url(nav-minus.png);
+    background-repeat: no-repeat;
+    background-position: 0 center;
+}
+
+body.Wt-rtl .Wt-treeview .Wt-ctrl.collapse {
+    background-image: url(nav-minus-rtl.png);
 }
 
 /* borders */
@@ -1084,12 +1162,12 @@ body.Wt-rtl .Wt-treeview .Wt-tv-br {
     border-left: 1px solid #dcdfe8;
 }
 
-body.Wt-ltr .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c {
+body.Wt-ltr .Wt-treeview li .Wt-tv-row .Wt-tv-c {
     border-right: 0px;
     margin-right: 1px;
 }
 
-body.Wt-rtl .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c {
+body.Wt-rtl .Wt-treeview li .Wt-tv-row .Wt-tv-c {
     border-left: 0px;
     margin-left: 1px;
 }
@@ -1099,8 +1177,8 @@ body.Wt-rtl .Wt-treeview .Wt-tv-node .Wt-tv-row .Wt-tv-c {
  */
 .Wt-pagingbar {
     text-align: center;
-    height: 25px;
-    line-height: 25px;
+    height: 35px;
+    line-height: 35px;
 }
 
 .Wt-pagingbar span {

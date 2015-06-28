@@ -56,7 +56,7 @@ class Grid {
 			this.item_ = item;
 			this.rowSpan_ = 1;
 			this.colSpan_ = 1;
-			this.update_ = false;
+			this.update_ = true;
 			this.alignment_ = alignment;
 		}
 

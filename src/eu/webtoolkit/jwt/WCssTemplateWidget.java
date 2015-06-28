@@ -33,27 +33,27 @@ class WCssTemplateWidget extends WWebWidget {
 		this.rule_.modified();
 	}
 
-	public void setOffsets(WLength offset, EnumSet<Side> sides) {
+	public void setOffsets(final WLength offset, EnumSet<Side> sides) {
 		super.setOffsets(offset, sides);
 		this.rule_.modified();
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 		this.rule_.modified();
 	}
 
-	public void setMinimumSize(WLength width, WLength height) {
+	public void setMinimumSize(final WLength width, final WLength height) {
 		super.setMinimumSize(width, height);
 		this.rule_.modified();
 	}
 
-	public void setMaximumSize(WLength width, WLength height) {
+	public void setMaximumSize(final WLength width, final WLength height) {
 		super.setMaximumSize(width, height);
 		this.rule_.modified();
 	}
 
-	public void setLineHeight(WLength height) {
+	public void setLineHeight(final WLength height) {
 		super.setLineHeight(height);
 		this.rule_.modified();
 	}
@@ -68,12 +68,12 @@ class WCssTemplateWidget extends WWebWidget {
 		this.rule_.modified();
 	}
 
-	public void setMargin(WLength margin, EnumSet<Side> sides) {
+	public void setMargin(final WLength margin, EnumSet<Side> sides) {
 		super.setMargin(margin, sides);
 		this.rule_.modified();
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
 		this.rule_.modified();
 	}
@@ -93,7 +93,8 @@ class WCssTemplateWidget extends WWebWidget {
 		return super.getDecorationStyle();
 	}
 
-	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
+	public void setVerticalAlignment(AlignmentFlag alignment,
+			final WLength length) {
 		super.setVerticalAlignment(alignment, length);
 		this.rule_.modified();
 	}

@@ -96,7 +96,7 @@ public class WGroupBox extends WContainerWidget {
 	/**
 	 * Creates a groupbox with given title message.
 	 */
-	public WGroupBox(CharSequence title, WContainerWidget parent) {
+	public WGroupBox(final CharSequence title, WContainerWidget parent) {
 		super(parent);
 		this.title_ = WString.toWString(title);
 		this.titleChanged_ = false;
@@ -109,7 +109,7 @@ public class WGroupBox extends WContainerWidget {
 	 * Calls {@link #WGroupBox(CharSequence title, WContainerWidget parent)
 	 * this(title, (WContainerWidget)null)}
 	 */
-	public WGroupBox(CharSequence title) {
+	public WGroupBox(final CharSequence title) {
 		this(title, (WContainerWidget) null);
 	}
 
@@ -123,16 +123,16 @@ public class WGroupBox extends WContainerWidget {
 	/**
 	 * Returns the title.
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		this.title_ = WString.toWString(title);
 		this.titleChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	public void refresh() {
 		if (this.title_.refresh()) {
 			this.titleChanged_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		super.refresh();
 	}
@@ -141,7 +141,7 @@ public class WGroupBox extends WContainerWidget {
 		return DomElementType.DomElement_FIELDSET;
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.titleChanged_) {
 			DomElement legend;
 			if (all) {
@@ -157,15 +157,6 @@ public class WGroupBox extends WContainerWidget {
 			this.titleChanged_ = false;
 		}
 		super.updateDom(element, all);
-	}
-
-	protected void propagateSetEnabled(boolean enabled) {
-		if (enabled) {
-			this.removeStyleClass("Wt-disabled");
-		} else {
-			this.addStyleClass("Wt-disabled");
-		}
-		super.propagateSetEnabled(enabled);
 	}
 
 	void propagateRenderOk(boolean deep) {

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 class ColorUtils {
 	private static Logger logger = LoggerFactory.getLogger(ColorUtils.class);
 
-	static int parseRgbArgument(String argument) {
+	static int parseRgbArgument(final String argument) {
 		String arg = argument.trim();
 		try {
 			if (arg.endsWith("%")) {
@@ -31,19 +31,19 @@ class ColorUtils {
 			} else {
 				return Integer.parseInt(arg);
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			logger.error(new StringWriter().append("invalid color component: ")
 					.append(arg).toString());
 			return 0;
 		}
 	}
 
-	static int replicateHex(String s) {
+	static int replicateHex(final String s) {
 		int result = Utils.hexToInt(s);
 		return result | result << 4;
 	}
 
-	public static WColor parseCssColor(String name) {
+	public static WColor parseCssColor(final String name) {
 		String n = name;
 		n = n.trim();
 		int red = 0;
@@ -109,7 +109,7 @@ class ColorUtils {
 				if (has_alpha) {
 					try {
 						alpha = Integer.parseInt(arguments.get(3).trim());
-					} catch (NumberFormatException e) {
+					} catch (final NumberFormatException e) {
 						logger.error(new StringWriter().append(
 								"could not parse rgb format: ").append(n)
 								.toString());

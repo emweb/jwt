@@ -60,13 +60,22 @@ public class AuthModel extends FormBaseModel {
 	private static Logger logger = LoggerFactory.getLogger(AuthModel.class);
 
 	/**
+	 * Password field.
+	 */
+	public static final String PasswordField = "password";
+	/**
+	 * Remember-me field.
+	 */
+	public static final String RememberMeField = "remember-me";
+
+	/**
 	 * Constructor.
 	 * <p>
 	 * Creates a new authentication model, using a basic authentication service
 	 * and user database.
 	 */
-	public AuthModel(AuthService baseAuth, AbstractUserDatabase users,
-			WObject parent) {
+	public AuthModel(final AuthService baseAuth,
+			final AbstractUserDatabase users, WObject parent) {
 		super(baseAuth, users, parent);
 		this.throttlingDelay_ = 0;
 		this.reset();
@@ -79,7 +88,8 @@ public class AuthModel extends FormBaseModel {
 	 * {@link #AuthModel(AuthService baseAuth, AbstractUserDatabase users, WObject parent)
 	 * this(baseAuth, users, (WObject)null)}
 	 */
-	public AuthModel(AuthService baseAuth, AbstractUserDatabase users) {
+	public AuthModel(final AuthService baseAuth,
+			final AbstractUserDatabase users) {
 		this(baseAuth, users, (WObject) null);
 	}
 
@@ -156,7 +166,7 @@ public class AuthModel extends FormBaseModel {
 								.append("throttling: ").append(
 										String.valueOf(this.throttlingDelay_))
 								.append(" seconds for ").append(
-										user.identity(Identity.LoginName))
+										user.getIdentity(Identity.LoginName))
 								.toString());
 						return false;
 					case PasswordValid:
@@ -199,7 +209,7 @@ public class AuthModel extends FormBaseModel {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
 			button.setJavaScriptMember(" AuthThrottle",
-					"new Wt3_2_3.AuthThrottle(Wt3_2_3,"
+					"new Wt3_3_4.AuthThrottle(Wt3_3_4,"
 							+ button.getJsRef()
 							+ ","
 							+ WString.toWString(
@@ -239,23 +249,41 @@ public class AuthModel extends FormBaseModel {
 	 * <p>
 	 * Returns whether the user could be logged in.
 	 */
-	public boolean login(Login login) {
+	public boolean login(final Login login) {
 		if (this.isValid()) {
 			User user = this.getUsers().findWithIdentity(Identity.LoginName,
 					this.valueText(LoginNameField));
-			if (user.isValid()) {
-				Object v = this.getValue(RememberMeField);
+			Object v = this.getValue(RememberMeField);
+			AuthService s = this.getBaseAuth();
+			if (this.loginUser(login, user)) {
 				if (!(v == null) && (Boolean) v == true) {
 					WApplication app = WApplication.getInstance();
-					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
-							this.getBaseAuth().createAuthToken(user), this
-									.getBaseAuth().getAuthTokenValidity() * 60);
+					app.setCookie(s.getAuthTokenCookieName(), s
+							.createAuthToken(user),
+							s.getAuthTokenValidity() * 60);
 				}
-				login.login(user);
 				return true;
+			} else {
+				return false;
 			}
+		} else {
+			return false;
 		}
-		return false;
+	}
+
+	/**
+	 * Logs the user out.
+	 * <p>
+	 * This also removes the remember-me cookie for the user.
+	 */
+	public void logout(final Login login) {
+		if (login.isLoggedIn()) {
+			if (this.getBaseAuth().isAuthTokensEnabled()) {
+				WApplication app = WApplication.getInstance();
+				app.removeCookie(this.getBaseAuth().getAuthTokenCookieName());
+			}
+			login.logout();
+		}
 	}
 
 	/**
@@ -265,7 +293,7 @@ public class AuthModel extends FormBaseModel {
 	 * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
 	 * AuthService#processEmailToken()}.
 	 */
-	public EmailTokenResult processEmailToken(String token) {
+	public EmailTokenResult processEmailToken(final String token) {
 		return this.getBaseAuth().processEmailToken(token, this.getUsers());
 	}
 
@@ -282,7 +310,7 @@ public class AuthModel extends FormBaseModel {
 	 */
 	public User processAuthToken() {
 		WApplication app = WApplication.getInstance();
-		WEnvironment env = app.getEnvironment();
+		final WEnvironment env = app.getEnvironment();
 		if (this.getBaseAuth().isAuthTokensEnabled()) {
 			String token = env.getCookieValue(this.getBaseAuth()
 					.getAuthTokenCookieName());
@@ -292,8 +320,7 @@ public class AuthModel extends FormBaseModel {
 				switch (result.getResult()) {
 				case Valid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
-							result.getNewToken(), this.getBaseAuth()
-									.getAuthTokenValidity() * 60);
+							result.getNewToken(), result.getNewTokenValidity());
 					return result.getUser();
 				case Invalid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
@@ -314,13 +341,4 @@ public class AuthModel extends FormBaseModel {
 				"AuthThrottle",
 				"function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}jQuery.data(a,\"throttle\",this);var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
 	}
-
-	/**
-	 * Password field.
-	 */
-	public static final String PasswordField = "password";
-	/**
-	 * Remember-me field.
-	 */
-	public static final String RememberMeField = "remember-me";
 }

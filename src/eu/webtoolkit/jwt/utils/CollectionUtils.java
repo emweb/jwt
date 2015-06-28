@@ -7,6 +7,8 @@ package eu.webtoolkit.jwt.utils;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,5 +51,20 @@ public class CollectionUtils {
 		List<V> tmp = map.get(key);
 		if (tmp != null)
 			result.addAll(tmp);
+	}
+
+	public static <V> void splice(LinkedList<V> list, Iterator<V> iterator, LinkedList<V> list2, V v) {
+		list2.remove(v);
+		assert(iterator.equals(list.iterator()));
+
+		list.addFirst(v);
+	}
+
+	public static <V> boolean add(List<V> list, V v) {
+		if (list.indexOf(v) == -1) {
+			list.add(v);
+			return true;
+		} else
+			return false;
 	}
 }

@@ -30,7 +30,7 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 	private Signal1<A1> dynamic_;
 
 	JSignal1(WObject sender, String name, boolean collectSlotJavaScript) {
-		super(sender, name);
+		super(sender, name, collectSlotJavaScript);
 
 		dynamic_ = null;
 	}
@@ -70,7 +70,7 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 
 	@Override
 	protected int getListenerCount() {
-		return super.getListenerCount() + (dynamic_ != null ? dynamic_.getListenerCount() : null);
+		return super.getListenerCount() + (dynamic_ != null ? dynamic_.getListenerCount() : 0);
 	}
 
 	/**
@@ -134,5 +134,10 @@ public abstract class JSignal1<A1> extends AbstractJSignal {
 	public void removeListener(Signal.Listener listener) {
 		if (dynamic_ != null)
 			dynamic_.removeListener(listener);
+	}
+	
+	@Override
+	protected int getArgumentCount() {
+		return 1;
 	}
 }

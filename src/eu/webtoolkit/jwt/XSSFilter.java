@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt;
 
 
+import java.io.PrintStream;
 import java.io.Reader;
 
 import net.n3.nanoxml.IXMLParser;
@@ -18,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class XSSFilter extends XHtmlFilter {
-    private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
+	private static Logger logger = LoggerFactory.getLogger(XSSFilter.class);
 
 	protected int discarding = 0;
 
@@ -47,13 +48,17 @@ class XSSFilter extends XHtmlFilter {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (XMLException e) {
-			logger.error("Error reading XHTML string: " + e.getMessage());
+			logger.error("Error reading XHTML string: " + e.getMessage() + ": line " + e.getLineNr() + " in '" + text + "'");
 		}
 
 		return false;
 	}
 
-	@Override
+    public XSSFilter() {
+		super(false);
+	}
+
+    @Override
 	public void addAttribute(String key, String nsPrefix, String nsURI, String value, String type) throws Exception {
 		if (discarding != 0)
 			return;

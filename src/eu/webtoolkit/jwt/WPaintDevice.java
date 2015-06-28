@@ -158,14 +158,15 @@ public interface WPaintDevice {
 	/**
 	 * Draws an arc.
 	 * <p>
-	 * The arc is defined as in
-	 * {@link WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
-	 * WPainter#drawArc()}
+	 * The arc describes the segment of an ellipse enclosed by the rect. The
+	 * segment starts at <code>startAngle</code>, and spans an angle given by
+	 * <code>spanAngle</code>. These angles have as unit degree, and are
+	 * measured counter-clockwise starting from the 3 o&apos;clock position.
 	 * <p>
 	 * The arc must be stroked, filled, and transformed using the current
 	 * painter settings.
 	 */
-	public void drawArc(WRectF rect, double startAngle, double spanAngle);
+	public void drawArc(final WRectF rect, double startAngle, double spanAngle);
 
 	/**
 	 * Draws an image.
@@ -176,8 +177,8 @@ public interface WPaintDevice {
 	 * <p>
 	 * The image is transformed using the current painter settings.
 	 */
-	public void drawImage(WRectF rect, String imageUri, int imgWidth,
-			int imgHeight, WRectF sourceRect);
+	public void drawImage(final WRectF rect, final String imageUri,
+			int imgWidth, int imgHeight, final WRectF sourceRect);
 
 	/**
 	 * Draws a line.
@@ -193,7 +194,7 @@ public interface WPaintDevice {
 	 * The path must be stroked, filled, and transformed using the current
 	 * painter settings.
 	 */
-	public void drawPath(WPainterPath path);
+	public void drawPath(final WPainterPath path);
 
 	/**
 	 * Draws text.
@@ -201,8 +202,9 @@ public interface WPaintDevice {
 	 * The text must be rendered, stroked and transformed using the current
 	 * painter settings.
 	 */
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> alignmentFlags,
-			TextFlag textFlag, CharSequence text);
+	public void drawText(final WRectF rect,
+			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
+			final CharSequence text);
 
 	/**
 	 * Measures rendered text size.
@@ -222,7 +224,7 @@ public interface WPaintDevice {
 	 * Throws a std::logic_error if the underlying device does not provide font
 	 * metrics.
 	 */
-	public WTextItem measureText(CharSequence text, double maxWidth,
+	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap);
 
 	/**
@@ -232,7 +234,7 @@ public interface WPaintDevice {
 	 * {@link #measureText(CharSequence text, double maxWidth, boolean wordWrap)
 	 * measureText(text, - 1, false)}
 	 */
-	public WTextItem measureText(CharSequence text);
+	public WTextItem measureText(final CharSequence text);
 
 	/**
 	 * Measures rendered text size.
@@ -241,7 +243,7 @@ public interface WPaintDevice {
 	 * {@link #measureText(CharSequence text, double maxWidth, boolean wordWrap)
 	 * measureText(text, maxWidth, false)}
 	 */
-	public WTextItem measureText(CharSequence text, double maxWidth);
+	public WTextItem measureText(final CharSequence text, double maxWidth);
 
 	/**
 	 * Returns font metrics.

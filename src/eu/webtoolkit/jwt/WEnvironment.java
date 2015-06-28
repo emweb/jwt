@@ -82,9 +82,17 @@ public class WEnvironment {
 		 */
 		IE8(1003),
 		/**
-		 * Internet Explorer 9 or later.
+		 * Internet Explorer 9.
 		 */
 		IE9(1004),
+		/**
+		 * Internet Explorer 10.
+		 */
+		IE10(1005),
+		/**
+		 * Internet Explorer 11.
+		 */
+		IE11(1006),
 		/**
 		 * Opera.
 		 */
@@ -219,7 +227,11 @@ public class WEnvironment {
 		/**
 		 * HTML4.
 		 */
-		HTML4;
+		HTML4,
+		/**
+		 * HTML5.
+		 */
+		HTML5;
 
 		/**
 		 * Returns the numerical representation of this enum.
@@ -233,7 +245,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_2_3";
+		return "Wt3_3_4";
 	}
 
 	/**
@@ -266,7 +278,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
-	public String[] getParameterValues(String name) {
+	public String[] getParameterValues(final String name) {
 		String[] i = this.parameters_.get(name);
 		if (i != null) {
 			return i;
@@ -284,8 +296,8 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterValues(String name)
 	 */
-	public String getParameter(String name) {
-		String[] values = this.getParameterValues(name);
+	public String getParameter(final String name) {
+		final String[] values = this.getParameterValues(name);
 		if (!(values.length == 0)) {
 			return values[0];
 		} else {
@@ -323,7 +335,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
-	public String getCookie(String cookieName) {
+	public String getCookie(final String cookieName) {
 		String i = this.cookies_.get(cookieName);
 		if (i == null) {
 			throw new RuntimeException("Missing cookie: " + cookieName);
@@ -340,7 +352,7 @@ public class WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookie(String cookieName)
 	 */
-	public String getCookieValue(String cookieName) {
+	public String getCookieValue(final String cookieName) {
 		String i = this.cookies_.get(cookieName);
 		if (i == null) {
 			return null;
@@ -359,7 +371,7 @@ public class WEnvironment {
 	 * this should not be the case according to RFC2616 </i>
 	 * </p>
 	 */
-	public String getHeaderValue(String name) {
+	public String getHeaderValue(final String name) {
 		return this.session_.getCgiHeader(name);
 	}
 
@@ -412,6 +424,40 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Returns whether the browser has support for WebGL.
+	 * <p>
+	 * Support for WebGL is required for client-side rendering of
+	 * {@link WGLWidget}.
+	 */
+	public boolean hasWebGL() {
+		return this.webGLsupported_;
+	}
+
+	/**
+	 * Returns the horizontal resolution of the client&apos;s screen.
+	 * <p>
+	 * Returns -1 if screen width is not known.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getScreenHeight()
+	 */
+	public int getScreenWidth() {
+		return this.screenWidth_;
+	}
+
+	/**
+	 * Returns the vertical resolution of the client&apos;s screen.
+	 * <p>
+	 * Returns -1 if screen height is not known.
+	 * <p>
+	 * 
+	 * @see WEnvironment#getScreenWidth()
+	 */
+	public int getScreenHeight() {
+		return this.screenHeight_;
+	}
+
+	/**
 	 * Returns the browser-side DPI scaling factor.
 	 * <p>
 	 * Internet Explorer scales all graphics, fonts and other elements on
@@ -443,6 +489,19 @@ public class WEnvironment {
 	 */
 	public Locale getLocale() {
 		return this.locale_;
+	}
+
+	/**
+	 * Returns the time zone offset as reported by the client.
+	 * <p>
+	 * This returns the time offset that the client has relative to UTC. A
+	 * positive value thus means that the local time is ahead of UTC.
+	 * <p>
+	 * This requires JavaScript support.
+	 * <p>
+	 */
+	public int getTimeZoneOffset() {
+		return this.timeZoneOffset_;
 	}
 
 	/**
@@ -594,7 +653,7 @@ public class WEnvironment {
 	 * </pre>
 	 * <p>
 	 * 
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 * @see WEnvironment#getDeploymentPath()
 	 */
 	public String getInternalPath() {
@@ -623,11 +682,11 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.2.3";
+		return "3.3.4";
 	}
 
-	// public void libraryVersion(bad java simple ref int series, bad java
-	// simple ref int major, bad java simple ref int minor) ;
+	// public void libraryVersion(final bad java simple ref int series, final
+	// bad java simple ref int major, final bad java simple ref int minor) ;
 	/**
 	 * Returns the JWt session id (<b>deprecated</b>).
 	 * <p>
@@ -655,7 +714,7 @@ public class WEnvironment {
 	 * @see WEnvironment#getServerSoftware()
 	 * @see WEnvironment#getServerAdmin()
 	 */
-	public String getCgiValue(String varName) {
+	public String getCgiValue(final String varName) {
 		if (varName.equals("QUERY_STRING")) {
 			return this.queryString_;
 		} else {
@@ -666,15 +725,11 @@ public class WEnvironment {
 	/**
 	 * The type of the content provided to the browser.
 	 * <p>
-	 * This is determined by listening to the capabilities of the browser.
-	 * Xhtml1 is chosen only if the browser reports support for it, and it is
-	 * allowed in the configuration file (wt_config.xml).
-	 * <p>
-	 * Note that JWt makes also use of common non-standard techniques
-	 * implemented in every major browser.
+	 * This is here for backwards compatibility, but the implementation now
+	 * alwasy returns HTML5.
 	 */
 	public WEnvironment.ContentType getContentType() {
-		return this.contentType_;
+		return WEnvironment.ContentType.HTML5;
 	}
 
 	/**
@@ -835,8 +890,14 @@ public class WEnvironment {
 		return this.session_.getController();
 	}
 
-	public boolean hashInternalPaths() {
-		return this.hashInternalPaths_;
+	/**
+	 * Returns whether internal paths are implemented using URI fragments.
+	 * <p>
+	 * This may be the case for older non-HTML5 browsers which do not support
+	 * HTML5 History APIs.
+	 */
+	public boolean isInternalPathUsingFragments() {
+		return this.internalPathUsingFragments_;
 	}
 
 	/**
@@ -845,6 +906,9 @@ public class WEnvironment {
 	public boolean supportsCss3Animations() {
 		return this.agentIsGecko()
 				&& this.agent_.getValue() >= WEnvironment.UserAgent.Firefox5_0
+						.getValue()
+				|| this.agentIsIE()
+				&& this.agent_.getValue() >= WEnvironment.UserAgent.IE10
 						.getValue() || this.agentIsWebKit();
 	}
 
@@ -866,14 +930,17 @@ public class WEnvironment {
 	WebSession session_;
 	boolean doesAjax_;
 	boolean doesCookies_;
-	boolean hashInternalPaths_;
+	boolean internalPathUsingFragments_;
 	WEnvironment.UserAgent agent_;
+	int screenWidth_;
+	int screenHeight_;
 	double dpiScale_;
-	WEnvironment.ContentType contentType_;
 	String queryString_;
+	boolean webGLsupported_;
 	Map<String, String[]> parameters_;
 	Map<String, String> cookies_;
 	Locale locale_;
+	int timeZoneOffset_;
 	String host_;
 	String userAgent_;
 	String urlScheme_;
@@ -891,13 +958,16 @@ public class WEnvironment {
 		this.session_ = null;
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
-		this.hashInternalPaths_ = false;
+		this.internalPathUsingFragments_ = false;
+		this.screenWidth_ = -1;
+		this.screenHeight_ = -1;
 		this.dpiScale_ = 1;
-		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.queryString_ = "";
+		this.webGLsupported_ = false;
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
+		this.timeZoneOffset_ = 0;
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";
@@ -912,9 +982,10 @@ public class WEnvironment {
 		this.publicDeploymentPath_ = "";
 	}
 
-	void setUserAgent(String userAgent) {
+	void setUserAgent(final String userAgent) {
 		this.userAgent_ = userAgent;
-		Configuration conf = this.session_.getController().getConfiguration();
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
 		if (this.userAgent_.indexOf("MSIE 2.") != -1
 				|| this.userAgent_.indexOf("MSIE 3.") != -1
@@ -926,17 +997,32 @@ public class WEnvironment {
 			if (this.userAgent_.indexOf("MSIE 6.") != -1) {
 				this.agent_ = WEnvironment.UserAgent.IE6;
 			} else {
-				if (this.userAgent_.indexOf("Trident/5.0") != -1) {
-					this.agent_ = WEnvironment.UserAgent.IE9;
+				if (this.userAgent_.indexOf("MSIE 7.") != -1) {
+					this.agent_ = WEnvironment.UserAgent.IE7;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 7.") != -1) {
-						this.agent_ = WEnvironment.UserAgent.IE7;
+					if (this.userAgent_.indexOf("MSIE 8.") != -1) {
+						this.agent_ = WEnvironment.UserAgent.IE8;
 					} else {
-						if (this.userAgent_.indexOf("MSIE 8.") != -1) {
-							this.agent_ = WEnvironment.UserAgent.IE8;
+						if (this.userAgent_.indexOf("MSIE 9.") != -1) {
+							this.agent_ = WEnvironment.UserAgent.IE9;
 						} else {
 							if (this.userAgent_.indexOf("MSIE") != -1) {
-								this.agent_ = WEnvironment.UserAgent.IE9;
+								this.agent_ = WEnvironment.UserAgent.IE10;
+							} else {
+								if (this.userAgent_.indexOf("Trident/5.0") != -1) {
+									this.agent_ = WEnvironment.UserAgent.IE9;
+									return;
+								} else {
+									if (this.userAgent_.indexOf("Trident/6.0") != -1) {
+										this.agent_ = WEnvironment.UserAgent.IE10;
+										return;
+									} else {
+										if (this.userAgent_.indexOf("Trident/") != -1) {
+											this.agent_ = WEnvironment.UserAgent.IE11;
+											return;
+										}
+									}
+								}
 							}
 						}
 					}
@@ -957,27 +1043,31 @@ public class WEnvironment {
 					if (v >= 10) {
 						this.agent_ = WEnvironment.UserAgent.Opera10;
 					}
-				} catch (NumberFormatException e) {
+				} catch (final NumberFormatException e) {
 				}
 			}
 		}
 		if (this.userAgent_.indexOf("Chrome") != -1) {
-			if (this.userAgent_.indexOf("Chrome/0.") != -1) {
-				this.agent_ = WEnvironment.UserAgent.Chrome0;
+			if (this.userAgent_.indexOf("Android") != -1) {
+				this.agent_ = WEnvironment.UserAgent.MobileWebKitAndroid;
 			} else {
-				if (this.userAgent_.indexOf("Chrome/1.") != -1) {
-					this.agent_ = WEnvironment.UserAgent.Chrome1;
+				if (this.userAgent_.indexOf("Chrome/0.") != -1) {
+					this.agent_ = WEnvironment.UserAgent.Chrome0;
 				} else {
-					if (this.userAgent_.indexOf("Chrome/2.") != -1) {
-						this.agent_ = WEnvironment.UserAgent.Chrome2;
+					if (this.userAgent_.indexOf("Chrome/1.") != -1) {
+						this.agent_ = WEnvironment.UserAgent.Chrome1;
 					} else {
-						if (this.userAgent_.indexOf("Chrome/3.") != -1) {
-							this.agent_ = WEnvironment.UserAgent.Chrome3;
+						if (this.userAgent_.indexOf("Chrome/2.") != -1) {
+							this.agent_ = WEnvironment.UserAgent.Chrome2;
 						} else {
-							if (this.userAgent_.indexOf("Chrome/4.") != -1) {
-								this.agent_ = WEnvironment.UserAgent.Chrome4;
+							if (this.userAgent_.indexOf("Chrome/3.") != -1) {
+								this.agent_ = WEnvironment.UserAgent.Chrome3;
 							} else {
-								this.agent_ = WEnvironment.UserAgent.Chrome5;
+								if (this.userAgent_.indexOf("Chrome/4.") != -1) {
+									this.agent_ = WEnvironment.UserAgent.Chrome4;
+								} else {
+									this.agent_ = WEnvironment.UserAgent.Chrome5;
+								}
 							}
 						}
 					}
@@ -1075,7 +1165,7 @@ public class WEnvironment {
 		}
 	}
 
-	void setInternalPath(String path) {
+	void setInternalPath(final String path) {
 		if (path.length() == 0) {
 			this.internalPath_ = path;
 		} else {
@@ -1087,13 +1177,16 @@ public class WEnvironment {
 		this.session_ = session;
 		this.doesAjax_ = false;
 		this.doesCookies_ = false;
-		this.hashInternalPaths_ = false;
+		this.internalPathUsingFragments_ = false;
+		this.screenWidth_ = -1;
+		this.screenHeight_ = -1;
 		this.dpiScale_ = 1;
-		this.contentType_ = WEnvironment.ContentType.HTML4;
 		this.queryString_ = "";
+		this.webGLsupported_ = false;
 		this.parameters_ = new HashMap<String, String[]>();
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
+		this.timeZoneOffset_ = 0;
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";
@@ -1108,22 +1201,24 @@ public class WEnvironment {
 		this.publicDeploymentPath_ = "";
 	}
 
-	void init(WebRequest request) {
-		Configuration conf = this.session_.getController().getConfiguration();
+	void init(final WebRequest request) {
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
 		this.queryString_ = request.getQueryString();
 		this.parameters_ = request.getParameterMap();
-		this.urlScheme_ = request.getScheme();
-		this.referer_ = request.getHeaderValue("Referer");
-		this.accept_ = request.getHeaderValue("Accept");
-		this.serverSignature_ = "";
-		this.serverSoftware_ = "";
-		this.serverAdmin_ = "";
+		this.urlScheme_ = str(request.getScheme());
+		this.referer_ = str(request.getHeaderValue("Referer"));
+		this.accept_ = str(request.getHeaderValue("Accept"));
+		this.serverSignature_ = str("");
+		this.serverSoftware_ = str("");
+		this.serverAdmin_ = str("");
 		this.pathInfo_ = request.getPathInfo();
-		this.setUserAgent(request.getHeaderValue("User-Agent"));
+		this.setUserAgent(str(request.getHeaderValue("User-Agent")));
 		logger.info(new StringWriter().append("UserAgent: ").append(
 				this.userAgent_).toString());
 		if (conf.isBehindReverseProxy()) {
-			String forwardedHost = request.getHeaderValue("X-Forwarded-Host");
+			String forwardedHost = str(request
+					.getHeaderValue("X-Forwarded-Host"));
 			if (forwardedHost.length() != 0) {
 				int i = forwardedHost.lastIndexOf(',');
 				if (i == -1) {
@@ -1132,10 +1227,10 @@ public class WEnvironment {
 					this.host_ = forwardedHost.substring(i + 1);
 				}
 			} else {
-				this.host_ = request.getHeaderValue("Host");
+				this.host_ = str(request.getHeaderValue("Host"));
 			}
 		} else {
-			this.host_ = request.getHeaderValue("Host");
+			this.host_ = str(request.getHeaderValue("Host"));
 		}
 		if (this.host_.length() == 0) {
 			this.host_ = request.getServerName();
@@ -1145,30 +1240,32 @@ public class WEnvironment {
 		}
 		this.clientAddress_ = getClientAddress(request, conf);
 		String cookie = request.getHeaderValue("Cookie");
-		this.doesCookies_ = cookie.length() != 0;
-		if (this.doesCookies_) {
+		this.doesCookies_ = cookie != null;
+		if (cookie != null) {
 			parseCookies(cookie, this.cookies_);
 		}
 		this.locale_ = request.getLocale();
-		if (conf.sendXHTMLMimeType()
-				&& this.accept_.indexOf("application/xhtml+xml") != -1
-				&& !this.agentIsIE()) {
-			this.contentType_ = WEnvironment.ContentType.XHTML1;
-		}
 	}
 
-	void enableAjax(WebRequest request) {
+	void enableAjax(final WebRequest request) {
 		this.doesAjax_ = true;
 		this.session_.getController().newAjaxSession();
-		this.doesCookies_ = request.getHeaderValue("Cookie").length() != 0;
+		this.doesCookies_ = request.getHeaderValue("Cookie") != null;
 		if (!(request.getParameter("htmlHistory") != null)) {
-			this.hashInternalPaths_ = true;
+			this.internalPathUsingFragments_ = true;
 		}
 		String scaleE = request.getParameter("scale");
 		try {
 			this.dpiScale_ = scaleE != null ? Double.parseDouble(scaleE) : 1;
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			this.dpiScale_ = 1;
+		}
+		String webGLE = request.getParameter("webGL");
+		this.webGLsupported_ = webGLE != null ? webGLE.equals("true") : false;
+		String tzE = request.getParameter("tz");
+		try {
+			this.timeZoneOffset_ = tzE != null ? Integer.parseInt(tzE) : 0;
+		} catch (final NumberFormatException e) {
 		}
 		String hashE = request.getParameter("_");
 		if (hashE != null) {
@@ -1182,23 +1279,39 @@ public class WEnvironment {
 				this.publicDeploymentPath_ = "";
 			}
 		}
+		String scrWE = request.getParameter("scrW");
+		if (scrWE != null) {
+			try {
+				this.screenWidth_ = Integer.parseInt(scrWE);
+			} catch (final NumberFormatException e) {
+			}
+		}
+		String scrHE = request.getParameter("scrH");
+		if (scrHE != null) {
+			try {
+				this.screenHeight_ = Integer.parseInt(scrHE);
+			} catch (final NumberFormatException e) {
+			}
+		}
 	}
 
 	boolean agentSupportsAjax() {
-		Configuration conf = this.session_.getController().getConfiguration();
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
 		return conf.agentSupportsAjax(this.userAgent_);
 	}
 
-	static String getClientAddress(WebRequest request, Configuration conf) {
+	static String getClientAddress(final WebRequest request,
+			final Configuration conf) {
 		String result = "";
 		if (conf.isBehindReverseProxy()) {
-			String clientIp = request.getHeaderValue("Client-IP");
+			String clientIp = str(request.getHeaderValue("Client-IP"));
 			clientIp = clientIp.trim();
 			List<String> ips = new ArrayList<String>();
 			if (clientIp.length() != 0) {
 				ips = new ArrayList<String>(Arrays.asList(clientIp.split(",")));
 			}
-			String forwardedFor = request.getHeaderValue("X-Forwarded-For");
+			String forwardedFor = str(request.getHeaderValue("X-Forwarded-For"));
 			forwardedFor = forwardedFor.trim();
 			List<String> forwardedIps = new ArrayList<String>();
 			if (forwardedFor.length() != 0) {
@@ -1217,12 +1330,13 @@ public class WEnvironment {
 			}
 		}
 		if (result.length() == 0) {
-			result = "";
+			result = str("");
 		}
 		return result;
 	}
 
-	private static void parseCookies(String cookie, Map<String, String> result) {
+	private static void parseCookies(final String cookie,
+			final Map<String, String> result) {
 		try {
 			List<String> list = new ArrayList<String>();
 			list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
@@ -1245,5 +1359,9 @@ public class WEnvironment {
 		} catch (UnsupportedEncodingException uee) {
 			uee.printStackTrace();
 		}
+	}
+
+	static String str(String s) {
+		return s != null ? s : "";
 	}
 }

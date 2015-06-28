@@ -22,9 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that indiciates a standard icon.
  * <p>
- * <p>
- * <i><b>Note: </b>Not used yet. </i>
- * </p>
+ * 
+ * @see WMessageBox
  */
 public enum Icon {
 	/**
@@ -32,19 +31,19 @@ public enum Icon {
 	 */
 	NoIcon(0),
 	/**
-	 * An information icon <i>(not implemented)</i>.
+	 * An information icon.
 	 */
 	Information(1),
 	/**
-	 * An warning icon <i>(not implemented)</i>.
+	 * A warning icon.
 	 */
 	Warning(2),
 	/**
-	 * An critical icon <i>(not implemented)</i>.
+	 * A critical icon.
 	 */
 	Critical(3),
 	/**
-	 * An question icon <i>(not implemented)</i>.
+	 * A question icon.
 	 */
 	Question(4);
 

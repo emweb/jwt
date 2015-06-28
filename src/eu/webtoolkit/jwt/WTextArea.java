@@ -74,7 +74,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Creates a text area with given content and optional parent.
 	 */
-	public WTextArea(String text, WContainerWidget parent) {
+	public WTextArea(final String text, WContainerWidget parent) {
 		super(parent);
 		this.content_ = text;
 		this.cols_ = 20;
@@ -91,7 +91,7 @@ public class WTextArea extends WFormWidget {
 	 * Calls {@link #WTextArea(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
 	 */
-	public WTextArea(String text) {
+	public WTextArea(final String text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -103,7 +103,7 @@ public class WTextArea extends WFormWidget {
 	public void setColumns(int columns) {
 		this.cols_ = columns;
 		this.attributesChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class WTextArea extends WFormWidget {
 	public void setRows(int rows) {
 		this.rows_ = rows;
 		this.attributesChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -149,10 +149,10 @@ public class WTextArea extends WFormWidget {
 	 * <p>
 	 * The default text is &quot;&quot;.
 	 */
-	public void setText(String text) {
+	public void setText(final String text) {
 		this.content_ = text;
 		this.contentChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint();
 		this.validate();
 		this.applyEmptyText();
 	}
@@ -234,17 +234,36 @@ public class WTextArea extends WFormWidget {
 	 * <p>
 	 * Calls {@link WTextArea#setText(String text) setText()}.
 	 */
-	public void setValueText(String value) {
+	public void setValueText(final String value) {
 		this.setText(value);
 	}
 
+	/**
+	 * Event signal emitted when the text in the input field changed.
+	 * <p>
+	 * This signal is emitted whenever the text contents has changed. Unlike the
+	 * {@link WFormWidget#changed() WFormWidget#changed()} signal, the signal is
+	 * fired on every change, not only when the focus is lost. Unlike the
+	 * {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()} signal,
+	 * this signal is fired also for other events that change the text, such as
+	 * paste actions.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#keyPressed()
+	 * @see WFormWidget#changed()
+	 */
+	public EventSignal textInput() {
+		return this.voidEventSignal(INPUT_SIGNAL, true);
+	}
+
+	private static String INPUT_SIGNAL = "input";
 	private String content_;
 	private int cols_;
 	private int rows_;
 	private boolean contentChanged_;
 	private boolean attributesChanged_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			if (this.contentChanged_ || all) {
 				element.setProperty(Property.PropertyValue, this.content_);
@@ -269,7 +288,7 @@ public class WTextArea extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (this.contentChanged_ || this.isReadOnly()) {
 			return;
 		}
@@ -281,7 +300,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	protected int boxPadding(Orientation orientation) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE() || env.agentIsOpera()) {
 			return 1;
 		} else {
@@ -302,7 +321,7 @@ public class WTextArea extends WFormWidget {
 	}
 
 	protected int boxBorder(Orientation orientation) {
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIE() || env.agentIsOpera()) {
 			return 2;
 		} else {

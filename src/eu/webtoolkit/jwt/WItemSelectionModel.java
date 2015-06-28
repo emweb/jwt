@@ -79,7 +79,7 @@ public class WItemSelectionModel extends WObject {
 	 * 
 	 * @see WItemSelectionModel#getSelectedIndexes()
 	 */
-	public boolean isSelected(WModelIndex index) {
+	public boolean isSelected(final WModelIndex index) {
 		if (this.selectionBehavior_ == SelectionBehavior.SelectRows) {
 			for (Iterator<WModelIndex> it_it = this.selection_.iterator(); it_it
 					.hasNext();) {
@@ -176,32 +176,17 @@ public class WItemSelectionModel extends WObject {
 		this.selection_ = new TreeSet<WModelIndex>();
 		this.model_ = model;
 		this.selectionBehavior_ = SelectionBehavior.SelectRows;
-		if (this.model_ != null) {
-			this.model_.layoutAboutToBeChanged().addListener(this,
-					new Signal.Listener() {
-						public void trigger() {
-							WItemSelectionModel.this
-									.modelLayoutAboutToBeChanged();
-						}
-					});
-			this.model_.layoutChanged().addListener(this,
-					new Signal.Listener() {
-						public void trigger() {
-							WItemSelectionModel.this.modelLayoutChanged();
-						}
-					});
-		}
 	}
 
 	WItemSelectionModel(WAbstractItemModel model) {
 		this(model, (WObject) null);
 	}
 
-	private void modelLayoutAboutToBeChanged() {
+	void modelLayoutAboutToBeChanged() {
 		WModelIndex.encodeAsRawIndexes(this.selection_);
 	}
 
-	private void modelLayoutChanged() {
+	void modelLayoutChanged() {
 		this.selection_ = WModelIndex.decodeFromRawIndexes(this.selection_);
 	}
 }

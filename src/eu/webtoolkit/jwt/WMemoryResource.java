@@ -31,7 +31,7 @@ public class WMemoryResource extends WResource {
 		this("", (WObject) null);
 	}
 
-	WMemoryResource(String mimeType, WObject parent) {
+	public WMemoryResource(String mimeType, WObject parent) {
 		super(parent);
 		this.data_ = null;
 		this.mimeType_ = mimeType;
@@ -102,6 +102,7 @@ public class WMemoryResource extends WResource {
 	@Override
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType(mimeType_);
-		response.getOutputStream().write(data_);
+		if (data_ != null)
+			response.getOutputStream().write(data_);
 	}
 }

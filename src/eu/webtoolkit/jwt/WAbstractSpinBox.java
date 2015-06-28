@@ -23,12 +23,10 @@ import org.slf4j.LoggerFactory;
  * An abstract spin box.
  * <p>
  * 
- * <h3>CSS</h3>
- * <p>
- * Using HTML4, the widget is implemented using a &lt;input
- * type=&quot;text&quot;&gt; The element can be styled using the
- * <code>Wt-spinbox</code> style. It may be styled through the current theme, or
- * you can override the style using internal or external CSS as appropriate.
+ * Although the element can be rendered using a native HTML5 control, by default
+ * it is rendered using an HTML4 compatibility workaround which is implemented
+ * using JavaScript and CSS, as most browsers do not yet implement the HTML5
+ * native element.
  */
 public abstract class WAbstractSpinBox extends WLineEdit {
 	private static Logger logger = LoggerFactory
@@ -59,7 +57,11 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 */
 	public boolean isNativeControl() {
 		if (this.preferNative_) {
-			WEnvironment env = WApplication.getInstance().getEnvironment();
+			if (super.getInputMask().length() != 0) {
+				return false;
+			}
+			final WEnvironment env = WApplication.getInstance()
+					.getEnvironment();
 			if (env.agentIsChrome()
 					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
 							.getValue()
@@ -93,8 +95,13 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
 	 */
-	public void setPrefix(CharSequence prefix) {
-		this.prefix_ = WString.toWString(prefix);
+	public void setPrefix(final CharSequence prefix) {
+		if (!this.prefix_.equals(prefix)) {
+			this.prefix_ = WString.toWString(prefix);
+			this.setText(this.getTextFromValue());
+			this.changed_ = true;
+			this.repaint();
+		}
 	}
 
 	/**
@@ -125,8 +132,13 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
 	 */
-	public void setSuffix(CharSequence suffix) {
-		this.suffix_ = WString.toWString(suffix);
+	public void setSuffix(final CharSequence suffix) {
+		if (!this.suffix_.equals(suffix)) {
+			this.suffix_ = WString.toWString(suffix);
+			this.setText(this.getTextFromValue());
+			this.changed_ = true;
+			this.repaint();
+		}
 	}
 
 	/**
@@ -139,9 +151,25 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		return this.suffix_;
 	}
 
-	public void setText(String text) {
+	public void setText(final String text) {
 		this.parseValue(text);
-		super.setText(this.getTextFromValue().toString());
+		super.setText(this.getTextFromValue());
+	}
+
+	public WValidator.State validate() {
+		return super.validate();
+	}
+
+	public void refresh() {
+		this.doJavaScript("jQuery.data("
+				+ this.getJsRef()
+				+ ", 'obj').setLocale("
+				+ jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils
+						.getCurrentLocale()))
+				+ ","
+				+ jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils
+						.getCurrentLocale())) + ");");
+		super.refresh();
 	}
 
 	/**
@@ -155,7 +183,6 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this.setup_ = false;
 		this.prefix_ = new WString();
 		this.suffix_ = new WString();
-		this.setJavaScriptMember("_a", "0");
 	}
 
 	/**
@@ -168,13 +195,21 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this((WContainerWidget) null);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all || this.changed_) {
 			if (!all) {
 				if (!this.isNativeControl()) {
-					this.doJavaScript("jQuery.data(" + this.getJsRef()
-							+ ", 'obj').update(" + this.getJsMinMaxStep() + ","
-							+ String.valueOf(this.getDecimals()) + ");");
+					this.doJavaScript("jQuery.data("
+							+ this.getJsRef()
+							+ ", 'obj').configure("
+							+ String.valueOf(this.getDecimals())
+							+ ","
+							+ WString.toWString(this.getPrefix())
+									.getJsStringLiteral()
+							+ ","
+							+ WString.toWString(this.getSuffix())
+									.getJsStringLiteral() + ","
+							+ this.getJsMinMaxStep() + ");");
 				} else {
 					this.setValidator(this.createValidator());
 				}
@@ -190,14 +225,12 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!this.setup_
 				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			this.setup_ = true;
-			boolean useNative = this.isNativeControl();
-			this.setup(useNative);
+			this.setup();
 		}
 		super.render(flags);
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		super.setFormData(formData);
 		this.parseValue(this.getText());
 	}
@@ -211,11 +244,13 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 
 	abstract int getDecimals();
 
-	abstract boolean parseNumberValue(String text);
+	abstract boolean parseNumberValue(final String text);
 
-	abstract WString getTextFromValue();
+	protected abstract String getTextFromValue();
 
 	abstract WValidator createValidator();
+
+	protected abstract WValidator.Result getValidateRange();
 
 	protected int boxPadding(Orientation orientation) {
 		if (!this.isNativeControl() && orientation == Orientation.Horizontal) {
@@ -235,42 +270,55 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WSpinBox.js", wtjs1());
-		String jsObj = "new Wt3_2_3.WSpinBox(" + app.getJavaScriptClass() + ","
-				+ this.getJsRef() + "," + String.valueOf(this.getDecimals())
+		String jsObj = "new Wt3_3_4.WSpinBox("
+				+ app.getJavaScriptClass()
+				+ ","
+				+ this.getJsRef()
+				+ ","
+				+ String.valueOf(this.getDecimals())
 				+ ","
 				+ WString.toWString(this.getPrefix()).getJsStringLiteral()
 				+ ","
 				+ WString.toWString(this.getSuffix()).getJsStringLiteral()
-				+ "," + this.getJsMinMaxStep() + ");";
-		this.setJavaScriptMember("_a", "0;" + jsObj);
+				+ ","
+				+ this.getJsMinMaxStep()
+				+ ","
+				+ jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils
+						.getCurrentLocale()))
+				+ ","
+				+ jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils
+						.getCurrentLocale())) + ");";
+		this.setJavaScriptMember(" WSpinBox", jsObj);
 	}
 
-	private void connectJavaScript(AbstractEventSignal s, String methodName) {
+	private void connectJavaScript(final AbstractEventSignal s,
+			final String methodName) {
 		String jsFunction = "function(obj, event) {var o = jQuery.data("
 				+ this.getJsRef() + ", 'obj');if (o) o." + methodName
 				+ "(obj, event);}";
 		s.addListener(jsFunction);
 	}
 
-	private void setup(boolean useNative) {
-		if (useNative) {
-			this.setValidator(this.createValidator());
-		} else {
+	private void setup() {
+		this.setup_ = true;
+		boolean useNative = this.isNativeControl();
+		if (!useNative) {
 			this.defineJavaScript();
-			this.addStyleClass("Wt-spinbox");
-			AbstractEventSignal b = this.mouseMoved();
-			AbstractEventSignal c = this.keyWentDown();
+			final AbstractEventSignal b = this.mouseMoved();
+			final AbstractEventSignal c = this.keyWentDown();
 			this.connectJavaScript(this.mouseMoved(), "mouseMove");
 			this.connectJavaScript(this.mouseWentUp(), "mouseUp");
 			this.connectJavaScript(this.mouseWentDown(), "mouseDown");
 			this.connectJavaScript(this.mouseWentOut(), "mouseOut");
 			this.connectJavaScript(this.keyWentDown(), "keyDown");
 			this.connectJavaScript(this.keyWentUp(), "keyUp");
-			this.setValidator(new SpinBoxValidator(this));
+			if (!(this.prefix_.length() == 0) || !(this.suffix_.length() == 0)) {
+				this.setValidator(new SpinBoxValidator(this));
+			}
 		}
 	}
 
-	boolean parseValue(String text) {
+	boolean parseValue(final String text) {
 		String textUtf8 = text;
 		boolean valid = true;
 		if (!this.isNativeControl()) {
@@ -287,6 +335,9 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 			}
 		}
 		if (valid) {
+			valid = textUtf8.length() > 0;
+		}
+		if (valid) {
 			valid = this.parseNumberValue(textUtf8);
 		}
 		return valid;
@@ -297,6 +348,6 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSpinBox",
-				"function(u,c,l,m,e,f,g,i){function j(){return!!c.getAttribute(\"readonly\")}function n(){var a=c.value;if(a.substr(0,m.length)==m){a=a.substr(m.length);if(a.length>e.length&&a.substr(a.length-e.length,e.length)==e){a=a.substr(0,a.length-e.length);return Number(a)}}return null}function p(a){if(a>g)a=g;else if(a<f)a=f;c.value=m+a.toFixed(l)+e;o=true}function q(){var a=n();if(a!==null){a+=i;p(a)}}function r(){var a=n();if(a!==null){a-=i;p(a)}}jQuery.data(c, \"obj\",this);var d=u.WT,h=$(c),k=null,s,o=false,t=null;this.update=function(a,b,v,w){f=a;g=b;i=v;l=w;t=new (l==0?d.WIntValidator:d.WDoubleValidator)(true,f,g,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+f,\"The number may be at most \"+g)};this.mouseOut=function(){h.removeClass(\"Wt-spinbox-dn\").removeClass(\"Wt-spinbox-up\")};this.mouseMove=function(a,b){if(!j())if(k){a=d.pageCoordinates(b).y-k.y;b=s;if(b!==null){b-=a*i;p(b)}}else{a=d.widgetCoordinates(c,b);if(h.hasClass(\"Wt-spinbox-dn\")|| h.hasClass(\"Wt-spinbox-up\"))h.removeClass(\"Wt-spinbox-dn\").removeClass(\"Wt-spinbox-up\");if(a.x>c.offsetWidth-16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?h.addClass(\"Wt-spinbox-up\"):h.addClass(\"Wt-spinbox-dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!j())if(c.style.cursor==\"crosshair\"){d.capture(null);d.capture(c);k=d.pageCoordinates(b);s=n()}else{a=d.widgetCoordinates(c,b);if(a.x> c.offsetWidth-16){d.cancelEvent(b);d.capture(c);a.y<c.offsetHeight/2?d.eventRepeat(function(){q()}):d.eventRepeat(function(){r()})}}};this.mouseUp=function(a){if(!j()){if(o||k!=null){k=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!j())if(b.keyCode==40)d.eventRepeat(function(){r()});else b.keyCode==38&&d.eventRepeat(function(){q()})};this.keyUp=function(a){if(!j()){if(o){o=false;a.onchange()}d.stopRepeat()}};this.validate=function(){var a=n();if(a===null)a=\"a\";return t.validate(a)}; this.update(f,g,i,l)}");
+				"function(A,c,t,g,f,k,l,m,p,q){function n(){return!!c.getAttribute(\"readonly\")}function r(){var a=e.data(\"lobj\"),b=\"\";if(a!==undefined){b=a.getValue();if(b===\"\")b=g+\"0\"+f}else b=c.value;if(b.substr(0,g.length)==g){b=b.substr(g.length);if(b.length>f.length&&b.substr(b.length-f.length,f.length)==f){b=b.substr(0,b.length-f.length);if(q)b=b.split(q).join(\"\");b=b.replace(p,\".\");return Number(b)}}return null}function u(a){var b=e.data(\"lobj\");if(a> l)a=l;else if(a<k)a=k;a=a.toFixed(t);a=a.replace(\".\",p);var i=a.indexOf(p),h=\"\";if(i!==-1){for(var j=0;j<i;j++){h+=a.charAt(j);if(j<i-1&&(i-j-1)%3===0)h+=q}h+=a.substr(i)}else h=a;if(b!==undefined)b.setValue(g+h+f);else c.value=g+h+f;s=true}function w(){var a=r();if(a!==null){a+=m;u(a)}}function x(){var a=r();if(a!==null){a-=m;u(a)}}jQuery.data(c,\"obj\",this);var d=A.WT,e=$(c),o=null,y,s=false,z=null,v=false;this.setIsDoubleSpinBox=function(a){v=a;this.configure(t,g,f,k,l,m)};this.configure=function(a, b,i,h,j,B){t=a;g=b;f=i;k=h;l=j;m=B;z=new (v||typeof d.WIntValidator===\"undefined\"?d.WDoubleValidator:d.WIntValidator)(true,k,l,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+k,\"The number may be at most \"+l)};this.mouseOut=function(){e.removeClass(\"dn\").removeClass(\"up\")};this.mouseMove=function(a,b){if(!n())if(o){a=d.pageCoordinates(b).y-o.y;b=y;if(b!==null){b-=a*m;u(b)}}else{a=d.widgetCoordinates(c,b);if(e.hasClass(\"dn\")||e.hasClass(\"up\"))e.removeClass(\"dn\").removeClass(\"up\"); if(a.x>c.offsetWidth-16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?e.addClass(\"up\"):e.addClass(\"dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!n())if(c.style.cursor==\"crosshair\"){d.capture(null);d.capture(c);e.addClass(\"unselectable\");o=d.pageCoordinates(b);y=r()}else{a=d.widgetCoordinates(c,b);if(a.x>c.offsetWidth-16){d.cancelEvent(b);d.capture(c);e.addClass(\"unselectable\");a.y< c.offsetHeight/2?d.eventRepeat(function(){w()}):d.eventRepeat(function(){x()})}}};this.mouseUp=function(a){e.removeClass(\"unselectable\");if(!n()){if(s||o!=null){o=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!n())if(b.keyCode==40)d.eventRepeat(function(){x()});else b.keyCode==38&&d.eventRepeat(function(){w()})};this.keyUp=function(a){if(!n()){if(s){s=false;a.onchange()}d.stopRepeat()}};this.setLocale=function(a,b){p=a;q=b};this.validate=function(){var a=r();if(a===null)a=\"a\";return z.validate(a)}; this.setIsDoubleSpinBox(v)}");
 	}
 }

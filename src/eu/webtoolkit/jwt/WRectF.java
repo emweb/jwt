@@ -31,7 +31,10 @@ public class WRectF {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Constructs an empty rectangle at point (0, 0).
+	 * Constructs a <code>null</code> rectangle.
+	 * <p>
+	 * 
+	 * @see WRectF#()
 	 */
 	public WRectF() {
 		this.x_ = 0;
@@ -63,7 +66,7 @@ public class WRectF {
 	 * can use this constructor too, but should call
 	 * {@link WRectF#getNormalized() getNormalized()} afterwords.
 	 */
-	public WRectF(WPointF topLeft, WPointF bottomRight) {
+	public WRectF(final WPointF topLeft, final WPointF bottomRight) {
 		this.x_ = topLeft.getX();
 		this.y_ = topLeft.getY();
 		this.width_ = bottomRight.getX() - topLeft.getX();
@@ -71,25 +74,14 @@ public class WRectF {
 	}
 
 	/**
-	 * Internal assign method.
-	 */
-	public WRectF assign(WRectF rhs) {
-		this.x_ = rhs.x_;
-		this.y_ = rhs.y_;
-		this.width_ = rhs.width_;
-		this.height_ = rhs.height_;
-		return this;
-	}
-
-	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
-	public boolean equals(WRectF rhs) {
+	public boolean equals(final WRectF rhs) {
 		return this.x_ == rhs.x_ && this.y_ == rhs.y_
 				&& this.width_ == rhs.width_ && this.height_ == rhs.height_;
 	}
 
-	// public boolean isNull() ;
+	// public boolean () ;
 	/**
 	 * Determines whether or not this rectangle is empty.
 	 * <p>
@@ -284,7 +276,7 @@ public class WRectF {
 	/**
 	 * Tests if a rectangle contains a point.
 	 */
-	public boolean contains(WPointF p) {
+	public boolean contains(final WPointF p) {
 		return this.contains(p.getX(), p.getY());
 	}
 
@@ -299,7 +291,7 @@ public class WRectF {
 	/**
 	 * Tests if two rectangles intersect.
 	 */
-	public boolean intersects(WRectF other) {
+	public boolean intersects(final WRectF other) {
 		if (this.isEmpty() || other.isEmpty()) {
 			return false;
 		} else {
@@ -320,7 +312,7 @@ public class WRectF {
 	/**
 	 * Makes the union of to rectangles.
 	 */
-	public WRectF united(WRectF other) {
+	public WRectF united(final WRectF other) {
 		if (this.isEmpty()) {
 			return other;
 		} else {

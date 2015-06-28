@@ -42,6 +42,9 @@ public class WIntValidator extends WValidator {
 
 	/**
 	 * Creates a new integer validator that accepts any integer.
+	 * <p>
+	 * The validator will accept numbers using the current locale&apos;s format.
+	 * <p>
 	 */
 	public WIntValidator(WObject parent) {
 		super(parent);
@@ -64,6 +67,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Creates a new integer validator that accepts integer input within the
 	 * given range.
+	 * <p>
 	 */
 	public WIntValidator(int bottom, int top, WObject parent) {
 		super(parent);
@@ -137,13 +141,13 @@ public class WIntValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents an integer within the valid range.
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
 		String text = input;
 		try {
-			int i = Integer.parseInt(text);
+			int i = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(), text);
 			if (i < this.bottom_) {
 				return new WValidator.Result(WValidator.State.Invalid, this
 						.getInvalidTooSmallText());
@@ -155,19 +159,19 @@ public class WIntValidator extends WValidator {
 					return new WValidator.Result(WValidator.State.Valid);
 				}
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return new WValidator.Result(WValidator.State.Invalid, this
 					.getInvalidNotANumberText());
 		}
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Sets the message to display when the input is not a number.
 	 * <p>
 	 * The default value is &quot;Must be an integer number.&quot;
 	 */
-	public void setInvalidNotANumberText(CharSequence text) {
+	public void setInvalidNotANumberText(final CharSequence text) {
 		this.nanText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -194,7 +198,7 @@ public class WIntValidator extends WValidator {
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be larger than {1}&quot;.
 	 */
-	public void setInvalidTooSmallText(CharSequence text) {
+	public void setInvalidTooSmallText(final CharSequence text) {
 		this.tooSmallText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -233,7 +237,7 @@ public class WIntValidator extends WValidator {
 	 * message is &quot;The number must be between {1} and {2}&quot; or
 	 * &quot;The number must be smaller than {2}&quot;.
 	 */
-	public void setInvalidTooLargeText(CharSequence text) {
+	public void setInvalidTooLargeText(final CharSequence text) {
 		this.tooLargeText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -267,8 +271,8 @@ public class WIntValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WIntValidator(").append(
-				this.isMandatory() ? "true" : "false").append(",");
+		js.append("new Wt3_3_4.WIntValidator(").append(this.isMandatory())
+				.append(',');
 		if (this.bottom_ != Integer.MIN_VALUE) {
 			js.append(this.bottom_);
 		} else {
@@ -280,15 +284,18 @@ public class WIntValidator extends WValidator {
 		} else {
 			js.append("null");
 		}
-		js.append(',').append(
-				WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidNotANumberText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooSmallText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooLargeText())
-						.getJsStringLiteral()).append(");");
+		js.append(",").append(
+				WWebWidget.jsStringLiteral(LocaleUtils
+						.getGroupSeparator(LocaleUtils.getCurrentLocale())))
+				.append(',').append(
+						WString.toWString(this.getInvalidBlankText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidNotANumberText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooSmallText())
+								.getJsStringLiteral()).append(',').append(
+						WString.toWString(this.getInvalidTooLargeText())
+								.getJsStringLiteral()).append(");");
 		return js.toString();
 	}
 
@@ -311,6 +318,6 @@ public class WIntValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WIntValidator",
-				"function(d,b,c,e,f,g,h){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:f};if(b!==null)if(a<b)return{valid:false,message:g};if(c!==null)if(a>c)return{valid:false,message:h};return{valid:true}}}");
+				"function(e,b,c,d,f,g,h,i){this.validate=function(a){a=String(a);if(a.length==0)return e?{valid:false,message:f}:{valid:true};if(d!=\"\")a=a.replace(d,\"\",\"g\");a=Number(a);if(isNaN(a)||Math.round(a)!=a)return{valid:false,message:g};if(b!==null)if(a<b)return{valid:false,message:h};if(c!==null)if(a>c)return{valid:false,message:i};return{valid:true}}}");
 	}
 }

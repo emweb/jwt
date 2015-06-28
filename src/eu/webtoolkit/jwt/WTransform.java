@@ -94,7 +94,7 @@ public class WTransform {
 	 * <p>
 	 * Copies the transformation from the <code>rhs</code>.
 	 */
-	public WTransform assign(WTransform rhs) {
+	public WTransform assign(final WTransform rhs) {
 		for (int i = 0; i < 6; ++i) {
 			this.m_[i] = rhs.m_[i];
 		}
@@ -117,7 +117,7 @@ public class WTransform {
 	 * <p>
 	 * Returns <code>true</code> if the transforms are exactly the same.
 	 */
-	public boolean equals(WTransform rhs) {
+	public boolean equals(final WTransform rhs) {
 		for (int i = 0; i < 6; ++i) {
 			if (this.m_[i] != rhs.m_[i]) {
 				return false;
@@ -230,7 +230,7 @@ public class WTransform {
 	 * 
 	 * @see WTransform#map(double x, double y, Double tx, Double ty)
 	 */
-	public WPointF map(WPointF p) {
+	public WPointF map(final WPointF p) {
 		double x;
 		double y;
 		x = this.m_[M11] * p.getX() + this.m_[M12] * p.getY() + this.m_[M13];
@@ -251,6 +251,31 @@ public class WTransform {
 	public void map(double x, double y, Double tx, Double ty) {
 		tx = this.m_[M11] * x + this.m_[M12] * y + this.m_[M13];
 		ty = this.m_[M21] * x + this.m_[M22] * y + this.m_[M23];
+	}
+
+	/**
+	 * Applies the transformation to a rectangle.
+	 * <p>
+	 * Since the rectangle is aligned with X and Y axes, this may increase the
+	 * size of the rectangle even for a transformation that only rotates.
+	 */
+	public WRectF map(final WRectF rect) {
+		double minX;
+		double minY;
+		double maxX;
+		double maxY;
+		WPointF p = this.map(rect.getTopLeft());
+		minX = maxX = p.getX();
+		minY = maxY = p.getY();
+		for (int i = 0; i < 3; ++i) {
+			WPointF p2 = this.map(i == 0 ? rect.getBottomLeft() : i == 1 ? rect
+					.getTopRight() : rect.getBottomRight());
+			minX = Math.min(minX, p2.getX());
+			maxX = Math.max(maxX, p2.getX());
+			minY = Math.min(minY, p2.getY());
+			maxY = Math.max(maxY, p2.getY());
+		}
+		return new WRectF(minX, minY, maxX - minX, maxY - minY);
 	}
 
 	/**
@@ -299,8 +324,7 @@ public class WTransform {
 	/**
 	 * Scales the transformation.
 	 * <p>
-	 * Applies a clock-wise rotation to the current transformation matrix, over
-	 * <code>angle</code> radians.
+	 * Scales the current transformation.
 	 * <p>
 	 * 
 	 * @see WTransform#shear(double sh, double sv)
@@ -334,8 +358,8 @@ public class WTransform {
 	/**
 	 * Adds a transform that is conceptually applied after this transform.
 	 */
-	public WTransform multiplyAndAssign(WTransform Y) {
-		WTransform X = this;
+	public WTransform multiplyAndAssign(final WTransform Y) {
+		final WTransform X = this;
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
 		double z12 = X.m_[M11] * Y.m_[M12] + X.m_[M12] * Y.m_[M22];
 		double z13 = X.m_[M11] * Y.m_[M13] + X.m_[M12] * Y.m_[M23] + X.m_[M13];
@@ -354,7 +378,7 @@ public class WTransform {
 	/**
 	 * Multiply 2 transform objects.
 	 */
-	public WTransform multiply(WTransform rhs) {
+	public WTransform multiply(final WTransform rhs) {
 		WTransform result = new WTransform();
 		result.assign(this);
 		return result.multiplyAndAssign(rhs);
@@ -463,17 +487,14 @@ public class WTransform {
 	 * orthonormalization</a>.
 	 */
 	public void decomposeTranslateRotateScaleSkew(
-			WTransform.TRSSDecomposition result) {
+			final WTransform.TRSSDecomposition result) {
 		double[] q1 = new double[2];
-		double[] q2 = new double[2];
 		double r11 = norm(this.m_[M11], this.m_[M21]);
 		q1[0] = this.m_[M11] / r11;
 		q1[1] = this.m_[M21] / r11;
 		double r12 = this.m_[M12] * q1[0] + this.m_[M22] * q1[1];
 		double r22 = norm(this.m_[M12] - r12 * q1[0], this.m_[M22] - r12
 				* q1[1]);
-		q2[0] = (this.m_[M12] - r12 * q1[0]) / r22;
-		q2[1] = (this.m_[M22] - r12 * q1[1]) / r22;
 		result.alpha = Math.atan2(q1[1], q1[0]);
 		result.sx = r11;
 		result.sy = r22;
@@ -532,7 +553,7 @@ public class WTransform {
 	 * Value Decomposition (SVD)</a>.
 	 */
 	public void decomposeTranslateRotateScaleRotate(
-			WTransform.TRSRDecomposition result) {
+			final WTransform.TRSRDecomposition result) {
 		double[] mtm = new double[4];
 		logger.debug(new StringWriter().append("M: \n").append(
 				String.valueOf(this.m_[M11])).append(" ").append(
@@ -591,6 +612,13 @@ public class WTransform {
 		return angle / 180. * 3.14159265358979323846;
 	}
 
+	/**
+	 * A constant that represents the identity transform.
+	 * <p>
+	 * 
+	 * @see WTransform#isIdentity()
+	 */
+	public static final WTransform Identity = new WTransform();
 	private static final int M11 = 0;
 	private static final int M12 = 1;
 	private static final int M21 = 2;
@@ -600,13 +628,6 @@ public class WTransform {
 	private static final int M23 = 5;
 	private static final int DY = 5;
 	private double[] m_ = new double[6];
-	/**
-	 * A constant that represents the identity transform.
-	 * <p>
-	 * 
-	 * @see WTransform#isIdentity()
-	 */
-	public static final WTransform Identity = new WTransform();
 
 	static double norm(double x1, double x2) {
 		return Math.sqrt(x1 * x1 + x2 * x2);

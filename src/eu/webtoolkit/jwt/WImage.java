@@ -78,7 +78,7 @@ public class WImage extends WInteractWidget {
 	 * <p>
 	 * The <code>imageLink</code> may link to a URL or resource.
 	 */
-	public WImage(WLink link, WContainerWidget parent) {
+	public WImage(final WLink link, WContainerWidget parent) {
 		super(parent);
 		this.altText_ = new WString();
 		this.imageLink_ = new WLink();
@@ -94,7 +94,7 @@ public class WImage extends WInteractWidget {
 	 * Calls {@link #WImage(WLink link, WContainerWidget parent) this(link,
 	 * (WContainerWidget)null)}
 	 */
-	public WImage(WLink link) {
+	public WImage(final WLink link) {
 		this(link, (WContainerWidget) null);
 	}
 
@@ -103,7 +103,8 @@ public class WImage extends WInteractWidget {
 	 * <p>
 	 * The <code>imageLink</code> may link to a URL or resource.
 	 */
-	public WImage(WLink link, CharSequence altText, WContainerWidget parent) {
+	public WImage(final WLink link, final CharSequence altText,
+			WContainerWidget parent) {
 		super(parent);
 		this.altText_ = WString.toWString(altText);
 		this.imageLink_ = new WLink();
@@ -120,7 +121,7 @@ public class WImage extends WInteractWidget {
 	 * {@link #WImage(WLink link, CharSequence altText, WContainerWidget parent)
 	 * this(link, altText, (WContainerWidget)null)}
 	 */
-	public WImage(WLink link, CharSequence altText) {
+	public WImage(final WLink link, final CharSequence altText) {
 		this(link, altText, (WContainerWidget) null);
 	}
 
@@ -131,7 +132,7 @@ public class WImage extends WInteractWidget {
 	 * @deprecated Use {@link WImage#WImage(WLink link, WContainerWidget parent)
 	 *             WImage()} instead.
 	 */
-	public WImage(String imageRef, WContainerWidget parent) {
+	public WImage(final String imageRef, WContainerWidget parent) {
 		super(parent);
 		this.altText_ = new WString();
 		this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
@@ -146,7 +147,7 @@ public class WImage extends WInteractWidget {
 	 * Calls {@link #WImage(String imageRef, WContainerWidget parent)
 	 * this(imageRef, (WContainerWidget)null)}
 	 */
-	public WImage(String imageRef) {
+	public WImage(final String imageRef) {
 		this(imageRef, (WContainerWidget) null);
 	}
 
@@ -159,7 +160,8 @@ public class WImage extends WInteractWidget {
 	 *             {@link WImage#WImage(WLink link, CharSequence altText, WContainerWidget parent)
 	 *             WImage()} instead.
 	 */
-	public WImage(String imageRef, CharSequence altText, WContainerWidget parent) {
+	public WImage(final String imageRef, final CharSequence altText,
+			WContainerWidget parent) {
 		super(parent);
 		this.altText_ = WString.toWString(altText);
 		this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
@@ -176,7 +178,7 @@ public class WImage extends WInteractWidget {
 	 * {@link #WImage(String imageRef, CharSequence altText, WContainerWidget parent)
 	 * this(imageRef, altText, (WContainerWidget)null)}
 	 */
-	public WImage(String imageRef, CharSequence altText) {
+	public WImage(final String imageRef, final CharSequence altText) {
 		this(imageRef, altText, (WContainerWidget) null);
 	}
 
@@ -189,7 +191,7 @@ public class WImage extends WInteractWidget {
 	 *             {@link WImage#WImage(WLink link, CharSequence altText, WContainerWidget parent)
 	 *             WImage()} instead.
 	 */
-	public WImage(WResource resource, CharSequence altText,
+	public WImage(WResource resource, final CharSequence altText,
 			WContainerWidget parent) {
 		super(parent);
 		this.altText_ = WString.toWString(altText);
@@ -208,7 +210,7 @@ public class WImage extends WInteractWidget {
 	 * {@link #WImage(WResource resource, CharSequence altText, WContainerWidget parent)
 	 * this(resource, altText, (WContainerWidget)null)}
 	 */
-	public WImage(WResource resource, CharSequence altText) {
+	public WImage(WResource resource, final CharSequence altText) {
 		this(resource, altText, (WContainerWidget) null);
 	}
 
@@ -234,13 +236,13 @@ public class WImage extends WInteractWidget {
 	 * 
 	 * @see WImage#getAlternateText()
 	 */
-	public void setAlternateText(CharSequence text) {
+	public void setAlternateText(final CharSequence text) {
 		if (canOptimizeUpdates() && text.equals(this.altText_)) {
 			return;
 		}
 		this.altText_ = WString.toWString(text);
 		this.flags_.set(BIT_ALT_TEXT_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
@@ -260,7 +262,7 @@ public class WImage extends WInteractWidget {
 	 * specifies application-dependent content, which may be used to generate an
 	 * image on demand.
 	 */
-	public void setImageLink(WLink link) {
+	public void setImageLink(final WLink link) {
 		if (link.getType() != WLink.Type.Resource && canOptimizeUpdates()
 				&& link.equals(this.imageLink_)) {
 			return;
@@ -275,7 +277,7 @@ public class WImage extends WInteractWidget {
 					});
 		}
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -293,7 +295,7 @@ public class WImage extends WInteractWidget {
 	 * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()}
 	 *             instead.
 	 */
-	public void setImageRef(String ref) {
+	public void setImageRef(final String ref) {
 		this.setImageLink(new WLink(ref));
 	}
 
@@ -345,7 +347,11 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * @see WImage#insertArea(int index, WAbstractArea area)
+	 * @see WImage#insertArea(int index, WAbstractArea area) <p>
+	 *      <i><b>Note: </b>Currently it is not possible to add a first area
+	 *      after the image has been rendered. If you want to use interactive
+	 *      areas you need to add one immediately. </i>
+	 *      </p>
 	 */
 	public void addArea(WAbstractArea area) {
 		this.insertArea(this.map_ != null ? this.map_.getCount() : 0, area);
@@ -362,13 +368,17 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * @see WImage#addArea(WAbstractArea area)
+	 * @see WImage#addArea(WAbstractArea area) <p>
+	 *      <i><b>Note: </b>Currently it is not possible to add a first area
+	 *      after the image has been rendered. If you want to use interactive
+	 *      areas you need to add one immediately. </i>
+	 *      </p>
 	 */
 	public void insertArea(int index, WAbstractArea area) {
 		if (!(this.map_ != null)) {
 			this.addChild(this.map_ = new MapWidget());
 			this.flags_.set(BIT_MAP_CREATED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+			this.repaint();
 		}
 		this.map_.insertWidget(index, area.getImpl());
 	}
@@ -430,6 +440,7 @@ public class WImage extends WInteractWidget {
 		return this.voidEventSignal(LOAD_SIGNAL, true);
 	}
 
+	private static String LOAD_SIGNAL = "load";
 	private static final int BIT_ALT_TEXT_CHANGED = 0;
 	private static final int BIT_IMAGE_LINK_CHANGED = 1;
 	private static final int BIT_MAP_CREATED = 2;
@@ -440,10 +451,10 @@ public class WImage extends WInteractWidget {
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.map_ != null) {
 			DomElement e = DomElement.getForUpdate("i" + this.getId(),
 					DomElementType.DomElement_IMG);
@@ -454,7 +465,7 @@ public class WImage extends WInteractWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		DomElement img = element;
 		if (all && element.getType() == DomElementType.DomElement_SPAN) {
 			DomElement map = this.map_.createSDomElement(WApplication
@@ -498,6 +509,4 @@ public class WImage extends WInteractWidget {
 		this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		super.propagateRenderOk(deep);
 	}
-
-	private static String LOAD_SIGNAL = "load";
 }

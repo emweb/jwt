@@ -83,7 +83,7 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Creates a label with a given text.
 	 */
-	public WLabel(CharSequence text, WContainerWidget parent) {
+	public WLabel(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.buddy_ = null;
 		this.image_ = null;
@@ -101,7 +101,7 @@ public class WLabel extends WInteractWidget {
 	 * Calls {@link #WLabel(CharSequence text, WContainerWidget parent)
 	 * this(text, (WContainerWidget)null)}
 	 */
-	public WLabel(CharSequence text) {
+	public WLabel(final CharSequence text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -162,13 +162,13 @@ public class WLabel extends WInteractWidget {
 			this.buddy_.setLabel(this);
 		}
 		this.buddyChanged_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 	}
 
 	/**
 	 * Sets the label text.
 	 */
-	public void setText(CharSequence text) {
+	public void setText(final CharSequence text) {
 		if (this.getText().equals(text)) {
 			return;
 		}
@@ -177,7 +177,7 @@ public class WLabel extends WInteractWidget {
 			this.text_.setWordWrap(false);
 			this.text_.setParentWidget(this);
 			this.newText_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		this.text_.setText(text);
 	}
@@ -194,6 +194,44 @@ public class WLabel extends WInteractWidget {
 	}
 
 	/**
+	 * Sets the text format.
+	 * <p>
+	 * The textFormat controls how the string should be interpreted: either as
+	 * plain text, which is displayed literally, or as XHTML-markup.
+	 * <p>
+	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
+	 * current text is literal (not created using {@link }), the current text is
+	 * parsed using an XML parser which discards malicious tags and attributes
+	 * silently. When the parser encounters an XML parse error, the textFormat
+	 * is left unchanged, and this method returns false.
+	 * <p>
+	 * Returns whether the textFormat could be set for the current text.
+	 * <p>
+	 * The default format is {@link TextFormat#XHTMLText}.
+	 */
+	public boolean setTextFormat(TextFormat format) {
+		if (!(this.text_ != null)) {
+			this.setText("A");
+			this.setText("");
+		}
+		return this.text_.setTextFormat(format);
+	}
+
+	/**
+	 * Returns the text format.
+	 * <p>
+	 * 
+	 * @see WLabel#setTextFormat(TextFormat format)
+	 */
+	public TextFormat getTextFormat() {
+		if (!(this.text_ != null)) {
+			return TextFormat.XHTMLText;
+		} else {
+			return this.text_.getTextFormat();
+		}
+	}
+
+	/**
 	 * Sets the image.
 	 */
 	public void setImage(WImage image, Side side) {
@@ -205,7 +243,7 @@ public class WLabel extends WInteractWidget {
 			this.imageSide_ = side;
 		}
 		this.newImage_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -244,7 +282,7 @@ public class WLabel extends WInteractWidget {
 			this.text_ = new WText();
 			this.text_.setParentWidget(this);
 			this.newText_ = true;
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		this.text_.setWordWrap(wordWrap);
 	}
@@ -267,7 +305,7 @@ public class WLabel extends WInteractWidget {
 	private boolean newImage_;
 	private boolean newText_;
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		WApplication app = WApplication.getInstance();
 		if (this.image_ != null && this.text_ != null) {
 			if (this.imageSide_ == Side.Left) {
@@ -299,7 +337,7 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.text_ != null) {
 			((WWebWidget) this.text_).getDomChanges(result, app);
@@ -318,16 +356,12 @@ public class WLabel extends WInteractWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		if (this.text_ != null) {
-			if (enabled) {
-				this.text_.removeStyleClass("Wt-disabled");
-			} else {
-				this.text_.addStyleClass("Wt-disabled");
-			}
+			this.text_.propagateSetEnabled(enabled);
 		}
 		super.propagateSetEnabled(enabled);
 	}
 
-	protected void updateImage(DomElement element, boolean all,
+	protected void updateImage(final DomElement element, boolean all,
 			WApplication app, int pos) {
 		if (this.newImage_ || all) {
 			if (this.image_ != null) {
@@ -337,7 +371,7 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	protected void updateText(DomElement element, boolean all,
+	protected void updateText(final DomElement element, boolean all,
 			WApplication app, int pos) {
 		if (this.newText_ || all) {
 			if (this.text_ != null) {

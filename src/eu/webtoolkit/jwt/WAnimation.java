@@ -305,7 +305,7 @@ public class WAnimation {
 	 * <p>
 	 * Returns <code>true</code> if the transitions are exactly the same.
 	 */
-	public boolean equals(WAnimation animation) {
+	public boolean equals(final WAnimation animation) {
 		return animation.effects_.equals(this.effects_)
 				&& animation.duration_ == this.duration_;
 	}

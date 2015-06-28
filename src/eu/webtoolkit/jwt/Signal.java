@@ -67,4 +67,9 @@ public class Signal extends AbstractSignal {
 		for (SignalImpl.Listener listener : listeners)
 			((Listener) (listener)).trigger();
 	}
+
+	@Override
+	protected int getArgumentCount() {
+		return 0;
+	}
 }

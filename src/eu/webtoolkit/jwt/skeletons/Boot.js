@@ -1,25 +1,91 @@
+window.onresize = function() { };
+
 function loadScript(url, callback) {
-  var s = document.createElement('script');
-
-  if (callback) {
-    if (s.readyState) {
-      s.onreadystatechange = function() {
-        if (s.readyState == "loaded" || s.readyState == "complete") {
-          s.onreadystatechange = null;
-          callback();
-        }
-      };
-    } else {
-      s.onload = function() {
-        callback();
-      };
-    }
-  }
-
-  s.setAttribute('src', url);
   var h = document.getElementsByTagName('head')[0];
-  h.appendChild(s);
+  var agent = navigator.userAgent.toLowerCase();
+  var re = /firefox\/(\d+)\./;
+  var m = re.exec(agent);
+
+  if (m && m[1] >= 20) {
+    var async = new XMLHttpRequest();
+    async.open('GET', url, true);
+
+    async.onreadystatechange = function() {
+      if (async.readyState == 4) {
+	var s = document.createElement('script');
+	s.type = 'text/javascript';
+	s.innerHTML=async.responseText;
+	h.appendChild(s);
+	if (callback)
+	  callback();
+      }
+    };
+
+    async.send(null);
+  } else {
+    var s = document.createElement('script');
+    if (callback) {
+      if (s.readyState) {
+	s.onreadystatechange = function() {
+	  if (s.readyState == "loaded" || s.readyState == "complete") {
+	    s.onreadystatechange = null;
+	    callback();
+	  }
+	};
+      } else {
+	s.onload = function() {
+	  callback();
+	};
+      }
+    }
+
+    s.setAttribute('src', url);
+    h.appendChild(s);
+  }
 }
+
+_$_$if_PROGRESS_$_();
+var delayedClicks = [];
+function delayClick(e) {
+  /* IE8 does not actually do detachEvent() in progressed() ? */
+  var form = document.getElementById('Wt-form');
+  if (form == null)
+    return true;
+
+  var ec = {
+    bubbles: e.bubbles,
+    cancelable: e.cancelable,
+    detail: e.detail,
+    screenX: e.screenX, screenY: e.screenY,
+    clientX: e.clientX, clientY: e.clientY,
+    ctrlKey: e.ctrlKey, altKey: e.altKey, shiftKey: e.shiftKey,
+    metaKey: e.metaKey, button: e.button,
+    targetId: (e.target || e.srcElement).id
+  };
+
+  delayedClicks.push(ec);
+
+  if (e.stopPropagation)
+    e.stopPropagation();
+  if (e.preventDefault)
+    e.preventDefault();
+  e.cancelBubble = true;
+  e.returnValue = false;
+  return false;
+}
+
+function setupDelayClick() {
+  var db = document.body;
+  if (!db)
+     setTimeout(setupDelayClick, 1);
+  else {
+    if (db.addEventListener)
+      db.addEventListener('click', delayClick, true);
+    else
+      db.attachEvent('onclick', delayClick);
+  }
+}
+_$_$endif_$_();
 
 (function() {
   function doLoad() {
@@ -118,17 +184,21 @@ var deployPathInfo = '&deployPath=' + encodeURIComponent(deployPath);
 // ajax support
 var ajax = (win.XMLHttpRequest || win.ActiveXObject);
 
+var no_replace = _$_RELOAD_IS_NEWSESSION_$_;
+var inOneSecond = new Date();
+inOneSecond.setTime(inOneSecond.getTime() + 1000);
+
+_$_$if_COOKIE_CHECKS_$_();
 // client-side cookie support
 var testcookie='jscookietest=valid';
 doc.cookie=testcookie;
-var no_replace = _$_RELOAD_IS_NEWSESSION_$_
-  || (_$_USE_COOKIES_$_ && doc.cookie.indexOf(testcookie) != -1);
+no_replace = no_replace || 
+	  (_$_USE_COOKIES_$_ && doc.cookie.indexOf(testcookie) != -1);
 doc.cookie=testcookie+';expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
 // server-side cookie support
-var inOneSecond = new Date();
-inOneSecond.setTime(inOneSecond.getTime() + 1000);
 doc.cookie='WtTestCookie=ok;path=/;expires=' + inOneSecond.toGMTString();
+_$_$endif_$_();
 
 // hash to query
 var hash = win.location.hash;
@@ -144,9 +214,32 @@ if ((ua.indexOf("gecko") == -1) || (ua.indexOf("webkit") != -1))
   hash = unescape(hash);
 
 // scale (VML)
-var scaleInfo = "";
+var otherInfo = "";
 if (screen.deviceXDPI != screen.logicalXDPI)
-  scaleInfo = "&scale=" + screen.deviceXDPI / screen.logicalXDPI;
+  otherInfo = "&scale=" + screen.deviceXDPI / screen.logicalXDPI;
+
+_$_$if_WEBGL_DETECT_$_();
+// webgl-check
+var webGLInfo = "";
+if (window.WebGLRenderingContext) {
+    var canvas = document.createElement("canvas");
+    var ctx = null;
+    try {
+        ctx = canvas.getContext('webgl', {antialias: true});
+    } catch (e) {}
+    if (ctx == null) {
+        try {
+            ctx = canvas.getContext('experimental-webgl');
+        } catch (e) {}
+    }
+    if (ctx != null) {
+	otherInfo += "&webGL=true";
+    }
+}
+_$_$endif_$_();
+
+// info about screen resolution
+otherInfo += "&scrW=" + screen.width + "&scrH=" + screen.height;
 
 // determine url
 var selfUrl = _$_SELF_URL_$_ + '&sid=' + _$_SCRIPT_ID_$_;
@@ -154,6 +247,10 @@ var selfUrl = _$_SELF_URL_$_ + '&sid=' + _$_SCRIPT_ID_$_;
 // determine html history support
 var htmlHistory = !!(window.history && window.history.pushState),
     htmlHistoryInfo = htmlHistory ? "&htmlHistory=true" : "";
+
+// determine time zone offset
+var tzOffset = (new Date()).getTimezoneOffset();
+otherInfo += "&tz=" + (-tzOffset);
 
 var needSessionInUrl = !no_replace || !ajax;
 
@@ -198,7 +295,15 @@ _$_$if_HYBRID_$_();
 _$_$endif_$_();
     }
 
-    var allInfo = hashInfo + scaleInfo + htmlHistoryInfo + deployPathInfo;
+_$_$if_PROGRESS_$_();
+    /*
+      Make sure that we are not processing click events while progressing.
+      Instead, delay them.
+    */
+    setupDelayClick();
+_$_$endif_$_();
+
+    var allInfo = hashInfo + otherInfo + htmlHistoryInfo + deployPathInfo;
 _$_$ifnot_SPLIT_SCRIPT_$_();
     loadScript(selfUrl + allInfo + '&request=script&rand=' + rand(),
                null);
@@ -215,12 +320,7 @@ _$_$endif_$_();
 }
     }
 
-_$_$if_DEFER_SCRIPT_$_();
  setTimeout(doLoad, 0);
-_$_$endif_$_();
-_$_$ifnot_DEFER_SCRIPT_$_();
- doLoad();
-_$_$endif_$_();
 
 })();
 

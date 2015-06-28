@@ -103,11 +103,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	  trueTypeFonts.addFontCollection(directory, recursive);
 	}
 
-	private double[] getSizeArray(WLength width, WLength height)
+	private float[] getSizeArray(WLength width, WLength height)
 	{
-		double [] size = new double[2];
-		size[0] = width.getValue();
-		size[1] = height.getValue();
+		float [] size = new float[2];
+		size[0] = (float)width.getValue();
+		size[1] = (float)height.getValue();
 		return size;
 	}
 
@@ -210,29 +210,35 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 	@Override
 	public void drawImage(WRectF rect, String imgUrl, int imgWidth, int imgHeight, WRectF sourceRect) {
+		processChangeFlags();
+		
 		Image image = null;
 		
-		if (UriUtils.isDataUri(imgUrl)) {
-			Uri uri = UriUtils.parseDataUri(imgUrl);
+		if (DataUri.isDataUri(imgUrl)) {
+			DataUri uri = new DataUri(imgUrl);
 			try {
+				byte[] b = new byte[uri.data.size()];
+				for (int i = 0; i < uri.data.size(); ++i)
+					b[i] = uri.data.get(i);
+				
 				if ("image/png".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(uri.data), ImageType.PNG);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.PNG);
 				else if ("image/jpeg".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(uri.data), ImageType.JPEG);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.JPG);
 				else if ("image/bmp".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(uri.data), ImageType.BMP);
+					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.BMP);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else {
-			String mimeType = ImageUtils.identifyImageFileMimeType(imgUrl);
+			String mimeType = ImageUtils.identifyMimeType(imgUrl);
 			try {
 				if ("image/png".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.PNG);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.PNG);
 				else if ("image/jpeg".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.JPEG);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.JPG);
 				else if ("image/bmp".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(new FileInputStream(imgUrl)), ImageType.BMP);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.BMP);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -247,8 +253,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	        
 			TRSSDecomposition d = new TRSSDecomposition();
 			currentTransform.decomposeTranslateRotateScaleSkew(d);
-	        double xScale  = (rect.getWidth() / w) * d.sx;
-	        double yScale  = (rect.getHeight() / h) * d.sy;
+	        float xScale  = (float) ((rect.getWidth() / w) * d.sx);
+	        float yScale  = (float) ((rect.getHeight() / h) * d.sy);
 	        image.scaleBy(xScale, yScale);
 	        try {
 				image.drawOn(this.page);
@@ -555,7 +561,6 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 	@Override
 	public void done() {
-		
 	}
 
 	@Override
@@ -577,13 +582,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("application/pdf");
 
-		try {
-			this.pdf.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		response.out().write(bos.toString());
-		response.out().flush();
+		write(response.getOutputStream());
 	}
 	
 	public void write(OutputStream os) throws IOException {
@@ -611,7 +610,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				page.setDefaultLinePattern();
 			page.setLineCapStyle(stroke.cap);
 			page.setLineJoinStyle(stroke.join);
-			page.setPenWidth(stroke.width);
+			page.setPenWidth(stroke.width * 0.75); // pixel to point
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

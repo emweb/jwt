@@ -53,5 +53,5 @@ public interface WLayoutItemImpl {
 	/**
 	 * Provides a hint that can aid in layout strategy / algorithm.
 	 */
-	public void setHint(String name, String value);
+	public void setHint(final String name, final String value);
 }

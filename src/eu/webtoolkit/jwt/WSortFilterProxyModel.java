@@ -48,9 +48,8 @@ import org.slf4j.LoggerFactory;
  * WAbstractItemModel#sort()} method. In this way, a view class such as
  * {@link WTreeView} may resort the model as indicated by the user. Use
  * {@link WSortFilterProxyModel#setSortRole(int role) setSortRole()} to indicate
- * on what data role sorting should be done, or reimplement the
- * {@link WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
- * lessThan()} method to provide a specialized sorting method.
+ * on what data role sorting should be done, or reimplement the lessThan()
+ * method to provide a specialized sorting method.
  * <p>
  * By default, the proxy does not automatically refilter and resort when the
  * original model changes. Data changes or row additions to the source model are
@@ -115,7 +114,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		this((WObject) null);
 	}
 
-	public WModelIndex mapFromSource(WModelIndex sourceIndex) {
+	public WModelIndex mapFromSource(final WModelIndex sourceIndex) {
 		if ((sourceIndex != null)) {
 			WModelIndex sourceParent = sourceIndex.getParent();
 			WSortFilterProxyModel.Item item = this
@@ -131,7 +130,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex mapToSource(WModelIndex proxyIndex) {
+	public WModelIndex mapToSource(final WModelIndex proxyIndex) {
 		if ((proxyIndex != null)) {
 			WSortFilterProxyModel.Item parentItem = this
 					.parentItemFromIndex(proxyIndex);
@@ -143,6 +142,15 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
+	/**
+	 * Sets the source model.
+	 * <p>
+	 * The source model provides the actual data for the proxy model.
+	 * <p>
+	 * Ownership of the source model is <i>not</i> transferred.
+	 * <p>
+	 * All signals of the source model are forwarded to the proxy model.
+	 */
 	public void setSourceModel(WAbstractItemModel model) {
 		if (this.getSourceModel() != null) {
 			for (int i = 0; i < this.modelConnections_.size(); ++i) {
@@ -298,17 +306,13 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
 	 * @see WSortFilterProxyModel#setFilterRole(int role)
 	 */
-	public void setFilterRegExp(String pattern) {
+	public void setFilterRegExp(final String pattern) {
 		if (!(this.regex_ != null)) {
 			this.regex_ = Pattern.compile(pattern);
 		} else {
 			this.regex_ = Pattern.compile(pattern, this.regex_.flags());
 		}
-		if (this.getSourceModel() != null) {
-			this.layoutAboutToBeChanged().trigger();
-			this.resetMappings();
-			this.layoutChanged().trigger();
-		}
+		this.invalidate();
 	}
 
 	/**
@@ -375,8 +379,6 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
-	 * 
-	 * @see WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
 	 */
 	public void setSortRole(int role) {
 		this.sortRole_ = role;
@@ -428,8 +430,6 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * model indexes. Therefore it is usually less complicated to manipulate
 	 * directly the source model instead.</i>
 	 * </p>
-	 * 
-	 * @see WSortFilterProxyModel#lessThan(WModelIndex lhs, WModelIndex rhs)
 	 */
 	public void setDynamicSortFilter(boolean enable) {
 		this.dynamic_ = enable;
@@ -445,16 +445,32 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		return this.dynamic_;
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	/**
+	 * Invalidates the current filter.
+	 * <p>
+	 * This refilters and resorts the model, and is useful only if you have
+	 * reimplemented
+	 * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
+	 * filterAcceptRow()} and/or lessThan()
+	 */
+	public void invalidate() {
+		if (this.getSourceModel() != null) {
+			this.layoutAboutToBeChanged().trigger();
+			this.resetMappings();
+			this.layoutChanged().trigger();
+		}
+	}
+
+	public int getColumnCount(final WModelIndex parent) {
 		return this.getSourceModel().getColumnCount(this.mapToSource(parent));
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		WSortFilterProxyModel.Item item = this.itemFromIndex(parent);
 		return item.proxyRowMap_.size();
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		if ((index != null)) {
 			WSortFilterProxyModel.Item parentItem = this
 					.parentItemFromIndex(index);
@@ -464,13 +480,13 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		WSortFilterProxyModel.Item item = this.itemFromIndex(parent);
 		return this.createIndex(row, column, item);
 	}
 
 	public boolean setHeaderData(int section, Orientation orientation,
-			Object value, int role) {
+			final Object value, int role) {
 		if (orientation == Orientation.Vertical) {
 			section = this.mapToSource(this.getIndex(section, 0)).getRow();
 		}
@@ -507,7 +523,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * usually a good idea to temporarily disable the dynamic sort/filtering
 	 * behaviour while inserting new row(s) of data.
 	 */
-	public boolean insertRows(int row, int count, WModelIndex parent) {
+	public boolean insertRows(int row, int count, final WModelIndex parent) {
 		int sourceRow;
 		int currentCount = this.getRowCount(parent);
 		if (row < currentCount) {
@@ -537,7 +553,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * The rows are removed from the source model.
 	 */
-	public boolean removeRows(int row, int count, WModelIndex parent) {
+	public boolean removeRows(int row, int count, final WModelIndex parent) {
 		for (int i = 0; i < count; ++i) {
 			int sourceRow = this.mapToSource(this.getIndex(row, 0, parent))
 					.getRow();
@@ -552,11 +568,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	public void sort(int column, SortOrder order) {
 		this.sortKeyColumn_ = column;
 		this.sortOrder_ = order;
-		if (this.getSourceModel() != null) {
-			this.layoutAboutToBeChanged().trigger();
-			this.resetMappings();
-			this.layoutChanged().trigger();
-		}
+		this.invalidate();
 	}
 
 	/**
@@ -569,7 +581,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * You may want to reimplement this method to provide specialized filtering.
 	 */
-	protected boolean filterAcceptRow(int sourceRow, WModelIndex sourceParent) {
+	protected boolean filterAcceptRow(int sourceRow,
+			final WModelIndex sourceParent) {
 		if (this.regex_ != null) {
 			WString s = StringUtils.asString(this.getSourceModel().getIndex(
 					sourceRow, this.filterKeyColumn_, sourceParent).getData(
@@ -591,8 +604,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * You may want to reimplement this method to provide specialized sorting.
 	 */
-	protected boolean lessThan(WModelIndex lhs, WModelIndex rhs) {
-		return this.compare(lhs, rhs) < 0;
+	protected int compare(final WModelIndex lhs, final WModelIndex rhs) {
+		return ObjectUtils.compare(lhs.getData(this.sortRole_), rhs
+				.getData(this.sortRole_));
 	}
 
 	static class Item extends WAbstractProxyModel.BaseItem {
@@ -601,7 +615,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		public List<Integer> sourceRowMap_;
 		public List<Integer> proxyRowMap_;
 
-		public Item(WModelIndex sourceIndex) {
+		public Item(final WModelIndex sourceIndex) {
 			super(sourceIndex);
 			this.sourceRowMap_ = new ArrayList<Integer>();
 			this.proxyRowMap_ = new ArrayList<Integer>();
@@ -647,33 +661,39 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	private SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> mappedIndexes_;
 	private WSortFilterProxyModel.Item mappedRootItem_;
 
-	private void sourceColumnsAboutToBeInserted(WModelIndex parent, int start,
-			int end) {
+	private void sourceColumnsAboutToBeInserted(final WModelIndex parent,
+			int start, int end) {
 		this.beginInsertColumns(this.mapFromSource(parent), start, end);
 	}
 
-	private void sourceColumnsInserted(WModelIndex parent, int start, int end) {
+	private void sourceColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		this.endInsertColumns();
 	}
 
-	private void sourceColumnsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void sourceColumnsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		this.beginRemoveColumns(this.mapFromSource(parent), start, end);
 	}
 
-	private void sourceColumnsRemoved(WModelIndex parent, int start, int end) {
+	private void sourceColumnsRemoved(final WModelIndex parent, int start,
+			int end) {
 		this.endRemoveColumns();
 	}
 
-	private void sourceRowsAboutToBeInserted(WModelIndex parent, int start,
-			int end) {
+	private void sourceRowsAboutToBeInserted(final WModelIndex parent,
+			int start, int end) {
 		if (this.inserting_) {
 			return;
 		}
-		this.itemFromIndex(this.mapFromSource(parent));
+		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
+		this.itemFromIndex(pparent);
 	}
 
-	private void sourceRowsInserted(WModelIndex parent, int start, int end) {
+	private void sourceRowsInserted(final WModelIndex parent, int start, int end) {
 		this.shiftModelIndexes(parent, start, end - start + 1,
 				this.mappedIndexes_);
 		if (this.inserting_) {
@@ -681,6 +701,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 		int count = end - start + 1;
 		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
 			if (item.proxyRowMap_.get(i) >= start) {
@@ -709,9 +732,12 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void sourceRowsAboutToBeRemoved(WModelIndex parent, int start,
-			int end) {
+	private void sourceRowsAboutToBeRemoved(final WModelIndex parent,
+			int start, int end) {
 		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int row = start; row <= end; ++row) {
 			int mappedRow = item.sourceRowMap_.get(row);
@@ -724,10 +750,13 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private void sourceRowsRemoved(WModelIndex parent, int start, int end) {
+	private void sourceRowsRemoved(final WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
 		this.shiftModelIndexes(parent, start, -count, this.mappedIndexes_);
 		WModelIndex pparent = this.mapFromSource(parent);
+		if ((parent != null) && !(pparent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(pparent);
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
 			if (item.proxyRowMap_.get(i) >= start) {
@@ -739,7 +768,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		;
 	}
 
-	private void sourceDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
+	private void sourceDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
+		if (!(topLeft != null) || !(bottomRight != null)) {
+			return;
+		}
 		boolean refilter = this.dynamic_
 				&& (this.filterKeyColumn_ >= topLeft.getColumn() && this.filterKeyColumn_ <= bottomRight
 						.getColumn());
@@ -747,6 +780,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 				&& (this.sortKeyColumn_ >= topLeft.getColumn() && this.sortKeyColumn_ <= bottomRight
 						.getColumn());
 		WModelIndex parent = this.mapFromSource(topLeft.getParent());
+		if ((topLeft.getParent() != null) && !(parent != null)) {
+			return;
+		}
 		WSortFilterProxyModel.Item item = this.itemFromIndex(parent);
 		for (int row = topLeft.getRow(); row <= bottomRight.getRow(); ++row) {
 			int oldMappedRow = item.sourceRowMap_.get(row);
@@ -816,7 +852,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private WSortFilterProxyModel.Item itemFromSourceIndex(
-			WModelIndex sourceParent) {
+			final WModelIndex sourceParent) {
 		if (!(sourceParent != null)) {
 			if (!(this.mappedRootItem_ != null)) {
 				WSortFilterProxyModel.Item result = new WSortFilterProxyModel.Item(
@@ -839,11 +875,12 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 	}
 
-	private WSortFilterProxyModel.Item parentItemFromIndex(WModelIndex index) {
+	private WSortFilterProxyModel.Item parentItemFromIndex(
+			final WModelIndex index) {
 		return (WSortFilterProxyModel.Item) index.getInternalPointer();
 	}
 
-	private WSortFilterProxyModel.Item itemFromIndex(WModelIndex index) {
+	private WSortFilterProxyModel.Item itemFromIndex(final WModelIndex index) {
 		if ((index != null)) {
 			WSortFilterProxyModel.Item parentItem = this
 					.parentItemFromIndex(index);
@@ -889,6 +926,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private void rebuildSourceRowMap(WSortFilterProxyModel.Item item) {
+		for (int i = 0; i < item.sourceRowMap_.size(); ++i) {
+			item.sourceRowMap_.set(i, -1);
+		}
 		for (int i = 0; i < item.proxyRowMap_.size(); ++i) {
 			item.sourceRowMap_.set(item.proxyRowMap_.get(i), i);
 		}
@@ -903,10 +943,5 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 			return CollectionUtils.insertionPoint(item.proxyRowMap_, sourceRow,
 					new WSortFilterProxyModel.Compare(this, item));
 		}
-	}
-
-	private int compare(WModelIndex lhs, WModelIndex rhs) {
-		return ObjectUtils.compare(lhs.getData(this.sortRole_), rhs
-				.getData(this.sortRole_));
 	}
 }

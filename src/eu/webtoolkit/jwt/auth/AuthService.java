@@ -139,7 +139,8 @@ public class AuthService {
 	 * whether there is a user with the same verified email address as the one
 	 * indicated by the identity.
 	 */
-	public User identifyUser(Identity identity, AbstractUserDatabase users) {
+	public User identifyUser(final Identity identity,
+			final AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction t = users.startTransaction();
 		User user = users.findWithIdentity(identity.getProvider(), new WString(
 				identity.getId()).toString());
@@ -189,7 +190,7 @@ public class AuthService {
 	 * @see AuthService#setTokenHashFunction(HashFunction function)
 	 * @see AuthService#setAuthTokenValidity(int minutes)
 	 */
-	public void setAuthTokensEnabled(boolean enabled, String cookieName) {
+	public void setAuthTokensEnabled(boolean enabled, final String cookieName) {
 		this.authTokens_ = enabled;
 		this.authTokenCookieName_ = cookieName;
 	}
@@ -260,7 +261,7 @@ public class AuthService {
 	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
 	 * processAuthToken()}.
 	 */
-	public String createAuthToken(User user) {
+	public String createAuthToken(final User user) {
 		if (!user.isValid()) {
 			throw new WException("Auth: createAuthToken(): user invalid");
 		}
@@ -268,8 +269,8 @@ public class AuthService {
 				.startTransaction();
 		String random = MathUtils.randomId(this.tokenLength_);
 		String hash = this.getTokenHashFunction().compute(random, "");
-		Token token = new Token(hash, new WDate(new Date())
-				.addSeconds(this.authTokenValidity_ * 60));
+		Token token = new Token(hash, WDate.getCurrentDate().addSeconds(
+				this.authTokenValidity_ * 60));
 		user.addAuthToken(token);
 		if (t != null) {
 			t.commit();
@@ -284,19 +285,25 @@ public class AuthService {
 	 * with a token hash value stored in database. If it matches, the token is
 	 * removed and a new token is created for the identified user.
 	 */
-	public AuthTokenResult processAuthToken(String token,
-			AbstractUserDatabase users) {
+	public AuthTokenResult processAuthToken(final String token,
+			final AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction t = users.startTransaction();
 		String hash = this.getTokenHashFunction().compute(token, "");
 		User user = users.findWithAuthToken(hash);
 		if (user.isValid()) {
-			user.removeAuthToken(hash);
-			String newToken = this.createAuthToken(user);
+			String newToken = MathUtils.randomId(this.tokenLength_);
+			String newHash = this.getTokenHashFunction().compute(newToken, "");
+			int validity = user.updateAuthToken(hash, newHash);
+			if (validity < 0) {
+				user.removeAuthToken(hash);
+				newToken = this.createAuthToken(user);
+				validity = this.authTokenValidity_ * 60;
+			}
 			if (t != null) {
 				t.commit();
 			}
 			return new AuthTokenResult(AuthTokenResult.Result.Valid, user,
-					newToken);
+					newToken, validity);
 		} else {
 			if (t != null) {
 				t.commit();
@@ -333,10 +340,13 @@ public class AuthService {
 	 */
 	public void setEmailVerificationEnabled(boolean enabled) {
 		this.emailVerification_ = enabled;
+		if (!enabled) {
+			this.emailVerificationReq_ = false;
+		}
 	}
 
 	/**
-	 * Returns wheter email verification is configured.
+	 * Returns whether email verification is configured.
 	 * <p>
 	 * 
 	 * @see AuthService#setEmailVerificationEnabled(boolean enabled)
@@ -346,11 +356,35 @@ public class AuthService {
 	}
 
 	/**
+	 * Configure email verificiation to be required for login.
+	 * <p>
+	 * When enabled, a user will not be able to login if the email-address was
+	 * not verified.
+	 */
+	public void setEmailVerificationRequired(boolean enabled) {
+		this.emailVerificationReq_ = enabled;
+		if (enabled) {
+			this.emailVerification_ = true;
+		}
+	}
+
+	/**
+	 * <p>
+	 * \ Returns whether email verification is required for login.
+	 * <p>
+	 * 
+	 * @see AuthService#setEmailVerificationRequired(boolean enabled)
+	 */
+	public boolean isEmailVerificationRequired() {
+		return this.emailVerificationReq_;
+	}
+
+	/**
 	 * Sets the internal path used to present tokens in emails.
 	 * <p>
 	 * The default path is &quot;/auth/mail/&quot;.
 	 */
-	public void setEmailRedirectInternalPath(String internalPath) {
+	public void setEmailRedirectInternalPath(final String internalPath) {
 		this.redirectInternalPath_ = internalPath;
 	}
 
@@ -373,7 +407,7 @@ public class AuthService {
 	 * It returns an empty string if the internal path does not contain an email
 	 * token.
 	 */
-	public String parseEmailToken(String internalPath) {
+	public String parseEmailToken(final String internalPath) {
 		if (this.emailVerification_
 				&& WApplication.pathMatches(internalPath,
 						this.redirectInternalPath_)) {
@@ -395,14 +429,14 @@ public class AuthService {
 	 * @see AuthService#processEmailToken(String token, AbstractUserDatabase
 	 *      users)
 	 */
-	public void verifyEmailAddress(User user, String address)
+	public void verifyEmailAddress(final User user, final String address)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
 			IOException {
 		user.setUnverifiedEmail(address);
 		String random = MathUtils.randomId(this.tokenLength_);
 		String hash = this.getTokenHashFunction().compute(random, "");
-		Token t = new Token(hash, new WDate(new Date())
-				.addSeconds(this.emailTokenValidity_ * 60));
+		Token t = new Token(hash, WDate.getCurrentDate().addSeconds(
+				this.emailTokenValidity_ * 60));
 		user.setEmailToken(t, User.EmailTokenRole.VerifyEmail);
 		this.sendConfirmMail(address, user, random);
 	}
@@ -422,14 +456,15 @@ public class AuthService {
 	 * @see AuthService#processEmailToken(String token, AbstractUserDatabase
 	 *      users)
 	 */
-	public void lostPassword(String emailAddress, AbstractUserDatabase users)
+	public void lostPassword(final String emailAddress,
+			final AbstractUserDatabase users)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
 			IOException {
 		User user = users.findWithEmail(emailAddress);
 		if (user.isValid()) {
 			String random = MathUtils.randomId(this.getRandomTokenLength());
 			String hash = this.getTokenHashFunction().compute(random, "");
-			WDate expires = new WDate(new Date());
+			WDate expires = WDate.getCurrentDate();
 			expires = expires.addSeconds(this.getEmailTokenValidity() * 60);
 			Token t = new Token(hash, expires);
 			user.setEmailToken(t, User.EmailTokenRole.LostPassword);
@@ -456,14 +491,14 @@ public class AuthService {
 	 * @see AuthService#lostPassword(String emailAddress, AbstractUserDatabase
 	 *      users)
 	 */
-	public EmailTokenResult processEmailToken(String token,
-			AbstractUserDatabase users) {
+	public EmailTokenResult processEmailToken(final String token,
+			final AbstractUserDatabase users) {
 		AbstractUserDatabase.Transaction tr = users.startTransaction();
 		String hash = this.getTokenHashFunction().compute(token, "");
 		User user = users.findWithEmailToken(hash);
 		if (user.isValid()) {
 			Token t = user.getEmailToken();
-			if (t.getExpirationTime().before(new WDate(new Date()))) {
+			if (t.getExpirationTime().before(WDate.getCurrentDate())) {
 				user.clearEmailToken();
 				if (tr != null) {
 					tr.commit();
@@ -539,7 +574,7 @@ public class AuthService {
 	 * configured using the smtp.host and smpt.port JWt configuration variables
 	 * (see {@link Configuration#setProperties(HashMap properties)}).
 	 */
-	public void sendMail(javax.mail.Message message)
+	public void sendMail(final javax.mail.Message message)
 			throws javax.mail.MessagingException, UnsupportedEncodingException,
 			IOException {
 		javax.mail.Message m = message;
@@ -571,9 +606,9 @@ public class AuthService {
 	 * the same place holders.</li>
 	 * </ul>
 	 */
-	protected void sendConfirmMail(String address, User user, String token)
-			throws javax.mail.MessagingException, UnsupportedEncodingException,
-			IOException {
+	protected void sendConfirmMail(final String address, final User user,
+			final String token) throws javax.mail.MessagingException,
+			UnsupportedEncodingException, IOException {
 		javax.mail.Message message = new javax.mail.internet.MimeMessage(
 				javax.mail.Session.getDefaultInstance(MailUtils
 						.getDefaultProperties()));
@@ -584,10 +619,10 @@ public class AuthService {
 				.setSubject(WString.tr("Wt.Auth.confirmmail.subject")
 						.toString());
 		MailUtils.setBody(message, WString.tr("Wt.Auth.confirmmail.body").arg(
-				user.identity(Identity.LoginName)).arg(token).arg(url));
+				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		MailUtils.addHtmlBody(message, WString.tr(
 				"Wt.Auth.confirmmail.htmlbody").arg(
-				user.identity(Identity.LoginName)).arg(token).arg(url));
+				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		this.sendMail(message);
 	}
 
@@ -608,9 +643,9 @@ public class AuthService {
 	 * which it passes user.identity() and token as arguments.</li>
 	 * </ul>
 	 */
-	protected void sendLostPasswordMail(String address, User user, String token)
-			throws javax.mail.MessagingException, UnsupportedEncodingException,
-			IOException {
+	protected void sendLostPasswordMail(final String address, final User user,
+			final String token) throws javax.mail.MessagingException,
+			UnsupportedEncodingException, IOException {
 		javax.mail.Message message = new javax.mail.internet.MimeMessage(
 				javax.mail.Session.getDefaultInstance(MailUtils
 						.getDefaultProperties()));
@@ -620,26 +655,27 @@ public class AuthService {
 		message.setSubject(WString.tr("Wt.Auth.lostpasswordmail.subject")
 				.toString());
 		MailUtils.setBody(message, WString.tr("Wt.Auth.lostpasswordmail.body")
-				.arg(user.identity(Identity.LoginName)).arg(token).arg(url));
+				.arg(user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		MailUtils.addHtmlBody(message, WString.tr(
 				"Wt.Auth.lostpasswordmail.htmlbody").arg(
-				user.identity(Identity.LoginName)).arg(token).arg(url));
+				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
 		this.sendMail(message);
 	}
 
-	protected String createRedirectUrl(String token) {
+	protected String createRedirectUrl(final String token) {
 		WApplication app = WApplication.getInstance();
 		return app.makeAbsoluteUrl(app
 				.getBookmarkUrl(this.redirectInternalPath_))
 				+ token;
 	}
 
-	// private AuthService(AuthService anon1) ;
+	// private AuthService(final AuthService anon1) ;
 	private IdentityPolicy identityPolicy_;
 	private int minimumLoginNameLength_;
 	private HashFunction tokenHashFunction_;
 	private int tokenLength_;
 	private boolean emailVerification_;
+	private boolean emailVerificationReq_;
 	private int emailTokenValidity_;
 	private String redirectInternalPath_;
 	private boolean authTokens_;

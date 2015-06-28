@@ -34,6 +34,11 @@ import org.slf4j.LoggerFactory;
  * setConfigurationSetting()} and related methods that provide direct access to
  * the underlying TinyMCE component.
  * <p>
+ * You can use this widget with TinyMCE version 3 or version 4.
+ * <p>
+ * The choice is global and set using
+ * {@link Configuration#setTinyMCEVersion(int)}.
+ * <p>
  * <h3>CSS</h3>
  * <p>
  * Styling through CSS is not applicable.
@@ -53,6 +58,8 @@ public class WTextEdit extends WTextArea {
 	 */
 	public WTextEdit(WContainerWidget parent) {
 		super(parent);
+		this.onChange_ = new JSignal(this, "change");
+		this.onRender_ = new JSignal(this, "render");
 		this.contentChanged_ = false;
 		this.configurationSettings_ = new HashMap<String, Object>();
 		this.init();
@@ -73,8 +80,10 @@ public class WTextEdit extends WTextArea {
 	 * <p>
 	 * The <code>text</code> should be valid XHTML.
 	 */
-	public WTextEdit(String text, WContainerWidget parent) {
+	public WTextEdit(final String text, WContainerWidget parent) {
 		super(text, parent);
+		this.onChange_ = new JSignal(this, "change");
+		this.onRender_ = new JSignal(this, "render");
 		this.contentChanged_ = false;
 		this.configurationSettings_ = new HashMap<String, Object>();
 		this.init();
@@ -86,7 +95,7 @@ public class WTextEdit extends WTextArea {
 	 * Calls {@link #WTextEdit(String text, WContainerWidget parent) this(text,
 	 * (WContainerWidget)null)}
 	 */
-	public WTextEdit(String text) {
+	public WTextEdit(final String text) {
 		this(text, (WContainerWidget) null);
 	}
 
@@ -99,13 +108,22 @@ public class WTextEdit extends WTextArea {
 	}
 
 	/**
+	 * Returns the TinyMCE version.
+	 * <p>
+	 * This returns the configured version of TinyMCE (currently 3 or 4).
+	 */
+	public int getVersion() {
+		return this.version_;
+	}
+
+	/**
 	 * Sets the content.
 	 * <p>
 	 * The <code>text</code> should be valid XHTML.
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 */
-	public void setText(String text) {
+	public void setText(final String text) {
 		super.setText(text);
 		this.contentChanged_ = true;
 	}
@@ -119,7 +137,7 @@ public class WTextEdit extends WTextArea {
 	 * <p>
 	 * Multiple stylesheets may be specified as a comma separated list.
 	 */
-	public void setStyleSheet(String uri) {
+	public void setStyleSheet(final String uri) {
 		this.setConfigurationSetting("content_css", uri);
 	}
 
@@ -143,15 +161,14 @@ public class WTextEdit extends WTextArea {
 	 * plugins. Multiple plugins may be specified as a comma separated list.
 	 * <p>
 	 * The various plugins are described in the <a
-	 * href="http://wiki.moxiecode.com/index.php/TinyMCE:Plugins">TinyMCE
-	 * documentation</a>.
+	 * href="http://www.tinymce.com/wiki.php/Plugins">TinyMCE documentation</a>.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>Plugins can only be loaded before the initial display of
 	 * the widget. </i>
 	 * </p>
 	 */
-	public void setExtraPlugins(String plugins) {
+	public void setExtraPlugins(final String plugins) {
 		this.setConfigurationSetting("plugins", plugins);
 	}
 
@@ -172,7 +189,10 @@ public class WTextEdit extends WTextArea {
 	 * This configures the buttons for the <code>i&apos;th</code> tool bar (with
 	 * 0 &lt;= <code>i</code> &lt;= 3).
 	 * <p>
-	 * The syntax and available buttons is documented in the <a href="http://wiki.moxiecode.com/index.php/TinyMCE:Configuration/theme_advanced_buttons_1_n"
+	 * <h3>TinyMCE 3</h3>
+	 * <p>
+	 * The syntax and available buttons is documented in the <a href=
+	 * "http://www.tinymce.com/wiki.php/Configuration3x:theme_advanced_buttons_1_n"
 	 * >TinyMCE documentation</a>.
 	 * <p>
 	 * The default <i>config</i> for the first tool bar (<code>i</code> = 0) is:
@@ -183,6 +203,15 @@ public class WTextEdit extends WTextArea {
 	 * By default, the other three tool bars are disabled (<code>config</code> =
 	 * &quot;&quot;).
 	 * <p>
+	 * <h3>TinyMCE 4</h3>
+	 * <p>
+	 * The syntax and available buttons is documented in the <a
+	 * href="http://www.tinymce.com/wiki.php/Configuration:toolbar%3CN%3E"
+	 * >TinyMCEdocumentation</a>.
+	 * <p>
+	 * The default <i>config</i> for the first tool bar (<code>i</code> = 0) is:
+	 * &quot;undo redo | styleselect | bold italic | link&quot;.
+	 * <p>
 	 * Some buttons are only available after loading extra plugins using
 	 * {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins()}.
 	 * <p>
@@ -191,9 +220,14 @@ public class WTextEdit extends WTextArea {
 	 * initial display of the widget. </i>
 	 * </p>
 	 */
-	public void setToolBar(int i, String config) {
-		this.setConfigurationSetting("theme_advanced_buttons"
-				+ String.valueOf(i + 1), config);
+	public void setToolBar(int i, final String config) {
+		String setting = "";
+		if (this.version_ < 4) {
+			setting = "theme_advanced_buttons";
+		} else {
+			setting = "toolbar";
+		}
+		this.setConfigurationSetting(setting + String.valueOf(i + 1), config);
 	}
 
 	/**
@@ -203,9 +237,15 @@ public class WTextEdit extends WTextArea {
 	 * @see WTextEdit#setToolBar(int i, String config)
 	 */
 	public String getToolBar(int i) {
+		String setting = "";
+		if (this.version_ < 4) {
+			setting = "theme_advanced_buttons";
+		} else {
+			setting = "toolbar";
+		}
 		return StringUtils.asString(
-				this.getConfigurationSetting("theme_advanced_buttons"
-						+ String.valueOf(i + 1))).toString();
+				this.getConfigurationSetting(setting + String.valueOf(i + 1)))
+				.toString();
 	}
 
 	/**
@@ -218,8 +258,12 @@ public class WTextEdit extends WTextArea {
 	 * The widget itself will also define a number of configuration settings and
 	 * these may be overridden using this method.
 	 */
-	public void setConfigurationSetting(String name, Object value) {
-		this.configurationSettings_.put(name, value);
+	public void setConfigurationSetting(final String name, final Object value) {
+		if (!(value == null)) {
+			this.configurationSettings_.put(name, value);
+		} else {
+			this.configurationSettings_.remove(name);
+		}
 	}
 
 	/**
@@ -228,7 +272,7 @@ public class WTextEdit extends WTextArea {
 	 * An empty boost::any is returned when no value could be found for the
 	 * provided argument.
 	 */
-	public Object getConfigurationSetting(String name) {
+	public Object getConfigurationSetting(final String name) {
 		Object it = this.configurationSettings_.get(name);
 		if (it != null) {
 			return it;
@@ -237,20 +281,58 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
-	public void resize(WLength width, WLength height) {
+	/**
+	 * Sets the placeholder text.
+	 * <p>
+	 * This method is not supported on {@link WTextEdit} and will thrown an
+	 * exception instead.
+	 */
+	public void setPlaceholderText(final CharSequence placeholder) {
+		throw new WException(
+				"WTextEdit::setPlaceholderText() is not implemented.");
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		super.setReadOnly(readOnly);
+		if (readOnly) {
+			this.setConfigurationSetting("readonly", "1");
+		} else {
+			this.setConfigurationSetting("readonly", null);
+		}
+	}
+
+	public void propagateSetEnabled(boolean enabled) {
+		super.propagateSetEnabled(enabled);
+		this.setReadOnly(!enabled);
+	}
+
+	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
+	}
+
+	/**
+	 * Signal emitted when rendered.
+	 * <p>
+	 * A text edit is instantiated asynchronously as it depends on additional
+	 * JavaScript libraries and initialization. This signal is emitted when the
+	 * component is initialized. The underlying TinyMCE editor component is
+	 * accessible as {@link WWidget#getJsRef() WWidget#getJsRef()} +
+	 * &quot;.ed&quot;.
+	 */
+	public JSignal rendered() {
+		return this.onRender_;
 	}
 
 	String renderRemoveJs() {
 		if (this.isRendered()) {
-			return this.getJsRef() + ".ed.remove();Wt3_2_3.remove('"
+			return this.getJsRef() + ".ed.remove();Wt3_3_4.remove('"
 					+ this.getId() + "');";
 		} else {
 			return super.renderRemoveJs();
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		super.updateDom(element, all);
 		if (element.getType() == DomElementType.DomElement_TEXTAREA) {
 			element.removeProperty(Property.PropertyStyleDisplay);
@@ -284,7 +366,9 @@ public class WTextEdit extends WTextArea {
 			element.callJavaScript("(function() { var obj = $('#"
 					+ this.getId() + "').data('obj');obj.render("
 					+ config.toString() + ","
-					+ jsStringLiteral(dummy.getCssStyle()) + ");})();");
+					+ jsStringLiteral(dummy.getCssStyle()) + ","
+					+ (this.changed().isConnected() ? "true" : "false")
+					+ ");})();");
 			this.contentChanged_ = false;
 		}
 		if (!all && this.contentChanged_) {
@@ -293,7 +377,7 @@ public class WTextEdit extends WTextArea {
 		}
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this.getFormName() + "_tbl",
 				DomElementType.DomElement_TABLE);
 		this.updateDom(e, false);
@@ -313,15 +397,20 @@ public class WTextEdit extends WTextArea {
 		return 0;
 	}
 
+	private JSignal onChange_;
+	private JSignal onRender_;
+	private int version_;
 	private boolean contentChanged_;
 	private Map<String, Object> configurationSettings_;
 
 	private String getPlugins() {
 		String plugins = this.getExtraPlugins();
-		if (plugins.length() != 0) {
-			plugins += ",";
+		if (this.version_ == 3) {
+			if (plugins.length() != 0) {
+				plugins += ",";
+			}
+			plugins += "safari";
 		}
-		plugins += "safari";
 		return plugins;
 	}
 
@@ -329,26 +418,46 @@ public class WTextEdit extends WTextArea {
 		WApplication app = WApplication.getInstance();
 		this.setInline(false);
 		initTinyMCE();
-		this.setJavaScriptMember(" WTextEdit", "new Wt3_2_3.WTextEdit("
+		this.version_ = getTinyMCEVersion();
+		this.setJavaScriptMember(" WTextEdit", "new Wt3_3_4.WTextEdit("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 		this.setJavaScriptMember(WT_RESIZE_JS,
-				"function(e,w,h) { var obj = $('#" + this.getId()
-						+ "').data('obj'); obj.wtResize(e,w,h); }");
+				"function(e, w, h) { var obj = $('#" + this.getId()
+						+ "').data('obj'); obj.wtResize(e, w, h); };");
 		String direction = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "ltr"
 				: "rtl";
 		this.setConfigurationSetting("directionality", direction);
-		String toolbar = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
+		String toolbar = "";
+		if (this.version_ < 4) {
+			toolbar = "fontselect,|,bold,italic,underline,|,fontsizeselect,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,anchor,|,numlist,bullist";
+		} else {
+			toolbar = "undo redo | styleselect | bold italic | link";
+		}
 		this.setToolBar(0, toolbar);
 		for (int i = 1; i <= 3; i++) {
 			this.setToolBar(i, "");
 		}
-		this.setConfigurationSetting("button_tile_map", true);
 		this.setConfigurationSetting("doctype", WApplication.getInstance()
 				.getDocType());
 		this.setConfigurationSetting("relative_urls", true);
-		this.setConfigurationSetting("theme", "advanced");
-		this.setConfigurationSetting("theme_advanced_toolbar_location", "top");
-		this.setConfigurationSetting("theme_advanced_toolbar_align", "left");
+		if (this.version_ < 4) {
+			this.setConfigurationSetting("button_tile_map", true);
+			this.setConfigurationSetting("theme", "advanced");
+			this.setConfigurationSetting("theme_advanced_toolbar_location",
+					"top");
+			this
+					.setConfigurationSetting("theme_advanced_toolbar_align",
+							"left");
+		}
+		this.onChange_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTextEdit.this.propagateOnChange();
+			}
+		});
+	}
+
+	private void propagateOnChange() {
+		this.changed().trigger();
 	}
 
 	private static void initTinyMCE() {
@@ -360,19 +469,35 @@ public class WTextEdit extends WTextArea {
 						.doJavaScript("window.tinyMCE_GZ = { loaded: true };",
 								false);
 			}
-			String tinyMCEBaseURL = WApplication.getResourcesUrl()
-					+ "tiny_mce/";
-			tinyMCEBaseURL = WApplication.readConfigurationProperty(
-					"tinyMCEBaseURL", tinyMCEBaseURL);
-			if (tinyMCEBaseURL.length() != 0
-					&& tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
-				tinyMCEBaseURL += '/';
+			String tinyMCEURL = "";
+			tinyMCEURL = WApplication.readConfigurationProperty("tinyMCEURL",
+					tinyMCEURL);
+			if (tinyMCEURL.length() == 0) {
+				int version = getTinyMCEVersion();
+				String folder = version == 3 ? "tiny_mce/" : "tinymce/";
+				String jsFile = version == 3 ? "tiny_mce.js" : "tinymce.js";
+				String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl()
+						+ folder;
+				tinyMCEBaseURL = WApplication.readConfigurationProperty(
+						"tinyMCEBaseURL", tinyMCEBaseURL);
+				if (tinyMCEBaseURL.length() != 0
+						&& tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
+					tinyMCEBaseURL += '/';
+				}
+				tinyMCEURL = tinyMCEBaseURL + jsFile;
 			}
-			app.require(tinyMCEBaseURL + "tiny_mce.js", "window['tinyMCE']");
+			app.require(tinyMCEURL, "window['tinyMCE']");
 			app.getStyleSheet().addRule(".mceEditor",
 					"display: block; position: absolute;");
 			app.loadJavaScript(THIS_JS, wtjs1());
 		}
+	}
+
+	private static int getTinyMCEVersion() {
+		String version = "3";
+		version = WApplication.readConfigurationProperty("tinyMCEVersion",
+				version);
+		return Integer.parseInt(version);
 	}
 
 	static WJavaScriptPreamble wtjs1() {
@@ -380,6 +505,6 @@ public class WTextEdit extends WTextArea {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTextEdit",
-				"function(m,c){jQuery.data(c,\"obj\",this);var j,i,n=this,b=m.WT,k;if(!tinymce.dom.Event.domLoaded)tinymce.dom.Event.domLoaded=true;tinyMCE.init({mode:\"none\"});this.render=function(a,d){k=d;c.ed=new tinymce.Editor(c.id,a);c.ed.render()};this.init=function(){var a=b.getElement(c.id+\"_ifr\").parentNode.parentNode.parentNode.parentNode;a.style.cssText=\"width:100%;\"+k;c.style.height=a.offsetHeight+\"px\";n.wtResize(c,j,i)};this.wtResize=function(a,d, e){var f=0;b.px(a,\"marginLeft\");b.px(a,\"marginRight\");f=b.px(a,\"marginTop\")+b.px(a,\"marginBottom\");if(!b.boxSizing(a)){b.px(a,\"borderLeftWidth\");b.px(a,\"borderRightWidth\");b.px(a,\"paddingLeft\");b.px(a,\"paddingRight\");f+=b.px(a,\"borderTopWidth\")+b.px(a,\"borderBottomWidth\")+b.px(a,\"paddingTop\")+b.px(a,\"paddingBottom\")}a.style.height=e-f+\"px\";if(f=b.getElement(a.id+\"_ifr\")){var l=f.parentNode.parentNode,g=l.parentNode.parentNode,h=g.parentNode;if(c.style.position===\"absolute\"){h.style.left=a.style.left; h.style.top=a.style.top;if(typeof d!==\"undefined\")h.style.width=g.style.width=d+\"px\";h.style.height=g.style.height=e+\"px\"}else{h.style.position=\"static\";h.style.display=\"block\"}a=0;for(d=g.rows.length;a<d;a++)if(g.rows[a]!=l)e-=Math.max(28,g.rows[a].offsetHeight);e+=\"px\";if(f.style.height!=e)f.style.height=e}else{j=d;i=e}};i=c.offsetHeight}");
+				"function(n,d){jQuery.data(d,\"obj\",this);var o,p,q=this,b=n.WT,r;if(!tinymce.dom.Event.domLoaded)tinymce.dom.Event.domLoaded=true;tinyMCE.init({mode:\"none\"});this.render=function(a,f,c){r=f;d.ed=new tinymce.Editor(d.id,a,tinymce.EditorManager);d.ed.render();c&&d.ed.onChange.add(function(){n.emit(d,\"change\")});n.emit(d,\"render\")};this.init=function(){var a=b.getElement(d.id+\"_ifr\"),f,c;if(tinymce.EditorManager.majorVersion<4){c=f=a.parentNode.parentNode.parentNode.parentNode; f=f.parentNode}else f=a.parentNode.parentNode.parentNode;if(c){c.style.cssText=\"width:100%;\"+r;d.style.height=c.offsetHeight+\"px\"}f.wtResize=d.wtResize;b.isGecko?setTimeout(function(){q.wtResize(d,o,p)},100):q.wtResize(d,o,p);$((b.isIE?document.frames[a.id].document:a.contentDocument).body).bind(\"paste\",function(k){function e(m){return m.indexOf(\"image/\")==0}var h=k.clipboardData||k.originalEvent.clipboardData,j,l;if(h&&h.types){j=0;for(l=h.types.length;j<l;++j)if(e(h.types[j])||e(h.items[j].type)){var i= h.items[j].getAsFile(),g=new FileReader;g.onload=function(){d.ed.insertContent('<img src=\"'+this.result+'\"></img>')};g.readAsDataURL(i);b.cancelEvent(k)}}})};this.wtResize=function(a,f,c){if(!(c<0)){var k=b.getElement(a.id+\"_ifr\");if(k){var e=0;b.px(a,\"marginLeft\");b.px(a,\"marginRight\");e=b.px(a,\"marginTop\")+b.px(a,\"marginBottom\");if(!b.boxSizing(a)){b.px(a,\"borderLeftWidth\");b.px(a,\"borderRightWidth\");b.px(a,\"paddingLeft\");b.px(a,\"paddingRight\");e+=b.px(a,\"borderTopWidth\")+b.px(a,\"borderBottomWidth\")+ b.px(a,\"paddingTop\")+b.px(a,\"paddingBottom\")}a.style.height=c-e+\"px\";var h,j=d.style.position!==\"absolute\";if(tinymce.EditorManager.majorVersion<4){var l=k.parentNode.parentNode,i=l.parentNode.parentNode,g,m;h=i;e=i.parentNode;if(!j&&typeof f!==\"undefined\")e.style.width=f-2+\"px\";g=0;for(m=i.rows.length;g<m;g++)if(i.rows[g]!=l)c-=i.rows[g].offsetHeight}else{l=k.parentNode;i=l.parentNode;e=i.parentNode;if(!j&&typeof f!==\"undefined\")e.style.width=f-2+\"px\";g=0;for(m=i.childNodes.length;g<m;g++)if(i.childNodes[g]!= l)c-=i.childNodes[g].offsetHeight+1;c-=1}if(!(c<0)){c+=\"px\";if(j){e.style.position=\"static\";e.style.display=\"block\"}else{e.style.position=a.style.position;e.style.left=a.style.left;e.style.top=a.style.top;if(!j&&h)h.style.width=f+\"px\";if(h){h.style.height=c+\"px\";e.style.height=a.style.height}}if(k.style.height!=c){k.style.height=c;n.layouts2&&n.layouts2.setElementDirty(d)}}}else{o=f;p=c}}};p=d.offsetHeight;o=d.offsetWidth}");
 	}
 }

@@ -56,7 +56,7 @@ import org.apache.commons.io.*;
  * <p>
  * Throughout the session, the instance is available through the static method
  * {@link WApplication#getInstance() getInstance()}, which uses thread-specific
- * storage to keep track of the current session. The application may be quited
+ * storage to keep track of the current session. The application may be exited
  * either using the method {@link WApplication#quit() quit()}, or because of a
  * timeout after the user has closed the window, but not because the user does
  * not interact: keep-alive messages in the background will keep the session
@@ -72,7 +72,8 @@ import org.apache.commons.io.*;
  * {@link WApplication#setTitle(CharSequence title) setTitle()}.</li>
  * <li>inline and external style sheets using
  * {@link WApplication#getStyleSheet() getStyleSheet()} and
- * {@link WApplication#useStyleSheet(String uri) useStyleSheet()}.</li>
+ * {@link WApplication#useStyleSheet(WLink link, String media) useStyleSheet()}.
+ * </li>
  * <li>inline and external JavaScript using
  * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
  * doJavaScript()} and {@link WApplication#addAutoJavaScript(String javascript)
@@ -88,8 +89,8 @@ import org.apache.commons.io.*;
  * {@link WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in
  * a future session.</li>
  * <li>management of the internal path (that enables browser history and
- * bookmarks) using {@link WApplication#makeAbsoluteUrl(String url)
- * makeAbsoluteUrl()} and related methods.</li>
+ * bookmarks) using {@link WApplication#getBookmarkUrl() getBookmarkUrl()} and
+ * related methods.</li>
  * <li>support for server-initiated updates with
  * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}</li>
  * </ul>
@@ -135,7 +136,7 @@ public class WApplication extends WObject {
 	 * The <code>environment</code> provides information on the initial request,
 	 * user agent, and deployment-related information.
 	 */
-	public WApplication(WEnvironment env) {
+	public WApplication(final WEnvironment env) {
 		super();
 		this.requestTooLarge_ = new Signal1<Long>();
 		this.session_ = env.session_;
@@ -143,21 +144,22 @@ public class WApplication extends WObject {
 		this.closeMessage_ = new WString();
 		this.titleChanged_ = false;
 		this.closeMessageChanged_ = false;
+		this.localeChanged_ = false;
 		this.styleSheet_ = new WCssStyleSheet();
 		this.localizedStrings_ = null;
 		this.locale_ = new Locale("");
-		this.oldInternalPath_ = "";
+		this.renderedInternalPath_ = "";
 		this.newInternalPath_ = "";
 		this.internalPathChanged_ = new Signal1<String>(this);
 		this.internalPathInvalid_ = new Signal1<String>();
 		this.serverPush_ = 0;
 		this.serverPushChanged_ = true;
 		this.javaScriptClass_ = "Wt";
-		this.dialogCover_ = null;
-		this.quited_ = false;
+		this.quitted_ = false;
+		this.quittedMessage_ = new WString();
 		this.onePixelGifUrl_ = "";
 		this.internalPathsEnabled_ = false;
-		this.exposedOnly_ = new ArrayList<WWidget>();
+		this.exposedOnly_ = null;
 		this.loadingIndicator_ = null;
 		this.connected_ = true;
 		this.htmlClass_ = "";
@@ -170,10 +172,11 @@ public class WApplication extends WObject {
 		this.layoutDirection_ = LayoutDirection.LeftToRight;
 		this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
 		this.scriptLibrariesAdded_ = 0;
-		this.theme_ = "default";
-		this.styleSheets_ = new ArrayList<WApplication.StyleSheet>();
+		this.theme_ = null;
+		this.styleSheets_ = new ArrayList<WCssStyleSheet>();
+		this.styleSheetsToRemove_ = new ArrayList<WCssStyleSheet>();
 		this.styleSheetsAdded_ = 0;
-		this.metaHeaders_ = new ArrayList<WApplication.MetaHeader>();
+		this.metaHeaders_ = new ArrayList<MetaHeader>();
 		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
 		this.exposedSignals_ = new HashMap<String, WeakReference<AbstractEventSignal>>();
 		this.exposedResources_ = new HashMap<String, WResource>();
@@ -197,18 +200,37 @@ public class WApplication extends WObject {
 		this.hideLoadJS = new JSlot();
 		this.session_.setApplication(this);
 		this.locale_ = this.getEnvironment().getLocale();
-		this.newInternalPath_ = this.getEnvironment().getInternalPath();
+		this.renderedInternalPath_ = this.newInternalPath_ = this
+				.getEnvironment().getInternalPath();
 		this.internalPathIsChanged_ = false;
 		this.internalPathDefaultValid_ = true;
 		this.internalPathValid_ = true;
+		this.theme_ = new WCssTheme("default", this);
 		this.setLocalizedStrings((WLocalizedStrings) null);
-		if (this.getEnvironment().agentIsIElt(9)) {
-			this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
-					"X-UA-Compatible", "IE=7");
-		} else {
-			if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE9) {
-				this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
-						"X-UA-Compatible", "IE=9");
+		if (!this.getEnvironment().hasJavaScript()
+				&& this.getEnvironment().agentIsIE()) {
+			if (this.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.IE9
+					.getValue()) {
+				final Configuration conf = this.getEnvironment().getServer()
+						.getConfiguration();
+				boolean selectIE7 = conf.getUaCompatible().indexOf("IE8=IE7") != -1;
+				if (selectIE7) {
+					this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+							"X-UA-Compatible", "IE=7");
+				}
+			} else {
+				if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE9) {
+					this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+							"X-UA-Compatible", "IE=9");
+				} else {
+					if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE10) {
+						this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+								"X-UA-Compatible", "IE=10");
+					} else {
+						this.addMetaHeader(MetaHeaderType.MetaHttpHeader,
+								"X-UA-Compatible", "IE=11");
+					}
+				}
 			}
 		}
 		this.domRoot_ = new WContainerWidget();
@@ -226,7 +248,6 @@ public class WApplication extends WObject {
 			this.ajaxMethod_ = WApplication.AjaxMethod.XMLHttpRequest;
 			this.domRoot2_ = null;
 			this.widgetRoot_ = new WContainerWidget(this.domRoot_);
-			;
 			this.widgetRoot_.resize(WLength.Auto, new WLength(100,
 					WLength.Unit.Percentage));
 		} else {
@@ -243,12 +264,7 @@ public class WApplication extends WObject {
 		this.styleSheet_.addRule("td", "text-align: left;");
 		this.styleSheet_.addRule(".Wt-rtl td", "text-align: right;");
 		this.styleSheet_.addRule("button", "white-space: nowrap;");
-		this.styleSheet_.addRule("button img",
-				"vertical-align: middle; padding-right: 10px");
 		this.styleSheet_.addRule("video", "display: block");
-		if (this.getEnvironment().getContentType() == WEnvironment.ContentType.XHTML1) {
-			this.styleSheet_.addRule("button", "display: inline");
-		}
 		if (this.getEnvironment().agentIsGecko()) {
 			this.styleSheet_.addRule("html", "overflow: auto;");
 		}
@@ -270,8 +286,6 @@ public class WApplication extends WObject {
 		if (this.getEnvironment().agentIsIE()) {
 			this.styleSheet_.addRule(".Wt-wrap", "margin: -1px 0px -3px;");
 		}
-		this.styleSheet_.addRule("span.Wt-disabled", "color: gray;");
-		this.styleSheet_.addRule("fieldset.Wt-disabled legend", "color: gray;");
 		this.styleSheet_
 				.addRule(
 						".unselectable",
@@ -280,9 +294,6 @@ public class WApplication extends WObject {
 				.addRule(
 						".selectable",
 						"-moz-user-select: text;-khtml-user-select: normal;-webkit-user-select: text;user-select: text;");
-		this.styleSheet_
-				.addRule(".Wt-sbspacer",
-						"float: right; width: 16px; height: 1px;border: 0px; display: none;");
 		this.styleSheet_.addRule(".Wt-domRoot", "position: relative;");
 		this.styleSheet_
 				.addRule(
@@ -324,8 +335,8 @@ public class WApplication extends WObject {
 					prefix = "moz-";
 				}
 			}
-			this.useStyleSheet(WApplication.getResourcesUrl() + prefix
-					+ "transitions.css");
+			this.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl()
+					+ prefix + "transitions.css"));
 		}
 		this.setLoadingIndicator(new WDefaultLoadingIndicator());
 		this.unloaded_.addListener(this, new Signal.Listener() {
@@ -392,7 +403,7 @@ public class WApplication extends WObject {
 	 * @see WObject#setObjectName(String name)
 	 * @see WWidget#find(String name)
 	 */
-	public WWidget findWidget(String name) {
+	public WWidget findWidget(final String name) {
 		WWidget result = this.domRoot_.find(name);
 		if (!(result != null) && this.domRoot2_ != null) {
 			result = this.domRoot2_.find(name);
@@ -413,7 +424,7 @@ public class WApplication extends WObject {
 	 * logistically.
 	 * <p>
 	 * 
-	 * @see WApplication#useStyleSheet(String uri)
+	 * @see WApplication#useStyleSheet(WLink link, String media)
 	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public WCssStyleSheet getStyleSheet() {
@@ -423,33 +434,60 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an external style sheet.
 	 * <p>
+	 * The <code>link</code> is a link to a stylesheet.
+	 * <p>
+	 * The <code>media</code> indicates the CSS media to which this stylesheet
+	 * applies. This may be a comma separated list of media. The default value
+	 * is &quot;all&quot; indicating all media.
+	 * <p>
+	 * This is an overloaded method for convenience, equivalent to:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    useStyleSheet(Wt::WCssStyleSheet(link, media))
+	 *   }
+	 * </pre>
+	 */
+	public void useStyleSheet(final WLink link, final String media) {
+		this.useStyleSheet(new WCssStyleSheet(link, media));
+	}
+
+	/**
+	 * Adds an external style sheet.
+	 * <p>
+	 * Calls {@link #useStyleSheet(WLink link, String media) useStyleSheet(link,
+	 * "all")}
+	 */
+	public final void useStyleSheet(final WLink link) {
+		useStyleSheet(link, "all");
+	}
+
+	/**
+	 * Conditionally adds an external style sheet.
+	 * <p>
+	 * This is an overloaded method for convenience, equivalent to:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    useStyleSheet(Wt::WCssStyleSheet(link, media), condition)
+	 *   }
+	 * </pre>
+	 */
+	public void useStyleSheet(final WLink link, final String condition,
+			final String media) {
+		this.useStyleSheet(new WCssStyleSheet(link, media), condition);
+	}
+
+	/**
+	 * Adds an external stylesheet.
+	 * <p>
 	 * Widgets may allow configuration of their look and feel through style
 	 * classes. These may be defined in an inline stylesheet, or in external
 	 * style sheets.
 	 * <p>
-	 * The <code>url</code> indicates a relative or absolute URL to the
-	 * stylesheet.
-	 * <p>
 	 * External stylesheets are inserted after the internal style sheet, and can
 	 * therefore override default styles set by widgets in the internal style
-	 * sheet.
-	 * <p>
-	 * 
-	 * @see WApplication#getStyleSheet()
-	 * @see WWidget#setStyleClass(String styleClass)
-	 */
-	public void useStyleSheet(String uri) {
-		for (int i = 0; i < this.styleSheets_.size(); ++i) {
-			if (this.styleSheets_.get(i).uri.equals(uri)) {
-				return;
-			}
-		}
-		this.styleSheets_.add(new WApplication.StyleSheet(uri, ""));
-		++this.styleSheetsAdded_;
-	}
-
-	/**
-	 * Adds an external style sheet, constrained with conditions.
+	 * sheet. External stylesheets must have valid link.
 	 * <p>
 	 * If not empty, <code>condition</code> is a string that is used to apply
 	 * the stylesheet to specific versions of IE. Only a limited subset of the
@@ -462,17 +500,17 @@ public class WApplication extends WObject {
 	 * <li>&quot;IE lte 7&quot;: only for IE versions prior to IE7.</li>
 	 * </ul>
 	 * <p>
-	 * The <code>media</code> indicates the CSS media to which this stylesheet
-	 * applies. This may be a comma separated list of media. The default value
-	 * is &quot;all&quot; indicating all media.
-	 * <p>
-	 * The <code>url</code> indicates a relative or absolute URL to the
-	 * stylesheet.
-	 * <p>
 	 * 
-	 * @see WApplication#useStyleSheet(String uri)
+	 * @see WApplication#getStyleSheet()
+	 * @see WApplication#removeStyleSheet(WLink link)
+	 * @see WWidget#setStyleClass(String styleClass)
 	 */
-	public void useStyleSheet(String uri, String condition, String media) {
+	public void useStyleSheet(final WCssStyleSheet styleSheet,
+			final String condition) {
+		if (styleSheet.getLink().isNull()) {
+			throw new WException(
+					"WApplication::useStyleSheet stylesheet must have valid link!");
+		}
 		boolean display = true;
 		if (condition.length() != 0) {
 			display = false;
@@ -556,7 +594,7 @@ public class WApplication extends WObject {
 												if (invert) {
 													display = !display;
 												}
-											} catch (RuntimeException e) {
+											} catch (final RuntimeException e) {
 												logger
 														.error(new StringWriter()
 																.append(
@@ -577,19 +615,49 @@ public class WApplication extends WObject {
 			}
 		}
 		if (display) {
-			this.styleSheets_.add(new WApplication.StyleSheet(uri, media));
+			for (int i = 0; i < this.styleSheets_.size(); ++i) {
+				if (this.styleSheets_.get(i).getLink().equals(
+						styleSheet.getLink())
+						&& this.styleSheets_.get(i).getMedia().equals(
+								styleSheet.getMedia())) {
+					return;
+				}
+			}
+			this.styleSheets_.add(styleSheet);
 			++this.styleSheetsAdded_;
 		}
 	}
 
 	/**
-	 * Adds an external style sheet, constrained with conditions.
+	 * Adds an external stylesheet.
 	 * <p>
-	 * Calls {@link #useStyleSheet(String uri, String condition, String media)
-	 * useStyleSheet(uri, condition, "all")}
+	 * Calls {@link #useStyleSheet(WCssStyleSheet styleSheet, String condition)
+	 * useStyleSheet(styleSheet, "")}
 	 */
-	public final void useStyleSheet(String uri, String condition) {
-		useStyleSheet(uri, condition, "all");
+	public final void useStyleSheet(final WCssStyleSheet styleSheet) {
+		useStyleSheet(styleSheet, "");
+	}
+
+	/**
+	 * Removes an external stylesheet.
+	 * <p>
+	 * 
+	 * @see WApplication#getStyleSheet()
+	 * @see WWidget#setStyleClass(String styleClass)
+	 */
+	public void removeStyleSheet(final WLink link) {
+		for (int i = (int) this.styleSheets_.size() - 1; i > -1; --i) {
+			if (this.styleSheets_.get(i).getLink().equals(link)) {
+				final WCssStyleSheet sheet = this.styleSheets_.get(i);
+				this.styleSheetsToRemove_.add(sheet);
+				if (i > (int) this.styleSheets_.size() + this.styleSheetsAdded_
+						- 1) {
+					this.styleSheetsAdded_--;
+				}
+				this.styleSheets_.remove(0 + i);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -599,21 +667,34 @@ public class WApplication extends WObject {
 	 * CSS style rules. Rules for each theme are defined in the
 	 * <code>resources/themes/</code><i>theme</i><code>/</code> folder.
 	 * <p>
-	 * The default theme is &quot;default&quot;. When setting &quot;&quot;, the
-	 * external style sheets related to the theme are not loaded.
+	 * The default theme is &quot;default&quot; CSS theme.
 	 */
-	public void setCssTheme(String theme) {
+	public void setTheme(WTheme theme) {
 		this.theme_ = theme;
 	}
 
 	/**
 	 * Returns the theme.
-	 * <p>
-	 * 
-	 * @see WApplication#setCssTheme(String theme)
 	 */
-	public String getCssTheme() {
+	public WTheme getTheme() {
 		return this.theme_;
+	}
+
+	/**
+	 * Sets a CSS theme.
+	 * <p>
+	 * This sets a {@link WCssTheme} as theme.
+	 * <p>
+	 * The theme provides the look and feel of several built-in widgets, using
+	 * CSS style rules. Rules for each CSS theme are defined in the
+	 * <code>resources/themes/</code><i>name</i><code>/</code> folder.
+	 * <p>
+	 * The default theme is &quot;default&quot;. Setting an empty theme
+	 * &quot;&quot; will result in a stub CSS theme that does not load any
+	 * stylesheets.
+	 */
+	public void setCssTheme(final String theme) {
+		this.setTheme(new WCssTheme(theme, this));
 	}
 
 	/**
@@ -675,7 +756,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#setHtmlClass(String styleClass)
 	 */
-	public void setBodyClass(String styleClass) {
+	public void setBodyClass(final String styleClass) {
 		this.bodyClass_ = styleClass;
 		this.bodyHtmlClassChanged_ = true;
 	}
@@ -696,7 +777,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#setBodyClass(String styleClass)
 	 */
-	public void setHtmlClass(String styleClass) {
+	public void setHtmlClass(final String styleClass) {
 		this.htmlClass_ = styleClass;
 		this.bodyHtmlClassChanged_ = true;
 	}
@@ -721,7 +802,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#getTitle()
 	 */
-	public void setTitle(CharSequence title) {
+	public void setTitle(final CharSequence title) {
 		if (this.session_.getRenderer().isPreLearning()
 				|| !this.title_.equals(title)) {
 			this.title_ = WString.toWString(title);
@@ -756,12 +837,9 @@ public class WApplication extends WObject {
 	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)
 	 * setLocalizedStrings()}.
 	 * <p>
-	 * {@link WString#tr(String key) WString#tr()} is used to create localized
-	 * strings, whose localized translation is looked up through this object,
-	 * using a key.
+	 * {@link } is used to create localized strings, whose localized translation
+	 * is looked up through this object, using a key.
 	 * <p>
-	 * 
-	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		if (this.localizedStrings_.getItems().size() > 1) {
@@ -794,7 +872,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
@@ -833,16 +910,18 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String key)
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		this.locale_ = locale;
+		this.localeChanged_ = true;
 		this.refresh();
 	}
 
 	/**
 	 * Returns the current locale.
 	 * <p>
+	 * 
+	 * @see WApplication#setLocale(Locale locale)
 	 */
 	public Locale getLocale() {
 		return this.locale_;
@@ -871,7 +950,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.refresh();
 		} else {
-			this.widgetRoot_.refresh();
+			this.domRoot_.refresh();
 		}
 		if (this.title_.refresh()) {
 			this.titleChanged_ = true;
@@ -893,7 +972,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#getRoot()
 	 * @see EntryPointType#WidgetSet
 	 */
-	public void bindWidget(WWidget widget, String domId) {
+	public void bindWidget(WWidget widget, final String domId) {
 		if (this.session_.getType() != EntryPointType.WidgetSet) {
 			throw new WException(
 					"WApplication::bindWidget() can be used only in WidgetSet mode.");
@@ -924,16 +1003,15 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String url(String internalPath) {
+	public String url(final String internalPath) {
 		return this.resolveRelativeUrl(this.session_
 				.getMostRelativeUrl(internalPath));
 	}
@@ -948,72 +1026,52 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Makes an absolute URL.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * Returns an absolute URL for a given (relative url) by including the
+	 * schema, hostname, and deployment path.
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * If <code>url</code> is &quot;&quot;, then the absolute base URL is
+	 * returned. This is the absolute URL at which the application is deployed,
+	 * up to the last &apos;/&apos;.
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * This is not used in the library, except when a public URL is needed, e.g.
+	 * for inclusion in an email.
 	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * You may want to reimplement this method when the application is hosted
+	 * behind a reverse proxy or in general the public URL of the application
+	 * cannot be guessed correctly by the application.
 	 */
-	public String makeAbsoluteUrl(String url) {
+	public String makeAbsoluteUrl(final String url) {
 		return this.session_.makeAbsoluteUrl(url);
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * &quot;Resolves&quot; a relative URL taking into account internal paths.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * Using HTML5 History API or in a plain HTML session (without ugly internal
+	 * paths), the internal path is present as a full part of the URL. This has
+	 * a consequence that relative URLs, if not dealt with, would be resolved
+	 * against the last &apos;folder&apos; name of the internal path, rather
+	 * than against the application deployment path (which is what you probably
+	 * want).
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * When using a widgetset mode deployment, or when configuring a baseURL
+	 * property in the configuration, this method will make an absolute URL so
+	 * that the property is fetched from the right server.
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * Otherwise, this method will fixup a relative URL so that it resolves
+	 * correctly against the base path of an application. This does not
+	 * necessarily mean that the URL is resolved into an absolute URL. In fact,
+	 * JWt will simply prepend a sequence of &quot;../&quot; path elements to
+	 * correct for the internal path. When passed an absolute URL (i.e. starting
+	 * with &apos;/&apos;), the url is returned unchanged.
 	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * For URLs passed to the JWt API (and of which the library knows it is
+	 * represents a URL) this method is called internally by the library. But it
+	 * may be useful for URLs which are set e.g. inside a {@link WTemplate}.
 	 */
-	public String resolveRelativeUrl(String url) {
+	public String resolveRelativeUrl(final String url) {
 		return this.session_.fixRelativeUrl(url);
 	}
 
@@ -1039,14 +1097,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl() {
 		return this.getBookmarkUrl(this.newInternalPath_);
@@ -1074,55 +1131,102 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String getBookmarkUrl(String internalPath) {
+	public String getBookmarkUrl(final String internalPath) {
 		return this.session_.getBookmarkUrl(internalPath);
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Changes the internal path.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * A JWt application may manage multiple virtual paths. The virtual path is
+	 * appended to the application URL. Depending on the situation, the path is
+	 * directly appended to the application URL or it is appended using a name
+	 * anchor (#).
 	 * <p>
-	 * For example, for an application deployed at
+	 * For example, for an application deployed at:
 	 * 
 	 * <pre>
 	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
+	 *    http://www.mydomain.com/stuff/app.wt
 	 *   }
 	 * </pre>
 	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * for which an <code>internalPath</code>
+	 * <code>&quot;/project/z3cbc/details/&quot;</code> is set, the two forms
+	 * for the application URL are:
+	 * <ul>
+	 * <li>
+	 * in an AJAX session (HTML5):
+	 * 
+	 * <pre>
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * <li>
+	 * in an AJAX session (HTML4):
+	 * 
+	 * <pre>
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * <li>
+	 * </li>
+	 * <li>
+	 * in a plain HTML session:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
+	 *   }
+	 * </pre>
+	 * 
+	 * </li>
+	 * </ul>
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * Note, since JWt 3.1.9, the actual form of the URL no longer affects
+	 * relative URL resolution, since now JWt includes an HTML
+	 * <code>meta base</code> tag which points to the deployment path,
+	 * regardless of the current internal path. This does break deployments
+	 * behind a reverse proxy which changes paths.
+	 * <p>
+	 * When the internal path is changed, an entry is added to the browser
+	 * history. When the user navigates back and forward through this history
+	 * (using the browser back/forward buttons), an
+	 * {@link WApplication#internalPathChanged() internalPathChanged()} event is
+	 * emitted. You should listen to this signal to switch the application to
+	 * the corresponding state. When <code>emitChange</code> is
+	 * <code>true</code>, this signal is also emitted by setting the path (but
+	 * only if the path is actually changed).
+	 * <p>
+	 * A url that includes the internal path may be obtained using
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()}.
+	 * <p>
+	 * The <code>internalPath</code> must start with a &apos;/&apos;. In this
+	 * way, you can still use normal anchors in your HTML. Internal path changes
+	 * initiated in the browser to paths that do not start with a &apos;/&apos;
+	 * are ignored.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#internalPathChanged()
 	 */
-	public void setInternalPath(String path, boolean emitChange) {
+	public void setInternalPath(final String path, boolean emitChange) {
 		this.enableInternalPaths();
-		if (!this.internalPathIsChanged_) {
-			this.oldInternalPath_ = this.newInternalPath_;
-		}
 		if (!this.session_.getRenderer().isPreLearning() && emitChange) {
 			this.changeInternalPath(path);
 		} else {
@@ -1133,45 +1237,28 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Changes the internal path.
 	 * <p>
 	 * Calls {@link #setInternalPath(String path, boolean emitChange)
 	 * setInternalPath(path, false)}
 	 */
-	public final void setInternalPath(String path) {
+	public final void setInternalPath(final String path) {
 		setInternalPath(path, false);
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Sets whether an internal path is valid by default.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * This configures how you treat (invalid) internal paths. If an internal
+	 * path is treated valid by default then you need to call
+	 * setInternalPath(false) for an invalid path. If on the other hand you
+	 * treat an internal path as invalid by default, then you need to call
+	 * setInternalPath(true) for a valid path.
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
+	 * A user which opens an invalid internal path will receive a HTTP 404-Not
+	 * Found response code (if sent an HTML response).
 	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
-	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * The default value is <code>true</code>.
 	 */
 	public void setInternalPathDefaultValid(boolean valid) {
 		this.internalPathDefaultValid_ = valid;
@@ -1199,49 +1286,30 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean isInternalPathDefaultValid() {
 		return this.internalPathDefaultValid_;
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Sets whether the current internal path is valid.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
-	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
-	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * You can use this function in response to an internal path change event
+	 * (or at application startup) to indicate whether the new (or initial)
+	 * internal path is valid. This has only an effect on plain HTML sessions,
+	 * or on the first response in an application deployed with progressive
+	 * bootstrap settings, as this generates then a 404 Not-Found response.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#internalPathChanged()
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public void setInternalPathValid(boolean valid) {
 		this.internalPathValid_ = valid;
@@ -1269,14 +1337,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean isInternalPathValid() {
 		return this.internalPathValid_;
@@ -1304,14 +1371,13 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPath() {
 		return StringUtils.prepend(this.newInternalPath_, '/');
@@ -1339,16 +1405,15 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String getInternalPathNextPart(String path) {
+	public String getInternalPathNextPart(final String path) {
 		String subPath = this.internalSubPath(path);
 		int t = subPath.indexOf('/');
 		if (t == -1) {
@@ -1380,16 +1445,15 @@ public class WApplication extends WObject {
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
 	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 * @see WEnvironment#getHostName()
 	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
-	public String internalSubPath(String path) {
+	public String internalSubPath(final String path) {
 		String current = StringUtils.append(this.newInternalPath_, '/');
 		if (!pathMatches(current, path)) {
 			logger.warn(new StringWriter().append("internalPath(): path '")
@@ -1403,23 +1467,23 @@ public class WApplication extends WObject {
 	/**
 	 * Checks if the internal path matches a given path.
 	 * <p>
-	 * Returns whether the current {@link WApplication#isInternalPathValid()
-	 * isInternalPathValid()} starts with <code>path</code> (or is equal to
+	 * Returns whether the current {@link WApplication#getBookmarkUrl()
+	 * getBookmarkUrl()} starts with <code>path</code> (or is equal to
 	 * <code>path</code>). You will typically use this method within a slot
 	 * conneted to the {@link WApplication#internalPathChanged()
 	 * internalPathChanged()} signal, to check that an internal path change
 	 * affects the widget. It may also be useful before changing
-	 * <code>path</code> using {@link WApplication#makeAbsoluteUrl(String url)
-	 * makeAbsoluteUrl()} if you do not intend to remove sub paths when the
+	 * <code>path</code> using {@link WApplication#getBookmarkUrl()
+	 * getBookmarkUrl()} if you do not intend to remove sub paths when the
 	 * current internal path already matches <code>path</code>.
 	 * <p>
 	 * The <code>path</code> must start with a &apos;/&apos;.
 	 * <p>
 	 * 
-	 * @see WApplication#makeAbsoluteUrl(String url)
-	 * @see WApplication#isInternalPathValid()
+	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#getBookmarkUrl()
 	 */
-	public boolean internalPathMatches(String path) {
+	public boolean internalPathMatches(final String path) {
 		if (this.session_.getRenderer().isPreLearning()) {
 			return false;
 		} else {
@@ -1429,35 +1493,15 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
+	 * Signal which indicates that the user changes the internal path.
 	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
+	 * This signal indicates a change to the internal path, which is usually
+	 * triggered by the user using the browser back/forward buttons.
 	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
-	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
+	 * The argument contains the new internal path.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * @see WApplication#getBookmarkUrl()
 	 */
 	public Signal1<String> internalPathChanged() {
 		this.enableInternalPaths();
@@ -1465,35 +1509,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Returns a URL for the current session.
-	 * <p>
-	 * Returns the (relative) URL for this application session (including the
-	 * session ID if necessary). The URL includes the full application path, and
-	 * is expanded by the browser into a full URL.
-	 * <p>
-	 * For example, for an application deployed at
-	 * 
-	 * <pre>
-	 * {@code
-	 *    http://www.mydomain.com/stuff/app.wt 
-	 *   }
-	 * </pre>
-	 * 
-	 * this method might return
-	 * <code>&quot;/stuff/app.wt?wtd=AbCdEf&quot;</code>. Additional query
-	 * parameters can be appended in the form of
-	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
-	 * <p>
-	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#makeAbsoluteUrl(String url) makeAbsoluteUrl()}
-	 * instead.
-	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#makeAbsoluteUrl(String url)
+	 * Signal which indicates that an invalid internal path is navigated.
 	 */
 	public Signal1<String> internalPathInvalid() {
 		return this.internalPathInvalid_;
@@ -1510,16 +1526,30 @@ public class WApplication extends WObject {
 	 * Calling redirect() does not imply quit() since it may be useful to switch
 	 * between a non-secure and secure (SSL) transport connection.
 	 */
-	public void redirect(String url) {
+	public void redirect(final String url) {
 		this.session_.redirect(url);
 	}
 
 	/**
 	 * Returns the URL at which the resources are deployed.
+	 * <p>
+	 * Returns resolveRelativeUrl({@link WApplication#getRelativeResourcesUrl()
+	 * getRelativeResourcesUrl()})
 	 */
 	public static String getResourcesUrl() {
+		return WApplication.getInstance().resolveRelativeUrl(
+				WApplication.getRelativeResourcesUrl());
+	}
+
+	/**
+	 * Returns the URL at which the resources are deployed.
+	 * <p>
+	 * 
+	 * @see WApplication#resolveRelativeUrl(String url)
+	 */
+	public static String getRelativeResourcesUrl() {
 		WApplication app = WApplication.getInstance();
-		Configuration conf = app.getEnvironment().getServer()
+		final Configuration conf = app.getEnvironment().getServer()
 				.getConfiguration();
 		String path = conf.getProperty(WApplication.RESOURCES_URL);
 		if (path == "/wt-resources/") {
@@ -1713,7 +1743,8 @@ public class WApplication extends WObject {
 					&& handler.getSession() == app.session_) {
 				return;
 			}
-			new WebSession.Handler(app.session_, true);
+			new WebSession.Handler(app.session_,
+					WebSession.Handler.LockOption.TakeLock);
 			this.createdHandler_ = true;
 		}
 
@@ -1785,11 +1816,14 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
+	 * In most situations, it&apos;s more robust to use
+	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
-	public void doJavaScript(String javascript, boolean afterLoaded) {
+	public void doJavaScript(final String javascript, boolean afterLoaded) {
 		if (afterLoaded) {
 			this.afterLoadJavaScript_ += javascript;
 			this.afterLoadJavaScript_ += '\n';
@@ -1806,7 +1840,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #doJavaScript(String javascript, boolean afterLoaded)
 	 * doJavaScript(javascript, true)}
 	 */
-	public final void doJavaScript(String javascript) {
+	public final void doJavaScript(final String javascript) {
 		doJavaScript(javascript, true);
 	}
 
@@ -1820,11 +1854,14 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
+	 * In most situations, it&apos;s more robust to use
+	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
-	public void addAutoJavaScript(String javascript) {
+	public void addAutoJavaScript(final String javascript) {
 		this.autoJavaScript_ += javascript;
 		this.autoJavaScriptChanged_ = true;
 	}
@@ -1837,7 +1874,8 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The next code snippet declares and invokes function foo:
 	 */
-	public void declareJavaScriptFunction(String name, String function) {
+	public void declareJavaScriptFunction(final String name,
+			final String function) {
 		this.doJavaScript(this.javaScriptClass_ + '.' + name + '=' + function
 				+ ';', false);
 	}
@@ -1868,17 +1906,13 @@ public class WApplication extends WObject {
 	 * {@link WApplication#addAutoJavaScript(String javascript)
 	 * addAutoJavaScript()}.
 	 */
-	public boolean require(String uri, String symbol) {
+	public boolean require(final String uri, final String symbol) {
 		WApplication.ScriptLibrary sl = new WApplication.ScriptLibrary(uri,
 				symbol);
 		if (this.scriptLibraries_.indexOf(sl) == -1) {
-			try {
-				StringWriter ss = new StringWriter();
-				this.streamBeforeLoadJavaScript(ss, false);
-				sl.beforeLoadJS = ss.toString();
-			} catch (IOException e) {
-				return false;
-			}
+			StringBuilder ss = new StringBuilder();
+			this.streamBeforeLoadJavaScript(ss, false);
+			sl.beforeLoadJS = ss.toString();
 			this.scriptLibraries_.add(sl);
 			++this.scriptLibrariesAdded_;
 			return true;
@@ -1892,7 +1926,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * Returns {@link #require(String uri, String symbol) require(uri, "")}
 	 */
-	public final boolean require(String uri) {
+	public final boolean require(final String uri) {
 		return require(uri, "");
 	}
 
@@ -1913,7 +1947,7 @@ public class WApplication extends WObject {
 	 *   }
 	 * </pre>
 	 */
-	public boolean requireJQuery(String uri) {
+	public boolean requireJQuery(final String uri) {
 		this.customJQuery_ = true;
 		return this.require(uri);
 	}
@@ -1928,8 +1962,11 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
+	 * In most situations, it&apos;s more robust to use
+	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public boolean isCustomJQuery() {
@@ -1944,7 +1981,7 @@ public class WApplication extends WObject {
 	 * applications. The <code>className</code> should be a valid JavaScript
 	 * identifier, and should also be unique in a single page.
 	 */
-	public void setJavaScriptClass(String javaScriptClass) {
+	public void setJavaScriptClass(final String javaScriptClass) {
 		if (this.session_.getType() != EntryPointType.Application) {
 			this.javaScriptClass_ = javaScriptClass;
 		}
@@ -1980,6 +2017,21 @@ public class WApplication extends WObject {
 	public void processEvents() {
 		this.doJavaScript("setTimeout(\"" + this.javaScriptClass_
 				+ "._p_.update(null,'none',null,true);\",0);");
+		this.waitForEvent();
+	}
+
+	/**
+	 * Blocks the thread, waiting for an UI event.
+	 * <p>
+	 * This function is used by functions like
+	 * {@link WDialog#exec(WAnimation animation) WDialog#exec()} or
+	 * WPopupMenu::exec(), to block the current thread waiting for a new event.
+	 * <p>
+	 * This requires that at least one additional thread is available to process
+	 * incoming requests, and is not scalable when working with a fixed size
+	 * thread pools.
+	 */
+	public void waitForEvent() {
 		if (!this.getEnvironment().isTest()) {
 			this.session_.doRecursiveEventLoop();
 		}
@@ -1991,7 +2043,8 @@ public class WApplication extends WObject {
 	 * Tries to read a configured value for the property <code>name</code>. If
 	 * no value was configured, the default <code>value</code> is returned.
 	 */
-	public static String readConfigurationProperty(String name, String value) {
+	public static String readConfigurationProperty(final String name,
+			final String value) {
 		WebSession session = WebSession.getInstance();
 		if (session != null) {
 			return session.getEnv().getServer().readConfigurationProperty(name,
@@ -2040,7 +2093,7 @@ public class WApplication extends WObject {
 		return result;
 	}
 
-	WObject decodeObject(String objectId) {
+	WObject decodeObject(final String objectId) {
 		WObject i = this.encodedObjects_.get(objectId);
 		if (i != null) {
 			return i;
@@ -2103,9 +2156,9 @@ public class WApplication extends WObject {
 	 * @see WEnvironment#supportsCookies()
 	 * @see WEnvironment#getCookie(String cookieName)
 	 */
-	public void setCookie(String name, String value, int maxAge, String domain,
-			String path, boolean secure) {
-		WDate expires = new WDate(new Date());
+	public void setCookie(final String name, final String value, int maxAge,
+			final String domain, final String path, boolean secure) {
+		WDate expires = WDate.getCurrentDate();
 		expires = expires.addSeconds(maxAge);
 		this.session_.getRenderer().setCookie(name, value, expires, domain,
 				path, secure);
@@ -2118,7 +2171,8 @@ public class WApplication extends WObject {
 	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
 	 * setCookie(name, value, maxAge, "", "", false)}
 	 */
-	public final void setCookie(String name, String value, int maxAge) {
+	public final void setCookie(final String name, final String value,
+			int maxAge) {
 		setCookie(name, value, maxAge, "", "", false);
 	}
 
@@ -2129,8 +2183,8 @@ public class WApplication extends WObject {
 	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
 	 * setCookie(name, value, maxAge, domain, "", false)}
 	 */
-	public final void setCookie(String name, String value, int maxAge,
-			String domain) {
+	public final void setCookie(final String name, final String value,
+			int maxAge, final String domain) {
 		setCookie(name, value, maxAge, domain, "", false);
 	}
 
@@ -2141,8 +2195,8 @@ public class WApplication extends WObject {
 	 * {@link #setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
 	 * setCookie(name, value, maxAge, domain, path, false)}
 	 */
-	public final void setCookie(String name, String value, int maxAge,
-			String domain, String path) {
+	public final void setCookie(final String name, final String value,
+			int maxAge, final String domain, final String path) {
 		setCookie(name, value, maxAge, domain, path, false);
 	}
 
@@ -2153,7 +2207,8 @@ public class WApplication extends WObject {
 	 * @see WApplication#setCookie(String name, String value, int maxAge, String
 	 *      domain, String path, boolean secure)
 	 */
-	public void removeCookie(String name, String domain, String path) {
+	public void removeCookie(final String name, final String domain,
+			final String path) {
 		this.session_.getRenderer().setCookie(name, "", new WDate(1970, 1, 1),
 				domain, path, false);
 	}
@@ -2164,7 +2219,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #removeCookie(String name, String domain, String path)
 	 * removeCookie(name, "", "")}
 	 */
-	public final void removeCookie(String name) {
+	public final void removeCookie(final String name) {
 		removeCookie(name, "", "");
 	}
 
@@ -2174,7 +2229,7 @@ public class WApplication extends WObject {
 	 * Calls {@link #removeCookie(String name, String domain, String path)
 	 * removeCookie(name, domain, "")}
 	 */
-	public final void removeCookie(String name, String domain) {
+	public final void removeCookie(final String name, final String domain) {
 		removeCookie(name, domain, "");
 	}
 
@@ -2189,8 +2244,9 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#removeMetaLink(String href)
 	 */
-	public void addMetaLink(String href, String rel, String media,
-			String hreflang, String type, String sizes, boolean disabled) {
+	public void addMetaLink(final String href, final String rel,
+			final String media, final String hreflang, final String type,
+			final String sizes, boolean disabled) {
 		if (this.getEnvironment().hasJavaScript()) {
 			logger.warn(new StringWriter().append(
 					"WApplication::addMetaLink() with no effect").toString());
@@ -2204,7 +2260,7 @@ public class WApplication extends WObject {
 					"WApplication::addMetaLink() rel cannot be empty!");
 		}
 		for (int i = 0; i < this.metaLinks_.size(); ++i) {
-			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			final WApplication.MetaLink ml = this.metaLinks_.get(i);
 			if (ml.href.equals(href)) {
 				ml.rel = rel;
 				ml.media = media;
@@ -2227,9 +2283,9 @@ public class WApplication extends WObject {
 	 * @see WApplication#addMetaLink(String href, String rel, String media,
 	 *      String hreflang, String type, String sizes, boolean disabled)
 	 */
-	public void removeMetaLink(String href) {
+	public void removeMetaLink(final String href) {
 		for (int i = 0; i < this.metaLinks_.size(); ++i) {
-			WApplication.MetaLink ml = this.metaLinks_.get(i);
+			final WApplication.MetaLink ml = this.metaLinks_.get(i);
 			if (ml.href.equals(href)) {
 				this.metaLinks_.remove(0 + i);
 				return;
@@ -2240,33 +2296,12 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an HTML meta header.
 	 * <p>
-	 * A meta header can only be added in the following situations:
-	 * <p>
-	 * <ul>
-	 * <li>when a plain HTML session is used (including when the user agent is a
-	 * bot), you can add meta headers at any time.</li>
-	 * </ul>
-	 * <p>
-	 * <ul>
-	 * <li>or, when DOCREF<a class="el"
-	 * href="overview.html#progressive_bootstrap">progressive bootstrap</a> is
-	 * used, you can set meta headers for any type of session, from within the
-	 * application constructor (which corresponds to the initial request).</li>
-	 * </ul>
-	 * <p>
-	 * <ul>
-	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
-	 * since then the application is hosted within a foreign HTML page.</li>
-	 * </ul>
-	 * <p>
-	 * When a header was previously set for the same <code>name</code>, its
-	 * contents is replaced.
-	 * <p>
-	 * These situations coincide with {@link WEnvironment#hasAjax()
-	 * WEnvironment#hasAjax()} returning <code>false</code> (see
-	 * {@link WApplication#getEnvironment() getEnvironment()}).
+	 * 
+	 * @see WApplication#addMetaHeader(MetaHeaderType type, String name,
+	 *      CharSequence content, String lang)
 	 */
-	public void addMetaHeader(String name, CharSequence content, String lang) {
+	public void addMetaHeader(final String name, final CharSequence content,
+			final String lang) {
 		this.addMetaHeader(MetaHeaderType.MetaName, name, content, lang);
 	}
 
@@ -2276,28 +2311,52 @@ public class WApplication extends WObject {
 	 * Calls {@link #addMetaHeader(String name, CharSequence content, String lang)
 	 * addMetaHeader(name, content, "")}
 	 */
-	public final void addMetaHeader(String name, CharSequence content) {
+	public final void addMetaHeader(final String name,
+			final CharSequence content) {
 		addMetaHeader(name, content, "");
 	}
 
 	/**
 	 * Adds an HTML meta header.
 	 * <p>
-	 * This overloaded method allows to define both &quot;name&quot; meta
-	 * headers, relating to document properties as well as
-	 * &quot;http-equiv&quot; meta headers, which define HTTP headers.
+	 * This method sets either a &quot;name&quot; meta headers, which configures
+	 * a document property, or a &quot;http-equiv&quot; meta headers, which
+	 * defines a HTTP headers (but these latter headers are being deprecated).
+	 * <p>
+	 * A meta header can however only be added in the following situations:
+	 * <p>
+	 * <ul>
+	 * <li>when a plain HTML session is used (including when the user agent is a
+	 * bot), you can add meta headers at any time.</li>
+	 * <li>or, when DOCREF<a class="el"
+	 * href="overview.html#progressive_bootstrap">progressive bootstrap</a> is
+	 * used, you can set meta headers for any type of session, from within the
+	 * application constructor (which corresponds to the initial request).</li>
+	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
+	 * since then the application is hosted within a foreign HTML page.</li>
+	 * </ul>
+	 * <p>
+	 * These situations coincide with {@link WEnvironment#hasAjax()
+	 * WEnvironment#hasAjax()} returning <code>false</code> (see
+	 * {@link WApplication#getEnvironment() getEnvironment()}). The reason that
+	 * it other cases the HTML page has already been rendered, and will not be
+	 * rerendered since all updates are done dynamically.
+	 * <p>
+	 * As an alternative, you can use the &lt;meta-headers&gt; configuration
+	 * property in the configuration file, which will be applied in all
+	 * circumstances.
 	 * <p>
 	 * 
 	 * @see WApplication#removeMetaHeader(MetaHeaderType type, String name)
 	 */
-	public void addMetaHeader(MetaHeaderType type, String name,
-			CharSequence content, String lang) {
+	public void addMetaHeader(MetaHeaderType type, final String name,
+			final CharSequence content, final String lang) {
 		if (this.getEnvironment().hasJavaScript()) {
 			logger.warn(new StringWriter().append(
 					"WApplication::addMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-			WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			final MetaHeader m = this.metaHeaders_.get(i);
 			if (m.type == type && m.name.equals(name)) {
 				if ((content.length() == 0)) {
 					this.metaHeaders_.remove(0 + i);
@@ -2308,8 +2367,8 @@ public class WApplication extends WObject {
 			}
 		}
 		if (!(content.length() == 0)) {
-			this.metaHeaders_.add(new WApplication.MetaHeader(type, name,
-					content, lang));
+			this.metaHeaders_
+					.add(new MetaHeader(type, name, content, lang, ""));
 		}
 	}
 
@@ -2320,8 +2379,8 @@ public class WApplication extends WObject {
 	 * {@link #addMetaHeader(MetaHeaderType type, String name, CharSequence content, String lang)
 	 * addMetaHeader(type, name, content, "")}
 	 */
-	public final void addMetaHeader(MetaHeaderType type, String name,
-			CharSequence content) {
+	public final void addMetaHeader(MetaHeaderType type, final String name,
+			final CharSequence content) {
 		addMetaHeader(type, name, content, "");
 	}
 
@@ -2335,13 +2394,13 @@ public class WApplication extends WObject {
 	 * @see WApplication#addMetaHeader(String name, CharSequence content, String
 	 *      lang)
 	 */
-	public void removeMetaHeader(MetaHeaderType type, String name) {
+	public void removeMetaHeader(MetaHeaderType type, final String name) {
 		if (this.getEnvironment().hasJavaScript()) {
 			logger.warn(new StringWriter().append(
 					"removeMetaHeader() with no effect").toString());
 		}
 		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
-			WApplication.MetaHeader m = this.metaHeaders_.get(i);
+			final MetaHeader m = this.metaHeaders_.get(i);
 			if (m.type == type && (name.length() == 0 || m.name.equals(name))) {
 				this.metaHeaders_.remove(0 + i);
 				if (name.length() == 0) {
@@ -2383,9 +2442,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_2_3.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_3_4.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_2_3.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_3_4.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2417,6 +2476,19 @@ public class WApplication extends WObject {
 	/**
 	 * Quits the application.
 	 * <p>
+	 * This quits the application with a default restart message resolved as
+	 * {@link }(&quot;Wt.QuittedMessage&quot;).
+	 * <p>
+	 * 
+	 * @see WApplication#quit(CharSequence restartMessage)
+	 */
+	public void quit() {
+		this.quit(WString.tr("Wt.QuittedMessage"));
+	}
+
+	/**
+	 * Quits the application.
+	 * <p>
 	 * The method returns immediately, but has as effect that the application
 	 * will be terminated after the current event is completed.
 	 * <p>
@@ -2424,16 +2496,16 @@ public class WApplication extends WObject {
 	 * applied during the current event handling) will still be rendered, after
 	 * which the application is terminated.
 	 * <p>
-	 * You might want to make sure no more events can be received from the user,
-	 * by not having anything clickable, for example by displaying only text.
-	 * Even better is to {@link WApplication#redirect(String url) redirect()}
-	 * the user to another, static, page in conjunction with quit().
+	 * If the restart message is not empty, then the user will be offered to
+	 * restart the application (using the provided message) when further
+	 * interacting with the application.
 	 * <p>
 	 * 
 	 * @see WApplication#redirect(String url)
 	 */
-	public void quit() {
-		this.quited_ = true;
+	public void quit(final CharSequence restartMessage) {
+		this.quitted_ = true;
+		this.quittedMessage_ = WString.toWString(restartMessage);
 	}
 
 	/**
@@ -2444,7 +2516,7 @@ public class WApplication extends WObject {
 	 * @deprecated {@link WApplication#hasQuit() hasQuit()} is proper English
 	 */
 	public boolean isQuited() {
-		return this.quited_;
+		return this.quitted_;
 	}
 
 	/**
@@ -2454,7 +2526,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#quit()
 	 */
 	public boolean hasQuit() {
-		return this.quited_;
+		return this.quitted_;
 	}
 
 	/**
@@ -2479,7 +2551,7 @@ public class WApplication extends WObject {
 		return this.requestTooLarge_;
 	}
 
-	void redirectToSession(String newSessionId) {
+	void redirectToSession(final String newSessionId) {
 		String redirectUrl = this.getBookmarkUrl();
 		if (!this.session_.isUseUrlRewriting()) {
 			String cookieName = this.getEnvironment().getDeploymentPath();
@@ -2568,7 +2640,7 @@ public class WApplication extends WObject {
 		return this.session_.isDebug();
 	}
 
-	public void setFocus(String id, int selectionStart, int selectionEnd) {
+	public void setFocus(final String id, int selectionStart, int selectionEnd) {
 		this.focusId_ = id;
 		this.selectionStart_ = selectionStart;
 		this.selectionEnd_ = selectionEnd;
@@ -2583,7 +2655,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 * @see WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 */
-	public void loadJavaScript(String jsFile, WJavaScriptPreamble preamble) {
+	public void loadJavaScript(String jsFile, final WJavaScriptPreamble preamble) {
 		if (!this.isJavaScriptLoaded(preamble.name)) {
 			this.javaScriptLoaded_.add(jsFile);
 			this.javaScriptLoaded_.add(preamble.name);
@@ -2610,20 +2682,23 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#unload()
 	 */
-	public void setConfirmCloseMessage(CharSequence message) {
+	public void setConfirmCloseMessage(final CharSequence message) {
 		if (!message.equals(this.closeMessage_)) {
 			this.closeMessage_ = WString.toWString(message);
 			this.closeMessageChanged_ = true;
 		}
 	}
 
+	/**
+	 * Sets the message for the user when the application was .
+	 */
 	void enableInternalPaths() {
 		if (!this.internalPathsEnabled_) {
 			this.internalPathsEnabled_ = true;
 			this.doJavaScript(this.getJavaScriptClass()
 					+ "._p_.enableInternalPaths("
-					+ WWebWidget.jsStringLiteral(this.newInternalPath_) + ");",
-					false);
+					+ WWebWidget.jsStringLiteral(this.renderedInternalPath_)
+					+ ");");
 			if (this.session_.isUseUglyInternalPaths()) {
 				logger
 						.warn(new StringWriter()
@@ -2641,7 +2716,7 @@ public class WApplication extends WObject {
 	 * <code>path</code>, meaning that it is equal to that path or it specifies
 	 * a more specific sub path of that path.
 	 */
-	public static boolean pathMatches(String path, String query) {
+	public static boolean pathMatches(final String path, final String query) {
 		if (query.equals(path)
 				|| path.length() > query.length()
 				&& path.substring(0, 0 + query.length()).equals(query)
@@ -2663,8 +2738,9 @@ public class WApplication extends WObject {
 	 * {@link WAnchor}) but you may want to use this function to encode URLs
 	 * which you use in {@link WTemplate} texts.
 	 */
-	public String encodeUntrustedUrl(String url) {
-		boolean needRedirect = url.indexOf("://") != -1
+	public String encodeUntrustedUrl(final String url) {
+		boolean needRedirect = (url.indexOf("://") != -1 || url
+				.startsWith("//"))
 				&& this.session_.hasSessionIdInUrl();
 		if (needRedirect) {
 			WtServlet c = this.session_.getController();
@@ -2673,6 +2749,27 @@ public class WApplication extends WObject {
 		} else {
 			return url;
 		}
+	}
+
+	/**
+	 * Pushes a (modal) widget onto the expose stack.
+	 * <p>
+	 * This defines a new context of widgets that are currently visible.
+	 */
+	void pushExposedConstraint(WWidget w) {
+		this.exposedOnly_ = w;
+	}
+
+	void popExposedConstraint(WWidget w) {
+		assert this.exposedOnly_ == w;
+		this.exposedOnly_ = null;
+	}
+
+	public void addGlobalWidget(WWidget w) {
+		this.domRoot_.addWidget(w);
+	}
+
+	public void removeGlobalWidget(WWidget anon1) {
 	}
 
 	/**
@@ -2721,7 +2818,7 @@ public class WApplication extends WObject {
 	 * Note that any uncaught exception throw during event handling terminates
 	 * the session.
 	 */
-	protected void notify(WEvent e) throws IOException {
+	protected void notify(final WEvent e) throws IOException {
 		this.session_.notify(e);
 	}
 
@@ -2742,10 +2839,8 @@ public class WApplication extends WObject {
 		if (w.getParent() == this.timerRoot_) {
 			return true;
 		}
-		WWidget exposedOnly = this.exposedOnly_.isEmpty() ? null
-				: this.exposedOnly_.get(this.exposedOnly_.size() - 1);
-		if (exposedOnly != null) {
-			return exposedOnly.isExposed(w);
+		if (this.exposedOnly_ != null) {
+			return this.exposedOnly_.isExposed(w);
 		} else {
 			WWidget p = w.getAdam();
 			return p == this.domRoot_ || p == this.domRoot2_;
@@ -2769,18 +2864,15 @@ public class WApplication extends WObject {
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;
-		try {
-			this.streamBeforeLoadJavaScript(
-					this.session_.getRenderer().beforeLoadJS_, false);
-			this
-					.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
-		} catch (IOException e) {
-		}
+		this.streamBeforeLoadJavaScript(
+				this.session_.getRenderer().beforeLoadJS_, false);
+		this
+				.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_2_3.ajaxInternalPaths("
+		this.doJavaScript("Wt3_3_4.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -2803,13 +2895,27 @@ public class WApplication extends WObject {
 		this.quit();
 	}
 
+	/**
+	 * handleJavaScriptError print javaScript errors to log file. You may want
+	 * to overwrite it to render error page for example.
+	 * <p>
+	 * 
+	 * @param errorText
+	 *            the error will usually be in json format. }
+	 */
+	protected void handleJavaScriptError(final String errorText) {
+		logger.error(new StringWriter().append("JavaScript error: ").append(
+				errorText).toString());
+		this.quit();
+	}
+
 	private Signal1<Long> requestTooLarge_;
 
 	static class ScriptLibrary {
 		private static Logger logger = LoggerFactory
 				.getLogger(ScriptLibrary.class);
 
-		public ScriptLibrary(String anUri, String aSymbol) {
+		public ScriptLibrary(final String anUri, final String aSymbol) {
 			this.uri = anUri;
 			this.symbol = aSymbol;
 			this.beforeLoadJS = "";
@@ -2819,34 +2925,17 @@ public class WApplication extends WObject {
 		public String symbol;
 		public String beforeLoadJS;
 
-		public boolean equals(WApplication.ScriptLibrary other) {
+		public boolean equals(final WApplication.ScriptLibrary other) {
 			return this.uri.equals(other.uri);
 		}
-	}
-
-	static class MetaHeader {
-		private static Logger logger = LoggerFactory
-				.getLogger(MetaHeader.class);
-
-		public MetaHeader(MetaHeaderType aType, String aName,
-				CharSequence aContent, String aLang) {
-			this.type = aType;
-			this.name = aName;
-			this.lang = aLang;
-			this.content = WString.toWString(aContent);
-		}
-
-		public MetaHeaderType type;
-		public String name;
-		public String lang;
-		public WString content;
 	}
 
 	static class MetaLink {
 		private static Logger logger = LoggerFactory.getLogger(MetaLink.class);
 
-		public MetaLink(String aHref, String aRel, String aMedia,
-				String aHreflang, String aType, String aSizes, boolean aDisabled) {
+		public MetaLink(final String aHref, final String aRel,
+				final String aMedia, final String aHreflang,
+				final String aType, final String aSizes, boolean aDisabled) {
 			this.href = aHref;
 			this.rel = aRel;
 			this.media = aMedia;
@@ -2870,6 +2959,7 @@ public class WApplication extends WObject {
 	private WString closeMessage_;
 	boolean titleChanged_;
 	boolean closeMessageChanged_;
+	boolean localeChanged_;
 	private WContainerWidget widgetRoot_;
 	WContainerWidget domRoot_;
 	WContainerWidget domRoot2_;
@@ -2877,7 +2967,7 @@ public class WApplication extends WObject {
 	private WCssStyleSheet styleSheet_;
 	WCombinedLocalizedStrings localizedStrings_;
 	private Locale locale_;
-	String oldInternalPath_;
+	String renderedInternalPath_;
 	String newInternalPath_;
 	Signal1<String> internalPathChanged_;
 	private Signal1<String> internalPathInvalid_;
@@ -2888,11 +2978,11 @@ public class WApplication extends WObject {
 	boolean serverPushChanged_;
 	private String javaScriptClass_;
 	private WApplication.AjaxMethod ajaxMethod_;
-	private WContainerWidget dialogCover_;
-	private boolean quited_;
+	private boolean quitted_;
+	WString quittedMessage_;
 	private String onePixelGifUrl_;
-	private boolean internalPathsEnabled_;
-	private List<WWidget> exposedOnly_;
+	boolean internalPathsEnabled_;
+	private WWidget exposedOnly_;
 	private WLoadingIndicator loadingIndicator_;
 	WWidget loadingIndicatorWidget_;
 	private boolean connected_;
@@ -2906,24 +2996,11 @@ public class WApplication extends WObject {
 	private LayoutDirection layoutDirection_;
 	List<WApplication.ScriptLibrary> scriptLibraries_;
 	int scriptLibrariesAdded_;
-
-	static class StyleSheet {
-		private static Logger logger = LoggerFactory
-				.getLogger(StyleSheet.class);
-
-		public String uri;
-		public String media;
-
-		public StyleSheet(String anUri, String aMedia) {
-			this.uri = anUri;
-			this.media = aMedia;
-		}
-	}
-
-	private String theme_;
-	List<WApplication.StyleSheet> styleSheets_;
+	private WTheme theme_;
+	List<WCssStyleSheet> styleSheets_;
+	List<WCssStyleSheet> styleSheetsToRemove_;
 	int styleSheetsAdded_;
-	List<WApplication.MetaHeader> metaHeaders_;
+	List<MetaHeader> metaHeaders_;
 	List<WApplication.MetaLink> metaLinks_;
 	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals_;
 	private Map<String, WResource> exposedResources_;
@@ -2945,19 +3022,6 @@ public class WApplication extends WObject {
 
 	WContainerWidget getTimerRoot() {
 		return this.timerRoot_;
-	}
-
-	WContainerWidget getDialogCover(boolean create) {
-		if (this.dialogCover_ == null && create && this.timerRoot_ != null) {
-			this.dialogCover_ = new WContainerWidget(this.domRoot_);
-			this.dialogCover_.setStyleClass("Wt-dialogcover");
-			this.dialogCover_.hide();
-		}
-		return this.dialogCover_;
-	}
-
-	final WContainerWidget getDialogCover() {
-		return getDialogCover(true);
 	}
 
 	WEnvironment getEnv() {
@@ -2984,7 +3048,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	AbstractEventSignal decodeExposedSignal(String signalName) {
+	AbstractEventSignal decodeExposedSignal(final String signalName) {
 		WeakReference<AbstractEventSignal> i = this.exposedSignals_
 				.get(signalName);
 		if (i != null) {
@@ -2994,7 +3058,8 @@ public class WApplication extends WObject {
 		}
 	}
 
-	AbstractEventSignal decodeExposedSignal(String objectId, String name) {
+	AbstractEventSignal decodeExposedSignal(final String objectId,
+			final String name) {
 		String signalName = (objectId.equals("app") ? this.getId() : objectId)
 				+ '.' + name;
 		return this.decodeExposedSignal(signalName);
@@ -3009,7 +3074,7 @@ public class WApplication extends WObject {
 				: "/path/" + resource.getInternalPath();
 	}
 
-	String addExposedResource(WResource resource, String internalPath) {
+	String addExposedResource(WResource resource) {
 		this.exposedResources_.put(this.resourceMapKey(resource), resource);
 		String fn = resource.getSuggestedFileName().toString();
 		if (fn.length() != 0 && fn.charAt(0) != '/') {
@@ -3038,7 +3103,7 @@ public class WApplication extends WObject {
 		}
 	}
 
-	WResource decodeExposedResource(String resourceKey) {
+	WResource decodeExposedResource(final String resourceKey) {
 		WResource i = this.exposedResources_.get(resourceKey);
 		if (i != null) {
 			return i;
@@ -3053,10 +3118,10 @@ public class WApplication extends WObject {
 		}
 	}
 
-	private boolean changeInternalPath(String aPath) {
+	private boolean changeInternalPath(final String aPath) {
 		String path = StringUtils.prepend(aPath, '/');
 		if (!path.equals(this.getInternalPath())) {
-			this.newInternalPath_ = path;
+			this.renderedInternalPath_ = this.newInternalPath_ = path;
 			this.internalPathValid_ = this.internalPathDefaultValid_;
 			this.internalPathChanged_.trigger(this.newInternalPath_);
 			if (!this.internalPathValid_) {
@@ -3066,19 +3131,19 @@ public class WApplication extends WObject {
 		return this.internalPathValid_;
 	}
 
-	boolean changedInternalPath(String path) {
-		if (!this.getEnvironment().hashInternalPaths()) {
+	boolean changedInternalPath(final String path) {
+		if (!this.getEnvironment().isInternalPathUsingFragments()) {
 			this.session_.setPagePathInfo(path);
 		}
 		return this.changeInternalPath(path);
 	}
 
-	void streamAfterLoadJavaScript(Writer out) throws IOException {
+	void streamAfterLoadJavaScript(final StringBuilder out) {
 		out.append(this.afterLoadJavaScript_);
 		this.afterLoadJavaScript_ = "";
 	}
 
-	void streamBeforeLoadJavaScript(Writer out, boolean all) throws IOException {
+	void streamBeforeLoadJavaScript(final StringBuilder out, boolean all) {
 		this.streamJavaScriptPreamble(out, all);
 		if (!all) {
 			if (this.newBeforeLoadJavaScript_ != 0) {
@@ -3092,18 +3157,18 @@ public class WApplication extends WObject {
 		this.newBeforeLoadJavaScript_ = 0;
 	}
 
-	private void streamJavaScriptPreamble(Writer out, boolean all)
-			throws IOException {
+	private void streamJavaScriptPreamble(final StringBuilder out, boolean all) {
 		if (all) {
 			this.newJavaScriptPreamble_ = this.javaScriptPreamble_.size();
 		}
 		for (int i = this.javaScriptPreamble_.size()
 				- this.newJavaScriptPreamble_; i < this.javaScriptPreamble_
 				.size(); ++i) {
-			WJavaScriptPreamble preamble = this.javaScriptPreamble_.get(i);
+			final WJavaScriptPreamble preamble = this.javaScriptPreamble_
+					.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
 					.getJavaScriptClass()
-					: "Wt3_2_3";
+					: "Wt3_3_4";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name).append(
 						" = function() { return (").append(preamble.src)
@@ -3126,28 +3191,12 @@ public class WApplication extends WObject {
 	}
 
 	private void doUnload() {
-		Configuration conf = this.getEnvironment().getServer()
+		final Configuration conf = this.getEnvironment().getServer()
 				.getConfiguration();
 		if (conf.reloadIsNewSession()) {
 			this.unload();
 		} else {
 			this.session_.setState(WebSession.State.Loaded, 5);
-		}
-	}
-
-	void pushExposedConstraint(WWidget w) {
-		this.exposedOnly_.add(w);
-	}
-
-	void popExposedConstraint(WWidget w) {
-		for (int i = this.exposedOnly_.size(); i > 0; --i) {
-			int j = i - 1;
-			if (this.exposedOnly_.get(j) == w) {
-				while (this.exposedOnly_.size() > j) {
-					this.exposedOnly_.remove(this.exposedOnly_.size() - 1);
-				}
-				break;
-			}
 		}
 	}
 
@@ -3171,6 +3220,7 @@ public class WApplication extends WObject {
 	}
 
 	private SoundManager soundManager_;
+	static String RESOURCES_URL = "resourcesURL";
 	private JSlot showLoadJS;
 	private JSlot hideLoadJS;
 	private static char[] gifData = { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01,
@@ -3179,5 +3229,4 @@ public class WApplication extends WObject {
 			0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44,
 			0x01, 0x00, 0x3b };
 	private static int seq = 0;
-	static String RESOURCES_URL = "resourcesURL";
 }

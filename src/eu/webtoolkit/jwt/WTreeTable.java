@@ -49,22 +49,6 @@ import org.slf4j.LoggerFactory;
  * {@link WCompositeWidget#resize(WLength width, WLength height)
  * WCompositeWidget#resize()}.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The treetable is styled by the current CSS theme. The look can be overridden
- * using the <code>Wt-treetable</code> CSS class. The style selectors that
- * affect the rendering of the tree are indicated in the documentation for
- * {@link WTree} (for selection) and {@link WTreeNode} (for decoration). In
- * addition, the following selector may be used to to style the header:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-treetable .Wt-header : header
- * </pre>
- * 
- * </div>
- * <p>
  * A screenshot of the treetable: <div align="center"> <img
  * src="doc-files//WTreeTable-default-1.png"
  * alt="An example WTreeTable (default)">
@@ -142,7 +126,7 @@ public class WTreeTable extends WCompositeWidget {
 	 * setTreeRoot()}, and the width of column 0 takes the remaining available
 	 * width.
 	 */
-	public void addColumn(CharSequence header, WLength width) {
+	public void addColumn(final CharSequence header, final WLength width) {
 		if (this.getTreeRoot() != null) {
 			throw new WException(
 					"WTreeTable::addColumn(): must be called before setTreeRoot()");
@@ -180,9 +164,9 @@ public class WTreeTable extends WCompositeWidget {
 	 * @see WTreeTable#getTreeRoot()
 	 * @see WTreeTable#setTree(WTree root, CharSequence h)
 	 */
-	public void setTreeRoot(WTreeTableNode root, CharSequence h) {
+	public void setTreeRoot(WTreeTableNode root, final CharSequence h) {
 		this.tree_.setTreeRoot(root);
-		this.header(0).setText(h);
+		this.header(0).setText((h.length() == 0) ? "&nbsp;" : h);
 		root.setTable(this);
 	}
 
@@ -201,14 +185,14 @@ public class WTreeTable extends WCompositeWidget {
 	 * 
 	 * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
 	 */
-	public void setTree(WTree root, CharSequence h) {
+	public void setTree(WTree root, final CharSequence h) {
 		WContainerWidget parent = ((this.tree_.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.tree_
 				.getParent())
 				: null);
 		if (this.tree_ != null)
 			this.tree_.remove();
+		parent.addWidget(this.tree_ = root);
 		this.header(0).setText(h);
-		parent.addWidget(this.tree_ = new WTree());
 		this.tree_.resize(new WLength(100, WLength.Unit.Percentage),
 				WLength.Auto);
 		this.getTreeRoot().setTable(this);
@@ -271,7 +255,7 @@ public class WTreeTable extends WCompositeWidget {
 		return this.headers_;
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
@@ -293,7 +277,7 @@ public class WTreeTable extends WCompositeWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
-		this.setJavaScriptMember(" WTreeTable", "new Wt3_2_3.WTreeTable("
+		this.setJavaScriptMember(" WTreeTable", "new Wt3_3_4.WTreeTable("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 	}
 
@@ -302,6 +286,6 @@ public class WTreeTable extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTreeTable",
-				"function(f,a){jQuery.data(a,\"obj\",this);var g=this,h=f.WT,e=$(a).find(\".Wt-content\").get(0),i=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){b.style.height=c+\"px\";d=b.lastChild;c-=$(b.firstChild).outerHeight();if(c>0)if(d.style.height!=c+\"px\")d.style.height=c+\"px\"};this.autoJavaScript=function(){if(a.parentNode){i.style.display=e.scrollHeight>e.offsetHeight?\"block\":\"none\";var b=h.pxself(a,\"height\");b&&g.wtResize(a,0,b)}}}");
+				"function(g,a){jQuery.data(a,\"obj\",this);var h=this,i=g.WT,f=$(a).find(\".Wt-content\").get(0),j=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){d=c>=0;b.style.height=d?c+\"px\":\"\";var e=b.lastChild;c-=$(b.firstChild).outerHeight();if(d&&c>0){if(e.style.height!=c+\"px\")e.style.height=c+\"px\"}else e.style.height=\"\"};this.autoJavaScript=function(){if(a.parentNode){j.style.display=f.scrollHeight>f.offsetHeight?\"block\":\"none\";var b=i.pxself(a, \"height\");b&&h.wtResize(a,0,b,true)}}}");
 	}
 }

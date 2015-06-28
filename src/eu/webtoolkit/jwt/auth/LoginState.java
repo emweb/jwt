@@ -33,8 +33,9 @@ public enum LoginState {
 	/**
 	 * The identified user was refused to login.
 	 * <p>
-	 * This is caused by {@link User#getStatus() User#getStatus()} returning
-	 * {@link User.Status#Disabled}
+	 * This is caused by for example {@link User#getStatus() User#getStatus()}
+	 * returning {@link User.Status#Disabled}, or if email verification is
+	 * required but the email hasn&apos;t been verified yet.
 	 */
 	DisabledLogin,
 	/**

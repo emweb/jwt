@@ -302,4 +302,8 @@ public class WModelIndex implements Comparable<WModelIndex> {
 
 		return i2 == null;
 	}
+
+	public int getInternalId() {
+		return ((Long)getInternalPointer()).intValue();
+	}
 }

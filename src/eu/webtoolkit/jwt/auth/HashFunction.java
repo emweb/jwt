@@ -53,7 +53,7 @@ public abstract class HashFunction {
 	 * The <code>salt</code> and the computed hash are encoded in printable
 	 * characters. This is usually ASCII-encoded or could be Base64-encoded.
 	 */
-	public abstract String compute(String msg, String salt);
+	public abstract String compute(final String msg, final String salt);
 
 	/**
 	 * Verifies a message with the salted hash.
@@ -65,7 +65,7 @@ public abstract class HashFunction {
 	 * <code>hash</code>, and this information is thus needed to verify the
 	 * message hash.
 	 */
-	public boolean verify(String msg, String salt, String hash) {
+	public boolean verify(final String msg, final String salt, final String hash) {
 		return this.compute(msg, salt).equals(hash);
 	}
 }

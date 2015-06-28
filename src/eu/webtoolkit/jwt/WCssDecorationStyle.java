@@ -208,7 +208,7 @@ public class WCssDecorationStyle extends WObject {
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
-	public void setBackgroundImage(WLink image,
+	public void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
 		if (image.getType() == WLink.Type.Resource) {
 			image.getResource().dataChanged().addListener(this,
@@ -238,7 +238,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, repeat, EnumSet.of(side, sides))}
 	 */
-	public final void setBackgroundImage(WLink image,
+	public final void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
 		setBackgroundImage(image, repeat, EnumSet.of(side, sides));
 	}
@@ -251,7 +251,7 @@ public class WCssDecorationStyle extends WObject {
 	 * setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY,
 	 * EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(WLink image) {
+	public final void setBackgroundImage(final WLink image) {
 		setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
 				.noneOf(Side.class));
 	}
@@ -263,7 +263,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(WLink image,
+	public final void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(image, repeat, EnumSet.noneOf(Side.class));
 	}
@@ -274,7 +274,7 @@ public class WCssDecorationStyle extends WObject {
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
-	public void setBackgroundImage(String url,
+	public void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
 		this.setBackgroundImage(new WLink(url), repeat, sides);
 	}
@@ -286,7 +286,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(url, repeat, EnumSet.of(side, sides))}
 	 */
-	public final void setBackgroundImage(String url,
+	public final void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat, Side side, Side... sides) {
 		setBackgroundImage(url, repeat, EnumSet.of(side, sides));
 	}
@@ -299,7 +299,7 @@ public class WCssDecorationStyle extends WObject {
 	 * setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY,
 	 * EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(String url) {
+	public final void setBackgroundImage(final String url) {
 		setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
 				.noneOf(Side.class));
 	}
@@ -311,7 +311,7 @@ public class WCssDecorationStyle extends WObject {
 	 * {@link #setBackgroundImage(String url, WCssDecorationStyle.Repeat repeat, EnumSet sides)
 	 * setBackgroundImage(url, repeat, EnumSet.noneOf(Side.class))}
 	 */
-	public final void setBackgroundImage(String url,
+	public final void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat) {
 		setBackgroundImage(url, repeat, EnumSet.noneOf(Side.class));
 	}
@@ -378,7 +378,7 @@ public class WCssDecorationStyle extends WObject {
 			this.borderChanged_ = true;
 		}
 		if (this.borderChanged_) {
-			this.changed();
+			this.changed(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -443,11 +443,11 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets the text font.
 	 */
-	public void setFont(WFont font) {
+	public void setFont(final WFont font) {
 		if (!WWebWidget.canOptimizeUpdates() || !this.font_.equals(font)) {
 			this.font_ = font;
 			this.fontChanged_ = true;
-			this.changed();
+			this.changed(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 	}
 
@@ -508,7 +508,7 @@ public class WCssDecorationStyle extends WObject {
 		return e.getCssStyle();
 	}
 
-	void updateDomElement(DomElement element, boolean all) {
+	void updateDomElement(final DomElement element, boolean all) {
 		if (this.cursorChanged_ || all) {
 			switch (this.cursor_) {
 			case AutoCursor:
@@ -582,56 +582,73 @@ public class WCssDecorationStyle extends WObject {
 		}
 		if (this.backgroundImageChanged_ || all) {
 			if (!this.backgroundImage_.isNull() || this.backgroundImageChanged_) {
-				element.setProperty(Property.PropertyStyleBackgroundImage,
-						!this.backgroundImage_.isNull() ? "url("
-								+ WApplication.getInstance()
-										.resolveRelativeUrl(
-												this.backgroundImage_.getUrl())
-								+ ")" : "none");
-				switch (this.backgroundImageRepeat_) {
-				case RepeatXY:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"repeat");
-					break;
-				case RepeatX:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"repeat-x");
-					break;
-				case RepeatY:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"repeat-y");
-					break;
-				case NoRepeat:
-					element.setProperty(Property.PropertyStyleBackgroundRepeat,
-							"no-repeat");
-					break;
+				if (this.backgroundImage_.isNull()) {
+					element.setProperty(Property.PropertyStyleBackgroundImage,
+							"none");
+				} else {
+					WApplication app = WApplication.getInstance();
+					String url = app
+							.encodeUntrustedUrl(app
+									.resolveRelativeUrl(this.backgroundImage_
+											.getUrl()));
+					element
+							.setProperty(Property.PropertyStyleBackgroundImage,
+									"url("
+											+ WWebWidget.jsStringLiteral(url,
+													'"') + ")");
 				}
-				if (!this.backgroundImageLocation_.isEmpty()) {
-					String location = "";
-					if (!EnumUtils.mask(this.backgroundImageLocation_,
-							Side.CenterY).isEmpty()) {
-						location += " center";
-					} else {
-						if (!EnumUtils.mask(this.backgroundImageLocation_,
-								Side.Bottom).isEmpty()) {
-							location += " bottom";
-						} else {
-							location += " top";
-						}
+				if (this.backgroundImageRepeat_ != WCssDecorationStyle.Repeat.RepeatXY
+						|| !this.backgroundImageLocation_.equals(0)) {
+					switch (this.backgroundImageRepeat_) {
+					case RepeatXY:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"repeat");
+						break;
+					case RepeatX:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"repeat-x");
+						break;
+					case RepeatY:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"repeat-y");
+						break;
+					case NoRepeat:
+						element.setProperty(
+								Property.PropertyStyleBackgroundRepeat,
+								"no-repeat");
+						break;
 					}
-					if (!EnumUtils.mask(this.backgroundImageLocation_,
-							Side.CenterX).isEmpty()) {
-						location += " center";
-					} else {
+					if (!this.backgroundImageLocation_.isEmpty()) {
+						String location = "";
 						if (!EnumUtils.mask(this.backgroundImageLocation_,
-								Side.Right).isEmpty()) {
-							location += " right";
+								Side.CenterY).isEmpty()) {
+							location += " center";
 						} else {
-							location += " left";
+							if (!EnumUtils.mask(this.backgroundImageLocation_,
+									Side.Bottom).isEmpty()) {
+								location += " bottom";
+							} else {
+								location += " top";
+							}
 						}
+						if (!EnumUtils.mask(this.backgroundImageLocation_,
+								Side.CenterX).isEmpty()) {
+							location += " center";
+						} else {
+							if (!EnumUtils.mask(this.backgroundImageLocation_,
+									Side.Right).isEmpty()) {
+								location += " right";
+							} else {
+								location += " left";
+							}
+						}
+						element.setProperty(
+								Property.PropertyStyleBackgroundPosition,
+								location);
 					}
-					element.setProperty(
-							Property.PropertyStyleBackgroundPosition, location);
 				}
 			}
 			this.backgroundImageChanged_ = false;
@@ -681,11 +698,18 @@ public class WCssDecorationStyle extends WObject {
 	private boolean fontChanged_;
 	private boolean textDecorationChanged_;
 
-	private void changed() {
+	private void changed(EnumSet<RepaintFlag> flags) {
 		if (this.widget_ != null) {
-			this.widget_.repaint(EnumSet
-					.of(RepaintFlag.RepaintPropertyAttribute));
+			this.widget_.repaint(flags);
 		}
+	}
+
+	private final void changed(RepaintFlag flag, RepaintFlag... flags) {
+		changed(EnumSet.of(flag, flags));
+	}
+
+	private final void changed() {
+		changed(EnumSet.noneOf(RepaintFlag.class));
 	}
 
 	private void backgroundImageResourceChanged() {

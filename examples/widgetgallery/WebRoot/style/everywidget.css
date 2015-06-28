@@ -1,36 +1,11 @@
-body, html {
-    font-family:arial,sans-serif;
-    height: 100%;
-    width: 100%;
-    margin: 0px; padding: 0px; border: none;
-    overflow: hidden;
+.main-nav {
+    margin-bottom: 0px;
 }
 
 tt {
     font-family: andale mono;
     color: #570;
-    font-size: 90%;
-}
-
-a {
-    outline: none;
-    color: #570;
-}
-
-a:visited {
-    outline: none;
-    color: #570;
-}
-
-ul {
-    list-style-type: disc;
-    list-style-position: outside;
-    margin: 1.12em 0;
-}
-
-.contents p, .contents li {
-    margin: 16px 0px;
-    line-height: 130%;
+    font-size: 97%;
 }
 
 .wmediaplayer li {
@@ -39,28 +14,19 @@ ul {
 }
 
 .contents h1 {
-    font-size: 150%;
-    font-weight: bold;
     color: #528B12;
-    margin: 0px 0px 7px;
 }
 
 .contents h2 {
-    font-size: 120%;
-    font-weight: bold;
     color: #528B12;
-    margin: 7px 0px;
-}
-
-.contents h2 span {
-    border-bottom: 0.2em solid #000;
 }
 
 .contents h3 {
-    font-size: 100%;
-    font-weight: bold;
     color: #528B12;
-    margin: 7px 0px;
+}
+
+.submenu {
+    overflow: auto;
 }
 
 .trhead {
@@ -106,64 +72,24 @@ ul {
     padding-left: 4px;
 }
 
-.Wt-suggest .highlight {
+.Wt-suggest .highlight, .typeahead .highlight {
     padding: 0px;
     font-weight: bold;
     text-decoration: underline;
 }
 
-ul.menu {
-    margin: 0px;
-    padding: 0px;
-    text-indent:5px;
-    list-style:none;
-    width:200px;
+.menu {
     overflow: auto;
 }
 
-ul.menu li {
-    padding-top: 8px;
-}
-
-ul.menu a {
-    letter-spacing:1px;
-    text-decoration:none;
-    padding-bottom:5px;
-    width:200px;
-}
-
-ul.menu .itemselected, ul.menu .itemselected a, ul.menu .itemselected a {
+.menu > li > .nav-pills > .active > a,
+.menu > li > .nav-pills > .active > a:hover {
     color: black;
+    background-color: #9CF;
 }
 
-ul.menu .item, ul.menu a.item, ul.menu .item a {
-    color: #7E7E7E;
-}
-
-ul.menu a:hover, ul.menu .item a:hover {
-    color: #70BD1A;
-    text-decoration: none;
-}
-
-ul.submenu {
-    font-size: 90%;
-    margin-left: 15px;
-    padding-bottom: 0px;
-    width: auto;
-    border-right: 0px;
-    display: none;
-}
-
-.itemselected ul.submenu {
-    display: block;
-}
-
-ul.submenu li {
-    padding-top: 4px;
-}
-
-ul.submenu li a {
-    padding-bottom: 0px;
+.menu > li > .nav-pills a {
+    color: #333;
 }
 
 span.title {
@@ -195,7 +121,7 @@ span.reactive {
 }
 
 div.contents {
-    padding: 6px;
+    padding: 0px 12px 6px;
 }
 
 .example-table {
@@ -212,58 +138,9 @@ div.contents {
     background-color: yellow;
 }
 
-.tabwidget {
-    border-bottom: 1px solid gray;
-    padding-bottom: 3px;
-    height: 100px;
-}
-
-.in-place-edit span {
-    margin:1px
-}
-
-.in-place-edit span:hover{
-    background-color:#FFFFCC;
-    margin:0px;
-    border:1px solid #CCCCCC;
-}
-
-.tree-table .header * {
-  font-weight: bold;
-}
-
-.tree-table .header {
-  border-bottom: solid 1px;
-}
-
-.validators td {
-    padding: 3px;
-}
-
 .centered {
     margin-left: auto;
     margin-right: auto;
-}
-
-.yellow-box {
-    background-color: #ffffb4;
-    border: 1px solid black;
-    margin-top: 1ex;
-    margin-bottom: 1ex;
-}
-
-.green-box {
-    background-color: #c4ffb4;
-    min-height: 30px;
-    text-align: center;
-    padding: 3px;
-}
-
-.blue-box {
-    background-color: #65dae8;
-    min-height: 30px;
-    text-align: center;
-    padding: 3px;
 }
 
 .events {
@@ -277,7 +154,7 @@ div.contents {
     cursor: default;   
 }
 
-.form {
+.example .form {
     background: #DDD;
     text-align: center;
     width: 40ex;
@@ -298,8 +175,76 @@ div.contents {
     padding: 2px;
 }
 
-.Wt-tree .Wt-label {
-    height: 19px;
-    display: inline-block;
-    zoom: 1;
+.example {
+    border: 1px solid #A9D2F5;
+    padding: 10px;
+    margin: 14px 14px;
+}
+
+.example > legend {
+    width: auto;
+    border-bottom: 0px;
+    padding: 0px 5px;
+    margin-bottom: -5px;
+}
+
+.example > p {
+    margin: 10px 0px;
+    padding-top: 10px;
+}
+
+.src {
+    margin-top: 10px;
+}
+
+.src > legend {
+    text-align: left;
+    font-size: 85%;
+    line-height: 24px;
+    border-bottom: 0px;
+    border-top: 1px solid #A9D2F5;
+    margin-bottom: 0px;
+}
+
+.src pre {
+    border: 0px;
+    background-color: #fcfcfc;
+    margin-bottom: 0px;
+}
+
+.centered-example {
+    width: 400px;
+    margin: 0px auto;
+}
+
+.example .Wt-tableview, .example .Wt-treeview {
+    margin: 0px auto;
+}
+
+.example .text-edit-example .out {
+    margin-top: 10px;
+    margin-left: 100px;
+}
+
+.centered {
+    text-align: center;
+}
+
+.lead {
+    padding: 0.1em 1em;
+    margin: 0;
+}
+
+.inline-buttons button {
+    margin-left: 7px;
+}
+
+.reset h1 {
+    font-size: auto;
+    font-weight: auto;
+    color: inherit;
+}
+
+.dl-horizontal.no-clear:after {
+  clear: none;
 }

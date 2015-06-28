@@ -38,22 +38,6 @@ import org.slf4j.LoggerFactory;
  * {@link WTreeNode#setSelectable(boolean selectable) selectable} may
  * participate in the selection.
  * <p>
- * <h3>CSS</h3>
- * <p>
- * The tree is styled by the current CSS theme. The look can be overridden using
- * the <code>Wt-tree</code> CSS class. The style selectors that affect the
- * rendering of the decoration of the nodes are indicated in the documentation
- * for {@link WTreeNode}. In addition, the following selector may be used to
- * style the header:
- * <p>
- * <div class="fragment">
- * 
- * <pre class="fragment">
- * .Wt-tree .Wt-selected : selected item
- * </pre>
- * 
- * </div>
- * <p>
  * A screenshot of the tree:
  * <table border="0" align="center" cellspacing="3" cellpadding="3">
  * <tr>
@@ -156,7 +140,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets a selection of tree nodes.
 	 */
-	public void select(Set<WTreeNode> nodes) {
+	public void select(final Set<WTreeNode> nodes) {
 		this.clearSelection();
 		for (Iterator<WTreeNode> i_it = nodes.iterator(); i_it.hasNext();) {
 			WTreeNode i = i_it.next();
@@ -275,7 +259,8 @@ public class WTree extends WCompositeWidget {
 					n = n.getChildNodes().get(0);
 				} else {
 					for (;;) {
-						List<WTreeNode> cs = n.getParentNode().getChildNodes();
+						final List<WTreeNode> cs = n.getParentNode()
+								.getChildNodes();
 						int i = cs.indexOf(n);
 						i++;
 						if (i < (int) cs.size()) {
@@ -361,7 +346,7 @@ public class WTree extends WCompositeWidget {
 		}
 	}
 
-	static boolean getAncestors(WTreeNode n, List<WTreeNode> ancestors) {
+	static boolean getAncestors(WTreeNode n, final List<WTreeNode> ancestors) {
 		WTreeNode p = n.getParentNode();
 		if (p != null) {
 			if (!p.isExpanded()) {

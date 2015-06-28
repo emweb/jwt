@@ -28,25 +28,25 @@ class HeaderProxyModel extends WAbstractTableModel {
 		this.model_ = model;
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		return this.model_.getColumnCount();
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		return 1;
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		return this.model_.getHeaderData(index.getColumn(),
 				Orientation.Horizontal, role);
 	}
 
-	public boolean setData(WModelIndex index, Object value, int role) {
+	public boolean setData(final WModelIndex index, final Object value, int role) {
 		return this.model_.setHeaderData(index.getColumn(),
 				Orientation.Horizontal, value, role);
 	}
 
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
+	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		EnumSet<HeaderFlag> headerFlags = this.model_.getHeaderFlags(index
 				.getColumn(), Orientation.Horizontal);
 		EnumSet<ItemFlag> result = EnumSet.noneOf(ItemFlag.class);
@@ -56,6 +56,10 @@ class HeaderProxyModel extends WAbstractTableModel {
 		}
 		if (!EnumUtils.mask(headerFlags, HeaderFlag.HeaderIsTristate).isEmpty()) {
 			result.add(ItemFlag.ItemIsTristate);
+		}
+		if (!EnumUtils.mask(headerFlags, HeaderFlag.HeaderIsXHTMLText)
+				.isEmpty()) {
+			result.add(ItemFlag.ItemIsXHTMLText);
 		}
 		return result;
 	}

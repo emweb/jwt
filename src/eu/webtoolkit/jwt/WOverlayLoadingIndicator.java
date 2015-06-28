@@ -109,14 +109,14 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *            </i>
 	 *            </p>
 	 */
-	public WOverlayLoadingIndicator(String styleClass,
-			String backgroundStyleClass, String textStyleClass) {
+	public WOverlayLoadingIndicator(final String styleClass,
+			final String backgroundStyleClass, final String textStyleClass) {
 		super();
 		this.setInline(false);
 		WApplication app = WApplication.getInstance();
 		this.cover_ = new WContainerWidget(this);
 		this.center_ = new WContainerWidget(this);
-		WImage img = new WImage(WApplication.getResourcesUrl()
+		WImage img = new WImage(WApplication.getRelativeResourcesUrl()
 				+ "ajax-loading.gif", this.center_);
 		img.setMargin(new WLength(7), EnumSet.of(Side.Top, Side.Bottom));
 		this.text_ = new WText(tr("Wt.WOverlayLoadingIndicator.Loading"),
@@ -178,7 +178,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 * {@link #WOverlayLoadingIndicator(String styleClass, String backgroundStyleClass, String textStyleClass)
 	 * this(styleClass, "", "")}
 	 */
-	public WOverlayLoadingIndicator(String styleClass) {
+	public WOverlayLoadingIndicator(final String styleClass) {
 		this(styleClass, "", "");
 	}
 
@@ -189,8 +189,8 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 * {@link #WOverlayLoadingIndicator(String styleClass, String backgroundStyleClass, String textStyleClass)
 	 * this(styleClass, backgroundStyleClass, "")}
 	 */
-	public WOverlayLoadingIndicator(String styleClass,
-			String backgroundStyleClass) {
+	public WOverlayLoadingIndicator(final String styleClass,
+			final String backgroundStyleClass) {
 		this(styleClass, backgroundStyleClass, "");
 	}
 
@@ -198,7 +198,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		return this;
 	}
 
-	public void setMessage(CharSequence text) {
+	public void setMessage(final CharSequence text) {
 		this.text_.setText(text);
 	}
 

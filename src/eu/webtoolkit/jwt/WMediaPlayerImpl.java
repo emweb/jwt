@@ -23,7 +23,7 @@ class WMediaPlayerImpl extends WTemplate {
 	private static Logger logger = LoggerFactory
 			.getLogger(WMediaPlayerImpl.class);
 
-	public WMediaPlayerImpl(WMediaPlayer player, CharSequence text) {
+	public WMediaPlayerImpl(WMediaPlayer player, final CharSequence text) {
 		super(text);
 		this.player_ = player;
 		this.setFormObject(true);
@@ -32,14 +32,14 @@ class WMediaPlayerImpl extends WTemplate {
 	String renderRemoveJs() {
 		if (this.isRendered()) {
 			return this.player_.getJsPlayerRef()
-					+ ".jPlayer('destroy');Wt3_2_3.remove('" + this.getId()
+					+ ".jPlayer('destroy');Wt3_3_4.remove('" + this.getId()
 					+ "');";
 		} else {
 			return super.renderRemoveJs();
 		}
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		this.player_.setFormData(formData);
 	}
 

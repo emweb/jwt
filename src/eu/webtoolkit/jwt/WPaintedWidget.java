@@ -146,16 +146,13 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.renderWidth_ = 0;
 		this.renderHeight_ = 0;
 		if (WApplication.getInstance() != null) {
-			WEnvironment env = WApplication.getInstance().getEnvironment();
+			final WEnvironment env = WApplication.getInstance()
+					.getEnvironment();
 			if (env.agentIsOpera()
 					&& env.getUserAgent().indexOf("Mac OS X") == -1) {
 				this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
 			}
 		}
-		this.setLayoutSizeAware(true);
-		this
-				.setJavaScriptMember(WT_RESIZE_JS,
-						"function(self,w,h) {$(self).find('canvas, img').width(w).height(h);}");
 		this.setInline(false);
 	}
 
@@ -237,7 +234,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		update(EnumSet.noneOf(PaintFlag.class));
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		if (!width.isAuto() && !height.isAuto()) {
 			this.setLayoutSizeAware(false);
 			this.resizeCanvas((int) width.toPixels(), (int) height.toPixels());
@@ -344,18 +341,18 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * You may want to reimplement this method to override this choice.
 	 */
 	protected WPaintedWidget.Method getMethod() {
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		WPaintedWidget.Method method;
-		WEnvironment env = WApplication.getInstance().getEnvironment();
-		if (env.getContentType() != WEnvironment.ContentType.XHTML1
-				&& !(env.agentIsChrome()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
-								.getValue()
-						|| env.agentIsIE()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
-								.getValue() || env.agentIsGecko()
-						&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
-								.getValue())) {
-			method = WPaintedWidget.Method.HtmlCanvas;
+		if (!(env.agentIsChrome()
+				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+						.getValue()
+				|| env.agentIsIE()
+				&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
+						.getValue() || env.agentIsGecko()
+				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
+						.getValue())) {
+			method = env.hasJavaScript() ? WPaintedWidget.Method.HtmlCanvas
+					: WPaintedWidget.Method.PngImage;
 		} else {
 			if (!env.hasJavaScript()) {
 				method = WPaintedWidget.Method.InlineSvgVml;
@@ -390,16 +387,32 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 */
 	protected abstract void paintEvent(WPaintDevice paintDevice);
 
+	/**
+	 * Creates a paint device.
+	 * <p>
+	 * Although it&apos;s usually not necessary to call this function, you may
+	 * want to reimplement this function to customize or specialize the device
+	 * used for painting the widget.
+	 */
+	protected WPaintDevice getCreatePaintDevice() {
+		(this).isCreatePainter();
+		if (this.painter_ != null) {
+			return this.painter_.createPaintDevice(true);
+		} else {
+			return null;
+		}
+	}
+
 	DomElementType getDomElementType() {
 		if (this.isInline()
-				&& WApplication.getInstance().getEnvironment().agentIsIE()) {
+				&& WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
 			return DomElementType.DomElement_SPAN;
 		} else {
 			return DomElementType.DomElement_DIV;
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all && this.areaImage_ != null || this.areaImageAdded_) {
 			element.addChild(this.areaImage_.createSDomElement(WApplication
 					.getInstance()));
@@ -409,6 +422,13 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	DomElement createDomElement(WApplication app) {
+		if (this.isInLayout()) {
+			this.setLayoutSizeAware(true);
+			this
+					.setJavaScriptMember(
+							WT_RESIZE_JS,
+							"function(self, w, h) {var u = $(self).find('canvas, img');if (w >= 0) u.width(w);if (h >= 0) u.height(h);}");
+		}
 		this.isCreatePainter();
 		DomElement result = DomElement.createNew(this.getDomElementType());
 		this.setId(result, app);
@@ -447,7 +467,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		return result;
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		this.updateDom(e, false);
@@ -523,7 +543,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.painter_ = new WWidgetRasterPainter(this);
 			return true;
 		}
-		WEnvironment env = WApplication.getInstance().getEnvironment();
+		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		if (env.agentIsIElt(9)) {
 			this.painter_ = new WWidgetVectorPainter(this,
 					WWidgetPainter.RenderType.InlineVml);
@@ -534,7 +554,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.painter_ = new WWidgetVectorPainter(this,
 					WWidgetPainter.RenderType.InlineSvg);
 		} else {
-			this.painter_ = new WWidgetCanvasPainter(this);
+			if (method == WPaintedWidget.Method.PngImage) {
+				this.painter_ = new WWidgetRasterPainter(this);
+			} else {
+				this.painter_ = new WWidgetCanvasPainter(this);
+			}
 		}
 		return true;
 	}
@@ -553,7 +577,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			this.areaImage_.setMargin(new WLength(0), EnumSet.of(Side.Top));
 			this.areaImage_.resize(new WLength(this.renderWidth_), new WLength(
 					this.renderHeight_));
-			this.areaImage_.setPopup(true);
 			this.areaImageAdded_ = true;
 		}
 	}

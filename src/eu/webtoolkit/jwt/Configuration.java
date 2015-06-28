@@ -31,13 +31,29 @@ import org.w3c.dom.NodeList;
 public class Configuration {
 	private static Logger logger = LoggerFactory.getLogger(AbstractJSignal.class);
 
-	enum SessionTracking {
+	public enum SessionTracking {
 		CookiesURL, Auto
 	}
 
-	enum ErrorReporting {
+	/**
+	 * An enumeration for the level of error reporting in case of client-side (JavaScript) errors.
+	 */
+	public enum ErrorReporting {
+		/**
+		 * The application silently dies, and this allows the use of standard debugging
+		 * capabilities of the browser to diagnose the problem (convenient during development).
+		 */
 		NoErrors,
+		
+		/**
+		 * The application dies with a message to the user indicating an internal error.
+		 * This is the default behaviour.
+		 */
 		ErrorMessage,
+
+		/**
+		 * The application dies with a message and if possible a stack trace of the problem.
+		 */
 		ErrorMessageWithStack
 	}
 
@@ -45,6 +61,7 @@ public class Configuration {
 	private String redirectMessage_ = "Plain HTML version";
 	private boolean sendXHTMLMimeType = false;
 	private boolean inlineCss_ = true;
+	private boolean webGLDetect_ = true;
 	private ArrayList<String> botList = new ArrayList<String>();
 	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
 	private boolean ajaxAgentWhiteList = false;
@@ -55,7 +72,10 @@ public class Configuration {
 	
 	private int sessionTimeout = 600;
 	private int indicatorTimeout = 500;
+	private int doubleClickTimeout = 200;
 	private int bootstrapTimeout = 10;
+	private String uaCompatible = "";
+	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
 
 	/**
 	 * Creates a default configuration.
@@ -124,6 +144,8 @@ public class Configuration {
 						}
 					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
 						setProgressiveBootstrap(parseBoolean(errorMessage, node));
+					} else if (node.getNodeName().equalsIgnoreCase("ua-compatible")) {
+						setUaCompatible(node.getTextContent().trim());
 					} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
 						setSendXHTMLMimeType(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
@@ -277,7 +299,7 @@ public class Configuration {
 	 * <p>
 	 * Debugging is off by default.
 	 * 
-	 * @deprecated
+	 * @deprecated use {@link #setErrorReporting(ErrorReporting)} instead.
 	 */
 	public void setDebug(boolean how) {
 		if (how)
@@ -292,6 +314,7 @@ public class Configuration {
 	 * @return whether debugging is enabled.
 	 * 
 	 * @see #setDebug(boolean)
+	 * @deprecated use {@link #getErrorReporting()} instead.
 	 */
 	public boolean debug() {
 		return errorReporting == ErrorReporting.NoErrors;
@@ -327,6 +350,10 @@ public class Configuration {
 	 */
 	public boolean isInlineCss() {
 		return inlineCss_;
+	}
+
+	public boolean isWebglDetect() {
+		return webGLDetect_;
 	}
 
 	/**
@@ -525,11 +552,16 @@ public class Configuration {
 	/**
 	 * Returns whether the progressive bootstrap method is used.
 	 * 
+	 * The method may take into account the internalPath to differentiate between
+	 * certain deep links which display widgets that do not progress well (such 
+	 * as table views or tree views).
+	 * 
+	 * @param internalPath the initial internal path  
 	 * @return whether the progressive bootstrap method is used.
 	 * 
 	 * @see #setProgressiveBootstrap(boolean).
 	 */
-	public boolean progressiveBootstrap() {
+	public boolean progressiveBootstrap(String internalPath) {
 		return this.progressiveBootstrap ;
 	}
 	
@@ -547,6 +579,23 @@ public class Configuration {
 			this.sessionTimeout = 10 * 60;
 		else
 			this.sessionTimeout = sessionTimeout;
+	}
+
+
+	/**
+	 * Returns the double click timeout.
+	 */
+	public int getDoubleClickTimeout() {
+		return doubleClickTimeout;
+	}
+	
+	/**
+	 * Sets the double click timeout.
+	 * 
+	 * The default value is 200 (ms).
+	 */
+	public void setDoubleClickTimeout(int doubleClickTimeout) {
+		this.doubleClickTimeout = doubleClickTimeout;
 	}
 
 	/**
@@ -584,10 +633,48 @@ public class Configuration {
 	}
 	
 	/**
-	 * Set the error reporting mode.
+	 * Sets the error reporting mode.
 	 */
 	public void setErrorReporting(ErrorReporting err) { 
 		errorReporting = err;
+	}
+
+	/**
+	 * Configures different rendering engines for certain browsers.
+	 * 
+	 * Currently this is only used to select IE7 compatible rendering
+	 * engine for IE8, which solves problems of unreliable and slow
+	 * rendering performance for VML which Microsoft broke in IE8.
+	 *
+     * Before 3.3.0, the default value was IE8=IE7, but since 3.3.0
+	 * this has been changed to an empty string (i.e. let IE8 use the
+	 * standard IE8 rendering engine) to take advantage of IE8's
+	 * improved CSS support. 
+	 */
+	public void setUaCompatible(String uaCompatible) {
+		this.uaCompatible = uaCompatible;
+	}
+	
+	/**
+	 * Returns UA compatibility selection
+	 * 
+	 * @see #setUaCompatible(String)
+	 */
+	public String getUaCompatible() {
+		return uaCompatible;
+	}
+	
+	/**
+	 * Sets the TinyMCE version to be used.
+	 * 
+	 * The default version is 3.
+	 * 
+	 * @param version must be 3 or 4
+	 * 
+	 * @see WTextEdit
+	 */
+	public void setTinyMCEVersion(int version) {
+		this.properties_.put("tinyMCEVersion", "" + version);
 	}
 
 	/*
@@ -623,5 +710,25 @@ public class Configuration {
 
 	boolean isBehindReverseProxy() {
 		return false;
+	}
+
+	public boolean isCookieChecks() {
+		return true;
+	}
+
+	/**
+	 * Returns configured meta headers.
+	 */
+	public List<MetaHeader> getMetaHeaders() {
+		return metaHeaders;
+	}
+
+	/**
+	 * Sets (static) meta headers. This is an alternative to using
+	 * {@link WApplication#addMetaHeader(String, CharSequence)}, but having the
+	 * benefit that they are added to all sessions.
+	 */
+	public void setMetaHeaders(List<MetaHeader> headers) {
+		this.metaHeaders = headers;
 	}
 }

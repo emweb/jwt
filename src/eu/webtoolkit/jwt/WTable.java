@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
  * expands automatically to create the indexed (row, column) as necessary.
  * <p>
  * It is possible to insert and delete entire rows or columns from the table
- * using the {@link WTable#insertColumn(int column) insertColumn()},
- * {@link WTable#insertRow(int row) insertRow()},
+ * using the insertColumn(int column), insertRow(int row),
  * {@link WTable#deleteColumn(int column) deleteColumn()}, or
  * {@link WTable#deleteRow(int row) deleteRow()} methods.
  * <p>
@@ -107,7 +106,7 @@ public class WTable extends WInteractWidget {
 	 */
 	public WTableCell getElementAt(int row, int column) {
 		this.expand(row, column, 1, 1);
-		WTableRow.TableData d = this.itemAt(row, column);
+		final WTableRow.TableData d = this.itemAt(row, column);
 		return d.cell;
 	}
 
@@ -147,6 +146,7 @@ public class WTable extends WInteractWidget {
 	 * Deletes a table cell and its contents.
 	 * <p>
 	 * The table cell at that position is recreated.
+	 * <p>
 	 */
 	public void removeCell(WTableCell item) {
 		this.removeCell(item.getRow(), item.getColumn());
@@ -159,25 +159,40 @@ public class WTable extends WInteractWidget {
 	 * @see WTable#removeCell(WTableCell item)
 	 */
 	public void removeCell(int row, int column) {
-		WTableRow.TableData d = this.itemAt(row, column);
+		final WTableRow.TableData d = this.itemAt(row, column);
 		if (d.cell != null)
 			d.cell.remove();
-		d.cell = new WTableCell(this.rows_.get(row), column);
+		d.cell = this.rows_.get(row).createCell(column);
 	}
 
 	/**
 	 * Inserts an empty row.
 	 */
-	public WTableRow insertRow(int row) {
-		if (row >= this.getRowCount()) {
-			return this.getRowAt(row);
+	public WTableRow insertRow(int row, WTableRow tableRow) {
+		if (row == this.getRowCount()
+				&& this.getRowCount() >= this.headerRowCount_) {
+			++this.rowsAdded_;
 		} else {
-			WTableRow tableRow = new WTableRow(this, this.getColumnCount());
-			this.rows_.add(0 + row, tableRow);
 			this.flags_.set(BIT_GRID_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-			return tableRow;
 		}
+		if (!(tableRow != null)) {
+			tableRow = this.createRow(row);
+		}
+		tableRow.table_ = this;
+		tableRow.expand(this.getColumnCount());
+		this.rows_.add(0 + row, tableRow);
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+		return tableRow;
+	}
+
+	/**
+	 * Inserts an empty row.
+	 * <p>
+	 * Returns {@link #insertRow(int row, WTableRow tableRow) insertRow(row,
+	 * (WTableRow)null)}
+	 */
+	public final WTableRow insertRow(int row) {
+		return insertRow(row, (WTableRow) null);
 	}
 
 	/**
@@ -202,7 +217,7 @@ public class WTable extends WInteractWidget {
 			--this.rowsAdded_;
 		} else {
 			this.flags_.set(BIT_GRID_CHANGED);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}
 		;
 		this.rows_.remove(0 + row);
@@ -211,18 +226,30 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Inserts an empty column.
 	 */
-	public WTableColumn insertColumn(int column) {
+	public WTableColumn insertColumn(int column, WTableColumn tableColumn) {
 		for (int i = 0; i < this.rows_.size(); ++i) {
 			this.rows_.get(i).insertColumn(column);
 		}
-		WTableColumn tableColumn = null;
 		if ((int) column <= this.columns_.size()) {
-			tableColumn = new WTableColumn(this);
+			if (!(tableColumn != null)) {
+				tableColumn = this.createColumn(column);
+				tableColumn.table_ = this;
+			}
 			this.columns_.add(0 + column, tableColumn);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return tableColumn;
+	}
+
+	/**
+	 * Inserts an empty column.
+	 * <p>
+	 * Returns {@link #insertColumn(int column, WTableColumn tableColumn)
+	 * insertColumn(column, (WTableColumn)null)}
+	 */
+	public final WTableColumn insertColumn(int column) {
+		return insertColumn(column, (WTableColumn) null);
 	}
 
 	/**
@@ -237,7 +264,7 @@ public class WTable extends WInteractWidget {
 			this.columns_.remove(0 + column);
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -344,7 +371,7 @@ public class WTable extends WInteractWidget {
 		}
 		this.rows_.add(0 + to, from_tr);
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	/**
@@ -370,13 +397,16 @@ public class WTable extends WInteractWidget {
 		}
 		this.columns_.add(0 + to, from_tc);
 		for (int i = 0; i < this.rows_.size(); i++) {
-			List<WTableRow.TableData> cells = this.rows_.get(i).cells_;
+			final List<WTableRow.TableData> cells = this.rows_.get(i).cells_;
 			WTableRow.TableData cell = cells.get(from);
 			cells.remove(0 + from);
 			cells.add(0 + to, cell);
+			for (int j = Math.min(from, to); j < cells.size(); ++j) {
+				cells.get(j).cell.column_ = j;
+			}
 		}
 		this.flags_.set(BIT_GRID_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	static final int BIT_GRID_CHANGED = 0;
@@ -390,29 +420,15 @@ public class WTable extends WInteractWidget {
 	private int headerColumnCount_;
 
 	void expand(int row, int column, int rowSpan, int columnSpan) {
-		int newNumRows = row + rowSpan;
+		int curNumRows = this.getRowCount();
 		int curNumColumns = this.getColumnCount();
+		int newNumRows = row + rowSpan;
 		int newNumColumns = Math.max(curNumColumns, column + columnSpan);
-		if (newNumRows > this.getRowCount() || newNumColumns > curNumColumns) {
-			if (newNumColumns == curNumColumns
-					&& this.getRowCount() >= this.headerRowCount_) {
-				this.rowsAdded_ += newNumRows - this.getRowCount();
-			} else {
-				this.flags_.set(BIT_GRID_CHANGED);
-			}
-			this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
-			for (int r = this.getRowCount(); r < newNumRows; ++r) {
-				this.rows_.add(new WTableRow(this, newNumColumns));
-			}
-			if (newNumColumns > curNumColumns) {
-				for (int r = 0; r < this.getRowCount(); ++r) {
-					WTableRow tr = this.rows_.get(r);
-					tr.expand(newNumColumns);
-				}
-				for (int c = curNumColumns; c <= column; ++c) {
-					this.columns_.add(new WTableColumn(this));
-				}
-			}
+		for (int r = curNumRows; r < newNumRows; ++r) {
+			this.insertRow(r);
+		}
+		for (int c = curNumColumns; c < newNumColumns; ++c) {
+			this.insertColumn(c);
 		}
 	}
 
@@ -428,15 +444,45 @@ public class WTable extends WInteractWidget {
 			this.rowsChanged_ = new HashSet<WTableRow>();
 		}
 		this.rowsChanged_.add(row);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	void repaintColumn(WTableColumn column) {
 		this.flags_.set(BIT_COLUMNS_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	/**
+	 * Creates a table cell.
+	 * <p>
+	 * You may want to override this method if you want your table to contain
+	 * specialized cells.
+	 */
+	protected WTableCell createCell(int row, int column) {
+		return new WTableCell();
+	}
+
+	/**
+	 * Creates a table row.
+	 * <p>
+	 * You may want to override this method if you want your table to contain
+	 * specialized rows.
+	 */
+	protected WTableRow createRow(int row) {
+		return new WTableRow();
+	}
+
+	/**
+	 * Creates a table column.
+	 * <p>
+	 * You may want to override this method if you want your table to contain
+	 * specialized columns.
+	 */
+	protected WTableColumn createColumn(int column) {
+		return new WTableColumn();
+	}
+
+	void updateDom(final DomElement element, boolean all) {
 		super.updateDom(element, all);
 	}
 
@@ -460,14 +506,17 @@ public class WTable extends WInteractWidget {
 		if (withIds) {
 			tbody.setId(this.getId() + "tb");
 		}
+		DomElement colgroup = DomElement
+				.createNew(DomElementType.DomElement_COLGROUP);
 		for (int col = 0; col < this.columns_.size(); ++col) {
 			DomElement c = DomElement.createNew(DomElementType.DomElement_COL);
 			if (withIds) {
 				c.setId(this.columns_.get(col).getId());
 			}
 			this.columns_.get(col).updateDom(c, true);
-			table.addChild(c);
+			colgroup.addChild(c);
 		}
+		table.addChild(colgroup);
 		this.flags_.clear(BIT_COLUMNS_CHANGED);
 		for (int row = 0; row < (int) this.getRowCount(); ++row) {
 			for (int col = 0; col < (int) this.getColumnCount(); ++col) {
@@ -475,7 +524,7 @@ public class WTable extends WInteractWidget {
 			}
 		}
 		for (int row = 0; row < (int) this.getRowCount(); ++row) {
-			DomElement tr = this.createRow(row, withIds, app);
+			DomElement tr = this.createRowDomElement(row, withIds, app);
 			if (row < (int) this.headerRowCount_) {
 				thead.addChild(tr);
 			} else {
@@ -494,7 +543,7 @@ public class WTable extends WInteractWidget {
 		return table;
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!this.isStubbed() && this.flags_.get(BIT_GRID_CHANGED)) {
 			DomElement newE = this.createDomElement(app);
@@ -516,7 +565,7 @@ public class WTable extends WInteractWidget {
 				DomElement etb = DomElement.getForUpdate(this.getId() + "tb",
 						DomElementType.DomElement_TBODY);
 				for (int i = 0; i < (int) this.rowsAdded_; ++i) {
-					DomElement tr = this.createRow(this.getRowCount()
+					DomElement tr = this.createRowDomElement(this.getRowCount()
 							- this.rowsAdded_ + i, true, app);
 					etb.addChild(tr);
 				}
@@ -547,7 +596,8 @@ public class WTable extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	private DomElement createRow(int row, boolean withIds, WApplication app) {
+	private DomElement createRowDomElement(int row, boolean withIds,
+			WApplication app) {
 		DomElement tr = DomElement.createNew(DomElementType.DomElement_TR);
 		if (withIds) {
 			tr.setId(this.rows_.get(row).getId());
@@ -556,7 +606,7 @@ public class WTable extends WInteractWidget {
 		tr.setWasEmpty(false);
 		int spanCounter = 0;
 		for (int col = 0; col < this.getColumnCount(); ++col) {
-			WTableRow.TableData d = this.itemAt(row, col);
+			final WTableRow.TableData d = this.itemAt(row, col);
 			if (!d.overSpanned) {
 				DomElement td = d.cell.createSDomElement(app);
 				if (col < this.headerColumnCount_ || row < this.headerRowCount_) {

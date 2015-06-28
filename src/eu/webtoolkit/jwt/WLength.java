@@ -46,7 +46,7 @@ public class WLength {
 		 */
 		Pixel,
 		/**
-		 * Inche.
+		 * Inch.
 		 */
 		Inch,
 		/**
@@ -79,6 +79,14 @@ public class WLength {
 	}
 
 	/**
+	 * An &apos;auto&apos; length.
+	 * <p>
+	 * 
+	 * @see WLength#WLength()
+	 */
+	public static WLength Auto = new WLength();
+
+	/**
 	 * Creates an &apos;auto&apos; length.
 	 * <p>
 	 * Specifies an &apos;auto&apos; length.
@@ -97,10 +105,135 @@ public class WLength {
 	 * <p>
 	 * This supports all CSS length formats that have an API counterpart.
 	 */
-	public WLength(String s) {
+	public WLength(final String str) {
+		this.parseCssString(str);
+	}
+
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * This constructor is also used for the implicit conversion of a double to
+	 * a {@link WLength}, assuming a pixel unit.
+	 */
+	public WLength(double value, WLength.Unit unit) {
+		this.auto_ = false;
+		this.value_ = value;
+		this.setUnit(unit);
+	}
+
+	/**
+	 * Creates a length with value and unit.
+	 * <p>
+	 * Calls {@link #WLength(double value, WLength.Unit unit) this(value,
+	 * WLength.Unit.Pixel)}
+	 */
+	public WLength(double value) {
+		this(value, WLength.Unit.Pixel);
+	}
+
+	/**
+	 * Returns whether the length is &apos;auto&apos;.
+	 * <p>
+	 * 
+	 * @see WLength#WLength()
+	 * @see WLength#Auto
+	 */
+	public boolean isAuto() {
+		return this.auto_;
+	}
+
+	/**
+	 * Returns the value.
+	 * <p>
+	 * 
+	 * @see WLength#getUnit()
+	 */
+	public double getValue() {
+		return this.value_;
+	}
+
+	/**
+	 * Returns the unit.
+	 * <p>
+	 * 
+	 * @see WLength#getValue()
+	 */
+	public WLength.Unit getUnit() {
+		return this.unit_;
+	}
+
+	/**
+	 * Returns the CSS text.
+	 */
+	public String getCssText() {
+		if (this.auto_) {
+			return "auto";
+		} else {
+			return String.valueOf(this.value_)
+					+ unitText[this.unit_.getValue()];
+		}
+	}
+
+	/**
+	 * Indicates whether some other object is "equal to" this one.
+	 */
+	public boolean equals(final WLength other) {
+		return this.auto_ == other.auto_ && this.unit_ == other.unit_
+				&& this.value_ == other.value_;
+	}
+
+	/**
+	 * Returns the (approximate) length in pixels.
+	 * <p>
+	 * When the length {@link WLength#isAuto() isAuto()}, 0 is returned,
+	 * otherwise the approximate length in pixels.
+	 */
+	public double toPixels(double fontSize) {
+		if (this.auto_) {
+			return 0;
+		} else {
+			if (this.unit_ == WLength.Unit.FontEm) {
+				return this.value_ * fontSize;
+			} else {
+				if (this.unit_ == WLength.Unit.FontEx) {
+					return this.value_ * fontSize / 2.0;
+				} else {
+					if (this.unit_ == WLength.Unit.Percentage) {
+						return this.value_ * fontSize / 100.0;
+					} else {
+						return this.value_
+								* unitFactor[this.unit_.getValue() - 2];
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the (approximate) length in pixels.
+	 * <p>
+	 * Returns {@link #toPixels(double fontSize) toPixels(16.0)}
+	 */
+	public final double toPixels() {
+		return toPixels(16.0);
+	}
+
+	private boolean auto_;
+	private WLength.Unit unit_;
+	private double value_;
+
+	private void setUnit(WLength.Unit unit) {
+		this.unit_ = unit;
+	}
+
+	private void parseCssString(String s) {
 		this.auto_ = false;
 		this.unit_ = WLength.Unit.Pixel;
 		this.value_ = -1;
+		if ("auto".equals(s)) {
+			this.auto_ = true;
+			return;
+		}
 		String end = null;
 		{
 			Matcher matcher = StringUtils.FLOAT_PATTERN.matcher(s);
@@ -170,190 +303,21 @@ public class WLength {
 		}
 	}
 
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * This constructor is also used for the implicit conversion of a double to
-	 * a {@link WLength}, assuming a pixel unit.
-	 */
-	public WLength(double value, WLength.Unit unit) {
-		this.auto_ = false;
-		this.value_ = value;
-		this.setUnit(unit);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * Calls {@link #WLength(double value, WLength.Unit unit) this(value,
-	 * WLength.Unit.Pixel)}
-	 */
-	public WLength(double value) {
-		this(value, WLength.Unit.Pixel);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * This constructor is also used for the implicit conversion of a int to a
-	 * {@link WLength}, assuming a pixel unit.
-	 */
-	public WLength(int value, WLength.Unit unit) {
-		this.auto_ = false;
-		this.value_ = (double) value;
-		this.setUnit(unit);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * Calls {@link #WLength(int value, WLength.Unit unit) this(value,
-	 * WLength.Unit.Pixel)}
-	 */
-	public WLength(int value) {
-		this(value, WLength.Unit.Pixel);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * This constructor is also used for the implicit conversion of a long to a
-	 * {@link WLength}, assuming a pixel unit.
-	 */
-	public WLength(long value, WLength.Unit unit) {
-		this.auto_ = false;
-		this.value_ = (double) value;
-		this.setUnit(unit);
-	}
-
-	/**
-	 * Creates a length with value and unit.
-	 * <p>
-	 * Calls {@link #WLength(long value, WLength.Unit unit) this(value,
-	 * WLength.Unit.Pixel)}
-	 */
-	public WLength(long value) {
-		this(value, WLength.Unit.Pixel);
-	}
-
-	/**
-	 * Returns whether the length is &apos;auto&apos;.
-	 * <p>
-	 * 
-	 * @see WLength#WLength()
-	 * @see WLength#Auto
-	 */
-	public boolean isAuto() {
-		return this.auto_;
-	}
-
-	/**
-	 * Returns the value.
-	 * <p>
-	 * 
-	 * @see WLength#getUnit()
-	 */
-	public double getValue() {
-		return this.value_;
-	}
-
-	/**
-	 * Returns the unit.
-	 * <p>
-	 * 
-	 * @see WLength#getValue()
-	 */
-	public WLength.Unit getUnit() {
-		return this.unit_;
-	}
-
-	/**
-	 * Returns the CSS text.
-	 */
-	public String getCssText() {
-		if (this.auto_) {
-			return "auto";
-		} else {
-			return String.valueOf(this.value_)
-					+ unitText[this.unit_.getValue()];
-		}
-	}
-
-	/**
-	 * Indicates whether some other object is "equal to" this one.
-	 */
-	public boolean equals(WLength other) {
-		return this.auto_ == other.auto_ && this.unit_ == other.unit_
-				&& this.value_ == other.value_;
-	}
-
-	/**
-	 * Returns the (approximate) length in pixels.
-	 * <p>
-	 * When the length {@link WLength#isAuto() isAuto()}, 0 is returned,
-	 * otherwise the approximate length in pixels.
-	 */
-	public double toPixels(double fontSize) {
-		if (this.auto_) {
-			return 0;
-		} else {
-			if (this.unit_ == WLength.Unit.FontEm) {
-				return this.value_ * fontSize;
-			} else {
-				if (this.unit_ == WLength.Unit.FontEx) {
-					return this.value_ * fontSize / 2.0;
-				} else {
-					if (this.unit_ == WLength.Unit.Percentage) {
-						return this.value_ * fontSize / 100.0;
-					} else {
-						return this.value_
-								* unitFactor[this.unit_.getValue() - 2];
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Returns the (approximate) length in pixels.
-	 * <p>
-	 * Returns {@link #toPixels(double fontSize) toPixels(16.0)}
-	 */
-	public final double toPixels() {
-		return toPixels(16.0);
-	}
-
-	private boolean auto_;
-	private WLength.Unit unit_;
-	private double value_;
-
-	private void setUnit(WLength.Unit unit) {
-		this.unit_ = unit;
-	}
-
 	private static String[] unitText = { "em", "ex", "px", "in", "cm", "mm",
 			"pt", "pc", "%" };
 	private static final double pxPerPt = 4.0 / 3.0;
 	private static double[] unitFactor = { 1, 72 * pxPerPt,
 			72 / 2.54 * pxPerPt, 72 / 25.4 * pxPerPt, pxPerPt, 12 * pxPerPt };
 
-	static WLength multiply(WLength l, double s) {
+	static WLength multiply(final WLength l, double s) {
 		return new WLength(l.getValue() * s, l.getUnit());
 	}
 
-	static WLength multiply(double s, WLength l) {
+	static WLength multiply(double s, final WLength l) {
 		return WLength.multiply(l, s);
 	}
 
-	static WLength divide(WLength l, double s) {
+	static WLength divide(final WLength l, double s) {
 		return WLength.multiply(l, 1 / s);
 	}
-
-	/**
-	 * An &apos;auto&apos; length.
-	 * <p>
-	 * 
-	 * @see WLength#WLength()
-	 */
-	public static WLength Auto = new WLength();
 }

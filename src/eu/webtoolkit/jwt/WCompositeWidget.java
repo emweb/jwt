@@ -32,10 +32,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Using this class you can completely hide the implementation of your composite
  * widget, and provide access to only the standard {@link WWidget} methods.
- * <p>
- * <h3>CSS</h3>
- * <p>
- * Styling through CSS is propagated to its implementation.
  */
 public class WCompositeWidget extends WWidget {
 	private static Logger logger = LoggerFactory
@@ -46,7 +42,7 @@ public class WCompositeWidget extends WWidget {
 	 * <p>
 	 * You need to set an implemetation using
 	 * {@link WCompositeWidget#setImplementation(WWidget widget)
-	 * setImplementation()}.
+	 * setImplementation()} directly after construction.
 	 */
 	public WCompositeWidget(WContainerWidget parent) {
 		super(parent);
@@ -68,6 +64,9 @@ public class WCompositeWidget extends WWidget {
 
 	/**
 	 * Creates a WCompositeWidget with given implementation.
+	 * <p>
+	 * 
+	 * @see WCompositeWidget#setImplementation(WWidget widget)
 	 */
 	public WCompositeWidget(WWidget implementation, WContainerWidget parent) {
 		super(parent);
@@ -85,6 +84,14 @@ public class WCompositeWidget extends WWidget {
 		super.remove();
 	}
 
+	public void setObjectName(final String name) {
+		this.impl_.setObjectName(name);
+	}
+
+	public String getObjectName() {
+		return this.impl_.getObjectName();
+	}
+
 	public String getId() {
 		return this.impl_.getId();
 	}
@@ -97,7 +104,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getPositionScheme();
 	}
 
-	public void setOffsets(WLength offset, EnumSet<Side> sides) {
+	public void setOffsets(final WLength offset, EnumSet<Side> sides) {
 		this.impl_.setOffsets(offset, sides);
 	}
 
@@ -105,7 +112,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getOffset(s);
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		this.impl_.resize(width, height);
 		super.resize(width, height);
 	}
@@ -118,7 +125,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getHeight();
 	}
 
-	public void setMinimumSize(WLength width, WLength height) {
+	public void setMinimumSize(final WLength width, final WLength height) {
 		this.impl_.setMinimumSize(width, height);
 	}
 
@@ -130,7 +137,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getMinimumHeight();
 	}
 
-	public void setMaximumSize(WLength width, WLength height) {
+	public void setMaximumSize(final WLength width, final WLength height) {
 		this.impl_.setMaximumSize(width, height);
 	}
 
@@ -142,7 +149,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getMaximumHeight();
 	}
 
-	public void setLineHeight(WLength height) {
+	public void setLineHeight(final WLength height) {
 		this.impl_.setLineHeight(height);
 	}
 
@@ -166,7 +173,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getClearSides();
 	}
 
-	public void setMargin(WLength margin, EnumSet<Side> sides) {
+	public void setMargin(final WLength margin, EnumSet<Side> sides) {
 		this.impl_.setMargin(margin, sides);
 	}
 
@@ -182,7 +189,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.isHiddenKeepsGeometry();
 	}
 
-	public void setHidden(boolean hidden, WAnimation animation) {
+	public void setHidden(boolean hidden, final WAnimation animation) {
 		this.impl_.setHidden(hidden, animation);
 	}
 
@@ -197,7 +204,7 @@ public class WCompositeWidget extends WWidget {
 			if (this.getParent() != null) {
 				return this.getParent().isVisible();
 			} else {
-				return true;
+				return false;
 			}
 		}
 	}
@@ -240,7 +247,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.isInline();
 	}
 
-	public void setDecorationStyle(WCssDecorationStyle style) {
+	public void setDecorationStyle(final WCssDecorationStyle style) {
 		this.impl_.setDecorationStyle(style);
 	}
 
@@ -248,7 +255,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getDecorationStyle();
 	}
 
-	public void setStyleClass(String styleClass) {
+	public void setStyleClass(final String styleClass) {
 		this.impl_.setStyleClass(styleClass);
 	}
 
@@ -256,15 +263,20 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getStyleClass();
 	}
 
-	public void addStyleClass(String styleClass, boolean force) {
+	public void addStyleClass(final String styleClass, boolean force) {
 		this.impl_.addStyleClass(styleClass, force);
 	}
 
-	public void removeStyleClass(String styleClass, boolean force) {
+	public void removeStyleClass(final String styleClass, boolean force) {
 		this.impl_.removeStyleClass(styleClass, force);
 	}
 
-	public void setVerticalAlignment(AlignmentFlag alignment, WLength length) {
+	public boolean hasStyleClass(final String styleClass) {
+		return this.impl_.hasStyleClass(styleClass);
+	}
+
+	public void setVerticalAlignment(AlignmentFlag alignment,
+			final WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
 			logger.error(new StringWriter().append(
@@ -287,7 +299,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_ != null ? this.impl_.getWebWidget() : null;
 	}
 
-	public void setToolTip(CharSequence text, TextFormat textFormat) {
+	public void setToolTip(final CharSequence text, TextFormat textFormat) {
 		this.impl_.setToolTip(text, textFormat);
 	}
 
@@ -295,28 +307,32 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getToolTip();
 	}
 
+	public void setDeferredToolTip(boolean enable, TextFormat textFormat) {
+		this.impl_.setDeferredToolTip(enable, textFormat);
+	}
+
 	public void refresh() {
 		this.impl_.refresh();
 		super.refresh();
 	}
 
-	public void setAttributeValue(String name, String value) {
+	public void setAttributeValue(final String name, final String value) {
 		this.impl_.setAttributeValue(name, value);
 	}
 
-	public String getAttributeValue(String name) {
+	public String getAttributeValue(final String name) {
 		return this.impl_.getAttributeValue(name);
 	}
 
-	public void setJavaScriptMember(String name, String value) {
+	public void setJavaScriptMember(final String name, final String value) {
 		this.impl_.setJavaScriptMember(name, value);
 	}
 
-	public String getJavaScriptMember(String name) {
+	public String getJavaScriptMember(final String name) {
 		return this.impl_.getJavaScriptMember(name);
 	}
 
-	public void callJavaScriptMember(String name, String args) {
+	public void callJavaScriptMember(final String name, final String args) {
 		this.impl_.callJavaScriptMember(name, args);
 	}
 
@@ -330,6 +346,26 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_ != null ? this.impl_.isLoaded() : true;
 	}
 
+	public void setCanReceiveFocus(boolean enabled) {
+		this.impl_.setCanReceiveFocus(enabled);
+	}
+
+	public boolean isCanReceiveFocus() {
+		return this.impl_.isCanReceiveFocus();
+	}
+
+	public void setFocus(boolean focus) {
+		this.impl_.setFocus(true);
+	}
+
+	public boolean isSetFirstFocus() {
+		return this.impl_.getWebWidget().isSetFirstFocus();
+	}
+
+	public boolean hasFocus() {
+		return this.impl_.hasFocus();
+	}
+
 	public void setTabIndex(int index) {
 		this.impl_.setTabIndex(index);
 	}
@@ -338,11 +374,15 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getTabIndex();
 	}
 
-	public void setId(String id) {
+	int getZIndex() {
+		return this.impl_.getZIndex();
+	}
+
+	public void setId(final String id) {
 		this.impl_.setId(id);
 	}
 
-	public WWidget find(String name) {
+	public WWidget find(final String name) {
 		if (this.getObjectName().equals(name)) {
 			return this;
 		} else {
@@ -350,11 +390,19 @@ public class WCompositeWidget extends WWidget {
 		}
 	}
 
+	public WWidget findById(final String id) {
+		if (this.getId().equals(id)) {
+			return this;
+		} else {
+			return this.impl_.findById(id);
+		}
+	}
+
 	public void setSelectable(boolean selectable) {
 		this.impl_.setSelectable(selectable);
 	}
 
-	public void doJavaScript(String js) {
+	public void doJavaScript(final String js) {
 		this.impl_.doJavaScript(js);
 	}
 
@@ -434,10 +482,21 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_;
 	}
 
-	void getSDomChanges(List<DomElement> result, WApplication app) {
+	protected WWidget getTakeImplementation() {
+		WWidget result = this.impl_;
+		if (result != null) {
+			this.removeChild(result);
+			this.impl_ = null;
+		}
+		return result;
+	}
+
+	void getSDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.needsToBeRendered()) {
-			this.render(this.impl_.isRendered() ? RenderFlag.RenderUpdate
-					: RenderFlag.RenderFull);
+			this
+					.render(this.impl_.isRendered()
+							|| !WWebWidget.canOptimizeUpdates() ? RenderFlag.RenderUpdate
+							: RenderFlag.RenderFull);
 		}
 		this.impl_.getSDomChanges(result, app);
 	}
@@ -454,7 +513,7 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.boxBorder(orientation);
 	}
 
-	void render(EnumSet<RenderFlag> flags) {
+	protected void render(EnumSet<RenderFlag> flags) {
 		this.impl_.render(flags);
 		this.renderOk();
 	}

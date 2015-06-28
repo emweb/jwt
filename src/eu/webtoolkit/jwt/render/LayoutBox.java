@@ -30,6 +30,10 @@ class LayoutBox {
 		this.height = 0;
 	}
 
+	public boolean isNull() {
+		return this.page == -1;
+	}
+
 	public int page;
 	public double x;
 	public double y;

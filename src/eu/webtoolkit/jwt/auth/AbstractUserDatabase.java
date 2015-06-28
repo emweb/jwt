@@ -111,7 +111,7 @@ public abstract class AbstractUserDatabase {
 	 * This should find the user with the given <code>id</code>, or return an
 	 * invalid user if no user with that id exists.
 	 */
-	public abstract User findWithId(String id);
+	public abstract User findWithId(final String id);
 
 	/**
 	 * Finds a user with a given identity.
@@ -122,19 +122,36 @@ public abstract class AbstractUserDatabase {
 	 * This should find the user with the given <code>identity</code>, or return
 	 * an invalid user if no user with that identity exists.
 	 */
-	public abstract User findWithIdentity(String provider, String identity);
+	public abstract User findWithIdentity(final String provider,
+			final String identity);
 
 	/**
-	 * Sets an identifier for the user.
+	 * Adds an identify for the user.
 	 * <p>
-	 * This associates an identifier with the user.
+	 * This adds an identity to the user.
 	 * <p>
 	 * You are free to support only one identity per user, e.g. if you only use
 	 * password-based authentication. But you may also want to support more than
 	 * one if you allow the user to login using multiple methods (e.g.
 	 * name/password, OAuth from one or more providers, LDAP, ...).
 	 */
-	public abstract void addIdentity(User user, String provider, String id);
+	public abstract void addIdentity(final User user, final String provider,
+			final String id);
+
+	/**
+	 * Changes an identity for a user.
+	 * <p>
+	 * The base implementation calls
+	 * {@link AbstractUserDatabase#removeIdentity(User user, String provider)
+	 * removeIdentity()} followed by
+	 * {@link AbstractUserDatabase#addIdentity(User user, String provider, String id)
+	 * addIdentity()}.
+	 */
+	public void setIdentity(final User user, final String provider,
+			final String id) {
+		this.removeIdentity(user, provider);
+		this.addIdentity(user, provider, id);
+	}
 
 	/**
 	 * Returns a user identity.
@@ -146,9 +163,19 @@ public abstract class AbstractUserDatabase {
 	 * @see AbstractUserDatabase#addIdentity(User user, String provider, String
 	 *      id)
 	 */
-	public abstract String getIdentity(User user, String provider);
+	public abstract String getIdentity(final User user, final String provider);
 
-	public abstract void removeIdentity(User user, String provider);
+	/**
+	 * Removes a user identity.
+	 * <p>
+	 * This removes all identities of a <code>provider</code> from the
+	 * <code>user</code>.
+	 * <p>
+	 * 
+	 * @see AbstractUserDatabase#addIdentity(User user, String provider, String
+	 *      id)
+	 */
+	public abstract void removeIdentity(final User user, final String provider);
 
 	/**
 	 * Registers a new user.
@@ -170,7 +197,7 @@ public abstract class AbstractUserDatabase {
 	 * <p>
 	 * This deletes a user from the database.
 	 */
-	public void deleteUser(User user) {
+	public void deleteUser(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("deleteUser()", REGISTRATION).toString())
 				.toString());
@@ -185,8 +212,18 @@ public abstract class AbstractUserDatabase {
 	 * The default implementation always returns {@link User.Status#Normal}.
 	 * <p>
 	 */
-	public User.Status getStatus(User user) {
+	public User.Status getStatus(final User user) {
 		return User.Status.Normal;
+	}
+
+	/**
+	 * Sets the user status.
+	 * <p>
+	 * This sets the status for a user (if supported).
+	 */
+	public void setStatus(final User user, User.Status status) {
+		logger.error(new StringWriter().append(
+				new Require("setStatus()").toString()).toString());
 	}
 
 	/**
@@ -196,7 +233,7 @@ public abstract class AbstractUserDatabase {
 	 * <p>
 	 * This is used only by {@link PasswordService}.
 	 */
-	public void setPassword(User user, PasswordHash password) {
+	public void setPassword(final User user, final PasswordHash password) {
 		logger.error(new StringWriter().append(
 				new Require("setPassword()", PASSWORDS).toString()).toString());
 	}
@@ -209,7 +246,7 @@ public abstract class AbstractUserDatabase {
 	 * <p>
 	 * This is used only by {@link PasswordService}.
 	 */
-	public PasswordHash getPassword(User user) {
+	public PasswordHash getPassword(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("password()", PASSWORDS).toString()).toString());
 		return new PasswordHash();
@@ -228,7 +265,7 @@ public abstract class AbstractUserDatabase {
 	 * 
 	 * @see AbstractUserDatabase#findWithEmail(String address)
 	 */
-	public boolean setEmail(User user, String address) {
+	public boolean setEmail(final User user, final String address) {
 		logger.error(new StringWriter().append(
 				new Require("setEmail()", EMAIL_VERIFICATION).toString())
 				.toString());
@@ -244,7 +281,7 @@ public abstract class AbstractUserDatabase {
 	 * This is an optional method, and currently not used by any of the included
 	 * models or views.
 	 */
-	public String getEmail(User user) {
+	public String getEmail(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("email()", EMAIL_VERIFICATION).toString())
 				.toString());
@@ -258,7 +295,7 @@ public abstract class AbstractUserDatabase {
 	 * currently unverified email address, while a mail is being sent for the
 	 * user to confirm this email address.
 	 */
-	public void setUnverifiedEmail(User user, String address) {
+	public void setUnverifiedEmail(final User user, final String address) {
 		logger.error(new StringWriter().append(
 				new Require("setUnverifiedEmail()", EMAIL_VERIFICATION)
 						.toString()).toString());
@@ -270,7 +307,7 @@ public abstract class AbstractUserDatabase {
 	 * This is an optional method, and currently not used by any of the included
 	 * models or views.
 	 */
-	public String getUnverifiedEmail(User user) {
+	public String getUnverifiedEmail(final User user) {
 		logger.error(new StringWriter()
 				.append(
 						new Require("unverifiedEmail()", EMAIL_VERIFICATION)
@@ -284,7 +321,7 @@ public abstract class AbstractUserDatabase {
 	 * This is used to verify that a email addresses are unique, and to
 	 * implement lost password functionality.
 	 */
-	public User findWithEmail(String address) {
+	public User findWithEmail(final String address) {
 		logger.error(new StringWriter().append(
 				new Require("findWithEmail()", EMAIL_VERIFICATION).toString())
 				.toString());
@@ -297,7 +334,8 @@ public abstract class AbstractUserDatabase {
 	 * This is only used when email verification is enabled or for lost password
 	 * functionality.
 	 */
-	public void setEmailToken(User user, Token token, User.EmailTokenRole role) {
+	public void setEmailToken(final User user, final Token token,
+			User.EmailTokenRole role) {
 		logger.error(new StringWriter().append(
 				new Require("setEmailToken()", EMAIL_VERIFICATION).toString())
 				.toString());
@@ -312,7 +350,7 @@ public abstract class AbstractUserDatabase {
 	 * {@link AbstractUserDatabase#setEmailToken(User user, Token token, User.EmailTokenRole role)
 	 * setEmailToken()}
 	 */
-	public Token getEmailToken(User user) {
+	public Token getEmailToken(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("emailToken()", EMAIL_VERIFICATION).toString())
 				.toString());
@@ -326,7 +364,7 @@ public abstract class AbstractUserDatabase {
 	 * functionality. It should return the role previously set with
 	 * setEailToken().
 	 */
-	public User.EmailTokenRole getEmailTokenRole(User user) {
+	public User.EmailTokenRole getEmailTokenRole(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("emailTokenRole()", EMAIL_VERIFICATION).toString())
 				.toString());
@@ -339,7 +377,7 @@ public abstract class AbstractUserDatabase {
 	 * This is only used when email verification is enabled or for lost password
 	 * functionality.
 	 */
-	public User findWithEmailToken(String hash) {
+	public User findWithEmailToken(final String hash) {
 		logger.error(new StringWriter().append(
 				new Require("findWithEmailToken()", EMAIL_VERIFICATION)
 						.toString()).toString());
@@ -353,7 +391,7 @@ public abstract class AbstractUserDatabase {
 	 * computer at a time, you should support multiple authentication tokens per
 	 * user.
 	 */
-	public void addAuthToken(User user, Token token) {
+	public void addAuthToken(final User user, final Token token) {
 		logger.error(new StringWriter().append(
 				new Require("addAuthToken()", AUTH_TOKEN).toString())
 				.toString());
@@ -366,7 +404,7 @@ public abstract class AbstractUserDatabase {
 	 * {@link AbstractUserDatabase#addAuthToken(User user, Token token)
 	 * addAuthToken()}
 	 */
-	public void removeAuthToken(User user, String hash) {
+	public void removeAuthToken(final User user, final String hash) {
 		logger.error(new StringWriter().append(
 				new Require("removeAuthToken()", AUTH_TOKEN).toString())
 				.toString());
@@ -380,11 +418,29 @@ public abstract class AbstractUserDatabase {
 	 * This should find the user associated with a particular token hash, or
 	 * return an invalid user if no user with that token hash exists.
 	 */
-	public User findWithAuthToken(String hash) {
+	public User findWithAuthToken(final String hash) {
 		logger.error(new StringWriter().append(
 				new Require("findWithAuthToken()", AUTH_TOKEN).toString())
 				.toString());
 		return new User();
+	}
+
+	/**
+	 * Updates the authentication token with a new hash.
+	 * <p>
+	 * If successful, returns the validity of the updated token in seconds.
+	 * <p>
+	 * Returns 0 if the token could not be updated because it wasn&apos;t found
+	 * or is expired.
+	 * <p>
+	 * Returns -1 if not implemented.
+	 */
+	public int updateAuthToken(final User user, final String hash,
+			final String newHash) {
+		logger.warn(new StringWriter().append(
+				new Require("updateAuthToken()", AUTH_TOKEN).toString())
+				.toString());
+		return -1;
 	}
 
 	/**
@@ -396,7 +452,7 @@ public abstract class AbstractUserDatabase {
 	 * This is used by the throttling logic to determine how much time a user
 	 * needs to wait before he can do a new login attempt.
 	 */
-	public void setFailedLoginAttempts(User user, int count) {
+	public void setFailedLoginAttempts(final User user, int count) {
 		logger.error(new StringWriter().append(
 				new Require("setFailedLoginAttempts()", THROTTLING).toString())
 				.toString());
@@ -409,7 +465,7 @@ public abstract class AbstractUserDatabase {
 	 * {@link AbstractUserDatabase#setFailedLoginAttempts(User user, int count)
 	 * setFailedLoginAttempts()}</i>
 	 */
-	public int getFailedLoginAttempts(User user) {
+	public int getFailedLoginAttempts(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("failedLoginAttempts()", THROTTLING).toString())
 				.toString());
@@ -421,7 +477,7 @@ public abstract class AbstractUserDatabase {
 	 * <p>
 	 * This sets the time at which the user attempted to login.
 	 */
-	public void setLastLoginAttempt(User user, WDate t) {
+	public void setLastLoginAttempt(final User user, final WDate t) {
 		logger.error(new StringWriter().append(
 				new Require("setLastLoginAttempt()", THROTTLING).toString())
 				.toString());
@@ -433,7 +489,7 @@ public abstract class AbstractUserDatabase {
 	 * 
 	 * @see AbstractUserDatabase#setLastLoginAttempt(User user, WDate t)
 	 */
-	public WDate getLastLoginAttempt(User user) {
+	public WDate getLastLoginAttempt(final User user) {
 		logger.error(new StringWriter().append(
 				new Require("lastLoginAttempt()", THROTTLING).toString())
 				.toString());
@@ -443,10 +499,10 @@ public abstract class AbstractUserDatabase {
 	protected AbstractUserDatabase() {
 	}
 
-	// private AbstractUserDatabase(AbstractUserDatabase anon1) ;
-	static String EMAIL_VERIFICATION = "email verification";
-	static String AUTH_TOKEN = "authentication tokens";
-	static String PASSWORDS = "password handling";
-	static String THROTTLING = "password attempt throttling";
-	static String REGISTRATION = "user registration";
+	// private AbstractUserDatabase(final AbstractUserDatabase anon1) ;
+	private static String EMAIL_VERIFICATION = "email verification";
+	private static String AUTH_TOKEN = "authentication tokens";
+	private static String PASSWORDS = "password handling";
+	private static String THROTTLING = "password attempt throttling";
+	private static String REGISTRATION = "user registration";
 }

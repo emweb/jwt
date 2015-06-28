@@ -71,8 +71,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
- * <code>&lt;form&gt;</code> tag. This widget does not provide styling, and
- * styling through CSS is not well supported across browsers.
+ * <code>&lt;form&gt;</code> tag for an Ajax session to implement the
+ * asynchronous upload action. This widget does not provide styling, and styling
+ * through CSS is not well supported across browsers.
  */
 public class WFileUpload extends WWebWidget {
 	private static Logger logger = LoggerFactory.getLogger(WFileUpload.class);
@@ -88,6 +89,7 @@ public class WFileUpload extends WWebWidget {
 		this.fileTooLarge_ = new Signal1<Long>(this);
 		this.dataReceived_ = new Signal2<Long, Long>(this);
 		this.progressBar_ = null;
+		this.acceptAttributes_ = "";
 		this.tooLargeSize_ = 0;
 		this.setInline(true);
 		this.fileTooLargeImpl().addListener(this, new Signal.Listener() {
@@ -322,7 +324,7 @@ public class WFileUpload extends WWebWidget {
 	public void upload() {
 		if (this.fileUploadTarget_ != null && !this.flags_.get(BIT_UPLOADING)) {
 			this.flags_.set(BIT_DO_UPLOAD);
-			this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyIEMobile));
+			this.repaint();
 			if (this.progressBar_ != null) {
 				if (this.progressBar_.getParent() != this) {
 					this.hide();
@@ -394,6 +396,28 @@ public class WFileUpload extends WWebWidget {
 		super.enableAjax();
 	}
 
+	/**
+	 * Sets input accept attributes.
+	 * <p>
+	 * The accept attribute may be specified to provide user agents with a hint
+	 * of what file types will be accepted. Use html input accept attributes as
+	 * input.
+	 * <p>
+	 * 
+	 * <pre>
+	 * {@code
+	 *    WFileUpload *fu = new WFileUpload(root());
+	 *    fu.setFilters("image/*");
+	 *   }
+	 * </pre>
+	 */
+	public void setFilters(final String acceptAttributes) {
+		this.acceptAttributes_ = acceptAttributes;
+	}
+
+	private static String CHANGE_SIGNAL = "M_change";
+	private static String UPLOADED_SIGNAL = "M_uploaded";
+	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 	private static final int BIT_DO_UPLOAD = 0;
 	private static final int BIT_ENABLE_AJAX = 1;
 	private static final int BIT_UPLOADING = 2;
@@ -406,6 +430,7 @@ public class WFileUpload extends WWebWidget {
 	private Signal2<Long, Long> dataReceived_;
 	private WResource fileUploadTarget_;
 	private WProgressBar progressBar_;
+	private String acceptAttributes_;
 
 	private void create() {
 		boolean methodIframe = WApplication.getInstance().getEnvironment()
@@ -419,8 +444,9 @@ public class WFileUpload extends WWebWidget {
 							WFileUpload.this.onData(e1, e2);
 						}
 					});
-			this.setJavaScriptMember(WT_RESIZE_JS,
-					"function(self,w,h) {$(self).find('input').width(w);}");
+			this
+					.setJavaScriptMember(WT_RESIZE_JS,
+							"function(self, w, h) {if (w >= 0) $(self).find('input').width(w);}");
 		} else {
 			this.fileUploadTarget_ = null;
 		}
@@ -465,7 +491,7 @@ public class WFileUpload extends WWebWidget {
 		this.fileTooLarge().trigger(size);
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		boolean containsProgress = this.progressBar_ != null
 				&& this.progressBar_.getParent() == this;
 		DomElement inputE = null;
@@ -476,6 +502,9 @@ public class WFileUpload extends WWebWidget {
 					.getInstance()));
 		}
 		if (this.fileUploadTarget_ != null && this.flags_.get(BIT_DO_UPLOAD)) {
+			element
+					.setAttribute("action", this.fileUploadTarget_
+							.generateUrl());
 			element.callMethod("submit()");
 			this.flags_.clear(BIT_DO_UPLOAD);
 			if (containsProgress) {
@@ -489,11 +518,12 @@ public class WFileUpload extends WWebWidget {
 				inputE = DomElement.getForUpdate("in" + this.getId(),
 						DomElementType.DomElement_INPUT);
 			}
-			if (this.isDisabled()) {
-				inputE.callMethod("disabled=true");
-			} else {
+			if (this.isEnabled()) {
 				inputE.callMethod("disabled=false");
+			} else {
+				inputE.callMethod("disabled=true");
 			}
+			inputE.setAttribute("accept", this.acceptAttributes_);
 			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
@@ -547,6 +577,7 @@ public class WFileUpload extends WWebWidget {
 			}
 			input.setAttribute("name", "data");
 			input.setAttribute("size", String.valueOf(this.textSize_));
+			input.setAttribute("accept", this.acceptAttributes_);
 			input.setId("in" + this.getId());
 			if (!this.isEnabled()) {
 				input.setProperty(Property.PropertyDisabled, "true");
@@ -582,7 +613,7 @@ public class WFileUpload extends WWebWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.flags_.get(BIT_ENABLE_AJAX)) {
 			DomElement plainE = DomElement.getForUpdate(this,
 					DomElementType.DomElement_INPUT);
@@ -596,7 +627,7 @@ public class WFileUpload extends WWebWidget {
 
 	protected void propagateSetEnabled(boolean enabled) {
 		this.flags_.set(BIT_ENABLED_CHANGED);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
+		this.repaint();
 		super.propagateSetEnabled(enabled);
 	}
 
@@ -617,7 +648,7 @@ public class WFileUpload extends WWebWidget {
 
 	long tooLargeSize_;
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		this.setFiles(formData.files);
 		logger.debug(new StringWriter().append("setFormData() : ").append(
 				String.valueOf(formData.files.size())).append(" file(s)")
@@ -627,7 +658,7 @@ public class WFileUpload extends WWebWidget {
 		}
 	}
 
-	void setFiles(List<UploadedFile> files) {
+	void setFiles(final List<UploadedFile> files) {
 		this.uploadedFiles_.clear();
 		for (int i = 0; i < files.size(); ++i) {
 			if (files.get(i).getClientFileName().length() != 0) {
@@ -635,8 +666,4 @@ public class WFileUpload extends WWebWidget {
 			}
 		}
 	}
-
-	private static String CHANGE_SIGNAL = "M_change";
-	private static String UPLOADED_SIGNAL = "M_uploaded";
-	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 }

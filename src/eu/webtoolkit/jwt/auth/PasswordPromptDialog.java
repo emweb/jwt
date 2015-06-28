@@ -47,21 +47,21 @@ public class PasswordPromptDialog extends WDialog {
 	 * if successful, is signalled using
 	 * {@link Login#login(User user, LoginState state) Login#login()}.
 	 */
-	public PasswordPromptDialog(Login login, AuthModel model) {
+	public PasswordPromptDialog(final Login login, AuthModel model) {
 		super(tr("Wt.Auth.enter-password"));
 		this.login_ = login;
 		this.model_ = model;
 		this.impl_ = new WTemplateFormView(
 				tr("Wt.Auth.template.password-prompt"));
 		this.model_.setValue(AuthModel.LoginNameField, this.login_.getUser()
-				.identity(Identity.LoginName));
+				.getIdentity(Identity.LoginName));
 		this.model_.setReadOnly(AuthModel.LoginNameField, true);
 		WLineEdit nameEdit = new WLineEdit();
 		this.impl_.bindWidget(AuthModel.LoginNameField, nameEdit);
 		this.impl_.updateViewField(this.model_, AuthModel.LoginNameField);
 		WLineEdit passwordEdit = new WLineEdit();
 		passwordEdit.setEchoMode(WLineEdit.EchoMode.Password);
-		passwordEdit.setFocus();
+		passwordEdit.setFocus(true);
 		this.impl_.bindWidget(AuthModel.PasswordField, passwordEdit);
 		this.impl_.updateViewField(this.model_, AuthModel.PasswordField);
 		WPushButton okButton = new WPushButton(tr("Wt.WMessageBox.Ok"));
@@ -88,7 +88,7 @@ public class PasswordPromptDialog extends WDialog {
 		}
 	}
 
-	protected Login login_;
+	protected final Login login_;
 	protected AuthModel model_;
 	protected WTemplateFormView impl_;
 

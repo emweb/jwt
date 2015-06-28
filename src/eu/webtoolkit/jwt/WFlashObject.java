@@ -51,7 +51,7 @@ public class WFlashObject extends WWebWidget {
 	/**
 	 * Constructs a Flash widget.
 	 */
-	public WFlashObject(String url, WContainerWidget parent) {
+	public WFlashObject(final String url, WContainerWidget parent) {
 		super(parent);
 		this.url_ = url;
 		this.sizeChanged_ = false;
@@ -80,7 +80,7 @@ public class WFlashObject extends WWebWidget {
 	 * Calls {@link #WFlashObject(String url, WContainerWidget parent) this(url,
 	 * (WContainerWidget)null)}
 	 */
-	public WFlashObject(String url) {
+	public WFlashObject(final String url) {
 		this(url, (WContainerWidget) null);
 	}
 
@@ -93,10 +93,9 @@ public class WFlashObject extends WWebWidget {
 		super.remove();
 	}
 
-	public void resize(WLength width, WLength height) {
+	public void resize(final WLength width, final WLength height) {
 		this.sizeChanged_ = true;
 		super.resize(width, height);
-		this.repaint(EnumSet.of(RepaintFlag.RepaintPropertyAttribute));
 	}
 
 	/**
@@ -113,7 +112,7 @@ public class WFlashObject extends WWebWidget {
 	 * rendered for the first time, so it is recommended to call this method
 	 * shortly after construction before returning to the idle loop.
 	 */
-	public void setFlashParameter(String name, CharSequence value) {
+	public void setFlashParameter(final String name, final CharSequence value) {
 		WString v = WString.toWString(value);
 		this.parameters_.put(name, v);
 	}
@@ -132,7 +131,7 @@ public class WFlashObject extends WWebWidget {
 	 * the first time, so it is recommended to call this method shortly after
 	 * construction before returning to the idle loop.
 	 */
-	public void setFlashVariable(String name, CharSequence value) {
+	public void setFlashVariable(final String name, final CharSequence value) {
 		WString v = WString.toWString(value);
 		this.variables_.put(name, v);
 	}
@@ -152,7 +151,7 @@ public class WFlashObject extends WWebWidget {
 	 * installed.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_2_3.getElement('" + this.getId() + "_flash')";
+		return "Wt3_3_4.getElement('" + this.getId() + "_flash')";
 	}
 
 	/**
@@ -175,7 +174,7 @@ public class WFlashObject extends WWebWidget {
 		}
 	}
 
-	void updateDom(DomElement element, boolean all) {
+	void updateDom(final DomElement element, boolean all) {
 		if (all) {
 			DomElement obj = DomElement
 					.createNew(DomElementType.DomElement_OBJECT);
@@ -188,7 +187,7 @@ public class WFlashObject extends WWebWidget {
 				ss
 						.append("function(self, w, h) {v="
 								+ this.getJsFlashRef()
-								+ ";if(v){v.setAttribute('width', w);v.setAttribute('height', h);}");
+								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 				if (this.alternative_ != null) {
 					ss
 							.append(
@@ -265,7 +264,7 @@ public class WFlashObject extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	void getDomChanges(List<DomElement> result, WApplication app) {
+	void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.sizeChanged_) {
 			StringWriter ss = new StringWriter();
@@ -300,10 +299,10 @@ public class WFlashObject extends WWebWidget {
 
 	private void renderIeAltnerative() {
 		this.replaceDummyIeContent_ = true;
-		this.repaint(EnumSet.of(RepaintFlag.RepaintInnerHtml));
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
-	static String toString(WLength length) {
+	static String toString(final WLength length) {
 		if (length.isAuto()) {
 			return "";
 		} else {

@@ -26,7 +26,6 @@ class PaintBrush extends WPaintedWidget {
 		super(parent);
 		this.path_ = new WPainterPath();
 		this.color_ = new WColor();
-		this.setSelectable(false);
 		this.resize(new WLength(width), new WLength(height));
 		this.getDecorationStyle().setCursor("icons/pencil.cur",
 				Cursor.CrossCursor);

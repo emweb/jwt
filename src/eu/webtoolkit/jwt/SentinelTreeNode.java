@@ -29,10 +29,6 @@ class SentinelTreeNode extends WTreeNode {
 		this.addStyleClass("Wt-sentinel");
 		this.setNodeVisible(false);
 		this.expand();
-		if (WApplication.getInstance().getEnvironment().agentIsIE()) {
-			this.getImpl().getElementAt(1, 0).resize(new WLength(1),
-					WLength.Auto);
-		}
 	}
 
 	public WTree getTree() {

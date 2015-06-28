@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="bin/|eu/webtoolkit/jwt/ServletApi3.java" kind="src" path="src"/>
+	<classpathentry excluding="bin/|eu/webtoolkit/jwt/ServletApi3.java|eu/webtoolkit/jwt/WServerGLWidget.java" kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/vecmath-1.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/http/httpclient-4.1.2.jar"/>
@@ -18,6 +20,11 @@
 	<classpathentry kind="lib" path="lib/vt-password/vt-password-3.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/javamail/geronimo-javamail_1.4_mail-1.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/javamail/geronimo-javamail_1.4_provider-1.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/pdfjet/PDFjet-3.07.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-runtime-3.5.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="lib/pdfjet/pdfjet-4.75.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-all-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

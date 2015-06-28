@@ -24,8 +24,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * A brush defines the properties of how areas (the interior of shapes) are
- * filled. A brush is defined using a color and a fill type (currently only
- * solid fills are supported).
+ * filled. A brush is defined either as a solid color or a gradient.
  * <p>
  * 
  * @see WPainter#setBrush(WBrush b)
@@ -42,16 +41,16 @@ public class WBrush {
 	public WBrush() {
 		this.style_ = BrushStyle.NoBrush;
 		this.color_ = WColor.black;
+		this.gradient_ = new WGradient();
 	}
 
 	/**
-	 * Creates a black brush with given style.
-	 * <p>
-	 * Creates a black brush with the indicated <code>style</code>.
+	 * Creates a brush with the given style.
 	 */
 	public WBrush(BrushStyle style) {
 		this.style_ = style;
 		this.color_ = WColor.black;
+		this.gradient_ = new WGradient();
 	}
 
 	/**
@@ -59,9 +58,19 @@ public class WBrush {
 	 * <p>
 	 * Creates a solid brush with the indicated <code>color</code>.
 	 */
-	public WBrush(WColor color) {
+	public WBrush(final WColor color) {
 		this.style_ = BrushStyle.SolidPattern;
 		this.color_ = color;
+		this.gradient_ = new WGradient();
+	}
+
+	/**
+	 * Creates a gradient brush.
+	 */
+	public WBrush(final WGradient gradient) {
+		this.style_ = BrushStyle.GradientPattern;
+		this.color_ = new WColor();
+		this.gradient_ = gradient;
 	}
 
 	/**
@@ -72,6 +81,7 @@ public class WBrush {
 	public WBrush clone() {
 		WBrush result = new WBrush();
 		result.color_ = this.color_;
+		result.gradient_ = this.gradient_;
 		result.style_ = this.style_;
 		return result;
 	}
@@ -81,8 +91,9 @@ public class WBrush {
 	 * <p>
 	 * Returns <code>true</code> if the brushes are exactly the same.
 	 */
-	public boolean equals(WBrush other) {
-		return this.color_.equals(other.color_) && this.style_ == other.style_;
+	public boolean equals(final WBrush other) {
+		return this.color_.equals(other.color_) && this.style_ == other.style_
+				&& this.gradient_.equals(other.gradient_);
 	}
 
 	/**
@@ -108,11 +119,17 @@ public class WBrush {
 	/**
 	 * Sets the brush color.
 	 * <p>
+	 * If the current style is a gradient style, then it is reset to
+	 * {@link BrushStyle#SolidPattern SolidPattern}.
+	 * <p>
 	 * 
 	 * @see WBrush#getColor()
 	 */
-	public void setColor(WColor color) {
+	public void setColor(final WColor color) {
 		this.color_ = color;
+		if (this.style_ == BrushStyle.GradientPattern) {
+			this.style_ = BrushStyle.SolidPattern;
+		}
 	}
 
 	/**
@@ -125,6 +142,27 @@ public class WBrush {
 		return this.color_;
 	}
 
+	/**
+	 * Sets the brush gradient.
+	 * <p>
+	 * This also sets the style to {@link BrushStyle#GradientPattern
+	 * GradientPattern}.
+	 */
+	public void setGradient(final WGradient gradient) {
+		if (!this.gradient_.isEmpty()) {
+			this.gradient_ = gradient;
+			this.style_ = BrushStyle.GradientPattern;
+		}
+	}
+
+	/**
+	 * Returns the brush gradient.
+	 */
+	public WGradient getGradient() {
+		return this.gradient_;
+	}
+
 	private BrushStyle style_;
 	private WColor color_;
+	private WGradient gradient_;
 }

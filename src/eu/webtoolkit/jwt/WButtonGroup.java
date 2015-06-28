@@ -254,14 +254,16 @@ public class WButtonGroup extends WObject {
 	 * getCheckedButton()}.
 	 */
 	public Signal1<WRadioButton> checkedChanged() {
-		this.checkedChangedConnected_ = true;
-		for (int i = 0; i < this.buttons_.size(); ++i) {
-			this.buttons_.get(i).button.changed().addListener(this,
-					new Signal.Listener() {
-						public void trigger() {
-							WButtonGroup.this.onButtonChange();
-						}
-					});
+		if (!this.checkedChangedConnected_) {
+			this.checkedChangedConnected_ = true;
+			for (int i = 0; i < this.buttons_.size(); ++i) {
+				this.buttons_.get(i).button.changed().addListener(this,
+						new Signal.Listener() {
+							public void trigger() {
+								WButtonGroup.this.onButtonChange();
+							}
+						});
+			}
 		}
 		return this.checkedChanged_;
 	}
@@ -297,12 +299,13 @@ public class WButtonGroup extends WObject {
 		this.checkedChanged_.trigger(this.getCheckedButton());
 	}
 
-	void setFormData(WObject.FormData formData) {
+	void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
-			String value = formData.values[0];
+			final String value = formData.values[0];
 			for (int i = 0; i < this.buttons_.size(); ++i) {
 				if (value.equals(this.buttons_.get(i).button.getId())) {
-					if (this.buttons_.get(i).button.stateChanged_) {
+					if (this.buttons_.get(i).button.flags_
+							.get(WAbstractToggleButton.BIT_STATE_CHANGED)) {
 						return;
 					}
 					this.uncheckOthers(this.buttons_.get(i).button);

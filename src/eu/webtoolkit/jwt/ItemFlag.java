@@ -35,7 +35,7 @@ public enum ItemFlag {
 	 */
 	ItemIsEditable,
 	/**
-	 * Item can be checked.
+	 * Item can be checked (checkbox is enabled).
 	 */
 	ItemIsUserCheckable,
 	/**
@@ -48,14 +48,20 @@ public enum ItemFlag {
 	ItemIsDropEnabled,
 	/**
 	 * <p>
-	 * Item has tree states. When set, {@link ItemDataRole#CheckStateRole} data
-	 * is of type {@link CheckState}
+	 * Item has tree states.
+	 * <p>
+	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
+	 * {@link CheckState}
 	 */
 	ItemIsTristate,
 	/**
-	 * Item&apos;s textual is HTML.
+	 * Item&apos;s text (DisplayRole, ToolTipRole) is HTML.
 	 */
 	ItemIsXHTMLText,
+	/**
+	 * Item&apos;s tooltip is deferred.
+	 */
+	ItemHasDeferredTooltip,
 	/**
 	 * Item&apos;s value has been modified.
 	 */

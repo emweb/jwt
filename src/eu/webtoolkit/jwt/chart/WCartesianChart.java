@@ -106,21 +106,16 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WCartesianChart(WContainerWidget parent) {
 		super(parent);
+		this.interface_ = new WChart2DImplementation(this);
 		this.orientation_ = Orientation.Vertical;
 		this.XSeriesColumn_ = -1;
 		this.type_ = ChartType.CategoryChart;
 		this.series_ = new ArrayList<WDataSeries>();
 		this.barMargin_ = 0;
-		this.legend_ = false;
-		this.legendLocation_ = LegendLocation.LegendOutside;
-		this.legendSide_ = Side.Right;
-		this.legendAlignment_ = AlignmentFlag.AlignMiddle;
-		this.legendColumns_ = 1;
-		this.legendColumnWidth_ = new WLength(100);
-		this.legendFont_ = new WFont();
-		this.legendBorder_ = new WPen(PenStyle.NoPen);
-		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
+		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
+		this.textPen_ = new WPen();
+		this.chartArea_ = null;
 		this.init();
 	}
 
@@ -141,21 +136,16 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WCartesianChart(ChartType type, WContainerWidget parent) {
 		super(parent);
+		this.interface_ = new WChart2DImplementation(this);
 		this.orientation_ = Orientation.Vertical;
 		this.XSeriesColumn_ = -1;
 		this.type_ = type;
 		this.series_ = new ArrayList<WDataSeries>();
 		this.barMargin_ = 0;
-		this.legend_ = false;
-		this.legendLocation_ = LegendLocation.LegendOutside;
-		this.legendSide_ = Side.Right;
-		this.legendAlignment_ = AlignmentFlag.AlignMiddle;
-		this.legendColumns_ = 1;
-		this.legendColumnWidth_ = new WLength(100);
-		this.legendFont_ = new WFont();
-		this.legendBorder_ = new WPen(PenStyle.NoPen);
-		this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
+		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
+		this.textPen_ = new WPen();
+		this.chartArea_ = null;
 		this.init();
 	}
 
@@ -167,6 +157,14 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WCartesianChart(ChartType type) {
 		this(type, (WContainerWidget) null);
+	}
+
+	public void remove() {
+		for (int i = 2; i > -1; i--) {
+			;
+		}
+		;
+		super.remove();
 	}
 
 	/**
@@ -188,7 +186,7 @@ public class WCartesianChart extends WAbstractChart {
 	public void setType(ChartType type) {
 		if (this.type_ != type) {
 			this.type_ = type;
-			this.axes_[Axis.XAxis.getValue()].init(this, Axis.XAxis);
+			this.axes_[Axis.XAxis.getValue()].init(this.interface_, Axis.XAxis);
 			this.update();
 		}
 	}
@@ -236,8 +234,9 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Sets the the model column for the X series.
 	 * <p>
-	 * Use this method to specify the data for the X series. For a
-	 * {@link ChartType#ScatterPlot ScatterPlot} this is mandatory, while for a
+	 * Use this method to specify the default data for the X series. For a
+	 * {@link ChartType#ScatterPlot ScatterPlot} this is mandatory if an X
+	 * series is not specified for every WDataSeries. For a
 	 * {@link ChartType#CategoryChart CategoryChart}, if not specified, an
 	 * increasing series of integer numbers will be used (1, 2, ...).
 	 * <p>
@@ -257,6 +256,24 @@ public class WCartesianChart extends WAbstractChart {
 		if (this.XSeriesColumn_ != modelColumn) {
 			this.XSeriesColumn_ = modelColumn;
 			this.update();
+		}
+	}
+
+	/**
+	 * set the pen used to render the labels
+	 * <p>
+	 * This method overwrites the pen for all axes
+	 * <p>
+	 * 
+	 * @see WAxis#setTextPen(WPen pen)
+	 */
+	public void setTextPen(final WPen pen) {
+		if (pen.equals(this.textPen_)) {
+			return;
+		}
+		this.textPen_ = pen;
+		for (int i = 0; i < 3; ++i) {
+			this.axes_[i].setTextPen(pen);
 		}
 	}
 
@@ -284,7 +301,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 * @see WCartesianChart#setSeries(List series)
 	 */
-	public void addSeries(WDataSeries series) {
+	public void addSeries(final WDataSeries series) {
 		this.series_.add(series);
 		this.series_.get(this.series_.size() - 1).setChart(this);
 		this.update();
@@ -318,7 +335,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#addSeries(WDataSeries series)
 	 * @see WCartesianChart#removeSeries(int modelColumn)
 	 */
-	public void setSeries(List<WDataSeries> series) {
+	public void setSeries(final List<WDataSeries> series) {
 		Utils.copyList(series, this.series_);
 		for (int i = 0; i < this.series_.size(); ++i) {
 			this.series_.get(i).setChart(this);
@@ -363,6 +380,17 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
+	 * Sets an axis.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#getAxis(Axis axis)
+	 */
+	public void setAxis(WAxis waxis, Axis axis) {
+		this.axes_[axis.getValue()] = waxis;
+		this.axes_[axis.getValue()].init(this.interface_, axis);
+	}
+
+	/**
 	 * Sets the margin between bars of different series.
 	 * <p>
 	 * Use this method to change the margin that is set between bars of
@@ -395,7 +423,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * The location of the legend can be configured using
 	 * {@link WCartesianChart#setLegendLocation(LegendLocation location, Side side, AlignmentFlag alignment)
-	 * setLegendLocation()}. Only series for which the legend is enabled or
+	 * setLegendLocation()}. Only series for which the legend is enabled are
 	 * included in this legend.
 	 * <p>
 	 * The default value is <code>false</code>.
@@ -406,10 +434,8 @@ public class WCartesianChart extends WAbstractChart {
 	 *      side, AlignmentFlag alignment)
 	 */
 	public void setLegendEnabled(boolean enabled) {
-		if (this.legend_ != enabled) {
-			this.legend_ = enabled;
-			this.update();
-		}
+		this.legend_.setLegendEnabled(enabled);
+		this.update();
 	}
 
 	/**
@@ -419,7 +445,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
 	public boolean isLegendEnabled() {
-		return this.legend_;
+		return this.legend_.isLegendEnabled();
 	}
 
 	/**
@@ -463,9 +489,7 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public void setLegendLocation(LegendLocation location, Side side,
 			AlignmentFlag alignment) {
-		this.legendLocation_ = location;
-		this.legendSide_ = side;
-		this.legendAlignment_ = alignment;
+		this.legend_.setLegendLocation(location, side, alignment);
 		this.update();
 	}
 
@@ -482,10 +506,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
-	public void setLegendStyle(WFont font, WPen border, WBrush background) {
-		this.legendFont_ = font;
-		this.legendBorder_ = border;
-		this.legendBackground_ = background;
+	public void setLegendStyle(final WFont font, final WPen border,
+			final WBrush background) {
+		this.legend_.setLegendStyle(font, border, background);
 		this.update();
 	}
 
@@ -497,7 +520,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      side, AlignmentFlag alignment)
 	 */
 	public LegendLocation getLegendLocation() {
-		return this.legendLocation_;
+		return this.legend_.getLegendLocation();
 	}
 
 	/**
@@ -508,7 +531,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      side, AlignmentFlag alignment)
 	 */
 	public Side getLegendSide() {
-		return this.legendSide_;
+		return this.legend_.getLegendSide();
 	}
 
 	/**
@@ -519,7 +542,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      side, AlignmentFlag alignment)
 	 */
 	public AlignmentFlag getLegendAlignment() {
-		return this.legendAlignment_;
+		return this.legend_.getLegendAlignment();
 	}
 
 	/**
@@ -529,7 +552,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setLegendColumns(int columns, WLength columnWidth)
 	 */
 	public int getLegendColumns() {
-		return this.legendColumns_;
+		return this.legend_.getLegendColumns();
 	}
 
 	/**
@@ -539,7 +562,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setLegendColumns(int columns, WLength columnWidth)
 	 */
 	public WLength getLegendColumnWidth() {
-		return this.legendColumnWidth_;
+		return this.legend_.getLegendColumnWidth();
 	}
 
 	/**
@@ -550,7 +573,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      background)
 	 */
 	public WFont getLegendFont() {
-		return this.legendFont_;
+		return this.legend_.getLegendFont();
 	}
 
 	/**
@@ -561,7 +584,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      background)
 	 */
 	public WPen getLegendBorder() {
-		return this.legendBorder_;
+		return this.legend_.getLegendBorder();
 	}
 
 	/**
@@ -572,7 +595,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      background)
 	 */
 	public WBrush getLegendBackground() {
-		return this.legendBackground_;
+		return this.legend_.getLegendBackground();
 	}
 
 	/**
@@ -582,25 +605,33 @@ public class WCartesianChart extends WAbstractChart {
 	 * or at the bottom of the chart.
 	 * <p>
 	 * The default value is a single column, 100 pixels wide.
+	 * <p>
+	 * When automatic chart layout is enabled, then the legend column width is
+	 * computed automatically, and this setting is ignored.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
 	 */
-	public void setLegendColumns(int columns, WLength columnWidth) {
-		this.legendColumns_ = columns;
-		this.legendColumnWidth_ = columnWidth;
+	public void setLegendColumns(int columns, final WLength columnWidth) {
+		this.legend_.setLegendColumns(columns);
+		this.legend_.setLegendColumnWidth(columnWidth);
 		this.update();
 	}
 
-	public void paint(WPainter painter, WRectF rectangle) {
+	public void paint(final WPainter painter, final WRectF rectangle) {
+		while (!this.getAreas().isEmpty()) {
+			if ((this).getAreas().get(0) != null)
+				(this).getAreas().get(0).remove();
+		}
 		if (!painter.isActive()) {
 			throw new WException(
 					"WCartesianChart::paint(): painter is not active.");
 		}
 		WRectF rect = rectangle;
-		if (rect.isEmpty()) {
-			rect.assign(painter.getWindow());
+		if ((rect == null) || rect.isEmpty()) {
+			rect = painter.getWindow();
 		}
-		WChart2DRenderer renderer = this.createRenderer(painter, rect);
-		renderer.render();
-		;
+		this.render(painter, rect);
 	}
 
 	/**
@@ -614,7 +645,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
-	public void drawMarker(WDataSeries series, WPainterPath result) {
+	public void drawMarker(final WDataSeries series, final WPainterPath result) {
 		final double size = 6.0;
 		final double hsize = size / 2;
 		switch (series.getMarker()) {
@@ -665,8 +696,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#renderLegendItem(WPainter painter, WPointF pos,
 	 *      WDataSeries series)
 	 */
-	public void renderLegendIcon(WPainter painter, WPointF pos,
-			WDataSeries series) {
+	public void renderLegendIcon(final WPainter painter, final WPointF pos,
+			final WDataSeries series) {
+		WShadow shadow = painter.getShadow();
 		switch (series.getType()) {
 		case BarSeries: {
 			WPainterPath path = new WPainterPath();
@@ -674,10 +706,11 @@ public class WCartesianChart extends WAbstractChart {
 			path.lineTo(-6, -8);
 			path.lineTo(6, -8);
 			path.lineTo(6, 8);
-			painter.setPen(series.getPen());
-			painter.setBrush(series.getBrush());
 			painter.translate(pos.getX() + 7.5, pos.getY());
-			painter.drawPath(path);
+			painter.setShadow(series.getShadow());
+			painter.fillPath(path, series.getBrush());
+			painter.setShadow(shadow);
+			painter.strokePath(path, series.getPen());
 			painter.translate(-(pos.getX() + 7.5), -pos.getY());
 			break;
 		}
@@ -686,17 +719,20 @@ public class WCartesianChart extends WAbstractChart {
 			painter.setPen(series.getPen());
 			double offset = series.getPen().getWidth().equals(new WLength(0)) ? 0.5
 					: 0;
+			painter.setShadow(series.getShadow());
 			painter.drawLine(pos.getX(), pos.getY() + offset, pos.getX() + 16,
 					pos.getY() + offset);
+			painter.setShadow(shadow);
 		}
 		case PointSeries: {
 			WPainterPath path = new WPainterPath();
 			this.drawMarker(series, path);
 			if (!path.isEmpty()) {
 				painter.translate(pos.getX() + 8, pos.getY());
-				painter.setPen(series.getMarkerPen());
-				painter.setBrush(series.getMarkerBrush());
-				painter.drawPath(path);
+				painter.setShadow(series.getShadow());
+				painter.fillPath(path, series.getMarkerBrush());
+				painter.setShadow(shadow);
+				painter.strokePath(path, series.getMarkerPen());
 				painter.translate(-(pos.getX() + 8), -pos.getY());
 			}
 			break;
@@ -720,12 +756,12 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
-	public void renderLegendItem(WPainter painter, WPointF pos,
-			WDataSeries series) {
+	public void renderLegendItem(final WPainter painter, final WPointF pos,
+			final WDataSeries series) {
 		WPen fontPen = painter.getPen();
 		this.renderLegendIcon(painter, pos, series);
 		painter.setPen(fontPen);
-		painter.drawText(pos.getX() + 17, pos.getY() - 10, 100, 20, EnumSet.of(
+		painter.drawText(pos.getX() + 23, pos.getY() - 9, 100, 20, EnumSet.of(
 				AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
 				StringUtils.asString(this.getModel().getHeaderData(
 						series.getModelColumn())));
@@ -739,19 +775,21 @@ public class WCartesianChart extends WAbstractChart {
 	 * This uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle) initLayout()} first.
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis
 	 *      ordinateAxis, int xSegment, int ySegment)
 	 */
-	public WPointF mapFromDevice(WPointF point, Axis ordinateAxis) {
-		WAxis xAxis = this.getAxis(Axis.XAxis);
-		WAxis yAxis = this.getAxis(ordinateAxis);
+	public WPointF mapFromDevice(final WPointF point, Axis ordinateAxis) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(ordinateAxis);
 		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
 				.toPixels());
-		return new WPointF(xAxis.mapFromDevice(p.getX()), yAxis.mapFromDevice(p
-				.getY()));
+		return new WPointF(xAxis.mapFromDevice(p.getX()
+				- this.chartArea_.getLeft()), yAxis
+				.mapFromDevice(this.chartArea_.getBottom() - p.getY()));
 	}
 
 	/**
@@ -760,7 +798,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * Returns {@link #mapFromDevice(WPointF point, Axis ordinateAxis)
 	 * mapFromDevice(point, Axis.OrdinateAxis)}
 	 */
-	public final WPointF mapFromDevice(WPointF point) {
+	public final WPointF mapFromDevice(final WPointF point) {
 		return mapFromDevice(point, Axis.OrdinateAxis);
 	}
 
@@ -773,7 +811,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * This uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish to already the
 	 * mapping reflect model changes since the last rendering, you should call
-	 * {@link WCartesianChart#initLayout(WRectF rectangle) initLayout()} first.
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
 	 * <p>
 	 * The <code>xSegment</code> and <code>ySegment</code> arguments are
 	 * relevant only when the corresponding axis is broken using
@@ -784,12 +823,15 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#mapFromDevice(WPointF point, Axis ordinateAxis)
 	 */
-	public WPointF mapToDevice(Object xValue, Object yValue, Axis ordinateAxis,
-			int xSegment, int ySegment) {
-		WAxis xAxis = this.getAxis(Axis.XAxis);
-		WAxis yAxis = this.getAxis(ordinateAxis);
-		return this.hv(xAxis.mapToDevice(xValue, xSegment), yAxis.mapToDevice(
-				yValue, ySegment), this.getWidth().toPixels());
+	public WPointF mapToDevice(final Object xValue, final Object yValue,
+			Axis ordinateAxis, int xSegment, int ySegment) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(ordinateAxis);
+		double x = this.chartArea_.getLeft()
+				+ xAxis.mapToDevice(xValue, xSegment);
+		double y = this.chartArea_.getBottom()
+				- yAxis.mapToDevice(yValue, ySegment);
+		return this.hv(x, y, this.getWidth().toPixels());
 	}
 
 	/**
@@ -799,7 +841,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDevice(xValue, yValue, Axis.OrdinateAxis, 0, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue) {
+	public final WPointF mapToDevice(final Object xValue, final Object yValue) {
 		return mapToDevice(xValue, yValue, Axis.OrdinateAxis, 0, 0);
 	}
 
@@ -810,7 +852,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDevice(xValue, yValue, ordinateAxis, 0, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue,
+	public final WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis ordinateAxis) {
 		return mapToDevice(xValue, yValue, ordinateAxis, 0, 0);
 	}
@@ -822,7 +864,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link #mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDevice(xValue, yValue, ordinateAxis, xSegment, 0)}
 	 */
-	public final WPointF mapToDevice(Object xValue, Object yValue,
+	public final WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis ordinateAxis, int xSegment) {
 		return mapToDevice(xValue, yValue, ordinateAxis, xSegment, 0);
 	}
@@ -830,40 +872,100 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Initializes the chart layout.
 	 * <p>
-	 * A cartesian chart delegates the rendering and layout of the chart and its
-	 * axes to a {@link WChart2DRenderer}. As a consequence, the mapping between
-	 * model and device coordinates is also established by this class, which is
-	 * only created on-demand when painging.
+	 * The mapping between model and device coordinates is only established
+	 * after a rendering phase, or after calling initLayout manually.
 	 * <p>
-	 * If you wish to establish the layout, in order to use the
+	 * You need a layout in order to use the
 	 * {@link WCartesianChart#mapFromDevice(WPointF point, Axis ordinateAxis)
 	 * mapFromDevice()} and
 	 * {@link WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
-	 * mapToDevice()} methods before the chart has been rendered, you should
-	 * call this method.
+	 * mapToDevice()} methods.
 	 * <p>
 	 * Unless a specific chart rectangle is specified, the entire widget area is
 	 * assumed.
 	 */
-	public void initLayout(WRectF rectangle) {
+	public boolean initLayout(final WRectF rectangle, WPaintDevice device) {
 		WRectF rect = rectangle;
-		if (rect.isEmpty()) {
-			rect.assign(new WRectF(0, 0, this.getWidth().toPixels(), this
-					.getHeight().toPixels()));
+		if ((rect == null) || rect.isEmpty()) {
+			rect = new WRectF(0.0, 0.0, this.getWidth().toPixels(), this
+					.getHeight().toPixels());
 		}
-		WPainter painter = new WPainter();
-		WChart2DRenderer renderer = this.createRenderer(painter, rect);
-		renderer.isInitLayout();
-		;
+		if (this.getOrientation() == Orientation.Vertical) {
+			this.width_ = (int) rect.getWidth();
+			this.height_ = (int) rect.getHeight();
+		} else {
+			this.width_ = (int) rect.getHeight();
+			this.height_ = (int) rect.getWidth();
+		}
+		for (int i = 0; i < 3; ++i) {
+			this.location_[i] = AxisValue.MinimumValue;
+		}
+		if (this.isAutoLayoutEnabled()) {
+			WCartesianChart self = this;
+			self.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
+			self.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
+			this.calcChartArea();
+			if (this.chartArea_.getWidth() <= 5
+					|| this.chartArea_.getHeight() <= 5
+					|| !this.isPrepareAxes()) {
+				return false;
+			}
+			WPaintDevice d = device;
+			if (!(d != null)) {
+				d = this.getCreatePaintDevice();
+			}
+			{
+				WMeasurePaintDevice md = new WMeasurePaintDevice(d);
+				WPainter painter = new WPainter(md);
+				this.renderAxes(painter, EnumSet.of(AxisProperty.Line,
+						AxisProperty.Labels));
+				this.renderLegend(painter);
+				WRectF bounds = md.getBoundingRect();
+				final int MARGIN = 5;
+				int corrLeft = (int) Math.max(0.0, rect.getLeft()
+						- bounds.getLeft() + MARGIN);
+				int corrRight = (int) Math.max(0.0, bounds.getRight()
+						- rect.getRight() + MARGIN);
+				int corrTop = (int) Math.max(0.0, rect.getTop()
+						- bounds.getTop() + MARGIN);
+				int corrBottom = (int) Math.max(0.0, bounds.getBottom()
+						- rect.getBottom() + MARGIN);
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Left)
+						+ corrLeft, EnumSet.of(Side.Left));
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Right)
+						+ corrRight, EnumSet.of(Side.Right));
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Top)
+						+ corrTop, EnumSet.of(Side.Top));
+				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Bottom)
+						+ corrBottom, EnumSet.of(Side.Bottom));
+			}
+			if (!(device != null)) {
+				;
+			}
+		}
+		this.calcChartArea();
+		return this.chartArea_.getWidth() > 5
+				&& this.chartArea_.getHeight() > 5 && this.isPrepareAxes();
 	}
 
 	/**
 	 * Initializes the chart layout.
 	 * <p>
-	 * Calls {@link #initLayout(WRectF rectangle) initLayout(new WRectF())}
+	 * Returns {@link #initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout(null, (WPaintDevice)null)}
 	 */
-	public final void initLayout() {
-		initLayout(new WRectF());
+	public final boolean initLayout() {
+		return initLayout(null, (WPaintDevice) null);
+	}
+
+	/**
+	 * Initializes the chart layout.
+	 * <p>
+	 * Returns {@link #initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout(rectangle, (WPaintDevice)null)}
+	 */
+	public final boolean initLayout(final WRectF rectangle) {
+		return initLayout(rectangle, (WPaintDevice) null);
 	}
 
 	/**
@@ -894,8 +996,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * </i>
 	 * </p>
 	 */
-	public void addDataPointArea(WDataSeries series, WModelIndex xIndex,
-			WAbstractArea area) {
+	public void addDataPointArea(final WDataSeries series,
+			final WModelIndex xIndex, WAbstractArea area) {
 		this.addArea(area);
 	}
 
@@ -919,69 +1021,238 @@ public class WCartesianChart extends WAbstractChart {
 		return this.axisPadding_;
 	}
 
-	protected void paintEvent(WPaintDevice paintDevice) {
-		while (!this.getAreas().isEmpty()) {
-			if (this.getAreas().get(0) != null)
-				this.getAreas().get(0).remove();
+	public void iterateSeries(SeriesIterator iterator, WPainter painter,
+			boolean reverseStacked) {
+		WAbstractItemModel chart_model = this.getModel();
+		int rows = chart_model != null ? chart_model.getRowCount() : 0;
+		double groupWidth = 0.0;
+		int numBarGroups;
+		int currentBarGroup;
+		List<Double> stackedValuesInit = new ArrayList<Double>();
+		{
+			int insertPos = 0;
+			for (int ii = 0; ii < rows; ++ii)
+				stackedValuesInit.add(insertPos + ii, 0.0);
 		}
-		WPainter painter = new WPainter(paintDevice);
-		painter.setRenderHint(WPainter.RenderHint.Antialiasing);
-		this.paint(painter);
+		;
+		final boolean scatterPlot = this.type_ == ChartType.ScatterPlot;
+		if (scatterPlot) {
+			numBarGroups = 1;
+			currentBarGroup = 0;
+		} else {
+			numBarGroups = this.getCalcNumBarGroups();
+			currentBarGroup = 0;
+		}
+		boolean containsBars = false;
+		for (int g = 0; g < this.series_.size(); ++g) {
+			if (this.series_.get(g).isHidden()) {
+				continue;
+			}
+			groupWidth = this.series_.get(g).getBarWidth()
+					* (this.map(2, 0).getX() - this.map(1, 0).getX());
+			if (containsBars) {
+				++currentBarGroup;
+			}
+			containsBars = false;
+			int startSeries;
+			int endSeries;
+			if (scatterPlot) {
+				startSeries = endSeries = g;
+			} else {
+				for (int i = 0; i < rows; ++i) {
+					stackedValuesInit.set(i, 0.0);
+				}
+				if (reverseStacked) {
+					endSeries = g;
+					Axis a = this.series_.get(g).getAxis();
+					for (;;) {
+						if (g < this.series_.size()
+								&& ((int) g == endSeries || this.series_.get(g)
+										.isStacked())
+								&& this.series_.get(g).getAxis() == a) {
+							if (this.series_.get(g).getType() == SeriesType.BarSeries) {
+								containsBars = true;
+							}
+							for (int row = 0; row < rows; ++row) {
+								double y = StringUtils.asNumber(chart_model
+										.getData(row, this.series_.get(g)
+												.getModelColumn()));
+								if (!Double.isNaN(y)) {
+									stackedValuesInit.set(row,
+											stackedValuesInit.get(row) + y);
+								}
+							}
+							++g;
+						} else {
+							break;
+						}
+					}
+					--g;
+					startSeries = g;
+				} else {
+					startSeries = g;
+					Axis a = this.series_.get(g).getAxis();
+					if (this.series_.get(g).getType() == SeriesType.BarSeries) {
+						containsBars = true;
+					}
+					++g;
+					for (;;) {
+						if (g < this.series_.size()
+								&& this.series_.get(g).isStacked()
+								&& this.series_.get(g).getAxis() == a) {
+							if (this.series_.get(g).getType() == SeriesType.BarSeries) {
+								containsBars = true;
+							}
+							++g;
+						} else {
+							break;
+						}
+					}
+					--g;
+					endSeries = g;
+				}
+			}
+			int i = startSeries;
+			for (;;) {
+				boolean doSeries = iterator.startSeries(this.series_.get(i),
+						groupWidth, numBarGroups, currentBarGroup);
+				List<Double> stackedValues = new ArrayList<Double>();
+				if (doSeries || !scatterPlot && i != endSeries) {
+					for (int currentXSegment = 0; currentXSegment < this
+							.getAxis(Axis.XAxis).getSegmentCount(); ++currentXSegment) {
+						for (int currentYSegment = 0; currentYSegment < this
+								.getAxis(this.series_.get(i).getAxis())
+								.getSegmentCount(); ++currentYSegment) {
+							stackedValues.clear();
+							stackedValues.addAll(stackedValuesInit);
+							if (painter != null) {
+								WRectF csa = this.chartSegmentArea(
+										this.getAxis(this.series_.get(i)
+												.getAxis()), currentXSegment,
+										currentYSegment);
+								iterator.startSegment(currentXSegment,
+										currentYSegment, csa);
+								painter.save();
+								WPainterPath clipPath = new WPainterPath();
+								clipPath.addRect(this.hv(csa));
+								painter.setClipPath(clipPath);
+								painter.setClipping(true);
+							} else {
+								iterator.startSegment(currentXSegment,
+										currentYSegment, null);
+							}
+							for (int row = 0; row < rows; ++row) {
+								WModelIndex xIndex = null;
+								WModelIndex yIndex = null;
+								double x;
+								if (scatterPlot) {
+									int c = this.series_.get(i).XSeriesColumn();
+									if (c == -1) {
+										c = this.XSeriesColumn();
+									}
+									if (c != -1) {
+										xIndex = chart_model.getIndex(row, c);
+										x = StringUtils.asNumber(chart_model
+												.getData(xIndex));
+									} else {
+										x = row;
+									}
+								} else {
+									x = row;
+								}
+								yIndex = chart_model.getIndex(row, this.series_
+										.get(i).getModelColumn());
+								double y = StringUtils.asNumber(chart_model
+										.getData(yIndex));
+								double prevStack;
+								if (scatterPlot) {
+									iterator.newValue(this.series_.get(i), x,
+											y, 0, xIndex, yIndex);
+								} else {
+									prevStack = stackedValues.get(row);
+									double nextStack = stackedValues.get(row);
+									boolean hasValue = !Double.isNaN(y);
+									if (hasValue) {
+										if (reverseStacked) {
+											nextStack -= y;
+										} else {
+											nextStack += y;
+										}
+									}
+									stackedValues.set(row, nextStack);
+									if (doSeries) {
+										if (reverseStacked) {
+											iterator.newValue(this.series_
+													.get(i), x,
+													hasValue ? prevStack : y,
+													nextStack, xIndex, yIndex);
+										} else {
+											iterator.newValue(this.series_
+													.get(i), x,
+													hasValue ? nextStack : y,
+													prevStack, xIndex, yIndex);
+										}
+									}
+								}
+							}
+							iterator.endSegment();
+							if (painter != null) {
+								painter.restore();
+							}
+						}
+					}
+					stackedValuesInit.clear();
+					stackedValuesInit.addAll(stackedValues);
+				}
+				if (doSeries) {
+					iterator.endSeries();
+				}
+				if (i == endSeries) {
+					break;
+				} else {
+					if (endSeries < startSeries) {
+						--i;
+					} else {
+						++i;
+					}
+				}
+			}
+		}
 	}
 
-	/**
-	 * Creates a renderer which renders the chart.
-	 * <p>
-	 * The rendering of the chart is delegated to a {@link WChart2DRenderer}
-	 * class, which will render the chart within the <code>rectangle</code> of
-	 * the <code>painter</code>.
-	 * <p>
-	 * You may want to reimplement this method if you wish to override one or
-	 * more aspects of the rendering, by returning an new instance of a
-	 * specialized {@link WChart2DRenderer} class.
-	 * <p>
-	 * After rendering, the renderer is deleted.
-	 * <p>
-	 * 
-	 * @see WChart2DRenderer#render()
-	 */
-	protected WChart2DRenderer createRenderer(WPainter painter, WRectF rectangle) {
-		return new WChart2DRenderer(this, painter, rectangle);
+	public final void iterateSeries(SeriesIterator iterator, WPainter painter) {
+		iterateSeries(iterator, painter, false);
 	}
 
+	private WChart2DImplementation interface_;
 	private Orientation orientation_;
 	private int XSeriesColumn_;
 	private ChartType type_;
 	private List<WDataSeries> series_;
 	private WAxis[] axes_ = new WAxis[3];
 	private double barMargin_;
-	private boolean legend_;
-	private LegendLocation legendLocation_;
-	private Side legendSide_;
-	private AlignmentFlag legendAlignment_;
-	private int legendColumns_;
-	private WLength legendColumnWidth_;
-	private WFont legendFont_;
-	private WPen legendBorder_;
-	private WBrush legendBackground_;
+	private WLegend legend_;
 	private int axisPadding_;
+	private WPen textPen_;
+	private int width_;
+	private int height_;
+	WRectF chartArea_;
+	private AxisValue[] location_ = new AxisValue[3];
 
 	private void init() {
-		this.legendFont_.setFamily(WFont.GenericFamily.SansSerif);
-		this.legendFont_.setSize(WFont.Size.FixedSize, new WLength(10,
-				WLength.Unit.Point));
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Muted));
 		for (int i = 0; i < 3; ++i) {
 			this.axes_[i] = new WAxis();
 		}
-		this.axes_[Axis.XAxis.getValue()].init(this, Axis.XAxis);
-		this.axes_[Axis.YAxis.getValue()].init(this, Axis.YAxis);
-		this.axes_[Axis.Y2Axis.getValue()].init(this, Axis.Y2Axis);
+		this.axes_[Axis.XAxis.getValue()].init(this.interface_, Axis.XAxis);
+		this.axes_[Axis.YAxis.getValue()].init(this.interface_, Axis.YAxis);
+		this.axes_[Axis.Y2Axis.getValue()].init(this.interface_, Axis.Y2Axis);
 		this.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
 		this.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
 	}
 
-	protected void modelColumnsInserted(WModelIndex parent, int start, int end) {
+	protected void modelColumnsInserted(final WModelIndex parent, int start,
+			int end) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() >= start) {
 				this.series_.get(i).modelColumn_ += end - start + 1;
@@ -989,7 +1260,8 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelColumnsRemoved(WModelIndex parent, int start, int end) {
+	protected void modelColumnsRemoved(final WModelIndex parent, int start,
+			int end) {
 		boolean needUpdate = false;
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() >= start) {
@@ -1007,26 +1279,51 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	protected void modelRowsInserted(WModelIndex parent, int start, int end) {
+	protected void modelRowsInserted(final WModelIndex parent, int start,
+			int end) {
 		this.update();
 	}
 
-	protected void modelRowsRemoved(WModelIndex parent, int start, int end) {
+	protected void modelRowsRemoved(final WModelIndex parent, int start, int end) {
 		this.update();
 	}
 
-	protected void modelDataChanged(WModelIndex topLeft, WModelIndex bottomRight) {
-		if (this.XSeriesColumn_ <= topLeft.getColumn()
-				&& this.XSeriesColumn_ >= bottomRight.getColumn()) {
+	protected void modelDataChanged(final WModelIndex topLeft,
+			final WModelIndex bottomRight) {
+		if (this.XSeriesColumn_ >= topLeft.getColumn()
+				&& this.XSeriesColumn_ <= bottomRight.getColumn()) {
 			this.update();
 			return;
 		}
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() >= topLeft.getColumn()
 					&& this.series_.get(i).getModelColumn() <= bottomRight
+							.getColumn()
+					|| this.series_.get(i).XSeriesColumn() >= topLeft
+							.getColumn()
+					&& this.series_.get(i).XSeriesColumn() <= bottomRight
 							.getColumn()) {
 				this.update();
 				break;
+			}
+		}
+	}
+
+	protected void modelHeaderDataChanged(Orientation orientation, int start,
+			int end) {
+		if (orientation == Orientation.Horizontal) {
+			if (this.XSeriesColumn_ >= start && this.XSeriesColumn_ <= end) {
+				this.update();
+				return;
+			}
+			for (int i = 0; i < this.series_.size(); ++i) {
+				if (this.series_.get(i).getModelColumn() >= start
+						&& this.series_.get(i).getModelColumn() <= end
+						|| this.series_.get(i).XSeriesColumn() >= start
+						&& this.series_.get(i).XSeriesColumn() <= end) {
+					this.update();
+					break;
+				}
 			}
 		}
 	}
@@ -1041,6 +1338,937 @@ public class WCartesianChart extends WAbstractChart {
 		this.update();
 	}
 
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void paintEvent(WPaintDevice paintDevice) {
+		WPainter painter = new WPainter(paintDevice);
+		painter.setRenderHint(WPainter.RenderHint.Antialiasing);
+		this.paint(painter);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void render(final WPainter painter, final WRectF rectangle) {
+		painter.save();
+		painter.translate(rectangle.getTopLeft());
+		if (this.initLayout(rectangle, painter.getDevice())) {
+			this.renderBackground(painter);
+			this.renderGrid(painter, this.getAxis(Axis.XAxis));
+			this.renderGrid(painter, this.getAxis(Axis.Y1Axis));
+			this.renderGrid(painter, this.getAxis(Axis.Y2Axis));
+			this.renderSeries(painter);
+			this.renderAxes(painter, EnumSet.of(AxisProperty.Line,
+					AxisProperty.Labels));
+			this.renderLegend(painter);
+		}
+		painter.restore();
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected WPointF map(double xValue, double yValue, Axis yAxis,
+			int currentXSegment, int currentYSegment) {
+		final WAxis xAx = this.getAxis(Axis.XAxis);
+		final WAxis yAx = this.getAxis(yAxis);
+		double x = this.chartArea_.getLeft()
+				+ xAx.mapToDevice(xValue, currentXSegment);
+		double y = this.chartArea_.getBottom()
+				- yAx.mapToDevice(yValue, currentYSegment);
+		return new WPointF(x, y);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * Returns
+	 * {@link #map(double xValue, double yValue, Axis yAxis, int currentXSegment, int currentYSegment)
+	 * map(xValue, yValue, Axis.OrdinateAxis, 0, 0)}
+	 */
+	protected final WPointF map(double xValue, double yValue) {
+		return map(xValue, yValue, Axis.OrdinateAxis, 0, 0);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * Returns
+	 * {@link #map(double xValue, double yValue, Axis yAxis, int currentXSegment, int currentYSegment)
+	 * map(xValue, yValue, yAxis, 0, 0)}
+	 */
+	protected final WPointF map(double xValue, double yValue, Axis yAxis) {
+		return map(xValue, yValue, yAxis, 0, 0);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * Returns
+	 * {@link #map(double xValue, double yValue, Axis yAxis, int currentXSegment, int currentYSegment)
+	 * map(xValue, yValue, yAxis, currentXSegment, 0)}
+	 */
+	protected final WPointF map(double xValue, double yValue, Axis yAxis,
+			int currentXSegment) {
+		return map(xValue, yValue, yAxis, currentXSegment, 0);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderLabel(final WPainter painter, final CharSequence text,
+			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
+			int margin) {
+		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignHorizontalMask));
+		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignVerticalMask));
+		AlignmentFlag rHorizontalAlign = horizontalAlign;
+		AlignmentFlag rVerticalAlign = verticalAlign;
+		double width = 1000;
+		double height = 20;
+		WPointF pos = this.hv(p);
+		if (this.getOrientation() == Orientation.Horizontal) {
+			switch (horizontalAlign) {
+			case AlignLeft:
+				rVerticalAlign = AlignmentFlag.AlignTop;
+				break;
+			case AlignCenter:
+				rVerticalAlign = AlignmentFlag.AlignMiddle;
+				break;
+			case AlignRight:
+				rVerticalAlign = AlignmentFlag.AlignBottom;
+				break;
+			default:
+				break;
+			}
+			switch (verticalAlign) {
+			case AlignTop:
+				rHorizontalAlign = AlignmentFlag.AlignRight;
+				break;
+			case AlignMiddle:
+				rHorizontalAlign = AlignmentFlag.AlignCenter;
+				break;
+			case AlignBottom:
+				rHorizontalAlign = AlignmentFlag.AlignLeft;
+				break;
+			default:
+				break;
+			}
+		}
+		double left = pos.getX();
+		double top = pos.getY();
+		switch (rHorizontalAlign) {
+		case AlignLeft:
+			left += margin;
+			break;
+		case AlignCenter:
+			left -= width / 2;
+			break;
+		case AlignRight:
+			left -= width + margin;
+		default:
+			break;
+		}
+		switch (rVerticalAlign) {
+		case AlignTop:
+			top += margin;
+			break;
+		case AlignMiddle:
+			top -= height / 2;
+			break;
+		case AlignBottom:
+			top -= height + margin;
+			break;
+		default:
+			break;
+		}
+		WPen oldPen = painter.getPen();
+		painter.setPen(this.textPen_);
+		if (angle == 0) {
+			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
+					rHorizontalAlign, rVerticalAlign), text);
+		} else {
+			painter.save();
+			painter.translate(pos);
+			painter.rotate(-angle);
+			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
+					width, height), EnumSet
+					.of(rHorizontalAlign, rVerticalAlign), text);
+			painter.restore();
+		}
+		painter.setPen(oldPen);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected WPointF hv(double x, double y) {
+		return this.hv(x, y, this.height_);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected WPointF hv(final WPointF p) {
+		return this.hv(p.getX(), p.getY());
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected WRectF hv(final WRectF r) {
+		if (this.getOrientation() == Orientation.Vertical) {
+			return r;
+		} else {
+			WPointF tl = this.hv(r.getBottomLeft());
+			return new WRectF(tl.getX(), tl.getY(), r.getHeight(), r.getWidth());
+		}
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected WRectF chartSegmentArea(WAxis yAxis, int xSegment, int ySegment) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis.Segment xs = xAxis.segments_.get(xSegment);
+		final WAxis.Segment ys = yAxis.segments_.get(ySegment);
+		double x1 = this.chartArea_.getLeft()
+				+ xs.renderStart
+				+ (xSegment == 0 ? xs.renderMinimum == 0 ? 0 : -this
+						.getAxisPadding() : -xAxis.getSegmentMargin() / 2);
+		double x2 = this.chartArea_.getLeft()
+				+ xs.renderStart
+				+ xs.renderLength
+				+ (xSegment == xAxis.getSegmentCount() - 1 ? xs.renderMaximum == 0 ? 0
+						: this.getAxisPadding()
+						: xAxis.getSegmentMargin() / 2);
+		double y1 = this.chartArea_.getBottom()
+				- ys.renderStart
+				- ys.renderLength
+				- (ySegment == yAxis.getSegmentCount() - 1 ? ys.renderMaximum == 0 ? 0
+						: this.getAxisPadding()
+						: yAxis.getSegmentMargin() / 2);
+		double y2 = this.chartArea_.getBottom()
+				- ys.renderStart
+				+ (ySegment == 0 ? ys.renderMinimum == 0 ? 0 : this
+						.getAxisPadding() : yAxis.getSegmentMargin() / 2);
+		return new WRectF(Math.floor(x1 + 0.5), Math.floor(y1 + 0.5), Math
+				.floor(x2 - x1), Math.floor(y2 - y1));
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void calcChartArea() {
+		if (this.orientation_ == Orientation.Vertical) {
+			this.chartArea_ = new WRectF(this.getPlotAreaPadding(Side.Left),
+					this.getPlotAreaPadding(Side.Top), Math.max(10, this.width_
+							- this.getPlotAreaPadding(Side.Left)
+							- this.getPlotAreaPadding(Side.Right)), Math.max(
+							10, this.height_
+									- this.getPlotAreaPadding(Side.Top)
+									- this.getPlotAreaPadding(Side.Bottom)));
+		} else {
+			this.chartArea_ = new WRectF(this.getPlotAreaPadding(Side.Top),
+					this.getPlotAreaPadding(Side.Right), Math.max(10,
+							this.width_ - this.getPlotAreaPadding(Side.Top)
+									- this.getPlotAreaPadding(Side.Bottom)),
+					Math.max(10, this.height_
+							- this.getPlotAreaPadding(Side.Right)
+							- this.getPlotAreaPadding(Side.Left)));
+		}
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected boolean isPrepareAxes() {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(Axis.YAxis);
+		final WAxis y2Axis = this.getAxis(Axis.Y2Axis);
+		Orientation yDir = this.orientation_;
+		Orientation xDir = this.orientation_ == Orientation.Vertical ? Orientation.Horizontal
+				: Orientation.Vertical;
+		if (!xAxis.prepareRender(xDir, this.chartArea_.getWidth())) {
+			return false;
+		}
+		if (!yAxis.prepareRender(yDir, this.chartArea_.getHeight())) {
+			return false;
+		}
+		if (!y2Axis.prepareRender(yDir, this.chartArea_.getHeight())) {
+			return false;
+		}
+		if (xAxis.getScale() == AxisScale.CategoryScale) {
+			switch (xAxis.getLocation()) {
+			case MinimumValue:
+			case ZeroValue:
+				this.location_[Axis.XAxis.getValue()] = AxisValue.MinimumValue;
+				break;
+			case MaximumValue:
+				this.location_[Axis.XAxis.getValue()] = AxisValue.MaximumValue;
+			}
+		}
+		for (int i = 0; i < 2; ++i) {
+			WAxis axis = i == 0 ? xAxis : yAxis;
+			WAxis other = i == 0 ? yAxis : xAxis;
+			AxisValue location = axis.getLocation();
+			if (location == AxisValue.ZeroValue) {
+				if (other.segments_.get(0).renderMaximum < 0) {
+					location = AxisValue.MaximumValue;
+				} else {
+					if (other.segments_.get(0).renderMinimum > 0) {
+						location = AxisValue.MinimumValue;
+					}
+				}
+			} else {
+				if (location == AxisValue.MinimumValue) {
+					if (other.segments_.get(0).renderMinimum == 0) {
+						location = AxisValue.ZeroValue;
+					}
+				} else {
+					if (other.segments_.get(0).renderMaximum == 0) {
+						location = AxisValue.MaximumValue;
+					}
+				}
+			}
+			this.location_[axis.getId().getValue()] = location;
+		}
+		if (y2Axis.isVisible()) {
+			if (!(this.location_[Axis.Y1Axis.getValue()] == AxisValue.ZeroValue && xAxis.segments_
+					.get(0).renderMinimum == 0)) {
+				this.location_[Axis.Y1Axis.getValue()] = AxisValue.MinimumValue;
+			}
+			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
+		} else {
+			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
+		}
+		xAxis.setOtherAxisLocation(this.location_[Axis.YAxis.getValue()]);
+		yAxis.setOtherAxisLocation(this.location_[Axis.XAxis.getValue()]);
+		y2Axis.setOtherAxisLocation(this.location_[Axis.XAxis.getValue()]);
+		return true;
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderBackground(final WPainter painter) {
+		if (this.getBackground().getStyle() != BrushStyle.NoBrush) {
+			painter.fillRect(this.hv(this.chartArea_), this.getBackground());
+		}
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderAxes(final WPainter painter,
+			EnumSet<AxisProperty> properties) {
+		this.renderAxis(painter, this.getAxis(Axis.XAxis), properties);
+		this.renderAxis(painter, this.getAxis(Axis.Y1Axis), properties);
+		this.renderAxis(painter, this.getAxis(Axis.Y2Axis), properties);
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * Calls {@link #renderAxes(WPainter painter, EnumSet properties)
+	 * renderAxes(painter, EnumSet.of(propertie, properties))}
+	 */
+	protected final void renderAxes(final WPainter painter,
+			AxisProperty propertie, AxisProperty... properties) {
+		renderAxes(painter, EnumSet.of(propertie, properties));
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderSeries(final WPainter painter) {
+		{
+			SeriesRenderIterator iterator = new SeriesRenderIterator(this,
+					painter);
+			this.iterateSeries(iterator, painter, true);
+		}
+		{
+			LabelRenderIterator iterator = new LabelRenderIterator(this,
+					painter);
+			this.iterateSeries(iterator, painter);
+		}
+		{
+			MarkerRenderIterator iterator = new MarkerRenderIterator(this,
+					painter);
+			this.iterateSeries(iterator, painter);
+		}
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderLegend(final WPainter painter) {
+		boolean vertical = this.getOrientation() == Orientation.Vertical;
+		int w = vertical ? this.width_ : this.height_;
+		int h = vertical ? this.height_ : this.width_;
+		final int margin = 10;
+		if (this.isLegendEnabled()) {
+			painter.save();
+			int numSeriesWithLegend = 0;
+			for (int i = 0; i < this.getSeries().size(); ++i) {
+				if (this.getSeries().get(i).isLegendEnabled()) {
+					++numSeriesWithLegend;
+				}
+			}
+			painter.setFont(this.getLegendFont());
+			WFont f = painter.getFont();
+			if (this.isAutoLayoutEnabled()) {
+				int columnWidth = 0;
+				for (int i = 0; i < this.getSeries().size(); ++i) {
+					if (this.getSeries().get(i).isLegendEnabled()) {
+						WString s = StringUtils.asString(this.getModel()
+								.getHeaderData(
+										this.getSeries().get(i)
+												.getModelColumn()));
+						WTextItem t = painter.getDevice().measureText(s);
+						columnWidth = Math.max(columnWidth, (int) t.getWidth());
+					}
+				}
+				WCartesianChart self = this;
+				self.legend_
+						.setLegendColumnWidth(new WLength(columnWidth + 25));
+			}
+			int numLegendRows = (numSeriesWithLegend - 1)
+					/ this.getLegendColumns() + 1;
+			double lineHeight = f.getSizeLength().toPixels() * 1.5;
+			int legendWidth = (int) this.getLegendColumnWidth().toPixels()
+					* Math.min(this.getLegendColumns(), numSeriesWithLegend);
+			int legendHeight = (int) (numLegendRows * lineHeight);
+			int x = 0;
+			int y = 0;
+			switch (this.getLegendSide()) {
+			case Left:
+				if (this.getLegendLocation() == LegendLocation.LegendInside) {
+					x = this.getPlotAreaPadding(Side.Left) + margin;
+				} else {
+					x = this.getPlotAreaPadding(Side.Left) - margin
+							- legendWidth;
+				}
+				break;
+			case Right:
+				x = w - this.getPlotAreaPadding(Side.Right);
+				if (this.getLegendLocation() == LegendLocation.LegendInside) {
+					x -= margin + legendWidth;
+				} else {
+					x += margin;
+				}
+				break;
+			case Top:
+				if (this.getLegendLocation() == LegendLocation.LegendInside) {
+					y = this.getPlotAreaPadding(Side.Top) + margin;
+				} else {
+					y = this.getPlotAreaPadding(Side.Top) - margin
+							- legendHeight;
+				}
+				break;
+			case Bottom:
+				y = h - this.getPlotAreaPadding(Side.Bottom);
+				if (this.getLegendLocation() == LegendLocation.LegendInside) {
+					y -= margin + legendHeight;
+				} else {
+					y += margin;
+				}
+			default:
+				break;
+			}
+			switch (this.getLegendAlignment()) {
+			case AlignTop:
+				y = this.getPlotAreaPadding(Side.Top) + margin;
+				break;
+			case AlignMiddle: {
+				double middle = this.getPlotAreaPadding(Side.Top)
+						+ (h - this.getPlotAreaPadding(Side.Top) - this
+								.getPlotAreaPadding(Side.Bottom)) / 2;
+				y = (int) (middle - legendHeight / 2);
+			}
+				break;
+			case AlignBottom:
+				y = h - this.getPlotAreaPadding(Side.Bottom) - margin
+						- legendHeight;
+				break;
+			case AlignLeft:
+				x = this.getPlotAreaPadding(Side.Left) + margin;
+				break;
+			case AlignCenter: {
+				double center = this.getPlotAreaPadding(Side.Left)
+						+ (w - this.getPlotAreaPadding(Side.Left) - this
+								.getPlotAreaPadding(Side.Right)) / 2;
+				x = (int) (center - legendWidth / 2);
+			}
+				break;
+			case AlignRight:
+				x = w - this.getPlotAreaPadding(Side.Right) - margin
+						- legendWidth;
+				break;
+			default:
+				break;
+			}
+			if (this.getLegendLocation() == LegendLocation.LegendOutside) {
+				if (this.getLegendSide() == Side.Top && !vertical
+						&& this.getAxis(Axis.Y1Axis).isVisible()) {
+					y -= 16;
+				}
+				if (this.getLegendSide() == Side.Right && vertical
+						&& this.getAxis(Axis.Y2Axis).isVisible()) {
+					x += 40;
+				}
+				if (this.getLegendSide() == Side.Bottom
+						&& (vertical && this.getAxis(Axis.XAxis).isVisible() || !vertical
+								&& this.getAxis(Axis.Y2Axis).isVisible())) {
+					y += 16;
+				}
+				if (this.getLegendSide() == Side.Left
+						&& (vertical && this.getAxis(Axis.Y1Axis).isVisible() || !vertical
+								&& this.getAxis(Axis.XAxis).isVisible())) {
+					x -= 40;
+				}
+			}
+			painter.setPen(this.getLegendBorder());
+			painter.setBrush(this.getLegendBackground());
+			painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
+					+ margin, legendHeight + margin);
+			painter.setPen(new WPen());
+			painter.setFont(this.getLegendFont());
+			int item = 0;
+			for (int i = 0; i < this.getSeries().size(); ++i) {
+				if (this.getSeries().get(i).isLegendEnabled()) {
+					int col = item % this.getLegendColumns();
+					int row = item / this.getLegendColumns();
+					double itemX = x + col
+							* this.getLegendColumnWidth().toPixels();
+					double itemY = y + row * lineHeight;
+					this.renderLegendItem(painter, new WPointF(itemX, itemY
+							+ lineHeight / 2), this.getSeries().get(i));
+					++item;
+				}
+			}
+			painter.restore();
+		}
+		if (!(this.getTitle().length() == 0)) {
+			int x = this.getPlotAreaPadding(Side.Left)
+					+ (w - this.getPlotAreaPadding(Side.Left) - this
+							.getPlotAreaPadding(Side.Right)) / 2;
+			painter.save();
+			painter.setFont(this.getTitleFont());
+			final int TITLE_HEIGHT = 50;
+			final int TITLE_PADDING = 20;
+			painter.drawText(x - 500, this.getPlotAreaPadding(Side.Top)
+					- TITLE_HEIGHT - TITLE_PADDING, 1000, TITLE_HEIGHT, EnumSet
+					.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+					this.getTitle());
+			painter.restore();
+		}
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderAxis(final WPainter painter, final WAxis axis,
+			EnumSet<AxisProperty> properties) {
+		if (!axis.isVisible()) {
+			return;
+		}
+		boolean vertical = axis.getId() != Axis.XAxis;
+		WPointF axisStart = new WPointF();
+		WPointF axisEnd = new WPointF();
+		double tickStart = 0.0;
+		double tickEnd = 0.0;
+		double labelPos = 0.0;
+		AlignmentFlag labelHFlag = AlignmentFlag.AlignCenter;
+		AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
+		if (vertical) {
+			labelVFlag = AlignmentFlag.AlignMiddle;
+			axisStart.setY(this.chartArea_.getBottom() + 0.5);
+			axisEnd.setY(this.chartArea_.getTop() + 0.5);
+		} else {
+			labelHFlag = AlignmentFlag.AlignCenter;
+			axisStart.setX(this.chartArea_.getLeft() + 0.5);
+			axisEnd.setX(this.chartArea_.getRight() + 0.5);
+		}
+		switch (this.location_[axis.getId().getValue()]) {
+		case MinimumValue:
+			if (vertical) {
+				tickStart = -TICK_LENGTH;
+				tickEnd = 0;
+				labelPos = -TICK_LENGTH;
+				labelHFlag = AlignmentFlag.AlignRight;
+				double x = this.chartArea_.getLeft() - axis.getMargin() + 0.5;
+				axisStart.setX(x);
+				axisEnd.setX(x);
+			} else {
+				tickStart = 0;
+				tickEnd = TICK_LENGTH;
+				labelPos = TICK_LENGTH;
+				labelVFlag = AlignmentFlag.AlignTop;
+				double y = this.chartArea_.getBottom() + axis.getMargin() + 0.5;
+				axisStart.setY(y);
+				axisEnd.setY(y);
+			}
+			break;
+		case MaximumValue:
+			if (vertical) {
+				tickStart = 0;
+				tickEnd = TICK_LENGTH;
+				labelPos = TICK_LENGTH;
+				labelHFlag = AlignmentFlag.AlignLeft;
+				double x = this.chartArea_.getRight() + axis.getMargin() + 0.5;
+				axisStart.setX(x);
+				axisEnd.setX(x);
+			} else {
+				tickStart = -TICK_LENGTH;
+				tickEnd = 0;
+				labelPos = -TICK_LENGTH;
+				labelVFlag = AlignmentFlag.AlignBottom;
+				double y = this.chartArea_.getTop() - axis.getMargin() + 0.5;
+				axisStart.setY(y);
+				axisEnd.setY(y);
+			}
+			break;
+		case ZeroValue:
+			tickStart = -TICK_LENGTH;
+			tickEnd = TICK_LENGTH;
+			if (vertical) {
+				double x = Math.floor(this.map(0, 0, Axis.YAxis).getX()) + 0.5;
+				axisStart.setX(x);
+				axisEnd.setX(x);
+				labelHFlag = AlignmentFlag.AlignRight;
+				if (this.getType() == ChartType.CategoryChart) {
+					labelPos = this.chartArea_.getLeft() - axisStart.getX()
+							- TICK_LENGTH;
+				} else {
+					labelPos = -TICK_LENGTH;
+				}
+			} else {
+				double y = Math.floor(this.map(0, 0, Axis.YAxis).getY()) + 0.5;
+				axisStart.setY(y);
+				axisEnd.setY(y);
+				labelVFlag = AlignmentFlag.AlignTop;
+				if (this.getType() == ChartType.CategoryChart) {
+					labelPos = this.chartArea_.getBottom() - axisStart.getY()
+							+ TICK_LENGTH;
+				} else {
+					labelPos = TICK_LENGTH;
+				}
+			}
+			break;
+		}
+		if (!EnumUtils.mask(properties, AxisProperty.Labels).isEmpty()
+				&& !(axis.getTitle().length() == 0)) {
+			WFont oldFont2 = painter.getFont();
+			WFont titleFont = axis.getTitleFont();
+			painter.setFont(titleFont);
+			boolean chartVertical = this.getOrientation() == Orientation.Vertical;
+			if (vertical) {
+				double u = axisStart.getX();
+				if (chartVertical) {
+					if (axis.getTitleOrientation() == Orientation.Horizontal) {
+						this
+								.renderLabel(
+										painter,
+										axis.getTitle(),
+										new WPointF(
+												u
+														+ (labelHFlag == AlignmentFlag.AlignRight ? 15
+																: -15),
+												this.chartArea_.getTop() - 8),
+										EnumSet.of(labelHFlag,
+												AlignmentFlag.AlignBottom), 0,
+										10);
+					} else {
+						if (axis.getId() == Axis.YAxis) {
+							this
+									.renderLabel(
+											painter,
+											axis.getTitle(),
+											new WPointF(
+													u
+															+ (labelHFlag == AlignmentFlag.AlignRight ? -40
+																	: +40),
+													this.chartArea_.getCenter()
+															.getY()
+															+ axis.getTitle()
+																	.toString()
+																	.length()
+															* titleFont
+																	.getSize()
+																	.getValue()),
+											EnumSet
+													.of(
+															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
+																	: AlignmentFlag.AlignRight,
+															AlignmentFlag.AlignMiddle),
+											90, 20);
+						} else {
+							this
+									.renderLabel(
+											painter,
+											axis.getTitle(),
+											new WPointF(
+													u
+															+ (labelHFlag == AlignmentFlag.AlignRight ? -40
+																	: +40),
+													this.chartArea_.getCenter()
+															.getY()
+															+ axis.getTitle()
+																	.toString()
+																	.length()
+															* titleFont
+																	.getSize()
+																	.getValue()),
+											EnumSet
+													.of(
+															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignRight
+																	: AlignmentFlag.AlignLeft,
+															AlignmentFlag.AlignMiddle),
+											90, 20);
+						}
+					}
+				} else {
+					this
+							.renderLabel(
+									painter,
+									axis.getTitle(),
+									new WPointF(
+											u
+													+ (labelHFlag == AlignmentFlag.AlignRight ? -40
+															: +40),
+											this.chartArea_.getCenter().getY()),
+									EnumSet
+											.of(
+													labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
+															: AlignmentFlag.AlignRight,
+													AlignmentFlag.AlignMiddle),
+									0, 20);
+				}
+			} else {
+				double u = axisStart.getY();
+				if (chartVertical) {
+					this.renderLabel(painter, axis.getTitle(), new WPointF(
+							this.chartArea_.getCenter().getX(), u + 22),
+							EnumSet.of(AlignmentFlag.AlignTop,
+									AlignmentFlag.AlignCenter), 0, 10);
+				} else {
+					this.renderLabel(painter, axis.getTitle(), new WPointF(
+							this.chartArea_.getRight(), u), EnumSet.of(
+							AlignmentFlag.AlignTop, AlignmentFlag.AlignLeft),
+							0, 8);
+				}
+			}
+			painter.setFont(oldFont2);
+		}
+		final double ANGLE1 = 15;
+		final double ANGLE2 = 80;
+		if (vertical) {
+			if (axis.getLabelAngle() > ANGLE1) {
+				labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom
+						: AlignmentFlag.AlignTop;
+				if (axis.getLabelAngle() > ANGLE2) {
+					labelHFlag = AlignmentFlag.AlignCenter;
+				}
+			} else {
+				if (axis.getLabelAngle() < -ANGLE1) {
+					labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop
+							: AlignmentFlag.AlignBottom;
+					if (axis.getLabelAngle() < -ANGLE2) {
+						labelHFlag = AlignmentFlag.AlignCenter;
+					}
+				}
+			}
+		} else {
+			if (axis.getLabelAngle() > ANGLE1) {
+				labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
+						: AlignmentFlag.AlignLeft;
+				if (axis.getLabelAngle() > ANGLE2) {
+					labelVFlag = AlignmentFlag.AlignMiddle;
+				}
+			} else {
+				if (axis.getLabelAngle() < -ANGLE1) {
+					labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
+							: AlignmentFlag.AlignRight;
+					if (axis.getLabelAngle() < -ANGLE2) {
+						labelVFlag = AlignmentFlag.AlignMiddle;
+					}
+				}
+			}
+		}
+		if (this.getOrientation() == Orientation.Horizontal) {
+			axisStart = this.hv(axisStart);
+			axisEnd = this.hv(axisEnd);
+			AlignmentFlag rHFlag = AlignmentFlag.AlignCenter;
+			AlignmentFlag rVFlag = AlignmentFlag.AlignMiddle;
+			switch (labelHFlag) {
+			case AlignLeft:
+				rVFlag = AlignmentFlag.AlignTop;
+				break;
+			case AlignCenter:
+				rVFlag = AlignmentFlag.AlignMiddle;
+				break;
+			case AlignRight:
+				rVFlag = AlignmentFlag.AlignBottom;
+				break;
+			default:
+				break;
+			}
+			switch (labelVFlag) {
+			case AlignTop:
+				rHFlag = AlignmentFlag.AlignRight;
+				break;
+			case AlignMiddle:
+				rHFlag = AlignmentFlag.AlignCenter;
+				break;
+			case AlignBottom:
+				rHFlag = AlignmentFlag.AlignLeft;
+				break;
+			default:
+				break;
+			}
+			labelHFlag = rHFlag;
+			labelVFlag = rVFlag;
+			boolean invertTicks = !vertical;
+			if (invertTicks) {
+				tickStart = -tickStart;
+				tickEnd = -tickEnd;
+				labelPos = -labelPos;
+			}
+		}
+		axis.render(painter, properties, axisStart, axisEnd, tickStart,
+				tickEnd, labelPos, EnumSet.of(labelHFlag, labelVFlag));
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * Calls {@link #renderAxis(WPainter painter, WAxis axis, EnumSet properties)
+	 * renderAxis(painter, axis, EnumSet.of(propertie, properties))}
+	 */
+	protected final void renderAxis(final WPainter painter, final WAxis axis,
+			AxisProperty propertie, AxisProperty... properties) {
+		renderAxis(painter, axis, EnumSet.of(propertie, properties));
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected void renderGrid(final WPainter painter, final WAxis ax) {
+		if (!ax.isGridLinesEnabled()) {
+			return;
+		}
+		boolean vertical = ax.getId() != Axis.XAxis;
+		final WAxis other = vertical ? this.getAxis(Axis.XAxis) : this
+				.getAxis(Axis.Y1Axis);
+		final WAxis.Segment s0 = other.segments_.get(0);
+		final WAxis.Segment sn = other.segments_
+				.get(other.segments_.size() - 1);
+		double ou0 = s0.renderStart;
+		double oun = sn.renderStart + sn.renderLength;
+		boolean otherVertical = !vertical;
+		if (otherVertical) {
+			ou0 = this.chartArea_.getBottom() - ou0 + 0.5;
+			oun = this.chartArea_.getBottom() - oun + 0.5;
+		} else {
+			ou0 = this.chartArea_.getLeft() + ou0 + 0.5;
+			oun = this.chartArea_.getLeft() + oun + 0.5;
+		}
+		WPainterPath gridPath = new WPainterPath();
+		List<Double> gridPos = ax.getGridLinePositions();
+		for (int i = 0; i < gridPos.size(); ++i) {
+			double u = gridPos.get(i);
+			if (vertical) {
+				u = Math.floor(this.chartArea_.getBottom() - u) + 0.5;
+				gridPath.moveTo(this.hv(ou0, u));
+				gridPath.lineTo(this.hv(oun, u));
+			} else {
+				u = Math.floor(this.chartArea_.getLeft() + u) + 0.5;
+				gridPath.moveTo(this.hv(u, ou0));
+				gridPath.lineTo(this.hv(u, oun));
+			}
+		}
+		painter.strokePath(gridPath, ax.getGridLinesPen());
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
+	protected int getCalcNumBarGroups() {
+		int numBarGroups = 0;
+		boolean newGroup = true;
+		for (int i = 0; i < this.getSeries().size(); ++i) {
+			if (this.getSeries().get(i).getType() == SeriesType.BarSeries) {
+				if (newGroup || !this.getSeries().get(i).isStacked()) {
+					++numBarGroups;
+				}
+				newGroup = false;
+			} else {
+				newGroup = true;
+			}
+		}
+		return numBarGroups;
+	}
+
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
 	int getSeriesIndexOf(int modelColumn) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() == modelColumn) {
@@ -1050,6 +2278,12 @@ public class WCartesianChart extends WAbstractChart {
 		return -1;
 	}
 
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
 	WPointF hv(double x, double y, double width) {
 		if (this.orientation_ == Orientation.Vertical) {
 			return new WPointF(x, y);
@@ -1058,6 +2292,12 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * paintEvent()} to paint on the paint device.
+	 */
 	private WPointF inverseHv(double x, double y, double width) {
 		if (this.orientation_ == Orientation.Vertical) {
 			return new WPointF(x, y);
@@ -1066,10 +2306,23 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	static class IconWidget extends WPaintedWidget {
+	/**
+	 * Paints the widget.
+	 * <p>
+	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+	 * WCartesianChart#paintEvent()} to paint on the paint device.
+	 */
+	private static class IconWidget extends WPaintedWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(IconWidget.class);
 
+		/**
+		 * Paints the widget.
+		 * <p>
+		 * This calls
+		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+		 * WCartesianChart#paintEvent()} to paint on the paint device.
+		 */
 		public IconWidget(WCartesianChart chart, int index,
 				WContainerWidget parent) {
 			super(parent);
@@ -1079,17 +2332,47 @@ public class WCartesianChart extends WAbstractChart {
 			this.resize(new WLength(20), new WLength(20));
 		}
 
+		/**
+		 * Paints the widget.
+		 * <p>
+		 * Calls
+		 * {@link #IconWidget(WCartesianChart chart, int index, WContainerWidget parent)
+		 * this(chart, index, (WContainerWidget)null)}
+		 */
 		public IconWidget(WCartesianChart chart, int index) {
 			this(chart, index, (WContainerWidget) null);
 		}
 
+		/**
+		 * Paints the widget.
+		 * <p>
+		 * This calls
+		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+		 * WCartesianChart#paintEvent()} to paint on the paint device.
+		 */
 		protected void paintEvent(WPaintDevice paintDevice) {
 			WPainter painter = new WPainter(paintDevice);
 			this.chart_.renderLegendIcon(painter, new WPointF(2.5, 10.0),
 					this.chart_.getSeries(this.index_));
 		}
 
+		/**
+		 * Paints the widget.
+		 * <p>
+		 * This calls
+		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+		 * WCartesianChart#paintEvent()} to paint on the paint device.
+		 */
 		private WCartesianChart chart_;
+		/**
+		 * Paints the widget.
+		 * <p>
+		 * This calls
+		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
+		 * WCartesianChart#paintEvent()} to paint on the paint device.
+		 */
 		private int index_;
 	}
+
+	private static final int TICK_LENGTH = 5;
 }

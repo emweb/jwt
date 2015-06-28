@@ -27,10 +27,14 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		super(widget);
 	}
 
-	public WPaintDevice getPaintDevice(boolean paintUpdate) {
+	public WCanvasPaintDevice createPaintDevice(boolean paintUpdate) {
 		return new WCanvasPaintDevice(new WLength(this.widget_.renderWidth_),
 				new WLength(this.widget_.renderHeight_), (WObject) null,
 				paintUpdate);
+	}
+
+	public WPaintDevice getPaintDevice(boolean paintUpdate) {
+		return this.createPaintDevice(paintUpdate);
 	}
 
 	public void createContents(DomElement result, WPaintDevice device) {
@@ -46,6 +50,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		canvas.setAttribute("width", wstr);
 		canvas.setAttribute("height", hstr);
 		result.addChild(canvas);
+		this.widget_.sizeChanged_ = false;
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
 		DomElement text = null;
@@ -65,7 +70,8 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		;
 	}
 
-	public void updateContents(List<DomElement> result, WPaintDevice device) {
+	public void updateContents(final List<DomElement> result,
+			WPaintDevice device) {
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
 		if (this.widget_.sizeChanged_) {

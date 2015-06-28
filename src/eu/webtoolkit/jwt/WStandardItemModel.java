@@ -175,7 +175,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * 
 	 * @see WStandardItemModel#indexFromItem(WStandardItem item)
 	 */
-	public WStandardItem getItemFromIndex(WModelIndex index) {
+	public WStandardItem getItemFromIndex(final WModelIndex index) {
 		return this.getItemFromIndex(index, true);
 	}
 
@@ -197,7 +197,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * @see WStandardItemModel#insertColumn(int column, List items)
 	 * @see WStandardItemModel#appendRow(List items)
 	 */
-	public void appendColumn(List<WStandardItem> items) {
+	public void appendColumn(final List<WStandardItem> items) {
 		this.insertColumn(this.getColumnCount(), items);
 	}
 
@@ -218,7 +218,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
 	 */
-	public void insertColumn(int column, List<WStandardItem> items) {
+	public void insertColumn(int column, final List<WStandardItem> items) {
 		this.invisibleRootItem_.insertColumn(column, items);
 	}
 
@@ -240,7 +240,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * @see WStandardItemModel#insertRow(int row, List items)
 	 * @see WStandardItemModel#appendColumn(List items)
 	 */
-	public void appendRow(List<WStandardItem> items) {
+	public void appendRow(final List<WStandardItem> items) {
 		this.insertRow(this.getRowCount(), items);
 	}
 
@@ -261,7 +261,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
 	 */
-	public void insertRow(int row, List<WStandardItem> items) {
+	public void insertRow(int row, final List<WStandardItem> items) {
 		this.invisibleRootItem_.insertRow(row, items);
 	}
 
@@ -473,7 +473,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 */
 	public void setHeaderFlags(int section, Orientation orientation,
 			EnumSet<HeaderFlag> flags) {
-		List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
+		final List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
 				: this.rowHeaderFlags_;
 		fl.set(section, flags);
 	}
@@ -492,17 +492,21 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	public EnumSet<HeaderFlag> getHeaderFlags(int section,
 			Orientation orientation) {
-		List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
+		final List<EnumSet<HeaderFlag>> fl = orientation == Orientation.Horizontal ? this.columnHeaderFlags_
 				: this.rowHeaderFlags_;
-		return fl.get(section);
+		if (section >= (int) fl.size()) {
+			return EnumSet.noneOf(HeaderFlag.class);
+		} else {
+			return fl.get(section);
+		}
 	}
 
-	public EnumSet<ItemFlag> getFlags(WModelIndex index) {
+	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
 		WStandardItem item = this.getItemFromIndex(index, false);
 		return item != null ? item.getFlags() : EnumSet.noneOf(ItemFlag.class);
 	}
 
-	public WModelIndex getParent(WModelIndex index) {
+	public WModelIndex getParent(final WModelIndex index) {
 		if (!(index != null)) {
 			return index;
 		}
@@ -510,7 +514,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return this.indexFromItem(parent);
 	}
 
-	public Object getData(WModelIndex index, int role) {
+	public Object getData(final WModelIndex index, int role) {
 		WStandardItem item = this.getItemFromIndex(index, false);
 		return item != null ? item.getData(role) : null;
 	}
@@ -519,14 +523,22 @@ public class WStandardItemModel extends WAbstractItemModel {
 		if (role == ItemDataRole.LevelRole) {
 			return 0;
 		}
-		Map<Integer, Object> d = orientation == Orientation.Horizontal ? this.columnHeaderData_
-				.get(section)
-				: this.rowHeaderData_.get(section);
+		final List<Map<Integer, Object>> headerData = orientation == Orientation.Horizontal ? this.columnHeaderData_
+				: this.rowHeaderData_;
+		if (section >= (int) headerData.size()) {
+			return null;
+		}
+		final Map<Integer, Object> d = headerData.get(section);
 		Object i = d.get(role);
-		return i != null ? i : null;
+		if (i != null) {
+			Object result = i;
+			return result;
+		} else {
+			return null;
+		}
 	}
 
-	public WModelIndex getIndex(int row, int column, WModelIndex parent) {
+	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent, false);
 		if (parentItem != null && row >= 0 && column >= 0
 				&& row < parentItem.getRowCount()
@@ -536,17 +548,17 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return null;
 	}
 
-	public int getColumnCount(WModelIndex parent) {
+	public int getColumnCount(final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent, false);
 		return parentItem != null ? parentItem.getColumnCount() : 0;
 	}
 
-	public int getRowCount(WModelIndex parent) {
+	public int getRowCount(final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent, false);
 		return parentItem != null ? parentItem.getRowCount() : 0;
 	}
 
-	public boolean insertColumns(int column, int count, WModelIndex parent) {
+	public boolean insertColumns(int column, int count, final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent);
 		if (parentItem != null) {
 			parentItem.insertColumns(column, count);
@@ -554,7 +566,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return parentItem != null;
 	}
 
-	public boolean insertRows(int row, int count, WModelIndex parent) {
+	public boolean insertRows(int row, int count, final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent);
 		if (parentItem != null) {
 			parentItem.insertRows(row, count);
@@ -562,7 +574,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return parentItem != null;
 	}
 
-	public boolean removeColumns(int column, int count, WModelIndex parent) {
+	public boolean removeColumns(int column, int count, final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent, false);
 		if (parentItem != null) {
 			parentItem.removeColumns(column, count);
@@ -570,7 +582,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return parentItem != null;
 	}
 
-	public boolean removeRows(int row, int count, WModelIndex parent) {
+	public boolean removeRows(int row, int count, final WModelIndex parent) {
 		WStandardItem parentItem = this.getItemFromIndex(parent, false);
 		if (parentItem != null) {
 			parentItem.removeRows(row, count);
@@ -578,7 +590,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return parentItem != null;
 	}
 
-	public boolean setData(WModelIndex index, Object value, int role) {
+	public boolean setData(final WModelIndex index, final Object value, int role) {
 		WStandardItem item = this.getItemFromIndex(index);
 		if (item != null) {
 			item.setData(value, role);
@@ -587,10 +599,10 @@ public class WStandardItemModel extends WAbstractItemModel {
 	}
 
 	public boolean setHeaderData(int section, Orientation orientation,
-			Object value, int role) {
-		List<Map<Integer, Object>> header = orientation == Orientation.Horizontal ? this.columnHeaderData_
+			final Object value, int role) {
+		final List<Map<Integer, Object>> header = orientation == Orientation.Horizontal ? this.columnHeaderData_
 				: this.rowHeaderData_;
-		Map<Integer, Object> d = header.get(section);
+		final Map<Integer, Object> d = header.get(section);
 		if (role == ItemDataRole.EditRole) {
 			role = ItemDataRole.DisplayRole;
 		}
@@ -599,7 +611,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return true;
 	}
 
-	public Object toRawIndex(WModelIndex index) {
+	public Object toRawIndex(final WModelIndex index) {
 		return this.getItemFromIndex(index);
 	}
 
@@ -646,25 +658,27 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return this.itemChanged_;
 	}
 
-	protected void beginInsertColumns(WModelIndex parent, int first, int last) {
+	protected void beginInsertColumns(final WModelIndex parent, int first,
+			int last) {
 		super.beginInsertColumns(parent, first, last);
 		this.insertHeaderData(this.columnHeaderData_, this.columnHeaderFlags_,
 				this.getItemFromIndex(parent), first, last - first + 1);
 	}
 
-	protected void beginInsertRows(WModelIndex parent, int first, int last) {
+	protected void beginInsertRows(final WModelIndex parent, int first, int last) {
 		super.beginInsertRows(parent, first, last);
 		this.insertHeaderData(this.rowHeaderData_, this.rowHeaderFlags_, this
 				.getItemFromIndex(parent), first, last - first + 1);
 	}
 
-	protected void beginRemoveColumns(WModelIndex parent, int first, int last) {
+	protected void beginRemoveColumns(final WModelIndex parent, int first,
+			int last) {
 		super.beginRemoveColumns(parent, first, last);
 		this.removeHeaderData(this.columnHeaderData_, this.columnHeaderFlags_,
 				this.getItemFromIndex(parent), first, last - first + 1);
 	}
 
-	protected void beginRemoveRows(WModelIndex parent, int first, int last) {
+	protected void beginRemoveRows(final WModelIndex parent, int first, int last) {
 		super.beginRemoveRows(parent, first, last);
 		this.removeHeaderData(this.rowHeaderData_, this.rowHeaderFlags_, this
 				.getItemFromIndex(parent), first, last - first + 1);
@@ -685,7 +699,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		this.itemPrototype_ = new WStandardItem();
 	}
 
-	private WStandardItem getItemFromIndex(WModelIndex index, boolean lazyCreate) {
+	private WStandardItem getItemFromIndex(final WModelIndex index,
+			boolean lazyCreate) {
 		if (!(index != null)) {
 			return this.invisibleRootItem_;
 		} else {
@@ -705,8 +720,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		}
 	}
 
-	private void insertHeaderData(List<Map<Integer, Object>> headerData,
-			List<EnumSet<HeaderFlag>> fl, WStandardItem item, int index,
+	private void insertHeaderData(final List<Map<Integer, Object>> headerData,
+			final List<EnumSet<HeaderFlag>> fl, WStandardItem item, int index,
 			int count) {
 		if (item == this.invisibleRootItem_) {
 			{
@@ -725,8 +740,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		}
 	}
 
-	private void removeHeaderData(List<Map<Integer, Object>> headerData,
-			List<EnumSet<HeaderFlag>> fl, WStandardItem item, int index,
+	private void removeHeaderData(final List<Map<Integer, Object>> headerData,
+			final List<EnumSet<HeaderFlag>> fl, WStandardItem item, int index,
 			int count) {
 		if (item == this.invisibleRootItem_) {
 			for (int ii = 0; ii < (0 + index + count) - (0 + index); ++ii)

@@ -20,15 +20,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class to represent a DOM element.
+ * Class to represent a client-side DOM element (proxy).
  * <p>
  * 
- * This class is for internal use only.
+ * The DOM element proxy object is used as an intermediate layer to render the
+ * creation of new DOM elements or updates to existing DOM elements. A DOM
+ * element can be serialized to HTML or to JavaScript manipulations, and
+ * therefore is the main abstraction layer to avoid hard-coding JavaScript-based
+ * rendering within the library while still allowing fine-grained Ajax updates
+ * or large-scale HTML changes.
+ * <p>
+ * This is an internal API, subject to change.
  */
 public class DomElement {
 	private static Logger logger = LoggerFactory.getLogger(DomElement.class);
 
-	enum Mode {
+	/**
+	 * Enumeration for the access mode (creation or update).
+	 */
+	public enum Mode {
 		ModeCreate, ModeUpdate;
 
 		/**
@@ -39,6 +49,23 @@ public class DomElement {
 		}
 	}
 
+	/**
+	 * Constructor.
+	 * <p>
+	 * This constructs a {@link DomElement} reference, with a given mode and
+	 * element type. Note that even when updating an existing element, the type
+	 * is taken into account for information on what kind of operations are
+	 * allowed (workarounds for IE deficiencies for examples) or to infer some
+	 * basic CSS defaults for it (whether it is inline or a block element).
+	 * <p>
+	 * Typically, elements are created using one of the &apos;named&apos;
+	 * constructors: {@link DomElement#createNew(DomElementType type)
+	 * createNew()},
+	 * {@link DomElement#getForUpdate(String id, DomElementType type)
+	 * getForUpdate()} or
+	 * {@link DomElement#updateGiven(String var, DomElementType type)
+	 * updateGiven()}.
+	 */
 	public DomElement(DomElement.Mode mode, DomElementType type) {
 		this.mode_ = mode;
 		this.wasEmpty_ = this.mode_ == DomElement.Mode.ModeCreate;
@@ -56,6 +83,7 @@ public class DomElement {
 		this.javaScriptEvenWhenDeleted_ = "";
 		this.var_ = "";
 		this.attributes_ = new HashMap<String, String>();
+		this.removedAttributes_ = new HashSet<String>();
 		this.properties_ = new TreeMap<Property, String>();
 		this.eventHandlers_ = new HashMap<String, DomElement.EventHandler>();
 		this.childrenToAdd_ = new ArrayList<DomElement.ChildInsertion>();
@@ -63,52 +91,73 @@ public class DomElement {
 		this.updatedChildren_ = new ArrayList<DomElement>();
 		this.childrenHtml_ = new EscapeOStream();
 		this.timeouts_ = new ArrayList<DomElement.TimeoutEvent>();
-		this.discardWithParent_ = true;
 	}
 
-	public static String urlEncodeS(String url) {
+	/**
+	 * Low-level URL encoding function.
+	 */
+	public static String urlEncodeS(final String url) {
 		return urlEncodeS(url, "");
 	}
 
-	public static String urlEncodeS(String url, String allowed) {
-		StringWriter result = new StringWriter();
+	/**
+	 * Low-level URL encoding function.
+	 * <p>
+	 * This variant allows the exclusion of certain characters from URL
+	 * encoding.
+	 */
+	public static String urlEncodeS(final String url, final String allowed) {
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < url.length(); ++i) {
 			char c = url.charAt(i);
 			if (c <= 31 || c >= 127 || unsafeChars_.indexOf(c) != -1) {
 				if (allowed.indexOf(c) != -1) {
-					result.write(c);
+					result.append((char) c);
 				} else {
 					result.append('%');
-					if ((int) c < 16) {
-						result.append('0');
-					}
-					result.append(Integer.toHexString(c));
+					result.append(hexLookup(c >> 4));
+					result.append(hexLookup(c));
 				}
 			} else {
-				result.write(c);
+				result.append((char) c);
 			}
 		}
 		return result.toString();
 	}
 
+	/**
+	 * Returns the mode.
+	 */
 	public DomElement.Mode getMode() {
 		return this.mode_;
 	}
 
+	/**
+	 * Sets the element type.
+	 */
 	public void setType(DomElementType type) {
 		this.type_ = type;
 	}
 
+	/**
+	 * Returns the element type.
+	 */
 	public DomElementType getType() {
 		return this.type_;
 	}
 
+	/**
+	 * Creates a reference to a new element.
+	 */
 	public static DomElement createNew(DomElementType type) {
 		DomElement e = new DomElement(DomElement.Mode.ModeCreate, type);
 		return e;
 	}
 
-	public static DomElement getForUpdate(String id, DomElementType type) {
+	/**
+	 * Creates a reference to an existing element, using its ID.
+	 */
+	public static DomElement getForUpdate(final String id, DomElementType type) {
 		if (id.length() == 0) {
 			throw new WException("Cannot update widget without id");
 		}
@@ -117,27 +166,57 @@ public class DomElement {
 		return e;
 	}
 
+	/**
+	 * Creates a reference to an existing element, deriving the ID from an
+	 * object.
+	 * <p>
+	 * This uses object.{@link DomElement#getId() getId()} as the id.
+	 */
 	public static DomElement getForUpdate(WObject object, DomElementType type) {
 		return getForUpdate(object.getId(), type);
 	}
 
-	public static DomElement updateGiven(String var, DomElementType type) {
+	/**
+	 * Creates a reference to an existing element, using an expression to access
+	 * the element.
+	 */
+	public static DomElement updateGiven(final String var, DomElementType type) {
 		DomElement e = new DomElement(DomElement.Mode.ModeUpdate, type);
 		e.var_ = var;
 		return e;
 	}
 
+	/**
+	 * Returns the JavaScript variable name.
+	 * <p>
+	 * This variable name is only defined when the element is being rendered
+	 * using JavaScript, after {@link DomElement#declare(EscapeOStream out)
+	 * declare()} has been called.
+	 */
 	public String getVar() {
 		return this.var_;
 	}
 
+	/**
+	 * Sets whether the element was initially empty.
+	 * <p>
+	 * Knowing that an element was empty allows optimization of
+	 * {@link DomElement#addChild(DomElement child) addChild()}
+	 */
 	public void setWasEmpty(boolean how) {
 		this.wasEmpty_ = how;
 	}
 
+	/**
+	 * Adds a child.
+	 * <p>
+	 * Ownership of the child is transferred to this element, and the child
+	 * should not be manipulated after the call, since it could be that it gets
+	 * directly converted into HTML and deleted.
+	 */
 	public void addChild(DomElement child) {
 		if (child.getMode() == DomElement.Mode.ModeCreate) {
-			++this.numManipulations_;
+			this.numManipulations_ += 2;
 			if (this.wasEmpty_
 					&& this.canWriteInnerHTML(WApplication.getInstance())) {
 				child.asHTML(this.childrenHtml_, this.javaScript_,
@@ -152,21 +231,44 @@ public class DomElement {
 		}
 	}
 
+	/**
+	 * Inserts a child.
+	 * <p>
+	 * Ownership of the child is transferred to this element, and the child
+	 * should not be manipulated after the call.
+	 */
 	public void insertChildAt(DomElement child, int pos) {
 		++this.numManipulations_;
 		this.childrenToAdd_.add(new DomElement.ChildInsertion(pos, child));
 	}
 
-	public void saveChild(String id) {
+	/**
+	 * Saves an existing child.
+	 * <p>
+	 * This detaches the child from the parent, allowing the manipulation of the
+	 * innerHTML without deleting the child. Stubs in the the new HTML that
+	 * reference the same id will be replaced with the saved child.
+	 */
+	public void saveChild(final String id) {
 		this.childrenToSave_.add(id);
 	}
 
-	public void setAttribute(String attribute, String value) {
+	/**
+	 * Sets an attribute value.
+	 */
+	public void setAttribute(final String attribute, final String value) {
 		++this.numManipulations_;
 		this.attributes_.put(attribute, value);
+		this.removedAttributes_.remove(attribute);
 	}
 
-	public String getAttribute(String attribute) {
+	/**
+	 * Returns an attribute value set.
+	 * <p>
+	 * 
+	 * @see DomElement#setAttribute(String attribute, String value)
+	 */
+	public String getAttribute(final String attribute) {
 		String i = this.attributes_.get(attribute);
 		if (i != null) {
 			return i;
@@ -175,11 +277,19 @@ public class DomElement {
 		}
 	}
 
-	public void removeAttribute(String attribute) {
+	/**
+	 * Removes an attribute.
+	 */
+	public void removeAttribute(final String attribute) {
+		++this.numManipulations_;
 		this.attributes_.remove(attribute);
+		this.removedAttributes_.add(attribute);
 	}
 
-	public void setProperty(Property property, String value) {
+	/**
+	 * Sets a property.
+	 */
+	public void setProperty(Property property, final String value) {
 		++this.numManipulations_;
 		this.properties_.put(property, value);
 		if (property.getValue() >= Property.PropertyStyleMinWidth.getValue()
@@ -189,6 +299,22 @@ public class DomElement {
 		}
 	}
 
+	/**
+	 * Adds a &apos;word&apos; to a property.
+	 * <p>
+	 * This adds a word (delimited by a space) to an existing property value.
+	 */
+	public void addPropertyWord(Property property, final String value) {
+		this.setProperty(property, StringUtils.addWord(this
+				.getProperty(property), value));
+	}
+
+	/**
+	 * Returns a property value set.
+	 * <p>
+	 * 
+	 * @see DomElement#setProperty(Property property, String value)
+	 */
 	public String getProperty(Property property) {
 		String i = this.properties_.get(property);
 		if (i != null) {
@@ -198,11 +324,17 @@ public class DomElement {
 		}
 	}
 
+	/**
+	 * Removes a property.
+	 */
 	public void removeProperty(Property property) {
 		this.properties_.remove(property);
 	}
 
-	public void setProperties(SortedMap<Property, String> properties) {
+	/**
+	 * Sets a whole map of properties.
+	 */
+	public void setProperties(final SortedMap<Property, String> properties) {
 		for (Iterator<Map.Entry<Property, String>> i_it = properties.entrySet()
 				.iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
@@ -210,36 +342,48 @@ public class DomElement {
 		}
 	}
 
+	/**
+	 * Returns all properties currently set.
+	 */
 	public SortedMap<Property, String> getProperties() {
 		return this.properties_;
 	}
 
+	/**
+	 * Clears all properties.
+	 */
 	public void clearProperties() {
 		this.numManipulations_ -= this.properties_.size();
 		this.properties_.clear();
 	}
 
-	public void setEventSignal(String eventName, AbstractEventSignal signal) {
+	/**
+	 * Sets an event handler based on a signal&apos;s connections.
+	 */
+	public void setEventSignal(String eventName,
+			final AbstractEventSignal signal) {
 		this.setEvent(eventName, signal.getJavaScript(), signal.encodeCmd(),
 				signal.isExposedSignal());
 	}
 
-	public void setEvent(String eventName, String jsCode, String signalName,
-			boolean isExposed) {
+	/**
+	 * Sets an event handler.
+	 * <p>
+	 * This sets an event handler by a combination of client-side JavaScript
+	 * code and a server-side signal to emit.
+	 */
+	public void setEvent(String eventName, final String jsCode,
+			final String signalName, boolean isExposed) {
 		WApplication app = WApplication.getInstance();
 		boolean anchorClick = this.getType() == DomElementType.DomElement_A
 				&& eventName == WInteractWidget.CLICK_SIGNAL;
 		StringBuilder js = new StringBuilder();
 		if (isExposed || anchorClick || jsCode.length() != 0) {
-			if (app.getEnvironment().agentIsIEMobile()) {
-				js.append("var e=window.event,");
-			} else {
-				js.append("var e=event||window.event,");
-			}
+			js.append("var e=event||window.event,");
 			js.append("o=this;");
 			if (anchorClick) {
 				js
-						.append("if(e.ctrlKey||e.metaKey||(Wt3_2_3.button(e) > 1))return true;else{");
+						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_4.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -255,21 +399,39 @@ public class DomElement {
 				.toString(), signalName));
 	}
 
-	public final void setEvent(String eventName, String jsCode,
-			String signalName) {
+	/**
+	 * Sets an event handler.
+	 * <p>
+	 * Calls
+	 * {@link #setEvent(String eventName, String jsCode, String signalName, boolean isExposed)
+	 * setEvent(eventName, jsCode, signalName, false)}
+	 */
+	public final void setEvent(String eventName, final String jsCode,
+			final String signalName) {
 		setEvent(eventName, jsCode, signalName, false);
 	}
 
-	public void setEvent(String eventName, String jsCode) {
+	/**
+	 * Sets an event handler.
+	 * <p>
+	 * This sets a JavaScript event handler.
+	 */
+	public void setEvent(String eventName, final String jsCode) {
 		this.eventHandlers_.put(eventName, new DomElement.EventHandler(jsCode,
 				""));
 	}
 
-	public void addEvent(String eventName, String jsCode) {
+	/**
+	 * This adds more JavaScript to an event handler.
+	 */
+	public void addEvent(String eventName, final String jsCode) {
 		this.eventHandlers_.get(eventName).jsCode += jsCode;
 	}
 
-	static class EventAction {
+	/**
+	 * A data-structure for an aggregated event handler.
+	 */
+	public static class EventAction {
 		private static Logger logger = LoggerFactory
 				.getLogger(EventAction.class);
 
@@ -278,8 +440,8 @@ public class DomElement {
 		public String updateCmd;
 		public boolean exposed;
 
-		public EventAction(String aJsCondition, String aJsCode,
-				String anUpdateCmd, boolean anExposed) {
+		public EventAction(final String aJsCondition, final String aJsCode,
+				final String anUpdateCmd, boolean anExposed) {
 			this.jsCondition = aJsCondition;
 			this.jsCode = aJsCode;
 			this.updateCmd = anUpdateCmd;
@@ -287,7 +449,11 @@ public class DomElement {
 		}
 	}
 
-	public void setEvent(String eventName, List<DomElement.EventAction> actions) {
+	/**
+	 * Sets an aggregated event handler.
+	 */
+	public void setEvent(String eventName,
+			final List<DomElement.EventAction> actions) {
 		StringBuilder code = new StringBuilder();
 		for (int i = 0; i < actions.size(); ++i) {
 			if (actions.get(i).jsCondition.length() != 0) {
@@ -307,27 +473,39 @@ public class DomElement {
 		this.setEvent(eventName, code.toString(), "");
 	}
 
-	public void setId(String id) {
+	/**
+	 * Sets the DOM element id.
+	 */
+	public void setId(final String id) {
 		++this.numManipulations_;
 		this.id_ = id;
 	}
 
-	public void setName(String name) {
+	/**
+	 * Sets a DOM element name.
+	 */
+	public void setName(final String name) {
 		++this.numManipulations_;
 		this.id_ = name;
 		this.setAttribute("name", name);
 	}
 
+	/**
+	 * Configures the DOM element as a source for timed events.
+	 */
 	public void setTimeout(int msec, boolean jsRepeat) {
 		++this.numManipulations_;
 		this.timeOut_ = msec;
 		this.timeOutJSRepeat_ = jsRepeat;
 	}
 
-	public void callMethod(String method) {
+	/**
+	 * Calls a JavaScript method on the DOM element.
+	 */
+	public void callMethod(final String method) {
 		++this.numManipulations_;
 		if (this.var_.length() == 0) {
-			this.javaScript_.append("Wt3_2_3").append(".$('").append(this.id_)
+			this.javaScript_.append("Wt3_3_4").append(".$('").append(this.id_)
 					.append("').");
 		} else {
 			this.javaScript_.append(this.var_).append('.');
@@ -335,7 +513,10 @@ public class DomElement {
 		this.javaScript_.append(method).append(";\n");
 	}
 
-	public void callJavaScript(String jsCode, boolean evenWhenDeleted) {
+	/**
+	 * Calls JavaScript (related to the DOM element).
+	 */
+	public void callJavaScript(final String jsCode, boolean evenWhenDeleted) {
 		++this.numManipulations_;
 		if (!evenWhenDeleted) {
 			this.javaScript_.append(jsCode).append('\n');
@@ -344,58 +525,97 @@ public class DomElement {
 		}
 	}
 
-	public final void callJavaScript(String jsCode) {
+	/**
+	 * Calls JavaScript (related to the DOM element).
+	 * <p>
+	 * Calls {@link #callJavaScript(String jsCode, boolean evenWhenDeleted)
+	 * callJavaScript(jsCode, false)}
+	 */
+	public final void callJavaScript(final String jsCode) {
 		callJavaScript(jsCode, false);
 	}
 
+	/**
+	 * Returns the id.
+	 */
 	public String getId() {
 		return this.id_;
 	}
 
+	/**
+	 * Removes all children.
+	 * <p>
+	 * If firstChild != 0, then only children starting from firstChild are
+	 * removed.
+	 */
 	public void removeAllChildren(int firstChild) {
 		++this.numManipulations_;
 		this.removeAllChildren_ = firstChild;
 		this.wasEmpty_ = firstChild == 0;
 	}
 
+	/**
+	 * Removes all children.
+	 * <p>
+	 * Calls {@link #removeAllChildren(int firstChild) removeAllChildren(0)}
+	 */
 	public final void removeAllChildren() {
 		removeAllChildren(0);
 	}
 
+	/**
+	 * Removes the element.
+	 */
 	public void removeFromParent() {
-		this.callJavaScript("Wt3_2_3.remove('" + this.getId() + "');", true);
+		this.callJavaScript("Wt3_3_4.remove('" + this.getId() + "');", true);
 	}
 
+	/**
+	 * Replaces the element by another element.
+	 */
 	public void replaceWith(DomElement newElement) {
 		++this.numManipulations_;
 		this.replaced_ = newElement;
 	}
 
+	/**
+	 * Unstubs an element by another element.
+	 * <p>
+	 * Stubs are used to render hidden elements initially and update them in the
+	 * background. This is almost the same as
+	 * {@link DomElement#replaceWith(DomElement newElement) replaceWith()}
+	 * except that some style properties are copied over (most importantly its
+	 * visibility).
+	 */
 	public void unstubWith(DomElement newElement, boolean hideWithDisplay) {
 		this.replaceWith(newElement);
 		this.unstubbed_ = true;
 		this.hideWithDisplay_ = hideWithDisplay;
 	}
 
+	/**
+	 * Inserts the element in the DOM as a new sibling.
+	 */
 	public void insertBefore(DomElement sibling) {
 		++this.numManipulations_;
 		this.insertBefore_ = sibling;
 	}
 
+	/**
+	 * Unwraps an element to progress to Ajax support.
+	 * <p>
+	 * In plain HTML mode, some elements are rendered wrapped in or as another
+	 * element, to provide more interactivity in the absense of JavaScript.
+	 */
 	public void unwrap() {
 		++this.numManipulations_;
 		this.unwrapped_ = true;
 	}
 
-	public void setDiscardWithParent(boolean discard) {
-		this.discardWithParent_ = discard;
-	}
-
-	public boolean discardWithParent() {
-		return this.discardWithParent_;
-	}
-
-	enum Priority {
+	/**
+	 * Enumeration for an update rendering phase.
+	 */
+	public enum Priority {
 		Delete, Create, Update;
 
 		/**
@@ -406,7 +626,10 @@ public class DomElement {
 		}
 	}
 
-	static class TimeoutEvent {
+	/**
+	 * Structure for keeping track of timers attached to this element.
+	 */
+	public static class TimeoutEvent {
 		private static Logger logger = LoggerFactory
 				.getLogger(TimeoutEvent.class);
 
@@ -418,14 +641,17 @@ public class DomElement {
 			this.event = "";
 		}
 
-		public TimeoutEvent(int m, String e, boolean r) {
+		public TimeoutEvent(int m, final String e, boolean r) {
 			this.msec = m;
 			this.event = e;
 			this.repeat = r;
 		}
 	}
 
-	public void asJavaScript(Writer out) {
+	/**
+	 * Renders the element as JavaScript.
+	 */
+	public void asJavaScript(final StringBuilder out) {
 		this.mode_ = DomElement.Mode.ModeUpdate;
 		EscapeOStream eout = new EscapeOStream(out);
 		this.declare(eout);
@@ -437,7 +663,16 @@ public class DomElement {
 		this.asJavaScript(eout, DomElement.Priority.Update);
 	}
 
-	public String asJavaScript(EscapeOStream out, DomElement.Priority priority) {
+	/**
+	 * Renders the element as JavaScript, by phase.
+	 * <p>
+	 * To avoid temporarily having dupliate IDs as elements move around in the
+	 * page, rendering is ordered in a number of phases : first deleting
+	 * existing elements, then creating new elements, and finally updates to
+	 * existing elements.
+	 */
+	public String asJavaScript(final EscapeOStream out,
+			DomElement.Priority priority) {
 		switch (priority) {
 		case Delete:
 			if (this.javaScriptEvenWhenDeleted_.length() != 0
@@ -446,7 +681,8 @@ public class DomElement {
 				if (this.removeAllChildren_ >= 0) {
 					this.declare(out);
 					if (this.removeAllChildren_ == 0) {
-						out.append(this.var_).append(".innerHTML='';\n");
+						out.append("Wt3_3_4").append(".setHtml(").append(
+								this.var_).append(", '');\n");
 					} else {
 						out.append("$(").append(this.var_).append(
 								").children(':gt(").append(
@@ -480,32 +716,37 @@ public class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_2_3.hide('").append(this.id_).append(
+						out.append("Wt3_3_4.hide('").append(this.id_).append(
 								"');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_2_3.show('").append(this.id_)
+							out.append("Wt3_3_4.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_2_3.inline('" + this.id_
+								out.append("Wt3_3_4.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_2_3.block('" + this.id_
+									out.append("Wt3_3_4.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
 							}
 						}
 					}
+				} else {
+					if (!this.javaScript_.isEmpty()) {
+						out.append(this.javaScript_);
+						return this.var_;
+					}
 				}
 			}
 			if (this.unwrapped_) {
-				out.append("Wt3_2_3.unwrap('").append(this.id_).append("');\n");
+				out.append("Wt3_3_4.unwrap('").append(this.id_).append("');\n");
 			}
 			this.processEvents(app);
 			this.processProperties(app);
@@ -518,7 +759,7 @@ public class DomElement {
 								");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_2_3.unstub(").append(this.var_).append(',')
+					out.append("Wt3_3_4.unstub(").append(this.var_).append(',')
 							.append(varr).append(',').append(
 									this.hideWithDisplay_ ? 1 : 0).append(
 									");\n");
@@ -537,13 +778,17 @@ public class DomElement {
 					return this.var_;
 				}
 			}
-			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
+			if (!this.childrenToSave_.isEmpty()) {
 				this.declare(out);
+				out.append("Wt3_3_4").append(".saveReparented(").append(
+						this.var_).append(");");
+			}
+			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
 				out.append("var c").append(this.var_).append((int) i).append(
 						'=').append("$('#").append(this.childrenToSave_.get(i))
 						.append("')");
 				if (app.getEnvironment().agentIsIE()) {
-					out.append(".remove()");
+					out.append(".detach()");
 				}
 				out.append(";");
 			}
@@ -565,6 +810,7 @@ public class DomElement {
 						"').replaceWith(c").append(this.var_).append((int) i)
 						.append(");");
 			}
+			this.renderDeferredJavaScript(out);
 			if (!childrenUpdated) {
 				for (int i = 0; i < this.updatedChildren_.size(); ++i) {
 					DomElement child = this.updatedChildren_.get(i);
@@ -577,8 +823,14 @@ public class DomElement {
 		return this.var_;
 	}
 
-	public void asHTML(EscapeOStream out, EscapeOStream javaScript,
-			List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
+	/**
+	 * Renders the element as HTML.
+	 * <p>
+	 * Anything that cannot be rendered as HTML is rendered as javaScript as a
+	 * by-product.
+	 */
+	public void asHTML(final EscapeOStream out, final EscapeOStream javaScript,
+			final List<DomElement.TimeoutEvent> timeouts, boolean openingTagOnly) {
 		if (this.mode_ != DomElement.Mode.ModeCreate) {
 			throw new WException("DomElement::asHTML() called with ModeUpdate");
 		}
@@ -588,7 +840,7 @@ public class DomElement {
 		DomElement.EventHandler clickEvent = this.eventHandlers_
 				.get(WInteractWidget.CLICK_SIGNAL);
 		boolean needButtonWrap = !app.getEnvironment().hasAjax()
-				&& clickEvent != null && clickEvent.jsCode.length() != 0
+				&& clickEvent != null && clickEvent.signalName.length() != 0
 				&& !app.getEnvironment().agentIsSpiderBot();
 		boolean isSubmit = needButtonWrap;
 		DomElementType renderedType = this.type_;
@@ -611,12 +863,6 @@ public class DomElement {
 			}
 		}
 		if (needButtonWrap) {
-			String i = this.properties_.get(Property.PropertyStyleDisplay);
-			if (i != null && i.equals("none")) {
-				return;
-			}
-		}
-		if (needButtonWrap) {
 			if (this.type_ == DomElementType.DomElement_AREA
 					|| this.type_ == DomElementType.DomElement_INPUT
 					|| this.type_ == DomElementType.DomElement_SELECT) {
@@ -624,10 +870,18 @@ public class DomElement {
 			}
 			if (this.type_ == DomElementType.DomElement_A) {
 				String href = this.getAttribute("href");
-				if (app.getEnvironment().agentIsIE()
-						&& app.getEnvironment().getAgent() != WEnvironment.UserAgent.IE6
-						|| !href.equals("#")) {
+				if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE7
+						|| app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE8
+						|| href.length() > 1) {
 					needButtonWrap = false;
+				} else {
+					if (app.getTheme().isCanStyleAnchorAsButton()) {
+						DomElement self = this;
+						self.setAttribute("href", app
+								.url(app.getInternalPath())
+								+ "&signal=" + clickEvent.signalName);
+						needButtonWrap = false;
+					}
 				}
 			} else {
 				if (this.type_ == DomElementType.DomElement_AREA) {
@@ -637,19 +891,8 @@ public class DomElement {
 				}
 			}
 		}
-		final boolean isIEMobile = app.getEnvironment().agentIsIEMobile();
-		final boolean supportButton = !isIEMobile;
+		final boolean supportButton = true;
 		boolean needAnchorWrap = false;
-		if (!needButtonWrap) {
-			if (isIEMobile
-					&& app.getEnvironment().hasAjax()
-					&& clickEvent != null
-					&& clickEvent.jsCode.length() != 0
-					&& (this.type_ == DomElementType.DomElement_IMG
-							|| this.type_ == DomElementType.DomElement_SPAN || this.type_ == DomElementType.DomElement_DIV)) {
-				needAnchorWrap = true;
-			}
-		}
 		if (!supportButton && this.type_ == DomElementType.DomElement_BUTTON) {
 			renderedType = DomElementType.DomElement_INPUT;
 			DomElement self = this;
@@ -671,7 +914,7 @@ public class DomElement {
 				String l = this.properties_.get(Property.PropertyClass);
 				if (l != null) {
 					out.append(l);
-					SortedMap<Property, String> map = this.properties_;
+					final SortedMap<Property, String> map = this.properties_;
 					map.remove(Property.PropertyClass);
 				}
 				out.append('"');
@@ -686,6 +929,15 @@ public class DomElement {
 				String i = this.properties_.get(Property.PropertyDisabled);
 				if (i != null && i.equals("true")) {
 					out.append(" disabled=\"disabled\"");
+				}
+				for (Iterator<Map.Entry<String, String>> j_it = this.attributes_
+						.entrySet().iterator(); j_it.hasNext();) {
+					Map.Entry<String, String> j = j_it.next();
+					if (j.getKey().equals("title")) {
+						out.append(' ').append(j.getKey()).append('=');
+						fastHtmlAttributeValue(out, attributeValues, j
+								.getValue());
+					}
 				}
 				if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror
 						&& !app.getEnvironment().agentIsWebKit()
@@ -716,7 +968,7 @@ public class DomElement {
 				fastHtmlAttributeValue(out, attributeValues, clickEvent.jsCode);
 				out.append("><").append(elementNames_[renderedType.getValue()]);
 			} else {
-				out.append("<").append(elementNames_[renderedType.getValue()]);
+				out.append('<').append(elementNames_[renderedType.getValue()]);
 			}
 		}
 		if (this.id_.length() != 0) {
@@ -728,7 +980,7 @@ public class DomElement {
 			Map.Entry<String, String> i = i_it.next();
 			if (!app.getEnvironment().agentIsSpiderBot()
 					|| !i.getKey().equals("name")) {
-				out.append(" ").append(i.getKey()).append("=");
+				out.append(' ').append(i.getKey()).append('=');
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 			}
 		}
@@ -743,7 +995,7 @@ public class DomElement {
 						this.setJavaScriptEvent(javaScript, i.getKey(), i
 								.getValue(), app);
 					} else {
-						out.append(" on").append(i.getKey()).append("=");
+						out.append(" on").append(i.getKey()).append('=');
 						fastHtmlAttributeValue(out, attributeValues, i
 								.getValue().jsCode);
 					}
@@ -755,12 +1007,8 @@ public class DomElement {
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
 			switch (i.getKey()) {
-			case PropertyText:
 			case PropertyInnerHTML:
 				innerHTML += i.getValue();
-				break;
-			case PropertyScript:
-				innerHTML += "/*<![CDATA[*/\n" + i.getValue() + "\n/* ]]> */";
 				break;
 			case PropertyDisabled:
 				if (i.getValue().equals("true")) {
@@ -783,6 +1031,12 @@ public class DomElement {
 			case PropertySelected:
 				if (i.getValue().equals("true")) {
 					out.append(" selected=\"selected\"");
+				}
+				break;
+			case PropertySelectedIndex:
+				if (i.getValue().equals("-1")) {
+					DomElement self = this;
+					self.callMethod("selectedIndex=-1");
 				}
 				break;
 			case PropertyMultiple:
@@ -823,6 +1077,10 @@ public class DomElement {
 				out.append(" class=");
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 				break;
+			case PropertyLabel:
+				out.append(" label=");
+				fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				break;
 			default:
 				break;
 			}
@@ -838,15 +1096,11 @@ public class DomElement {
 			out.append(" />");
 		} else {
 			if (openingTagOnly) {
-				out.append(">");
-				if (innerHTML.length() != 0) {
-					DomElement self = this;
-					self.childrenHtml_.append(innerHTML);
-				}
+				out.append('>');
 				return;
 			}
 			if (!isSelfClosingTag(renderedType)) {
-				out.append(">");
+				out.append('>');
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
 					this.childrenToAdd_.get(i).child.asHTML(out, javaScript,
 							timeouts);
@@ -882,34 +1136,58 @@ public class DomElement {
 		timeouts.addAll(this.timeouts_);
 	}
 
-	public final void asHTML(EscapeOStream out, EscapeOStream javaScript,
-			List<DomElement.TimeoutEvent> timeouts) {
+	/**
+	 * Renders the element as HTML.
+	 * <p>
+	 * Calls
+	 * {@link #asHTML(EscapeOStream out, EscapeOStream javaScript, List timeouts, boolean openingTagOnly)
+	 * asHTML(out, javaScript, timeouts, false)}
+	 */
+	public final void asHTML(final EscapeOStream out,
+			final EscapeOStream javaScript,
+			final List<DomElement.TimeoutEvent> timeouts) {
 		asHTML(out, javaScript, timeouts, false);
 	}
 
-	public static void createTimeoutJs(Writer out,
-			List<DomElement.TimeoutEvent> timeouts, WApplication app)
-			throws IOException {
+	/**
+	 * Creates the JavaScript statements for timer rendering.
+	 */
+	public static void createTimeoutJs(final StringBuilder out,
+			final List<DomElement.TimeoutEvent> timeouts, WApplication app) {
 		for (int i = 0; i < timeouts.size(); ++i) {
 			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
 					.append(timeouts.get(i).event).append("', ").append(
-							String.valueOf(timeouts.get(i).msec)).append(",")
-					.append(timeouts.get(i).repeat ? "true" : "false").append(
-							");\n");
+							timeouts.get(i).msec).append(",").append(
+							timeouts.get(i).repeat).append(");\n");
 		}
 	}
 
+	/**
+	 * Returns the default display property for this element.
+	 * <p>
+	 * This returns whether the element is by default an inline or block
+	 * element.
+	 */
 	public boolean isDefaultInline() {
 		return isDefaultInline(this.type_);
 	}
 
-	public void declare(EscapeOStream out) {
+	/**
+	 * Declares the element.
+	 * <p>
+	 * Only after the element has been declared, {@link DomElement#getVar()
+	 * getVar()} returns a useful JavaScript reference.
+	 */
+	public void declare(final EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar()).append(
-					"=Wt3_2_3.$('").append(this.id_).append("');\n");
+					"=Wt3_3_4.$('").append(this.id_).append("');\n");
 		}
 	}
 
+	/**
+	 * Renders properties and attributes into CSS.
+	 */
 	public String getCssStyle() {
 		if (this.properties_.isEmpty()) {
 			return "";
@@ -970,14 +1248,22 @@ public class DomElement {
 		return style.toString();
 	}
 
-	public static void fastJsStringLiteral(EscapeOStream outRaw,
-			EscapeOStream outEscaped, String s) {
+	/**
+	 * Utility for rapid rendering of JavaScript strings.
+	 * <p>
+	 * It uses pre-computed mixing rules for escaping of the string.
+	 */
+	public static void fastJsStringLiteral(final EscapeOStream outRaw,
+			final EscapeOStream outEscaped, final String s) {
 		outRaw.append('\'');
 		outRaw.append(s, outEscaped);
 		outRaw.append('\'');
 	}
 
-	public static void jsStringLiteral(EscapeOStream out, String s,
+	/**
+	 * Utility that renders a string as JavaScript literal.
+	 */
+	public static void jsStringLiteral(final EscapeOStream out, final String s,
 			char delimiter) {
 		out.append(delimiter);
 		out
@@ -988,30 +1274,49 @@ public class DomElement {
 		out.append(delimiter);
 	}
 
-	public static void jsStringLiteral(Writer out, String s, char delimiter) {
+	/**
+	 * Utility that renders a string as JavaScript literal.
+	 */
+	public static void jsStringLiteral(final StringBuilder out, final String s,
+			char delimiter) {
 		EscapeOStream sout = new EscapeOStream(out);
 		jsStringLiteral(sout, s, delimiter);
 	}
 
-	public static void fastHtmlAttributeValue(EscapeOStream outRaw,
-			EscapeOStream outEscaped, String s) {
+	/**
+	 * Utility for rapid rendering of HTML attribute values.
+	 * <p>
+	 * It uses pre-computed mixing rules for escaping of the attribute value.
+	 */
+	public static void fastHtmlAttributeValue(final EscapeOStream outRaw,
+			final EscapeOStream outEscaped, final String s) {
 		outRaw.append('"');
 		outRaw.append(s, outEscaped);
 		outRaw.append('"');
 	}
 
-	public static void htmlAttributeValue(Writer out, String s) {
+	/**
+	 * Utility that renders a string as HTML attribute.
+	 */
+	public static void htmlAttributeValue(final StringBuilder out,
+			final String s) {
 		EscapeOStream sout = new EscapeOStream(out);
 		sout.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 		sout.append(s);
 	}
 
-	public static boolean isSelfClosingTag(String tag) {
+	/**
+	 * Returns whether a tag is self-closing in HTML.
+	 */
+	public static boolean isSelfClosingTag(final String tag) {
 		return tag.equals("br") || tag.equals("hr") || tag.equals("img")
 				|| tag.equals("area") || tag.equals("col")
 				|| tag.equals("input");
 	}
 
+	/**
+	 * Returns whether a tag is self-closing in HTML.
+	 */
 	public static boolean isSelfClosingTag(DomElementType element) {
 		return element == DomElementType.DomElement_BR
 				|| element == DomElementType.DomElement_IMG
@@ -1020,7 +1325,10 @@ public class DomElement {
 				|| element == DomElementType.DomElement_INPUT;
 	}
 
-	public static DomElementType parseTagName(String tag) {
+	/**
+	 * Parses a tag name to a DOMElement type.
+	 */
+	public static DomElementType parseTagName(final String tag) {
 		for (int i = 0; i < DomElementType.DomElement_UNKNOWN.getValue(); ++i) {
 			if (tag.equals(elementNames_[i])) {
 				return DomElementType.values()[i];
@@ -1029,30 +1337,49 @@ public class DomElement {
 		return DomElementType.DomElement_UNKNOWN;
 	}
 
+	/**
+	 * Returns the tag name for a DOMElement type.
+	 */
+	public static String tagName(DomElementType type) {
+		return elementNames_[type.getValue()];
+	}
+
+	/**
+	 * Returns the name for a CSS property, as a string.
+	 */
 	public static String cssName(Property property) {
 		return cssNames_[property.getValue()
 				- Property.PropertyStylePosition.getValue()];
 	}
 
+	/**
+	 * Returns whether a paritcular element is by default inline.
+	 */
 	public static boolean isDefaultInline(DomElementType type) {
 		return defaultInline_[type.getValue()];
 	}
 
+	/**
+	 * Returns all custom JavaScript collected in this element.
+	 */
 	public String getJavaScript() {
 		return this.javaScript_.toString();
 	}
 
+	/**
+	 * Something to do with broken IE Mobile 5 browsers...
+	 */
 	public void updateInnerHtmlOnly() {
 		this.mode_ = DomElement.Mode.ModeUpdate;
 		assert this.replaced_ == null;
 		assert this.insertBefore_ == null;
 		this.attributes_.clear();
+		this.removedAttributes_.clear();
 		this.eventHandlers_.clear();
 		for (Iterator<Map.Entry<Property, String>> i_it = this.properties_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<Property, String> i = i_it.next();
 			if (i.getKey() == Property.PropertyInnerHTML
-					|| i.getKey() == Property.PropertyText
 					|| i.getKey() == Property.PropertyTarget) {
 			} else {
 				i_it.remove();
@@ -1060,17 +1387,31 @@ public class DomElement {
 		}
 	}
 
-	public String addToParent(Writer out, String parentVar, int pos,
-			WApplication app) {
+	/**
+	 * Adds an element to a parent, using suitable methods.
+	 * <p>
+	 * Depending on the type, different DOM methods are needed. In particular
+	 * for table cells, some browsers require dedicated API instead of generic
+	 * insertAt() or appendChild() functions.
+	 */
+	public String addToParent(final StringBuilder out, final String parentVar,
+			int pos, WApplication app) {
 		EscapeOStream sout = new EscapeOStream(out);
 		return this.addToParent(sout, parentVar, pos, app);
 	}
 
-	public void createElement(Writer out, WApplication app, String domInsertJS) {
+	/**
+	 * Renders the element as JavaScript, and inserts it in the DOM.
+	 */
+	public void createElement(final StringBuilder out, WApplication app,
+			final String domInsertJS) {
 		EscapeOStream sout = new EscapeOStream(out);
 		this.createElement(sout, app, domInsertJS);
 	}
 
+	/**
+	 * Allocates a JavaScript variable.
+	 */
 	public String getCreateVar() {
 		this.var_ = "j" + String.valueOf(nextId_++);
 		return this.var_;
@@ -1088,23 +1429,22 @@ public class DomElement {
 			this.signalName = "";
 		}
 
-		public EventHandler(String j, String sn) {
+		public EventHandler(final String j, final String sn) {
 			this.jsCode = j;
 			this.signalName = sn;
 		}
 	}
 
 	private boolean canWriteInnerHTML(WApplication app) {
-		if (app.getEnvironment().agentIsIEMobile()) {
-			return true;
-		}
 		if ((app.getEnvironment().agentIsIE() || app.getEnvironment()
 				.getAgent() == WEnvironment.UserAgent.Konqueror)
 				&& (this.type_ == DomElementType.DomElement_TBODY
 						|| this.type_ == DomElementType.DomElement_THEAD
 						|| this.type_ == DomElementType.DomElement_TABLE
+						|| this.type_ == DomElementType.DomElement_COLGROUP
 						|| this.type_ == DomElementType.DomElement_TR
-						|| this.type_ == DomElementType.DomElement_SELECT || this.type_ == DomElementType.DomElement_TD)) {
+						|| this.type_ == DomElementType.DomElement_SELECT
+						|| this.type_ == DomElementType.DomElement_TD || this.type_ == DomElementType.DomElement_OPTGROUP)) {
 			return false;
 		}
 		return true;
@@ -1117,7 +1457,7 @@ public class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_2_3.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_3_4.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1133,7 +1473,7 @@ public class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringBuilder expr = new StringBuilder();
-					expr.append("Wt3_2_3.IEwidth(this,");
+					expr.append("Wt3_3_4.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1160,7 +1500,8 @@ public class DomElement {
 		}
 	}
 
-	private void setJavaScriptProperties(EscapeOStream out, WApplication app) {
+	private void setJavaScriptProperties(final EscapeOStream out,
+			WApplication app) {
 		EscapeOStream escaped = out.push();
 		boolean pushed = false;
 		for (Iterator<Map.Entry<Property, String>> i_it = this.properties_
@@ -1170,27 +1511,26 @@ public class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				out.append("Wt3_2_3.setHtml(").append(this.var_).append(',');
+				if (this.mode_ == DomElement.Mode.ModeCreate
+						&& (this.type_ == DomElementType.DomElement_DIV
+								&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+								|| !this.childrenToAdd_.isEmpty() || !this.childrenHtml_
+								.isEmpty())) {
+					break;
+				}
+				out.append("Wt3_3_4.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped
 							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;
 				}
 				fastJsStringLiteral(out, escaped, i.getValue());
-				out.append(
-						i.getKey() == Property.PropertyInnerHTML ? ",false"
-								: ",true").append(");");
-				break;
-			case PropertyScript:
-				out.append(this.var_).append(".innerHTML=");
-				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-					pushed = true;
+				if (i.getKey() == Property.PropertyInnerHTML) {
+					out.append(",false");
+				} else {
+					out.append(",true");
 				}
-				fastJsStringLiteral(out, escaped, "/*<![CDATA[*/\n"
-						+ i.getValue() + "\n/* ]]> */");
-				out.append(';');
+				out.append(");");
 				break;
 			case PropertyValue:
 				out.append(this.var_).append(".value=");
@@ -1211,8 +1551,18 @@ public class DomElement {
 						i.getValue()).append(";");
 				break;
 			case PropertyDisabled:
-				out.append(this.var_).append(".disabled=").append(i.getValue())
-						.append(';');
+				if (this.type_ == DomElementType.DomElement_A) {
+					if (i.getValue().equals("true")) {
+						out.append(this.var_).append(
+								".setAttribute('disabled', 'disabled');");
+					} else {
+						out.append(this.var_).append(
+								".removeAttribute('disabled', 'disabled');");
+					}
+				} else {
+					out.append(this.var_).append(".disabled=").append(
+							i.getValue()).append(';');
+				}
 				break;
 			case PropertyReadOnly:
 				out.append(this.var_).append(".readOnly=").append(i.getValue())
@@ -1260,21 +1610,14 @@ public class DomElement {
 				fastJsStringLiteral(out, escaped, i.getValue());
 				out.append(';');
 				break;
-			case PropertyText:
-				out.append(this.var_).append(".text=");
-				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-					pushed = true;
-				}
-				fastJsStringLiteral(out, escaped, i.getValue());
-				out.append(';');
-				break;
 			case PropertyStyleFloat:
-				out.append(this.var_).append(".style.").append(
-						app.getEnvironment().agentIsIE() ? "styleFloat"
-								: "cssFloat").append("=\'")
-						.append(i.getValue()).append("\';");
+				out.append(this.var_).append(".style.");
+				if (app.getEnvironment().agentIsIE()) {
+					out.append("styleFloat");
+				} else {
+					out.append("cssFloat");
+				}
+				out.append("=\'").append(i.getValue()).append("\';");
 				break;
 			case PropertyStyleWidthExpression:
 				out.append(this.var_).append(".style.setExpression('width',");
@@ -1290,19 +1633,17 @@ public class DomElement {
 				if (i.getKey().getValue() >= Property.PropertyStyle.getValue()
 						&& i.getKey().getValue() <= Property.PropertyStyleBoxSizing
 								.getValue()) {
-					if (!app.getEnvironment().agentIsIE()
-							|| i.getKey().getValue() < Property.PropertyStylePosition
-									.getValue()) {
-						out.append(this.var_).append(".style.").append(
-								cssCamelNames_[i.getKey().getValue()
-										- Property.PropertyStyle.getValue()])
-								.append("='").append(i.getValue()).append("';");
-					} else {
+					if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 						out.append(this.var_).append(".style['").append(
 								cssNames_[i.getKey().getValue()
 										- Property.PropertyStylePosition
 												.getValue()]).append("']='")
 								.append(i.getValue()).append("';");
+					} else {
+						out.append(this.var_).append(".style.").append(
+								cssCamelNames_[i.getKey().getValue()
+										- Property.PropertyStyle.getValue()])
+								.append("='").append(i.getValue()).append("';");
 					}
 				}
 			}
@@ -1310,7 +1651,7 @@ public class DomElement {
 		}
 	}
 
-	private void setJavaScriptAttributes(EscapeOStream out) {
+	private void setJavaScriptAttributes(final EscapeOStream out) {
 		for (Iterator<Map.Entry<String, String>> i_it = this.attributes_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, String> i = i_it.next();
@@ -1326,20 +1667,29 @@ public class DomElement {
 				out.append(");\n");
 			}
 		}
+		for (Iterator<String> i_it = this.removedAttributes_.iterator(); i_it
+				.hasNext();) {
+			String i = i_it.next();
+			this.declare(out);
+			out.append(this.var_).append(".removeAttribute('").append(i)
+					.append("');\n");
+		}
 	}
 
-	private void setJavaScriptEvent(EscapeOStream out, String eventName,
-			DomElement.EventHandler handler, WApplication app) {
+	private void setJavaScriptEvent(final EscapeOStream out, String eventName,
+			final DomElement.EventHandler handler, WApplication app) {
 		boolean globalUnfocused = this.id_.equals(app.getDomRoot().getId());
-		String extra1 = "";
-		String extra2 = "";
-		if (globalUnfocused) {
-			extra1 = "var g = event||window.event; var t = g.target||g.srcElement;if ((!t||Wt3_2_3.hasTag(t,'DIV') ||Wt3_2_3.hasTag(t,'BODY') ||Wt3_2_3.hasTag(t,'HTML'))) { ";
-			extra2 = "}";
-		}
 		int fid = nextId_++;
-		out.append("function f").append(fid).append("(event){ ").append(extra1)
-				.append(handler.jsCode).append(extra2).append("}\n");
+		out.append("function f").append(fid).append("(event) { ");
+		if (globalUnfocused) {
+			out
+					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_4.hasTag(t,'DIV') ||Wt3_3_4.hasTag(t,'BODY') ||Wt3_3_4.hasTag(t,'HTML'))) {");
+		}
+		out.append(handler.jsCode);
+		if (globalUnfocused) {
+			out.append('}');
+		}
+		out.append("}\n");
 		if (globalUnfocused) {
 			out.append("document");
 		} else {
@@ -1356,8 +1706,8 @@ public class DomElement {
 		}
 	}
 
-	private void createElement(EscapeOStream out, WApplication app,
-			String domInsertJS) {
+	private void createElement(final EscapeOStream out, WApplication app,
+			final String domInsertJS) {
 		if (this.var_.length() == 0) {
 			this.getCreateVar();
 		}
@@ -1375,6 +1725,7 @@ public class DomElement {
 			out.append("');");
 			out.append(domInsertJS);
 			this.renderInnerHtmlJS(out, app);
+			this.renderDeferredJavaScript(out);
 		} else {
 			out.append("document.createElement('").append(
 					elementNames_[this.type_.getValue()]).append("');");
@@ -1384,8 +1735,8 @@ public class DomElement {
 		}
 	}
 
-	private String addToParent(EscapeOStream out, String parentVar, int pos,
-			WApplication app) {
+	private String addToParent(final EscapeOStream out, final String parentVar,
+			int pos, WApplication app) {
 		this.getCreateVar();
 		if (this.type_ == DomElementType.DomElement_TD
 				|| this.type_ == DomElementType.DomElement_TR) {
@@ -1402,7 +1753,7 @@ public class DomElement {
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_2_3.insertAt(").append(parentVar).append(
+				insertJS.append("Wt3_3_4.insertAt(").append(parentVar).append(
 						",").append(this.var_).append(",").append(pos).append(
 						");");
 			} else {
@@ -1414,27 +1765,40 @@ public class DomElement {
 		return this.var_;
 	}
 
-	// private String createAsJavaScript(EscapeOStream out, String parentVar,
-	// int pos, WApplication app) ;
-	private void renderInnerHtmlJS(EscapeOStream out, WApplication app) {
+	// private String createAsJavaScript(final EscapeOStream out, final String
+	// parentVar, int pos, WApplication app) ;
+	private void renderInnerHtmlJS(final EscapeOStream out, WApplication app) {
 		if (!this.childrenHtml_.isEmpty() || this.wasEmpty_
 				&& this.canWriteInnerHTML(app)) {
+			String innerHTML = "";
+			if (!this.properties_.isEmpty()) {
+				String i = this.properties_.get(Property.PropertyInnerHTML);
+				if (i != null) {
+					innerHTML += i;
+				}
+				i = this.properties_.get(Property.PropertyAddedInnerHTML);
+				if (i != null) {
+					innerHTML += i;
+				}
+			}
 			if (this.type_ == DomElementType.DomElement_DIV
 					&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 					|| !this.childrenToAdd_.isEmpty()
-					|| !this.childrenHtml_.isEmpty()) {
+					|| !this.childrenHtml_.isEmpty() || innerHTML.length() != 0) {
 				this.declare(out);
-				out.append("Wt3_2_3.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_3_4.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
-				out.append(this.childrenHtml_.toString());
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 				EscapeOStream js = new EscapeOStream();
 				for (int i = 0; i < this.childrenToAdd_.size(); ++i) {
 					this.childrenToAdd_.get(i).child.asHTML(out, js, timeouts);
 				}
+				out.append(innerHTML);
+				out.append(this.childrenHtml_.toString());
 				if (this.type_ == DomElementType.DomElement_DIV
 						&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
 						&& this.childrenToAdd_.isEmpty()
+						&& innerHTML.length() == 0
 						&& this.childrenHtml_.isEmpty()) {
 					out.append("&nbsp;");
 				}
@@ -1445,9 +1809,8 @@ public class DomElement {
 					out.append(app.getJavaScriptClass()).append(
 							"._p_.addTimerEvent('").append(
 							timeouts.get(i).event).append("', ").append(
-							timeouts.get(i).msec).append(",").append(
-							timeouts.get(i).repeat ? "true" : "false").append(
-							");\n");
+							timeouts.get(i).msec).append(',').append(
+							timeouts.get(i).repeat).append(");\n");
 				}
 				out.append(js);
 			}
@@ -1459,16 +1822,17 @@ public class DomElement {
 						this.childrenToAdd_.get(i).pos, app);
 			}
 		}
-		if (!this.javaScript_.isEmpty()) {
-			this.declare(out);
-			out.append(this.javaScript_).append('\n');
-		}
 		if (this.timeOut_ != -1) {
 			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
 					.append(this.id_).append("', ").append(this.timeOut_)
-					.append(",").append(
-							this.timeOutJSRepeat_ ? "true" : "false").append(
-							");\n");
+					.append(',').append(this.timeOutJSRepeat_).append(");\n");
+		}
+	}
+
+	private void renderDeferredJavaScript(final EscapeOStream out) {
+		if (!this.javaScript_.isEmpty()) {
+			this.declare(out);
+			out.append(this.javaScript_).append('\n');
 		}
 	}
 
@@ -1491,6 +1855,7 @@ public class DomElement {
 	private String var_;
 	private boolean declared_;
 	private Map<String, String> attributes_;
+	private Set<String> removedAttributes_;
 	private SortedMap<Property, String> properties_;
 	private Map<String, DomElement.EventHandler> eventHandlers_;
 
@@ -1517,45 +1882,56 @@ public class DomElement {
 	private List<DomElement> updatedChildren_;
 	private EscapeOStream childrenHtml_;
 	private List<DomElement.TimeoutEvent> timeouts_;
-	private boolean discardWithParent_;
-	static String[] elementNames_ = { "a", "br", "button", "col", "div",
-			"fieldset", "form", "h1", "h2", "h3", "h4", "h5", "h6", "iframe",
-			"img", "input", "label", "legend", "li", "ol", "option", "ul",
-			"script", "select", "span", "table", "tbody", "thead", "tfoot",
-			"th", "td", "textarea", "tr", "p", "canvas", "map", "area",
-			"object", "param", "audio", "video", "source", "strong", "em" };
-	static boolean[] defaultInline_ = { true, true, true, false, false, false,
-			false, true, false, false, false, false, false, true, true, true,
-			true, true, false, false, true, false, false, true, true, false,
-			false, false, false, false, false, true, false, false, true, false,
-			true, false, false, false, false, false, true, true };
-	static String[] cssNames_ = { "position", "z-index", "float", "clear",
-			"width", "height", "line-height", "min-width", "min-height",
-			"max-width", "max-height", "left", "right", "top", "bottom",
-			"vertical-align", "text-align", "padding", "padding-top",
+	private static int nextId_ = 0;
+	private static String[] elementNames_ = { "a", "br", "button", "col",
+			"colgroup", "div", "fieldset", "form", "h1", "h2", "h3", "h4",
+			"h5", "h6", "iframe", "img", "input", "label", "legend", "li",
+			"ol", "option", "ul", "script", "select", "span", "table", "tbody",
+			"thead", "tfoot", "th", "td", "textarea", "optgroup", "tr", "p",
+			"canvas", "map", "area", "style", "object", "param", "audio",
+			"video", "source", "b", "strong", "em", "i", "hr" };
+	private static boolean[] defaultInline_ = { true, false, true, false,
+			false, false, false, false, false, false, false, false, false,
+			false, true, true, true, true, true, false, false, true, false,
+			false, true, true, false, false, false, false, false, false, true,
+			true, false, false, true, false, true, true, false, false, false,
+			false, false, true, true, true, true, false };
+	private static String[] cssNames_ = { "position", "z-index", "float",
+			"clear", "width", "height", "line-height", "min-width",
+			"min-height", "max-width", "max-height", "left", "right", "top",
+			"bottom", "vertical-align", "text-align", "padding", "padding-top",
 			"padding-right", "padding-bottom", "padding-left", "margin-top",
 			"margin-right", "margin-bottom", "margin-left", "cursor",
 			"border-top", "border-right", "border-bottom", "border-left",
-			"color", "overflow-x", "overflow-y", "opacity", "font-family",
-			"font-style", "font-variant", "font-weight", "font-size",
-			"background-color", "background-image", "background-repeat",
-			"background-attachment", "background-position", "text-decoration",
-			"white-space", "table-layout", "border-spacing",
+			"border-color-top", "border-color-right", "border-color-bottom",
+			"border-color-left", "border-width-top", "border-width-right",
+			"border-width-bottom", "border-width-left", "color", "overflow-x",
+			"overflow-y", "opacity", "font-family", "font-style",
+			"font-variant", "font-weight", "font-size", "background-color",
+			"background-image", "background-repeat", "background-attachment",
+			"background-position", "text-decoration", "white-space",
+			"table-layout", "border-spacing", "border-collapse",
 			"page-break-before", "page-break-after", "zoom", "visibility",
 			"display", "box-sizing" };
-	static String[] cssCamelNames_ = { "cssText", "width", "position",
+	private static String[] cssCamelNames_ = { "cssText", "width", "position",
 			"zIndex", "cssFloat", "clear", "width", "height", "lineHeight",
 			"minWidth", "minHeight", "maxWidth", "maxHeight", "left", "right",
 			"top", "bottom", "verticalAlign", "textAlign", "padding",
 			"paddingTop", "paddingRight", "paddingBottom", "paddingLeft",
 			"marginTop", "marginRight", "marginBottom", "marginLeft", "cursor",
-			"borderTop", "borderRight", "borderBottom", "borderLeft", "color",
-			"overflowX", "overflowY", "opacity", "fontFamily", "fontStyle",
-			"fontVariant", "fontWeight", "fontSize", "backgroundColor",
-			"backgroundImage", "backgroundRepeat", "backgroundAttachment",
-			"backgroundPosition", "textDecoration", "whiteSpace",
-			"tableLayout", "borderSpacing", "pageBreakBefore",
-			"pageBreakAfter", "zoom", "visibility", "display", "boxSizing" };
-	static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`";
-	private static int nextId_ = 0;
+			"borderTop", "borderRight", "borderBottom", "borderLeft",
+			"borderColorTop", "borderColorRight", "borderColorBottom",
+			"borderColorLeft", "borderWidthTop", "borderWidthRight",
+			"borderWidthBottom", "borderWidthLeft", "color", "overflowX",
+			"overflowY", "opacity", "fontFamily", "fontStyle", "fontVariant",
+			"fontWeight", "fontSize", "backgroundColor", "backgroundImage",
+			"backgroundRepeat", "backgroundAttachment", "backgroundPosition",
+			"textDecoration", "whiteSpace", "tableLayout", "borderSpacing",
+			"border-collapse", "pageBreakBefore", "pageBreakAfter", "zoom",
+			"visibility", "display", "boxSizing" };
+	private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`/";
+
+	static char hexLookup(int n) {
+		return "0123456789abcdef".charAt(n & 0xF);
+	}
 }

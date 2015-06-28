@@ -99,7 +99,7 @@ public class WFormModel extends WObject {
 	 * <p>
 	 * If the <code>field</code> was already in the model, its data is reset.
 	 */
-	public void addField(String field, CharSequence info) {
+	public void addField(String field, final CharSequence info) {
 		this.fields_.put(field, new WFormModel.FieldData());
 		this.fields_.get(field).validation = new WValidator.Result(
 				WValidator.State.Invalid, info);
@@ -115,7 +115,15 @@ public class WFormModel extends WObject {
 		addField(field, WString.Empty);
 	}
 
-	// public void removeField(String field) ;
+	/**
+	 * Removes a field.
+	 * <p>
+	 * The <code>field</code> is removed from the model.
+	 */
+	public void removeField(String field) {
+		this.fields_.remove(field);
+	}
+
 	/**
 	 * Returns the fields.
 	 * <p>
@@ -128,9 +136,7 @@ public class WFormModel extends WObject {
 		for (Iterator<Map.Entry<String, WFormModel.FieldData>> i_it = this.fields_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, WFormModel.FieldData> i = i_it.next();
-			if (this.isVisible(i.getKey())) {
-				result.add(i.getKey());
-			}
+			result.add(i.getKey());
 		}
 		return result;
 	}
@@ -186,7 +192,7 @@ public class WFormModel extends WObject {
 		for (Iterator<Map.Entry<String, WFormModel.FieldData>> i_it = this.fields_
 				.entrySet().iterator(); i_it.hasNext();) {
 			Map.Entry<String, WFormModel.FieldData> i = i_it.next();
-			WFormModel.FieldData fd = i.getValue();
+			final WFormModel.FieldData fd = i.getValue();
 			if (!fd.visible) {
 				continue;
 			}
@@ -201,7 +207,8 @@ public class WFormModel extends WObject {
 	/**
 	 * Sets whether a field is visible.
 	 * <p>
-	 * Fields are visible by default.
+	 * Fields are visible by default. An invisible field will be ignored during
+	 * validation (i.e. will be considered as valid).
 	 * <p>
 	 * 
 	 * @see WFormModel#isVisible(String field)
@@ -286,7 +293,7 @@ public class WFormModel extends WObject {
 	 * @see WFormModel#getValue(String field)
 	 * @see WFormModel#valueText(String field)
 	 */
-	public void setValue(String field, Object value) {
+	public void setValue(String field, final Object value) {
 		this.fields_.get(field).value = value;
 	}
 
@@ -313,7 +320,9 @@ public class WFormModel extends WObject {
 	 * @see WFormModel#getValue(String field)
 	 */
 	public String valueText(String field) {
-		return StringUtils.asString(this.getValue(field)).toString();
+		WValidator v = this.getValidator(field);
+		return StringUtils.asString(this.getValue(field),
+				v != null ? v.getFormat() : "").toString();
 	}
 
 	/**
@@ -325,7 +334,7 @@ public class WFormModel extends WObject {
 	public void setValidator(String field, WValidator validator) {
 		WFormModel.FieldData i = this.fields_.get(field);
 		if (i != null) {
-			WFormModel.FieldData d = i;
+			final WFormModel.FieldData d = i;
 			if (d.validator != null && d.validator.getParent() == this) {
 				;
 			}
@@ -337,6 +346,20 @@ public class WFormModel extends WObject {
 			logger.error(new StringWriter().append("setValidator(): ").append(
 					field).append(" not in model").toString());
 		}
+	}
+
+	/**
+	 * Returns a validator.
+	 * <p>
+	 * Returns the validator for the field.
+	 */
+	public WValidator getValidator(String field) {
+		WFormModel.FieldData i = this.fields_.get(field);
+		if (i != null) {
+			final WFormModel.FieldData d = i;
+			return d.validator;
+		}
+		return null;
 	}
 
 	/**
@@ -358,10 +381,10 @@ public class WFormModel extends WObject {
 		}
 		WFormModel.FieldData i = this.fields_.get(field);
 		if (i != null) {
-			WFormModel.FieldData d = i;
+			final WFormModel.FieldData d = i;
 			if (d.validator != null) {
 				this.setValidation(field, d.validator.validate(StringUtils
-						.asString(d.value).toString()));
+						.asString(this.valueText(field)).toString()));
 			} else {
 				this.setValidation(field, Valid);
 			}
@@ -434,7 +457,7 @@ public class WFormModel extends WObject {
 	 * @see WFormModel#getValidation(String field)
 	 * @see WFormModel#isValidated(String field)
 	 */
-	public void setValidation(String field, WValidator.Result result) {
+	public void setValidation(String field, final WValidator.Result result) {
 		WFormModel.FieldData i = this.fields_.get(field);
 		if (i != null) {
 			i.validation = result;

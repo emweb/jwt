@@ -46,7 +46,7 @@ public class RegistrationWidget extends WTemplateFormView {
 		this.created_ = false;
 		this.confirmPasswordLogin_ = null;
 		WApplication app = WApplication.getInstance();
-		app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Auth_xml);
+		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}
 
 	/**
@@ -91,10 +91,9 @@ public class RegistrationWidget extends WTemplateFormView {
 	 * model.
 	 */
 	public void update() {
-		if (!(this.model_.getPasswordAuth() != null)
-				&& !this.model_.getOAuth().isEmpty()) {
+		if (this.model_.getPasswordAuth() != null) {
 			this.bindString("password-description",
-					tr("Wt.Auth.password-or-oauth-registration"));
+					tr("Wt.Auth.password-registration"));
 		} else {
 			this.bindEmpty("password-description");
 		}
@@ -226,7 +225,15 @@ public class RegistrationWidget extends WTemplateFormView {
 			User user = this.model_.doRegister();
 			if (user.isValid()) {
 				this.registerUserDetails(user);
-				this.model_.getLogin().login(user);
+				if (!this.model_.getBaseAuth().isEmailVerificationRequired()) {
+					this.model_.loginUser(this.model_.getLogin(), user);
+				} else {
+					if (this.authWidget_ != null) {
+						this.authWidget_.displayInfo(WString
+								.tr("Wt.Auth.confirm-email-first"));
+					}
+					this.close();
+				}
 			} else {
 				this.update();
 			}
@@ -257,7 +264,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	 * information to the registration form which needs to be annotated to the
 	 * user.
 	 */
-	protected void registerUserDetails(User user) {
+	protected void registerUserDetails(final User user) {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
@@ -385,7 +392,7 @@ public class RegistrationWidget extends WTemplateFormView {
 		}
 	}
 
-	private void oAuthDone(OAuthProcess oauth, Identity identity) {
+	private void oAuthDone(OAuthProcess oauth, final Identity identity) {
 		if (identity.isValid()) {
 			logger.warn(new StringWriter().append("secure:").append(
 					oauth.getService().getName()).append(": identified: as ")

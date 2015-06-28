@@ -23,8 +23,9 @@ import org.slf4j.LoggerFactory;
  * A validator that checks user input against a regular expression.
  * <p>
  * 
- * This validator checks whether user input is matched by the given (perl-like)
- * regular expression.
+ * This validator checks whether user input matches the given (perl-like)
+ * regular expression. It checks the complete input; prefix ^ and suffix $ are
+ * not needed.
  * <p>
  * The following perl features are not supported (since client-side validation
  * cannot handle them):
@@ -93,7 +94,7 @@ public class WRegExpValidator extends WValidator {
 	 * This constructs a validator that matches the perl regular expression
 	 * <code>expr</code>.
 	 */
-	public WRegExpValidator(String pattern, WObject parent) {
+	public WRegExpValidator(final String pattern, WObject parent) {
 		super(parent);
 		this.regexp_ = Pattern.compile(pattern);
 		this.noMatchText_ = new WString();
@@ -106,7 +107,7 @@ public class WRegExpValidator extends WValidator {
 	 * Calls {@link #WRegExpValidator(String pattern, WObject parent)
 	 * this(pattern, (WObject)null)}
 	 */
-	public WRegExpValidator(String pattern) {
+	public WRegExpValidator(final String pattern) {
 		this(pattern, (WObject) null);
 	}
 
@@ -115,7 +116,7 @@ public class WRegExpValidator extends WValidator {
 	 * <p>
 	 * Sets the perl regular expression <code>expr</code>.
 	 */
-	public void setRegExp(String pattern) {
+	public void setRegExp(final String pattern) {
 		if (!(this.regexp_ != null)) {
 			this.regexp_ = Pattern.compile(pattern);
 		} else {
@@ -160,7 +161,7 @@ public class WRegExpValidator extends WValidator {
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or matches the regular expression.
 	 */
-	public WValidator.Result validate(String input) {
+	public WValidator.Result validate(final String input) {
 		if (input.length() == 0) {
 			return super.validate(input);
 		}
@@ -172,13 +173,13 @@ public class WRegExpValidator extends WValidator {
 		}
 	}
 
-	// public void createExtConfig(Writer config) throws IOException;
+	// public void createExtConfig(final Writer config) throws IOException;
 	/**
 	 * Sets the text to be shown if no match can be found.
 	 * <p>
 	 * Sets the text to be shown if no match can be found.
 	 */
-	public void setNoMatchText(CharSequence text) {
+	public void setNoMatchText(final CharSequence text) {
 		this.setInvalidNoMatchText(text);
 	}
 
@@ -187,7 +188,7 @@ public class WRegExpValidator extends WValidator {
 	 * <p>
 	 * The default value is &quot;Invalid input&quot;.
 	 */
-	public void setInvalidNoMatchText(CharSequence text) {
+	public void setInvalidNoMatchText(final CharSequence text) {
 		this.noMatchText_ = WString.toWString(text);
 		this.repaint();
 	}
@@ -209,8 +210,8 @@ public class WRegExpValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_2_3.WRegExpValidator(").append(
-				this.isMandatory() ? "true" : "false").append(",");
+		js.append("new Wt3_3_4.WRegExpValidator(").append(this.isMandatory())
+				.append(',');
 		if (this.regexp_ != null) {
 			js.append(WWebWidget.jsStringLiteral(this.regexp_.pattern()))
 					.append(",'");
@@ -242,6 +243,6 @@ public class WRegExpValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WRegExpValidator",
-				"function(d,a,e,f,g){var b=a?new RegExp(\"^\"+a+\"$\",e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?{valid:b.test(c),message:g}:{valid:true}}}");
+				"function(d,a,e,f,g){var b=a?new RegExp(\"^(\"+a+\")$\",e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?b.test(c)?{valid:true}:{valid:false,message:g}:{valid:true}}}");
 	}
 }
