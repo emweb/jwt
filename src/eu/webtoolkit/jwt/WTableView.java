@@ -151,6 +151,8 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.handleSingleClick(false, event);
 						}
 					});
+			this.canvas_.clicked().addListener(
+					"function(o, e) { $(document).trigger('click', e);}");
 			this.canvas_.clicked().preventPropagation();
 			this.canvas_.mouseWentDown().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {

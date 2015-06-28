@@ -238,7 +238,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public void setTarget(AnchorTarget target) {
 		this.createAnchorImpl();
-		this.anchor_.linkState.target = target;
+		this.anchor_.linkState.link.setTarget(target);
 		this.repaint();
 	}
 
@@ -250,7 +250,7 @@ public class WAbstractArea extends WObject {
 	 */
 	public AnchorTarget getTarget() {
 		if (this.anchor_ != null) {
-			return this.anchor_.linkState.target;
+			return this.anchor_.linkState.link.getTarget();
 		} else {
 			return AnchorTarget.TargetSelf;
 		}

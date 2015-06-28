@@ -465,6 +465,7 @@ public class WTemplate extends WInteractWidget {
 		this.text_ = new WString();
 		this.errorText_ = "";
 		this.encodeInternalPaths_ = false;
+		this.encodeTemplateText_ = true;
 		this.changed_ = false;
 		this.widgetIdMode_ = WTemplate.WidgetIdMode.SetNoWidgetId;
 		this.plainTextNewLineEscStream_ = new EscapeOStream();
@@ -502,6 +503,7 @@ public class WTemplate extends WInteractWidget {
 		this.text_ = new WString();
 		this.errorText_ = "";
 		this.encodeInternalPaths_ = false;
+		this.encodeTemplateText_ = true;
 		this.changed_ = false;
 		this.widgetIdMode_ = WTemplate.WidgetIdMode.SetNoWidgetId;
 		this.plainTextNewLineEscStream_ = new EscapeOStream();
@@ -576,7 +578,20 @@ public class WTemplate extends WInteractWidget {
 		setTemplateText(text, TextFormat.XHTMLText);
 	}
 
-	// public void setWidgetIdMode(WTemplate.WidgetIdMode mode) ;
+	/**
+	 * Sets how the varName should be reflected on bound widgets.
+	 * <p>
+	 * To easily identify a widget in the browser, it may be convenient to
+	 * reflect the varName to the widget&apos;s ID. This options allows you to
+	 * choose from two methods.
+	 * <p>
+	 * The default value is SetNoWidgetId which does not reflect the varName on
+	 * the bound widget.
+	 */
+	public void setWidgetIdMode(WTemplate.WidgetIdMode mode) {
+		this.widgetIdMode_ = mode;
+	}
+
 	/**
 	 * Returns how the varName is reflected on a bound widget.
 	 * <p>
@@ -838,7 +853,7 @@ public class WTemplate extends WInteractWidget {
 			final Writer result) throws IOException {
 		WString i = this.strings_.get(varName);
 		if (i != null) {
-			result.append(i);
+			result.append(i.toString());
 		} else {
 			WWidget w = this.resolveWidget(varName);
 			if (w != null) {
@@ -924,6 +939,27 @@ public class WTemplate extends WInteractWidget {
 		} else {
 			return null;
 		}
+	}
+
+	public List<WWidget> getWidgets() {
+		List<WWidget> result = new ArrayList<WWidget>();
+		for (Iterator<Map.Entry<String, WWidget>> j_it = this.widgets_
+				.entrySet().iterator(); j_it.hasNext();) {
+			Map.Entry<String, WWidget> j = j_it.next();
+			result.add(j.getValue());
+		}
+		return result;
+	}
+
+	public String varName(WWidget w) {
+		for (Iterator<Map.Entry<String, WWidget>> j_it = this.widgets_
+				.entrySet().iterator(); j_it.hasNext();) {
+			Map.Entry<String, WWidget> j = j_it.next();
+			if (j.getValue() == w) {
+				return j.getKey();
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -1019,6 +1055,31 @@ public class WTemplate extends WInteractWidget {
 		return this.encodeInternalPaths_;
 	}
 
+	/**
+	 * Configures when internal path encoding is done.
+	 * <p>
+	 * By default, the internal path encoding (if enabled) is done on the
+	 * template text before placeholders are being resolved. In some rare
+	 * situations, you may want to postpone the internal path encoding until
+	 * after placeholders have been resolved, e.g. if a placeholder was used to
+	 * provide the string for an anchor href.
+	 * <p>
+	 * The default value is <code>true</code>
+	 */
+	public void setEncodeTemplateText(boolean on) {
+		this.encodeTemplateText_ = on;
+	}
+
+	/**
+	 * Returns whether internal path encoding is done on the template text.
+	 * <p>
+	 * 
+	 * @see WTemplate#setEncodeTemplateText(boolean on)
+	 */
+	public boolean isEncodeTemplateText() {
+		return this.encodeTemplateText_;
+	}
+
 	public void refresh() {
 		if (this.text_.refresh()) {
 			this.changed_ = true;
@@ -1059,21 +1120,8 @@ public class WTemplate extends WInteractWidget {
 			final CharSequence templateText) throws IOException {
 		this.errorText_ = "";
 		String text = "";
-		WApplication app = WApplication.getInstance();
-		if (app != null
-				&& (this.encodeInternalPaths_ || app.getSession()
-						.hasSessionIdInUrl())) {
-			EnumSet<RefEncoderOption> options = EnumSet
-					.noneOf(RefEncoderOption.class);
-			if (this.encodeInternalPaths_) {
-				options.add(RefEncoderOption.EncodeInternalPaths);
-			}
-			if (app.getSession().hasSessionIdInUrl()) {
-				options.add(RefEncoderOption.EncodeRedirectTrampoline);
-			}
-			WString t = WString.toWString(templateText);
-			RefEncoder.EncodeRefs(t, options);
-			text = t.toString();
+		if (this.encodeTemplateText_) {
+			text = this.encode(templateText.toString());
 		} else {
 			text = templateText.toString();
 		}
@@ -1255,9 +1303,13 @@ public class WTemplate extends WInteractWidget {
 						previouslyRendered.remove(w);
 					}
 				}
-				element
-						.setProperty(Property.PropertyInnerHTML, html
-								.toString());
+				if (!this.encodeTemplateText_) {
+					element.setProperty(Property.PropertyInnerHTML, html
+							.toString());
+				} else {
+					element.setProperty(Property.PropertyInnerHTML, this
+							.encode(html.toString()));
+				}
 				this.changed_ = false;
 				for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it
 						.hasNext();) {
@@ -1378,8 +1430,28 @@ public class WTemplate extends WInteractWidget {
 	private WString text_;
 	private String errorText_;
 	private boolean encodeInternalPaths_;
+	private boolean encodeTemplateText_;
 	private boolean changed_;
 	private WTemplate.WidgetIdMode widgetIdMode_;
+
+	private String encode(final String text) {
+		WApplication app = WApplication.getInstance();
+		if (app != null
+				&& (this.encodeInternalPaths_ || app.getSession()
+						.hasSessionIdInUrl())) {
+			EnumSet<RefEncoderOption> options = EnumSet
+					.noneOf(RefEncoderOption.class);
+			if (this.encodeInternalPaths_) {
+				options.add(RefEncoderOption.EncodeInternalPaths);
+			}
+			if (app.getSession().hasSessionIdInUrl()) {
+				options.add(RefEncoderOption.EncodeRedirectTrampoline);
+			}
+			return RefEncoder.EncodeRefs(new WString(text), options).toString();
+		} else {
+			return text;
+		}
+	}
 
 	private static int parseArgs(final String text, int pos,
 			final List<WString> result) {

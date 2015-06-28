@@ -987,39 +987,39 @@ public class WEnvironment {
 		final Configuration conf = this.session_.getController()
 				.getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
-		if (this.userAgent_.indexOf("MSIE 2.") != -1
-				|| this.userAgent_.indexOf("MSIE 3.") != -1
-				|| this.userAgent_.indexOf("MSIE 4.") != -1
-				|| this.userAgent_.indexOf("MSIE 5.") != -1
-				|| this.userAgent_.indexOf("IEMobile") != -1) {
-			this.agent_ = WEnvironment.UserAgent.IEMobile;
+		if (this.userAgent_.indexOf("Trident/5.0") != -1) {
+			this.agent_ = WEnvironment.UserAgent.IE9;
+			return;
 		} else {
-			if (this.userAgent_.indexOf("MSIE 6.") != -1) {
-				this.agent_ = WEnvironment.UserAgent.IE6;
+			if (this.userAgent_.indexOf("Trident/6.0") != -1) {
+				this.agent_ = WEnvironment.UserAgent.IE10;
+				return;
 			} else {
-				if (this.userAgent_.indexOf("MSIE 7.") != -1) {
-					this.agent_ = WEnvironment.UserAgent.IE7;
+				if (this.userAgent_.indexOf("Trident/") != -1) {
+					this.agent_ = WEnvironment.UserAgent.IE11;
+					return;
 				} else {
-					if (this.userAgent_.indexOf("MSIE 8.") != -1) {
-						this.agent_ = WEnvironment.UserAgent.IE8;
+					if (this.userAgent_.indexOf("MSIE 2.") != -1
+							|| this.userAgent_.indexOf("MSIE 3.") != -1
+							|| this.userAgent_.indexOf("MSIE 4.") != -1
+							|| this.userAgent_.indexOf("MSIE 5.") != -1
+							|| this.userAgent_.indexOf("IEMobile") != -1) {
+						this.agent_ = WEnvironment.UserAgent.IEMobile;
 					} else {
-						if (this.userAgent_.indexOf("MSIE 9.") != -1) {
-							this.agent_ = WEnvironment.UserAgent.IE9;
+						if (this.userAgent_.indexOf("MSIE 6.") != -1) {
+							this.agent_ = WEnvironment.UserAgent.IE6;
 						} else {
-							if (this.userAgent_.indexOf("MSIE") != -1) {
-								this.agent_ = WEnvironment.UserAgent.IE10;
+							if (this.userAgent_.indexOf("MSIE 7.") != -1) {
+								this.agent_ = WEnvironment.UserAgent.IE7;
 							} else {
-								if (this.userAgent_.indexOf("Trident/5.0") != -1) {
-									this.agent_ = WEnvironment.UserAgent.IE9;
-									return;
+								if (this.userAgent_.indexOf("MSIE 8.") != -1) {
+									this.agent_ = WEnvironment.UserAgent.IE8;
 								} else {
-									if (this.userAgent_.indexOf("Trident/6.0") != -1) {
-										this.agent_ = WEnvironment.UserAgent.IE10;
-										return;
+									if (this.userAgent_.indexOf("MSIE 9.") != -1) {
+										this.agent_ = WEnvironment.UserAgent.IE9;
 									} else {
-										if (this.userAgent_.indexOf("Trident/") != -1) {
-											this.agent_ = WEnvironment.UserAgent.IE11;
-											return;
+										if (this.userAgent_.indexOf("MSIE") != -1) {
+											this.agent_ = WEnvironment.UserAgent.IE10;
 										}
 									}
 								}

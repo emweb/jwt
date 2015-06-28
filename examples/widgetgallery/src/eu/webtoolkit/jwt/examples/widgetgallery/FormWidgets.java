@@ -1027,7 +1027,7 @@ class FormWidgets extends TopicWidget {
 				.tr("appendedDropdownButton-template"));
 		WPopupMenu popup = new WPopupMenu();
 		popup.addItem("Choose a button type");
-		popup.getAddSeparator();
+		popup.addSeparator();
 		popup.addItem("One-time hit button").setLink(new WLink("#one-time"));
 		popup.addItem("Navigation button").setLink(new WLink("#navigation"));
 		popup.addItem("Button style").setLink(new WLink("#style"));

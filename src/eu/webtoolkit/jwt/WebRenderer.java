@@ -170,6 +170,7 @@ class WebRenderer implements SlotLearnerInterface {
 			break;
 		case Page:
 			this.initialStyleRendered_ = false;
+			++this.pageId_;
 			if (this.session_.getApp() != null) {
 				this.serveMainpage(response);
 			} else {
@@ -663,7 +664,7 @@ class WebRenderer implements SlotLearnerInterface {
 		DomElement.htmlAttributeValue(bootStyleUrl, this.session_
 				.getBootstrapUrl(response,
 						WebSession.BootstrapOption.ClearInternalPath)
-				+ "&request=style");
+				+ "&request=style&page=" + String.valueOf(this.pageId_));
 		boot.setVar("BOOT_STYLE_URL", bootStyleUrl.toString());
 		this.setCaching(response, false);
 		String contentType = "text/html; charset=UTF-8";
@@ -677,7 +678,6 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void serveMainpage(final WebResponse response) throws IOException {
 		++this.expectedAckId_;
-		++this.pageId_;
 		this.session_.sessionIdChanged_ = false;
 		final Configuration conf = this.session_.getController()
 				.getConfiguration();

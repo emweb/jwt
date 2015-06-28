@@ -440,36 +440,36 @@ public class StringUtils {
 	    int i = 0;
 	    int pad = 0;
 	    while (i < bytes.length) {
-	      byte b1 = bytes [i++];
-	      byte b2;
-	      byte b3;
+	      int b1 = bytes [i++] & 0xff;
+	      int b2;
+	      int b3;
 	      if (i >= bytes.length) {
 	         b2 = 0;
 	         b3 = 0;
 	         pad = 2;
 	         }
 	      else {
-	         b2 = bytes [i++];
+	         b2 = bytes [i++] & 0xff;
 	         if (i >= bytes.length) {
 	            b3 = 0;
 	            pad = 1;
 	            }
 	         else
-	            b3 = bytes [i++];
+	            b3 = bytes [i++] & 0xff;
 	         }
-	      byte c1 = (byte)(b1 >> 2);
-	      byte c2 = (byte)(((b1 & 0x3) << 4) | (b2 >> 4));
-	      byte c3 = (byte)(((b2 & 0xf) << 2) | (b3 >> 6));
-	      byte c4 = (byte)(b3 & 0x3f);
-	      encodedString += base64Array [c1];
-	      encodedString += base64Array [c2];
+	      int c1 = (b1 >> 2);
+	      int c2 = (((b1 & 0x3) << 4) | (b2 >> 4));
+	      int c3 = (((b2 & 0xf) << 2) | (b3 >> 6));
+	      int c4 = (b3 & 0x3f);
+	      encodedString += base64Array [c1 & 0xff];
+	      encodedString += base64Array [c2 & 0xff];
 	      switch (pad) {
 	       case 0:
-	         encodedString += base64Array [c3];
-	         encodedString += base64Array [c4];
+	         encodedString += base64Array [c3 & 0xff];
+	         encodedString += base64Array [c4 & 0xff];
 	         break;
 	       case 1:
-	         encodedString += base64Array [c3];
+	         encodedString += base64Array [c3 & 0xff];
 	         encodedString += "=";
 	         break;
 	       case 2:

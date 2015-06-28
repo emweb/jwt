@@ -17,11 +17,18 @@ public class BCryptHashFunction extends HashFunction {
 
 	@Override
 	public String compute(String msg, String salt) {
-		return BCrypt.hashpw(msg, BCrypt.gensalt());
+		if (salt == null || salt.isEmpty() || salt.charAt(0) != '$')
+			return BCrypt.hashpw(msg, BCrypt.gensalt());
+		else
+			return BCrypt.hashpw(msg, salt);
 	}
 	
 	@Override
 	public boolean verify(String msg, String salt, String hash) {
 		return BCrypt.checkpw(msg, hash);
+	}
+	
+	public static void main(String [] args) {
+		System.err.println(BCrypt.gensalt(12));
 	}
 }

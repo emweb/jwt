@@ -143,9 +143,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				WLink link = (WLink) linkData;
 				IndexAnchor a = this.anchorWidget(widgetRef, index);
 				a.setLink(link);
-				if (link.getType() == WLink.Type.Resource) {
-					a.setTarget(AnchorTarget.TargetNewWindow);
-				}
+				a.setTarget(link.getTarget());
 			}
 			IndexText t = this.textWidget(widgetRef, index);
 			WString label = StringUtils.asString(index.getData(),

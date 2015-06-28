@@ -41,6 +41,7 @@ public abstract class WWebWidget extends WWidget {
 	 */
 	public WWebWidget(WContainerWidget parent) {
 		super(parent);
+		this.elementTagName_ = "";
 		this.flags_ = new BitSet();
 		this.width_ = null;
 		this.height_ = null;
@@ -753,7 +754,13 @@ public abstract class WWebWidget extends WWidget {
 
 	DomElement createDomElement(WApplication app) {
 		this.setRendered(true);
-		DomElement result = DomElement.createNew(this.getDomElementType());
+		DomElement result;
+		if (this.elementTagName_.length() > 0) {
+			result = DomElement.createNew(DomElementType.DomElement_OTHER);
+			result.setDomElementTagName(this.elementTagName_);
+		} else {
+			result = DomElement.createNew(this.getDomElementType());
+		}
 		this.setId(result, app);
 		this.updateDom(result, true);
 		return result;
@@ -826,6 +833,33 @@ public abstract class WWebWidget extends WWidget {
 	 */
 	public void setLoadLaterWhenInvisible(boolean how) {
 		this.flags_.set(BIT_DONOT_STUB, !how);
+	}
+
+	/**
+	 * returns the current html tag name
+	 * <p>
+	 * 
+	 * @see WWebWidget#setHtmlTagName(String tag)
+	 */
+	public String getHtmlTagName() {
+		if (this.elementTagName_.length() > 0) {
+			return this.elementTagName_;
+		}
+		DomElementType type = this.getDomElementType();
+		return DomElement.tagName(type);
+	}
+
+	/**
+	 * set the custom HTML tag name
+	 * <p>
+	 * The custom tag will replace the actual tag. The tag is not tested to see
+	 * if it is a valid one and a closing tag will always be added.
+	 * <p>
+	 * 
+	 * @see WWebWidget#getHtmlTagName()
+	 */
+	public void setHtmlTagName(final String tag) {
+		this.elementTagName_ = tag;
 	}
 
 	/**
@@ -2010,6 +2044,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_TABINDEX_CHANGED = 30;
 	private static String FOCUS_SIGNAL = "focus";
 	private static String BLUR_SIGNAL = "blur";
+	private String elementTagName_;
 
 	private void loadToolTip() {
 		if (!(this.lookImpl_.toolTip_ != null)) {

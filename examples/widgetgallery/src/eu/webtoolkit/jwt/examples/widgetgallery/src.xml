@@ -2069,7 +2069,7 @@
     <span class="n">WPopupMenu</span> <span class="n">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Contents&quot;</span><span class="o">);</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Index&quot;</span><span class="o">);</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;About&quot;</span><span class="o">);</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">itemSelected</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
             <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WMenuItem</span><span class="o">&gt;()</span> <span class="o">{</span>
@@ -3135,7 +3135,7 @@
                     <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;You are disconnected now.&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">});</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;icons/house.png&quot;</span><span class="o">,</span> <span class="s">&quot;I&#39;m home&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span>
             <span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
@@ -3151,7 +3151,7 @@
                     <span class="n">item</span><span class="o">.</span><span class="na">isChecked</span><span class="o">()</span> <span class="o">?</span> <span class="s">&quot;checked&quot;</span> <span class="o">:</span> <span class="s">&quot;unchecked&quot;</span><span class="o">));</span>
         <span class="o">}</span>
     <span class="o">});</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">WPopupMenu</span> <span class="n">subMenu</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
     <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Contents&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
             <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
@@ -3167,7 +3167,7 @@
                             <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;This could be a link to /index.html.&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">});</span>
-    <span class="n">subMenu</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
+    <span class="n">subMenu</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;About&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
             <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
@@ -3312,7 +3312,7 @@
             <span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;appendedDropdownButton-template&quot;</span><span class="o">));</span>
     <span class="n">WPopupMenu</span> <span class="n">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Choose a button type&quot;</span><span class="o">);</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;One-time hit button&quot;</span><span class="o">).</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;#one-time&quot;</span><span class="o">));</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Navigation button&quot;</span><span class="o">).</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;#navigation&quot;</span><span class="o">));</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Button style&quot;</span><span class="o">).</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;#style&quot;</span><span class="o">));</span>
@@ -3330,8 +3330,8 @@
             <span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;prependedDropdownButton-template&quot;</span><span class="o">));</span>
     <span class="n">WPopupMenu</span> <span class="n">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Choose a button type&quot;</span><span class="o">);</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">getAddSeparator</span><span class="o">();</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;One-time hit button&quot;</span><span class="o">).</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;#one-time&quot;</span><span class="o">));</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Navigation button&quot;</span><span class="o">).</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;#navigation&quot;</span><span class="o">));</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Button style&quot;</span><span class="o">).</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;#style&quot;</span><span class="o">));</span>

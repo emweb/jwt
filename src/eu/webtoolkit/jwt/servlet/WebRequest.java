@@ -23,6 +23,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;
 
@@ -81,45 +82,67 @@ public class WebRequest extends HttpServletRequestWrapper {
 	private String scriptName;
 	private String pathInfo;
 
-	/**
-	 * Creates a WebRequest by wrapping an HttpServletRequest
-	 * @param request The request to be wrapped.
-	 */
-	public WebRequest(HttpServletRequest request) {
-		super(request);
-		this.httpRequest  = request;
-
-		computePaths();
-		
-		try {
-			parse(null);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static String computeScriptName(HttpServletRequest request) {
+	public static String computeScriptName(HttpServletRequest request, Configuration configuration) {
 		String scriptName = request.getServletPath();
 	
 		if (request.getContextPath() != null)
 			scriptName = request.getContextPath() + scriptName;
+
 		if (!scriptName.startsWith("/"))
 			scriptName = "/" + scriptName;
-	
+
 		// Jetty will auto-redirect in this case to .../
 		// I am not sure if this is according to the servlet spec ?
 		if (request.getServletPath().length() == 0 && !scriptName.endsWith("/"))
 			scriptName += "/"; 
 		
+		if (configuration.internalDeploymentSize() != 0) {
+			String pathInfo = getPathInfo(request, scriptName); 
+			// Move part of the internal path to the script name
+			if (pathInfo != null) {
+				for (int i = 0; i < configuration.internalDeploymentSize(); ++i) {
+					if (pathInfo.length() > 1) {
+						int slashPos = pathInfo.indexOf('/', 1);
+						if (slashPos != -1) {
+							scriptName += pathInfo.substring(0, slashPos);
+							pathInfo = pathInfo.substring(slashPos);
+						}
+					}
+				}
+			}
+			if (!scriptName.endsWith("/"))
+				scriptName += "/";
+		}
+		
 		return scriptName;
 	}
 	
-	public static String computePathInfo(HttpServletRequest request) {
-		String scriptName = computeScriptName(request);
-		return computePathInfo(request, scriptName);
+	public static String computePathInfo(HttpServletRequest request, Configuration configuration) {
+		String scriptName = computeScriptName(request, configuration);
+		return computePathInfo(request, scriptName, configuration);
 	}
 	
-	public static String computePathInfo(HttpServletRequest request, String scriptName) {
+	public static String computePathInfo(HttpServletRequest request, String scriptName, Configuration configuration) {
+		String pathInfo = getPathInfo(request, scriptName);
+		
+		if (configuration.internalDeploymentSize() != 0) {
+			// Move part of the internal path to the script name
+			for (int i = 0; i < configuration.internalDeploymentSize(); ++i) {
+				if (pathInfo.length() > 1) {
+					int slashPos = pathInfo.indexOf('/', 1);
+					if (slashPos != -1) {
+						pathInfo = pathInfo.substring(slashPos);
+					}
+				}
+			}
+			if (scriptName.endsWith("/") && pathInfo.startsWith("/"))
+				pathInfo = pathInfo.substring(1);
+		}
+		
+		return pathInfo;
+	}
+
+	private static String getPathInfo(HttpServletRequest request, String scriptName) {
 		String pathInfo = request.getPathInfo();
 		
 		// Jetty will report "/" as an internal path. Which totally makes no sense but is according
@@ -142,29 +165,29 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 		if (pathInfo == null)
 			pathInfo = "";
-		
 		return pathInfo;
 	}
 	
-	private void computePaths() {
+	private void computePaths(Configuration configuration) {
 		/*
 		 * We compute this here since sometimes when reposted through async (servlet 3), the context and everything
 		 * gets messed up (You, JETTY 8!)
 		 */
-		this.scriptName = computeScriptName(httpRequest);
-		this.pathInfo = computePathInfo(httpRequest, this.scriptName);
+		this.scriptName = computeScriptName(httpRequest, configuration);
+		this.pathInfo = computePathInfo(httpRequest, this.scriptName, configuration);
 	}
 	
 	/**
 	 * Creates a WebRequest by wrapping an HttpServletRequest
 	 * @param request The request to be wrapped.
 	 * @param progressListener a progress listener implementation
+	 * @param configuration 
 	 */
-	public WebRequest(HttpServletRequest request, ProgressListener progressListener) {
+	public WebRequest(HttpServletRequest request, ProgressListener progressListener, Configuration configuration) {
 		super(request);
 		this.httpRequest  = request;
 		
-		computePaths();
+		computePaths(configuration);
 
 		try {
 			parse(progressListener);

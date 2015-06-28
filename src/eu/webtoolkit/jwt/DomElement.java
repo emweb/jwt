@@ -91,6 +91,14 @@ public class DomElement {
 		this.updatedChildren_ = new ArrayList<DomElement>();
 		this.childrenHtml_ = new EscapeOStream();
 		this.timeouts_ = new ArrayList<DomElement.TimeoutEvent>();
+		this.elementTagName_ = "";
+	}
+
+	/**
+	 * set dom element custom tag name
+	 */
+	public void setDomElementTagName(final String name) {
+		this.elementTagName_ = name;
 	}
 
 	/**
@@ -968,7 +976,12 @@ public class DomElement {
 				fastHtmlAttributeValue(out, attributeValues, clickEvent.jsCode);
 				out.append("><").append(elementNames_[renderedType.getValue()]);
 			} else {
-				out.append('<').append(elementNames_[renderedType.getValue()]);
+				if (renderedType == DomElementType.DomElement_OTHER) {
+					out.append('<').append(this.elementTagName_);
+				} else {
+					out.append('<').append(
+							elementNames_[renderedType.getValue()]);
+				}
 			}
 		}
 		if (this.id_.length() != 0) {
@@ -1114,8 +1127,12 @@ public class DomElement {
 						&& this.childrenHtml_.isEmpty()) {
 					out.append("&nbsp;");
 				}
-				out.append("</").append(elementNames_[renderedType.getValue()])
-						.append(">");
+				if (renderedType == DomElementType.DomElement_OTHER) {
+					out.append("</").append(this.elementTagName_).append(">");
+				} else {
+					out.append("</").append(
+							elementNames_[renderedType.getValue()]).append(">");
+				}
 			} else {
 				out.append(" />");
 			}
@@ -1882,6 +1899,7 @@ public class DomElement {
 	private List<DomElement> updatedChildren_;
 	private EscapeOStream childrenHtml_;
 	private List<DomElement.TimeoutEvent> timeouts_;
+	private String elementTagName_;
 	private static int nextId_ = 0;
 	private static String[] elementNames_ = { "a", "br", "button", "col",
 			"colgroup", "div", "fieldset", "form", "h1", "h2", "h3", "h4",

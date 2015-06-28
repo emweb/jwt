@@ -168,10 +168,7 @@ public class WTemplateFormView extends WTemplate {
 	 * updateModelValue()}.
 	 */
 	public void setFormWidget(String field, WWidget formWidget) {
-		WTemplateFormView.FieldData i = this.fields_.get(field);
-		if (i == null) {
-			this.fields_.put(field, new WTemplateFormView.FieldData());
-		}
+		this.fields_.put(field, new WTemplateFormView.FieldData());
 		this.fields_.get(field).formWidget = formWidget;
 		this.bindWidget(field, formWidget);
 	}
@@ -201,10 +198,7 @@ public class WTemplateFormView extends WTemplate {
 	 */
 	public void setFormWidget(String field, WWidget formWidget,
 			WTemplateFormView.FieldView fieldView) {
-		WTemplateFormView.FieldData i = this.fields_.get(field);
-		if (i == null) {
-			this.fields_.put(field, new WTemplateFormView.FieldData());
-		}
+		this.fields_.put(field, new WTemplateFormView.FieldData());
 		this.fields_.get(field).formWidget = formWidget;
 		this.fields_.get(field).updateFunctions = fieldView;
 		this.bindWidget(field, formWidget);

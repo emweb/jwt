@@ -737,6 +737,8 @@ public class AuthWidget extends WTemplateFormView {
 				}
 				this.model_.reset();
 				this.createLoginView();
+			} else {
+				this.createLoginView();
 			}
 		}
 	}

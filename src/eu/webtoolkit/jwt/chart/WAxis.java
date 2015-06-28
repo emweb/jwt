@@ -1090,9 +1090,37 @@ public class WAxis {
 									s.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
 									if (daysInterval < 1.3) {
 										interval = 1;
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MinimumValue)
+												.isEmpty()) {
+											min.setTime(new WTime(0, 0));
+										}
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MaximumValue)
+												.isEmpty()) {
+											if (!max.equals(new WTime(0, 0))) {
+												max = max.addDays(1);
+											}
+										}
 									} else {
 										interval = 7 * Math.max(1,
 												(int) ((daysInterval + 5) / 7));
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MinimumValue)
+												.isEmpty()) {
+											int dw = min.getDayOfWeek();
+											min = min.addDays(-(dw - 1));
+										}
+										if (!EnumUtils.mask(this.roundLimits_,
+												AxisValue.MaximumValue)
+												.isEmpty()) {
+											int days = min.getDaysTo(max);
+											if (!max.equals(new WTime(0, 0))) {
+												++days;
+											}
+											days = roundUp(days, interval);
+											max = min.addDays(days);
+										}
 									}
 								} else {
 									double minutes = daysInterval * 24 * 60;
@@ -1481,6 +1509,46 @@ public class WAxis {
 		this.renderingMirror_ = enable;
 	}
 
+	public double calcTitleSize(WPaintDevice d, Orientation orientation) {
+		WMeasurePaintDevice device = new WMeasurePaintDevice(d);
+		WPainter painter = new WPainter(device);
+		painter.setFont(this.titleFont_);
+		painter.drawText(0, 0, 100, 100, EnumSet.of(AlignmentFlag.AlignCenter),
+				this.getTitle());
+		return orientation == Orientation.Vertical ? device.getBoundingRect()
+				.getHeight() : device.getBoundingRect().getWidth();
+	}
+
+	public double calcMaxTickLabelSize(WPaintDevice d, Orientation orientation) {
+		WMeasurePaintDevice device = new WMeasurePaintDevice(d);
+		WPainter painter = new WPainter(device);
+		painter.setFont(this.labelFont_);
+		List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
+		for (int i = 0; i < this.getSegmentCount(); ++i) {
+			this.getLabelTicks(ticks, i);
+		}
+		for (int i = 0; i < ticks.size(); ++i) {
+			painter.drawText(0, 0, 100, 100, EnumSet
+					.of(AlignmentFlag.AlignRight), ticks.get(i).label);
+		}
+		return orientation == Orientation.Vertical ? device.getBoundingRect()
+				.getHeight() : device.getBoundingRect().getWidth();
+	}
+
+	/**
+	 * Represents a Date time unit.
+	 */
+	protected enum DateTimeUnit {
+		Seconds, Minutes, Hours, Days, Months, Years;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	/**
 	 * Represents a label/tick on the axis.
 	 */
@@ -1562,10 +1630,10 @@ public class WAxis {
 		this.textPen_ = new WPen(WColor.black);
 		this.titleOrientation_ = Orientation.Horizontal;
 		this.segments_ = new ArrayList<WAxis.Segment>();
-		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
 				WLength.Unit.Point));
-		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif);
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
 				WLength.Unit.Point));
 		this.segments_.add(new WAxis.Segment());
@@ -1703,15 +1771,63 @@ public class WAxis {
 		}
 	}
 
-	enum DateTimeUnit {
-		Seconds, Minutes, Hours, Days, Months, Years;
-
-		/**
-		 * Returns the numerical representation of this enum.
-		 */
-		public int getValue() {
-			return ordinal();
+	/**
+	 * Returns the Date format.
+	 */
+	protected WString autoDateFormat(final WDate dt, WAxis.DateTimeUnit unit,
+			boolean atTick) {
+		if (atTick) {
+			switch (unit) {
+			case Months:
+			case Years:
+			case Days:
+				if (dt.getSecond() != 0) {
+					return new WString("dd/MM/yy hh:mm:ss");
+				} else {
+					if (dt.getHour() != 0) {
+						return new WString("dd/MM/yy hh:mm");
+					} else {
+						return new WString("dd/MM/yy");
+					}
+				}
+			case Hours:
+				if (dt.getSecond() != 0) {
+					return new WString("dd/MM hh:mm:ss");
+				} else {
+					if (dt.getMinute() != 0) {
+						return new WString("dd/MM hh:mm");
+					} else {
+						return new WString("h'h' dd/MM");
+					}
+				}
+			case Minutes:
+				if (dt.getSecond() != 0) {
+					return new WString("hh:mm:ss");
+				} else {
+					return new WString("hh:mm");
+				}
+			case Seconds:
+				return new WString("hh:mm:ss");
+			}
+		} else {
+			switch (unit) {
+			case Years:
+				return new WString("yyyy");
+			case Months:
+				return new WString("MMM yy");
+			case Days:
+				return new WString("dd/MM/yy");
+			case Hours:
+				return new WString("h'h' dd/MM");
+			case Minutes:
+				return new WString("hh:mm");
+			case Seconds:
+				return new WString("hh:mm:ss");
+			default:
+				break;
+			}
 		}
+		return WString.Empty;
 	}
 
 	private WAbstractChartImplementation chart_;
@@ -1759,6 +1875,7 @@ public class WAxis {
 			this.renderLength = AUTO_MAXIMUM;
 			this.renderStart = AUTO_MAXIMUM;
 			this.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
+			this.dateTimeRenderInterval = 0;
 		}
 	}
 
@@ -2002,58 +2119,7 @@ public class WAxis {
 				|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
 				|| !!EnumUtils.mask(this.roundLimits_, AxisValue.MinimumValue)
 						.isEmpty();
-		if (atTick) {
-			switch (unit) {
-			case Months:
-			case Years:
-			case Days:
-				if (dt.getSecond() != 0) {
-					return new WString("dd/MM/yy hh:mm:ss");
-				} else {
-					if (dt.getHour() != 0) {
-						return new WString("dd/MM/yy hh:mm");
-					} else {
-						return new WString("dd/MM/yy");
-					}
-				}
-			case Hours:
-				if (dt.getSecond() != 0) {
-					return new WString("dd/MM hh:mm:ss");
-				} else {
-					if (dt.getMinute() != 0) {
-						return new WString("dd/MM hh:mm");
-					} else {
-						return new WString("h'h' dd/MM");
-					}
-				}
-			case Minutes:
-				if (dt.getSecond() != 0) {
-					return new WString("hh:mm:ss");
-				} else {
-					return new WString("hh:mm");
-				}
-			case Seconds:
-				return new WString("hh:mm:ss");
-			}
-		} else {
-			switch (unit) {
-			case Years:
-				return new WString("yyyy");
-			case Months:
-				return new WString("MMM yy");
-			case Days:
-				return new WString("dd/MM/yy");
-			case Hours:
-				return new WString("h'h' dd/MM");
-			case Minutes:
-				return new WString("hh:mm");
-			case Seconds:
-				return new WString("hh:mm:ss");
-			default:
-				break;
-			}
-		}
-		return WString.Empty;
+		return this.autoDateFormat(dt, unit, atTick);
 	}
 
 	double mapFromDevice(double d) {
@@ -2150,6 +2216,10 @@ public class WAxis {
 
 	static int roundDown(int v, int factor) {
 		return v / factor * factor;
+	}
+
+	static int roundUp(int v, int factor) {
+		return ((v - 1) / factor + 1) * factor;
 	}
 
 	static WPointF interpolate(final WPointF p1, final WPointF p2, double u) {

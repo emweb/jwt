@@ -7,7 +7,6 @@ package eu.webtoolkit.jwt.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,14 +14,24 @@ import java.io.UnsupportedEncodingException;
 
 public class StreamUtils {
 	public static String readFile(String fname) {
+		FileInputStream s = null;
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			copy(new FileInputStream(fname), baos);
+			s = new FileInputStream(fname);
+			copy(s, baos);
 			return baos.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("Could not read file: " + fname, e);
 		} catch (IOException e) {
 			throw new RuntimeException("Could not read file: " + fname, e);
+		} finally {
+			if (s != null) {
+				try {
+					s.close();
+				} catch (IOException e) {
+					// Ignore that
+				}
+			}
 		}
 	}
 	

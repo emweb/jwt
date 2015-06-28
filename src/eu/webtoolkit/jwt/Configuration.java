@@ -76,6 +76,7 @@ public class Configuration {
 	private int bootstrapTimeout = 10;
 	private String uaCompatible = "";
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
+	private int internalDeploymentSize = 0;
 
 	/**
 	 * Creates a default configuration.
@@ -714,6 +715,14 @@ public class Configuration {
 
 	public boolean isCookieChecks() {
 		return true;
+	}
+
+	public int internalDeploymentSize() {
+		return internalDeploymentSize;
+	}
+	
+	public void setInternalDeploymentSize(int size) {
+		this.internalDeploymentSize = size;
 	}
 
 	/**

@@ -272,7 +272,7 @@ class Navigation extends TopicWidget {
 		WPopupMenu popup = new WPopupMenu();
 		popup.addItem("Contents");
 		popup.addItem("Index");
-		popup.getAddSeparator();
+		popup.addSeparator();
 		popup.addItem("About");
 		popup.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
@@ -326,7 +326,7 @@ class Navigation extends TopicWidget {
 						out.setText("<p>You are disconnected now.</p>");
 					}
 				});
-		popup.getAddSeparator();
+		popup.addSeparator();
 		popup.addItem("icons/house.png", "I'm home").triggered().addListener(
 				this, new Signal.Listener() {
 					public void trigger() {
@@ -342,7 +342,7 @@ class Navigation extends TopicWidget {
 						item.isChecked() ? "checked" : "unchecked"));
 			}
 		});
-		popup.getAddSeparator();
+		popup.addSeparator();
 		WPopupMenu subMenu = new WPopupMenu();
 		subMenu.addItem("Contents").triggered().addListener(this,
 				new Signal.Listener() {
@@ -358,7 +358,7 @@ class Navigation extends TopicWidget {
 								.setText("<p>This could be a link to /index.html.</p>");
 					}
 				});
-		subMenu.getAddSeparator();
+		subMenu.addSeparator();
 		subMenu.addItem("About").triggered().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {

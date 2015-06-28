@@ -72,6 +72,7 @@ public class WLink {
 	public WLink() {
 		this.type_ = WLink.Type.Url;
 		this.value_ = new Object();
+		this.target_ = AnchorTarget.TargetSelf;
 		this.setUrl("");
 	}
 
@@ -83,6 +84,7 @@ public class WLink {
 	 */
 	public WLink(String url) {
 		this.value_ = new Object();
+		this.target_ = AnchorTarget.TargetSelf;
 		this.setUrl(url);
 	}
 
@@ -101,6 +103,7 @@ public class WLink {
 	 */
 	public WLink(WLink.Type type, final String value) {
 		this.value_ = new Object();
+		this.target_ = AnchorTarget.TargetSelf;
 		switch (type) {
 		case Url:
 			this.setUrl(value);
@@ -122,6 +125,7 @@ public class WLink {
 	 */
 	public WLink(WResource resource) {
 		this.value_ = new Object();
+		this.target_ = AnchorTarget.TargetSelf;
 		this.setResource(resource);
 	}
 
@@ -244,6 +248,36 @@ public class WLink {
 	}
 
 	/**
+	 * Sets the location where the linked content should be displayed.
+	 * <p>
+	 * By default, the linked content is displayed in the application (
+	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
+	 * document, the application is replaced with the new document. When the
+	 * link is to a document that cannot be displayed in the browser, it is
+	 * offered for download or opened using an external program, depending on
+	 * browser settings.
+	 * <p>
+	 * By setting <code>target</code> to {@link AnchorTarget#TargetNewWindow},
+	 * the destination is displayed in a new browser window or tab.
+	 * <p>
+	 * 
+	 * @see WLink#getTarget()
+	 */
+	public void setTarget(AnchorTarget target) {
+		this.target_ = target;
+	}
+
+	/**
+	 * Returns the location where the linked content should be displayed.
+	 * <p>
+	 * 
+	 * @see WLink#setTarget(AnchorTarget target)
+	 */
+	public AnchorTarget getTarget() {
+		return this.target_;
+	}
+
+	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(final WLink other) {
@@ -274,6 +308,7 @@ public class WLink {
 
 	private WLink.Type type_;
 	private Object value_;
+	private AnchorTarget target_;
 
 	JSlot manageInternalPathChange(WApplication app, WInteractWidget widget,
 			JSlot slot) {

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Class which holds a date on the gregorian calendar, specified as
@@ -29,6 +30,8 @@ import java.util.GregorianCalendar;
  * Simple operations are supported to compare dates, or to calculate with dates.
  */
 public class WDate implements Comparable<WDate> {
+	static private TimeZone timeZone = null;
+	
 	static class RegExpInfo {
 		public String regexp;
 		public String yearGetJS;
@@ -55,6 +58,20 @@ public class WDate implements Comparable<WDate> {
 	}
 
 	private Date d;
+
+	/**
+	 * Sets default timezone
+	 * 
+	 * If <code>null</code>, then the default (local) timezone will be used. You may
+	 * want to change this to e.g. GMT to not be affected by oddities in the local
+	 * time zone, such as for example missing 'time'.
+	 * (see e.g. http://stackoverflow.com/questions/6140624/java-missing-28-seconds)
+	 *
+	 * The default is <code>null</code>.
+	 */
+	public static void setTimezone(TimeZone timeZone) {
+		WDate.timeZone = timeZone; 
+	}
 
 	/**
 	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
@@ -123,7 +140,7 @@ public class WDate implements Comparable<WDate> {
 	 */
 	public void setDate(int year, int month, int day, int hour, int minute,
 			int second, int millisecond) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		c.set(year, month - 1, day, hour, minute, second);
 		c.set(Calendar.MILLISECOND, millisecond);
@@ -138,6 +155,13 @@ public class WDate implements Comparable<WDate> {
 		}
 
 		d = c.getTime();
+	}
+
+	private static Calendar createCalendar() {
+		if (timeZone != null)
+			return Calendar.getInstance(timeZone);
+		else
+			return Calendar.getInstance();
 	}
 
 	/**
@@ -203,7 +227,7 @@ public class WDate implements Comparable<WDate> {
 	 * many seconds earlier.
 	 */
 	public WDate addSeconds(int nSeconds) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		c.add(Calendar.SECOND, nSeconds);
 		return new WDate(c.getTime());
@@ -217,7 +241,7 @@ public class WDate implements Comparable<WDate> {
 	 * time that is as many seconds earlier.
 	 */
 	public WDate addMilliseconds(int nMilliseconds) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		c.add(Calendar.MILLISECOND, nMilliseconds);
 		return new WDate(c.getTime());
@@ -233,7 +257,7 @@ public class WDate implements Comparable<WDate> {
 	 * @see #addYears(int)
 	 */
 	public WDate addDays(int ndays) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		c.add(Calendar.DATE, ndays);
 		return new WDate(c.getTime());
@@ -250,7 +274,7 @@ public class WDate implements Comparable<WDate> {
 	 * @see #addYears(int)
 	 */
 	public WDate addMonths(int nmonths) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		c.add(Calendar.MONTH, nmonths);
 		return new WDate(c.getTime());
@@ -267,7 +291,7 @@ public class WDate implements Comparable<WDate> {
 	 * @see #addMonths(int)
 	 */
 	public WDate addYears(int nyears) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		c.add(Calendar.YEAR, nyears);
 		return new WDate(c.getTime());
@@ -277,7 +301,7 @@ public class WDate implements Comparable<WDate> {
 	 * Year
 	 */
 	public int getYear() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.YEAR);
 	}
@@ -286,7 +310,7 @@ public class WDate implements Comparable<WDate> {
 	 * Month (1-12)
 	 */
 	public int getMonth() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.MONTH) + 1;
 	}
@@ -295,7 +319,7 @@ public class WDate implements Comparable<WDate> {
 	 * Day of month (1-31)
 	 */
 	public int getDay() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.DATE);
 	}
@@ -304,7 +328,7 @@ public class WDate implements Comparable<WDate> {
 	 * Hour (0-24)
 	 */
 	public int getHour() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.HOUR_OF_DAY);
 	}
@@ -313,7 +337,7 @@ public class WDate implements Comparable<WDate> {
 	 * Minute (0-59)
 	 */
 	public int getMinute() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.MINUTE);
 	}
@@ -322,7 +346,7 @@ public class WDate implements Comparable<WDate> {
 	 * Second (0-59)
 	 */
 	public int getSecond() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.SECOND);
 	}
@@ -331,7 +355,7 @@ public class WDate implements Comparable<WDate> {
 	 * Millisecond (0-999)
 	 */
 	public int getMillisecond() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.MILLISECOND);
 	}
@@ -358,7 +382,7 @@ public class WDate implements Comparable<WDate> {
 	 * Day of week (1-7)
 	 */
 	public int getDayOfWeek() {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d);
 		return c.get(Calendar.DAY_OF_WEEK);
 	}
@@ -487,8 +511,11 @@ public class WDate implements Comparable<WDate> {
 	 * configured in the client.
 	 */
 	public static WDate getCurrentDate() {
-		// TODO
-		return new WDate(new Date());
+		if (WApplication.getInstance() != null) {
+			int timeZoneOffset = WApplication.getInstance().getEnvironment().getTimeZoneOffset();
+			return getCurrentServerDate().addSeconds(60 * timeZoneOffset);
+		} else
+			return getCurrentServerDate();
 	}
 
 	/**
@@ -498,7 +525,7 @@ public class WDate implements Comparable<WDate> {
 	 * server.
 	 */
 	public static WDate getCurrentServerDate() {
-		return getCurrentDate();
+		return new WDate(createCalendar().getTime());
 	}
 
 	static boolean isLeapYear(int year) {
@@ -658,6 +685,7 @@ public class WDate implements Comparable<WDate> {
 		SimpleDateFormat formatter = new SimpleDateFormat(format);
 		try {
 			formatter.setLenient(false);
+			formatter.setCalendar(createCalendar());
 			Date d = formatter.parse(text);
 			if (d != null && formatter.format(d).equals(text))
 				return new WDate(d);
@@ -734,7 +762,7 @@ public class WDate implements Comparable<WDate> {
 	}
 
 	static WDate getPreviousWeekday(WDate d, Day gw) {
-		Calendar c = Calendar.getInstance();
+		Calendar c = createCalendar();
 		c.setTime(d.d);
 		
 		// FIXME we shouldn't need a loop here!

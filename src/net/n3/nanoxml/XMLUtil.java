@@ -228,20 +228,20 @@ public class XMLUtil
 
       boolean lastWasEntity = false;
       for (;;) {
-         String str = XMLUtil.read(reader, entityChar);
+         String str = XMLUtil.read(reader, lastWasEntity ? 0 : entityChar);
          char ch = str.charAt(0);
 
          if (ch == entityChar) {
-            if (str.charAt(1) == '#') {
+            if (str.length() > 1 && str.charAt(1) == '#') {
                result.append(XMLUtil.processCharLiteral(str));
             } else {
             	if (lastWasEntity) {
-            		result.append(str);
+           			result.append(str);
             		lastWasEntity = false;
             	} else {
             		XMLUtil.processEntity(str, reader, entityResolver);
             		lastWasEntity = true;
-            	}
+                }
             }
          } else if (ch == '&') {
             reader.unread(ch);

@@ -180,11 +180,11 @@ public abstract class WtServlet extends HttpServlet {
 	}
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
-		String pathInfo = WebRequest.computePathInfo(request);
+		String pathInfo = WebRequest.computePathInfo(request, configuration);
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		
 		if (pathInfo != null) {
-			String scriptName = WebRequest.computeScriptName(request);
+			String scriptName = WebRequest.computeScriptName(request, configuration);
 
 			String requestPath = scriptName;
 			if (requestPath.endsWith("/") && pathInfo.startsWith("/"))
@@ -201,7 +201,7 @@ public abstract class WtServlet extends HttpServlet {
 				
 				if (requestPath.equals(staticResourcePath)) {
 					try {
-						WebRequest webRequest = new WebRequest(request, progressListener);
+						WebRequest webRequest = new WebRequest(request, progressListener, configuration);
 						WebResponse webResponse = new WebResponse(response, webRequest);
 						staticResource.handle(webRequest, webResponse);
 					} catch (IOException e) {
@@ -249,7 +249,7 @@ public abstract class WtServlet extends HttpServlet {
 			return;
 		}
 
-		WebRequest webRequest = new WebRequest(request, progressListener);
+		WebRequest webRequest = new WebRequest(request, progressListener, configuration);
 		WebResponse webResponse = new WebResponse(response, webRequest);
 
 		servletApi.doHandleRequest(this, webRequest, webResponse);
@@ -489,7 +489,7 @@ public abstract class WtServlet extends HttpServlet {
 		try {
 			handler = new WebSession.Handler(wsession, WebSession.Handler.LockOption.TryLock);
 		} finally {
-			handler.release();			
+			handler.release();
 		}
 	}
 
@@ -500,13 +500,13 @@ public abstract class WtServlet extends HttpServlet {
 	 * @param function the task to be run
 	 */
 	public void postAll(Runnable function) {
-	        for (WebSession session : sessions.values()) {
+		for (WebSession session : sessions.values()) {
 			session.queueEvent(new ApplicationEvent(session.getSessionId(), function));
 			WebSession.Handler handler = null;
 			try {
 				handler = new WebSession.Handler(session, WebSession.Handler.LockOption.TryLock);
 			} finally {
-			        handler.release();
+				handler.release();
 			}
 		}
 	}

@@ -370,6 +370,12 @@ public class WTable extends WInteractWidget {
 			this.getRowAt(to);
 		}
 		this.rows_.add(0 + to, from_tr);
+		final List<WTableRow.TableData> cells = this.rows_.get(to).cells_;
+		for (int i = 0; i < cells.size(); ++i) {
+			if (cells.get(i).cell.getRowSpan() > 1) {
+				this.getRowAt(to + cells.get(i).cell.getRowSpan() - 1);
+			}
+		}
 		this.flags_.set(BIT_GRID_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
@@ -401,6 +407,9 @@ public class WTable extends WInteractWidget {
 			WTableRow.TableData cell = cells.get(from);
 			cells.remove(0 + from);
 			cells.add(0 + to, cell);
+			if (cell.cell.getColumnSpan() - 1 != 0) {
+				this.getColumnAt(to + cell.cell.getColumnSpan() - 1);
+			}
 			for (int j = Math.min(from, to); j < cells.size(); ++j) {
 				cells.get(j).cell.column_ = j;
 			}

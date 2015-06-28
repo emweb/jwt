@@ -56,6 +56,7 @@ class WebSession {
 		this.absoluteBaseUrl_ = "";
 		this.applicationUrl_ = "";
 		this.deploymentPath_ = "";
+		this.docRoot_ = "";
 		this.redirect_ = "";
 		this.pagePathInfo_ = "";
 		this.pongMessage_ = "";
@@ -64,7 +65,6 @@ class WebSession {
 		this.canWriteAsyncResponse_ = false;
 		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
-		this.bootStyle_ = true;
 		this.deferredRequest_ = null;
 		this.deferredResponse_ = null;
 		this.deferCount_ = 0;
@@ -949,7 +949,11 @@ class WebSession {
 		if (request != null) {
 			return str("");
 		} else {
-			return "";
+			if (varName.equals("DOCUMENT_ROOT")) {
+				return this.docRoot_;
+			} else {
+				return "";
+			}
 		}
 	}
 
@@ -1141,6 +1145,9 @@ class WebSession {
 
 		public boolean isHaveLock() {
 			return this.session_.getMutex().isHeldByCurrentThread();
+		}
+
+		public void unlock() {
 		}
 
 		public void flushResponse() {
@@ -1444,6 +1451,8 @@ class WebSession {
 								} else {
 									if (requestE.equals("style")) {
 										this.flushBootStyleResponse();
+										String page = request
+												.getParameter("page");
 										boolean ios5 = this.env_
 												.agentIsMobileWebKit()
 												&& (this.env_.getUserAgent()
@@ -1461,10 +1470,13 @@ class WebSession {
 										String jsE = request.getParameter("js");
 										boolean nojs = jsE != null
 												&& jsE.equals("no");
-										this.bootStyle_ = this.bootStyle_
-												&& (this.app_ != null || !ios5
-														&& !nojs);
-										if (!this.bootStyle_) {
+										boolean bootStyle = (this.app_ != null || !ios5
+												&& !nojs)
+												&& page != null
+												&& page.equals(String
+														.valueOf(this.renderer_
+																.getPageId()));
+										if (!bootStyle) {
 											handler.getResponse()
 													.setContentType("text/css");
 											handler.flushResponse();
@@ -1707,6 +1719,7 @@ class WebSession {
 	private String absoluteBaseUrl_;
 	private String applicationUrl_;
 	private String deploymentPath_;
+	private String docRoot_;
 	private String redirect_;
 	String pagePathInfo_;
 	private String pongMessage_;
@@ -1715,7 +1728,6 @@ class WebSession {
 	private boolean canWriteAsyncResponse_;
 	private int pollRequestsIgnored_;
 	private boolean progressiveBoot_;
-	private boolean bootStyle_;
 	private WebRequest deferredRequest_;
 	private WebResponse deferredResponse_;
 	private int deferCount_;
@@ -2142,6 +2154,7 @@ class WebSession {
 		}
 		this.env_.setInternalPath(path);
 		this.pagePathInfo_ = request.getPathInfo();
+		this.docRoot_ = this.getCgiValue("DOCUMENT_ROOT");
 	}
 
 	private boolean start(WebResponse response) {
