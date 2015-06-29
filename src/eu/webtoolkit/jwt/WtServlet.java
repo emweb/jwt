@@ -159,7 +159,8 @@ public abstract class WtServlet extends HttpServlet {
 		
 		redirectSecret_ = MathUtils.randomId(32);
 		
-		instance = this;
+		if (instance == null)
+			instance = this;
 	}
 	
 	/**
