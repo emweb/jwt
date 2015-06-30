@@ -116,6 +116,19 @@ public class WCartesianChart extends WAbstractChart {
 		this.axisPadding_ = 5;
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
+		this.zoomEnabled_ = false;
+		this.panEnabled_ = false;
+		this.rubberBandEnabled_ = true;
+		this.crosshairEnabled_ = false;
+		this.followCurve_ = -1;
+		this.cObjCreated_ = false;
+		this.curvePaths_ = new HashMap<Integer, WJavaScriptHandle<WPainterPath>>();
+		this.freePainterPaths_ = new ArrayList<WJavaScriptHandle<WPainterPath>>();
+		this.xTransform_ = new WJavaScriptHandle<WTransform>();
+		this.yTransform_ = new WJavaScriptHandle<WTransform>();
+		this.pens_ = new HashMap<Axis, List<WCartesianChart.PenAssignment>>();
+		this.freePens_ = new ArrayList<WJavaScriptHandle<WPen>>();
+		this.axisSliderWidgets_ = new ArrayList<WAxisSliderWidget>();
 		this.init();
 	}
 
@@ -146,6 +159,19 @@ public class WCartesianChart extends WAbstractChart {
 		this.axisPadding_ = 5;
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
+		this.zoomEnabled_ = false;
+		this.panEnabled_ = false;
+		this.rubberBandEnabled_ = true;
+		this.crosshairEnabled_ = false;
+		this.followCurve_ = -1;
+		this.cObjCreated_ = false;
+		this.curvePaths_ = new HashMap<Integer, WJavaScriptHandle<WPainterPath>>();
+		this.freePainterPaths_ = new ArrayList<WJavaScriptHandle<WPainterPath>>();
+		this.xTransform_ = new WJavaScriptHandle<WTransform>();
+		this.yTransform_ = new WJavaScriptHandle<WTransform>();
+		this.pens_ = new HashMap<Axis, List<WCartesianChart.PenAssignment>>();
+		this.freePens_ = new ArrayList<WJavaScriptHandle<WPen>>();
+		this.axisSliderWidgets_ = new ArrayList<WAxisSliderWidget>();
 		this.init();
 	}
 
@@ -164,6 +190,12 @@ public class WCartesianChart extends WAbstractChart {
 			;
 		}
 		;
+		List<WAxisSliderWidget> copy = new ArrayList<WAxisSliderWidget>(
+				this.axisSliderWidgets_);
+		this.axisSliderWidgets_.clear();
+		for (int i = 0; i < copy.size(); ++i) {
+			copy.get(i).setChart((WCartesianChart) null);
+		}
 		super.remove();
 	}
 
@@ -304,6 +336,10 @@ public class WCartesianChart extends WAbstractChart {
 	public void addSeries(final WDataSeries series) {
 		this.series_.add(series);
 		this.series_.get(this.series_.size() - 1).setChart(this);
+		if (series.getType() == SeriesType.LineSeries
+				|| series.getType() == SeriesType.CurveSeries) {
+			this.assignJSPathsForSeries(series);
+		}
 		this.update();
 	}
 
@@ -320,6 +356,10 @@ public class WCartesianChart extends WAbstractChart {
 	public void removeSeries(int modelColumn) {
 		int index = this.getSeriesIndexOf(modelColumn);
 		if (index != -1) {
+			if (this.series_.get(index).getType() == SeriesType.LineSeries
+					|| this.series_.get(index).getType() == SeriesType.CurveSeries) {
+				this.freeJSPathsForSeries(modelColumn);
+			}
 			this.series_.remove(0 + index);
 			this.update();
 		}
@@ -337,6 +377,14 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public void setSeries(final List<WDataSeries> series) {
 		Utils.copyList(series, this.series_);
+		this.freeAllJSPaths();
+		for (int i = 0; i < this.series_.size(); ++i) {
+			final WDataSeries s = this.series_.get(i);
+			if (s.getType() == SeriesType.LineSeries
+					|| s.getType() == SeriesType.CurveSeries) {
+				this.assignJSPathsForSeries(s);
+			}
+		}
 		for (int i = 0; i < this.series_.size(); ++i) {
 			this.series_.get(i).setChart(this);
 		}
@@ -716,7 +764,7 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		case LineSeries:
 		case CurveSeries: {
-			painter.setPen(series.getPen());
+			painter.setPen(series.getPen().clone());
 			double offset = series.getPen().getWidth().equals(new WLength(0)) ? 0.5
 					: 0;
 			painter.setShadow(series.getShadow());
@@ -760,7 +808,7 @@ public class WCartesianChart extends WAbstractChart {
 			final WDataSeries series) {
 		WPen fontPen = painter.getPen();
 		this.renderLegendIcon(painter, pos, series);
-		painter.setPen(fontPen);
+		painter.setPen(fontPen.clone());
 		painter.drawText(pos.getX() + 23, pos.getY() - 9, 100, 20, EnumSet.of(
 				AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
 				StringUtils.asString(this.getModel().getHeaderData(
@@ -1021,6 +1069,202 @@ public class WCartesianChart extends WAbstractChart {
 		return this.axisPadding_;
 	}
 
+	/**
+	 * Enables zoom functionality.
+	 * <p>
+	 * When using the mouse, press the ctrl key while scrolling to zoom in/out a
+	 * specific point on the chart. If you press shift+ctrl, it will only zoom
+	 * vertically. If you press alt+ctrl, it will only zoom horizontally.
+	 * <p>
+	 * When using touch, you can use a pinch gesture to zoom in/out. If the
+	 * pinch gesture is vertical/horizontal, it will zoom only
+	 * vertically/horizontally, otherwise it will zoom both axes equally.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#isZoomEnabled()
+	 */
+	public void setZoomEnabled(boolean zoomEnabled) {
+		if (this.zoomEnabled_ != zoomEnabled) {
+			this.zoomEnabled_ = zoomEnabled;
+			this.updateJSConfig("zoom", this.zoomEnabled_);
+		}
+	}
+
+	/**
+	 * Enables zoom functionality.
+	 * <p>
+	 * Calls {@link #setZoomEnabled(boolean zoomEnabled) setZoomEnabled(true)}
+	 */
+	public final void setZoomEnabled() {
+		setZoomEnabled(true);
+	}
+
+	/**
+	 * Returns whether zoom is enabled.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setZoomEnabled(boolean zoomEnabled)
+	 */
+	public boolean isZoomEnabled() {
+		return this.zoomEnabled_;
+	}
+
+	/**
+	 * Enables pan functionality.
+	 * <p>
+	 * When using the mouse, you can click and drag to pan the chart (if zoomed
+	 * in), or use the scrollwheel.
+	 * <p>
+	 * When using touch, you can drag to pan the chart. If the rubberband effect
+	 * is enabled, this is intertial (it will keep scrolling after you let go)
+	 * and there is an overscroll and bounce back effect on the sides.
+	 * <p>
+	 * The default value is <code>false</code>.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#isPanEnabled()
+	 */
+	public void setPanEnabled(boolean panEnabled) {
+		if (this.panEnabled_ != panEnabled) {
+			this.panEnabled_ = panEnabled;
+			this.updateJSConfig("pan", this.panEnabled_);
+		}
+	}
+
+	/**
+	 * Enables pan functionality.
+	 * <p>
+	 * Calls {@link #setPanEnabled(boolean panEnabled) setPanEnabled(true)}
+	 */
+	public final void setPanEnabled() {
+		setPanEnabled(true);
+	}
+
+	/**
+	 * Returns whether pan is enabled.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setPanEnabled(boolean panEnabled)
+	 */
+	public boolean isPanEnabled() {
+		return this.panEnabled_;
+	}
+
+	/**
+	 * Enable the crosshair functionality.
+	 * <p>
+	 * When enabled, the crosshair will follow mouse movement, and show in the
+	 * top right corner the coordinate (according to X axis and the first Y
+	 * axis) corresponding to this position.
+	 * <p>
+	 * When using touch, the crosshair can be moved with a drag. If both panning
+	 * and the crosshair are enabled, the crosshair will be moved when dragging
+	 * close to the crosshair. Otherwise, the chart will pan.
+	 */
+	public void setCrosshairEnabled(boolean crosshair) {
+		if (this.crosshairEnabled_ != crosshair) {
+			this.crosshairEnabled_ = crosshair;
+			this.updateJSConfig("crosshair", this.crosshairEnabled_);
+		}
+	}
+
+	/**
+	 * Enable the crosshair functionality.
+	 * <p>
+	 * Calls {@link #setCrosshairEnabled(boolean crosshair)
+	 * setCrosshairEnabled(true)}
+	 */
+	public final void setCrosshairEnabled() {
+		setCrosshairEnabled(true);
+	}
+
+	/**
+	 * Returns whether the crosshair is enabled.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setCrosshairEnabled(boolean crosshair)
+	 */
+	public boolean isCrosshairEnabled() {
+		return this.crosshairEnabled_;
+	}
+
+	/**
+	 * Enable the follow curve functionality for the data series corresponding
+	 * to the given column.
+	 * <p>
+	 * If the data series is of type LineSeries or CurveSeries, the crosshair
+	 * can only be moved in the x direction. The y position of the crosshair
+	 * will be determined by the value of the data series. The crosshair will
+	 * snap to the nearest point that is defined in the data series.
+	 * <p>
+	 * When using the mouse, the x position will change on mouseover. When using
+	 * touch, the x position can be moved with a drag. The follow curve
+	 * functionality has priority over the crosshair functionality.
+	 * <p>
+	 * Use column index -1 or {@link WCartesianChart#disableFollowCurve()
+	 * disableFollowCurve()} to disable the follow curve feature.
+	 */
+	public void setFollowCurve(int followCurve) {
+		if (this.followCurve_ != followCurve) {
+			this.followCurve_ = followCurve;
+			this.updateJSConfig("followCurve", this.followCurve_);
+		}
+	}
+
+	/**
+	 * Disable the follow curve functionality.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setFollowCurve(int followCurve)
+	 */
+	public void disableFollowCurve() {
+		this.setFollowCurve(-1);
+	}
+
+	/**
+	 * Returns the curve that is to be followed, if the follow curve
+	 * functionality is enabled, or -1 otherwise.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setFollowCurve(int followCurve)
+	 */
+	public int getFollowCurve() {
+		return this.followCurve_;
+	}
+
+	/**
+	 * Enables/disables the inertial scrolling and rubberband effect.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setPanEnabled(boolean panEnabled)
+	 */
+	public void setRubberBandEffectEnabled(boolean rubberBandEnabled) {
+		if (this.rubberBandEnabled_ != rubberBandEnabled) {
+			this.rubberBandEnabled_ = rubberBandEnabled;
+			this.updateJSConfig("rubberBand", this.rubberBandEnabled_);
+		}
+	}
+
+	/**
+	 * Enables/disables the inertial scrolling and rubberband effect.
+	 * <p>
+	 * Calls {@link #setRubberBandEffectEnabled(boolean rubberBandEnabled)
+	 * setRubberBandEffectEnabled(true)}
+	 */
+	public final void setRubberBandEffectEnabled() {
+		setRubberBandEffectEnabled(true);
+	}
+
+	/**
+	 * Check whether the rubberband effect is enabled.
+	 * <p>
+	 */
+	public boolean isRubberBandEffectEnabled() {
+		return this.rubberBandEnabled_;
+	}
+
 	public void iterateSeries(SeriesIterator iterator, WPainter painter,
 			boolean reverseStacked) {
 		WAbstractItemModel chart_model = this.getModel();
@@ -1133,10 +1377,12 @@ public class WCartesianChart extends WAbstractChart {
 								iterator.startSegment(currentXSegment,
 										currentYSegment, csa);
 								painter.save();
-								WPainterPath clipPath = new WPainterPath();
-								clipPath.addRect(this.hv(csa));
-								painter.setClipPath(clipPath);
-								painter.setClipping(true);
+								if (!this.isInteractive()) {
+									WPainterPath clipPath = new WPainterPath();
+									clipPath.addRect(this.hv(csa));
+									painter.setClipPath(clipPath);
+									painter.setClipping(true);
+								}
 							} else {
 								iterator.startSegment(currentXSegment,
 										currentYSegment, null);
@@ -1224,6 +1470,41 @@ public class WCartesianChart extends WAbstractChart {
 		iterateSeries(iterator, painter, false);
 	}
 
+	public void addAxisSliderWidget(WAxisSliderWidget slider) {
+		this.axisSliderWidgets_.add(slider);
+		StringBuilder ss = new StringBuilder();
+		ss.append('[');
+		for (int i = 0; i < this.axisSliderWidgets_.size(); ++i) {
+			if (i != 0) {
+				ss.append(',');
+			}
+			ss.append('"').append(this.axisSliderWidgets_.get(i).getId())
+					.append('"');
+		}
+		ss.append(']');
+		this.updateJSConfig("sliders", ss.toString());
+	}
+
+	public void removeAxisSliderWidget(WAxisSliderWidget slider) {
+		for (int i = 0; i < this.axisSliderWidgets_.size(); ++i) {
+			if (slider == this.axisSliderWidgets_.get(i)) {
+				this.axisSliderWidgets_.remove(0 + i);
+				StringBuilder ss = new StringBuilder();
+				ss.append('[');
+				for (int j = 0; j < this.axisSliderWidgets_.size(); ++j) {
+					if (j != 0) {
+						ss.append(',');
+					}
+					ss.append('"').append(
+							this.axisSliderWidgets_.get(j).getId()).append('"');
+				}
+				ss.append(']');
+				this.updateJSConfig("sliders", ss.toString());
+				return;
+			}
+		}
+	}
+
 	private WChart2DImplementation interface_;
 	private Orientation orientation_;
 	private int XSeriesColumn_;
@@ -1249,6 +1530,34 @@ public class WCartesianChart extends WAbstractChart {
 		this.axes_[Axis.Y2Axis.getValue()].init(this.interface_, Axis.Y2Axis);
 		this.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
 		this.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
+		this.xTransform_ = this.createJSTransform();
+		this.yTransform_ = this.createJSTransform();
+		if (WApplication.getInstance() != null) {
+			this.mouseWentDown().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.mouseDown(o, e);}}");
+			this.mouseWentUp().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.mouseUp(o, e);}}");
+			this.mouseDragged().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.mouseDrag(o, e);}}");
+			this.mouseMoved().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.mouseMove(o, e);}}");
+			this.mouseWheel().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.mouseWheel(o, e);}}");
+			this.touchStarted().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.touchStart(o, e);}}");
+			this.touchEnded().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.touchEnd(o, e);}}");
+			this.touchMoved().addListener(
+					"function(o, e){var o=" + this.getCObjJsRef()
+							+ ";if(o){o.touchMoved(o, e);}}");
+		}
 	}
 
 	protected void modelColumnsInserted(final WModelIndex parent, int start,
@@ -1341,20 +1650,92 @@ public class WCartesianChart extends WAbstractChart {
 	/**
 	 * Paints the widget.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * This calls
+	 * {@link WCartesianChart#render(WPainter painter, WRectF rectangle)
+	 * render()} to paint on the paint device.
 	 */
 	protected void paintEvent(WPaintDevice paintDevice) {
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing);
 		this.paint(painter);
+		if (this.isInteractive()) {
+			this.setInitialZoomAndPan();
+			double modelBottom = this.getAxis(Axis.Y1Axis).mapFromDevice(0);
+			double modelTop = this.getAxis(Axis.Y1Axis).mapFromDevice(
+					this.chartArea_.getHeight());
+			double modelLeft = this.getAxis(Axis.XAxis).mapFromDevice(0);
+			double modelRight = this.getAxis(Axis.XAxis).mapFromDevice(
+					this.chartArea_.getWidth());
+			WRectF modelArea = new WRectF(modelLeft, modelBottom, modelRight
+					- modelLeft, modelTop - modelBottom);
+			char[] buf = new char[30];
+			WApplication app = WApplication.getInstance();
+			StringBuilder ss = new StringBuilder();
+			ss.append("new Wt3_3_4.WCartesianChart(").append(
+					app.getJavaScriptClass()).append(",").append(
+					this.getJsRef()).append(",").append(this.getObjJsRef())
+					.append(",{zoom:").append(
+							StringUtils.asString(this.zoomEnabled_).toString())
+					.append(",pan:").append(
+							StringUtils.asString(this.panEnabled_).toString())
+					.append(",crosshair:").append(
+							StringUtils.asString(this.crosshairEnabled_)
+									.toString()).append(",followCurve:")
+					.append(this.followCurve_).append(",xTransform:").append(
+							this.xTransform_.getJsRef()).append(",yTransform:")
+					.append(this.yTransform_.getJsRef()).append(",area:")
+					.append(this.chartArea_.getJsRef()).append(",modelArea:")
+					.append(modelArea.getJsRef()).append(",");
+			this.updateJSPens(ss);
+			ss.append("series:{");
+			for (int i = 0; i < this.series_.size(); ++i) {
+				if (this.series_.get(i).getType() == SeriesType.LineSeries
+						|| this.series_.get(i).getType() == SeriesType.CurveSeries) {
+					ss.append(this.series_.get(i).getModelColumn()).append(":")
+							.append(
+									this.curvePaths_.get(
+											this.series_.get(i)
+													.getModelColumn())
+											.getJsRef()).append(",");
+				}
+			}
+			ss.append("},");
+			ss.append("maxZoom:[")
+					.append(
+							MathUtils.roundJs(this.getAxis(Axis.XAxis)
+									.getMaxZoom(), 3)).append(",");
+			ss
+					.append(
+							MathUtils.roundJs(this.getAxis(Axis.Y1Axis)
+									.getMaxZoom(), 3)).append("],");
+			ss.append("rubberBand:").append(this.rubberBandEnabled_)
+					.append(',');
+			ss.append("sliders:[");
+			for (int i = 0; i < this.axisSliderWidgets_.size(); ++i) {
+				if (i != 0) {
+					ss.append(',');
+				}
+				ss.append('"').append(this.axisSliderWidgets_.get(i).getId())
+						.append('"');
+			}
+			ss.append("]");
+			ss.append("});");
+			this.doJavaScript(ss.toString());
+			this.cObjCreated_ = true;
+			for (int i = 0; i < this.axisSliderWidgets_.size(); ++i) {
+				this.axisSliderWidgets_.get(i).update();
+			}
+		}
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders the chart.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * Renders the chart within the given rectangle. To accomodate both
+	 * rendering of horizontal and vertically oriented charts, all rendering
+	 * logic assumes horizontal. This &quot;chart coordinates&quot; space is
+	 * transformed to painter coordinates using
+	 * {@link WCartesianChart#hv(double x, double y) hv()}.
 	 */
 	protected void render(final WPainter painter, final WRectF rectangle) {
 		painter.save();
@@ -1373,10 +1754,11 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Map (x, y) value pair to chart coordinates coordinates.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * The result needs further transformation using
+	 * {@link WCartesianChart#hv(double x, double y) hv()} to painter
+	 * coordinates.
 	 */
 	protected WPointF map(double xValue, double yValue, Axis yAxis,
 			int currentXSegment, int currentYSegment) {
@@ -1390,7 +1772,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Map (x, y) value pair to chart coordinates coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis yAxis, int currentXSegment, int currentYSegment)
@@ -1401,7 +1783,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Map (x, y) value pair to chart coordinates coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis yAxis, int currentXSegment, int currentYSegment)
@@ -1412,7 +1794,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Map (x, y) value pair to chart coordinates coordinates.
 	 * <p>
 	 * Returns
 	 * {@link #map(double xValue, double yValue, Axis yAxis, int currentXSegment, int currentYSegment)
@@ -1424,10 +1806,15 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Utility function for rendering text.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * This method renders text on the chart position <i>pos</i>, with a
+	 * particular alignment <i>flags</i>. These are both specified in chart
+	 * coordinates. The position is converted to painter coordinates using
+	 * {@link WCartesianChart#hv(double x, double y) hv()}, and the alignment
+	 * flags are changed accordingly. The rotation, indicated by <i>angle</i> is
+	 * specified in painter coordinates and thus an angle of 0 always indicates
+	 * horizontal text, regardless of the chart orientation.
 	 */
 	protected void renderLabel(final WPainter painter, final CharSequence text,
 			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
@@ -1469,8 +1856,8 @@ public class WCartesianChart extends WAbstractChart {
 				break;
 			}
 		}
-		double left = pos.getX();
-		double top = pos.getY();
+		double left = 0;
+		double top = 0;
 		switch (rHorizontalAlign) {
 		case AlignLeft:
 			left += margin;
@@ -1497,47 +1884,53 @@ public class WCartesianChart extends WAbstractChart {
 			break;
 		}
 		WPen oldPen = painter.getPen();
-		painter.setPen(this.textPen_);
+		painter.setPen(this.textPen_.clone());
+		WTransform oldTransform = painter.getWorldTransform();
+		painter.translate(pos);
 		if (angle == 0) {
 			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
 					rHorizontalAlign, rVerticalAlign), text);
 		} else {
-			painter.save();
-			painter.translate(pos);
 			painter.rotate(-angle);
-			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
-					width, height), EnumSet
-					.of(rHorizontalAlign, rVerticalAlign), text);
-			painter.restore();
+			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
+					rHorizontalAlign, rVerticalAlign), text);
 		}
+		painter.setWorldTransform(oldTransform, false);
 		painter.setPen(oldPen);
 	}
 
 	/**
-	 * Paints the widget.
+	 * Conversion between chart and painter coordinates.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * Converts from chart coordinates to painter coordinates, taking into
+	 * account the chart orientation.
 	 */
 	protected WPointF hv(double x, double y) {
 		return this.hv(x, y, this.height_);
 	}
 
 	/**
-	 * Paints the widget.
+	 * Conversion between chart and painter coordinates.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * Converts from chart coordinates to painter coordinates, taking into
+	 * account the chart orientation.
 	 */
 	protected WPointF hv(final WPointF p) {
+		if (p.isJavaScriptBound()) {
+			if (this.getOrientation() == Orientation.Vertical) {
+				return p;
+			} else {
+				return p.getSwapXY();
+			}
+		}
 		return this.hv(p.getX(), p.getY());
 	}
 
 	/**
-	 * Paints the widget.
+	 * Conversion between chart and painter coordinates.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * Converts from chart coordinates to painter coordinates, taking into
+	 * account the chart orientation.
 	 */
 	protected WRectF hv(final WRectF r) {
 		if (this.getOrientation() == Orientation.Vertical) {
@@ -1549,10 +1942,10 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Returns the segment area for a combination of X and Y segments.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * This segment area is used for clipping when rendering in a particular
+	 * segment.
 	 */
 	protected WRectF chartSegmentArea(WAxis yAxis, int xSegment, int ySegment) {
 		final WAxis xAxis = this.getAxis(Axis.XAxis);
@@ -1583,10 +1976,14 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Calculates the chart area.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * This calculates the chartArea(), which is the rectangle (in chart
+	 * coordinates) that bounds the actual chart (thus excluding axes, labels,
+	 * titles, legend, etc...).
+	 * <p>
+	 * 
+	 * @see WAbstractChart#getPlotAreaPadding(Side side)
 	 */
 	protected void calcChartArea() {
 		if (this.orientation_ == Orientation.Vertical) {
@@ -1609,10 +2006,14 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Prepares the axes for rendering.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * Computes axis properties such as the range (if not manually specified),
+	 * label interval (if not manually specified) and axis locations. These
+	 * properties are stored within the axes.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 */
 	protected boolean isPrepareAxes() {
 		final WAxis xAxis = this.getAxis(Axis.XAxis);
@@ -1638,6 +2039,9 @@ public class WCartesianChart extends WAbstractChart {
 				break;
 			case MaximumValue:
 				this.location_[Axis.XAxis.getValue()] = AxisValue.MaximumValue;
+				break;
+			case BothSides:
+				this.location_[Axis.XAxis.getValue()] = AxisValue.BothSides;
 			}
 		}
 		for (int i = 0; i < 2; ++i) {
@@ -1658,16 +2062,23 @@ public class WCartesianChart extends WAbstractChart {
 						location = AxisValue.ZeroValue;
 					}
 				} else {
-					if (other.segments_.get(0).renderMaximum == 0) {
-						location = AxisValue.MaximumValue;
+					if (location != AxisValue.BothSides) {
+						if (other.segments_.get(0).renderMaximum == 0) {
+							location = AxisValue.MaximumValue;
+						}
 					}
 				}
 			}
 			this.location_[axis.getId().getValue()] = location;
 		}
 		if (y2Axis.isVisible()) {
-			if (!(this.location_[Axis.Y1Axis.getValue()] == AxisValue.ZeroValue && xAxis.segments_
-					.get(0).renderMinimum == 0)) {
+			if (this.location_[Axis.Y1Axis.getValue()] == AxisValue.BothSides
+					&& xAxis.segments_.get(0).renderMinimum == 0) {
+				this.location_[Axis.Y1Axis.getValue()] = AxisValue.ZeroValue;
+			}
+			if (this.location_[Axis.Y1Axis.getValue()] == AxisValue.BothSides
+					|| !(this.location_[Axis.Y1Axis.getValue()] == AxisValue.ZeroValue && xAxis.segments_
+							.get(0).renderMinimum == 0)) {
 				this.location_[Axis.Y1Axis.getValue()] = AxisValue.MinimumValue;
 			}
 			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
@@ -1681,10 +2092,10 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders the background.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * 
+	 * @see WCartesianChart#render(WPainter painter, WRectF rectangle)
 	 */
 	protected void renderBackground(final WPainter painter) {
 		if (this.getBackground().getStyle() != BrushStyle.NoBrush) {
@@ -1693,10 +2104,14 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders one or more properties of the axes.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * This calls
+	 * {@link WCartesianChart#renderAxis(WPainter painter, WAxis axis, EnumSet properties)
+	 * renderAxis()} for each axis.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#render(WPainter painter, WRectF rectangle)
 	 */
 	protected void renderAxes(final WPainter painter,
 			EnumSet<AxisProperty> properties) {
@@ -1706,7 +2121,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders one or more properties of the axes.
 	 * <p>
 	 * Calls {@link #renderAxes(WPainter painter, EnumSet properties)
 	 * renderAxes(painter, EnumSet.of(propertie, properties))}
@@ -1717,12 +2132,19 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders all series data, including value labels.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * 
+	 * @see WCartesianChart#render(WPainter painter, WRectF rectangle)
 	 */
 	protected void renderSeries(final WPainter painter) {
+		if (this.isInteractive()) {
+			painter.save();
+			WPainterPath clipPath = new WPainterPath();
+			clipPath.addRect(this.chartArea_);
+			painter.setClipPath(clipPath);
+			painter.setClipping(true);
+		}
 		{
 			SeriesRenderIterator iterator = new SeriesRenderIterator(this,
 					painter);
@@ -1738,13 +2160,16 @@ public class WCartesianChart extends WAbstractChart {
 					painter);
 			this.iterateSeries(iterator, painter);
 		}
+		if (this.isInteractive()) {
+			painter.restore();
+		}
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders the (default) legend and chart titles.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * 
+	 * @see WCartesianChart#render(WPainter painter, WRectF rectangle)
 	 */
 	protected void renderLegend(final WPainter painter) {
 		boolean vertical = this.getOrientation() == Orientation.Vertical;
@@ -1901,7 +2326,7 @@ public class WCartesianChart extends WAbstractChart {
 					x -= 40;
 				}
 			}
-			painter.setPen(this.getLegendBorder());
+			painter.setPen(this.getLegendBorder().clone());
 			painter.setBrush(this.getLegendBackground());
 			painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
 					+ margin, legendHeight + margin);
@@ -1939,10 +2364,10 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders properties of one axis.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * 
+	 * @see WCartesianChart#renderAxes(WPainter painter, EnumSet properties)
 	 */
 	protected void renderAxis(final WPainter painter, final WAxis axis,
 			EnumSet<AxisProperty> properties) {
@@ -1950,6 +2375,26 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		boolean vertical = axis.getId() != Axis.XAxis;
+		if (this.isInteractive()) {
+			WRectF clipRect = null;
+			if (axis.getLocation() == AxisValue.ZeroValue) {
+				clipRect = this.chartArea_;
+			} else {
+				if (vertical) {
+					clipRect = new WRectF(0.0, this.chartArea_.getTop(), this
+							.getWidth().toPixels(), this.chartArea_.getHeight());
+				} else {
+					clipRect = new WRectF(this.chartArea_.getLeft(), 0.0,
+							this.chartArea_.getWidth(), this.getHeight()
+									.toPixels());
+				}
+			}
+			WPainterPath clipPath = new WPainterPath();
+			clipPath.addRect(clipRect);
+			painter.save();
+			painter.setClipPath(clipPath);
+			painter.setClipping(true);
+		}
 		WPointF axisStart = new WPointF();
 		WPointF axisEnd = new WPointF();
 		double tickStart = 0.0;
@@ -1959,274 +2404,333 @@ public class WCartesianChart extends WAbstractChart {
 		AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
 		if (vertical) {
 			labelVFlag = AlignmentFlag.AlignMiddle;
-			axisStart.setY(this.chartArea_.getBottom() + 0.5);
-			axisEnd.setY(this.chartArea_.getTop() + 0.5);
+			axisStart.setY(this.chartArea_.getBottom());
+			axisEnd.setY(this.chartArea_.getTop());
 		} else {
 			labelHFlag = AlignmentFlag.AlignCenter;
-			axisStart.setX(this.chartArea_.getLeft() + 0.5);
-			axisEnd.setX(this.chartArea_.getRight() + 0.5);
+			axisStart.setX(this.chartArea_.getLeft());
+			axisEnd.setX(this.chartArea_.getRight());
 		}
-		switch (this.location_[axis.getId().getValue()]) {
-		case MinimumValue:
-			if (vertical) {
-				tickStart = -TICK_LENGTH;
-				tickEnd = 0;
-				labelPos = -TICK_LENGTH;
-				labelHFlag = AlignmentFlag.AlignRight;
-				double x = this.chartArea_.getLeft() - axis.getMargin() + 0.5;
-				axisStart.setX(x);
-				axisEnd.setX(x);
-			} else {
-				tickStart = 0;
-				tickEnd = TICK_LENGTH;
-				labelPos = TICK_LENGTH;
-				labelVFlag = AlignmentFlag.AlignTop;
-				double y = this.chartArea_.getBottom() + axis.getMargin() + 0.5;
-				axisStart.setY(y);
-				axisEnd.setY(y);
-			}
-			break;
-		case MaximumValue:
-			if (vertical) {
-				tickStart = 0;
-				tickEnd = TICK_LENGTH;
-				labelPos = TICK_LENGTH;
-				labelHFlag = AlignmentFlag.AlignLeft;
-				double x = this.chartArea_.getRight() + axis.getMargin() + 0.5;
-				axisStart.setX(x);
-				axisEnd.setX(x);
-			} else {
-				tickStart = -TICK_LENGTH;
-				tickEnd = 0;
-				labelPos = -TICK_LENGTH;
-				labelVFlag = AlignmentFlag.AlignBottom;
-				double y = this.chartArea_.getTop() - axis.getMargin() + 0.5;
-				axisStart.setY(y);
-				axisEnd.setY(y);
-			}
-			break;
-		case ZeroValue:
-			tickStart = -TICK_LENGTH;
-			tickEnd = TICK_LENGTH;
-			if (vertical) {
-				double x = Math.floor(this.map(0, 0, Axis.YAxis).getX()) + 0.5;
-				axisStart.setX(x);
-				axisEnd.setX(x);
-				labelHFlag = AlignmentFlag.AlignRight;
-				if (this.getType() == ChartType.CategoryChart) {
-					labelPos = this.chartArea_.getLeft() - axisStart.getX()
-							- TICK_LENGTH;
-				} else {
+		List<AxisValue> locations = new ArrayList<AxisValue>();
+		if (this.location_[axis.getId().getValue()] == AxisValue.BothSides) {
+			locations.add(AxisValue.MinimumValue);
+			locations.add(AxisValue.MaximumValue);
+		} else {
+			locations.add(this.location_[axis.getId().getValue()]);
+		}
+		for (int l = 0; l < locations.size(); ++l) {
+			switch (locations.get(l)) {
+			case MinimumValue:
+				if (vertical) {
+					tickStart = -TICK_LENGTH;
+					tickEnd = 0;
 					labelPos = -TICK_LENGTH;
-				}
-			} else {
-				double y = Math.floor(this.map(0, 0, Axis.YAxis).getY()) + 0.5;
-				axisStart.setY(y);
-				axisEnd.setY(y);
-				labelVFlag = AlignmentFlag.AlignTop;
-				if (this.getType() == ChartType.CategoryChart) {
-					labelPos = this.chartArea_.getBottom() - axisStart.getY()
-							+ TICK_LENGTH;
+					labelHFlag = AlignmentFlag.AlignRight;
+					double x = this.chartArea_.getLeft() - axis.getMargin();
+					axisStart.setX(x);
+					axisEnd.setX(x);
 				} else {
+					tickStart = 0;
+					tickEnd = TICK_LENGTH;
 					labelPos = TICK_LENGTH;
+					labelVFlag = AlignmentFlag.AlignTop;
+					double y = this.chartArea_.getBottom() + axis.getMargin();
+					axisStart.setY(y);
+					axisEnd.setY(y);
 				}
+				break;
+			case MaximumValue:
+				if (vertical) {
+					tickStart = 0;
+					tickEnd = TICK_LENGTH;
+					labelPos = TICK_LENGTH;
+					labelHFlag = AlignmentFlag.AlignLeft;
+					double x = this.chartArea_.getRight() + axis.getMargin();
+					axisStart.setX(x);
+					axisEnd.setX(x);
+				} else {
+					tickStart = -TICK_LENGTH;
+					tickEnd = 0;
+					labelPos = -TICK_LENGTH;
+					labelVFlag = AlignmentFlag.AlignBottom;
+					double y = this.chartArea_.getTop() - axis.getMargin();
+					axisStart.setY(y);
+					axisEnd.setY(y);
+				}
+				break;
+			case ZeroValue:
+				tickStart = -TICK_LENGTH;
+				tickEnd = TICK_LENGTH;
+				if (vertical) {
+					double x = this.map(0, 0, Axis.YAxis).getX();
+					axisStart.setX(x);
+					axisEnd.setX(x);
+					labelHFlag = AlignmentFlag.AlignRight;
+					if (this.getType() == ChartType.CategoryChart) {
+						labelPos = this.chartArea_.getLeft() - axisStart.getX()
+								- TICK_LENGTH;
+					} else {
+						labelPos = -TICK_LENGTH;
+					}
+				} else {
+					double y = this.map(0, 0, Axis.YAxis).getY();
+					axisStart.setY(y);
+					axisEnd.setY(y);
+					labelVFlag = AlignmentFlag.AlignTop;
+					if (this.getType() == ChartType.CategoryChart) {
+						labelPos = this.chartArea_.getBottom()
+								- axisStart.getY() + TICK_LENGTH;
+					} else {
+						labelPos = TICK_LENGTH;
+					}
+				}
+				break;
+			case BothSides:
+				assert false;
+				break;
 			}
-			break;
-		}
-		if (!EnumUtils.mask(properties, AxisProperty.Labels).isEmpty()
-				&& !(axis.getTitle().length() == 0)) {
-			WFont oldFont2 = painter.getFont();
-			WFont titleFont = axis.getTitleFont();
-			painter.setFont(titleFont);
-			boolean chartVertical = this.getOrientation() == Orientation.Vertical;
-			if (vertical) {
-				double u = axisStart.getX();
-				if (chartVertical) {
-					if (axis.getTitleOrientation() == Orientation.Horizontal) {
+			if (!EnumUtils.mask(properties, AxisProperty.Labels).isEmpty()
+					&& !(axis.getTitle().length() == 0)) {
+				if (this.isInteractive()) {
+					painter.setClipping(false);
+				}
+				WFont oldFont2 = painter.getFont();
+				WFont titleFont = axis.getTitleFont();
+				painter.setFont(titleFont);
+				boolean chartVertical = this.getOrientation() == Orientation.Vertical;
+				if (vertical) {
+					double u = axisStart.getX();
+					if (chartVertical) {
+						if (axis.getTitleOrientation() == Orientation.Horizontal) {
+							this
+									.renderLabel(
+											painter,
+											axis.getTitle(),
+											new WPointF(
+													u
+															+ (labelHFlag == AlignmentFlag.AlignRight ? 15
+																	: -15),
+													this.chartArea_.getTop() - 8),
+											EnumSet.of(labelHFlag,
+													AlignmentFlag.AlignBottom),
+											0, 10);
+						} else {
+							if (axis.getId() == Axis.YAxis) {
+								WPaintDevice device = painter.getDevice();
+								double size = axis.calcMaxTickLabelSize(device,
+										Orientation.Horizontal);
+								double titleSize = axis.calcTitleSize(device,
+										Orientation.Horizontal);
+								double titleSizeW = axis.calcTitleSize(device,
+										Orientation.Vertical);
+								this
+										.renderLabel(
+												painter,
+												axis.getTitle(),
+												new WPointF(
+														u
+																+ (labelHFlag == AlignmentFlag.AlignRight ? -(size + titleSizeW)
+																		: +(size + titleSizeW)),
+														this.chartArea_
+																.getCenter()
+																.getY()
+																+ titleSize / 2),
+												EnumSet
+														.of(
+																labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
+																		: AlignmentFlag.AlignRight,
+																AlignmentFlag.AlignMiddle),
+												90, 10);
+							} else {
+								WPaintDevice device = painter.getDevice();
+								double size = axis.calcMaxTickLabelSize(device,
+										Orientation.Horizontal);
+								double titleSize = axis.calcTitleSize(device,
+										Orientation.Horizontal);
+								double titleSizeW = axis.calcTitleSize(device,
+										Orientation.Vertical);
+								this
+										.renderLabel(
+												painter,
+												axis.getTitle(),
+												new WPointF(
+														u
+																+ (labelHFlag == AlignmentFlag.AlignRight ? -(size + titleSizeW)
+																		: +(size + titleSizeW)),
+														this.chartArea_
+																.getCenter()
+																.getY()
+																+ titleSize / 2),
+												EnumSet
+														.of(
+																labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignRight
+																		: AlignmentFlag.AlignLeft,
+																AlignmentFlag.AlignMiddle),
+												90, 10);
+							}
+						}
+					} else {
+						WPaintDevice device = painter.getDevice();
+						double titleSize = axis.calcTitleSize(device,
+								Orientation.Vertical);
+						double size = axis.calcMaxTickLabelSize(device,
+								Orientation.Vertical);
 						this
 								.renderLabel(
 										painter,
 										axis.getTitle(),
 										new WPointF(
 												u
-														+ (labelHFlag == AlignmentFlag.AlignRight ? 15
-																: -15),
-												this.chartArea_.getTop() - 8),
-										EnumSet.of(labelHFlag,
-												AlignmentFlag.AlignBottom), 0,
-										10);
-					} else {
-						if (axis.getId() == Axis.YAxis) {
-							WPaintDevice device = painter.getDevice();
-							double size = axis.calcMaxTickLabelSize(device,
-									Orientation.Horizontal);
-							double titleSize = axis.calcTitleSize(device,
-									Orientation.Horizontal);
-							double titleSizeW = axis.calcTitleSize(device,
-									Orientation.Vertical);
-							this
-									.renderLabel(
-											painter,
-											axis.getTitle(),
-											new WPointF(
-													u
-															+ (labelHFlag == AlignmentFlag.AlignRight ? -(size + titleSizeW)
-																	: +(size + titleSizeW)),
-													this.chartArea_.getCenter()
-															.getY()
-															+ titleSize / 2),
-											EnumSet
-													.of(
-															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
-																	: AlignmentFlag.AlignRight,
-															AlignmentFlag.AlignMiddle),
-											90, 10);
-						} else {
-							WPaintDevice device = painter.getDevice();
-							double size = axis.calcMaxTickLabelSize(device,
-									Orientation.Horizontal);
-							double titleSize = axis.calcTitleSize(device,
-									Orientation.Horizontal);
-							double titleSizeW = axis.calcTitleSize(device,
-									Orientation.Vertical);
-							this
-									.renderLabel(
-											painter,
-											axis.getTitle(),
-											new WPointF(
-													u
-															+ (labelHFlag == AlignmentFlag.AlignRight ? -(size + titleSizeW)
-																	: +(size + titleSizeW)),
-													this.chartArea_.getCenter()
-															.getY()
-															+ titleSize / 2),
-											EnumSet
-													.of(
-															labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignRight
-																	: AlignmentFlag.AlignLeft,
-															AlignmentFlag.AlignMiddle),
-											90, 10);
-						}
+														+ (labelHFlag == AlignmentFlag.AlignRight ? -(20 + size + titleSize)
+																: +(20 + size + titleSize)),
+												this.chartArea_.getCenter()
+														.getY()),
+										EnumSet
+												.of(
+														labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
+																: AlignmentFlag.AlignRight,
+														AlignmentFlag.AlignMiddle),
+										0, 20);
 					}
 				} else {
-					WPaintDevice device = painter.getDevice();
-					double titleSize = axis.calcTitleSize(device,
-							Orientation.Vertical);
-					double size = axis.calcMaxTickLabelSize(device,
-							Orientation.Vertical);
-					this
-							.renderLabel(
-									painter,
-									axis.getTitle(),
-									new WPointF(
-											u
-													+ (labelHFlag == AlignmentFlag.AlignRight ? -(20 + size + titleSize)
-															: +(20 + size + titleSize)),
-											this.chartArea_.getCenter().getY()),
-									EnumSet
-											.of(
-													labelHFlag == AlignmentFlag.AlignRight ? AlignmentFlag.AlignLeft
-															: AlignmentFlag.AlignRight,
-													AlignmentFlag.AlignMiddle),
-									0, 20);
+					double u = axisStart.getY();
+					if (chartVertical) {
+						this.renderLabel(painter, axis.getTitle(), new WPointF(
+								this.chartArea_.getCenter().getX(), u + 22),
+								EnumSet.of(AlignmentFlag.AlignTop,
+										AlignmentFlag.AlignCenter), 0, 10);
+					} else {
+						this.renderLabel(painter, axis.getTitle(), new WPointF(
+								this.chartArea_.getRight(), u), EnumSet
+								.of(AlignmentFlag.AlignTop,
+										AlignmentFlag.AlignLeft), 0, 8);
+					}
 				}
-			} else {
-				double u = axisStart.getY();
-				if (chartVertical) {
-					this.renderLabel(painter, axis.getTitle(), new WPointF(
-							this.chartArea_.getCenter().getX(), u + 22),
-							EnumSet.of(AlignmentFlag.AlignTop,
-									AlignmentFlag.AlignCenter), 0, 10);
-				} else {
-					this.renderLabel(painter, axis.getTitle(), new WPointF(
-							this.chartArea_.getRight(), u), EnumSet.of(
-							AlignmentFlag.AlignTop, AlignmentFlag.AlignLeft),
-							0, 8);
+				painter.setFont(oldFont2);
+				if (this.isInteractive()) {
+					painter.setClipping(true);
 				}
 			}
-			painter.setFont(oldFont2);
-		}
-		final double ANGLE1 = 15;
-		final double ANGLE2 = 80;
-		if (vertical) {
-			if (axis.getLabelAngle() > ANGLE1) {
-				labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom
-						: AlignmentFlag.AlignTop;
-				if (axis.getLabelAngle() > ANGLE2) {
-					labelHFlag = AlignmentFlag.AlignCenter;
-				}
-			} else {
-				if (axis.getLabelAngle() < -ANGLE1) {
-					labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop
-							: AlignmentFlag.AlignBottom;
-					if (axis.getLabelAngle() < -ANGLE2) {
+			final double ANGLE1 = 15;
+			final double ANGLE2 = 80;
+			if (vertical) {
+				if (axis.getLabelAngle() > ANGLE1) {
+					labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom
+							: AlignmentFlag.AlignTop;
+					if (axis.getLabelAngle() > ANGLE2) {
 						labelHFlag = AlignmentFlag.AlignCenter;
 					}
-				}
-			}
-		} else {
-			if (axis.getLabelAngle() > ANGLE1) {
-				labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
-						: AlignmentFlag.AlignLeft;
-				if (axis.getLabelAngle() > ANGLE2) {
-					labelVFlag = AlignmentFlag.AlignMiddle;
+				} else {
+					if (axis.getLabelAngle() < -ANGLE1) {
+						labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop
+								: AlignmentFlag.AlignBottom;
+						if (axis.getLabelAngle() < -ANGLE2) {
+							labelHFlag = AlignmentFlag.AlignCenter;
+						}
+					}
 				}
 			} else {
-				if (axis.getLabelAngle() < -ANGLE1) {
-					labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
-							: AlignmentFlag.AlignRight;
-					if (axis.getLabelAngle() < -ANGLE2) {
+				if (axis.getLabelAngle() > ANGLE1) {
+					labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
+							: AlignmentFlag.AlignLeft;
+					if (axis.getLabelAngle() > ANGLE2) {
 						labelVFlag = AlignmentFlag.AlignMiddle;
+					}
+				} else {
+					if (axis.getLabelAngle() < -ANGLE1) {
+						labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
+								: AlignmentFlag.AlignRight;
+						if (axis.getLabelAngle() < -ANGLE2) {
+							labelVFlag = AlignmentFlag.AlignMiddle;
+						}
 					}
 				}
 			}
+			if (this.getOrientation() == Orientation.Horizontal) {
+				axisStart = this.hv(axisStart);
+				axisEnd = this.hv(axisEnd);
+				AlignmentFlag rHFlag = AlignmentFlag.AlignCenter;
+				AlignmentFlag rVFlag = AlignmentFlag.AlignMiddle;
+				switch (labelHFlag) {
+				case AlignLeft:
+					rVFlag = AlignmentFlag.AlignTop;
+					break;
+				case AlignCenter:
+					rVFlag = AlignmentFlag.AlignMiddle;
+					break;
+				case AlignRight:
+					rVFlag = AlignmentFlag.AlignBottom;
+					break;
+				default:
+					break;
+				}
+				switch (labelVFlag) {
+				case AlignTop:
+					rHFlag = AlignmentFlag.AlignRight;
+					break;
+				case AlignMiddle:
+					rHFlag = AlignmentFlag.AlignCenter;
+					break;
+				case AlignBottom:
+					rHFlag = AlignmentFlag.AlignLeft;
+					break;
+				default:
+					break;
+				}
+				labelHFlag = rHFlag;
+				labelVFlag = rVFlag;
+				boolean invertTicks = !vertical;
+				if (invertTicks) {
+					tickStart = -tickStart;
+					tickEnd = -tickEnd;
+					labelPos = -labelPos;
+				}
+			}
+			List<WPen> pens = new ArrayList<WPen>();
+			List<WPen> textPens = new ArrayList<WPen>();
+			final Map<Axis, List<WCartesianChart.PenAssignment>> penMap = this.pens_;
+			if (this.isInteractive()
+					&& (axis.getId() == Axis.XAxis || axis.getId() == Axis.YAxis)) {
+				for (int i = 0; i < penMap.get(axis.getId()).size(); ++i) {
+					pens.add(penMap.get(axis.getId()).get(i).pen.getValue());
+					textPens.add(penMap.get(axis.getId()).get(i).textPen
+							.getValue());
+				}
+			}
+			WTransform transform = new WTransform();
+			if (axis.getLocation() == AxisValue.ZeroValue) {
+				transform.assign(new WTransform(1, 0, 0, -1, this.chartArea_
+						.getLeft(), this.chartArea_.getBottom()).multiply(
+						this.xTransform_.getValue()).multiply(
+						this.yTransform_.getValue()).multiply(
+						new WTransform(1, 0, 0, -1, -this.chartArea_.getLeft(),
+								this.chartArea_.getBottom())));
+			} else {
+				if (vertical) {
+					transform.assign(new WTransform(1, 0, 0, -1, 0,
+							this.chartArea_.getBottom()).multiply(
+							this.yTransform_.getValue()).multiply(
+							new WTransform(1, 0, 0, -1, 0, this.chartArea_
+									.getBottom())));
+				} else {
+					transform.assign(new WTransform(1, 0, 0, 1, this.chartArea_
+							.getLeft(), 0)
+							.multiply(this.xTransform_.getValue()).multiply(
+									new WTransform(1, 0, 0, 1, -this.chartArea_
+											.getLeft(), 0)));
+				}
+			}
+			axis.render(painter, properties, axisStart, axisEnd, tickStart,
+					tickEnd, labelPos, EnumSet.of(labelHFlag, labelVFlag),
+					transform, pens, textPens);
 		}
-		if (this.getOrientation() == Orientation.Horizontal) {
-			axisStart = this.hv(axisStart);
-			axisEnd = this.hv(axisEnd);
-			AlignmentFlag rHFlag = AlignmentFlag.AlignCenter;
-			AlignmentFlag rVFlag = AlignmentFlag.AlignMiddle;
-			switch (labelHFlag) {
-			case AlignLeft:
-				rVFlag = AlignmentFlag.AlignTop;
-				break;
-			case AlignCenter:
-				rVFlag = AlignmentFlag.AlignMiddle;
-				break;
-			case AlignRight:
-				rVFlag = AlignmentFlag.AlignBottom;
-				break;
-			default:
-				break;
-			}
-			switch (labelVFlag) {
-			case AlignTop:
-				rHFlag = AlignmentFlag.AlignRight;
-				break;
-			case AlignMiddle:
-				rHFlag = AlignmentFlag.AlignCenter;
-				break;
-			case AlignBottom:
-				rHFlag = AlignmentFlag.AlignLeft;
-				break;
-			default:
-				break;
-			}
-			labelHFlag = rHFlag;
-			labelVFlag = rVFlag;
-			boolean invertTicks = !vertical;
-			if (invertTicks) {
-				tickStart = -tickStart;
-				tickEnd = -tickEnd;
-				labelPos = -labelPos;
-			}
+		if (this.isInteractive()) {
+			painter.restore();
 		}
-		axis.render(painter, properties, axisStart, axisEnd, tickStart,
-				tickEnd, labelPos, EnumSet.of(labelHFlag, labelVFlag));
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders properties of one axis.
 	 * <p>
 	 * Calls {@link #renderAxis(WPainter painter, WAxis axis, EnumSet properties)
 	 * renderAxis(painter, axis, EnumSet.of(propertie, properties))}
@@ -2237,10 +2741,10 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Paints the widget.
+	 * Renders grid lines along the ticks of the given axis.
 	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * 
+	 * @see WCartesianChart#render(WPainter painter, WRectF rectangle)
 	 */
 	protected void renderGrid(final WPainter painter, final WAxis ax) {
 		if (!ax.isGridLinesEnabled()) {
@@ -2256,34 +2760,43 @@ public class WCartesianChart extends WAbstractChart {
 		double oun = sn.renderStart + sn.renderLength;
 		boolean otherVertical = !vertical;
 		if (otherVertical) {
-			ou0 = this.chartArea_.getBottom() - ou0 + 0.5;
-			oun = this.chartArea_.getBottom() - oun + 0.5;
+			ou0 = this.chartArea_.getBottom() - ou0;
+			oun = this.chartArea_.getBottom() - oun;
 		} else {
-			ou0 = this.chartArea_.getLeft() + ou0 + 0.5;
-			oun = this.chartArea_.getLeft() + oun + 0.5;
+			ou0 = this.chartArea_.getLeft() + ou0;
+			oun = this.chartArea_.getLeft() + oun;
 		}
 		WPainterPath gridPath = new WPainterPath();
 		List<Double> gridPos = ax.getGridLinePositions();
 		for (int i = 0; i < gridPos.size(); ++i) {
 			double u = gridPos.get(i);
 			if (vertical) {
-				u = Math.floor(this.chartArea_.getBottom() - u) + 0.5;
+				u = this.chartArea_.getBottom() - u;
 				gridPath.moveTo(this.hv(ou0, u));
 				gridPath.lineTo(this.hv(oun, u));
 			} else {
-				u = Math.floor(this.chartArea_.getLeft() + u) + 0.5;
+				u = this.chartArea_.getLeft() + u;
 				gridPath.moveTo(this.hv(u, ou0));
 				gridPath.lineTo(this.hv(u, oun));
 			}
 		}
-		painter.strokePath(gridPath, ax.getGridLinesPen());
+		if (this.isInteractive()) {
+			painter.save();
+			WPainterPath clipPath = new WPainterPath();
+			clipPath.addRect(this.chartArea_);
+			painter.setClipPath(clipPath);
+			painter.setClipping(true);
+		}
+		painter.strokePath(
+				this.getCombinedTransform().map(gridPath).getCrisp(), ax
+						.getGridLinesPen());
+		if (this.isInteractive()) {
+			painter.restore();
+		}
 	}
 
 	/**
-	 * Paints the widget.
-	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
+	 * Calculates the total number of bar groups.
 	 */
 	protected int getCalcNumBarGroups() {
 		int numBarGroups = 0;
@@ -2301,12 +2814,30 @@ public class WCartesianChart extends WAbstractChart {
 		return numBarGroups;
 	}
 
-	/**
-	 * Paints the widget.
-	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
-	 */
+	protected DomElement createDomElement(WApplication app) {
+		if (this.isInteractive()) {
+			this.createPensForAxis(Axis.XAxis);
+			this.createPensForAxis(Axis.YAxis);
+		}
+		DomElement res = super.createDomElement(app);
+		return res;
+	}
+
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
+		if (this.isInteractive()) {
+			this.clearPens();
+			this.createPensForAxis(Axis.XAxis);
+			this.createPensForAxis(Axis.YAxis);
+		}
+		super.getDomChanges(result, app);
+	}
+
+	protected void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WCartesianChart.js", wtjs1());
+	}
+
 	int getSeriesIndexOf(int modelColumn) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() == modelColumn) {
@@ -2316,12 +2847,228 @@ public class WCartesianChart extends WAbstractChart {
 		return -1;
 	}
 
-	/**
-	 * Paints the widget.
-	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
-	 */
+	private void clearPens() {
+		for (Iterator<Map.Entry<Axis, List<WCartesianChart.PenAssignment>>> it_it = this.pens_
+				.entrySet().iterator(); it_it.hasNext();) {
+			Map.Entry<Axis, List<WCartesianChart.PenAssignment>> it = it_it
+					.next();
+			final List<WCartesianChart.PenAssignment> assignments = it
+					.getValue();
+			for (int i = 0; i < assignments.size(); ++i) {
+				final WCartesianChart.PenAssignment assignment = assignments
+						.get(i);
+				this.freePens_.add(assignment.pen);
+				this.freePens_.add(assignment.textPen);
+			}
+		}
+		this.pens_.clear();
+	}
+
+	private void createPensForAxis(Axis ax) {
+		if (!this.getAxis(ax).isVisible()) {
+			return;
+		}
+		double initialZoom = this.getAxis(ax).getInitialZoom();
+		if (initialZoom > this.getAxis(ax).getMaxZoom()) {
+			initialZoom = this.getAxis(ax).getMaxZoom();
+		}
+		int initialLevel = toZoomLevel(initialZoom);
+		List<WCartesianChart.PenAssignment> assignments = new ArrayList<WCartesianChart.PenAssignment>();
+		for (int i = 1;; ++i) {
+			double zoom = Math.pow(2.0, i - 1);
+			if (zoom > this.getAxis(ax).getMaxZoom()) {
+				break;
+			}
+			WJavaScriptHandle<WPen> pen = new WJavaScriptHandle<WPen>();
+			if (this.freePens_.size() > 0) {
+				pen = this.freePens_.get(this.freePens_.size() - 1);
+				this.freePens_.remove(this.freePens_.size() - 1);
+			} else {
+				pen = this.createJSPen();
+			}
+			WPen p = this.getAxis(ax).getPen().clone();
+			p.setColor(new WColor(p.getColor().getRed(), p.getColor()
+					.getGreen(), p.getColor().getBlue(), i == initialLevel ? p
+					.getColor().getAlpha() : 0));
+			pen.setValue(p);
+			WJavaScriptHandle<WPen> textPen = new WJavaScriptHandle<WPen>();
+			if (this.freePens_.size() > 0) {
+				textPen = this.freePens_.get(this.freePens_.size() - 1);
+				this.freePens_.remove(this.freePens_.size() - 1);
+			} else {
+				textPen = this.createJSPen();
+			}
+			p = this.getAxis(ax).getTextPen().clone();
+			p.setColor(new WColor(p.getColor().getRed(), p.getColor()
+					.getGreen(), p.getColor().getBlue(), i == initialLevel ? p
+					.getColor().getAlpha() : 0));
+			textPen.setValue(p);
+			assignments.add(new WCartesianChart.PenAssignment(pen, textPen));
+		}
+		this.pens_.put(ax, assignments);
+	}
+
+	String getCObjJsRef() {
+		return "jQuery.data(" + this.getJsRef() + ",'cobj')";
+	}
+
+	private void assignJSPathsForSeries(final WDataSeries series) {
+		WJavaScriptHandle<WPainterPath> handle = new WJavaScriptHandle<WPainterPath>();
+		if (this.freePainterPaths_.size() > 0) {
+			handle = this.freePainterPaths_
+					.get(this.freePainterPaths_.size() - 1);
+			this.freePainterPaths_.remove(this.freePainterPaths_.size() - 1);
+		} else {
+			handle = this.getCreateJSPainterPath();
+		}
+		this.curvePaths_.put(series.getModelColumn(), handle);
+	}
+
+	private void freeJSPathsForSeries(int modelColumn) {
+		this.freePainterPaths_.add(this.curvePaths_.get(modelColumn));
+		this.curvePaths_.remove(modelColumn);
+	}
+
+	private void freeAllJSPaths() {
+		for (Iterator<Map.Entry<Integer, WJavaScriptHandle<WPainterPath>>> it_it = this.curvePaths_
+				.entrySet().iterator(); it_it.hasNext();) {
+			Map.Entry<Integer, WJavaScriptHandle<WPainterPath>> it = it_it
+					.next();
+			this.freePainterPaths_.add(it.getValue());
+		}
+		this.curvePaths_.clear();
+	}
+
+	private void updateJSPens(final StringBuilder js) {
+		js.append("pens:{x:");
+		this.updateJSPensForAxis(js, Axis.XAxis);
+		js.append(",y:");
+		this.updateJSPensForAxis(js, Axis.YAxis);
+		js.append("},");
+		js.append("penAlpha:{x:[");
+		js.append(this.getAxis(Axis.XAxis).getPen().getColor().getAlpha())
+				.append(',');
+		js.append(this.getAxis(Axis.XAxis).getTextPen().getColor().getAlpha());
+		js.append("],y:[");
+		js.append(this.getAxis(Axis.YAxis).getPen().getColor().getAlpha())
+				.append(',');
+		js.append(this.getAxis(Axis.YAxis).getTextPen().getColor().getAlpha())
+				.append("]},");
+	}
+
+	private void updateJSPensForAxis(final StringBuilder js, Axis axis) {
+		final Map<Axis, List<WCartesianChart.PenAssignment>> pens = this.pens_;
+		js.append("[");
+		for (int i = 0; i < pens.get(axis).size(); ++i) {
+			if (i != 0) {
+				js.append(",");
+			}
+			final WCartesianChart.PenAssignment assignment = pens.get(axis)
+					.get(i);
+			js.append("[");
+			js.append(assignment.pen.getJsRef());
+			js.append(",");
+			js.append(assignment.textPen.getJsRef());
+			js.append("]");
+		}
+		js.append("]");
+	}
+
+	private void updateJSConfig(final String key, Object value) {
+		if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
+			if (!this.cObjCreated_) {
+				this.update();
+			} else {
+				this.doJavaScript(this.getCObjJsRef() + ".updateConfig({" + key
+						+ ":" + StringUtils.asString(value).toString() + "});");
+			}
+		}
+	}
+
+	private boolean isInteractive() {
+		return (this.zoomEnabled_ || this.panEnabled_ || this.crosshairEnabled_
+				|| this.followCurve_ >= 0 || this.axisSliderWidgets_.size() > 0)
+				&& this.getMethod() == WPaintedWidget.Method.HtmlCanvas;
+	}
+
+	WPainterPath pathForSeries(int modelColumn) {
+		for (int i = 0; i < this.series_.size(); ++i) {
+			if (this.series_.get(i).getType() == SeriesType.LineSeries
+					|| this.series_.get(i).getType() == SeriesType.CurveSeries) {
+				if (this.series_.get(i).getModelColumn() == modelColumn) {
+					return this.curvePaths_.get(
+							this.series_.get(i).getModelColumn()).getValue();
+				}
+			}
+		}
+		return new WPainterPath();
+	}
+
+	WTransform getCombinedTransform() {
+		return this.combinedTransform(this.xTransform_.getValue(),
+				this.yTransform_.getValue());
+	}
+
+	private WTransform combinedTransform(WTransform xTransform,
+			WTransform yTransform) {
+		return new WTransform(1, 0, 0, -1, this.chartArea_.getLeft(),
+				this.chartArea_.getBottom()).multiply(xTransform).multiply(
+				yTransform).multiply(
+				new WTransform(1, 0, 0, -1, -this.chartArea_.getLeft(),
+						this.chartArea_.getBottom()));
+	}
+
+	private void setInitialZoomAndPan() {
+		double xPan = -this.getAxis(Axis.XAxis).mapToDevice(
+				this.getAxis(Axis.XAxis).getInitialPan(), 0);
+		double yPan = -this.getAxis(Axis.YAxis).mapToDevice(
+				this.getAxis(Axis.YAxis).getInitialPan(), 0);
+		double xZoom = this.getAxis(Axis.XAxis).getInitialZoom();
+		if (xZoom > this.getAxis(Axis.XAxis).getMaxZoom()) {
+			xZoom = this.getAxis(Axis.XAxis).getMaxZoom();
+		}
+		double yZoom = this.getAxis(Axis.YAxis).getInitialZoom();
+		if (yZoom > this.getAxis(Axis.YAxis).getMaxZoom()) {
+			yZoom = this.getAxis(Axis.YAxis).getMaxZoom();
+		}
+		WTransform xTransform = new WTransform(xZoom, 0, 0, 1, xZoom * xPan, 0);
+		WTransform yTransform = new WTransform(1, 0, 0, yZoom, 0, yZoom * yPan);
+		WRectF transformedArea = this.combinedTransform(xTransform, yTransform)
+				.map(this.chartArea_);
+		if (transformedArea.getLeft() > this.chartArea_.getLeft()) {
+			double diff = this.chartArea_.getLeft() - transformedArea.getLeft();
+			xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
+					.multiply(xTransform));
+			transformedArea = this.combinedTransform(xTransform, yTransform)
+					.map(this.chartArea_);
+		}
+		if (transformedArea.getRight() < this.chartArea_.getRight()) {
+			double diff = this.chartArea_.getRight()
+					- transformedArea.getRight();
+			xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
+					.multiply(xTransform));
+			transformedArea = this.combinedTransform(xTransform, yTransform)
+					.map(this.chartArea_);
+		}
+		if (transformedArea.getTop() > this.chartArea_.getTop()) {
+			double diff = this.chartArea_.getTop() - transformedArea.getTop();
+			yTransform.assign(new WTransform(1, 0, 0, 1, 0, -diff)
+					.multiply(yTransform));
+			transformedArea = this.combinedTransform(xTransform, yTransform)
+					.map(this.chartArea_);
+		}
+		if (transformedArea.getBottom() < this.chartArea_.getBottom()) {
+			double diff = this.chartArea_.getBottom()
+					- transformedArea.getBottom();
+			yTransform.assign(new WTransform(1, 0, 0, 1, 0, -diff)
+					.multiply(yTransform));
+			transformedArea = this.combinedTransform(xTransform, yTransform)
+					.map(this.chartArea_);
+		}
+		this.xTransform_.setValue(xTransform);
+		this.yTransform_.setValue(yTransform);
+	}
+
 	WPointF hv(double x, double y, double width) {
 		if (this.orientation_ == Orientation.Vertical) {
 			return new WPointF(x, y);
@@ -2330,12 +3077,6 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	/**
-	 * Paints the widget.
-	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * paintEvent()} to paint on the paint device.
-	 */
 	private WPointF inverseHv(double x, double y, double width) {
 		if (this.orientation_ == Orientation.Vertical) {
 			return new WPointF(x, y);
@@ -2344,23 +3085,10 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	/**
-	 * Paints the widget.
-	 * <p>
-	 * This calls {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-	 * WCartesianChart#paintEvent()} to paint on the paint device.
-	 */
-	private static class IconWidget extends WPaintedWidget {
+	static class IconWidget extends WPaintedWidget {
 		private static Logger logger = LoggerFactory
 				.getLogger(IconWidget.class);
 
-		/**
-		 * Paints the widget.
-		 * <p>
-		 * This calls
-		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-		 * WCartesianChart#paintEvent()} to paint on the paint device.
-		 */
 		public IconWidget(WCartesianChart chart, int index,
 				WContainerWidget parent) {
 			super(parent);
@@ -2370,47 +3098,60 @@ public class WCartesianChart extends WAbstractChart {
 			this.resize(new WLength(20), new WLength(20));
 		}
 
-		/**
-		 * Paints the widget.
-		 * <p>
-		 * Calls
-		 * {@link #IconWidget(WCartesianChart chart, int index, WContainerWidget parent)
-		 * this(chart, index, (WContainerWidget)null)}
-		 */
 		public IconWidget(WCartesianChart chart, int index) {
 			this(chart, index, (WContainerWidget) null);
 		}
 
-		/**
-		 * Paints the widget.
-		 * <p>
-		 * This calls
-		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-		 * WCartesianChart#paintEvent()} to paint on the paint device.
-		 */
 		protected void paintEvent(WPaintDevice paintDevice) {
 			WPainter painter = new WPainter(paintDevice);
 			this.chart_.renderLegendIcon(painter, new WPointF(2.5, 10.0),
 					this.chart_.getSeries(this.index_));
 		}
 
-		/**
-		 * Paints the widget.
-		 * <p>
-		 * This calls
-		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-		 * WCartesianChart#paintEvent()} to paint on the paint device.
-		 */
 		private WCartesianChart chart_;
-		/**
-		 * Paints the widget.
-		 * <p>
-		 * This calls
-		 * {@link WCartesianChart#paintEvent(WPaintDevice paintDevice)
-		 * WCartesianChart#paintEvent()} to paint on the paint device.
-		 */
 		private int index_;
 	}
 
+	private boolean zoomEnabled_;
+	private boolean panEnabled_;
+	private boolean rubberBandEnabled_;
+	private boolean crosshairEnabled_;
+	private int followCurve_;
+	boolean cObjCreated_;
+	Map<Integer, WJavaScriptHandle<WPainterPath>> curvePaths_;
+	private List<WJavaScriptHandle<WPainterPath>> freePainterPaths_;
+	WJavaScriptHandle<WTransform> xTransform_;
+	WJavaScriptHandle<WTransform> yTransform_;
+
+	static class PenAssignment {
+		private static Logger logger = LoggerFactory
+				.getLogger(PenAssignment.class);
+
+		public WJavaScriptHandle<WPen> pen;
+		public WJavaScriptHandle<WPen> textPen;
+
+		public PenAssignment(final WJavaScriptHandle<WPen> pen,
+				final WJavaScriptHandle<WPen> textPen) {
+			this.pen = pen;
+			this.textPen = textPen;
+		}
+	}
+
+	private Map<Axis, List<WCartesianChart.PenAssignment>> pens_;
+	private List<WJavaScriptHandle<WPen>> freePens_;
+	private List<WAxisSliderWidget> axisSliderWidgets_;
+
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WCartesianChart",
+				"function(F,x,w,d){function Q(){return d.crosshair||d.followCurve!==-1}function la(a){return a.pointerType===2||a.pointerType===3||a.pointerType===\"pen\"||a.pointerType===\"touch\"}function j(a){if(a===g)return d.xTransform;if(a===i)return d.yTransform}function Z(){var a=m(d.area),b=o(d.area);return z([1,0,0,-1,a,b],z(j(g),z(j(i),[1,0,0,-1,-a,b])))}function C(){return z(Z(),d.area)}function S(a,b){if(b===undefined)b=false;a=b?a:z(ma(Z()), a);a=[(a[g]-d.area[0])/d.area[2],1-(a[i]-d.area[1])/d.area[3]];return[d.modelArea[0]+a[g]*d.modelArea[2],d.modelArea[1]+a[i]*d.modelArea[3]]}function O(a,b){if(b===undefined)b=false;a=[(a[g]-d.modelArea[0])/d.modelArea[2],1-(a[i]-d.modelArea[1])/d.modelArea[3]];a=[d.area[0]+a[g]*d.area[2],d.area[1]+a[i]*d.area[3]];return b?a:z(Z(),a)}function za(a,b){var e=na(a,b);if(e<0)e=0;if(e>=b.length)e=b.length-2;if(b[e][g]===a)return[a,b[e][i]];var f=e+1;if(b[f][2]==T)f+=2;return a-b[e][g]<b[f][g]-a?[b[e][g], b[e][i]]:[b[f][g],b[f][i]]}function na(a,b){function e(v){b[v][2]===oa&&--v;b[v][2]===T&&--v;return v}var f=b.length,h=Math.floor(f/2);h=e(h);var k=0,s=f,r=false;if(b[0][g]>a)return-1;if(b[f-1][g]<a)return f;for(;!r;){f=h+1;if(b[f][2]===T)f+=2;if(b[h][g]>a){s=h;h=Math.floor((s+k)/2);h=e(h)}else if(b[h][g]===a)r=true;else if(b[f][g]>a)r=true;else if(b[f][g]===a){h=f;r=true}else{k=h;h=Math.floor((s+k)/2);h=e(h)}}return h}function aa(){var a=(S([m(d.area),0])[0]-d.modelArea[0])/d.modelArea[2],b=(S([n(d.area), 0])[0]-d.modelArea[0])/d.modelArea[2],e;for(e=0;e<d.sliders.length;++e){var f=$(\"#\"+d.sliders[e]);if(f)(f=f.data(\"sobj\"))&&f.changeRange(a,b)}}function U(){J&&ba(function(){w.repaint();Q()&&pa()})}function pa(){if(J){var a=E.getContext(\"2d\");a.clearRect(0,0,E.width,E.height);a.save();a.beginPath();a.moveTo(m(d.area),q(d.area));a.lineTo(n(d.area),q(d.area));a.lineTo(n(d.area),o(d.area));a.lineTo(m(d.area),o(d.area));a.closePath();a.clip();var b=z(ma(Z()),p),e=p[g],f=p[i];if(d.followCurve!==-1){b=za(b[g], d.series[d.followCurve]);f=z(Z(),b);e=f[g];f=f[i];p[g]=e;p[i]=f}b=[(b[g]-d.area[0])/d.area[2],1-(b[i]-d.area[1])/d.area[3]];b=[d.modelArea[0]+b[g]*d.modelArea[2],d.modelArea[1]+b[i]*d.modelArea[3]];a.font=\"16px sans-serif\";a.textAlign=\"right\";a.textBaseline=\"top\";var h=b[0].toFixed(2);b=b[1].toFixed(2);if(h==\"-0.00\")h=\"0.00\";if(b==\"-0.00\")b=\"0.00\";a.fillText(\"(\"+h+\",\"+b+\")\",n(d.area)-5,q(d.area)+5);a.setLineDash&&a.setLineDash([1,2]);a.beginPath();a.moveTo(Math.floor(e)+0.5,Math.floor(q(d.area))+ 0.5);a.lineTo(Math.floor(e)+0.5,Math.floor(o(d.area))+0.5);a.moveTo(Math.floor(m(d.area))+0.5,Math.floor(f)+0.5);a.lineTo(Math.floor(n(d.area))+0.5,Math.floor(f)+0.5);a.stroke();a.restore()}}function V(a,b){var e;if(a.x!==undefined){e=a.x;a=a.y}else{e=a[0];a=a[1]}return e>=m(b)&&e<=n(b)&&a>=q(b)&&a<=o(b)}function Aa(a){return q(a)<=q(d.area)+da&&o(a)>=o(d.area)-da&&m(a)<=m(d.area)+da&&n(a)>=n(d.area)-da}function G(a){var b=C();if(a===undefined||a===ea)if(j(g)[0]<1){j(g)[0]=1;b=C()}if(a===undefined|| a===fa)if(j(i)[3]<1){j(i)[3]=1;b=C()}if(a===undefined||a===ea){if(m(b)>m(d.area)){b=m(d.area)-m(b);j(g)[4]=j(g)[4]+b;b=C()}if(n(b)<n(d.area)){b=n(d.area)-n(b);j(g)[4]=j(g)[4]+b;b=C()}}if(a===undefined||a===fa){if(q(b)>q(d.area)){b=q(d.area)-q(b);j(i)[5]=j(i)[5]-b;b=C()}if(o(b)<o(d.area)){b=o(d.area)-o(b);j(i)[5]=j(i)[5]-b;C()}}}function Ba(){if(E===undefined&&Q()){c=document.createElement(\"canvas\");c.setAttribute(\"width\",w.canvas.width);c.setAttribute(\"height\",w.canvas.height);c.style.position=\"absolute\"; c.style.display=\"block\";c.style.left=\"0\";c.style.top=\"0\";c.style.msTouchAction=\"none\";w.canvas.parentNode.appendChild(c);E=c;jQuery.data(x,\"oobj\",E)}else if(E!==undefined&&!Q()){E.parentNode.removeChild(E);jQuery.removeData(x,\"oobj\");E=undefined}if(p===null)p=O([(m(d.modelArea)+n(d.modelArea))/2,(q(d.modelArea)+o(d.modelArea))/2])}function Ca(a,b){var e=Math.cos(a);a=Math.sin(a);var f=e*a,h=-b[0]*e-b[1]*a;return[e*e,f,f,a*a,e*h+b[0],a*h+b[1]]}function Da(a,b,e){a=[b[g]-a[g],b[i]-a[i]];return e*e>= a[g]*a[g]+a[i]*a[i]}function qa(a,b){if(W){var e=Date.now();if(b===undefined)b=e-H;var f={x:0,y:0},h=C(),k=Ea;if(b>2*ca){J=false;var s=Math.floor(b/ca-1),r;for(r=0;r<s;++r){qa(a,ca);if(!W){J=true;U();return}}b-=s*ca;J=true}if(l.x===Infinity||l.x===-Infinity)l.x=l.x>0?K:-K;if(isFinite(l.x)){l.x/=1+va*b;h[0]+=l.x*b;if(m(h)>m(d.area)){l.x+=-k*(m(h)-m(d.area))*b;l.x*=0.7}else if(n(h)<n(d.area)){l.x+=-k*(n(h)-n(d.area))*b;l.x*=0.7}if(Math.abs(l.x)<ra)if(m(h)>m(d.area))l.x=ra;else if(n(h)<n(d.area))l.x= -ra;if(Math.abs(l.x)>K)l.x=(l.x>0?1:-1)*K;f.x=l.x*b}if(l.y===Infinity||l.y===-Infinity)l.y=l.y>0?K:-K;if(isFinite(l.y)){l.y/=1+va*b;h[1]+=l.y*b;if(q(h)>q(d.area)){l.y+=-k*(q(h)-q(d.area))*b;l.y*=0.7}else if(o(h)<o(d.area)){l.y+=-k*(o(h)-o(d.area))*b;l.y*=0.7}if(Math.abs(l.y)<0.001)if(q(h)>q(d.area))l.y=0.001;else if(o(h)<o(d.area))l.y=-0.001;if(Math.abs(l.y)>K)l.y=(l.y>0?1:-1)*K;f.y=l.y*b}h=C();M(f,X);a=C();if(m(h)>m(d.area)&&m(a)<=m(d.area)){l.x=0;M({x:-f.x,y:0},X);G(ea)}if(n(h)<n(d.area)&&n(a)>= n(d.area)){l.x=0;M({x:-f.x,y:0},X);G(ea)}if(q(h)>q(d.area)&&q(a)<=q(d.area)){l.y=0;M({x:0,y:-f.y},X);G(fa)}if(o(h)<o(d.area)&&o(a)>=o(d.area)){l.y=0;M({x:0,y:-f.y},X);G(fa)}if(Math.abs(l.x)<wa&&Math.abs(l.y)<wa&&Aa(a)){G();W=false;B=null;l.x=0;l.y=0;H=null;t=[]}else{H=e;J&&ba(qa)}}}function xa(a){return Math.floor(Math.log(a)/Math.LN2+0.5)+1}function ga(){var a,b,e=xa(j(g)[0])-1;if(e>=d.pens.x.length)e=d.pens.x.length-1;for(a=0;a<d.pens.x.length;++a)if(e===a)for(b=0;b<d.pens.x[a].length;++b)d.pens.x[a][b].color[3]= d.penAlpha.x[b];else for(b=0;b<d.pens.x[a].length;++b)d.pens.x[a][b].color[3]=0;e=xa(j(i)[3])-1;if(e>=d.pens.y.length)e=d.pens.y.length-1;for(a=0;a<d.pens.y.length;++a)if(e===a)for(b=0;b<d.pens.y[a].length;++b)d.pens.y[a][b].color[3]=d.penAlpha.y[b];else for(b=0;b<d.pens.y[a].length;++b)d.pens.y[a][b].color[3]=0}function M(a,b){var e=S(p);if(b&X){j(g)[4]=j(g)[4]+a.x;j(i)[5]=j(i)[5]-a.y}else if(b&ya){b=C();if(m(b)>m(d.area)){if(a.x>0)a.x/=1+(m(b)-m(d.area))*ha}else if(n(b)<n(d.area))if(a.x<0)a.x/= 1+(n(d.area)-n(b))*ha;if(q(b)>q(d.area)){if(a.y>0)a.y/=1+(q(b)-q(d.area))*ha}else if(o(b)<o(d.area))if(a.y<0)a.y/=1+(o(d.area)-o(b))*ha;j(g)[4]=j(g)[4]+a.x;j(i)[5]=j(i)[5]-a.y;p[g]+=a.x;p[i]+=a.y}else{j(g)[4]=j(g)[4]+a.x;j(i)[5]=j(i)[5]-a.y;p[g]+=a.x;p[i]+=a.y;G()}a=O(e);p[g]=a[g];p[i]=a[i];U();aa()}function sa(a,b,e){var f=S(p),h=z(ma([1,0,0,-1,m(d.area),o(d.area)]),[a.x,a.y]);a=h[0];h=h[1];b=Math.pow(1.2,b);e=Math.pow(1.2,e);if(j(g)[0]*b>d.maxZoom[g])b=d.maxZoom[g]/j(g)[0];if(b<1||j(g)[0]!==d.maxZoom[g])ia(j(g), z([b,0,0,1,a-b*a,0],j(g)));if(j(i)[3]*e>d.maxZoom[i])e=d.maxZoom[i]/j(i)[3];if(e<1||j(i)[3]!==d.maxZoom[i])ia(j(i),z([1,0,0,e,0,h-e*h],j(i)));G();f=O(f);p[g]=f[g];p[i]=f[i];ga();U();aa()}var ca=17,ba=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||function(a){window.setTimeout(a,ca)}}();w.canvas.style.msTouchAction=\"none\";var T=2,oa=3,X=1,ya=2,ea=1,fa=2,g=0,i=1,I=false;if(!window.TouchEvent&&(window.MSPointerEvent||window.PointerEvent))(function(){function a(){if(pointers.length> 0&&!I)I=true;else if(pointers.length<=0&&I)I=false}function b(h){if(la(h)){h.preventDefault();pointers.push(h);a();Y.touchStart(x,{touches:pointers.slice(0)})}}function e(h){if(I)if(la(h)){h.preventDefault();var k;for(k=0;k<pointers.length;++k)if(pointers[k].pointerId===h.pointerId){pointers.splice(k,1);break}a();Y.touchEnd(x,{touches:pointers.slice(0),changedTouches:[]})}}function f(h){if(la(h)){h.preventDefault();var k;for(k=0;k<pointers.length;++k)if(pointers[k].pointerId===h.pointerId){pointers[k]= h;break}a();Y.touchMoved(x,{touches:pointers.slice(0)})}}pointers=[];if(window.PointerEvent){x.addEventListener(\"pointerdown\",b);x.addEventListener(\"pointerup\",e);x.addEventListener(\"pointerout\",e);x.addEventListener(\"pointermove\",f)}else{x.addEventListener(\"MSPointerDown\",b);x.addEventListener(\"MSPointerUp\",e);x.addEventListener(\"MSPointerOut\",e);x.addEventListener(\"MSPointerMove\",f)}})();var va=0.003,Ea=2.0E-4,ha=0.07,da=3,ra=0.001,K=1.5,wa=0.02;jQuery.data(x,\"cobj\",this);var Y=this,u=F.WT;Y.config= d;var E=jQuery.data(x,\"oobj\"),p=null,J=true,B=null,t=[],P=false,N=false,D=null,ta=null,ua=null,l={x:0,y:0},H=null,ja=null;F=u.gfxUtils;var z=F.transform_mult,ma=F.transform_inverted,ia=F.transform_assign,q=F.rect_top,o=F.rect_bottom,m=F.rect_left,n=F.rect_right,W=false;this.mouseMove=function(a,b){setTimeout(function(){if(!I){var e=u.widgetCoordinates(w.canvas,b);if(V(e,d.area))if(Q()&&J){p=[e.x,e.y];ba(pa)}}},0)};this.mouseDown=function(a,b){if(!I){a=u.widgetCoordinates(w.canvas,b);if(V(a,d.area))B= a}};this.mouseUp=function(){I||(B=null)};this.mouseDrag=function(a,b){if(!I)if(B!==null){a=u.widgetCoordinates(w.canvas,b);if(V(a,d.area)){u.buttons===1&&d.pan&&M({x:a.x-B.x,y:a.y-B.y});B=a}}};this.mouseWheel=function(a,b){var e=u.widgetCoordinates(w.canvas,b);if(V(e,d.area)){a=u.normalizeWheel(b);if(!b.ctrlKey&&d.pan){e=j(g)[4];var f=j(i)[5];M({x:-a.pixelX,y:-a.pixelY});if(e!==j(g)[4]||f!==j(i)[5])u.cancelEvent(b)}else if(b.ctrlKey&&d.zoom){u.cancelEvent(b);f=-a.spinY;if(f===0)f=-a.spinX;if(b.shiftKey&& !b.altKey)sa(e,0,f);else b.altKey&&!b.shiftKey?sa(e,f,0):sa(e,f,f)}}};this.touchStart=function(a,b){P=b.touches.length===1;N=b.touches.length===2;if(P){W=false;a=u.widgetCoordinates(w.canvas,b.touches[0]);if(!V(a,d.area))return;ja=Q()&&Da(p,[a.x,a.y],30)?1:0;H=Date.now();B=a;u.capture(null);u.capture(w.canvas)}else if(N&&d.zoom){W=false;t=[u.widgetCoordinates(w.canvas,b.touches[0]),u.widgetCoordinates(w.canvas,b.touches[1])].map(function(f){return[f.x,f.y]});if(!t.every(function(f){return V(f,d.area)})){N= null;return}u.capture(null);u.capture(w.canvas);D=Math.atan2(t[1][1]-t[0][1],t[1][0]-t[0][0]);ta=[(t[0][0]+t[1][0])/2,(t[0][1]+t[1][1])/2];a=Math.abs(Math.sin(D));var e=Math.abs(Math.cos(D));D=a<Math.sin(0.125*Math.PI)?0:e<Math.cos(0.375*Math.PI)?Math.PI/2:Math.tan(D)>0?Math.PI/4:-Math.PI/4;ua=Ca(D,ta)}else return;b.preventDefault&&b.preventDefault()};this.touchEnd=function(a,b){var e=Array.prototype.slice.call(b.touches),f=e.length===0;P=e.length===1;N=e.length===2;f||function(){var h;for(h=0;h< b.changedTouches.length;++h)(function(){for(var k=b.changedTouches[h].identifier,s=0;s<e.length;++s)if(e[s].identifier===k){e.splice(s,1);return}})()}();f=e.length===0;P=e.length===1;N=e.length===2;if(f){if(ja===0&&(isFinite(l.x)||isFinite(l.y))&&d.rubberBand){H=Date.now();W=true;ba(qa)}else{Y.mouseUp(null,null);e=[];ua=ta=D=null;if(H!=null){Date.now();H=null}}ja=null}else if(P||N)Y.touchStart(a,b)};this.touchMoved=function(a,b){if(P||N)if(P){if(B!==null){a=u.widgetCoordinates(w.canvas,b.touches[0]); var e=Date.now(),f={x:a.x-B.x,y:a.y-B.y},h=e-H;H=e;if(ja===1){p[g]+=f.x;p[i]+=f.y;Q()&&J&&ba(pa)}else if(d.pan){if(a.x<d.area[0]||a.x>d.area[0]+d.area[2]){l={x:0,y:0};return}if(a.y<d.area[1]||a.y>d.area[1]+d.area[3]){l={x:0,y:0};return}l.x=f.x/h;l.y=f.y/h;M(f,d.rubberBand?ya:0)}b.preventDefault&&b.preventDefault();B=a}}else if(N&&d.zoom){b.preventDefault&&b.preventDefault();a=S(p);var k=(t[0][0]+t[1][0])/2,s=(t[0][1]+t[1][1])/2;b=[u.widgetCoordinates(w.canvas,b.touches[0]),u.widgetCoordinates(w.canvas, b.touches[1])].map(function(ka){return D===0?[ka.x,s]:D===Math.PI/2?[k,ka.y]:z(ua,[ka.x,ka.y])});e=Math.abs(t[1][0]-t[0][0]);f=Math.abs(b[1][0]-b[0][0]);h=e>0?f/e:1;if(f===e||D===Math.PI/2)h=1;if(j(g)[0]*h>d.maxZoom[g])h=d.maxZoom[g]/j(g)[0];var r=(b[0][0]+b[1][0])/2,v=Math.abs(t[1][1]-t[0][1]),A=Math.abs(b[1][1]-b[0][1]),y=v?A/v:1;if(A===v||D===0)y=1;if(j(i)[3]*y>d.maxZoom[i])y=d.maxZoom[i]/j(i)[3];var Fa=(b[0][1]+b[1][1])/2;if(f!=e&&(h<1||j(g)[0]!==d.maxZoom[g]))ia(j(g),z([h,0,0,1,-h*k+r,0],j(g))); if(A!=v&&(y<1||j(i)[3]!==d.maxZoom[i]))ia(j(i),z([1,0,0,y,0,-y*s+Fa],j(i)));G();a=O(a);p[g]=a[g];p[i]=a[i];t=b;ga();U();aa()}};this.setXRange=function(a,b,e){b=d.modelArea[0]+d.modelArea[2]*b;e=d.modelArea[0]+d.modelArea[2]*e;if(b<m(d.modelArea))b=m(d.modelArea);if(e>n(d.modelArea))e=n(d.modelArea);var f=d.series[a];if(f.length!==0){a=O([b,0],true);var h=O([e,0],true),k=na(a[g],f);if(k<0)k=0;else{k++;if(f[k][2]===T)k+=2}var s=na(h[g],f),r,v,A=Infinity,y=-Infinity;for(r=k;r<=s&&r<f.length;++r)if(f[r][2]!== T&&f[r][2]!==oa){if(f[r][i]<A)A=f[r][i];if(f[r][i]>y)y=f[r][i]}if(k>0){v=k-1;if(f[v][2]===oa)v-=2;r=(a[g]-f[v][g])/(f[k][g]-f[v][g]);k=f[v][i]+r*(f[k][i]-f[v][i]);if(k<A)A=k;if(k>y)y=k}if(s<f.length-1){k=s+1;if(f[k][2]===T)k+=2;r=(h[g]-f[s][g])/(f[k][g]-f[s][g]);k=f[s][i]+r*(f[k][i]-f[s][i]);if(k<A)A=k;if(k>y)y=k}b=d.modelArea[2]/(e-b);e=d.area[3]/(y-A);e=d.area[3]/(d.area[3]/e+20);if(e>d.maxZoom[i])e=d.maxZoom[i];a=[a[g]-m(d.area),-((A+y)/2+d.area[3]/e/2-o(d.area))];A=S(p);j(g)[0]=b;j(i)[3]=e;j(g)[4]= -a[g]*b;j(i)[5]=-a[i]*e;a=O(A);p[g]=a[g];p[i]=a[i];G();ga();U();aa()}};this.getSeries=function(a){return d.series[a]};this.rangeChangedCallbacks=[];this.updateConfig=function(a){for(var b in a)if(a.hasOwnProperty(b))d[b]=a[b];Ba();ga();U();aa()};this.updateConfig({})}");
+	}
+
 	private static final int TICK_LENGTH = 5;
+
+	static int toZoomLevel(double zoomFactor) {
+		return (int) Math.floor(Math.log(zoomFactor) / Math.log(2.0) + 0.5) + 1;
+	}
 }

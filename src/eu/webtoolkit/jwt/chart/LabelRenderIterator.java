@@ -88,7 +88,9 @@ class LabelRenderIterator extends SeriesIterator {
 						AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom));
 				p.setY(p.getY() - 3);
 			}
-			this.chart_.renderLabel(this.painter_, text, p, alignment, 0, 3);
+			final WCartesianChart chart = this.chart_;
+			this.chart_.renderLabel(this.painter_, text, chart
+					.getCombinedTransform().map(p), alignment, 0, 3);
 		}
 	}
 

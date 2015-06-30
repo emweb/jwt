@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * with <i>T</i> a translation, <i>R</i> a rotation, <i>Sxx</i> a scale, and
  * <i>Sxy</i> a skew component.
  */
-public class WTransform {
+public class WTransform extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WTransform.class);
 
 	/**
@@ -71,6 +71,7 @@ public class WTransform {
 	 * Creates the identity transformation matrix.
 	 */
 	public WTransform() {
+		super();
 		this.reset();
 	}
 
@@ -81,6 +82,7 @@ public class WTransform {
 	 */
 	public WTransform(double m11, double m12, double m21, double m22,
 			double dx, double dy) {
+		super();
 		this.m_[M11] = m11;
 		this.m_[M12] = m21;
 		this.m_[M13] = dx;
@@ -90,11 +92,25 @@ public class WTransform {
 	}
 
 	/**
+	 * Copy constructor.
+	 */
+	public WTransform(final WTransform other) {
+		super(other);
+		for (int i = 0; i < 6; ++i) {
+			this.m_[i] = other.m_[i];
+		}
+	}
+
+	// public WTransform assign(final WJavaScriptExposableObject rhs) ;
+	/**
 	 * Assignment method.
 	 * <p>
 	 * Copies the transformation from the <code>rhs</code>.
 	 */
 	public WTransform assign(final WTransform rhs) {
+		if (rhs.isJavaScriptBound()) {
+			this.assignBinding(rhs);
+		}
 		for (int i = 0; i < 6; ++i) {
 			this.m_[i] = rhs.m_[i];
 		}
@@ -118,6 +134,9 @@ public class WTransform {
 	 * Returns <code>true</code> if the transforms are exactly the same.
 	 */
 	public boolean equals(final WTransform rhs) {
+		if (!this.sameBindingAs(rhs)) {
+			return false;
+		}
 		for (int i = 0; i < 6; ++i) {
 			if (this.m_[i] != rhs.m_[i]) {
 				return false;
@@ -132,9 +151,10 @@ public class WTransform {
 	 * Returns true if the transform represents an identity transformation.
 	 */
 	public boolean isIdentity() {
-		return this.m_[M11] == 1.0 && this.m_[M22] == 1.0
-				&& this.m_[M21] == 0.0 && this.m_[M12] == 0.0
-				&& this.m_[M13] == 0.0 && this.m_[M23] == 0.0;
+		return !this.isJavaScriptBound() && this.m_[M11] == 1.0
+				&& this.m_[M22] == 1.0 && this.m_[M21] == 0.0
+				&& this.m_[M12] == 0.0 && this.m_[M13] == 0.0
+				&& this.m_[M23] == 0.0;
 	}
 
 	/**
@@ -231,12 +251,24 @@ public class WTransform {
 	 * @see WTransform#map(double x, double y, Double tx, Double ty)
 	 */
 	public WPointF map(final WPointF p) {
+		if (this.isIdentity()) {
+			return p;
+		}
 		double x;
 		double y;
 		x = this.m_[M11] * p.getX() + this.m_[M12] * p.getY() + this.m_[M13];
 		y = this.m_[M21] * p.getX() + this.m_[M22] * p.getY() + this.m_[M23];
 		;
-		return new WPointF(x, y);
+		WPointF result = new WPointF(x, y);
+		if (this.isJavaScriptBound() || p.isJavaScriptBound()) {
+			WJavaScriptExposableObject o = this;
+			if (p.isJavaScriptBound()) {
+				o = p;
+			}
+			result.assignBinding(o, "Wt3_3_4.gfxUtils.transform_mult("
+					+ this.getJsRef() + ',' + p.getJsRef() + ')');
+		}
+		return result;
 	}
 
 	/**
@@ -260,6 +292,9 @@ public class WTransform {
 	 * size of the rectangle even for a transformation that only rotates.
 	 */
 	public WRectF map(final WRectF rect) {
+		if (this.isIdentity()) {
+			return rect;
+		}
 		double minX;
 		double minY;
 		double maxX;
@@ -275,7 +310,55 @@ public class WTransform {
 			minY = Math.min(minY, p2.getY());
 			maxY = Math.max(maxY, p2.getY());
 		}
-		return new WRectF(minX, minY, maxX - minX, maxY - minY);
+		WRectF result = new WRectF(minX, minY, maxX - minX, maxY - minY);
+		if (this.isJavaScriptBound() || rect.isJavaScriptBound()) {
+			WJavaScriptExposableObject o = this;
+			if (rect.isJavaScriptBound()) {
+				o = rect;
+			}
+			result.assignBinding(o, "Wt3_3_4.gfxUtils.transform_mult("
+					+ this.getJsRef() + ',' + rect.getJsRef() + ')');
+		}
+		return result;
+	}
+
+	/**
+	 * Applies the transformation to a painter path.
+	 * <p>
+	 * This will transform all individual points according to the
+	 * transformation. The radius of arcs will be unaffected.
+	 */
+	public WPainterPath map(final WPainterPath path) {
+		if (this.isIdentity()) {
+			return path;
+		}
+		WPainterPath result = new WPainterPath();
+		if (this.isJavaScriptBound() || path.isJavaScriptBound()) {
+			WJavaScriptExposableObject o = this;
+			if (!this.isJavaScriptBound()) {
+				o = path;
+			}
+			result.assignBinding(o, "Wt3_3_4.gfxUtils.transform_apply("
+					+ this.getJsRef() + ',' + path.getJsRef() + ')');
+		}
+		final List<WPainterPath.Segment> sourceSegments = path.getSegments();
+		for (int i = 0; i < sourceSegments.size(); ++i) {
+			double tx;
+			double ty;
+			if (sourceSegments.get(i).getType() == WPainterPath.Segment.Type.ArcR
+					|| sourceSegments.get(i).getType() == WPainterPath.Segment.Type.ArcAngleSweep) {
+				result.segments_.add(sourceSegments.get(i));
+			} else {
+				tx = this.m_[M11] * sourceSegments.get(i).getX() + this.m_[M12]
+						* sourceSegments.get(i).getY() + this.m_[M13];
+				ty = this.m_[M21] * sourceSegments.get(i).getX() + this.m_[M22]
+						* sourceSegments.get(i).getY() + this.m_[M23];
+				;
+				result.segments_.add(new WPainterPath.Segment(tx, ty,
+						sourceSegments.get(i).getType()));
+			}
+		}
+		return result;
 	}
 
 	/**
@@ -355,11 +438,42 @@ public class WTransform {
 		return this.multiplyAndAssign(new WTransform(1, 0, 0, 1, dx, dy));
 	}
 
+	public WTransform translate(final WPointF p) {
+		String refBefore = this.getJsRef();
+		this.translate(p.getX(), p.getY());
+		if (this.isJavaScriptBound() || p.isJavaScriptBound()) {
+			WJavaScriptExposableObject o = this;
+			if (!this.isJavaScriptBound()) {
+				o = p;
+			}
+			this.assignBinding(o,
+					"Wt3_3_4.gfxUtils.transform_mult((function(){var p="
+							+ p.getJsRef()
+							+ ";return [1,0,0,1,p[0],p[1]];})(),(" + refBefore
+							+ "))");
+		}
+		return this;
+	}
+
 	/**
 	 * Adds a transform that is conceptually applied after this transform.
 	 */
 	public WTransform multiplyAndAssign(final WTransform Y) {
+		if (this.isIdentity()) {
+			return this.assign(Y);
+		}
+		if (Y.isIdentity()) {
+			return this;
+		}
 		final WTransform X = this;
+		if (this.isJavaScriptBound() || Y.isJavaScriptBound()) {
+			WJavaScriptExposableObject o = this;
+			if (!this.isJavaScriptBound()) {
+				o = Y;
+			}
+			this.assignBinding(o, "Wt3_3_4.gfxUtils.transform_mult("
+					+ this.getJsRef() + ',' + Y.getJsRef() + ')');
+		}
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
 		double z12 = X.m_[M11] * Y.m_[M12] + X.m_[M12] * Y.m_[M22];
 		double z13 = X.m_[M11] * Y.m_[M13] + X.m_[M12] * Y.m_[M23] + X.m_[M13];
@@ -403,16 +517,20 @@ public class WTransform {
 	 * Returns the adjoint.
 	 */
 	public WTransform getAdjoint() {
-		return new WTransform(this.getM33() * this.getM22() - this.getM32()
-				* this.getM23(), -(this.getM33() * this.getM12() - this
+		WTransform res = new WTransform(this.getM33() * this.getM22()
+				- this.getM32() * this.getM23(), -(this.getM33()
+				* this.getM12() - this.getM32() * this.getM13()), -(this
+				.getM33()
+				* this.getM21() - this.getM31() * this.getM23()), this.getM33()
+				* this.getM11() - this.getM31() * this.getM13(), this.getM32()
+				* this.getM21() - this.getM31() * this.getM22(), -(this
 				.getM32()
-				* this.getM13()), -(this.getM33() * this.getM21() - this
-				.getM31()
-				* this.getM23()), this.getM33() * this.getM11() - this.getM31()
-				* this.getM13(), this.getM32() * this.getM21() - this.getM31()
-				* this.getM22(), -(this.getM32() * this.getM11() - this
-				.getM31()
-				* this.getM12()));
+				* this.getM11() - this.getM31() * this.getM12()));
+		if (this.isJavaScriptBound()) {
+			res.assignBinding(this, "Wt3_3_4.gfxUtils.transform_adjoint("
+					+ this.getJsRef() + ")");
+		}
+		return res;
 	}
 
 	/**
@@ -426,10 +544,14 @@ public class WTransform {
 		double det = this.getDeterminant();
 		if (det != 0) {
 			WTransform adj = this.getAdjoint();
-			return new WTransform(adj.getM11() / det, adj.getM12() / det, adj
-					.getM21()
-					/ det, adj.getM22() / det, adj.getM31() / det, adj.getM32()
-					/ det);
+			WTransform res = new WTransform(adj.getM11() / det, adj.getM12()
+					/ det, adj.getM21() / det, adj.getM22() / det, adj.getM31()
+					/ det, adj.getM32() / det);
+			if (this.isJavaScriptBound()) {
+				res.assignBinding(this, "Wt3_3_4.gfxUtils.transform_inverted("
+						+ this.getJsRef() + ")");
+			}
+			return res;
 		} else {
 			logger.error(new StringWriter().append(
 					"inverted(): oops, determinant == 0").toString());
@@ -619,6 +741,20 @@ public class WTransform {
 	 * @see WTransform#isIdentity()
 	 */
 	public static final WTransform Identity = new WTransform();
+
+	public String getJsValue() {
+		char[] buf = new char[30];
+		StringBuilder ss = new StringBuilder();
+		ss.append('[');
+		ss.append(MathUtils.roundJs(this.m_[0], 3)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[2], 3)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[1], 3)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[3], 3)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[4], 3)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[5], 3)).append(']');
+		return ss.toString();
+	}
+
 	private static final int M11 = 0;
 	private static final int M12 = 1;
 	private static final int M21 = 2;

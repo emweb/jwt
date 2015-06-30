@@ -62,8 +62,26 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 			text.setProperty(Property.PropertyStyleTop, "0px");
 			text.setProperty(Property.PropertyStyleLeft, "0px");
 		}
-		canvasDevice.render("c" + this.widget_.getId(), text != null ? text
-				: result);
+		DomElement el = text != null ? text : result;
+		boolean hasJsObjects = this.widget_.jsObjects_.size() > 0;
+		if (hasJsObjects) {
+			StringBuilder ss = new StringBuilder();
+			WApplication app = WApplication.getInstance();
+			ss.append("new Wt3_3_4.WPaintedWidget(").append(
+					app.getJavaScriptClass()).append(",").append(
+					this.widget_.getJsRef()).append(");");
+			this.widget_.jsObjects_.updateJs(ss);
+			el.callJavaScript(ss.toString());
+		}
+		canvasDevice.render('c' + this.widget_.getId(), el);
+		if (hasJsObjects) {
+			StringBuilder ss = new StringBuilder();
+			ss.append(this.widget_.getObjJsRef())
+					.append(".repaint=function(){");
+			ss.append(canvasDevice.recordedJs_.toString());
+			ss.append("};");
+			el.callJavaScript(ss.toString());
+		}
 		if (text != null) {
 			result.addChild(text);
 		}
@@ -90,7 +108,21 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		if (domText) {
 			el.removeAllChildren();
 		}
+		boolean hasJsObjects = this.widget_.jsObjects_.size() > 0;
+		if (hasJsObjects) {
+			StringBuilder ss = new StringBuilder();
+			this.widget_.jsObjects_.updateJs(ss);
+			el.callJavaScript(ss.toString());
+		}
 		canvasDevice.render('c' + this.widget_.getId(), el);
+		if (hasJsObjects) {
+			StringBuilder ss = new StringBuilder();
+			ss.append(this.widget_.getObjJsRef())
+					.append(".repaint=function(){");
+			ss.append(canvasDevice.recordedJs_.toString());
+			ss.append("};");
+			el.callJavaScript(ss.toString());
+		}
 		result.add(el);
 		;
 	}

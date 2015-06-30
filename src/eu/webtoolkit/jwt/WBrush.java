@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * @see WPainter#setBrush(WBrush b)
  * @see WPen
  */
-public class WBrush {
+public class WBrush extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WBrush.class);
 
 	/**
@@ -39,6 +39,7 @@ public class WBrush {
 	 * Creates a brush with a {@link BrushStyle#NoBrush NoBrush} fill style.
 	 */
 	public WBrush() {
+		super();
 		this.style_ = BrushStyle.NoBrush;
 		this.color_ = WColor.black;
 		this.gradient_ = new WGradient();
@@ -48,6 +49,7 @@ public class WBrush {
 	 * Creates a brush with the given style.
 	 */
 	public WBrush(BrushStyle style) {
+		super();
 		this.style_ = style;
 		this.color_ = WColor.black;
 		this.gradient_ = new WGradient();
@@ -59,6 +61,7 @@ public class WBrush {
 	 * Creates a solid brush with the indicated <code>color</code>.
 	 */
 	public WBrush(final WColor color) {
+		super();
 		this.style_ = BrushStyle.SolidPattern;
 		this.color_ = color;
 		this.gradient_ = new WGradient();
@@ -68,6 +71,7 @@ public class WBrush {
 	 * Creates a gradient brush.
 	 */
 	public WBrush(final WGradient gradient) {
+		super();
 		this.style_ = BrushStyle.GradientPattern;
 		this.color_ = new WColor();
 		this.gradient_ = gradient;
@@ -80,6 +84,9 @@ public class WBrush {
 	 */
 	public WBrush clone() {
 		WBrush result = new WBrush();
+		if (this.isJavaScriptBound()) {
+			result.assignBinding(this);
+		}
 		result.color_ = this.color_;
 		result.gradient_ = this.gradient_;
 		result.style_ = this.style_;
@@ -92,7 +99,8 @@ public class WBrush {
 	 * Returns <code>true</code> if the brushes are exactly the same.
 	 */
 	public boolean equals(final WBrush other) {
-		return this.color_.equals(other.color_) && this.style_ == other.style_
+		return this.sameBindingAs(other) && this.color_.equals(other.color_)
+				&& this.style_ == other.style_
 				&& this.gradient_.equals(other.gradient_);
 	}
 
@@ -160,6 +168,15 @@ public class WBrush {
 	 */
 	public WGradient getGradient() {
 		return this.gradient_;
+	}
+
+	public String getJsValue() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{\"color\":[").append(this.color_.getRed()).append(",")
+				.append(this.color_.getGreen()).append(",").append(
+						this.color_.getBlue()).append(",").append(
+						this.color_.getAlpha()).append("]}");
+		return ss.toString();
 	}
 
 	private BrushStyle style_;

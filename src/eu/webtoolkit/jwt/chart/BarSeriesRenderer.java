@@ -63,21 +63,23 @@ class BarSeriesRenderer extends SeriesRenderer {
 		double width = this.groupWidth_ / g;
 		double left = topMid.getX() - this.groupWidth_ / 2 + this.group_
 				* width * (1 + this.chart_.getBarMargin());
-		bar.moveTo(this.hv(crisp(left), crisp(topMid.getY())));
-		bar.lineTo(this.hv(crisp(left + width), crisp(topMid.getY())));
-		bar.lineTo(this.hv(crisp(left + width), crisp(bottomMid.getY())));
-		bar.lineTo(this.hv(crisp(left), crisp(bottomMid.getY())));
+		bar.moveTo(this.hv(left, topMid.getY()));
+		bar.lineTo(this.hv(left + width, topMid.getY()));
+		bar.lineTo(this.hv(left + width, bottomMid.getY()));
+		bar.lineTo(this.hv(left, bottomMid.getY()));
 		bar.closeSubPath();
 		this.painter_.setShadow(this.series_.getShadow());
+		final WCartesianChart chart = this.chart_;
+		WTransform transform = chart.getCombinedTransform();
 		WBrush brush = this.series_.getBrush().clone();
 		SeriesIterator.setBrushColor(brush, xIndex, yIndex,
 				ItemDataRole.BarBrushColorRole);
-		this.painter_.fillPath(bar, brush);
+		this.painter_.fillPath(transform.map(bar).getCrisp(), brush);
 		this.painter_.setShadow(new WShadow());
 		WPen pen = this.series_.getPen().clone();
 		SeriesIterator.setPenColor(pen, xIndex, yIndex,
 				ItemDataRole.BarPenColorRole);
-		this.painter_.strokePath(bar, pen);
+		this.painter_.strokePath(transform.map(bar).getCrisp(), pen);
 		Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
 		if (!(toolTip == null)) {
 			WTransform t = this.painter_.getWorldTransform();
@@ -129,10 +131,12 @@ class BarSeriesRenderer extends SeriesRenderer {
 			breakPath.lineTo(this.hv(left - 10, bTopMidY - 1));
 			this.painter_.setPen(new WPen(PenStyle.NoPen));
 			this.painter_.setBrush(this.chart_.getBackground());
-			this.painter_.drawPath(breakPath);
+			this.painter_.drawPath(transform.map(breakPath).getCrisp());
 			this.painter_.setPen(new WPen());
-			this.painter_.drawLine(this.hv(left - 10, bTopMidY + 10), this.hv(
-					left + width + 10, bTopMidY + 1));
+			WPainterPath line = new WPainterPath();
+			line.moveTo(this.hv(left - 10, bTopMidY + 10));
+			line.lineTo(this.hv(left + width + 10, bTopMidY + 1));
+			this.painter_.drawPath(transform.map(line).getCrisp());
 		}
 		if (bBottomMidY < bottomMid.getY() && bTopMidY >= topMid.getY()) {
 			WPainterPath breakPath = new WPainterPath();
@@ -142,10 +146,12 @@ class BarSeriesRenderer extends SeriesRenderer {
 			breakPath.lineTo(this.hv(left + width + 10, bBottomMidY + 1));
 			this.painter_.setBrush(this.chart_.getBackground());
 			this.painter_.setPen(new WPen(PenStyle.NoPen));
-			this.painter_.drawPath(breakPath);
+			this.painter_.drawPath(transform.map(breakPath).getCrisp());
 			this.painter_.setPen(new WPen());
-			this.painter_.drawLine(this.hv(left - 10, bBottomMidY - 1), this
-					.hv(left + width + 10, bBottomMidY - 10));
+			WPainterPath line = new WPainterPath();
+			line.moveTo(this.hv(left - 10, bBottomMidY - 1));
+			line.lineTo(this.hv(left + width + 10, bBottomMidY - 10));
+			this.painter_.drawPath(transform.map(line).getCrisp());
 		}
 	}
 

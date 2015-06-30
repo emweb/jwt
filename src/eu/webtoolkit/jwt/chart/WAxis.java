@@ -697,6 +697,16 @@ public class WAxis {
 	}
 
 	/**
+	 * Returns the pen used for rendering the axis and ticks.
+	 * <p>
+	 * 
+	 * @see WAxis#setPen(WPen pen)
+	 */
+	public WPen getPen() {
+		return this.pen_;
+	}
+
+	/**
 	 * Changes the pen used for rendering labels for this axis.
 	 * <p>
 	 * The default value is a black pen of 0 width.
@@ -715,13 +725,13 @@ public class WAxis {
 	}
 
 	/**
-	 * Returns the pen used for rendering the axis and ticks.
+	 * Returns the pen used for rendering labels for this axis.
 	 * <p>
 	 * 
-	 * @see WAxis#setPen(WPen pen)
+	 * @see WAxis#setTextPen(WPen pen)
 	 */
-	public WPen getPen() {
-		return this.pen_;
+	public WPen getTextPen() {
+		return this.textPen_;
 	}
 
 	/**
@@ -908,11 +918,90 @@ public class WAxis {
 	}
 
 	/**
-	 * Returns the chart to which this axis belongs.
+	 * Sets the initial zoom level for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode. The zoom level should be &gt;= 1 and smaller than
+	 * {@link WAxis#getMaxZoom() getMaxZoom()}
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
+	 * has no effect on the second Y axis. </i>
+	 * </p>
+	 */
+	public void setInitialZoom(double initialZoom) {
+		this.initialZoom_ = initialZoom;
+	}
+
+	/**
+	 * Get the initial zoom level for this axis.
 	 * <p>
 	 * 
-	 * @see WCartesianChart#getAxis(Axis axis)
+	 * @see WAxis#setInitialZoom(double initialZoom)
 	 */
+	public double getInitialZoom() {
+		return this.initialZoom_;
+	}
+
+	/**
+	 * Sets the maximum zoom level for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode. The zoom level should be &gt;= 1 (no zoom).
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
+	 * has no effect on the second Y axis. </i>
+	 * </p>
+	 */
+	public void setMaxZoom(double maxZoom) {
+		this.maxZoom_ = maxZoom < 1 ? 1 : maxZoom;
+		this.update();
+	}
+
+	/**
+	 * Get the maximum zoom level for this axis.
+	 * <p>
+	 * 
+	 * @see WAxis#setMaxZoom(double maxZoom)
+	 */
+	public double getMaxZoom() {
+		return this.maxZoom_;
+	}
+
+	/**
+	 * Sets the initial value to pan to for this axis.
+	 * <p>
+	 * This sets the leftmost (horizontal axis) or bottom (vertical axis) value
+	 * to be displayed on the chart.
+	 * <p>
+	 * Note that if this would cause the chart to go out of bounds, the panning
+	 * of the chart will be automatically adjusted.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode. The zoom level should be &gt;= 1 and smaller than
+	 * {@link WAxis#getMaxZoom() getMaxZoom()}
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
+	 * has no effect on the second Y axis. </i>
+	 * </p>
+	 */
+	public void setInitialPan(double initialPan) {
+		this.initialPan_ = initialPan;
+	}
+
+	/**
+	 * Get the initial value to pan to for this axis, when pan is enabled on the
+	 * chart.
+	 * <p>
+	 * 
+	 * @see WAxis#setInitialPan(double initialPan)
+	 */
+	public double getInitialPan() {
+		return this.initialPan_;
+	}
+
 	public int getSegmentCount() {
 		return (int) this.segments_.size();
 	}
@@ -1347,18 +1436,43 @@ public class WAxis {
 	public void render(final WPainter painter,
 			EnumSet<AxisProperty> properties, final WPointF axisStart,
 			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, EnumSet<AlignmentFlag> labelFlags,
+			final WTransform transform) {
+		List<WPen> pens = new ArrayList<WPen>();
+		List<WPen> textPens = new ArrayList<WPen>();
+		this.render(painter, properties, axisStart, axisEnd, tickStart,
+				tickEnd, labelPos, labelFlags, transform, pens, textPens);
+	}
+
+	public final void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
 			double labelPos, EnumSet<AlignmentFlag> labelFlags) {
+		render(painter, properties, axisStart, axisEnd, tickStart, tickEnd,
+				labelPos, labelFlags, new WTransform());
+	}
+
+	public void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, EnumSet<AlignmentFlag> labelFlags,
+			final WTransform transform, List<WPen> pens, List<WPen> textPens) {
 		WFont oldFont1 = painter.getFont();
 		painter.setFont(this.labelFont_);
 		boolean vertical = axisStart.getX() == axisEnd.getX();
 		for (int segment = 0; segment < this.getSegmentCount(); ++segment) {
 			final WAxis.Segment s = this.segments_.get(segment);
 			if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()) {
-				painter.setPen(this.getPen());
+				painter.setPen(this.getPen().clone());
 				WPointF begin = interpolate(axisStart, axisEnd, s.renderStart);
 				WPointF end = interpolate(axisStart, axisEnd, s.renderStart
 						+ s.renderLength);
-				painter.drawLine(begin, end);
+				{
+					WPainterPath path = new WPainterPath();
+					path.moveTo(begin);
+					path.lineTo(end);
+					painter.drawPath(transform.map(path).getCrisp());
+				}
 				boolean rotate = vertical;
 				if (segment != 0) {
 					painter.save();
@@ -1381,54 +1495,59 @@ public class WAxis {
 					painter.restore();
 				}
 			}
-			WPainterPath ticksPath = new WPainterPath();
-			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
-			this.getLabelTicks(ticks, segment);
-			for (int i = 0; i < ticks.size(); ++i) {
-				double u = this.mapToDevice(ticks.get(i).u, segment);
-				WPointF p = interpolate(axisStart, axisEnd, Math.floor(u));
-				if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()
-						&& ticks.get(i).tickLength != WAxis.TickLabel.TickLength.Zero) {
-					double ts = tickStart;
-					double te = tickEnd;
-					if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Short) {
-						ts = tickStart / 2;
-						te = tickEnd / 2;
-					}
-					if (vertical) {
-						ticksPath.moveTo(new WPointF(p.getX() + ts, p.getY()));
-						ticksPath.lineTo(new WPointF(p.getX() + te, p.getY()));
-					} else {
-						ticksPath.moveTo(new WPointF(p.getX(), p.getY() + ts));
-						ticksPath.lineTo(new WPointF(p.getX(), p.getY() + te));
-					}
-				}
-				if (!EnumUtils.mask(properties, AxisProperty.Labels).isEmpty()
-						&& !(ticks.get(i).label.length() == 0)) {
-					WPointF labelP = new WPointF();
-					if (vertical) {
-						labelP = new WPointF(p.getX() + labelPos, p.getY());
-					} else {
-						labelP = new WPointF(p.getX(), p.getY() + labelPos);
-					}
-					this.renderLabel(painter, ticks.get(i).label, labelP,
-							labelFlags, this.getLabelAngle(), 3);
-				}
+			if (pens.isEmpty()) {
+				pens.add(this.getPen());
+				textPens.add(this.getTextPen());
 			}
-			if (!ticksPath.isEmpty()) {
-				painter.strokePath(ticksPath, this.getPen());
+			for (int level = 1; level <= pens.size(); ++level) {
+				WPainterPath ticksPath = new WPainterPath();
+				List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
+				this.getLabelTicks(ticks, segment, level);
+				for (int i = 0; i < ticks.size(); ++i) {
+					double u = this.mapToDevice(ticks.get(i).u, segment);
+					WPointF p = interpolate(axisStart, axisEnd, u);
+					if (!EnumUtils.mask(properties, AxisProperty.Line)
+							.isEmpty()
+							&& ticks.get(i).tickLength != WAxis.TickLabel.TickLength.Zero) {
+						double ts = tickStart;
+						double te = tickEnd;
+						if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Short) {
+							ts = tickStart / 2;
+							te = tickEnd / 2;
+						}
+						if (vertical) {
+							ticksPath.moveTo(new WPointF(p.getX() + ts, p
+									.getY()));
+							ticksPath.lineTo(new WPointF(p.getX() + te, p
+									.getY()));
+						} else {
+							ticksPath.moveTo(new WPointF(p.getX(), p.getY()
+									+ ts));
+							ticksPath.lineTo(new WPointF(p.getX(), p.getY()
+									+ te));
+						}
+					}
+					if (!EnumUtils.mask(properties, AxisProperty.Labels)
+							.isEmpty()
+							&& !(ticks.get(i).label.length() == 0)) {
+						WPointF labelP = new WPointF();
+						if (vertical) {
+							labelP = new WPointF(p.getX() + labelPos, p.getY());
+						} else {
+							labelP = new WPointF(p.getX(), p.getY() + labelPos);
+						}
+						this.renderLabel(painter, ticks.get(i).label, labelP,
+								labelFlags, this.getLabelAngle(), 3, transform,
+								textPens.get(level - 1));
+					}
+				}
+				if (!ticksPath.isEmpty()) {
+					painter.strokePath(transform.map(ticksPath).getCrisp(),
+							pens.get(level - 1));
+				}
 			}
 		}
 		painter.setFont(oldFont1);
-	}
-
-	public final void render(final WPainter painter,
-			EnumSet<AxisProperty> properties, final WPointF axisStart,
-			final WPointF axisEnd, double tickStart, double tickEnd,
-			double labelPos, AlignmentFlag labelFlag,
-			AlignmentFlag... labelFlags) {
-		render(painter, properties, axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelFlag, labelFlags));
 	}
 
 	/**
@@ -1441,7 +1560,7 @@ public class WAxis {
 		List<Double> pos = new ArrayList<Double>();
 		for (int segment = 0; segment < this.segments_.size(); ++segment) {
 			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
-			this.getLabelTicks(ticks, segment);
+			this.getLabelTicks(ticks, segment, 1);
 			for (int i = 0; i < ticks.size(); ++i) {
 				if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
 					pos.add(this.mapToDevice(ticks.get(i).u, segment));
@@ -1453,7 +1572,7 @@ public class WAxis {
 
 	public void renderLabel(final WPainter painter, final CharSequence text,
 			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
-			int margin) {
+			int margin, WTransform transform, final WPen pen) {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
@@ -1488,14 +1607,15 @@ public class WAxis {
 		default:
 			break;
 		}
-		WPen oldPen = painter.getPen();
-		painter.setPen(this.textPen_);
+		WPen oldPen = painter.getPen().clone();
+		painter.setPen(pen.clone());
 		if (angle == 0) {
-			painter.drawText(new WRectF(left, top, width, height), EnumSet.of(
+			painter.drawText(transform
+					.map(new WRectF(left, top, width, height)), EnumSet.of(
 					horizontalAlign, verticalAlign), text);
 		} else {
 			painter.save();
-			painter.translate(pos);
+			painter.translate(transform.map(pos));
 			painter.rotate(-angle);
 			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
 					width, height), EnumSet.of(horizontalAlign, verticalAlign),
@@ -1525,7 +1645,7 @@ public class WAxis {
 		painter.setFont(this.labelFont_);
 		List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
 		for (int i = 0; i < this.getSegmentCount(); ++i) {
-			this.getLabelTicks(ticks, i);
+			this.getLabelTicks(ticks, i, 1);
 		}
 		for (int i = 0; i < ticks.size(); ++i) {
 			painter.drawText(0, 0, 100, 100, EnumSet
@@ -1629,6 +1749,9 @@ public class WAxis {
 		this.titleOffset_ = 0;
 		this.textPen_ = new WPen(WColor.black);
 		this.titleOrientation_ = Orientation.Horizontal;
+		this.maxZoom_ = 4;
+		this.initialZoom_ = 1;
+		this.initialPan_ = 0;
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
@@ -1642,7 +1765,9 @@ public class WAxis {
 	/**
 	 * Returns the label (and ticks) information for this axis.
 	 */
-	protected void getLabelTicks(final List<WAxis.TickLabel> ticks, int segment) {
+	protected void getLabelTicks(final List<WAxis.TickLabel> ticks,
+			int segment, int zoomLevel) {
+		double divisor = Math.pow(2.0, zoomLevel - 1);
 		final WAxis.Segment s = this.segments_.get(segment);
 		switch (this.scale_) {
 		case CategoryScale: {
@@ -1658,7 +1783,7 @@ public class WAxis {
 									.getLabel((double) i)));
 				}
 			} else {
-				for (int i = (int) (s.renderMinimum + 0.5); i < s.renderMaximum; i += renderInterval) {
+				for (int i = (int) s.renderMinimum; i < s.renderMaximum; i += renderInterval) {
 					ticks.add(new WAxis.TickLabel(i,
 							WAxis.TickLabel.TickLength.Long, this
 									.getLabel((double) i)));
@@ -1667,9 +1792,10 @@ public class WAxis {
 			break;
 		}
 		case LinearScale: {
+			double interval = this.renderInterval_ / divisor;
 			for (int i = 0;; ++i) {
-				double v = s.renderMinimum + this.renderInterval_ * i;
-				if (v - s.renderMaximum > EPSILON * this.renderInterval_) {
+				double v = s.renderMinimum + interval * i;
+				if (v - s.renderMaximum > EPSILON * interval) {
 					break;
 				}
 				WString t = new WString();
@@ -1719,7 +1845,7 @@ public class WAxis {
 			} else {
 				dt = new WDate(new Date((long) (long) s.renderMinimum));
 			}
-			int interval = s.dateTimeRenderInterval;
+			int interval = (int) (s.dateTimeRenderInterval / divisor);
 			WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
 			boolean atTick = interval > 1
 					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
@@ -1853,6 +1979,9 @@ public class WAxis {
 	private double titleOffset_;
 	private WPen textPen_;
 	private Orientation titleOrientation_;
+	private double maxZoom_;
+	private double initialZoom_;
+	private double initialPan_;
 	private boolean renderingMirror_;
 
 	static class Segment {

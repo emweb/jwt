@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see WPainter#drawPath(WPainterPath path)
  */
-public class WPainterPath {
+public class WPainterPath extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WPainterPath.class);
 
 	/**
@@ -76,6 +76,7 @@ public class WPainterPath {
 	 * Creates an empty path, and sets the current position to (0, 0).
 	 */
 	public WPainterPath() {
+		super();
 		this.isRect_ = false;
 		this.segments_ = new ArrayList<WPainterPath.Segment>();
 	}
@@ -87,6 +88,7 @@ public class WPainterPath {
 	 * <code>startPoint</code>.
 	 */
 	public WPainterPath(final WPointF startPoint) {
+		super();
 		this.isRect_ = false;
 		this.segments_ = new ArrayList<WPainterPath.Segment>();
 		this.moveTo(startPoint);
@@ -96,17 +98,26 @@ public class WPainterPath {
 	 * Copy constructor.
 	 */
 	public WPainterPath(final WPainterPath path) {
+		super(path);
 		this.isRect_ = path.isRect_;
-		this.segments_ = path.segments_;
+		this.segments_ = new ArrayList<WPainterPath.Segment>();
+		Utils.copyList(path.segments_, this.segments_);
 	}
 
 	/**
 	 * Assignment method.
 	 */
 	public WPainterPath assign(final WPainterPath path) {
+		if (path.isJavaScriptBound()) {
+			this.assignBinding(path);
+		}
 		Utils.copyList(path.segments_, this.segments_);
 		this.isRect_ = path.isRect_;
 		return this;
+	}
+
+	public WPainterPath clone() {
+		return new WPainterPath(this);
 	}
 
 	/**
@@ -516,7 +527,7 @@ public class WPainterPath {
 					&& this.y_ == other.y_;
 		}
 
-		private Segment(double x, double y, WPainterPath.Segment.Type type) {
+		Segment(double x, double y, WPainterPath.Segment.Type type) {
 			this.x_ = x;
 			this.y_ = y;
 			this.type_ = type;
@@ -525,6 +536,7 @@ public class WPainterPath {
 		private double x_;
 		private double y_;
 		private WPainterPath.Segment.Type type_;
+		// private WPainterPath map(final WPainterPath path) ;
 	}
 
 	public List<WPainterPath.Segment> getSegments() {
@@ -676,8 +688,42 @@ public class WPainterPath {
 		return getControlPointRect(WTransform.Identity);
 	}
 
+	public WPainterPath getCrisp() {
+		WPainterPath result = new WPainterPath();
+		if (this.isJavaScriptBound()) {
+			result.assignBinding(this, "Wt3_3_4.gfxUtils.path_crisp("
+					+ this.getJsRef() + ')');
+		}
+		for (int i = 0; i < this.segments_.size(); ++i) {
+			final WPainterPath.Segment segment = this.segments_.get(i);
+			double hx = Math.floor(segment.getX()) + 0.5;
+			double hy = Math.floor(segment.getY()) + 0.5;
+			result.segments_.add(new WPainterPath.Segment(hx, hy, segment
+					.getType()));
+		}
+		return result;
+	}
+
+	public String getJsValue() {
+		char[] buf = new char[30];
+		StringBuilder ss = new StringBuilder();
+		ss.append('[');
+		for (int i = 0; i < this.segments_.size(); ++i) {
+			final WPainterPath.Segment s = this.segments_.get(i);
+			if (i != 0) {
+				ss.append(',');
+			}
+			ss.append('[');
+			ss.append(MathUtils.roundJs(s.getX(), 3)).append(',');
+			ss.append(MathUtils.roundJs(s.getY(), 3)).append(',');
+			ss.append((int) s.getType().getValue()).append(']');
+		}
+		ss.append(']');
+		return ss.toString();
+	}
+
 	private boolean isRect_;
-	private List<WPainterPath.Segment> segments_;
+	List<WPainterPath.Segment> segments_;
 
 	private WPointF getSubPathStart() {
 		for (int i = this.segments_.size() - 1; i >= 0; --i) {
@@ -715,6 +761,7 @@ public class WPainterPath {
 				WPainterPath.Segment.Type.ArcAngleSweep));
 	}
 
+	// private WPainterPath map(final WPainterPath path) ;
 	static double degreesToRadians(double r) {
 		return r / 180. * 3.14159265358979323846;
 	}

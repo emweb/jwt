@@ -263,11 +263,11 @@ public class WStackedWidget extends WContainerWidget {
 		}
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		return super.createDomElement(app);
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 	}
 

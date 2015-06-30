@@ -39,7 +39,11 @@ public enum AxisValue {
 	/**
 	 * At the zero value (if displayed).
 	 */
-	ZeroValue;
+	ZeroValue,
+	/**
+	 * At both sides (MinimumValue and MaximumValue).
+	 */
+	BothSides;
 
 	/**
 	 * Returns the numerical representation of this enum.

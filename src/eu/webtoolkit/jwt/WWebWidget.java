@@ -752,7 +752,13 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	DomElement createDomElement(WApplication app) {
+	/**
+	 * Create DOM element for widget.
+	 * <p>
+	 * This is an internal function, and should not be called directly, or be
+	 * overridden!
+	 */
+	protected DomElement createDomElement(WApplication app) {
 		this.setRendered(true);
 		DomElement result;
 		if (this.elementTagName_.length() > 0) {
@@ -766,7 +772,13 @@ public abstract class WWebWidget extends WWidget {
 		return result;
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	/**
+	 * Get DOM changes for this widget.
+	 * <p>
+	 * This is an internal function, and should not be called directly, or be
+	 * overridden!
+	 */
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		this.updateDom(e, false);
 		result.add(e);

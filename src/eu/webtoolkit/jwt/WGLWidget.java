@@ -3088,7 +3088,7 @@ public class WGLWidget extends WInteractWidget {
 		}
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		DomElement result = null;
 		if (!(this.pImpl_ != null)) {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
@@ -3104,7 +3104,7 @@ public class WGLWidget extends WInteractWidget {
 		return result;
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 	}
 

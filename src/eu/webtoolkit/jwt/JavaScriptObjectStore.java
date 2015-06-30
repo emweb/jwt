@@ -3,7 +3,7 @@
  *
  * See the LICENSE file for terms of use.
  */
-package eu.webtoolkit.jwt.chart;
+package eu.webtoolkit.jwt;
 
 import java.util.*;
 import java.util.regex.*;
@@ -19,10 +19,3 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WAxis3D extends WAxis {
-	private static Logger logger = LoggerFactory.getLogger(WAxis3D.class);
-
-	public void getLabelTicks(final List<WAxis.TickLabel> ticks, int segment) {
-		super.getLabelTicks(ticks, segment);
-	}
-}

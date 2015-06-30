@@ -540,7 +540,7 @@ public class WFileUpload extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		DomElement result = DomElement.createNew(this.getDomElementType());
 		if (result.getType() == DomElementType.DomElement_FORM) {
 			result.setId(this.getId());
@@ -621,7 +621,7 @@ public class WFileUpload extends WWebWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.flags_.get(BIT_ENABLE_AJAX)) {
 			DomElement plainE = DomElement.getForUpdate(this,
 					DomElementType.DomElement_INPUT);

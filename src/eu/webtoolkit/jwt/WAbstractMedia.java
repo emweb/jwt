@@ -427,7 +427,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.mediaId_.length() != 0) {
 			DomElement media = DomElement.getForUpdate(this.mediaId_,
 					DomElementType.DomElement_DIV);
@@ -455,7 +455,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		super.getDomChanges(result, app);
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		this.loadJavaScript();
 		DomElement result = null;
 		if (this.isInLayout()) {

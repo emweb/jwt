@@ -454,7 +454,7 @@ public class WImage extends WInteractWidget {
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.map_ != null) {
 			DomElement e = DomElement.getForUpdate("i" + this.getId(),
 					DomElementType.DomElement_IMG);

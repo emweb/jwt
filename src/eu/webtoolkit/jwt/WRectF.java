@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * 
  * The rectangle is defined by a top-left point and a width and height.
  */
-public class WRectF {
+public class WRectF extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WRectF.class);
 
 	/**
@@ -37,6 +37,7 @@ public class WRectF {
 	 * @see WRectF#()
 	 */
 	public WRectF() {
+		super();
 		this.x_ = 0;
 		this.y_ = 0;
 		this.width_ = 0;
@@ -50,10 +51,19 @@ public class WRectF {
 	 * <code>y</code>) and size <code>width</code> x <code>height</code>.
 	 */
 	public WRectF(double x, double y, double width, double height) {
+		super();
 		this.x_ = x;
 		this.y_ = y;
 		this.width_ = width;
 		this.height_ = height;
+	}
+
+	public WRectF(final WRectF other) {
+		super(other);
+		this.x_ = other.getX();
+		this.y_ = other.getY();
+		this.width_ = other.getWidth();
+		this.height_ = other.getHeight();
 	}
 
 	/**
@@ -67,16 +77,24 @@ public class WRectF {
 	 * {@link WRectF#getNormalized() getNormalized()} afterwords.
 	 */
 	public WRectF(final WPointF topLeft, final WPointF bottomRight) {
+		super();
 		this.x_ = topLeft.getX();
 		this.y_ = topLeft.getY();
 		this.width_ = bottomRight.getX() - topLeft.getX();
 		this.height_ = bottomRight.getY() - topLeft.getY();
 	}
 
+	public WRectF clone() {
+		return new WRectF(this);
+	}
+
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(final WRectF rhs) {
+		if (!this.sameBindingAs(rhs)) {
+			return false;
+		}
 		return this.x_ == rhs.x_ && this.y_ == rhs.y_
 				&& this.width_ == rhs.width_ && this.height_ == rhs.height_;
 	}
@@ -86,8 +104,15 @@ public class WRectF {
 	 * Determines whether or not this rectangle is empty.
 	 * <p>
 	 * A rectangle is empty if its width and height are zero.
+	 * <p>
+	 * A rectangle that {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} is JavaScript bound is
+	 * never empty.
 	 */
 	public boolean isEmpty() {
+		if (this.isJavaScriptBound()) {
+			return false;
+		}
 		return this.width_ == 0 && this.height_ == 0;
 	}
 
@@ -96,6 +121,12 @@ public class WRectF {
 	 * <p>
 	 * The right side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public void setX(double x) {
 		this.width_ += this.x_ - x;
@@ -107,6 +138,12 @@ public class WRectF {
 	 * <p>
 	 * The bottom side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public void setY(double y) {
 		this.height_ += this.y_ - y;
@@ -118,6 +155,12 @@ public class WRectF {
 	 * <p>
 	 * The right side of the rectangle may move, but this does not affect the
 	 * left side.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public void setWidth(double width) {
 		this.width_ = width;
@@ -128,6 +171,12 @@ public class WRectF {
 	 * <p>
 	 * The bottom side of the rectangle may move, but this does not affect the Y
 	 * position of the top side.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public void setHeight(double height) {
 		this.height_ = height;
@@ -275,6 +324,12 @@ public class WRectF {
 
 	/**
 	 * Tests if a rectangle contains a point.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public boolean contains(final WPointF p) {
 		return this.contains(p.getX(), p.getY());
@@ -282,6 +337,12 @@ public class WRectF {
 
 	/**
 	 * Tests if a rectangle contains a point.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public boolean contains(double x, double y) {
 		return x >= this.x_ && x <= this.x_ + this.width_ && y >= this.y_
@@ -290,6 +351,12 @@ public class WRectF {
 
 	/**
 	 * Tests if two rectangles intersect.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public boolean intersects(final WRectF other) {
 		if (this.isEmpty() || other.isEmpty()) {
@@ -311,6 +378,12 @@ public class WRectF {
 
 	/**
 	 * Makes the union of to rectangles.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This method is not supported if this rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
+	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * </p>
 	 */
 	public WRectF united(final WRectF other) {
 		if (this.isEmpty()) {
@@ -354,7 +427,23 @@ public class WRectF {
 			y = this.y_ + this.height_;
 			h = -this.height_;
 		}
-		return new WRectF(x, y, w, h);
+		WRectF result = new WRectF(x, y, w, h);
+		if (this.isJavaScriptBound()) {
+			result.assignBinding(this, "Wt3_3_4.gfxUtils.rect_normalized("
+					+ this.getJsRef() + ')');
+		}
+		return result;
+	}
+
+	public String getJsValue() {
+		char[] buf = new char[30];
+		StringBuilder ss = new StringBuilder();
+		ss.append('[');
+		ss.append(MathUtils.roundJs(this.x_, 3)).append(',');
+		ss.append(MathUtils.roundJs(this.y_, 3)).append(',');
+		ss.append(MathUtils.roundJs(this.width_, 3)).append(',');
+		ss.append(MathUtils.roundJs(this.height_, 3)).append(']');
+		return ss.toString();
 	}
 
 	private double x_;

@@ -145,6 +145,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.areaImage_ = null;
 		this.renderWidth_ = 0;
 		this.renderHeight_ = 0;
+		this.repaintSlot_ = new JSlot("function() {var o=" + this.getObjJsRef()
+				+ ";if(o){o.repaint();}}", this);
+		this.jsObjects_ = new WJavaScriptObjectStorage(this.getObjJsRef());
 		if (WApplication.getInstance() != null) {
 			final WEnvironment env = WApplication.getInstance()
 					.getEnvironment();
@@ -328,6 +331,57 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				: (List<WAbstractArea>) new ArrayList<WAbstractArea>();
 	}
 
+	/**
+	 * Create a {@link WTransform} that is accessible from JavaScript,
+	 * associated with this {@link WPaintedWidget}.
+	 */
+	public WJavaScriptHandle<WTransform> createJSTransform() {
+		return this.jsObjects_.addObject(new WTransform());
+	}
+
+	/**
+	 * Create a {@link WBrush} that is accessible from JavaScript, associated
+	 * with this {@link WPaintedWidget}.
+	 */
+	public WJavaScriptHandle<WBrush> createJSBrush() {
+		return this.jsObjects_.addObject(new WBrush());
+	}
+
+	/**
+	 * Create a {@link WPen} that is accessible from JavaScript, associated with
+	 * this {@link WPaintedWidget}.
+	 */
+	public WJavaScriptHandle<WPen> createJSPen() {
+		return this.jsObjects_.addObject(new WPen());
+	}
+
+	/**
+	 * Create a {@link WPainterPath} that is accessible from JavaScript,
+	 * associated with this {@link WPaintedWidget}.
+	 */
+	public WJavaScriptHandle<WPainterPath> getCreateJSPainterPath() {
+		return this.jsObjects_.addObject(new WPainterPath());
+	}
+
+	/**
+	 * Create a {@link WRectF} that is accessible from JavaScript, associated
+	 * with this {@link WPaintedWidget}.
+	 */
+	public WJavaScriptHandle<WRectF> getCreateJSRect() {
+		return this.jsObjects_.addObject(new WRectF(0, 0, 0, 0));
+	}
+
+	/**
+	 * A JavaScript slot that repaints the widget when triggered.
+	 * <p>
+	 * This is useful for client-side initiated repaints. You may want to use
+	 * this if you want to add interaction or animation to your
+	 * {@link WPaintedWidget}.
+	 */
+	public JSlot getRepaintSlot() {
+		return this.repaintSlot_;
+	}
+
 	protected void layoutSizeChanged(int width, int height) {
 		this.resizeCanvas(width, height);
 	}
@@ -343,36 +397,43 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	protected WPaintedWidget.Method getMethod() {
 		final WEnvironment env = WApplication.getInstance().getEnvironment();
 		WPaintedWidget.Method method;
-		if (!(env.agentIsChrome()
-				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
-						.getValue()
-				|| env.agentIsIE()
-				&& env.getAgent().getValue() >= WEnvironment.UserAgent.IE9
-						.getValue() || env.agentIsGecko()
-				&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
-						.getValue())) {
-			method = env.hasJavaScript() ? WPaintedWidget.Method.HtmlCanvas
+		if (this.preferredMethod_ == WPaintedWidget.Method.PngImage) {
+			return WPaintedWidget.Method.PngImage;
+		}
+		if (env.agentIsIElt(9)) {
+			method = this.preferredMethod_ == WPaintedWidget.Method.InlineSvgVml ? WPaintedWidget.Method.InlineSvgVml
 					: WPaintedWidget.Method.PngImage;
 		} else {
-			if (!env.hasJavaScript()) {
-				method = WPaintedWidget.Method.InlineSvgVml;
+			if (!(env.agentIsChrome()
+					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5
+							.getValue() || env.agentIsGecko()
+					&& env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0
+							.getValue())) {
+				method = env.hasJavaScript() ? WPaintedWidget.Method.HtmlCanvas
+						: WPaintedWidget.Method.PngImage;
 			} else {
-				boolean oldFirefoxMac = (env.getUserAgent().indexOf(
-						"Firefox/1.5") != -1 || env.getUserAgent().indexOf(
-						"Firefox/2.0") != -1)
-						&& env.getUserAgent().indexOf("Macintosh") != -1;
-				if (oldFirefoxMac) {
-					method = WPaintedWidget.Method.HtmlCanvas;
+				if (!env.hasJavaScript()) {
+					method = WPaintedWidget.Method.InlineSvgVml;
 				} else {
-					method = this.preferredMethod_;
-				}
-				boolean nokia810 = env.getUserAgent().indexOf("Linux arm") != -1
-						&& env.getUserAgent().indexOf("Tablet browser") != -1
-						&& env.getUserAgent().indexOf("Gecko") != -1;
-				if (nokia810) {
-					method = WPaintedWidget.Method.HtmlCanvas;
-				} else {
-					method = this.preferredMethod_;
+					boolean oldFirefoxMac = (env.getUserAgent().indexOf(
+							"Firefox/1.5") != -1 || env.getUserAgent().indexOf(
+							"Firefox/2.0") != -1)
+							&& env.getUserAgent().indexOf("Macintosh") != -1;
+					if (oldFirefoxMac) {
+						method = WPaintedWidget.Method.HtmlCanvas;
+					} else {
+						method = this.preferredMethod_ == WPaintedWidget.Method.PngImage ? WPaintedWidget.Method.HtmlCanvas
+								: this.preferredMethod_;
+					}
+					boolean nokia810 = env.getUserAgent().indexOf("Linux arm") != -1
+							&& env.getUserAgent().indexOf("Tablet browser") != -1
+							&& env.getUserAgent().indexOf("Gecko") != -1;
+					if (nokia810) {
+						method = WPaintedWidget.Method.HtmlCanvas;
+					} else {
+						method = this.preferredMethod_ == WPaintedWidget.Method.PngImage ? WPaintedWidget.Method.HtmlCanvas
+								: this.preferredMethod_;
+					}
 				}
 			}
 		}
@@ -421,7 +482,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		super.updateDom(element, all);
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		if (this.isInLayout()) {
 			this.setLayoutSizeAware(true);
 			this
@@ -467,7 +528,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		return result;
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this,
 				DomElementType.DomElement_DIV);
 		this.updateDom(e, false);
@@ -511,6 +572,27 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		super.enableAjax();
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			this.defineJavaScript();
+		}
+		super.render(flags);
+	}
+
+	void setFormData(final WObject.FormData formData) {
+		String[] parVals = formData.values;
+	}
+
+	protected String getObjJsRef() {
+		return "jQuery.data(" + this.getJsRef() + ",'obj')";
+	}
+
+	private void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WPaintedWidget.js", wtjs2());
+		app.loadJavaScript("js/WPaintedWidget.js", wtjs1());
+	}
+
 	private WPaintedWidget.Method preferredMethod_;
 	private WWidgetPainter painter_;
 	private boolean needRepaint_;
@@ -520,6 +602,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	private WImage areaImage_;
 	int renderWidth_;
 	int renderHeight_;
+	private JSlot repaintSlot_;
+	WJavaScriptObjectStorage jsObjects_;
 
 	private void resizeCanvas(int width, int height) {
 		if (this.renderWidth_ == width && this.renderHeight_ == height) {
@@ -539,20 +623,16 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		if (this.painter_ != null) {
 			return false;
 		}
-		if (this.preferredMethod_ == WPaintedWidget.Method.PngImage) {
-			this.painter_ = new WWidgetRasterPainter(this);
-			return true;
-		}
 		final WEnvironment env = WApplication.getInstance().getEnvironment();
-		if (env.agentIsIElt(9)) {
-			this.painter_ = new WWidgetVectorPainter(this,
-					WWidgetPainter.RenderType.InlineVml);
-			return true;
-		}
 		WPaintedWidget.Method method = this.getMethod();
 		if (method == WPaintedWidget.Method.InlineSvgVml) {
-			this.painter_ = new WWidgetVectorPainter(this,
-					WWidgetPainter.RenderType.InlineSvg);
+			if (env.agentIsIElt(9)) {
+				this.painter_ = new WWidgetVectorPainter(this,
+						WWidgetPainter.RenderType.InlineVml);
+			} else {
+				this.painter_ = new WWidgetVectorPainter(this,
+						WWidgetPainter.RenderType.InlineSvg);
+			}
 		} else {
 			if (method == WPaintedWidget.Method.PngImage) {
 				this.painter_ = new WWidgetRasterPainter(this);
@@ -579,5 +659,21 @@ public abstract class WPaintedWidget extends WInteractWidget {
 					this.renderHeight_));
 			this.areaImageAdded_ = true;
 		}
+	}
+
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WPaintedWidget",
+				"function(x,i){this.canvas=document.getElementById(\"c\"+i.id);this.canvas.getContext(\"2d\");jQuery.data(i,\"obj\",this);this.jsValues=[];this.repaint=function(){}}");
+	}
+
+	static WJavaScriptPreamble wtjs2() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptObject,
+				"gfxUtils",
+				"function(){function x(){var h=this;this.path_crisp=function(a){return a.map(function(b){return[Math.floor(b[0])+0.5,Math.floor(b[1])+0.5,b[2]]})};this.transform_mult=function(a,b){if(b.length===2){var d=b[0],e=b[1];return[a[i]*d+a[k]*e+a[o],a[l]*d+a[m]*e+a[p]]}if(b.length===3){if(b[2]===y||b[2]===z)return b.slice(0);d=b[0];e=b[1];return[a[i]*d+a[k]*e+a[o],a[l]*d+a[m]*e+a[p],b[2]]}if(b.length===4){var j,c,g,n;c=h.transform_mult(a,[b[0],b[1]]);d=c[0]; j=c[0];e=c[1];c=c[1];for(g=0;g<3;++g){n=h.transform_mult(a,g==0?[h.rect_left(b),h.rect_bottom(b)]:g==1?[h.rect_right(b),h.rect_top(b)]:[h.rect_right(b),h.rect_bottom(b)]);d=Math.min(d,n[0]);j=Math.max(j,n[0]);e=Math.min(e,n[1]);c=Math.max(c,n[1])}return[d,e,j-d,c-e]}if(b.length===6)return[a[i]*b[i]+a[k]*b[l],a[i]*b[k]+a[k]*b[m],a[l]*b[i]+a[m]*b[l],a[l]*b[k]+a[m]*b[m],a[i]*b[o]+a[k]*b[p]+a[o],a[l]*b[o]+a[m]*b[p]+a[p]];return[]};this.transform_apply=function(a,b){var d=h.transform_mult;return b.map(function(e){return d(a, e)})};this.transform_det=function(a){return a[i]*a[m]-a[k]*a[l]};this.transform_adjoint=function(a){var b=a[i],d=a[l],e=a[k],j=a[m],c=a[o];a=a[p];return[j,-d,-e,b,a*e-c*j,-(a*b-c*d)]};this.transform_inverted=function(a){var b=h.transform_det(a);if(b!=0){a=h.transform_adjoint(a);return[a[i]/b,a[l]/b,a[k]/b,a[m]/b,a[o]/b,a[p]/b]}else{console.log(\"inverted(): oops, determinant == 0\");return a}};this.transform_assign=function(a,b){a[0]=b[0];a[1]=b[1];a[2]=b[2];a[3]=b[3];a[4]=b[4];a[5]=b[5]};this.css_text= function(a){return\"rgba(\"+a[0]+\",\"+a[1]+\",\"+a[2]+\",\"+a[3]+\")\"};this.drawRect=function(a,b,d,e){b=h.rect_normalized(b);var j=h.rect_top(b),c=h.rect_bottom(b),g=h.rect_left(b);b=h.rect_right(b);path=[[g,j,w],[b,j,q],[b,c,q],[g,c,q],[g,j,q]];h.drawPath(a,path,d,e,false)};this.drawPath=function(a,b,d,e,j){function c(r){return r[0]}function g(r){return r[1]}function n(r){return r[2]}var u=0,s=[],t=[],v=[];a.beginPath();b.length>0&&n(b[0])!==w&&a.moveTo(0,0);for(u=0;u<b.length;u++){var f=b[u];switch(n(f)){case w:a.moveTo(c(f), g(f));break;case q:a.lineTo(c(f),g(f));break;case A:s.push(c(f),g(f));break;case B:s.push(c(f),g(f));break;case C:s.push(c(f),g(f));a.bezierCurveTo.apply(a,s);s=[];break;case D:t.push(c(f),g(f));break;case y:t.push(c(f));break;case z:t.push(c(f)*Math.PI/180,g(f)*Math.PI/180,g(f)>0);a.arc.apply(a,t);t=[];break;case E:v.push(c(f));break;case F:v.push(c(f),g(f));a.quadraticCurveTo.apply(a,v);v=[];break}}d&&a.fill();e&&a.stroke();j&&a.clip()};this.rect_top=function(a){return a[1]};this.rect_bottom=function(a){return a[1]+ a[3]};this.rect_right=function(a){return a[0]+a[2]};this.rect_left=function(a){return a[0]};this.rect_topleft=function(a){return[a[0],a[1]]};this.rect_topright=function(a){return[a[0]+a[2],a[1]]};this.rect_bottomleft=function(a){return[a[0],a[1]+a[3]]};this.rect_bottomright=function(a){return[a[0]+a[2],a[1]+a[3]]};this.rect_center=function(a){return{x:(2*a[0]+a[2])/2,y:(2*a[1]+a[3])/2}};this.rect_normalized=function(a){var b,d,e;if(a[2]>0){b=a[0];e=a[2]}else{b=a[0]+a[2];e=-a[2]}if(a[3]>0){d=a[1]; a=a[3]}else{d=a[1]+a[3];a=-a[3]}return[b,d,e,a]}}var i=0,k=1,l=2,m=3,o=4,p=5,w=0,q=1,A=2,B=3,C=4,E=5,F=6,D=7,y=8,z=9;return new x}()");
 	}
 }

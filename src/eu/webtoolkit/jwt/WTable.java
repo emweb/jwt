@@ -499,7 +499,7 @@ public class WTable extends WInteractWidget {
 		return DomElementType.DomElement_TABLE;
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		boolean withIds = !app.getEnvironment().agentIsSpiderBot();
 		DomElement table = DomElement.createNew(this.getDomElementType());
 		this.setId(table, app);
@@ -552,7 +552,7 @@ public class WTable extends WInteractWidget {
 		return table;
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!this.isStubbed() && this.flags_.get(BIT_GRID_CHANGED)) {
 			DomElement newE = this.createDomElement(app);

@@ -804,7 +804,7 @@ public class WContainerWidget extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
 		if (!app.getSession().getRenderer().isPreLearning()) {
 			if (this.flags_.get(BIT_LAYOUT_NEEDS_RERENDER)) {
@@ -1101,7 +1101,7 @@ public class WContainerWidget extends WInteractWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	DomElement createDomElement(WApplication app) {
+	protected DomElement createDomElement(WApplication app) {
 		return this.createDomElement(app, true);
 	}
 

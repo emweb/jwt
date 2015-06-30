@@ -80,6 +80,16 @@ public class WTestEnvironment extends WEnvironment {
 	}
 
 	/**
+	 * Closes the test environment.
+	 * <p>
+	 * Destroys the test environment. This will allow the environment and the
+	 * application under test to be garbage collected.
+	 */
+	public void close() {
+		WebSession.Handler.getInstance().release();
+	}
+
+	/**
 	 * Sets parameters to the application.
 	 * <p>
 	 * The default value is an empty map.
@@ -87,8 +97,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getParameterMap()
 	 */
-	public void close() {
-		WebSession.Handler.getInstance().release();
+	public void setParameterMap(final Map<String, String[]> parameters) {
+		this.parameters_ = parameters;
 	}
 
 	/**
@@ -99,8 +109,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getCookies()
 	 */
-	public void setParameterMap(final Map<String, String[]> parameters) {
-		this.parameters_ = parameters;
+	public void setCookies(final Map<String, String> cookies) {
+		this.cookies_ = cookies;
 	}
 
 	/**
@@ -111,8 +121,7 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getHeaderValue(String name)
 	 */
-	public void setCookies(final Map<String, String> cookies) {
-		this.cookies_ = cookies;
+	public void setHeaderValue(final String value) {
 	}
 
 	/**
@@ -123,7 +132,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#supportsCookies()
 	 */
-	public void setHeaderValue(final String value) {
+	public void setSupportsCookies(boolean enabled) {
+		this.doesCookies_ = enabled;
 	}
 
 	/**
@@ -134,8 +144,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#hasAjax()
 	 */
-	public void setSupportsCookies(boolean enabled) {
-		this.doesCookies_ = enabled;
+	public void setAjax(boolean enabled) {
+		this.doesAjax_ = enabled;
 	}
 
 	/**
@@ -146,8 +156,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getDpiScale()
 	 */
-	public void setAjax(boolean enabled) {
-		this.doesAjax_ = enabled;
+	public void setDpiScale(double dpiScale) {
+		this.dpiScale_ = dpiScale;
 	}
 
 	/**
@@ -158,8 +168,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getLocale()
 	 */
-	public void setDpiScale(double dpiScale) {
-		this.dpiScale_ = dpiScale;
+	public void setLocale(final Locale locale) {
+		this.locale_ = locale;
 	}
 
 	/**
@@ -170,8 +180,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getHostName()
 	 */
-	public void setLocale(final Locale locale) {
-		this.locale_ = locale;
+	public void setHostName(final String hostName) {
+		this.host_ = hostName;
 	}
 
 	/**
@@ -182,8 +192,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getUrlScheme()
 	 */
-	public void setHostName(final String hostName) {
-		this.host_ = hostName;
+	public void setUrlScheme(final String scheme) {
+		this.urlScheme_ = scheme;
 	}
 
 	/**
@@ -195,8 +205,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getUserAgent()
 	 */
-	public void setUrlScheme(final String scheme) {
-		this.urlScheme_ = scheme;
+	void setUserAgent(final String userAgent) {
+		super.setUserAgent(userAgent);
 	}
 
 	/**
@@ -207,8 +217,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getReferer()
 	 */
-	void setUserAgent(final String userAgent) {
-		super.setUserAgent(userAgent);
+	public void setReferer(final String referer) {
+		this.referer_ = referer;
 	}
 
 	/**
@@ -222,8 +232,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getAccept()
 	 */
-	public void setReferer(final String referer) {
-		this.referer_ = referer;
+	public void setAccept(final String accept) {
+		this.accept_ = accept;
 	}
 
 	/**
@@ -234,8 +244,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getServerSignature()
 	 */
-	public void setAccept(final String accept) {
-		this.accept_ = accept;
+	public void setServerSignature(final String signature) {
+		this.serverSignature_ = signature;
 	}
 
 	/**
@@ -246,8 +256,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getServerSoftware()
 	 */
-	public void setServerSignature(final String signature) {
-		this.serverSignature_ = signature;
+	public void setServerSoftware(final String software) {
+		this.serverSignature_ = software;
 	}
 
 	/**
@@ -258,8 +268,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getServerAdmin()
 	 */
-	public void setServerSoftware(final String software) {
-		this.serverSignature_ = software;
+	public void setServerAdmin(final String serverAdmin) {
+		this.serverAdmin_ = serverAdmin;
 	}
 
 	/**
@@ -270,8 +280,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getClientAddress()
 	 */
-	public void setServerAdmin(final String serverAdmin) {
-		this.serverAdmin_ = serverAdmin;
+	public void setClientAddress(final String clientAddress) {
+		this.clientAddress_ = clientAddress;
 	}
 
 	/**
@@ -282,12 +292,16 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WEnvironment#getInternalPath()
 	 */
-	public void setClientAddress(final String clientAddress) {
-		this.clientAddress_ = clientAddress;
-	}
-
 	public void setInternalPath(final String internalPath) {
 		super.setInternalPath(internalPath);
+	}
+
+	/**
+	 * Sets the content type (<b>deprecated</b>.
+	 * <p>
+	 * Since contentType is now always HTML5, this setting is ignored.
+	 */
+	public void setContentType(WEnvironment.ContentType contentType) {
 	}
 
 	/**
@@ -302,7 +316,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * (calling done() directly or indirectly) so that the main event loop can
 	 * continue.
 	 */
-	public void setContentType(WEnvironment.ContentType contentType) {
+	Signal1<WDialog> dialogExecuted() {
+		return this.dialogExecuted_;
 	}
 
 	/**
@@ -315,8 +330,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WTestEnvironment#dialogExecuted()
 	 */
-	Signal1<WDialog> dialogExecuted() {
-		return this.dialogExecuted_;
+	Signal1<WPopupMenu> popupExecuted() {
+		return this.popupExecuted_;
 	}
 
 	/**
@@ -330,12 +345,19 @@ public class WTestEnvironment extends WEnvironment {
 	 * 
 	 * @see WTestEnvironment#startRequest()
 	 */
-	Signal1<WPopupMenu> popupExecuted() {
-		return this.popupExecuted_;
-	}
-
 	public void endRequest() {
 		;
+	}
+
+	/**
+	 * Simulates the start of a new request by the main event loop.
+	 * <p>
+	 * 
+	 * @see WTestEnvironment#endRequest()
+	 */
+	public void startRequest() {
+		new WebSession.Handler(this.theSession_,
+				WebSession.Handler.LockOption.TakeLock);
 	}
 
 	/**
@@ -346,11 +368,6 @@ public class WTestEnvironment extends WEnvironment {
 	 * <p>
 	 * The default value is <code>false</code>.
 	 */
-	public void startRequest() {
-		new WebSession.Handler(this.theSession_,
-				WebSession.Handler.LockOption.TakeLock);
-	}
-
 	public void setSessionIdInUrl(boolean sessionIdInUrl) {
 		this.theSession_.setSessionIdInUrl(sessionIdInUrl);
 	}

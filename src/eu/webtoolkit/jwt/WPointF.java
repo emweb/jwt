@@ -22,13 +22,14 @@ import org.slf4j.LoggerFactory;
 /**
  * A value class that defines a 2D point.
  */
-public class WPointF {
+public class WPointF extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WPointF.class);
 
 	/**
 	 * Creates point (0, 0).
 	 */
 	public WPointF() {
+		super();
 		this.x_ = 0;
 		this.y_ = 0;
 	}
@@ -37,6 +38,7 @@ public class WPointF {
 	 * Creates a point (x, y).
 	 */
 	public WPointF(double x, double y) {
+		super();
 		this.x_ = x;
 		this.y_ = y;
 	}
@@ -45,6 +47,7 @@ public class WPointF {
 	 * Copy constructor.
 	 */
 	public WPointF(final WPointF other) {
+		super(other);
 		this.x_ = other.getX();
 		this.y_ = other.getY();
 	}
@@ -53,8 +56,13 @@ public class WPointF {
 	 * Creates a point from mouse coordinates.
 	 */
 	public WPointF(final Coordinates other) {
+		super();
 		this.x_ = other.x;
 		this.y_ = other.y;
+	}
+
+	public WPointF clone() {
+		return new WPointF(this);
 	}
 
 	/**
@@ -89,6 +97,9 @@ public class WPointF {
 	 * Indicates whether some other object is "equal to" this one.
 	 */
 	public boolean equals(final WPointF other) {
+		if (!this.sameBindingAs(other)) {
+			return false;
+		}
 		return this.x_ == other.x_ && this.y_ == other.y_;
 	}
 
@@ -96,6 +107,24 @@ public class WPointF {
 		this.x_ += other.x_;
 		this.y_ += other.y_;
 		return this;
+	}
+
+	public String getJsValue() {
+		char[] buf = new char[30];
+		StringBuilder ss = new StringBuilder();
+		ss.append('[');
+		ss.append(MathUtils.roundJs(this.x_, 3)).append(',');
+		ss.append(MathUtils.roundJs(this.y_, 3)).append(']');
+		return ss.toString();
+	}
+
+	public WPointF getSwapXY() {
+		WPointF result = new WPointF(this.getY(), this.getX());
+		if (this.isJavaScriptBound()) {
+			result.assignBinding(this, "((function(p){return [p[1],p[0]];})("
+					+ this.getJsRef() + "))");
+		}
+		return result;
 	}
 
 	private double x_;

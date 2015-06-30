@@ -337,7 +337,7 @@ public class WLabel extends WInteractWidget {
 		}
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.text_ != null) {
 			((WWebWidget) this.text_).getDomChanges(result, app);

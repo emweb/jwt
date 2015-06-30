@@ -153,7 +153,11 @@ public class Login extends WObject {
 	 * <p>
 	 * This signal is emitted as a result of
 	 * {@link Login#login(User user, LoginState state) login()} or
-	 * {@link Login#logout() logout()}.
+	 * {@link Login#logout() logout()}. If no user was logged in, then a
+	 * {@link Login#changed() changed()} signal does not necessarily mean that
+	 * user is {@link Login#isLoggedIn() isLoggedIn()} as the user may have been
+	 * identified correctly but have a DisabledLogin {@link Login#getState()
+	 * getState()} for example.
 	 */
 	public Signal changed() {
 		return this.changed_;

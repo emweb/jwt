@@ -1003,8 +1003,10 @@ public class DomElement {
 				Map.Entry<String, DomElement.EventHandler> i = i_it.next();
 				if (i.getValue().jsCode.length() != 0) {
 					if (this.id_.equals(app.getDomRoot().getId())
-							|| i.getKey() == WInteractWidget.MOUSE_WHEEL_SIGNAL
-							&& app.getEnvironment().agentIsGecko()) {
+							|| i.getKey() == WInteractWidget.WHEEL_SIGNAL
+							&& app.getEnvironment().agentIsIE()
+							&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
+									.getValue()) {
 						this.setJavaScriptEvent(javaScript, i.getKey(), i
 								.getValue(), app);
 					} else {
@@ -1713,10 +1715,12 @@ public class DomElement {
 			this.declare(out);
 			out.append(this.var_);
 		}
-		if (eventName == WInteractWidget.MOUSE_WHEEL_SIGNAL
-				&& app.getEnvironment().agentIsGecko()) {
-			out.append(".addEventListener('DOMMouseScroll', f").append(fid)
-					.append(", false);\n");
+		if (eventName == WInteractWidget.WHEEL_SIGNAL
+				&& app.getEnvironment().agentIsIE()
+				&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
+						.getValue()) {
+			out.append(".addEventListener('wheel', f").append(fid).append(
+					", false);\n");
 		} else {
 			out.append(".on").append(eventName).append("=f").append(fid)
 					.append(";\n");

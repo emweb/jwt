@@ -73,6 +73,10 @@ class LineSeriesRenderer extends SeriesRenderer {
 	}
 
 	public void paint() {
+		final WCartesianChart chart = this.chart_;
+		final WJavaScriptHandle<WPainterPath> curveHandle = chart.curvePaths_
+				.get(this.series_.getModelColumn());
+		WTransform transform = chart.getCombinedTransform();
 		if (this.curveLength_ > 1) {
 			if (this.series_.getType() == SeriesType.CurveSeries) {
 				WPointF c1 = new WPointF();
@@ -88,14 +92,17 @@ class LineSeriesRenderer extends SeriesRenderer {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
 				this.painter_.setShadow(this.series_.getShadow());
-				this.painter_.fillPath(this.fill_, this.series_.getBrush());
+				this.painter_.fillPath(transform.map(this.fill_), this.series_
+						.getBrush());
 			}
 			if (this.series_.getFillRange() == FillRangeType.NoFill) {
 				this.painter_.setShadow(this.series_.getShadow());
 			} else {
 				this.painter_.setShadow(new WShadow());
 			}
-			this.painter_.strokePath(this.curve_, this.series_.getPen());
+			curveHandle.setValue(this.curve_);
+			this.painter_.strokePath(transform.map(curveHandle.getValue()),
+					this.series_.getPen());
 		}
 		this.curveLength_ = 0;
 		this.curve_.assign(new WPainterPath());

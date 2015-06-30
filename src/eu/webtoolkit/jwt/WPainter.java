@@ -818,8 +818,14 @@ public class WPainter {
 	 * @see WPainter#drawRect(double x, double y, double width, double height)
 	 */
 	public void drawRect(final WRectF rectangle) {
-		this.drawRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(),
-				rectangle.getHeight());
+		WCanvasPaintDevice cDevice = ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_)
+				: null);
+		if (cDevice != null && rectangle.isJavaScriptBound()) {
+			cDevice.drawRect(rectangle);
+		} else {
+			this.drawRect(rectangle.getX(), rectangle.getY(), rectangle
+					.getWidth(), rectangle.getHeight());
+		}
 	}
 
 	/**
@@ -1341,7 +1347,11 @@ public class WPainter {
 	 * @see WPainter#resetTransform()
 	 */
 	public void translate(final WPointF p) {
-		this.translate(p.getX(), p.getY());
+		this.getS().worldTransform_.translate(p);
+		if (this.device_ != null) {
+			this.device_.setChanged(EnumSet
+					.of(WPaintDevice.ChangeFlag.Transform));
+		}
 	}
 
 	/**
@@ -1357,11 +1367,7 @@ public class WPainter {
 	 * @see WPainter#resetTransform()
 	 */
 	public void translate(double dx, double dy) {
-		this.getS().worldTransform_.translate(dx, dy);
-		if (this.device_ != null) {
-			this.device_.setChanged(EnumSet
-					.of(WPaintDevice.ChangeFlag.Transform));
-		}
+		this.translate(new WPointF(dx, dy));
 	}
 
 	/**

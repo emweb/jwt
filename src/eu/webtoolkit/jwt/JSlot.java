@@ -231,7 +231,8 @@ public class JSlot {
 					"The number of arguments given must be between 0 and 6.");
 		}
 		this.nbArgs_ = nbArgs;
-		if (this.widget_ != null) {
+		WApplication app = WApplication.getInstance();
+		if (this.widget_ != null && app != null) {
 			WApplication.getInstance().declareJavaScriptFunction(
 					this.getJsFunctionName(), js);
 		} else {
@@ -534,12 +535,16 @@ public class JSlot {
 	private void create() {
 		StringWriter ss = new StringWriter();
 		if (this.widget_ != null) {
-			ss.append(WApplication.getInstance().getJavaScriptClass()).append(
-					".").append(this.getJsFunctionName()).append("(o,e");
-			for (int i = 1; i <= this.nbArgs_; ++i) {
-				ss.append(",a").append(String.valueOf(i));
+			WApplication app = WApplication.getInstance();
+			if (app != null) {
+				ss.append(WApplication.getInstance().getJavaScriptClass())
+						.append(".").append(this.getJsFunctionName()).append(
+								"(o,e");
+				for (int i = 1; i <= this.nbArgs_; ++i) {
+					ss.append(",a").append(String.valueOf(i));
+				}
+				ss.append(");");
 			}
-			ss.append(");");
 		}
 		this.imp_ = new AbstractEventSignal.JavaScriptListener(this.widget_,
 				null, ss.toString());

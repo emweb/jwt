@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @see WPainter#setPen(WPen p)
  * @see WBrush
  */
-public class WPen {
+public class WPen extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WPen.class);
 
 	/**
@@ -46,6 +46,7 @@ public class WPen {
 	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
 	 */
 	public WPen() {
+		super();
 		this.penStyle_ = PenStyle.SolidLine;
 		this.penCapStyle_ = PenCapStyle.SquareCap;
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
@@ -64,6 +65,7 @@ public class WPen {
 	 * The line style is set to <code>style</code>.
 	 */
 	public WPen(PenStyle style) {
+		super();
 		this.penStyle_ = style;
 		this.penCapStyle_ = PenCapStyle.SquareCap;
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
@@ -82,6 +84,7 @@ public class WPen {
 	 * The pen color is set to <code>color</code>.
 	 */
 	public WPen(final WColor color) {
+		super();
 		this.penStyle_ = PenStyle.SolidLine;
 		this.penCapStyle_ = PenCapStyle.SquareCap;
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
@@ -100,6 +103,7 @@ public class WPen {
 	 * The pen&apos;s color is defined by the gradient <code>color</code>.
 	 */
 	public WPen(final WGradient gradient) {
+		super();
 		this.penStyle_ = PenStyle.SolidLine;
 		this.penCapStyle_ = PenCapStyle.SquareCap;
 		this.penJoinStyle_ = PenJoinStyle.BevelJoin;
@@ -115,11 +119,16 @@ public class WPen {
 	 */
 	public WPen clone() {
 		WPen result = new WPen();
+		if (this.isJavaScriptBound()) {
+			result.assignBinding(this);
+		}
 		result.penStyle_ = this.penStyle_;
 		result.penCapStyle_ = this.penCapStyle_;
 		result.penJoinStyle_ = this.penJoinStyle_;
 		result.width_ = this.width_;
-		result.color_ = this.color_;
+		result.color_ = new WColor(this.color_.getRed(),
+				this.color_.getGreen(), this.color_.getBlue(), this.color_
+						.getAlpha());
 		return result;
 	}
 
@@ -129,7 +138,7 @@ public class WPen {
 	 * Returns <code>true</code> if the pens are exactly the same.
 	 */
 	public boolean equals(final WPen other) {
-		return this.penStyle_ == other.penStyle_
+		return this.sameBindingAs(other) && this.penStyle_ == other.penStyle_
 				&& this.penCapStyle_ == other.penCapStyle_
 				&& this.penJoinStyle_ == other.penJoinStyle_
 				&& this.width_.equals(other.width_)
@@ -253,6 +262,15 @@ public class WPen {
 	 */
 	public WGradient getGradient() {
 		return this.gradient_;
+	}
+
+	public String getJsValue() {
+		StringBuilder ss = new StringBuilder();
+		ss.append("{\"color\":[").append(this.color_.getRed()).append(",")
+				.append(this.color_.getGreen()).append(",").append(
+						this.color_.getBlue()).append(",").append(
+						this.color_.getAlpha()).append("]}");
+		return ss.toString();
 	}
 
 	private PenStyle penStyle_;

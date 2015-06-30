@@ -55,9 +55,11 @@ class MarkerRenderIterator extends SeriesIterator {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
 			WPointF p = this.chart_.map(x, y, series.getAxis(), this
 					.getCurrentXSegment(), this.getCurrentYSegment());
+			final WCartesianChart chart = this.chart_;
 			if (!this.marker_.isEmpty()) {
 				this.painter_.save();
-				this.painter_.translate(this.hv(p));
+				WTransform currentTransform = new WTransform().translate(chart
+						.getCombinedTransform().map(this.hv(p)));
 				WPen pen = series.getMarkerPen().clone();
 				setPenColor(pen, xIndex, yIndex,
 						ItemDataRole.MarkerPenColorRole);
@@ -69,10 +71,12 @@ class MarkerRenderIterator extends SeriesIterator {
 				this.painter_.setShadow(series.getShadow());
 				if (series.getMarker() != MarkerType.CrossMarker
 						&& series.getMarker() != MarkerType.XCrossMarker) {
-					this.painter_.fillPath(this.marker_, brush);
+					this.painter_.fillPath(currentTransform.map(this.marker_),
+							brush);
 					this.painter_.setShadow(new WShadow());
 				}
-				this.painter_.strokePath(this.marker_, pen);
+				this.painter_.strokePath(currentTransform.map(this.marker_),
+						pen);
 				this.painter_.restore();
 			}
 			if (series.getType() != SeriesType.BarSeries) {

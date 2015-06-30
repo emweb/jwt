@@ -1001,7 +1001,7 @@ public class WLineEdit extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (app.getEnvironment().agentIsIE()
 				&& this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
 			DomElement e = DomElement.getForUpdate(this, this

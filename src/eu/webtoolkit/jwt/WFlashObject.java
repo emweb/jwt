@@ -264,7 +264,7 @@ public class WFlashObject extends WWebWidget {
 		super.updateDom(element, all);
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		super.getDomChanges(result, app);
 		if (this.sizeChanged_) {
 			StringWriter ss = new StringWriter();

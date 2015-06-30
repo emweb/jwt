@@ -620,7 +620,7 @@ public class WPushButton extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void getDomChanges(final List<DomElement> result, WApplication app) {
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.flags_.get(BIT_ICON_CHANGED)
 				&& this.flags_.get(BIT_ICON_RENDERED)) {
 			DomElement image = DomElement.getForUpdate("im"

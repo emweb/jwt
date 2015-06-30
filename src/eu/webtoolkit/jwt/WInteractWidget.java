@@ -237,6 +237,11 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * window {@link WMouseEvent#getWindow() window}, or the
 	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
+	 * If you connect also the {@link WInteractWidget#mouseWentDown()
+	 * mouseWentDown()} signal, then a subsequent
+	 * {@link WInteractWidget#mouseWentUp() mouseWentUp()} will be received by
+	 * the same widget, even if mouse is no longer over the original widget.
+	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -322,7 +327,11 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * </p>
 	 */
 	public EventSignal1<WMouseEvent> mouseWheel() {
-		return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
+		if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
+			return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
+		} else {
+			return this.mouseEventSignal(WHEEL_SIGNAL, true);
+		}
 	}
 
 	/**
@@ -863,6 +872,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String MOUSE_MOVE_SIGNAL = "M_mousemove";
 	private static String MOUSE_DRAG_SIGNAL = "M_mousedrag";
 	static String MOUSE_WHEEL_SIGNAL = "mousewheel";
+	static String WHEEL_SIGNAL = "wheel";
 	private static String TOUCH_START_SIGNAL = "touchstart";
 	private static String TOUCH_MOVE_SIGNAL = "touchmove";
 	private static String TOUCH_END_SIGNAL = "touchend";
