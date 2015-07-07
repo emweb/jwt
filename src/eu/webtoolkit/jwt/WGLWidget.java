@@ -3151,11 +3151,11 @@ public class WGLWidget extends WInteractWidget {
 		super.render(flags);
 	}
 
-	String renderRemoveJs() {
+	String renderRemoveJs(boolean recursive) {
 		if (this.webGlNotAvailable_) {
-			return this.alternative_.getWebWidget().renderRemoveJs();
+			return this.alternative_.getWebWidget().renderRemoveJs(recursive);
 		} else {
-			return super.renderRemoveJs();
+			return super.renderRemoveJs(recursive);
 		}
 	}
 

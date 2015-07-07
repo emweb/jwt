@@ -323,12 +323,15 @@ public class WTextEdit extends WTextArea {
 		return this.onRender_;
 	}
 
-	String renderRemoveJs() {
+	String renderRemoveJs(boolean recursive) {
 		if (this.isRendered()) {
-			return this.getJsRef() + ".ed.remove();Wt3_3_4.remove('"
-					+ this.getId() + "');";
+			String result = this.getJsRef() + ".ed.remove();";
+			if (!recursive) {
+				result += "Wt3_3_4.remove('" + this.getId() + "');";
+			}
+			return result;
 		} else {
-			return super.renderRemoveJs();
+			return super.renderRemoveJs(recursive);
 		}
 	}
 

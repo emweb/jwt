@@ -29,13 +29,16 @@ class WMediaPlayerImpl extends WTemplate {
 		this.setFormObject(true);
 	}
 
-	String renderRemoveJs() {
+	String renderRemoveJs(boolean recursive) {
 		if (this.isRendered()) {
-			return this.player_.getJsPlayerRef()
-					+ ".jPlayer('destroy');Wt3_3_4.remove('" + this.getId()
-					+ "');";
+			String result = this.player_.getJsPlayerRef()
+					+ ".jPlayer('destroy');";
+			if (!recursive) {
+				result += "Wt3_3_4.remove('" + this.getId() + "');";
+			}
+			return result;
 		} else {
-			return super.renderRemoveJs();
+			return super.renderRemoveJs(recursive);
 		}
 	}
 

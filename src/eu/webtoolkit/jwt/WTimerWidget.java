@@ -62,7 +62,7 @@ class WTimerWidget extends WInteractWidget {
 		return DomElementType.DomElement_SPAN;
 	}
 
-	String renderRemoveJs() {
+	protected String renderRemoveJs() {
 		return "{var obj="
 				+ this.getJsRef()
 				+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_3_4.remove('"

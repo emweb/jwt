@@ -1868,8 +1868,22 @@ public abstract class WWebWidget extends WWidget {
 		propagateRenderOk(true);
 	}
 
-	String renderRemoveJs() {
-		return "_" + this.getId();
+	String renderRemoveJs(boolean recursive) {
+		String result = "";
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				result += this.children_.get(i).getWebWidget().renderRemoveJs(
+						true);
+			}
+		}
+		if (!recursive) {
+			if (result.length() == 0) {
+				result = "_" + this.getId();
+			} else {
+				result += "Wt3_3_4.remove('" + this.getId() + "');";
+			}
+		}
+		return result;
 	}
 
 	protected void propagateSetEnabled(boolean enabled) {
@@ -1937,7 +1951,7 @@ public abstract class WWebWidget extends WWidget {
 		int i = this.children_.indexOf(child);
 		assert i != -1;
 		if (!this.flags_.get(BIT_IGNORE_CHILD_REMOVES)) {
-			String js = child.getWebWidget().renderRemoveJs();
+			String js = child.getWebWidget().renderRemoveJs(false);
 			if (!(this.transientImpl_ != null)) {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
