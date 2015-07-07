@@ -1081,7 +1081,7 @@ public class WTemplate extends WInteractWidget {
 	}
 
 	public void refresh() {
-		if (this.text_.refresh()) {
+		if (this.text_.refresh() || !this.strings_.isEmpty()) {
 			this.changed_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		}

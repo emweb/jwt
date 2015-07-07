@@ -118,11 +118,15 @@ public class WPointF extends WJavaScriptExposableObject {
 		return ss.toString();
 	}
 
-	public WPointF getSwapXY() {
-		WPointF result = new WPointF(this.getY(), this.getX());
+	public WPointF swapHV(double width) {
+		WPointF result = new WPointF(width - this.getY(), this.getX());
 		if (this.isJavaScriptBound()) {
-			result.assignBinding(this, "((function(p){return [p[1],p[0]];})("
-					+ this.getJsRef() + "))");
+			StringBuilder ss = new StringBuilder();
+			char[] buf = new char[30];
+			ss.append("((function(p){return [");
+			ss.append(MathUtils.roundJs(width, 3)).append(" - p[1],p[0]];})(")
+					.append(this.getJsRef() + "))");
+			result.assignBinding(this, ss.toString());
 		}
 		return result;
 	}

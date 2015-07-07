@@ -1403,7 +1403,6 @@ public class WTreeView extends WAbstractItemView {
 		} else {
 			if (type.equals("dblclicked")) {
 				this.handleDoubleClick(index, event);
-				this.skipNextMouseEvent_ = true;
 			} else {
 				if (type.equals("mousedown")) {
 					this.mouseWentDown().trigger(index, event);

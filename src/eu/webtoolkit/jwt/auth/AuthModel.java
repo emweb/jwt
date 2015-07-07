@@ -256,6 +256,7 @@ public class AuthModel extends FormBaseModel {
 			Object v = this.getValue(RememberMeField);
 			AuthService s = this.getBaseAuth();
 			if (this.loginUser(login, user)) {
+				this.reset();
 				if (!(v == null) && (Boolean) v == true) {
 					WApplication app = WApplication.getInstance();
 					app.setCookie(s.getAuthTokenCookieName(), s

@@ -55,6 +55,10 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 				true);
 		if (user.getPassword().isEmpty()) {
 			this.authModel_ = null;
+		} else {
+			if (this.authModel_ != null) {
+				this.authModel_.reset();
+			}
 		}
 		if (this.authModel_ != null
 				&& this.authModel_.getBaseAuth().isEmailVerificationEnabled()) {

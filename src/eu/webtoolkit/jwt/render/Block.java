@@ -38,6 +38,7 @@ class Block {
 		this.css_ = new HashMap<String, Block.PropertyValue>();
 		this.font_ = new WFont();
 		this.styleSheet_ = null;
+		this.noPropertyCache_ = new HashSet<Property>();
 		if (node != null) {
 			if (RenderUtils.isXmlElement(node)) {
 				this.type_ = DomElement.parseTagName(node.getName());
@@ -638,6 +639,7 @@ class Block {
 	public void setStyleSheet(StyleSheet styleSheet) {
 		this.styleSheet_ = styleSheet;
 		this.css_.clear();
+		this.noPropertyCache_.clear();
 		for (int i = 0; i < this.children_.size(); ++i) {
 			this.children_.get(i).setStyleSheet(styleSheet);
 		}
@@ -816,6 +818,9 @@ class Block {
 		if (!(this.node_ != null)) {
 			return "";
 		}
+		if (this.noPropertyCache_.contains(property) != false) {
+			return "";
+		}
 		if (this.css_.isEmpty()) {
 			if (this.styleSheet_ != null) {
 				for (int i = 0; i < this.styleSheet_.getRulesetSize(); ++i) {
@@ -835,6 +840,7 @@ class Block {
 		if (i != null) {
 			return i.value_;
 		} else {
+			this.noPropertyCache_.add(property);
 			return "";
 		}
 	}
@@ -942,6 +948,7 @@ class Block {
 	private Map<String, Block.PropertyValue> css_;
 	private WFont font_;
 	private StyleSheet styleSheet_;
+	private Set<Property> noPropertyCache_;
 	private int tableRowCount_;
 	private int tableColCount_;
 	private int cellRow_;

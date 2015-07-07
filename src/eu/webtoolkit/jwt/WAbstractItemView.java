@@ -1780,7 +1780,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 		this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
 		this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId()
-				+ " .headerrh", this);
+				+ " .headerrh");
 		app.getStyleSheet().addRule(this.headerHeightRule_);
 		this.setHeaderHeight(this.headerLineHeight_);
 	}

@@ -638,7 +638,7 @@ public class WCalendar extends WCompositeWidget {
 			if (!this.isSelected(date)) {
 				styleClass += " Wt-cal-now";
 			}
-			t.setToolTip("Today");
+			t.setToolTip(WString.tr("Wt.WCalendar.today"));
 		} else {
 			t.setToolTip("");
 		}

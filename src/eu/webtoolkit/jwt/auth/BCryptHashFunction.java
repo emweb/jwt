@@ -29,6 +29,6 @@ public class BCryptHashFunction extends HashFunction {
 	}
 	
 	public static void main(String [] args) {
-		System.err.println(BCrypt.gensalt(12));
+		System.err.println(BCrypt.gensalt(13));
 	}
 }

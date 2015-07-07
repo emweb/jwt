@@ -930,7 +930,11 @@ public class WAxis {
 	 * </p>
 	 */
 	public void setInitialZoom(double initialZoom) {
-		this.initialZoom_ = initialZoom;
+		if (!ChartUtils.equals(this.initialZoom_, initialZoom)) {
+			this.initialZoom_ = initialZoom;
+			update();
+		}
+		;
 	}
 
 	/**
@@ -955,8 +959,12 @@ public class WAxis {
 	 * </p>
 	 */
 	public void setMaxZoom(double maxZoom) {
-		this.maxZoom_ = maxZoom < 1 ? 1 : maxZoom;
-		this.update();
+		maxZoom = maxZoom < 1 ? 1 : maxZoom;
+		if (!ChartUtils.equals(this.maxZoom_, maxZoom)) {
+			this.maxZoom_ = maxZoom;
+			update();
+		}
+		;
 	}
 
 	/**
@@ -988,7 +996,11 @@ public class WAxis {
 	 * </p>
 	 */
 	public void setInitialPan(double initialPan) {
-		this.initialPan_ = initialPan;
+		if (!ChartUtils.equals(this.initialPan_, initialPan)) {
+			this.initialPan_ = initialPan;
+			update();
+		}
+		;
 	}
 
 	/**
@@ -1000,6 +1012,65 @@ public class WAxis {
 	 */
 	public double getInitialPan() {
 		return this.initialPan_;
+	}
+
+	/**
+	 * Sets the padding between the chart area and this axis.
+	 * <p>
+	 * 
+	 * @see WAxis#getPadding()
+	 */
+	public void setPadding(int padding) {
+		if (!ChartUtils.equals(this.padding_, padding)) {
+			this.padding_ = padding;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns the padding between the chart area and this axis.
+	 * <p>
+	 * 
+	 * @see WAxis#setPadding(int padding)
+	 */
+	public int getPadding() {
+		return this.padding_;
+	}
+
+	/**
+	 * Sets the direction that the axis ticks should point to.
+	 * <p>
+	 * If set to Outwards, the axis ticks will point outside of the chart, and
+	 * the labels will be on the outside.
+	 * <p>
+	 * If set to Inwards, the axis ticks will point inside of the chart, and the
+	 * labels will be on the inside. Also, the {@link WAxis#getPadding()
+	 * getPadding()} will be set to 25.
+	 * <p>
+	 * 
+	 * @see WAxis#getTickDirection()
+	 * @see WAxis#setPadding(int padding)
+	 */
+	public void setTickDirection(TickDirection direction) {
+		if (direction == TickDirection.Inwards) {
+			this.setPadding(25);
+		}
+		if (!ChartUtils.equals(this.tickDirection_, direction)) {
+			this.tickDirection_ = direction;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Gets the direction that the axis ticks point to.
+	 * <p>
+	 * 
+	 * @see WAxis#setTickDirection(TickDirection direction)
+	 */
+	public TickDirection getTickDirection() {
+		return this.tickDirection_;
 	}
 
 	public int getSegmentCount() {
@@ -1017,10 +1088,10 @@ public class WAxis {
 			this.computeRange(s);
 			totalRenderRange += s.renderMaximum - s.renderMinimum;
 		}
-		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0
-				: this.chart_.getAxisPadding();
+		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0 : this
+				.getPadding();
 		double clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
-				: this.chart_.getAxisPadding();
+				: this.getPadding();
 		double totalRenderLength = length;
 		double totalRenderStart = clipMin;
 		final double SEGMENT_MARGIN = 40;
@@ -1752,6 +1823,8 @@ public class WAxis {
 		this.maxZoom_ = 4;
 		this.initialZoom_ = 1;
 		this.initialPan_ = 0;
+		this.padding_ = 0;
+		this.tickDirection_ = TickDirection.Outwards;
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
@@ -1982,6 +2055,8 @@ public class WAxis {
 	private double maxZoom_;
 	private double initialZoom_;
 	private double initialPan_;
+	private int padding_;
+	private TickDirection tickDirection_;
 	private boolean renderingMirror_;
 
 	static class Segment {
@@ -2173,14 +2248,14 @@ public class WAxis {
 				int borderMin;
 				int borderMax;
 				if (this.scale_ == AxisScale.CategoryScale) {
-					borderMax = borderMin = this.chart_.getAxisPadding();
+					borderMax = borderMin = this.getPadding();
 				} else {
 					borderMin = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0
-							: this.chart_.getAxisPadding();
+							&& otherLocation == AxisValue.ZeroValue ? 0 : this
+							.getPadding();
 					borderMax = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0
-							: this.chart_.getAxisPadding();
+							&& otherLocation == AxisValue.ZeroValue ? 0 : this
+							.getPadding();
 				}
 				s.renderLength -= borderMin + borderMax;
 				s.renderStart += borderMin;

@@ -246,6 +246,8 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public boolean ackUpdate(int updateId) {
 		if (updateId == this.expectedAckId_) {
+			logger.debug(new StringWriter().append(
+					"jsSynced(false) after ackUpdate okay").toString());
 			this.setJSSynced(false);
 			++this.expectedAckId_;
 			return true;
@@ -453,6 +455,9 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append(this.collectedJS1_.toString()).append(
 					this.collectedJS2_.toString());
 			if (response.isWebSocketMessage()) {
+				logger.debug(new StringWriter().append(
+						"jsSynced(false) after rendering websocket message")
+						.toString());
 				this.setJSSynced(false);
 			}
 		}
@@ -907,6 +912,8 @@ class WebRenderer implements SlotLearnerInterface {
 		WApplication app = this.session_.getApp();
 		final Configuration conf = this.session_.getController()
 				.getConfiguration();
+		logger.debug(new StringWriter().append("Rendering invisible: ").append(
+				this.invisibleJS_.toString()).toString());
 		this.collectedJS1_.append(this.invisibleJS_.toString());
 		this.invisibleJS_.setLength(0);
 		if (conf.isInlineCss()) {

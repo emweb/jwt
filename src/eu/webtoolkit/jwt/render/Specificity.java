@@ -23,12 +23,8 @@ class Specificity {
 	private static Logger logger = LoggerFactory.getLogger(Specificity.class);
 
 	public Specificity(boolean valid) {
-		this.value_ = "     ";
-		this.setA(0);
-		this.setB(0);
-		this.setC(0);
-		this.setD(0);
-		this.setValid(valid);
+		this.value_ = 0;
+		this.valid_ = valid;
 	}
 
 	public Specificity() {
@@ -36,44 +32,44 @@ class Specificity {
 	}
 
 	public Specificity(int a, int b, int c, int d) {
-		this.value_ = "     ";
+		this.value_ = 0;
+		this.valid_ = true;
 		this.setA(a);
 		this.setB(b);
 		this.setC(c);
 		this.setD(d);
-		this.setValid(true);
-	}
-
-	public void setValid(boolean b) {
-		this.value_ = StringUtils.put(this.value_, 0, b ? (char) 1 : (char) 0);
-	}
-
-	public void setA(int a) {
-		this.value_ = StringUtils.put(this.value_, 1, (char) (a % 256));
-	}
-
-	public void setB(int b) {
-		this.value_ = StringUtils.put(this.value_, 2, (char) (b % 256));
-	}
-
-	public void setC(int c) {
-		this.value_ = StringUtils.put(this.value_, 3, (char) (c % 256));
-	}
-
-	public void setD(int d) {
-		this.value_ = StringUtils.put(this.value_, 4, (char) (d % 256));
 	}
 
 	public boolean isValid() {
-		return this.value_.charAt(0) == (char) 1;
+		return this.valid_;
+	}
+
+	public boolean equals(final Specificity other) {
+		return this.valid_ == other.valid_ && this.value_ == other.value_;
+	}
+
+	public void setA(int a) {
+		this.value_ = this.value_ & ~0xFF000000 | (a & 0xFF) << 24;
+	}
+
+	public void setB(int b) {
+		this.value_ = this.value_ & ~0x00FF0000 | (b & 0xFF) << 16;
+	}
+
+	public void setC(int c) {
+		this.value_ = this.value_ & ~0x0000FF00 | (c & 0xFF) << 8;
+	}
+
+	public void setD(int d) {
+		this.value_ = this.value_ & ~0x000000FF | d & 0xFF;
 	}
 
 	public boolean isSmallerThen(final Specificity other) {
-		return this.value_.compareTo(other.value_) < 0;
+		return !this.valid_ ? true : this.value_ < other.value_;
 	}
 
 	public boolean isGreaterThen(final Specificity other) {
-		return this.value_.compareTo(other.value_) > 0;
+		return !other.valid_ ? true : this.value_ > other.value_;
 	}
 
 	public boolean isSmallerOrEqualThen(final Specificity other) {
@@ -84,5 +80,6 @@ class Specificity {
 		return !this.isSmallerThen(other);
 	}
 
-	private String value_;
+	private long value_;
+	private boolean valid_;
 }

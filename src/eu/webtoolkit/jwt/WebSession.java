@@ -420,7 +420,9 @@ class WebSession {
 					if (signalE != null) {
 						String ackIdE = request.getParameter("ackId");
 						boolean invalidAckId = this.env_.hasAjax()
-								&& !request.isWebSocketMessage();
+								&& !request.isWebSocketMessage()
+								&& (!(this.asyncResponse_ != null) || !this.asyncResponse_
+										.isWebSocketRequest());
 						if (invalidAckId && ackIdE != null) {
 							try {
 								if (this.renderer_.ackUpdate(Integer

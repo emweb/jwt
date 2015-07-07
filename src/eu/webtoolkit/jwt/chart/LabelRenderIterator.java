@@ -70,7 +70,6 @@ class LabelRenderIterator extends SeriesIterator {
 						* width * (1 + this.chart_.getBarMargin());
 				p = new WPointF(left + width / 2, p.getY());
 			}
-			WColor c = WColor.black;
 			EnumSet<AlignmentFlag> alignment = EnumSet
 					.noneOf(AlignmentFlag.class);
 			if (series.getType() == SeriesType.BarSeries) {
@@ -82,15 +81,22 @@ class LabelRenderIterator extends SeriesIterator {
 					alignment = EnumSet.copyOf(EnumSet.of(
 							AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop));
 				}
-				c = series.getLabelColor();
 			} else {
 				alignment = EnumSet.copyOf(EnumSet.of(
 						AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom));
 				p.setY(p.getY() - 3);
 			}
 			final WCartesianChart chart = this.chart_;
-			this.chart_.renderLabel(this.painter_, text, chart
-					.getCombinedTransform().map(p), alignment, 0, 3);
+			WPen oldPen = chart.textPen_.clone();
+			chart.textPen_.setColor(series.getLabelColor());
+			WTransform t = new WTransform(1, 0, 0, -1, chart.chartArea_
+					.getLeft(), chart.chartArea_.getBottom()).multiply(
+					chart.xTransform_.getValue()).multiply(
+					chart.yTransform_.getValue()).multiply(
+					new WTransform(1, 0, 0, -1, -chart.chartArea_.getLeft(),
+							chart.chartArea_.getBottom()));
+			chart.renderLabel(this.painter_, text, t.map(p), alignment, 0, 3);
+			chart.textPen_ = oldPen;
 		}
 	}
 

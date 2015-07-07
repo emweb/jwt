@@ -461,8 +461,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		if (this.isInLayout()) {
 			this.setJavaScriptMember(WT_RESIZE_JS, "function() {}");
 		}
-		if (app.getEnvironment().agentIsIElt(9)
-				|| app.getEnvironment().getAgent() == WEnvironment.UserAgent.MobileWebKitAndroid) {
+		if (app.getEnvironment().agentIsIElt(9)) {
 			result = DomElement.createNew(DomElementType.DomElement_DIV);
 			if (this.alternative_ != null) {
 				result.addChild(this.alternative_.createSDomElement(app));
