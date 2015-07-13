@@ -29,6 +29,7 @@ class MarkerRenderIterator extends SeriesIterator {
 		this.chart_ = chart;
 		this.painter_ = painter;
 		this.marker_ = new WPainterPath();
+		this.scale_ = new WTransform();
 	}
 
 	public boolean startSeries(final WDataSeries series, double groupWidth,
@@ -58,8 +59,6 @@ class MarkerRenderIterator extends SeriesIterator {
 			final WCartesianChart chart = this.chart_;
 			if (!this.marker_.isEmpty()) {
 				this.painter_.save();
-				WTransform currentTransform = new WTransform().translate(chart
-						.getCombinedTransform().map(this.hv(p)));
 				WPen pen = series.getMarkerPen().clone();
 				setPenColor(pen, xIndex, yIndex,
 						ItemDataRole.MarkerPenColorRole);
@@ -68,15 +67,17 @@ class MarkerRenderIterator extends SeriesIterator {
 						ItemDataRole.MarkerBrushColorRole);
 				this.setMarkerSize(this.painter_, xIndex, yIndex, series
 						.getMarkerSize());
+				WTransform currentTransform = new WTransform().translate(
+						chart.getCombinedTransform().map(this.hv(p))).multiply(
+						this.scale_);
+				this.painter_.setWorldTransform(currentTransform, false);
 				this.painter_.setShadow(series.getShadow());
 				if (series.getMarker() != MarkerType.CrossMarker
 						&& series.getMarker() != MarkerType.XCrossMarker) {
-					this.painter_.fillPath(currentTransform.map(this.marker_),
-							brush);
+					this.painter_.fillPath(this.marker_, brush);
 					this.painter_.setShadow(new WShadow());
 				}
-				this.painter_.strokePath(currentTransform.map(this.marker_),
-						pen);
+				this.painter_.strokePath(this.marker_, pen);
 				this.painter_.restore();
 			}
 			if (series.getType() != SeriesType.BarSeries) {
@@ -105,6 +106,7 @@ class MarkerRenderIterator extends SeriesIterator {
 	private final WPainter painter_;
 	private WPainterPath marker_;
 	private boolean needRestore_;
+	private WTransform scale_;
 
 	private void setMarkerSize(final WPainter painter,
 			final WModelIndex xIndex, final WModelIndex yIndex,
@@ -121,6 +123,6 @@ class MarkerRenderIterator extends SeriesIterator {
 			dScale = StringUtils.asNumber(scale);
 		}
 		dScale = markerSize / 6 * dScale;
-		painter.scale(dScale, dScale);
+		this.scale_.assign(new WTransform(dScale, 0, 0, dScale, 0, 0));
 	}
 }

@@ -54,7 +54,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		this.background_ = new WBrush(new WColor(230, 230, 230));
 		this.selectedAreaBrush_ = new WBrush(new WColor(255, 255, 255));
 		this.axisMargin_ = -1;
-		this.transform_ = new WJavaScriptHandle<WTransform>();
+		this.transform_ = null;
 		this.init();
 	}
 
@@ -86,7 +86,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		this.background_ = new WBrush(new WColor(230, 230, 230));
 		this.selectedAreaBrush_ = new WBrush(new WColor(255, 255, 255));
 		this.axisMargin_ = -1;
-		this.transform_ = new WJavaScriptHandle<WTransform>();
+		this.transform_ = null;
 		this.init();
 	}
 

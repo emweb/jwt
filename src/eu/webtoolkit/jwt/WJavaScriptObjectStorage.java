@@ -48,7 +48,7 @@ class WJavaScriptObjectStorage {
 		return jsValues.size();
 	}
 
-	public final List<WJavaScriptExposableObject> jsValues = new ArrayList<WJavaScriptExposableObject>();
-	public final BitSet dirty = new BitSet();
-	public final String jsRef;
+	final List<WJavaScriptExposableObject> jsValues = new ArrayList<WJavaScriptExposableObject>();
+	final BitSet dirty = new BitSet();
+	private final String jsRef;
 }

@@ -64,8 +64,21 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  * <p>
+ * <h3>JavaScript exposability</h3>
+ * <p>
+ * A WPainterPath is JavaScript exposable. If a WPainterPath
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
+ * it can be accessed in your custom JavaScript code through {@link its
+ * handle&apos;s jsRef()}.
+ * <p>
+ * <p>
+ * <i><b>Warning:</b>A WPainterPath that is JavaScript exposed should be
+ * modified only through its {@link WJavaScriptHandle handle}. Any attempt at
+ * modifying it will cause an exception to be thrown.</i>
+ * </p>
  * 
  * @see WPainter#drawPath(WPainterPath path)
+ * @see WPaintedWidget#createJSPainterPath()
  */
 public class WPainterPath extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WPainterPath.class);
@@ -169,8 +182,14 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Draws a line from the current position to the start position of the last
 	 * sub path (which is the end point of the last move operation), and sets
 	 * the current position to (0, 0).
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void closeSubPath() {
+		this.checkModifiable();
 		this.moveTo(0, 0);
 	}
 
@@ -181,6 +200,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * sub path.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#closeSubPath()
 	 * @see WPainterPath#moveTo(double x, double y)
 	 */
@@ -195,10 +217,14 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * sub path.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#closeSubPath()
 	 * @see WPainterPath#moveTo(WPointF point)
 	 */
 	public void moveTo(double x, double y) {
+		this.checkModifiable();
 		if (!this.segments_.isEmpty()
 				&& this.segments_.get(this.segments_.size() - 1).getType() != WPainterPath.Segment.Type.MoveTo) {
 			WPointF startP = this.getSubPathStart();
@@ -218,6 +244,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * which becomes the new current position.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#lineTo(double x, double y)
 	 */
 	public void lineTo(final WPointF point) {
@@ -231,9 +260,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <code>y</code>), which becomes the new current position.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#lineTo(WPointF point)
 	 */
 	public void lineTo(double x, double y) {
+		this.checkModifiable();
 		this.segments_.add(new WPainterPath.Segment(x, y,
 				WPainterPath.Segment.Type.LineTo));
 	}
@@ -246,6 +279,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * curve uses the two control points <i>c1</i> and <code>c2</code>.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#cubicTo(double c1x, double c1y, double c2x, double c2y,
 	 *      double endPointx, double endPointy)
 	 */
@@ -261,10 +297,14 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * This is an overloaded method provided for convenience.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#cubicTo(WPointF c1, WPointF c2, WPointF endPoint)
 	 */
 	public void cubicTo(double c1x, double c1y, double c2x, double c2y,
 			double endPointx, double endPointy) {
+		this.checkModifiable();
 		this.segments_.add(new WPainterPath.Segment(c1x, c1y,
 				WPainterPath.Segment.Type.CubicC1));
 		this.segments_.add(new WPainterPath.Segment(c2x, c2y,
@@ -286,6 +326,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * arc, if the current position is different from the start.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#arcMoveTo(double cx, double cy, double radius, double
 	 *      angle)
 	 */
@@ -304,6 +347,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * o&apos;clock position.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
 	 *      startAngle, double sweepLength)
 	 */
@@ -320,6 +366,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * measured counter-clockwise starting from the 3 o&apos;clock position.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
 	 *      startAngle, double sweepLength)
 	 */
@@ -337,6 +386,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * curve uses the single control point <code>c</code>.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#quadTo(double cx, double cy, double endPointX, double
 	 *      endPointY)
 	 */
@@ -350,9 +402,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * This is an overloaded method provided for convenience.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#quadTo(WPointF c, WPointF endPoint)
 	 */
 	public void quadTo(double cx, double cy, double endPointX, double endPointY) {
+		this.checkModifiable();
 		this.segments_.add(new WPainterPath.Segment(cx, cy,
 				WPainterPath.Segment.Type.QuadC));
 		this.segments_.add(new WPainterPath.Segment(endPointX, endPointY,
@@ -368,6 +424,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <code>Note:</code> some renderers only support circles (width == height)
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#addEllipse(double x, double y, double width, double
 	 *      height)
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
@@ -389,6 +448,10 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <i><b>Note: </b>Some renderers only support circles (width == height)</i>
 	 * </p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
+	 * 
 	 * @see WPainterPath#addEllipse(WRectF rect)
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
 	 *      startAngle, double sweepLength)
@@ -405,6 +468,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * defined by <code>rectangle</code>.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#addRect(double x, double y, double width, double
 	 *      height)
 	 */
@@ -421,9 +487,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <i>width</i> x <code>height</code>.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#addRect(WRectF rectangle)
 	 */
 	public void addRect(double x, double y, double width, double height) {
+		this.checkModifiable();
 		if (this.isEmpty()) {
 			this.isRect_ = true;
 		}
@@ -442,10 +512,14 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * polygon.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#moveTo(WPointF point)
 	 * @see WPainterPath#lineTo(WPointF point)
 	 */
 	public void addPolygon(final List<WPointF> points) {
+		this.checkModifiable();
 		if (!points.isEmpty()) {
 			int i = 0;
 			if (!this.getCurrentPosition().equals(points.get(0))) {
@@ -466,9 +540,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * path&apos;s first sub path.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#connectPath(WPainterPath path)
 	 */
 	public void addPath(final WPainterPath path) {
+		this.checkModifiable();
 		if (!this.getCurrentPosition().equals(path.getBeginPosition())) {
 			this.moveTo(path.getBeginPosition());
 		}
@@ -484,9 +562,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * path&apos;s first sub path.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the path
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPainterPath#connectPath(WPainterPath path)
 	 */
 	public void connectPath(final WPainterPath path) {
+		this.checkModifiable();
 		if (!this.getCurrentPosition().equals(path.getBeginPosition())) {
 			this.lineTo(path.getBeginPosition());
 		}
@@ -688,6 +770,18 @@ public class WPainterPath extends WJavaScriptExposableObject {
 		return getControlPointRect(WTransform.Identity);
 	}
 
+	/**
+	 * Returns a copy of the path where straight lines are moved to be rendered
+	 * crisply.
+	 * <p>
+	 * This is intended to be used on rectangles, or other paths consisting of
+	 * only straight line, and will nudge every edge a little bit, so that 1px
+	 * straight lines are rendered as a crisp line.
+	 * <p>
+	 * This will also work if the path
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript
+	 * bound}.
+	 */
 	public WPainterPath getCrisp() {
 		WPainterPath result = new WPainterPath();
 		if (this.isJavaScriptBound()) {
@@ -753,6 +847,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 
 	void arcTo(double x, double y, double width, double height,
 			double startAngle, double sweepLength) {
+		this.checkModifiable();
 		this.segments_.add(new WPainterPath.Segment(x + width / 2, y + height
 				/ 2, WPainterPath.Segment.Type.ArcC));
 		this.segments_.add(new WPainterPath.Segment(width / 2, height / 2,

@@ -125,8 +125,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.cObjCreated_ = false;
 		this.curvePaths_ = new HashMap<Integer, WJavaScriptHandle<WPainterPath>>();
 		this.freePainterPaths_ = new ArrayList<WJavaScriptHandle<WPainterPath>>();
-		this.xTransform_ = new WJavaScriptHandle<WTransform>();
-		this.yTransform_ = new WJavaScriptHandle<WTransform>();
+		this.xTransform_ = null;
+		this.yTransform_ = null;
 		this.pens_ = new HashMap<Axis, List<WCartesianChart.PenAssignment>>();
 		this.freePens_ = new ArrayList<WJavaScriptHandle<WPen>>();
 		this.axisSliderWidgets_ = new ArrayList<WAxisSliderWidget>();
@@ -169,8 +169,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.cObjCreated_ = false;
 		this.curvePaths_ = new HashMap<Integer, WJavaScriptHandle<WPainterPath>>();
 		this.freePainterPaths_ = new ArrayList<WJavaScriptHandle<WPainterPath>>();
-		this.xTransform_ = new WJavaScriptHandle<WTransform>();
-		this.yTransform_ = new WJavaScriptHandle<WTransform>();
+		this.xTransform_ = null;
+		this.yTransform_ = null;
 		this.pens_ = new HashMap<Axis, List<WCartesianChart.PenAssignment>>();
 		this.freePens_ = new ArrayList<WJavaScriptHandle<WPen>>();
 		this.axisSliderWidgets_ = new ArrayList<WAxisSliderWidget>();
@@ -1566,6 +1566,34 @@ public class WCartesianChart extends WAbstractChart {
 	private int height_;
 	WRectF chartArea_;
 	private AxisValue[] location_ = new AxisValue[3];
+	private boolean zoomEnabled_;
+	private boolean panEnabled_;
+	private boolean rubberBandEnabled_;
+	private boolean crosshairEnabled_;
+	private int followCurve_;
+	boolean cObjCreated_;
+	Map<Integer, WJavaScriptHandle<WPainterPath>> curvePaths_;
+	private List<WJavaScriptHandle<WPainterPath>> freePainterPaths_;
+	WJavaScriptHandle<WTransform> xTransform_;
+	WJavaScriptHandle<WTransform> yTransform_;
+
+	static class PenAssignment {
+		private static Logger logger = LoggerFactory
+				.getLogger(PenAssignment.class);
+
+		public WJavaScriptHandle<WPen> pen;
+		public WJavaScriptHandle<WPen> textPen;
+
+		public PenAssignment(final WJavaScriptHandle<WPen> pen,
+				final WJavaScriptHandle<WPen> textPen) {
+			this.pen = pen;
+			this.textPen = textPen;
+		}
+	}
+
+	private Map<Axis, List<WCartesianChart.PenAssignment>> pens_;
+	private List<WJavaScriptHandle<WPen>> freePens_;
+	private List<WAxisSliderWidget> axisSliderWidgets_;
 
 	private void init() {
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Muted));
@@ -2511,9 +2539,14 @@ public class WCartesianChart extends WAbstractChart {
 				clipRect = area;
 			} else {
 				if (vertical != (this.getOrientation() == Orientation.Horizontal)) {
+					double h = area.getHeight();
+					if (this.location_[Axis.XAxis.getValue()] == AxisValue.ZeroValue
+							&& this.getAxis(Axis.XAxis).getLocation() == AxisValue.MinimumValue
+							&& this.getOrientation() == Orientation.Vertical) {
+						h += 1;
+					}
 					clipRect = new WRectF(0.0, area.getTop(),
-							vertical ? this.width_ : this.height_, area
-									.getHeight());
+							vertical ? this.width_ : this.height_, h);
 				} else {
 					clipRect = new WRectF(area.getLeft(), 0.0, area.getWidth(),
 							vertical ? this.height_ : this.width_);
@@ -2736,15 +2769,14 @@ public class WCartesianChart extends WAbstractChart {
 						if (locations.get(l) != AxisValue.MaximumValue) {
 							extraMargin = -extraMargin;
 						}
-						AlignmentFlag alignment = EnumUtils
-								.enumFromSet(EnumSet
-										.of(
-												locations.get(l) == AxisValue.MaximumValue ? AlignmentFlag.AlignLeft
-														: AlignmentFlag.AlignRight,
-												AlignmentFlag.AlignMiddle));
+						EnumSet<AlignmentFlag> alignment = EnumSet
+								.of(
+										locations.get(l) == AxisValue.MaximumValue ? AlignmentFlag.AlignLeft
+												: AlignmentFlag.AlignRight,
+										AlignmentFlag.AlignMiddle);
 						this.renderLabel(painter, axis.getTitle(), new WPointF(
 								u + extraMargin, this.chartArea_.getCenter()
-										.getY()), EnumSet.of(alignment), 0, 10);
+										.getY()), alignment, 0, 10);
 					}
 				} else {
 					double u = axisStart.getY();
@@ -2766,16 +2798,14 @@ public class WCartesianChart extends WAbstractChart {
 						if (locations.get(l) == AxisValue.MaximumValue) {
 							extraMargin = -extraMargin;
 						}
-						AlignmentFlag alignment = EnumUtils
-								.enumFromSet(EnumSet
-										.of(
-												locations.get(l) == AxisValue.MaximumValue ? AlignmentFlag.AlignBottom
-														: AlignmentFlag.AlignTop,
-												AlignmentFlag.AlignCenter));
+						EnumSet<AlignmentFlag> alignment = EnumSet
+								.of(
+										locations.get(l) == AxisValue.MaximumValue ? AlignmentFlag.AlignBottom
+												: AlignmentFlag.AlignTop,
+										AlignmentFlag.AlignCenter);
 						this.renderLabel(painter, axis.getTitle(), new WPointF(
 								this.chartArea_.getCenter().getX(), u
-										+ extraMargin), EnumSet.of(alignment),
-								0, 10);
+										+ extraMargin), alignment, 0, 10);
 					} else {
 						if (axis.getTitleOrientation() == Orientation.Vertical) {
 							WPaintDevice device = painter.getDevice();
@@ -2808,15 +2838,14 @@ public class WCartesianChart extends WAbstractChart {
 											locations.get(l) == AxisValue.MaximumValue ? -90
 													: 90, 10);
 						} else {
-							AlignmentFlag alignment = EnumUtils
-									.enumFromSet(EnumSet
-											.of(
-													locations.get(l) == AxisValue.MaximumValue ? AlignmentFlag.AlignBottom
-															: AlignmentFlag.AlignTop,
-													AlignmentFlag.AlignLeft));
+							EnumSet<AlignmentFlag> alignment = EnumSet
+									.of(
+											locations.get(l) == AxisValue.MaximumValue ? AlignmentFlag.AlignBottom
+													: AlignmentFlag.AlignTop,
+											AlignmentFlag.AlignLeft);
 							this.renderLabel(painter, axis.getTitle(),
 									new WPointF(this.chartArea_.getRight(), u),
-									EnumSet.of(alignment), 0, 8);
+									alignment, 0, 8);
 						}
 					}
 				}
@@ -3125,7 +3154,7 @@ public class WCartesianChart extends WAbstractChart {
 			if (zoom > this.getAxis(ax).getMaxZoom()) {
 				break;
 			}
-			WJavaScriptHandle<WPen> pen = new WJavaScriptHandle<WPen>();
+			WJavaScriptHandle<WPen> pen = null;
 			if (this.freePens_.size() > 0) {
 				pen = this.freePens_.get(this.freePens_.size() - 1);
 				this.freePens_.remove(this.freePens_.size() - 1);
@@ -3137,7 +3166,7 @@ public class WCartesianChart extends WAbstractChart {
 					.getGreen(), p.getColor().getBlue(), i == initialLevel ? p
 					.getColor().getAlpha() : 0));
 			pen.setValue(p);
-			WJavaScriptHandle<WPen> textPen = new WJavaScriptHandle<WPen>();
+			WJavaScriptHandle<WPen> textPen = null;
 			if (this.freePens_.size() > 0) {
 				textPen = this.freePens_.get(this.freePens_.size() - 1);
 				this.freePens_.remove(this.freePens_.size() - 1);
@@ -3159,13 +3188,13 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	private void assignJSPathsForSeries(final WDataSeries series) {
-		WJavaScriptHandle<WPainterPath> handle = new WJavaScriptHandle<WPainterPath>();
+		WJavaScriptHandle<WPainterPath> handle = null;
 		if (this.freePainterPaths_.size() > 0) {
 			handle = this.freePainterPaths_
 					.get(this.freePainterPaths_.size() - 1);
 			this.freePainterPaths_.remove(this.freePainterPaths_.size() - 1);
 		} else {
-			handle = this.getCreateJSPainterPath();
+			handle = this.createJSPainterPath();
 		}
 		this.curvePaths_.put(series.getModelColumn(), handle);
 	}
@@ -3385,35 +3414,6 @@ public class WCartesianChart extends WAbstractChart {
 		private WCartesianChart chart_;
 		private int index_;
 	}
-
-	private boolean zoomEnabled_;
-	private boolean panEnabled_;
-	private boolean rubberBandEnabled_;
-	private boolean crosshairEnabled_;
-	private int followCurve_;
-	boolean cObjCreated_;
-	Map<Integer, WJavaScriptHandle<WPainterPath>> curvePaths_;
-	private List<WJavaScriptHandle<WPainterPath>> freePainterPaths_;
-	WJavaScriptHandle<WTransform> xTransform_;
-	WJavaScriptHandle<WTransform> yTransform_;
-
-	static class PenAssignment {
-		private static Logger logger = LoggerFactory
-				.getLogger(PenAssignment.class);
-
-		public WJavaScriptHandle<WPen> pen;
-		public WJavaScriptHandle<WPen> textPen;
-
-		public PenAssignment(final WJavaScriptHandle<WPen> pen,
-				final WJavaScriptHandle<WPen> textPen) {
-			this.pen = pen;
-			this.textPen = textPen;
-		}
-	}
-
-	private Map<Axis, List<WCartesianChart.PenAssignment>> pens_;
-	private List<WJavaScriptHandle<WPen>> freePens_;
-	private List<WAxisSliderWidget> axisSliderWidgets_;
 
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(

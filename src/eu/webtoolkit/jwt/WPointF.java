@@ -21,6 +21,30 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A value class that defines a 2D point.
+ * <p>
+ * 
+ * <h3>JavaScript exposability</h3>
+ * <p>
+ * A WPointF is JavaScript exposable. If a WPointF
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
+ * it can be accessed in your custom JavaScript code through {@link its
+ * handle&apos;s jsRef()}. A point is represented in JavaScript as an array of
+ * two elements, e.g. a point WPointF(10,20) will be represented in JavaScript
+ * as:
+ * 
+ * <pre>
+ * {@code
+ *  [10, 20]
+ * }
+ * </pre>
+ * <p>
+ * <p>
+ * <i><b>Warning:</b>A WPointF that is JavaScript exposed should be modified
+ * only through its {@link WJavaScriptHandle handle}. Any attempt at modifying
+ * it will cause an exception to be thrown.</i>
+ * </p>
+ * 
+ * @see WPaintedWidget#createJSPoint()
  */
 public class WPointF extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WPointF.class);
@@ -67,15 +91,27 @@ public class WPointF extends WJavaScriptExposableObject {
 
 	/**
 	 * Sets the X coordinate.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the point
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setX(double x) {
+		this.checkModifiable();
 		this.x_ = x;
 	}
 
 	/**
 	 * Sets the Y coordinate.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the point
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setY(double y) {
+		this.checkModifiable();
 		this.y_ = y;
 	}
 
@@ -104,6 +140,7 @@ public class WPointF extends WJavaScriptExposableObject {
 	}
 
 	WPointF add(final WPointF other) {
+		this.checkModifiable();
 		this.x_ += other.x_;
 		this.y_ += other.y_;
 		return this;

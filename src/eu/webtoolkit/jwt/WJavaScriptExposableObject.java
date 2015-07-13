@@ -20,7 +20,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * JavaScript exposable object.
+ * A JavaScript exposable object.
+ * <p>
+ * 
+ * A JavaScript bound object (as opposed to being mostly a simple value class)
+ * has an equivalent representation in JavaScript. Its value can usually only be
+ * modified through a {@link WJavaScriptHandle}. There are certain exceptions to
+ * this rule. Some methods, notably many {@link WTransform} methods, will
+ * correctly apply these modifications also on the JavaScript representation.
+ * <p>
+ * 
+ * @see WJavaScriptHandle
  */
 public abstract class WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory
@@ -39,16 +49,41 @@ public abstract class WJavaScriptExposableObject {
 	/**
 	 * Returns whether this object is JavaScript bound.
 	 * <p>
-	 * A JavaScript bound object (as opposed to being mostly a simple value
-	 * class) has an equivalent representation in JavaScript. Its value can
-	 * usually only be modified through a WJavaScriptHandle.
+	 * An object is JavaScript bound if it is associated with a
+	 * {@link WJavaScriptHandle}. It should not be modified directly on the
+	 * server side. {@link } should be used instead.
 	 */
 	public boolean isJavaScriptBound() {
 		return this.clientBinding_ != null;
 	}
 
+	/**
+	 * Returns a JavaScript representation of the value of this object.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The value returned will reflect the current server side
+	 * value of the object. If this object is JavaScript bound, this value may
+	 * not reflect the actual client side value. If you need access to the
+	 * client side value, use {@link WJavaScriptExposableObject#getJsRef()
+	 * getJsRef()} intead. </i>
+	 * </p>
+	 */
 	public abstract String getJsValue();
 
+	/**
+	 * Returns a JavaScript reference to this object.
+	 * <p>
+	 * If this object is not JavaScript bound, it will return a JavaScript
+	 * representation of the value of the object, according to
+	 * {@link WJavaScriptExposableObject#getJsValue() getJsValue()}.
+	 * <p>
+	 * <p>
+	 * <i><b>Warning:</b>This reference is intended as read-only. Attempts to
+	 * modify it may have unintended consequences. If you want a JavaScript
+	 * reference that is modifiable, use the {@link jsRef of the handle}
+	 * instead. </i>
+	 * </p>
+	 */
 	public String getJsRef() {
 		if (this.clientBinding_ != null) {
 			return this.clientBinding_.jsRef_;
@@ -63,18 +98,6 @@ public abstract class WJavaScriptExposableObject {
 		} else {
 			if (this.clientBinding_ != null && rhs.clientBinding_ != null) {
 				return this.clientBinding_.equals(rhs.clientBinding_);
-			} else {
-				return false;
-			}
-		}
-	}
-
-	protected boolean sameContextAs(final WJavaScriptExposableObject rhs) {
-		if (!(this.clientBinding_ != null) && !(rhs.clientBinding_ != null)) {
-			return true;
-		} else {
-			if (this.clientBinding_ != null && rhs.clientBinding_ != null) {
-				return this.clientBinding_.context_ == rhs.clientBinding_.context_;
 			} else {
 				return false;
 			}
@@ -102,6 +125,12 @@ public abstract class WJavaScriptExposableObject {
 					rhs.clientBinding_);
 		}
 		this.clientBinding_.jsRef_ = jsRef;
+	}
+
+	protected void checkModifiable() {
+		if (this.isJavaScriptBound()) {
+			throw new WException("Trying to modify a JavaScript bound object!");
+		}
 	}
 
 	static class JSInfo {

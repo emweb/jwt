@@ -31,9 +31,32 @@ import org.slf4j.LoggerFactory;
  * modified by the {@link WPainter#getWorldTransform() transformation} set on
  * the painter.
  * <p>
+ * <h3>JavaScript exposability</h3>
+ * <p>
+ * A WPen is JavaScript exposable. If a WPen
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
+ * it can be accessed in your custom JavaScript code through {@link its
+ * handle&apos;s jsRef()}. At the moment, only the {@link WPen#getColor()
+ * getColor()} property is exposed, e.g. a pen with the color
+ * WColor(10,20,30,255) will be represented in JavaScript as:
+ * 
+ * <pre>
+ * {@code
+ *  {
+ *    color: [10,20,30,255]
+ *  }
+ * }
+ * </pre>
+ * <p>
+ * <p>
+ * <i><b>Warning:</b>A WPen that is JavaScript exposed should be modified only
+ * through its {@link WJavaScriptHandle handle}. Any attempt at modifying it
+ * will cause an exception to be thrown.</i>
+ * </p>
  * 
  * @see WPainter#setPen(WPen p)
  * @see WBrush
+ * @see WPaintedWidget#createJSPen()
  */
 public class WPen extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WPen.class);
@@ -150,8 +173,14 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Sets the pen style.
 	 * <p>
 	 * The pen style determines the pattern with which the pen is rendered.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the pen
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setStyle(PenStyle style) {
+		this.checkModifiable();
 		this.penStyle_ = style;
 	}
 
@@ -169,8 +198,14 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Sets the style for rendering line ends.
 	 * <p>
 	 * The cap style configures how line ends are rendered.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the pen
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setCapStyle(PenCapStyle style) {
+		this.checkModifiable();
 		this.penCapStyle_ = style;
 	}
 
@@ -189,8 +224,14 @@ public class WPen extends WJavaScriptExposableObject {
 	 * <p>
 	 * The join style configures how corners are rendered between different
 	 * segments of a poly-line, rectange or painter path.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the pen
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setJoinStyle(PenJoinStyle style) {
+		this.checkModifiable();
 		this.penJoinStyle_ = style;
 	}
 
@@ -209,8 +250,14 @@ public class WPen extends WJavaScriptExposableObject {
 	 * <p>
 	 * A pen width <code>must</code> be specified using
 	 * {@link WLength.Unit#Pixel} units.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the pen
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setWidth(final WLength width) {
+		this.checkModifiable();
 		this.width_ = width;
 	}
 
@@ -227,9 +274,14 @@ public class WPen extends WJavaScriptExposableObject {
 	/**
 	 * Sets the pen color.
 	 * <p>
-	 * <i>{@link WPen#setGradient(WGradient gradient) setGradient()}</i>
+	 * 
+	 * @exception {@link WException}if the pen
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}<i>
+	 *            {@link WPen#setGradient(WGradient gradient) setGradient()}</i>
 	 */
 	public void setColor(final WColor color) {
+		this.checkModifiable();
 		this.color_ = color;
 		this.gradient_ = new WGradient();
 	}
@@ -248,9 +300,13 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Sets the pen color as a gradient.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the pen
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WPen#setColor(WColor color)
 	 */
 	public void setGradient(final WGradient gradient) {
+		this.checkModifiable();
 		this.gradient_ = gradient;
 	}
 

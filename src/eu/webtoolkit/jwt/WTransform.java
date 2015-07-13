@@ -61,6 +61,29 @@ import org.slf4j.LoggerFactory;
  * <p>
  * with <i>T</i> a translation, <i>R</i> a rotation, <i>Sxx</i> a scale, and
  * <i>Sxy</i> a skew component.
+ * <p>
+ * <h3>JavaScript exposability</h3>
+ * <p>
+ * A WTransform is JavaScript exposable. If a WTransform
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
+ * it can be accessed in your custom JavaScript code through {@link its
+ * handle&apos;s jsRef()}. A transform is represented as a JavaScript array,
+ * e.g. a WTransform(m11, m12, m21, m22, dx, dy) will be represented in
+ * JavaScript by:
+ * 
+ * <pre>
+ * {@code
+ *  [m11, m12, m21, m22, dx, dy]
+ * }
+ * </pre>
+ * <p>
+ * As an exception to the general rule that
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() JavaScript bound}
+ * objects should not be modified, WTransform does support many modifications.
+ * These modifications will then accumulate in the JavaScript representation of
+ * the transform.
+ * <p>
+ * TODO(Roel): add an example?
  */
 public class WTransform extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WTransform.class);
@@ -149,6 +172,12 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * Identity check.
 	 * <p>
 	 * Returns true if the transform represents an identity transformation.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is always false if the transform is
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() JavaScript bound}.
+	 * </i>
+	 * </p>
 	 */
 	public boolean isIdentity() {
 		return !this.isJavaScriptBound() && this.m_[M11] == 1.0
@@ -247,6 +276,11 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * <p>
 	 * Returns the transformed point.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If this transform or the given point
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
+	 * bound}, the resulting point will also be JavaScript bound.</i>
+	 * </p>
 	 * 
 	 * @see WTransform#map(double x, double y, Double tx, Double ty)
 	 */
@@ -290,6 +324,12 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * <p>
 	 * Since the rectangle is aligned with X and Y axes, this may increase the
 	 * size of the rectangle even for a transformation that only rotates.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If this transform or the given rectangle
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
+	 * bound}, the resulting rectangle will also be JavaScript bound. </i>
+	 * </p>
 	 */
 	public WRectF map(final WRectF rect) {
 		if (this.isIdentity()) {
@@ -327,6 +367,12 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * <p>
 	 * This will transform all individual points according to the
 	 * transformation. The radius of arcs will be unaffected.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If this transform or the given path
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
+	 * bound}, the resulting path will also be JavaScript bound. </i>
+	 * </p>
 	 */
 	public WPainterPath map(final WPainterPath path) {
 		if (this.isIdentity()) {
@@ -365,10 +411,14 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * Resets the transformation to the identity.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the transform
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WTransform#isIdentity()
 	 * @see WTransform#WTransform()
 	 */
 	public void reset() {
+		this.checkModifiable();
 		this.m_[M11] = this.m_[M22] = 1;
 		this.m_[M21] = this.m_[M12] = this.m_[M13] = this.m_[M23] = 0;
 	}
@@ -438,6 +488,17 @@ public class WTransform extends WJavaScriptExposableObject {
 		return this.multiplyAndAssign(new WTransform(1, 0, 0, 1, dx, dy));
 	}
 
+	/**
+	 * Translates the transformation.
+	 * <p>
+	 * Translates the current transformation.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If this transform or the given point
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
+	 * bound}, the resulting transform will also be JavaScript bound. </i>
+	 * </p>
+	 */
 	public WTransform translate(final WPointF p) {
 		String refBefore = this.getJsRef();
 		this.translate(p.getX(), p.getY());

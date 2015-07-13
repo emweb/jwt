@@ -24,6 +24,29 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * The rectangle is defined by a top-left point and a width and height.
+ * <p>
+ * <h3>JavaScript exposability</h3>
+ * <p>
+ * A WRectF is JavaScript exposable. If a WRectF
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
+ * it can be accessed in your custom JavaScript code through {@link its
+ * handle&apos;s jsRef()}. A rectangle is represented in JavaScript as an array
+ * of four elements (x,y,width,height), e.g. a rectangle WRectF(10,20,30,40)
+ * will be represented in JavaScript as:
+ * 
+ * <pre>
+ * {@code
+ *  [10, 20, 30, 40]
+ * }
+ * </pre>
+ * <p>
+ * <p>
+ * <i><b>Warning:</b>A WRectF that is JavaScript exposed should be modified only
+ * through its {@link WJavaScriptHandle handle}. Any attempt at modifying it
+ * will cause an exception to be thrown.</i>
+ * </p>
+ * 
+ * @see WPaintedWidget#createJSRect()
  */
 public class WRectF extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WRectF.class);
@@ -122,13 +145,13 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * The right side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
-	 * </p>
+	 * 
+	 * @exception {@link WException}if the rectangle
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setX(double x) {
+		this.checkModifiable();
 		this.width_ += this.x_ - x;
 		this.x_ = x;
 	}
@@ -139,13 +162,13 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * The bottom side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
-	 * </p>
+	 * 
+	 * @exception {@link WException}if the rectangle
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setY(double y) {
+		this.checkModifiable();
 		this.height_ += this.y_ - y;
 		this.y_ = y;
 	}
@@ -156,11 +179,10 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * The right side of the rectangle may move, but this does not affect the
 	 * left side.
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
-	 * </p>
+	 * 
+	 * @exception {@link WException}if the rectangle
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setWidth(double width) {
 		this.width_ = width;
@@ -172,11 +194,10 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * The bottom side of the rectangle may move, but this does not affect the Y
 	 * position of the top side.
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
-	 * </p>
+	 * 
+	 * @exception {@link WException}if the rectangle
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setHeight(double height) {
 		this.height_ = height;
@@ -351,12 +372,6 @@ public class WRectF extends WJavaScriptExposableObject {
 
 	/**
 	 * Tests if two rectangles intersect.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
-	 * </p>
 	 */
 	public boolean intersects(final WRectF other) {
 		if (this.isEmpty() || other.isEmpty()) {
@@ -381,8 +396,8 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript
+	 * bound}. </i>
 	 * </p>
 	 */
 	public WRectF united(final WRectF other) {
@@ -407,6 +422,8 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * Returns a normalized rectangle.
 	 * <p>
 	 * A normalized rectangle has a positive width and height.
+	 * <p>
+	 * This method supports JavaScript bound rectangles.
 	 */
 	public WRectF getNormalized() {
 		double x;

@@ -61,8 +61,9 @@ class WebSession {
 		this.pagePathInfo_ = "";
 		this.pongMessage_ = "";
 		this.asyncResponse_ = null;
+		this.webSocket_ = null;
 		this.bootStyleResponse_ = null;
-		this.canWriteAsyncResponse_ = false;
+		this.canWriteWebSocket_ = false;
 		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
 		this.deferredRequest_ = null;
@@ -420,9 +421,7 @@ class WebSession {
 					if (signalE != null) {
 						String ackIdE = request.getParameter("ackId");
 						boolean invalidAckId = this.env_.hasAjax()
-								&& !request.isWebSocketMessage()
-								&& (!(this.asyncResponse_ != null) || !this.asyncResponse_
-										.isWebSocketRequest());
+								&& !request.isWebSocketMessage();
 						if (invalidAckId && ackIdE != null) {
 							try {
 								if (this.renderer_.ackUpdate(Integer
@@ -445,11 +444,9 @@ class WebSession {
 							this.serveError(403, handler, "Forbidden");
 							return;
 						}
-						if (this.asyncResponse_ != null
-								&& !this.asyncResponse_.isWebSocketRequest()) {
+						if (this.asyncResponse_ != null) {
 							this.asyncResponse_.flush();
 							this.asyncResponse_ = null;
-							this.canWriteAsyncResponse_ = false;
 						}
 						if (signalE.equals("poll")) {
 							if (!WtServlet.isAsyncSupported()) {
@@ -471,24 +468,17 @@ class WebSession {
 								}
 							}
 							if (!this.updatesPending_) {
-								if (!(this.asyncResponse_ != null)
+								if (!(this.webSocket_ != null)
 										|| this.pollRequestsIgnored_ == 2) {
-									if (this.asyncResponse_ != null) {
-										logger
-												.info(new StringWriter()
-														.append(
-																"discarding broken asyncResponse, (ws: ")
-														.append(
-																String
-																		.valueOf(this.asyncResponse_
-																				.isWebSocketRequest()))
-														.toString());
-										this.asyncResponse_.flush();
-										this.asyncResponse_ = null;
+									if (this.webSocket_ != null) {
+										logger.info(new StringWriter().append(
+												"discarding broken websocket")
+												.toString());
+										this.webSocket_.flush();
+										this.webSocket_ = null;
 									}
 									this.pollRequestsIgnored_ = 0;
 									this.asyncResponse_ = handler.getResponse();
-									this.canWriteAsyncResponse_ = true;
 									handler.setRequest((WebRequest) null,
 											(WebResponse) null);
 								} else {
@@ -1672,6 +1662,12 @@ class WebSession {
 			WebReadEvent event) {
 	}
 
+	private static void webSocketConnect(WebSession session, WebWriteEvent event) {
+		logger
+				.debug(new StringWriter().append("webSocketConnect()")
+						.toString());
+	}
+
 	private static void webSocketReady(WebSession session, WebWriteEvent event) {
 		logger.debug(new StringWriter().append("webSocketReady()").toString());
 	}
@@ -1726,8 +1722,10 @@ class WebSession {
 	String pagePathInfo_;
 	private String pongMessage_;
 	private WebResponse asyncResponse_;
+	private WebResponse webSocket_;
 	private WebResponse bootStyleResponse_;
-	private boolean canWriteAsyncResponse_;
+	private boolean canWriteWebSocket_;
+	private boolean webSocketConnected_;
 	private int pollRequestsIgnored_;
 	private boolean progressiveBoot_;
 	private WebRequest deferredRequest_;
@@ -1757,28 +1755,27 @@ class WebSession {
 				return;
 			}
 			this.updatesPending_ = true;
-			if (this.canWriteAsyncResponse_) {
-				if (this.asyncResponse_.isWebSocketRequest()
-						&& this.asyncResponse_.isWebSocketMessagePending()) {
-					logger.debug(new StringWriter().append(
-							"pushUpdates(): web socket message pending")
-							.toString());
-					return;
-				}
-				if (this.asyncResponse_.isWebSocketRequest()) {
-				} else {
-					this.asyncResponse_
-							.setResponseType(WebRequest.ResponseType.Update);
-					this.app_.notify(new WEvent(new WEvent.Impl(
-							this.asyncResponse_)));
-				}
+			if (this.asyncResponse_ != null) {
+				this.asyncResponse_
+						.setResponseType(WebRequest.ResponseType.Update);
+				this.app_.notify(new WEvent(
+						new WEvent.Impl(this.asyncResponse_)));
 				this.updatesPending_ = false;
-				if (!this.asyncResponse_.isWebSocketRequest()) {
-					this.asyncResponse_.flush();
-					this.asyncResponse_ = null;
-					this.canWriteAsyncResponse_ = false;
-				}
+				this.asyncResponse_.flush();
+				this.asyncResponse_ = null;
 			} else {
+				if (this.webSocket_ != null && this.webSocketConnected_) {
+					if (this.webSocket_.isWebSocketMessagePending()) {
+						logger.debug(new StringWriter().append(
+								"pushUpdates(): web socket message pending")
+								.toString());
+						return;
+					}
+					if (this.canWriteWebSocket_) {
+					}
+				}
+			}
+			if (this.updatesPending_) {
 				logger.debug(new StringWriter().append(
 						"pushUpdates(): cannot write now").toString());
 				this.updatesPendingEvent_.signal();

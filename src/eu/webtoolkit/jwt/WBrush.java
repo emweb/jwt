@@ -26,9 +26,32 @@ import org.slf4j.LoggerFactory;
  * A brush defines the properties of how areas (the interior of shapes) are
  * filled. A brush is defined either as a solid color or a gradient.
  * <p>
+ * <h3>JavaScript exposability</h3>
+ * <p>
+ * A WBrush is JavaScript exposable. If a WBrush
+ * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
+ * it can be accessed in your custom JavaScript code through {@link its
+ * handle&apos;s jsRef()}. At the moment, only the {@link WBrush#getColor()
+ * getColor()} property is exposed, e.g. a brush with the color
+ * WColor(10,20,30,255) will be represented in JavaScript as:
+ * 
+ * <pre>
+ * {@code
+ *  {
+ *    color: [10,20,30,255]
+ *  }
+ * }
+ * </pre>
+ * <p>
+ * <p>
+ * <i><b>Warning:</b>A WBrush that is JavaScript exposed should be modified only
+ * through its {@link WJavaScriptHandle handle}. Any attempt at modifying it
+ * will cause an exception to be thrown.</i>
+ * </p>
  * 
  * @see WPainter#setBrush(WBrush b)
  * @see WPen
+ * @see WPaintedWidget#createJSBrush()
  */
 public class WBrush extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WBrush.class);
@@ -108,9 +131,13 @@ public class WBrush extends WJavaScriptExposableObject {
 	 * Sets the brush style.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the brush
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WBrush#getStyle()
 	 */
 	public void setStyle(BrushStyle style) {
+		this.checkModifiable();
 		this.style_ = style;
 	}
 
@@ -131,9 +158,13 @@ public class WBrush extends WJavaScriptExposableObject {
 	 * {@link BrushStyle#SolidPattern SolidPattern}.
 	 * <p>
 	 * 
+	 * @exception {@link WException}if the brush
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 * @see WBrush#getColor()
 	 */
 	public void setColor(final WColor color) {
+		this.checkModifiable();
 		this.color_ = color;
 		if (this.style_ == BrushStyle.GradientPattern) {
 			this.style_ = BrushStyle.SolidPattern;
@@ -155,8 +186,14 @@ public class WBrush extends WJavaScriptExposableObject {
 	 * <p>
 	 * This also sets the style to {@link BrushStyle#GradientPattern
 	 * GradientPattern}.
+	 * <p>
+	 * 
+	 * @exception {@link WException}if the brush
+	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
+	 *            JavaScript bound}
 	 */
 	public void setGradient(final WGradient gradient) {
+		this.checkModifiable();
 		if (!this.gradient_.isEmpty()) {
 			this.gradient_ = gradient;
 			this.style_ = BrushStyle.GradientPattern;

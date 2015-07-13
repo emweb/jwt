@@ -71,7 +71,9 @@ class SeriesRenderIterator extends SeriesIterator {
 			break;
 		}
 		this.series_ = series;
-		this.painter_.save();
+		if (this.seriesRenderer_ != null) {
+			this.painter_.save();
+		}
 		return this.seriesRenderer_ != null;
 	}
 

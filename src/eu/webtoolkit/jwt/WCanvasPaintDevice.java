@@ -833,10 +833,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
 		if (penChanged) {
 			if (penColorChanged) {
-				this.currentPen_
-						.setColor(this.getPainter().getPen().getColor());
-				this.currentPen_.setGradient(this.getPainter().getPen()
-						.getGradient());
+				WPen tmpPen = new WPen();
+				tmpPen.setColor(this.getPainter().getPen().getColor());
+				tmpPen.setGradient(this.getPainter().getPen().getGradient());
+				this.currentPen_ = tmpPen;
 				if (!this.getPainter().getPen().getGradient().isEmpty()) {
 					String gradientName = defineGradient(this.getPainter()
 							.getPen().getGradient(), this.js_);

@@ -98,7 +98,20 @@ import org.slf4j.LoggerFactory;
  * {@link WPaintedWidget#resize(WLength width, WLength height) resize()} or by a
  * layout manager.</i>
  * </p>
+ * <h3>Client side interaction and repainting</h3>
+ * <p>
+ * If the widget is drawn as an HTML canvas element, i.e. the
+ * {@link WPaintedWidget#getMethod() method} is HtmlCanvas, a WPaintedWidget can
+ * expose certain objects to be modified client side.
+ * <p>
+ * <p>
+ * <i><b>Note: </b>Changes to client side objects are currently not synced back
+ * to the server, whereas changes to the handle on the server side <i>will</i>
+ * be synced to the client.</i>
+ * </p>
  * 
+ * @see WJavaScriptHandle
+ * @see WJavaScriptExposableObject
  * @see WImage
  */
 public abstract class WPaintedWidget extends WInteractWidget {
@@ -332,54 +345,72 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Create a {@link WTransform} that is accessible from JavaScript,
-	 * associated with this {@link WPaintedWidget}.
-	 */
-	public WJavaScriptHandle<WTransform> createJSTransform() {
-		return this.jsObjects_.addObject(new WTransform());
-	}
-
-	/**
-	 * Create a {@link WBrush} that is accessible from JavaScript, associated
-	 * with this {@link WPaintedWidget}.
-	 */
-	public WJavaScriptHandle<WBrush> createJSBrush() {
-		return this.jsObjects_.addObject(new WBrush());
-	}
-
-	/**
-	 * Create a {@link WPen} that is accessible from JavaScript, associated with
-	 * this {@link WPaintedWidget}.
-	 */
-	public WJavaScriptHandle<WPen> createJSPen() {
-		return this.jsObjects_.addObject(new WPen());
-	}
-
-	/**
-	 * Create a {@link WPainterPath} that is accessible from JavaScript,
-	 * associated with this {@link WPaintedWidget}.
-	 */
-	public WJavaScriptHandle<WPainterPath> getCreateJSPainterPath() {
-		return this.jsObjects_.addObject(new WPainterPath());
-	}
-
-	/**
-	 * Create a {@link WRectF} that is accessible from JavaScript, associated
-	 * with this {@link WPaintedWidget}.
-	 */
-	public WJavaScriptHandle<WRectF> getCreateJSRect() {
-		return this.jsObjects_.addObject(new WRectF(0, 0, 0, 0));
-	}
-
-	/**
 	 * A JavaScript slot that repaints the widget when triggered.
 	 * <p>
 	 * This is useful for client-side initiated repaints. You may want to use
 	 * this if you want to add interaction or animation to your
 	 * {@link WPaintedWidget}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This feature is currently only supported if the
+	 * {@link WPaintedWidget#getMethod() method} is HtmlCanvas. This will not
+	 * cause a server roundtrip. Instead, the resulting JavaScript of
+	 * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent()}
+	 * will be re-executed on the client side.</i>
+	 * </p>
+	 * 
+	 * @see WPaintedWidget#getObjJsRef()
 	 */
 	public JSlot getRepaintSlot() {
 		return this.repaintSlot_;
+	}
+
+	/**
+	 * Create a {@link WTransform} that is accessible from JavaScript,
+	 * associated with this WPaintedWidget.
+	 */
+	protected WJavaScriptHandle<WTransform> createJSTransform() {
+		return this.jsObjects_.addObject(new WTransform());
+	}
+
+	/**
+	 * Create a {@link WBrush} that is accessible from JavaScript, associated
+	 * with this WPaintedWidget.
+	 */
+	protected WJavaScriptHandle<WBrush> createJSBrush() {
+		return this.jsObjects_.addObject(new WBrush());
+	}
+
+	/**
+	 * Create a {@link WPen} that is accessible from JavaScript, associated with
+	 * this WPaintedWidget.
+	 */
+	protected WJavaScriptHandle<WPen> createJSPen() {
+		return this.jsObjects_.addObject(new WPen());
+	}
+
+	/**
+	 * Create a {@link WPainterPath} that is accessible from JavaScript,
+	 * associated with this WPaintedWidget.
+	 */
+	protected WJavaScriptHandle<WPainterPath> createJSPainterPath() {
+		return this.jsObjects_.addObject(new WPainterPath());
+	}
+
+	/**
+	 * Create a {@link WRectF} that is accessible from JavaScript, associated
+	 * with this WPaintedWidget.
+	 */
+	protected WJavaScriptHandle<WRectF> createJSRect() {
+		return this.jsObjects_.addObject(new WRectF(0, 0, 0, 0));
+	}
+
+	/**
+	 * Create a {@link WPointF} that is accessible from JavaScript, associated
+	 * with this WPaintedWidget.
+	 */
+	protected WJavaScriptHandle<WPointF> createJSPoint() {
+		return this.jsObjects_.addObject(new WPointF(0, 0));
 	}
 
 	protected void layoutSizeChanged(int width, int height) {
@@ -583,6 +614,28 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		String[] parVals = formData.values;
 	}
 
+	/**
+	 * Returns a JavaScript reference to the client side representation of the
+	 * {@link WPaintedWidget}.
+	 * <p>
+	 * The client side representation exposes the following interface:
+	 * 
+	 * <pre>
+	 * {@code
+	 *    {
+	 *      canvas: exposes the underlying HTML canvas element
+	 *      repaint: a function that, when called, will repaint the widget without a server roundtrip
+	 *    }
+	 *   }
+	 * </pre>
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The {@link WPaintedWidget#getMethod() method} should be
+	 * HtmlCanvas and there has to be at least one {@link WJavaScriptHandle}
+	 * associated with this {@link WPaintedWidget} in order for this reference
+	 * to be valid. </i>
+	 * </p>
+	 */
 	protected String getObjJsRef() {
 		return "jQuery.data(" + this.getJsRef() + ",'obj')";
 	}
