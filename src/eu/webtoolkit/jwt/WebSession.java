@@ -771,8 +771,11 @@ class WebSession {
 		if (WebSession.Handler.getInstance().getResponse() != null) {
 			return WebSession.Handler.getInstance().getResponse().encodeURL(
 					result);
+		} else {
+			questionPos = result.indexOf('?');
+			return result.substring(0, 0 + questionPos) + ";jsessionid="
+					+ this.getSessionId() + result.substring(questionPos);
 		}
-		return url;
 	}
 
 	public String ajaxCanonicalUrl(final WebResponse request) {
