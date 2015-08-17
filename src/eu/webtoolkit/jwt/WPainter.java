@@ -890,13 +890,21 @@ public class WPainter {
 	 * TextFlag determines how the text is rendered in the rectangle. Text can
 	 * be rendered on one line or by wrapping the words within the rectangle.
 	 * <p>
+	 * If a clipPoint is provided, the text will not be drawn if the point is
+	 * outside of the {@link WPainter#getClipPath() getClipPath()}.
 	 * <p>
-	 * <i><b>Note: </b>HtmlCanvas: on older browsers implementing Html5 canvas,
-	 * text will be rendered horizontally (unaffected by rotation and unaffected
-	 * by the scaling component of the transformation matrix). In that case,
-	 * text is overlayed on top of painted shapes (in DOM div&apos;s), and is
-	 * not covered by shapes that are painted after the text. Use the SVG and
-	 * VML renderers (WPaintedWidget::inlineSvgVml) for the most accurate font
+	 * <p>
+	 * <i><b>Note: </b>If the clip path is not a polygon, i.e. it has rounded
+	 * segments in it, an approximation will be used instead by having the
+	 * polygon pass through the control points, and the begin and end point of
+	 * arcs.
+	 * <p>
+	 * HtmlCanvas: on older browsers implementing Html5 canvas, text will be
+	 * rendered horizontally (unaffected by rotation and unaffected by the
+	 * scaling component of the transformation matrix). In that case, text is
+	 * overlayed on top of painted shapes (in DOM div&apos;s), and is not
+	 * covered by shapes that are painted after the text. Use the SVG and VML
+	 * renderers (WPaintedWidget::inlineSvgVml) for the most accurate font
 	 * rendering. Native HTML5 text rendering is supported on Firefox3+,
 	 * Chrome2+ and Safari4+.
 	 * <p>
@@ -908,9 +916,18 @@ public class WPainter {
 	 */
 	public void drawText(final WRectF rectangle,
 			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
-			final CharSequence text) {
+			final CharSequence text, WPointF clipPoint) {
 		if (textFlag == TextFlag.TextSingleLine) {
-			this.drawText(rectangle, alignmentFlags, text);
+			if (!!EnumUtils.mask(alignmentFlags,
+					AlignmentFlag.AlignVerticalMask).isEmpty()) {
+				alignmentFlags.add(AlignmentFlag.AlignTop);
+			}
+			if (!!EnumUtils.mask(alignmentFlags,
+					AlignmentFlag.AlignHorizontalMask).isEmpty()) {
+				alignmentFlags.add(AlignmentFlag.AlignLeft);
+			}
+			this.device_.drawText(rectangle.getNormalized(), alignmentFlags,
+					TextFlag.TextSingleLine, text, clipPoint);
 		} else {
 			if (!!EnumUtils.mask(alignmentFlags,
 					AlignmentFlag.AlignVerticalMask).isEmpty()) {
@@ -923,7 +940,7 @@ public class WPainter {
 			if (!EnumUtils.mask(this.device_.getFeatures(),
 					WPaintDevice.FeatureFlag.CanWordWrap).isEmpty()) {
 				this.device_.drawText(rectangle.getNormalized(),
-						alignmentFlags, textFlag, text);
+						alignmentFlags, textFlag, text, clipPoint);
 			} else {
 				if (!EnumUtils.mask(this.device_.getFeatures(),
 						WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
@@ -938,12 +955,22 @@ public class WPainter {
 	/**
 	 * Draws text.
 	 * <p>
+	 * Calls
+	 * {@link #drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF clipPoint)
+	 * drawText(rectangle, alignmentFlags, textFlag, text, (WPointF)null)}
+	 */
+	public final void drawText(final WRectF rectangle,
+			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
+			final CharSequence text) {
+		drawText(rectangle, alignmentFlags, textFlag, text, (WPointF) null);
+	}
+
+	/**
+	 * Draws text.
+	 * <p>
 	 * This is an overloaded method for convenience, it will render text on a
 	 * single line.
 	 * <p>
-	 * 
-	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
-	 *      textFlag, CharSequence text)
 	 */
 	public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> flags,
 			final CharSequence text) {
@@ -955,7 +982,7 @@ public class WPainter {
 			flags.add(AlignmentFlag.AlignLeft);
 		}
 		this.device_.drawText(rectangle.getNormalized(), flags,
-				TextFlag.TextSingleLine, text);
+				TextFlag.TextSingleLine, text, (WPointF) null);
 	}
 
 	/**
@@ -979,7 +1006,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
-	 *      textFlag, CharSequence text)
+	 *      textFlag, CharSequence text, WPointF clipPoint)
 	 * @see WRectF
 	 * @see TextFlag
 	 * @see WString
@@ -1139,7 +1166,7 @@ public class WPainter {
 	 * 
 	 * @see WPainter#getFont()
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
-	 *      textFlag, CharSequence text)
+	 *      textFlag, CharSequence text, WPointF clipPoint)
 	 */
 	public void setFont(final WFont f) {
 		if (!this.getFont().equals(f)) {

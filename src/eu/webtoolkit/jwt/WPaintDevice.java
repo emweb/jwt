@@ -95,7 +95,7 @@ public interface WPaintDevice {
 	public enum FeatureFlag {
 		/**
 		 * Implements
-		 * {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text)
+		 * {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF clipPoint)
 		 * drawText()} with {@link TextFlag#TextWordWrap}.
 		 */
 		CanWordWrap,
@@ -201,10 +201,13 @@ public interface WPaintDevice {
 	 * <p>
 	 * The text must be rendered, stroked and transformed using the current
 	 * painter settings.
+	 * <p>
+	 * If clipPoint is not null, a check is performed whether the point is
+	 * inside of the current clip area. If not, the text is not drawn.
 	 */
 	public void drawText(final WRectF rect,
 			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
-			final CharSequence text);
+			final CharSequence text, WPointF clipPoint);
 
 	/**
 	 * Measures rendered text size.

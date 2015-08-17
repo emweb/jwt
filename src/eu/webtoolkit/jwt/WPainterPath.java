@@ -71,6 +71,25 @@ import org.slf4j.LoggerFactory;
  * it can be accessed in your custom JavaScript code through {@link its
  * handle&apos;s jsRef()}.
  * <p>
+ * A WPainterPath is represented in JavaScript as an array of segments, where
+ * each segment is defined by a three element array: [x,y,type], where type is
+ * the integer representation of the type of a segment.
+ * <p>
+ * For example, a 10 by 10 square with the top left at (10,10) is represented
+ * as:
+ * 
+ * <pre>
+ * {@code
+ *  [
+ *   [10,10,0], // move to (10,10)
+ *   [20,10,1], // line to (20,10)
+ *   [20,20,1], // line to (20,20)
+ *   [10,20,1], // line to (10,20)
+ *   [10,10,1]  // line to (10,10)
+ *  ]
+ * }
+ * </pre>
+ * <p>
  * <p>
  * <i><b>Warning:</b>A WPainterPath that is JavaScript exposed should be
  * modified only through its {@link WJavaScriptHandle handle}. Any attempt at
@@ -581,25 +600,95 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	public static class Segment {
 		private static Logger logger = LoggerFactory.getLogger(Segment.class);
 
-		enum Type {
-			MoveTo, LineTo, CubicC1, CubicC2, CubicEnd, QuadC, QuadEnd, ArcC, ArcR, ArcAngleSweep;
+		/**
+		 * <p>
+		 * The segment type
+		 */
+		public enum Type {
+			/**
+			 * moveTo segment
+			 */
+			MoveTo(0),
+			/**
+			 * lineTo segment
+			 */
+			LineTo(1),
+			/**
+			 * first control point of cubic bezier curve, always followed by a
+			 * CubicC2 and CubicEnd segment
+			 */
+			CubicC1(2),
+			/**
+			 * second control point of cubic bezier curve, always followed by a
+			 * CubicEnd segment
+			 */
+			CubicC2(3),
+			/**
+			 * end point of cubic bezier curve
+			 */
+			CubicEnd(4),
+			/**
+			 * control point of quadratic bezier curve
+			 */
+			QuadC(5),
+			/**
+			 * end point of quadratic bezier curve
+			 */
+			QuadEnd(6),
+			/**
+			 * center of an arc, always followed by an ArcR and ArcAngleSweep
+			 * segment
+			 */
+			ArcC(7),
+			/**
+			 * radius of an arc, always followed by an ArcAngleSweep segment
+			 */
+			ArcR(8),
+			/**
+			 * the sweep of an arc, x = startAngle, y = spanAngle
+			 */
+			ArcAngleSweep(9);
+
+			private int value;
+
+			Type(int value) {
+				this.value = value;
+			}
 
 			/**
 			 * Returns the numerical representation of this enum.
 			 */
 			public int getValue() {
-				return ordinal();
+				return value;
 			}
 		}
 
+		/**
+		 * <p>
+		 * The x parameter
+		 * <p>
+		 * Depending on the {@link WPainterPath.Segment#getType() getType()},
+		 * this is either the x position of the point, or something else.
+		 */
 		public double getX() {
 			return this.x_;
 		}
 
+		/**
+		 * <p>
+		 * The y parameter
+		 * <p>
+		 * Depending on the {@link WPainterPath.Segment#getType() getType()},
+		 * this is either the y position of the point, or something else.
+		 */
 		public double getY() {
 			return this.y_;
 		}
 
+		/**
+		 * <p>
+		 * The type of the segment
+		 */
 		public WPainterPath.Segment.Type getType() {
 			return this.type_;
 		}
@@ -796,6 +885,51 @@ public class WPainterPath extends WJavaScriptExposableObject {
 					.getType()));
 		}
 		return result;
+	}
+
+	boolean isPointInPath(final WPointF p) {
+		boolean res = false;
+		double ax = 0.0;
+		double ay = 0.0;
+		double px = p.getX();
+		double py = p.getY();
+		for (int i = 0; i < this.segments_.size(); ++i) {
+			double bx = ax;
+			double by = ay;
+			if (this.segments_.get(i).getType() == WPainterPath.Segment.Type.ArcC) {
+				WPointF arcPos = getArcPosition(this.segments_.get(i).getX(),
+						this.segments_.get(i).getY(), this.segments_.get(i + 1)
+								.getX(), this.segments_.get(i + 1).getY(),
+						this.segments_.get(i + 2).getX());
+				bx = arcPos.getX();
+				by = arcPos.getY();
+			} else {
+				if (this.segments_.get(i).getType() == WPainterPath.Segment.Type.ArcAngleSweep) {
+					WPointF arcPos = getArcPosition(this.segments_.get(i - 2)
+							.getX(), this.segments_.get(i - 2).getY(),
+							this.segments_.get(i - 1).getX(), this.segments_
+									.get(i - 1).getY(), this.segments_.get(i)
+									.getX()
+									+ this.segments_.get(i).getY());
+					bx = arcPos.getX();
+					by = arcPos.getY();
+				} else {
+					if (this.segments_.get(i).getType() != WPainterPath.Segment.Type.ArcR) {
+						bx = this.segments_.get(i).getX();
+						by = this.segments_.get(i).getY();
+					}
+				}
+			}
+			if (this.segments_.get(i).getType() != WPainterPath.Segment.Type.MoveTo) {
+				if (ay > py != by > py
+						&& px < (bx - ax) * (py - ay) / (by - ay) + ax) {
+					res = !res;
+				}
+			}
+			ax = bx;
+			ay = by;
+		}
+		return res;
 	}
 
 	public String getJsValue() {

@@ -620,6 +620,16 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
+	/**
+	 * Raises this dialog to be the top-most dialog.
+	 */
+	public void raiseToFront() {
+		this.doJavaScript("jQuery.data(" + this.getJsRef()
+				+ ", 'obj').bringToFront()");
+		DialogCover c = this.getCover();
+		c.bringToFront(this);
+	}
+
 	public void setMinimumSize(final WLength width, final WLength height) {
 		super.setMinimumSize(width, height);
 		this.impl_.resolveWidget("layout").setMinimumSize(width, height);
@@ -840,10 +850,7 @@ public class WDialog extends WPopupWidget {
 	private void bringToFront(final WMouseEvent e) {
 		if (e.getButton() == WMouseEvent.Button.LeftButton
 				&& e.getModifiers().equals(KeyboardModifier.NoModifier)) {
-			this.doJavaScript("jQuery.data(" + this.getJsRef()
-					+ ", 'obj').bringToFront()");
-			DialogCover c = this.getCover();
-			c.bringToFront(this);
+			this.raiseToFront();
 		}
 	}
 

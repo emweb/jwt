@@ -1680,19 +1680,28 @@ public class WAxis {
 		}
 		WPen oldPen = painter.getPen().clone();
 		painter.setPen(pen.clone());
+		boolean clipping = painter.hasClipping();
+		if (clipping && this.getTickDirection() == TickDirection.Outwards
+				&& this.getLocation() != AxisValue.ZeroValue) {
+			painter.setClipping(false);
+		}
+		WPointF transformedPoint = transform.map(pos);
 		if (angle == 0) {
 			painter.drawText(transform
 					.map(new WRectF(left, top, width, height)), EnumSet.of(
-					horizontalAlign, verticalAlign), text);
+					horizontalAlign, verticalAlign), TextFlag.TextSingleLine,
+					text, clipping ? transformedPoint : null);
 		} else {
 			painter.save();
 			painter.translate(transform.map(pos));
 			painter.rotate(-angle);
 			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
 					width, height), EnumSet.of(horizontalAlign, verticalAlign),
-					text);
+					TextFlag.TextSingleLine, text, clipping ? transformedPoint
+							: null);
 			painter.restore();
 		}
+		painter.setClipping(clipping);
 		painter.setPen(oldPen);
 	}
 
@@ -1918,8 +1927,140 @@ public class WAxis {
 			} else {
 				dt = new WDate(new Date((long) (long) s.renderMinimum));
 			}
-			int interval = (int) (s.dateTimeRenderInterval / divisor);
-			WAxis.DateTimeUnit unit = s.dateTimeRenderUnit;
+			WAxis.DateTimeUnit unit;
+			int interval;
+			if (zoomLevel == 1) {
+				unit = s.dateTimeRenderUnit;
+				interval = s.dateTimeRenderInterval;
+			} else {
+				double daysInterval = 0.0;
+				if (this.scale_ == AxisScale.DateScale) {
+					daysInterval = this.renderInterval_;
+				} else {
+					daysInterval = this.renderInterval_ / (60.0 * 60.0 * 24);
+				}
+				daysInterval /= divisor;
+				if (daysInterval > 200) {
+					unit = WAxis.DateTimeUnit.Years;
+					interval = Math.max(1, (int) round125(daysInterval / 365));
+				} else {
+					if (daysInterval > 20) {
+						unit = WAxis.DateTimeUnit.Months;
+						double d = daysInterval / 30;
+						if (d < 1.3) {
+							interval = 1;
+						} else {
+							if (d < 2.3) {
+								interval = 2;
+							} else {
+								if (d < 3.3) {
+									interval = 3;
+								} else {
+									if (d < 4.3) {
+										interval = 4;
+									} else {
+										interval = 6;
+									}
+								}
+							}
+						}
+					} else {
+						if (daysInterval > 0.6) {
+							unit = WAxis.DateTimeUnit.Days;
+							if (daysInterval < 1.3) {
+								interval = 1;
+							} else {
+								interval = 7 * Math.max(1,
+										(int) ((daysInterval + 5) / 7));
+							}
+						} else {
+							double minutes = daysInterval * 24 * 60;
+							if (minutes > 40) {
+								unit = WAxis.DateTimeUnit.Hours;
+								double d = minutes / 60;
+								if (d < 1.3) {
+									interval = 1;
+								} else {
+									if (d < 2.3) {
+										interval = 2;
+									} else {
+										if (d < 3.3) {
+											interval = 3;
+										} else {
+											if (d < 4.3) {
+												interval = 4;
+											} else {
+												if (d < 6.3) {
+													interval = 6;
+												} else {
+													interval = 12;
+												}
+											}
+										}
+									}
+								}
+							} else {
+								if (minutes > 0.8) {
+									unit = WAxis.DateTimeUnit.Minutes;
+									if (minutes < 1.3) {
+										interval = 1;
+									} else {
+										if (minutes < 2.3) {
+											interval = 2;
+										} else {
+											if (minutes < 5.3) {
+												interval = 5;
+											} else {
+												if (minutes < 10.3) {
+													interval = 10;
+												} else {
+													if (minutes < 15.3) {
+														interval = 15;
+													} else {
+														if (minutes < 20.3) {
+															interval = 20;
+														} else {
+															interval = 30;
+														}
+													}
+												}
+											}
+										}
+									}
+								} else {
+									unit = WAxis.DateTimeUnit.Seconds;
+									double seconds = minutes * 60;
+									if (seconds < 1.3) {
+										interval = 1;
+									} else {
+										if (seconds < 2.3) {
+											interval = 2;
+										} else {
+											if (seconds < 5.3) {
+												interval = 5;
+											} else {
+												if (seconds < 10.3) {
+													interval = 10;
+												} else {
+													if (seconds < 15.3) {
+														interval = 15;
+													} else {
+														if (seconds < 20.3) {
+															interval = 20;
+														} else {
+															interval = 30;
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 			boolean atTick = interval > 1
 					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
 					|| !!EnumUtils.mask(this.roundLimits_,

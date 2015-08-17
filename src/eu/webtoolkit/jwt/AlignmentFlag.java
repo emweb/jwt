@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * alignment of contents within the table cell.
  * <p>
  * When used with
- * {@link WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text)
+ * {@link WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF clipPoint)
  * WPainter#drawText()}, this determines the horizontal and vertical alignment
  * of the text with respect to the bounding rectangle.
  * <p>

@@ -2274,9 +2274,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						&& this.isSelected(index) || !EnumUtils.mask(
 						this.getEditTriggers(),
 						WAbstractItemView.EditTrigger.SingleClicked).isEmpty());
-		if ((index != null)) {
-			this.selectionHandleClick(index, event.getModifiers());
-		}
 		if (doEdit) {
 			this.edit(index);
 		}
@@ -2310,6 +2307,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * signal.
 	 */
 	void handleMouseDown(final WModelIndex index, final WMouseEvent event) {
+		if ((index != null)) {
+			this.selectionHandleClick(index, event.getModifiers());
+		}
 		this.mouseWentDown_.trigger(index, event);
 	}
 
@@ -2655,7 +2655,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						modifiers,
 						EnumSet.of(KeyboardModifier.ControlModifier,
 								KeyboardModifier.MetaModifier)).isEmpty()) {
-					this.select(index, SelectionFlag.ClearAndSelect);
+					if (!this.isSelected(index)) {
+						this.select(index, SelectionFlag.ClearAndSelect);
+					}
 				} else {
 					this.select(index, SelectionFlag.ToggleSelect);
 				}

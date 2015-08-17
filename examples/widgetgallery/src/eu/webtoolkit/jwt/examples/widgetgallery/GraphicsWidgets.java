@@ -88,6 +88,7 @@ class GraphicsWidgets extends TopicWidget {
 		result.bindWidget("PaintingClipping", PaintingClipping());
 		result.bindWidget("PaintingStyle", PaintingStyle());
 		result.bindWidget("PaintingImages", PaintingImages());
+		result.bindWidget("PaintingInteractive", PaintingInteractive());
 		return result;
 	}
 
@@ -107,6 +108,7 @@ class GraphicsWidgets extends TopicWidget {
 		WTemplate result = new TopicTemplate("graphics-ScatterPlot");
 		result.bindWidget("ScatterPlotData", ScatterPlotData());
 		result.bindWidget("ScatterPlotCurve", ScatterPlotCurve());
+		result.bindWidget("ScatterPlotInteractive", ScatterPlotInteractive());
 		return result;
 	}
 
@@ -186,6 +188,39 @@ class GraphicsWidgets extends TopicWidget {
 	WWidget PaintingImages() {
 		WContainerWidget container = new WContainerWidget();
 		new PaintingImagesWidget(container);
+		return container;
+	}
+
+	WWidget PaintingInteractive() {
+		WContainerWidget container = new WContainerWidget();
+		final PaintingInteractiveWidget widget = new PaintingInteractiveWidget(
+				container);
+		final WSpinBox sb = new WSpinBox(container);
+		sb.setWidth(new WLength(300));
+		sb.setRange(0, 360);
+		sb.setValue(0);
+		final WSlider slider = new WSlider(Orientation.Horizontal, container);
+		slider.resize(new WLength(300), new WLength(50));
+		slider.setRange(0, 360);
+		slider.sliderMoved().addListener(widget.rotateSlot);
+		sb.valueChanged().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				slider.setValue(sb.getValue());
+				widget.rotate(sb.getValue());
+			}
+		});
+		sb.enterPressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				slider.setValue(sb.getValue());
+				widget.rotate(sb.getValue());
+			}
+		});
+		slider.valueChanged().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				sb.setValue(slider.getValue());
+				widget.rotate(slider.getValue());
+			}
+		});
 		return container;
 	}
 
@@ -379,7 +414,7 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setType(ChartType.ScatterPlot);
 		chart.getAxis(Axis.XAxis).setLocation(AxisValue.ZeroValue);
 		chart.getAxis(Axis.YAxis).setLocation(AxisValue.ZeroValue);
-		chart.setPlotAreaPadding(80, EnumSet.of(Side.Left));
+		chart.setPlotAreaPadding(120, EnumSet.of(Side.Right));
 		chart.setPlotAreaPadding(40, EnumSet.of(Side.Top, Side.Bottom));
 		WDataSeries s = new WDataSeries(1, SeriesType.CurveSeries);
 		s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
@@ -387,6 +422,41 @@ class GraphicsWidgets extends TopicWidget {
 		chart.resize(new WLength(800), new WLength(300));
 		chart.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
 		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
+		return container;
+	}
+
+	WWidget ScatterPlotInteractive() {
+		WContainerWidget container = new WContainerWidget();
+		WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv",
+				container);
+		if (!(model != null)) {
+			return container;
+		}
+		for (int row = 0; row < model.getRowCount(); ++row) {
+			WString s = StringUtils.asString(model.getData(row, 0));
+			WDate date = WDate.fromString(s.toString(), "dd/MM/yy");
+			model.setData(row, 0, date);
+		}
+		WCartesianChart chart = new WCartesianChart(container);
+		chart.setBackground(new WBrush(new WColor(220, 220, 220)));
+		chart.setModel(model);
+		chart.setXSeriesColumn(0);
+		chart.setType(ChartType.ScatterPlot);
+		chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
+		chart.getAxis(Axis.XAxis).setMaxZoom(16.0);
+		WDataSeries s = new WDataSeries(2, SeriesType.LineSeries);
+		s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+		chart.addSeries(s);
+		chart.resize(new WLength(800), new WLength(400));
+		chart.setPanEnabled(true);
+		chart.setZoomEnabled(true);
+		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
+		WAxisSliderWidget sliderWidget = new WAxisSliderWidget(chart, 2,
+				container);
+		sliderWidget.resize(new WLength(800), new WLength(80));
+		sliderWidget.setSelectionAreaPadding(40, EnumSet.of(Side.Left,
+				Side.Right));
+		sliderWidget.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
 		return container;
 	}
 

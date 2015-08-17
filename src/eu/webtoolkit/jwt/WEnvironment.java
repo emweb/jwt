@@ -987,6 +987,10 @@ public class WEnvironment {
 		final Configuration conf = this.session_.getController()
 				.getConfiguration();
 		this.agent_ = WEnvironment.UserAgent.Unknown;
+		if (this.userAgent_.indexOf("Trident/4.0") != -1) {
+			this.agent_ = WEnvironment.UserAgent.IE8;
+			return;
+		}
 		if (this.userAgent_.indexOf("Trident/5.0") != -1) {
 			this.agent_ = WEnvironment.UserAgent.IE9;
 			return;

@@ -877,10 +877,14 @@ public class WTreeView extends WAbstractItemView {
 		this.rootNode_ = new WTreeViewNode(this, this.getRootIndex(), -1, true,
 				(WTreeViewNode) null);
 		if (WApplication.getInstance().getEnvironment().hasAjax()) {
-			this.connectObjJS(this.rootNode_.clicked(), "click");
-			if (firstTime) {
-				this.connectObjJS(this.contentsContainer_.clicked(),
-						"rootClick");
+			if (!EnumUtils.mask(this.getEditTriggers(),
+					WAbstractItemView.EditTrigger.SingleClicked).isEmpty()
+					|| this.clicked().isConnected()) {
+				this.connectObjJS(this.rootNode_.clicked(), "click");
+				if (firstTime) {
+					this.connectObjJS(this.contentsContainer_.clicked(),
+							"rootClick");
+				}
 			}
 			if (!EnumUtils.mask(this.getEditTriggers(),
 					WAbstractItemView.EditTrigger.DoubleClicked).isEmpty()
@@ -891,12 +895,10 @@ public class WTreeView extends WAbstractItemView {
 							"rootDblClick");
 				}
 			}
-			if (this.mouseWentDown().isConnected() || this.dragEnabled_) {
-				this.connectObjJS(this.rootNode_.mouseWentDown(), "mouseDown");
-				if (firstTime) {
-					this.connectObjJS(this.contentsContainer_.mouseWentDown(),
-							"rootMouseDown");
-				}
+			this.connectObjJS(this.rootNode_.mouseWentDown(), "mouseDown");
+			if (firstTime) {
+				this.connectObjJS(this.contentsContainer_.mouseWentDown(),
+						"rootMouseDown");
 			}
 			if (this.mouseWentUp().isConnected()) {
 				this.connectObjJS(this.rootNode_.mouseWentUp(), "mouseUp");
@@ -1405,11 +1407,11 @@ public class WTreeView extends WAbstractItemView {
 				this.handleDoubleClick(index, event);
 			} else {
 				if (type.equals("mousedown")) {
-					this.mouseWentDown().trigger(index, event);
+					this.handleMouseDown(index, event);
 					this.skipNextMouseEvent_ = true;
 				} else {
 					if (type.equals("mouseup")) {
-						this.mouseWentUp().trigger(index, event);
+						this.handleMouseUp(index, event);
 						this.skipNextMouseEvent_ = true;
 					} else {
 						if (type.equals("drop")) {

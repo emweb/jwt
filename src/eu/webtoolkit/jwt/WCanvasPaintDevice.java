@@ -250,7 +250,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
-			TextFlag textFlag, final CharSequence text) {
+			TextFlag textFlag, final CharSequence text, WPointF clipPoint) {
 		if (textFlag == TextFlag.TextWordWrap) {
 			throw new WException(
 					"WCanvasPaintDevice::drawText() TextWordWrap is not supported");
@@ -349,9 +349,23 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				default:
 					break;
 				}
+				if (clipPoint != null && this.getPainter() != null) {
+					this.js_.append("if (Wt3_3_4.gfxUtils.pnpoly(").append(
+							this.getPainter().getWorldTransform()
+									.map(clipPoint).getJsRef()).append(",")
+							.append(
+									this.getPainter().getClipPathTransform()
+											.map(
+													this.getPainter()
+															.getClipPath())
+											.getJsRef()).append(")) {");
+				}
 				this.js_.append("ctx.fillText(").append(
 						WString.toWString(text).getJsStringLiteral()).append(
 						',').append(s_x).append(',').append(s_y).append(");");
+				if (clipPoint != null && this.getPainter() != null) {
+					this.js_.append("}");
+				}
 			} else {
 				switch (horizontalAlign) {
 				case AlignLeft:
@@ -379,10 +393,24 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				default:
 					break;
 				}
+				if (clipPoint != null && this.getPainter() != null) {
+					this.js_.append("if (Wt3_3_4.gfxUtils.pnpoly(").append(
+							this.getPainter().getWorldTransform()
+									.map(clipPoint).getJsRef()).append(",")
+							.append(
+									this.getPainter().getClipPathTransform()
+											.map(
+													this.getPainter()
+															.getClipPath())
+											.getJsRef()).append(")) {");
+				}
 				this.js_.append("ctx.fillText(").append(
 						WString.toWString(text).getJsStringLiteral()).append(
 						',').append(MathUtils.roundJs(x, 3)).append(',');
 				this.js_.append(MathUtils.roundJs(y, 3)).append(");");
+				if (clipPoint != null && this.getPainter() != null) {
+					this.js_.append("}");
+				}
 			}
 			if (this.currentBrush_.isJavaScriptBound()) {
 				this.js_.append("ctx.fillStyle=Wt3_3_4.gfxUtils.css_text(")

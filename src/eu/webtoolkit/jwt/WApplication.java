@@ -178,9 +178,10 @@ public class WApplication extends WObject {
 		this.styleSheetsAdded_ = 0;
 		this.metaHeaders_ = new ArrayList<MetaHeader>();
 		this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
-		this.exposedSignals_ = new HashMap<String, WeakReference<AbstractEventSignal>>();
-		this.exposedResources_ = new HashMap<String, WResource>();
+		this.exposedSignals_ = new WeakValueMap<String, AbstractEventSignal>();
+		this.exposedResources_ = new WeakValueMap<String, WResource>();
 		this.encodedObjects_ = new HashMap<String, WObject>();
+		this.justRemovedSignals_ = new HashSet<String>();
 		this.exposeSignals_ = true;
 		this.afterLoadJavaScript_ = "";
 		this.beforeLoadJavaScript_ = "";
@@ -3002,9 +3003,10 @@ public class WApplication extends WObject {
 	int styleSheetsAdded_;
 	List<MetaHeader> metaHeaders_;
 	List<WApplication.MetaLink> metaLinks_;
-	private Map<String, WeakReference<AbstractEventSignal>> exposedSignals_;
-	private Map<String, WResource> exposedResources_;
+	private WeakValueMap<String, AbstractEventSignal> exposedSignals_;
+	private WeakValueMap<String, WResource> exposedResources_;
 	private Map<String, WObject> encodedObjects_;
+	private Set<String> justRemovedSignals_;
 	private boolean exposeSignals_;
 	String afterLoadJavaScript_;
 	String beforeLoadJavaScript_;
@@ -3030,8 +3032,7 @@ public class WApplication extends WObject {
 
 	void addExposedSignal(AbstractEventSignal signal) {
 		String s = signal.encodeCmd();
-		this.exposedSignals_.put(s, new WeakReference<AbstractEventSignal>(
-				signal));
+		this.exposedSignals_.put(s, signal);
 		logger.debug(new StringWriter().append("addExposedSignal: ").append(s)
 				.toString());
 	}
@@ -3039,6 +3040,7 @@ public class WApplication extends WObject {
 	void removeExposedSignal(AbstractEventSignal signal) {
 		String s = signal.encodeCmd();
 		if (this.exposedSignals_.remove(s) != null) {
+			this.justRemovedSignals_.add(s);
 			logger.debug(new StringWriter().append("removeExposedSignal: ")
 					.append(s).toString());
 		} else {
@@ -3049,24 +3051,24 @@ public class WApplication extends WObject {
 	}
 
 	AbstractEventSignal decodeExposedSignal(final String signalName) {
-		WeakReference<AbstractEventSignal> i = this.exposedSignals_
-				.get(signalName);
+		AbstractEventSignal i = this.exposedSignals_.get(signalName);
 		if (i != null) {
-			return i.get();
+			return i;
 		} else {
 			return null;
 		}
 	}
 
-	AbstractEventSignal decodeExposedSignal(final String objectId,
-			final String name) {
-		String signalName = (objectId.equals("app") ? this.getId() : objectId)
-				+ '.' + name;
-		return this.decodeExposedSignal(signalName);
+	String encodeSignal(final String objectId, final String name) {
+		return (objectId.equals("app") ? this.getId() : objectId) + '.' + name;
 	}
 
-	Map<String, WeakReference<AbstractEventSignal>> exposedSignals() {
+	WeakValueMap<String, AbstractEventSignal> exposedSignals() {
 		return this.exposedSignals_;
+	}
+
+	Set<String> getJustRemovedSignals() {
+		return this.justRemovedSignals_;
 	}
 
 	private String resourceMapKey(WResource resource) {

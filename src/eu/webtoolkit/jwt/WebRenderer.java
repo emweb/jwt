@@ -1199,17 +1199,12 @@ class WebRenderer implements SlotLearnerInterface {
 			return;
 		}
 		this.collectJS(out);
-		final Map<String, WeakReference<AbstractEventSignal>> ss = this.session_
+		final WeakValueMap<String, AbstractEventSignal> ss = this.session_
 				.getApp().exposedSignals();
-		for (Iterator<Map.Entry<String, WeakReference<AbstractEventSignal>>> i_it = ss
+		for (Iterator<Map.Entry<String, AbstractEventSignal>> i_it = ss
 				.entrySet().iterator(); i_it.hasNext();) {
-			Map.Entry<String, WeakReference<AbstractEventSignal>> i = i_it
-					.next();
-			AbstractEventSignal s = i.getValue().get();
-			if (!(s != null)) {
-				i_it.remove();
-				continue;
-			}
+			Map.Entry<String, AbstractEventSignal> i = i_it.next();
+			AbstractEventSignal s = i.getValue();
 			if (s.getSender() == app) {
 				s.processPreLearnStateless(this);
 			} else {

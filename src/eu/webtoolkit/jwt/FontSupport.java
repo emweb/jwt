@@ -121,7 +121,8 @@ class FontSupport {
 	public void drawText(final WFont font, final WRectF rect,
 			EnumSet<AlignmentFlag> flags, final CharSequence text) {
 		this.font_ = font;
-		this.device_.drawText(rect, flags, TextFlag.TextSingleLine, text);
+		this.device_.drawText(rect, flags, TextFlag.TextSingleLine, text,
+				(WPointF) null);
 		this.font_ = null;
 	}
 

@@ -140,9 +140,16 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	}
 
 	@Override
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text) {
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
 		if (textFlag == TextFlag.TextWordWrap)
 			throw new UnsupportedOperationException("drawText(): TextWordWrap not yet implemented");
+
+		if (clipPoint != null && this.getPainter() != null) {
+			if (!this.getPainter().getClipPathTransform().map(this.getPainter().getClipPath())
+					.isPointInPath(this.getPainter().getWorldTransform().map(clipPoint))) {
+				return;
+			}
+		}
 		
 		processChangeFlags();
 		

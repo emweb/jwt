@@ -45,6 +45,7 @@ public class RegistrationWidget extends WTemplateFormView {
 		this.model_ = null;
 		this.created_ = false;
 		this.confirmPasswordLogin_ = null;
+		this.setWidgetIdMode(WTemplate.WidgetIdMode.SetWidgetObjectName);
 		WApplication app = WApplication.getInstance();
 		app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
 	}

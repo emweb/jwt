@@ -82,8 +82,6 @@ import org.slf4j.LoggerFactory;
  * objects should not be modified, WTransform does support many modifications.
  * These modifications will then accumulate in the JavaScript representation of
  * the transform.
- * <p>
- * TODO(Roel): add an example?
  */
 public class WTransform extends WJavaScriptExposableObject {
 	private static Logger logger = LoggerFactory.getLogger(WTransform.class);

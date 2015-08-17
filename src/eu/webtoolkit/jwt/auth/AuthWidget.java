@@ -684,6 +684,7 @@ public class AuthWidget extends WTemplateFormView {
 	private WDialog messageBox_;
 
 	private void init() {
+		this.setWidgetIdMode(WTemplate.WidgetIdMode.SetWidgetObjectName);
 		this.registrationModel_ = null;
 		this.registrationEnabled_ = false;
 		this.created_ = false;

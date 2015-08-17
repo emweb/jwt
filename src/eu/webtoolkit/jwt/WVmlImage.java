@@ -300,10 +300,17 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
-			TextFlag textFlag, final CharSequence text) {
+			TextFlag textFlag, final CharSequence text, WPointF clipPoint) {
 		if (textFlag == TextFlag.TextWordWrap) {
 			throw new WException(
 					"WVmlImage::drawText(): TextWordWrap is not supported");
+		}
+		if (clipPoint != null && this.getPainter() != null) {
+			if (!this.getPainter().getClipPathTransform().map(
+					this.getPainter().getClipPath()).isPointInPath(
+					this.getPainter().getWorldTransform().map(clipPoint))) {
+				return;
+			}
 		}
 		this.finishPaths();
 		EnumSet<AlignmentFlag> horizontalAlign = EnumUtils.mask(flags,

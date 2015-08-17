@@ -346,6 +346,7 @@ public class WMediaPlayer extends WCompositeWidget {
 			WContainerWidget parent) {
 		super(parent);
 		this.signals_ = new ArrayList<JSignal>();
+		this.signalsDouble_ = new ArrayList<WMediaPlayer.SignalDouble>();
 		this.mediaType_ = mediaType;
 		this.videoWidth_ = 0;
 		this.videoHeight_ = 0;
@@ -354,6 +355,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.initialJs_ = "";
 		this.gui_ = this;
 		this.boundSignals_ = 0;
+		this.boundSignalsDouble_ = 0;
 		this.status_ = new WMediaPlayer.State();
 		for (int i = 0; i < 11; ++i) {
 			this.control_[i] = null;
@@ -399,6 +401,9 @@ public class WMediaPlayer extends WCompositeWidget {
 	public void remove() {
 		this.setParentWidget((WWidget) null);
 		for (int i = 0; i < this.signals_.size(); ++i) {
+			;
+		}
+		for (int i = 0; i < this.signalsDouble_.size(); ++i) {
 			;
 		}
 		super.remove();
@@ -848,8 +853,9 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * The event indicates that the {@link WMediaPlayer#getCurrentTime()
 	 * getCurrentTime()} has changed.
 	 */
-	public JSignal timeUpdated() {
-		return this.signal(TIME_UPDATED_SIGNAL);
+	public JSignal1<Double> timeUpdated() {
+		return this.signalDouble(TIME_UPDATED_SIGNAL, this.getJsPlayerRef()
+				+ ".data('jPlayer').status.currentTime");
 	}
 
 	/**
@@ -880,8 +886,9 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Event that indicates that the volume has changed.
 	 */
-	public JSignal volumeChanged() {
-		return this.signal(VOLUME_CHANGED_SIGNAL);
+	public JSignal1<Double> volumeChanged() {
+		return this.signalDouble(VOLUME_CHANGED_SIGNAL, this.getJsPlayerRef()
+				+ ".data('jPlayer').options.volume");
 	}
 
 	String getJsPlayerRef() {
@@ -1049,6 +1056,7 @@ public class WMediaPlayer extends WCompositeWidget {
 					this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());
 			this.boundSignals_ = 0;
+			this.boundSignalsDouble_ = 0;
 		}
 		if (this.boundSignals_ < this.signals_.size()) {
 			StringBuilder ss = new StringBuilder();
@@ -1057,6 +1065,24 @@ public class WMediaPlayer extends WCompositeWidget {
 				ss.append(".bind('").append(this.signals_.get(i).getName())
 						.append("', function(o, e) { ").append(
 								this.signals_.get(i).createCall()).append("})");
+			}
+			ss.append(';');
+			this.doJavaScript(ss.toString());
+			this.boundSignals_ = this.signals_.size();
+		}
+		if (this.boundSignalsDouble_ < this.signalsDouble_.size()) {
+			StringBuilder ss = new StringBuilder();
+			ss.append(this.getJsPlayerRef());
+			for (int i = this.boundSignalsDouble_; i < this.signalsDouble_
+					.size(); ++i) {
+				ss
+						.append(".bind('")
+						.append(this.signalsDouble_.get(i).signal.getName())
+						.append("', function(o, e) { ")
+						.append(
+								this.signalsDouble_.get(i).signal
+										.createCall(this.signalsDouble_.get(i).jsExprA1))
+						.append("})");
 			}
 			ss.append(';');
 			this.doJavaScript(ss.toString());
@@ -1072,7 +1098,16 @@ public class WMediaPlayer extends WCompositeWidget {
 		public WLink link;
 	}
 
+	static class SignalDouble {
+		private static Logger logger = LoggerFactory
+				.getLogger(SignalDouble.class);
+
+		public JSignal1<Double> signal;
+		public String jsExprA1;
+	}
+
 	private List<JSignal> signals_;
+	private List<WMediaPlayer.SignalDouble> signalsDouble_;
 	private WMediaPlayer.MediaType mediaType_;
 	private int videoWidth_;
 	private int videoHeight_;
@@ -1084,6 +1119,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	private WProgressBar[] progressBar_ = new WProgressBar[2];
 	private WWidget gui_;
 	private int boundSignals_;
+	private int boundSignalsDouble_;
 	private boolean mediaUpdated_;
 
 	static class State {
@@ -1211,6 +1247,21 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.signals_.add(result = new JSignal(this, name, true));
 		this.scheduleRender();
 		return result;
+	}
+
+	private JSignal1<Double> signalDouble(String name, final String jsExpr) {
+		for (int i = 0; i < this.signalsDouble_.size(); ++i) {
+			if (this.signalsDouble_.get(i).signal.getName().equals(name)) {
+				return this.signalsDouble_.get(i).signal;
+			}
+		}
+		WMediaPlayer.SignalDouble sd = new WMediaPlayer.SignalDouble();
+		sd.signal = new JSignal1<Double>(this, name, true) {
+		};
+		sd.jsExprA1 = jsExpr;
+		this.signalsDouble_.add(sd);
+		this.scheduleRender();
+		return sd.signal;
 	}
 
 	private void updateProgressBarState(WMediaPlayer.BarControlId id) {

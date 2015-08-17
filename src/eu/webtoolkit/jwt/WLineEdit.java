@@ -962,7 +962,9 @@ public class WLineEdit extends WFormWidget {
 							.isEmpty()) {
 				t = this.displayContent_;
 			}
-			element.setProperty(Property.PropertyValue, t);
+			if (!all || t.length() != 0) {
+				element.setProperty(Property.PropertyValue, t);
+			}
 			this.flags_.clear(BIT_CONTENT_CHANGED);
 		}
 		if (all || this.flags_.get(BIT_ECHO_MODE_CHANGED)) {

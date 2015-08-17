@@ -2520,6 +2520,95 @@
 <span class="o">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-PaintingInteractive"><![CDATA[
+<div class="highlight"><pre><span class="kd">class</span> <span class="nc">PaintingInteractiveWidget</span> <span class="kd">extends</span> <span class="n">WPaintedWidget</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
+            <span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">PaintingInteractiveWidget</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="n">PaintingInteractiveWidget</span><span class="o">(</span><span class="n">WContainerWidget</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">rotateSlot</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSlot</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">transform</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">300</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">300</span><span class="o">));</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">transform</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">createJSTransform</span><span class="o">();</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">rotateSlot</span>
+                <span class="o">.</span><span class="na">setJavaScript</span><span class="o">(</span><span class="s">&quot;function(o,e,deg) {if (&quot;</span>
+                        <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getObjJsRef</span><span class="o">()</span>
+                        <span class="o">+</span> <span class="s">&quot;) {var rad = deg / 180 * Math.PI;var c = Math.cos(rad);var s = Math.sin(rad);&quot;</span>
+                        <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">transform</span><span class="o">.</span><span class="na">getJsRef</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot; = [c,-s,s,c,0,0];&quot;</span>
+                        <span class="o">+</span> <span class="k">this</span><span class="o">.</span><span class="na">getRepaintSlot</span><span class="o">().</span><span class="na">execJs</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;;}}&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">PaintingInteractiveWidget</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">((</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kt">void</span> <span class="nf">rotate</span><span class="o">(</span><span class="kt">int</span> <span class="n">degrees</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">double</span> <span class="n">radians</span> <span class="o">=</span> <span class="n">degrees</span> <span class="o">/</span> <span class="mf">180.0</span> <span class="o">*</span> <span class="mf">3.14159265358979323846</span><span class="o">;</span>
+        <span class="kt">double</span> <span class="n">c</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">cos</span><span class="o">(</span><span class="n">radians</span><span class="o">);</span>
+        <span class="kt">double</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Math</span><span class="o">.</span><span class="na">sin</span><span class="o">(</span><span class="n">radians</span><span class="o">);</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">transform</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="k">new</span> <span class="n">WTransform</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="o">-</span><span class="n">s</span><span class="o">,</span> <span class="n">s</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">));</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">update</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">JSlot</span> <span class="n">rotateSlot</span><span class="o">;</span>
+
+    <span class="kt">void</span> <span class="nf">paintEvent</span><span class="o">(</span><span class="n">WPaintDevice</span> <span class="n">paintDevice</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">WPainter</span> <span class="n">painter</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPainter</span><span class="o">(</span><span class="n">paintDevice</span><span class="o">);</span>
+        <span class="n">painter</span><span class="o">.</span><span class="na">translate</span><span class="o">(</span><span class="mi">150</span><span class="o">,</span> <span class="mi">150</span><span class="o">);</span>
+        <span class="n">WPen</span> <span class="n">pen</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPen</span><span class="o">();</span>
+        <span class="n">pen</span><span class="o">.</span><span class="na">setWidth</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">5</span><span class="o">));</span>
+        <span class="n">painter</span><span class="o">.</span><span class="na">setPen</span><span class="o">(</span><span class="n">pen</span><span class="o">);</span>
+        <span class="n">WPainterPath</span> <span class="n">path</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPainterPath</span><span class="o">();</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">moveTo</span><span class="o">(-</span><span class="mi">50</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">20</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(</span><span class="mi">100</span><span class="o">,</span> <span class="mi">20</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="o">-</span><span class="mi">100</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(-</span><span class="mi">100</span><span class="o">,</span> <span class="mi">20</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(-</span><span class="mi">50</span><span class="o">,</span> <span class="mi">20</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(-</span><span class="mi">50</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+        <span class="n">path</span><span class="o">.</span><span class="na">lineTo</span><span class="o">(</span><span class="mi">50</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span>
+        <span class="n">WPainterPath</span> <span class="n">transformedPath</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">transform</span><span class="o">.</span><span class="na">getValue</span><span class="o">().</span><span class="na">map</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">painter</span><span class="o">.</span><span class="na">drawPath</span><span class="o">(</span><span class="n">transformedPath</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="n">WJavaScriptHandle</span><span class="o">&lt;</span><span class="n">WTransform</span><span class="o">&gt;</span> <span class="n">transform</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kt">void</span> <span class="nf">PaintingInteractive</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
+    <span class="kd">final</span> <span class="n">PaintingInteractiveWidget</span> <span class="n">widget</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PaintingInteractiveWidget</span><span class="o">(</span>
+            <span class="n">container</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">WSpinBox</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WSpinBox</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">setWidth</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">300</span><span class="o">));</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">setRange</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">360</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="kd">final</span> <span class="n">WSlider</span> <span class="n">slider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WSlider</span><span class="o">(</span><span class="n">Orientation</span><span class="o">.</span><span class="na">Horizontal</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+    <span class="n">slider</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">300</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">50</span><span class="o">));</span>
+    <span class="n">slider</span><span class="o">.</span><span class="na">setRange</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">360</span><span class="o">);</span>
+    <span class="n">slider</span><span class="o">.</span><span class="na">sliderMoved</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="n">widget</span><span class="o">.</span><span class="na">rotateSlot</span><span class="o">);</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">valueChanged</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">slider</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="n">widget</span><span class="o">.</span><span class="na">rotate</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="n">sb</span><span class="o">.</span><span class="na">enterPressed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">slider</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="n">widget</span><span class="o">.</span><span class="na">rotate</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+    <span class="n">slider</span><span class="o">.</span><span class="na">valueChanged</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">sb</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">slider</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="n">widget</span><span class="o">.</span><span class="na">rotate</span><span class="o">(</span><span class="n">slider</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">});</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-PaintingShapes"><![CDATA[
 <div class="highlight"><pre><span class="kd">class</span> <span class="nc">ShapesWidget</span> <span class="kd">extends</span> <span class="n">WPaintedWidget</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
@@ -3548,7 +3637,7 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">ScatterPlot</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setLocation</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">ZeroValue</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis</span><span class="o">).</span><span class="na">setLocation</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">ZeroValue</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">80</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">120</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
     <span class="n">WDataSeries</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">CurveSeries</span><span class="o">);</span>
     <span class="n">s</span><span class="o">.</span><span class="na">setShadow</span><span class="o">(</span><span class="k">new</span> <span class="n">WShadow</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">127</span><span class="o">),</span> <span class="mi">3</span><span class="o">));</span>
@@ -3607,6 +3696,42 @@
     <span class="o">}</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">800</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">400</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="n">WLength</span><span class="o">.</span><span class="na">Auto</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
+  <message id="src-ScatterPlotInteractive"><![CDATA[
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">ScatterPlotInteractive</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
+    <span class="n">WStandardItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="n">CsvUtil</span><span class="o">.</span><span class="na">csvToModel</span><span class="o">(</span><span class="s">&quot;&quot;</span> <span class="o">+</span> <span class="s">&quot;timeseries.csv&quot;</span><span class="o">,</span>
+            <span class="n">container</span><span class="o">);</span>
+    <span class="k">if</span> <span class="o">(!(</span><span class="n">model</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">container</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">model</span><span class="o">.</span><span class="na">getRowCount</span><span class="o">();</span> <span class="o">++</span><span class="n">row</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">WString</span> <span class="n">s</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="n">model</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="mi">0</span><span class="o">));</span>
+        <span class="n">WDate</span> <span class="n">date</span> <span class="o">=</span> <span class="n">WDate</span><span class="o">.</span><span class="na">fromString</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="s">&quot;dd/MM/yy&quot;</span><span class="o">);</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">date</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">WCartesianChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesianChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setBackground</span><span class="o">(</span><span class="k">new</span> <span class="n">WBrush</span><span class="o">(</span><span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">220</span><span class="o">,</span> <span class="mi">220</span><span class="o">,</span> <span class="mi">220</span><span class="o">)));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">model</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setXSeriesColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">ScatterPlot</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setScale</span><span class="o">(</span><span class="n">AxisScale</span><span class="o">.</span><span class="na">DateScale</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setMaxZoom</span><span class="o">(</span><span class="mf">16.0</span><span class="o">);</span>
+    <span class="n">WDataSeries</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">LineSeries</span><span class="o">);</span>
+    <span class="n">s</span><span class="o">.</span><span class="na">setShadow</span><span class="o">(</span><span class="k">new</span> <span class="n">WShadow</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">127</span><span class="o">),</span> <span class="mi">3</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">addSeries</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">800</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">400</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setPanEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setZoomEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="n">WLength</span><span class="o">.</span><span class="na">Auto</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
+    <span class="n">WAxisSliderWidget</span> <span class="n">sliderWidget</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAxisSliderWidget</span><span class="o">(</span><span class="n">chart</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span>
+            <span class="n">container</span><span class="o">);</span>
+    <span class="n">sliderWidget</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">800</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">80</span><span class="o">));</span>
+    <span class="n">sliderWidget</span><span class="o">.</span><span class="na">setSelectionAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span>
+            <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
+    <span class="n">sliderWidget</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="n">WLength</span><span class="o">.</span><span class="na">Auto</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>

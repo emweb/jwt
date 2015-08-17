@@ -22,9 +22,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that specifies the way text should be printed.
  * <p>
- * 
- * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
- *      textFlag, CharSequence text)
  */
 public enum TextFlag {
 	/**

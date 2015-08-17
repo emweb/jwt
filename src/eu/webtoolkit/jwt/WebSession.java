@@ -59,7 +59,6 @@ class WebSession {
 		this.docRoot_ = "";
 		this.redirect_ = "";
 		this.pagePathInfo_ = "";
-		this.pongMessage_ = "";
 		this.asyncResponse_ = null;
 		this.webSocket_ = null;
 		this.bootStyleResponse_ = null;
@@ -1720,7 +1719,6 @@ class WebSession {
 	private String docRoot_;
 	private String redirect_;
 	String pagePathInfo_;
-	private String pongMessage_;
 	private WebResponse asyncResponse_;
 	private WebResponse webSocket_;
 	private WebResponse bootStyleResponse_;
@@ -1798,30 +1796,20 @@ class WebSession {
 			}
 		}
 		if (!(result != null) && checkExposed) {
-			logger.error(new StringWriter().append("decodeSignal(): signal '")
-					.append(signalId).append("' not exposed").toString());
+			if (this.app_.getJustRemovedSignals().contains(signalId) == false) {
+				logger.error(new StringWriter().append(
+						"decodeSignal(): signal '").append(signalId).append(
+						"' not exposed").toString());
+			}
 		}
 		return result;
 	}
 
 	private AbstractEventSignal decodeSignal(final String objectId,
 			final String name, boolean checkExposed) {
-		AbstractEventSignal result = this.app_.decodeExposedSignal(objectId,
-				name);
-		if (result != null && checkExposed) {
-			WWidget w = ((result.getSender()) instanceof WWidget ? (WWidget) (result
-					.getSender())
-					: null);
-			if (w != null && !this.app_.isExposed(w) && !name.equals("resized")) {
-				result = null;
-			}
-		}
-		if (!(result != null) && checkExposed) {
-			logger.error(new StringWriter().append("decodeSignal(): signal '")
-					.append(objectId).append('.').append(name).append(
-							"' not exposed").toString());
-		}
-		return result;
+		String signalId = this.app_.encodeSignal(objectId, name);
+		return this.decodeSignal(signalId, checkExposed
+				&& !name.equals("resized"));
 	}
 
 	private static WObject.FormData getFormData(final WebRequest request,
@@ -2038,6 +2026,7 @@ class WebSession {
 				}
 			}
 		}
+		this.app_.getJustRemovedSignals().clear();
 	}
 
 	private void propagateFormValues(final WEvent e, final String se) {
