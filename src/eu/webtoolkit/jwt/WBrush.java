@@ -216,6 +216,33 @@ public class WBrush extends WJavaScriptExposableObject {
 		return ss.toString();
 	}
 
+	protected void assignFromJSON(final com.google.gson.JsonElement value) {
+		try {
+			final com.google.gson.JsonObject o = (com.google.gson.JsonObject) value;
+			final com.google.gson.JsonElement color = o.get("color");
+			final com.google.gson.JsonArray col = (com.google.gson.JsonArray) color;
+			if (col.size() == 4
+					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(0)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(1)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(2)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(3)))) {
+				this.color_ = new WColor(JsonUtils.orIfNullInt(JsonUtils
+						.toNumber(col.get(0)), 0), JsonUtils.orIfNullInt(
+						JsonUtils.toNumber(col.get(1)), 0), JsonUtils
+						.orIfNullInt(JsonUtils.toNumber(col.get(2)), 0),
+						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(3)),
+								255));
+			} else {
+				logger.error(new StringWriter().append(
+						"Couldn't convert JSON to WBrush").toString());
+			}
+		} catch (final RuntimeException e) {
+			logger.error(new StringWriter().append(
+					"Couldn't convert JSON to WBrush: " + e.toString())
+					.toString());
+		}
+	}
+
 	private BrushStyle style_;
 	private WColor color_;
 	private WGradient gradient_;

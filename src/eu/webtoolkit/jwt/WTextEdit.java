@@ -381,7 +381,7 @@ public class WTextEdit extends WTextArea {
 	}
 
 	protected void getDomChanges(final List<DomElement> result, WApplication app) {
-		DomElement e = DomElement.getForUpdate(this.getFormName() + "_tbl",
+		DomElement e = DomElement.getForUpdate(this.getFormName(),
 				DomElementType.DomElement_TABLE);
 		this.updateDom(e, false);
 		super.getDomChanges(result, app);

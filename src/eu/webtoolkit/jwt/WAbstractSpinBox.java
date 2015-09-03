@@ -230,7 +230,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		super.render(flags);
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		super.setFormData(formData);
 		this.parseValue(this.getText());
 	}

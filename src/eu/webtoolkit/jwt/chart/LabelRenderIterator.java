@@ -91,8 +91,7 @@ class LabelRenderIterator extends SeriesIterator {
 			chart.textPen_.setColor(series.getLabelColor());
 			WTransform t = new WTransform(1, 0, 0, -1, chart.chartArea_
 					.getLeft(), chart.chartArea_.getBottom()).multiply(
-					chart.xTransform_.getValue()).multiply(
-					chart.yTransform_.getValue()).multiply(
+					chart.xTransform_).multiply(chart.yTransform_).multiply(
 					new WTransform(1, 0, 0, -1, -chart.chartArea_.getLeft(),
 							chart.chartArea_.getBottom()));
 			chart.renderLabel(this.painter_, text, t.map(p), alignment, 0, 3);

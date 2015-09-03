@@ -3164,7 +3164,7 @@ public class WGLWidget extends WInteractWidget {
 		this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.RESIZE_GL));
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.valueChanged_) {
 			return;
 		}

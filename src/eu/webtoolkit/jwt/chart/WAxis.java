@@ -918,7 +918,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Sets the initial zoom level for this axis.
+	 * Sets the zoom level for this axis.
 	 * <p>
 	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
 	 * interactive mode. The zoom level should be &gt;= 1 and smaller than
@@ -929,22 +929,27 @@ public class WAxis {
 	 * has no effect on the second Y axis. </i>
 	 * </p>
 	 */
-	public void setInitialZoom(double initialZoom) {
-		if (!ChartUtils.equals(this.initialZoom_, initialZoom)) {
-			this.initialZoom_ = initialZoom;
+	public void setZoom(double zoom) {
+		if (!ChartUtils.equals(this.zoom_, zoom)) {
+			this.zoom_ = zoom;
 			update();
 		}
 		;
+		this.zoomDirty_ = true;
 	}
 
 	/**
-	 * Get the initial zoom level for this axis.
+	 * Get the zoom level for this axis.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If the zoom level has been changed on the client side,
+	 * this may not reflect the actual zoom level.</i>
+	 * </p>
 	 * 
-	 * @see WAxis#setInitialZoom(double initialZoom)
+	 * @see WAxis#setZoom(double zoom)
 	 */
-	public double getInitialZoom() {
-		return this.initialZoom_;
+	public double getZoom() {
+		return this.zoom_;
 	}
 
 	/**
@@ -978,7 +983,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Sets the initial value to pan to for this axis.
+	 * Sets the value to pan to for this axis.
 	 * <p>
 	 * This sets the leftmost (horizontal axis) or bottom (vertical axis) value
 	 * to be displayed on the chart.
@@ -987,31 +992,36 @@ public class WAxis {
 	 * of the chart will be automatically adjusted.
 	 * <p>
 	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode. The zoom level should be &gt;= 1 and smaller than
-	 * {@link WAxis#getMaxZoom() getMaxZoom()}
+	 * interactive mode.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis. </i>
+	 * has no effect on the second Y axis.
+	 * <p>
+	 * If the pan position has been changed on the client side, this may not
+	 * reflect the actual pan position. </i>
 	 * </p>
 	 */
-	public void setInitialPan(double initialPan) {
-		if (!ChartUtils.equals(this.initialPan_, initialPan)) {
-			this.initialPan_ = initialPan;
+	public void setPan(double pan) {
+		if (!ChartUtils.equals(this.pan_, pan)) {
+			this.pan_ = pan;
 			update();
 		}
 		;
+		this.zoomDirty_ = true;
 	}
 
 	/**
-	 * Get the initial value to pan to for this axis, when pan is enabled on the
-	 * chart.
+	 * Get the value to pan to for this axis, when pan is enabled on the chart.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b></i>
+	 * </p>
 	 * 
-	 * @see WAxis#setInitialPan(double initialPan)
+	 * @see WAxis#setPan(double pan)
 	 */
-	public double getInitialPan() {
-		return this.initialPan_;
+	public double getPan() {
+		return this.pan_;
 	}
 
 	/**
@@ -1695,6 +1705,8 @@ public class WAxis {
 			painter.save();
 			painter.translate(transform.map(pos));
 			painter.rotate(-angle);
+			transformedPoint = painter.getWorldTransform().getInverted().map(
+					transformedPoint);
 			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
 					width, height), EnumSet.of(horizontalAlign, verticalAlign),
 					TextFlag.TextSingleLine, text, clipping ? transformedPoint
@@ -1830,8 +1842,10 @@ public class WAxis {
 		this.textPen_ = new WPen(WColor.black);
 		this.titleOrientation_ = Orientation.Horizontal;
 		this.maxZoom_ = 4;
-		this.initialZoom_ = 1;
-		this.initialPan_ = 0;
+		this.zoom_ = 1;
+		this.pan_ = 0;
+		this.zoomDirty_ = true;
+		this.panDirty_ = true;
 		this.padding_ = 0;
 		this.tickDirection_ = TickDirection.Outwards;
 		this.segments_ = new ArrayList<WAxis.Segment>();
@@ -2194,8 +2208,10 @@ public class WAxis {
 	private WPen textPen_;
 	private Orientation titleOrientation_;
 	private double maxZoom_;
-	private double initialZoom_;
-	private double initialPan_;
+	private double zoom_;
+	private double pan_;
+	boolean zoomDirty_;
+	boolean panDirty_;
 	private int padding_;
 	private TickDirection tickDirection_;
 	private boolean renderingMirror_;
@@ -2225,7 +2241,7 @@ public class WAxis {
 	}
 
 	List<WAxis.Segment> segments_;
-	private double renderInterval_;
+	double renderInterval_;
 
 	void init(WAbstractChartImplementation chart, Axis axis) {
 		this.chart_ = chart;

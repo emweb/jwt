@@ -133,6 +133,9 @@ public abstract class WJavaScriptExposableObject {
 		}
 	}
 
+	protected abstract void assignFromJSON(
+			final com.google.gson.JsonElement value);
+
 	static class JSInfo {
 		private static Logger logger = LoggerFactory.getLogger(JSInfo.class);
 

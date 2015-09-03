@@ -702,6 +702,11 @@ public class WAnchor extends WContainerWidget {
 			break;
 		case TargetNewWindow:
 			element.setProperty(Property.PropertyTarget, "_blank");
+			break;
+		case TargetDownload:
+			element.setProperty(Property.PropertyTarget, "wt_iframe_dl");
+			element.setProperty(Property.PropertyDownload, "");
+			break;
 		}
 	}
 

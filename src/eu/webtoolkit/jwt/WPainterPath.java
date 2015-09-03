@@ -950,6 +950,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 		return ss.toString();
 	}
 
+	protected void assignFromJSON(final com.google.gson.JsonElement value) {
+	}
+
 	private boolean isRect_;
 	List<WPainterPath.Segment> segments_;
 

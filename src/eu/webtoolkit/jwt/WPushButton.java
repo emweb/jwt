@@ -700,9 +700,15 @@ public class WPushButton extends WFormWidget {
 							.setJavaScript("function(){window.open("
 									+ jsStringLiteral(url) + ");}");
 				} else {
-					this.linkState_.clickJS
-							.setJavaScript("function(){window.location="
-									+ jsStringLiteral(url) + ";}");
+					if (this.linkState_.link.getTarget() == AnchorTarget.TargetDownload) {
+						this.linkState_.clickJS
+								.setJavaScript("function(){var ifr = document.getElementById('wt_iframe_dl_id');ifr.src = "
+										+ jsStringLiteral(url) + ";}");
+					} else {
+						this.linkState_.clickJS
+								.setJavaScript("function(){window.location="
+										+ jsStringLiteral(url) + ";}");
+					}
 				}
 			}
 			this.clicked().senderRepaint();

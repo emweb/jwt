@@ -900,7 +900,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		this.render(EnumSet.of(RenderFlag.RenderFull));
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]

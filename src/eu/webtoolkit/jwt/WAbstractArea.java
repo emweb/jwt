@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @see WImage#addArea(WAbstractArea area)
  * @see WPaintedWidget#addArea(WAbstractArea area)
  */
-public class WAbstractArea extends WObject {
+public abstract class WAbstractArea extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WAbstractArea.class);
 
 	/**
@@ -83,6 +83,15 @@ public class WAbstractArea extends WObject {
 	 */
 	public boolean isHole() {
 		return this.hole_;
+	}
+
+	public void setTransformable(boolean transformable) {
+		this.transformable_ = transformable;
+		this.repaint();
+	}
+
+	public boolean isTransformable() {
+		return this.transformable_;
 	}
 
 	/**
@@ -635,6 +644,7 @@ public class WAbstractArea extends WObject {
 	}
 
 	private boolean hole_;
+	private boolean transformable_;
 	private WAbstractArea.AnchorImpl anchor_;
 
 	private void createAnchorImpl() {
@@ -651,6 +661,7 @@ public class WAbstractArea extends WObject {
 		super();
 		this.impl_ = new AreaWidget(this);
 		this.hole_ = false;
+		this.transformable_ = true;
 		this.anchor_ = null;
 	}
 
@@ -670,8 +681,14 @@ public class WAbstractArea extends WObject {
 		return needsUrlResolution;
 	}
 
+	protected abstract String getUpdateAreaCoordsJS();
+
 	void repaint() {
 		this.impl_.repaint();
+	}
+
+	protected String getJsRef() {
+		return this.getImpl().getJsRef();
 	}
 
 	WInteractWidget getImpl() {

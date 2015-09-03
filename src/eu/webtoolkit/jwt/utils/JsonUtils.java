@@ -1,6 +1,7 @@
 package eu.webtoolkit.jwt.utils;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 
 public class JsonUtils {
@@ -28,5 +29,24 @@ public class JsonUtils {
 			return defaultValue;
 		else
 			return e.getAsInt();
+	}
+
+	public static double orIfNullDouble(JsonElement e, double defaultValue) {
+		if (e == null || e.isJsonNull())
+			return defaultValue;
+		else
+			return e.getAsDouble();
+	}
+
+	public static JsonElement toNumber(JsonElement e) {
+		if (e == null || e.isJsonNull())
+			return e;
+		if (e.isJsonPrimitive() && ((JsonPrimitive)e).isNumber())
+			return e;
+		return new JsonNull();
+	}
+
+	public static boolean isNull(JsonElement e) {
+		return e == null || e.isJsonNull();
 	}
 }

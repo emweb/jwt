@@ -288,7 +288,7 @@ public class WTextArea extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.contentChanged_ || this.isReadOnly()) {
 			return;
 		}

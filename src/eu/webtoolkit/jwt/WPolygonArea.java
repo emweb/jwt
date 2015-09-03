@@ -47,7 +47,8 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public WPolygonArea() {
 		super();
-		this.points_ = new ArrayList<WPoint>();
+		this.points_ = new ArrayList<WPointF>();
+		this.pointsIntCompatibility_ = new ArrayList<WPoint>();
 	}
 
 	/**
@@ -59,14 +60,16 @@ public class WPolygonArea extends WAbstractArea {
 	 */
 	public WPolygonArea(final List<WPoint> points) {
 		super();
-		this.points_ = points;
+		this.points_ = new ArrayList<WPointF>();
+		this.pointsIntCompatibility_ = new ArrayList<WPoint>();
+		this.setPoints(points);
 	}
 
 	/**
 	 * Adds a point.
 	 */
 	public void addPoint(int x, int y) {
-		this.points_.add(new WPoint(x, y));
+		this.points_.add(new WPointF(x, y));
 		this.repaint();
 	}
 
@@ -74,7 +77,7 @@ public class WPolygonArea extends WAbstractArea {
 	 * Adds a point.
 	 */
 	public void addPoint(double x, double y) {
-		this.points_.add(new WPoint((int) x, (int) y));
+		this.points_.add(new WPointF(x, y));
 		this.repaint();
 	}
 
@@ -82,7 +85,7 @@ public class WPolygonArea extends WAbstractArea {
 	 * Adds a point.
 	 */
 	public void addPoint(final WPoint point) {
-		this.points_.add(point);
+		this.points_.add(new WPointF(point.getX(), point.getY()));
 		this.repaint();
 	}
 
@@ -90,7 +93,7 @@ public class WPolygonArea extends WAbstractArea {
 	 * Adds a point.
 	 */
 	public void addPoint(final WPointF point) {
-		this.points_.add(new WPoint((int) point.getX(), (int) point.getY()));
+		this.points_.add(point);
 		this.repaint();
 	}
 
@@ -102,7 +105,10 @@ public class WPolygonArea extends WAbstractArea {
 	 * point.
 	 */
 	public void setPoints(final List<WPoint> points) {
-		Utils.copyList(points, this.points_);
+		this.points_.clear();
+		for (int i = 0; i < points.size(); ++i) {
+			this.addPoint(points.get(i));
+		}
 		this.repaint();
 	}
 
@@ -111,12 +117,30 @@ public class WPolygonArea extends WAbstractArea {
 	 * <p>
 	 * 
 	 * @see WPolygonArea#setPoints(List points)
+	 * @see WPolygonArea#getPoints()
 	 */
-	public List<WPoint> getPoints() {
+	public List<WPointF> getPointFs() {
 		return this.points_;
 	}
 
-	private List<WPoint> points_;
+	/**
+	 * Returns the polygon vertices.
+	 * <p>
+	 * 
+	 * @see WPolygonArea#setPoints(List points)
+	 * @see WPolygonArea#getPointFs()
+	 */
+	public List<WPoint> getPoints() {
+		this.pointsIntCompatibility_.clear();
+		for (int i = 0; i < this.points_.size(); ++i) {
+			this.pointsIntCompatibility_.add(new WPoint((int) this.points_.get(
+					i).getX(), (int) this.points_.get(i).getY()));
+		}
+		return this.pointsIntCompatibility_;
+	}
+
+	private List<WPointF> points_;
+	private List<WPoint> pointsIntCompatibility_;
 
 	protected boolean updateDom(final DomElement element, boolean all) {
 		element.setAttribute("shape", "poly");
@@ -125,10 +149,27 @@ public class WPolygonArea extends WAbstractArea {
 			if (i != 0) {
 				coords.append(',');
 			}
-			coords.append(String.valueOf(this.points_.get(i).getX())).append(
-					',').append(String.valueOf(this.points_.get(i).getY()));
+			coords.append(String.valueOf((int) this.points_.get(i).getX()))
+					.append(',').append(
+							String.valueOf((int) this.points_.get(i).getY()));
 		}
 		element.setAttribute("coords", coords.toString());
 		return super.updateDom(element, all);
+	}
+
+	protected String getUpdateAreaCoordsJS() {
+		StringWriter coords = new StringWriter();
+		char[] buf = new char[30];
+		coords.append("[").append(this.getJsRef()).append(",[");
+		for (int i = 0; i < this.points_.size(); ++i) {
+			if (i != 0) {
+				coords.append(',');
+			}
+			coords.append(MathUtils.roundJs(this.points_.get(i).getX(), 2))
+					.append(',');
+			coords.append(MathUtils.roundJs(this.points_.get(i).getY(), 2));
+		}
+		coords.append("]]");
+		return coords.toString();
 	}
 }

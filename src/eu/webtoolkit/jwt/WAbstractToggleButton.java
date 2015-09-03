@@ -473,7 +473,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		formObjects.put(this.getFormName(), this);
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.flags_.get(BIT_STATE_CHANGED) || this.isReadOnly()) {
 			return;
 		}

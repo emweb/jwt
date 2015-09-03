@@ -1303,7 +1303,7 @@ public class WTemplate extends WInteractWidget {
 						previouslyRendered.remove(w);
 					}
 				}
-				if (!this.encodeTemplateText_) {
+				if (this.encodeTemplateText_) {
 					element.setProperty(Property.PropertyInnerHTML, html
 							.toString());
 				} else {

@@ -71,7 +71,9 @@ public class WCircleArea extends WAbstractArea {
 	 * Sets the center.
 	 */
 	public void setCenter(final WPointF point) {
-		this.setCenter((int) point.getX(), (int) point.getY());
+		this.x_ = point.getX();
+		this.y_ = point.getY();
+		this.repaint();
 	}
 
 	/**
@@ -87,14 +89,14 @@ public class WCircleArea extends WAbstractArea {
 	 * Returns the center X coordinate.
 	 */
 	public int getCenterX() {
-		return this.x_;
+		return (int) this.x_;
 	}
 
 	/**
 	 * Returns the center Y coordinate.
 	 */
 	public int getCenterY() {
-		return this.y_;
+		return (int) this.y_;
 	}
 
 	/**
@@ -109,20 +111,30 @@ public class WCircleArea extends WAbstractArea {
 	 * Returns the radius.
 	 */
 	public int getRadius() {
-		return this.r_;
+		return (int) this.r_;
 	}
 
-	private int x_;
-	private int y_;
-	private int r_;
+	private double x_;
+	private double y_;
+	private double r_;
 
 	protected boolean updateDom(final DomElement element, boolean all) {
 		element.setAttribute("shape", "circle");
 		StringWriter coords = new StringWriter();
-		coords.append(String.valueOf(this.x_)).append(',').append(
-				String.valueOf(this.y_)).append(',').append(
-				String.valueOf(this.r_));
+		coords.append(String.valueOf((int) this.x_)).append(',').append(
+				String.valueOf((int) this.y_)).append(',').append(
+				String.valueOf((int) this.r_));
 		element.setAttribute("coords", coords.toString());
 		return super.updateDom(element, all);
+	}
+
+	protected String getUpdateAreaCoordsJS() {
+		StringWriter coords = new StringWriter();
+		char[] buf = new char[30];
+		coords.append("[").append(this.getJsRef()).append(",[");
+		coords.append(MathUtils.roundJs(this.x_, 2)).append(',');
+		coords.append(MathUtils.roundJs(this.y_, 2)).append(',');
+		coords.append(MathUtils.roundJs(this.r_, 2)).append("]]");
+		return coords.toString();
 	}
 }

@@ -268,7 +268,16 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			listenerRemoved();
 		}
 	}
-	
+
+	/**
+	 * Remove a JavaScript listener from this signal.
+	 * 
+	 * @param listener a learning listener that was previously added
+	 */
+	public void removeListener(JSlot listener) {
+		removeListener(listener.getSlotimp());
+	}
+
 	void listenerAdded() {
 		if ((flags_ & BIT_SERVER_EVENT) != 0)
 			return;

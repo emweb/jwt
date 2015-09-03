@@ -584,7 +584,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 
 	abstract DomElement createMediaDomElement();
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			List<String> attributes = new ArrayList<String>();
 			attributes = new ArrayList<String>(Arrays.asList(formData.values[0]
@@ -617,6 +617,14 @@ public abstract class WAbstractMedia extends WInteractWidget {
 				throw new WException("WAbstractMedia: error parsing: "
 						+ formData.values[0]);
 			}
+		}
+	}
+
+	protected void enableAjax() {
+		super.enableAjax();
+		if (!EnumUtils.mask(this.flags_, WAbstractMedia.Options.Autoplay)
+				.isEmpty()) {
+			this.play();
 		}
 	}
 

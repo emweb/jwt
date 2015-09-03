@@ -550,6 +550,7 @@ class WebSession {
 						if (handler.getRequest() != null) {
 							this.env_.parameters_ = handler.getRequest()
 									.getParameterMap();
+							this.env_.updateHostName(handler.getRequest());
 						}
 						this.app_.refresh();
 					}

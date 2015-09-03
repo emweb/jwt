@@ -11,6 +11,7 @@ package eu.webtoolkit.jwt.utils;
 import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.Key;
+import eu.webtoolkit.jwt.KeyboardModifier;
 import eu.webtoolkit.jwt.ValidationStyleFlag;
 import eu.webtoolkit.jwt.WAnimation.AnimationEffect;
 
@@ -75,6 +76,8 @@ public class EnumUtils {
 				return valueOfAnimationEffects(enumSet);
 			else if (o instanceof ValidationStyleFlag)
 				return valueOfValidationStyleFlags(enumSet);
+			else if (o instanceof KeyboardModifier)
+				return valueOfKeyboardModifiers(enumSet);
 			else
 				throw new RuntimeException("Not supported valueOf()");
 		} else
@@ -111,6 +114,17 @@ public class EnumUtils {
 		if (enumSet.contains(ValidationStyleFlag.ValidationValidStyle))
 			result |= 0x2;
 		
+		return result;
+	}
+
+	private static <E extends Enum<E>> int valueOfKeyboardModifiers(EnumSet<E> enumSet) {
+		int result = 0;
+
+		for (Enum<E> e : enumSet) {
+			if (e.ordinal() != 0)
+				result |= 1 << (e.ordinal() - 1);
+		}
+
 		return result;
 	}
 }

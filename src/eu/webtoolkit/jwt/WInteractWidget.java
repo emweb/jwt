@@ -515,6 +515,21 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	/**
+	 * Disable drag &amp; drop for this widget.
+	 * <p>
+	 * 
+	 * @see WInteractWidget#setDraggable(String mimeType, WWidget dragWidget,
+	 *      boolean isDragWidgetOnly, WObject sourceObject)
+	 */
+	public void unsetDraggable() {
+		if (this.dragSlot_ != null) {
+			this.mouseWentDown().removeListener(this.dragSlot_);
+			;
+			this.dragSlot_ = null;
+		}
+	}
+
+	/**
 	 * Sets a delay for the mouse over event.
 	 * <p>
 	 * This sets a delay (in milliseconds) before the mouse over event is

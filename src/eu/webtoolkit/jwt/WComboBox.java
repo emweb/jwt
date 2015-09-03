@@ -586,7 +586,7 @@ public class WComboBox extends WFormWidget {
 			}
 			this.itemsChanged_ = false;
 		}
-		if (this.selectionChanged_) {
+		if (this.selectionChanged_ || all) {
 			element.setProperty(Property.PropertySelectedIndex, String
 					.valueOf(this.currentIndex_));
 			this.selectionChanged_ = false;
@@ -614,7 +614,7 @@ public class WComboBox extends WFormWidget {
 		super.propagateRenderOk(deep);
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.selectionChanged_ || this.isReadOnly()) {
 			return;
 		}

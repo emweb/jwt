@@ -1062,6 +1062,9 @@ public class DomElement {
 			case PropertyTarget:
 				out.append(" target=\"").append(i.getValue()).append("\"");
 				break;
+			case PropertyDownload:
+				out.append(" download=\"").append(i.getValue()).append("\"");
+				break;
 			case PropertyIndeterminate:
 				if (i.getValue().equals("true")) {
 					DomElement self = this;

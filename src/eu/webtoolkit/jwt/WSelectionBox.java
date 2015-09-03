@@ -234,7 +234,7 @@ public class WSelectionBox extends WComboBox {
 		super.updateDom(element, all);
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.selectionChanged_) {
 			return;
 		}

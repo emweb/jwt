@@ -37,7 +37,11 @@ public enum AnchorTarget {
 	/**
 	 * Show in a separate new tab or window.
 	 */
-	TargetNewWindow;
+	TargetNewWindow,
+	/**
+	 * Targets an empty iframe and can only be used for downloadable items.
+	 */
+	TargetDownload;
 
 	/**
 	 * Returns the numerical representation of this enum.

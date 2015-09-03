@@ -32,7 +32,7 @@ public class MailUtils {
 	public static void addHtmlBody(Message message, WString htmlBody) throws IOException, MessagingException {
 		MimeMultipart mp = getMultiPart(message);
 		MimeBodyPart htmlPart = new MimeBodyPart();
-		htmlPart.setContent(htmlBody.toString(), "text/html");
+		htmlPart.setText(htmlBody.toString(), "UTF-8", "html");
 		mp.addBodyPart(htmlPart);
 	}
 	

@@ -1210,6 +1210,7 @@ public class WEnvironment {
 				.getConfiguration();
 		this.queryString_ = request.getQueryString();
 		this.parameters_ = request.getParameterMap();
+		this.host_ = str(request.getHeaderValue("Host"));
 		this.urlScheme_ = str(request.getScheme());
 		this.referer_ = str(request.getHeaderValue("Referer"));
 		this.accept_ = str(request.getHeaderValue("Accept"));
@@ -1230,11 +1231,17 @@ public class WEnvironment {
 				} else {
 					this.host_ = forwardedHost.substring(i + 1);
 				}
-			} else {
-				this.host_ = str(request.getHeaderValue("Host"));
 			}
-		} else {
-			this.host_ = str(request.getHeaderValue("Host"));
+			String forwardedProto = str(request
+					.getHeaderValue("X-Forwarded-Proto"));
+			if (forwardedProto.length() != 0) {
+				int i = forwardedProto.lastIndexOf(',');
+				if (i == -1) {
+					this.urlScheme_ = forwardedProto;
+				} else {
+					this.urlScheme_ = forwardedProto.substring(i + 1);
+				}
+			}
 		}
 		if (this.host_.length() == 0) {
 			this.host_ = request.getServerName();
@@ -1249,6 +1256,28 @@ public class WEnvironment {
 			parseCookies(cookie, this.cookies_);
 		}
 		this.locale_ = request.getLocale();
+	}
+
+	void updateHostName(final WebRequest request) {
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
+		String oldHost = this.host_;
+		this.host_ = str(request.getHeaderValue("Host"));
+		if (conf.isBehindReverseProxy()) {
+			String forwardedHost = str(request
+					.getHeaderValue("X-Forwarded-Host"));
+			if (forwardedHost.length() != 0) {
+				int i = forwardedHost.lastIndexOf(',');
+				if (i == -1) {
+					this.host_ = forwardedHost;
+				} else {
+					this.host_ = forwardedHost.substring(i + 1);
+				}
+			}
+		}
+		if (this.host_.length() == 0) {
+			this.host_ = oldHost;
+		}
 	}
 
 	void enableAjax(final WebRequest request) {

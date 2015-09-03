@@ -656,7 +656,7 @@ public class WFileUpload extends WWebWidget {
 
 	long tooLargeSize_;
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		this.setFiles(formData.files);
 		logger.debug(new StringWriter().append("setFormData() : ").append(
 				String.valueOf(formData.files.size())).append(" file(s)")

@@ -85,8 +85,9 @@ class MarkerRenderIterator extends SeriesIterator {
 				if (!(toolTip == null)) {
 					WTransform t = this.painter_.getWorldTransform();
 					p = t.map(this.hv(p));
-					WCircleArea circleArea = new WCircleArea((int) p.getX(),
-							(int) p.getY(), 5);
+					WCircleArea circleArea = new WCircleArea();
+					circleArea.setCenter(new WPointF(p.getX(), p.getY()));
+					circleArea.setRadius(5);
 					circleArea.setToolTip(StringUtils.asString(toolTip));
 					this.chart_.addDataPointArea(series, xIndex, circleArea);
 				}

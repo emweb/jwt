@@ -299,7 +299,7 @@ public class WButtonGroup extends WObject {
 		this.checkedChanged_.trigger(this.getCheckedButton());
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (!(formData.values.length == 0)) {
 			final String value = formData.values[0];
 			for (int i = 0; i < this.buttons_.size(); ++i) {

@@ -70,10 +70,10 @@ public class WRectArea extends WAbstractArea {
 	 */
 	public WRectArea(double x, double y, double width, double height) {
 		super();
-		this.x_ = (int) x;
-		this.y_ = (int) y;
-		this.width_ = (int) width;
-		this.height_ = (int) height;
+		this.x_ = x;
+		this.y_ = y;
+		this.width_ = width;
+		this.height_ = height;
 	}
 
 	/**
@@ -83,10 +83,10 @@ public class WRectArea extends WAbstractArea {
 	 */
 	public WRectArea(final WRectF rect) {
 		super();
-		this.x_ = (int) rect.getX();
-		this.y_ = (int) rect.getY();
-		this.width_ = (int) rect.getWidth();
-		this.height_ = (int) rect.getHeight();
+		this.x_ = rect.getX();
+		this.y_ = rect.getY();
+		this.width_ = rect.getWidth();
+		this.height_ = rect.getHeight();
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class WRectArea extends WAbstractArea {
 	 * Returns the top-left X coordinate.
 	 */
 	public int getX() {
-		return this.x_;
+		return (int) this.x_;
 	}
 
 	/**
@@ -116,7 +116,7 @@ public class WRectArea extends WAbstractArea {
 	 * Returns the top-left Y coordinate.
 	 */
 	public int getY() {
-		return this.y_;
+		return (int) this.y_;
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class WRectArea extends WAbstractArea {
 	 * Returns the width.
 	 */
 	public int getWidth() {
-		return this.width_;
+		return (int) this.width_;
 	}
 
 	/**
@@ -146,27 +146,42 @@ public class WRectArea extends WAbstractArea {
 	 * Returns the height.
 	 */
 	public int getHeight() {
-		return this.height_;
+		return (int) this.height_;
 	}
 
-	private int x_;
-	private int y_;
-	private int width_;
-	private int height_;
+	private double x_;
+	private double y_;
+	private double width_;
+	private double height_;
 
 	protected boolean updateDom(final DomElement element, boolean all) {
 		element.setAttribute("shape", "rect");
 		StringWriter coords = new StringWriter();
-		if (this.x_ == 0 && this.y_ == 0 && this.width_ == 0
-				&& this.height_ == 0) {
+		int x = (int) this.x_;
+		int y = (int) this.y_;
+		int width = (int) this.width_;
+		int height = (int) this.height_;
+		if (x == 0 && y == 0 && width == 0 && height == 0) {
 			coords.append("0%,0%,100%,100%");
 		} else {
-			coords.append(String.valueOf(this.x_)).append(',').append(
-					String.valueOf(this.y_)).append(',').append(
-					String.valueOf(this.x_ + this.width_)).append(',').append(
-					String.valueOf(this.y_ + this.height_));
+			coords.append(String.valueOf(x)).append(',').append(
+					String.valueOf(y)).append(',').append(
+					String.valueOf(x + width)).append(',').append(
+					String.valueOf(y + height));
 		}
 		element.setAttribute("coords", coords.toString());
 		return super.updateDom(element, all);
+	}
+
+	protected String getUpdateAreaCoordsJS() {
+		StringWriter coords = new StringWriter();
+		char[] buf = new char[30];
+		coords.append("[").append(this.getJsRef()).append(",[");
+		coords.append(MathUtils.roundJs(this.x_, 2)).append(',');
+		coords.append(MathUtils.roundJs(this.y_, 2)).append(',');
+		coords.append(MathUtils.roundJs(this.x_ + this.width_, 2)).append(',');
+		coords.append(MathUtils.roundJs(this.y_ + this.height_, 2))
+				.append("]]");
+		return coords.toString();
 	}
 }

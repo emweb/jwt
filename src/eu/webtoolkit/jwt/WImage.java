@@ -60,6 +60,7 @@ public class WImage extends WInteractWidget {
 		this.imageLink_ = new WLink();
 		this.map_ = null;
 		this.flags_ = new BitSet();
+		this.targetJS_ = "";
 		this.setLoadLaterWhenInvisible(false);
 	}
 
@@ -84,6 +85,7 @@ public class WImage extends WInteractWidget {
 		this.imageLink_ = new WLink();
 		this.map_ = null;
 		this.flags_ = new BitSet();
+		this.targetJS_ = "";
 		this.setLoadLaterWhenInvisible(false);
 		this.setImageLink(link);
 	}
@@ -110,6 +112,7 @@ public class WImage extends WInteractWidget {
 		this.imageLink_ = new WLink();
 		this.map_ = null;
 		this.flags_ = new BitSet();
+		this.targetJS_ = "";
 		this.setLoadLaterWhenInvisible(false);
 		this.setImageLink(link);
 	}
@@ -138,6 +141,7 @@ public class WImage extends WInteractWidget {
 		this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
 		this.map_ = null;
 		this.flags_ = new BitSet();
+		this.targetJS_ = "";
 		this.setLoadLaterWhenInvisible(false);
 	}
 
@@ -167,6 +171,7 @@ public class WImage extends WInteractWidget {
 		this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
 		this.map_ = null;
 		this.flags_ = new BitSet();
+		this.targetJS_ = "";
 		this.setLoadLaterWhenInvisible(false);
 	}
 
@@ -198,6 +203,7 @@ public class WImage extends WInteractWidget {
 		this.imageLink_ = new WLink();
 		this.map_ = null;
 		this.flags_ = new BitSet();
+		this.targetJS_ = "";
 		this.setLoadLaterWhenInvisible(false);
 		this.setImageLink(new WLink(resource));
 	}
@@ -440,6 +446,29 @@ public class WImage extends WInteractWidget {
 		return this.voidEventSignal(LOAD_SIGNAL, true);
 	}
 
+	public void setTargetJS(String targetJS) {
+		this.targetJS_ = targetJS;
+	}
+
+	public String getUpdateAreasJS() {
+		StringBuilder ss = new StringBuilder();
+		if (this.targetJS_.length() != 0) {
+			ss.append("jQuery.data(").append(this.getJsRef()).append(
+					", 'obj').updateAreas();");
+		}
+		return ss.toString();
+	}
+
+	public String getSetAreaCoordsJS() {
+		StringBuilder ss = new StringBuilder();
+		if (this.targetJS_.length() != 0) {
+			ss.append("jQuery.data(").append(this.getJsRef()).append(
+					", 'obj').setAreaCoordsJSON(").append(
+					this.getUpdateAreaCoordsJSON()).append(");");
+		}
+		return ss.toString();
+	}
+
 	private static String LOAD_SIGNAL = "load";
 	private static final int BIT_ALT_TEXT_CHANGED = 0;
 	private static final int BIT_IMAGE_LINK_CHANGED = 1;
@@ -448,6 +477,7 @@ public class WImage extends WInteractWidget {
 	private WLink imageLink_;
 	private MapWidget map_;
 	BitSet flags_;
+	String targetJS_;
 
 	private void resourceChanged() {
 		this.flags_.set(BIT_IMAGE_LINK_CHANGED);
@@ -499,6 +529,25 @@ public class WImage extends WInteractWidget {
 		}
 	}
 
+	protected void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		app.loadJavaScript("js/WImage.js", wtjs1());
+		StringBuilder ss = new StringBuilder();
+		ss.append("new Wt3_3_4.WImage(").append(app.getJavaScriptClass())
+				.append(",").append(this.getJsRef()).append(",").append(
+						this.targetJS_).append(");");
+		this.doJavaScript(ss.toString());
+	}
+
+	protected void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+			if (this.targetJS_.length() != 0) {
+				this.defineJavaScript();
+			}
+		}
+		super.render(flags);
+	}
+
 	DomElementType getDomElementType() {
 		return this.map_ != null ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_IMG;
@@ -508,5 +557,32 @@ public class WImage extends WInteractWidget {
 		this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
 		this.flags_.clear(BIT_ALT_TEXT_CHANGED);
 		super.propagateRenderOk(deep);
+	}
+
+	protected String getUpdateAreaCoordsJSON() {
+		StringBuilder js = new StringBuilder();
+		final List<WAbstractArea> areas = this.getAreas();
+		if (!areas.isEmpty()) {
+			for (int i = 0; i < areas.size(); ++i) {
+				if (areas.get(i).isTransformable()) {
+					if ((js.length() == 0)) {
+						js.append("[");
+					} else {
+						js.append(",");
+					}
+					js.append(areas.get(i).getUpdateAreaCoordsJS());
+				}
+			}
+			js.append("]");
+		}
+		return js.toString();
+	}
+
+	static WJavaScriptPreamble wtjs1() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"WImage",
+				"function(o,p,q){jQuery.data(p,\"obj\",this);var k=this,g=null,e=0,h=\"\",b=null,d=0;this.setAreaCoordsJSON=function(a){g=a;h=\"\";this.updateAreas()};this.updateAreas=function(){var a=q.combinedTransform;if(!(a===undefined||g===null)){a=a();var i=a.toString()!==h.toString();if(e===0&&d===0){if(i){h=a;e=(new Date).getTime();b=setTimeout(this.updateAreas,100)}}else{var c=(new Date).getTime();if(i){h=a;e=c;d=0;b&&clearTimeout(b);b=setTimeout(this.updateAreas, 100)}else if(d>0||e&&c-e>100)if(k.updateAreaCoords(50)){d=e=0;b&&clearTimeout(b);b=null}else{b&&clearTimeout(b);b=setTimeout(k.updateAreas,0)}else{a=c-e;if(a>100)a=100;b&&clearTimeout(b);b=setTimeout(k.updateAreas,a)}}}};this.updateAreaCoords=function(a){var i=o.WT.gfxUtils.transform_mult;a=d+a;if(a>g.length)a=g.length;for(;d<a;){var c=g[d],l=c[0];c=c[1];for(var m=c.length,j=\"\",f=0;f+1<m;f+=2){if(f>0)j+=\",\";var n=i(h,c.slice(f,f+2));j+=Math.round(n[0]).toString()+\",\"+Math.round(n[1]).toString()}if(f< m)j+=\",\"+c[f].toString();if(l)l.coords=j;d++}return a===g.length}}");
 	}
 }

@@ -53,6 +53,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		this.background_ = new WBrush(new WColor(230, 230, 230));
 		this.selectedAreaBrush_ = new WBrush(new WColor(255, 255, 255));
 		this.autoPadding_ = false;
+		this.labelsEnabled_ = true;
 		this.transform_ = null;
 		this.init();
 	}
@@ -84,6 +85,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		this.background_ = new WBrush(new WColor(230, 230, 230));
 		this.selectedAreaBrush_ = new WBrush(new WColor(255, 255, 255));
 		this.autoPadding_ = false;
+		this.labelsEnabled_ = true;
 		this.transform_ = null;
 		this.init();
 	}
@@ -349,6 +351,37 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		return this.autoPadding_;
 	}
 
+	/**
+	 * Set whether to draw the X axis tick labels on the slider widget.
+	 * <p>
+	 * Labels are enabled by default.
+	 */
+	public void setLabelsEnabled(boolean enabled) {
+		if (enabled != this.labelsEnabled_) {
+			this.labelsEnabled_ = enabled;
+			this.update();
+		}
+	}
+
+	/**
+	 * Set whether to draw the X axis tick labels on the slider widget.
+	 * <p>
+	 * Calls {@link #setLabelsEnabled(boolean enabled) setLabelsEnabled(true)}
+	 */
+	public final void setLabelsEnabled() {
+		setLabelsEnabled(true);
+	}
+
+	/**
+	 * Returns whether the X axis tick labels are drawn.
+	 * <p>
+	 * 
+	 * @see WAxisSliderWidget#setLabelsEnabled(boolean enabled)
+	 */
+	public boolean isLabelsEnabled() {
+		return this.labelsEnabled_;
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		super.render(flags);
 		WApplication app = WApplication.getInstance();
@@ -357,6 +390,26 @@ public class WAxisSliderWidget extends WPaintedWidget {
 
 	protected void paintEvent(WPaintDevice paintDevice) {
 		if (!(this.chart_ != null) || !this.chart_.cObjCreated_) {
+			return;
+		}
+		if (this.chart_.getSeries(this.seriesColumn_).getType() != SeriesType.LineSeries
+				&& this.chart_.getSeries(this.seriesColumn_).getType() != SeriesType.CurveSeries) {
+			if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
+				StringBuilder ss = new StringBuilder();
+				ss.append("jQuery.removeData(").append(this.getJsRef()).append(
+						",'sobj');");
+				ss.append("\nif (").append(this.getObjJsRef()).append(") {")
+						.append(this.getObjJsRef()).append(
+								".canvas.style.cursor = 'auto';").append(
+								"setTimeout(").append(this.getObjJsRef())
+						.append(".repaint,0);}\n");
+				this.doJavaScript(ss.toString());
+			}
+			logger
+					.error(new StringWriter()
+							.append(
+									"WAxisSliderWidget is not associated with a line or curve series.")
+							.toString());
 			return;
 		}
 		WPainter painter = new WPainter(paintDevice);
@@ -368,7 +421,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		boolean autoPadding = this.autoPadding_;
 		if (autoPadding
 				&& EnumUtils.mask(paintDevice.getFeatures(),
-						WPaintDevice.FeatureFlag.HasFontMetrics).equals(0)) {
+						WPaintDevice.FeatureFlag.HasFontMetrics).equals(0)
+				&& this.labelsEnabled_) {
 			logger
 					.error(new StringWriter()
 							.append(
@@ -378,23 +432,37 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		}
 		if (autoPadding) {
 			if (horizontal) {
-				this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
-				this.setSelectionAreaPadding((int) (this.chart_.getAxis(
-						Axis.XAxis).calcMaxTickLabelSize(paintDevice,
-						Orientation.Vertical) + 10), EnumSet.of(Side.Bottom));
-				this.setSelectionAreaPadding((int) Math.max(this.chart_
-						.getAxis(Axis.XAxis).calcMaxTickLabelSize(paintDevice,
-								Orientation.Horizontal) / 2, 10.0), EnumSet.of(
-						Side.Left, Side.Right));
+				if (this.labelsEnabled_) {
+					this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
+					this.setSelectionAreaPadding((int) (this.chart_.getAxis(
+							Axis.XAxis).calcMaxTickLabelSize(paintDevice,
+							Orientation.Vertical) + 10), EnumSet
+							.of(Side.Bottom));
+					this.setSelectionAreaPadding((int) Math.max(this.chart_
+							.getAxis(Axis.XAxis).calcMaxTickLabelSize(
+									paintDevice, Orientation.Horizontal) / 2,
+							10.0), EnumSet.of(Side.Left, Side.Right));
+				} else {
+					this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
+					this.setSelectionAreaPadding(5, EnumSet.of(Side.Left,
+							Side.Right, Side.Bottom));
+				}
 			} else {
-				this.setSelectionAreaPadding(0, EnumSet.of(Side.Right));
-				this.setSelectionAreaPadding((int) Math.max(this.chart_
-						.getAxis(Axis.XAxis).calcMaxTickLabelSize(paintDevice,
-								Orientation.Vertical) / 2, 10.0), EnumSet.of(
-						Side.Top, Side.Bottom));
-				this.setSelectionAreaPadding((int) (this.chart_.getAxis(
-						Axis.XAxis).calcMaxTickLabelSize(paintDevice,
-						Orientation.Horizontal) + 10), EnumSet.of(Side.Left));
+				if (this.labelsEnabled_) {
+					this.setSelectionAreaPadding(0, EnumSet.of(Side.Right));
+					this.setSelectionAreaPadding((int) Math.max(this.chart_
+							.getAxis(Axis.XAxis).calcMaxTickLabelSize(
+									paintDevice, Orientation.Vertical) / 2,
+							10.0), EnumSet.of(Side.Top, Side.Bottom));
+					this.setSelectionAreaPadding((int) (this.chart_.getAxis(
+							Axis.XAxis).calcMaxTickLabelSize(paintDevice,
+							Orientation.Horizontal) + 10), EnumSet
+							.of(Side.Left));
+				} else {
+					this.setSelectionAreaPadding(0, EnumSet.of(Side.Right));
+					this.setSelectionAreaPadding(5, EnumSet.of(Side.Top,
+							Side.Bottom, Side.Left));
+				}
 			}
 		}
 		double left = horizontal ? this.getSelectionAreaPadding(Side.Left)
@@ -407,18 +475,21 @@ public class WAxisSliderWidget extends WPaintedWidget {
 				: this.getSelectionAreaPadding(Side.Left);
 		double maxW = w - left - right;
 		WRectF drawArea = new WRectF(left, 0, maxW, h);
+		List<WAxis.Segment> segmentsBak = this.chart_.getAxis(Axis.XAxis).segments_;
+		double renderIntervalBak = this.chart_.getAxis(Axis.XAxis).renderInterval_;
 		this.chart_.getAxis(Axis.XAxis).prepareRender(
 				horizontal ? Orientation.Horizontal : Orientation.Vertical,
 				drawArea.getWidth());
 		final WRectF chartArea = this.chart_.chartArea_;
 		WRectF selectionRect = null;
 		{
-			double u = -this.chart_.xTransform_.getValue().getDx()
-					/ (chartArea.getWidth() * this.chart_.xTransform_
+			double u = -this.chart_.xTransformHandle_.getValue().getDx()
+					/ (chartArea.getWidth() * this.chart_.xTransformHandle_
 							.getValue().getM11());
 			selectionRect = new WRectF(0, top, maxW, h - (top + bottom));
-			this.transform_.setValue(new WTransform(1 / this.chart_.xTransform_
-					.getValue().getM11(), 0, 0, 1, u * maxW, 0));
+			this.transform_.setValue(new WTransform(
+					1 / this.chart_.xTransformHandle_.getValue().getM11(), 0,
+					0, 1, u * maxW, 0));
 		}
 		WRectF seriesArea = new WRectF(left, top + 5, maxW, h
 				- (top + bottom + 5));
@@ -429,34 +500,75 @@ public class WAxisSliderWidget extends WPaintedWidget {
 				this.hv(new WRectF(left, top, maxW, h - top - bottom)),
 				this.background_);
 		painter.fillRect(rect, this.selectedAreaBrush_);
+		final double TICK_LENGTH = 5;
+		final double ANGLE1 = 15;
+		final double ANGLE2 = 80;
+		double tickStart = 0.0;
+		double tickEnd = 0.0;
+		double labelPos = 0.0;
+		AlignmentFlag labelHFlag = AlignmentFlag.AlignCenter;
+		AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
+		final WAxis axis = this.chart_.getAxis(Axis.XAxis);
 		if (horizontal) {
-			this.chart_.getAxis(Axis.XAxis).render(
-					painter,
-					EnumSet.of(AxisProperty.Labels, AxisProperty.Line),
-					new WPointF(drawArea.getLeft(), h - bottom),
-					new WPointF(drawArea.getRight(), h - bottom),
-					0,
-					5,
-					5,
-					EnumSet.of(AlignmentFlag.AlignCenter,
-							AlignmentFlag.AlignTop));
+			tickStart = 0;
+			tickEnd = TICK_LENGTH;
+			labelPos = TICK_LENGTH;
+			labelVFlag = AlignmentFlag.AlignTop;
+		} else {
+			tickStart = -TICK_LENGTH;
+			tickEnd = 0;
+			labelPos = -TICK_LENGTH;
+			labelHFlag = AlignmentFlag.AlignRight;
+		}
+		if (horizontal) {
+			if (axis.getLabelAngle() > ANGLE1) {
+				labelHFlag = AlignmentFlag.AlignRight;
+				if (axis.getLabelAngle() > ANGLE2) {
+					labelVFlag = AlignmentFlag.AlignMiddle;
+				}
+			} else {
+				if (axis.getLabelAngle() < -ANGLE1) {
+					labelHFlag = AlignmentFlag.AlignLeft;
+					if (axis.getLabelAngle() < -ANGLE2) {
+						labelVFlag = AlignmentFlag.AlignMiddle;
+					}
+				}
+			}
+		} else {
+			if (axis.getLabelAngle() > ANGLE1) {
+				labelVFlag = AlignmentFlag.AlignBottom;
+				if (axis.getLabelAngle() > ANGLE2) {
+					labelHFlag = AlignmentFlag.AlignCenter;
+				}
+			} else {
+				if (axis.getLabelAngle() < -ANGLE1) {
+					labelVFlag = AlignmentFlag.AlignTop;
+					if (axis.getLabelAngle() < -ANGLE2) {
+						labelHFlag = AlignmentFlag.AlignCenter;
+					}
+				}
+			}
+		}
+		EnumSet<AxisProperty> axisProperties = EnumSet.of(AxisProperty.Line);
+		if (this.labelsEnabled_) {
+			axisProperties.add(AxisProperty.Labels);
+		}
+		if (horizontal) {
+			axis.render(painter, axisProperties, new WPointF(
+					drawArea.getLeft(), h - bottom), new WPointF(drawArea
+					.getRight(), h - bottom), tickStart, tickEnd, labelPos,
+					EnumSet.of(labelHFlag, labelVFlag));
 			WPainterPath line = new WPainterPath();
 			line.moveTo(drawArea.getLeft() + 0.5, h - (bottom - 0.5));
 			line.lineTo(drawArea.getRight(), h - (bottom - 0.5));
 			painter.strokePath(line, this.chart_.getAxis(Axis.XAxis).getPen());
 		} else {
-			this.chart_.getAxis(Axis.XAxis).render(
-					painter,
-					EnumSet.of(AxisProperty.Labels, AxisProperty.Line),
+			axis.render(painter, axisProperties,
 					new WPointF(this.getSelectionAreaPadding(Side.Left) - 1,
-							drawArea.getLeft()),
-					new WPointF(this.getSelectionAreaPadding(Side.Left) - 1,
-							drawArea.getRight()),
-					-5,
-					0,
-					-5,
-					EnumSet.of(AlignmentFlag.AlignRight,
-							AlignmentFlag.AlignMiddle));
+							drawArea.getLeft()), new WPointF(this
+							.getSelectionAreaPadding(Side.Left) - 1, drawArea
+							.getRight()), tickStart, tickEnd, labelPos, EnumSet
+							.of(labelHFlag, labelVFlag));
 			WPainterPath line = new WPainterPath();
 			line.moveTo(this.getSelectionAreaPadding(Side.Left) - 0.5, drawArea
 					.getLeft() + 0.5);
@@ -549,6 +661,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
 					.append("});");
 			this.doJavaScript(ss.toString());
 		}
+		Utils.copyList(segmentsBak, this.chart_.getAxis(Axis.XAxis).segments_);
+		this.chart_.getAxis(Axis.XAxis).renderInterval_ = renderIntervalBak;
 	}
 
 	private void init() {
@@ -615,6 +729,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	private WBrush background_;
 	private WBrush selectedAreaBrush_;
 	private boolean autoPadding_;
+	private boolean labelsEnabled_;
 	private int[] padding_ = new int[4];
 	private WJavaScriptHandle<WTransform> transform_;
 

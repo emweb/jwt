@@ -35,7 +35,7 @@ public class WObject {
 		}
 	}
 
-	static class FormData {
+	protected static class FormData {
 		public FormData(String[] parameters, List<UploadedFile> uploadedFiles) {
 			values = parameters;
 			files = uploadedFiles;
@@ -138,7 +138,7 @@ public class WObject {
 			return getUniqueId();
 	}
 
-	void setFormData(FormData formData) {
+	protected void setFormData(FormData formData) {
 	}
 
 	void setRequestTooLarge(long size) {

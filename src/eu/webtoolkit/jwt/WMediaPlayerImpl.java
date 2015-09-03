@@ -42,7 +42,7 @@ class WMediaPlayerImpl extends WTemplate {
 		}
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		this.player_.setFormData(formData);
 	}
 

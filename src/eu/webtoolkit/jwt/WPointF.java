@@ -168,6 +168,27 @@ public class WPointF extends WJavaScriptExposableObject {
 		return result;
 	}
 
+	protected void assignFromJSON(final com.google.gson.JsonElement value) {
+		try {
+			final com.google.gson.JsonArray ar = (com.google.gson.JsonArray) value;
+			if (ar.size() == 2
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(0)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(1)))) {
+				this.x_ = JsonUtils.orIfNullDouble(JsonUtils
+						.toNumber(ar.get(0)), this.x_);
+				this.y_ = JsonUtils.orIfNullDouble(JsonUtils
+						.toNumber(ar.get(1)), this.y_);
+			} else {
+				logger.error(new StringWriter().append(
+						"Couldn't convert JSON to WPointF").toString());
+			}
+		} catch (final RuntimeException e) {
+			logger.error(new StringWriter().append(
+					"Couldn't convert JSON to WPointF: " + e.toString())
+					.toString());
+		}
+	}
+
 	private double x_;
 	private double y_;
 }

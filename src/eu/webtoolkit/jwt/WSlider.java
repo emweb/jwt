@@ -604,7 +604,7 @@ public class WSlider extends WFormWidget {
 				: DomElementType.DomElement_INPUT;
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.changed_ || this.isReadOnly()) {
 			return;
 		}

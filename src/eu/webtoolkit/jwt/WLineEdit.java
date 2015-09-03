@@ -1017,7 +1017,7 @@ public class WLineEdit extends WFormWidget {
 		}
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.flags_.get(BIT_CONTENT_CHANGED) || this.isReadOnly()) {
 			return;
 		}

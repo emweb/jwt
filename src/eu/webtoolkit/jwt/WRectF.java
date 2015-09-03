@@ -463,6 +463,33 @@ public class WRectF extends WJavaScriptExposableObject {
 		return ss.toString();
 	}
 
+	protected void assignFromJSON(final com.google.gson.JsonElement value) {
+		try {
+			final com.google.gson.JsonArray ar = (com.google.gson.JsonArray) value;
+			if (ar.size() == 4
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(0)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(1)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(2)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(3)))) {
+				this.x_ = JsonUtils.orIfNullDouble(JsonUtils
+						.toNumber(ar.get(0)), this.x_);
+				this.y_ = JsonUtils.orIfNullDouble(JsonUtils
+						.toNumber(ar.get(1)), this.y_);
+				this.width_ = JsonUtils.orIfNullDouble(JsonUtils.toNumber(ar
+						.get(2)), this.width_);
+				this.height_ = JsonUtils.orIfNullDouble(JsonUtils.toNumber(ar
+						.get(3)), this.height_);
+			} else {
+				logger.error(new StringWriter().append(
+						"Couldn't convert JSON to WRectF").toString());
+			}
+		} catch (final RuntimeException e) {
+			logger.error(new StringWriter().append(
+					"Couldn't convert JSON to WRectF: " + e.toString())
+					.toString());
+		}
+	}
+
 	private double x_;
 	private double y_;
 	private double width_;

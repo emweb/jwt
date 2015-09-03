@@ -19,6 +19,11 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+
 class WJavaScriptObjectStorage {
 	private static Logger logger = LoggerFactory.getLogger(WJavaScriptObjectStorage.class);
 
@@ -46,6 +51,25 @@ class WJavaScriptObjectStorage {
 
 	public int size() {
 		return jsValues.size();
+	}
+
+	public void assignFromJSON(String json) {
+		try {
+			JsonElement result = new JsonParser().parse(json);
+			JsonArray ar = result.getAsJsonArray();
+
+			if (jsValues.size() != ar.size())
+				throw new IllegalStateException("JSON array length is incompatible with number of jsValues");
+
+			for (int i = 0; i < jsValues.size(); ++i) {
+				if (!dirty.get(i))
+					jsValues.get(i).assignFromJSON(ar.get(i));
+			}
+		} catch (JsonParseException e) {
+			logger.error("Failed to parse JSON", e);
+		} catch (IllegalStateException e) {
+			logger.error("Failed to assign value from JSON", e);
+		}
 	}
 
 	final List<WJavaScriptExposableObject> jsValues = new ArrayList<WJavaScriptExposableObject>();

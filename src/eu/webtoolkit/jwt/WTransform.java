@@ -814,6 +814,31 @@ public class WTransform extends WJavaScriptExposableObject {
 		return ss.toString();
 	}
 
+	protected void assignFromJSON(final com.google.gson.JsonElement value) {
+		try {
+			final com.google.gson.JsonArray ar = (com.google.gson.JsonArray) value;
+			if (ar.size() == 6
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(0)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(1)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(2)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(3)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(4)))
+					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(5)))) {
+				for (int i = 0; i < 6; ++i) {
+					this.m_[i] = JsonUtils.orIfNullDouble(JsonUtils.toNumber(ar
+							.get(i)), this.m_[i]);
+				}
+			} else {
+				logger.error(new StringWriter().append(
+						"Couldn't convert JSON to WTransform").toString());
+			}
+		} catch (final RuntimeException e) {
+			logger.error(new StringWriter().append(
+					"Couldn't convert JSON to WTransform: " + e.toString())
+					.toString());
+		}
+	}
+
 	private static final int M11 = 0;
 	private static final int M12 = 1;
 	private static final int M21 = 2;

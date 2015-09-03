@@ -26,6 +26,16 @@ class MapWidget extends WContainerWidget {
 		super();
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		WImage parent_img = ((this.getParent()) instanceof WImage ? (WImage) (this
+				.getParent())
+				: null);
+		if (parent_img.targetJS_.length() != 0) {
+			parent_img.doJavaScript(parent_img.getSetAreaCoordsJS());
+		}
+	}
+
 	void updateDom(final DomElement element, boolean all) {
 		if (all) {
 			element.setAttribute("name", this.getId());

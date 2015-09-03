@@ -156,7 +156,7 @@ public class WRadioButton extends WAbstractToggleButton {
 		super.getFormObjects(formObjects);
 	}
 
-	void setFormData(final WObject.FormData formData) {
+	protected void setFormData(final WObject.FormData formData) {
 		if (this.flags_.get(BIT_STATE_CHANGED) || this.isReadOnly()) {
 			return;
 		}
