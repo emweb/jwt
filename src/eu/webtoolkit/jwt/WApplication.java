@@ -1521,7 +1521,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The client will be redirected to a new location identified by
 	 * <code>url</code>. Use this in conjunction with
-	 * {@link WApplication#quit() quit()} if you want to the application to be
+	 * {@link WApplication#quit() quit()} if you want the application to be
 	 * terminated as well.
 	 * <p>
 	 * Calling redirect() does not imply quit() since it may be useful to switch

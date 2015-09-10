@@ -1453,19 +1453,19 @@ public class WAxis {
 													int sec = roundDown(min
 															.getSecond(),
 															interval);
-													min.setTime(min.getHour(),
-															min.getMinute(),
-															sec);
+													min.setTime(new WTime(min
+															.getHour(), min
+															.getMinute(), sec));
 												} else {
 													if (min.getMillisecond() != 0) {
 														min
-																.setTime(
+																.setTime(new WTime(
 																		min
 																				.getHour(),
 																		min
 																				.getMinute(),
 																		min
-																				.getSecond());
+																				.getSecond()));
 													}
 												}
 											}
@@ -1474,18 +1474,19 @@ public class WAxis {
 													AxisValue.MaximumValue)
 													.isEmpty()) {
 												if (max.getMillisecond() != 0) {
-													max.setTime(max.getHour(),
-															max.getMinute(),
-															max.getSecond());
+													max.setTime(new WTime(max
+															.getHour(), max
+															.getMinute(), max
+															.getSecond()));
 													max = max.addSeconds(1);
 												}
 												if (max.getSecond() % interval != 0) {
 													int sec = roundDown(max
 															.getSecond(),
 															interval);
-													max.setTime(max.getHour(),
-															max.getMinute(),
-															sec);
+													max.setTime(new WTime(max
+															.getHour(), max
+															.getMinute(), sec));
 													max = max
 															.addSeconds(interval);
 												}

@@ -327,6 +327,19 @@ public class WComboBox extends WFormWidget {
 	}
 
 	/**
+	 * Returns the selection mode.
+	 * <p>
+	 * Always returns SingleSelection for a combo box, but may return
+	 * ExtendedSelection for a selection box
+	 * <p>
+	 * 
+	 * @see WSelectionBox#setSelectionMode(SelectionMode mode)
+	 */
+	public SelectionMode getSelectionMode() {
+		return SelectionMode.SingleSelection;
+	}
+
+	/**
 	 * Returns the current value.
 	 * <p>
 	 * Returns {@link WComboBox#getCurrentText() getCurrentText()} converted
@@ -586,7 +599,8 @@ public class WComboBox extends WFormWidget {
 			}
 			this.itemsChanged_ = false;
 		}
-		if (this.selectionChanged_ || all) {
+		if (this.selectionChanged_ || all
+				&& this.getSelectionMode() == SelectionMode.SingleSelection) {
 			element.setProperty(Property.PropertySelectedIndex, String
 					.valueOf(this.currentIndex_));
 			this.selectionChanged_ = false;

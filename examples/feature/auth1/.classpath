@@ -26,8 +26,8 @@
 	<classpathentry kind="lib" path="lib/jwt-lib/servlet-api/servlet-api-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.3.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/jwt-auth-3.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.3.5.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/jwt-auth-3.3.5.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/vt-password/bcprov-jdk15-1.45.jar"/>

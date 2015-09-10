@@ -25,6 +25,72 @@ newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour. It also indicates the main changes from version to verison.
 
+
+<h2>Release 3.3.5 (Sept X, 2015)</h2>
+
+<p>
+ This release has comes with a slew bug fixes but also one or two new
+ features:
+</p>
+
+<dl>
+  <dt>
+    <a href="classWt_1_1Chart_1_1WCartesianChart.html">Chart::WCartesianChart</a>
+  </dt>
+  <dd>
+	WCartesianChart has several new features that allow interaction with the
+	chart without server roundtrips. These features include zoom, pan,
+	crosshair and follow curve functionality.
+
+	This is only available if the chart is drawn
+	on an HTML canvas. This is the default rendering method on modern browsers.
+	
+	When enabled, the crosshair will follow mouse movement,
+	and show in the top right corner the coordinate
+	(according to X axis and the first Y axis)  corresponding to this position.
+  </dd>
+  <dt>
+  <a href="classWt_1_1Chart_1_1WAxisSliderWidget.html">WAxisSliderWidget</a>
+  </dt>
+  <dd>
+	WAxisSliderWidget lets you easily focus on a particular range by selecting an XAxis. It will create a sliding widget where you can change the size of the focused region by dragging the blue handles, and change the position by dragging the selected area. When using touch, the size of this area can also be changed using a pinch movement.
+  </dd>
+  <dt>
+  <a href="classWt_1_1WPainter.html">WPainter</a>, <a href="classWt_1_1WJavaScriptHandle.html">WJavascriptHandle</a>, <a href="classWt_1_1WCanvasDevice.html">WCanvasDevice</a>
+  </dt>
+  <dd>
+  Support client-side interaction (when rendered with WCanvasPaintDevice) by using a WTransform which you can manipulate client side using a WJavascriptHandle
+  A WJavaScriptHandle allows to access and modify an object in JavaScript.
+  This is useful to avoid server roundtrips when frequently updating something,
+  </dd>
+
+  <dt> <a href=classWt_1_1WAnchor.html">WAnchor</a> target type moved to <a href="classWt_1_1WLink.html#afda591cd277562d5c8ea723733290790">WLink</a></dt>
+  <dd> Before, the WAnchor was the owner of the TargetType, however from now on, WLink has the ownership of the TargetType.
+  This may break WAnchors in existing applications if the WAnchor target type is set before setting a WLink to the WAnchor.
+  </dd>
+
+  <dt>WLink added new <a href="namespaceWt.html#a6c93a6e97016801a310275457e43f333">TargetDownload</a></dt>
+  <dd>The new TargetDownload type will allow the user to download a file without openning a new windows or tab as it was done before.
+  This is done with the HTML5 download attribute or, if not supported by targeting a hidden iFrame contained in the page.
+  </dd>
+
+  <dt>Added seconds to <a href="classWt_1_1WTimePicker.html#a4d19d3ad8bdf0a9a3e35d84f3d298994">WTimePicker</a></dt>
+  <dd>WTimePicker was missing the seconds, we've also added the setSecondStep() method.
+  </dd>
+
+  <dt><a href="classWt_1_1WCheckBox.html#a2d741874682e9a683d40527b03615d32">WCheckBox::setPartialStateSelectable()</a></dt>
+  <dd>Before it was only possible to set the partial state of the WCheckbox when creating the Widget.
+  We've added a method WCheckBox::setPartialStateSelectable(bool) which will allow the user to select indeterminate state. This is false by default;
+  </dd>
+
+  <dt>New client side connection monitor</dt>
+  <dd>The <a href="classWt_1_1WApplication.html#ab6ae1117e316f1a7b31449aaeb83c9cf">WApplication::setConnectionMonitor()</a> method will let the user register a Javascript object that will be notified on connection changes (connection, disconnection, websockets enabled/disabled..)
+  The monitor will trigger the onChange method of the provided Javascript object</dd>
+
+  <dt> Support custom tags for widgets </dt>
+  <dd> We've added <a href="classWt_1_1WWebWidget.html#adf6034e0e715138cae479eae6e324ce6">WWebWidget::setHtmlTagName()</a> that will change the current html tag to the one provided. This allows the user to create widgets that are not provided by Wt, for example an iframe.
+  </dd>
+
 <h2>Release 3.3.4 (Mar 25, 2015)</h2>
 
 <p>

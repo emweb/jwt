@@ -609,7 +609,7 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	public String getAttributeValue(final String name) {
-		if (this.otherImpl_ != null) {
+		if (this.otherImpl_ != null && this.otherImpl_.attributes_ != null) {
 			String i = this.otherImpl_.attributes_.get(name);
 			if (i != null) {
 				return i;

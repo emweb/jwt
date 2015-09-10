@@ -39,7 +39,7 @@ public enum AnchorTarget {
 	 */
 	TargetNewWindow,
 	/**
-	 * Targets an empty iframe and can only be used for downloadable items.
+	 * Useful only for a downloadable resource.
 	 */
 	TargetDownload;
 

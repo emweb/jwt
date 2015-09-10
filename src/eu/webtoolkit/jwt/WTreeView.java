@@ -1395,24 +1395,25 @@ public class WTreeView extends WAbstractItemView {
 				}
 			}
 		}
-		if (this.skipNextMouseEvent_) {
+		if (nodeAndColumnId.length() == 0 && this.skipNextMouseEvent_) {
 			this.skipNextMouseEvent_ = false;
 			return;
+		} else {
+			if (nodeAndColumnId.length() != 0) {
+				this.skipNextMouseEvent_ = true;
+			}
 		}
 		if (type.equals("clicked")) {
 			this.handleClick(index, event);
-			this.skipNextMouseEvent_ = true;
 		} else {
 			if (type.equals("dblclicked")) {
 				this.handleDoubleClick(index, event);
 			} else {
 				if (type.equals("mousedown")) {
 					this.handleMouseDown(index, event);
-					this.skipNextMouseEvent_ = true;
 				} else {
 					if (type.equals("mouseup")) {
 						this.handleMouseUp(index, event);
-						this.skipNextMouseEvent_ = true;
 					} else {
 						if (type.equals("drop")) {
 							WDropEvent e = new WDropEvent(WApplication
