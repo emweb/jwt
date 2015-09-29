@@ -38,7 +38,7 @@
       <fileset dir="${jwt.dir}/dist" />
       <fileset dir="${lib.dir}/" includes="*.jar" />
       <fileset dir="${jwt.dir}/lib" 
-	       includes="*.jar servlet-api/*.jar pdfjet/*.jar jogl/*.jar"/>
+	       includes="*.jar servlet-api/*.jar pdfjet/*.jar jogl/*.jar gson/*.jar"/>
     </copy>
 
     <mkdir dir="${build.dir}"/>

@@ -1612,24 +1612,24 @@ public class WCartesian3DChart extends WGLWidget {
 				this.getCameraMatrix());
 		javax.vecmath.Matrix4f invTransform = transform;
 		invTransform.invert();
-		javax.vecmath.GVector near = new javax.vecmath.GVector(new double[] {
+		javax.vecmath.GVector near_ = new javax.vecmath.GVector(new double[] {
 				x / this.getWidth().getValue() * 2 - 1,
 				y / this.getHeight().getValue() * -2 + 1, -1.0, 1.0 });
-		javax.vecmath.GVector far = new javax.vecmath.GVector(new double[] {
-				near.getElement(0), near.getElement(1), 1.0, 1.0 });
-		near = WebGLUtils.multiply(invTransform, near);
-		far = WebGLUtils.multiply(invTransform, far);
-		near = WebGLUtils.multiply(near, 1.0 / near.getElement(3));
-		far = WebGLUtils.multiply(far, 1.0 / far.getElement(3));
+		javax.vecmath.GVector far_ = new javax.vecmath.GVector(new double[] {
+				near_.getElement(0), near_.getElement(1), 1.0, 1.0 });
+		near_ = WebGLUtils.multiply(invTransform, near_);
+		far_ = WebGLUtils.multiply(invTransform, far_);
+		near_ = WebGLUtils.multiply(near_, 1.0 / near_.getElement(3));
+		far_ = WebGLUtils.multiply(far_, 1.0 / far_.getElement(3));
 		javax.vecmath.GVector ray = new javax.vecmath.GVector(WebGLUtils
-				.subtract(far, near));
+				.subtract(far_, near_));
 		WebGLUtils.normalize(ray);
 		direction.setElement(0, ray.getElement(0));
 		direction.setElement(1, ray.getElement(2));
 		direction.setElement(2, ray.getElement(1));
-		eye.setElement(0, near.getElement(0));
-		eye.setElement(1, near.getElement(2));
-		eye.setElement(2, near.getElement(1));
+		eye.setElement(0, near_.getElement(0));
+		eye.setElement(1, near_.getElement(2));
+		eye.setElement(2, near_.getElement(1));
 	}
 
 	private void initializePlotCube() {

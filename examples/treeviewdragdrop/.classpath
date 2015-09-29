@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/servlet-api/servlet-api-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.3.5.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-fileupload-1.2.1.jar"/>

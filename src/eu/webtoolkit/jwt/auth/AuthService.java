@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * <li>authentication tokens, used by e.g. remember-me functionality:
  * <ul>
  * <li>
- * {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName)
+ * {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
  * setAuthTokensEnabled()}</li>
  * <li>
  * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
@@ -83,6 +83,7 @@ public class AuthService {
 		this.authTokens_ = false;
 		this.authTokenValidity_ = 14 * 24 * 60;
 		this.authTokenCookieName_ = "";
+		this.authTokenCookieDomain_ = "";
 		this.redirectInternalPath_ = "/auth/mail/";
 	}
 
@@ -190,26 +191,42 @@ public class AuthService {
 	 * @see AuthService#setTokenHashFunction(HashFunction function)
 	 * @see AuthService#setAuthTokenValidity(int minutes)
 	 */
-	public void setAuthTokensEnabled(boolean enabled, final String cookieName) {
+	public void setAuthTokensEnabled(boolean enabled, final String cookieName,
+			final String cookieDomain) {
 		this.authTokens_ = enabled;
 		this.authTokenCookieName_ = cookieName;
+		this.authTokenCookieDomain_ = cookieDomain;
 	}
 
 	/**
 	 * Configures authentication token support.
 	 * <p>
-	 * Calls {@link #setAuthTokensEnabled(boolean enabled, String cookieName)
-	 * setAuthTokensEnabled(enabled, "wtauth")}
+	 * Calls
+	 * {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+	 * setAuthTokensEnabled(enabled, "wtauth", "")}
 	 */
 	public final void setAuthTokensEnabled(boolean enabled) {
-		setAuthTokensEnabled(enabled, "wtauth");
+		setAuthTokensEnabled(enabled, "wtauth", "");
+	}
+
+	/**
+	 * Configures authentication token support.
+	 * <p>
+	 * Calls
+	 * {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+	 * setAuthTokensEnabled(enabled, cookieName, "")}
+	 */
+	public final void setAuthTokensEnabled(boolean enabled,
+			final String cookieName) {
+		setAuthTokensEnabled(enabled, cookieName, "");
 	}
 
 	/**
 	 * Returns whether authentication tokens are enabled.
 	 * <p>
 	 * 
-	 * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName)
+	 * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName,
+	 *      String cookieDomain)
 	 */
 	public boolean isAuthTokensEnabled() {
 		return this.authTokens_;
@@ -222,10 +239,28 @@ public class AuthService {
 	 * in the user&apos;s browser.
 	 * <p>
 	 * 
-	 * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName)
+	 * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName,
+	 *      String cookieDomain)
 	 */
 	public String getAuthTokenCookieName() {
 		return this.authTokenCookieName_;
+	}
+
+	/**
+	 * Returns the authentication token cookie domain.
+	 * <p>
+	 * This is the domain used for the authentication cookie. By default this is
+	 * empty, which means that a cookie will be set for this application.
+	 * <p>
+	 * You may want to set a more general domain if you are sharing the
+	 * authentication with multiple applications.
+	 * <p>
+	 * 
+	 * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName,
+	 *      String cookieDomain)
+	 */
+	public String getAuthTokenCookieDomain() {
+		return this.authTokenCookieDomain_;
 	}
 
 	/**
@@ -681,4 +716,5 @@ public class AuthService {
 	private boolean authTokens_;
 	private int authTokenValidity_;
 	private String authTokenCookieName_;
+	private String authTokenCookieDomain_;
 }

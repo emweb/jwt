@@ -254,14 +254,10 @@ public class AuthModel extends FormBaseModel {
 			User user = this.getUsers().findWithIdentity(Identity.LoginName,
 					this.valueText(LoginNameField));
 			Object v = this.getValue(RememberMeField);
-			AuthService s = this.getBaseAuth();
 			if (this.loginUser(login, user)) {
 				this.reset();
 				if (!(v == null) && (Boolean) v == true) {
-					WApplication app = WApplication.getInstance();
-					app.setCookie(s.getAuthTokenCookieName(), s
-							.createAuthToken(user),
-							s.getAuthTokenValidity() * 60);
+					this.setRememberMeCookie(user);
 				}
 				return true;
 			} else {
@@ -296,6 +292,18 @@ public class AuthModel extends FormBaseModel {
 	 */
 	public EmailTokenResult processEmailToken(final String token) {
 		return this.getBaseAuth().processEmailToken(token, this.getUsers());
+	}
+
+	/**
+	 * Creates a token and stores it in a cookie.
+	 * <p>
+	 * This enables automatic authentication in a next session.
+	 */
+	public void setRememberMeCookie(final User user) {
+		WApplication app = WApplication.getInstance();
+		AuthService s = this.getBaseAuth();
+		app.setCookie(s.getAuthTokenCookieName(), s.createAuthToken(user), s
+				.getAuthTokenValidity() * 60, s.getAuthTokenCookieDomain());
 	}
 
 	/**

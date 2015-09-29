@@ -1211,7 +1211,6 @@ public class WEnvironment {
 		this.queryString_ = request.getQueryString();
 		this.parameters_ = request.getParameterMap();
 		this.host_ = str(request.getHeaderValue("Host"));
-		this.urlScheme_ = str(request.getScheme());
 		this.referer_ = str(request.getHeaderValue("Referer"));
 		this.accept_ = str(request.getHeaderValue("Accept"));
 		this.serverSignature_ = str("");
@@ -1219,6 +1218,7 @@ public class WEnvironment {
 		this.serverAdmin_ = str("");
 		this.pathInfo_ = request.getPathInfo();
 		this.setUserAgent(str(request.getHeaderValue("User-Agent")));
+		this.updateUrlScheme(request);
 		logger.info(new StringWriter().append("UserAgent: ").append(
 				this.userAgent_).toString());
 		if (conf.isBehindReverseProxy()) {
@@ -1230,16 +1230,6 @@ public class WEnvironment {
 					this.host_ = forwardedHost;
 				} else {
 					this.host_ = forwardedHost.substring(i + 1);
-				}
-			}
-			String forwardedProto = str(request
-					.getHeaderValue("X-Forwarded-Proto"));
-			if (forwardedProto.length() != 0) {
-				int i = forwardedProto.lastIndexOf(',');
-				if (i == -1) {
-					this.urlScheme_ = forwardedProto;
-				} else {
-					this.urlScheme_ = forwardedProto.substring(i + 1);
 				}
 			}
 		}
@@ -1277,6 +1267,24 @@ public class WEnvironment {
 		}
 		if (this.host_.length() == 0) {
 			this.host_ = oldHost;
+		}
+	}
+
+	void updateUrlScheme(final WebRequest request) {
+		this.urlScheme_ = str(request.getScheme());
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
+		if (conf.isBehindReverseProxy()) {
+			String forwardedProto = str(request
+					.getHeaderValue("X-Forwarded-Proto"));
+			if (forwardedProto.length() != 0) {
+				int i = forwardedProto.lastIndexOf(',');
+				if (i == -1) {
+					this.urlScheme_ = forwardedProto;
+				} else {
+					this.urlScheme_ = forwardedProto.substring(i + 1);
+				}
+			}
 		}
 	}
 

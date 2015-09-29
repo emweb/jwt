@@ -618,7 +618,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			tmp.append(");");
 		}
 		tmp.append("}");
-		text.callJavaScript(tmp.toString());
 		for (int i = 0; i < this.textElements_.size(); ++i) {
 			text.addChild(this.textElements_.get(i));
 		}

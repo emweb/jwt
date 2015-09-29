@@ -783,7 +783,7 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WMenu#setItemDisabled(int index, boolean disabled)
-	 * @see WWebWidget#setDisabled(boolean disabled)
+	 * @see WMenuItem#setDisabled(boolean disabled)
 	 */
 	public void setItemDisabled(WMenuItem item, boolean disabled) {
 		item.setDisabled(disabled);
@@ -1053,6 +1053,9 @@ public class WMenu extends WCompositeWidget {
 			int bestI = -1;
 			int bestMatchLength = -1;
 			for (int i = 0; i < this.getCount(); ++i) {
+				if (!this.itemAt(i).isEnabled() || this.itemAt(i).isHidden()) {
+					continue;
+				}
 				int matchLength = match(subPath, this.itemAt(i)
 						.getPathComponent());
 				if (matchLength > bestMatchLength) {
@@ -1092,12 +1095,12 @@ public class WMenu extends WCompositeWidget {
 	protected int nextAfterHide(int index) {
 		if (this.current_ == index) {
 			for (int i = this.current_ + 1; i < this.getCount(); ++i) {
-				if (!this.isItemHidden(i)) {
+				if (!this.isItemHidden(i) && this.itemAt(i).isEnabled()) {
 					return i;
 				}
 			}
 			for (int i = this.current_ - 1; i >= 0; --i) {
-				if (!this.isItemHidden(i)) {
+				if (!this.isItemHidden(i) && this.itemAt(i).isEnabled()) {
 					return i;
 				}
 			}
@@ -1267,7 +1270,7 @@ public class WMenu extends WCompositeWidget {
 		this.itemSelectRendered_.trigger(item);
 	}
 
-	private void onItemHidden(int index, boolean hidden) {
+	void onItemHidden(int index, boolean hidden) {
 		if (hidden) {
 			int nextItem = this.nextAfterHide(index);
 			if (nextItem != this.current_) {

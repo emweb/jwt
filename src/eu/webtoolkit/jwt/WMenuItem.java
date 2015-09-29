@@ -785,6 +785,24 @@ public class WMenuItem extends WContainerWidget {
 		super.enableAjax();
 	}
 
+	public void setHidden(boolean hidden, final WAnimation animation) {
+		super.setHidden(hidden, animation);
+		if (hidden) {
+			if (this.menu_ != null) {
+				this.menu_.onItemHidden(this.menu_.indexOf(this), true);
+			}
+		}
+	}
+
+	public void setDisabled(boolean disabled) {
+		super.setDisabled(disabled);
+		if (disabled) {
+			if (this.menu_ != null) {
+				this.menu_.onItemHidden(this.menu_.indexOf(this), true);
+			}
+		}
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		this.connectSignals();
 		super.render(flags);

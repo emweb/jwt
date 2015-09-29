@@ -18,6 +18,7 @@
     <fileset dir="${jwt.dir}/dist" />
     <fileset dir="${jwt.dir}/lib" />
     <fileset dir="${jwt.dir}/lib/servlet-api" />
+    <fileset dir="${jwt.dir}/lib/gson" />
   </path>
 
   <target name="all" depends="dist">
@@ -39,7 +40,7 @@
     <copy todir="${jwt-lib.dir}">
       <fileset dir="${jwt.dir}/dist" />
       <fileset dir="${jwt.dir}/lib" 
-	       includes="*.jar servlet-api/*.jar"/>
+	       includes="*.jar servlet-api/*.jar gson/*.jar"/>
     </copy>
 
     <mkdir dir="${build.dir}"/>

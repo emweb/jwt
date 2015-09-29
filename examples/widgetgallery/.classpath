@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.2.0.201212191850-r.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/pdfjet-4.75.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/vecmath-1.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/gson-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

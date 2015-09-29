@@ -157,7 +157,7 @@ public class WApplication extends WObject {
 		this.javaScriptClass_ = "Wt";
 		this.quitted_ = false;
 		this.quittedMessage_ = new WString();
-		this.onePixelGifUrl_ = "";
+		this.onePixelGifR_ = null;
 		this.internalPathsEnabled_ = false;
 		this.exposedOnly_ = null;
 		this.loadingIndicator_ = null;
@@ -2462,12 +2462,16 @@ public class WApplication extends WObject {
 	}
 
 	String getOnePixelGifUrl() {
-		if (this.onePixelGifUrl_.length() == 0) {
-			WMemoryResource w = new WMemoryResource("image/gif", this);
-			w.setData(gifData);
-			this.onePixelGifUrl_ = w.getUrl();
+		if (this.getEnvironment().agentIsIElt(7)) {
+			if (!(this.onePixelGifR_ != null)) {
+				WMemoryResource w = new WMemoryResource("image/gif", this);
+				w.setData(gifData);
+				this.onePixelGifR_ = w;
+			}
+			return this.onePixelGifR_.getUrl();
+		} else {
+			return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 		}
-		return this.onePixelGifUrl_;
 	}
 
 	String getDocType() {
@@ -2981,7 +2985,7 @@ public class WApplication extends WObject {
 	private WApplication.AjaxMethod ajaxMethod_;
 	private boolean quitted_;
 	WString quittedMessage_;
-	private String onePixelGifUrl_;
+	private WResource onePixelGifR_;
 	boolean internalPathsEnabled_;
 	private WWidget exposedOnly_;
 	private WLoadingIndicator loadingIndicator_;

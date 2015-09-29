@@ -96,6 +96,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		this.changeFlags = EnumSet.allOf(ChangeFlag.class);
 		
 		trueTypeFonts = new FontSupport(this);
+		
+		setDeviceTransform(new WTransform());
 	}
 	
 	public void addFontCollection(String directory, boolean recursive)
@@ -699,7 +701,6 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 		if (resetTransform) {
 			currentTransform = painter.getCombinedTransform().clone();
-			currentTransform.translate(this.x, this.y);
 			if (deviceTransform != null)
 				currentTransform = deviceTransform.multiply(currentTransform);
 		}
@@ -751,8 +752,10 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		}
 	}
 	
-	public void setDeviceTransform(WTransform deviceTransform) {
-		this.deviceTransform = deviceTransform;	
+	public void setDeviceTransform(WTransform transform) {
+		this.deviceTransform = new WTransform();
+		this.deviceTransform.translate(this.x, this.y);
+		this.deviceTransform.multiplyAndAssign(transform);
 		changeFlags.add(ChangeFlag.Transform);
 	}
 	

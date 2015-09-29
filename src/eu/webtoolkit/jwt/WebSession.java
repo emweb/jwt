@@ -416,7 +416,7 @@ class WebSession {
 						}
 					}
 				} else {
-					this.env_.urlScheme_ = str(request.getScheme());
+					this.env_.updateUrlScheme(request);
 					if (signalE != null) {
 						String ackIdE = request.getParameter("ackId");
 						boolean invalidAckId = this.env_.hasAjax()
