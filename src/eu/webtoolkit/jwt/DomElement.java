@@ -1457,6 +1457,11 @@ public class DomElement {
 		}
 	}
 
+	private boolean willRenderInnerHtmlJS(WApplication app) {
+		return !this.childrenHtml_.isEmpty() || this.wasEmpty_
+				&& this.canWriteInnerHTML(app);
+	}
+
 	private boolean canWriteInnerHTML(WApplication app) {
 		if ((app.getEnvironment().agentIsIE() || app.getEnvironment()
 				.getAgent() == WEnvironment.UserAgent.Konqueror)
@@ -1533,11 +1538,7 @@ public class DomElement {
 			switch (i.getKey()) {
 			case PropertyInnerHTML:
 			case PropertyAddedInnerHTML:
-				if (this.mode_ == DomElement.Mode.ModeCreate
-						&& (this.type_ == DomElementType.DomElement_DIV
-								&& app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
-								|| !this.childrenToAdd_.isEmpty() || !this.childrenHtml_
-								.isEmpty())) {
+				if (this.willRenderInnerHtmlJS(app)) {
 					break;
 				}
 				out.append("Wt3_3_4.setHtml(").append(this.var_).append(',');
@@ -1792,8 +1793,7 @@ public class DomElement {
 	// private String createAsJavaScript(final EscapeOStream out, final String
 	// parentVar, int pos, WApplication app) ;
 	private void renderInnerHtmlJS(final EscapeOStream out, WApplication app) {
-		if (!this.childrenHtml_.isEmpty() || this.wasEmpty_
-				&& this.canWriteInnerHTML(app)) {
+		if (this.willRenderInnerHtmlJS(app)) {
 			String innerHTML = "";
 			if (!this.properties_.isEmpty()) {
 				String i = this.properties_.get(Property.PropertyInnerHTML);

@@ -239,12 +239,6 @@ public class WCartesian3DChart extends WGLWidget {
 		this.axisTexCoordsVert_ = new WGLWidget.Buffer();
 		this.overlayPosBuffer_ = new WGLWidget.Buffer();
 		this.overlayTexCoBuffer_ = new WGLWidget.Buffer();
-		this.titlePosBuffer_ = new WGLWidget.Buffer();
-		this.titleTexCoBuffer_ = new WGLWidget.Buffer();
-		this.legendPosBuffer_ = new WGLWidget.Buffer();
-		this.legendTexCoBuffer_ = new WGLWidget.Buffer();
-		this.colorMapPosBuffer_ = new WGLWidget.Buffer();
-		this.colorMapTexCoBuffer_ = new WGLWidget.Buffer();
 		this.clippingPlaneVertBuffer_ = new WGLWidget.Buffer();
 		this.horizAxisTexture_ = new WGLWidget.Texture();
 		this.horizAxisTexture2_ = new WGLWidget.Texture();
@@ -436,12 +430,6 @@ public class WCartesian3DChart extends WGLWidget {
 		this.axisTexCoordsVert_ = new WGLWidget.Buffer();
 		this.overlayPosBuffer_ = new WGLWidget.Buffer();
 		this.overlayTexCoBuffer_ = new WGLWidget.Buffer();
-		this.titlePosBuffer_ = new WGLWidget.Buffer();
-		this.titleTexCoBuffer_ = new WGLWidget.Buffer();
-		this.legendPosBuffer_ = new WGLWidget.Buffer();
-		this.legendTexCoBuffer_ = new WGLWidget.Buffer();
-		this.colorMapPosBuffer_ = new WGLWidget.Buffer();
-		this.colorMapTexCoBuffer_ = new WGLWidget.Buffer();
 		this.clippingPlaneVertBuffer_ = new WGLWidget.Buffer();
 		this.horizAxisTexture_ = new WGLWidget.Texture();
 		this.horizAxisTexture2_ = new WGLWidget.Texture();
@@ -1937,6 +1925,8 @@ public class WCartesian3DChart extends WGLWidget {
 		this.deleteBuffer(this.cubeBuffer_);
 		this.deleteBuffer(this.cubeNormalsBuffer_);
 		this.deleteBuffer(this.cubeIndicesBuffer_);
+		this.deleteBuffer(this.cubeLineNormalsBuffer_);
+		this.deleteBuffer(this.cubeLineIndicesBuffer_);
 		this.deleteBuffer(this.axisBuffer_);
 		this.deleteBuffer(this.axisIndicesBuffer_);
 		this.deleteBuffer(this.axisInPlaneBuffer_);
@@ -1952,6 +1942,8 @@ public class WCartesian3DChart extends WGLWidget {
 		this.cubeTexCoords_.clear();
 		this.deleteBuffer(this.axisTexCoordsHoriz_);
 		this.axisTexCoordsHoriz_.clear();
+		this.deleteBuffer(this.axisTexCoordsVert_);
+		this.axisTexCoordsVert_.clear();
 		if (!this.cubeProgram_.isNull()) {
 			this.detachShader(this.cubeProgram_, this.fragmentShader_);
 			this.detachShader(this.cubeProgram_, this.vertexShader_);
@@ -1964,10 +1956,14 @@ public class WCartesian3DChart extends WGLWidget {
 		this.deleteShader(this.vertexShader_);
 		this.deleteShader(this.fragmentShader2_);
 		this.deleteShader(this.vertexShader2_);
+		this.deleteShader(this.cubeLineFragShader_);
+		this.deleteShader(this.cubeLineVertShader_);
 		this.deleteProgram(this.cubeProgram_);
 		this.cubeProgram_.clear();
 		this.deleteProgram(this.axisProgram_);
 		this.axisProgram_.clear();
+		this.deleteProgram(this.cubeLineProgram_);
+		this.cubeLineProgram_.clear();
 		this.deleteOffscreenBuffer();
 		this.clearBinaryResources();
 	}
@@ -3498,12 +3494,6 @@ public class WCartesian3DChart extends WGLWidget {
 	private WGLWidget.Buffer axisTexCoordsVert_;
 	private WGLWidget.Buffer overlayPosBuffer_;
 	private WGLWidget.Buffer overlayTexCoBuffer_;
-	private WGLWidget.Buffer titlePosBuffer_;
-	private WGLWidget.Buffer titleTexCoBuffer_;
-	private WGLWidget.Buffer legendPosBuffer_;
-	private WGLWidget.Buffer legendTexCoBuffer_;
-	private WGLWidget.Buffer colorMapPosBuffer_;
-	private WGLWidget.Buffer colorMapTexCoBuffer_;
 	private WGLWidget.Buffer clippingPlaneVertBuffer_;
 	private WGLWidget.Texture horizAxisTexture_;
 	private WGLWidget.Texture horizAxisTexture2_;

@@ -744,6 +744,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("ctx.deleteBuffer(").append(buffer.getJsRef()).append(
 				");");
+		this.js_.append("delete ").append(buffer.getJsRef()).append(";");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -761,6 +762,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("ctx.deleteFramebuffer(").append(buffer.getJsRef())
 				.append(");");
+		this.js_.append("delete ").append(buffer.getJsRef()).append(";");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -778,6 +780,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("ctx.deleteProgram(").append(program.getJsRef())
 				.append(");");
+		this.js_.append("delete ").append(program.getJsRef()).append(";");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -795,6 +798,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("ctx.deleteRenderbuffer(").append(buffer.getJsRef())
 				.append(");");
+		this.js_.append("delete ").append(buffer.getJsRef()).append(";");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -812,6 +816,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("ctx.deleteShader(").append(shader.getJsRef()).append(
 				");");
+		this.js_.append("delete ").append(shader.getJsRef()).append(";");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -829,6 +834,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 		}
 		this.js_.append("ctx.deleteTexture(").append(texture.getJsRef())
 				.append(");");
+		this.js_.append("delete ").append(texture.getJsRef()).append(";");
 		do {
 			if (this.debugging_) {
 				this.js_
@@ -1478,6 +1484,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 			this.js_.append(this.currentlyBoundTexture_.getJsRef()).append(
 					".image").append(String.valueOf(imgNb)).append("=").append(
 					jsRef).append(";");
+			this.js_.append("delete ").append(jsRef).append(";");
 		} else {
 			if (((paintdevice) instanceof WRasterPaintDevice ? (WRasterPaintDevice) (paintdevice)
 					: null) != null) {
