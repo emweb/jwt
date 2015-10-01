@@ -1130,7 +1130,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Set the pen of the border to be drawn around the chart area.
+	 * Sets the pen of the border to be drawn around the chart area.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#getBorderPen()
@@ -1143,7 +1143,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * The pen of the border to be drawn around the chart area.
+	 * Returns the pen used to draw the border around the chart area.
 	 * <p>
 	 * Defaults to NoPen.
 	 * <p>
@@ -1242,7 +1242,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Enable the crosshair functionality.
+	 * Enables the crosshair functionality.
 	 * <p>
 	 * When enabled, the crosshair will follow mouse movement, and show in the
 	 * top right corner the coordinate (according to X axis and the first Y
@@ -1260,7 +1260,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Enable the crosshair functionality.
+	 * Enables the crosshair functionality.
 	 * <p>
 	 * Calls {@link #setCrosshairEnabled(boolean crosshair)
 	 * setCrosshairEnabled(true)}
@@ -1280,7 +1280,9 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Enable the follow curve functionality for the data series corresponding
+	 * Enables the follow curve functionality for a data series.
+	 * <p>
+	 * This enables follow curve functionality for the data series corresponding
 	 * to the given column.
 	 * <p>
 	 * If the data series is of type LineSeries or CurveSeries, the crosshair
@@ -1297,7 +1299,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>The follow curve functionality requires that the X axis
-	 * values of the data series are strictly increasing or strictly decreasing.
+	 * values of the data series are monotonically increasing or decreasing.
 	 * </i>
 	 * </p>
 	 */
@@ -1319,8 +1321,9 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Returns the curve that is to be followed, if the follow curve
-	 * functionality is enabled, or -1 otherwise.
+	 * Returns the curve that is to be followed.
+	 * <p>
+	 * If follow curve functionality is not enabled, returns -1.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#setFollowCurve(int followCurve)
@@ -1353,7 +1356,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Check whether the rubberband effect is enabled.
+	 * Checks whether the rubberband effect is enabled.
 	 * <p>
 	 */
 	public boolean isRubberBandEffectEnabled() {
@@ -1361,7 +1364,7 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Set the mapping of mouse wheel actions for interactive charts.
+	 * Sets the mapping of mouse wheel actions for interactive charts.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#getWheelActions()
@@ -1374,13 +1377,25 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
-	 * Return the current mapping of mouse wheel actions for interactive charts.
+	 * Returns the current mouse wheel actions for interactive charts.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#setWheelActions(Map wheelActions)
 	 */
 	public Map<EnumSet<KeyboardModifier>, InteractiveAction> getWheelActions() {
 		return this.wheelActions_;
+	}
+
+	/**
+	 * Enables or disables soft label clipping on all axes.
+	 * <p>
+	 * 
+	 * @see WAxis#setSoftLabelClipping(boolean enabled)
+	 */
+	public void setSoftLabelClipping(boolean enabled) {
+		for (int i = 0; i < 3; ++i) {
+			this.axes_[i].setSoftLabelClipping(enabled);
+		}
 	}
 
 	public void iterateSeries(SeriesIterator iterator, WPainter painter,
@@ -1681,6 +1696,9 @@ public class WCartesianChart extends WAbstractChart {
 		this.axes_[Axis.XAxis.getValue()].setPadding(this.axisPadding_);
 		this.axes_[Axis.YAxis.getValue()].setPadding(this.axisPadding_);
 		this.axes_[Axis.Y2Axis.getValue()].setPadding(this.axisPadding_);
+		this.axes_[Axis.XAxis.getValue()].setSoftLabelClipping(true);
+		this.axes_[Axis.YAxis.getValue()].setSoftLabelClipping(true);
+		this.axes_[Axis.Y2Axis.getValue()].setSoftLabelClipping(true);
 		this.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
 		this.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
 		this.xTransformHandle_ = this.createJSTransform();

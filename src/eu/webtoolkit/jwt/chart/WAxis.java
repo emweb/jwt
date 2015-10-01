@@ -1083,6 +1083,59 @@ public class WAxis {
 		return this.tickDirection_;
 	}
 
+	/**
+	 * Enables soft clipping of axis labels.
+	 * <p>
+	 * This is set to <code>false</code> by for a 3D chart and to
+	 * <code>true</code> for a 2D chart.
+	 * <p>
+	 * This setting determines how labels should be clipped in case not the
+	 * entire axis is visible due to clipping. &quot;Hard&quot; clipping is done
+	 * by the paint device and may truncate labels. &quot;Soft&quot; clipping
+	 * will determine if the corresponding tick is visible, and draw the label
+	 * (unclipped), preventing labels from being truncated. For a 2D chart, this
+	 * feature is only relevant when
+	 * {@link WCartesianChart#setZoomEnabled(boolean zoomEnabled) zoom is
+	 * enabled} on a {@link eu.webtoolkit.jwt.chart.WCartesianChart}.
+	 * <table border="1" cellspacing="3" cellpadding="3">
+	 * <tr>
+	 * <td><div align="center"> <img
+	 * src="doc-files//WAxis-partialLabelClipping-disabled.png"
+	 * alt="Soft clipping enabled (slower).">
+	 * <p>
+	 * <strong>Soft clipping enabled (slower).</strong>
+	 * </p>
+	 * </div> This is the default for
+	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart}. The tick for 0 is
+	 * visible, and the 0 is shown completely. The tick for 01/01/86 is not
+	 * visible, so its label is not shown.</td>
+	 * <td><div align="center"> <img
+	 * src="doc-files//WAxis-partialLabelClipping-enabled.png"
+	 * alt="Soft clipping disabled (faster).">
+	 * <p>
+	 * <strong>Soft clipping disabled (faster).</strong>
+	 * </p>
+	 * </div> The tick of the 0 is visible, but the 0 is shown partially. Also,
+	 * the tick of 01/01/86 is not visible, but the label is partially shown.</td>
+	 * </tr>
+	 * </table>
+	 */
+	public void setSoftLabelClipping(boolean enabled) {
+		if (!ChartUtils.equals(this.partialLabelClipping_, !enabled)) {
+			this.partialLabelClipping_ = !enabled;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Returns whether soft lable clipping is enabled.
+	 * <p>
+	 */
+	public boolean isSoftLabelClipping() {
+		return !this.partialLabelClipping_;
+	}
+
 	public int getSegmentCount() {
 		return (int) this.segments_.size();
 	}
@@ -1692,7 +1745,8 @@ public class WAxis {
 		WPen oldPen = painter.getPen().clone();
 		painter.setPen(pen.clone());
 		boolean clipping = painter.hasClipping();
-		if (clipping && this.getTickDirection() == TickDirection.Outwards
+		if (!this.partialLabelClipping_ && clipping
+				&& this.getTickDirection() == TickDirection.Outwards
 				&& this.getLocation() != AxisValue.ZeroValue) {
 			painter.setClipping(false);
 		}
@@ -1701,7 +1755,9 @@ public class WAxis {
 			painter.drawText(transform
 					.map(new WRectF(left, top, width, height)), EnumSet.of(
 					horizontalAlign, verticalAlign), TextFlag.TextSingleLine,
-					text, clipping ? transformedPoint : null);
+					text,
+					clipping && !this.partialLabelClipping_ ? transformedPoint
+							: null);
 		} else {
 			painter.save();
 			painter.translate(transform.map(pos));
@@ -1710,7 +1766,8 @@ public class WAxis {
 					transformedPoint);
 			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
 					width, height), EnumSet.of(horizontalAlign, verticalAlign),
-					TextFlag.TextSingleLine, text, clipping ? transformedPoint
+					TextFlag.TextSingleLine, text, clipping
+							&& !this.partialLabelClipping_ ? transformedPoint
 							: null);
 			painter.restore();
 		}
@@ -1849,6 +1906,7 @@ public class WAxis {
 		this.panDirty_ = true;
 		this.padding_ = 0;
 		this.tickDirection_ = TickDirection.Outwards;
+		this.partialLabelClipping_ = true;
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
@@ -2215,6 +2273,7 @@ public class WAxis {
 	boolean panDirty_;
 	private int padding_;
 	private TickDirection tickDirection_;
+	private boolean partialLabelClipping_;
 	private boolean renderingMirror_;
 
 	static class Segment {
