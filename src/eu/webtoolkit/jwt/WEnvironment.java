@@ -94,6 +94,10 @@ public class WEnvironment {
 		 */
 		IE11(1006),
 		/**
+		 * Edge.
+		 */
+		Edge(1100),
+		/**
 		 * Opera.
 		 */
 		Opera(3000),
@@ -1163,6 +1167,9 @@ public class WEnvironment {
 					}
 				}
 			}
+		}
+		if (this.userAgent_.indexOf("Edge/12") != -1) {
+			this.agent_ = WEnvironment.UserAgent.Edge;
 		}
 		if (conf.agentIsBot(this.userAgent_)) {
 			this.agent_ = WEnvironment.UserAgent.BotAgent;

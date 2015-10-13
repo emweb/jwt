@@ -904,6 +904,46 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						+ chart.getRepaintSlot().execJs() + " }", 1);
 	}
 
+	public List<Object> getGlObjects() {
+		List<Object> res = new ArrayList<Object>();
+		List<List<WGLWidget.Buffer>> buffers = new ArrayList<List<WGLWidget.Buffer>>();
+		buffers.add(this.vertexPosBuffers_);
+		buffers.add(this.vertexPosBuffers2_);
+		buffers.add(this.vertexSizeBuffers_);
+		buffers.add(this.vertexSizeBuffers2_);
+		buffers.add(this.vertexColorBuffers2_);
+		buffers.add(this.indexBuffers_);
+		buffers.add(this.indexBuffers2_);
+		buffers.add(this.overlayLinesBuffers_);
+		buffers.add(this.overlayLinesBuffers2_);
+		buffers.add(this.colormapTexBuffers_);
+		buffers.add(this.isoLineBuffers_);
+		for (int i = 0; i < buffers.size(); ++i) {
+			for (int j = 0; j < buffers.get(i).size(); ++j) {
+				res.add(buffers.get(i).get(j));
+			}
+		}
+		res.add(this.fragShader_);
+		res.add(this.colFragShader_);
+		res.add(this.meshFragShader_);
+		res.add(this.singleColorFragShader_);
+		res.add(this.positionFragShader_);
+		res.add(this.isoLineFragShader_);
+		res.add(this.vertShader_);
+		res.add(this.colVertShader_);
+		res.add(this.meshVertShader_);
+		res.add(this.isoLineVertexShader_);
+		res.add(this.seriesProgram_);
+		res.add(this.colSeriesProgram_);
+		res.add(this.meshProgram_);
+		res.add(this.singleColorProgram_);
+		res.add(this.isoLineProgram_);
+		res.add(this.colormapTexture_);
+		res.add(this.isoLineColorMapTexture_);
+		res.add(this.pointSpriteTexture_);
+		return res;
+	}
+
 	public void initializeGL() {
 		this.chart_.initJavaScriptVector(this.jsMinPt_);
 		this.chart_.initJavaScriptVector(this.jsMaxPt_);
@@ -913,6 +953,19 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		if (this.hidden_) {
 			return;
 		}
+		this.loadPointSpriteTexture(this.pointSpriteTexture_);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
 		switch (this.seriesType_) {
 		case PointSeries3D:
 			if (this.chart_.getType() != ChartType.ScatterPlot) {

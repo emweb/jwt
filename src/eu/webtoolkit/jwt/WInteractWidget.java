@@ -327,7 +327,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * </p>
 	 */
 	public EventSignal1<WMouseEvent> mouseWheel() {
-		if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
+		if (WApplication.getInstance().getEnvironment().agentIsIElt(9)
+				|| WApplication.getInstance().getEnvironment().getAgent() == WEnvironment.UserAgent.Edge) {
 			return this.mouseEventSignal(MOUSE_WHEEL_SIGNAL, true);
 		} else {
 			return this.mouseEventSignal(WHEEL_SIGNAL, true);

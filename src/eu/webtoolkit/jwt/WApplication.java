@@ -3101,11 +3101,14 @@ public class WApplication extends WObject {
 		}
 	}
 
-	void removeExposedResource(WResource resource) {
+	private boolean removeExposedResource(WResource resource) {
 		String key = this.resourceMapKey(resource);
 		WResource i = this.exposedResources_.get(key);
 		if (i != null && i == resource) {
 			this.exposedResources_.remove(key);
+			return true;
+		} else {
+			return false;
 		}
 	}
 

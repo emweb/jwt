@@ -256,6 +256,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.positionFramebuffer_ = new WGLWidget.Framebuffer();
 		this.intersectionLinesFramebuffer_ = new WGLWidget.Framebuffer();
 		this.offscreenDepthbuffer_ = new WGLWidget.Renderbuffer();
+		this.objectsToDelete = new ArrayList<Object>();
 		this.XYGridEnabled_[0] = false;
 		this.XYGridEnabled_[1] = false;
 		this.XZGridEnabled_[0] = false;
@@ -447,6 +448,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.positionFramebuffer_ = new WGLWidget.Framebuffer();
 		this.intersectionLinesFramebuffer_ = new WGLWidget.Framebuffer();
 		this.offscreenDepthbuffer_ = new WGLWidget.Renderbuffer();
+		this.objectsToDelete = new ArrayList<Object>();
 		this.XYGridEnabled_[0] = false;
 		this.XYGridEnabled_[1] = false;
 		this.XZGridEnabled_[0] = false;
@@ -527,6 +529,11 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void removeDataSeries(WAbstractDataSeries3D dataseries) {
 		this.dataSeriesVector_.remove(dataseries);
+		List<Object> glObjects = dataseries.getGlObjects();
+		;
+		for (int i = 0; i < glObjects.size(); ++i) {
+			this.objectsToDelete.add(glObjects.get(i));
+		}
 		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
 	}
 
@@ -1996,6 +2003,43 @@ public class WCartesian3DChart extends WGLWidget {
 			this.deleteTexture(this.colorMapTexture_);
 		}
 		this.colorMapTexture_.clear();
+		for (int i = 0; i < this.objectsToDelete.size(); ++i) {
+			Object o = this.objectsToDelete.get(i);
+			if (o.getClass().equals(WGLWidget.Buffer.class)) {
+				WGLWidget.Buffer buf = (WGLWidget.Buffer) this.objectsToDelete
+						.get(i);
+				if (!buf.isNull()) {
+					this.deleteBuffer(buf);
+				}
+			} else {
+				if (o.getClass().equals(WGLWidget.Texture.class)) {
+					WGLWidget.Texture tex = (WGLWidget.Texture) this.objectsToDelete
+							.get(i);
+					if (!tex.isNull()) {
+						this.deleteTexture(tex);
+					}
+				} else {
+					if (o.getClass().equals(WGLWidget.Shader.class)) {
+						WGLWidget.Shader shader = (WGLWidget.Shader) this.objectsToDelete
+								.get(i);
+						if (!shader.isNull()) {
+							this.deleteShader(shader);
+						}
+					} else {
+						if (o.getClass().equals(WGLWidget.Program.class)) {
+							WGLWidget.Program prog = (WGLWidget.Program) this.objectsToDelete
+									.get(i);
+							if (!prog.isNull()) {
+								this.deleteProgram(prog);
+							}
+						} else {
+							assert false;
+						}
+					}
+				}
+			}
+		}
+		this.objectsToDelete.clear();
 	}
 
 	private void initializeIntersectionLinesProgram() {
@@ -3511,6 +3555,7 @@ public class WCartesian3DChart extends WGLWidget {
 	private WGLWidget.Framebuffer positionFramebuffer_;
 	private WGLWidget.Framebuffer intersectionLinesFramebuffer_;
 	private WGLWidget.Renderbuffer offscreenDepthbuffer_;
+	private List<Object> objectsToDelete;
 	private static float[] cubeData = { 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0,
 			0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1,
 			0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0,
@@ -3703,8 +3748,8 @@ public class WCartesian3DChart extends WGLWidget {
 	private static final String fragmentShaderSrc2D = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform sampler2D uSampler;\n\nvoid main(void) {\n  gl_FragColor = texture2D(uSampler, vec2(vTextureCo.s, vTextureCo.t));\n}";
 	private static final String vertexShaderSrc2D = "attribute vec3 aVertexPosition;\nattribute vec2 aTextureCo;\n\nvarying vec2 vTextureCo;\n\nvoid main(void) {\n  gl_Position = vec4(aVertexPosition, 1.0);\n  vTextureCo = aTextureCo;\n}";
 	private static final String intersectionLinesFragmentShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec2 vTextureCo;\n\nuniform mat4 uCamera;\nuniform vec4 uColor;\nuniform float uVPwidth;\nuniform float uVPheight;\nuniform sampler2D uPositionSampler;\nuniform sampler2D uMeshIndexSampler;\n\nvoid main(void) {\n  float dx = 1.0/uVPwidth;\n  float dy = 1.0/uVPheight;\n  vec3 pt  = texture2D(uPositionSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 pl  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 pr  = texture2D(uPositionSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 pb  = texture2D(uPositionSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  vec3 it  = texture2D(uMeshIndexSampler, vTextureCo+vec2(-dx,0.0)).xyz;\n  vec3 il  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,dy)).xyz;\n  vec3 ir  = texture2D(uMeshIndexSampler, vTextureCo+vec2(0.0,-dy)).xyz;\n  vec3 ib  = texture2D(uMeshIndexSampler, vTextureCo+vec2(dx,0.0)).xyz;\n  float scale = length(vec3(uCamera[0][0], uCamera[1][0], uCamera[2][0]));\n  scale = scale > 5.0 ? 5.0 : scale;\n  float totalDistance = 0.0;\n  int count = 0;\n  vec3 white = vec3(1.0);\n  if (il != ir && il != white && ir != white) {\n    count ++;\n    totalDistance += length(pl - pr) * scale;\n  }\n  if (it != ib && it != white && ib != white) {\n    count ++;\n    totalDistance += length(pt - pb) * scale;\n  }\n  float factor = count == 0 ? 0.0 : 1.0 - totalDistance / float(count);\n  factor = smoothstep(0.9, 1.0, factor);\n  gl_FragColor = vec4(uColor.rgb, factor);\n}";
-	private static final String clippingPlaneFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform bool uDrawPosition;\nuniform lowp int uClippingAxis;\n\nvoid main(void) {\n  if (uClippingAxis == 0 && (vPos.x <= 0.0 || vPos.x >= 1.0) ||      uClippingAxis == 1 && (vPos.y <= 0.0 || vPos.y >= 1.0) ||      uClippingAxis == 2 && (vPos.z <= 0.0 || vPos.z >= 1.0)) {\n    discard;\n  }\n  if (uDrawPosition) {\n    gl_FragColor = vec4(vPos, 1.0);\n  } else {\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n  }\n}\n";
-	private static final String clippingPlaneVertexShaderSrc = "attribute vec2 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform vec3 uClipPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\nuniform lowp int uClippingAxis;\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  vec3 pos;\n  vec3 clipPt = clamp((uClipPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), 0.0, 1.0);\n  if (uClippingAxis == 0) {\n    pos = vec3(clipPt.x, aVertexPosition);\n  } else if (uClippingAxis == 1) {\n    pos = vec3(aVertexPosition.x, clipPt.y, aVertexPosition.y);\n  } else if (uClippingAxis == 2) {\n    pos = vec3(aVertexPosition, clipPt.z);\n  }\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(pos, 1.0);\n  vPos = pos;\n}\n";
+	private static final String clippingPlaneFragShaderSrc = "#ifdef GL_ES\nprecision highp float;\n#endif\n\nvarying vec3 vPos;\n\nuniform bool uDrawPosition;\n#ifdef GL_ES\nuniform lowp int uClippingAxis;\n#else\nuniform int uClippingAxis;\n#endif\n\nvoid main(void) {\n  if (uClippingAxis == 0 && (vPos.x <= 0.0 || vPos.x >= 1.0) ||      uClippingAxis == 1 && (vPos.y <= 0.0 || vPos.y >= 1.0) ||      uClippingAxis == 2 && (vPos.z <= 0.0 || vPos.z >= 1.0)) {\n    discard;\n  }\n  if (uDrawPosition) {\n    gl_FragColor = vec4(vPos, 1.0);\n  } else {\n    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n  }\n}\n";
+	private static final String clippingPlaneVertexShaderSrc = "attribute vec2 aVertexPosition;\n\nvarying vec3 vPos;\n\nuniform vec3 uClipPt;\nuniform vec3 uDataMinPt;\nuniform vec3 uDataMaxPt;\n#ifdef GL_ES\nuniform lowp int uClippingAxis;\n#else\nuniform int uClippingAxis;\n#endif\nuniform mat4 uMVMatrix;\nuniform mat4 uPMatrix;\nuniform mat4 uCMatrix;\n\nvoid main(void) {\n  vec3 pos;\n  vec3 clipPt = clamp((uClipPt - uDataMinPt) / (uDataMaxPt - uDataMinPt), 0.0, 1.0);\n  if (uClippingAxis == 0) {\n    pos = vec3(clipPt.x, aVertexPosition);\n  } else if (uClippingAxis == 1) {\n    pos = vec3(aVertexPosition.x, clipPt.y, aVertexPosition.y);\n  } else if (uClippingAxis == 2) {\n    pos = vec3(aVertexPosition, clipPt.z);\n  }\n  gl_Position = uPMatrix * uCMatrix * uMVMatrix * vec4(pos, 1.0);\n  vPos = pos;\n}\n";
 	private static final double TICKLENGTH = 5.0;
 	private static final double TITLEOFFSET = 30;
 	private static final double ANGLE1 = 15;

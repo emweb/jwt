@@ -453,8 +453,9 @@ public class WImage extends WInteractWidget {
 	public String getUpdateAreasJS() {
 		StringBuilder ss = new StringBuilder();
 		if (this.targetJS_.length() != 0) {
-			ss.append("jQuery.data(").append(this.getJsRef()).append(
-					", 'obj').updateAreas();");
+			ss.append("(function(){var o = jQuery.data(").append(
+					this.getJsRef()).append(
+					", 'obj');if (o) {o.updateAreas();}})();");
 		}
 		return ss.toString();
 	}

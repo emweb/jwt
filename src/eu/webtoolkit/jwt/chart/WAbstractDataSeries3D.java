@@ -600,6 +600,10 @@ public abstract class WAbstractDataSeries3D extends WObject {
 		}
 	}
 
+	public List<Object> getGlObjects() {
+		return new ArrayList<Object>();
+	}
+
 	/**
 	 * Initialize GL resources.
 	 * <p>
@@ -673,11 +677,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	protected WGLWidget.Texture getPointSpriteTexture() {
 		WGLWidget.Texture tex = this.chart_.createTexture();
 		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D, tex);
-		if (this.pointSprite_.length() != 0) {
-			this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
-					WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,
-					WGLWidget.GLenum.UNSIGNED_BYTE, this.pointSprite_);
-		} else {
+		if (this.pointSprite_.length() == 0) {
 			WPaintDevice cpd = this.chart_.createPaintDevice(new WLength(1),
 					new WLength(1));
 			WColor color = new WColor(255, 255, 255, 255);
@@ -690,6 +690,15 @@ public abstract class WAbstractDataSeries3D extends WObject {
 					WGLWidget.GLenum.UNSIGNED_BYTE, cpd);
 		}
 		return tex;
+	}
+
+	protected void loadPointSpriteTexture(final WGLWidget.Texture tex) {
+		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D, tex);
+		if (this.pointSprite_.length() != 0) {
+			this.chart_.texImage2D(WGLWidget.GLenum.TEXTURE_2D, 0,
+					WGLWidget.GLenum.RGBA, WGLWidget.GLenum.RGBA,
+					WGLWidget.GLenum.UNSIGNED_BYTE, this.pointSprite_);
+		}
 	}
 
 	WString name_;

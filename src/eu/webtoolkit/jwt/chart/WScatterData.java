@@ -420,6 +420,28 @@ public class WScatterData extends WAbstractDataSeries3D {
 		}
 	}
 
+	public List<Object> getGlObjects() {
+		List<Object> res = new ArrayList<Object>();
+		res.add(this.vertexPosBuffer_);
+		res.add(this.vertexSizeBuffer_);
+		res.add(this.vertexPosBuffer2_);
+		res.add(this.vertexSizeBuffer2_);
+		res.add(this.vertexColorBuffer2_);
+		res.add(this.lineVertBuffer_);
+		res.add(this.colormapTexture_);
+		res.add(this.pointSpriteTexture_);
+		res.add(this.vertexShader_);
+		res.add(this.colVertexShader_);
+		res.add(this.linesVertShader_);
+		res.add(this.fragmentShader_);
+		res.add(this.colFragmentShader_);
+		res.add(this.linesFragShader_);
+		res.add(this.shaderProgram_);
+		res.add(this.colShaderProgram_);
+		res.add(this.linesProgram_);
+		return res;
+	}
+
 	public void initializeGL() {
 	}
 
@@ -427,6 +449,19 @@ public class WScatterData extends WAbstractDataSeries3D {
 		if (this.hidden_) {
 			return;
 		}
+		this.loadPointSpriteTexture(this.pointSpriteTexture_);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_S,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.chart_
+				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+						WGLWidget.GLenum.TEXTURE_WRAP_T,
+						WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.chart_.disable(WGLWidget.GLenum.CULL_FACE);
 		this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
 		if (!this.vertexPosBuffer_.isNull()) {
