@@ -116,8 +116,13 @@ public class DomElement {
 	 */
 	public static String urlEncodeS(final String url, final String allowed) {
 		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < url.length(); ++i) {
-			char c = url.charAt(i);
+		List<Byte> bytes = new ArrayList<Byte>();
+		try {
+			Utils.copyList(url.getBytes("UTF-8"), bytes);
+		} catch (final UnsupportedEncodingException e) {
+		}
+		for (int i = 0; i < bytes.size(); ++i) {
+			char c = toChar(bytes.get(i));
 			if (c <= 31 || c >= 127 || unsafeChars_.indexOf(c) != -1) {
 				if (allowed.indexOf(c) != -1) {
 					result.append((char) c);
@@ -1958,5 +1963,9 @@ public class DomElement {
 
 	static char hexLookup(int n) {
 		return "0123456789abcdef".charAt(n & 0xF);
+	}
+
+	static char toChar(int b) {
+		return (char) b;
 	}
 }

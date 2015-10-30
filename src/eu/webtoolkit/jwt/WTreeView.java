@@ -1089,6 +1089,7 @@ public class WTreeView extends WAbstractItemView {
 			return;
 		}
 		WWidget parentWidget = this.widgetForIndex(parent);
+		boolean renderedRowsChange = this.isExpandedRecursive(parent);
 		if (parentWidget != null) {
 			WTreeViewNode parentNode = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
 					: null);
@@ -1107,20 +1108,24 @@ public class WTreeView extends WAbstractItemView {
 					if (startWidget != null
 							&& startWidget == parentNode.topSpacer()) {
 						parentNode.addTopSpacerHeight(count);
-						this.renderedRowsChanged(this.renderedRow(this
-								.getModel().getIndex(start, 0, parent),
-								parentNode.topSpacer(), this
-										.getRenderLowerBound(), this
-										.getRenderUpperBound()), count);
+						if (renderedRowsChange) {
+							this.renderedRowsChanged(this.renderedRow(this
+									.getModel().getIndex(start, 0, parent),
+									parentNode.topSpacer(), this
+											.getRenderLowerBound(), this
+											.getRenderUpperBound()), count);
+						}
 					} else {
 						if (startWidget != null
 								&& startWidget == parentNode.bottomSpacer()) {
 							parentNode.addBottomSpacerHeight(count);
-							this.renderedRowsChanged(this.renderedRow(this
-									.getModel().getIndex(start, 0, parent),
-									parentNode.bottomSpacer(), this
-											.getRenderLowerBound(), this
-											.getRenderUpperBound()), count);
+							if (renderedRowsChange) {
+								this.renderedRowsChanged(this.renderedRow(this
+										.getModel().getIndex(start, 0, parent),
+										parentNode.bottomSpacer(), this
+												.getRenderLowerBound(), this
+												.getRenderUpperBound()), count);
+							}
 						} else {
 							int maxRenderHeight = this.firstRenderedRow_
 									+ Math.max(this.validRowCount_,
@@ -1144,7 +1149,9 @@ public class WTreeView extends WAbstractItemView {
 										parentNode);
 								parentNode.getChildContainer().insertWidget(
 										containerIndex + i, n);
-								++this.validRowCount_;
+								if (renderedRowsChange) {
+									++this.validRowCount_;
+								}
 								if (!(first != null)) {
 									first = n;
 								}
@@ -1165,8 +1172,10 @@ public class WTreeView extends WAbstractItemView {
 											: null);
 									assert n != null;
 									extraBottomSpacer += n.getRenderedHeight();
-									this.validRowCount_ -= n
-											.getRenderedHeight();
+									if (renderedRowsChange) {
+										this.validRowCount_ -= n
+												.getRenderedHeight();
+									}
 									if (n != null)
 										n.remove();
 								}
@@ -1176,7 +1185,7 @@ public class WTreeView extends WAbstractItemView {
 								}
 								parentNode.normalizeSpacers();
 							}
-							if (first != null) {
+							if (first != null && renderedRowsChange) {
 								this.renderedRowsChanged(first.renderedRow(this
 										.getRenderLowerBound(), this
 										.getRenderUpperBound()), nodesToAdd);
@@ -1199,14 +1208,18 @@ public class WTreeView extends WAbstractItemView {
 					parentNode.updateGraphics(parentNode.isLast(), false);
 				}
 			} else {
-				RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
-						: null);
-				s.setRows(s.getRows() + count);
-				s.getNode().adjustChildrenHeight(count);
-				this.renderedRowsChanged(this.renderedRow(this.getModel()
-						.getIndex(start, 0, parent), s, this
-						.getRenderLowerBound(), this.getRenderUpperBound()),
-						count);
+				if (this.isExpanded(parent)) {
+					RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
+							: null);
+					s.setRows(s.getRows() + count);
+					s.getNode().adjustChildrenHeight(count);
+					if (renderedRowsChange) {
+						this.renderedRowsChanged(this.renderedRow(this
+								.getModel().getIndex(start, 0, parent), s, this
+								.getRenderLowerBound(), this
+								.getRenderUpperBound()), count);
+					}
+				}
 			}
 		}
 	}
@@ -1214,6 +1227,7 @@ public class WTreeView extends WAbstractItemView {
 	private void modelRowsAboutToBeRemoved(final WModelIndex parent, int start,
 			int end) {
 		int count = end - start + 1;
+		boolean renderedRowsChange = this.isExpandedRecursive(parent);
 		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender
 				&& this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
 			this.firstRemovedRow_ = -1;
@@ -1232,21 +1246,27 @@ public class WTreeView extends WAbstractItemView {
 							if (s != null) {
 								WModelIndex childIndex = this.getModel()
 										.getIndex(i, 0, parent);
-								if (i == start) {
+								if (i == start && renderedRowsChange) {
 									this.firstRemovedRow_ = this.renderedRow(
 											childIndex, w);
 								}
 								int childHeight = this
 										.subTreeHeight(childIndex);
-								this.removedHeight_ += childHeight;
+								if (renderedRowsChange) {
+									this.removedHeight_ += childHeight;
+								}
 								s.setRows(s.getRows() - childHeight);
 							} else {
 								WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w)
 										: null);
-								if (i == start) {
-									this.firstRemovedRow_ = node.renderedRow();
+								if (renderedRowsChange) {
+									if (i == start) {
+										this.firstRemovedRow_ = node
+												.renderedRow();
+									}
+									this.removedHeight_ += node
+											.getRenderedHeight();
 								}
-								this.removedHeight_ += node.getRenderedHeight();
 								if (node != null)
 									node.remove();
 							}
@@ -1270,21 +1290,25 @@ public class WTreeView extends WAbstractItemView {
 						parentNode.updateGraphics(parentNode.isLast(), true);
 					}
 				} else {
-					RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
-							: null);
-					for (int i = start; i <= end; ++i) {
-						WModelIndex childIndex = this.getModel().getIndex(i, 0,
-								parent);
-						int childHeight = this.subTreeHeight(childIndex);
-						this.removedHeight_ += childHeight;
-						if (i == start) {
-							this.firstRemovedRow_ = this.renderedRow(
-									childIndex, s);
+					if (this.isExpanded(parent)) {
+						RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget)
+								: null);
+						for (int i = start; i <= end; ++i) {
+							WModelIndex childIndex = this.getModel().getIndex(
+									i, 0, parent);
+							int childHeight = this.subTreeHeight(childIndex);
+							if (renderedRowsChange) {
+								this.removedHeight_ += childHeight;
+								if (i == start) {
+									this.firstRemovedRow_ = this.renderedRow(
+											childIndex, s);
+								}
+							}
 						}
+						WTreeViewNode node = s.getNode();
+						s.setRows(s.getRows() - this.removedHeight_);
+						node.adjustChildrenHeight(-this.removedHeight_);
 					}
-					WTreeViewNode node = s.getNode();
-					s.setRows(s.getRows() - this.removedHeight_);
-					node.adjustChildrenHeight(-this.removedHeight_);
 				}
 			}
 		}
@@ -1719,6 +1743,7 @@ public class WTreeView extends WAbstractItemView {
 				assert n != null;
 				WModelIndex childIndex = this.getModel().getIndex(
 						n.getModelIndex().getRow() - 1, 0, index);
+				assert (childIndex != null);
 				int childHeight = this.subTreeHeight(childIndex);
 				n = new WTreeViewNode(this, childIndex, childHeight - 1,
 						childIndex.getRow() == childCount - 1, node);
@@ -1745,6 +1770,7 @@ public class WTreeView extends WAbstractItemView {
 				assert n != null;
 				WModelIndex childIndex = this.getModel().getIndex(
 						n.getModelIndex().getRow() + 1, 0, index);
+				assert (childIndex != null);
 				int childHeight = this.subTreeHeight(childIndex);
 				n = new WTreeViewNode(this, childIndex, childHeight - 1,
 						childIndex.getRow() == childCount - 1, node);
@@ -1975,6 +2001,19 @@ public class WTreeView extends WAbstractItemView {
 					}
 				}
 			}
+		}
+	}
+
+	private boolean isExpandedRecursive(final WModelIndex index) {
+		if (this.isExpanded(index)) {
+			if (!(index == this.getRootIndex() || (index != null && index
+					.equals(this.getRootIndex())))) {
+				return this.isExpanded(index.getParent());
+			} else {
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 

@@ -504,4 +504,17 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 			}
 		}
 	}
+
+	@Override
+	public List<Object> getGlObjects() {
+		List<Object> res = new ArrayList<Object>();
+		res.add(program);
+		res.add(vertexShader);
+		res.add(fragShader);
+		res.add(vertexPosBuffer);
+		res.add(indexBuffer);
+		res.add(lineBuffer);
+		res.add(lineIndexBuffer);
+		return res;
+	}
 }

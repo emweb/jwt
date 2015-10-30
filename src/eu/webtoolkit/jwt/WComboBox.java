@@ -355,7 +355,8 @@ public class WComboBox extends WFormWidget {
 	 * Sets the current index to the item corresponding to <code>value</code>.
 	 */
 	public void setValueText(final String value) {
-		for (int i = 0; i < this.getCount(); ++i) {
+		int size = this.getCount();
+		for (int i = 0; i < size; ++i) {
 			if (StringUtils.asString(
 					this.model_.getIndex(i, this.modelColumn_).getData(
 							ItemDataRole.DisplayRole)).equals(value)) {
@@ -518,7 +519,8 @@ public class WComboBox extends WFormWidget {
 			}
 			DomElement currentGroup = null;
 			boolean groupDisabled = true;
-			for (int i = 0; i < this.getCount(); ++i) {
+			int size = this.getCount();
+			for (int i = 0; i < size; ++i) {
 				DomElement item = DomElement
 						.createNew(DomElementType.DomElement_OPTION);
 				item.setProperty(Property.PropertyValue, String.valueOf(i));
@@ -588,7 +590,7 @@ public class WComboBox extends WFormWidget {
 				} else {
 					currentGroup.addChild(item);
 				}
-				if (i == this.getCount() - 1 && currentGroup != null) {
+				if (i == size - 1 && currentGroup != null) {
 					if (groupDisabled) {
 						currentGroup.setProperty(Property.PropertyDisabled,
 								"true");

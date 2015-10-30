@@ -32,6 +32,12 @@ class RowSpacer extends WWebWidget {
 	}
 
 	public void setRows(int height, boolean force) {
+		if (height < 0) {
+			logger.error(new StringWriter().append(
+					"RowSpacer::setRows() with heigth ").append(
+					String.valueOf(height)).toString());
+			height = 0;
+		}
 		if (height == 0) {
 			if (this != null)
 				this.remove();
