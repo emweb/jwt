@@ -391,11 +391,9 @@ public abstract class OAuthService {
 							response.addHeader("Location", redirectUrl);
 							return;
 						} else {
-							logger
-									.error(new StringWriter()
-											.append(
-													"RedirectEndpoint: could not decode state ")
-											.append(stateE).toString());
+							logger.error(new StringWriter()
+									.append("RedirectEndpoint: could not decode state ")
+									.append(stateE).toString());
 						}
 					} else {
 						logger.error(new StringWriter().append(
@@ -403,9 +401,9 @@ public abstract class OAuthService {
 					}
 					response.setStatus(400);
 					response.setContentType("text/html");
-					response.out().append("<html><body>").append(
-							"<h1>OAuth Authentication error</h1>").append(
-							"</body></html>");
+					response.out().append("<html><body>")
+							.append("<h1>OAuth Authentication error</h1>")
+							.append("</body></html>");
 				} catch (IOException ioe) {
 					ioe.printStackTrace();
 				}

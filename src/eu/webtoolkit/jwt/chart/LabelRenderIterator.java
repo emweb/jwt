@@ -60,8 +60,8 @@ class LabelRenderIterator extends SeriesIterator {
 					y - stackY));
 		}
 		if (!(text.length() == 0)) {
-			WPointF p = this.chart_.map(x, y, series.getAxis(), this
-					.getCurrentXSegment(), this.getCurrentYSegment());
+			WPointF p = this.chart_.map(x, y, series.getAxis(),
+					this.getCurrentXSegment(), this.getCurrentYSegment());
 			if (series.getType() == SeriesType.BarSeries) {
 				double g = this.numGroups_ + (this.numGroups_ - 1)
 						* this.chart_.getBarMargin();
@@ -89,11 +89,13 @@ class LabelRenderIterator extends SeriesIterator {
 			final WCartesianChart chart = this.chart_;
 			WPen oldPen = chart.textPen_.clone();
 			chart.textPen_.setColor(series.getLabelColor());
-			WTransform t = new WTransform(1, 0, 0, -1, chart.chartArea_
-					.getLeft(), chart.chartArea_.getBottom()).multiply(
-					chart.xTransform_).multiply(chart.yTransform_).multiply(
-					new WTransform(1, 0, 0, -1, -chart.chartArea_.getLeft(),
-							chart.chartArea_.getBottom()));
+			WTransform t = new WTransform(1, 0, 0, -1,
+					chart.chartArea_.getLeft(), chart.chartArea_.getBottom())
+					.multiply(chart.xTransform_)
+					.multiply(chart.yTransform_)
+					.multiply(
+							new WTransform(1, 0, 0, -1, -chart.chartArea_
+									.getLeft(), chart.chartArea_.getBottom()));
 			chart.renderLabel(this.painter_, text, t.map(p), alignment, 0, 3);
 			chart.textPen_ = oldPen;
 		}

@@ -126,7 +126,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 						: CheckState.Unchecked
 						: checkedData.getClass().equals(CheckState.class) ? (CheckState) checkedData
 								: CheckState.Unchecked;
-				IndexCheckBox icb = this.checkBox(widgetRef, index, true,
+				IndexCheckBox icb = this.checkBox(
+						widgetRef,
+						index,
+						true,
 						!EnumUtils.mask(index.getFlags(),
 								ItemFlag.ItemIsTristate).isEmpty());
 				icb.setCheckState(state);
@@ -193,12 +196,12 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		widgetRef.w.setStyleClass(sc);
 		if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsDropEnabled)
 				.isEmpty()) {
-			widgetRef.w.setAttributeValue("drop", new WString("true")
-					.toString());
+			widgetRef.w.setAttributeValue("drop",
+					new WString("true").toString());
 		} else {
 			if (widgetRef.w.getAttributeValue("drop").length() != 0) {
-				widgetRef.w.setAttributeValue("drop", new WString("f")
-						.toString());
+				widgetRef.w.setAttributeValue("drop",
+						new WString("f").toString());
 			}
 		}
 		return widgetRef.w;
@@ -267,7 +270,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    public void setModelData(Object editState, WAbstractItemModel model, WModelIndex index) {
 	 *      model.setData(index, editState, ItemDataRole.EditRole);
 	 *    }
@@ -294,7 +297,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    public Object getEditState(WWidget editor) {
 	 *      WContainerWidget w = (WContainerWidget) editor;
 	 *      WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
@@ -313,8 +316,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		IndexContainerWidget w = ((editor) instanceof IndexContainerWidget ? (IndexContainerWidget) (editor)
 				: null);
 		WLineEdit lineEdit = ((w.getWidget(0)) instanceof WLineEdit ? (WLineEdit) (w
-				.getWidget(0))
-				: null);
+				.getWidget(0)) : null);
 		return lineEdit.getText();
 	}
 
@@ -329,7 +331,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    public void setEditState(WWidget editor, Object value) {
 	 *      WContainerWidget w = (WContainerWidget) editor;
 	 *      WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
@@ -345,8 +347,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		IndexContainerWidget w = ((editor) instanceof IndexContainerWidget ? (IndexContainerWidget) (editor)
 				: null);
 		WLineEdit lineEdit = ((w.getWidget(0)) instanceof WLineEdit ? (WLineEdit) (w
-				.getWidget(0))
-				: null);
+				.getWidget(0)) : null);
 		lineEdit.setText((String) value);
 	}
 
@@ -379,7 +380,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    protected WWidget createEditor(WModelIndex index, EnumSet&lt;ViewItemRenderFlag&gt; flags) {
 	 *     final WContainerWidget result = new WContainerWidget();
 	 *     result.setSelectable(true);
@@ -468,24 +469,21 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	private IndexCheckBox checkBox(final WItemDelegate.WidgetRef w,
 			final WModelIndex index, boolean autoCreate, boolean triState) {
 		IndexCheckBox checkBox = ((w.w.find("c")) instanceof IndexCheckBox ? (IndexCheckBox) (w.w
-				.find("c"))
-				: null);
+				.find("c")) : null);
 		if (!(checkBox != null)) {
 			if (autoCreate) {
 				final IndexCheckBox result = checkBox = new IndexCheckBox(index);
 				checkBox.setObjectName("c");
 				checkBox.clicked().preventPropagation();
 				IndexContainerWidget wc = ((w.w.find("o")) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
-						.find("o"))
-						: null);
+						.find("o")) : null);
 				if (!(wc != null)) {
 					wc = new IndexContainerWidget(index);
 					wc.setObjectName("o");
 					w.w.setInline(true);
 					w.w.setStyleClass(WString.Empty.toString());
 					IndexContainerWidget p = ((w.w.getParent()) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
-							.getParent())
-							: null);
+							.getParent()) : null);
 					if (p != null) {
 						p.removeWidget(w.w);
 					}
@@ -525,12 +523,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			return image;
 		}
 		IndexContainerWidget wc = ((w.w.find("a")) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
-				.find("a"))
-				: null);
+				.find("a")) : null);
 		if (!(wc != null)) {
 			wc = ((w.w.find("o")) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
-					.find("o"))
-					: null);
+					.find("o")) : null);
 		}
 		if (!(wc != null)) {
 			wc = new IndexContainerWidget(index);
@@ -560,21 +556,18 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	private IndexAnchor anchorWidget(final WItemDelegate.WidgetRef w,
 			final WModelIndex index) {
 		IndexAnchor anchor = ((w.w.find("a")) instanceof IndexAnchor ? (IndexAnchor) (w.w
-				.find("a"))
-				: null);
+				.find("a")) : null);
 		if (anchor != null) {
 			return anchor;
 		}
 		anchor = new IndexAnchor(index);
 		anchor.setObjectName("a");
 		IndexContainerWidget wc = ((w.w.find("o")) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
-				.find("o"))
-				: null);
+				.find("o")) : null);
 		if (wc != null) {
 			int firstToMove = 0;
 			WCheckBox cb = ((wc.getWidget(0)) instanceof WCheckBox ? (WCheckBox) (wc
-					.getWidget(0))
-					: null);
+					.getWidget(0)) : null);
 			if (cb != null) {
 				firstToMove = 1;
 			}

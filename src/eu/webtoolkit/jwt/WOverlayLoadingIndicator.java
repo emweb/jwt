@@ -77,7 +77,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *            the CSS style elements
 	 * 
 	 *            <pre>
-	 * {@code
+	 *   {@code
 	 *                background: white;
 	 *                border: 3px solid #333333;
 	 *                z-index: 10001; visibility: visible;
@@ -93,7 +93,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 *            CSS style elements
 	 * 
 	 *            <pre>
-	 * {@code
+	 *   {@code
 	 *                background: #DDDDDD;
 	 *                height: 100%; width: 100%;
 	 *                top: 0px; left: 0px;
@@ -138,8 +138,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
 				: "fixed";
 		if (backgroundStyleClass.length() == 0) {
-			app
-					.getStyleSheet()
+			app.getStyleSheet()
 					.addRule(
 							"div#" + this.cover_.getId(),
 							""
@@ -150,8 +149,7 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 											: "opacity: 0.5;"));
 		}
 		if (styleClass.length() == 0) {
-			app
-					.getStyleSheet()
+			app.getStyleSheet()
 					.addRule(
 							"div#" + this.center_.getId(),
 							"background: white;border: 3px solid #333333;z-index: 10001; visibility: visible;position: "

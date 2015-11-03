@@ -305,8 +305,8 @@ public abstract class WAbstractItemModel extends WObject {
 			for (int i = 0; i <= ItemDataRole.BarBrushColorRole; ++i) {
 				result.put(i, this.getData(index, i));
 			}
-			result.put(ItemDataRole.UserRole, this.getData(index,
-					ItemDataRole.UserRole));
+			result.put(ItemDataRole.UserRole,
+					this.getData(index, ItemDataRole.UserRole));
 		}
 		return result;
 	}
@@ -405,8 +405,8 @@ public abstract class WAbstractItemModel extends WObject {
 					row -= rc;
 				}
 			}
-			WModelIndex idx = this.getIndex(row, start.getColumn(), start
-					.getParent());
+			WModelIndex idx = this.getIndex(row, start.getColumn(),
+					start.getParent());
 			Object v = this.getData(idx, role);
 			if (StringUtils.matchValue(v, value, flags)) {
 				result.add(idx);
@@ -424,7 +424,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * This is a convenience method, and is equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    index(row, column, parent).data(role)
 	 *   }
 	 * </pre>
@@ -465,7 +465,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    return row >= 0 && column >= 0
 	 *           && row < rowCount(parent) && column < columnCount(parent);
 	 *   }
@@ -899,8 +899,7 @@ public abstract class WAbstractItemModel extends WObject {
 	public void dropEvent(final WDropEvent e, DropAction action, int row,
 			int column, final WModelIndex parent) {
 		WItemSelectionModel selectionModel = ((e.getSource()) instanceof WItemSelectionModel ? (WItemSelectionModel) (e
-				.getSource())
-				: null);
+				.getSource()) : null);
 		if (selectionModel != null) {
 			WAbstractItemModel sourceModel = selectionModel.getModel();
 			if (action == DropAction.MoveAction || row == -1) {
@@ -925,8 +924,8 @@ public abstract class WAbstractItemModel extends WObject {
 					WModelIndex sourceParent = sourceIndex.getParent();
 					for (int col = 0; col < sourceModel
 							.getColumnCount(sourceParent); ++col) {
-						WModelIndex s = sourceModel.getIndex(sourceIndex
-								.getRow(), col, sourceParent);
+						WModelIndex s = sourceModel.getIndex(
+								sourceIndex.getRow(), col, sourceParent);
 						WModelIndex d = this.getIndex(r, col, parent);
 						copyData(sourceModel, s, this, d);
 					}
@@ -954,7 +953,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertColumns(column, 1, parent);
 	 *   }
 	 * </pre>
@@ -986,7 +985,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertRows(row, 1, parent);
 	 *   }
 	 * </pre>
@@ -1018,7 +1017,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    removeColumns(column, 1, parent);
 	 *   }
 	 * </pre>
@@ -1050,7 +1049,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    removeRows(row, 1, parent);
 	 *   }
 	 * </pre>
@@ -1081,7 +1080,7 @@ public abstract class WAbstractItemModel extends WObject {
 	 * This is a convience method, and is equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    setData(index(row, column, parent), value, role);
 	 *   }
 	 * </pre>

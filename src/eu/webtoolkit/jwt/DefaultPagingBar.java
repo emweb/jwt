@@ -83,10 +83,9 @@ class DefaultPagingBar extends WContainerWidget {
 				.getPageCount() - 1);
 		this.lastButton_.setDisabled(this.view_.getCurrentPage() == this.view_
 				.getPageCount() - 1);
-		this.current_
-				.setText(WString.tr("Wt.WAbstractItemView.PageIOfN").arg(
-						this.view_.getCurrentPage() + 1).arg(
-						this.view_.getPageCount()));
+		this.current_.setText(WString.tr("Wt.WAbstractItemView.PageIOfN")
+				.arg(this.view_.getCurrentPage() + 1)
+				.arg(this.view_.getPageCount()));
 	}
 
 	private void showFirstPage() {

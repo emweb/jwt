@@ -28,9 +28,8 @@ class TopicTemplate extends WTemplate {
 		this.addFunction("tr", Functions.tr);
 		this.setCondition("if:cpp", false);
 		this.setCondition("if:java", true);
-		this
-				.bindString("doc-url",
-						"http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
+		this.bindString("doc-url",
+				"http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
 	}
 
 	public void resolveString(final String varName, final List<WString> args,
@@ -38,17 +37,17 @@ class TopicTemplate extends WTemplate {
 		if (varName.equals("doc-link")) {
 			String className = args.get(0).toString();
 			className = StringUtils.replaceAll(className, "Render-", "render.");
-			result.append("<a href=\"").append(this.docUrl(className)).append(
-					"\" target=\"_blank\">");
+			result.append("<a href=\"").append(this.docUrl(className))
+					.append("\" target=\"_blank\">");
 			className = StringUtils.replaceAll(className, "render.", "");
 			result.append(className).append("</a>");
 		} else {
 			if (varName.equals("src")) {
 				String exampleName = args.get(0).toString();
-				result.append("<fieldset class=\"src\">").append(
-						"<legend>source</legend>").append(
-						tr("src-" + exampleName).toString()).append(
-						"</fieldset>");
+				result.append("<fieldset class=\"src\">")
+						.append("<legend>source</legend>")
+						.append(tr("src-" + exampleName).toString())
+						.append("</fieldset>");
 			} else {
 				super.resolveString(varName, args, result);
 			}

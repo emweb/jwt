@@ -380,8 +380,8 @@ public class User {
 		if (success) {
 			this.db_.setFailedLoginAttempts(this, 0);
 		} else {
-			this.db_.setFailedLoginAttempts(this, this.db_
-					.getFailedLoginAttempts(this) + 1);
+			this.db_.setFailedLoginAttempts(this,
+					this.db_.getFailedLoginAttempts(this) + 1);
 		}
 		this.db_.setLastLoginAttempt(this, WDate.getCurrentDate());
 	}

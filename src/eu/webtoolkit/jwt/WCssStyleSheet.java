@@ -204,8 +204,8 @@ public class WCssStyleSheet {
 					: this.rulesAdded_;
 			for (int i = 0; i < toProcess.size(); ++i) {
 				WCssRule rule = toProcess.get(i);
-				out.append(rule.getSelector()).append(" { ").append(
-						rule.getDeclarations()).append(" }\n");
+				out.append(rule.getSelector()).append(" { ")
+						.append(rule.getDeclarations()).append(" }\n");
 			}
 			this.rulesAdded_.clear();
 			if (all) {

@@ -174,8 +174,8 @@ public class WTableColumn extends WObject {
 
 	void updateDom(final DomElement element, boolean all) {
 		if (this.width_ != null) {
-			element.setProperty(Property.PropertyStyleWidth, this.width_
-					.getCssText());
+			element.setProperty(Property.PropertyStyleWidth,
+					this.width_.getCssText());
 		}
 		if (!all || this.styleClass_.length() != 0) {
 			element.setProperty(Property.PropertyClass, this.styleClass_);

@@ -31,9 +31,11 @@ import org.slf4j.LoggerFactory;
  * contains the data of a dataseries. Implementations of this class format the
  * data for representation on the chart and perform all necessary drawing
  * operations. Note that if a dataseries holds numerical data it should be added
- * to a chart of type DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
+ * to a chart of type DOCREF<a class="el" href=
+ * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
  * >ScatterPlot</a>, if it holds categorical data it should be added to a chart
- * of type DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
+ * of type DOCREF<a class="el" href=
+ * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
  * >CategoryChart</a>.
  * <p>
  * <h3>Color</h3>

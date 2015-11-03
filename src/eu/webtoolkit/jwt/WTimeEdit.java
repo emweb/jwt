@@ -53,8 +53,8 @@ public class WTimeEdit extends WLineEdit {
 					}
 				});
 		t.bindWidget("timePicker", this.timePicker_);
-		WApplication.getInstance().getTheme().apply(this, this.popup_,
-				WidgetThemeRole.TimePickerPopupRole);
+		WApplication.getInstance().getTheme()
+				.apply(this, this.popup_, WidgetThemeRole.TimePickerPopupRole);
 		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
 			public void trigger() {
 				WTimeEdit.this.popup_.hide();
@@ -114,8 +114,7 @@ public class WTimeEdit extends WLineEdit {
 	 */
 	public WTimeValidator getValidator() {
 		return ((super.getValidator()) instanceof WTimeValidator ? (WTimeValidator) (super
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 	}
 
 	/**
@@ -128,11 +127,9 @@ public class WTimeEdit extends WLineEdit {
 			tv.setFormat(format);
 			this.setTime(t);
 		} else {
-			logger
-					.warn(new StringWriter()
-							.append(
-									"setFormaT() ignored since validator is not WTimeValidator")
-							.toString());
+			logger.warn(new StringWriter()
+					.append("setFormaT() ignored since validator is not WTimeValidator")
+					.toString());
 		}
 	}
 

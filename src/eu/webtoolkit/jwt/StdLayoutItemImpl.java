@@ -50,8 +50,7 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
 		WLayoutItem i = this.getLayoutItem();
 		if (i.getParentLayout() != null) {
 			return ((i.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (i
-					.getParentLayout().getImpl())
-					: null);
+					.getParentLayout().getImpl()) : null);
 		} else {
 			return null;
 		}

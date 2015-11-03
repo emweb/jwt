@@ -276,15 +276,15 @@ class GoogleMapExample extends WContainerWidget {
 	}
 
 	private void googleMapDoubleClicked(WGoogleMap.Coordinate c) {
-		System.err.append("Double clicked at coordinate (").append(
-				String.valueOf(c.getLatitude())).append(",").append(
-				String.valueOf(c.getLongitude())).append(")");
+		System.err.append("Double clicked at coordinate (")
+				.append(String.valueOf(c.getLatitude())).append(",")
+				.append(String.valueOf(c.getLongitude())).append(")");
 	}
 
 	private void googleMapClicked(WGoogleMap.Coordinate c) {
-		System.err.append("Clicked at coordinate (").append(
-				String.valueOf(c.getLatitude())).append(",").append(
-				String.valueOf(c.getLongitude())).append(")");
+		System.err.append("Clicked at coordinate (")
+				.append(String.valueOf(c.getLatitude())).append(",")
+				.append(String.valueOf(c.getLongitude())).append(")");
 	}
 
 	private WGoogleMap map_;

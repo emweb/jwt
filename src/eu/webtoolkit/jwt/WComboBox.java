@@ -221,7 +221,8 @@ public class WComboBox extends WFormWidget {
 	 * <p>
 	 * The default value is a {@link WStringListModel} that is owned by the
 	 * combo box. Items in the model can be grouped by setting the DOCREF<a
-	 * class="el" href="group__modelview.html#gg0ae864e12320f9f89172735e075ed0684b121c4303b1ab17f6347e950af65c21"
+	 * class="el" href=
+	 * "group__modelview.html#gg0ae864e12320f9f89172735e075ed0684b121c4303b1ab17f6347e950af65c21"
 	 * >LevelRole</a>. The contents is interpreted by DOCREF<a class="el"
 	 * href="group__modelview.html#gcab3e57a168c5e4e76a6884070106d48"
 	 * >Wt::asString</a>, and subsequent items of the same group are rendered as
@@ -317,8 +318,9 @@ public class WComboBox extends WFormWidget {
 	 * Returns the index of the first item that matches a text.
 	 */
 	public int findText(final CharSequence text, MatchOptions flags) {
-		List<WModelIndex> list = this.model_.match(this.model_.getIndex(0,
-				this.modelColumn_), ItemDataRole.DisplayRole, text, 1, flags);
+		List<WModelIndex> list = this.model_.match(
+				this.model_.getIndex(0, this.modelColumn_),
+				ItemDataRole.DisplayRole, text, 1, flags);
 		if (list.isEmpty()) {
 			return -1;
 		} else {
@@ -524,9 +526,11 @@ public class WComboBox extends WFormWidget {
 				DomElement item = DomElement
 						.createNew(DomElementType.DomElement_OPTION);
 				item.setProperty(Property.PropertyValue, String.valueOf(i));
-				item.setProperty(Property.PropertyInnerHTML, escapeText(
-						StringUtils.asString(this.model_.getData(i,
-								this.modelColumn_))).toString());
+				item.setProperty(
+						Property.PropertyInnerHTML,
+						escapeText(
+								StringUtils.asString(this.model_.getData(i,
+										this.modelColumn_))).toString());
 				if (!!EnumUtils.mask(
 						this.model_.getFlags(this.model_.getIndex(i,
 								this.modelColumn_)), ItemFlag.ItemIsSelectable)
@@ -603,8 +607,8 @@ public class WComboBox extends WFormWidget {
 		}
 		if (this.selectionChanged_ || all
 				&& this.getSelectionMode() == SelectionMode.SingleSelection) {
-			element.setProperty(Property.PropertySelectedIndex, String
-					.valueOf(this.currentIndex_));
+			element.setProperty(Property.PropertySelectedIndex,
+					String.valueOf(this.currentIndex_));
 			this.selectionChanged_ = false;
 		}
 		if (!this.currentlyConnected_
@@ -640,9 +644,9 @@ public class WComboBox extends WFormWidget {
 				try {
 					this.currentIndex_ = Integer.parseInt(value);
 				} catch (final NumberFormatException e) {
-					logger.error(new StringWriter().append(
-							"received illegal form value: '").append(value)
-							.append("'").toString());
+					logger.error(new StringWriter()
+							.append("received illegal form value: '")
+							.append(value).append("'").toString());
 				}
 			} else {
 				this.currentIndex_ = -1;

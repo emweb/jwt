@@ -166,13 +166,12 @@ public class WStandardColorMap extends WAbstractColorMap {
 		}
 		double val0 = this.colors_.get(0).getValue();
 		double interval = (this.colors_.get(this.colors_.size() - 1).getValue() - this.colors_
-				.get(0).getValue())
-				/ numberOfBands;
+				.get(0).getValue()) / numberOfBands;
 		List<WStandardColorMap.Pair> newColors = new ArrayList<WStandardColorMap.Pair>();
 		for (int i = 0; i < numberOfBands; i++) {
 			WStandardColorMap.Pair newCol = new WStandardColorMap.Pair(val0 + i
-					* interval, this
-					.toColor(val0 + i * interval + interval / 2));
+					* interval,
+					this.toColor(val0 + i * interval + interval / 2));
 			newColors.add(newCol);
 		}
 		Utils.copyList(newColors, this.colors_);

@@ -106,26 +106,26 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			maxHeight = pixelSize(this.getContainer().getMaximumHeight());
 		}
 		StringBuilder js = new StringBuilder();
-		js.append(app.getJavaScriptClass()).append(
-				".layouts2.add(new Wt3_3_4.StdLayout2(").append(
-				app.getJavaScriptClass()).append(",'").append(this.getId())
-				.append("',");
+		js.append(app.getJavaScriptClass())
+				.append(".layouts2.add(new Wt3_3_4.StdLayout2(")
+				.append(app.getJavaScriptClass()).append(",'")
+				.append(this.getId()).append("',");
 		if (this.getLayout().getParentLayout() != null) {
-			js.append("'").append(
-					getImpl(this.getLayout().getParentLayout()).getId())
+			js.append("'")
+					.append(getImpl(this.getLayout().getParentLayout()).getId())
 					.append("',");
 		} else {
 			js.append("null,");
 		}
 		boolean progressive = !app.getEnvironment().hasAjax();
-		js.append(fitWidth ? '1' : '0').append(",").append(
-				fitHeight ? '1' : '0').append(",").append(
-				progressive ? '1' : '0').append(",");
-		js.append(maxWidth).append(",").append(maxHeight).append(",[").append(
-				this.grid_.horizontalSpacing_).append(",").append(margin[3])
-				.append(",").append(margin[1]).append("],[").append(
-						this.grid_.verticalSpacing_).append(",").append(
-						margin[0]).append(",").append(margin[2]).append("],");
+		js.append(fitWidth ? '1' : '0').append(",")
+				.append(fitHeight ? '1' : '0').append(",")
+				.append(progressive ? '1' : '0').append(",");
+		js.append(maxWidth).append(",").append(maxHeight).append(",[")
+				.append(this.grid_.horizontalSpacing_).append(",")
+				.append(margin[3]).append(",").append(margin[1]).append("],[")
+				.append(this.grid_.verticalSpacing_).append(",")
+				.append(margin[0]).append(",").append(margin[2]).append("],");
 		this.streamConfig(js, app);
 		DomElement div = DomElement.createNew(DomElementType.DomElement_DIV);
 		div.setId(this.getId());
@@ -263,15 +263,15 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 									break;
 								}
 							}
-							td.setProperty(Property.PropertyStyle, style
-									.toString());
+							td.setProperty(Property.PropertyStyle,
+									style.toString());
 							if (item.rowSpan_ != 1) {
-								td.setProperty(Property.PropertyRowSpan, String
-										.valueOf(item.rowSpan_));
+								td.setProperty(Property.PropertyRowSpan,
+										String.valueOf(item.rowSpan_));
 							}
 							if (item.colSpan_ != 1) {
-								td.setProperty(Property.PropertyColSpan, String
-										.valueOf(item.colSpan_));
+								td.setProperty(Property.PropertyColSpan,
+										String.valueOf(item.colSpan_));
 							}
 							prevColumnWithItem = col;
 						}
@@ -323,11 +323,9 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 									if (haveMinWidth) {
 										DomElement spacer = DomElement
 												.createNew(DomElementType.DomElement_DIV);
-										spacer
-												.setProperty(
-														Property.PropertyStyleWidth,
-														c
-																.getProperty(Property.PropertyStyleMinWidth));
+										spacer.setProperty(
+												Property.PropertyStyleWidth,
+												c.getProperty(Property.PropertyStyleMinWidth));
 										spacer.setProperty(
 												Property.PropertyStyleHeight,
 												"1px");
@@ -369,15 +367,11 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 								if (haveMinWidth) {
 									DomElement spacer = DomElement
 											.createNew(DomElementType.DomElement_DIV);
-									spacer
-											.setProperty(
-													Property.PropertyStyleWidth,
-													c
-															.getProperty(Property.PropertyStyleMinWidth));
-									spacer
-											.setProperty(
-													Property.PropertyStyleHeight,
-													"1px");
+									spacer.setProperty(
+											Property.PropertyStyleWidth,
+											c.getProperty(Property.PropertyStyleMinWidth));
+									spacer.setProperty(
+											Property.PropertyStyleHeight, "1px");
 									td.addChild(spacer);
 								}
 							}
@@ -417,15 +411,16 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			}
 			this.addedItems_.clear();
 			for (int i = 0; i < this.removedItems_.size(); ++i) {
-				parent.callJavaScript("Wt3_3_4.remove('"
-						+ this.removedItems_.get(i) + "');", true);
+				parent.callJavaScript(
+						"Wt3_3_4.remove('" + this.removedItems_.get(i) + "');",
+						true);
 			}
 			this.removedItems_.clear();
 			parent.addChild(div);
 			StringBuilder js = new StringBuilder();
-			js.append(app.getJavaScriptClass()).append(
-					".layouts2.updateConfig('").append(this.getId()).append(
-					"',");
+			js.append(app.getJavaScriptClass())
+					.append(".layouts2.updateConfig('").append(this.getId())
+					.append("',");
 			this.streamConfig(js, app);
 			js.append(");");
 			app.doJavaScript(js.toString());
@@ -455,8 +450,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 							js.append(",");
 						}
 						first = false;
-						js.append("[").append((int) row).append(",").append(
-								(int) col).append("]");
+						js.append("[").append((int) row).append(",")
+								.append((int) col).append("]");
 					}
 				}
 			}
@@ -472,8 +467,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 					WLayout nested = item.getLayout();
 					if (nested != null) {
 						(((nested.getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (nested
-								.getImpl())
-								: null)).updateDom(parent);
+								.getImpl()) : null)).updateDom(parent);
 					}
 				}
 			}
@@ -481,8 +475,8 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 	}
 
 	public void setHint(final String name, final String value) {
-		logger.error(new StringWriter().append("unrecognized hint '").append(
-				name).append("'").toString());
+		logger.error(new StringWriter().append("unrecognized hint '")
+				.append(name).append("'").toString());
 	}
 
 	public boolean itemResized(WLayoutItem item) {
@@ -696,12 +690,10 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 						}
 						js.append("align:").append((int) align).append(",");
 					}
-					js
-							.append("dirty:")
-							.append(
-									this.grid_.items_.get(row).get(col).update_ ? 2
-											: 0).append(",id:'").append(id)
-							.append("'").append("}");
+					js.append("dirty:")
+							.append(this.grid_.items_.get(row).get(col).update_ ? 2
+									: 0).append(",id:'").append(id).append("'")
+							.append("}");
 					this.grid_.items_.get(row).get(col).update_ = 0 != 0;
 				} else {
 					js.append("null");

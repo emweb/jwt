@@ -58,8 +58,8 @@ class WIcon extends WInteractWidget {
 	}
 
 	public void setSize(double factor) {
-		this.getDecorationStyle().getFont().setSize(
-				new WLength(factor, WLength.Unit.FontEm));
+		this.getDecorationStyle().getFont()
+				.setSize(new WLength(factor, WLength.Unit.FontEm));
 	}
 
 	public double getSize() {

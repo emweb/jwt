@@ -350,8 +350,8 @@ public class WPushButton extends WFormWidget {
 		this.linkState_.link = link;
 		this.flags_.set(BIT_LINK_CHANGED);
 		if (this.linkState_.link.getType() == WLink.Type.Resource) {
-			this.linkState_.link.getResource().dataChanged().addListener(this,
-					new Signal.Listener() {
+			this.linkState_.link.getResource().dataChanged()
+					.addListener(this, new Signal.Listener() {
 						public void trigger() {
 							WPushButton.this.resourceChanged();
 						}
@@ -565,16 +565,16 @@ public class WPushButton extends WFormWidget {
 				&& !this.icon_.isNull()) {
 			DomElement image = DomElement
 					.createNew(DomElementType.DomElement_IMG);
-			image.setProperty(Property.PropertySrc, this.icon_
-					.resolveUrl(WApplication.getInstance()));
+			image.setProperty(Property.PropertySrc,
+					this.icon_.resolveUrl(WApplication.getInstance()));
 			image.setId("im" + this.getFormName());
 			element.insertChildAt(image, 0);
 			this.flags_.set(BIT_ICON_RENDERED);
 			this.flags_.clear(BIT_ICON_CHANGED);
 		}
 		if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
-			element.setProperty(Property.PropertyInnerHTML, this.text_
-					.getFormattedText());
+			element.setProperty(Property.PropertyInnerHTML,
+					this.text_.getFormattedText());
 			this.flags_.clear(BIT_TEXT_CHANGED);
 		}
 		if (this.flags_.get(BIT_LINK_CHANGED) || all) {
@@ -589,15 +589,17 @@ public class WPushButton extends WFormWidget {
 		if (this.isCheckable()) {
 			if (this.flags_.get(BIT_CHECKED_CHANGED) || all) {
 				if (!all || this.flags_.get(BIT_IS_CHECKED)) {
-					this.toggleStyleClass("active", this.flags_
-							.get(BIT_IS_CHECKED), true);
+					this.toggleStyleClass("active",
+							this.flags_.get(BIT_IS_CHECKED), true);
 				}
 				this.flags_.clear(BIT_CHECKED_CHANGED);
 			}
 		}
 		if (!all) {
-			WApplication.getInstance().getTheme().apply(this, element,
-					ElementThemeRole.MainElementThemeRole);
+			WApplication
+					.getInstance()
+					.getTheme()
+					.apply(this, element, ElementThemeRole.MainElementThemeRole);
 		}
 		super.updateDom(element, all);
 	}
@@ -623,14 +625,14 @@ public class WPushButton extends WFormWidget {
 	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.flags_.get(BIT_ICON_CHANGED)
 				&& this.flags_.get(BIT_ICON_RENDERED)) {
-			DomElement image = DomElement.getForUpdate("im"
-					+ this.getFormName(), DomElementType.DomElement_IMG);
+			DomElement image = DomElement.getForUpdate(
+					"im" + this.getFormName(), DomElementType.DomElement_IMG);
 			if (this.icon_.isNull()) {
 				image.removeFromParent();
 				this.flags_.clear(BIT_ICON_RENDERED);
 			} else {
-				image.setProperty(Property.PropertySrc, this.icon_
-						.resolveUrl(app));
+				image.setProperty(Property.PropertySrc,
+						this.icon_.resolveUrl(app));
 			}
 			result.add(image);
 			this.flags_.clear(BIT_ICON_CHANGED);

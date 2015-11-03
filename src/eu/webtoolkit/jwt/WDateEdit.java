@@ -71,8 +71,8 @@ public class WDateEdit extends WLineEdit {
 					}
 				});
 		t.bindWidget("calendar", this.calendar_);
-		WApplication.getInstance().getTheme().apply(this, this.popup_,
-				WidgetThemeRole.DatePickerPopupRole);
+		WApplication.getInstance().getTheme()
+				.apply(this, this.popup_, WidgetThemeRole.DatePickerPopupRole);
 		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
 			public void trigger() {
 				WDateEdit.this.popup_.hide();
@@ -135,8 +135,7 @@ public class WDateEdit extends WLineEdit {
 	 */
 	public WDateValidator getValidator() {
 		return ((super.getValidator()) instanceof WDateValidator ? (WDateValidator) (super
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 	}
 
 	/**
@@ -156,11 +155,9 @@ public class WDateEdit extends WLineEdit {
 			dv.setFormat(format);
 			this.setDate(d);
 		} else {
-			logger
-					.warn(new StringWriter()
-							.append(
-									"setFormat() ignored since validator is not a WDateValidator")
-							.toString());
+			logger.warn(new StringWriter()
+					.append("setFormat() ignored since validator is not a WDateValidator")
+					.toString());
 		}
 	}
 
@@ -175,11 +172,9 @@ public class WDateEdit extends WLineEdit {
 		if (dv != null) {
 			return dv.getFormat();
 		} else {
-			logger
-					.warn(new StringWriter()
-							.append(
-									"format() is bogus  since validator is not a WDateValidator")
-							.toString());
+			logger.warn(new StringWriter()
+					.append("format() is bogus  since validator is not a WDateValidator")
+					.toString());
 			return "";
 		}
 	}

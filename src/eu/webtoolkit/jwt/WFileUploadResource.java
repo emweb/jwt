@@ -43,30 +43,29 @@ class WFileUploadResource extends WResource {
 		response.addHeader("Expires", "Sun, 14 Jun 2020 00:00:00 GMT");
 		response.addHeader("Cache-Control", "max-age=315360000");
 		Writer o = response.out();
-		o
-				.append("<!DOCTYPE html><html>\n<head><script type=\"text/javascript\">\nfunction load() { ");
+		o.append("<!DOCTYPE html><html>\n<head><script type=\"text/javascript\">\nfunction load() { ");
 		if (triggerUpdate || 0 != 0) {
 			if (triggerUpdate) {
 				logger.debug(new StringWriter().append(
 						"Resource handleRequest(): signaling uploaded")
 						.toString());
 				o.append("window.parent.postMessage(").append("{ fu: '")
-						.append(this.fileUpload_.getId()).append("',").append(
-								"  signal: '").append(
-								this.fileUpload_.uploaded().encodeCmd())
+						.append(this.fileUpload_.getId()).append("',")
+						.append("  signal: '")
+						.append(this.fileUpload_.uploaded().encodeCmd())
 						.append("'}, '*');");
 			} else {
 				if (0 != 0) {
-					logger
-							.debug(new StringWriter()
-									.append(
-											"Resource handleRequest(): signaling file-too-large")
-									.toString());
-					o.append("window.parent.postMessage(").append("{ fu: '")
-							.append(this.fileUpload_.getId()).append("',")
-							.append("  signal: '").append(
-									this.fileUpload_.fileTooLargeImpl()
-											.encodeCmd()).append("'}, '*');");
+					logger.debug(new StringWriter()
+							.append("Resource handleRequest(): signaling file-too-large")
+							.toString());
+					o.append("window.parent.postMessage(")
+							.append("{ fu: '")
+							.append(this.fileUpload_.getId())
+							.append("',")
+							.append("  signal: '")
+							.append(this.fileUpload_.fileTooLargeImpl()
+									.encodeCmd()).append("'}, '*');");
 				}
 			}
 		} else {

@@ -47,8 +47,8 @@ class HeaderProxyModel extends WAbstractTableModel {
 	}
 
 	public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
-		EnumSet<HeaderFlag> headerFlags = this.model_.getHeaderFlags(index
-				.getColumn(), Orientation.Horizontal);
+		EnumSet<HeaderFlag> headerFlags = this.model_.getHeaderFlags(
+				index.getColumn(), Orientation.Horizontal);
 		EnumSet<ItemFlag> result = EnumSet.noneOf(ItemFlag.class);
 		if (!EnumUtils.mask(headerFlags, HeaderFlag.HeaderIsUserCheckable)
 				.isEmpty()) {

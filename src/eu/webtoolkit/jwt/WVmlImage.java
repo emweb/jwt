@@ -109,43 +109,48 @@ public class WVmlImage implements WVectorImage {
 		}
 		WTransform t = this.getPainter().getCombinedTransform();
 		WPointF tl = t.map(rect.getTopLeft());
-		this.rendered_.append("<v:group style=\"width:").append(
-				String.valueOf(Z * this.getWidth().getValue())).append(
-				"px;height:").append(
-				String.valueOf(Z * this.getHeight().getValue())).append("px;");
+		this.rendered_.append("<v:group style=\"width:")
+				.append(String.valueOf(Z * this.getWidth().getValue()))
+				.append("px;height:")
+				.append(String.valueOf(Z * this.getHeight().getValue()))
+				.append("px;");
 		double cx = 1;
 		double cy = 1;
 		if (t.getM11() != 1.0 || t.getM22() != 1.0 || t.getM12() != 0.0
 				|| t.getM21() != 0.0) {
 			cx = this.getWidth().getValue() / rect.getWidth();
 			cy = this.getHeight().getValue() / rect.getHeight();
-			this.rendered_.append(
-					"filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
+			this.rendered_
+					.append("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
 					.append(String.valueOf(t.getM11() / cx)).append("',M12='")
 					.append(String.valueOf(t.getM21() / cy)).append("',M21='")
 					.append(String.valueOf(t.getM12() / cx)).append("',M22='")
 					.append(String.valueOf(t.getM22() / cy)).append("',Dx='")
-					.append(String.valueOf(tl.getX())).append("',Dy='").append(
-							String.valueOf(tl.getY())).append(
-							"',sizingmethod='clip');");
+					.append(String.valueOf(tl.getX())).append("',Dy='")
+					.append(String.valueOf(tl.getY()))
+					.append("',sizingmethod='clip');");
 		} else {
 			this.rendered_.append("top:").append(String.valueOf(Z * tl.getY()))
 					.append("px;left:").append(String.valueOf(Z * tl.getX()))
 					.append("px;");
 		}
-		this.rendered_.append("\"><v:image src=\"").append(imgUri).append(
-				"\" style=\"width:").append(
-				String.valueOf(Z * rect.getWidth() * cx)).append("px;height:")
-				.append(String.valueOf(Z * rect.getHeight() * cy)).append(
-						"px\" cropleft=\"").append(
-						String.valueOf(sourceRect.getX() / imgWidth)).append(
-						"\" croptop=\"").append(
-						String.valueOf(sourceRect.getY() / imgHeight)).append(
-						"\" cropright=\"").append(
-						String.valueOf((imgWidth - sourceRect.getRight())
-								/ imgWidth)).append("\" cropbottom=\"").append(
-						String.valueOf((imgHeight - sourceRect.getBottom())
-								/ imgHeight)).append("\"/></v:group>");
+		this.rendered_
+				.append("\"><v:image src=\"")
+				.append(imgUri)
+				.append("\" style=\"width:")
+				.append(String.valueOf(Z * rect.getWidth() * cx))
+				.append("px;height:")
+				.append(String.valueOf(Z * rect.getHeight() * cy))
+				.append("px\" cropleft=\"")
+				.append(String.valueOf(sourceRect.getX() / imgWidth))
+				.append("\" croptop=\"")
+				.append(String.valueOf(sourceRect.getY() / imgHeight))
+				.append("\" cropright=\"")
+				.append(String.valueOf((imgWidth - sourceRect.getRight())
+						/ imgWidth))
+				.append("\" cropbottom=\"")
+				.append(String.valueOf((imgHeight - sourceRect.getBottom())
+						/ imgHeight)).append("\"/></v:group>");
 	}
 
 	public void drawLine(double x1, double y1, double x2, double y2) {
@@ -193,11 +198,11 @@ public class WVmlImage implements WVectorImage {
 		StringBuilder tmp = new StringBuilder();
 		final List<WPainterPath.Segment> segments = path.getSegments();
 		if (thisPath == -1) {
-			tmp.append("<v:shape style=\"width:").append(
-					(int) (Z * this.currentRect_.getWidth())).append(
-					"px;height:").append(
-					(int) (Z * this.currentRect_.getHeight())).append(
-					"px;\" path=\"m0,0l0,0");
+			tmp.append("<v:shape style=\"width:")
+					.append((int) (Z * this.currentRect_.getWidth()))
+					.append("px;height:")
+					.append((int) (Z * this.currentRect_.getHeight()))
+					.append("px;\" path=\"m0,0l0,0");
 			this.activePaths_.add(new WVmlImage.ActivePath());
 			thisPath = this.activePaths_.size() - 1;
 		}
@@ -239,14 +244,14 @@ public class WVmlImage implements WVectorImage {
 				} else {
 					tmp.append("wa");
 				}
-				tmp.append(myzround(a.getX())).append(",").append(
-						myzround(a.getY())).append(",").append(
-						myzround(b.getX())).append(",").append(
-						myzround(b.getY())).append(",").append(
-						myzround(p1.getX())).append(",").append(
-						myzround(p1.getY())).append(",").append(
-						myzround(p2.getX())).append(",").append(
-						myzround(p2.getY()));
+				tmp.append(myzround(a.getX())).append(",")
+						.append(myzround(a.getY())).append(",")
+						.append(myzround(b.getX())).append(",")
+						.append(myzround(b.getY())).append(",")
+						.append(myzround(p1.getX())).append(",")
+						.append(myzround(p1.getY())).append(",")
+						.append(myzround(p2.getX())).append(",")
+						.append(myzround(p2.getY()));
 			} else {
 				switch (s.getType()) {
 				case MoveTo:
@@ -290,8 +295,8 @@ public class WVmlImage implements WVectorImage {
 				}
 				WPointF p = new WPointF(x, y);
 				p = transform.map(p);
-				tmp.append(myzround(p.getX())).append(",").append(
-						myzround(p.getY()));
+				tmp.append(myzround(p.getX())).append(",")
+						.append(myzround(p.getY()));
 			}
 		}
 		this.activePaths_.get(thisPath).path += tmp.toString();
@@ -306,9 +311,13 @@ public class WVmlImage implements WVectorImage {
 					"WVmlImage::drawText(): TextWordWrap is not supported");
 		}
 		if (clipPoint != null && this.getPainter() != null) {
-			if (!this.getPainter().getClipPathTransform().map(
-					this.getPainter().getClipPath()).isPointInPath(
-					this.getPainter().getWorldTransform().map(clipPoint))) {
+			if (!this
+					.getPainter()
+					.getClipPathTransform()
+					.map(this.getPainter().getClipPath())
+					.isPointInPath(
+							this.getPainter().getWorldTransform()
+									.map(clipPoint))) {
 				return;
 			}
 		}
@@ -334,20 +343,24 @@ public class WVmlImage implements WVectorImage {
 			break;
 		}
 		EscapeOStream render = new EscapeOStream();
-		render.append("<v:shape style=\"width:").append(
-				(int) (Z * this.currentRect_.getWidth())).append("px;height:")
-				.append((int) (Z * this.currentRect_.getHeight())).append(
-						"px;\"><v:path textpathok=\"True\" v=\"m").append(
-						myzround(rect.getLeft(), false)).append(',').append(
-						myzround(y, false)).append('l').append(
-						myzround(rect.getRight(), false)).append(',').append(
-						myzround(y, false)).append(
-						"m0,0l0,0e\"/><v:fill on=\"True\" ").append(
-						colorAttributes(this.getPainter().getPen().getColor()))
-				.append("/><v:stroke on=\"False\"/>").append(
-						this.skewElement(this.getPainter()
-								.getCombinedTransform())).append(
-						"<v:textpath on=\"True\" string=\"");
+		render.append("<v:shape style=\"width:")
+				.append((int) (Z * this.currentRect_.getWidth()))
+				.append("px;height:")
+				.append((int) (Z * this.currentRect_.getHeight()))
+				.append("px;\"><v:path textpathok=\"True\" v=\"m")
+				.append(myzround(rect.getLeft(), false))
+				.append(',')
+				.append(myzround(y, false))
+				.append('l')
+				.append(myzround(rect.getRight(), false))
+				.append(',')
+				.append(myzround(y, false))
+				.append("m0,0l0,0e\"/><v:fill on=\"True\" ")
+				.append(colorAttributes(this.getPainter().getPen().getColor()))
+				.append("/><v:stroke on=\"False\"/>")
+				.append(this.skewElement(this.getPainter()
+						.getCombinedTransform()))
+				.append("<v:textpath on=\"True\" string=\"");
 		render.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
 		render.append(text.toString());
 		render.popEscape();
@@ -367,8 +380,8 @@ public class WVmlImage implements WVectorImage {
 		}
 		WApplication app = WApplication.getInstance();
 		WFont textFont = this.getPainter().getFont();
-		textFont.setSize(WFont.Size.FixedSize, WLength.multiply(textFont
-				.getSizeLength(), app.getEnvironment().getDpiScale()));
+		textFont.setSize(WFont.Size.FixedSize, WLength.multiply(
+				textFont.getSizeLength(), app.getEnvironment().getDpiScale()));
 		String cssFont = textFont.getCssText(false);
 		int i = cssFont.indexOf(',');
 		if (i != -1) {
@@ -377,12 +390,12 @@ public class WVmlImage implements WVectorImage {
 		}
 		render.append(";").append(cssFont).append("\"/></v:shape>");
 		if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
-				.getValue()) != 0)
-				&& !this.currentShadow_.isNone()) {
+				.getValue()) != 0) && !this.currentShadow_.isNone()) {
 			String result = render.toString();
 			int pos = result.indexOf("style=\"") + 7;
-			this.rendered_.append(result.substring(0, 0 + pos)).append(
-					this.getCreateShadowFilter()).append(result.substring(pos));
+			this.rendered_.append(result.substring(0, 0 + pos))
+					.append(this.getCreateShadowFilter())
+					.append(result.substring(pos));
 		}
 		this.rendered_.append(render.toString());
 	}
@@ -434,11 +447,11 @@ public class WVmlImage implements WVectorImage {
 			return this.rendered_.toString();
 		} else {
 			StringBuilder s = new StringBuilder();
-			s.append("<div style=\"position:relative;width:").append(
-					this.getWidth().getCssText()).append(";height:").append(
-					this.getHeight().getCssText()).append(
-					";overflow:hidden;\">").append(this.rendered_.toString())
-					.append("</div>");
+			s.append("<div style=\"position:relative;width:")
+					.append(this.getWidth().getCssText()).append(";height:")
+					.append(this.getHeight().getCssText())
+					.append(";overflow:hidden;\">")
+					.append(this.rendered_.toString()).append("</div>");
 			return s.toString();
 		}
 	}
@@ -489,22 +502,21 @@ public class WVmlImage implements WVectorImage {
 	private void finishPaths() {
 		for (int i = 0; i < this.activePaths_.size(); ++i) {
 			if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows
-					.getValue()) != 0)
-					&& !this.currentShadow_.isNone()) {
+					.getValue()) != 0) && !this.currentShadow_.isNone()) {
 				final String path = this.activePaths_.get(i).path;
 				int pos = path.indexOf("style=\"") + 7;
-				this.rendered_.append(path.substring(0, 0 + pos)).append(
-						this.getCreateShadowFilter()).append(
-						path.substring(pos)).append("e\">").append(
-						this.strokeElement(this.currentPen_)).append(
-						this.fillElement(this.currentBrush_)).append(
-						"</v:shape>");
+				this.rendered_.append(path.substring(0, 0 + pos))
+						.append(this.getCreateShadowFilter())
+						.append(path.substring(pos)).append("e\">")
+						.append(this.strokeElement(this.currentPen_))
+						.append(this.fillElement(this.currentBrush_))
+						.append("</v:shape>");
 			}
 			this.rendered_.append(this.activePaths_.get(i).path).append("e\">")
-					.append(this.strokeElement(this.currentPen_)).append(
-							this.fillElement(this.currentBrush_)).append(
-							this.shadowElement(this.currentShadow_)).append(
-							"</v:shape>");
+					.append(this.strokeElement(this.currentPen_))
+					.append(this.fillElement(this.currentBrush_))
+					.append(this.shadowElement(this.currentShadow_))
+					.append("</v:shape>");
 		}
 		this.activePaths_.clear();
 	}
@@ -544,13 +556,10 @@ public class WVmlImage implements WVectorImage {
 						this.startClip(new WRectF(tlx, tly, brx - tlx, bry
 								- tly));
 					} else {
-						logger
-								.warn(new StringWriter()
-										.append(
-												"VML only supports rectangle clipping ")
-										.append(
-												"with rectangles aligned to the window")
-										.toString());
+						logger.warn(new StringWriter()
+								.append("VML only supports rectangle clipping ")
+								.append("with rectangles aligned to the window")
+								.toString());
 					}
 				} else {
 					logger.warn(new StringWriter().append(
@@ -630,20 +639,18 @@ public class WVmlImage implements WVectorImage {
 		if (!t.isIdentity()) {
 			char[] buf = new char[30];
 			StringBuilder s = new StringBuilder();
-			s.append("<v:skew on=\"true\" matrix=\"").append(
-					MathUtils.roundJs(t.getM11(), 5)).append(',');
+			s.append("<v:skew on=\"true\" matrix=\"")
+					.append(MathUtils.roundJs(t.getM11(), 5)).append(',');
 			s.append(MathUtils.roundJs(t.getM21(), 5)).append(',');
 			s.append(MathUtils.roundJs(t.getM12(), 5)).append(',');
 			s.append(MathUtils.roundJs(t.getM22(), 5)).append(
 					",0,0\" origin=\"-0.5 -0.5\" offset=\"");
-			s
-					.append(
-							MathUtils.roundJs(t.getDx() + Math.abs(t.getM11())
-									* 0.5, 5)).append("px,");
-			s
-					.append(
-							MathUtils.roundJs(t.getDy() + Math.abs(t.getM22())
-									* 0.5, 5)).append("px\"/>");
+			s.append(
+					MathUtils.roundJs(t.getDx() + Math.abs(t.getM11()) * 0.5, 5))
+					.append("px,");
+			s.append(
+					MathUtils.roundJs(t.getDy() + Math.abs(t.getM22()) * 0.5, 5))
+					.append("px\"/>");
 			return s.toString();
 		} else {
 			return "";
@@ -658,11 +665,12 @@ public class WVmlImage implements WVectorImage {
 		char[] buf = new char[30];
 		if (!shadow.isNone()) {
 			StringBuilder result = new StringBuilder();
-			result.append("<v:shadow on=\"true\" offset=\"").append(
-					MathUtils.roundJs(shadow.getOffsetX(), 3)).append("px,");
-			result.append(MathUtils.roundJs(shadow.getOffsetY(), 3)).append(
-					"px\" ").append(colorAttributes(shadow.getColor())).append(
-					"/>");
+			result.append("<v:shadow on=\"true\" offset=\"")
+					.append(MathUtils.roundJs(shadow.getOffsetX(), 3))
+					.append("px,");
+			result.append(MathUtils.roundJs(shadow.getOffsetY(), 3))
+					.append("px\" ").append(colorAttributes(shadow.getColor()))
+					.append("/>");
 			return result.toString();
 		} else {
 			return "";
@@ -673,19 +681,17 @@ public class WVmlImage implements WVectorImage {
 		char[] buf = new char[30];
 		StringBuilder filter = new StringBuilder();
 		double r = Math.sqrt(2 * this.currentShadow_.getBlur());
-		filter.append("left: ").append(
-				myzround(this.currentShadow_.getOffsetX() - r / 2 - 1)).append(
-				"px;");
-		filter.append("top: ").append(
-				myzround(this.currentShadow_.getOffsetY() - r / 2 - 1)).append(
-				"px;z-index:-10;");
-		filter
-				.append("filter:progid:DXImageTransform.Microsoft.Blur(makeShadow=1,");
+		filter.append("left: ")
+				.append(myzround(this.currentShadow_.getOffsetX() - r / 2 - 1))
+				.append("px;");
+		filter.append("top: ")
+				.append(myzround(this.currentShadow_.getOffsetY() - r / 2 - 1))
+				.append("px;z-index:-10;");
+		filter.append("filter:progid:DXImageTransform.Microsoft.Blur(makeShadow=1,");
 		filter.append("pixelradius=").append(MathUtils.roundCss(r, 2));
-		filter.append(",shadowOpacity=").append(
-				MathUtils.roundCss(
-						this.currentShadow_.getColor().getAlpha() / 255., 2))
-				.append(");");
+		filter.append(",shadowOpacity=")
+				.append(MathUtils.roundCss(this.currentShadow_.getColor()
+						.getAlpha() / 255., 2)).append(");");
 		return filter.toString();
 	}
 
@@ -707,21 +713,25 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	private void startClip(final WRectF rect) {
-		this.rendered_.append("<div style=\"position:absolute;left:").append(
-				String.valueOf(rect.getLeft())).append("px;top:").append(
-				String.valueOf(rect.getTop())).append("px;width:").append(
-				String.valueOf(rect.getWidth())).append("px;height:").append(
-				String.valueOf(rect.getHeight())).append(
-				"px;overflow:hidden;\"").append(
-				" onselectstart=\"return false;\">").append(
-				"<v:group style=\"position:absolute;left:0px;top:0px;width:")
+		this.rendered_
+				.append("<div style=\"position:absolute;left:")
+				.append(String.valueOf(rect.getLeft()))
+				.append("px;top:")
+				.append(String.valueOf(rect.getTop()))
+				.append("px;width:")
+				.append(String.valueOf(rect.getWidth()))
+				.append("px;height:")
+				.append(String.valueOf(rect.getHeight()))
+				.append("px;overflow:hidden;\"")
+				.append(" onselectstart=\"return false;\">")
+				.append("<v:group style=\"position:absolute;left:0px;top:0px;width:")
 				.append(String.valueOf(rect.getWidth())).append("px;height:")
-				.append(String.valueOf(rect.getHeight())).append(
-						"px\" coordorigin=\"").append(
-						String.valueOf(0.5 * rect.getLeft() * Z)).append(",")
-				.append(String.valueOf(0.5 * rect.getTop() * Z)).append(
-						"\" coordsize=\"").append(
-						String.valueOf(rect.getWidth() * Z)).append(",")
+				.append(String.valueOf(rect.getHeight()))
+				.append("px\" coordorigin=\"")
+				.append(String.valueOf(0.5 * rect.getLeft() * Z)).append(",")
+				.append(String.valueOf(0.5 * rect.getTop() * Z))
+				.append("\" coordsize=\"")
+				.append(String.valueOf(rect.getWidth() * Z)).append(",")
 				.append(String.valueOf(rect.getHeight() * Z)).append("\">");
 		this.currentRect_ = rect;
 	}

@@ -210,11 +210,10 @@ public class WSelectionBox extends WComboBox {
 		if (this.configChanged_ || all) {
 			element.setAttribute("size", String.valueOf(this.verticalSize_));
 			if (!all || this.selectionMode_ == SelectionMode.ExtendedSelection) {
-				element
-						.setProperty(
-								Property.PropertyMultiple,
-								this.selectionMode_ == SelectionMode.ExtendedSelection ? "true"
-										: "false");
+				element.setProperty(
+						Property.PropertyMultiple,
+						this.selectionMode_ == SelectionMode.ExtendedSelection ? "true"
+								: "false");
 				if (!all) {
 					this.selectionChanged_ = true;
 				}
@@ -249,9 +248,9 @@ public class WSelectionBox extends WComboBox {
 						int i = Integer.parseInt(v);
 						this.selection_.add(i);
 					} catch (final NumberFormatException error) {
-						logger.error(new StringWriter().append(
-								"received illegal form value: '").append(v)
-								.append("'").toString());
+						logger.error(new StringWriter()
+								.append("received illegal form value: '")
+								.append(v).append("'").toString());
 					}
 				}
 			}

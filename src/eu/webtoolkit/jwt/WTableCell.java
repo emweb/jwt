@@ -186,12 +186,12 @@ public class WTableCell extends WContainerWidget {
 
 	void updateDom(final DomElement element, boolean all) {
 		if (all && this.rowSpan_ != 1 || this.spanChanged_) {
-			element.setProperty(Property.PropertyRowSpan, String
-					.valueOf(this.rowSpan_));
+			element.setProperty(Property.PropertyRowSpan,
+					String.valueOf(this.rowSpan_));
 		}
 		if (all && this.columnSpan_ != 1 || this.spanChanged_) {
-			element.setProperty(Property.PropertyColSpan, String
-					.valueOf(this.columnSpan_));
+			element.setProperty(Property.PropertyColSpan,
+					String.valueOf(this.columnSpan_));
 		}
 		if (this.getRow() < this.getTable().getHeaderCount(
 				Orientation.Horizontal)) {

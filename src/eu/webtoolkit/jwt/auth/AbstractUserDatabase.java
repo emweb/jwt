@@ -309,9 +309,8 @@ public abstract class AbstractUserDatabase {
 	 */
 	public String getUnverifiedEmail(final User user) {
 		logger.error(new StringWriter()
-				.append(
-						new Require("unverifiedEmail()", EMAIL_VERIFICATION)
-								.toString()).toString());
+				.append(new Require("unverifiedEmail()", EMAIL_VERIFICATION)
+						.toString()).toString());
 		return "";
 	}
 

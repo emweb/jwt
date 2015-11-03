@@ -39,8 +39,7 @@ class WTreeViewNode extends WTemplate {
 		int selfHeight = 0;
 		boolean needLoad = this.view_.isExpanded(this.index_);
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
-				.equals(this.view_.getRootIndex())))
-				&& !needLoad) {
+				.equals(this.view_.getRootIndex()))) && !needLoad) {
 			this.getChildContainer().hide();
 		}
 		if (needLoad) {
@@ -57,8 +56,8 @@ class WTreeViewNode extends WTemplate {
 		}
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
 				.equals(this.view_.getRootIndex())))) {
-			this.updateGraphics(isLast, !this.view_.getModel().hasChildren(
-					this.index_));
+			this.updateGraphics(isLast,
+					!this.view_.getModel().hasChildren(this.index_));
 			this.insertColumns(0, this.view_.getColumnCount());
 			selfHeight = 1;
 			if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows
@@ -246,8 +245,7 @@ class WTreeViewNode extends WTemplate {
 		int first = this.topSpacer() != null ? 1 : 0;
 		if (first < c.getCount()) {
 			WTreeViewNode n = ((c.getWidget(first)) instanceof WTreeViewNode ? (WTreeViewNode) (c
-					.getWidget(first))
-					: null);
+					.getWidget(first)) : null);
 			if (n != null) {
 				int row = this.getTopSpacerHeight();
 				int index = first + (modelRow - row);
@@ -277,8 +275,7 @@ class WTreeViewNode extends WTemplate {
 				: this.topSpacer() != null ? 1 : 0;
 		if (nextI < c.getCount()) {
 			return ((c.getWidget(nextI)) instanceof WTreeViewNode ? (WTreeViewNode) (c
-					.getWidget(nextI))
-					: null);
+					.getWidget(nextI)) : null);
 		} else {
 			return null;
 		}
@@ -330,8 +327,7 @@ class WTreeViewNode extends WTemplate {
 		RowSpacer result = null;
 		if (c.getCount() == 0
 				|| !((result = ((c.getWidget(0)) instanceof RowSpacer ? (RowSpacer) (c
-						.getWidget(0))
-						: null)) != null)) {
+						.getWidget(0)) : null)) != null)) {
 			if (!create) {
 				return null;
 			} else {
@@ -351,8 +347,7 @@ class WTreeViewNode extends WTemplate {
 		RowSpacer result = null;
 		if (c.getCount() == 0
 				|| !((result = ((c.getWidget(c.getCount() - 1)) instanceof RowSpacer ? (RowSpacer) (c
-						.getWidget(c.getCount() - 1))
-						: null)) != null)) {
+						.getWidget(c.getCount() - 1)) : null)) != null)) {
 			if (!create) {
 				return null;
 			} else {
@@ -401,8 +396,7 @@ class WTreeViewNode extends WTemplate {
 		}
 		for (int i = first; i != end; i += inc) {
 			WTreeViewNode n = ((c.getWidget(i)) instanceof WTreeViewNode ? (WTreeViewNode) (c
-					.getWidget(i))
-					: null);
+					.getWidget(i)) : null);
 			if (n != null && n.getModelIndex().getRow() >= start) {
 				this.view_.removeRenderedNode(n);
 				n.index_ = this.view_.getModel().getIndex(
@@ -587,8 +581,7 @@ class WTreeViewNode extends WTemplate {
 					.resolveWidget("cols-row");
 			if (this.view_.getRowHeaderCount() != 0) {
 				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
-						.getWidget(0))
-						: null);
+						.getWidget(0)) : null);
 			}
 			return row.getCount() >= column ? row.getWidget(column - 1) : null;
 		}
@@ -631,8 +624,7 @@ class WTreeViewNode extends WTemplate {
 					.resolveWidget("cols-row");
 			if (this.view_.getRowHeaderCount() != 0) {
 				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
-						.getWidget(0))
-						: null);
+						.getWidget(0)) : null);
 			}
 			if (current != null)
 				current.remove();
@@ -642,8 +634,8 @@ class WTreeViewNode extends WTemplate {
 			WInteractWidget wi = ((newW) instanceof WInteractWidget ? (WInteractWidget) (newW)
 					: null);
 			if (wi != null) {
-				this.view_.clickedMapper_.mapConnect1(wi.clicked(), this
-						.childIndex(column));
+				this.view_.clickedMapper_.mapConnect1(wi.clicked(),
+						this.childIndex(column));
 			}
 		}
 	}

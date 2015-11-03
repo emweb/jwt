@@ -46,9 +46,9 @@ class WLegend3D extends WLegend {
 		if (nbItems % this.legendColumns_ != 0) {
 			nbRows++;
 		}
-		painter.drawRect(0, 0, this.legendColumns_
-				* this.legendColumnWidth_.getValue() + 2 * boxPadding, nbRows
-				* lineHeight + 2 * boxPadding);
+		painter.drawRect(0, 0,
+				this.legendColumns_ * this.legendColumnWidth_.getValue() + 2
+						* boxPadding, nbRows * lineHeight + 2 * boxPadding);
 		painter.translate(boxPadding, boxPadding);
 		int count = 0;
 		for (int i = 0; i < dataseries.size(); i++) {

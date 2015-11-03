@@ -279,10 +279,10 @@ public class WCompositeWidget extends WWidget {
 			final WLength length) {
 		if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment)
 				.isEmpty()) {
-			logger.error(new StringWriter().append(
-					"setVerticalAlignment(): alignment ").append(
-					String.valueOf(alignment.getValue())).append(
-					"is not vertical").toString());
+			logger.error(new StringWriter()
+					.append("setVerticalAlignment(): alignment ")
+					.append(String.valueOf(alignment.getValue()))
+					.append("is not vertical").toString());
 		}
 		this.impl_.setVerticalAlignment(alignment, length);
 	}
@@ -493,10 +493,9 @@ public class WCompositeWidget extends WWidget {
 
 	void getSDomChanges(final List<DomElement> result, WApplication app) {
 		if (this.needsToBeRendered()) {
-			this
-					.render(this.impl_.isRendered()
-							|| !WWebWidget.canOptimizeUpdates() ? RenderFlag.RenderUpdate
-							: RenderFlag.RenderFull);
+			this.render(this.impl_.isRendered()
+					|| !WWebWidget.canOptimizeUpdates() ? RenderFlag.RenderUpdate
+					: RenderFlag.RenderFull);
 		}
 		this.impl_.getSDomChanges(result, app);
 	}

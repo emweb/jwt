@@ -47,8 +47,8 @@ class WWidgetVectorPainter extends WWidgetPainter {
 	public void createContents(DomElement canvas, WPaintDevice device) {
 		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
 				: null);
-		canvas.setProperty(Property.PropertyInnerHTML, vectorDevice
-				.getRendered());
+		canvas.setProperty(Property.PropertyInnerHTML,
+				vectorDevice.getRendered());
 		;
 	}
 
@@ -61,18 +61,18 @@ class WWidgetVectorPainter extends WWidgetPainter {
 			DomElement painter = DomElement.updateGiven("Wt3_3_4.getElement('p"
 					+ this.widget_.getId() + "').firstChild",
 					DomElementType.DomElement_DIV);
-			painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice
-					.getRendered());
+			painter.setProperty(Property.PropertyAddedInnerHTML,
+					vectorDevice.getRendered());
 			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsOpera()) {
 				painter.callMethod("forceRedraw();");
 			}
 			result.add(painter);
 		} else {
-			DomElement canvas = DomElement.getForUpdate('p' + this.widget_
-					.getId(), DomElementType.DomElement_DIV);
-			canvas.setProperty(Property.PropertyInnerHTML, vectorDevice
-					.getRendered());
+			DomElement canvas = DomElement.getForUpdate(
+					'p' + this.widget_.getId(), DomElementType.DomElement_DIV);
+			canvas.setProperty(Property.PropertyInnerHTML,
+					vectorDevice.getRendered());
 			result.add(canvas);
 		}
 		this.widget_.sizeChanged_ = false;

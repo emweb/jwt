@@ -67,9 +67,9 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		if (hasJsObjects) {
 			StringBuilder ss = new StringBuilder();
 			WApplication app = WApplication.getInstance();
-			ss.append("new Wt3_3_4.WPaintedWidget(").append(
-					app.getJavaScriptClass()).append(",").append(
-					this.widget_.getJsRef()).append(");");
+			ss.append("new Wt3_3_4.WPaintedWidget(")
+					.append(app.getJavaScriptClass()).append(",")
+					.append(this.widget_.getJsRef()).append(");");
 			this.widget_.jsObjects_.updateJs(ss);
 			el.callJavaScript(ss.toString());
 		}
@@ -102,18 +102,20 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		WCanvasPaintDevice canvasDevice = ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device)
 				: null);
 		if (this.widget_.sizeChanged_) {
-			DomElement canvas = DomElement.getForUpdate('c' + this.widget_
-					.getId(), DomElementType.DomElement_CANVAS);
-			canvas.setAttribute("width", String
-					.valueOf(this.widget_.renderWidth_));
-			canvas.setAttribute("height", String
-					.valueOf(this.widget_.renderHeight_));
+			DomElement canvas = DomElement.getForUpdate(
+					'c' + this.widget_.getId(),
+					DomElementType.DomElement_CANVAS);
+			canvas.setAttribute("width",
+					String.valueOf(this.widget_.renderWidth_));
+			canvas.setAttribute("height",
+					String.valueOf(this.widget_.renderHeight_));
 			result.add(canvas);
 			this.widget_.sizeChanged_ = false;
 		}
 		boolean domText = canvasDevice.getTextMethod() == WCanvasPaintDevice.TextMethod.DomText;
-		DomElement el = DomElement.getForUpdate(domText ? 't' + this.widget_
-				.getId() : this.widget_.getId(), DomElementType.DomElement_DIV);
+		DomElement el = DomElement.getForUpdate(
+				domText ? 't' + this.widget_.getId() : this.widget_.getId(),
+				DomElementType.DomElement_DIV);
 		if (domText) {
 			el.removeAllChildren();
 		}

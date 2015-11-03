@@ -55,8 +55,7 @@ public class WDefaultLoadingIndicator extends WText implements
 		this.setInline(false);
 		this.setStyleClass("Wt-loading");
 		WApplication app = WApplication.getInstance();
-		app
-				.getStyleSheet()
+		app.getStyleSheet()
 				.addRule(
 						"div.Wt-loading",
 						"background-color: red; color: white;font-family: Arial,Helvetica,sans-serif;font-size: small;position: absolute; right: 0px; top: 0px;");
@@ -64,8 +63,7 @@ public class WDefaultLoadingIndicator extends WText implements
 				"position: fixed;");
 		if (app.getEnvironment().getUserAgent().indexOf("MSIE 5.5") != -1
 				|| app.getEnvironment().getUserAgent().indexOf("MSIE 6") != -1) {
-			app
-					.getStyleSheet()
+			app.getStyleSheet()
 					.addRule(
 							"div.Wt-loading",
 							"right: expression(((ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft )) + 'px' );top: expression(((ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop)) + 'px' );");

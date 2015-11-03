@@ -45,7 +45,7 @@ public class WAnimation {
 	 * fade effect, e.g:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *     SlideInFromRight
 	 *     SlideInFromTop | Fade
 	 *   }

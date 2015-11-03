@@ -410,8 +410,7 @@ public abstract class WAbstractArea extends WObject {
 
 	WImage getImage() {
 		return ((this.impl_.getParent()) instanceof WImage ? (WImage) (this.impl_
-				.getParent())
-				: null);
+				.getParent()) : null);
 	}
 
 	AreaWidget impl_;

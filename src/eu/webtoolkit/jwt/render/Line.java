@@ -153,8 +153,7 @@ class Line {
 					boolean done = false;
 					for (int j = 0; j < b.inlineLayout.size(); ++j) {
 						final InlineBox ib = b.inlineLayout.get(b.inlineLayout
-								.size()
-								- 1 - j);
+								.size() - 1 - j);
 						if (ib.utf8Count > 0) {
 							char lastChar = b.getText().charAt(
 									ib.utf8Pos + ib.utf8Count - 1);
@@ -241,9 +240,10 @@ class Line {
 			}
 			break;
 		default:
-			logger.error(new StringWriter().append(
-					"unsupported text-align attribute: ").append(
-					String.valueOf((int) textAlign.getValue())).toString());
+			logger.error(new StringWriter()
+					.append("unsupported text-align attribute: ")
+					.append(String.valueOf((int) textAlign.getValue()))
+					.toString());
 		}
 		double x = rangeX.start;
 		for (int i = 0; i < boxes.size(); ++i) {

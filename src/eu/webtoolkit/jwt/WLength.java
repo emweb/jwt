@@ -282,13 +282,10 @@ public class WLength {
 										if (unit.equals("%")) {
 											this.unit_ = WLength.Unit.Percentage;
 										} else {
-											logger
-													.error(new StringWriter()
-															.append(
-																	"unrecognized unit in '")
-															.append(s).append(
-																	"'")
-															.toString());
+											logger.error(new StringWriter()
+													.append("unrecognized unit in '")
+													.append(s).append("'")
+													.toString());
 											this.auto_ = true;
 											this.value_ = -1;
 											this.unit_ = WLength.Unit.Pixel;

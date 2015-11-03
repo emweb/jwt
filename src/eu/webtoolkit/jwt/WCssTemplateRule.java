@@ -103,8 +103,8 @@ public class WCssTemplateRule extends WCssRule {
 	}
 
 	public String getDeclarations() {
-		DomElement e = new DomElement(DomElement.Mode.ModeUpdate, this.widget_
-				.getDomElementType());
+		DomElement e = new DomElement(DomElement.Mode.ModeUpdate,
+				this.widget_.getDomElementType());
 		this.updateDomElement(e, true);
 		return e.getCssStyle();
 	}

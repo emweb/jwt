@@ -120,8 +120,8 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 		if (!(this.getSourceModel() != null) || !(proxyIndex != null)) {
 			return null;
 		}
-		return this.createSourceIndex(proxyIndex.getRow(), proxyIndex
-				.getColumn(), proxyIndex.getInternalPointer());
+		return this.createSourceIndex(proxyIndex.getRow(),
+				proxyIndex.getColumn(), proxyIndex.getInternalPointer());
 	}
 
 	/**

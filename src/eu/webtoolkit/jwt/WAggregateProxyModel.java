@@ -81,7 +81,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	 * defined by <code>firstColumn</code> to <code>lastColumn:</code>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    parentColumn == firstColumn - 1 || parentColumn == lastColumn + 1 
 	 *   }
 	 * </pre>
@@ -107,8 +107,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			int column = this.topLevel_.mapFromSource(sourceIndex.getColumn());
 			if (column >= 0) {
 				int row = sourceIndex.getRow();
-				return this.createIndex(row, column, sourceIndex
-						.getInternalPointer());
+				return this.createIndex(row, column,
+						sourceIndex.getInternalPointer());
 			} else {
 				return null;
 			}
@@ -121,8 +121,8 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		if ((proxyIndex != null)) {
 			int column = this.topLevel_.mapToSource(proxyIndex.getColumn());
 			int row = proxyIndex.getRow();
-			return this.createSourceIndex(row, column, proxyIndex
-					.getInternalPointer());
+			return this.createSourceIndex(row, column,
+					proxyIndex.getInternalPointer());
 		} else {
 			return null;
 		}
@@ -136,8 +136,10 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 			this.modelConnections_.clear();
 		}
 		super.setSourceModel(model);
-		this.modelConnections_.add(this.getSourceModel()
-				.columnsAboutToBeInserted().addListener(this,
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsAboutToBeInserted()
+				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
 									Integer e3) {
@@ -146,7 +148,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 												e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().columnsInserted()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsInserted()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -155,8 +159,10 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										.sourceColumnsInserted(e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel()
-				.columnsAboutToBeRemoved().addListener(this,
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsAboutToBeRemoved()
+				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
 									Integer e3) {
@@ -165,7 +171,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 												e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().columnsRemoved()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsRemoved()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -174,8 +182,10 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel()
-				.rowsAboutToBeInserted().addListener(this,
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsAboutToBeInserted()
+				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
 									Integer e3) {
@@ -183,7 +193,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										.sourceRowsAboutToBeInserted(e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().rowsInserted()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsInserted()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -192,7 +204,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().rowsAboutToBeRemoved()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsAboutToBeRemoved()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -201,7 +215,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										.sourceRowsAboutToBeRemoved(e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().rowsRemoved()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsRemoved()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -210,7 +226,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().dataChanged()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.dataChanged()
 				.addListener(this,
 						new Signal2.Listener<WModelIndex, WModelIndex>() {
 							public void trigger(WModelIndex e1, WModelIndex e2) {
@@ -218,7 +236,9 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 										e2);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().headerDataChanged()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.headerDataChanged()
 				.addListener(this,
 						new Signal3.Listener<Orientation, Integer, Integer>() {
 							public void trigger(Orientation e1, Integer e2,
@@ -228,13 +248,13 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 							}
 						}));
 		this.modelConnections_.add(this.getSourceModel()
-				.layoutAboutToBeChanged().addListener(this,
-						new Signal.Listener() {
-							public void trigger() {
-								WAggregateProxyModel.this
-										.sourceLayoutAboutToBeChanged();
-							}
-						}));
+				.layoutAboutToBeChanged()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WAggregateProxyModel.this
+								.sourceLayoutAboutToBeChanged();
+					}
+				}));
 		this.modelConnections_.add(this.getSourceModel().layoutChanged()
 				.addListener(this, new Signal.Listener() {
 					public void trigger() {
@@ -345,8 +365,11 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		WModelIndex sourceIndex = this.getSourceModel().getIndex(sourceRow,
 				sourceColumn, sourceParent);
 		return this
-				.createIndex(row, column, (sourceIndex != null) ? sourceIndex
-						.getInternalPointer() : null);
+				.createIndex(
+						row,
+						column,
+						(sourceIndex != null) ? sourceIndex
+								.getInternalPointer() : null);
 	}
 
 	public void sort(int column, SortOrder order) {
@@ -626,9 +649,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		this.columnsRemoved().trigger(proxyIndex, start, end);
 		int rc = this.getRowCount(proxyIndex);
 		for (int i = 0; i < rc; ++i) {
-			this
-					.propagateEndRemove(this.getIndex(i, 0, proxyIndex), start,
-							end);
+			this.propagateEndRemove(this.getIndex(i, 0, proxyIndex), start, end);
 		}
 	}
 
@@ -647,9 +668,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 		this.columnsInserted().trigger(proxyIndex, start, end);
 		int rc = this.getRowCount(proxyIndex);
 		for (int i = 0; i < rc; ++i) {
-			this
-					.propagateEndInsert(this.getIndex(i, 0, proxyIndex), start,
-							end);
+			this.propagateEndInsert(this.getIndex(i, 0, proxyIndex), start, end);
 		}
 	}
 
@@ -762,13 +781,13 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	static String nestingError(int pa, int a1, int a2, int pb, int b1, int b2) {
 		StringWriter msg = new StringWriter();
 		msg.append("WAggregateProxyModel: aggregates must strictly nest: [")
-				.append(String.valueOf(pa)).append(": ").append(
-						String.valueOf(a1)).append(" - ").append(
-						String.valueOf(a2)).append(
-						"] overlaps partially with [").append(
-						String.valueOf(pb)).append(": ").append(
-						String.valueOf(b1)).append(" - ").append(
-						String.valueOf(b2)).append("]");
+				.append(String.valueOf(pa)).append(": ")
+				.append(String.valueOf(a1)).append(" - ")
+				.append(String.valueOf(a2))
+				.append("] overlaps partially with [")
+				.append(String.valueOf(pb)).append(": ")
+				.append(String.valueOf(b1)).append(" - ")
+				.append(String.valueOf(b2)).append("]");
 		return msg.toString();
 	}
 }

@@ -474,9 +474,8 @@ public class WPieChart extends WAbstractChart {
 				- this.getPlotAreaPadding(Side.Bottom));
 		double side = Math.min(rect.getWidth(), rect.getHeight());
 		painter.save();
-		painter.translate(rect.getLeft() + (rect.getWidth() - side) / 2, rect
-				.getTop()
-				+ (rect.getHeight() - side) / 2);
+		painter.translate(rect.getLeft() + (rect.getWidth() - side) / 2,
+				rect.getTop() + (rect.getHeight() - side) / 2);
 		if (!(this.getTitle().length() == 0)) {
 			painter.translate(0, 15);
 		}
@@ -525,13 +524,11 @@ public class WPieChart extends WAbstractChart {
 					double px = cx
 							+ f
 							* r
-							* Math
-									.cos(-midAngle / 180.0 * 3.14159265358979323846);
+							* Math.cos(-midAngle / 180.0 * 3.14159265358979323846);
 					double py = cy
 							+ f
 							* r
-							* Math
-									.sin(-midAngle / 180.0 * 3.14159265358979323846)
+							* Math.sin(-midAngle / 180.0 * 3.14159265358979323846)
 							* (h > 0 ? 0.5 : 1);
 					EnumSet<AlignmentFlag> alignment = EnumSet
 							.noneOf(AlignmentFlag.class);
@@ -579,8 +576,8 @@ public class WPieChart extends WAbstractChart {
 					if (v / total * 100 >= this.avoidLabelRendering_) {
 						painter.setPen(new WPen(c));
 						painter.drawText(new WRectF(left, top, width, height),
-								alignment, this.labelText(i, v, total,
-										this.labelOptions_));
+								alignment,
+								this.labelText(i, v, total, this.labelOptions_));
 					}
 					currentAngle = endAngle;
 				}
@@ -793,13 +790,11 @@ public class WPieChart extends WAbstractChart {
 						double pcx = cx
 								+ r
 								* this.pie_.get(i).explode
-								* Math
-										.cos(-midAngle / 180.0 * 3.14159265358979323846);
+								* Math.cos(-midAngle / 180.0 * 3.14159265358979323846);
 						double pcy = cy
 								+ r
 								* this.pie_.get(i).explode
-								* Math
-										.sin(-midAngle / 180.0 * 3.14159265358979323846);
+								* Math.sin(-midAngle / 180.0 * 3.14159265358979323846);
 						painter.setBrush(darken(this.getBrush(i)));
 						this.drawSide(painter, pcx, pcy, r, endAngle, h);
 					}
@@ -825,13 +820,11 @@ public class WPieChart extends WAbstractChart {
 						double pcx = cx
 								+ r
 								* this.pie_.get(i).explode
-								* Math
-										.cos(-midAngle / 180.0 * 3.14159265358979323846);
+								* Math.cos(-midAngle / 180.0 * 3.14159265358979323846);
 						double pcy = cy
 								+ r
 								* this.pie_.get(i).explode
-								* Math
-										.sin(-midAngle / 180.0 * 3.14159265358979323846);
+								* Math.sin(-midAngle / 180.0 * 3.14159265358979323846);
 						painter.setBrush(darken(this.getBrush(i)));
 						this.drawSide(painter, pcx, pcy, r, startAngle, h);
 					}
@@ -862,13 +855,11 @@ public class WPieChart extends WAbstractChart {
 						double pcx = cx
 								+ r
 								* this.pie_.get(i).explode
-								* Math
-										.cos(-midAngle / 180.0 * 3.14159265358979323846);
+								* Math.cos(-midAngle / 180.0 * 3.14159265358979323846);
 						double pcy = cy
 								+ r
 								* this.pie_.get(i).explode
-								* Math
-										.sin(-midAngle / 180.0 * 3.14159265358979323846);
+								* Math.sin(-midAngle / 180.0 * 3.14159265358979323846);
 						double a1 = startAngle < 180 ? 360 : startAngle;
 						double a2 = endAngle < 180 ? 180 : endAngle;
 						this.drawOuter(painter, pcx, pcy, r, a1, a2, h);
@@ -924,30 +915,22 @@ public class WPieChart extends WAbstractChart {
 						} else {
 							a = currentAngle + d;
 						}
-						area
-								.addPoint(t
-										.map(new WPointF(
-												pcx
-														+ r
-														* Math
-																.cos(-a / 180.0 * 3.14159265358979323846),
-												pcy
-														+ r
-														* Math
-																.sin(-a / 180.0 * 3.14159265358979323846))));
+						area.addPoint(t.map(new WPointF(
+								pcx
+										+ r
+										* Math.cos(-a / 180.0 * 3.14159265358979323846),
+								pcy
+										+ r
+										* Math.sin(-a / 180.0 * 3.14159265358979323846))));
 					}
 					double a = currentAngle + spanAngle;
-					area
-							.addPoint(t
-									.map(new WPointF(
-											pcx
-													+ r
-													* Math
-															.cos(-a / 180.0 * 3.14159265358979323846),
-											pcy
-													+ r
-													* Math
-															.sin(-a / 180.0 * 3.14159265358979323846))));
+					area.addPoint(t.map(new WPointF(
+							pcx
+									+ r
+									* Math.cos(-a / 180.0 * 3.14159265358979323846),
+							pcy
+									+ r
+									* Math.sin(-a / 180.0 * 3.14159265358979323846))));
 					area.setToolTip(StringUtils.asString(toolTip));
 					this.addDataPointArea(index, area);
 				}
@@ -965,8 +948,7 @@ public class WPieChart extends WAbstractChart {
 		WPainterPath path = new WPainterPath();
 		path.arcMoveTo(pcx - r, pcy - r, 2 * r, 2 * r, angle);
 		path.lineTo(path.getCurrentPosition().getX(), path.getCurrentPosition()
-				.getY()
-				+ h);
+				.getY() + h);
 		path.lineTo(pcx, pcy + h);
 		path.lineTo(pcx, pcy);
 		path.closeSubPath();
@@ -978,8 +960,7 @@ public class WPieChart extends WAbstractChart {
 		WPainterPath path = new WPainterPath();
 		path.arcMoveTo(pcx - r, pcy - r, 2 * r, 2 * r, a1);
 		path.lineTo(path.getCurrentPosition().getX(), path.getCurrentPosition()
-				.getY()
-				+ h);
+				.getY() + h);
 		path.arcTo(pcx, pcy + h, r, a1, a2 - a1);
 		path.arcTo(pcx, pcy, r, a2, a1 - a2);
 		path.closeSubPath();

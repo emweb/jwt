@@ -79,11 +79,11 @@ public class WGridData extends WAbstractGridData {
 				return this.model_.getRowCount() - 1 - 0.5;
 			}
 			if (this.YAbscisRow_ != this.model_.getRowCount()) {
-				return StringUtils.asNumber(this.model_.getData(this.model_
-						.getRowCount() - 1, this.XAbscisColumn_));
+				return StringUtils.asNumber(this.model_.getData(
+						this.model_.getRowCount() - 1, this.XAbscisColumn_));
 			} else {
-				return StringUtils.asNumber(this.model_.getData(this.model_
-						.getRowCount() - 2, this.XAbscisColumn_));
+				return StringUtils.asNumber(this.model_.getData(
+						this.model_.getRowCount() - 2, this.XAbscisColumn_));
 			}
 		} else {
 			if (axis == Axis.YAxis_3D) {
@@ -467,11 +467,9 @@ public class WGridData extends WAbstractGridData {
 		int yDim = 0;
 		for (int i = 0; i < dataseries.size(); i++) {
 			if (((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-					.get(i))
-					: null) != null) {
+					.get(i)) : null) != null) {
 				WAbstractGridData griddata = ((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (griddata == this
 						|| griddata.getType() != Series3DType.BarSeries3D) {
 					break;
@@ -559,11 +557,9 @@ public class WGridData extends WAbstractGridData {
 		int yDim = 0;
 		for (int i = 0; i < dataseries.size(); i++) {
 			if (((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-					.get(i))
-					: null) != null) {
+					.get(i)) : null) != null) {
 				WAbstractGridData griddata = ((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (griddata == this
 						|| griddata.getType() != Series3DType.BarSeries3D) {
 					break;

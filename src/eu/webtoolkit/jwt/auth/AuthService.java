@@ -650,14 +650,17 @@ public class AuthService {
 		String url = this.createRedirectUrl(token);
 		message.addRecipient(javax.mail.Message.RecipientType.TO,
 				new javax.mail.internet.InternetAddress(address));
-		message
-				.setSubject(WString.tr("Wt.Auth.confirmmail.subject")
-						.toString());
-		MailUtils.setBody(message, WString.tr("Wt.Auth.confirmmail.body").arg(
-				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
-		MailUtils.addHtmlBody(message, WString.tr(
-				"Wt.Auth.confirmmail.htmlbody").arg(
-				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
+		message.setSubject(WString.tr("Wt.Auth.confirmmail.subject").toString());
+		MailUtils.setBody(
+				message,
+				WString.tr("Wt.Auth.confirmmail.body")
+						.arg(user.getIdentity(Identity.LoginName)).arg(token)
+						.arg(url));
+		MailUtils.addHtmlBody(
+				message,
+				WString.tr("Wt.Auth.confirmmail.htmlbody")
+						.arg(user.getIdentity(Identity.LoginName)).arg(token)
+						.arg(url));
 		this.sendMail(message);
 	}
 
@@ -691,17 +694,18 @@ public class AuthService {
 				.toString());
 		MailUtils.setBody(message, WString.tr("Wt.Auth.lostpasswordmail.body")
 				.arg(user.getIdentity(Identity.LoginName)).arg(token).arg(url));
-		MailUtils.addHtmlBody(message, WString.tr(
-				"Wt.Auth.lostpasswordmail.htmlbody").arg(
-				user.getIdentity(Identity.LoginName)).arg(token).arg(url));
+		MailUtils.addHtmlBody(
+				message,
+				WString.tr("Wt.Auth.lostpasswordmail.htmlbody")
+						.arg(user.getIdentity(Identity.LoginName)).arg(token)
+						.arg(url));
 		this.sendMail(message);
 	}
 
 	protected String createRedirectUrl(final String token) {
 		WApplication app = WApplication.getInstance();
 		return app.makeAbsoluteUrl(app
-				.getBookmarkUrl(this.redirectInternalPath_))
-				+ token;
+				.getBookmarkUrl(this.redirectInternalPath_)) + token;
 	}
 
 	// private AuthService(final AuthService anon1) ;

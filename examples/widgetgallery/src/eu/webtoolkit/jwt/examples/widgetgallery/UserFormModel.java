@@ -40,10 +40,10 @@ class UserFormModel extends WFormModel {
 		this.addField(BirthField);
 		this.addField(ChildrenField);
 		this.addField(RemarksField);
-		this.setValidator(FirstNameField, this
-				.createNameValidator(FirstNameField));
-		this.setValidator(LastNameField, this
-				.createNameValidator(LastNameField));
+		this.setValidator(FirstNameField,
+				this.createNameValidator(FirstNameField));
+		this.setValidator(LastNameField,
+				this.createNameValidator(LastNameField));
 		this.setValidator(CountryField, this.getCreateCountryValidator());
 		this.setValidator(CityField, this.getCreateCityValidator());
 		this.setValidator(BirthField, this.getCreateBirthValidator());
@@ -91,16 +91,16 @@ class UserFormModel extends WFormModel {
 	public WString getUserData() {
 		return StringUtils.asString(this.getValue(FirstNameField)).append(" ")
 				.append(StringUtils.asString(this.getValue(LastNameField)))
-				.append(": country code=").append(
-						StringUtils.asString(this.getValue(CountryField)))
-				.append(", city=").append(
-						StringUtils.asString(this.getValue(CityField))).append(
-						", birth=").append(
-						StringUtils.asString(this.getValue(BirthField)))
-				.append(", children=").append(
-						StringUtils.asString(this.getValue(ChildrenField)))
-				.append(", remarks=").append(
-						StringUtils.asString(this.getValue(RemarksField)))
+				.append(": country code=")
+				.append(StringUtils.asString(this.getValue(CountryField)))
+				.append(", city=")
+				.append(StringUtils.asString(this.getValue(CityField)))
+				.append(", birth=")
+				.append(StringUtils.asString(this.getValue(BirthField)))
+				.append(", children=")
+				.append(StringUtils.asString(this.getValue(ChildrenField)))
+				.append(", remarks=")
+				.append(StringUtils.asString(this.getValue(RemarksField)))
 				.append(".");
 	}
 

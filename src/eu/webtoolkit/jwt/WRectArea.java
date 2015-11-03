@@ -164,10 +164,10 @@ public class WRectArea extends WAbstractArea {
 		if (x == 0 && y == 0 && width == 0 && height == 0) {
 			coords.append("0%,0%,100%,100%");
 		} else {
-			coords.append(String.valueOf(x)).append(',').append(
-					String.valueOf(y)).append(',').append(
-					String.valueOf(x + width)).append(',').append(
-					String.valueOf(y + height));
+			coords.append(String.valueOf(x)).append(',')
+					.append(String.valueOf(y)).append(',')
+					.append(String.valueOf(x + width)).append(',')
+					.append(String.valueOf(y + height));
 		}
 		element.setAttribute("coords", coords.toString());
 		return super.updateDom(element, all);

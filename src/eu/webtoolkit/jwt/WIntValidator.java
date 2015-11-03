@@ -154,19 +154,19 @@ public class WIntValidator extends WValidator {
 		try {
 			int i = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(), text);
 			if (i < this.bottom_) {
-				return new WValidator.Result(WValidator.State.Invalid, this
-						.getInvalidTooSmallText());
+				return new WValidator.Result(WValidator.State.Invalid,
+						this.getInvalidTooSmallText());
 			} else {
 				if (i > this.top_) {
-					return new WValidator.Result(WValidator.State.Invalid, this
-							.getInvalidTooLargeText());
+					return new WValidator.Result(WValidator.State.Invalid,
+							this.getInvalidTooLargeText());
 				} else {
 					return new WValidator.Result(WValidator.State.Valid);
 				}
 			}
 		} catch (final NumberFormatException e) {
-			return new WValidator.Result(WValidator.State.Invalid, this
-					.getInvalidNotANumberText());
+			return new WValidator.Result(WValidator.State.Invalid,
+					this.getInvalidNotANumberText());
 		}
 	}
 
@@ -227,8 +227,8 @@ public class WIntValidator extends WValidator {
 					return WString.tr("Wt.WIntValidator.TooSmall").arg(
 							this.bottom_);
 				} else {
-					return WString.tr("Wt.WIntValidator.BadRange").arg(
-							this.bottom_).arg(this.top_);
+					return WString.tr("Wt.WIntValidator.BadRange")
+							.arg(this.bottom_).arg(this.top_);
 				}
 			}
 		}
@@ -266,8 +266,8 @@ public class WIntValidator extends WValidator {
 					return WString.tr("Wt.WIntValidator.TooLarge").arg(
 							this.top_);
 				} else {
-					return WString.tr("Wt.WIntValidator.BadRange").arg(
-							this.bottom_).arg(this.top_);
+					return WString.tr("Wt.WIntValidator.BadRange")
+							.arg(this.bottom_).arg(this.top_);
 				}
 			}
 		}
@@ -312,18 +312,21 @@ public class WIntValidator extends WValidator {
 		} else {
 			js.append("null");
 		}
-		js.append(",").append(
-				WWebWidget.jsStringLiteral(LocaleUtils
+		js.append(",")
+				.append(WWebWidget.jsStringLiteral(LocaleUtils
 						.getGroupSeparator(LocaleUtils.getCurrentLocale())))
-				.append(',').append(
-						WString.toWString(this.getInvalidBlankText())
-								.getJsStringLiteral()).append(',').append(
-						WString.toWString(this.getInvalidNotANumberText())
-								.getJsStringLiteral()).append(',').append(
-						WString.toWString(this.getInvalidTooSmallText())
-								.getJsStringLiteral()).append(',').append(
-						WString.toWString(this.getInvalidTooLargeText())
-								.getJsStringLiteral()).append(");");
+				.append(',')
+				.append(WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidNotANumberText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidTooSmallText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidTooLargeText())
+						.getJsStringLiteral()).append(");");
 		return js.toString();
 	}
 

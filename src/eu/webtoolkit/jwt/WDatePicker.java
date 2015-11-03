@@ -160,8 +160,7 @@ public class WDatePicker extends WCompositeWidget {
 		WDate d = this.getDate();
 		this.format_ = format;
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (dv != null) {
 			dv.setFormat(format);
 		}
@@ -276,8 +275,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void setBottom(final WDate bottom) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (dv != null) {
 			dv.setBottom(bottom);
 			this.calendar_.setBottom(bottom);
@@ -289,8 +287,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public WDate getBottom() {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (dv != null) {
 			return dv.getBottom();
 		} else {
@@ -303,8 +300,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void setTop(final WDate top) {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (dv != null) {
 			dv.setTop(top);
 			this.calendar_.setTop(top);
@@ -316,8 +312,7 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public WDate getTop() {
 		WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (dv != null) {
 			return dv.getTop();
 		} else {
@@ -369,8 +364,7 @@ public class WDatePicker extends WCompositeWidget {
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WDateValidator dv = ((this.forEdit_.getValidator()) instanceof WDateValidator ? (WDateValidator) (this.forEdit_
-					.getValidator())
-					: null);
+					.getValidator()) : null);
 			if (dv != null) {
 				this.setTop(dv.getTop());
 				this.setBottom(dv.getBottom());
@@ -455,8 +449,8 @@ public class WDatePicker extends WCompositeWidget {
 			}
 		});
 		t.bindWidget("calendar", this.calendar_);
-		WApplication.getInstance().getTheme().apply(this, this.popup_,
-				WidgetThemeRole.DatePickerPopupRole);
+		WApplication.getInstance().getTheme()
+				.apply(this, this.popup_, WidgetThemeRole.DatePickerPopupRole);
 		displayWidget.clicked().addListener(this.popup_,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {

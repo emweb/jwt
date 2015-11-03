@@ -26,8 +26,10 @@ import org.slf4j.LoggerFactory;
  * The chart consists of a plotcube, which is always open on the front, and
  * adapts to the data which is shown on the chart. The plotcube has three axes
  * of type {@link WAxis}. Each of these can be manually configured as in the 2D
- * case. The chart can be either a DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
- * >ScatterPlot</a> or a DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
+ * case. The chart can be either a DOCREF<a class="el" href=
+ * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
+ * >ScatterPlot</a> or a DOCREF<a class="el" href=
+ * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
  * >CategoryChart</a>. This influences how the data is positioned in relation to
  * the x/y-axis. Gridlines can also be drawn on each of the plotcube-planes. The
  * chart has a mouse-handler which allows rotation of the chart around the
@@ -1046,7 +1048,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * For example:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    {.cpp}
 	 *      ...
 	 *    
@@ -1166,9 +1168,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.bufferDatafv(WGLWidget.GLenum.ARRAY_BUFFER, vertexPosBuf,
 				WGLWidget.GLenum.STATIC_DRAW);
 		this.overlayTexCoBuffer_ = this.createBuffer();
-		this
-				.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-						this.overlayTexCoBuffer_);
+		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.overlayTexCoBuffer_);
 		size = texCo.length;
 		java.nio.ByteBuffer texCoBuf = WebGLUtils.newByteBuffer(4 * (size));
 		for (int i = 0; i < size; i++) {
@@ -1198,8 +1198,9 @@ public class WCartesian3DChart extends WGLWidget {
 			this.updateChart(EnumSet.of(ChartUpdates.GLContext,
 					ChartUpdates.GLTextures));
 		} else {
-			this.updateChart(EnumUtils.or(EnumSet.of(ChartUpdates.GLContext,
-					ChartUpdates.GLTextures), ChartUpdates.CameraMatrix));
+			this.updateChart(EnumUtils.or(
+					EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures),
+					ChartUpdates.CameraMatrix));
 		}
 	}
 
@@ -1209,8 +1210,9 @@ public class WCartesian3DChart extends WGLWidget {
 	 * Specialized for chart rendering.
 	 */
 	protected void paintGL() {
-		this.clearColor(this.background_.getRed() / 255.0, this.background_
-				.getGreen() / 255.0, this.background_.getBlue() / 255.0,
+		this.clearColor(this.background_.getRed() / 255.0,
+				this.background_.getGreen() / 255.0,
+				this.background_.getBlue() / 255.0,
 				this.background_.getAlpha() / 255.0);
 		this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
 				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
@@ -1252,16 +1254,17 @@ public class WCartesian3DChart extends WGLWidget {
 		this.polygonOffset(1, unitOffset);
 		this.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 				this.cubeIndicesBuffer_);
-		this.drawElements(WGLWidget.GLenum.TRIANGLES, this.cubeIndices_
-				.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+		this.drawElements(WGLWidget.GLenum.TRIANGLES,
+				this.cubeIndices_.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT,
+				0);
 		this.disableVertexAttribArray(this.cube_vertexPositionAttribute_);
 		this.disableVertexAttribArray(this.cube_textureCoordAttribute_);
 		this.disable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
 		this.useProgram(this.cubeLineProgram_);
 		this.uniformMatrix4(this.cubeLine_mvMatrixUniform_, mvMatrix);
 		this.uniformMatrix4(this.cubeLine_cMatrixUniform_, this.jsMatrix_);
-		this.uniformMatrix4(this.cubeLine_nMatrixUniform_, this.jsMatrix_
-				.multiply(mvMatrix));
+		this.uniformMatrix4(this.cubeLine_nMatrixUniform_,
+				this.jsMatrix_.multiply(mvMatrix));
 		this.uniform4f(this.cubeLine_colorUniform_, (float) this.cubeLinesPen_
 				.getColor().getRed(), (float) this.cubeLinesPen_.getColor()
 				.getGreen(), (float) this.cubeLinesPen_.getColor().getBlue(),
@@ -1279,22 +1282,21 @@ public class WCartesian3DChart extends WGLWidget {
 				: this.cubeLinesPen_.getWidth().getValue());
 		this.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 				this.cubeLineIndicesBuffer_);
-		this.drawElements(WGLWidget.GLenum.LINES, this.cubeLineIndices_
-				.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+		this.drawElements(WGLWidget.GLenum.LINES,
+				this.cubeLineIndices_.capacity(),
+				WGLWidget.GLenum.UNSIGNED_SHORT, 0);
 		this.disableVertexAttribArray(this.cubeLine_vertexPositionAttribute_);
 		this.disableVertexAttribArray(this.cubeLine_normalAttribute_);
 		this.useProgram(this.axisProgram_);
 		this.uniformMatrix4(this.axis_mvMatrixUniform_, mvMatrix);
 		this.uniformMatrix4(this.axis_cMatrixUniform_, this.jsMatrix_);
-		this.uniformMatrix4(this.axis_nMatrixUniform_, this.jsMatrix_
-				.multiply(mvMatrix));
+		this.uniformMatrix4(this.axis_nMatrixUniform_,
+				this.jsMatrix_.multiply(mvMatrix));
 		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.axisBuffer_);
 		this.vertexAttribPointer(this.axis_vertexPositionAttribute_, 3,
 				WGLWidget.GLenum.FLOAT, false, 0, 0);
 		this.enableVertexAttribArray(this.axis_vertexPositionAttribute_);
-		this
-				.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-						this.axisTexCoordsHoriz_);
+		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.axisTexCoordsHoriz_);
 		this.vertexAttribPointer(this.axis_textureCoordAttribute_, 2,
 				WGLWidget.GLenum.FLOAT, false, 0, 0);
 		this.enableVertexAttribArray(this.axis_textureCoordAttribute_);
@@ -1318,14 +1320,16 @@ public class WCartesian3DChart extends WGLWidget {
 		this.uniform1i(this.axis_texSamplerUniform_, 1);
 		this.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 				this.axisIndicesBuffer_);
-		this.drawElements(WGLWidget.GLenum.TRIANGLES, this.axisSlabIndices_
-				.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+		this.drawElements(WGLWidget.GLenum.TRIANGLES,
+				this.axisSlabIndices_.capacity(),
+				WGLWidget.GLenum.UNSIGNED_SHORT, 0);
 		this.uniform1i(this.axis_normalAngleTextureUniform_, 0);
 		this.activeTexture(WGLWidget.GLenum.TEXTURE1);
 		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.horizAxisTexture2_);
 		this.uniform1i(this.axis_texSamplerUniform_, 1);
-		this.drawElements(WGLWidget.GLenum.TRIANGLES, this.axisSlabIndices_
-				.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+		this.drawElements(WGLWidget.GLenum.TRIANGLES,
+				this.axisSlabIndices_.capacity(),
+				WGLWidget.GLenum.UNSIGNED_SHORT, 0);
 		this.disableVertexAttribArray(this.axis_vertexPositionAttribute_);
 		this.disableVertexAttribArray(this.axis_textureCoordAttribute_);
 		this.disableVertexAttribArray(this.axis_inPlaneAttribute_);
@@ -1359,11 +1363,13 @@ public class WCartesian3DChart extends WGLWidget {
 		this.uniform1i(this.axis_texSamplerUniform_, 1);
 		this.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 				this.axisIndicesVertBuffer_);
-		this.drawElements(WGLWidget.GLenum.TRIANGLES, this.axisSlabIndicesVert_
-				.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+		this.drawElements(WGLWidget.GLenum.TRIANGLES,
+				this.axisSlabIndicesVert_.capacity(),
+				WGLWidget.GLenum.UNSIGNED_SHORT, 0);
 		this.uniform1i(this.axis_normalAngleTextureUniform_, 1);
-		this.drawElements(WGLWidget.GLenum.TRIANGLES, this.axisSlabIndicesVert_
-				.capacity(), WGLWidget.GLenum.UNSIGNED_SHORT, 0);
+		this.drawElements(WGLWidget.GLenum.TRIANGLES,
+				this.axisSlabIndicesVert_.capacity(),
+				WGLWidget.GLenum.UNSIGNED_SHORT, 0);
 		this.disableVertexAttribArray(this.axis_vertexPositionAttribute_);
 		this.disableVertexAttribArray(this.axis_textureCoordAttribute_);
 		this.disableVertexAttribArray(this.axis_inPlaneAttribute_);
@@ -1372,8 +1378,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.disable(WGLWidget.GLenum.BLEND);
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-					.get(i))
-					: null);
+					.get(i)) : null);
 			if (gridData != null
 					&& gridData.getType() == Series3DType.SurfaceSeries3D
 					&& gridData.isClippingLinesEnabled()) {
@@ -1396,8 +1401,7 @@ public class WCartesian3DChart extends WGLWidget {
 		}
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-					.get(i))
-					: null);
+					.get(i)) : null);
 			if (gridData != null
 					&& gridData.getType() == Series3DType.SurfaceSeries3D
 					&& !gridData.isClippingLinesEnabled()) {
@@ -1408,8 +1412,7 @@ public class WCartesian3DChart extends WGLWidget {
 				&& this.intersectionPlanes_.isEmpty()) {
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 				WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (!(gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D)) {
 					this.dataSeriesVector_.get(i).paintGL();
 				}
@@ -1445,8 +1448,7 @@ public class WCartesian3DChart extends WGLWidget {
 			this.enable(WGLWidget.GLenum.DEPTH_TEST);
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 				WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (!(gridData != null)
 						|| gridData.getType() != Series3DType.SurfaceSeries3D) {
 					this.dataSeriesVector_.get(i).paintGL();
@@ -1482,8 +1484,9 @@ public class WCartesian3DChart extends WGLWidget {
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 				this.dataSeriesVector_.get(i).deleteAllGLResources();
 			}
-			this.clearColor(this.background_.getRed() / 255.0, this.background_
-					.getGreen() / 255.0, this.background_.getBlue() / 255.0,
+			this.clearColor(this.background_.getRed() / 255.0,
+					this.background_.getGreen() / 255.0,
+					this.background_.getBlue() / 255.0,
 					this.background_.getAlpha() / 255.0);
 			this.initializePlotCube();
 			if (this.intersectionLinesEnabled_
@@ -1493,8 +1496,7 @@ public class WCartesian3DChart extends WGLWidget {
 			}
 			for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 				WAbstractGridData data = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (data != null) {
 					this.initializeClippingPlaneProgram();
 					if (!this.intersectionLinesEnabled_
@@ -1562,8 +1564,7 @@ public class WCartesian3DChart extends WGLWidget {
 		boolean clippingLinesEnabled = false;
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			WAbstractGridData data = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-					.get(i))
-					: null);
+					.get(i)) : null);
 			if (data != null && data.isClippingLinesEnabled()) {
 				clippingLinesEnabled = true;
 				break;
@@ -1616,8 +1617,8 @@ public class WCartesian3DChart extends WGLWidget {
 		far_ = WebGLUtils.multiply(invTransform, far_);
 		near_ = WebGLUtils.multiply(near_, 1.0 / near_.getElement(3));
 		far_ = WebGLUtils.multiply(far_, 1.0 / far_.getElement(3));
-		javax.vecmath.GVector ray = new javax.vecmath.GVector(WebGLUtils
-				.subtract(far_, near_));
+		javax.vecmath.GVector ray = new javax.vecmath.GVector(
+				WebGLUtils.subtract(far_, near_));
 		WebGLUtils.normalize(ray);
 		direction.setElement(0, ray.getElement(0));
 		direction.setElement(1, ray.getElement(2));
@@ -1870,9 +1871,7 @@ public class WCartesian3DChart extends WGLWidget {
 				this.axisProgram_, "uSampler");
 		this.loadCubeTextures();
 		this.axisTexCoordsHoriz_ = this.createBuffer();
-		this
-				.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-						this.axisTexCoordsHoriz_);
+		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.axisTexCoordsHoriz_);
 		size = axisTexCo.length;
 		this.axisTexCo_ = WebGLUtils.newByteBuffer(4 * (size));
 		for (int i = 0; i < size; i++) {
@@ -2123,14 +2122,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.meshIndexFramebuffer_ = this.getCreateFramebuffer();
 		this.meshIndexTexture_ = this.createTexture();
 		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.meshIndexTexture_);
@@ -2138,14 +2133,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.positionFramebuffer_ = this.getCreateFramebuffer();
 		this.positionTexture_ = this.createTexture();
 		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_);
@@ -2153,14 +2144,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.NEAREST);
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.NEAREST);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.resizeOffscreenBuffer();
 	}
 
@@ -2250,8 +2237,7 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-					.get(i))
-					: null);
+					.get(i)) : null);
 			if (gridData != null
 					&& gridData.getType() == Series3DType.SurfaceSeries3D) {
 				gridData.paintGLIndex(i);
@@ -2263,8 +2249,7 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.DEPTH_BUFFER_BIT));
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			WAbstractGridData gridData = ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-					.get(i))
-					: null);
+					.get(i)) : null);
 			if (gridData != null
 					&& gridData.getType() == Series3DType.SurfaceSeries3D) {
 				gridData.paintGLPositions();
@@ -2280,16 +2265,12 @@ public class WCartesian3DChart extends WGLWidget {
 		this.vertexAttribPointer(
 				this.intersectionLines_vertexPositionAttribute_, 3,
 				WGLWidget.GLenum.FLOAT, false, 0, 0);
-		this
-				.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
-		this
-				.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
-						this.overlayTexCoBuffer_);
+		this.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+		this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.overlayTexCoBuffer_);
 		this.vertexAttribPointer(
 				this.intersectionLines_vertexTextureCoAttribute_, 2,
 				WGLWidget.GLenum.FLOAT, false, 0, 0);
-		this
-				.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+		this.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
 		this.uniformMatrix4(this.intersectionLines_cameraUniform_,
 				this.jsMatrix_);
 		this.uniform1f(this.intersectionLines_viewportWidthUniform_, this
@@ -2308,10 +2289,8 @@ public class WCartesian3DChart extends WGLWidget {
 		this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.meshIndexTexture_);
 		this.uniform1i(this.intersectionLines_meshIndexSamplerUniform_, 1);
 		this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
-		this
-				.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
-		this
-				.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+		this.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+		this.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
 		this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
 				new WGLWidget.Framebuffer());
 		this.enable(WGLWidget.GLenum.CULL_FACE);
@@ -2328,8 +2307,7 @@ public class WCartesian3DChart extends WGLWidget {
 					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
 			for (int j = 0; j < this.dataSeriesVector_.size(); j++) {
 				WAbstractGridData gridData = ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-						.get(j))
-						: null);
+						.get(j)) : null);
 				if (gridData != null
 						&& gridData.getType() == Series3DType.SurfaceSeries3D) {
 					gridData.paintGLIndex(1);
@@ -2375,21 +2353,18 @@ public class WCartesian3DChart extends WGLWidget {
 			this.vertexAttribPointer(
 					this.clippingPlane_vertexPositionAttribute_, 2,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
 			this.enable(WGLWidget.GLenum.CULL_FACE);
 			this.disable(WGLWidget.GLenum.DEPTH_TEST);
-			this
-					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
 					this.positionFramebuffer_);
 			this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT,
 					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
 			for (int j = 0; j < this.dataSeriesVector_.size(); j++) {
 				WAbstractGridData gridData = ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-						.get(j))
-						: null);
+						.get(j)) : null);
 				if (gridData != null
 						&& gridData.getType() == Series3DType.SurfaceSeries3D) {
 					gridData.paintGLPositions();
@@ -2409,13 +2384,11 @@ public class WCartesian3DChart extends WGLWidget {
 			this.vertexAttribPointer(
 					this.clippingPlane_vertexPositionAttribute_, 2,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
 			this.enable(WGLWidget.GLenum.CULL_FACE);
 			this.disable(WGLWidget.GLenum.DEPTH_TEST);
-			this
-					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
 					this.intersectionLinesFramebuffer_);
 			this.disable(WGLWidget.GLenum.CULL_FACE);
@@ -2427,39 +2400,34 @@ public class WCartesian3DChart extends WGLWidget {
 			this.vertexAttribPointer(
 					this.intersectionLines_vertexPositionAttribute_, 3,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
 			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.overlayTexCoBuffer_);
 			this.vertexAttribPointer(
 					this.intersectionLines_vertexTextureCoAttribute_, 2,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
 			this.uniformMatrix4(this.intersectionLines_cameraUniform_,
 					this.jsMatrix_);
 			this.uniform1f(this.intersectionLines_viewportWidthUniform_, this
 					.getWidth().getValue());
 			this.uniform1f(this.intersectionLines_viewportHeightUniform_, this
 					.getHeight().getValue());
-			this.uniform4f(this.intersectionLines_colorUniform_, plane.color
-					.getRed() / 255.0, plane.color.getGreen() / 255.0,
+			this.uniform4f(this.intersectionLines_colorUniform_,
+					plane.color.getRed() / 255.0,
+					plane.color.getGreen() / 255.0,
 					plane.color.getBlue() / 255.0,
 					plane.color.getAlpha() / 255.0);
 			this.activeTexture(WGLWidget.GLenum.TEXTURE0);
-			this
-					.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
-							this.positionTexture_);
+			this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_);
 			this.uniform1i(this.intersectionLines_positionSamplerUniform_, 0);
 			this.activeTexture(WGLWidget.GLenum.TEXTURE1);
 			this.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 					this.meshIndexTexture_);
 			this.uniform1i(this.intersectionLines_meshIndexSamplerUniform_, 1);
 			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
-			this
-					.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
-			this
-					.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
 			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
 					new WGLWidget.Framebuffer());
 			this.enable(WGLWidget.GLenum.CULL_FACE);
@@ -2518,11 +2486,9 @@ public class WCartesian3DChart extends WGLWidget {
 			this.vertexAttribPointer(
 					this.clippingPlane_vertexPositionAttribute_, 2,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
-			this
-					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			data.paintGLIndex(1, clippingAxis == 0 ? 0.01 : 0.0,
 					clippingAxis == 1 ? 0.01 : 0.0, clippingAxis == 2 ? 0.01
 							: 0.0);
@@ -2530,8 +2496,7 @@ public class WCartesian3DChart extends WGLWidget {
 				if (this.dataSeriesVector_.get(j) != data) {
 					WAbstractGridData gridData = ((this.dataSeriesVector_
 							.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-							.get(j))
-							: null);
+							.get(j)) : null);
 					if (gridData != null
 							&& gridData.getType() == Series3DType.SurfaceSeries3D
 							&& gridData.isClippingLinesEnabled()) {
@@ -2552,11 +2517,9 @@ public class WCartesian3DChart extends WGLWidget {
 			this.vertexAttribPointer(
 					this.clippingPlane_vertexPositionAttribute_, 2,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.enableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
-			this
-					.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
+			this.disableVertexAttribArray(this.clippingPlane_vertexPositionAttribute_);
 			data.paintGLPositions(clippingAxis == 0 ? 0.01 : 0.0,
 					clippingAxis == 1 ? 0.01 : 0.0, clippingAxis == 2 ? 0.01
 							: 0.0);
@@ -2564,8 +2527,7 @@ public class WCartesian3DChart extends WGLWidget {
 				if (this.dataSeriesVector_.get(j) != data) {
 					WAbstractGridData gridData = ((this.dataSeriesVector_
 							.get(j)) instanceof WAbstractGridData ? (WAbstractGridData) (this.dataSeriesVector_
-							.get(j))
-							: null);
+							.get(j)) : null);
 					if (gridData != null
 							&& gridData.getType() == Series3DType.SurfaceSeries3D
 							&& gridData.isClippingLinesEnabled()) {
@@ -2584,15 +2546,13 @@ public class WCartesian3DChart extends WGLWidget {
 			this.vertexAttribPointer(
 					this.intersectionLines_vertexPositionAttribute_, 3,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this.enableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
 			this.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.overlayTexCoBuffer_);
 			this.vertexAttribPointer(
 					this.intersectionLines_vertexTextureCoAttribute_, 2,
 					WGLWidget.GLenum.FLOAT, false, 0, 0);
-			this
-					.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.enableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
 			this.uniformMatrix4(this.intersectionLines_cameraUniform_,
 					this.jsMatrix_);
 			this.uniform1f(this.intersectionLines_viewportWidthUniform_, this
@@ -2605,19 +2565,15 @@ public class WCartesian3DChart extends WGLWidget {
 					.getClippingLinesColor().getBlue() / 255.0, data
 					.getClippingLinesColor().getAlpha() / 255.0);
 			this.activeTexture(WGLWidget.GLenum.TEXTURE0);
-			this
-					.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
-							this.positionTexture_);
+			this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.positionTexture_);
 			this.uniform1i(this.intersectionLines_positionSamplerUniform_, 0);
 			this.activeTexture(WGLWidget.GLenum.TEXTURE1);
 			this.bindTexture(WGLWidget.GLenum.TEXTURE_2D,
 					this.meshIndexTexture_);
 			this.uniform1i(this.intersectionLines_meshIndexSamplerUniform_, 1);
 			this.drawArrays(WGLWidget.GLenum.TRIANGLE_STRIP, 0, 4);
-			this
-					.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
-			this
-					.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
+			this.disableVertexAttribArray(this.intersectionLines_vertexPositionAttribute_);
+			this.disableVertexAttribArray(this.intersectionLines_vertexTextureCoAttribute_);
 			this.bindFramebuffer(WGLWidget.GLenum.FRAMEBUFFER,
 					new WGLWidget.Framebuffer());
 			this.enable(WGLWidget.GLenum.CULL_FACE);
@@ -2683,9 +2639,10 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 		}
-		this.XAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.XAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		double addOffset = this.XAxis_.getTitleOffset();
 		WFont oldFont = painter.getFont();
 		painter.setFont(this.XAxis_.getTitleFont());
@@ -2702,9 +2659,10 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = 0.0;
 		tickEnd = TICKLENGTH;
 		labelPos = tickEnd;
-		this.XAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.XAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
 				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.XAxis_
@@ -2735,9 +2693,10 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 		}
-		this.XAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.XAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
 				AlignmentFlag.AlignBottom), this.XAxis_.getTitle());
@@ -2750,9 +2709,10 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = -TICKLENGTH;
 		tickEnd = 0.0;
 		labelPos = tickEnd - 4;
-		this.XAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.XAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
 				AlignmentFlag.AlignBottom), this.XAxis_.getTitle());
@@ -2783,9 +2743,10 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 		}
-		this.YAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.YAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		addOffset = this.YAxis_.getTitleOffset();
 		painter.setFont(this.YAxis_.getTitleFont());
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
@@ -2801,9 +2762,10 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = 0.0;
 		tickEnd = TICKLENGTH;
 		labelPos = tickEnd;
-		this.YAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.YAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
 				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.YAxis_
@@ -2834,9 +2796,10 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 		}
-		this.YAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.YAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
 				AlignmentFlag.AlignBottom), this.YAxis_.getTitle());
@@ -2849,9 +2812,10 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = -TICKLENGTH;
 		tickEnd = 0.0;
 		labelPos = tickEnd - 4;
-		this.YAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.YAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
 				AlignmentFlag.AlignBottom), this.YAxis_.getTitle());
@@ -2898,9 +2862,10 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 		}
-		this.ZAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.ZAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		double addOffset = this.ZAxis_.getTitleOffset();
 		painter.rotate(-90);
 		WFont oldFont = this.ZAxis_.getTitleFont();
@@ -2932,9 +2897,10 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 		}
-		this.ZAxis_.render(painter, EnumSet.of(AxisProperty.Line,
-				AxisProperty.Labels), axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, EnumSet.of(labelHFlag, labelVFlag));
+		this.ZAxis_.render(painter,
+				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
+				axisEnd, tickStart, tickEnd, labelPos,
+				EnumSet.of(labelHFlag, labelVFlag));
 		painter.rotate(-90);
 		painter.drawText(new WRectF(-axisWidth, axisHeight + TITLEOFFSET
 				+ addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
@@ -3058,14 +3024,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER,
 				WGLWidget.GLenum.LINEAR_MIPMAP_LINEAR);
 		this.generateMipmap(WGLWidget.GLenum.TEXTURE_2D);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		if (this.horizAxisTexture2_.isNull()) {
 			this.horizAxisTexture2_ = this.createTexture();
 		}
@@ -3079,14 +3041,10 @@ public class WCartesian3DChart extends WGLWidget {
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER,
 				WGLWidget.GLenum.LINEAR_MIPMAP_LINEAR);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.generateMipmap(WGLWidget.GLenum.TEXTURE_2D);
 		if (this.vertAxisTexture_.isNull()) {
 			this.vertAxisTexture_ = this.createTexture();
@@ -3100,14 +3058,10 @@ public class WCartesian3DChart extends WGLWidget {
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER,
 				WGLWidget.GLenum.LINEAR_MIPMAP_LINEAR);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.generateMipmap(WGLWidget.GLenum.TEXTURE_2D);
 		WPaintDevice pd1 = this.createPaintDevice(new WLength(512),
 				new WLength(512));
@@ -3199,14 +3153,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.LINEAR);
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.LINEAR);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 		this.currentTopOffset_ += pixelHeight;
 	}
 
@@ -3230,19 +3180,25 @@ public class WCartesian3DChart extends WGLWidget {
 				switch (this.dataSeriesVector_.get(i).getColorMapSide()) {
 				case Left:
 					painter.translate(this.currentLeftOffset_, 0);
-					this.dataSeriesVector_.get(i).getColorMap().paintLegend(
-							painter,
-							new WRectF(LEFT_OFFSET, VERT_MARGIN, WIDTH, space
-									- 2 * VERT_MARGIN));
+					this.dataSeriesVector_
+							.get(i)
+							.getColorMap()
+							.paintLegend(
+									painter,
+									new WRectF(LEFT_OFFSET, VERT_MARGIN, WIDTH,
+											space - 2 * VERT_MARGIN));
 					this.currentLeftOffset_ += WIDTH;
 					break;
 				case Right:
 					painter.translate(this.getWidth().getValue()
 							- this.currentRightOffset_ - WIDTH, 0);
-					this.dataSeriesVector_.get(i).getColorMap().paintLegend(
-							painter,
-							new WRectF(LEFT_OFFSET, VERT_MARGIN, WIDTH, space
-									- 2 * VERT_MARGIN));
+					this.dataSeriesVector_
+							.get(i)
+							.getColorMap()
+							.paintLegend(
+									painter,
+									new WRectF(LEFT_OFFSET, VERT_MARGIN, WIDTH,
+											space - 2 * VERT_MARGIN));
 					this.currentRightOffset_ += WIDTH;
 					break;
 				default:
@@ -3265,14 +3221,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.LINEAR);
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.LINEAR);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 	}
 
 	private void initLegend() {
@@ -3375,14 +3327,10 @@ public class WCartesian3DChart extends WGLWidget {
 				WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.LINEAR);
 		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
 				WGLWidget.GLenum.TEXTURE_MIN_FILTER, WGLWidget.GLenum.LINEAR);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_S,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
-		this
-				.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
-						WGLWidget.GLenum.TEXTURE_WRAP_T,
-						WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_S, WGLWidget.GLenum.CLAMP_TO_EDGE);
+		this.texParameteri(WGLWidget.GLenum.TEXTURE_2D,
+				WGLWidget.GLenum.TEXTURE_WRAP_T, WGLWidget.GLenum.CLAMP_TO_EDGE);
 	}
 
 	private void paintPeripheralTexture(final WGLWidget.Buffer pos,

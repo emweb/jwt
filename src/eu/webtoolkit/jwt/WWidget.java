@@ -283,7 +283,7 @@ public abstract class WWidget extends WObject {
 	 * implemented as:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    resize(width, height())
 	 *   }
 	 * </pre>
@@ -318,7 +318,7 @@ public abstract class WWidget extends WObject {
 	 * implemented as:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    resize(width(), height)
 	 *   }
 	 * </pre>
@@ -1531,12 +1531,14 @@ public abstract class WWidget extends WObject {
 			if (w == this) {
 				this.getWebWidget().resized();
 			} else {
-				this.getWebWidget().resized().addListener(this,
-						new Signal2.Listener<Integer, Integer>() {
-							public void trigger(Integer e1, Integer e2) {
-								WWidget.this.layoutSizeChanged(e1, e2);
-							}
-						});
+				this.getWebWidget()
+						.resized()
+						.addListener(this,
+								new Signal2.Listener<Integer, Integer>() {
+									public void trigger(Integer e1, Integer e2) {
+										WWidget.this.layoutSizeChanged(e1, e2);
+									}
+								});
 			}
 		} else {
 			this.getWebWidget().setImplementLayoutSizeAware(false);
@@ -1832,8 +1834,8 @@ public abstract class WWidget extends WObject {
 	void scheduleRerender(boolean laterOnly, EnumSet<RepaintFlag> flags) {
 		if (!this.flags_.get(BIT_NEED_RERENDER)) {
 			this.flags_.set(BIT_NEED_RERENDER);
-			WApplication.getInstance().getSession().getRenderer().needUpdate(
-					this, laterOnly);
+			WApplication.getInstance().getSession().getRenderer()
+					.needUpdate(this, laterOnly);
 		}
 		if (!EnumUtils.mask(flags, RepaintFlag.RepaintSizeAffected).isEmpty()
 				&& !this.flags_.get(BIT_NEED_RERENDER_SIZE_CHANGE)) {
@@ -1920,10 +1922,12 @@ public abstract class WWidget extends WObject {
 		if (!this.getHeight().isAuto()
 				&& this.getHeight().getUnit() != WLength.Unit.Percentage
 				&& this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
-			this.callJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ","
-					+ String.valueOf(this.getWidth().toPixels()) + ","
-					+ String.valueOf(this.getHeight().toPixels()) + ","
-					+ "false");
+			this.callJavaScriptMember(
+					WT_RESIZE_JS,
+					this.getJsRef() + ","
+							+ String.valueOf(this.getWidth().toPixels()) + ","
+							+ String.valueOf(this.getHeight().toPixels()) + ","
+							+ "false");
 		}
 	}
 

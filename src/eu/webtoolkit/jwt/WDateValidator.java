@@ -59,8 +59,7 @@ public class WDateValidator extends WValidator {
 		this.tooEarlyText_ = new WString();
 		this.tooLateText_ = new WString();
 		this.notADateText_ = new WString();
-		this.setFormat(LocaleUtils
-				.getDateFormat(LocaleUtils.getCurrentLocale()));
+		this.setFormat(LocaleUtils.getDateFormat(LocaleUtils.getCurrentLocale()));
 	}
 
 	/**
@@ -87,8 +86,7 @@ public class WDateValidator extends WValidator {
 		this.tooEarlyText_ = new WString();
 		this.tooLateText_ = new WString();
 		this.notADateText_ = new WString();
-		this.setFormat(LocaleUtils
-				.getDateFormat(LocaleUtils.getCurrentLocale()));
+		this.setFormat(LocaleUtils.getDateFormat(LocaleUtils.getCurrentLocale()));
 	}
 
 	/**
@@ -255,26 +253,26 @@ public class WDateValidator extends WValidator {
 					if (!(this.bottom_ == null)) {
 						if (d.before(this.bottom_)) {
 							return new WValidator.Result(
-									WValidator.State.Invalid, this
-											.getInvalidTooEarlyText());
+									WValidator.State.Invalid,
+									this.getInvalidTooEarlyText());
 						}
 					}
 					if (!(this.top_ == null)) {
 						if (d.after(this.top_)) {
 							return new WValidator.Result(
-									WValidator.State.Invalid, this
-											.getInvalidTooLateText());
+									WValidator.State.Invalid,
+									this.getInvalidTooLateText());
 						}
 					}
 					return new WValidator.Result(WValidator.State.Valid);
 				}
 			} catch (final RuntimeException e) {
-				logger.warn(new StringWriter().append("validate(): ").append(
-						e.toString()).toString());
+				logger.warn(new StringWriter().append("validate(): ")
+						.append(e.toString()).toString());
 			}
 		}
-		return new WValidator.Result(WValidator.State.Invalid, this
-				.getInvalidNotADateText());
+		return new WValidator.Result(WValidator.State.Invalid,
+				this.getInvalidNotADateText());
 	}
 
 	// public void createExtConfig(final Writer config) throws IOException;
@@ -336,9 +334,9 @@ public class WDateValidator extends WValidator {
 					return WString.tr("Wt.WDateValidator.DateTooEarly").arg(
 							this.bottom_.toString(this.formats_.get(0)));
 				} else {
-					return WString.tr("Wt.WDateValidator.WrongDateRange").arg(
-							this.bottom_.toString(this.formats_.get(0))).arg(
-							this.top_.toString(this.formats_.get(0)));
+					return WString.tr("Wt.WDateValidator.WrongDateRange")
+							.arg(this.bottom_.toString(this.formats_.get(0)))
+							.arg(this.top_.toString(this.formats_.get(0)));
 				}
 			}
 		}
@@ -377,9 +375,9 @@ public class WDateValidator extends WValidator {
 					return WString.tr("Wt.WDateValidator.DateTooLate").arg(
 							this.top_.toString(this.formats_.get(0)));
 				} else {
-					return WString.tr("Wt.WDateValidator.WrongDateRange").arg(
-							this.bottom_.toString(this.formats_.get(0))).arg(
-							this.top_.toString(this.formats_.get(0)));
+					return WString.tr("Wt.WDateValidator.WrongDateRange")
+							.arg(this.bottom_.toString(this.formats_.get(0)))
+							.arg(this.top_.toString(this.formats_.get(0)));
 				}
 			}
 		}
@@ -395,38 +393,41 @@ public class WDateValidator extends WValidator {
 			if (i != 0) {
 				js.append(',');
 			}
-			js.append("{").append("regexp:").append(
-					WWebWidget.jsStringLiteral(r.regexp)).append(',').append(
-					"getMonth:function(results){").append(r.monthGetJS).append(
-					";},").append("getDay:function(results){").append(
-					r.dayGetJS).append(";},").append(
-					"getYear:function(results){").append(r.yearGetJS).append(
-					";}").append("}");
+			js.append("{").append("regexp:")
+					.append(WWebWidget.jsStringLiteral(r.regexp)).append(',')
+					.append("getMonth:function(results){").append(r.monthGetJS)
+					.append(";},").append("getDay:function(results){")
+					.append(r.dayGetJS).append(";},")
+					.append("getYear:function(results){").append(r.yearGetJS)
+					.append(";}").append("}");
 		}
 		js.append("],");
 		if (!(this.bottom_ == null)) {
 			js.append("new Date(").append(this.bottom_.getYear()).append(',')
-					.append(this.bottom_.getMonth() - 1).append(',').append(
-							this.bottom_.getDay()).append(")");
+					.append(this.bottom_.getMonth() - 1).append(',')
+					.append(this.bottom_.getDay()).append(")");
 		} else {
 			js.append("null");
 		}
 		js.append(',');
 		if (!(this.top_ == null)) {
 			js.append("new Date(").append(this.top_.getYear()).append(',')
-					.append(this.top_.getMonth() - 1).append(',').append(
-							this.top_.getDay()).append(")");
+					.append(this.top_.getMonth() - 1).append(',')
+					.append(this.top_.getDay()).append(")");
 		} else {
 			js.append("null");
 		}
-		js.append(',').append(
-				WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidNotADateText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooEarlyText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooLateText())
+		js.append(',')
+				.append(WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidNotADateText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidTooEarlyText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidTooLateText())
 						.getJsStringLiteral()).append(");");
 		return js.toString();
 	}

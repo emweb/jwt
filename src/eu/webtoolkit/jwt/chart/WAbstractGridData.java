@@ -30,9 +30,11 @@ import org.slf4j.LoggerFactory;
  * href="group__charts.html#gcca4e123c9e4b212050bcfac488fceee">Series3DType</a>
  * and can be either PointSeries3D, SurfaceSeries3D or BarSeries3D. Note that
  * points and surfaces can only be added to charts of type DOCREF<a class="el"
- * href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
+ * href=
+ * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
  * >ScatterPlot</a>, while bars can only be added to charts of type DOCREF<a
- * class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
+ * class="el" href=
+ * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
  * >CategoryChart</a>.
  * <p>
  * When the data is shown as a surface, a mesh can be added to the surface. This
@@ -192,13 +194,18 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * All representations in DOCREF<a class="el"
 	 * href="group__charts.html#gcca4e123c9e4b212050bcfac488fceee"
 	 * >Series3DType</a> are possible for the data. Note that DOCREF<a
-	 * class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceee8a491a3e05d49b93cb2b22c3fd06881c"
-	 * >PointSeries3D</a> and DOCREF<a class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
+	 * class="el" href=
+	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceee8a491a3e05d49b93cb2b22c3fd06881c"
+	 * >PointSeries3D</a> and DOCREF<a class="el" href=
+	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
 	 * >SurfaceSeries3D</a> can only be used on a chart that is configured as a
-	 * DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
-	 * >ScatterPlot</a> and DOCREF<a class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceee3c5fa7e4aed74f126086c1877c4acbfa"
+	 * DOCREF<a class="el" href=
+	 * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
+	 * >ScatterPlot</a> and DOCREF<a class="el" href=
+	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceee3c5fa7e4aed74f126086c1877c4acbfa"
 	 * >BarSeries3D</a> can only be used on a chart that is configured to be a
-	 * DOCREF<a class="el" href="group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
+	 * DOCREF<a class="el" href=
+	 * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
 	 * >CategoryChart</a>.
 	 * <p>
 	 * The default value is PointSeries3D.
@@ -226,7 +233,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * Enables or disables a mesh for when a surface is drawn.
 	 * <p>
 	 * The default value is false. This option only takes effect when the type
-	 * of this {@link WGridData} is DOCREF<a class="el" href="group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
+	 * of this {@link WGridData} is DOCREF<a class="el" href=
+	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
 	 * >SurfaceSeries3D</a>. The mesh is drawn at the position of the x-axis and
 	 * y-axis values.
 	 */
@@ -343,8 +351,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		javax.vecmath.GVector rd = new javax.vecmath.GVector(new double[] { 0,
 				0, 0 });
 		this.chart_.createRay(x, y, re, rd);
-		javax.vecmath.Matrix4f invTransform = WebGLUtils.multiply(this.chart_
-				.getCameraMatrix(), this.mvMatrix_);
+		javax.vecmath.Matrix4f invTransform = WebGLUtils.multiply(
+				this.chart_.getCameraMatrix(), this.mvMatrix_);
 		invTransform.invert();
 		javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {
 				0.0, 0.0, 0.0, 1.0 });
@@ -477,9 +485,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 							* (this.chart_.axis(Axis.ZAxis_3D).getMaximum() - this.chart_
 									.axis(Axis.ZAxis_3D).getMinimum())
 							+ this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-					result
-							.add(new WSurfaceSelection(distance, resX, resY,
-									resZ));
+					result.add(new WSurfaceSelection(distance, resX, resY, resZ));
 				}
 			}
 		}
@@ -513,8 +519,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		double closestDistance = Double.POSITIVE_INFINITY;
 		int closestI = 0;
 		int closestJ = 0;
-		javax.vecmath.Matrix4f invTransform = WebGLUtils.multiply(this.chart_
-				.getCameraMatrix(), this.mvMatrix_);
+		javax.vecmath.Matrix4f invTransform = WebGLUtils.multiply(
+				this.chart_.getCameraMatrix(), this.mvMatrix_);
 		invTransform.invert();
 		javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {
 				0.0, 0.0, 0.0, 1.0 });
@@ -542,15 +548,14 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 						* (nbSimpleBarBuffers - 1)))));
 		this.barDataFromModel(simplePtsArrays);
 		for (int i = 0; i < simplePtsArrays.size(); ++i) {
-			this.barSeriesVertexData(simplePtsArrays.get(i), barVertexArrays
-					.get(i));
+			this.barSeriesVertexData(simplePtsArrays.get(i),
+					barVertexArrays.get(i));
 		}
 		for (int i = 0; i < simplePtsArrays.size(); ++i) {
 			java.nio.IntBuffer vertexIndices = java.nio.IntBuffer
 					.allocate(12 * 3 * (simplePtsArrays.get(i).capacity() / 4 / PT_INFO_SIZE));
 			this.generateVertexIndices(vertexIndices, 0, 0, simplePtsArrays
-					.get(i).capacity()
-					/ 4 / PT_INFO_SIZE);
+					.get(i).capacity() / 4 / PT_INFO_SIZE);
 			for (int j = 0; j < vertexIndices.capacity(); j += 3) {
 				javax.vecmath.GVector point = new javax.vecmath.GVector(
 						new double[] { 0, 0, 0 });
@@ -1068,8 +1073,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					&& this.surfaceMeshEnabled_) {
 				this.chart_.useProgram(this.meshProgram_);
 				this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
-				this.chart_.uniformMatrix4(this.mesh_cMatrix_, this.chart_
-						.getJsMatrix());
+				this.chart_.uniformMatrix4(this.mesh_cMatrix_,
+						this.chart_.getJsMatrix());
 				this.chart_.uniform3fv(this.mesh_minPtUniform_, this.jsMinPt_);
 				this.chart_.uniform3fv(this.mesh_maxPtUniform_, this.jsMaxPt_);
 				this.chart_.uniform3f(this.mesh_dataMinPtUniform_, xMin, yMin,
@@ -1110,8 +1115,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		}
 		for (int i = 0; i < this.vertexPosBuffers2_.size(); i++) {
 			this.chart_.useProgram(this.colSeriesProgram_);
-			this.chart_.uniformMatrix4(this.cMatrix2_, this.chart_
-					.getJsMatrix());
+			this.chart_.uniformMatrix4(this.cMatrix2_,
+					this.chart_.getJsMatrix());
 			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.vertexPosBuffers2_.get(i));
 			this.chart_.vertexAttribPointer(this.vertexPosAttr2_, 3,
@@ -1154,8 +1159,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
 				this.chart_.enable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
 				this.chart_.polygonOffset(1, 0.001);
-				this.chart_.uniformMatrix4(this.mesh_cMatrix_, this.chart_
-						.getJsMatrix());
+				this.chart_.uniformMatrix4(this.mesh_cMatrix_,
+						this.chart_.getJsMatrix());
 				this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 						this.vertexPosBuffers2_.get(i));
 				this.chart_.vertexAttribPointer(this.meshVertexPosAttr_, 3,
@@ -1274,19 +1279,19 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			if (this.isoLineHeights_.size() > 0) {
 				this.chart_.useProgram(this.isoLineProgram_);
 				if (this.isoLineColorMap_ != null) {
-					min = this.chart_.toPlotCubeCoords(this.isoLineColorMap_
-							.getMinimum(), Axis.ZAxis_3D);
-					max = this.chart_.toPlotCubeCoords(this.isoLineColorMap_
-							.getMaximum(), Axis.ZAxis_3D);
+					min = this.chart_.toPlotCubeCoords(
+							this.isoLineColorMap_.getMinimum(), Axis.ZAxis_3D);
+					max = this.chart_.toPlotCubeCoords(
+							this.isoLineColorMap_.getMaximum(), Axis.ZAxis_3D);
 					this.chart_.uniform1f(this.isoLine_offset_, min);
 					this.chart_.uniform1f(this.isoLine_scaleFactor_,
 							1.0 / (max - min));
 				} else {
 					if (this.colormap_ != null) {
-						min = this.chart_.toPlotCubeCoords(this.colormap_
-								.getMinimum(), Axis.ZAxis_3D);
-						max = this.chart_.toPlotCubeCoords(this.colormap_
-								.getMaximum(), Axis.ZAxis_3D);
+						min = this.chart_.toPlotCubeCoords(
+								this.colormap_.getMinimum(), Axis.ZAxis_3D);
+						max = this.chart_.toPlotCubeCoords(
+								this.colormap_.getMaximum(), Axis.ZAxis_3D);
 						this.chart_.uniform1f(this.isoLine_offset_, min);
 						this.chart_.uniform1f(this.isoLine_scaleFactor_,
 								1.0 / (max - min));
@@ -1307,8 +1312,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			this.chart_.useProgram(this.meshProgram_);
 			this.chart_.uniformMatrix4(this.mesh_mvMatrixUniform_,
 					this.mvMatrix_);
-			this.chart_.uniformMatrix4(this.mesh_pMatrix_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.mesh_pMatrix_,
+					this.chart_.getPMatrix());
 		case PointSeries3D:
 			this.chart_.useProgram(this.colSeriesProgram_);
 			this.chart_.uniformMatrix4(this.mvMatrixUniform2_, this.mvMatrix_);
@@ -1320,15 +1325,15 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				this.chart_.useProgram(this.meshProgram_);
 				this.chart_.uniformMatrix4(this.mesh_mvMatrixUniform_,
 						this.mvMatrix_);
-				this.chart_.uniformMatrix4(this.mesh_pMatrix_, this.chart_
-						.getPMatrix());
+				this.chart_.uniformMatrix4(this.mesh_pMatrix_,
+						this.chart_.getPMatrix());
 			}
 			if (this.isoLineHeights_.size() > 0) {
 				this.chart_.useProgram(this.isoLineProgram_);
 				this.chart_.uniformMatrix4(this.isoLine_mvMatrixUniform_,
 						this.mvMatrix_);
-				this.chart_.uniformMatrix4(this.isoLine_pMatrix_, this.chart_
-						.getPMatrix());
+				this.chart_.uniformMatrix4(this.isoLine_pMatrix_,
+						this.chart_.getPMatrix());
 			}
 			if (this.chart_.isIntersectionLinesEnabled()
 					|| this.isClippingLinesEnabled()
@@ -1341,8 +1346,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 				this.chart_.useProgram(this.positionProgram_);
 				this.chart_.uniformMatrix4(this.position_mvMatrixUniform_,
 						this.mvMatrix_);
-				this.chart_.uniformMatrix4(this.position_pMatrix_, this.chart_
-						.getPMatrix());
+				this.chart_.uniformMatrix4(this.position_pMatrix_,
+						this.chart_.getPMatrix());
 			}
 			break;
 		}
@@ -1361,23 +1366,23 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		}
 		if (!this.singleColorProgram_.isNull()) {
 			this.chart_.useProgram(this.singleColorProgram_);
-			this.chart_.uniformMatrix4(this.singleColor_pMatrix_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.singleColor_pMatrix_,
+					this.chart_.getPMatrix());
 		}
 		if (!this.positionProgram_.isNull()) {
 			this.chart_.useProgram(this.positionProgram_);
-			this.chart_.uniformMatrix4(this.position_pMatrix_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.position_pMatrix_,
+					this.chart_.getPMatrix());
 		}
 		if (!this.meshProgram_.isNull()) {
 			this.chart_.useProgram(this.meshProgram_);
-			this.chart_.uniformMatrix4(this.mesh_pMatrix_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.mesh_pMatrix_,
+					this.chart_.getPMatrix());
 		}
 		if (!this.isoLineProgram_.isNull()) {
 			this.chart_.useProgram(this.isoLineProgram_);
-			this.chart_.uniformMatrix4(this.isoLine_pMatrix_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.isoLine_pMatrix_,
+					this.chart_.getPMatrix());
 		}
 	}
 
@@ -2041,8 +2046,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.barDataFromModel(simplePtsArrays, coloredPtsArrays,
 				coloredPtsColors);
 		for (int i = 0; i < simplePtsArrays.size(); i++) {
-			this.barSeriesVertexData(simplePtsArrays.get(i), barVertexArrays
-					.get(i));
+			this.barSeriesVertexData(simplePtsArrays.get(i),
+					barVertexArrays.get(i));
 		}
 		for (int i = 0; i < coloredPtsArrays.size(); i++) {
 			this.barSeriesVertexData(coloredPtsArrays.get(i),
@@ -2067,8 +2072,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			java.nio.IntBuffer vertexIndices = java.nio.IntBuffer
 					.allocate(12 * 3 * (simplePtsArrays.get(i).capacity() / 4 / PT_INFO_SIZE));
 			this.generateVertexIndices(vertexIndices, 0, 0, simplePtsArrays
-					.get(i).capacity()
-					/ 4 / PT_INFO_SIZE);
+					.get(i).capacity() / 4 / PT_INFO_SIZE);
 			this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 					this.indexBuffers_.get(i));
 			this.chart_.bufferDataiv(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
@@ -2079,8 +2083,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			java.nio.IntBuffer lineIndices = java.nio.IntBuffer
 					.allocate(24 * (simplePtsArrays.get(i).capacity() / 4 / PT_INFO_SIZE));
 			this.generateMeshIndices(lineIndices, 0, 0, simplePtsArrays.get(i)
-					.capacity()
-					/ 4 / PT_INFO_SIZE);
+					.capacity() / 4 / PT_INFO_SIZE);
 			this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 					this.overlayLinesBuffers_.get(i));
 			this.chart_.bufferDataiv(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
@@ -2103,8 +2106,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			java.nio.IntBuffer vertexIndices = java.nio.IntBuffer
 					.allocate(12 * 3 * (coloredPtsArrays.get(i).capacity() / 4 / PT_INFO_SIZE));
 			this.generateVertexIndices(vertexIndices, 0, 0, coloredPtsArrays
-					.get(i).capacity()
-					/ 4 / PT_INFO_SIZE);
+					.get(i).capacity() / 4 / PT_INFO_SIZE);
 			this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 					this.indexBuffers2_.get(i));
 			this.chart_.bufferDataiv(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
@@ -2115,8 +2117,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			java.nio.IntBuffer lineIndices = java.nio.IntBuffer
 					.allocate(24 * (coloredPtsArrays.get(i).capacity() / 4 / PT_INFO_SIZE));
 			this.generateMeshIndices(lineIndices, 0, 0, coloredPtsArrays.get(i)
-					.capacity()
-					/ 4 / PT_INFO_SIZE);
+					.capacity() / 4 / PT_INFO_SIZE);
 			this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
 					this.overlayLinesBuffers2_.get(i));
 			this.chart_.bufferDataiv(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER,
@@ -2129,8 +2130,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	private void loadBinaryResource(final java.nio.ByteBuffer data,
 			final List<WGLWidget.Buffer> buffers) {
 		buffers.add(this.chart_.createBuffer());
-		this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, buffers
-				.get(buffers.size() - 1));
+		this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
+				buffers.get(buffers.size() - 1));
 		this.chart_.bufferDatafv(WGLWidget.GLenum.ARRAY_BUFFER, data,
 				WGLWidget.GLenum.STATIC_DRAW, true);
 	}
@@ -2316,10 +2317,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 					}
 				}
 			} else {
-				float min = (float) this.chart_.toPlotCubeCoords(this.colormap_
-						.getMinimum(), Axis.ZAxis_3D);
-				float max = (float) this.chart_.toPlotCubeCoords(this.colormap_
-						.getMaximum(), Axis.ZAxis_3D);
+				float min = (float) this.chart_.toPlotCubeCoords(
+						this.colormap_.getMinimum(), Axis.ZAxis_3D);
+				float max = (float) this.chart_.toPlotCubeCoords(
+						this.colormap_.getMaximum(), Axis.ZAxis_3D);
 				for (int i = 0; i < size; i++) {
 					float zNorm = (dataArray.getFloat(4 * (i * 4 + 3)) - min)
 							/ (max - min);
@@ -2356,8 +2357,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
 		for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
 			this.chart_.useProgram(this.singleColorProgram_);
-			this.chart_.uniformMatrix4(this.singleColor_cMatrix_, this.chart_
-					.getJsMatrix());
+			this.chart_.uniformMatrix4(this.singleColor_cMatrix_,
+					this.chart_.getJsMatrix());
 			this.chart_.uniform3fv(this.singleColor_minPtUniform_,
 					this.jsMinPt_);
 			this.chart_.uniform3fv(this.singleColor_maxPtUniform_,
@@ -2412,8 +2413,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
 		for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
 			this.chart_.useProgram(this.positionProgram_);
-			this.chart_.uniformMatrix4(this.position_cMatrix_, this.chart_
-					.getJsMatrix());
+			this.chart_.uniformMatrix4(this.position_cMatrix_,
+					this.chart_.getJsMatrix());
 			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.vertexPosBuffers_.get(i));
 			this.chart_.uniform3fv(this.position_minPtUniform_, this.jsMinPt_);
@@ -2442,12 +2443,12 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 			final javax.vecmath.GVector rd, final javax.vecmath.GVector camera,
 			final javax.vecmath.GVector v0, final javax.vecmath.GVector v1,
 			final javax.vecmath.GVector v2, final javax.vecmath.GVector point) {
-		javax.vecmath.GVector e1 = new javax.vecmath.GVector(WebGLUtils
-				.subtract(v1, v0));
-		javax.vecmath.GVector e2 = new javax.vecmath.GVector(WebGLUtils
-				.subtract(v2, v0));
-		javax.vecmath.GVector tr = new javax.vecmath.GVector(WebGLUtils
-				.subtract(re, v0));
+		javax.vecmath.GVector e1 = new javax.vecmath.GVector(
+				WebGLUtils.subtract(v1, v0));
+		javax.vecmath.GVector e2 = new javax.vecmath.GVector(
+				WebGLUtils.subtract(v2, v0));
+		javax.vecmath.GVector tr = new javax.vecmath.GVector(
+				WebGLUtils.subtract(re, v0));
 		javax.vecmath.GVector P = WebGLUtils.cross(rd, e2);
 		javax.vecmath.GVector Q = WebGLUtils.cross(tr, e1);
 		double m = P.dot(e1);
@@ -2474,8 +2475,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	private void drawIsoLines() {
 		this.chart_.useProgram(this.isoLineProgram_);
 		this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
-		this.chart_.uniformMatrix4(this.isoLine_cMatrix_, this.chart_
-				.getJsMatrix());
+		this.chart_.uniformMatrix4(this.isoLine_cMatrix_,
+				this.chart_.getJsMatrix());
 		this.chart_.lineWidth(1.0);
 		this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
 		this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D,

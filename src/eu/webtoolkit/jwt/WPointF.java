@@ -174,10 +174,10 @@ public class WPointF extends WJavaScriptExposableObject {
 			if (ar.size() == 2
 					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(0)))
 					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(1)))) {
-				this.x_ = JsonUtils.orIfNullDouble(JsonUtils
-						.toNumber(ar.get(0)), this.x_);
-				this.y_ = JsonUtils.orIfNullDouble(JsonUtils
-						.toNumber(ar.get(1)), this.y_);
+				this.x_ = JsonUtils.orIfNullDouble(
+						JsonUtils.toNumber(ar.get(0)), this.x_);
+				this.y_ = JsonUtils.orIfNullDouble(
+						JsonUtils.toNumber(ar.get(1)), this.y_);
 			} else {
 				logger.error(new StringWriter().append(
 						"Couldn't convert JSON to WPointF").toString());

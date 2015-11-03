@@ -393,8 +393,8 @@ public class WAnchor extends WContainerWidget {
 		this.repaint();
 		switch (this.linkState_.link.getType()) {
 		case Resource:
-			this.linkState_.link.getResource().dataChanged().addListener(this,
-					new Signal.Listener() {
+			this.linkState_.link.getResource().dataChanged()
+					.addListener(this, new Signal.Listener() {
 						public void trigger() {
 							WAnchor.this.resourceChanged();
 						}
@@ -713,8 +713,8 @@ public class WAnchor extends WContainerWidget {
 	static void renderUrlResolution(WWidget widget, final DomElement element,
 			boolean all) {
 		if (all) {
-			element.setProperty(Property.PropertyClass, StringUtils.addWord(
-					widget.getStyleClass(), "Wt-rr"));
+			element.setProperty(Property.PropertyClass,
+					StringUtils.addWord(widget.getStyleClass(), "Wt-rr"));
 		} else {
 			element.callJavaScript("$('#" + widget.getId()
 					+ "').addClass('Wt-rr');");

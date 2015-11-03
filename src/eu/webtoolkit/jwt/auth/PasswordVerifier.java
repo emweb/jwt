@@ -112,13 +112,13 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 		for (int i = 0; i < this.hashFunctions_.size(); ++i) {
 			final HashFunction f = this.hashFunctions_.get(i);
 			if (f.getName().equals(hash.getFunction())) {
-				return f.verify(password.toString(), hash.getSalt(), hash
-						.getValue());
+				return f.verify(password.toString(), hash.getSalt(),
+						hash.getValue());
 			}
 		}
-		logger.error(new StringWriter().append(
-				"verify() no hash configured for ").append(hash.getFunction())
-				.toString());
+		logger.error(new StringWriter()
+				.append("verify() no hash configured for ")
+				.append(hash.getFunction()).toString());
 		return false;
 	}
 

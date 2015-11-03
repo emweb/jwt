@@ -151,8 +151,8 @@ public class WGroupBox extends WContainerWidget {
 				legend = DomElement.getForUpdate(this.getId() + "l",
 						DomElementType.DomElement_LEGEND);
 			}
-			legend.setProperty(Property.PropertyInnerHTML, escapeText(
-					this.title_).toString());
+			legend.setProperty(Property.PropertyInnerHTML,
+					escapeText(this.title_).toString());
 			element.addChild(legend);
 			this.titleChanged_ = false;
 		}
@@ -172,7 +172,7 @@ public class WGroupBox extends WContainerWidget {
 	private boolean titleChanged_;
 
 	private void init() {
-		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
-				.getSecondGetPSJS());
+		this.setJavaScriptMember(WT_GETPS_JS,
+				StdWidgetItemImpl.getSecondGetPSJS());
 	}
 }

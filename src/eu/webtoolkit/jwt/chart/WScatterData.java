@@ -275,8 +275,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
 		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
 		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
-		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(this.chart_
-				.getCameraMatrix(), this.mvMatrix_);
+		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(
+				this.chart_.getCameraMatrix(), this.mvMatrix_);
 		javax.vecmath.Matrix4f invTransform = new javax.vecmath.Matrix4f(
 				transform);
 		invTransform.invert();
@@ -286,18 +286,19 @@ public class WScatterData extends WAbstractDataSeries3D {
 		transform = WebGLUtils.multiply(this.chart_.getPMatrix(), transform);
 		List<WPointSelection> result = new ArrayList<WPointSelection>();
 		for (int r = 0; r < this.model_.getRowCount(); ++r) {
-			javax.vecmath.GVector v = new javax.vecmath.GVector(new double[] {
-					(StringUtils.asNumber(this.model_.getData(r,
-							this.XSeriesColumn_)) - xMin)
-							/ (xMax - xMin),
-					(StringUtils.asNumber(this.model_.getData(r,
-							this.YSeriesColumn_)) - yMin)
-							/ (yMax - yMin),
-					(StringUtils.asNumber(this.model_.getData(r,
-							this.ZSeriesColumn_)) - zMin)
-							/ (zMax - zMin), 1.0 });
-			javax.vecmath.GVector tv = new javax.vecmath.GVector(WebGLUtils
-					.multiply(transform, v));
+			javax.vecmath.GVector v = new javax.vecmath.GVector(
+					new double[] {
+							(StringUtils.asNumber(this.model_.getData(r,
+									this.XSeriesColumn_)) - xMin)
+									/ (xMax - xMin),
+							(StringUtils.asNumber(this.model_.getData(r,
+									this.YSeriesColumn_)) - yMin)
+									/ (yMax - yMin),
+							(StringUtils.asNumber(this.model_.getData(r,
+									this.ZSeriesColumn_)) - zMin)
+									/ (zMax - zMin), 1.0 });
+			javax.vecmath.GVector tv = new javax.vecmath.GVector(
+					WebGLUtils.multiply(transform, v));
 			tv = WebGLUtils.multiply(tv, 1.0 / tv.getElement(3));
 			double vx = (tv.getElement(0) + 1) / 2
 					* this.chart_.getWidth().getValue();
@@ -333,8 +334,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
 		double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
 		double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
-		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(this.chart_
-				.getCameraMatrix(), this.mvMatrix_);
+		javax.vecmath.Matrix4f transform = WebGLUtils.multiply(
+				this.chart_.getCameraMatrix(), this.mvMatrix_);
 		javax.vecmath.Matrix4f invTransform = new javax.vecmath.Matrix4f(
 				transform);
 		invTransform.invert();
@@ -344,18 +345,19 @@ public class WScatterData extends WAbstractDataSeries3D {
 		transform = WebGLUtils.multiply(this.chart_.getPMatrix(), transform);
 		List<WPointSelection> result = new ArrayList<WPointSelection>();
 		for (int r = 0; r < this.model_.getRowCount(); ++r) {
-			javax.vecmath.GVector v = new javax.vecmath.GVector(new double[] {
-					(StringUtils.asNumber(this.model_.getData(r,
-							this.XSeriesColumn_)) - xMin)
-							/ (xMax - xMin),
-					(StringUtils.asNumber(this.model_.getData(r,
-							this.YSeriesColumn_)) - yMin)
-							/ (yMax - yMin),
-					(StringUtils.asNumber(this.model_.getData(r,
-							this.ZSeriesColumn_)) - zMin)
-							/ (zMax - zMin), 1.0 });
-			javax.vecmath.GVector tv = new javax.vecmath.GVector(WebGLUtils
-					.multiply(transform, v));
+			javax.vecmath.GVector v = new javax.vecmath.GVector(
+					new double[] {
+							(StringUtils.asNumber(this.model_.getData(r,
+									this.XSeriesColumn_)) - xMin)
+									/ (xMax - xMin),
+							(StringUtils.asNumber(this.model_.getData(r,
+									this.YSeriesColumn_)) - yMin)
+									/ (yMax - yMin),
+							(StringUtils.asNumber(this.model_.getData(r,
+									this.ZSeriesColumn_)) - zMin)
+									/ (zMax - zMin), 1.0 });
+			javax.vecmath.GVector tv = new javax.vecmath.GVector(
+					WebGLUtils.multiply(transform, v));
 			tv = WebGLUtils.multiply(tv, 1.0 / tv.getElement(3));
 			double vx = (tv.getElement(0) + 1) / 2
 					* this.chart_.getWidth().getValue();
@@ -466,8 +468,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
 		if (!this.vertexPosBuffer_.isNull()) {
 			this.chart_.useProgram(this.shaderProgram_);
-			this.chart_.uniformMatrix4(this.cMatrixUniform_, this.chart_
-					.getJsMatrix());
+			this.chart_.uniformMatrix4(this.cMatrixUniform_,
+					this.chart_.getJsMatrix());
 			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.vertexPosBuffer_);
 			this.chart_.vertexAttribPointer(this.posAttr_, 3,
@@ -495,8 +497,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		}
 		if (!this.vertexPosBuffer2_.isNull()) {
 			this.chart_.useProgram(this.colShaderProgram_);
-			this.chart_.uniformMatrix4(this.cMatrixUniform2_, this.chart_
-					.getJsMatrix());
+			this.chart_.uniformMatrix4(this.cMatrixUniform2_,
+					this.chart_.getJsMatrix());
 			this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER,
 					this.vertexPosBuffer2_);
 			this.chart_.vertexAttribPointer(this.posAttr2_, 3,
@@ -526,8 +528,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 		}
 		if (this.droplinesEnabled_) {
 			this.chart_.useProgram(this.linesProgram_);
-			this.chart_.uniformMatrix4(this.cMatrixUniform3_, this.chart_
-					.getJsMatrix());
+			this.chart_.uniformMatrix4(this.cMatrixUniform3_,
+					this.chart_.getJsMatrix());
 			this.chart_.uniform4f(this.lineColorUniform_,
 					(float) this.droplinesPen_.getColor().getRed(),
 					(float) this.droplinesPen_.getColor().getGreen(),
@@ -635,24 +637,24 @@ public class WScatterData extends WAbstractDataSeries3D {
 		this.initShaders();
 		this.chart_.useProgram(this.shaderProgram_);
 		this.chart_.uniformMatrix4(this.mvMatrixUniform_, this.mvMatrix_);
-		this.chart_.uniformMatrix4(this.pMatrixUniform_, this.chart_
-				.getPMatrix());
+		this.chart_.uniformMatrix4(this.pMatrixUniform_,
+				this.chart_.getPMatrix());
 		this.chart_.useProgram(this.colShaderProgram_);
 		this.chart_.uniformMatrix4(this.mvMatrixUniform2_, this.mvMatrix_);
-		this.chart_.uniformMatrix4(this.pMatrixUniform2_, this.chart_
-				.getPMatrix());
+		this.chart_.uniformMatrix4(this.pMatrixUniform2_,
+				this.chart_.getPMatrix());
 		this.chart_.useProgram(this.linesProgram_);
 		this.chart_.uniformMatrix4(this.mvMatrixUniform3_, this.mvMatrix_);
-		this.chart_.uniformMatrix4(this.pMatrixUniform3_, this.chart_
-				.getPMatrix());
+		this.chart_.uniformMatrix4(this.pMatrixUniform3_,
+				this.chart_.getPMatrix());
 		this.chart_.useProgram(this.shaderProgram_);
 		float text_min;
 		float text_max;
 		if (this.colormap_ != null) {
-			text_min = (float) this.chart_.toPlotCubeCoords(this.colormap_
-					.getMinimum(), Axis.ZAxis_3D);
-			text_max = (float) this.chart_.toPlotCubeCoords(this.colormap_
-					.getMaximum(), Axis.ZAxis_3D);
+			text_min = (float) this.chart_.toPlotCubeCoords(
+					this.colormap_.getMinimum(), Axis.ZAxis_3D);
+			text_max = (float) this.chart_.toPlotCubeCoords(
+					this.colormap_.getMaximum(), Axis.ZAxis_3D);
 			this.chart_.uniform1f(this.offsetUniform_, text_min);
 			this.chart_.uniform1f(this.scaleFactorUniform_,
 					1.0 / (text_max - text_min));
@@ -665,18 +667,18 @@ public class WScatterData extends WAbstractDataSeries3D {
 	public void resizeGL() {
 		if (!this.shaderProgram_.isNull()) {
 			this.chart_.useProgram(this.shaderProgram_);
-			this.chart_.uniformMatrix4(this.pMatrixUniform_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.pMatrixUniform_,
+					this.chart_.getPMatrix());
 		}
 		if (!this.colShaderProgram_.isNull()) {
 			this.chart_.useProgram(this.colShaderProgram_);
-			this.chart_.uniformMatrix4(this.pMatrixUniform2_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.pMatrixUniform2_,
+					this.chart_.getPMatrix());
 		}
 		if (!this.linesProgram_.isNull()) {
 			this.chart_.useProgram(this.linesProgram_);
-			this.chart_.uniformMatrix4(this.pMatrixUniform3_, this.chart_
-					.getPMatrix());
+			this.chart_.uniformMatrix4(this.pMatrixUniform3_,
+					this.chart_.getPMatrix());
 		}
 	}
 

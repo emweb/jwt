@@ -35,8 +35,8 @@ class Navigation extends TopicWidget {
 				return Navigation.this.anchor();
 			}
 		}));
-		menu.addItem("Stacked widget", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Stacked widget",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Navigation.this.stackedWidget();
 					}
@@ -46,26 +46,26 @@ class Navigation extends TopicWidget {
 				return Navigation.this.menuWidget();
 			}
 		}));
-		menu.addItem("Tab widget", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Tab widget",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Navigation.this.tabWidget();
 					}
 				}));
-		menu.addItem("Navigation bar", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Navigation bar",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Navigation.this.navigationBar();
 					}
 				}));
-		menu.addItem("Popup menu", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Popup menu",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Navigation.this.popupMenu();
 					}
 				}));
-		menu.addItem("Split button", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Split button",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Navigation.this.splitButton();
 					}
@@ -135,9 +135,7 @@ class Navigation extends TopicWidget {
 
 	WWidget Path() {
 		WPushButton button = new WPushButton("Next");
-		button
-				.setLink(new WLink(WLink.Type.InternalPath,
-						"/navigation/anchor"));
+		button.setLink(new WLink(WLink.Type.InternalPath, "/navigation/anchor"));
 		return button;
 	}
 
@@ -196,9 +194,8 @@ class Navigation extends TopicWidget {
 				"<strong>Stacked widget-index 0</strong><p>Hello</p>"));
 		stack.addWidget(new WText(
 				"<strong>Stacked widget-index 1</strong><p>This is Wt</p>"));
-		stack
-				.addWidget(new WText(
-						"<strong>Stacked widget-index 2</strong><p>Do you like it?</p>"));
+		stack.addWidget(new WText(
+				"<strong>Stacked widget-index 2</strong><p>Do you like it?</p>"));
 		sb.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				if (sb.validate() != null) {
@@ -215,13 +212,9 @@ class Navigation extends TopicWidget {
 		WMenu menu = new WMenu(contents, Orientation.Vertical, container);
 		menu.setStyleClass("nav nav-pills nav-stacked");
 		menu.setWidth(new WLength(150));
-		menu
-				.addItem("Internal paths", new WTextArea(
-						"Internal paths contents"));
+		menu.addItem("Internal paths", new WTextArea("Internal paths contents"));
 		menu.addItem("Anchor", new WTextArea("Anchor contents"));
-		menu
-				.addItem("Stacked widget", new WTextArea(
-						"Stacked widget contents"));
+		menu.addItem("Stacked widget", new WTextArea("Stacked widget contents"));
 		menu.addItem("Tab widget", new WTextArea("Tab widget contents"));
 		menu.addItem("Menu", new WTextArea("Menu contents"));
 		container.addWidget(contents);
@@ -233,17 +226,15 @@ class Navigation extends TopicWidget {
 		WTabWidget tabW = new WTabWidget(container);
 		tabW.addTab(new WTextArea("This is the contents of the first tab."),
 				"First", WTabWidget.LoadPolicy.PreLoading);
-		tabW
-				.addTab(
-						new WTextArea(
-								"The contents of the tabs are pre-loaded in the browser to ensure swift switching."),
-						"Preload", WTabWidget.LoadPolicy.PreLoading);
-		tabW
-				.addTab(
-						new WTextArea(
-								"You could change any other style attribute of the tab widget by modifying the style class. The style class 'trhead' is applied to this tab."),
-						"Style", WTabWidget.LoadPolicy.PreLoading)
-				.setStyleClass("trhead");
+		tabW.addTab(
+				new WTextArea(
+						"The contents of the tabs are pre-loaded in the browser to ensure swift switching."),
+				"Preload", WTabWidget.LoadPolicy.PreLoading);
+		tabW.addTab(
+				new WTextArea(
+						"You could change any other style attribute of the tab widget by modifying the style class. The style class 'trhead' is applied to this tab."),
+				"Style", WTabWidget.LoadPolicy.PreLoading).setStyleClass(
+				"trhead");
 		WMenuItem tab = tabW.addTab(new WTextArea(
 				"You can close this tab by clicking on the close icon."),
 				"Close");
@@ -314,21 +305,21 @@ class Navigation extends TopicWidget {
 		final WText status = new WText();
 		status.setMargin(new WLength(10), EnumSet.of(Side.Left, Side.Right));
 		final WText out = new WText();
-		popup.addItem("Connect").triggered().addListener(this,
-				new Signal.Listener() {
+		popup.addItem("Connect").triggered()
+				.addListener(this, new Signal.Listener() {
 					public void trigger() {
 						out.setText("<p>Connecting...</p>");
 					}
 				});
-		popup.addItem("Disconnect").triggered().addListener(this,
-				new Signal.Listener() {
+		popup.addItem("Disconnect").triggered()
+				.addListener(this, new Signal.Listener() {
 					public void trigger() {
 						out.setText("<p>You are disconnected now.</p>");
 					}
 				});
 		popup.addSeparator();
-		popup.addItem("icons/house.png", "I'm home").triggered().addListener(
-				this, new Signal.Listener() {
+		popup.addItem("icons/house.png", "I'm home").triggered()
+				.addListener(this, new Signal.Listener() {
 					public void trigger() {
 						out.setText("");
 					}
@@ -344,23 +335,21 @@ class Navigation extends TopicWidget {
 		});
 		popup.addSeparator();
 		WPopupMenu subMenu = new WPopupMenu();
-		subMenu.addItem("Contents").triggered().addListener(this,
-				new Signal.Listener() {
+		subMenu.addItem("Contents").triggered()
+				.addListener(this, new Signal.Listener() {
 					public void trigger() {
-						out
-								.setText("<p>This could be a link to /contents.html.</p>");
+						out.setText("<p>This could be a link to /contents.html.</p>");
 					}
 				});
-		subMenu.addItem("Index").triggered().addListener(this,
-				new Signal.Listener() {
+		subMenu.addItem("Index").triggered()
+				.addListener(this, new Signal.Listener() {
 					public void trigger() {
-						out
-								.setText("<p>This could be a link to /index.html.</p>");
+						out.setText("<p>This could be a link to /index.html.</p>");
 					}
 				});
 		subMenu.addSeparator();
-		subMenu.addItem("About").triggered().addListener(this,
-				new Signal.Listener() {
+		subMenu.addItem("About").triggered()
+				.addListener(this, new Signal.Listener() {
 					public void trigger() {
 						final WMessageBox messageBox = new WMessageBox(
 								"About",

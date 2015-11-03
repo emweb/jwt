@@ -398,9 +398,9 @@ public class WText extends WInteractWidget {
 		case Left:
 			return this.padding_[3];
 		default:
-			logger.error(new StringWriter().append(
-					"padding(Side) with invalid side: ").append(
-					String.valueOf((int) side.getValue())).toString());
+			logger.error(new StringWriter()
+					.append("padding(Side) with invalid side: ")
+					.append(String.valueOf((int) side.getValue())).toString());
 			return new WLength();
 		}
 	}

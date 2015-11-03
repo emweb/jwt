@@ -148,8 +148,7 @@ import org.slf4j.LoggerFactory;
  * {
  * 	&#064;code
  * 	WTemplate t = new WTemplate();
- * 	t
- * 			.setTemplateText(&quot;&lt;div&gt; ${&lt;if-register&gt;} Register ... ${&lt;/if-register&gt;}&lt;/div&gt;&quot;);
+ * 	t.setTemplateText(&quot;&lt;div&gt; ${&lt;if-register&gt;} Register ... ${&lt;/if-register&gt;}&lt;/div&gt;&quot;);
  * 	t.setCondition(&quot;if-register&quot;, true);
  * }
  * </pre>
@@ -218,10 +217,8 @@ public class WTemplate extends WInteractWidget {
 				return false;
 			}
 		} else {
-			logger
-					.error(new StringWriter().append(
-							"Functions::tr(): expects exactly one argument")
-							.toString());
+			logger.error(new StringWriter().append(
+					"Functions::tr(): expects exactly one argument").toString());
 			return false;
 		}
 	}
@@ -313,7 +310,7 @@ public class WTemplate extends WInteractWidget {
 		 * template that contains the placeholder
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *        ... ${tr:name} ...
 		 *     }
 		 * </pre>
@@ -321,7 +318,7 @@ public class WTemplate extends WInteractWidget {
 		 * will be resolved to the value of:
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *        WString::tr("name")
 		 *     }
 		 * </pre>
@@ -340,7 +337,7 @@ public class WTemplate extends WInteractWidget {
 		 * For example, a template that contains:
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *      ...
 		 *      ${block:form-field category}
 		 *      ...
@@ -351,7 +348,7 @@ public class WTemplate extends WInteractWidget {
 		 * <p>
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *      <message id="form-field">
 		 *         <div class="control-group">
 		 *            ${{1}-info}
@@ -364,7 +361,7 @@ public class WTemplate extends WInteractWidget {
 		 * <p>
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *      ...
 		 *      <div class="control-group">
 		 *        ${category-info}
@@ -390,7 +387,7 @@ public class WTemplate extends WInteractWidget {
 		 * template text that contains a place-holder
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *        ... ${id:name} ...
 		 *     }
 		 * </pre>
@@ -399,7 +396,7 @@ public class WTemplate extends WInteractWidget {
 		 * <p>
 		 * 
 		 * <pre>
-		 * {@code
+		 *     {@code
 		 *        t.resolveWidget("name").id()
 		 *     }
 		 * </pre>
@@ -770,7 +767,7 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    WTemplate t = ...;
 	 *    t.addFunction("id", WTemplate.Functions.id);
 	 *    t.addFunction("tr", WTemplate.Functions.tr);
@@ -860,8 +857,8 @@ public class WTemplate extends WInteractWidget {
 				w.setParentWidget(this);
 				if (this.previouslyRendered_ != null
 						&& this.previouslyRendered_.contains(w) != false) {
-					result.append("<span id=\"").append(w.getId()).append(
-							"\"> </span>");
+					result.append("<span id=\"").append(w.getId())
+							.append("\"> </span>");
 				} else {
 					this.applyArguments(w, args);
 					w.htmlText(result);
@@ -919,7 +916,7 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    if (WWidget known = super.resolveWidget(varName)) {
 	 *      return known;
 	 *    } else {
@@ -1177,8 +1174,7 @@ public class WTemplate extends WInteractWidget {
 												cond)) {
 									StringWriter errorStream = new StringWriter();
 									errorStream
-											.append(
-													"mismatching condition block end: ")
+											.append("mismatching condition block end: ")
 											.append(cond);
 									this.errorText_ = errorStream.toString();
 									logger.error(new StringWriter().append(
@@ -1304,11 +1300,11 @@ public class WTemplate extends WInteractWidget {
 					}
 				}
 				if (this.encodeTemplateText_) {
-					element.setProperty(Property.PropertyInnerHTML, html
-							.toString());
+					element.setProperty(Property.PropertyInnerHTML,
+							html.toString());
 				} else {
-					element.setProperty(Property.PropertyInnerHTML, this
-							.encode(html.toString()));
+					element.setProperty(Property.PropertyInnerHTML,
+							this.encode(html.toString()));
 				}
 				this.changed_ = false;
 				for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it
@@ -1337,8 +1333,7 @@ public class WTemplate extends WInteractWidget {
 		DomElementType type = this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 		WContainerWidget p = ((this.getParentWebWidget()) instanceof WContainerWidget ? (WContainerWidget) (this
-				.getParentWebWidget())
-				: null);
+				.getParentWebWidget()) : null);
 		if (p != null && p.isList()) {
 			type = DomElementType.DomElement_LI;
 		}

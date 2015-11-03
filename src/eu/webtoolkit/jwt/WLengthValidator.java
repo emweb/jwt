@@ -143,12 +143,12 @@ public class WLengthValidator extends WValidator {
 		}
 		String text = input;
 		if ((int) text.length() < this.minLength_) {
-			return new WValidator.Result(WValidator.State.Invalid, this
-					.getInvalidTooShortText());
+			return new WValidator.Result(WValidator.State.Invalid,
+					this.getInvalidTooShortText());
 		} else {
 			if ((int) text.length() > this.maxLength_) {
-				return new WValidator.Result(WValidator.State.Invalid, this
-						.getInvalidTooLongText());
+				return new WValidator.Result(WValidator.State.Invalid,
+						this.getInvalidTooLongText());
 			} else {
 				return new WValidator.Result(WValidator.State.Valid);
 			}
@@ -188,8 +188,8 @@ public class WLengthValidator extends WValidator {
 					return WString.tr("Wt.WLengthValidator.TooShort").arg(
 							this.minLength_);
 				} else {
-					return WString.tr("Wt.WLengthValidator.BadRange").arg(
-							this.minLength_).arg(this.maxLength_);
+					return WString.tr("Wt.WLengthValidator.BadRange")
+							.arg(this.minLength_).arg(this.maxLength_);
 				}
 			}
 		}
@@ -227,8 +227,8 @@ public class WLengthValidator extends WValidator {
 					return WString.tr("Wt.WLengthValidator.TooLong").arg(
 							this.maxLength_);
 				} else {
-					return WString.tr("Wt.WLengthValidator.BadRange").arg(
-							this.minLength_).arg(this.maxLength_);
+					return WString.tr("Wt.WLengthValidator.BadRange")
+							.arg(this.minLength_).arg(this.maxLength_);
 				}
 			}
 		}
@@ -250,12 +250,14 @@ public class WLengthValidator extends WValidator {
 		} else {
 			js.append("null");
 		}
-		js.append(',').append(
-				WString.toWString(this.getInvalidBlankText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooShortText())
-						.getJsStringLiteral()).append(',').append(
-				WString.toWString(this.getInvalidTooLongText())
+		js.append(',')
+				.append(WString.toWString(this.getInvalidBlankText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidTooShortText())
+						.getJsStringLiteral())
+				.append(',')
+				.append(WString.toWString(this.getInvalidTooLongText())
 						.getJsStringLiteral()).append(");");
 		return js.toString();
 	}

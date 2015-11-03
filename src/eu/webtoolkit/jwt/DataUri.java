@@ -49,8 +49,8 @@ class DataUri {
 			if (!this.mimeType.endsWith(";base64") || this.data.isEmpty()) {
 				throw new WException("Ill formed data URI: " + uriString);
 			} else {
-				this.mimeType = this.mimeType.substring(0, 0 + this.mimeType
-						.indexOf(";"));
+				this.mimeType = this.mimeType.substring(0,
+						0 + this.mimeType.indexOf(";"));
 			}
 		} catch (IOException ie) {
 			ie.printStackTrace();

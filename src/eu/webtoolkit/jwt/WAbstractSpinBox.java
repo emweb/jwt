@@ -84,7 +84,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *      spinBox.setPrefix("$ ");
 	 *   }
 	 * </pre>
@@ -121,7 +121,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *      spinBox.setSuffix(" crates");
 	 *   }
 	 * </pre>

@@ -51,31 +51,32 @@ class FacebookProcess extends OAuthProcess {
 			}
 			boolean ok = me != null;
 			if (!ok) {
-				logger.error(new StringWriter().append(
-						"could not parse Json: '").append(response.getBody())
-						.append("'").toString());
+				logger.error(new StringWriter()
+						.append("could not parse Json: '")
+						.append(response.getBody()).append("'").toString());
 				this.setError(WString.tr("Wt.Auth.FacebookService.badjson"));
 				this.authenticated().trigger(Identity.Invalid);
 			} else {
 				String id = me.get("id").getAsString();
 				String userName = me.get("name").getAsString();
 				String email = me.get("email").getAsString();
-				boolean emailVerified = JsonUtils.orIfNullBoolean(me
-						.get("verified"), false);
+				boolean emailVerified = JsonUtils.orIfNullBoolean(
+						me.get("verified"), false);
 				this.authenticated().trigger(
 						new Identity(this.getService().getName(), id, userName,
 								email, emailVerified));
 			}
 		} else {
 			if (err == null) {
-				logger.error(new StringWriter().append(
-						"user info request returned: ").append(
-						String.valueOf(response.getStatus())).toString());
-				logger.error(new StringWriter().append("with: ").append(
-						response.getBody()).toString());
+				logger.error(new StringWriter()
+						.append("user info request returned: ")
+						.append(String.valueOf(response.getStatus()))
+						.toString());
+				logger.error(new StringWriter().append("with: ")
+						.append(response.getBody()).toString());
 			} else {
-				logger.error(new StringWriter().append("handleMe(): ").append(
-						err.getMessage()).toString());
+				logger.error(new StringWriter().append("handleMe(): ")
+						.append(err.getMessage()).toString());
 			}
 			this.setError(WString.tr("Wt.Auth.FacebookService.badresponse"));
 			this.authenticated().trigger(Identity.Invalid);

@@ -363,8 +363,11 @@ public class WInPlaceEdit extends WCompositeWidget {
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.save_ != null
 				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-			WApplication.getInstance().getTheme().apply(this, this.editing_,
-					WidgetThemeRole.InPlaceEditingRole);
+			WApplication
+					.getInstance()
+					.getTheme()
+					.apply(this, this.editing_,
+							WidgetThemeRole.InPlaceEditingRole);
 		}
 		super.render(flags);
 	}

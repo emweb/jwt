@@ -35,26 +35,26 @@ class TreesTables extends TopicWidget {
 				return TreesTables.this.trees();
 			}
 		}));
-		menu.addItem("Tree Tables", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Tree Tables",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return TreesTables.this.treeTables();
 					}
 				}));
-		menu.addItem("MVC Table Views", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("MVC Table Views",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return TreesTables.this.tableViews();
 					}
 				}));
-		menu.addItem("MVC Tree Views", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("MVC Tree Views",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return TreesTables.this.treeViews();
 					}
 				}));
-		menu.addItem("MVC Item models", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("MVC Item models",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return TreesTables.this.itemModels();
 					}

@@ -147,8 +147,7 @@ public class WTimePicker extends WCompositeWidget {
 
 	private void init(final WTime time) {
 		StringBuilder text = new StringBuilder();
-		text
-				.append("<table><tr><th>${incrementHour}</th><th></th><th>${incrementMinute}</th><th></th><th>${incrementSecond}</th></tr><tr><td valign=\"middle\" align=\"center\">${hourText}</td><td valign=\"middle\" align=\"center\">:</td><td valign=\"middle\" align=\"center\">${minuteText}</td><td valign=\"middle\" align=\"center\">:</td><td valign=\"middle\" align=\"center\">${secondText}</td></tr><tr><th>${decrementHour}</th><th></th><th>${decrementMinute}</th><th></th><th>${decrementSecond}</th></tr></table>");
+		text.append("<table><tr><th>${incrementHour}</th><th></th><th>${incrementMinute}</th><th></th><th>${incrementSecond}</th></tr><tr><td valign=\"middle\" align=\"center\">${hourText}</td><td valign=\"middle\" align=\"center\">:</td><td valign=\"middle\" align=\"center\">${minuteText}</td><td valign=\"middle\" align=\"center\">:</td><td valign=\"middle\" align=\"center\">${secondText}</td></tr><tr><th>${decrementHour}</th><th></th><th>${decrementMinute}</th><th></th><th>${decrementSecond}</th></tr></table>");
 		WTemplate impl = new WTemplate();
 		this.setImplementation(impl);
 		impl.setTemplateText(new WString(text.toString()));
@@ -236,11 +235,9 @@ public class WTimePicker extends WCompositeWidget {
 			try {
 				curVal = Integer.parseInt(str);
 			} catch (final NumberFormatException ex) {
-				logger
-						.error(new StringWriter()
-								.append(
-										"boost::bad_lexical_cast caught in WTimePicker::time()")
-								.toString());
+				logger.error(new StringWriter()
+						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
+						.toString());
 			}
 		}
 		if ((curVal += this.minuteStep_) >= 60) {
@@ -267,11 +264,9 @@ public class WTimePicker extends WCompositeWidget {
 			try {
 				curVal = Integer.parseInt(str);
 			} catch (final NumberFormatException ex) {
-				logger
-						.error(new StringWriter()
-								.append(
-										"boost::bad_lexical_cast caught in WTimePicker::time()")
-								.toString());
+				logger.error(new StringWriter()
+						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
+						.toString());
 			}
 		}
 		if ((curVal -= this.minuteStep_) < 0) {
@@ -298,11 +293,9 @@ public class WTimePicker extends WCompositeWidget {
 			try {
 				curVal = Integer.parseInt(str);
 			} catch (final NumberFormatException ex) {
-				logger
-						.error(new StringWriter()
-								.append(
-										"boost::bad_lexical_cast caught in WTimePicker::time()")
-								.toString());
+				logger.error(new StringWriter()
+						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
+						.toString());
 			}
 		}
 		if (curVal + 1 < 24) {
@@ -331,11 +324,9 @@ public class WTimePicker extends WCompositeWidget {
 			try {
 				curVal = Integer.parseInt(str);
 			} catch (final NumberFormatException ex) {
-				logger
-						.error(new StringWriter()
-								.append(
-										"boost::bad_lexical_cast caught in WTimePicker::time()")
-								.toString());
+				logger.error(new StringWriter()
+						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
+						.toString());
 			}
 		}
 		if (curVal - 1 >= 0) {
@@ -364,11 +355,9 @@ public class WTimePicker extends WCompositeWidget {
 			try {
 				curVal = Integer.parseInt(str);
 			} catch (final NumberFormatException ex) {
-				logger
-						.error(new StringWriter()
-								.append(
-										"boost::bad_lexical_cast caught in WTimePicker::time()")
-								.toString());
+				logger.error(new StringWriter()
+						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
+						.toString());
 			}
 		}
 		if ((curVal += this.secondStep_) >= 60) {
@@ -395,11 +384,9 @@ public class WTimePicker extends WCompositeWidget {
 			try {
 				curVal = Integer.parseInt(str);
 			} catch (final NumberFormatException ex) {
-				logger
-						.error(new StringWriter()
-								.append(
-										"boost::bad_lexical_cast caught in WTimePicker::time()")
-								.toString());
+				logger.error(new StringWriter()
+						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
+						.toString());
 			}
 		}
 		if ((curVal -= this.secondStep_) < 0) {

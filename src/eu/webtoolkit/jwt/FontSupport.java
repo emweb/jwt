@@ -280,9 +280,7 @@ class FontSupport {
 						String fn = fontNames.get(i) + weightVariants.get(w)
 								+ styleVariants.get(s);
 						if (fn.equals(name)) {
-							Utils
-									.assignFontMatch(match, new FontMatch(path,
-											q));
+							Utils.assignFontMatch(match, new FontMatch(path, q));
 							return;
 						}
 					}

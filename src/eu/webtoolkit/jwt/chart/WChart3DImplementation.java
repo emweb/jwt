@@ -47,8 +47,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 		WAbstractGridData first;
 		if (axis == Axis.XAxis_3D) {
 			first = ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData ? (WAbstractGridData) (this.chart_
-					.getDataSeries().get(0))
-					: null);
+					.getDataSeries().get(0)) : null);
 			if (first == null) {
 				throw new WException(
 						"WChart3DImplementation: can only count the categories in WAbstractGridData");
@@ -58,8 +57,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 		} else {
 			if (axis == Axis.YAxis_3D) {
 				first = ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData ? (WAbstractGridData) (this.chart_
-						.getDataSeries().get(0))
-						: null);
+						.getDataSeries().get(0)) : null);
 				if (first == null) {
 					throw new WException(
 							"WChart3DImplementation: can only count the categories in WAbstractGridData");
@@ -82,8 +80,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 			return new WString(String.valueOf(u));
 		}
 		WAbstractGridData first = ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData ? (WAbstractGridData) (this.chart_
-				.getDataSeries().get(0))
-				: null);
+				.getDataSeries().get(0)) : null);
 		if (!(first != null)) {
 			throw new WException(
 					"WChart3DImplementation: can only count the categories in WAbstractGridData");
@@ -124,8 +121,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 		case CategoryChart:
 			for (int k = 0; k < series.size(); k++) {
 				griddata = ((series.get(k)) instanceof WAbstractGridData ? (WAbstractGridData) (series
-						.get(k))
-						: null);
+						.get(k)) : null);
 				if (griddata == null
 						|| griddata.getType() != Series3DType.BarSeries3D) {
 					throw new WException(
@@ -133,11 +129,9 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 				}
 			}
 			xDim = (((series.get(0)) instanceof WAbstractGridData ? (WAbstractGridData) (series
-					.get(0))
-					: null)).getNbXPoints();
+					.get(0)) : null)).getNbXPoints();
 			yDim = (((series.get(0)) instanceof WAbstractGridData ? (WAbstractGridData) (series
-					.get(0))
-					: null)).getNbYPoints();
+					.get(0)) : null)).getNbYPoints();
 			min = 0.0;
 			for (int i = 0; i < xDim; i++) {
 				for (int j = 0; j < yDim; j++) {
@@ -146,8 +140,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 							continue;
 						}
 						griddata = ((series.get(k)) instanceof WAbstractGridData ? (WAbstractGridData) (series
-								.get(k))
-								: null);
+								.get(k)) : null);
 						stackedBarsHeight += StringUtils.asNumber(griddata
 								.data(i, j));
 					}

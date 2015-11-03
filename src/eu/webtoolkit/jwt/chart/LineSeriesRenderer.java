@@ -37,8 +37,8 @@ class LineSeriesRenderer extends SeriesRenderer {
 
 	public void addValue(double x, double y, double stacky,
 			final WModelIndex xIndex, final WModelIndex yIndex) {
-		WPointF p = this.chart_.map(x, y, this.series_.getAxis(), this.it_
-				.getCurrentXSegment(), this.it_.getCurrentYSegment());
+		WPointF p = this.chart_.map(x, y, this.series_.getAxis(),
+				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		if (this.curveLength_ == 0) {
 			this.curve_.moveTo(this.hv(p));
 			if (this.series_.getFillRange() != FillRangeType.NoFill
@@ -58,10 +58,10 @@ class LineSeriesRenderer extends SeriesRenderer {
 					WPointF c1 = new WPointF();
 					WPointF c2 = new WPointF();
 					computeC(this.p_1, this.p0, p, c1, c2);
-					this.curve_.cubicTo(this.hv(this.c_), this.hv(c1), this
-							.hv(this.p0));
-					this.fill_.cubicTo(this.hv(this.c_), this.hv(c1), this
-							.hv(this.p0));
+					this.curve_.cubicTo(this.hv(this.c_), this.hv(c1),
+							this.hv(this.p0));
+					this.fill_.cubicTo(this.hv(this.c_), this.hv(c1),
+							this.hv(this.p0));
 					this.c_ = c2;
 				}
 			}
@@ -81,10 +81,10 @@ class LineSeriesRenderer extends SeriesRenderer {
 			if (this.series_.getType() == SeriesType.CurveSeries) {
 				WPointF c1 = new WPointF();
 				computeC(this.p0, this.p_1, c1);
-				this.curve_.cubicTo(this.hv(this.c_), this.hv(c1), this
-						.hv(this.p0));
-				this.fill_.cubicTo(this.hv(this.c_), this.hv(c1), this
-						.hv(this.p0));
+				this.curve_.cubicTo(this.hv(this.c_), this.hv(c1),
+						this.hv(this.p0));
+				this.fill_.cubicTo(this.hv(this.c_), this.hv(c1),
+						this.hv(this.p0));
 			}
 			if (this.series_.getFillRange() != FillRangeType.NoFill
 					&& !this.series_.getBrush().equals(
@@ -92,8 +92,8 @@ class LineSeriesRenderer extends SeriesRenderer {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
 				this.painter_.setShadow(this.series_.getShadow());
-				this.painter_.fillPath(transform.map(this.fill_), this.series_
-						.getBrush());
+				this.painter_.fillPath(transform.map(this.fill_),
+						this.series_.getBrush());
 			}
 			if (this.series_.getFillRange() == FillRangeType.NoFill) {
 				this.painter_.setShadow(this.series_.getShadow());
@@ -160,8 +160,8 @@ class LineSeriesRenderer extends SeriesRenderer {
 					this.chart_.chartArea_.getTop());
 		case ZeroValueFill:
 			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
-					this.it_.getCurrentXSegment(), this.it_
-							.getCurrentYSegment()));
+					this.it_.getCurrentXSegment(),
+					this.it_.getCurrentYSegment()));
 		default:
 			return new WPointF();
 		}

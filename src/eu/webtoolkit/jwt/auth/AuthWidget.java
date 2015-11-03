@@ -233,8 +233,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * showDialog()}.
 	 */
 	public void registerNewUser(final Identity oauth) {
-		this.showDialog(tr("Wt.Auth.registration"), this
-				.createRegistrationView(oauth));
+		this.showDialog(tr("Wt.Auth.registration"),
+				this.createRegistrationView(oauth));
 	}
 
 	/**
@@ -310,8 +310,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * showDialog()}.
 	 */
 	public void letUpdatePassword(final User user, boolean promptPassword) {
-		this.showDialog(tr("Wt.Auth.updatepassword"), this
-				.createUpdatePasswordView(user, promptPassword));
+		this.showDialog(tr("Wt.Auth.updatepassword"),
+				this.createUpdatePasswordView(user, promptPassword));
 	}
 
 	/**
@@ -327,8 +327,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * showDialog()}.
 	 */
 	public void handleLostPassword() {
-		this.showDialog(tr("Wt.Auth.lostpassword"), this
-				.getCreateLostPasswordView());
+		this.showDialog(tr("Wt.Auth.lostpassword"),
+				this.getCreateLostPasswordView());
 	}
 
 	/**
@@ -346,8 +346,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#handleLostPassword()
 	 */
 	public WWidget getCreateLostPasswordView() {
-		return new LostPasswordWidget(this.model_.getUsers(), this.model_
-				.getBaseAuth());
+		return new LostPasswordWidget(this.model_.getUsers(),
+				this.model_.getBaseAuth());
 	}
 
 	/**
@@ -496,8 +496,8 @@ public class AuthWidget extends WTemplateFormView {
 	 */
 	protected void createLoggedInView() {
 		this.setTemplateText(tr("Wt.Auth.template.logged-in"));
-		this.bindString("user-name", this.login_.getUser().getIdentity(
-				Identity.LoginName));
+		this.bindString("user-name",
+				this.login_.getUser().getIdentity(Identity.LoginName));
 		WPushButton logout = new WPushButton(tr("Wt.Auth.logout"));
 		logout.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent e1) {
@@ -580,18 +580,18 @@ public class AuthWidget extends WTemplateFormView {
 		if (contents != null) {
 			this.dialog_ = new WDialog(title);
 			this.dialog_.getContents().addWidget(contents);
-			this.dialog_.getContents().childrenChanged().addListener(this,
-					new Signal.Listener() {
+			this.dialog_.getContents().childrenChanged()
+					.addListener(this, new Signal.Listener() {
 						public void trigger() {
 							AuthWidget.this.closeDialog();
 						}
 					});
 			this.dialog_.getFooter().hide();
 			if (!WApplication.getInstance().getEnvironment().hasAjax()) {
-				this.dialog_.setMargin(new WLength("-21em"), EnumSet
-						.of(Side.Left));
-				this.dialog_.setMargin(new WLength("-200px"), EnumSet
-						.of(Side.Top));
+				this.dialog_.setMargin(new WLength("-21em"),
+						EnumSet.of(Side.Left));
+				this.dialog_.setMargin(new WLength("-200px"),
+						EnumSet.of(Side.Top));
 			}
 			this.dialog_.show();
 		}
@@ -633,8 +633,9 @@ public class AuthWidget extends WTemplateFormView {
 	 * @see AuthWidget#registerNewUser()
 	 */
 	protected RegistrationModel getCreateRegistrationModel() {
-		RegistrationModel result = new RegistrationModel(this.model_
-				.getBaseAuth(), this.model_.getUsers(), this.login_, this);
+		RegistrationModel result = new RegistrationModel(
+				this.model_.getBaseAuth(), this.model_.getUsers(), this.login_,
+				this);
 		if (this.model_.getPasswordAuth() != null) {
 			result.addPasswordAuth(this.model_.getPasswordAuth());
 		}
@@ -765,11 +766,11 @@ public class AuthWidget extends WTemplateFormView {
 	// private void oAuthStateChange(OAuthProcess process) ;
 	private void oAuthDone(OAuthProcess oauth, final Identity identity) {
 		if (identity.isValid()) {
-			logger.warn(new StringWriter().append("secure:").append(
-					oauth.getService().getName()).append(": identified: as ")
-					.append(identity.getId()).append(", ").append(
-							identity.getName()).append(", ").append(
-							identity.getEmail()).toString());
+			logger.warn(new StringWriter().append("secure:")
+					.append(oauth.getService().getName())
+					.append(": identified: as ").append(identity.getId())
+					.append(", ").append(identity.getName()).append(", ")
+					.append(identity.getEmail()).toString());
 			AbstractUserDatabase.Transaction t = this.model_.getUsers()
 					.startTransaction();
 			User user = this.model_.getBaseAuth().identifyUser(identity,
@@ -783,9 +784,9 @@ public class AuthWidget extends WTemplateFormView {
 				t.commit();
 			}
 		} else {
-			logger.warn(new StringWriter().append("secure:").append(
-					oauth.getService().getName()).append(": error: ").append(
-					oauth.getError()).toString());
+			logger.warn(new StringWriter().append("secure:")
+					.append(oauth.getService().getName()).append(": error: ")
+					.append(oauth.getError()).toString());
 			this.displayError(oauth.getError());
 		}
 	}

@@ -787,8 +787,8 @@ public class WLineEdit extends WFormWidget {
 		if (this.inputMask_.charAt(this.inputMask_.length() - 2) == ';') {
 			this.spaceChar_ = this.inputMask_
 					.charAt(this.inputMask_.length() - 1);
-			this.inputMask_ = this.inputMask_.substring(0, 0 + this.inputMask_
-					.length() - 2);
+			this.inputMask_ = this.inputMask_.substring(0,
+					0 + this.inputMask_.length() - 2);
 		}
 		;
 		;
@@ -986,8 +986,8 @@ public class WLineEdit extends WFormWidget {
 		}
 		if (all || this.flags_.get(BIT_MAX_LENGTH_CHANGED)) {
 			if (!all || this.maxLength_ > 0) {
-				element.setAttribute("maxLength", String
-						.valueOf(this.maxLength_));
+				element.setAttribute("maxLength",
+						String.valueOf(this.maxLength_));
 			}
 			this.flags_.clear(BIT_MAX_LENGTH_CHANGED);
 		}
@@ -1006,8 +1006,8 @@ public class WLineEdit extends WFormWidget {
 	protected void getDomChanges(final List<DomElement> result, WApplication app) {
 		if (app.getEnvironment().agentIsIE()
 				&& this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
-			DomElement e = DomElement.getForUpdate(this, this
-					.getDomElementType());
+			DomElement e = DomElement.getForUpdate(this,
+					this.getDomElementType());
 			DomElement d = this.createDomElement(app);
 			app.getTheme().apply(this.getSelfWidget(), d, 0);
 			e.replaceWith(d);

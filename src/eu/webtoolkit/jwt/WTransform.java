@@ -297,8 +297,9 @@ public class WTransform extends WJavaScriptExposableObject {
 			if (p.isJavaScriptBound()) {
 				o = p;
 			}
-			result.assignBinding(o, "Wt3_3_4.gfxUtils.transform_mult("
-					+ this.getJsRef() + ',' + p.getJsRef() + ')');
+			result.assignBinding(o,
+					"Wt3_3_4.gfxUtils.transform_mult(" + this.getJsRef() + ','
+							+ p.getJsRef() + ')');
 		}
 		return result;
 	}
@@ -354,8 +355,9 @@ public class WTransform extends WJavaScriptExposableObject {
 			if (rect.isJavaScriptBound()) {
 				o = rect;
 			}
-			result.assignBinding(o, "Wt3_3_4.gfxUtils.transform_mult("
-					+ this.getJsRef() + ',' + rect.getJsRef() + ')');
+			result.assignBinding(o,
+					"Wt3_3_4.gfxUtils.transform_mult(" + this.getJsRef() + ','
+							+ rect.getJsRef() + ')');
 		}
 		return result;
 	}
@@ -382,8 +384,9 @@ public class WTransform extends WJavaScriptExposableObject {
 			if (!this.isJavaScriptBound()) {
 				o = path;
 			}
-			result.assignBinding(o, "Wt3_3_4.gfxUtils.transform_apply("
-					+ this.getJsRef() + ',' + path.getJsRef() + ')');
+			result.assignBinding(o,
+					"Wt3_3_4.gfxUtils.transform_apply(" + this.getJsRef() + ','
+							+ path.getJsRef() + ')');
 		}
 		final List<WPainterPath.Segment> sourceSegments = path.getSegments();
 		for (int i = 0; i < sourceSegments.size(); ++i) {
@@ -505,7 +508,8 @@ public class WTransform extends WJavaScriptExposableObject {
 			if (!this.isJavaScriptBound()) {
 				o = p;
 			}
-			this.assignBinding(o,
+			this.assignBinding(
+					o,
 					"Wt3_3_4.gfxUtils.transform_mult((function(){var p="
 							+ p.getJsRef()
 							+ ";return [1,0,0,1,p[0],p[1]];})(),(" + refBefore
@@ -530,8 +534,9 @@ public class WTransform extends WJavaScriptExposableObject {
 			if (!this.isJavaScriptBound()) {
 				o = Y;
 			}
-			this.assignBinding(o, "Wt3_3_4.gfxUtils.transform_mult("
-					+ this.getJsRef() + ',' + Y.getJsRef() + ')');
+			this.assignBinding(o,
+					"Wt3_3_4.gfxUtils.transform_mult(" + this.getJsRef() + ','
+							+ Y.getJsRef() + ')');
 		}
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
 		double z12 = X.m_[M11] * Y.m_[M12] + X.m_[M12] * Y.m_[M22];
@@ -576,15 +581,13 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * Returns the adjoint.
 	 */
 	public WTransform getAdjoint() {
-		WTransform res = new WTransform(this.getM33() * this.getM22()
-				- this.getM32() * this.getM23(), -(this.getM33()
-				* this.getM12() - this.getM32() * this.getM13()), -(this
-				.getM33()
-				* this.getM21() - this.getM31() * this.getM23()), this.getM33()
-				* this.getM11() - this.getM31() * this.getM13(), this.getM32()
-				* this.getM21() - this.getM31() * this.getM22(), -(this
-				.getM32()
-				* this.getM11() - this.getM31() * this.getM12()));
+		WTransform res = new WTransform(
+				this.getM33() * this.getM22() - this.getM32() * this.getM23(),
+				-(this.getM33() * this.getM12() - this.getM32() * this.getM13()),
+				-(this.getM33() * this.getM21() - this.getM31() * this.getM23()),
+				this.getM33() * this.getM11() - this.getM31() * this.getM13(),
+				this.getM32() * this.getM21() - this.getM31() * this.getM22(),
+				-(this.getM32() * this.getM11() - this.getM31() * this.getM12()));
 		if (this.isJavaScriptBound()) {
 			res.assignBinding(this, "Wt3_3_4.gfxUtils.transform_adjoint("
 					+ this.getJsRef() + ")");
@@ -736,11 +739,11 @@ public class WTransform extends WJavaScriptExposableObject {
 	public void decomposeTranslateRotateScaleRotate(
 			final WTransform.TRSRDecomposition result) {
 		double[] mtm = new double[4];
-		logger.debug(new StringWriter().append("M: \n").append(
-				String.valueOf(this.m_[M11])).append(" ").append(
-				String.valueOf(this.m_[M12])).append("\n   ").append(
-				String.valueOf(this.m_[M21])).append(" ").append(
-				String.valueOf(this.m_[M22])).toString());
+		logger.debug(new StringWriter().append("M: \n")
+				.append(String.valueOf(this.m_[M11])).append(" ")
+				.append(String.valueOf(this.m_[M12])).append("\n   ")
+				.append(String.valueOf(this.m_[M21])).append(" ")
+				.append(String.valueOf(this.m_[M22])).toString());
 		matrixMultiply(this.m_[M11], this.m_[M21], this.m_[M12], this.m_[M22],
 				this.m_[M11], this.m_[M12], this.m_[M21], this.m_[M22], mtm);
 		double[] e = new double[2];
@@ -748,11 +751,11 @@ public class WTransform extends WJavaScriptExposableObject {
 		eigenValues(mtm, e, V);
 		result.sx = Math.sqrt(e[0]);
 		result.sy = Math.sqrt(e[1]);
-		logger.debug(new StringWriter().append("V: \n").append(
-				String.valueOf(V[M11])).append(" ").append(
-				String.valueOf(V[M12])).append("\n   ").append(
-				String.valueOf(V[M21])).append(" ").append(
-				String.valueOf(V[M22])).toString());
+		logger.debug(new StringWriter().append("V: \n")
+				.append(String.valueOf(V[M11])).append(" ")
+				.append(String.valueOf(V[M12])).append("\n   ")
+				.append(String.valueOf(V[M21])).append(" ")
+				.append(String.valueOf(V[M22])).toString());
 		if (V[0] * V[3] - V[1] * V[2] < 0) {
 			result.sx = -result.sx;
 			V[0] = -V[0];
@@ -765,11 +768,11 @@ public class WTransform extends WJavaScriptExposableObject {
 		U[2] /= result.sx;
 		U[1] /= result.sy;
 		U[3] /= result.sy;
-		logger.debug(new StringWriter().append("U: \n").append(
-				String.valueOf(U[M11])).append(" ").append(
-				String.valueOf(U[M12])).append("\n   ").append(
-				String.valueOf(U[M21])).append(" ").append(
-				String.valueOf(U[M22])).toString());
+		logger.debug(new StringWriter().append("U: \n")
+				.append(String.valueOf(U[M11])).append(" ")
+				.append(String.valueOf(U[M12])).append("\n   ")
+				.append(String.valueOf(U[M21])).append(" ")
+				.append(String.valueOf(U[M22])).toString());
 		if (U[0] * U[3] - U[1] * U[2] < 0) {
 			result.sx = -result.sx;
 			U[0] = -U[0];
@@ -777,11 +780,11 @@ public class WTransform extends WJavaScriptExposableObject {
 		}
 		result.alpha1 = Math.atan2(U[2], U[0]);
 		result.alpha2 = Math.atan2(V[1], V[0]);
-		logger.debug(new StringWriter().append("alpha1: ").append(
-				String.valueOf(result.alpha1)).append(", alpha2: ").append(
-				String.valueOf(result.alpha2)).append(", sx: ").append(
-				String.valueOf(result.sx)).append(", sy: ").append(
-				String.valueOf(result.sy)).toString());
+		logger.debug(new StringWriter().append("alpha1: ")
+				.append(String.valueOf(result.alpha1)).append(", alpha2: ")
+				.append(String.valueOf(result.alpha2)).append(", sx: ")
+				.append(String.valueOf(result.sx)).append(", sy: ")
+				.append(String.valueOf(result.sy)).toString());
 		result.dx = this.m_[DX];
 		result.dy = this.m_[DY];
 	}
@@ -825,8 +828,8 @@ public class WTransform extends WJavaScriptExposableObject {
 					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(4)))
 					&& !JsonUtils.isNull(JsonUtils.toNumber(ar.get(5)))) {
 				for (int i = 0; i < 6; ++i) {
-					this.m_[i] = JsonUtils.orIfNullDouble(JsonUtils.toNumber(ar
-							.get(i)), this.m_[i]);
+					this.m_[i] = JsonUtils.orIfNullDouble(
+							JsonUtils.toNumber(ar.get(i)), this.m_[i]);
 				}
 			} else {
 				logger.error(new StringWriter().append(

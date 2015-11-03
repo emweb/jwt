@@ -49,8 +49,8 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this.user_ = user;
 		this.registrationModel_ = registrationModel;
 		this.authModel_ = authModel;
-		this.registrationModel_.setValue(RegistrationModel.LoginNameField, user
-				.getIdentity(Identity.LoginName));
+		this.registrationModel_.setValue(RegistrationModel.LoginNameField,
+				user.getIdentity(Identity.LoginName));
 		this.registrationModel_.setReadOnly(RegistrationModel.LoginNameField,
 				true);
 		if (user.getPassword().isEmpty()) {
@@ -62,16 +62,15 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		}
 		if (this.authModel_ != null
 				&& this.authModel_.getBaseAuth().isEmailVerificationEnabled()) {
-			this.registrationModel_.setValue(RegistrationModel.EmailField, user
-					.getEmail()
-					+ " " + user.getUnverifiedEmail());
+			this.registrationModel_.setValue(RegistrationModel.EmailField,
+					user.getEmail() + " " + user.getUnverifiedEmail());
 		}
 		this.registrationModel_.setVisible(RegistrationModel.EmailField, false);
 		WPushButton okButton = new WPushButton(tr("Wt.WMessageBox.Ok"));
 		WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
 		if (this.authModel_ != null) {
-			this.authModel_.setValue(AuthModel.LoginNameField, user
-					.getIdentity(Identity.LoginName));
+			this.authModel_.setValue(AuthModel.LoginNameField,
+					user.getIdentity(Identity.LoginName));
 			this.updateViewField(this.authModel_, AuthModel.PasswordField);
 			this.authModel_.configureThrottling(okButton);
 			WLineEdit password = (WLineEdit) this

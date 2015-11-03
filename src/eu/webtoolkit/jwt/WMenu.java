@@ -910,8 +910,8 @@ public class WMenu extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		this.basePath_ = basePath.length() == 0 ? app.getInternalPath()
 				: basePath;
-		this.basePath_ = StringUtils.append(StringUtils.prepend(this.basePath_,
-				'/'), '/');
+		this.basePath_ = StringUtils.append(
+				StringUtils.prepend(this.basePath_, '/'), '/');
 		if (!this.internalPathEnabled_) {
 			this.internalPathEnabled_ = true;
 			app.internalPathChanged().addListener(this,
@@ -1003,8 +1003,7 @@ public class WMenu extends WCompositeWidget {
 	 */
 	public WMenuItem itemAt(int index) {
 		return ((this.getUl().getWidget(index)) instanceof WMenuItem ? (WMenuItem) (this
-				.getUl().getWidget(index))
-				: null);
+				.getUl().getWidget(index)) : null);
 	}
 
 	/**

@@ -61,10 +61,10 @@ class JavaScriptEvent {
 				concat(s, seLength, "clientX"), 0);
 		this.clientY = parseIntParameter(request,
 				concat(s, seLength, "clientY"), 0);
-		this.documentX = parseIntParameter(request, concat(s, seLength,
-				"documentX"), 0);
-		this.documentY = parseIntParameter(request, concat(s, seLength,
-				"documentY"), 0);
+		this.documentX = parseIntParameter(request,
+				concat(s, seLength, "documentX"), 0);
+		this.documentY = parseIntParameter(request,
+				concat(s, seLength, "documentY"), 0);
 		this.screenX = parseIntParameter(request,
 				concat(s, seLength, "screenX"), 0);
 		this.screenY = parseIntParameter(request,
@@ -77,8 +77,8 @@ class JavaScriptEvent {
 				0);
 		this.dragDY = parseIntParameter(request, concat(s, seLength, "dragdY"),
 				0);
-		this.wheelDelta = parseIntParameter(request, concat(s, seLength,
-				"wheel"), 0);
+		this.wheelDelta = parseIntParameter(request,
+				concat(s, seLength, "wheel"), 0);
 		this.modifiers.clear();
 		if (request.getParameter(concat(s, seLength, "altKey")) != null) {
 			this.modifiers.add(KeyboardModifier.AltModifier);
@@ -94,32 +94,35 @@ class JavaScriptEvent {
 		}
 		this.keyCode = parseIntParameter(request,
 				concat(s, seLength, "keyCode"), 0);
-		this.charCode = parseIntParameter(request, concat(s, seLength,
-				"charCode"), 0);
+		this.charCode = parseIntParameter(request,
+				concat(s, seLength, "charCode"), 0);
 		this.button = parseIntParameter(request, concat(s, seLength, "button"),
 				0);
 		this.scrollX = parseIntParameter(request,
 				concat(s, seLength, "scrollX"), 0);
 		this.scrollY = parseIntParameter(request,
 				concat(s, seLength, "scrollY"), 0);
-		this.viewportWidth = parseIntParameter(request, concat(s, seLength,
-				"width"), 0);
-		this.viewportHeight = parseIntParameter(request, concat(s, seLength,
-				"height"), 0);
-		this.response = getStringParameter(request, concat(s, seLength,
-				"response"));
+		this.viewportWidth = parseIntParameter(request,
+				concat(s, seLength, "width"), 0);
+		this.viewportHeight = parseIntParameter(request,
+				concat(s, seLength, "height"), 0);
+		this.response = getStringParameter(request,
+				concat(s, seLength, "response"));
 		int uean = parseIntParameter(request, concat(s, seLength, "an"), 0);
 		this.userEventArgs.clear();
 		for (int i = 0; i < uean; ++i) {
 			this.userEventArgs.add(getStringParameter(request, se + "a"
 					+ String.valueOf(i)));
 		}
-		decodeTouches(getStringParameter(request,
-				concat(s, seLength, "touches")), this.touches);
-		decodeTouches(getStringParameter(request, concat(s, seLength,
-				"ttouches")), this.targetTouches);
-		decodeTouches(getStringParameter(request, concat(s, seLength,
-				"ctouches")), this.changedTouches);
+		decodeTouches(
+				getStringParameter(request, concat(s, seLength, "touches")),
+				this.touches);
+		decodeTouches(
+				getStringParameter(request, concat(s, seLength, "ttouches")),
+				this.targetTouches);
+		decodeTouches(
+				getStringParameter(request, concat(s, seLength, "ctouches")),
+				this.changedTouches);
 	}
 
 	public JavaScriptEvent() {
@@ -152,9 +155,9 @@ class JavaScriptEvent {
 			try {
 				return asInt(p);
 			} catch (final NumberFormatException ee) {
-				logger.error(new StringWriter().append(
-						"Could not cast event property '").append(name).append(
-						": ").append(p).append("' to int").toString());
+				logger.error(new StringWriter()
+						.append("Could not cast event property '").append(name)
+						.append(": ").append(p).append("' to int").toString());
 				return ifMissing;
 			}
 		} else {
@@ -178,9 +181,9 @@ class JavaScriptEvent {
 		List<String> s = new ArrayList<String>();
 		s = new ArrayList<String>(Arrays.asList(str.split(";")));
 		if (s.size() % 9 != 0) {
-			logger.error(new StringWriter().append(
-					"Could not parse touches array '").append(str).append("'")
-					.toString());
+			logger.error(new StringWriter()
+					.append("Could not parse touches array '").append(str)
+					.append("'").toString());
 			return;
 		}
 		try {
@@ -192,9 +195,9 @@ class JavaScriptEvent {
 								.get(i + 8))));
 			}
 		} catch (final NumberFormatException ee) {
-			logger.error(new StringWriter().append(
-					"Could not parse touches array '").append(str).append("'")
-					.toString());
+			logger.error(new StringWriter()
+					.append("Could not parse touches array '").append(str)
+					.append("'").toString());
 			return;
 		}
 	}

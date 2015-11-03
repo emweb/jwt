@@ -97,8 +97,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it
 					.next();
 			WBatchEditProxyModel.Item item = ((i.getValue()) instanceof WBatchEditProxyModel.Item ? (WBatchEditProxyModel.Item) (i
-					.getValue())
-					: null);
+					.getValue()) : null);
 			if (!item.removedColumns_.isEmpty()
 					|| !item.insertedColumns_.isEmpty()
 					|| !item.removedRows_.isEmpty()
@@ -125,8 +124,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it
 					.next();
 			WBatchEditProxyModel.Item item = ((i.getValue()) instanceof WBatchEditProxyModel.Item ? (WBatchEditProxyModel.Item) (i
-					.getValue())
-					: null);
+					.getValue()) : null);
 			while (!item.removedColumns_.isEmpty()) {
 				this.getSourceModel().removeColumn(item.removedColumns_.get(0),
 						item.sourceIndex_);
@@ -171,8 +169,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it
 					.next();
 			WBatchEditProxyModel.Item item = ((i.getValue()) instanceof WBatchEditProxyModel.Item ? (WBatchEditProxyModel.Item) (i
-					.getValue())
-					: null);
+					.getValue()) : null);
 			WModelIndex proxyIndex = this.mapFromSource(item.sourceIndex_);
 			while (!item.insertedColumns_.isEmpty()) {
 				this.removeColumn(item.insertedColumns_.get(0), proxyIndex);
@@ -277,8 +274,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			WBatchEditProxyModel.Item parentItem = this
 					.itemFromSourceIndex(sourceParent);
 			int row = this.adjustedProxyRow(parentItem, sourceIndex.getRow());
-			int column = this.adjustedProxyColumn(parentItem, sourceIndex
-					.getColumn());
+			int column = this.adjustedProxyColumn(parentItem,
+					sourceIndex.getColumn());
 			if (row >= 0 && column >= 0) {
 				return this.createIndex(row, column, parentItem);
 			} else {
@@ -294,8 +291,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			WBatchEditProxyModel.Item parentItem = this
 					.parentItemFromIndex(proxyIndex);
 			int row = this.adjustedSourceRow(parentItem, proxyIndex.getRow());
-			int column = this.adjustedSourceColumn(parentItem, proxyIndex
-					.getColumn());
+			int column = this.adjustedSourceColumn(parentItem,
+					proxyIndex.getColumn());
 			if (row >= 0 && column >= 0) {
 				return this.getSourceModel().getIndex(row, column,
 						parentItem.sourceIndex_);
@@ -324,8 +321,10 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			this.modelConnections_.clear();
 		}
 		super.setSourceModel(model);
-		this.modelConnections_.add(this.getSourceModel()
-				.columnsAboutToBeInserted().addListener(this,
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsAboutToBeInserted()
+				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
 									Integer e3) {
@@ -334,7 +333,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 												e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().columnsInserted()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsInserted()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -343,8 +344,10 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										.sourceColumnsInserted(e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel()
-				.columnsAboutToBeRemoved().addListener(this,
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsAboutToBeRemoved()
+				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
 									Integer e3) {
@@ -353,7 +356,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 												e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().columnsRemoved()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.columnsRemoved()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -362,8 +367,10 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel()
-				.rowsAboutToBeInserted().addListener(this,
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsAboutToBeInserted()
+				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
 									Integer e3) {
@@ -371,7 +378,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										.sourceRowsAboutToBeInserted(e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().rowsInserted()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsInserted()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -380,7 +389,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().rowsAboutToBeRemoved()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsAboutToBeRemoved()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -389,7 +400,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										.sourceRowsAboutToBeRemoved(e1, e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().rowsRemoved()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.rowsRemoved()
 				.addListener(this,
 						new Signal3.Listener<WModelIndex, Integer, Integer>() {
 							public void trigger(WModelIndex e1, Integer e2,
@@ -398,7 +411,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										e2, e3);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().dataChanged()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.dataChanged()
 				.addListener(this,
 						new Signal2.Listener<WModelIndex, WModelIndex>() {
 							public void trigger(WModelIndex e1, WModelIndex e2) {
@@ -406,7 +421,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 										e2);
 							}
 						}));
-		this.modelConnections_.add(this.getSourceModel().headerDataChanged()
+		this.modelConnections_.add(this
+				.getSourceModel()
+				.headerDataChanged()
 				.addListener(this,
 						new Signal3.Listener<Orientation, Integer, Integer>() {
 							public void trigger(Orientation e1, Integer e2,
@@ -416,13 +433,13 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 							}
 						}));
 		this.modelConnections_.add(this.getSourceModel()
-				.layoutAboutToBeChanged().addListener(this,
-						new Signal.Listener() {
-							public void trigger() {
-								WBatchEditProxyModel.this
-										.sourceLayoutAboutToBeChanged();
-							}
-						}));
+				.layoutAboutToBeChanged()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WBatchEditProxyModel.this
+								.sourceLayoutAboutToBeChanged();
+					}
+				}));
 		this.modelConnections_.add(this.getSourceModel().layoutChanged()
 				.addListener(this, new Signal.Listener() {
 					public void trigger() {
@@ -906,8 +923,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			WBatchEditProxyModel.Item parentItem = this
 					.parentItemFromIndex(index);
 			int row = this.adjustedSourceRow(parentItem, index.getRow());
-			int column = this.adjustedSourceColumn(parentItem, index
-					.getColumn());
+			int column = this.adjustedSourceColumn(parentItem,
+					index.getColumn());
 			if (row >= 0 && column >= 0) {
 				WModelIndex sourceIndex = this.getSourceModel().getIndex(row,
 						column, parentItem.sourceIndex_);
@@ -949,8 +966,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 			if (row < 0) {
 				return true;
 			}
-			int column = this.adjustedProxyColumn(parentItem, sourceIndex
-					.getColumn());
+			int column = this.adjustedProxyColumn(parentItem,
+					sourceIndex.getColumn());
 			return column < 0;
 		}
 	}

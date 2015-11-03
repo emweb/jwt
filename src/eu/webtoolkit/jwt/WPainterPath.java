@@ -306,8 +306,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 */
 	public void cubicTo(final WPointF c1, final WPointF c2,
 			final WPointF endPoint) {
-		this.cubicTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), endPoint
-				.getX(), endPoint.getY());
+		this.cubicTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(),
+				endPoint.getX(), endPoint.getY());
 	}
 
 	/**
@@ -452,8 +452,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 *      startAngle, double sweepLength)
 	 */
 	public void addEllipse(final WRectF rect) {
-		this.addEllipse(rect.getX(), rect.getY(), rect.getWidth(), rect
-				.getHeight());
+		this.addEllipse(rect.getX(), rect.getY(), rect.getWidth(),
+				rect.getHeight());
 	}
 
 	/**
@@ -827,14 +827,12 @@ public class WPainterPath extends WJavaScriptExposableObject {
 								.getY()));
 						WPointF p2 = transform.map(new WPointF(s2.getX(), s2
 								.getY()));
-						WPointF tl = new WPointF(p1.getX() - p2.getX(), p1
-								.getY()
-								- p2.getY());
+						WPointF tl = new WPointF(p1.getX() - p2.getX(),
+								p1.getY() - p2.getY());
 						minX = Math.min(tl.getX(), minX);
 						minY = Math.min(tl.getY(), minY);
-						WPointF br = new WPointF(p1.getX() + p2.getX(), p1
-								.getY()
-								+ p2.getY());
+						WPointF br = new WPointF(p1.getX() + p2.getX(),
+								p1.getY() + p2.getY());
 						maxX = Math.max(br.getX(), maxX);
 						maxY = Math.max(br.getY(), maxY);
 					}
@@ -874,8 +872,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	public WPainterPath getCrisp() {
 		WPainterPath result = new WPainterPath();
 		if (this.isJavaScriptBound()) {
-			result.assignBinding(this, "Wt3_3_4.gfxUtils.path_crisp("
-					+ this.getJsRef() + ')');
+			result.assignBinding(this,
+					"Wt3_3_4.gfxUtils.path_crisp(" + this.getJsRef() + ')');
 		}
 		for (int i = 0; i < this.segments_.size(); ++i) {
 			final WPainterPath.Segment segment = this.segments_.get(i);
@@ -909,8 +907,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 							.getX(), this.segments_.get(i - 2).getY(),
 							this.segments_.get(i - 1).getX(), this.segments_
 									.get(i - 1).getY(), this.segments_.get(i)
-									.getX()
-									+ this.segments_.get(i).getY());
+									.getX() + this.segments_.get(i).getY());
 					bx = arcPos.getX();
 					by = arcPos.getY();
 				} else {

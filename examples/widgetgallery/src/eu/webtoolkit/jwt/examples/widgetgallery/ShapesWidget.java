@@ -39,9 +39,7 @@ class ShapesWidget extends WPaintedWidget {
 		painter.drawRect(0, 25, 80, 50);
 		painter.setBrush(new WBrush(WColor.green));
 		painter.drawRect(100, 25, 80, 50);
-		painter
-				.fillRect(220, 25, 80, 50,
-						new WBrush(new WColor(0, 255, 0, 64)));
+		painter.fillRect(220, 25, 80, 50, new WBrush(new WColor(0, 255, 0, 64)));
 		painter.drawEllipse(0, 100, 80, 50);
 		painter.drawChord(100, 100, 80, 50, 0, 180 * 16);
 		painter.drawArc(220, 100, 50, 50, 90 * 16, 90 * 16);

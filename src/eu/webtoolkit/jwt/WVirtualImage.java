@@ -473,11 +473,11 @@ public class WVirtualImage extends WCompositeWidget {
 							this.contents_.addWidget(img);
 							img.setPositionScheme(PositionScheme.Absolute);
 							img.setOffsets(new WLength((double) i
-									* this.gridImageSize_), EnumSet
-									.of(Side.Left));
+									* this.gridImageSize_),
+									EnumSet.of(Side.Left));
 							img.setOffsets(new WLength((double) j
-									* this.gridImageSize_), EnumSet
-									.of(Side.Top));
+									* this.gridImageSize_),
+									EnumSet.of(Side.Top));
 							this.grid_.put(key, img);
 						}
 					}
@@ -525,18 +525,18 @@ public class WVirtualImage extends WCompositeWidget {
 
 	private void internalScrollTo(long newX, long newY, boolean moveViewPort) {
 		if (this.imageWidth_ != Infinite) {
-			newX = Math.min(this.imageWidth_ - this.viewPortWidth_, Math.max(
-					(long) 0, newX));
+			newX = Math.min(this.imageWidth_ - this.viewPortWidth_,
+					Math.max((long) 0, newX));
 		}
 		if (this.imageHeight_ != Infinite) {
-			newY = Math.min(this.imageHeight_ - this.viewPortHeight_, Math.max(
-					(long) 0, newY));
+			newY = Math.min(this.imageHeight_ - this.viewPortHeight_,
+					Math.max((long) 0, newY));
 		}
 		if (moveViewPort) {
-			this.contents_.setOffsets(new WLength((double) -newX), EnumSet
-					.of(Side.Left));
-			this.contents_.setOffsets(new WLength((double) -newY), EnumSet
-					.of(Side.Top));
+			this.contents_.setOffsets(new WLength((double) -newX),
+					EnumSet.of(Side.Left));
+			this.contents_.setOffsets(new WLength((double) -newY),
+					EnumSet.of(Side.Top));
 		}
 		this.generateGridItems(newX, newY);
 		this.viewPortChanged_.trigger(this.currentX_, this.currentY_);

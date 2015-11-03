@@ -80,8 +80,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setMinimum(double minimum) {
 		this.min_ = minimum;
 		WDoubleValidator v = ((this.getValidator()) instanceof WDoubleValidator ? (WDoubleValidator) (this
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (v != null) {
 			v.setBottom(this.min_);
 		}
@@ -107,8 +106,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	public void setMaximum(double maximum) {
 		this.max_ = maximum;
 		WDoubleValidator v = ((this.getValidator()) instanceof WDoubleValidator ? (WDoubleValidator) (this
-				.getValidator())
-				: null);
+				.getValidator()) : null);
 		if (v != null) {
 			v.setTop(this.max_);
 		}
@@ -264,8 +262,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	boolean parseNumberValue(final String text) {
 		try {
 			if (!this.getTextFromValue().equals(text)) {
-				this.value_ = LocaleUtils.toDouble(LocaleUtils
-						.getCurrentLocale(), text);
+				this.value_ = LocaleUtils.toDouble(
+						LocaleUtils.getCurrentLocale(), text);
 			}
 			return true;
 		} catch (final NumberFormatException e) {
@@ -274,8 +272,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	}
 
 	protected String getTextFromValue() {
-		String result = LocaleUtils.toFixedString(LocaleUtils
-				.getCurrentLocale(), this.value_, this.precision_);
+		String result = LocaleUtils.toFixedString(
+				LocaleUtils.getCurrentLocale(), this.value_, this.precision_);
 		if (!this.isNativeControl()) {
 			result = this.getPrefix().toString() + result
 					+ this.getSuffix().toString();

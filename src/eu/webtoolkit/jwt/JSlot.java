@@ -197,7 +197,7 @@ public class JSlot {
 	 * look like:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *        function(obj, event) {
 	 *          // ...
 	 *        }
@@ -212,7 +212,7 @@ public class JSlot {
 	 * be configured using the nbArgs parameter.
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *        function(obj, event, a1, a2, a3, a4, a5, a6) {
 	 *          // ...
 	 *        }
@@ -538,8 +538,8 @@ public class JSlot {
 			WApplication app = WApplication.getInstance();
 			if (app != null) {
 				ss.append(WApplication.getInstance().getJavaScriptClass())
-						.append(".").append(this.getJsFunctionName()).append(
-								"(o,e");
+						.append(".").append(this.getJsFunctionName())
+						.append("(o,e");
 				for (int i = 1; i <= this.nbArgs_; ++i) {
 					ss.append(",a").append(String.valueOf(i));
 				}

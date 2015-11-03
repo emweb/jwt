@@ -43,9 +43,9 @@ class Block {
 			if (RenderUtils.isXmlElement(node)) {
 				this.type_ = DomElement.parseTagName(node.getName());
 				if (this.type_ == DomElementType.DomElement_UNKNOWN) {
-					logger.error(new StringWriter().append(
-							"unsupported element: ").append(node.getName())
-							.toString());
+					logger.error(new StringWriter()
+							.append("unsupported element: ")
+							.append(node.getName()).toString());
 					this.type_ = DomElementType.DomElement_DIV;
 				}
 				String s = this.attributeValue("class");
@@ -144,8 +144,8 @@ class Block {
 							this.inline_ = false;
 						} else {
 							logger.error(new StringWriter().append("display '")
-									.append(display).append(
-											"' is not supported.").toString());
+									.append(display)
+									.append("' is not supported.").toString());
 							this.inline_ = false;
 						}
 					}
@@ -154,8 +154,8 @@ class Block {
 				}
 				if (this.inline_ && !allChildrenInline) {
 					logger.error(new StringWriter().append("inline element ")
-							.append(DomElement.tagName(this.type_)).append(
-									" cannot contain block elements")
+							.append(DomElement.tagName(this.type_))
+							.append(" cannot contain block elements")
 							.toString());
 				}
 			} else {
@@ -346,10 +346,10 @@ class Block {
 		double cssSetWidth = this.cssWidth(renderer.getFontScale());
 		if (this.isTable()) {
 			if (cssSetWidth > 0) {
-				cssSetWidth -= this.cssBorderWidth(Side.Left, renderer
-						.getFontScale())
-						+ this.cssBorderWidth(Side.Right, renderer
-								.getFontScale());
+				cssSetWidth -= this.cssBorderWidth(Side.Left,
+						renderer.getFontScale())
+						+ this.cssBorderWidth(Side.Right,
+								renderer.getFontScale());
 				cssSetWidth = Math.max(0.0, cssSetWidth);
 			}
 			this.layoutTable(ps, canIncreaseWidth, renderer, cssSetWidth);
@@ -362,12 +362,12 @@ class Block {
 				if (!paddingBorderWithinWidth) {
 					width += this
 							.cssPadding(Side.Left, renderer.getFontScale())
-							+ this.cssBorderWidth(Side.Left, renderer
-									.getFontScale())
-							+ this.cssPadding(Side.Right, renderer
-									.getFontScale())
-							+ this.cssBorderWidth(Side.Right, renderer
-									.getFontScale());
+							+ this.cssBorderWidth(Side.Left,
+									renderer.getFontScale())
+							+ this.cssPadding(Side.Right,
+									renderer.getFontScale())
+							+ this.cssBorderWidth(Side.Right,
+									renderer.getFontScale());
 				}
 				if (this.isTableCell()) {
 					if (width < ps.maxX - ps.minX) {
@@ -411,8 +411,8 @@ class Block {
 					this.pageBreak(ps);
 					startPage = ps.page;
 					startY = ps.y;
-					ps.y += this.cssBorderWidth(Side.Top, renderer
-							.getFontScale());
+					ps.y += this.cssBorderWidth(Side.Top,
+							renderer.getFontScale());
 				}
 				ps.y += height;
 				ps.maxX = Math.max(ps.minX + width, ps.maxX);
@@ -427,13 +427,13 @@ class Block {
 				double cMinX = ps.minX
 						+ this.cssPadding(Side.Left, renderer.getFontScale())
 						+ borderFactor
-						* this.cssBorderWidth(Side.Left, renderer
-								.getFontScale());
+						* this.cssBorderWidth(Side.Left,
+								renderer.getFontScale());
 				double cMaxX = ps.maxX
 						- this.cssPadding(Side.Right, renderer.getFontScale())
 						- borderFactor
-						* this.cssBorderWidth(Side.Right, renderer
-								.getFontScale());
+						* this.cssBorderWidth(Side.Right,
+								renderer.getFontScale());
 				cMaxX = Math.max(cMaxX, cMinX);
 				this.currentWidth_ = cMaxX - cMinX;
 				ps.y += this.cssPadding(Side.Top, renderer.getFontScale());
@@ -483,9 +483,7 @@ class Block {
 								absolutePs.minX = ps.minX;
 								absolutePs.maxX = ps.maxX;
 								Utils.copyList(ps.floats, absolutePs.floats);
-								c
-										.layoutBlock(absolutePs, false,
-												renderer, 0, 0);
+								c.layoutBlock(absolutePs, false, renderer, 0, 0);
 							} else {
 								double copyMinX = ps.minX;
 								double copyMaxX = ps.maxX;
@@ -509,20 +507,20 @@ class Block {
 				ps.maxX = cMaxX
 						+ this.cssPadding(Side.Right, renderer.getFontScale())
 						+ borderFactor
-						* this.cssBorderWidth(Side.Right, renderer
-								.getFontScale());
+						* this.cssBorderWidth(Side.Right,
+								renderer.getFontScale());
 				advance(ps, spacerBottom, renderer);
 				ps.y += this.cssPadding(Side.Bottom, renderer.getFontScale());
 			}
 		}
 		ps.y += this.cssBorderWidth(Side.Bottom, renderer.getFontScale());
-		double marginBottom = this.cssMargin(Side.Bottom, renderer
-				.getFontScale());
+		double marginBottom = this.cssMargin(Side.Bottom,
+				renderer.getFontScale());
 		ps.y -= collapseMarginBottom;
 		double height = this.cssHeight(renderer.getFontScale());
 		if (this.isTableCell()) {
-			this.contentsHeight_ = Math.max(0.0, diff(ps.y, ps.page, startY,
-					startPage, renderer));
+			this.contentsHeight_ = Math.max(0.0,
+					diff(ps.y, ps.page, startY, startPage, renderer));
 		}
 		if (height >= 0) {
 			int prevPage = ps.page;
@@ -597,10 +595,10 @@ class Block {
 				ps.maxX = origMaxX;
 			} else {
 				if (!this.isFloat()) {
-					ps.minX -= this.cssMargin(Side.Left, renderer
-							.getFontScale());
-					ps.maxX += this.cssMargin(Side.Right, renderer
-							.getFontScale());
+					ps.minX -= this.cssMargin(Side.Left,
+							renderer.getFontScale());
+					ps.maxX += this.cssMargin(Side.Right,
+							renderer.getFontScale());
 				}
 			}
 		}
@@ -625,8 +623,7 @@ class Block {
 	public void collectStyles(final StringBuilder ss) {
 		for (int i = 0; i < this.children_.size(); ++i) {
 			if (this.children_.get(i).type_ == DomElementType.DomElement_STYLE) {
-				ss.append(RenderUtils
-						.nodeValueToString(this.children_.get(i).node_));
+				ss.append(RenderUtils.nodeValueToString(this.children_.get(i).node_));
 				;
 				this.children_.remove(0 + i);
 				--i;
@@ -649,8 +646,8 @@ class Block {
 			final WPainter painter, final LayoutBox lb) {
 		if (this.type_ == DomElementType.DomElement_IMG) {
 			LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
-			this.renderBorders(bb, renderer, painter, EnumSet.of(Side.Top,
-					Side.Bottom));
+			this.renderBorders(bb, renderer, painter,
+					EnumSet.of(Side.Top, Side.Bottom));
 			double left = renderer.getMargin(Side.Left) + bb.x
 					+ this.cssBorderWidth(Side.Left, renderer.getFontScale());
 			double top = renderer.getMargin(Side.Top) + bb.y
@@ -658,8 +655,9 @@ class Block {
 			double width = bb.width;
 			double height = bb.height;
 			WRectF rect = new WRectF(left, top, width, height);
-			painter.drawImage(rect, new WPainter.Image(this
-					.attributeValue("src"), (int) width, (int) height));
+			painter.drawImage(rect,
+					new WPainter.Image(this.attributeValue("src"), (int) width,
+							(int) height));
 		} else {
 			LayoutBox bb = this.toBorderBox(lb, renderer.getFontScale());
 			WRectF rect = new WRectF(bb.x + renderer.getMargin(Side.Left), bb.y
@@ -706,13 +704,13 @@ class Block {
 			painter.save();
 			painterTranslated = true;
 			LayoutBox box = this.getLayoutTotal();
-			double left = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleLeft), renderer
-					.getFontScale(), 0,
+			double left = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleLeft),
+					renderer.getFontScale(), 0,
 					Block.PercentageRule.PercentageOfParentSize, box.width);
-			double top = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleTop), renderer
-					.getFontScale(), 0,
+			double top = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleTop),
+					renderer.getFontScale(), 0,
 					Block.PercentageRule.PercentageOfParentSize, box.height);
 			painter.translate(left, top);
 		}
@@ -1010,9 +1008,7 @@ class Block {
 								v);
 						this.updateAggregateProperty(n, "-bottom", specificity,
 								v);
-						this
-								.updateAggregateProperty(n, "-left",
-										specificity, v);
+						this.updateAggregateProperty(n, "-left", specificity, v);
 					} else {
 						if (count == 2) {
 							String v1 = allvalues.get(0);
@@ -1081,18 +1077,18 @@ class Block {
 	private double cssWidth(double fontScale) {
 		double result = -1;
 		if (this.node_ != null) {
-			result = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleWidth), fontScale,
-					result, Block.PercentageRule.PercentageOfParentSize, this
-							.getCurrentParentWidth());
+			result = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleWidth), fontScale,
+					result, Block.PercentageRule.PercentageOfParentSize,
+					this.getCurrentParentWidth());
 			if (this.type_ == DomElementType.DomElement_IMG
 					|| this.type_ == DomElementType.DomElement_TABLE
 					|| this.type_ == DomElementType.DomElement_TD
 					|| this.type_ == DomElementType.DomElement_TH) {
 				result = this.cssDecodeLength(this.attributeValue("width"),
 						fontScale, result,
-						Block.PercentageRule.PercentageOfParentSize, this
-								.getCurrentParentWidth());
+						Block.PercentageRule.PercentageOfParentSize,
+						this.getCurrentParentWidth());
 			}
 		}
 		return result;
@@ -1101,8 +1097,8 @@ class Block {
 	private double cssHeight(double fontScale) {
 		double result = -1;
 		if (this.node_ != null) {
-			result = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleHeight), fontScale,
+			result = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleHeight), fontScale,
 					result, Block.PercentageRule.IgnorePercentage);
 			if (this.type_ == DomElementType.DomElement_IMG) {
 				result = this.cssDecodeLength(this.attributeValue("height"),
@@ -1259,8 +1255,7 @@ class Block {
 		}
 		int index = sideToIndex(side);
 		Property property = Property.values()[Property.PropertyStyleBorderTop
-				.getValue()
-				+ index];
+				.getValue() + index];
 		String borderStr = this.cssProperty(property);
 		String borderWidthStr = "";
 		if (borderStr.length() != 0) {
@@ -1277,8 +1272,7 @@ class Block {
 		}
 		if (borderWidthStr.length() == 0) {
 			property = Property.values()[Property.PropertyStyleBorderWidthTop
-					.getValue()
-					+ index];
+					.getValue() + index];
 			borderWidthStr = this.cssProperty(property);
 		}
 		double result = 0;
@@ -1338,8 +1332,7 @@ class Block {
 	private WColor rawCssBorderColor(Side side) {
 		int index = sideToIndex(side);
 		Property property = Property.values()[Property.PropertyStyleBorderTop
-				.getValue()
-				+ index];
+				.getValue() + index];
 		String borderStr = this.cssProperty(property);
 		String borderColorStr = "";
 		if (borderStr.length() != 0) {
@@ -1351,8 +1344,7 @@ class Block {
 		}
 		if (borderColorStr.length() == 0) {
 			property = Property.values()[Property.PropertyStyleBorderColorTop
-					.getValue()
-					+ index];
+					.getValue() + index];
 			borderColorStr = this.cssProperty(property);
 		}
 		if (borderColorStr.length() != 0) {
@@ -1672,8 +1664,7 @@ class Block {
 												if (name.equals("symbol")) {
 													genericFamily = WFont.GenericFamily.Fantasy;
 												} else {
-													if (name
-															.equals("zapf dingbats")) {
+													if (name.equals("zapf dingbats")) {
 														genericFamily = WFont.GenericFamily.Cursive;
 													}
 												}
@@ -1692,8 +1683,8 @@ class Block {
 			}
 		}
 		this.font_.setFamily(genericFamily, specificFamilies);
-		this.font_.setSize(WFont.Size.FixedSize, new WLength(this
-				.cssFontSize(fontScale), WLength.Unit.Pixel));
+		this.font_.setSize(WFont.Size.FixedSize,
+				new WLength(this.cssFontSize(fontScale), WLength.Unit.Pixel));
 		this.font_.setWeight(WFont.Weight.Value, this.getCssFontWeight());
 		this.font_.setStyle(this.getCssFontStyle());
 		return this.font_;
@@ -1815,8 +1806,8 @@ class Block {
 			double minX, double maxX, boolean canIncreaseWidth,
 			final WTextRenderer renderer) {
 		this.inlineLayout.clear();
-		this.inlinePageBreak(this
-				.cssProperty(Property.PropertyStylePageBreakBefore), line,
+		this.inlinePageBreak(
+				this.cssProperty(Property.PropertyStylePageBreakBefore), line,
 				floats, minX, maxX, renderer);
 		if (this.isText() || this.type_ == DomElementType.DomElement_IMG
 				|| this.type_ == DomElementType.DomElement_BR) {
@@ -1885,9 +1876,10 @@ class Block {
 									for (int i = utf8Pos; i <= s.length(); ++i) {
 										if (i == s.length()
 												|| isWhitespace(s.charAt(i))) {
-											WString word = new WString(s
-													.substring(utf8Pos, utf8Pos
-															+ i - utf8Pos));
+											WString word = new WString(
+													s.substring(utf8Pos,
+															utf8Pos + i
+																	- utf8Pos));
 											double wordWidth = device
 													.measureText(word)
 													.getWidth();
@@ -1932,14 +1924,14 @@ class Block {
 								h = image.getHeight();
 							}
 						}
-						w += this.cssBoxMargin(Side.Left, renderer
-								.getFontScale())
-								+ this.cssBoxMargin(Side.Right, renderer
-										.getFontScale());
-						h += this.cssBoxMargin(Side.Top, renderer
-								.getFontScale())
-								+ this.cssBoxMargin(Side.Bottom, renderer
-										.getFontScale());
+						w += this.cssBoxMargin(Side.Left,
+								renderer.getFontScale())
+								+ this.cssBoxMargin(Side.Right,
+										renderer.getFontScale());
+						h += this.cssBoxMargin(Side.Top,
+								renderer.getFontScale())
+								+ this.cssBoxMargin(Side.Bottom,
+										renderer.getFontScale());
 						String va = this
 								.cssProperty(Property.PropertyStyleVerticalAlign);
 						if (va.equals("middle")) {
@@ -1953,8 +1945,7 @@ class Block {
 					}
 				}
 				if (lineBreak || isEpsilonMore(w, rangeX.end - line.getX())) {
-					line
-							.setLineBreak(this.type_ == DomElementType.DomElement_BR);
+					line.setLineBreak(this.type_ == DomElementType.DomElement_BR);
 					line.finish(this.getCssTextAlign(), floats, minX, maxX,
 							renderer);
 					if (w == 0 || line.getX() > rangeX.start) {
@@ -1962,8 +1953,8 @@ class Block {
 							maxX += w - (maxX - line.getX());
 							rangeX.end += w - (maxX - line.getX());
 						}
-						line.newLine(minX, line.getY() + line.getHeight(), line
-								.getPage());
+						line.newLine(minX, line.getY() + line.getHeight(),
+								line.getPage());
 						h = 0;
 					} else {
 						if (isEpsilonMore(w, maxX - minX)) {
@@ -1991,14 +1982,14 @@ class Block {
 					double marginBottom = 0;
 					double marginTop = 0;
 					if (this.type_ == DomElementType.DomElement_IMG) {
-						marginLeft = this.cssMargin(Side.Left, renderer
-								.getFontScale());
-						marginRight = this.cssMargin(Side.Right, renderer
-								.getFontScale());
-						marginBottom = this.cssMargin(Side.Bottom, renderer
-								.getFontScale());
-						marginTop = this.cssMargin(Side.Top, renderer
-								.getFontScale());
+						marginLeft = this.cssMargin(Side.Left,
+								renderer.getFontScale());
+						marginRight = this.cssMargin(Side.Right,
+								renderer.getFontScale());
+						marginBottom = this.cssMargin(Side.Bottom,
+								renderer.getFontScale());
+						marginTop = this.cssMargin(Side.Top,
+								renderer.getFontScale());
 					}
 					b.page = line.getPage();
 					b.x = line.getX() + marginLeft;
@@ -2064,8 +2055,8 @@ class Block {
 				this.offsetChildren_.get(i).layoutAbsolute(renderer);
 			}
 		}
-		this.inlinePageBreak(this
-				.cssProperty(Property.PropertyStylePageBreakAfter), line,
+		this.inlinePageBreak(
+				this.cssProperty(Property.PropertyStylePageBreakAfter), line,
 				floats, minX, maxX, renderer);
 		return maxX;
 	}
@@ -2085,10 +2076,12 @@ class Block {
 		int colCount = minimumColumnWidths.size();
 		for (int i = 0; i < colCount; ++i) {
 			if (setColumnWidths.get(i) >= 0) {
-				setColumnWidths.set(i, Math.max(setColumnWidths.get(i),
-						minimumColumnWidths.get(i)));
-				maximumColumnWidths.set(i, minimumColumnWidths.set(i,
-						setColumnWidths.get(i)));
+				setColumnWidths.set(
+						i,
+						Math.max(setColumnWidths.get(i),
+								minimumColumnWidths.get(i)));
+				maximumColumnWidths.set(i,
+						minimumColumnWidths.set(i, setColumnWidths.get(i)));
 			}
 		}
 		double cellSpacing = this.cssBorderSpacing(renderer.getFontScale());
@@ -2105,8 +2098,8 @@ class Block {
 			Range rangeX = new Range(ps.minX, ps.maxX);
 			adjustAvailableWidth(ps.y, ps.page, ps.floats, rangeX);
 			ps.maxX = rangeX.end;
-			double border = this.cssBorderWidth(Side.Left, renderer
-					.getFontScale())
+			double border = this.cssBorderWidth(Side.Left,
+					renderer.getFontScale())
 					+ this.cssBorderWidth(Side.Right, renderer.getFontScale());
 			availableWidth = rangeX.end - rangeX.start - border;
 			if (canIncreaseWidth
@@ -2237,8 +2230,8 @@ class Block {
 			floatPs.minX = minX;
 			floatPs.maxX = maxX;
 			double floatX = positionFloat(lineX, floatPs, lineHeight,
-					currentWidth, canIncreaseWidth, renderer, this
-							.getFloatSide());
+					currentWidth, canIncreaseWidth, renderer,
+					this.getFloatSide());
 			if (floatPs.maxX > maxX) {
 				return floatPs.maxX;
 			}
@@ -2285,22 +2278,22 @@ class Block {
 		this.layoutBlock(ps, true, renderer, 0, 0);
 		double preferredWidth = ps.maxX;
 		double availableWidth = containingLayout.width;
-		double shrinkToFitWidth = Math.min(Math.max(preferredMinWidth,
-				availableWidth), preferredWidth);
+		double shrinkToFitWidth = Math.min(
+				Math.max(preferredMinWidth, availableWidth), preferredWidth);
 		double left = 0;
 		double width = 0;
 		double right = 0;
 		if (!leftAuto) {
-			left = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleLeft), renderer
-					.getFontScale(), 0,
+			left = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleLeft),
+					renderer.getFontScale(), 0,
 					Block.PercentageRule.PercentageOfParentSize,
 					containingLayout.width);
 		}
 		if (!rightAuto) {
-			right = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleRight), renderer
-					.getFontScale(), 0,
+			right = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleRight),
+					renderer.getFontScale(), 0,
 					Block.PercentageRule.PercentageOfParentSize,
 					containingLayout.width);
 		}
@@ -2352,16 +2345,16 @@ class Block {
 		double height = 0;
 		double bottom = 0;
 		if (!topAuto) {
-			top = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleTop), renderer
-					.getFontScale(), 0,
+			top = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleTop),
+					renderer.getFontScale(), 0,
 					Block.PercentageRule.PercentageOfParentSize,
 					containingLayout.height);
 		}
 		if (!bottomAuto) {
-			right = this.cssDecodeLength(this
-					.cssProperty(Property.PropertyStyleBottom), renderer
-					.getFontScale(), 0,
+			right = this.cssDecodeLength(
+					this.cssProperty(Property.PropertyStyleBottom),
+					renderer.getFontScale(), 0,
 					Block.PercentageRule.PercentageOfParentSize,
 					containingLayout.height);
 		}
@@ -2427,16 +2420,15 @@ class Block {
 				|| this.type_ == DomElementType.DomElement_TFOOT) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				Block c = this.children_.get(i);
-				c
-						.tableDoLayout(
-								x,
-								ps,
-								cellSpacing,
-								widths,
-								rowSpanBackLog,
-								protectRows,
-								this.type_ != DomElementType.DomElement_THEAD ? repeatHead
-										: null, renderer);
+				c.tableDoLayout(
+						x,
+						ps,
+						cellSpacing,
+						widths,
+						rowSpanBackLog,
+						protectRows,
+						this.type_ != DomElementType.DomElement_THEAD ? repeatHead
+								: null, renderer);
 			}
 			if (repeatHead != null
 					&& this.type_ == DomElementType.DomElement_THEAD) {
@@ -2985,8 +2977,8 @@ class Block {
 		WPaintDevice device = painter.getDevice();
 		painter.setFont(this.cssFont(renderer.getFontScale()));
 		WFontMetrics metrics = device.getFontMetrics();
-		double lineHeight = this.cssLineHeight(metrics.getHeight(), renderer
-				.getFontScale());
+		double lineHeight = this.cssLineHeight(metrics.getHeight(),
+				renderer.getFontScale());
 		double fontHeight = metrics.getSize();
 		String decoration = this.getCssTextDecoration();
 		for (int i = 0; i < this.inlineLayout.size(); ++i) {
@@ -3001,8 +2993,8 @@ class Block {
 				if (ib.whitespaceWidth == device.measureText(" ").getWidth()) {
 					WString t = new WString(text.substring(ib.utf8Pos,
 							ib.utf8Pos + ib.utf8Count));
-					painter
-							.drawText(new WRectF(rect.getX(), rect.getY(), rect
+					painter.drawText(
+							new WRectF(rect.getX(), rect.getY(), rect
 									.getWidth(), rect.getHeight()
 									+ metrics.getLeading()), EnumSet.of(
 									AlignmentFlag.AlignLeft,
@@ -3046,8 +3038,8 @@ class Block {
 						if (decoration.equals("line-through")) {
 							double through = y + metrics.getLeading()
 									+ metrics.getAscent() - 3;
-							painter.drawLine(rect.getLeft(), through, rect
-									.getRight(), through);
+							painter.drawLine(rect.getLeft(), through,
+									rect.getRight(), through);
 						}
 					}
 				}
@@ -3073,8 +3065,8 @@ class Block {
 		WColor[] borderColor = new WColor[4];
 		Side[] sides = { Side.Top, Side.Right, Side.Bottom, Side.Left };
 		for (int i = 0; i < 4; ++i) {
-			borderWidth[i] = this.cssBorderWidth(sides[i], renderer
-					.getFontScale());
+			borderWidth[i] = this.cssBorderWidth(sides[i],
+					renderer.getFontScale());
 			borderColor[i] = this.cssBorderColor(sides[i]);
 		}
 		double offsetFactor = 1;
@@ -3159,12 +3151,9 @@ class Block {
 							bottomOffset = -borderWidth[i] / 2;
 						}
 					}
-					painter
-							.drawLine(
-									right - offsetFactor * borderWidth[i] / 2,
-									top + topOffset, right - offsetFactor
-											* borderWidth[i] / 2, bottom
-											- bottomOffset);
+					painter.drawLine(right - offsetFactor * borderWidth[i] / 2,
+							top + topOffset, right - offsetFactor
+									* borderWidth[i] / 2, bottom - bottomOffset);
 				}
 					break;
 				case Bottom:
@@ -3216,11 +3205,9 @@ class Block {
 							bottomOffset = -borderWidth[i] / 2;
 						}
 					}
-					painter
-							.drawLine(left + offsetFactor * borderWidth[i] / 2,
-									top + topOffset, left + offsetFactor
-											* borderWidth[i] / 2, bottom
-											- bottomOffset);
+					painter.drawLine(left + offsetFactor * borderWidth[i] / 2,
+							top + topOffset, left + offsetFactor
+									* borderWidth[i] / 2, bottom - bottomOffset);
 				}
 					break;
 				default:
@@ -3354,15 +3341,16 @@ class Block {
 
 	private static void unsupportedAttributeValue(String attribute,
 			final String value) {
-		logger.error(new StringWriter().append("unsupported value '").append(
-				value).append("' for attribute ").append(attribute).toString());
+		logger.error(new StringWriter().append("unsupported value '")
+				.append(value).append("' for attribute ").append(attribute)
+				.toString());
 	}
 
 	private static void unsupportedCssValue(Property property,
 			final String value) {
-		logger.error(new StringWriter().append("unsupported value '").append(
-				value).append("'for CSS style property ").append(
-				DomElement.cssName(property)).toString());
+		logger.error(new StringWriter().append("unsupported value '")
+				.append(value).append("'for CSS style property ")
+				.append(DomElement.cssName(property)).toString());
 	}
 
 	private static boolean isAggregate(final String cssProperty) {

@@ -98,9 +98,13 @@ public class WMeasurePaintDevice implements WPaintDevice {
 	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
 			TextFlag textFlag, final CharSequence text, WPointF clipPoint) {
 		if (clipPoint != null && this.getPainter() != null) {
-			if (!this.getPainter().getClipPathTransform().map(
-					this.getPainter().getClipPath()).isPointInPath(
-					this.getPainter().getWorldTransform().map(clipPoint))) {
+			if (!this
+					.getPainter()
+					.getClipPathTransform()
+					.map(this.getPainter().getClipPath())
+					.isPointInPath(
+							this.getPainter().getWorldTransform()
+									.map(clipPoint))) {
 				return;
 			}
 		}

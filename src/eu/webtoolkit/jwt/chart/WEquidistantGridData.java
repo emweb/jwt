@@ -378,11 +378,9 @@ public class WEquidistantGridData extends WAbstractGridData {
 		int yDim = 0;
 		for (int i = 0; i < dataseries.size(); i++) {
 			if (((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-					.get(i))
-					: null) != null) {
+					.get(i)) : null) != null) {
 				WAbstractGridData griddata = ((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (griddata == this
 						|| griddata.getType() != Series3DType.BarSeries3D) {
 					break;
@@ -461,11 +459,9 @@ public class WEquidistantGridData extends WAbstractGridData {
 		int yDim = 0;
 		for (int i = 0; i < dataseries.size(); i++) {
 			if (((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-					.get(i))
-					: null) != null) {
+					.get(i)) : null) != null) {
 				WAbstractGridData griddata = ((dataseries.get(i)) instanceof WAbstractGridData ? (WAbstractGridData) (dataseries
-						.get(i))
-						: null);
+						.get(i)) : null);
 				if (griddata == this
 						|| griddata.getType() != Series3DType.BarSeries3D) {
 					break;

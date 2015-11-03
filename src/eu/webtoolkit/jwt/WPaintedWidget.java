@@ -514,10 +514,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	protected DomElement createDomElement(WApplication app) {
 		if (this.isInLayout()) {
 			this.setLayoutSizeAware(true);
-			this
-					.setJavaScriptMember(
-							WT_RESIZE_JS,
-							"function(self, w, h) {var u = $(self).find('canvas, img');if (w >= 0) u.width(w);if (h >= 0) u.height(h);}");
+			this.setJavaScriptMember(
+					WT_RESIZE_JS,
+					"function(self, w, h) {var u = $(self).find('canvas, img');if (w >= 0) u.width(w);if (h >= 0) u.height(h);}");
 		}
 		this.isCreatePainter();
 		DomElement result = DomElement.createNew(this.getDomElementType());
@@ -626,7 +625,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * The client side representation exposes the following interface:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    {
 	 *      canvas: exposes the underlying HTML canvas element
 	 *      repaint: a function that, when called, will repaint the widget without a server roundtrip
@@ -710,8 +709,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				this.setPositionScheme(PositionScheme.Relative);
 			}
 			this.areaImage_.setPositionScheme(PositionScheme.Absolute);
-			this.areaImage_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
-					Side.Top));
+			this.areaImage_.setOffsets(new WLength(0),
+					EnumSet.of(Side.Left, Side.Top));
 			this.areaImage_.setMargin(new WLength(0), EnumSet.of(Side.Top));
 			this.areaImage_.resize(new WLength(this.renderWidth_), new WLength(
 					this.renderHeight_));

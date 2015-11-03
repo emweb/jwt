@@ -395,8 +395,8 @@ public class WSlider extends WFormWidget {
 	public void setRange(int minimum, int maximum) {
 		this.minimum_ = minimum;
 		this.maximum_ = maximum;
-		this.value_ = Math.min(this.maximum_, Math.max(this.minimum_,
-				this.value_));
+		this.value_ = Math.min(this.maximum_,
+				Math.max(this.minimum_, this.value_));
 		this.update();
 	}
 
@@ -556,11 +556,9 @@ public class WSlider extends WFormWidget {
 			boolean useNative = this.isNativeControl();
 			if (!useNative) {
 				if (!(this.paintedSlider_ != null)) {
-					this
-							.addChild(this.paintedSlider_ = new PaintedSlider(
-									this));
-					this.paintedSlider_.sliderResized(this.getWidth(), this
-							.getHeight());
+					this.addChild(this.paintedSlider_ = new PaintedSlider(this));
+					this.paintedSlider_.sliderResized(this.getWidth(),
+							this.getHeight());
 				}
 			} else {
 				if (this.paintedSlider_ != null)
@@ -579,8 +577,8 @@ public class WSlider extends WFormWidget {
 		} else {
 			if (all || this.changed_) {
 				element.setAttribute("type", "range");
-				element.setProperty(Property.PropertyValue, String
-						.valueOf(this.value_));
+				element.setProperty(Property.PropertyValue,
+						String.valueOf(this.value_));
 				element.setAttribute("min", String.valueOf(this.minimum_));
 				element.setAttribute("max", String.valueOf(this.maximum_));
 				if (!this.changedConnected_

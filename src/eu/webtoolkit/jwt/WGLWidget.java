@@ -1053,8 +1053,8 @@ public class WGLWidget extends WInteractWidget {
 	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 		if (this.pImpl_ != null) {
-			this.layoutSizeChanged((int) width.getValue(), (int) height
-					.getValue());
+			this.layoutSizeChanged((int) width.getValue(),
+					(int) height.getValue());
 		}
 	}
 
@@ -1625,7 +1625,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a frame buffer.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteFramebuffers.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteFramebuffers.xml"
 	 * >glDeleteFramebuffers() OpenGL ES manpage</a>
 	 */
 	public void deleteFramebuffer(WGLWidget.Framebuffer buffer) {
@@ -1646,7 +1647,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a render buffer.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteRenderbuffers.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteRenderbuffers.xml"
 	 * >glDeleteRenderbuffers() OpenGL ES manpage</a>
 	 */
 	public void deleteRenderbuffer(WGLWidget.Renderbuffer buffer) {
@@ -1734,7 +1736,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to disable the vertex attribute array.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDisableVertexAttribArray.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDisableVertexAttribArray.xml"
 	 * >glDisableVertexAttribArray() OpenGL ES manpage</a>
 	 */
 	public void disableVertexAttribArray(WGLWidget.AttribLocation index) {
@@ -1778,7 +1781,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to enable the vertex attribute array.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glEnableVertexAttribArray.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glEnableVertexAttribArray.xml"
 	 * >glEnableVertexAttribArray() OpenGL ES manpage</a>
 	 */
 	public void enableVertexAttribArray(WGLWidget.AttribLocation index) {
@@ -1814,7 +1818,8 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to attach the given renderbuffer to the currently bound frame
 	 * buffer.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFramebufferRenderbuffer.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFramebufferRenderbuffer.xml"
 	 * >glFramebufferRenderbuffer() OpenGL ES manpage</a>
 	 */
 	public void framebufferRenderbuffer(WGLWidget.GLenum target,
@@ -1827,7 +1832,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to render directly into a texture image.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFramebufferTexture2D.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFramebufferTexture2D.xml"
 	 * >glFramebufferTexture2D() OpenGL ES manpage</a>
 	 */
 	public void framebufferTexture2D(WGLWidget.GLenum target,
@@ -1875,7 +1881,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to retrieve a Uniform&apos;s location in a {@link Program}.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGetUniformLocation.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGetUniformLocation.xml"
 	 * >glGetUniformLocation() OpenGL ES manpage</a>
 	 */
 	public WGLWidget.UniformLocation getUniformLocation(
@@ -1942,7 +1949,8 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to allocate the appropriate amount of memory for a render
 	 * buffer.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glRenderbufferStorage.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glRenderbufferStorage.xml"
 	 * >glSampleCoverage() OpenGL ES manpage</a>
 	 */
 	public void renderbufferStorage(WGLWidget.GLenum target,
@@ -1998,7 +2006,8 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set stencil test parameters for front and/or back
 	 * stencils.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilFuncSeparate.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilFuncSeparate.xml"
 	 * >glStencilFuncSeparate() OpenGL ES manpage</a>
 	 */
 	public void stencilFuncSeparate(WGLWidget.GLenum face,
@@ -2022,7 +2031,8 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to control which bits are written to the front and/or back
 	 * stencil buffers.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilMaskSeparate.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilMaskSeparate.xml"
 	 * >glStencilMaskSeparate() OpenGL ES manpage</a>
 	 */
 	public void stencilMaskSeparate(WGLWidget.GLenum face, int mask) {
@@ -2655,7 +2665,8 @@ public class WGLWidget extends WInteractWidget {
 	 * <p>
 	 * The maximum stride is 255.
 	 * <p>
-	 * <a href="http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttribPointer.xml"
+	 * <a href=
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttribPointer.xml"
 	 * >glVertexAttribPointer() OpenGL ES manpage</a>
 	 */
 	public void vertexAttribPointer(WGLWidget.AttribLocation location,
@@ -2906,7 +2917,7 @@ public class WGLWidget extends WInteractWidget {
 	 * JavaScript, and uses the <a href="glmatrix.net">glMatrix</a> library:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *   function(cameraMatrix) {
 	 *     var target = null;
 	 *   
@@ -2940,7 +2951,7 @@ public class WGLWidget extends WInteractWidget {
 	 * This mouse handler can be set as such:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *   setClientSideMouseHandler("new " + mouseHandler + "(" + cameraMatrix.jsRef() + ")");
 	 *   }
 	 * </pre>
@@ -3219,8 +3230,8 @@ public class WGLWidget extends WInteractWidget {
 						.split(",")));
 				for (int i1 = 0; i1 < 4; i1++) {
 					for (int i2 = 0; i2 < 4; i2++) {
-						mat.setElement(i2, i1, Float.parseFloat(mData.get(i1
-								* 4 + i2)));
+						mat.setElement(i2, i1,
+								Float.parseFloat(mData.get(i1 * 4 + i2)));
 					}
 				}
 			}

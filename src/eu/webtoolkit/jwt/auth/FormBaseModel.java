@@ -161,16 +161,18 @@ public class FormBaseModel extends WFormModel {
 			return false;
 		}
 		if (user.getStatus() == User.Status.Disabled) {
-			this.setValidation(LoginNameField, new WValidator.Result(
-					WValidator.State.Invalid, WString
+			this.setValidation(
+					LoginNameField,
+					new WValidator.Result(WValidator.State.Invalid, WString
 							.tr("Wt.Auth.account-disabled")));
 			login.login(user, LoginState.DisabledLogin);
 			return false;
 		} else {
 			if (this.getBaseAuth().isEmailVerificationRequired()
 					&& user.getEmail().length() == 0) {
-				this.setValidation(LoginNameField, new WValidator.Result(
-						WValidator.State.Invalid, WString
+				this.setValidation(
+						LoginNameField,
+						new WValidator.Result(WValidator.State.Invalid, WString
 								.tr("Wt.Auth.email-unverified")));
 				login.login(user, LoginState.DisabledLogin);
 				return false;

@@ -278,7 +278,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertChildNode(childNodes().size(), node);
 	 *   }
 	 * </pre>
@@ -333,8 +333,8 @@ public class WTreeNode extends WCompositeWidget {
 		if (policy != WTreeNode.ChildCountPolicy.Disabled
 				&& !(this.childCountLabel_ != null)) {
 			this.childCountLabel_ = new WText();
-			this.childCountLabel_.setMargin(new WLength(7), EnumSet
-					.of(Side.Left));
+			this.childCountLabel_.setMargin(new WLength(7),
+					EnumSet.of(Side.Left));
 			this.childCountLabel_.setStyleClass("Wt-childcount");
 			this.getLabelArea().addWidget(this.childCountLabel_);
 		}

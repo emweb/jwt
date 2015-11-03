@@ -166,7 +166,7 @@ public class WIconPair extends WCompositeWidget {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    icon1().clicked()
 	 *   }
 	 * </pre>
@@ -181,7 +181,7 @@ public class WIconPair extends WCompositeWidget {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    icon2().clicked()
 	 *   }
 	 * </pre>

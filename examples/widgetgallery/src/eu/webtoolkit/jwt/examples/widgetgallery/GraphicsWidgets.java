@@ -31,26 +31,26 @@ class GraphicsWidgets extends TopicWidget {
 	public void populateSubMenu(WMenu menu) {
 		menu.setInternalBasePath("/graphics-charts");
 		menu.addItem("2D painting", this.painting2d()).setPathComponent("");
-		menu.addItem("Paintbrush", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Paintbrush",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.paintbrush();
 					}
 				}));
-		menu.addItem("Category chart", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Category chart",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.categoryChart();
 					}
 				}));
-		menu.addItem("Scatter plot", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Scatter plot",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.scatterPlot();
 					}
 				}));
-		menu.addItem("Pie chart", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Pie chart",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.pieChart();
 					}
@@ -60,20 +60,20 @@ class GraphicsWidgets extends TopicWidget {
 				return GraphicsWidgets.this.googleMap();
 			}
 		}));
-		menu.addItem("3D painting", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("3D painting",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.painting3d();
 					}
 				}));
-		menu.addItem("3D numerical chart", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("3D numerical chart",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.numCharts3d();
 					}
 				}));
-		menu.addItem("3D category chart", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("3D category chart",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return GraphicsWidgets.this.catCharts3d();
 					}
@@ -334,8 +334,8 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setModel(model);
 		chart.setXSeriesColumn(0);
 		chart.setLegendEnabled(true);
-		chart.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Top,
-				Side.Bottom));
+		chart.setPlotAreaPadding(40,
+				EnumSet.of(Side.Left, Side.Top, Side.Bottom));
 		chart.setPlotAreaPadding(120, EnumSet.of(Side.Right));
 		for (int column = 1; column < model.getColumnCount(); ++column) {
 			WDataSeries series = new WDataSeries(column, SeriesType.BarSeries);
@@ -384,8 +384,8 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setLegendEnabled(true);
 		chart.setType(ChartType.ScatterPlot);
 		chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
-		chart.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Top,
-				Side.Bottom));
+		chart.setPlotAreaPadding(40,
+				EnumSet.of(Side.Left, Side.Top, Side.Bottom));
 		chart.setPlotAreaPadding(120, EnumSet.of(Side.Right));
 		for (int i = 2; i < 4; ++i) {
 			WDataSeries s = new WDataSeries(i, SeriesType.LineSeries);
@@ -454,8 +454,8 @@ class GraphicsWidgets extends TopicWidget {
 		WAxisSliderWidget sliderWidget = new WAxisSliderWidget(chart, 2,
 				container);
 		sliderWidget.resize(new WLength(800), new WLength(80));
-		sliderWidget.setSelectionAreaPadding(40, EnumSet.of(Side.Left,
-				Side.Right));
+		sliderWidget.setSelectionAreaPadding(40,
+				EnumSet.of(Side.Left, Side.Right));
 		sliderWidget.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
 		return container;
 	}
@@ -509,8 +509,9 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setModel(model);
 		chart.setLabelsColumn(0);
 		chart.setDataColumn(1);
-		chart.setDisplayLabels(EnumUtils.or(EnumSet.of(LabelOption.Outside,
-				LabelOption.TextLabel), LabelOption.TextPercentage));
+		chart.setDisplayLabels(EnumUtils.or(
+				EnumSet.of(LabelOption.Outside, LabelOption.TextLabel),
+				LabelOption.TextPercentage));
 		chart.setPerspectiveEnabled(true, 0.2);
 		chart.setShadowEnabled(true);
 		chart.setExplode(0, 0.3);
@@ -557,8 +558,9 @@ class GraphicsWidgets extends TopicWidget {
 		WGridData dataset1 = new WGridData(model1);
 		dataset1.setType(Series3DType.SurfaceSeries3D);
 		dataset1.setSurfaceMeshEnabled(true);
-		WStandardColorMap colormap = new WStandardColorMap(dataset1
-				.minimum(Axis.ZAxis_3D), dataset1.maximum(Axis.ZAxis_3D), true);
+		WStandardColorMap colormap = new WStandardColorMap(
+				dataset1.minimum(Axis.ZAxis_3D),
+				dataset1.maximum(Axis.ZAxis_3D), true);
 		dataset1.setColorMap(colormap);
 		WStandardItemModel model2 = new PlaneData(40, 40, container);
 		for (int i = 0; i < model2.getRowCount(); i++) {

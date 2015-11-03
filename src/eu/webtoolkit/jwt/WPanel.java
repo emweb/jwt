@@ -55,9 +55,7 @@ public class WPanel extends WCompositeWidget {
 		this.collapsedSS_ = new Signal1<Boolean>(this);
 		this.expandedSS_ = new Signal1<Boolean>(this);
 		String TEMPLATE = "${titlebar}${contents}";
-		this
-				.setImplementation(this.impl_ = new WTemplate(new WString(
-						TEMPLATE)));
+		this.setImplementation(this.impl_ = new WTemplate(new WString(TEMPLATE)));
 		// this.implementStateless(WPanel.doExpand,WPanel.undoExpand);
 		// this.implementStateless(WPanel.doCollapse,WPanel.undoCollapse);
 		WApplication app = WApplication.getInstance();
@@ -65,12 +63,11 @@ public class WPanel extends WCompositeWidget {
 		app.getTheme().apply(this, centralArea, WidgetThemeRole.PanelBodyRole);
 		this.impl_.bindWidget("titlebar", (WWidget) null);
 		this.impl_.bindWidget("contents", centralArea);
-		this
-				.setJavaScriptMember(
-						WT_RESIZE_JS,
-						"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_3_4.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_3_4.boxSizing(self)) {h -= Wt3_3_4.px(self, 'borderTopWidth') + Wt3_3_4.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
-		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
-				.getSecondGetPSJS());
+		this.setJavaScriptMember(
+				WT_RESIZE_JS,
+				"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_3_4.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_3_4.boxSizing(self)) {h -= Wt3_3_4.px(self, 'borderTopWidth') + Wt3_3_4.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
+		this.setJavaScriptMember(WT_GETPS_JS,
+				StdWidgetItemImpl.getSecondGetPSJS());
 	}
 
 	/**
@@ -178,8 +175,7 @@ public class WPanel extends WCompositeWidget {
 	 */
 	public WContainerWidget getTitleBarWidget() {
 		return ((this.impl_.resolveWidget("titlebar")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-				.resolveWidget("titlebar"))
-				: null);
+				.resolveWidget("titlebar")) : null);
 	}
 
 	/**
@@ -234,8 +230,8 @@ public class WPanel extends WCompositeWidget {
 					});
 			this.collapseIcon_.icon2Clicked().preventPropagation();
 			this.collapseIcon_.setState(this.isCollapsed() ? 1 : 0);
-			this.getTitleBarWidget().clicked().addListener(this,
-					new Signal1.Listener<WMouseEvent>() {
+			this.getTitleBarWidget().clicked()
+					.addListener(this, new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent e1) {
 							WPanel.this.toggleCollapse();
 						}
@@ -464,7 +460,6 @@ public class WPanel extends WCompositeWidget {
 
 	private WContainerWidget getCentralArea() {
 		return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-				.resolveWidget("contents"))
-				: null);
+				.resolveWidget("contents")) : null);
 	}
 }

@@ -285,8 +285,8 @@ public class WTableRow extends WObject {
 
 	void updateDom(final DomElement element, boolean all) {
 		if (this.height_ != null) {
-			element.setProperty(Property.PropertyStyleHeight, this.height_
-					.getCssText());
+			element.setProperty(Property.PropertyStyleHeight,
+					this.height_.getCssText());
 		}
 		if (!all || this.styleClass_.length() != 0) {
 			element.setProperty(Property.PropertyClass, this.styleClass_);

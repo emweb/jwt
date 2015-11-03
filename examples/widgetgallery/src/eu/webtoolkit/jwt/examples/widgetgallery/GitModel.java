@@ -263,8 +263,8 @@ class GitModel extends WAbstractItemModel {
 	private Git.Object getObject(final WModelIndex index) {
 		int parentId = index.getInternalId();
 		final GitModel.Tree parentItem = this.treeData_.get(parentId);
-		return this.git_.treeGetObject(parentItem.getTreeObject(), index
-				.getRow());
+		return this.git_.treeGetObject(parentItem.getTreeObject(),
+				index.getRow());
 	}
 
 	private static String getSuffix(final String fileName) {

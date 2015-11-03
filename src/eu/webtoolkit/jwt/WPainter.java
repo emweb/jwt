@@ -474,8 +474,9 @@ public class WPainter {
 	 */
 	public void drawImage(final WPointF point, final WPainter.Image image,
 			final WRectF sourceRect) {
-		this.drawImage(new WRectF(point.getX(), point.getY(), sourceRect
-				.getWidth(), sourceRect.getHeight()), image, sourceRect);
+		this.drawImage(
+				new WRectF(point.getX(), point.getY(), sourceRect.getWidth(),
+						sourceRect.getHeight()), image, sourceRect);
 	}
 
 	/**
@@ -487,8 +488,8 @@ public class WPainter {
 	 * This is an overloaded method provided for convenience.
 	 */
 	public void drawImage(final WRectF rect, final WPainter.Image image) {
-		this.drawImage(rect, image, new WRectF(0, 0, image.getWidth(), image
-				.getHeight()));
+		this.drawImage(rect, image,
+				new WRectF(0, 0, image.getWidth(), image.getHeight()));
 	}
 
 	/**
@@ -500,8 +501,10 @@ public class WPainter {
 	 */
 	public void drawImage(final WRectF rect, final WPainter.Image image,
 			final WRectF sourceRect) {
-		this.device_.drawImage(rect.getNormalized(), image.getUri(), image
-				.getWidth(), image.getHeight(), sourceRect.getNormalized());
+		this.device_
+				.drawImage(rect.getNormalized(), image.getUri(),
+						image.getWidth(), image.getHeight(),
+						sourceRect.getNormalized());
 	}
 
 	/**
@@ -519,8 +522,10 @@ public class WPainter {
 		if (sh <= 0) {
 			sh = image.getHeight() - sy;
 		}
-		this.device_.drawImage(new WRectF(x, y, sw, sh), image.getUri(), image
-				.getWidth(), image.getHeight(), new WRectF(sx, sy, sw, sh));
+		this.device_
+				.drawImage(new WRectF(x, y, sw, sh), image.getUri(), image
+						.getWidth(), image.getHeight(), new WRectF(sx, sy, sw,
+						sh));
 	}
 
 	/**
@@ -823,8 +828,8 @@ public class WPainter {
 		if (cDevice != null && rectangle.isJavaScriptBound()) {
 			cDevice.drawRect(rectangle);
 		} else {
-			this.drawRect(rectangle.getX(), rectangle.getY(), rectangle
-					.getWidth(), rectangle.getHeight());
+			this.drawRect(rectangle.getX(), rectangle.getY(),
+					rectangle.getWidth(), rectangle.getHeight());
 		}
 	}
 
@@ -1156,7 +1161,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    WFont mono;
 	 *    mono.setFamily(WFont::Monospace, "'Courier New'");
 	 *    mono.setSize(18);
@@ -1702,9 +1707,9 @@ public class WPainter {
 		this.viewTransform_.assign(new WTransform());
 		double scaleX = this.viewPort_.getWidth() / this.window_.getWidth();
 		double scaleY = this.viewPort_.getHeight() / this.window_.getHeight();
-		this.viewTransform_.translate(this.viewPort_.getX()
-				- this.window_.getX() * scaleX, this.viewPort_.getY()
-				- this.window_.getY() * scaleY);
+		this.viewTransform_.translate(
+				this.viewPort_.getX() - this.window_.getX() * scaleX,
+				this.viewPort_.getY() - this.window_.getY() * scaleY);
 		this.viewTransform_.scale(scaleX, scaleY);
 		if (this.device_ != null) {
 			this.device_.setChanged(EnumSet

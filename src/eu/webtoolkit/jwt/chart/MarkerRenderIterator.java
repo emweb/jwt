@@ -54,8 +54,8 @@ class MarkerRenderIterator extends SeriesIterator {
 	public void newValue(final WDataSeries series, double x, double y,
 			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
-			WPointF p = this.chart_.map(x, y, series.getAxis(), this
-					.getCurrentXSegment(), this.getCurrentYSegment());
+			WPointF p = this.chart_.map(x, y, series.getAxis(),
+					this.getCurrentXSegment(), this.getCurrentYSegment());
 			final WCartesianChart chart = this.chart_;
 			if (!this.marker_.isEmpty()) {
 				this.painter_.save();
@@ -65,8 +65,8 @@ class MarkerRenderIterator extends SeriesIterator {
 				WBrush brush = series.getMarkerBrush().clone();
 				setBrushColor(brush, xIndex, yIndex,
 						ItemDataRole.MarkerBrushColorRole);
-				this.setMarkerSize(this.painter_, xIndex, yIndex, series
-						.getMarkerSize());
+				this.setMarkerSize(this.painter_, xIndex, yIndex,
+						series.getMarkerSize());
 				WTransform currentTransform = new WTransform().translate(
 						chart.getCombinedTransform().map(this.hv(p))).multiply(
 						this.scale_);

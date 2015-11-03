@@ -146,9 +146,9 @@ public class WPopupWidget extends WCompositeWidget {
 		this.autoHideDelay_ = autoHideDelay;
 		if (this.isRendered()) {
 			StringBuilder ss = new StringBuilder();
-			ss.append("jQuery.data(").append(this.getJsRef()).append(
-					", 'popup').setTransient(").append(this.transient_).append(
-					',').append(this.autoHideDelay_).append(");");
+			ss.append("jQuery.data(").append(this.getJsRef())
+					.append(", 'popup').setTransient(").append(this.transient_)
+					.append(',').append(this.autoHideDelay_).append(");");
 			this.doJavaScript(ss.toString());
 		}
 	}
@@ -298,11 +298,11 @@ public class WPopupWidget extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WPopupWidget.js", wtjs1());
 		StringBuilder jsObj = new StringBuilder();
-		jsObj.append("new Wt3_3_4.WPopupWidget(").append(
-				app.getJavaScriptClass()).append(',').append(this.getJsRef())
-				.append(',').append(this.transient_).append(',').append(
-						this.autoHideDelay_).append(',').append(
-						!this.isHidden()).append(");");
+		jsObj.append("new Wt3_3_4.WPopupWidget(")
+				.append(app.getJavaScriptClass()).append(',')
+				.append(this.getJsRef()).append(',').append(this.transient_)
+				.append(',').append(this.autoHideDelay_).append(',')
+				.append(!this.isHidden()).append(");");
 		this.setJavaScriptMember(" WPopupWidget", jsObj.toString());
 	}
 

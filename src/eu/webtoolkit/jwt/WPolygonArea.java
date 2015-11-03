@@ -150,8 +150,8 @@ public class WPolygonArea extends WAbstractArea {
 				coords.append(',');
 			}
 			coords.append(String.valueOf((int) this.points_.get(i).getX()))
-					.append(',').append(
-							String.valueOf((int) this.points_.get(i).getY()));
+					.append(',')
+					.append(String.valueOf((int) this.points_.get(i).getY()));
 		}
 		element.setAttribute("coords", coords.toString());
 		return super.updateDom(element, all);

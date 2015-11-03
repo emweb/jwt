@@ -562,8 +562,7 @@ public abstract class WInteractWidget extends WWebWidget {
 
 	public void setPopup(boolean popup) {
 		if (popup && WApplication.getInstance().getEnvironment().hasAjax()) {
-			this
-					.clicked()
+			this.clicked()
 					.addListener(
 							"function(o,e) {  if (Wt3_3_4.WPopupWidget) {Wt3_3_4.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_3_4.WPopupWidget.popupClicked = null; }}");
 			this.clicked().preventPropagation();
@@ -608,14 +607,14 @@ public abstract class WInteractWidget extends WWebWidget {
 					final WEnvironment env = app.getEnvironment();
 					if (((this) instanceof WFormWidget ? (WFormWidget) (this)
 							: null) != null
-							&& !env.agentIsOpera() && !env.agentIsIE()) {
+							&& !env.agentIsOpera()
+							&& !env.agentIsIE()) {
 						extraJS = "var g=this.onchange;this.onchange=function(){this.onchange=g;};";
 					}
 					actions.add(new DomElement.EventAction(
 							"e.keyCode && (e.keyCode == 13)", enterPress
-									.getJavaScript()
-									+ extraJS, enterPress.encodeCmd(),
-							enterPress.isExposedSignal()));
+									.getJavaScript() + extraJS, enterPress
+									.encodeCmd(), enterPress.isExposedSignal()));
 				}
 				enterPress.updateOk();
 			}
@@ -683,8 +682,8 @@ public abstract class WInteractWidget extends WWebWidget {
 			}
 			if (mouseDown != null) {
 				js.append(mouseDown.getJavaScript());
-				element.setEvent("mousedown", js.toString(), mouseDown
-						.encodeCmd(), mouseDown.isExposedSignal());
+				element.setEvent("mousedown", js.toString(),
+						mouseDown.encodeCmd(), mouseDown.isExposedSignal());
 				mouseDown.updateOk();
 			} else {
 				element.setEvent("mousedown", js.toString(), "", false);
@@ -755,34 +754,35 @@ public abstract class WInteractWidget extends WWebWidget {
 				js.append("if(Wt3_3_4.isDblClick(o, e)) {").append(
 						mouseDblClick.getJavaScript());
 				if (mouseDblClick.isExposedSignal()) {
-					js.append(app.getJavaScriptClass()).append(
-							"._p_.update(o,'")
-							.append(mouseDblClick.encodeCmd()).append(
-									"',e,true);");
+					js.append(app.getJavaScriptClass())
+							.append("._p_.update(o,'")
+							.append(mouseDblClick.encodeCmd())
+							.append("',e,true);");
 				}
 				mouseDblClick.updateOk();
-				js
-						.append("}else{if (Wt3_3_4.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
+				js.append("}else{if (Wt3_3_4.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
-						js.append(app.getJavaScriptClass()).append(
-								"._p_.update(o,'").append(
-								mouseClick.encodeCmd()).append("',e,true);");
+						js.append(app.getJavaScriptClass())
+								.append("._p_.update(o,'")
+								.append(mouseClick.encodeCmd())
+								.append("',e,true);");
 					}
 					mouseClick.updateOk();
 				}
 				final Configuration conf = app.getEnvironment().getServer()
 						.getConfiguration();
-				js.append("},").append(conf.getDoubleClickTimeout()).append(
-						");}");
+				js.append("},").append(conf.getDoubleClickTimeout())
+						.append(");}");
 			} else {
 				if (mouseClick != null && mouseClick.needsUpdate(all)) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
-						js.append(app.getJavaScriptClass()).append(
-								"._p_.update(o,'").append(
-								mouseClick.encodeCmd()).append("',e,true);");
+						js.append(app.getJavaScriptClass())
+								.append("._p_.update(o,'")
+								.append(mouseClick.encodeCmd())
+								.append("',e,true);");
 					}
 					mouseClick.updateOk();
 				}
@@ -804,12 +804,13 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (this.mouseOverDelay_ != 0) {
 			if (updateMouseOver) {
 				StringBuilder js = new StringBuilder();
-				js.append("o.over=setTimeout(function() {").append(
-						"o.over = null;").append(mouseOver.getJavaScript());
+				js.append("o.over=setTimeout(function() {")
+						.append("o.over = null;")
+						.append(mouseOver.getJavaScript());
 				if (mouseOver.isExposedSignal()) {
-					js.append(app.getJavaScriptClass()).append(
-							"._p_.update(o,'").append(mouseOver.encodeCmd())
-							.append("',e,true);");
+					js.append(app.getJavaScriptClass())
+							.append("._p_.update(o,'")
+							.append(mouseOver.encodeCmd()).append("',e,true);");
 				}
 				js.append("},").append(this.mouseOverDelay_).append(");");
 				element.setEvent("mouseover", js.toString(), "");
@@ -817,10 +818,11 @@ public abstract class WInteractWidget extends WWebWidget {
 				if (!(mouseOut != null)) {
 					mouseOut = this.mouseEventSignal(MOUSE_OUT_SIGNAL, true);
 				}
-				element.setEvent("mouseout",
+				element.setEvent(
+						"mouseout",
 						"clearTimeout(o.over); o.over=null;"
-								+ mouseOut.getJavaScript(), mouseOut
-								.encodeCmd(), mouseOut.isExposedSignal());
+								+ mouseOut.getJavaScript(),
+						mouseOut.encodeCmd(), mouseOut.isExposedSignal());
 				mouseOut.updateOk();
 			}
 		} else {

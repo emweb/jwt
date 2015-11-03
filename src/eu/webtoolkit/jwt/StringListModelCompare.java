@@ -33,8 +33,8 @@ class StringListModelCompare implements Comparator<Integer> {
 	}
 
 	public int compare(Integer r1, Integer r2) {
-		int result = this.model_.getStringList().get(r1).compareTo(
-				this.model_.getStringList().get(r2));
+		int result = this.model_.getStringList().get(r1)
+				.compareTo(this.model_.getStringList().get(r2));
 		if (this.order_ == SortOrder.DescendingOrder) {
 			result = -result;
 		}

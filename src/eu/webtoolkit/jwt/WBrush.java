@@ -210,9 +210,9 @@ public class WBrush extends WJavaScriptExposableObject {
 	public String getJsValue() {
 		StringBuilder ss = new StringBuilder();
 		ss.append("{\"color\":[").append(this.color_.getRed()).append(",")
-				.append(this.color_.getGreen()).append(",").append(
-						this.color_.getBlue()).append(",").append(
-						this.color_.getAlpha()).append("]}");
+				.append(this.color_.getGreen()).append(",")
+				.append(this.color_.getBlue()).append(",")
+				.append(this.color_.getAlpha()).append("]}");
 		return ss.toString();
 	}
 
@@ -226,10 +226,11 @@ public class WBrush extends WJavaScriptExposableObject {
 					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(1)))
 					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(2)))
 					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(3)))) {
-				this.color_ = new WColor(JsonUtils.orIfNullInt(JsonUtils
-						.toNumber(col.get(0)), 0), JsonUtils.orIfNullInt(
-						JsonUtils.toNumber(col.get(1)), 0), JsonUtils
-						.orIfNullInt(JsonUtils.toNumber(col.get(2)), 0),
+				this.color_ = new WColor(
+						JsonUtils
+								.orIfNullInt(JsonUtils.toNumber(col.get(0)), 0),
+						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(1)), 0),
+						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(2)), 0),
 						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(3)),
 								255));
 			} else {

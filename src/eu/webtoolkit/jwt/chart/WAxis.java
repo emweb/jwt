@@ -359,8 +359,9 @@ public class WAxis {
 			this.roundLimits_.add(AxisValue.MinimumValue);
 		}
 		if (!EnumUtils.mask(locations, AxisValue.MaximumValue).isEmpty()) {
-			if (!ChartUtils.equals(this.segments_
-					.get(this.segments_.size() - 1).maximum, AUTO_MAXIMUM)) {
+			if (!ChartUtils.equals(
+					this.segments_.get(this.segments_.size() - 1).maximum,
+					AUTO_MAXIMUM)) {
 				this.segments_.get(this.segments_.size() - 1).maximum = AUTO_MAXIMUM;
 				update();
 			}
@@ -895,8 +896,8 @@ public class WAxis {
 		if (this.scale_ == AxisScale.CategoryScale) {
 			text = this.chart_.categoryLabel((int) u, this.axis_);
 			if ((text.length() == 0)) {
-				text = new WString(LocaleUtils.toString(LocaleUtils
-						.getCurrentLocale(), u));
+				text = new WString(LocaleUtils.toString(
+						LocaleUtils.getCurrentLocale(), u));
 			}
 		} else {
 			if (this.scale_ == AxisScale.DateScale) {
@@ -906,8 +907,8 @@ public class WAxis {
 			} else {
 				String format = this.getLabelFormat().toString();
 				if (format.length() == 0) {
-					text = new WString(LocaleUtils.toString(LocaleUtils
-							.getCurrentLocale(), u));
+					text = new WString(LocaleUtils.toString(
+							LocaleUtils.getCurrentLocale(), u));
 				} else {
 					buf = String.format(format, u);
 					text = new WString(buf);
@@ -1180,8 +1181,8 @@ public class WAxis {
 							double numLabels = this.calcAutoNumLabels(
 									orientation, s) / 1.5;
 							int rc = this.chart_.numberOfCategories(this.axis_);
-							this.renderInterval_ = Math.max(1.0, Math.floor(rc
-									/ numLabels));
+							this.renderInterval_ = Math.max(1.0,
+									Math.floor(rc / numLabels));
 						} else {
 							if (this.scale_ == AxisScale.LogScale) {
 								this.renderInterval_ = 1;
@@ -1243,8 +1244,8 @@ public class WAxis {
 							}
 						}
 						logger.debug(new StringWriter().append("Range: ")
-								.append(min.toString()).append(", ").append(
-										max.toString()).toString());
+								.append(min.toString()).append(", ")
+								.append(max.toString()).toString());
 						if (daysInterval > 200) {
 							s.dateTimeRenderUnit = WAxis.DateTimeUnit.Years;
 							interval = Math.max(1,
@@ -1290,16 +1291,16 @@ public class WAxis {
 										min = new WDate(min.getYear(), m, 1);
 									} else {
 										if (min.getDay() != 1) {
-											min = new WDate(min.getYear(), min
-													.getMonth(), 1);
+											min = new WDate(min.getYear(),
+													min.getMonth(), 1);
 										}
 									}
 								}
 								if (!EnumUtils.mask(this.roundLimits_,
 										AxisValue.MaximumValue).isEmpty()) {
 									if (max.getDay() != 1) {
-										max = new WDate(max.getYear(), max
-												.getMonth(), 1).addMonths(1);
+										max = new WDate(max.getYear(),
+												max.getMonth(), 1).addMonths(1);
 									}
 									if ((max.getMonth() - 1) % interval != 0) {
 										int m = roundDown(max.getMonth() - 1,
@@ -1434,19 +1435,16 @@ public class WAxis {
 													AxisValue.MinimumValue)
 													.isEmpty()) {
 												if (min.getMinute() % interval != 0) {
-													int m = roundDown(min
-															.getMinute(),
+													int m = roundDown(
+															min.getMinute(),
 															interval);
 													min.setTime(new WTime(min
 															.getHour(), m));
 												} else {
 													if (min.getSecond() != 0) {
-														min
-																.setTime(new WTime(
-																		min
-																				.getHour(),
-																		min
-																				.getMinute()));
+														min.setTime(new WTime(
+																min.getHour(),
+																min.getMinute()));
 													}
 												}
 											}
@@ -1461,8 +1459,8 @@ public class WAxis {
 													max = max.addSeconds(60);
 												}
 												if (max.getMinute() % interval != 0) {
-													int m = roundDown(max
-															.getMinute(),
+													int m = roundDown(
+															max.getMinute(),
 															interval);
 													max.setTime(new WTime(max
 															.getHour(), m));
@@ -1503,22 +1501,18 @@ public class WAxis {
 													AxisValue.MinimumValue)
 													.isEmpty()) {
 												if (min.getSecond() % interval != 0) {
-													int sec = roundDown(min
-															.getSecond(),
+													int sec = roundDown(
+															min.getSecond(),
 															interval);
 													min.setTime(new WTime(min
 															.getHour(), min
 															.getMinute(), sec));
 												} else {
 													if (min.getMillisecond() != 0) {
-														min
-																.setTime(new WTime(
-																		min
-																				.getHour(),
-																		min
-																				.getMinute(),
-																		min
-																				.getSecond()));
+														min.setTime(new WTime(
+																min.getHour(),
+																min.getMinute(),
+																min.getSecond()));
 													}
 												}
 											}
@@ -1534,8 +1528,8 @@ public class WAxis {
 													max = max.addSeconds(1);
 												}
 												if (max.getSecond() % interval != 0) {
-													int sec = roundDown(max
-															.getSecond(),
+													int sec = roundDown(
+															max.getSecond(),
 															interval);
 													max.setTime(new WTime(max
 															.getHour(), max
@@ -1663,8 +1657,7 @@ public class WAxis {
 						}
 					}
 					if (!EnumUtils.mask(properties, AxisProperty.Labels)
-							.isEmpty()
-							&& !(ticks.get(i).label.length() == 0)) {
+							.isEmpty() && !(ticks.get(i).label.length() == 0)) {
 						WPointF labelP = new WPointF();
 						if (vertical) {
 							labelP = new WPointF(p.getX() + labelPos, p.getY());
@@ -1762,8 +1755,8 @@ public class WAxis {
 			painter.save();
 			painter.translate(transform.map(pos));
 			painter.rotate(-angle);
-			transformedPoint = painter.getWorldTransform().getInverted().map(
-					transformedPoint);
+			transformedPoint = painter.getWorldTransform().getInverted()
+					.map(transformedPoint);
 			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
 					width, height), EnumSet.of(horizontalAlign, verticalAlign),
 					TextFlag.TextSingleLine, text, clipping
@@ -1798,8 +1791,8 @@ public class WAxis {
 			this.getLabelTicks(ticks, i, 1);
 		}
 		for (int i = 0; i < ticks.size(); ++i) {
-			painter.drawText(0, 0, 100, 100, EnumSet
-					.of(AlignmentFlag.AlignRight), ticks.get(i).label);
+			painter.drawText(0, 0, 100, 100,
+					EnumSet.of(AlignmentFlag.AlignRight), ticks.get(i).label);
 		}
 		return orientation == Orientation.Vertical ? device.getBoundingRect()
 				.getHeight() : device.getBoundingRect().getWidth();
@@ -2389,24 +2382,24 @@ public class WAxis {
 					segment.renderMinimum = Math.pow(10, Math.floor(minLog10));
 					segment.renderMaximum = Math.pow(10, Math.ceil(maxLog10));
 					if (segment.renderMinimum == segment.renderMaximum) {
-						segment.renderMaximum = Math.pow(10, Math
-								.ceil(maxLog10) + 1);
+						segment.renderMaximum = Math.pow(10,
+								Math.ceil(maxLog10) + 1);
 					}
 				} else {
 					if (findMinimum) {
-						segment.renderMinimum = Math.pow(10, Math
-								.floor(minLog10));
+						segment.renderMinimum = Math.pow(10,
+								Math.floor(minLog10));
 						if (segment.renderMinimum == segment.renderMaximum) {
-							segment.renderMinimum = Math.pow(10, Math
-									.floor(minLog10) - 1);
+							segment.renderMinimum = Math.pow(10,
+									Math.floor(minLog10) - 1);
 						}
 					} else {
 						if (findMaximum) {
-							segment.renderMaximum = Math.pow(10, Math
-									.ceil(maxLog10));
+							segment.renderMaximum = Math.pow(10,
+									Math.ceil(maxLog10));
 							if (segment.renderMinimum == segment.renderMaximum) {
-								segment.renderMaximum = Math.pow(10, Math
-										.ceil(maxLog10) + 1);
+								segment.renderMaximum = Math.pow(10,
+										Math.ceil(maxLog10) + 1);
 							}
 						}
 					}
@@ -2415,8 +2408,8 @@ public class WAxis {
 				double resolution = this.resolution_;
 				if (resolution == 0) {
 					if (this.scale_ == AxisScale.LinearScale) {
-						resolution = Math.max(1E-3, Math
-								.abs(1E-3 * segment.renderMinimum));
+						resolution = Math.max(1E-3,
+								Math.abs(1E-3 * segment.renderMinimum));
 					} else {
 						if (this.scale_ == AxisScale.DateScale) {
 							resolution = 1;

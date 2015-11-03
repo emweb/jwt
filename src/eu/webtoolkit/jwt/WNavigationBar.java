@@ -64,8 +64,8 @@ public class WNavigationBar extends WTemplate {
 		WAnchor titleLink = (WAnchor) this.resolveWidget("title-link");
 		if (!(titleLink != null)) {
 			this.bindWidget("title-link", titleLink = new WAnchor());
-			WApplication.getInstance().getTheme().apply(this, titleLink,
-					WidgetThemeRole.NavBrandRole);
+			WApplication.getInstance().getTheme()
+					.apply(this, titleLink, WidgetThemeRole.NavBrandRole);
 		}
 		titleLink.setText(title);
 		titleLink.setLink(link);
@@ -95,8 +95,8 @@ public class WNavigationBar extends WTemplate {
 			WInteractWidget expandButton = (WInteractWidget) this
 					.resolveWidget("expand-button");
 			if (!(collapseButton != null)) {
-				this.bindWidget("collapse-button", collapseButton = this
-						.getCreateCollapseButton());
+				this.bindWidget("collapse-button",
+						collapseButton = this.getCreateCollapseButton());
 				collapseButton.clicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent e1) {
@@ -104,8 +104,8 @@ public class WNavigationBar extends WTemplate {
 							}
 						});
 				collapseButton.hide();
-				this.bindWidget("expand-button", expandButton = this
-						.getCreateExpandButton());
+				this.bindWidget("expand-button",
+						expandButton = this.getCreateExpandButton());
 				expandButton.clicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent e1) {
@@ -113,13 +113,12 @@ public class WNavigationBar extends WTemplate {
 							}
 						});
 			}
-			WApplication.getInstance().getTheme().apply(this, contents,
-					WidgetThemeRole.NavCollapseRole);
+			WApplication.getInstance().getTheme()
+					.apply(this, contents, WidgetThemeRole.NavCollapseRole);
 			contents.hide();
 			if (contents.isBootstrap2Responsive()) {
-				contents
-						.setJavaScriptMember("wtAnimatedHidden",
-								"function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
+				contents.setJavaScriptMember("wtAnimatedHidden",
+						"function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
 			}
 		} else {
 			this.bindEmpty("collapse-button");
@@ -138,8 +137,8 @@ public class WNavigationBar extends WTemplate {
 	 */
 	public void addMenu(WMenu menu, AlignmentFlag alignment) {
 		this.addWidget((WWidget) menu, alignment);
-		WApplication.getInstance().getTheme().apply(this, menu,
-				WidgetThemeRole.NavbarMenuRole);
+		WApplication.getInstance().getTheme()
+				.apply(this, menu, WidgetThemeRole.NavbarMenuRole);
 	}
 
 	/**
@@ -181,8 +180,8 @@ public class WNavigationBar extends WTemplate {
 	 * indicate a search function.
 	 */
 	public void addSearch(WLineEdit field, AlignmentFlag alignment) {
-		WApplication.getInstance().getTheme().apply(this, field,
-				WidgetThemeRole.NavbarSearchRole);
+		WApplication.getInstance().getTheme()
+				.apply(this, field, WidgetThemeRole.NavbarSearchRole);
 		this.addWrapped(field, alignment, "navbar-form");
 	}
 
@@ -232,8 +231,8 @@ public class WNavigationBar extends WTemplate {
 		WPushButton result = new WPushButton(
 				tr("Wt.WNavigationBar.expand-button"));
 		result.setTextFormat(TextFormat.XHTMLText);
-		WApplication.getInstance().getTheme().apply(this, result,
-				WidgetThemeRole.NavbarBtn);
+		WApplication.getInstance().getTheme()
+				.apply(this, result, WidgetThemeRole.NavbarBtn);
 		return result;
 	}
 
@@ -320,17 +319,17 @@ public class WNavigationBar extends WTemplate {
 	private void align(WWidget widget, AlignmentFlag alignment) {
 		switch (alignment) {
 		case AlignLeft:
-			WApplication.getInstance().getTheme().apply(this, widget,
-					WidgetThemeRole.NavbarAlignLeftRole);
+			WApplication.getInstance().getTheme()
+					.apply(this, widget, WidgetThemeRole.NavbarAlignLeftRole);
 			break;
 		case AlignRight:
-			WApplication.getInstance().getTheme().apply(this, widget,
-					WidgetThemeRole.NavbarAlignRightRole);
+			WApplication.getInstance().getTheme()
+					.apply(this, widget, WidgetThemeRole.NavbarAlignRightRole);
 			break;
 		default:
-			logger.error(new StringWriter().append(
-					"addWidget(...): unsupported alignment ").append(
-					String.valueOf(alignment.getValue())).toString());
+			logger.error(new StringWriter()
+					.append("addWidget(...): unsupported alignment ")
+					.append(String.valueOf(alignment.getValue())).toString());
 		}
 	}
 

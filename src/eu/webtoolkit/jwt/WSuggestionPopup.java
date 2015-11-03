@@ -122,10 +122,10 @@ import org.slf4j.LoggerFactory;
  * 	WSuggestionPopup.Options contactOptions = new WSuggestionPopup.Options();
  * 	contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;;
  * 	contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;;
- * 	contactOptions.listSeparator = ','; //for multiple addresses)
+ * 	contactOptions.listSeparator = ','; // for multiple addresses)
  * 	contactOptions.whitespace = &quot; \\n&quot;;
- * 	contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; //within an address
- * 	contactOptions.appendReplacedText = &quot;, &quot;; //prepare next email address
+ * 	contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; // within an address
+ * 	contactOptions.appendReplacedText = &quot;, &quot;; // prepare next email address
  * 
  * 	WSuggestionPopup popup = new WSuggestionPopup(contactOptions, this);
  * 
@@ -318,8 +318,8 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {
 		};
-		this.jactivated_ = new JSignal2<String, String>(this
-				.getImplementation(), "select") {
+		this.jactivated_ = new JSignal2<String, String>(
+				this.getImplementation(), "select") {
 		};
 		this.edits_ = new ArrayList<WFormWidget>();
 		this.init();
@@ -360,8 +360,8 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 		this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {
 		};
-		this.jactivated_ = new JSignal2<String, String>(this
-				.getImplementation(), "select") {
+		this.jactivated_ = new JSignal2<String, String>(
+				this.getImplementation(), "select") {
 		};
 		this.edits_ = new ArrayList<WFormWidget>();
 		this.init();
@@ -694,7 +694,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    public filterSuggestions(String filter) {
 	 *      proxyModel.setFilterRegExp(filter + ".*");
 	 *    }
@@ -787,8 +787,7 @@ public class WSuggestionPopup extends WPopupWidget {
 
 	private void init() {
 		this.impl_ = ((this.getImplementation()) instanceof WContainerWidget ? (WContainerWidget) (this
-				.getImplementation())
-				: null);
+				.getImplementation()) : null);
 		this.impl_.setList(true);
 		this.impl_.setLoadLaterWhenInvisible(false);
 		this.setAttributeValue("style",
@@ -886,8 +885,8 @@ public class WSuggestionPopup extends WPopupWidget {
 			value.setAttributeValue("sug", StringUtils.asString(d2).toString());
 			Object styleclass = index.getData(ItemDataRole.StyleClassRole);
 			if (!(styleclass == null)) {
-				value.setAttributeValue("class", StringUtils.asString(
-						styleclass).toString());
+				value.setAttributeValue("class",
+						StringUtils.asString(styleclass).toString());
 			}
 		}
 	}
@@ -917,14 +916,11 @@ public class WSuggestionPopup extends WPopupWidget {
 		}
 		for (int i = topLeft.getRow(); i <= bottomRight.getRow(); ++i) {
 			WContainerWidget w = ((this.impl_.getWidget(i)) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-					.getWidget(i))
-					: null);
+					.getWidget(i)) : null);
 			WAnchor anchor = ((w.getWidget(0)) instanceof WAnchor ? (WAnchor) (w
-					.getWidget(0))
-					: null);
+					.getWidget(0)) : null);
 			WText value = ((anchor.getWidget(0)) instanceof WText ? (WText) (anchor
-					.getWidget(0))
-					: null);
+					.getWidget(0)) : null);
 			WModelIndex index = this.model_.getIndex(i, this.modelColumn_);
 			Object d = index.getData();
 			value.setText(StringUtils.asString(d));
@@ -932,8 +928,8 @@ public class WSuggestionPopup extends WPopupWidget {
 					ItemFlag.ItemIsXHTMLText).isEmpty() ? TextFormat.XHTMLText
 					: TextFormat.PlainText;
 			value.setTextFormat(format);
-			Object d2 = this.model_.getData(i, this.modelColumn_, this
-					.getEditRole());
+			Object d2 = this.model_.getData(i, this.modelColumn_,
+					this.getEditRole());
 			if ((d2 == null)) {
 				d2 = d;
 			}
@@ -951,8 +947,8 @@ public class WSuggestionPopup extends WPopupWidget {
 			return true;
 		} else {
 			if (this.model_.getRowCount() > 0) {
-				WModelIndex index = this.model_.getIndex(this.model_
-						.getRowCount() - 1, this.modelColumn_);
+				WModelIndex index = this.model_.getIndex(
+						this.model_.getRowCount() - 1, this.modelColumn_);
 				Object styleclass = index.getData(ItemDataRole.StyleClassRole);
 				return StringUtils.asString(styleclass).equals("Wt-more-data");
 			} else {
@@ -967,7 +963,8 @@ public class WSuggestionPopup extends WPopupWidget {
 		app.loadJavaScript(THIS_JS, wtjs1());
 		app.loadJavaScript(THIS_JS, wtjs2());
 		String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
-		this.setJavaScriptMember(" WSuggestionPopup",
+		this.setJavaScriptMember(
+				" WSuggestionPopup",
 				"new Wt3_3_4.WSuggestionPopup(" + app.getJavaScriptClass()
 						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
 						+ this.matcherJS_ + ","
@@ -1002,23 +999,23 @@ public class WSuggestionPopup extends WPopupWidget {
 
 	static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_3_4.WSuggestionPopupStdMatcher(").append(
-				WWebWidget.jsStringLiteral(options.highlightBeginTag)).append(
-				", ").append(
-				WWebWidget.jsStringLiteral(options.highlightEndTag)).append(
-				", ");
+		s.append("new Wt3_3_4.WSuggestionPopupStdMatcher(")
+				.append(WWebWidget.jsStringLiteral(options.highlightBeginTag))
+				.append(", ")
+				.append(WWebWidget.jsStringLiteral(options.highlightEndTag))
+				.append(", ");
 		if (options.listSeparator != 0) {
 			s.append(WWebWidget.jsStringLiteral("" + options.listSeparator));
 		} else {
 			s.append("null");
 		}
 		s.append(", ").append(WWebWidget.jsStringLiteral(options.whitespace))
-				.append(", ").append(
-						WWebWidget.jsStringLiteral(options.wordSeparators))
-				.append(", ").append(
-						WWebWidget.jsStringLiteral(options.wordStartRegexp))
-				.append(", ").append(
-						WWebWidget.jsStringLiteral(options.appendReplacedText))
+				.append(", ")
+				.append(WWebWidget.jsStringLiteral(options.wordSeparators))
+				.append(", ")
+				.append(WWebWidget.jsStringLiteral(options.wordStartRegexp))
+				.append(", ")
+				.append(WWebWidget.jsStringLiteral(options.appendReplacedText))
 				.append(")");
 		return s.toString();
 	}

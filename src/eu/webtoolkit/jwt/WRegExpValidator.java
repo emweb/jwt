@@ -168,8 +168,8 @@ public class WRegExpValidator extends WValidator {
 		if (!(this.regexp_ != null) || this.regexp_.matcher(input).matches()) {
 			return new WValidator.Result(WValidator.State.Valid);
 		} else {
-			return new WValidator.Result(WValidator.State.Invalid, this
-					.getInvalidNoMatchText());
+			return new WValidator.Result(WValidator.State.Invalid,
+					this.getInvalidNoMatchText());
 		}
 	}
 
@@ -223,10 +223,10 @@ public class WRegExpValidator extends WValidator {
 		} else {
 			js.append("null, null");
 		}
-		js.append(',').append(
-				WWebWidget.jsStringLiteral(this.getInvalidBlankText())).append(
-				',').append(
-				WWebWidget.jsStringLiteral(this.getInvalidNoMatchText()))
+		js.append(',')
+				.append(WWebWidget.jsStringLiteral(this.getInvalidBlankText()))
+				.append(',')
+				.append(WWebWidget.jsStringLiteral(this.getInvalidNoMatchText()))
 				.append(");");
 		return js.toString();
 	}

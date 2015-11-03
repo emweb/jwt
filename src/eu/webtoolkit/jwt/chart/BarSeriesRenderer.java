@@ -37,10 +37,10 @@ class BarSeriesRenderer extends SeriesRenderer {
 			final WModelIndex xIndex, final WModelIndex yIndex) {
 		WPainterPath bar = new WPainterPath();
 		final WAxis yAxis = this.chart_.getAxis(this.series_.getAxis());
-		WPointF topMid = this.chart_.map(x, y, yAxis.getId(), this.it_
-				.getCurrentXSegment(), this.it_.getCurrentYSegment());
-		WPointF bottomMid = this.chart_.map(x, stacky, yAxis.getId(), this.it_
-				.getCurrentXSegment(), this.it_.getCurrentYSegment());
+		WPointF topMid = this.chart_.map(x, y, yAxis.getId(),
+				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
+		WPointF bottomMid = this.chart_.map(x, stacky, yAxis.getId(),
+				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		FillRangeType fr = this.series_.getFillRange();
 		switch (fr) {
 		case MinimumValueFill:

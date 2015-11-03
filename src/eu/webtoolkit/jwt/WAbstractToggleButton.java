@@ -355,8 +355,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		super.updateDom(input, all);
 		if (element != input) {
 			if (element.getProperties().get(Property.PropertyClass) != null) {
-				input.addPropertyWord(Property.PropertyClass, element
-						.getProperty(Property.PropertyClass));
+				input.addPropertyWord(Property.PropertyClass,
+						element.getProperty(Property.PropertyClass));
 			}
 			element.setProperties(input.getProperties());
 			input.clearProperties();
@@ -383,11 +383,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 						this.state_ == CheckState.PartiallyChecked ? "true"
 								: "false");
 			} else {
-				input
-						.setProperty(
-								Property.PropertyStyleOpacity,
-								this.state_ == CheckState.PartiallyChecked ? "0.5"
-										: "");
+				input.setProperty(Property.PropertyStyleOpacity,
+						this.state_ == CheckState.PartiallyChecked ? "0.5" : "");
 			}
 			this.flags_.clear(BIT_STATE_CHANGED);
 		}
@@ -438,16 +435,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				}
 			} else {
 				if (click != null) {
-					this
-							.updateSignalConnection(input, click, CLICK_SIGNAL,
-									all);
+					this.updateSignalConnection(input, click, CLICK_SIGNAL, all);
 				}
 			}
 		}
 		if (span != null) {
 			if (all || this.flags_.get(BIT_TEXT_CHANGED)) {
-				span.setProperty(Property.PropertyInnerHTML, this.text_
-						.getFormattedText());
+				span.setProperty(Property.PropertyInnerHTML,
+						this.text_.getFormattedText());
 				if (all || this.flags_.get(BIT_WORD_WRAP_CHANGED)) {
 					span.setProperty(Property.PropertyStyleWhiteSpace,
 							this.flags_.get(BIT_WORD_WRAP) ? "normal"

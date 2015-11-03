@@ -29,8 +29,8 @@ class Layout extends TopicWidget {
 
 	public void populateSubMenu(WMenu menu) {
 		menu.addItem("Containers", this.containers()).setPathComponent("");
-		menu.addItem("HTML Templates", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("HTML Templates",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Layout.this.templates();
 					}
@@ -40,14 +40,14 @@ class Layout extends TopicWidget {
 				return Layout.this.text();
 			}
 		}));
-		menu.addItem("Grouping widgets", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Grouping widgets",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Layout.this.grouping();
 					}
 				}));
-		menu.addItem("Layout managers", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Layout managers",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Layout.this.layoutManagers();
 					}
@@ -404,10 +404,11 @@ class Layout extends TopicWidget {
 
 	final void showDialog(final WText out) {
 		final WDialog dialog = new WDialog("Go to cell");
-		WLabel label = new WLabel("Cell location (A1..Z999)", dialog
-				.getContents());
+		WLabel label = new WLabel("Cell location (A1..Z999)",
+				dialog.getContents());
 		final WLineEdit edit = new WLineEdit(dialog.getContents());
 		label.setBuddy(edit);
+		dialog.getContents().addStyleClass("form-group");
 		WRegExpValidator validator = new WRegExpValidator(
 				"[A-Za-z][1-9][0-9]{0,2}");
 		validator.setMandatory(true);
@@ -484,8 +485,7 @@ class Layout extends TopicWidget {
 								if (messageBox.getButtonResult() == StandardButton.Yes) {
 									out.setText("The rocket is launched!");
 								} else {
-									out
-											.setText("The rocket is ready for launch...");
+									out.setText("The rocket is ready for launch...");
 								}
 								if (messageBox != null)
 									messageBox.remove();
@@ -505,8 +505,8 @@ class Layout extends TopicWidget {
 		button.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				StandardButton answer = WMessageBox.show("Launch phase",
-						"<p>Launch the rocket?</p>", EnumSet.of(
-								StandardButton.Ok, StandardButton.Cancel));
+						"<p>Launch the rocket?</p>",
+						EnumSet.of(StandardButton.Ok, StandardButton.Cancel));
 				if (answer == StandardButton.Ok) {
 					out.setText("The rocket is launched!");
 				} else {
@@ -604,8 +604,7 @@ class Layout extends TopicWidget {
 				container);
 		toggleB.disable();
 		WText text = new WText(container);
-		text
-				.setText("<p>These are the most import API classes and methods for working with CSS:</p>");
+		text.setText("<p>These are the most import API classes and methods for working with CSS:</p>");
 		final WTable table = new WTable(container);
 		table.setHeaderCount(1);
 		table.getElementAt(0, 0).addWidget(new WText("Method"));

@@ -445,9 +445,9 @@ public class WPopupMenu extends WMenu {
 			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
 			StringBuilder s = new StringBuilder();
 			s.append("new Wt3_3_4.WPopupMenu(")
-					.append(app.getJavaScriptClass()).append(',').append(
-							this.getJsRef()).append(',').append(
-							this.autoHideDelay_).append(");");
+					.append(app.getJavaScriptClass()).append(',')
+					.append(this.getJsRef()).append(',')
+					.append(this.autoHideDelay_).append(");");
 			this.setJavaScriptMember(" WPopupMenu", s.toString());
 			this.cancel_.addListener(this, new Signal.Listener() {
 				public void trigger() {
@@ -472,8 +472,7 @@ public class WPopupMenu extends WMenu {
 			WMenuItem item = this.itemAt(i);
 			item.setItemPadding(needPadding);
 			WPopupMenu subMenu = ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
-					.getMenu())
-					: null);
+					.getMenu()) : null);
 			if (subMenu != null) {
 				subMenu.adjustPadding();
 			}
@@ -504,8 +503,7 @@ public class WPopupMenu extends WMenu {
 		for (int i = 0; i < this.getCount(); ++i) {
 			WMenuItem item = this.itemAt(i);
 			WPopupMenu subMenu = ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item
-					.getMenu())
-					: null);
+					.getMenu()) : null);
 			if (subMenu != null) {
 				subMenu.connectSignals(topLevel);
 			}

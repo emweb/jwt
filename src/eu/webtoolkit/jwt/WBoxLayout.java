@@ -153,8 +153,8 @@ public class WBoxLayout extends WLayout {
 	}
 
 	public void addItem(WLayoutItem item) {
-		this.insertItem(this.getCount(), item, 0, EnumSet
-				.noneOf(AlignmentFlag.class));
+		this.insertItem(this.getCount(), item, 0,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	public void removeItem(WLayoutItem item) {
@@ -449,8 +449,8 @@ public class WBoxLayout extends WLayout {
 	 * EnumSet.noneOf(AlignmentFlag.class))}
 	 */
 	public final void insertWidget(int index, WWidget widget, int stretch) {
-		insertWidget(index, widget, stretch, EnumSet
-				.noneOf(AlignmentFlag.class));
+		insertWidget(index, widget, stretch,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
@@ -501,8 +501,8 @@ public class WBoxLayout extends WLayout {
 	 * EnumSet.noneOf(AlignmentFlag.class))}
 	 */
 	public final void insertLayout(int index, WLayout layout, int stretch) {
-		insertLayout(index, layout, stretch, EnumSet
-				.noneOf(AlignmentFlag.class));
+		insertLayout(index, layout, stretch,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
@@ -516,8 +516,8 @@ public class WBoxLayout extends WLayout {
 	 */
 	public void insertSpacing(int index, final WLength size) {
 		WWidget spacer = this.createSpacer(size);
-		this.insertItem(index, new WWidgetItem(spacer), 0, EnumSet
-				.noneOf(AlignmentFlag.class));
+		this.insertItem(index, new WWidgetItem(spacer), 0,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
@@ -532,8 +532,8 @@ public class WBoxLayout extends WLayout {
 	 */
 	public void insertStretch(int index, int stretch) {
 		WWidget spacer = this.createSpacer(new WLength(0));
-		this.insertItem(index, new WWidgetItem(spacer), stretch, EnumSet
-				.noneOf(AlignmentFlag.class));
+		this.insertItem(index, new WWidgetItem(spacer), stretch,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**

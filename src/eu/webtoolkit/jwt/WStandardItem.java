@@ -684,8 +684,8 @@ public class WStandardItem {
 	 */
 	public void setColumnCount(int columns) {
 		if (columns > this.getColumnCount()) {
-			this.insertColumns(this.getColumnCount(), columns
-					- this.getColumnCount());
+			this.insertColumns(this.getColumnCount(),
+					columns - this.getColumnCount());
 		} else {
 			if (columns < this.getColumnCount()) {
 				this.removeColumns(columns, this.getColumnCount() - columns);
@@ -712,7 +712,7 @@ public class WStandardItem {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertColumn(columnCount(), items);
 	 *   }
 	 * </pre>
@@ -778,7 +778,7 @@ public class WStandardItem {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertRow(rowCount(), items);
 	 *   }
 	 * </pre>
@@ -902,7 +902,7 @@ public class WStandardItem {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertRow(rowCount(), item);
 	 *   }
 	 * </pre>
@@ -949,7 +949,7 @@ public class WStandardItem {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertRows(rowCount(), items);
 	 *   }
 	 * </pre>
@@ -1016,7 +1016,7 @@ public class WStandardItem {
 	 * nodes), and is equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    setChild(row, 0, item);
 	 *   }
 	 * </pre>
@@ -1071,8 +1071,8 @@ public class WStandardItem {
 		if (result != null) {
 			WModelIndex idx = result.getIndex();
 			if (result.hasChildren()) {
-				this.model_.beginRemoveRows(result.getIndex(), 0, result
-						.getRowCount() - 1);
+				this.model_.beginRemoveRows(result.getIndex(), 0,
+						result.getRowCount() - 1);
 			}
 			this.orphanChild(result);
 			this.columns_.get(column).set(row, null);
@@ -1157,7 +1157,7 @@ public class WStandardItem {
 	 * column count by one). Is equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    removeColumns(column, 1);
 	 *   }
 	 * </pre>
@@ -1210,7 +1210,7 @@ public class WStandardItem {
 	 * by one). Is equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    removeRows(row, 1);
 	 *   }
 	 * </pre>

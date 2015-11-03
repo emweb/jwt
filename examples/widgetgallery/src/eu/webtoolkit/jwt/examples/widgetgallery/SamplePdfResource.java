@@ -40,7 +40,8 @@ class SamplePdfResource extends WPdfImage {
 		painter.setPen(thickPen);
 		painter.drawLine(50, 250, 150, 50);
 		painter.drawLine(150, 50, 250, 50);
-		painter.drawText(0, 0, 400, 300, EnumSet.of(AlignmentFlag.AlignCenter,
-				AlignmentFlag.AlignTop), "Hello, PDF");
+		painter.drawText(0, 0, 400, 300,
+				EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+				"Hello, PDF");
 	}
 }

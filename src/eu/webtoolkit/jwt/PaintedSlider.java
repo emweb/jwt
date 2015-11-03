@@ -38,8 +38,8 @@ class PaintedSlider extends WPaintedWidget {
 								: "v"));
 		if (this.slider_.getPositionScheme() == PositionScheme.Static) {
 			this.slider_.setPositionScheme(PositionScheme.Relative);
-			this.slider_.setOffsets(new WLength(0), EnumSet.of(Side.Left,
-					Side.Top));
+			this.slider_.setOffsets(new WLength(0),
+					EnumSet.of(Side.Left, Side.Top));
 		}
 		this.addChild(this.fill_ = new WContainerWidget());
 		this.addChild(this.handle_ = this.slider_.getCreateHandle());
@@ -94,36 +94,36 @@ class PaintedSlider extends WPaintedWidget {
 		double max = l - this.slider_.getHandleWidth();
 		boolean horizontal = o == Orientation.Horizontal;
 		StringBuilder mouseDownJS = new StringBuilder();
-		mouseDownJS.append("obj.setAttribute('down', Wt3_3_4").append(
-				".widgetCoordinates(obj, event).").append(u).append(");")
-				.append("Wt3_3_4.cancelEvent(event);");
+		mouseDownJS.append("obj.setAttribute('down', Wt3_3_4")
+				.append(".widgetCoordinates(obj, event).").append(u)
+				.append(");").append("Wt3_3_4.cancelEvent(event);");
 		StringBuilder computeD = new StringBuilder();
-		computeD.append("var objh = ").append(this.handle_.getJsRef()).append(
-				",").append("objf = ").append(this.fill_.getJsRef())
+		computeD.append("var objh = ").append(this.handle_.getJsRef())
+				.append(",").append("objf = ").append(this.fill_.getJsRef())
 				.append(",").append("objb = ").append(this.slider_.getJsRef())
 				.append(",").append("page_u = WT.pageCoordinates(event).")
-				.append(u).append(",").append(
-						"widget_page_u = WT.widgetPageCoordinates(objb).")
+				.append(u).append(",")
+				.append("widget_page_u = WT.widgetPageCoordinates(objb).")
 				.append(u).append(",").append("pos = page_u - widget_page_u,")
-				.append("rtl = ").append(rtl).append(",").append(
-						"horizontal = ").append(horizontal).append(";").append(
-						"if (rtl && horizontal)").append("pos = ").append(l)
+				.append("rtl = ").append(rtl).append(",")
+				.append("horizontal = ").append(horizontal).append(";")
+				.append("if (rtl && horizontal)").append("pos = ").append(l)
 				.append(" - pos;").append("var d = pos - down;");
 		StringBuilder mouseMovedJS = new StringBuilder();
-		mouseMovedJS.append("var down = obj.getAttribute('down');").append(
-				"var WT = Wt3_3_4;")
-				.append("if (down != null && down != '') {").append(
-						computeD.toString()).append(
-						"d = Math.max(0, Math.min(d, ").append(max).append(
-						"));").append("var v = Math.round(d/").append(
-						pixelsPerUnit).append(");").append("var intd = v*")
-				.append(pixelsPerUnit).append(";").append(
-						"if (Math.abs(WT.pxself(objh, '").append(dir).append(
-						"') - intd) > 1) {").append("objf.style.").append(size)
+		mouseMovedJS.append("var down = obj.getAttribute('down');")
+				.append("var WT = Wt3_3_4;")
+				.append("if (down != null && down != '') {")
+				.append(computeD.toString())
+				.append("d = Math.max(0, Math.min(d, ").append(max)
+				.append("));").append("var v = Math.round(d/")
+				.append(pixelsPerUnit).append(");").append("var intd = v*")
+				.append(pixelsPerUnit).append(";")
+				.append("if (Math.abs(WT.pxself(objh, '").append(dir)
+				.append("') - intd) > 1) {").append("objf.style.").append(size)
 				.append(" = ");
 		if (o == Orientation.Vertical) {
-			mouseMovedJS.append('(').append(max).append(" - intd + ").append(
-					this.slider_.getHandleWidth() / 2).append(")");
+			mouseMovedJS.append('(').append(max).append(" - intd + ")
+					.append(this.slider_.getHandleWidth() / 2).append(")");
 		} else {
 			mouseMovedJS.append("intd + ").append(
 					this.slider_.getHandleWidth() / 2);
@@ -135,19 +135,19 @@ class PaintedSlider extends WPaintedWidget {
 		} else {
 			mouseMovedJS.append(this.slider_.getMaximum()).append(" - v");
 		}
-		mouseMovedJS.append(";").append("var f = objb.onValueChange;").append(
-				"if (f) f(vs);");
+		mouseMovedJS.append(";").append("var f = objb.onValueChange;")
+				.append("if (f) f(vs);");
 		if (this.slider_.sliderMoved().needsUpdate(true)) {
 			mouseMovedJS.append(this.slider_.sliderMoved().createCall("vs"));
 		}
 		mouseMovedJS.append("}").append("}");
 		StringBuilder mouseUpJS = new StringBuilder();
-		mouseUpJS.append("var down = obj.getAttribute('down');").append(
-				"var WT = Wt3_3_4;")
-				.append("if (down != null && down != '') {").append(
-						computeD.toString()).append("d += ").append(
-						this.slider_.getHandleWidth() / 2).append(";").append(
-						this.sliderReleased_.createCall("Math.round(d)"))
+		mouseUpJS.append("var down = obj.getAttribute('down');")
+				.append("var WT = Wt3_3_4;")
+				.append("if (down != null && down != '') {")
+				.append(computeD.toString()).append("d += ")
+				.append(this.slider_.getHandleWidth() / 2).append(";")
+				.append(this.sliderReleased_.createCall("Math.round(d)"))
 				.append("obj.removeAttribute('down');").append("}");
 		boolean enabled = !this.slider_.isDisabled();
 		this.mouseDownJS_.setJavaScript("function(obj, event) {"
@@ -165,20 +165,21 @@ class PaintedSlider extends WPaintedWidget {
 
 	public void updateSliderPosition() {
 		double l = this.slider_.getOrientation() == Orientation.Horizontal ? this
-				.getW()
-				: this.getH();
+				.getW() : this.getH();
 		double pixelsPerUnit = (l - this.slider_.getHandleWidth())
 				/ this.getRange();
 		double u = ((double) this.slider_.getValue() - this.slider_
-				.getMinimum())
-				* pixelsPerUnit;
+				.getMinimum()) * pixelsPerUnit;
 		if (this.slider_.getOrientation() == Orientation.Horizontal) {
 			this.handle_.setOffsets(new WLength(u), EnumSet.of(Side.Left));
 			this.fill_.setWidth(new WLength(u + this.slider_.getHandleWidth()
 					/ 2));
 		} else {
-			this.handle_.setOffsets(new WLength(this.getH()
-					- this.slider_.getHandleWidth() - u), EnumSet.of(Side.Top));
+			this.handle_
+					.setOffsets(
+							new WLength(this.getH()
+									- this.slider_.getHandleWidth() - u),
+							EnumSet.of(Side.Top));
 			this.fill_.setHeight(new WLength(u + this.slider_.getHandleWidth()
 					/ 2));
 		}
@@ -197,9 +198,7 @@ class PaintedSlider extends WPaintedWidget {
 			element.addChild(east);
 			element.addChild(this.createSDomElement(app));
 			element.addChild(((WWebWidget) this.fill_).createSDomElement(app));
-			element
-					.addChild(((WWebWidget) this.handle_)
-							.createSDomElement(app));
+			element.addChild(((WWebWidget) this.handle_).createSDomElement(app));
 		}
 	}
 
@@ -292,9 +291,8 @@ class PaintedSlider extends WPaintedWidget {
 		if (WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {
 			x = (int) (this.getW() - x);
 		}
-		this
-				.onSliderReleased(this.slider_.getOrientation() == Orientation.Horizontal ? x
-						: y);
+		this.onSliderReleased(this.slider_.getOrientation() == Orientation.Horizontal ? x
+				: y);
 	}
 
 	private void onSliderReleased(int u) {
@@ -304,13 +302,13 @@ class PaintedSlider extends WPaintedWidget {
 			u = (int) this.getH() - (u + this.slider_.getHandleWidth() / 2);
 		}
 		double l = this.slider_.getOrientation() == Orientation.Horizontal ? this
-				.getW()
-				: this.getH();
+				.getW() : this.getH();
 		double pixelsPerUnit = (l - this.slider_.getHandleWidth())
 				/ this.getRange();
-		double v = Math.max(this.slider_.getMinimum(), Math.min(this.slider_
-				.getMaximum(), this.slider_.getMinimum()
-				+ (int) ((double) u / pixelsPerUnit + 0.5)));
+		double v = Math.max(
+				this.slider_.getMinimum(),
+				Math.min(this.slider_.getMaximum(), this.slider_.getMinimum()
+						+ (int) ((double) u / pixelsPerUnit + 0.5)));
 		this.slider_.sliderMoved().trigger((int) v);
 		this.slider_.setValue((int) v);
 		this.slider_.valueChanged().trigger(this.slider_.getValue());

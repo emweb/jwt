@@ -216,8 +216,8 @@ public class WProgressBar extends WInteractWidget {
 	public void resize(final WLength width, final WLength height) {
 		super.resize(width, height);
 		if (!height.isAuto()) {
-			this.setAttributeValue("style", "line-height: "
-					+ height.getCssText());
+			this.setAttributeValue("style",
+					"line-height: " + height.getCssText());
 		}
 	}
 
@@ -248,9 +248,8 @@ public class WProgressBar extends WInteractWidget {
 	 * want the width to change.
 	 */
 	protected void updateBar(final DomElement bar) {
-		bar.setProperty(Property.PropertyStyleWidth, String.valueOf(this
-				.getPercentage())
-				+ "%");
+		bar.setProperty(Property.PropertyStyleWidth,
+				String.valueOf(this.getPercentage()) + "%");
 	}
 
 	void updateDom(final DomElement element, boolean all) {

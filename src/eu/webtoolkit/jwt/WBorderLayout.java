@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * The five regions are composed of:
  * 
  * <pre>
- * ------------------------------------
+ *      ------------------------------------
  *      |              North               |
  *      ------------------------------------
  *      |      |                    |      |
@@ -236,8 +236,7 @@ public class WBorderLayout extends WLayout {
 	 */
 	public WWidget widgetAt(WBorderLayout.Position position) {
 		WWidgetItem item = ((this.getItemAt(position)) instanceof WWidgetItem ? (WWidgetItem) (this
-				.getItemAt(position))
-				: null);
+				.getItemAt(position)) : null);
 		if (item != null) {
 			return item.getWidget();
 		} else {
@@ -288,9 +287,10 @@ public class WBorderLayout extends WLayout {
 		case Center:
 			return this.grid_.items_.get(1).get(1);
 		default:
-			logger.error(new StringWriter().append(
-					"itemAtPosition(): invalid position:").append(
-					String.valueOf((int) position.getValue())).toString());
+			logger.error(new StringWriter()
+					.append("itemAtPosition(): invalid position:")
+					.append(String.valueOf((int) position.getValue()))
+					.toString());
 			return this.grid_.items_.get(1).get(1);
 		}
 	}

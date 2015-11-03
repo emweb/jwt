@@ -59,7 +59,7 @@ public class WFontMetrics {
 	 * This is the same as:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    font().size().sizeLength()
 	 *   }
 	 * </pre>

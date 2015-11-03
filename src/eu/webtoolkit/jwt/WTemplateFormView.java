@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * <div class="fragment">
  * 
  * <pre class="fragment">
- * ${&lt;if:UserName&gt;}
+ *    ${&lt;if:UserName&gt;}
  *      &lt;label for=&quot;${id:UserName}&quot;&gt;${UserName-label}&lt;/label&gt;
  *      ${UserName} ${UserName-info}
  *    ${&lt;/if:UserName&gt;}
@@ -96,7 +96,7 @@ public class WTemplateFormView extends WTemplate {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    addFunction("id", Functions.id);
 	 *    addFunction("tr", Functions.tr);
 	 *    addFunction("block", Functions.block);
@@ -126,7 +126,7 @@ public class WTemplateFormView extends WTemplate {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    addFunction("id", Functions.id);
 	 *    addFunction("tr", Functions.tr);
 	 *    addFunction("block", Functions.block);
@@ -256,8 +256,8 @@ public class WTemplateFormView extends WTemplate {
 			if (!(edit != null)) {
 				edit = this.createFormWidget(field);
 				if (!(edit != null)) {
-					logger.error(new StringWriter().append(
-							"updateViewField: createFormWidget('")
+					logger.error(new StringWriter()
+							.append("updateViewField: createFormWidget('")
 							.append(field).append("') returned 0").toString());
 					return;
 				}
@@ -448,13 +448,19 @@ public class WTemplateFormView extends WTemplate {
 			WText info, WWidget edit, final WValidator.Result validation) {
 		info.setText(validation.getMessage());
 		if (validated) {
-			WApplication.getInstance().getTheme().applyValidationStyle(edit,
-					validation, ValidationStyleFlag.ValidationAllStyles);
+			WApplication
+					.getInstance()
+					.getTheme()
+					.applyValidationStyle(edit, validation,
+							ValidationStyleFlag.ValidationAllStyles);
 			info.toggleStyleClass("Wt-error",
 					validation.getState() != WValidator.State.Valid, true);
 		} else {
-			WApplication.getInstance().getTheme().applyValidationStyle(edit,
-					validation, ValidationStyleFlag.ValidationNoStyle);
+			WApplication
+					.getInstance()
+					.getTheme()
+					.applyValidationStyle(edit, validation,
+							ValidationStyleFlag.ValidationNoStyle);
 			info.removeStyleClass("Wt-error", true);
 		}
 	}

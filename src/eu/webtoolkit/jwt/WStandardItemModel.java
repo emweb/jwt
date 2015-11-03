@@ -160,8 +160,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 		if (item == this.invisibleRootItem_) {
 			return null;
 		} else {
-			return this.createIndex(item.getRow(), item.getColumn(), item
-					.getParent());
+			return this.createIndex(item.getRow(), item.getColumn(),
+					item.getParent());
 		}
 	}
 
@@ -188,7 +188,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertColumn(columnCount(), items);
 	 *   }
 	 * </pre>
@@ -210,7 +210,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().insertColumn(column, items);
 	 *   }
 	 * </pre>
@@ -231,7 +231,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertRow(rowCount(), items);
 	 *   }
 	 * </pre>
@@ -253,7 +253,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().insertRow(row, items);
 	 *   }
 	 * </pre>
@@ -273,7 +273,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    insertRow(rowCount(), item);
 	 *   }
 	 * </pre>
@@ -293,7 +293,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().insertRow(row, item);
 	 *   }
 	 * </pre>
@@ -315,7 +315,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().child(row, column);
 	 *   }
 	 * </pre>
@@ -347,7 +347,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().setChild(row, column, item);
 	 *   }
 	 * </pre>
@@ -399,7 +399,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().takeColumn(column);
 	 *   }
 	 * </pre>
@@ -421,7 +421,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().takeRow(row);
 	 *   }
 	 * </pre>
@@ -443,7 +443,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    invisibleRootItem().takeItem(row, column);
 	 *   }
 	 * </pre>
@@ -667,8 +667,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	protected void beginInsertRows(final WModelIndex parent, int first, int last) {
 		super.beginInsertRows(parent, first, last);
-		this.insertHeaderData(this.rowHeaderData_, this.rowHeaderFlags_, this
-				.getItemFromIndex(parent), first, last - first + 1);
+		this.insertHeaderData(this.rowHeaderData_, this.rowHeaderFlags_,
+				this.getItemFromIndex(parent), first, last - first + 1);
 	}
 
 	protected void beginRemoveColumns(final WModelIndex parent, int first,
@@ -680,8 +680,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 
 	protected void beginRemoveRows(final WModelIndex parent, int first, int last) {
 		super.beginRemoveRows(parent, first, last);
-		this.removeHeaderData(this.rowHeaderData_, this.rowHeaderFlags_, this
-				.getItemFromIndex(parent), first, last - first + 1);
+		this.removeHeaderData(this.rowHeaderData_, this.rowHeaderFlags_,
+				this.getItemFromIndex(parent), first, last - first + 1);
 	}
 
 	private int sortRole_;
@@ -709,8 +709,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 			} else {
 				WStandardItem parent = (WStandardItem) index
 						.getInternalPointer();
-				WStandardItem c = parent.getChild(index.getRow(), index
-						.getColumn());
+				WStandardItem c = parent.getChild(index.getRow(),
+						index.getColumn());
 				if (lazyCreate && !(c != null)) {
 					c = this.getItemPrototype().clone();
 					parent.setChild(index.getRow(), index.getColumn(), c);

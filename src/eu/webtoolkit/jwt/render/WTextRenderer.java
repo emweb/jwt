@@ -234,9 +234,9 @@ public abstract class WTextRenderer {
 				if (docStyles != null) {
 					styles.use(docStyles);
 				} else {
-					logger.error(new StringWriter().append(
-							"Error parsing style sheet: ").append(
-							parser.getLastError()).toString());
+					logger.error(new StringWriter()
+							.append("Error parsing style sheet: ")
+							.append(parser.getLastError()).toString());
 				}
 			}
 			docBlock.setStyleSheet(styles);
@@ -265,11 +265,11 @@ public abstract class WTextRenderer {
 						this, Double.MAX_VALUE, collapseMarginBottom);
 				if (isEpsilonMore(currentPs.maxX, maxX)) {
 					if (!tooWide) {
-						logger.warn(new StringWriter().append(
-								"contents too wide for page. (").append(
-								String.valueOf(currentPs.maxX)).append(" > ")
-								.append(String.valueOf(maxX)).append(")")
-								.toString());
+						logger.warn(new StringWriter()
+								.append("contents too wide for page. (")
+								.append(String.valueOf(currentPs.maxX))
+								.append(" > ").append(String.valueOf(maxX))
+								.append(")").toString());
 						tooWide = true;
 					}
 					maxX = currentPs.maxX;
@@ -321,7 +321,7 @@ public abstract class WTextRenderer {
 	 * <li>multiples: h1, h2, h3 {}
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    h1.a1#one.a2 h3#two.c {}
 	 *   }
 	 * </pre>
@@ -361,7 +361,7 @@ public abstract class WTextRenderer {
 	 * This is an overloaded member, provided for convenience. Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    setStyleSheetText(styleSheetText() + <filename_contents>)
 	 *   }
 	 * </pre>
@@ -386,7 +386,7 @@ public abstract class WTextRenderer {
 	 * This is an overloaded member, provided for convenience. Equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    setStyleSheetText("")
 	 *   }
 	 * </pre>

@@ -88,8 +88,8 @@ public class FacebookService extends OAuthService {
 			configurationProperty(ClientSecretProperty);
 			return true;
 		} catch (final RuntimeException e) {
-			logger.info(new StringWriter().append("not configured: ").append(
-					e.toString()).toString());
+			logger.info(new StringWriter().append("not configured: ")
+					.append(e.toString()).toString());
 			return false;
 		}
 	}

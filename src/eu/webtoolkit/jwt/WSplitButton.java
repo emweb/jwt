@@ -73,8 +73,7 @@ public class WSplitButton extends WCompositeWidget {
 	 */
 	public WPushButton getActionButton() {
 		return ((this.impl_.widget(0)) instanceof WPushButton ? (WPushButton) (this.impl_
-				.widget(0))
-				: null);
+				.widget(0)) : null);
 	}
 
 	/**
@@ -84,8 +83,7 @@ public class WSplitButton extends WCompositeWidget {
 	 */
 	public WPushButton getDropDownButton() {
 		return ((this.impl_.widget(1)) instanceof WPushButton ? (WPushButton) (this.impl_
-				.widget(1))
-				: null);
+				.widget(1)) : null);
 	}
 
 	/**

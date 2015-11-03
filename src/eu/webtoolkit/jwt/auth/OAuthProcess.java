@@ -129,12 +129,12 @@ public class OAuthProcess extends WObject {
 	public void connectStartAuthenticate(final AbstractEventSignal s) {
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			StringBuilder js = new StringBuilder();
-			js.append("function(object, event) {").append(
-					"Wt3_3_4.PopupWindow(Wt3_3_4").append(",").append(
-					WWebWidget.jsStringLiteral(this.getAuthorizeUrl())).append(
-					", ").append(this.service_.getPopupWidth()).append(", ")
-					.append(this.service_.getPopupHeight()).append(");")
-					.append("}");
+			js.append("function(object, event) {")
+					.append("Wt3_3_4.PopupWindow(Wt3_3_4").append(",")
+					.append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
+					.append(", ").append(this.service_.getPopupWidth())
+					.append(", ").append(this.service_.getPopupHeight())
+					.append(");").append("}");
 			s.addListener(js.toString());
 		}
 		s.addListener(this, new Signal.Listener() {
@@ -311,17 +311,17 @@ public class OAuthProcess extends WObject {
 					if (type.startsWith("application/json")) {
 						return this.parseJsonToken(response);
 					} else {
-						throw new OAuthProcess.TokenError(WString
-								.tr("Wt.Auth.OAuthService.badresponse"));
+						throw new OAuthProcess.TokenError(
+								WString.tr("Wt.Auth.OAuthService.badresponse"));
 					}
 				}
 			} else {
-				throw new OAuthProcess.TokenError(WString
-						.tr("Wt.Auth.OAuthService.badresponse"));
+				throw new OAuthProcess.TokenError(
+						WString.tr("Wt.Auth.OAuthService.badresponse"));
 			}
 		} else {
-			throw new OAuthProcess.TokenError(WString
-					.tr("Wt.Auth.OAuthService.badresponse"));
+			throw new OAuthProcess.TokenError(
+					WString.tr("Wt.Auth.OAuthService.badresponse"));
 		}
 	}
 
@@ -354,14 +354,15 @@ public class OAuthProcess extends WObject {
 		try {
 			String url = this.service_.getTokenEndpoint();
 			StringBuilder ss = new StringBuilder();
-			ss.append("grant_type=authorization_code").append("&client_id=")
+			ss.append("grant_type=authorization_code")
+					.append("&client_id=")
 					.append(Utils.urlEncode(this.service_.getClientId()))
-					.append("&client_secret=").append(
-							Utils.urlEncode(this.service_.getClientSecret()))
-					.append("&redirect_uri=").append(
-							Utils.urlEncode(this.service_
-									.getGenerateRedirectEndpoint())).append(
-							"&code=").append(authorizationCode);
+					.append("&client_secret=")
+					.append(Utils.urlEncode(this.service_.getClientSecret()))
+					.append("&redirect_uri=")
+					.append(Utils.urlEncode(this.service_
+							.getGenerateRedirectEndpoint())).append("&code=")
+					.append(authorizationCode);
 			HttpClient client = new HttpClient(this);
 			client.setTimeout(15);
 			client.done().addListener(this,
@@ -391,8 +392,8 @@ public class OAuthProcess extends WObject {
 		if (err == null) {
 			this.doParseTokenResponse(response);
 		} else {
-			logger.error(new StringWriter().append("handleToken(): ").append(
-					err.getMessage()).toString());
+			logger.error(new StringWriter().append("handleToken(): ")
+					.append(err.getMessage()).toString());
 			this.setError(new WString(err.getMessage()));
 		}
 		WApplication app = WApplication.getInstance();
@@ -419,17 +420,17 @@ public class OAuthProcess extends WObject {
 				}
 				return new OAuthAccessToken(accessToken, expires, "");
 			} else {
-				throw new OAuthProcess.TokenError(WString
-						.tr("Wt.Auth.OAuthService.badresponse"));
+				throw new OAuthProcess.TokenError(
+						WString.tr("Wt.Auth.OAuthService.badresponse"));
 			}
 		} else {
 			String errorE = AuthUtils.getParamValue(params, "error");
 			if (errorE != null) {
-				throw new OAuthProcess.TokenError(WString
-						.tr("Wt.Auth.OAuthService." + errorE));
+				throw new OAuthProcess.TokenError(
+						WString.tr("Wt.Auth.OAuthService." + errorE));
 			} else {
-				throw new OAuthProcess.TokenError(WString
-						.tr("Wt.Auth.OAuthService.badresponse"));
+				throw new OAuthProcess.TokenError(
+						WString.tr("Wt.Auth.OAuthService.badresponse"));
 			}
 		}
 	}
@@ -447,8 +448,8 @@ public class OAuthProcess extends WObject {
 		if (!ok) {
 			logger.error(new StringWriter().append("parseJsonToken(): ")
 					.append(pe.toString()).toString());
-			throw new OAuthProcess.TokenError(WString
-					.tr("Wt.Auth.OAuthService.badjson"));
+			throw new OAuthProcess.TokenError(
+					WString.tr("Wt.Auth.OAuthService.badjson"));
 		} else {
 			if (response.getStatus() == 200) {
 				try {
@@ -459,20 +460,20 @@ public class OAuthProcess extends WObject {
 					if (secs > 0) {
 						expires = WDate.getCurrentDate().addSeconds(secs);
 					}
-					String refreshToken = JsonUtils.orIfNullString(root
-							.get("refreshToken"), "");
+					String refreshToken = JsonUtils.orIfNullString(
+							root.get("refreshToken"), "");
 					return new OAuthAccessToken(accessToken, expires,
 							refreshToken);
 				} catch (final RuntimeException e) {
-					logger.error(new StringWriter().append(
-							"token response error: ").append(e.toString())
-							.toString());
-					throw new OAuthProcess.TokenError(WString
-							.tr("Wt.Auth.OAuthService.badresponse"));
+					logger.error(new StringWriter()
+							.append("token response error: ")
+							.append(e.toString()).toString());
+					throw new OAuthProcess.TokenError(
+							WString.tr("Wt.Auth.OAuthService.badresponse"));
 				}
 			} else {
-				throw new OAuthProcess.TokenError(WString
-						.tr("Wt.Auth.OAuthService."
+				throw new OAuthProcess.TokenError(
+						WString.tr("Wt.Auth.OAuthService."
 								+ JsonUtils.orIfNullString(root.get("error"),
 										"missing error")));
 			}
@@ -483,15 +484,17 @@ public class OAuthProcess extends WObject {
 		StringBuilder url = new StringBuilder();
 		url.append(this.service_.getAuthorizationEndpoint());
 		boolean hasQuery = url.toString().indexOf('?') != -1;
-		url.append(hasQuery ? '&' : '?').append("client_id=").append(
-				Utils.urlEncode(this.service_.getClientId())).append(
-				"&redirect_uri=").append(
-				Utils.urlEncode(this.service_.getGenerateRedirectEndpoint()))
-				.append("&scope=").append(Utils.urlEncode(this.scope_)).append(
-						"&response_type=code").append("&state=").append(
-						Utils.urlEncode(this.oAuthState_));
-		logger.info(new StringWriter().append("authorize URL: ").append(
-				url.toString()).toString());
+		url.append(hasQuery ? '&' : '?')
+				.append("client_id=")
+				.append(Utils.urlEncode(this.service_.getClientId()))
+				.append("&redirect_uri=")
+				.append(Utils.urlEncode(this.service_
+						.getGenerateRedirectEndpoint())).append("&scope=")
+				.append(Utils.urlEncode(this.scope_))
+				.append("&response_type=code").append("&state=")
+				.append(Utils.urlEncode(this.oAuthState_));
+		logger.info(new StringWriter().append("authorize URL: ")
+				.append(url.toString()).toString());
 		return url.toString();
 	}
 

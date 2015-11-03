@@ -266,8 +266,10 @@ public class WDialog extends WPopupWidget {
 	public WContainerWidget getFooter() {
 		if (!(this.footer_ != null)) {
 			this.footer_ = new WContainerWidget();
-			WApplication.getInstance().getTheme().apply(this, this.footer_,
-					WidgetThemeRole.DialogFooterRole);
+			WApplication
+					.getInstance()
+					.getTheme()
+					.apply(this, this.footer_, WidgetThemeRole.DialogFooterRole);
 			WContainerWidget layoutContainer = (WContainerWidget) this.impl_
 					.resolveWidget("layout");
 			layoutContainer.getLayout().addWidget(this.footer_);
@@ -471,14 +473,13 @@ public class WDialog extends WPopupWidget {
 			}
 			if (this.resizable_) {
 				Resizable.loadJavaScript(WApplication.getInstance());
-				this
-						.setJavaScriptMember(
-								" Resizable",
-								"(new Wt3_3_4.Resizable(Wt3_3_4,"
-										+ this.getJsRef()
-										+ ")).onresize(function(w, h, done) {var obj = $('#"
-										+ this.getId()
-										+ "').data('obj');if (obj) obj.onresize(w, h, done); });");
+				this.setJavaScriptMember(
+						" Resizable",
+						"(new Wt3_3_4.Resizable(Wt3_3_4,"
+								+ this.getJsRef()
+								+ ")).onresize(function(w, h, done) {var obj = $('#"
+								+ this.getId()
+								+ "').data('obj');if (obj) obj.onresize(w, h, done); });");
 			}
 		}
 	}
@@ -504,8 +505,11 @@ public class WDialog extends WPopupWidget {
 			if (!(this.closeIcon_ != null)) {
 				this.closeIcon_ = new WText();
 				this.titleBar_.insertWidget(0, this.closeIcon_);
-				WApplication.getInstance().getTheme().apply(this,
-						this.closeIcon_, WidgetThemeRole.DialogCloseIconRole);
+				WApplication
+						.getInstance()
+						.getTheme()
+						.apply(this, this.closeIcon_,
+								WidgetThemeRole.DialogCloseIconRole);
 				this.closeIcon_.clicked().addListener(this,
 						new Signal1.Listener<WMouseEvent>() {
 							public void trigger(WMouseEvent e1) {
@@ -541,8 +545,7 @@ public class WDialog extends WPopupWidget {
 				if (this.footer_ != null) {
 					for (int i = 0; i < this.getFooter().getCount(); ++i) {
 						WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
-								.getFooter().getWidget(i))
-								: null);
+								.getFooter().getWidget(i)) : null);
 						if (b != null && b.isDefault()) {
 							this.enterConnection1_ = app.globalEnterPressed()
 									.addListener(this, new Signal.Listener() {
@@ -586,8 +589,7 @@ public class WDialog extends WPopupWidget {
 					c.pushDialog(this, animation);
 				}
 				if (this.modal_) {
-					this
-							.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
+					this.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
 				}
 			} else {
 				if (c != null) {
@@ -612,11 +614,9 @@ public class WDialog extends WPopupWidget {
 	public void positionAt(final WMouseEvent ev) {
 		this.setPositionScheme(PositionScheme.Fixed);
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
-			this.setOffsets(new WLength(ev.getWindow().x), EnumSet
-					.of(Side.Left));
-			this
-					.setOffsets(new WLength(ev.getWindow().y), EnumSet
-							.of(Side.Top));
+			this.setOffsets(new WLength(ev.getWindow().x),
+					EnumSet.of(Side.Left));
+			this.setOffsets(new WLength(ev.getWindow().y), EnumSet.of(Side.Top));
 		}
 	}
 
@@ -682,31 +682,29 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this
-					.doJavaScript("new Wt3_3_4.WDialog("
-							+ app.getJavaScriptClass()
-							+ ","
-							+ this.getJsRef()
-							+ ","
-							+ this.titleBar_.getJsRef()
-							+ ","
-							+ (centerX ? "1" : "0")
-							+ ","
-							+ (centerY ? "1" : "0")
-							+ ","
-							+ (this.moved_.isConnected() ? '"' + this.moved_
-									.getName() + '"' : "null")
-							+ ","
-							+ (this.resized_.isConnected() ? '"' + this.resized_
-									.getName() + '"'
-									: "null") + ");");
+			this.doJavaScript("new Wt3_3_4.WDialog("
+					+ app.getJavaScriptClass()
+					+ ","
+					+ this.getJsRef()
+					+ ","
+					+ this.titleBar_.getJsRef()
+					+ ","
+					+ (centerX ? "1" : "0")
+					+ ","
+					+ (centerY ? "1" : "0")
+					+ ","
+					+ (this.moved_.isConnected() ? '"' + this.moved_.getName() + '"'
+							: "null")
+					+ ","
+					+ (this.resized_.isConnected() ? '"' + this.resized_
+							.getName() + '"' : "null") + ");");
 			if (!app.getEnvironment().agentIsIElt(9)) {
 				String js = WString.tr("Wt.WDialog.CenterJS").toString();
 				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
 				StringUtils.replace(js, "$centerX", centerX ? "1" : "0");
 				StringUtils.replace(js, "$centerY", centerY ? "1" : "0");
-				this.impl_.bindString("center-script", "<script>"
-						+ Utils.htmlEncode(js) + "</script>",
+				this.impl_.bindString("center-script",
+						"<script>" + Utils.htmlEncode(js) + "</script>",
 						TextFormat.XHTMLUnsafeText);
 			} else {
 				this.impl_.bindEmpty("center-script");
@@ -756,8 +754,7 @@ public class WDialog extends WPopupWidget {
 		this.escapeIsReject_ = false;
 		this.autoFocus_ = true;
 		this.impl_ = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
-				.getImplementation())
-				: null);
+				.getImplementation()) : null);
 		String CSS_RULES_NAME = "Wt::WDialog";
 		WApplication app = WApplication.getInstance();
 		if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -766,8 +763,7 @@ public class WDialog extends WPopupWidget {
 			}
 			String position = app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute"
 					: "fixed";
-			app
-					.getStyleSheet()
+			app.getStyleSheet()
 					.addRule(
 							"div.Wt-dialog",
 							""
@@ -777,14 +773,12 @@ public class WDialog extends WPopupWidget {
 											: "left: 0px; top: 0px;"),
 							CSS_RULES_NAME);
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-				app
-						.getStyleSheet()
+				app.getStyleSheet()
 						.addRule(
 								"div.Wt-dialogcover",
 								"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop) + 'px' );");
 				if (!app.getEnvironment().hasAjax()) {
-					app
-							.getStyleSheet()
+					app.getStyleSheet()
 							.addRule(
 									"div.Wt-dialog",
 									"position: absolute;left: expression((ignoreMe2 = document.documentElement.scrollLeft + document.documentElement.clientWidth/2) + 'px' );top: expression((ignoreMe = document.documentElement.scrollTop + document.documentElement.clientHeight/2) + 'px' );");
@@ -793,8 +787,8 @@ public class WDialog extends WPopupWidget {
 		}
 		app.loadJavaScript("js/WDialog.js", wtjs1());
 		WContainerWidget layoutContainer = new WContainerWidget();
-		WApplication.getInstance().getTheme().apply(this, layoutContainer,
-				WidgetThemeRole.DialogContent);
+		WApplication.getInstance().getTheme()
+				.apply(this, layoutContainer, WidgetThemeRole.DialogContent);
 		layoutContainer.addStyleClass("dialog-layout");
 		WVBoxLayout layout = new WVBoxLayout(layoutContainer);
 		layout.setContentsMargins(0, 0, 0, 0);
@@ -817,9 +811,8 @@ public class WDialog extends WPopupWidget {
 				this.setPositionScheme(PositionScheme.Fixed);
 			}
 		} else {
-			this
-					.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
-							: PositionScheme.Fixed);
+			this.setPositionScheme(app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? PositionScheme.Absolute
+					: PositionScheme.Fixed);
 		}
 	}
 
@@ -835,8 +828,7 @@ public class WDialog extends WPopupWidget {
 		if (this.footer_ != null && c != null && c.isTopDialogRendered(this)) {
 			for (int i = 0; i < this.getFooter().getCount(); ++i) {
 				WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
-						.getFooter().getWidget(i))
-						: null);
+						.getFooter().getWidget(i)) : null);
 				if (b != null && b.isDefault()) {
 					if (b.isEnabled()) {
 						b.clicked().trigger(new WMouseEvent());

@@ -69,11 +69,9 @@ class WWidgetRasterPainter extends WWidgetPainter {
 		DomElement img = DomElement.getForUpdate('i' + this.widget_.getId(),
 				DomElementType.DomElement_IMG);
 		if (this.widget_.sizeChanged_) {
-			img
-					.setAttribute("width", String
-							.valueOf(this.widget_.renderWidth_));
-			img.setAttribute("height", String
-					.valueOf(this.widget_.renderHeight_));
+			img.setAttribute("width", String.valueOf(this.widget_.renderWidth_));
+			img.setAttribute("height",
+					String.valueOf(this.widget_.renderHeight_));
 			this.widget_.sizeChanged_ = false;
 		}
 		img.setAttribute("src", resource.generateUrl());

@@ -175,8 +175,7 @@ public class WTreeTable extends WCompositeWidget {
 	 */
 	public WTreeTableNode getTreeRoot() {
 		return ((this.tree_.getTreeRoot()) instanceof WTreeTableNode ? (WTreeTableNode) (this.tree_
-				.getTreeRoot())
-				: null);
+				.getTreeRoot()) : null);
 	}
 
 	/**
@@ -187,8 +186,7 @@ public class WTreeTable extends WCompositeWidget {
 	 */
 	public void setTree(WTree root, final CharSequence h) {
 		WContainerWidget parent = ((this.tree_.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.tree_
-				.getParent())
-				: null);
+				.getParent()) : null);
 		if (this.tree_ != null)
 			this.tree_.remove();
 		parent.addWidget(this.tree_ = root);
@@ -233,16 +231,13 @@ public class WTreeTable extends WCompositeWidget {
 	public WText header(int column) {
 		if (column == 0) {
 			return (((((this.impl_.getChildren().get(0)) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-					.getChildren().get(0))
-					: null)).getChildren().get(2)) instanceof WText ? (WText) ((((this.impl_
+					.getChildren().get(0)) : null)).getChildren().get(2)) instanceof WText ? (WText) ((((this.impl_
 					.getChildren().get(0)) instanceof WContainerWidget ? (WContainerWidget) (this.impl_
-					.getChildren().get(0))
-					: null)).getChildren().get(2))
+					.getChildren().get(0)) : null)).getChildren().get(2))
 					: null);
 		} else {
 			return ((this.headerContainer_.getChildren().get(column - 1)) instanceof WText ? (WText) (this.headerContainer_
-					.getChildren().get(column - 1))
-					: null);
+					.getChildren().get(column - 1)) : null);
 		}
 	}
 
@@ -277,8 +272,9 @@ public class WTreeTable extends WCompositeWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
-		this.setJavaScriptMember(" WTreeTable", "new Wt3_3_4.WTreeTable("
-				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+		this.setJavaScriptMember(" WTreeTable",
+				"new Wt3_3_4.WTreeTable(" + app.getJavaScriptClass() + ","
+						+ this.getJsRef() + ");");
 	}
 
 	static WJavaScriptPreamble wtjs1() {

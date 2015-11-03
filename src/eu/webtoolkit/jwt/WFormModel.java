@@ -218,8 +218,8 @@ public class WFormModel extends WObject {
 		if (i != null) {
 			i.visible = visible;
 		} else {
-			logger.error(new StringWriter().append("setVisible(): ").append(
-					field).append(" not in model").toString());
+			logger.error(new StringWriter().append("setVisible(): ")
+					.append(field).append(" not in model").toString());
 		}
 	}
 
@@ -256,8 +256,8 @@ public class WFormModel extends WObject {
 		if (i != null) {
 			i.readOnly = readOnly;
 		} else {
-			logger.error(new StringWriter().append("setReadOnly(): ").append(
-					field).append(" not in model").toString());
+			logger.error(new StringWriter().append("setReadOnly(): ")
+					.append(field).append(" not in model").toString());
 		}
 	}
 
@@ -343,8 +343,8 @@ public class WFormModel extends WObject {
 				this.addChild(validator);
 			}
 		} else {
-			logger.error(new StringWriter().append("setValidator(): ").append(
-					field).append(" not in model").toString());
+			logger.error(new StringWriter().append("setValidator(): ")
+					.append(field).append(" not in model").toString());
 		}
 	}
 
@@ -383,8 +383,10 @@ public class WFormModel extends WObject {
 		if (i != null) {
 			final WFormModel.FieldData d = i;
 			if (d.validator != null) {
-				this.setValidation(field, d.validator.validate(StringUtils
-						.asString(this.valueText(field)).toString()));
+				this.setValidation(
+						field,
+						d.validator.validate(StringUtils.asString(
+								this.valueText(field)).toString()));
 			} else {
 				this.setValidation(field, Valid);
 			}
@@ -409,8 +411,8 @@ public class WFormModel extends WObject {
 		if (i != null) {
 			i.validated = validated;
 		} else {
-			logger.error(new StringWriter().append("setValidated(): ").append(
-					field).append(" not in model").toString());
+			logger.error(new StringWriter().append("setValidated(): ")
+					.append(field).append(" not in model").toString());
 		}
 	}
 
@@ -463,8 +465,8 @@ public class WFormModel extends WObject {
 			i.validation = result;
 			this.setValidated(field, true);
 		} else {
-			logger.error(new StringWriter().append("setValidation(): ").append(
-					field).append(" not in model").toString());
+			logger.error(new StringWriter().append("setValidation(): ")
+					.append(field).append(" not in model").toString());
 		}
 	}
 

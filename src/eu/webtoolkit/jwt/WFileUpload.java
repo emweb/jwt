@@ -405,7 +405,7 @@ public class WFileUpload extends WWebWidget {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    WFileUpload *fu = new WFileUpload(root());
 	 *    fu.setFilters("image/*");
 	 *   }
@@ -444,9 +444,8 @@ public class WFileUpload extends WWebWidget {
 							WFileUpload.this.onData(e1, e2);
 						}
 					});
-			this
-					.setJavaScriptMember(WT_RESIZE_JS,
-							"function(self, w, h) {if (w >= 0) $(self).find('input').width(w);}");
+			this.setJavaScriptMember(WT_RESIZE_JS,
+					"function(self, w, h) {if (w >= 0) $(self).find('input').width(w);}");
 		} else {
 			this.fileUploadTarget_ = null;
 		}
@@ -502,9 +501,7 @@ public class WFileUpload extends WWebWidget {
 					.getInstance()));
 		}
 		if (this.fileUploadTarget_ != null && this.flags_.get(BIT_DO_UPLOAD)) {
-			element
-					.setAttribute("action", this.fileUploadTarget_
-							.generateUrl());
+			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			element.callMethod("submit()");
 			this.flags_.clear(BIT_DO_UPLOAD);
 			if (containsProgress) {
@@ -552,9 +549,7 @@ public class WFileUpload extends WWebWidget {
 			DomElement i = DomElement
 					.createNew(DomElementType.DomElement_IFRAME);
 			i.setProperty(Property.PropertyClass, "Wt-resource");
-			i
-					.setProperty(Property.PropertySrc, this.fileUploadTarget_
-							.getUrl());
+			i.setProperty(Property.PropertySrc, this.fileUploadTarget_.getUrl());
 			i.setName("if" + this.getId());
 			if (app.getEnvironment().agentIsIE()) {
 				i.setAttribute("APPLICATION", "yes");
@@ -586,14 +581,13 @@ public class WFileUpload extends WWebWidget {
 				this.updateSignalConnection(input, change, "change", true);
 			}
 			form.addChild(input);
-			this
-					.doJavaScript("window.addEventListener('message', function(event) {if ("
-							+ this.getJsRef()
-							+ ".action.indexOf(event.origin) === 0) {if (event.data.fu == '"
-							+ this.getId()
-							+ "')"
-							+ app.getJavaScriptClass()
-							+ "._p_.update(null, event.data.signal, null, true);}}, false);");
+			this.doJavaScript("window.addEventListener('message', function(event) {if ("
+					+ this.getJsRef()
+					+ ".action.indexOf(event.origin) === 0) {if (event.data.fu == '"
+					+ this.getId()
+					+ "')"
+					+ app.getJavaScriptClass()
+					+ "._p_.update(null, event.data.signal, null, true);}}, false);");
 		} else {
 			result.setAttribute("type", "file");
 			if (this.flags_.get(BIT_MULTIPLE)) {
@@ -658,9 +652,9 @@ public class WFileUpload extends WWebWidget {
 
 	protected void setFormData(final WObject.FormData formData) {
 		this.setFiles(formData.files);
-		logger.debug(new StringWriter().append("setFormData() : ").append(
-				String.valueOf(formData.files.size())).append(" file(s)")
-				.toString());
+		logger.debug(new StringWriter().append("setFormData() : ")
+				.append(String.valueOf(formData.files.size()))
+				.append(" file(s)").toString());
 		if (!formData.files.isEmpty()) {
 			this.uploaded().trigger();
 		}

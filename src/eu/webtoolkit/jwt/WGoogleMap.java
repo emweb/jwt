@@ -252,16 +252,16 @@ public class WGoogleMap extends WCompositeWidget {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("var marker = ");
 			write(strm, pos);
-			strm.append(";").append(this.getJsRef()).append(
-					".map.addOverlay(marker);");
+			strm.append(";").append(this.getJsRef())
+					.append(".map.addOverlay(marker);");
 		} else {
 			strm.append("var position = ");
 			write(strm, pos);
 			strm.append(";").append("var marker = new google.maps.Marker({")
-					.append("position: position,").append("map: ").append(
-							this.getJsRef()).append(".map").append("});")
-					.append(this.getJsRef()).append(
-							".map.overlays.push(marker);");
+					.append("position: position,").append("map: ")
+					.append(this.getJsRef()).append(".map").append("});")
+					.append(this.getJsRef())
+					.append(".map.overlays.push(marker);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -287,21 +287,20 @@ public class WGoogleMap extends WCompositeWidget {
 		}
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
 			strm.append("var poly = new google.maps.Polyline(waypoints, \"")
-					.append(color.getCssText()).append("\", ").append(
-							String.valueOf(width)).append(", ").append(
-							String.valueOf(opacity)).append(");").append(
-							this.getJsRef()).append(".map.addOverlay(poly);");
+					.append(color.getCssText()).append("\", ")
+					.append(String.valueOf(width)).append(", ")
+					.append(String.valueOf(opacity)).append(");")
+					.append(this.getJsRef()).append(".map.addOverlay(poly);");
 		} else {
-			strm
-					.append(
-							"var poly = new google.maps.Polyline({path: waypoints,strokeColor: \"")
-					.append(color.getCssText()).append("\",").append(
-							"strokeOpacity: ").append(String.valueOf(opacity))
-					.append(",").append("strokeWeight: ").append(
-							String.valueOf(width)).append("});").append(
-							"poly.setMap(").append(this.getJsRef()).append(
-							".map);").append(this.getJsRef()).append(
-							".map.overlays.push(poly);");
+			strm.append(
+					"var poly = new google.maps.Polyline({path: waypoints,strokeColor: \"")
+					.append(color.getCssText()).append("\",")
+					.append("strokeOpacity: ").append(String.valueOf(opacity))
+					.append(",").append("strokeWeight: ")
+					.append(String.valueOf(width)).append("});")
+					.append("poly.setMap(").append(this.getJsRef())
+					.append(".map);").append(this.getJsRef())
+					.append(".map.overlays.push(poly);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -360,21 +359,19 @@ public class WGoogleMap extends WCompositeWidget {
 			strm.append("var mapLocal = ").append(this.getJsRef() + ".map;")
 					.append("var latLng = ");
 			write(strm, center);
-			strm
-					.append(";")
-					.append(
-							"var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
-					.append(String.valueOf(radius)).append(
-							",   center:  latLng  ,  fillOpacity: \"").append(
-							String.valueOf(fillOpacity)).append(
-							"\",  fillColor: \"")
-					.append(fillColor.getCssText()).append(
-							"\",  strokeWeight: ").append(
-							String.valueOf(strokeWidth)).append(
-							",  strokeColor:\"").append(
-							strokeColor.getCssText()).append(
-							"\",  strokeOpacity: ").append(
-							String.valueOf(strokeOpacity)).append("} );");
+			strm.append(";")
+					.append("var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
+					.append(String.valueOf(radius))
+					.append(",   center:  latLng  ,  fillOpacity: \"")
+					.append(String.valueOf(fillOpacity))
+					.append("\",  fillColor: \"")
+					.append(fillColor.getCssText())
+					.append("\",  strokeWeight: ")
+					.append(String.valueOf(strokeWidth))
+					.append(",  strokeColor:\"")
+					.append(strokeColor.getCssText())
+					.append("\",  strokeOpacity: ")
+					.append(String.valueOf(strokeOpacity)).append("} );");
 			this.doGmJavaScript(strm.toString());
 		}
 	}
@@ -404,11 +401,11 @@ public class WGoogleMap extends WCompositeWidget {
 			strm.append("var position = ");
 			write(strm, pos);
 			strm.append(";").append("var marker = new google.maps.Marker({")
-					.append("position: position,").append("icon: \"").append(
-							iconURL).append("\",").append("map: ").append(
-							this.getJsRef()).append(".map").append("});")
-					.append(this.getJsRef()).append(
-							".map.overlays.push(marker);");
+					.append("position: position,").append("icon: \"")
+					.append(iconURL).append("\",").append("map: ")
+					.append(this.getJsRef()).append(".map").append("});")
+					.append(this.getJsRef())
+					.append(".map.overlays.push(marker);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -421,15 +418,15 @@ public class WGoogleMap extends WCompositeWidget {
 			this.doGmJavaScript(this.getJsRef() + ".map.clearOverlays();");
 		} else {
 			StringWriter strm = new StringWriter();
-			strm.append("var mapLocal = ").append(
-					this.getJsRef() + ".map, i;\n").append(
-					"if (mapLocal.overlays) {\n").append(
-					"for (i in mapLocal.overlays) {\n").append(
-					"mapLocal.overlays[i].setMap(null);\n").append("}\n")
-					.append("mapLocal.overlays.length = 0;\n").append("}\n")
-					.append("if (mapLocal.infowindows) {\n").append(
-							"for (i in mapLocal.infowindows) {\n").append(
-							"mapLocal.infowindows[i].close();\n").append("}\n")
+			strm.append("var mapLocal = ")
+					.append(this.getJsRef() + ".map, i;\n")
+					.append("if (mapLocal.overlays) {\n")
+					.append("for (i in mapLocal.overlays) {\n")
+					.append("mapLocal.overlays[i].setMap(null);\n")
+					.append("}\n").append("mapLocal.overlays.length = 0;\n")
+					.append("}\n").append("if (mapLocal.infowindows) {\n")
+					.append("for (i in mapLocal.infowindows) {\n")
+					.append("mapLocal.infowindows[i].close();\n").append("}\n")
 					.append("mapLocal.infowindows.length = 0;\n").append("}\n");
 			this.doGmJavaScript(strm.toString());
 		}
@@ -451,10 +448,10 @@ public class WGoogleMap extends WCompositeWidget {
 			strm.append(
 					"var infowindow = new google.maps.InfoWindow({content: ")
 					.append(WWebWidget.jsStringLiteral(myHtml)).append(",")
-					.append("position: pos});infowindow.open(").append(
-							this.getJsRef()).append(".map);").append(
-							this.getJsRef()).append(
-							".map.infowindows.push(infowindow);");
+					.append("position: pos});infowindow.open(")
+					.append(this.getJsRef()).append(".map);")
+					.append(this.getJsRef())
+					.append(".map.infowindows.push(infowindow);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -501,15 +498,15 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void zoomWindow(final WGoogleMap.Coordinate topLeft,
 			final WGoogleMap.Coordinate rightBottom) {
-		final WGoogleMap.Coordinate center = new WGoogleMap.Coordinate((topLeft
-				.getLatitude() + rightBottom.getLatitude()) / 2.0, (topLeft
-				.getLongitude() + rightBottom.getLongitude()) / 2.0);
+		final WGoogleMap.Coordinate center = new WGoogleMap.Coordinate(
+				(topLeft.getLatitude() + rightBottom.getLatitude()) / 2.0,
+				(topLeft.getLongitude() + rightBottom.getLongitude()) / 2.0);
 		WGoogleMap.Coordinate topLeftC = new WGoogleMap.Coordinate(Math.min(
 				topLeft.getLatitude(), rightBottom.getLatitude()), Math.min(
 				topLeft.getLongitude(), rightBottom.getLongitude()));
-		WGoogleMap.Coordinate rightBottomC = new WGoogleMap.Coordinate(Math
-				.max(topLeft.getLatitude(), rightBottom.getLatitude()), Math
-				.max(topLeft.getLongitude(), rightBottom.getLongitude()));
+		WGoogleMap.Coordinate rightBottomC = new WGoogleMap.Coordinate(
+				Math.max(topLeft.getLatitude(), rightBottom.getLatitude()),
+				Math.max(topLeft.getLongitude(), rightBottom.getLongitude()));
 		StringWriter strm = new StringWriter();
 		strm.append("var bbox = new google.maps.LatLngBounds(");
 		write(strm, topLeftC);
@@ -517,9 +514,9 @@ public class WGoogleMap extends WCompositeWidget {
 		write(strm, rightBottomC);
 		strm.append(");");
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			strm.append("var zooml = ").append(this.getJsRef()).append(
-					".map.getBoundsZoomLevel(bbox);").append(this.getJsRef())
-					.append(".map.setCenter(");
+			strm.append("var zooml = ").append(this.getJsRef())
+					.append(".map.getBoundsZoomLevel(bbox);")
+					.append(this.getJsRef()).append(".map.setCenter(");
 			write(strm, center);
 			strm.append(", zooml);");
 		} else {
@@ -541,9 +538,9 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void zoomIn() {
 		StringWriter strm = new StringWriter();
-		strm.append("var zoom = ").append(this.getJsRef()).append(
-				".map.getZoom();").append(this.getJsRef()).append(
-				".map.setZoom(zoom + 1);");
+		strm.append("var zoom = ").append(this.getJsRef())
+				.append(".map.getZoom();").append(this.getJsRef())
+				.append(".map.setZoom(zoom + 1);");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -552,9 +549,9 @@ public class WGoogleMap extends WCompositeWidget {
 	 */
 	public void zoomOut() {
 		StringWriter strm = new StringWriter();
-		strm.append("var zoom = ").append(this.getJsRef()).append(
-				".map.getZoom();").append(this.getJsRef()).append(
-				".map.setZoom(zoom - 1);");
+		strm.append("var zoom = ").append(this.getJsRef())
+				.append(".map.getZoom();").append(this.getJsRef())
+				.append(".map.setZoom(zoom - 1);");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -569,10 +566,10 @@ public class WGoogleMap extends WCompositeWidget {
 			this.doGmJavaScript(this.getJsRef() + ".map.savePosition();");
 		} else {
 			StringWriter strm = new StringWriter();
-			strm.append(this.getJsRef()).append(".map.savedZoom = ").append(
-					this.getJsRef()).append(".map.getZoom();").append(
-					this.getJsRef()).append(".map.savedPosition = ").append(
-					this.getJsRef()).append(".map.getCenter();");
+			strm.append(this.getJsRef()).append(".map.savedZoom = ")
+					.append(this.getJsRef()).append(".map.getZoom();")
+					.append(this.getJsRef()).append(".map.savedPosition = ")
+					.append(this.getJsRef()).append(".map.getCenter();");
 			this.doGmJavaScript(strm.toString());
 		}
 	}
@@ -587,10 +584,10 @@ public class WGoogleMap extends WCompositeWidget {
 					+ ".map.returnToSavedPosition();");
 		} else {
 			StringWriter strm = new StringWriter();
-			strm.append(this.getJsRef()).append(".map.setZoom(").append(
-					this.getJsRef()).append(".map.savedZoom);").append(
-					this.getJsRef()).append(".map.setCenter(").append(
-					this.getJsRef()).append(".map.savedPosition);");
+			strm.append(this.getJsRef()).append(".map.setZoom(")
+					.append(this.getJsRef()).append(".map.savedZoom);")
+					.append(this.getJsRef()).append(".map.setCenter(")
+					.append(this.getJsRef()).append(".map.savedPosition);");
 			this.doGmJavaScript(strm.toString());
 		}
 	}
@@ -751,12 +748,12 @@ public class WGoogleMap extends WCompositeWidget {
 			default:
 				control = "";
 			}
-			strm.append(this.getJsRef()).append(".map.removeControl(").append(
-					this.getJsRef()).append(".mtc);");
+			strm.append(this.getJsRef()).append(".map.removeControl(")
+					.append(this.getJsRef()).append(".mtc);");
 			if (!control.equals("")) {
 				strm.append("var mtc = new ").append(control).append("();")
-						.append(this.getJsRef()).append(".mtc = mtc;").append(
-								this.getJsRef())
+						.append(this.getJsRef()).append(".mtc = mtc;")
+						.append(this.getJsRef())
 						.append(".map.addControl(mtc);");
 			}
 		} else {
@@ -777,15 +774,15 @@ public class WGoogleMap extends WCompositeWidget {
 			default:
 				control = "";
 			}
-			strm.append("var options = {").append("disableDefaultUI: ").append(
-					control.equals("") ? "true" : "false").append(",").append(
-					"mapTypeControlOptions: {");
+			strm.append("var options = {").append("disableDefaultUI: ")
+					.append(control.equals("") ? "true" : "false").append(",")
+					.append("mapTypeControlOptions: {");
 			if (!control.equals("")) {
 				strm.append("style: google.maps.MapTypeControlStyle.").append(
 						control);
 			}
-			strm.append("}").append("};").append(this.getJsRef()).append(
-					".map.setOptions(options);");
+			strm.append("}").append("};").append(this.getJsRef())
+					.append(".map.setOptions(options);");
 		}
 		this.doGmJavaScript(strm.toString());
 	}
@@ -842,24 +839,21 @@ public class WGoogleMap extends WCompositeWidget {
 			String initFunction = app.getJavaScriptClass()
 					+ ".init_google_maps_" + this.getId();
 			StringBuilder strm = new StringBuilder();
-			strm.append("{ ").append(initFunction).append(
-					" = function() {var self = ").append(this.getJsRef())
+			strm.append("{ ").append(initFunction)
+					.append(" = function() {var self = ")
+					.append(this.getJsRef())
 					.append(";if (!self) { setTimeout(").append(initFunction)
 					.append(", 0);return;}");
 			if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-				strm
-						.append("var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
-				this
-						.setJavaScriptMember(
-								WT_RESIZE_JS,
-								"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
+				strm.append("var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
+				this.setJavaScriptMember(
+						WT_RESIZE_JS,
+						"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
 			} else {
-				strm
-						.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
-				this
-						.setJavaScriptMember(
-								WT_RESIZE_JS,
-								"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
+				strm.append("var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
+				this.setJavaScriptMember(
+						WT_RESIZE_JS,
+						"function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
 			}
 			strm.append("self.map = map;");
 			this.streamJSListener(this.clicked_, "click", strm);
@@ -870,15 +864,13 @@ public class WGoogleMap extends WCompositeWidget {
 			for (int i = 0; i < this.additions_.size(); i++) {
 				strm.append(this.additions_.get(i));
 			}
-			strm
-					.append("setTimeout(function(){ delete ")
+			strm.append("setTimeout(function(){ delete ")
 					.append(initFunction)
 					.append(";}, 0)};")
 					.append("google.load(\"maps\", \"")
-					.append(
-							this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2'
-									: '3').append(
-							"\", {other_params:\"sensor=false\", callback: ")
+					.append(this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2'
+							: '3')
+					.append("\", {other_params:\"sensor=false\", callback: ")
 					.append(initFunction).append("});").append("}");
 			this.additions_.clear();
 			app.doJavaScript(strm.toString(), true);
@@ -906,19 +898,18 @@ public class WGoogleMap extends WCompositeWidget {
 	private void streamJSListener(final JSignal1<WGoogleMap.Coordinate> signal,
 			String signalName, final StringBuilder strm) {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
-			strm.append("google.maps.Event.addListener(map, \"").append(
-					signalName).append(
-					"\", function(overlay, latlng) {if (latlng) {").append(
-					signal.createCall("latlng.lat() +' '+ latlng.lng()"))
+			strm.append("google.maps.Event.addListener(map, \"")
+					.append(signalName)
+					.append("\", function(overlay, latlng) {if (latlng) {")
+					.append(signal
+							.createCall("latlng.lat() +' '+ latlng.lng()"))
 					.append(";}});");
 		} else {
-			strm
-					.append("google.maps.event.addListener(map, \"")
+			strm.append("google.maps.event.addListener(map, \"")
 					.append(signalName)
 					.append("\", function(event) {if (event && event.latLng) {")
-					.append(
-							signal
-									.createCall("event.latLng.lat() +' '+ event.latLng.lng()"))
+					.append(signal
+							.createCall("event.latLng.lat() +' '+ event.latLng.lng()"))
 					.append(";}});");
 		}
 	}
@@ -926,8 +917,8 @@ public class WGoogleMap extends WCompositeWidget {
 	private void setMapOption(final String option, final String value) {
 		StringWriter strm = new StringWriter();
 		strm.append("var option = {").append(option).append(" :").append(value)
-				.append("};").append(this.getJsRef()).append(
-						".map.setOptions(option);");
+				.append("};").append(this.getJsRef())
+				.append(".map.setOptions(option);");
 		this.doGmJavaScript(strm.toString());
 	}
 
@@ -937,8 +928,8 @@ public class WGoogleMap extends WCompositeWidget {
 	static void write(final StringWriter os, final WGoogleMap.Coordinate c) {
 		char[] b1 = new char[35];
 		char[] b2 = new char[35];
-		os.append("new google.maps.LatLng(").append(
-				MathUtils.roundJs(c.getLatitude(), 15)).append(",").append(
-				MathUtils.roundJs(c.getLongitude(), 15)).append(")");
+		os.append("new google.maps.LatLng(")
+				.append(MathUtils.roundJs(c.getLatitude(), 15)).append(",")
+				.append(MathUtils.roundJs(c.getLongitude(), 15)).append(")");
 	}
 }

@@ -266,7 +266,7 @@ public class WFont {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    WFont mono;
 	 *    mono.setFamily(WFont::Monospace, "'Courier New'");
 	 *    mono.setSize(18);

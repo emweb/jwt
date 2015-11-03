@@ -62,8 +62,8 @@ class ClippingWidget extends WPaintedWidget {
 		painter.translate(75, 75);
 		for (int star = 1; star < 50; star++) {
 			painter.save();
-			painter.translate(75 - random.nextInt() % 150 + 1, 75 - random
-					.nextInt() % 150 + 1);
+			painter.translate(75 - random.nextInt() % 150 + 1,
+					75 - random.nextInt() % 150 + 1);
 			this.drawStar(painter, Math.max(0, random.nextInt() % 4) + 2);
 			painter.restore();
 		}

@@ -195,9 +195,9 @@ public class WPdfRenderer extends WTextRenderer {
 		case Left:
 			return this.margin_[3] / CmPerInch * this.dpi_;
 		default:
-			logger.error(new StringWriter().append(
-					"margin(Side) with invalid side").append(
-					String.valueOf((int) side.getValue())).toString());
+			logger.error(new StringWriter()
+					.append("margin(Side) with invalid side")
+					.append(String.valueOf((int) side.getValue())).toString());
 			return 0;
 		}
 	}
@@ -206,8 +206,8 @@ public class WPdfRenderer extends WTextRenderer {
 		if (page > 0) {
 			this.setCurrentPage(this.createPage(page));
 		}
-		WPdfImage device = new WPdfImage(this.pdf_, this.page_, 0, 0, this
-				.pageWidth(page), this.pageHeight(page));
+		WPdfImage device = new WPdfImage(this.pdf_, this.page_, 0, 0,
+				this.pageWidth(page), this.pageHeight(page));
 		WTransform deviceTransform = new WTransform();
 		deviceTransform.scale(72.0f / this.dpi_, 72.0f / this.dpi_);
 		device.setDeviceTransform(deviceTransform);

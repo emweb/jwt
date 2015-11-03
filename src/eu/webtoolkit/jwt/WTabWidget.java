@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * 
  * 	examples.currentChanged().addListener(this, new Signal.Listener() {
  * 		public void trigger() {
- * 			//custom code
+ * 			// custom code
  * 		}
  * 	});
  * 	examples.setInternalPathEnabled();
@@ -490,8 +490,8 @@ public class WTabWidget extends WCompositeWidget {
 	 * Orientation.Vertical))}
 	 */
 	public final void setOverflow(WContainerWidget.Overflow value) {
-		setOverflow(value, EnumSet.of(Orientation.Horizontal,
-				Orientation.Vertical));
+		setOverflow(value,
+				EnumSet.of(Orientation.Horizontal, Orientation.Vertical));
 	}
 
 	private Signal1<Integer> currentChanged_;
@@ -505,10 +505,10 @@ public class WTabWidget extends WCompositeWidget {
 		this.menu_ = new WMenu(new WStackedWidget());
 		this.layout_.addWidget(this.menu_);
 		this.layout_.addWidget(this.menu_.getContentsStack());
-		this.setJavaScriptMember(WT_RESIZE_JS, StdWidgetItemImpl
-				.getSecondResizeJS());
-		this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl
-				.getSecondGetPSJS());
+		this.setJavaScriptMember(WT_RESIZE_JS,
+				StdWidgetItemImpl.getSecondResizeJS());
+		this.setJavaScriptMember(WT_GETPS_JS,
+				StdWidgetItemImpl.getSecondGetPSJS());
 		this.menu_.itemSelected().addListener(this,
 				new Signal1.Listener<WMenuItem>() {
 					public void trigger(WMenuItem e1) {

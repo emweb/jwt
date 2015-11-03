@@ -444,7 +444,7 @@ public class WApplication extends WObject {
 	 * This is an overloaded method for convenience, equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    useStyleSheet(Wt::WCssStyleSheet(link, media))
 	 *   }
 	 * </pre>
@@ -469,7 +469,7 @@ public class WApplication extends WObject {
 	 * This is an overloaded method for convenience, equivalent to:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    useStyleSheet(Wt::WCssStyleSheet(link, media), condition)
 	 *   }
 	 * </pre>
@@ -596,14 +596,10 @@ public class WApplication extends WObject {
 													display = !display;
 												}
 											} catch (final RuntimeException e) {
-												logger
-														.error(new StringWriter()
-																.append(
-																		"Could not parse condition: '")
-																.append(
-																		condition)
-																.append("'")
-																.toString());
+												logger.error(new StringWriter()
+														.append("Could not parse condition: '")
+														.append(condition)
+														.append("'").toString());
 											}
 											r = "";
 										}
@@ -617,10 +613,10 @@ public class WApplication extends WObject {
 		}
 		if (display) {
 			for (int i = 0; i < this.styleSheets_.size(); ++i) {
-				if (this.styleSheets_.get(i).getLink().equals(
-						styleSheet.getLink())
-						&& this.styleSheets_.get(i).getMedia().equals(
-								styleSheet.getMedia())) {
+				if (this.styleSheets_.get(i).getLink()
+						.equals(styleSheet.getLink())
+						&& this.styleSheets_.get(i).getMedia()
+								.equals(styleSheet.getMedia())) {
 					return;
 				}
 			}
@@ -723,7 +719,7 @@ public class WApplication extends WObject {
 	 * For example:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    body        .sidebar { float: right; }
 	 *    body.Wt-rtl .sidebar { float: left; }
 	 *   }
@@ -992,7 +988,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1086,7 +1082,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1120,7 +1116,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1155,7 +1151,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt
 	 *   }
 	 * </pre>
@@ -1168,7 +1164,7 @@ public class WApplication extends WObject {
 	 * in an AJAX session (HTML5):
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
 	 *   }
 	 * </pre>
@@ -1178,7 +1174,7 @@ public class WApplication extends WObject {
 	 * in an AJAX session (HTML4):
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt#/project/z3cbc/details/
 	 *   }
 	 * </pre>
@@ -1190,7 +1186,7 @@ public class WApplication extends WObject {
 	 * in a plain HTML session:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt/project/z3cbc/details/
 	 *   }
 	 * </pre>
@@ -1275,7 +1271,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1326,7 +1322,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1360,7 +1356,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1394,7 +1390,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1434,7 +1430,7 @@ public class WApplication extends WObject {
 	 * For example, for an application deployed at
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt 
 	 *   }
 	 * </pre>
@@ -1458,8 +1454,8 @@ public class WApplication extends WObject {
 		String current = StringUtils.append(this.newInternalPath_, '/');
 		if (!pathMatches(current, path)) {
 			logger.warn(new StringWriter().append("internalPath(): path '")
-					.append(path).append("' not within current path '").append(
-							this.getInternalPath()).append("'").toString());
+					.append(path).append("' not within current path '")
+					.append(this.getInternalPath()).append("'").toString());
 			return "";
 		}
 		return current.substring(path.length());
@@ -1610,7 +1606,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    // You need to have a reference to the application whose state
 	 *    // you are about to manipulate.
 	 *    WApplication app = ...;
@@ -1646,11 +1642,9 @@ public class WApplication extends WObject {
 		if (enabled) {
 			if (this.serverPush_ == 0
 					&& !(WebSession.Handler.getInstance().getRequest() != null)) {
-				logger
-						.warn(new StringWriter()
-								.append(
-										"WApplication::enableUpdates(true): should be called from within event loop")
-								.toString());
+				logger.warn(new StringWriter()
+						.append("WApplication::enableUpdates(true): should be called from within event loop")
+						.toString());
 			}
 			++this.serverPush_;
 		} else {
@@ -1943,7 +1937,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    requireJQuery("jquery/jquery-1.7.2.min.js");
 	 *   }
 	 * </pre>
@@ -2048,8 +2042,8 @@ public class WApplication extends WObject {
 			final String value) {
 		WebSession session = WebSession.getInstance();
 		if (session != null) {
-			return session.getEnv().getServer().readConfigurationProperty(name,
-					value);
+			return session.getEnv().getServer()
+					.readConfigurationProperty(name, value);
 		} else {
 			return value;
 		}
@@ -2705,11 +2699,9 @@ public class WApplication extends WObject {
 					+ WWebWidget.jsStringLiteral(this.renderedInternalPath_)
 					+ ");");
 			if (this.session_.isUseUglyInternalPaths()) {
-				logger
-						.warn(new StringWriter()
-								.append(
-										"Deploy-path ends with '/', using /?_= for internal paths")
-								.toString());
+				logger.warn(new StringWriter()
+						.append("Deploy-path ends with '/', using /?_= for internal paths")
+						.toString());
 			}
 		}
 	}
@@ -2745,8 +2737,7 @@ public class WApplication extends WObject {
 	 */
 	public String encodeUntrustedUrl(final String url) {
 		boolean needRedirect = (url.indexOf("://") != -1 || url
-				.startsWith("//"))
-				&& this.session_.hasSessionIdInUrl();
+				.startsWith("//")) && this.session_.hasSessionIdInUrl();
 		if (needRedirect) {
 			WtServlet c = this.session_.getController();
 			return "?request=redirect&url=" + Utils.urlEncode(url) + "&hash="
@@ -2807,7 +2798,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    void notify(WEvent event) {
 	 *        // Grab resources for during request handling
 	 *        try {
@@ -2871,8 +2862,7 @@ public class WApplication extends WObject {
 		this.enableAjax_ = true;
 		this.streamBeforeLoadJavaScript(
 				this.session_.getRenderer().beforeLoadJS_, false);
-		this
-				.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
+		this.streamAfterLoadJavaScript(this.session_.getRenderer().beforeLoadJS_);
 		this.domRoot_.enableAjax();
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
@@ -2909,8 +2899,8 @@ public class WApplication extends WObject {
 	 *            the error will usually be in json format. }
 	 */
 	protected void handleJavaScriptError(final String errorText) {
-		logger.error(new StringWriter().append("JavaScript error: ").append(
-				errorText).toString());
+		logger.error(new StringWriter().append("JavaScript error: ")
+				.append(errorText).toString());
 		this.quit();
 	}
 
@@ -3048,9 +3038,9 @@ public class WApplication extends WObject {
 			logger.debug(new StringWriter().append("removeExposedSignal: ")
 					.append(s).toString());
 		} else {
-			logger.debug(new StringWriter().append(
-					"removeExposedSignal of non-exposed ").append(s).append(
-					"??").toString());
+			logger.debug(new StringWriter()
+					.append("removeExposedSignal of non-exposed ").append(s)
+					.append("??").toString());
 		}
 	}
 
@@ -3176,16 +3166,15 @@ public class WApplication extends WObject {
 			final WJavaScriptPreamble preamble = this.javaScriptPreamble_
 					.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
-					.getJavaScriptClass()
-					: "Wt3_3_4";
+					.getJavaScriptClass() : "Wt3_3_4";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
-				out.append(scope).append('.').append(preamble.name).append(
-						" = function() { return (").append(preamble.src)
-						.append(").apply(").append(scope).append(
-								", arguments) };");
+				out.append(scope).append('.').append(preamble.name)
+						.append(" = function() { return (")
+						.append(preamble.src).append(").apply(").append(scope)
+						.append(", arguments) };");
 			} else {
-				out.append(scope).append('.').append(preamble.name).append(
-						" = ").append(preamble.src).append('\n');
+				out.append(scope).append('.').append(preamble.name)
+						.append(" = ").append(preamble.src).append('\n');
 			}
 		}
 		this.newJavaScriptPreamble_ = 0;

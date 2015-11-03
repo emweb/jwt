@@ -29,50 +29,50 @@ class FormWidgets extends TopicWidget {
 
 	public void populateSubMenu(WMenu menu) {
 		menu.addItem("Introduction", this.introduction()).setPathComponent("");
-		menu.addItem("Line/Text editor", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Line/Text editor",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.textEditors();
 					}
 				}));
-		menu.addItem("Check boxes", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Check boxes",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.checkBox();
 					}
 				}));
-		menu.addItem("Radio buttons", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Radio buttons",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.radioButton();
 					}
 				}));
-		menu.addItem("Combo box", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Combo box",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.comboBox();
 					}
 				}));
-		menu.addItem("Selection box", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Selection box",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.selectionBox();
 					}
 				}));
-		menu.addItem("Autocomplete", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Autocomplete",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.autoComplete();
 					}
 				}));
-		menu.addItem("Date entry", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Date entry",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.dateEntry();
 					}
 				}));
-		menu.addItem("In-place edit", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("In-place edit",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.inPlaceEdit();
 					}
@@ -82,32 +82,32 @@ class FormWidgets extends TopicWidget {
 				return FormWidgets.this.slider();
 			}
 		}));
-		menu.addItem("Progress bar", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Progress bar",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.progressBar();
 					}
 				}));
-		menu.addItem("File upload", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("File upload",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.fileUpload();
 					}
 				}));
-		menu.addItem("Push button", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Push button",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.pushButton();
 					}
 				}));
-		menu.addItem("Validation", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Validation",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.validation();
 					}
 				}));
-		menu.addItem("Integration example", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Integration example",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.example();
 					}
@@ -233,10 +233,8 @@ class FormWidgets extends TopicWidget {
 				reindent(tr("pushButtonColor-template")), TextFormat.PlainText);
 		result.bindString("pushButtonSize-template",
 				reindent(tr("pushButtonSize-template")), TextFormat.PlainText);
-		result
-				.bindString("pushButtonAction-template",
-						reindent(tr("pushButtonAction-template")),
-						TextFormat.PlainText);
+		result.bindString("pushButtonAction-template",
+				reindent(tr("pushButtonAction-template")), TextFormat.PlainText);
 		return result;
 	}
 
@@ -271,11 +269,10 @@ class FormWidgets extends TopicWidget {
 		result.bindWidget("out", out);
 		button.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				out
-						.setText("Hello, "
-								+ name.getText()
-								+ "! I just want to help you... You"
-								+ " could complete this simple form by adding validation.");
+				out.setText("Hello, "
+						+ name.getText()
+						+ "! I just want to help you... You"
+						+ " could complete this simple form by adding validation.");
 			}
 		});
 		return result;
@@ -364,8 +361,7 @@ class FormWidgets extends TopicWidget {
 		WTextArea ta = new WTextArea(container);
 		ta.setColumns(80);
 		ta.setRows(5);
-		ta
-				.setText("Change this text... \nand click outside the text area to get a changed event.");
+		ta.setText("Change this text... \nand click outside the text area to get a changed event.");
 		final WText out = new WText("<p></p>", container);
 		out.addStyleClass("help-block");
 		ta.changed().addListener(this, new Signal.Listener() {
@@ -381,8 +377,7 @@ class FormWidgets extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		final WTextEdit edit = new WTextEdit(container);
 		edit.setHeight(new WLength(300));
-		edit
-				.setText("<p><span style=\"font-family: 'courier new', courier; font-size: medium;\"><strong>WTextEdit</strong></span></p><p>Hey, I'm a <strong>WTextEdit</strong> and you can make me <span style=\"text-decoration: underline;\"><em>rich</em></span> by adding your <span style=\"color: #ff0000;\"><em>style</em></span>!</p><p>Other widgets like...</p><ul style=\"padding: 0px; margin: 0px 0px 10px 25px;\"><li>WLineEdit</li><li>WTextArea</li><li>WSpinBox</li></ul><p>don't have style.</p>");
+		edit.setText("<p><span style=\"font-family: 'courier new', courier; font-size: medium;\"><strong>WTextEdit</strong></span></p><p>Hey, I'm a <strong>WTextEdit</strong> and you can make me <span style=\"text-decoration: underline;\"><em>rich</em></span> by adding your <span style=\"color: #ff0000;\"><em>style</em></span>!</p><p>Other widgets like...</p><ul style=\"padding: 0px; margin: 0px 0px 10px 25px;\"><li>WLineEdit</li><li>WTextArea</li><li>WSpinBox</li></ul><p>don't have style.</p>");
 		WPushButton button = new WPushButton("Get text", container);
 		button.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
 		final WText out = new WText(container);
@@ -596,8 +591,8 @@ class FormWidgets extends TopicWidget {
 			public void trigger() {
 				WString countryName = cb.getCurrentText();
 				int row = cb.getCurrentIndex();
-				String countryCode = (String) model.getData(model.getIndex(row,
-						0), ItemDataRole.UserRole);
+				String countryCode = (String) model.getData(
+						model.getIndex(row, 0), ItemDataRole.UserRole);
 				out.setText(new WString("You selected {1} with key {2}.").arg(
 						countryName).arg(countryCode));
 			}
@@ -669,9 +664,9 @@ class FormWidgets extends TopicWidget {
 		contactOptions.whitespace = " \\n";
 		contactOptions.wordSeparators = "-., \"@\\n;";
 		contactOptions.appendReplacedText = ", ";
-		WSuggestionPopup sp = new WSuggestionPopup(WSuggestionPopup
-				.generateMatcherJS(contactOptions), WSuggestionPopup
-				.generateReplacerJS(contactOptions), container);
+		WSuggestionPopup sp = new WSuggestionPopup(
+				WSuggestionPopup.generateMatcherJS(contactOptions),
+				WSuggestionPopup.generateReplacerJS(contactOptions), container);
 		WLineEdit le = new WLineEdit(container);
 		le.setEmptyText("Enter a name starting with 'J'");
 		sp.forEdit(le);
@@ -770,14 +765,12 @@ class FormWidgets extends TopicWidget {
 				} else {
 					int days = de1.getDate().getDaysTo(de2.getDate()) + 1;
 					if (days == 1) {
-						out
-								.setText("It's fine to take holiday just for one day!");
+						out.setText("It's fine to take holiday just for one day!");
 					} else {
 						if (days > 1) {
-							out
-									.setText(new WString(
-											"So, you want to take holiday for a period of {1} days?...")
-											.arg(days));
+							out.setText(new WString(
+									"So, you want to take holiday for a period of {1} days?...")
+									.arg(days));
 						} else {
 							out.setText("Invalid period!");
 						}
@@ -824,14 +817,12 @@ class FormWidgets extends TopicWidget {
 				} else {
 					int days = dp1.getDate().getDaysTo(dp2.getDate()) + 1;
 					if (days == 0) {
-						out
-								.setText("It's fine to take holiday just for one day!");
+						out.setText("It's fine to take holiday just for one day!");
 					} else {
 						if (days > 1) {
-							out
-									.setText(new WString(
-											"So, you want to take holiday for a period of {1} days?...")
-											.arg(days));
+							out.setText(new WString(
+									"So, you want to take holiday for a period of {1} days?...")
+									.arg(days));
 						} else {
 							out.setText("Invalid period!");
 						}
@@ -959,8 +950,8 @@ class FormWidgets extends TopicWidget {
 		fu.setProgressBar(new WProgressBar());
 		fu.setMargin(new WLength(10), EnumSet.of(Side.Right));
 		final WPushButton uploadButton = new WPushButton("Send", container);
-		uploadButton.setMargin(new WLength(10), EnumSet.of(Side.Left,
-				Side.Right));
+		uploadButton.setMargin(new WLength(10),
+				EnumSet.of(Side.Left, Side.Right));
 		final WText out = new WText(container);
 		uploadButton.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
@@ -1016,15 +1007,13 @@ class FormWidgets extends TopicWidget {
 
 	WWidget PushButtonLink() {
 		WPushButton button = new WPushButton("Navigate");
-		button
-				.setLink(new WLink(WLink.Type.InternalPath,
-						"/navigation/anchor"));
+		button.setLink(new WLink(WLink.Type.InternalPath, "/navigation/anchor"));
 		return button;
 	}
 
 	WWidget PushButtonDropdownAppended() {
-		WTemplate result = new WTemplate(WString
-				.tr("appendedDropdownButton-template"));
+		WTemplate result = new WTemplate(
+				WString.tr("appendedDropdownButton-template"));
 		WPopupMenu popup = new WPopupMenu();
 		popup.addItem("Choose a button type");
 		popup.addSeparator();
@@ -1093,8 +1082,8 @@ class FormWidgets extends TopicWidget {
 	}
 
 	WWidget PushButtonAction() {
-		WTemplate result = new WTemplate(WString
-				.tr("pushButtonAction-template"));
+		WTemplate result = new WTemplate(
+				WString.tr("pushButtonAction-template"));
 		WPushButton button = new WPushButton("Save");
 		result.bindWidget("button-save", button);
 		button.setStyleClass("btn-primary");
@@ -1148,8 +1137,7 @@ class FormWidgets extends TopicWidget {
 		dv.setFormat("dd/MM/yyyy");
 		dv.setMandatory(true);
 		dv.setInvalidBlankText("A birthdate is mandatory!");
-		dv
-				.setInvalidNotADateText("You should enter a date in the format \"dd/MM/yyyy\"!");
+		dv.setInvalidNotADateText("You should enter a date in the format \"dd/MM/yyyy\"!");
 		dv.setInvalidTooEarlyText(new WString(
 				"That's too early... The date must be {1} or later!").arg(dv
 				.getBottom().toString("dd/MM/yyyy")));
@@ -1175,10 +1163,9 @@ class FormWidgets extends TopicWidget {
 						days = d.getDaysTo(dateEdit.getDate().addYears(
 								years + 1));
 					}
-					out
-							.setText("<p>In "
-									+ String.valueOf(days)
-									+ " days, we will be celebrating your next anniversary!</p>");
+					out.setText("<p>In "
+							+ String.valueOf(days)
+							+ " days, we will be celebrating your next anniversary!</p>");
 					out.setStyleClass("alert alert-success");
 				} else {
 					dateEdit.setFocus(true);

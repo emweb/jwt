@@ -80,8 +80,7 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl {
 
 	protected static StdLayoutItemImpl getImpl(WLayoutItem item) {
 		return ((item.getImpl()) instanceof StdLayoutItemImpl ? (StdLayoutItemImpl) (item
-				.getImpl())
-				: null);
+				.getImpl()) : null);
 	}
 
 	private WLayout layout_;

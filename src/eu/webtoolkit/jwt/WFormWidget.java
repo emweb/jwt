@@ -152,9 +152,11 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.validatorChanged();
 		} else {
 			if (this.isRendered()) {
-				WApplication.getInstance().getTheme().applyValidationStyle(
-						this, new WValidator.Result(),
-						ValidationStyleFlag.ValidationNoStyle);
+				WApplication
+						.getInstance()
+						.getTheme()
+						.applyValidationStyle(this, new WValidator.Result(),
+								ValidationStyleFlag.ValidationNoStyle);
 			}
 			;
 			this.validateJs_ = null;
@@ -181,9 +183,13 @@ public abstract class WFormWidget extends WInteractWidget {
 			WValidator.Result result = this.getValidator().validate(
 					this.getValueText());
 			if (this.isRendered()) {
-				WApplication.getInstance().getTheme().applyValidationStyle(
-						this, result,
-						EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+				WApplication
+						.getInstance()
+						.getTheme()
+						.applyValidationStyle(
+								this,
+								result,
+								EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
 			}
 			if (!this.validationToolTip_.equals(result.getMessage())) {
 				this.validationToolTip_ = result.getMessage();
@@ -489,8 +495,8 @@ public abstract class WFormWidget extends WInteractWidget {
 		}
 		if (this.flags_.get(BIT_READONLY_CHANGED) || all) {
 			if (!all || this.isReadOnly()) {
-				element.setProperty(Property.PropertyReadOnly, this
-						.isReadOnly() ? "true" : "false");
+				element.setProperty(Property.PropertyReadOnly,
+						this.isReadOnly() ? "true" : "false");
 			}
 			this.flags_.clear(BIT_READONLY_CHANGED);
 		}
@@ -499,8 +505,8 @@ public abstract class WFormWidget extends WInteractWidget {
 			if ((this.validationToolTip_.length() == 0)) {
 				element.setAttribute("title", this.getToolTip().toString());
 			} else {
-				element.setAttribute("title", this.validationToolTip_
-						.toString());
+				element.setAttribute("title",
+						this.validationToolTip_.toString());
 			}
 		}
 	}
@@ -519,9 +525,13 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (this.getValidator() != null) {
 				WValidator.Result result = this.getValidator().validate(
 						this.getValueText());
-				WApplication.getInstance().getTheme().applyValidationStyle(
-						this, result,
-						EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+				WApplication
+						.getInstance()
+						.getTheme()
+						.applyValidationStyle(
+								this,
+								result,
+								EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
 			}
 		}
 		super.render(flags);

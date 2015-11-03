@@ -65,8 +65,8 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public void setRendered(boolean how) {
 		if (this.rendered_ != how) {
-			logger.debug(new StringWriter().append("setRendered: ").append(
-					String.valueOf(how)).toString());
+			logger.debug(new StringWriter().append("setRendered: ")
+					.append(String.valueOf(how)).toString());
 			this.rendered_ = how;
 		}
 	}
@@ -120,10 +120,8 @@ class WebRenderer implements SlotLearnerInterface {
 			this.setCaching(response, false);
 			this.setHeaders(response, "text/javascript; charset=UTF-8");
 		}
-		response
-				.out()
-				.append(
-						"if (window.Wt) window.Wt._p_.quit(null); window.location.reload(true);");
+		response.out()
+				.append("if (window.Wt) window.Wt._p_.quit(null); window.location.reload(true);");
 	}
 
 	public final void letReloadJS(final WebResponse response, boolean newSession)
@@ -195,15 +193,17 @@ class WebRenderer implements SlotLearnerInterface {
 		if (!js || !(app != null)) {
 			response.setStatus(status);
 			response.setContentType("text/html");
-			response.out().append("<title>Error occurred.</title>").append(
-					"<h2>Error occurred.</h2>").append(
-					WWebWidget.escapeText(new WString(message), true)
+			response.out()
+					.append("<title>Error occurred.</title>")
+					.append("<h2>Error occurred.</h2>")
+					.append(WWebWidget.escapeText(new WString(message), true)
 							.toString()).append('\n');
 		} else {
-			response.out().append(app.getJavaScriptClass()).append(
-					"._p_.quit(null);").append(
-					"document.title = 'Error occurred.';").append(
-					"document.body.innerHtml='<h2>Error occurred.</h2>' +")
+			response.out()
+					.append(app.getJavaScriptClass())
+					.append("._p_.quit(null);")
+					.append("document.title = 'Error occurred.';")
+					.append("document.body.innerHtml='<h2>Error occurred.</h2>' +")
 					.append(WWebWidget.jsStringLiteral(message)).append(';');
 		}
 	}
@@ -265,15 +265,12 @@ class WebRenderer implements SlotLearnerInterface {
 	public void streamRedirectJS(final StringBuilder out, final String redirect) {
 		if (this.session_.getApp() != null
 				&& this.session_.getApp().internalPathIsChanged_) {
-			out
-					.append("if (window.")
+			out.append("if (window.")
 					.append(this.session_.getApp().getJavaScriptClass())
 					.append(") ")
 					.append(this.session_.getApp().getJavaScriptClass())
 					.append("._p_.setHash(")
-					.append(
-							WWebWidget
-									.jsStringLiteral(this.session_.getApp().newInternalPath_))
+					.append(WWebWidget.jsStringLiteral(this.session_.getApp().newInternalPath_))
 					.append(", false);\n");
 		}
 		out.append("if (window.location.replace) window.location.replace('")
@@ -285,8 +282,9 @@ class WebRenderer implements SlotLearnerInterface {
 		if (this.solution_.length() != 0) {
 			String ackPuzzleE = request.getParameter("ackPuzzle");
 			if (!(ackPuzzleE != null)) {
-				logger.warn(new StringWriter().append("secure:").append(
-						"Ajax puzzle fail: solution missing").toString());
+				logger.warn(new StringWriter().append("secure:")
+						.append("Ajax puzzle fail: solution missing")
+						.toString());
 				return false;
 			}
 			String ackPuzzle = ackPuzzleE;
@@ -312,9 +310,9 @@ class WebRenderer implements SlotLearnerInterface {
 				fail = true;
 			}
 			if (fail) {
-				logger.warn(new StringWriter().append("secure:").append(
-						"Ajax puzzle fail: '").append(ackPuzzle).append(
-						"' vs '").append(this.solution_).append('\'')
+				logger.warn(new StringWriter().append("secure:")
+						.append("Ajax puzzle fail: '").append(ackPuzzle)
+						.append("' vs '").append(this.solution_).append('\'')
 						.toString());
 				this.solution_ = "";
 				return false;
@@ -328,8 +326,8 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void setJSSynced(boolean invisibleToo) {
-		logger.debug(new StringWriter().append("setJSSynced: ").append(
-				String.valueOf(invisibleToo)).toString());
+		logger.debug(new StringWriter().append("setJSSynced: ")
+				.append(String.valueOf(invisibleToo)).toString());
 		this.collectedJS1_.setLength(0);
 		this.collectedJS2_.setLength(0);
 		if (!invisibleToo) {
@@ -391,20 +389,21 @@ class WebRenderer implements SlotLearnerInterface {
 			if (value.length() == 0) {
 				value = "deleted";
 			}
-			header.append(Utils.urlEncode(i.getKey())).append('=').append(
-					Utils.urlEncode(value)).append("; Version=1;");
+			header.append(Utils.urlEncode(i.getKey())).append('=')
+					.append(Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
 				String formatString = "EEE, dd-MMM-yyyy hh:mm:ss 'GMT'";
-				String d = cookie.expires.toString(new WString(formatString)
-						.toString(), false);
+				String d = cookie.expires.toString(
+						new WString(formatString).toString(), false);
 				header.append("Expires=").append(d).append(';');
 			}
 			if (cookie.domain.length() != 0) {
 				header.append(" Domain=").append(cookie.domain).append(';');
 			}
 			if (cookie.path.length() == 0) {
-				header.append(" Path=").append(
-						this.session_.getEnv().getDeploymentPath()).append(';');
+				header.append(" Path=")
+						.append(this.session_.getEnv().getDeploymentPath())
+						.append(';');
 			} else {
 				header.append(" Path=").append(cookie.path).append(';');
 			}
@@ -436,11 +435,11 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setCaching(response, false);
 		this.setHeaders(response, "text/javascript; charset=UTF-8");
 		if (this.session_.sessionIdChanged_) {
-			this.collectedJS1_.append(
-					this.session_.getApp().getJavaScriptClass()).append(
-					"._p_.setSessionUrl(").append(
-					WWebWidget.jsStringLiteral(this.getSessionUrl())).append(
-					");");
+			this.collectedJS1_
+					.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.setSessionUrl(")
+					.append(WWebWidget.jsStringLiteral(this.getSessionUrl()))
+					.append(");");
 		}
 		StringBuilder out = new StringBuilder();
 		if (!this.rendered_) {
@@ -449,9 +448,9 @@ class WebRenderer implements SlotLearnerInterface {
 			this.collectJavaScript();
 			this.addResponseAckPuzzle(out);
 			this.renderSetServerPush(out);
-			logger.debug(new StringWriter().append("js: ").append(
-					this.collectedJS1_.toString()).append(
-					this.collectedJS2_.toString()).toString());
+			logger.debug(new StringWriter().append("js: ")
+					.append(this.collectedJS1_.toString())
+					.append(this.collectedJS2_.toString()).toString());
 			out.append(this.collectedJS1_.toString()).append(
 					this.collectedJS2_.toString());
 			if (response.isWebSocketMessage()) {
@@ -502,35 +501,32 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			FileServe script = new FileServe(parts.size() > 1 ? Wt_js_combined
 					: WtServlet.Wt_js);
-			script
-					.setCondition(
-							"CATCH_ERROR",
-							conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
-			script
-					.setCondition(
-							"SHOW_ERROR",
-							conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
-			script.setCondition("UGLY_INTERNAL_PATHS", this.session_
-					.isUseUglyInternalPaths());
+			script.setCondition(
+					"CATCH_ERROR",
+					conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
+			script.setCondition(
+					"SHOW_ERROR",
+					conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
+			script.setCondition("UGLY_INTERNAL_PATHS",
+					this.session_.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
 			script.setVar("WT_CLASS", "Wt3_3_4");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
-			script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf
-					.serializedEvents());
+			script.setCondition("STRICTLY_SERIALIZED_EVENTS",
+					conf.serializedEvents());
 			script.setCondition("WEB_SOCKETS", conf.webSockets());
 			script.setVar("INNER_HTML", innerHtml);
 			script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
-			script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this
-					.getSessionUrl()));
-			script.setVar("QUITTED_STR", WString.toWString(
-					WString.tr("Wt.QuittedMessage")).getJsStringLiteral());
+			script.setVar("SESSION_URL",
+					WWebWidget.jsStringLiteral(this.getSessionUrl()));
+			script.setVar("QUITTED_STR",
+					WString.toWString(WString.tr("Wt.QuittedMessage"))
+							.getJsStringLiteral());
 			String deployPath = this.session_.getEnv().publicDeploymentPath_;
 			if (deployPath.length() == 0) {
 				deployPath = this.session_.getDeploymentPath();
 			}
-			script
-					.setVar("DEPLOY_PATH", WWebWidget
-							.jsStringLiteral(deployPath));
+			script.setVar("DEPLOY_PATH", WWebWidget.jsStringLiteral(deployPath));
 			int keepAlive;
 			if (conf.getSessionTimeout() == -1) {
 				keepAlive = 1000000;
@@ -563,8 +559,8 @@ class WebRenderer implements SlotLearnerInterface {
 			response.out().append(out.toString());
 			return;
 		}
-		out.append(app.getJavaScriptClass()).append("._p_.setPage(").append(
-				this.pageId_).append(");");
+		out.append(app.getJavaScriptClass()).append("._p_.setPage(")
+				.append(this.pageId_).append(");");
 		this.formObjectsChanged_ = true;
 		app.autoJavaScriptChanged_ = true;
 		if (this.session_.getType() == EntryPointType.WidgetSet) {
@@ -577,21 +573,20 @@ class WebRenderer implements SlotLearnerInterface {
 				boolean enabledAjax = app.enableAjax_;
 				if (app.enableAjax_) {
 					this.collectedJS1_
-							.append(
-									"var form = Wt3_3_4.getElement('Wt-form'); if (form) {")
+							.append("var form = Wt3_3_4.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_.setLength(0);
-					this.collectedJS1_.append("var domRoot=").append(
-							app.domRoot_.getJsRef()).append(';').append(
-							"Wt3_3_4.progressed(domRoot);");
+					this.collectedJS1_.append("var domRoot=")
+							.append(app.domRoot_.getJsRef()).append(';')
+							.append("Wt3_3_4.progressed(domRoot);");
 					int librariesLoaded = this.loadScriptLibraries(
 							this.collectedJS1_, app);
 					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
-					this.collectedJS2_.append(
-							"Wt3_3_4.resolveRelativeAnchors();").append(
-							"domRoot.style.visibility = 'visible';").append(
-							app.getJavaScriptClass()).append(
-							"._p_.doAutoJavaScript();");
+					this.collectedJS2_
+							.append("Wt3_3_4.resolveRelativeAnchors();")
+							.append("domRoot.style.visibility = 'visible';")
+							.append(app.getJavaScriptClass())
+							.append("._p_.doAutoJavaScript();");
 					this.loadScriptLibraries(this.collectedJS2_, app,
 							librariesLoaded);
 					this.collectedJS2_.append('}');
@@ -599,15 +594,13 @@ class WebRenderer implements SlotLearnerInterface {
 				} else {
 					app.streamBeforeLoadJavaScript(out, true);
 				}
-				out.append("window.").append(app.getJavaScriptClass()).append(
-						"LoadWidgetTree = function(){\n");
+				out.append("window.").append(app.getJavaScriptClass())
+						.append("LoadWidgetTree = function(){\n");
 				if (app.internalPathsEnabled_) {
-					out
-							.append(app.getJavaScriptClass())
+					out.append(app.getJavaScriptClass())
 							.append("._p_.enableInternalPaths(")
-							.append(
-									WWebWidget
-											.jsStringLiteral(app.renderedInternalPath_))
+							.append(WWebWidget
+									.jsStringLiteral(app.renderedInternalPath_))
 							.append(");\n");
 				}
 				this.visibleOnly_ = false;
@@ -615,36 +608,35 @@ class WebRenderer implements SlotLearnerInterface {
 				this.currentFormObjectsList_ = "";
 				this.collectJavaScript();
 				this.updateLoadIndicator(this.collectedJS1_, app, true);
-				logger.debug(new StringWriter().append("js: ").append(
-						this.collectedJS1_.toString()).append(
-						this.collectedJS2_.toString()).toString());
+				logger.debug(new StringWriter().append("js: ")
+						.append(this.collectedJS1_.toString())
+						.append(this.collectedJS2_.toString()).toString());
 				out.append(this.collectedJS1_.toString());
 				this.addResponseAckPuzzle(out);
-				out.append(app.getJavaScriptClass()).append("._p_.setHash(")
-						.append(
-								WWebWidget
-										.jsStringLiteral(app.newInternalPath_))
+				out.append(app.getJavaScriptClass())
+						.append("._p_.setHash(")
+						.append(WWebWidget
+								.jsStringLiteral(app.newInternalPath_))
 						.append(", false);\n");
 				if (!app.getEnvironment().isInternalPathUsingFragments()) {
 					this.session_.setPagePathInfo(app.newInternalPath_);
 				}
-				out.append(app.getJavaScriptClass()).append(
-						"._p_.update(null, 'load', null, false);").append(
-						this.collectedJS2_.toString()).append("};");
+				out.append(app.getJavaScriptClass())
+						.append("._p_.update(null, 'load', null, false);")
+						.append(this.collectedJS2_.toString()).append("};");
 				this.session_.getApp().serverPushChanged_ = true;
 				this.renderSetServerPush(out);
 				if (enabledAjax) {
-					out
-							.append(
-									"\nif (typeof document.readyState === 'undefined')")
-							.append(" setTimeout(function() { ").append(
-									app.getJavaScriptClass()).append(
-									"._p_.load(true);").append("}, 400);")
+					out.append(
+							"\nif (typeof document.readyState === 'undefined')")
+							.append(" setTimeout(function() { ")
+							.append(app.getJavaScriptClass())
+							.append("._p_.load(true);").append("}, 400);")
 							.append("else ");
 				}
-				out.append("$(document).ready(function() { ").append(
-						app.getJavaScriptClass()).append(
-						"._p_.load(true);});\n");
+				out.append("$(document).ready(function() { ")
+						.append(app.getJavaScriptClass())
+						.append("._p_.load(true);});\n");
 			}
 		}
 		response.out().append(out.toString());
@@ -656,20 +648,25 @@ class WebRenderer implements SlotLearnerInterface {
 		FileServe boot = new FileServe(WtServlet.Boot_html);
 		this.setPageVars(boot);
 		StringBuilder noJsRedirectUrl = new StringBuilder();
-		DomElement.htmlAttributeValue(noJsRedirectUrl, this.session_
-				.getBootstrapUrl(response,
-						WebSession.BootstrapOption.KeepInternalPath)
-				+ "&js=no");
+		DomElement
+				.htmlAttributeValue(
+						noJsRedirectUrl,
+						this.session_.getBootstrapUrl(response,
+								WebSession.BootstrapOption.KeepInternalPath)
+								+ "&js=no");
 		boot.setVar("REDIRECT_URL", noJsRedirectUrl.toString());
 		boot.setVar("AUTO_REDIRECT",
 				"<noscript><meta http-equiv=\"refresh\" content=\"0; url="
 						+ noJsRedirectUrl.toString() + "\"></noscript>");
 		boot.setVar("NOSCRIPT_TEXT", conf.getRedirectMessage());
 		StringBuilder bootStyleUrl = new StringBuilder();
-		DomElement.htmlAttributeValue(bootStyleUrl, this.session_
-				.getBootstrapUrl(response,
-						WebSession.BootstrapOption.ClearInternalPath)
-				+ "&request=style&page=" + String.valueOf(this.pageId_));
+		DomElement
+				.htmlAttributeValue(
+						bootStyleUrl,
+						this.session_.getBootstrapUrl(response,
+								WebSession.BootstrapOption.ClearInternalPath)
+								+ "&request=style&page="
+								+ String.valueOf(this.pageId_));
 		boot.setVar("BOOT_STYLE_URL", bootStyleUrl.toString());
 		this.setCaching(response, false);
 		String contentType = "text/html; charset=UTF-8";
@@ -731,8 +728,8 @@ class WebRenderer implements SlotLearnerInterface {
 		for (int i = 0; i < app.scriptLibraries_.size(); ++i) {
 			String url = app.scriptLibraries_.get(i).uri;
 			styleSheets.append("<script src=");
-			DomElement.htmlAttributeValue(styleSheets, this.session_
-					.fixRelativeUrl(url));
+			DomElement.htmlAttributeValue(styleSheets,
+					this.session_.fixRelativeUrl(url));
 			styleSheets.append("></script>\n");
 			this.beforeLoadJS_.append(app.scriptLibraries_.get(i).beforeLoadJS);
 		}
@@ -815,14 +812,14 @@ class WebRenderer implements SlotLearnerInterface {
 		app.loadingIndicatorWidget_.hide();
 		app.scriptLibrariesAdded_ = app.scriptLibraries_.size();
 		int librariesLoaded = this.loadScriptLibraries(out, app);
-		out.append(app.getJavaScriptClass()).append(
-				"._p_.autoJavaScript=function(){").append(app.autoJavaScript_)
-				.append("};\n");
+		out.append(app.getJavaScriptClass())
+				.append("._p_.autoJavaScript=function(){")
+				.append(app.autoJavaScript_).append("};\n");
 		app.autoJavaScriptChanged_ = false;
 		app.streamBeforeLoadJavaScript(out, true);
 		if (!widgetset) {
-			out.append("window.").append(app.getJavaScriptClass()).append(
-					"LoadWidgetTree = function(){\n");
+			out.append("window.").append(app.getJavaScriptClass())
+					.append("LoadWidgetTree = function(){\n");
 		}
 		if (!this.initialStyleRendered_) {
 			if (app.getTheme() != null) {
@@ -841,11 +838,11 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		if (app.bodyHtmlClassChanged_) {
 			String op = widgetset ? "+=" : "=";
-			out.append("document.body.parentNode.className").append(op).append(
-					'\'').append(app.htmlClass_).append("';").append(
-					"document.body.className").append(op).append('\'').append(
-					this.getBodyClassRtl()).append("';").append(
-					"document.body.setAttribute('dir', '");
+			out.append("document.body.parentNode.className").append(op)
+					.append('\'').append(app.htmlClass_).append("';")
+					.append("document.body.className").append(op).append('\'')
+					.append(this.getBodyClassRtl()).append("';")
+					.append("document.body.setAttribute('dir', '");
 			if (app.getLayoutDirection() == LayoutDirection.LeftToRight) {
 				out.append("LTR");
 			} else {
@@ -858,10 +855,11 @@ class WebRenderer implements SlotLearnerInterface {
 		;
 		this.addResponseAckPuzzle(s);
 		if (app.hasQuit()) {
-			s.append(app.getJavaScriptClass()).append("._p_.quit(").append(
-					((app.quittedMessage_.length() == 0) ? "null" : WString
-							.toWString(app.quittedMessage_)
-							.getJsStringLiteral())
+			s.append(app.getJavaScriptClass())
+					.append("._p_.quit(")
+					.append(((app.quittedMessage_.length() == 0) ? "null"
+							: WString.toWString(app.quittedMessage_)
+									.getJsStringLiteral())
 							+ ");");
 		}
 		if (widgetset) {
@@ -877,22 +875,22 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setRendered(true);
 		this.setJSSynced(true);
 		this.preLearnStateless(app, this.collectedJS1_);
-		logger.debug(new StringWriter().append("js: ").append(
-				this.collectedJS1_.toString()).toString());
+		logger.debug(new StringWriter().append("js: ")
+				.append(this.collectedJS1_.toString()).toString());
 		out.append(this.collectedJS1_.toString());
 		this.collectedJS1_.setLength(0);
 		this.updateLoadIndicator(out, app, true);
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				out.append("Wt3_3_4").append(".history.initialize('").append(
-						historyE.charAt(0)).append("-field', '").append(
-						historyE.charAt(0)).append("-iframe', '');\n");
+				out.append("Wt3_3_4").append(".history.initialize('")
+						.append(historyE.charAt(0)).append("-field', '")
+						.append(historyE.charAt(0)).append("-iframe', '');\n");
 			}
 		}
 		app.streamAfterLoadJavaScript(out);
-		out.append("{var o=null,e=null;").append(
-				app.hideLoadingIndicator_.getJavaScript()).append('}');
+		out.append("{var o=null,e=null;")
+				.append(app.hideLoadingIndicator_.getJavaScript()).append('}');
 		if (!widgetset) {
 			if (!app.isQuited()) {
 				out.append(this.session_.getApp().getJavaScriptClass()).append(
@@ -901,9 +899,9 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append("};\n");
 		}
 		this.renderSetServerPush(out);
-		out.append("$(document).ready(function() { ").append(
-				app.getJavaScriptClass()).append("._p_.load(").append(
-				!widgetset).append(");});\n");
+		out.append("$(document).ready(function() { ")
+				.append(app.getJavaScriptClass()).append("._p_.load(")
+				.append(!widgetset).append(");});\n");
 		this.loadScriptLibraries(out, app, librariesLoaded);
 	}
 
@@ -912,8 +910,8 @@ class WebRenderer implements SlotLearnerInterface {
 		WApplication app = this.session_.getApp();
 		final Configuration conf = this.session_.getController()
 				.getConfiguration();
-		logger.debug(new StringWriter().append("Rendering invisible: ").append(
-				this.invisibleJS_.toString()).toString());
+		logger.debug(new StringWriter().append("Rendering invisible: ")
+				.append(this.invisibleJS_.toString()).toString());
 		this.collectedJS1_.append(this.invisibleJS_.toString());
 		this.invisibleJS_.setLength(0);
 		if (conf.isInlineCss()) {
@@ -964,9 +962,9 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		if (app.autoJavaScriptChanged_) {
-			this.collectedJS1_.append(app.getJavaScriptClass()).append(
-					"._p_.autoJavaScript=function(){").append(
-					app.autoJavaScript_).append("};");
+			this.collectedJS1_.append(app.getJavaScriptClass())
+					.append("._p_.autoJavaScript=function(){")
+					.append(app.autoJavaScript_).append("};");
 			app.autoJavaScriptChanged_ = false;
 		}
 		this.visibleOnly_ = true;
@@ -1046,10 +1044,10 @@ class WebRenderer implements SlotLearnerInterface {
 				out.append('}');
 				return;
 			}
-			out.append(this.session_.getApp().getJavaScriptClass()).append(
-					"._p_.setSessionUrl(").append(
-					WWebWidget.jsStringLiteral(this.getSessionUrl())).append(
-					");");
+			out.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.setSessionUrl(")
+					.append(WWebWidget.jsStringLiteral(this.getSessionUrl()))
+					.append(");");
 			this.session_.sessionIdChanged_ = false;
 		}
 		this.collectJS(out);
@@ -1058,17 +1056,18 @@ class WebRenderer implements SlotLearnerInterface {
 			String formObjectsList = this.createFormObjectsList(app);
 			if (!formObjectsList.equals(this.currentFormObjectsList_)) {
 				this.currentFormObjectsList_ = formObjectsList;
-				out.append(app.getJavaScriptClass()).append(
-						"._p_.setFormObjects([").append(
-						this.currentFormObjectsList_).append("]);");
+				out.append(app.getJavaScriptClass())
+						.append("._p_.setFormObjects([")
+						.append(this.currentFormObjectsList_).append("]);");
 			}
 		}
 		app.streamAfterLoadJavaScript(out);
 		if (app.isQuited()) {
-			out.append(app.getJavaScriptClass()).append("._p_.quit(").append(
-					((app.quittedMessage_.length() == 0) ? "null" : WString
-							.toWString(app.quittedMessage_)
-							.getJsStringLiteral())
+			out.append(app.getJavaScriptClass())
+					.append("._p_.quit(")
+					.append(((app.quittedMessage_.length() == 0) ? "null"
+							: WString.toWString(app.quittedMessage_)
+									.getJsStringLiteral())
 							+ ");");
 		}
 		if (this.updateLayout_) {
@@ -1082,9 +1081,9 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void loadStyleSheet(final StringBuilder out, WApplication app,
 			final WCssStyleSheet sheet) {
-		out.append("Wt3_3_4").append(".addStyleSheet('").append(
-				sheet.getLink().resolveUrl(app)).append("', '").append(
-				sheet.getMedia()).append("');\n ");
+		out.append("Wt3_3_4").append(".addStyleSheet('")
+				.append(sheet.getLink().resolveUrl(app)).append("', '")
+				.append(sheet.getMedia()).append("');\n ");
 	}
 
 	private void loadStyleSheets(final StringBuilder out, WApplication app) {
@@ -1098,9 +1097,10 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void removeStyleSheets(final StringBuilder out, WApplication app) {
 		for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
-			out.append("Wt3_3_4").append(".removeStyleSheet('").append(
-					app.styleSheetsToRemove_.get(i).getLink().resolveUrl(app))
-					.append("');\n ");
+			out.append("Wt3_3_4")
+					.append(".removeStyleSheet('")
+					.append(app.styleSheetsToRemove_.get(i).getLink()
+							.resolveUrl(app)).append("');\n ");
 			app.styleSheetsToRemove_.remove(0 + i);
 		}
 	}
@@ -1112,9 +1112,9 @@ class WebRenderer implements SlotLearnerInterface {
 			for (int i = first; i < app.scriptLibraries_.size(); ++i) {
 				String uri = this.session_.fixRelativeUrl(app.scriptLibraries_
 						.get(i).uri);
-				out.append(app.scriptLibraries_.get(i).beforeLoadJS).append(
-						app.getJavaScriptClass()).append("._p_.loadScript('")
-						.append(uri).append("',");
+				out.append(app.scriptLibraries_.get(i).beforeLoadJS)
+						.append(app.getJavaScriptClass())
+						.append("._p_.loadScript('").append(uri).append("',");
 				DomElement.jsStringLiteral(out,
 						app.scriptLibraries_.get(i).symbol, '\'');
 				out.append(");\n");
@@ -1146,24 +1146,25 @@ class WebRenderer implements SlotLearnerInterface {
 		if (app.showLoadingIndicator_.needsUpdate(all)) {
 			out.append(
 					"showLoadingIndicator = function() {var o=null,e=null;\n")
-					.append(app.showLoadingIndicator_.getJavaScript()).append(
-							"};\n");
+					.append(app.showLoadingIndicator_.getJavaScript())
+					.append("};\n");
 			app.showLoadingIndicator_.updateOk();
 		}
 		if (app.hideLoadingIndicator_.needsUpdate(all)) {
 			out.append(
 					"hideLoadingIndicator = function() {var o=null,e=null;\n")
-					.append(app.hideLoadingIndicator_.getJavaScript()).append(
-							"};\n");
+					.append(app.hideLoadingIndicator_.getJavaScript())
+					.append("};\n");
 			app.hideLoadingIndicator_.updateOk();
 		}
 	}
 
 	private void renderSetServerPush(final StringBuilder out) {
 		if (this.session_.getApp().serverPushChanged_) {
-			out.append(this.session_.getApp().getJavaScriptClass()).append(
-					"._p_.setServerPush(").append(
-					this.session_.getApp().isUpdatesEnabled()).append(");");
+			out.append(this.session_.getApp().getJavaScriptClass())
+					.append("._p_.setServerPush(")
+					.append(this.session_.getApp().isUpdatesEnabled())
+					.append(");");
 			this.session_.getApp().serverPushChanged_ = false;
 		}
 	}
@@ -1254,24 +1255,23 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 		if (js != null) {
 			if (app.titleChanged_) {
-				js.append(app.getJavaScriptClass()).append("._p_.setTitle(")
-						.append(
-								WString.toWString(app.getTitle())
-										.getJsStringLiteral()).append(");\n");
+				js.append(app.getJavaScriptClass())
+						.append("._p_.setTitle(")
+						.append(WString.toWString(app.getTitle())
+								.getJsStringLiteral()).append(");\n");
 			}
 			if (app.closeMessageChanged_) {
-				js.append(app.getJavaScriptClass()).append(
-						"._p_.setCloseMessage(").append(
-						WString.toWString(app.getCloseMessage())
+				js.append(app.getJavaScriptClass())
+						.append("._p_.setCloseMessage(")
+						.append(WString.toWString(app.getCloseMessage())
 								.getJsStringLiteral()).append(");\n");
 			}
 			if (app.localeChanged_) {
-				js.append(app.getJavaScriptClass()).append("._p_.setLocale(")
-						.append(
-								WString.toWString(
-										new WString(app.getLocale()
-												.getLanguage()))
-										.getJsStringLiteral()).append(");\n");
+				js.append(app.getJavaScriptClass())
+						.append("._p_.setLocale(")
+						.append(WString.toWString(
+								new WString(app.getLocale().getLanguage()))
+								.getJsStringLiteral()).append(");\n");
 			}
 		}
 		app.titleChanged_ = false;
@@ -1281,10 +1281,10 @@ class WebRenderer implements SlotLearnerInterface {
 			int librariesLoaded = this.loadScriptLibraries(js, app);
 			app.streamAfterLoadJavaScript(js);
 			if (app.internalPathIsChanged_) {
-				js.append(app.getJavaScriptClass()).append("._p_.setHash(")
-						.append(
-								WWebWidget
-										.jsStringLiteral(app.newInternalPath_))
+				js.append(app.getJavaScriptClass())
+						.append("._p_.setHash(")
+						.append(WWebWidget
+								.jsStringLiteral(app.newInternalPath_))
 						.append(", false);\n");
 				if (!this.isPreLearning()
 						&& !app.getEnvironment().isInternalPathUsingFragments()) {
@@ -1335,9 +1335,11 @@ class WebRenderer implements SlotLearnerInterface {
 				.getConfiguration();
 		StringBuilder out = new StringBuilder();
 		FileServe bootJs = new FileServe(WtServlet.Boot_js);
-		boot.setVar("BLANK_HTML", this.session_.getBootstrapUrl(response,
-				WebSession.BootstrapOption.ClearInternalPath)
-				+ "&amp;request=resource&amp;resource=blank");
+		boot.setVar(
+				"BLANK_HTML",
+				this.session_.getBootstrapUrl(response,
+						WebSession.BootstrapOption.ClearInternalPath)
+						+ "&amp;request=resource&amp;resource=blank");
 		boot.setVar("SESSION_ID", this.session_.getSessionId());
 		boot.setVar("APP_CLASS", "Wt");
 		bootJs.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
@@ -1348,15 +1350,14 @@ class WebRenderer implements SlotLearnerInterface {
 		bootJs.setVar("SCRIPT_ID", this.scriptId_);
 		bootJs.setVar("RANDOMSEED", MathUtils.randomInt());
 		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.reloadIsNewSession());
-		bootJs
-				.setVar(
-						"USE_COOKIES",
-						conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
+		bootJs.setVar(
+				"USE_COOKIES",
+				conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
 		bootJs.setVar("AJAX_CANONICAL_URL", this
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
-		bootJs.setVar("PATH_INFO", WWebWidget
-				.jsStringLiteral(this.session_.pagePathInfo_));
+		bootJs.setVar("PATH_INFO",
+				WWebWidget.jsStringLiteral(this.session_.pagePathInfo_));
 		bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
 		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);
@@ -1401,8 +1402,8 @@ class WebRenderer implements SlotLearnerInterface {
 				this.solution_ += l;
 			}
 		}
-		out.append(this.session_.getApp().getJavaScriptClass()).append(
-				"._p_.response(").append(this.expectedAckId_);
+		out.append(this.session_.getApp().getJavaScriptClass())
+				.append("._p_.response(").append(this.expectedAckId_);
 		if (puzzle.length() != 0) {
 			out.append(",").append(puzzle);
 		}
@@ -1520,23 +1521,19 @@ class WebRenderer implements SlotLearnerInterface {
 					boolean selectIE7 = conf.getUaCompatible().indexOf(
 							"IE8=IE7") != -1;
 					if (selectIE7) {
-						result
-								.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\"");
+						result.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=7\"");
 						closeSpecial(result);
 					}
 				} else {
 					if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE9) {
-						result
-								.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"");
+						result.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\"");
 						closeSpecial(result);
 					} else {
 						if (this.session_.getEnv().getAgent() == WEnvironment.UserAgent.IE10) {
-							result
-									.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=10\"");
+							result.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=10\"");
 							closeSpecial(result);
 						} else {
-							result
-									.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=11\"");
+							result.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=11\"");
 							closeSpecial(result);
 						}
 					}
@@ -1544,8 +1541,8 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		if (this.session_.getFavicon().length() != 0) {
-			result.append("<link rel=\"shortcut icon\" href=\"").append(
-					this.session_.getFavicon()).append('"');
+			result.append("<link rel=\"shortcut icon\" href=\"")
+					.append(this.session_.getFavicon()).append('"');
 			closeSpecial(result);
 		}
 		String baseUrl = "";

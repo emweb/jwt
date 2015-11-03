@@ -309,11 +309,9 @@ public class WCalendar extends WCompositeWidget {
 			d = "dlong";
 			break;
 		default:
-			logger
-					.error(new StringWriter()
-							.append(
-									"setHorizontalHeaderFormat(): improper horizontal header format.")
-							.toString());
+			logger.error(new StringWriter()
+					.append("setHorizontalHeaderFormat(): improper horizontal header format.")
+					.toString());
 			format = WCalendar.HorizontalHeaderFormat.SingleLetterDayNames;
 			d = "d1";
 		}
@@ -479,9 +477,8 @@ public class WCalendar extends WCompositeWidget {
 	 *             setHorizontalHeaderFormat()} instead.
 	 */
 	public void setDayOfWeekLength(int chars) {
-		this
-				.setHorizontalHeaderFormat(chars == 3 ? WCalendar.HorizontalHeaderFormat.ShortDayNames
-						: WCalendar.HorizontalHeaderFormat.SingleLetterDayNames);
+		this.setHorizontalHeaderFormat(chars == 3 ? WCalendar.HorizontalHeaderFormat.ShortDayNames
+				: WCalendar.HorizontalHeaderFormat.SingleLetterDayNames);
 	}
 
 	/**
@@ -555,8 +552,8 @@ public class WCalendar extends WCompositeWidget {
 				this.yearEdit_.setText(new WString(buf));
 			}
 			WDate todayd = WDate.getCurrentDate();
-			WDate today = new WDate(todayd.getYear(), todayd.getMonth(), todayd
-					.getDay());
+			WDate today = new WDate(todayd.getYear(), todayd.getMonth(),
+					todayd.getDay());
 			WDate d = new WDate(this.currentYear_, this.currentMonth_, 1);
 			d = d.addDays(-1);
 			WDate.Day gw = WDate.Day.fromInt(this.firstDayOfWeek_ % 7);
@@ -565,14 +562,13 @@ public class WCalendar extends WCompositeWidget {
 				for (int j = 0; j < 7; ++j) {
 					buf = String.valueOf(i * 7 + j);
 					String cell = "c" + buf;
-					WDate date = new WDate(d.getYear(), d.getMonth(), d
-							.getDay());
+					WDate date = new WDate(d.getYear(), d.getMonth(),
+							d.getDay());
 					WWidget w = this.impl_.resolveWidget(cell);
 					WWidget rw = this.renderCell(w, date);
 					this.impl_.bindWidget(cell, rw);
 					WInteractWidget iw = ((rw.getWebWidget()) instanceof WInteractWidget ? (WInteractWidget) (rw
-							.getWebWidget())
-							: null);
+							.getWebWidget()) : null);
 					if (iw != null && iw != w) {
 						if (this.clicked().isConnected()
 								|| this.selectionMode_ == SelectionMode.ExtendedSelection
@@ -586,9 +582,9 @@ public class WCalendar extends WCompositeWidget {
 								&& !this.singleClickSelect_
 								&& (this.activated().isConnected() || this
 										.selectionChanged().isConnected())) {
-							this.cellDblClickMapper_.mapConnect(iw
-									.doubleClicked(), new WCalendar.Coordinate(
-									i, j));
+							this.cellDblClickMapper_.mapConnect(
+									iw.doubleClicked(),
+									new WCalendar.Coordinate(i, j));
 						}
 					}
 					d = d.addDays(1);
@@ -711,11 +707,10 @@ public class WCalendar extends WCompositeWidget {
 		this.currentYear_ = currentDay.getYear();
 		this.currentMonth_ = currentDay.getMonth();
 		StringBuilder text = new StringBuilder();
-		text
-				.append("<table class=\"days ${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><tr><th class=\"caption\">${nav-prev}</th><th class=\"caption\"colspan=\"5\">${month} ${year}</th><th class=\"caption\">${nav-next}</th></tr><tr>");
+		text.append("<table class=\"days ${table-class}\" cellspacing=\"0\" cellpadding=\"0\"><tr><th class=\"caption\">${nav-prev}</th><th class=\"caption\"colspan=\"5\">${month} ${year}</th><th class=\"caption\">${nav-next}</th></tr><tr>");
 		for (int j = 0; j < 7; ++j) {
-			text.append("<th title=\"${t").append(j).append(
-					"}\" scope=\"col\">${d").append(j).append("}</th>");
+			text.append("<th title=\"${t").append(j)
+					.append("}\" scope=\"col\">${d").append(j).append("}</th>");
 		}
 		text.append("</tr>");
 		for (int i = 0; i < 6; ++i) {

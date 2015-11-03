@@ -372,11 +372,9 @@ public class RegistrationWidget extends WTemplateFormView {
 		}
 			break;
 		case ConfirmWithEmail:
-			logger
-					.info(new StringWriter()
-							.append(
-									"confirming a new identity to existing user not yet implemented")
-							.toString());
+			logger.info(new StringWriter()
+					.append("confirming a new identity to existing user not yet implemented")
+					.toString());
 			break;
 		default:
 			logger.error(new StringWriter().append("that's gone haywire.")
@@ -395,11 +393,11 @@ public class RegistrationWidget extends WTemplateFormView {
 
 	private void oAuthDone(OAuthProcess oauth, final Identity identity) {
 		if (identity.isValid()) {
-			logger.warn(new StringWriter().append("secure:").append(
-					oauth.getService().getName()).append(": identified: as ")
-					.append(identity.getId()).append(", ").append(
-							identity.getName()).append(", ").append(
-							identity.getEmail()).toString());
+			logger.warn(new StringWriter().append("secure:")
+					.append(oauth.getService().getName())
+					.append(": identified: as ").append(identity.getId())
+					.append(", ").append(identity.getName()).append(", ")
+					.append(identity.getEmail()).toString());
 			if (!this.model_.registerIdentified(identity)) {
 				this.update();
 			}
@@ -407,9 +405,9 @@ public class RegistrationWidget extends WTemplateFormView {
 			if (this.authWidget_ != null) {
 				this.authWidget_.displayError(oauth.getError());
 			}
-			logger.warn(new StringWriter().append("secure:").append(
-					oauth.getService().getName()).append(": error: ").append(
-					oauth.getError()).toString());
+			logger.warn(new StringWriter().append("secure:")
+					.append(oauth.getService().getName()).append(": error: ")
+					.append(oauth.getError()).toString());
 		}
 	}
 }

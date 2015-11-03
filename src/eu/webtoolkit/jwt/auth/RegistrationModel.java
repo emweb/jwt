@@ -180,10 +180,10 @@ public class RegistrationModel extends FormBaseModel {
 		} else {
 			this.addField(LoginNameField, WString.tr("Wt.Auth.user-name-info"));
 		}
-		this.addField(ChoosePasswordField, WString
-				.tr("Wt.Auth.choose-password-info"));
-		this.addField(RepeatPasswordField, WString
-				.tr("Wt.Auth.repeat-password-info"));
+		this.addField(ChoosePasswordField,
+				WString.tr("Wt.Auth.choose-password-info"));
+		this.addField(RepeatPasswordField,
+				WString.tr("Wt.Auth.repeat-password-info"));
 		this.setEmailPolicy(this.emailPolicy_);
 	}
 
@@ -233,9 +233,7 @@ public class RegistrationModel extends FormBaseModel {
 			this.addField(EmailField, WString.tr("Wt.Auth.email-info"));
 			break;
 		case EmailOptional:
-			this
-					.addField(EmailField, WString
-							.tr("Wt.Auth.optional-email-info"));
+			this.addField(EmailField, WString.tr("Wt.Auth.optional-email-info"));
 			break;
 		default:
 			break;
@@ -278,8 +276,8 @@ public class RegistrationModel extends FormBaseModel {
 				switch (this.getBaseAuth().getIdentityPolicy()) {
 				case LoginNameIdentity:
 					if (this.idpIdentity_.getName().length() != 0) {
-						this.setValue(LoginNameField, this.idpIdentity_
-								.getName());
+						this.setValue(LoginNameField,
+								this.idpIdentity_.getName());
 					} else {
 						if (this.idpIdentity_.getEmail().length() != 0) {
 							String suggested = this.idpIdentity_.getEmail();
@@ -423,8 +421,8 @@ public class RegistrationModel extends FormBaseModel {
 					user.addIdentity(this.idpIdentity_.getProvider(),
 							this.idpIdentity_.getId());
 					if (this.getBaseAuth().getIdentityPolicy() != IdentityPolicy.OptionalIdentity) {
-						user.addIdentity(Identity.LoginName, this
-								.valueText(LoginNameField));
+						user.addIdentity(Identity.LoginName,
+								this.valueText(LoginNameField));
 					}
 					String email = "";
 					boolean emailVerified = false;
@@ -448,8 +446,8 @@ public class RegistrationModel extends FormBaseModel {
 						}
 					}
 				} else {
-					user.addIdentity(Identity.LoginName, this
-							.valueText(LoginNameField));
+					user.addIdentity(Identity.LoginName,
+							this.valueText(LoginNameField));
 					this.getPasswordAuth().updatePassword(user,
 							this.valueText(ChoosePasswordField));
 					if (this.getBaseAuth().isEmailVerificationEnabled()) {
@@ -547,10 +545,10 @@ public class RegistrationModel extends FormBaseModel {
 				AbstractPasswordService.AbstractStrengthValidator v = this
 						.getPasswordAuth().getStrengthValidator();
 				if (v != null) {
-					WValidator.Result r = v.validate(this
-							.valueText(ChoosePasswordField), this
-							.valueText(LoginNameField), this
-							.valueText(EmailField));
+					WValidator.Result r = v.validate(
+							this.valueText(ChoosePasswordField),
+							this.valueText(LoginNameField),
+							this.valueText(EmailField));
 					valid = r.getState() == WValidator.State.Valid;
 					error = r.getMessage();
 				} else {
@@ -643,8 +641,7 @@ public class RegistrationModel extends FormBaseModel {
 								+ ");} else {$(o).removeClass('Wt-valid');Wt3_3_4.setHtml(i,"
 								+ WString
 										.toWString(
-												WString
-														.tr("Wt.Auth.repeat-password-info"))
+												WString.tr("Wt.Auth.repeat-password-info"))
 										.getJsStringLiteral() + ");}}}");
 	}
 

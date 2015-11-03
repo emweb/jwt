@@ -231,13 +231,14 @@ public class WCheckBox extends WAbstractToggleButton {
 		}
 		if (this.partialStateSelectable_) {
 			StringWriter ss = new StringWriter();
-			ss.append("function(obj, e) {\n").append(
-					"if(obj.nextState == 'c'){\n").append("obj.checked=true;")
-					.append(partialOff).append(" obj.nextState='u';").append(
-							"} else if( obj.nextState=='i') {\n").append(
-							"obj.nextState='c';").append(partialOn).append(
-							" } else if( obj.nextState=='u') {\n").append(
-							"obj.nextState='i';").append("obj.checked=false;")
+			ss.append("function(obj, e) {\n")
+					.append("if(obj.nextState == 'c'){\n")
+					.append("obj.checked=true;").append(partialOff)
+					.append(" obj.nextState='u';")
+					.append("} else if( obj.nextState=='i') {\n")
+					.append("obj.nextState='c';").append(partialOn)
+					.append(" } else if( obj.nextState=='u') {\n")
+					.append("obj.nextState='i';").append("obj.checked=false;")
 					.append(partialOff).append(" } else obj.nextState='i';")
 					.append("}");
 			slot = new JSlot(ss.toString(), this);

@@ -161,8 +161,7 @@ public class WTreeTableNode extends WTreeNode {
 			this.table_ = table;
 			for (int i = 0; i < this.getChildNodes().size(); ++i) {
 				(((this.getChildNodes().get(i)) instanceof WTreeTableNode ? (WTreeTableNode) (this
-						.getChildNodes().get(i))
-						: null)).setTable(table);
+						.getChildNodes().get(i)) : null)).setTable(table);
 			}
 			this.createExtraColumns(table.getColumnCount() - 1);
 			for (int i = 0; i < this.columnWidgets_.size(); ++i) {

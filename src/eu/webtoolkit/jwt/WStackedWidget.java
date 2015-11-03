@@ -131,9 +131,7 @@ public class WStackedWidget extends WContainerWidget {
 	 * @see WStackedWidget#setCurrentWidget(WWidget widget)
 	 */
 	public void setCurrentIndex(int index) {
-		this
-				.setCurrentIndex(index, this.animation_,
-						this.autoReverseAnimation_);
+		this.setCurrentIndex(index, this.animation_, this.autoReverseAnimation_);
 	}
 
 	/**
@@ -319,8 +317,8 @@ public class WStackedWidget extends WContainerWidget {
 			if (this.javaScriptDefined_) {
 				WApplication.getInstance().loadJavaScript(
 						"js/WStackedWidget.js", wtjs2());
-				this.setJavaScriptMember("wtAnimateChild", "$('#"
-						+ this.getId() + "').data('obj').animateChild");
+				this.setJavaScriptMember("wtAnimateChild",
+						"$('#" + this.getId() + "').data('obj').animateChild");
 				this.setJavaScriptMember("wtAutoReverse",
 						this.autoReverseAnimation_ ? "true" : "false");
 			}

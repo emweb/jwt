@@ -392,20 +392,18 @@ public class WAxisSliderWidget extends WPaintedWidget {
 				&& this.chart_.getSeries(this.seriesColumn_).getType() != SeriesType.CurveSeries) {
 			if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
 				StringBuilder ss = new StringBuilder();
-				ss.append("jQuery.removeData(").append(this.getJsRef()).append(
-						",'sobj');");
+				ss.append("jQuery.removeData(").append(this.getJsRef())
+						.append(",'sobj');");
 				ss.append("\nif (").append(this.getObjJsRef()).append(") {")
-						.append(this.getObjJsRef()).append(
-								".canvas.style.cursor = 'auto';").append(
-								"setTimeout(").append(this.getObjJsRef())
+						.append(this.getObjJsRef())
+						.append(".canvas.style.cursor = 'auto';")
+						.append("setTimeout(").append(this.getObjJsRef())
 						.append(".repaint,0);}\n");
 				this.doJavaScript(ss.toString());
 			}
-			logger
-					.error(new StringWriter()
-							.append(
-									"WAxisSliderWidget is not associated with a line or curve series.")
-							.toString());
+			logger.error(new StringWriter()
+					.append("WAxisSliderWidget is not associated with a line or curve series.")
+					.toString());
 			return;
 		}
 		WPainter painter = new WPainter(paintDevice);
@@ -419,45 +417,47 @@ public class WAxisSliderWidget extends WPaintedWidget {
 				&& EnumUtils.mask(paintDevice.getFeatures(),
 						WPaintDevice.FeatureFlag.HasFontMetrics).equals(0)
 				&& this.labelsEnabled_) {
-			logger
-					.error(new StringWriter()
-							.append(
-									"setAutoLayout(): device does not have font metrics (not even server-side font metrics).")
-							.toString());
+			logger.error(new StringWriter()
+					.append("setAutoLayout(): device does not have font metrics (not even server-side font metrics).")
+					.toString());
 			autoPadding = false;
 		}
 		if (autoPadding) {
 			if (horizontal) {
 				if (this.labelsEnabled_) {
 					this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
-					this.setSelectionAreaPadding((int) (this.chart_.getAxis(
-							Axis.XAxis).calcMaxTickLabelSize(paintDevice,
-							Orientation.Vertical) + 10), EnumSet
-							.of(Side.Bottom));
-					this.setSelectionAreaPadding((int) Math.max(this.chart_
-							.getAxis(Axis.XAxis).calcMaxTickLabelSize(
-									paintDevice, Orientation.Horizontal) / 2,
-							10.0), EnumSet.of(Side.Left, Side.Right));
+					this.setSelectionAreaPadding(
+							(int) (this.chart_.getAxis(Axis.XAxis)
+									.calcMaxTickLabelSize(paintDevice,
+											Orientation.Vertical) + 10),
+							EnumSet.of(Side.Bottom));
+					this.setSelectionAreaPadding((int) Math.max(
+							this.chart_.getAxis(Axis.XAxis)
+									.calcMaxTickLabelSize(paintDevice,
+											Orientation.Horizontal) / 2, 10.0),
+							EnumSet.of(Side.Left, Side.Right));
 				} else {
 					this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
-					this.setSelectionAreaPadding(5, EnumSet.of(Side.Left,
-							Side.Right, Side.Bottom));
+					this.setSelectionAreaPadding(5,
+							EnumSet.of(Side.Left, Side.Right, Side.Bottom));
 				}
 			} else {
 				if (this.labelsEnabled_) {
 					this.setSelectionAreaPadding(0, EnumSet.of(Side.Right));
-					this.setSelectionAreaPadding((int) Math.max(this.chart_
-							.getAxis(Axis.XAxis).calcMaxTickLabelSize(
-									paintDevice, Orientation.Vertical) / 2,
-							10.0), EnumSet.of(Side.Top, Side.Bottom));
-					this.setSelectionAreaPadding((int) (this.chart_.getAxis(
-							Axis.XAxis).calcMaxTickLabelSize(paintDevice,
-							Orientation.Horizontal) + 10), EnumSet
-							.of(Side.Left));
+					this.setSelectionAreaPadding((int) Math.max(
+							this.chart_.getAxis(Axis.XAxis)
+									.calcMaxTickLabelSize(paintDevice,
+											Orientation.Vertical) / 2, 10.0),
+							EnumSet.of(Side.Top, Side.Bottom));
+					this.setSelectionAreaPadding(
+							(int) (this.chart_.getAxis(Axis.XAxis)
+									.calcMaxTickLabelSize(paintDevice,
+											Orientation.Horizontal) + 10),
+							EnumSet.of(Side.Left));
 				} else {
 					this.setSelectionAreaPadding(0, EnumSet.of(Side.Right));
-					this.setSelectionAreaPadding(5, EnumSet.of(Side.Top,
-							Side.Bottom, Side.Left));
+					this.setSelectionAreaPadding(5,
+							EnumSet.of(Side.Top, Side.Bottom, Side.Left));
 				}
 			}
 		}
@@ -552,9 +552,9 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		}
 		if (horizontal) {
 			axis.render(painter, axisProperties, new WPointF(
-					drawArea.getLeft(), h - bottom), new WPointF(drawArea
-					.getRight(), h - bottom), tickStart, tickEnd, labelPos,
-					EnumSet.of(labelHFlag, labelVFlag));
+					drawArea.getLeft(), h - bottom),
+					new WPointF(drawArea.getRight(), h - bottom), tickStart,
+					tickEnd, labelPos, EnumSet.of(labelHFlag, labelVFlag));
 			WPainterPath line = new WPainterPath();
 			line.moveTo(drawArea.getLeft() + 0.5, h - (bottom - 0.5));
 			line.lineTo(drawArea.getRight(), h - (bottom - 0.5));
@@ -562,15 +562,15 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		} else {
 			axis.render(painter, axisProperties,
 					new WPointF(this.getSelectionAreaPadding(Side.Left) - 1,
-							drawArea.getLeft()), new WPointF(this
-							.getSelectionAreaPadding(Side.Left) - 1, drawArea
-							.getRight()), tickStart, tickEnd, labelPos, EnumSet
-							.of(labelHFlag, labelVFlag));
+							drawArea.getLeft()),
+					new WPointF(this.getSelectionAreaPadding(Side.Left) - 1,
+							drawArea.getRight()), tickStart, tickEnd, labelPos,
+					EnumSet.of(labelHFlag, labelVFlag));
 			WPainterPath line = new WPainterPath();
-			line.moveTo(this.getSelectionAreaPadding(Side.Left) - 0.5, drawArea
-					.getLeft() + 0.5);
-			line.lineTo(this.getSelectionAreaPadding(Side.Left) - 0.5, drawArea
-					.getRight());
+			line.moveTo(this.getSelectionAreaPadding(Side.Left) - 0.5,
+					drawArea.getLeft() + 0.5);
+			line.lineTo(this.getSelectionAreaPadding(Side.Left) - 0.5,
+					drawArea.getRight());
 			painter.strokePath(line, this.chart_.getAxis(Axis.XAxis).getPen());
 		}
 		WPainterPath curve = new WPainterPath();
@@ -584,12 +584,10 @@ public class WAxisSliderWidget extends WPaintedWidget {
 					new WTransform(1, 0, 0, 1, -chartArea.getLeft(), -chartArea
 							.getTop()));
 			if (!horizontal) {
-				t
-						.assign(new WTransform(0, 1, 1, 0, this
-								.getSelectionAreaPadding(Side.Left)
-								- this.getSelectionAreaPadding(Side.Right) - 5,
-								0).multiply(t).multiply(
-								new WTransform(0, 1, 1, 0, 0, 0)));
+				t.assign(new WTransform(0, 1, 1, 0, this
+						.getSelectionAreaPadding(Side.Left)
+						- this.getSelectionAreaPadding(Side.Right) - 5, 0)
+						.multiply(t).multiply(new WTransform(0, 1, 1, 0, 0, 0)));
 			}
 			curve.assign(t.map(this.chart_.pathForSeries(this.seriesColumn_)));
 		}
@@ -646,15 +644,15 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
 			WApplication app = WApplication.getInstance();
 			StringBuilder ss = new StringBuilder();
-			ss.append("new Wt3_3_4.WAxisSliderWidget(").append(
-					app.getJavaScriptClass()).append(",").append(
-					this.getJsRef()).append(",").append(this.getObjJsRef())
-					.append(",").append("{chart:").append(
-							this.chart_.getCObjJsRef()).append(",transform:")
-					.append(this.transform_.getJsRef()).append(
-							",rect:function(){return ").append(rect.getJsRef())
-					.append("},drawArea:").append(drawArea.getJsRef()).append(
-							",series:").append(this.seriesColumn_)
+			ss.append("new Wt3_3_4.WAxisSliderWidget(")
+					.append(app.getJavaScriptClass()).append(",")
+					.append(this.getJsRef()).append(",")
+					.append(this.getObjJsRef()).append(",").append("{chart:")
+					.append(this.chart_.getCObjJsRef()).append(",transform:")
+					.append(this.transform_.getJsRef())
+					.append(",rect:function(){return ").append(rect.getJsRef())
+					.append("},drawArea:").append(drawArea.getJsRef())
+					.append(",series:").append(this.seriesColumn_)
 					.append("});");
 			this.doJavaScript(ss.toString());
 		}
@@ -703,8 +701,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
 			return rect;
 		} else {
 			return new WRectF(this.getWidth().getValue() - rect.getY()
-					- rect.getHeight(), rect.getX(), rect.getHeight(), rect
-					.getWidth());
+					- rect.getHeight(), rect.getX(), rect.getHeight(),
+					rect.getWidth());
 		}
 	}
 

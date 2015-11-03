@@ -61,9 +61,9 @@
     <span class="n">contactOptions</span><span class="o">.</span><span class="na">whitespace</span> <span class="o">=</span> <span class="s">&quot; \\n&quot;</span><span class="o">;</span>
     <span class="n">contactOptions</span><span class="o">.</span><span class="na">wordSeparators</span> <span class="o">=</span> <span class="s">&quot;-., \&quot;@\\n;&quot;</span><span class="o">;</span>
     <span class="n">contactOptions</span><span class="o">.</span><span class="na">appendReplacedText</span> <span class="o">=</span> <span class="s">&quot;, &quot;</span><span class="o">;</span>
-    <span class="n">WSuggestionPopup</span> <span class="n">sp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WSuggestionPopup</span><span class="o">(</span><span class="n">WSuggestionPopup</span>
-            <span class="o">.</span><span class="na">generateMatcherJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">),</span> <span class="n">WSuggestionPopup</span>
-            <span class="o">.</span><span class="na">generateReplacerJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">),</span> <span class="n">container</span><span class="o">);</span>
+    <span class="n">WSuggestionPopup</span> <span class="n">sp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WSuggestionPopup</span><span class="o">(</span>
+            <span class="n">WSuggestionPopup</span><span class="o">.</span><span class="na">generateMatcherJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">),</span>
+            <span class="n">WSuggestionPopup</span><span class="o">.</span><span class="na">generateReplacerJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">),</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">WLineEdit</span> <span class="n">le</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">le</span><span class="o">.</span><span class="na">setEmptyText</span><span class="o">(</span><span class="s">&quot;Enter a name starting with &#39;J&#39;&quot;</span><span class="o">);</span>
     <span class="n">sp</span><span class="o">.</span><span class="na">forEdit</span><span class="o">(</span><span class="n">le</span><span class="o">);</span>
@@ -115,8 +115,7 @@
             <span class="n">container</span><span class="o">);</span>
     <span class="n">toggleB</span><span class="o">.</span><span class="na">disable</span><span class="o">();</span>
     <span class="n">WText</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
-    <span class="n">text</span>
-            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;These are the most import API classes and methods for working with CSS:&lt;/p&gt;&quot;</span><span class="o">);</span>
+    <span class="n">text</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;These are the most import API classes and methods for working with CSS:&lt;/p&gt;&quot;</span><span class="o">);</span>
     <span class="kd">final</span> <span class="n">WTable</span> <span class="n">table</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTable</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">table</span><span class="o">.</span><span class="na">setHeaderCount</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
     <span class="n">table</span><span class="o">.</span><span class="na">getElementAt</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">).</span><span class="na">addWidget</span><span class="o">(</span><span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;Method&quot;</span><span class="o">));</span>
@@ -265,8 +264,8 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">model</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setXSeriesColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setLegendEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span>
-            <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span>
+            <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">120</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">model</span><span class="o">.</span><span class="na">getColumnCount</span><span class="o">();</span> <span class="o">++</span><span class="n">column</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">WDataSeries</span> <span class="n">series</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="n">column</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">BarSeries</span><span class="o">);</span>
@@ -400,8 +399,8 @@
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
             <span class="n">WString</span> <span class="n">countryName</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="na">getCurrentText</span><span class="o">();</span>
             <span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="na">getCurrentIndex</span><span class="o">();</span>
-            <span class="n">String</span> <span class="n">countryCode</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">model</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">model</span><span class="o">.</span><span class="na">getIndex</span><span class="o">(</span><span class="n">row</span><span class="o">,</span>
-                    <span class="mi">0</span><span class="o">),</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">UserRole</span><span class="o">);</span>
+            <span class="n">String</span> <span class="n">countryCode</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span> <span class="n">model</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span>
+                    <span class="n">model</span><span class="o">.</span><span class="na">getIndex</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="mi">0</span><span class="o">),</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">UserRole</span><span class="o">);</span>
             <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;You selected {1} with key {2}.&quot;</span><span class="o">).</span><span class="na">arg</span><span class="o">(</span>
                     <span class="n">countryName</span><span class="o">).</span><span class="na">arg</span><span class="o">(</span><span class="n">countryCode</span><span class="o">));</span>
         <span class="o">}</span>
@@ -636,14 +635,12 @@
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="kt">int</span> <span class="n">days</span> <span class="o">=</span> <span class="n">de1</span><span class="o">.</span><span class="na">getDate</span><span class="o">().</span><span class="na">getDaysTo</span><span class="o">(</span><span class="n">de2</span><span class="o">.</span><span class="na">getDate</span><span class="o">())</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">days</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">out</span>
-                            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;It&#39;s fine to take holiday just for one day!&quot;</span><span class="o">);</span>
+                    <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;It&#39;s fine to take holiday just for one day!&quot;</span><span class="o">);</span>
                 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">days</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">out</span>
-                                <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
-                                        <span class="s">&quot;So, you want to take holiday for a period of {1} days?...&quot;</span><span class="o">)</span>
-                                        <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">days</span><span class="o">));</span>
+                        <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
+                                <span class="s">&quot;So, you want to take holiday for a period of {1} days?...&quot;</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">days</span><span class="o">));</span>
                     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                         <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Invalid period!&quot;</span><span class="o">);</span>
                     <span class="o">}</span>
@@ -691,14 +688,12 @@
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="kt">int</span> <span class="n">days</span> <span class="o">=</span> <span class="n">dp1</span><span class="o">.</span><span class="na">getDate</span><span class="o">().</span><span class="na">getDaysTo</span><span class="o">(</span><span class="n">dp2</span><span class="o">.</span><span class="na">getDate</span><span class="o">())</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
                 <span class="k">if</span> <span class="o">(</span><span class="n">days</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-                    <span class="n">out</span>
-                            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;It&#39;s fine to take holiday just for one day!&quot;</span><span class="o">);</span>
+                    <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;It&#39;s fine to take holiday just for one day!&quot;</span><span class="o">);</span>
                 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">days</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">out</span>
-                                <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
-                                        <span class="s">&quot;So, you want to take holiday for a period of {1} days?...&quot;</span><span class="o">)</span>
-                                        <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">days</span><span class="o">));</span>
+                        <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
+                                <span class="s">&quot;So, you want to take holiday for a period of {1} days?...&quot;</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">days</span><span class="o">));</span>
                     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                         <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Invalid period!&quot;</span><span class="o">);</span>
                     <span class="o">}</span>
@@ -712,10 +707,11 @@
   <message id="src-Dialog"><![CDATA[
 <div class="highlight"><pre><span class="kd">final</span> <span class="kt">void</span> <span class="nf">showDialog</span><span class="o">(</span><span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span><span class="o">)</span> <span class="o">{</span>
     <span class="kd">final</span> <span class="n">WDialog</span> <span class="n">dialog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDialog</span><span class="o">(</span><span class="s">&quot;Go to cell&quot;</span><span class="o">);</span>
-    <span class="n">WLabel</span> <span class="n">label</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLabel</span><span class="o">(</span><span class="s">&quot;Cell location (A1..Z999)&quot;</span><span class="o">,</span> <span class="n">dialog</span>
-            <span class="o">.</span><span class="na">getContents</span><span class="o">());</span>
+    <span class="n">WLabel</span> <span class="n">label</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLabel</span><span class="o">(</span><span class="s">&quot;Cell location (A1..Z999)&quot;</span><span class="o">,</span>
+            <span class="n">dialog</span><span class="o">.</span><span class="na">getContents</span><span class="o">());</span>
     <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">edit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">dialog</span><span class="o">.</span><span class="na">getContents</span><span class="o">());</span>
     <span class="n">label</span><span class="o">.</span><span class="na">setBuddy</span><span class="o">(</span><span class="n">edit</span><span class="o">);</span>
+    <span class="n">dialog</span><span class="o">.</span><span class="na">getContents</span><span class="o">().</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;form-group&quot;</span><span class="o">);</span>
     <span class="n">WRegExpValidator</span> <span class="n">validator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WRegExpValidator</span><span class="o">(</span>
             <span class="s">&quot;[A-Za-z][1-9][0-9]{0,2}&quot;</span><span class="o">);</span>
     <span class="n">validator</span><span class="o">.</span><span class="na">setMandatory</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
@@ -780,8 +776,8 @@
     <span class="n">fu</span><span class="o">.</span><span class="na">setProgressBar</span><span class="o">(</span><span class="k">new</span> <span class="n">WProgressBar</span><span class="o">());</span>
     <span class="n">fu</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WPushButton</span> <span class="n">uploadButton</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Send&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
-    <span class="n">uploadButton</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span>
-            <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
+    <span class="n">uploadButton</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span>
+            <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">uploadButton</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
@@ -844,10 +840,10 @@
         <span class="k">this</span><span class="o">.</span><span class="na">addField</span><span class="o">(</span><span class="n">BirthField</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">addField</span><span class="o">(</span><span class="n">ChildrenField</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">addField</span><span class="o">(</span><span class="n">RemarksField</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">FirstNameField</span><span class="o">,</span> <span class="k">this</span>
-                <span class="o">.</span><span class="na">createNameValidator</span><span class="o">(</span><span class="n">FirstNameField</span><span class="o">));</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">LastNameField</span><span class="o">,</span> <span class="k">this</span>
-                <span class="o">.</span><span class="na">createNameValidator</span><span class="o">(</span><span class="n">LastNameField</span><span class="o">));</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">FirstNameField</span><span class="o">,</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">createNameValidator</span><span class="o">(</span><span class="n">FirstNameField</span><span class="o">));</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">LastNameField</span><span class="o">,</span>
+                <span class="k">this</span><span class="o">.</span><span class="na">createNameValidator</span><span class="o">(</span><span class="n">LastNameField</span><span class="o">));</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">CountryField</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">getCreateCountryValidator</span><span class="o">());</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">CityField</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">getCreateCityValidator</span><span class="o">());</span>
         <span class="k">this</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="n">BirthField</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">getCreateBirthValidator</span><span class="o">());</span>
@@ -893,20 +889,20 @@
     <span class="o">}</span>
 
     <span class="n">WString</span> <span class="nf">getUserData</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">FirstNameField</span><span class="o">)).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot; &quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">LastNameField</span><span class="o">))).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot;: country code=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">CountryField</span><span class="o">))).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot;, city=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">CityField</span><span class="o">))).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot;, birth=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">BirthField</span><span class="o">))).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot;, children=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">ChildrenField</span><span class="o">))).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot;, remarks=&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">RemarksField</span><span class="o">))).</span><span class="na">append</span><span class="o">(</span>
-                <span class="s">&quot;.&quot;</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">FirstNameField</span><span class="o">))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot; &quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">LastNameField</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;: country code=&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">CountryField</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;, city=&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">CityField</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;, birth=&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">BirthField</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;, children=&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">ChildrenField</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;, remarks=&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">RemarksField</span><span class="o">)))</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;.&quot;</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="n">String</span> <span class="nf">countryCode</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">)</span> <span class="o">{</span>
@@ -1094,9 +1090,8 @@
     <span class="kt">void</span> <span class="nf">process</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">model</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">validate</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">this</span>
-                    <span class="o">.</span><span class="na">bindString</span><span class="o">(</span><span class="s">&quot;submit-info&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
-                            <span class="s">&quot;Saved user data for &quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">model</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">bindString</span><span class="o">(</span><span class="s">&quot;submit-info&quot;</span><span class="o">,</span>
+                    <span class="k">new</span> <span class="nf">WString</span><span class="o">(</span><span class="s">&quot;Saved user data for &quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">model</span>
                             <span class="o">.</span><span class="na">getUserData</span><span class="o">()),</span> <span class="n">TextFormat</span><span class="o">.</span><span class="na">PlainText</span><span class="o">);</span>
             <span class="k">this</span><span class="o">.</span><span class="na">updateView</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">model</span><span class="o">);</span>
             <span class="n">WLineEdit</span> <span class="n">viewField</span> <span class="o">=</span> <span class="o">(</span><span class="n">WLineEdit</span><span class="o">)</span> <span class="k">this</span>
@@ -1178,8 +1173,8 @@
             <span class="o">}</span>
             <span class="n">Git</span><span class="o">.</span><span class="na">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getObject</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">type</span> <span class="o">==</span> <span class="n">Git</span><span class="o">.</span><span class="na">ObjectType</span><span class="o">.</span><span class="na">Tree</span><span class="o">)</span> <span class="o">{</span>
-                <span class="n">treeId</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getTreeId</span><span class="o">(</span><span class="n">parent</span><span class="o">.</span><span class="na">getInternalId</span><span class="o">(),</span> <span class="n">parent</span>
-                        <span class="o">.</span><span class="na">getRow</span><span class="o">());</span>
+                <span class="n">treeId</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">getTreeId</span><span class="o">(</span><span class="n">parent</span><span class="o">.</span><span class="na">getInternalId</span><span class="o">(),</span>
+                        <span class="n">parent</span><span class="o">.</span><span class="na">getRow</span><span class="o">());</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
             <span class="o">}</span>
@@ -1347,8 +1342,8 @@
         <span class="n">Integer</span> <span class="n">i</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">childPointer_</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">index</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
             <span class="kd">final</span> <span class="n">GitModel</span><span class="o">.</span><span class="na">Tree</span> <span class="n">parentItem</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">treeData_</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">parentId</span><span class="o">);</span>
-            <span class="n">Git</span><span class="o">.</span><span class="na">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">git_</span><span class="o">.</span><span class="na">treeGetObject</span><span class="o">(</span><span class="n">parentItem</span>
-                    <span class="o">.</span><span class="na">getTreeObject</span><span class="o">(),</span> <span class="n">childIndex</span><span class="o">);</span>
+            <span class="n">Git</span><span class="o">.</span><span class="na">Object</span> <span class="n">o</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">git_</span><span class="o">.</span><span class="na">treeGetObject</span><span class="o">(</span>
+                    <span class="n">parentItem</span><span class="o">.</span><span class="na">getTreeObject</span><span class="o">(),</span> <span class="n">childIndex</span><span class="o">);</span>
             <span class="k">this</span><span class="o">.</span><span class="na">treeData_</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">GitModel</span><span class="o">.</span><span class="na">Tree</span><span class="o">(</span><span class="n">parentId</span><span class="o">,</span> <span class="n">childIndex</span><span class="o">,</span>
                     <span class="n">o</span><span class="o">.</span><span class="na">id</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">git_</span><span class="o">.</span><span class="na">treeSize</span><span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">id</span><span class="o">)));</span>
             <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">treeData_</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
@@ -1362,8 +1357,8 @@
     <span class="n">Git</span><span class="o">.</span><span class="na">Object</span> <span class="nf">getObject</span><span class="o">(</span><span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">int</span> <span class="n">parentId</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="na">getInternalId</span><span class="o">();</span>
         <span class="kd">final</span> <span class="n">GitModel</span><span class="o">.</span><span class="na">Tree</span> <span class="n">parentItem</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">treeData_</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">parentId</span><span class="o">);</span>
-        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">git_</span><span class="o">.</span><span class="na">treeGetObject</span><span class="o">(</span><span class="n">parentItem</span><span class="o">.</span><span class="na">getTreeObject</span><span class="o">(),</span> <span class="n">index</span>
-                <span class="o">.</span><span class="na">getRow</span><span class="o">());</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">git_</span><span class="o">.</span><span class="na">treeGetObject</span><span class="o">(</span><span class="n">parentItem</span><span class="o">.</span><span class="na">getTreeObject</span><span class="o">(),</span>
+                <span class="n">index</span><span class="o">.</span><span class="na">getRow</span><span class="o">());</span>
     <span class="o">}</span>
 
     <span class="kd">static</span> <span class="n">String</span> <span class="nf">getSuffix</span><span class="o">(</span><span class="kd">final</span> <span class="n">String</span> <span class="n">fileName</span><span class="o">)</span> <span class="o">{</span>
@@ -1498,8 +1493,7 @@
         <span class="o">});</span>
         <span class="n">WCheckBox</span> <span class="n">enableDoubleClickZoomCB</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span>
                 <span class="s">&quot;Enable double click zoom&quot;</span><span class="o">);</span>
-        <span class="n">controls</span>
-                <span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;double-click-zoom-cb&quot;</span><span class="o">,</span> <span class="n">enableDoubleClickZoomCB</span><span class="o">);</span>
+        <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;double-click-zoom-cb&quot;</span><span class="o">,</span> <span class="n">enableDoubleClickZoomCB</span><span class="o">);</span>
         <span class="n">enableDoubleClickZoomCB</span><span class="o">.</span><span class="na">setChecked</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">disableDoubleClickZoom</span><span class="o">();</span>
         <span class="n">enableDoubleClickZoomCB</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
@@ -1516,8 +1510,7 @@
                 <span class="o">});</span>
         <span class="n">WCheckBox</span> <span class="n">enableScrollWheelZoomCB</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span>
                 <span class="s">&quot;Enable scroll wheel zoom&quot;</span><span class="o">);</span>
-        <span class="n">controls</span>
-                <span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;scroll-wheel-zoom-cb&quot;</span><span class="o">,</span> <span class="n">enableScrollWheelZoomCB</span><span class="o">);</span>
+        <span class="n">controls</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;scroll-wheel-zoom-cb&quot;</span><span class="o">,</span> <span class="n">enableScrollWheelZoomCB</span><span class="o">);</span>
         <span class="n">enableScrollWheelZoomCB</span><span class="o">.</span><span class="na">setChecked</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">enableScrollWheelZoom</span><span class="o">();</span>
         <span class="n">enableScrollWheelZoomCB</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
@@ -1649,15 +1642,15 @@
     <span class="o">}</span>
 
     <span class="kt">void</span> <span class="nf">googleMapDoubleClicked</span><span class="o">(</span><span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Double clicked at coordinate (&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Double clicked at coordinate (&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="kt">void</span> <span class="nf">googleMapClicked</span><span class="o">(</span><span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Clicked at coordinate (&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">).</span><span class="na">append</span><span class="o">(</span>
-                <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">err</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;Clicked at coordinate (&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">())).</span><span class="na">append</span><span class="o">(</span><span class="s">&quot;)&quot;</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="kd">private</span> <span class="n">WGoogleMap</span> <span class="n">map_</span><span class="o">;</span>
@@ -1947,8 +1940,7 @@
     <span class="n">player</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">Encoding</span><span class="o">.</span><span class="na">M4V</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">mp4Video</span><span class="o">));</span>
     <span class="n">player</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">Encoding</span><span class="o">.</span><span class="na">OGV</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">ogvVideo</span><span class="o">));</span>
     <span class="n">player</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">Encoding</span><span class="o">.</span><span class="na">PosterImage</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">poster</span><span class="o">));</span>
-    <span class="n">player</span>
-            <span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;&lt;a href=\&quot;http://durian.blender.org/\&quot;target=\&quot;_blank\&quot;&gt;Sintel&lt;/a&gt;, (c) copyright Blender Foundation&quot;</span><span class="o">);</span>
+    <span class="n">player</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;&lt;a href=\&quot;http://durian.blender.org/\&quot;target=\&quot;_blank\&quot;&gt;Sintel&lt;/a&gt;, (c) copyright Blender Foundation&quot;</span><span class="o">);</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">player</span><span class="o">.</span><span class="na">playbackStarted</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
@@ -1980,13 +1972,9 @@
     <span class="n">WMenu</span> <span class="n">menu</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WMenu</span><span class="o">(</span><span class="n">contents</span><span class="o">,</span> <span class="n">Orientation</span><span class="o">.</span><span class="na">Vertical</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">menu</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;nav nav-pills nav-stacked&quot;</span><span class="o">);</span>
     <span class="n">menu</span><span class="o">.</span><span class="na">setWidth</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">150</span><span class="o">));</span>
-    <span class="n">menu</span>
-            <span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Internal paths&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span>
-                    <span class="s">&quot;Internal paths contents&quot;</span><span class="o">));</span>
+    <span class="n">menu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Internal paths&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="s">&quot;Internal paths contents&quot;</span><span class="o">));</span>
     <span class="n">menu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Anchor&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="s">&quot;Anchor contents&quot;</span><span class="o">));</span>
-    <span class="n">menu</span>
-            <span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Stacked widget&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span>
-                    <span class="s">&quot;Stacked widget contents&quot;</span><span class="o">));</span>
+    <span class="n">menu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Stacked widget&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="s">&quot;Stacked widget contents&quot;</span><span class="o">));</span>
     <span class="n">menu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Tab widget&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="s">&quot;Tab widget contents&quot;</span><span class="o">));</span>
     <span class="n">menu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Menu&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="s">&quot;Menu contents&quot;</span><span class="o">));</span>
     <span class="n">container</span><span class="o">.</span><span class="na">addWidget</span><span class="o">(</span><span class="n">contents</span><span class="o">);</span>
@@ -2014,8 +2002,7 @@
                             <span class="k">if</span> <span class="o">(</span><span class="n">messageBox</span><span class="o">.</span><span class="na">getButtonResult</span><span class="o">()</span> <span class="o">==</span> <span class="n">StandardButton</span><span class="o">.</span><span class="na">Yes</span><span class="o">)</span> <span class="o">{</span>
                                 <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;The rocket is launched!&quot;</span><span class="o">);</span>
                             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-                                <span class="n">out</span>
-                                        <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;The rocket is ready for launch...&quot;</span><span class="o">);</span>
+                                <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;The rocket is ready for launch...&quot;</span><span class="o">);</span>
                             <span class="o">}</span>
                             <span class="k">if</span> <span class="o">(</span><span class="n">messageBox</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
                                 <span class="n">messageBox</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
@@ -2036,8 +2023,8 @@
     <span class="n">button</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
             <span class="n">StandardButton</span> <span class="n">answer</span> <span class="o">=</span> <span class="n">WMessageBox</span><span class="o">.</span><span class="na">show</span><span class="o">(</span><span class="s">&quot;Launch phase&quot;</span><span class="o">,</span>
-                    <span class="s">&quot;&lt;p&gt;Launch the rocket?&lt;/p&gt;&quot;</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
-                            <span class="n">StandardButton</span><span class="o">.</span><span class="na">Ok</span><span class="o">,</span> <span class="n">StandardButton</span><span class="o">.</span><span class="na">Cancel</span><span class="o">));</span>
+                    <span class="s">&quot;&lt;p&gt;Launch the rocket?&lt;/p&gt;&quot;</span><span class="o">,</span>
+                    <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">StandardButton</span><span class="o">.</span><span class="na">Ok</span><span class="o">,</span> <span class="n">StandardButton</span><span class="o">.</span><span class="na">Cancel</span><span class="o">));</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">answer</span> <span class="o">==</span> <span class="n">StandardButton</span><span class="o">.</span><span class="na">Ok</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;The rocket is launched!&quot;</span><span class="o">);</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
@@ -2154,8 +2141,9 @@
     <span class="n">WGridData</span> <span class="n">dataset1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WGridData</span><span class="o">(</span><span class="n">model1</span><span class="o">);</span>
     <span class="n">dataset1</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">SurfaceSeries3D</span><span class="o">);</span>
     <span class="n">dataset1</span><span class="o">.</span><span class="na">setSurfaceMeshEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="n">WStandardColorMap</span> <span class="n">colormap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardColorMap</span><span class="o">(</span><span class="n">dataset1</span>
-            <span class="o">.</span><span class="na">minimum</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">),</span> <span class="n">dataset1</span><span class="o">.</span><span class="na">maximum</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">),</span> <span class="kc">true</span><span class="o">);</span>
+    <span class="n">WStandardColorMap</span> <span class="n">colormap</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStandardColorMap</span><span class="o">(</span>
+            <span class="n">dataset1</span><span class="o">.</span><span class="na">minimum</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">),</span>
+            <span class="n">dataset1</span><span class="o">.</span><span class="na">maximum</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">),</span> <span class="kc">true</span><span class="o">);</span>
     <span class="n">dataset1</span><span class="o">.</span><span class="na">setColorMap</span><span class="o">(</span><span class="n">colormap</span><span class="o">);</span>
     <span class="n">WStandardItemModel</span> <span class="n">model2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PlaneData</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">model2</span><span class="o">.</span><span class="na">getRowCount</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
@@ -2404,8 +2392,8 @@
         <span class="n">painter</span><span class="o">.</span><span class="na">translate</span><span class="o">(</span><span class="mi">75</span><span class="o">,</span> <span class="mi">75</span><span class="o">);</span>
         <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">star</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">star</span> <span class="o">&lt;</span> <span class="mi">50</span><span class="o">;</span> <span class="n">star</span><span class="o">++)</span> <span class="o">{</span>
             <span class="n">painter</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
-            <span class="n">painter</span><span class="o">.</span><span class="na">translate</span><span class="o">(</span><span class="mi">75</span> <span class="o">-</span> <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">()</span> <span class="o">%</span> <span class="mi">150</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">75</span> <span class="o">-</span> <span class="n">random</span>
-                    <span class="o">.</span><span class="na">nextInt</span><span class="o">()</span> <span class="o">%</span> <span class="mi">150</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+            <span class="n">painter</span><span class="o">.</span><span class="na">translate</span><span class="o">(</span><span class="mi">75</span> <span class="o">-</span> <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">()</span> <span class="o">%</span> <span class="mi">150</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span>
+                    <span class="mi">75</span> <span class="o">-</span> <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">()</span> <span class="o">%</span> <span class="mi">150</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
             <span class="k">this</span><span class="o">.</span><span class="na">drawStar</span><span class="o">(</span><span class="n">painter</span><span class="o">,</span> <span class="n">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">()</span> <span class="o">%</span> <span class="mi">4</span><span class="o">)</span> <span class="o">+</span> <span class="mi">2</span><span class="o">);</span>
             <span class="n">painter</span><span class="o">.</span><span class="na">restore</span><span class="o">();</span>
         <span class="o">}</span>
@@ -2961,9 +2949,7 @@
   <message id="src-Path"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">Path</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Next&quot;</span><span class="o">);</span>
-    <span class="n">button</span>
-            <span class="o">.</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">WLink</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">InternalPath</span><span class="o">,</span>
-                    <span class="s">&quot;/navigation/anchor&quot;</span><span class="o">));</span>
+    <span class="n">button</span><span class="o">.</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">WLink</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">InternalPath</span><span class="o">,</span> <span class="s">&quot;/navigation/anchor&quot;</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -3153,8 +3139,9 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">model</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setLabelsColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setDataColumn</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">setDisplayLabels</span><span class="o">(</span><span class="n">EnumUtils</span><span class="o">.</span><span class="na">or</span><span class="o">(</span><span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">LabelOption</span><span class="o">.</span><span class="na">Outside</span><span class="o">,</span>
-            <span class="n">LabelOption</span><span class="o">.</span><span class="na">TextLabel</span><span class="o">),</span> <span class="n">LabelOption</span><span class="o">.</span><span class="na">TextPercentage</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setDisplayLabels</span><span class="o">(</span><span class="n">EnumUtils</span><span class="o">.</span><span class="na">or</span><span class="o">(</span>
+            <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">LabelOption</span><span class="o">.</span><span class="na">Outside</span><span class="o">,</span> <span class="n">LabelOption</span><span class="o">.</span><span class="na">TextLabel</span><span class="o">),</span>
+            <span class="n">LabelOption</span><span class="o">.</span><span class="na">TextPercentage</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setPerspectiveEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="mf">0.2</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setShadowEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setExplode</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">);</span>
@@ -3212,21 +3199,21 @@
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">status</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">();</span>
     <span class="n">status</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">();</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Connect&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Connect&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
                     <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;Connecting...&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">});</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Disconnect&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Disconnect&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
                     <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;You are disconnected now.&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">});</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
-    <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;icons/house.png&quot;</span><span class="o">,</span> <span class="s">&quot;I&#39;m home&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span>
-            <span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;icons/house.png&quot;</span><span class="o">,</span> <span class="s">&quot;I&#39;m home&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
                     <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
@@ -3242,23 +3229,21 @@
     <span class="o">});</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
     <span class="n">WPopupMenu</span> <span class="n">subMenu</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
-    <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Contents&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Contents&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                    <span class="n">out</span>
-                            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;This could be a link to /contents.html.&lt;/p&gt;&quot;</span><span class="o">);</span>
+                    <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;This could be a link to /contents.html.&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">});</span>
-    <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Index&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Index&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                    <span class="n">out</span>
-                            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;This could be a link to /index.html.&lt;/p&gt;&quot;</span><span class="o">);</span>
+                    <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;This could be a link to /index.html.&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">});</span>
     <span class="n">subMenu</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
-    <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;About&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">subMenu</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;About&quot;</span><span class="o">).</span><span class="na">triggered</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
                 <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
                     <span class="kd">final</span> <span class="n">WMessageBox</span> <span class="n">messageBox</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WMessageBox</span><span class="o">(</span>
                             <span class="s">&quot;About&quot;</span><span class="o">,</span>
@@ -3356,8 +3341,8 @@
   ]]></message>
   <message id="src-PushButtonAction"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">PushButtonAction</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span>
-            <span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;pushButtonAction-template&quot;</span><span class="o">));</span>
+    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span>
+            <span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;pushButtonAction-template&quot;</span><span class="o">));</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Save&quot;</span><span class="o">);</span>
     <span class="n">result</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;button-save&quot;</span><span class="o">,</span> <span class="n">button</span><span class="o">);</span>
     <span class="n">button</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;btn-primary&quot;</span><span class="o">);</span>
@@ -3397,8 +3382,8 @@
   ]]></message>
   <message id="src-PushButtonDropdownAppended"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">PushButtonDropdownAppended</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span>
-            <span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;appendedDropdownButton-template&quot;</span><span class="o">));</span>
+    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span>
+            <span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;appendedDropdownButton-template&quot;</span><span class="o">));</span>
     <span class="n">WPopupMenu</span> <span class="n">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Choose a button type&quot;</span><span class="o">);</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
@@ -3415,8 +3400,8 @@
   ]]></message>
   <message id="src-PushButtonDropdownPrepended"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">PushButtonDropdownPrepended</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span>
-            <span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;prependedDropdownButton-template&quot;</span><span class="o">));</span>
+    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span>
+            <span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;prependedDropdownButton-template&quot;</span><span class="o">));</span>
     <span class="n">WPopupMenu</span> <span class="n">popup</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPopupMenu</span><span class="o">();</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Choose a button type&quot;</span><span class="o">);</span>
     <span class="n">popup</span><span class="o">.</span><span class="na">addSeparator</span><span class="o">();</span>
@@ -3436,9 +3421,7 @@
   <message id="src-PushButtonLink"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">PushButtonLink</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Navigate&quot;</span><span class="o">);</span>
-    <span class="n">button</span>
-            <span class="o">.</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">WLink</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">InternalPath</span><span class="o">,</span>
-                    <span class="s">&quot;/navigation/anchor&quot;</span><span class="o">));</span>
+    <span class="n">button</span><span class="o">.</span><span class="na">setLink</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">WLink</span><span class="o">.</span><span class="na">Type</span><span class="o">.</span><span class="na">InternalPath</span><span class="o">,</span> <span class="s">&quot;/navigation/anchor&quot;</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -3686,8 +3669,8 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">setLegendEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">ScatterPlot</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setScale</span><span class="o">(</span><span class="n">AxisScale</span><span class="o">.</span><span class="na">DateScale</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span>
-            <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span>
+            <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setPlotAreaPadding</span><span class="o">(</span><span class="mi">120</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">WDataSeries</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">LineSeries</span><span class="o">);</span>
@@ -3729,8 +3712,8 @@
     <span class="n">WAxisSliderWidget</span> <span class="n">sliderWidget</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAxisSliderWidget</span><span class="o">(</span><span class="n">chart</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span>
             <span class="n">container</span><span class="o">);</span>
     <span class="n">sliderWidget</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">800</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">80</span><span class="o">));</span>
-    <span class="n">sliderWidget</span><span class="o">.</span><span class="na">setSelectionAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span>
-            <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
+    <span class="n">sliderWidget</span><span class="o">.</span><span class="na">setSelectionAreaPadding</span><span class="o">(</span><span class="mi">40</span><span class="o">,</span>
+            <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="n">sliderWidget</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="n">WLength</span><span class="o">.</span><span class="na">Auto</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
 <span class="o">}</span>
 </pre></div>
@@ -3804,11 +3787,10 @@
     <span class="n">result</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;out&quot;</span><span class="o">,</span> <span class="n">out</span><span class="o">);</span>
     <span class="n">button</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">out</span>
-                    <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Hello, &quot;</span>
-                            <span class="o">+</span> <span class="n">name</span><span class="o">.</span><span class="na">getText</span><span class="o">()</span>
-                            <span class="o">+</span> <span class="s">&quot;! I just want to help you... You&quot;</span>
-                            <span class="o">+</span> <span class="s">&quot; could complete this simple form by adding validation.&quot;</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Hello, &quot;</span>
+                    <span class="o">+</span> <span class="n">name</span><span class="o">.</span><span class="na">getText</span><span class="o">()</span>
+                    <span class="o">+</span> <span class="s">&quot;! I just want to help you... You&quot;</span>
+                    <span class="o">+</span> <span class="s">&quot; could complete this simple form by adding validation.&quot;</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">});</span>
 <span class="o">}</span>
@@ -3819,19 +3801,16 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WLineEdit</span> <span class="n">edit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">edit</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;input-block-level&quot;</span><span class="o">);</span>
-    <span class="n">edit</span>
-            <span class="o">.</span><span class="na">setEmptyText</span><span class="o">(</span><span class="s">&quot;This is a line edit with style class .input-block-level applied to it.&quot;</span><span class="o">);</span>
+    <span class="n">edit</span><span class="o">.</span><span class="na">setEmptyText</span><span class="o">(</span><span class="s">&quot;This is a line edit with style class .input-block-level applied to it.&quot;</span><span class="o">);</span>
     <span class="n">WComboBox</span> <span class="n">combo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WComboBox</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">combo</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;input-block-level&quot;</span><span class="o">);</span>
     <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="o">;</span> <span class="o">++</span><span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">combo</span>
-                <span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Combo box with style class .input-block-level - item&quot;</span>
-                        <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+        <span class="n">combo</span><span class="o">.</span><span class="na">addItem</span><span class="o">(</span><span class="s">&quot;Combo box with style class .input-block-level - item&quot;</span>
+                <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
     <span class="o">}</span>
     <span class="n">WTextArea</span> <span class="n">area</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">area</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;input-block-level&quot;</span><span class="o">);</span>
-    <span class="n">area</span>
-            <span class="o">.</span><span class="na">setEmptyText</span><span class="o">(</span><span class="s">&quot;This is a text area with style class .input-block-level applied to it.&quot;</span><span class="o">);</span>
+    <span class="n">area</span><span class="o">.</span><span class="na">setEmptyText</span><span class="o">(</span><span class="s">&quot;This is a text area with style class .input-block-level applied to it.&quot;</span><span class="o">);</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -4040,9 +4019,8 @@
             <span class="s">&quot;&lt;strong&gt;Stacked widget-index 0&lt;/strong&gt;&lt;p&gt;Hello&lt;/p&gt;&quot;</span><span class="o">));</span>
     <span class="n">stack</span><span class="o">.</span><span class="na">addWidget</span><span class="o">(</span><span class="k">new</span> <span class="n">WText</span><span class="o">(</span>
             <span class="s">&quot;&lt;strong&gt;Stacked widget-index 1&lt;/strong&gt;&lt;p&gt;This is Wt&lt;/p&gt;&quot;</span><span class="o">));</span>
-    <span class="n">stack</span>
-            <span class="o">.</span><span class="na">addWidget</span><span class="o">(</span><span class="k">new</span> <span class="n">WText</span><span class="o">(</span>
-                    <span class="s">&quot;&lt;strong&gt;Stacked widget-index 2&lt;/strong&gt;&lt;p&gt;Do you like it?&lt;/p&gt;&quot;</span><span class="o">));</span>
+    <span class="n">stack</span><span class="o">.</span><span class="na">addWidget</span><span class="o">(</span><span class="k">new</span> <span class="n">WText</span><span class="o">(</span>
+            <span class="s">&quot;&lt;strong&gt;Stacked widget-index 2&lt;/strong&gt;&lt;p&gt;Do you like it?&lt;/p&gt;&quot;</span><span class="o">));</span>
     <span class="n">sb</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
@@ -4116,17 +4094,15 @@
     <span class="n">WTabWidget</span> <span class="n">tabW</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTabWidget</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">tabW</span><span class="o">.</span><span class="na">addTab</span><span class="o">(</span><span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="s">&quot;This is the contents of the first tab.&quot;</span><span class="o">),</span>
             <span class="s">&quot;First&quot;</span><span class="o">,</span> <span class="n">WTabWidget</span><span class="o">.</span><span class="na">LoadPolicy</span><span class="o">.</span><span class="na">PreLoading</span><span class="o">);</span>
-    <span class="n">tabW</span>
-            <span class="o">.</span><span class="na">addTab</span><span class="o">(</span>
-                    <span class="k">new</span> <span class="nf">WTextArea</span><span class="o">(</span>
-                            <span class="s">&quot;The contents of the tabs are pre-loaded in the browser to ensure swift switching.&quot;</span><span class="o">),</span>
-                    <span class="s">&quot;Preload&quot;</span><span class="o">,</span> <span class="n">WTabWidget</span><span class="o">.</span><span class="na">LoadPolicy</span><span class="o">.</span><span class="na">PreLoading</span><span class="o">);</span>
-    <span class="n">tabW</span>
-            <span class="o">.</span><span class="na">addTab</span><span class="o">(</span>
-                    <span class="k">new</span> <span class="nf">WTextArea</span><span class="o">(</span>
-                            <span class="s">&quot;You could change any other style attribute of the tab widget by modifying the style class. The style class &#39;trhead&#39; is applied to this tab.&quot;</span><span class="o">),</span>
-                    <span class="s">&quot;Style&quot;</span><span class="o">,</span> <span class="n">WTabWidget</span><span class="o">.</span><span class="na">LoadPolicy</span><span class="o">.</span><span class="na">PreLoading</span><span class="o">)</span>
-            <span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;trhead&quot;</span><span class="o">);</span>
+    <span class="n">tabW</span><span class="o">.</span><span class="na">addTab</span><span class="o">(</span>
+            <span class="k">new</span> <span class="nf">WTextArea</span><span class="o">(</span>
+                    <span class="s">&quot;The contents of the tabs are pre-loaded in the browser to ensure swift switching.&quot;</span><span class="o">),</span>
+            <span class="s">&quot;Preload&quot;</span><span class="o">,</span> <span class="n">WTabWidget</span><span class="o">.</span><span class="na">LoadPolicy</span><span class="o">.</span><span class="na">PreLoading</span><span class="o">);</span>
+    <span class="n">tabW</span><span class="o">.</span><span class="na">addTab</span><span class="o">(</span>
+            <span class="k">new</span> <span class="nf">WTextArea</span><span class="o">(</span>
+                    <span class="s">&quot;You could change any other style attribute of the tab widget by modifying the style class. The style class &#39;trhead&#39; is applied to this tab.&quot;</span><span class="o">),</span>
+            <span class="s">&quot;Style&quot;</span><span class="o">,</span> <span class="n">WTabWidget</span><span class="o">.</span><span class="na">LoadPolicy</span><span class="o">.</span><span class="na">PreLoading</span><span class="o">).</span><span class="na">setStyleClass</span><span class="o">(</span>
+            <span class="s">&quot;trhead&quot;</span><span class="o">);</span>
     <span class="n">WMenuItem</span> <span class="n">tab</span> <span class="o">=</span> <span class="n">tabW</span><span class="o">.</span><span class="na">addTab</span><span class="o">(</span><span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span>
             <span class="s">&quot;You can close this tab by clicking on the close icon.&quot;</span><span class="o">),</span>
             <span class="s">&quot;Close&quot;</span><span class="o">);</span>
@@ -4647,8 +4623,7 @@
     <span class="n">WTextArea</span> <span class="n">ta</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTextArea</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">ta</span><span class="o">.</span><span class="na">setColumns</span><span class="o">(</span><span class="mi">80</span><span class="o">);</span>
     <span class="n">ta</span><span class="o">.</span><span class="na">setRows</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
-    <span class="n">ta</span>
-            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Change this text... \nand click outside the text area to get a changed event.&quot;</span><span class="o">);</span>
+    <span class="n">ta</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Change this text... \nand click outside the text area to get a changed event.&quot;</span><span class="o">);</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;/p&gt;&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">out</span><span class="o">.</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;help-block&quot;</span><span class="o">);</span>
     <span class="n">ta</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
@@ -4689,8 +4664,7 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="kd">final</span> <span class="n">WTextEdit</span> <span class="n">edit</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTextEdit</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">edit</span><span class="o">.</span><span class="na">setHeight</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">300</span><span class="o">));</span>
-    <span class="n">edit</span>
-            <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;span style=\&quot;font-family: &#39;courier new&#39;, courier; font-size: medium;\&quot;&gt;&lt;strong&gt;WTextEdit&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Hey, I&#39;m a &lt;strong&gt;WTextEdit&lt;/strong&gt; and you can make me &lt;span style=\&quot;text-decoration: underline;\&quot;&gt;&lt;em&gt;rich&lt;/em&gt;&lt;/span&gt; by adding your &lt;span style=\&quot;color: #ff0000;\&quot;&gt;&lt;em&gt;style&lt;/em&gt;&lt;/span&gt;!&lt;/p&gt;&lt;p&gt;Other widgets like...&lt;/p&gt;&lt;ul style=\&quot;padding: 0px; margin: 0px 0px 10px 25px;\&quot;&gt;&lt;li&gt;WLineEdit&lt;/li&gt;&lt;li&gt;WTextArea&lt;/li&gt;&lt;li&gt;WSpinBox&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;don&#39;t have style.&lt;/p&gt;&quot;</span><span class="o">);</span>
+    <span class="n">edit</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;&lt;span style=\&quot;font-family: &#39;courier new&#39;, courier; font-size: medium;\&quot;&gt;&lt;strong&gt;WTextEdit&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Hey, I&#39;m a &lt;strong&gt;WTextEdit&lt;/strong&gt; and you can make me &lt;span style=\&quot;text-decoration: underline;\&quot;&gt;&lt;em&gt;rich&lt;/em&gt;&lt;/span&gt; by adding your &lt;span style=\&quot;color: #ff0000;\&quot;&gt;&lt;em&gt;style&lt;/em&gt;&lt;/span&gt;!&lt;/p&gt;&lt;p&gt;Other widgets like...&lt;/p&gt;&lt;ul style=\&quot;padding: 0px; margin: 0px 0px 10px 25px;\&quot;&gt;&lt;li&gt;WLineEdit&lt;/li&gt;&lt;li&gt;WTextArea&lt;/li&gt;&lt;li&gt;WSpinBox&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;don&#39;t have style.&lt;/p&gt;&quot;</span><span class="o">);</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="o">(</span><span class="s">&quot;Get text&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">button</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Top</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Bottom</span><span class="o">));</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
@@ -4853,11 +4827,10 @@
                     <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;This is a really small range of time&quot;</span><span class="o">);</span>
                 <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                     <span class="k">if</span> <span class="o">(</span><span class="n">secs</span> <span class="o">&gt;</span> <span class="mi">3600</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">out</span>
-                                <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
-                                        <span class="s">&quot;So, you want to be delivered between {1} and {2} ?...&quot;</span><span class="o">)</span>
-                                        <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">de1</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">toString</span><span class="o">()).</span><span class="na">arg</span><span class="o">(</span>
-                                                <span class="n">de2</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">toString</span><span class="o">()));</span>
+                        <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
+                                <span class="s">&quot;So, you want to be delivered between {1} and {2} ?...&quot;</span><span class="o">)</span>
+                                <span class="o">.</span><span class="na">arg</span><span class="o">(</span><span class="n">de1</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">toString</span><span class="o">()).</span><span class="na">arg</span><span class="o">(</span>
+                                        <span class="n">de2</span><span class="o">.</span><span class="na">getTime</span><span class="o">().</span><span class="na">toString</span><span class="o">()));</span>
                     <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                         <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Invalid period!&quot;</span><span class="o">);</span>
                     <span class="o">}</span>
@@ -5065,8 +5038,7 @@
     <span class="n">dv</span><span class="o">.</span><span class="na">setFormat</span><span class="o">(</span><span class="s">&quot;dd/MM/yyyy&quot;</span><span class="o">);</span>
     <span class="n">dv</span><span class="o">.</span><span class="na">setMandatory</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">dv</span><span class="o">.</span><span class="na">setInvalidBlankText</span><span class="o">(</span><span class="s">&quot;A birthdate is mandatory!&quot;</span><span class="o">);</span>
-    <span class="n">dv</span>
-            <span class="o">.</span><span class="na">setInvalidNotADateText</span><span class="o">(</span><span class="s">&quot;You should enter a date in the format \&quot;dd/MM/yyyy\&quot;!&quot;</span><span class="o">);</span>
+    <span class="n">dv</span><span class="o">.</span><span class="na">setInvalidNotADateText</span><span class="o">(</span><span class="s">&quot;You should enter a date in the format \&quot;dd/MM/yyyy\&quot;!&quot;</span><span class="o">);</span>
     <span class="n">dv</span><span class="o">.</span><span class="na">setInvalidTooEarlyText</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span>
             <span class="s">&quot;That&#39;s too early... The date must be {1} or later!&quot;</span><span class="o">).</span><span class="na">arg</span><span class="o">(</span><span class="n">dv</span>
             <span class="o">.</span><span class="na">getBottom</span><span class="o">().</span><span class="na">toString</span><span class="o">(</span><span class="s">&quot;dd/MM/yyyy&quot;</span><span class="o">)));</span>
@@ -5092,10 +5064,9 @@
                     <span class="n">days</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="na">getDaysTo</span><span class="o">(</span><span class="n">dateEdit</span><span class="o">.</span><span class="na">getDate</span><span class="o">().</span><span class="na">addYears</span><span class="o">(</span>
                             <span class="n">years</span> <span class="o">+</span> <span class="mi">1</span><span class="o">));</span>
                 <span class="o">}</span>
-                <span class="n">out</span>
-                        <span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;In &quot;</span>
-                                <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">days</span><span class="o">)</span>
-                                <span class="o">+</span> <span class="s">&quot; days, we will be celebrating your next anniversary!&lt;/p&gt;&quot;</span><span class="o">);</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;&lt;p&gt;In &quot;</span>
+                        <span class="o">+</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">days</span><span class="o">)</span>
+                        <span class="o">+</span> <span class="s">&quot; days, we will be celebrating your next anniversary!&lt;/p&gt;&quot;</span><span class="o">);</span>
                 <span class="n">out</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;alert alert-success&quot;</span><span class="o">);</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="n">dateEdit</span><span class="o">.</span><span class="na">setFocus</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>

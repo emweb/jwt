@@ -428,11 +428,11 @@ public class WMediaPlayer extends WCompositeWidget {
 			this.setWidth(new WLength(this.videoWidth_));
 			if (this.isRendered()) {
 				StringBuilder ss = new StringBuilder();
-				ss.append("'size', {").append("width: \"").append(
-						this.videoWidth_).append("px\",").append("height: \"")
-						.append(this.videoHeight_).append("px\",").append(
-								"cssClass: \"jp-video-").append(
-								this.videoHeight_).append("p\"").append("}");
+				ss.append("'size', {").append("width: \"")
+						.append(this.videoWidth_).append("px\",")
+						.append("height: \"").append(this.videoHeight_)
+						.append("px\",").append("cssClass: \"jp-video-")
+						.append(this.videoHeight_).append("p\"").append("}");
 				this.playerDo("option", ss.toString());
 			}
 		}
@@ -486,8 +486,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		}
 		this.gui_ = controlsWidget;
 		WTemplate impl = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
-				.getImplementation())
-				: null);
+				.getImplementation()) : null);
 		if (this.gui_ != null) {
 			this.gui_.addStyleClass("jp-gui");
 			impl.bindWidget("gui", this.gui_);
@@ -921,8 +920,7 @@ public class WMediaPlayer extends WCompositeWidget {
 					this.status_.seekPercent = Double.parseDouble(attributes
 							.get(7));
 					this.updateProgressBarState(WMediaPlayer.BarControlId.Time);
-					this
-							.updateProgressBarState(WMediaPlayer.BarControlId.Volume);
+					this.updateProgressBarState(WMediaPlayer.BarControlId.Volume);
 				} catch (final RuntimeException e) {
 					throw new WException("WMediaPlayer: error parsing: "
 							+ formData.values[0] + ": " + e.toString());
@@ -967,38 +965,36 @@ public class WMediaPlayer extends WCompositeWidget {
 				this.createDefaultGui();
 			}
 			StringBuilder ss = new StringBuilder();
-			ss.append(this.getJsPlayerRef()).append(".jPlayer({").append(
-					"ready: function () {");
+			ss.append(this.getJsPlayerRef()).append(".jPlayer({")
+					.append("ready: function () {");
 			if (this.initialJs_.length() != 0) {
 				ss.append("$(this)").append(this.initialJs_).append(';');
 			}
 			this.initialJs_ = "";
-			ss.append("},").append("swfPath: \"").append(
-					WApplication.getResourcesUrl()).append("jPlayer\",")
-					.append("supplied: \"");
+			ss.append("},").append("swfPath: \"")
+					.append(WApplication.getResourcesUrl())
+					.append("jPlayer\",").append("supplied: \"");
 			boolean first = true;
 			for (int i = 0; i < this.media_.size(); ++i) {
 				if (this.media_.get(i).encoding != WMediaPlayer.Encoding.PosterImage) {
 					if (!first) {
 						ss.append(',');
 					}
-					ss
-							.append(mediaNames[this.media_.get(i).encoding
-									.getValue()]);
+					ss.append(mediaNames[this.media_.get(i).encoding.getValue()]);
 					first = false;
 				}
 			}
 			ss.append("\",");
 			if (this.mediaType_ == WMediaPlayer.MediaType.Video) {
-				ss.append("size: {").append("width: \"").append(
-						this.videoWidth_).append("px\",").append("height: \"")
-						.append(this.videoHeight_).append("px\",").append(
-								"cssClass: \"jp-video-").append(
-								this.videoHeight_).append("p\"").append("},");
+				ss.append("size: {").append("width: \"")
+						.append(this.videoWidth_).append("px\",")
+						.append("height: \"").append(this.videoHeight_)
+						.append("px\",").append("cssClass: \"jp-video-")
+						.append(this.videoHeight_).append("p\"").append("},");
 			}
-			ss.append("cssSelectorAncestor: ").append(
-					this.gui_ != null ? "'#" + this.getId() + '\'' : "''")
-					.append(", cssSelector: {");
+			ss.append("cssSelectorAncestor: ")
+					.append(this.gui_ != null ? "'#" + this.getId() + '\''
+							: "''").append(", cssSelector: {");
 			String[] controlSelectors = { "videoPlay", "play", "pause", "stop",
 					"volumeMute", "volumeUnmute", "volumeMax", "fullScreen",
 					"restoreScreen", "repeat", "repeatOff" };
@@ -1009,8 +1005,8 @@ public class WMediaPlayer extends WCompositeWidget {
 					if (!first) {
 						ss.append(", ");
 					}
-					ss.append(controlSelectors[i]).append(":\"#").append(
-							this.control_[i].getId()).append("\"");
+					ss.append(controlSelectors[i]).append(":\"#")
+							.append(this.control_[i].getId()).append("\"");
 					first = false;
 				}
 			}
@@ -1021,8 +1017,8 @@ public class WMediaPlayer extends WCompositeWidget {
 					if (!first) {
 						ss.append(", ");
 					}
-					ss.append(displaySelectors[i]).append(":\"#").append(
-							this.display_[i].getId()).append("\"");
+					ss.append(displaySelectors[i]).append(":\"#")
+							.append(this.display_[i].getId()).append("\"");
 					first = false;
 				}
 			}
@@ -1030,11 +1026,12 @@ public class WMediaPlayer extends WCompositeWidget {
 				if (!first) {
 					ss.append(", ");
 				}
-				ss.append("seekBar:\"#").append(
-						this.progressBar_[WMediaPlayer.BarControlId.Time
-								.getValue()].getId()).append("\", ").append(
-						"playBar:\"#bar").append(
-						this.progressBar_[WMediaPlayer.BarControlId.Time
+				ss.append("seekBar:\"#")
+						.append(this.progressBar_[WMediaPlayer.BarControlId.Time
+								.getValue()].getId())
+						.append("\", ")
+						.append("playBar:\"#bar")
+						.append(this.progressBar_[WMediaPlayer.BarControlId.Time
 								.getValue()].getId()).append("\"");
 				first = false;
 			}
@@ -1042,18 +1039,19 @@ public class WMediaPlayer extends WCompositeWidget {
 				if (!first) {
 					ss.append(", ");
 				}
-				ss.append("volumeBar:\"#").append(
-						this.progressBar_[WMediaPlayer.BarControlId.Volume
-								.getValue()].getId()).append("\", ").append(
-						"volumeBarValue:\"#bar").append(
-						this.progressBar_[WMediaPlayer.BarControlId.Volume
+				ss.append("volumeBar:\"#")
+						.append(this.progressBar_[WMediaPlayer.BarControlId.Volume
+								.getValue()].getId())
+						.append("\", ")
+						.append("volumeBarValue:\"#bar")
+						.append(this.progressBar_[WMediaPlayer.BarControlId.Volume
 								.getValue()].getId()).append("\"");
 				first = false;
 			}
 			ss.append('}').append("});");
-			ss.append("new Wt3_3_4.WMediaPlayer(").append(
-					app.getJavaScriptClass()).append(',').append(
-					this.getJsRef()).append(");");
+			ss.append("new Wt3_3_4.WMediaPlayer(")
+					.append(app.getJavaScriptClass()).append(',')
+					.append(this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());
 			this.boundSignals_ = 0;
 			this.boundSignalsDouble_ = 0;
@@ -1063,8 +1061,8 @@ public class WMediaPlayer extends WCompositeWidget {
 			ss.append(this.getJsPlayerRef());
 			for (int i = this.boundSignals_; i < this.signals_.size(); ++i) {
 				ss.append(".bind('").append(this.signals_.get(i).getName())
-						.append("', function(o, e) { ").append(
-								this.signals_.get(i).createCall()).append("})");
+						.append("', function(o, e) { ")
+						.append(this.signals_.get(i).createCall()).append("})");
 			}
 			ss.append(';');
 			this.doJavaScript(ss.toString());
@@ -1075,13 +1073,11 @@ public class WMediaPlayer extends WCompositeWidget {
 			ss.append(this.getJsPlayerRef());
 			for (int i = this.boundSignalsDouble_; i < this.signalsDouble_
 					.size(); ++i) {
-				ss
-						.append(".bind('")
+				ss.append(".bind('")
 						.append(this.signalsDouble_.get(i).signal.getName())
 						.append("', function(o, e) { ")
-						.append(
-								this.signalsDouble_.get(i).signal
-										.createCall(this.signalsDouble_.get(i).jsExprA1))
+						.append(this.signalsDouble_.get(i).signal
+								.createCall(this.signalsDouble_.get(i).jsExprA1))
 						.append("})");
 			}
 			ss.append(';');
@@ -1186,9 +1182,8 @@ public class WMediaPlayer extends WCompositeWidget {
 				"jp-volume-bar", "jp-volume-bar-value");
 		ui.bindString("title-display", (this.title_.length() == 0) ? "none"
 				: "");
-		this
-				.addStyleClass(this.mediaType_ == WMediaPlayer.MediaType.Video ? "jp-video"
-						: "jp-audio");
+		this.addStyleClass(this.mediaType_ == WMediaPlayer.MediaType.Video ? "jp-video"
+				: "jp-audio");
 		this.setControlsWidget(ui);
 	}
 
@@ -1201,8 +1196,8 @@ public class WMediaPlayer extends WCompositeWidget {
 			text = altText;
 		}
 		text = "Wt.WMediaPlayer." + text;
-		WAnchor anchor = new WAnchor(new WLink("javascript:;"), WString
-				.tr(text));
+		WAnchor anchor = new WAnchor(new WLink("javascript:;"),
+				WString.tr(text));
 		anchor.setStyleClass(styleClass);
 		anchor.setAttributeValue("tabindex", "1");
 		anchor.setToolTip(WString.tr(text));

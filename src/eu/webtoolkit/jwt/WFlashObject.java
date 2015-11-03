@@ -61,12 +61,11 @@ public class WFlashObject extends WWebWidget {
 		this.ieRendersAlternative_ = new JSignal(this, "IeAltnernative");
 		this.replaceDummyIeContent_ = false;
 		this.setInline(false);
-		this
-				.setAlternativeContent(new WAnchor(
-						new WLink("http://www.adobe.com/go/getflashplayer"),
-						new WImage(
-								new WLink(
-										"http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"))));
+		this.setAlternativeContent(new WAnchor(
+				new WLink("http://www.adobe.com/go/getflashplayer"),
+				new WImage(
+						new WLink(
+								"http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"))));
 		this.ieRendersAlternative_.addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WFlashObject.this.renderIeAltnerative();
@@ -184,17 +183,14 @@ public class WFlashObject extends WWebWidget {
 				obj.setProperty(Property.PropertyStyleRight, "0");
 				element.setProperty(Property.PropertyStylePosition, "relative");
 				StringWriter ss = new StringWriter();
-				ss
-						.append("function(self, w, h) {v="
-								+ this.getJsFlashRef()
-								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
+				ss.append("function(self, w, h) {v="
+						+ this.getJsFlashRef()
+						+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 				if (this.alternative_ != null) {
-					ss
-							.append(
-									"a=" + this.alternative_.getJsRef()
-											+ ";if(a && a.").append(
-									WT_RESIZE_JS).append(")a.").append(
-									WT_RESIZE_JS).append("(a, w, h);");
+					ss.append(
+							"a=" + this.alternative_.getJsRef() + ";if(a && a.")
+							.append(WT_RESIZE_JS).append(")a.")
+							.append(WT_RESIZE_JS).append("(a, w, h);");
 				}
 				ss.append("}");
 				this.setJavaScriptMember(WT_RESIZE_JS, ss.toString());
@@ -234,8 +230,8 @@ public class WFlashObject extends WWebWidget {
 					if (i != this.variables_.entrySet().iterator()) {
 						ss.append("&");
 					}
-					ss.append(Utils.urlEncode(i.getKey())).append("=").append(
-							Utils.urlEncode(i.getValue().toString()));
+					ss.append(Utils.urlEncode(i.getKey())).append("=")
+							.append(Utils.urlEncode(i.getValue().toString()));
 				}
 				DomElement param = DomElement
 						.createNew(DomElementType.DomElement_PARAM);
@@ -268,17 +264,17 @@ public class WFlashObject extends WWebWidget {
 		super.getDomChanges(result, app);
 		if (this.sizeChanged_) {
 			StringWriter ss = new StringWriter();
-			ss.append("var v=").append(this.getJsFlashRef()).append(
-					";if(v){v.setAttribute('width', '").append(
-					toString(this.getWidth())).append(
-					"');v.setAttribute('height', '").append(
-					toString(this.getHeight())).append("');}");
+			ss.append("var v=").append(this.getJsFlashRef())
+					.append(";if(v){v.setAttribute('width', '")
+					.append(toString(this.getWidth()))
+					.append("');v.setAttribute('height', '")
+					.append(toString(this.getHeight())).append("');}");
 			WApplication.getInstance().doJavaScript(ss.toString());
 			this.sizeChanged_ = false;
 		}
 		if (this.alternative_ != null && this.replaceDummyIeContent_) {
-			DomElement element = DomElement.getForUpdate(this.alternative_
-					.getId(), DomElementType.DomElement_DIV);
+			DomElement element = DomElement.getForUpdate(
+					this.alternative_.getId(), DomElementType.DomElement_DIV);
 			element.replaceWith(this.alternative_.createSDomElement(app));
 			result.add(element);
 			this.replaceDummyIeContent_ = false;

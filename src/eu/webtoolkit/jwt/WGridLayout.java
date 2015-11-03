@@ -232,8 +232,8 @@ public class WGridLayout extends WLayout {
 	public final void addItem(WLayoutItem item, int row, int column,
 			int rowSpan, int columnSpan, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
-		addItem(item, row, column, rowSpan, columnSpan, EnumSet.of(alignmen,
-				alignment));
+		addItem(item, row, column, rowSpan, columnSpan,
+				EnumSet.of(alignmen, alignment));
 	}
 
 	/**
@@ -256,8 +256,8 @@ public class WGridLayout extends WLayout {
 	 * EnumSet.noneOf(AlignmentFlag.class))}
 	 */
 	public final void addItem(WLayoutItem item, int row, int column, int rowSpan) {
-		addItem(item, row, column, rowSpan, 1, EnumSet
-				.noneOf(AlignmentFlag.class));
+		addItem(item, row, column, rowSpan, 1,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
@@ -270,8 +270,8 @@ public class WGridLayout extends WLayout {
 	 */
 	public final void addItem(WLayoutItem item, int row, int column,
 			int rowSpan, int columnSpan) {
-		addItem(item, row, column, rowSpan, columnSpan, EnumSet
-				.noneOf(AlignmentFlag.class));
+		addItem(item, row, column, rowSpan, columnSpan,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
@@ -359,8 +359,8 @@ public class WGridLayout extends WLayout {
 	public final void addLayout(WLayout layout, int row, int column,
 			int rowSpan, int columnSpan, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
-		addLayout(layout, row, column, rowSpan, columnSpan, EnumSet.of(
-				alignmen, alignment));
+		addLayout(layout, row, column, rowSpan, columnSpan,
+				EnumSet.of(alignmen, alignment));
 	}
 
 	/**
@@ -373,8 +373,8 @@ public class WGridLayout extends WLayout {
 	 */
 	public final void addLayout(WLayout layout, int row, int column,
 			int rowSpan, int columnSpan) {
-		addLayout(layout, row, column, rowSpan, columnSpan, EnumSet
-				.noneOf(AlignmentFlag.class));
+		addLayout(layout, row, column, rowSpan, columnSpan,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**
@@ -463,8 +463,8 @@ public class WGridLayout extends WLayout {
 	public final void addWidget(WWidget widget, int row, int column,
 			int rowSpan, int columnSpan, AlignmentFlag alignmen,
 			AlignmentFlag... alignment) {
-		addWidget(widget, row, column, rowSpan, columnSpan, EnumSet.of(
-				alignmen, alignment));
+		addWidget(widget, row, column, rowSpan, columnSpan,
+				EnumSet.of(alignmen, alignment));
 	}
 
 	/**
@@ -477,8 +477,8 @@ public class WGridLayout extends WLayout {
 	 */
 	public final void addWidget(WWidget widget, int row, int column,
 			int rowSpan, int columnSpan) {
-		addWidget(widget, row, column, rowSpan, columnSpan, EnumSet
-				.noneOf(AlignmentFlag.class));
+		addWidget(widget, row, column, rowSpan, columnSpan,
+				EnumSet.noneOf(AlignmentFlag.class));
 	}
 
 	/**

@@ -39,10 +39,10 @@ class OAuthRedirectEndpoint extends WResource {
 		response.setContentType("text/html; charset=UTF-8");
 		String stateE = request.getParameter("state");
 		if (!(stateE != null) || !stateE.equals(this.process_.oAuthState_)) {
-			logger.error(new StringWriter().append(
-					WString.tr("Wt.Auth.OAuthService.invalid-state")).append(
-					", state: ").append(stateE != null ? stateE : "(empty)")
-					.toString());
+			logger.error(new StringWriter()
+					.append(WString.tr("Wt.Auth.OAuthService.invalid-state"))
+					.append(", state: ")
+					.append(stateE != null ? stateE : "(empty)").toString());
 			this.process_.setError(WString
 					.tr("Wt.Auth.OAuthService.invalid-state"));
 			this.sendError(response);
@@ -59,10 +59,8 @@ class OAuthRedirectEndpoint extends WResource {
 		}
 		String codeE = request.getParameter("code");
 		if (!(codeE != null)) {
-			logger
-					.error(new StringWriter().append(
-							WString.tr("Wt.Auth.OAuthService.missing-code"))
-							.toString());
+			logger.error(new StringWriter().append(
+					WString.tr("Wt.Auth.OAuthService.missing-code")).toString());
 			this.process_.setError(WString
 					.tr("Wt.Auth.OAuthService.missing-code"));
 			this.sendError(response);
@@ -76,9 +74,8 @@ class OAuthRedirectEndpoint extends WResource {
 		Writer o = response.out();
 		WApplication app = WApplication.getInstance();
 		String appJs = app.getJavaScriptClass();
-		o
-				.append(
-						"<!DOCTYPE html><html lang=\"en\" dir=\"ltr\">\n<head><title></title>\n<script type=\"text/javascript\">\nfunction load() { if (window.opener.")
+		o.append(
+				"<!DOCTYPE html><html lang=\"en\" dir=\"ltr\">\n<head><title></title>\n<script type=\"text/javascript\">\nfunction load() { if (window.opener.")
 				.append(appJs)
 				.append(") {var ")
 				.append(appJs)
@@ -86,8 +83,7 @@ class OAuthRedirectEndpoint extends WResource {
 				.append(appJs)
 				.append(";")
 				.append(this.process_.redirected_.createCall())
-				.append(
-						";window.close();}\n}\n</script></head><body onload=\"load();\"></body></html>");
+				.append(";window.close();}\n}\n</script></head><body onload=\"load();\"></body></html>");
 	}
 
 	private OAuthProcess process_;

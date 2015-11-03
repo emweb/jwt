@@ -166,8 +166,8 @@ public class WMenuItem extends WContainerWidget {
 					result = StringUtils.put(result, i, '-');
 				} else {
 					if (Character.isLetterOrDigit((char) result.charAt(i))) {
-						result = StringUtils.put(result, i, Character
-								.toLowerCase((char) result.charAt(i)));
+						result = StringUtils.put(result, i,
+								Character.toLowerCase((char) result.charAt(i)));
 					} else {
 						result = StringUtils.put(result, i, '_');
 					}
@@ -408,8 +408,7 @@ public class WMenuItem extends WContainerWidget {
 		this.subMenu_ = menu;
 		this.subMenu_.parentItem_ = this;
 		WContainerWidget sparent = ((this.subMenu_.getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.subMenu_
-				.getParent())
-				: null);
+				.getParent()) : null);
 		if (sparent != null) {
 			sparent.removeWidget(this.subMenu_);
 		}
@@ -457,8 +456,7 @@ public class WMenuItem extends WContainerWidget {
 	public void setChecked(boolean checked) {
 		if (this.isCheckable()) {
 			WCheckBox cb = ((this.getAnchor().getWidget(0)) instanceof WCheckBox ? (WCheckBox) (this
-					.getAnchor().getWidget(0))
-					: null);
+					.getAnchor().getWidget(0)) : null);
 			cb.setChecked(checked);
 		}
 	}
@@ -476,8 +474,7 @@ public class WMenuItem extends WContainerWidget {
 	public boolean isChecked() {
 		if (this.isCheckable()) {
 			WCheckBox cb = ((this.getAnchor().getWidget(0)) instanceof WCheckBox ? (WCheckBox) (this
-					.getAnchor().getWidget(0))
-					: null);
+					.getAnchor().getWidget(0)) : null);
 			return cb.isChecked();
 		} else {
 			return false;
@@ -734,8 +731,7 @@ public class WMenuItem extends WContainerWidget {
 	public WAnchor getAnchor() {
 		for (int i = 0; i < this.getCount(); ++i) {
 			WAnchor result = ((this.getWidget(i)) instanceof WAnchor ? (WAnchor) (this
-					.getWidget(i))
-					: null);
+					.getWidget(i)) : null);
 			if (result != null) {
 				return result;
 			}
@@ -862,8 +858,7 @@ public class WMenuItem extends WContainerWidget {
 		this.data_ = null;
 		if (contents != null && contents.getParent() != null) {
 			WContainerWidget cw = ((contents.getParent()) instanceof WContainerWidget ? (WContainerWidget) (contents
-					.getParent())
-					: null);
+					.getParent()) : null);
 			if (cw != null) {
 				cw.removeWidget(contents);
 			}

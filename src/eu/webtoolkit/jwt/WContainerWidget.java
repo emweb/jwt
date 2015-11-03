@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * {
  * 	&#064;code
  * 	// Example 1:
- * 	// Instantiate a container widget and add some children whose layout 
+ * 	// Instantiate a container widget and add some children whose layout
  * 	// is governed based on HTML/CSS rules.
  * 	WContainerWidget container1 = new WContainerWidget();
  * 	container1.addWidget(new WText(&quot;Some text&quot;));
@@ -252,11 +252,9 @@ public class WContainerWidget extends WInteractWidget {
 		AlignmentFlag vAlign = EnumUtils.enumFromSet(EnumUtils.mask(alignment,
 				AlignmentFlag.AlignVerticalMask));
 		if (hAlign != AlignmentFlag.AlignJustify || vAlign != null) {
-			logger
-					.warn(new StringWriter()
-							.append(
-									"setLayout(layout, alignment) is being deprecated (and does no longer have the special meaning it used to have). Use spacers or CSS instead to control alignment")
-							.toString());
+			logger.warn(new StringWriter()
+					.append("setLayout(layout, alignment) is being deprecated (and does no longer have the special meaning it used to have). Use spacers or CSS instead to control alignment")
+					.toString());
 		}
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
 		if (layout != this.layout_) {
@@ -595,8 +593,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * Orientation.Vertical))}
 	 */
 	public final void setOverflow(WContainerWidget.Overflow value) {
-		setOverflow(value, EnumSet.of(Orientation.Horizontal,
-				Orientation.Vertical));
+		setOverflow(value,
+				EnumSet.of(Orientation.Horizontal, Orientation.Vertical));
 	}
 
 	/**
@@ -710,8 +708,7 @@ public class WContainerWidget extends WInteractWidget {
 			return false;
 		} else {
 			return (this.transientImpl_ != null ? this.transientImpl_.addedChildren_
-					.size()
-					: 0) == this.children_.size();
+					.size() : 0) == this.children_.size();
 		}
 	}
 
@@ -723,14 +720,10 @@ public class WContainerWidget extends WInteractWidget {
 			for (int i = 0; i < toAdd.size(); ++i) {
 				DomElement c = toAdd.get(i).createSDomElement(app);
 				app.streamBeforeLoadJavaScript(out, false);
-				c
-						.callMethod("omousemove=function(e) {if (!e) e = window.event;return "
-								+ app.getJavaScriptClass()
-								+ "._p_.dragDrag(event); }");
-				c
-						.callMethod("mouseup=function(e) {if (!e) e = window.event;return "
-								+ app.getJavaScriptClass()
-								+ "._p_.dragEnd(event);}");
+				c.callMethod("omousemove=function(e) {if (!e) e = window.event;return "
+						+ app.getJavaScriptClass() + "._p_.dragDrag(event); }");
+				c.callMethod("mouseup=function(e) {if (!e) e = window.event;return "
+						+ app.getJavaScriptClass() + "._p_.dragEnd(event);}");
 				c.callMethod("dragstart=function(){return false;}");
 				c.asJavaScript(out);
 				;
@@ -780,8 +773,8 @@ public class WContainerWidget extends WInteractWidget {
 			WWidgetItem item = this.layout_.findWidgetItem(child);
 			if (item != null) {
 				if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (item
-						.getParentLayout().getImpl())
-						: null)).itemResized(item)) {
+						.getParentLayout().getImpl()) : null))
+						.itemResized(item)) {
 					this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
 					this.repaint();
 				}
@@ -794,8 +787,7 @@ public class WContainerWidget extends WInteractWidget {
 	protected void parentResized(WWidget parent, EnumSet<Orientation> directions) {
 		if (this.layout_ != null) {
 			if ((((this.layout_.getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (this.layout_
-					.getImpl())
-					: null)).isParentResized()) {
+					.getImpl()) : null)).isParentResized()) {
 				this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
 				this.repaint();
 			}
@@ -919,9 +911,7 @@ public class WContainerWidget extends WInteractWidget {
 					if (pos + (addedCount - insertCount) == totalCount) {
 						parent.addChild(c);
 					} else {
-						parent
-								.insertChildAt(c, pos
-										+ this.getFirstChildIndex());
+						parent.insertChildAt(c, pos + this.getFirstChildIndex());
 					}
 					++insertCount;
 				}
@@ -940,8 +930,7 @@ public class WContainerWidget extends WInteractWidget {
 		DomElementType type = this.isInline() ? DomElementType.DomElement_SPAN
 				: DomElementType.DomElement_DIV;
 		WContainerWidget p = ((this.getParentWebWidget()) instanceof WContainerWidget ? (WContainerWidget) (this
-				.getParentWebWidget())
-				: null);
+				.getParentWebWidget()) : null);
 		if (p != null && p.isList()) {
 			type = DomElementType.DomElement_LI;
 		}
@@ -1017,19 +1006,17 @@ public class WContainerWidget extends WInteractWidget {
 							AlignmentFlag.AlignHorizontalMask));
 					if (ha == AlignmentFlag.AlignCenter) {
 						if (!child.getMargin(Side.Left).isAuto()) {
-							child
-									.setMargin(WLength.Auto, EnumSet
-											.of(Side.Left));
+							child.setMargin(WLength.Auto, EnumSet.of(Side.Left));
 						}
 						if (!child.getMargin(Side.Right).isAuto()) {
-							child.setMargin(WLength.Auto, EnumSet
-									.of(Side.Right));
+							child.setMargin(WLength.Auto,
+									EnumSet.of(Side.Right));
 						}
 					} else {
 						if (ha == AlignmentFlag.AlignRight) {
 							if (!child.getMargin(Side.Left).isAuto()) {
-								child.setMargin(WLength.Auto, EnumSet
-										.of(Side.Left));
+								child.setMargin(WLength.Auto,
+										EnumSet.of(Side.Left));
 							}
 						}
 					}
@@ -1043,7 +1030,7 @@ public class WContainerWidget extends WInteractWidget {
 				&& this.padding_ != null
 				&& !(this.padding_[0].isAuto() && this.padding_[1].isAuto()
 						&& this.padding_[2].isAuto() && this.padding_[3]
-						.isAuto())) {
+							.isAuto())) {
 			if (this.padding_[0].equals(this.padding_[1])
 					&& this.padding_[0].equals(this.padding_[2])
 					&& this.padding_[0].equals(this.padding_[3])) {
@@ -1058,9 +1045,7 @@ public class WContainerWidget extends WInteractWidget {
 					s.append(this.padding_[i].isAuto() ? "0" : this.padding_[i]
 							.getCssText());
 				}
-				element
-						.setProperty(Property.PropertyStylePadding, s
-								.toString());
+				element.setProperty(Property.PropertyStylePadding, s.toString());
 			}
 			this.flags_.clear(BIT_PADDINGS_CHANGED);
 		}
@@ -1147,8 +1132,7 @@ public class WContainerWidget extends WInteractWidget {
 
 	StdLayoutImpl getLayoutImpl() {
 		return ((this.layout_.getImpl()) instanceof StdLayoutImpl ? (StdLayoutImpl) (this.layout_
-				.getImpl())
-				: null);
+				.getImpl()) : null);
 	}
 
 	private void propagateLayoutItemsOk(WLayoutItem item) {
@@ -1175,10 +1159,10 @@ public class WContainerWidget extends WInteractWidget {
 		} else {
 			this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
 		}
-		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		if (deleted) {
 			this.layout_ = null;
 		}
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}
 
 	void removeFromLayout(WWidget widget) {

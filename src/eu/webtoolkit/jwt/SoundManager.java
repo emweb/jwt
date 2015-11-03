@@ -29,11 +29,9 @@ class SoundManager extends WMediaPlayer {
 		this.getControlsWidget().hide();
 		this.getDecorationStyle().setBorder(new WBorder());
 		StringBuilder ss = new StringBuilder();
-		ss
-				.append("function() { var s = ")
+		ss.append("function() { var s = ")
 				.append(this.getJsRef())
-				.append(
-						", l = s.getAttribute('loops');if (l && l != '0') {s.setAttribute('loops', l - 1);")
+				.append(", l = s.getAttribute('loops');if (l && l != '0') {s.setAttribute('loops', l - 1);")
 				.append(this.getJsPlayerRef()).append(".jPlayer('play');}}");
 		this.ended().addListener(ss.toString());
 		this.ended().setNotExposed();

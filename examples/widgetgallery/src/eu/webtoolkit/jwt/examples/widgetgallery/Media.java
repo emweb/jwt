@@ -49,20 +49,20 @@ class Media extends TopicWidget {
 				return Media.this.video();
 			}
 		}));
-		menu.addItem("WFlashObject", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("WFlashObject",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Media.this.flashObject();
 					}
 				}));
-		menu.addItem("Resources", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("Resources",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Media.this.resources();
 					}
 				}));
-		menu.addItem("PDF output", DeferredWidget
-				.deferCreate(new WidgetCreator() {
+		menu.addItem("PDF output",
+				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return Media.this.pdf();
 					}
@@ -127,8 +127,7 @@ class Media extends TopicWidget {
 		player.addSource(WMediaPlayer.Encoding.M4V, new WLink(mp4Video));
 		player.addSource(WMediaPlayer.Encoding.OGV, new WLink(ogvVideo));
 		player.addSource(WMediaPlayer.Encoding.PosterImage, new WLink(poster));
-		player
-				.setTitle("<a href=\"http://durian.blender.org/\"target=\"_blank\">Sintel</a>, (c) copyright Blender Foundation");
+		player.setTitle("<a href=\"http://durian.blender.org/\"target=\"_blank\">Sintel</a>, (c) copyright Blender Foundation");
 		final WText out = new WText(container);
 		player.playbackStarted().addListener(this, new Signal.Listener() {
 			public void trigger() {

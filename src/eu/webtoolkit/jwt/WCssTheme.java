@@ -430,9 +430,7 @@ public class WCssTheme extends WTheme {
 			WApplication app = WApplication.getInstance();
 			result.add(new WCssStyleSheet(new WLink(themeDir + "wt.css")));
 			if (app.getEnvironment().agentIsIElt(9)) {
-				result
-						.add(new WCssStyleSheet(new WLink(themeDir
-								+ "wt_ie.css")));
+				result.add(new WCssStyleSheet(new WLink(themeDir + "wt_ie.css")));
 			}
 			if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
 				result.add(new WCssStyleSheet(
@@ -537,8 +535,7 @@ public class WCssTheme extends WTheme {
 						"Wt-popupmenu Wt-outset");
 			} else {
 				WTabWidget tabs = ((widget.getParent().getParent()) instanceof WTabWidget ? (WTabWidget) (widget
-						.getParent().getParent())
-						: null);
+						.getParent().getParent()) : null);
 				if (tabs != null) {
 					element.addPropertyWord(Property.PropertyClass, "Wt-tabs");
 				} else {
@@ -667,13 +664,15 @@ public class WCssTheme extends WTheme {
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_3_4.setValidationState(").append(widget.getJsRef())
-					.append(",").append(
-							validation.getState() == WValidator.State.Valid ? 1
-									: 0).append(",").append(
-							WString.toWString(validation.getMessage())
-									.getJsStringLiteral()).append(",").append(
-							EnumUtils.valueOf(styles)).append(");");
+			js.append("Wt3_3_4.setValidationState(")
+					.append(widget.getJsRef())
+					.append(",")
+					.append(validation.getState() == WValidator.State.Valid ? 1
+							: 0)
+					.append(",")
+					.append(WString.toWString(validation.getMessage())
+							.getJsStringLiteral()).append(",")
+					.append(EnumUtils.valueOf(styles)).append(");");
 			widget.doJavaScript(js.toString());
 		} else {
 			boolean validStyle = validation.getState() == WValidator.State.Valid

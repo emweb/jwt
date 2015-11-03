@@ -191,9 +191,9 @@ public class WMouseEvent implements WAbstractEvent {
 			try {
 				return asInt(p);
 			} catch (final NumberFormatException ee) {
-				logger.error(new StringWriter().append(
-						"Could not cast event property '").append(name).append(
-						": ").append(p).append("' to int").toString());
+				logger.error(new StringWriter()
+						.append("Could not cast event property '").append(name)
+						.append(": ").append(p).append("' to int").toString());
 				return ifMissing;
 			}
 		} else {
@@ -217,9 +217,9 @@ public class WMouseEvent implements WAbstractEvent {
 		List<String> s = new ArrayList<String>();
 		s = new ArrayList<String>(Arrays.asList(str.split(";")));
 		if (s.size() % 9 != 0) {
-			logger.error(new StringWriter().append(
-					"Could not parse touches array '").append(str).append("'")
-					.toString());
+			logger.error(new StringWriter()
+					.append("Could not parse touches array '").append(str)
+					.append("'").toString());
 			return;
 		}
 		try {
@@ -231,9 +231,9 @@ public class WMouseEvent implements WAbstractEvent {
 								.get(i + 8))));
 			}
 		} catch (final NumberFormatException ee) {
-			logger.error(new StringWriter().append(
-					"Could not parse touches array '").append(str).append("'")
-					.toString());
+			logger.error(new StringWriter()
+					.append("Could not parse touches array '").append(str)
+					.append("'").toString());
 			return;
 		}
 	}

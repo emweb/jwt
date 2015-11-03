@@ -45,8 +45,8 @@ class GoogleProcess extends OAuthProcess {
 
 	private void handleMe(Exception err, final HttpMessage response) {
 		if (err == null && response.getStatus() == 200) {
-			logger.info(new StringWriter().append("user info: ").append(
-					response.getBody()).toString());
+			logger.info(new StringWriter().append("user info: ")
+					.append(response.getBody()).toString());
 			com.google.gson.JsonObject userInfo = new com.google.gson.JsonObject();
 			try {
 				userInfo = (com.google.gson.JsonObject) new com.google.gson.JsonParser()
@@ -55,9 +55,9 @@ class GoogleProcess extends OAuthProcess {
 			}
 			boolean ok = userInfo != null;
 			if (!ok) {
-				logger.error(new StringWriter().append(
-						"could not parse Json: '").append(response.getBody())
-						.append("'").toString());
+				logger.error(new StringWriter()
+						.append("could not parse Json: '")
+						.append(response.getBody()).append("'").toString());
 				this.setError(WString.tr("Wt.Auth.GoogleService.badjson"));
 				this.authenticated().trigger(Identity.Invalid);
 			} else {
@@ -65,24 +65,23 @@ class GoogleProcess extends OAuthProcess {
 				String userName = userInfo.get("name").getAsString();
 				String email = JsonUtils.orIfNullString(userInfo.get("email"),
 						"");
-				boolean emailVerified = JsonUtils.orIfNullBoolean(userInfo
-						.get("verified_email"), false);
+				boolean emailVerified = JsonUtils.orIfNullBoolean(
+						userInfo.get("verified_email"), false);
 				this.authenticated().trigger(
 						new Identity(this.getService().getName(), id, userName,
 								email, emailVerified));
 			}
 		} else {
-			logger
-					.error(new StringWriter().append(
-							WString.tr("Wt.Auth.GoogleService.badresponse"))
-							.toString());
+			logger.error(new StringWriter().append(
+					WString.tr("Wt.Auth.GoogleService.badresponse")).toString());
 			this.setError(WString.tr("Wt.Auth.GoogleService.badresponse"));
 			if (err == null) {
-				logger.error(new StringWriter().append(
-						"user info request returned: ").append(
-						String.valueOf(response.getStatus())).toString());
-				logger.error(new StringWriter().append("with: ").append(
-						response.getBody()).toString());
+				logger.error(new StringWriter()
+						.append("user info request returned: ")
+						.append(String.valueOf(response.getStatus()))
+						.toString());
+				logger.error(new StringWriter().append("with: ")
+						.append(response.getBody()).toString());
 			}
 			this.authenticated().trigger(Identity.Invalid);
 		}

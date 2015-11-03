@@ -130,8 +130,9 @@ public class AuthModel extends FormBaseModel {
 			if (user.isValid()) {
 				this.setValid(LoginNameField);
 			} else {
-				this.setValidation(LoginNameField, new WValidator.Result(
-						WValidator.State.Invalid, WString
+				this.setValidation(
+						LoginNameField,
+						new WValidator.Result(WValidator.State.Invalid, WString
 								.tr("Wt.Auth.user-name-invalid")));
 				this.throttlingDelay_ = 0;
 			}
@@ -143,13 +144,9 @@ public class AuthModel extends FormBaseModel {
 							user, this.valueText(PasswordField));
 					switch (r) {
 					case PasswordInvalid:
-						this
-								.setValidation(
-										PasswordField,
-										new WValidator.Result(
-												WValidator.State.Invalid,
-												WString
-														.tr("Wt.Auth.password-invalid")));
+						this.setValidation(PasswordField,
+								new WValidator.Result(WValidator.State.Invalid,
+										WString.tr("Wt.Auth.password-invalid")));
 						if (this.getPasswordAuth().isAttemptThrottlingEnabled()) {
 							this.throttlingDelay_ = this.getPasswordAuth()
 									.delayForNextAttempt(user);
@@ -163,10 +160,10 @@ public class AuthModel extends FormBaseModel {
 						this.throttlingDelay_ = this.getPasswordAuth()
 								.delayForNextAttempt(user);
 						logger.warn(new StringWriter().append("secure:")
-								.append("throttling: ").append(
-										String.valueOf(this.throttlingDelay_))
-								.append(" seconds for ").append(
-										user.getIdentity(Identity.LoginName))
+								.append("throttling: ")
+								.append(String.valueOf(this.throttlingDelay_))
+								.append(" seconds for ")
+								.append(user.getIdentity(Identity.LoginName))
 								.toString());
 						return false;
 					case PasswordValid:
@@ -208,7 +205,8 @@ public class AuthModel extends FormBaseModel {
 				&& this.getPasswordAuth().isAttemptThrottlingEnabled()) {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
-			button.setJavaScriptMember(" AuthThrottle",
+			button.setJavaScriptMember(
+					" AuthThrottle",
 					"new Wt3_3_4.AuthThrottle(Wt3_3_4,"
 							+ button.getJsRef()
 							+ ","
@@ -233,9 +231,9 @@ public class AuthModel extends FormBaseModel {
 		if (this.getPasswordAuth() != null
 				&& this.getPasswordAuth().isAttemptThrottlingEnabled()) {
 			StringBuilder s = new StringBuilder();
-			s.append("jQuery.data(").append(button.getJsRef()).append(
-					", 'throttle').reset(").append(this.throttlingDelay_)
-					.append(");");
+			s.append("jQuery.data(").append(button.getJsRef())
+					.append(", 'throttle').reset(")
+					.append(this.throttlingDelay_).append(");");
 			button.doJavaScript(s.toString());
 		}
 	}
@@ -302,8 +300,8 @@ public class AuthModel extends FormBaseModel {
 	public void setRememberMeCookie(final User user) {
 		WApplication app = WApplication.getInstance();
 		AuthService s = this.getBaseAuth();
-		app.setCookie(s.getAuthTokenCookieName(), s.createAuthToken(user), s
-				.getAuthTokenValidity() * 60, s.getAuthTokenCookieDomain());
+		app.setCookie(s.getAuthTokenCookieName(), s.createAuthToken(user),
+				s.getAuthTokenValidity() * 60, s.getAuthTokenCookieDomain());
 	}
 
 	/**

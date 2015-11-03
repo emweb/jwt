@@ -318,8 +318,8 @@ public class DomElement {
 	 * This adds a word (delimited by a space) to an existing property value.
 	 */
 	public void addPropertyWord(Property property, final String value) {
-		this.setProperty(property, StringUtils.addWord(this
-				.getProperty(property), value));
+		this.setProperty(property,
+				StringUtils.addWord(this.getProperty(property), value));
 	}
 
 	/**
@@ -395,8 +395,7 @@ public class DomElement {
 			js.append("var e=event||window.event,");
 			js.append("o=this;");
 			if (anchorClick) {
-				js
-						.append("if(e.ctrlKey||e.metaKey||(Wt3_3_4.button(e) > 1))return true;else{");
+				js.append("if(e.ctrlKey||e.metaKey||(Wt3_3_4.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -408,8 +407,8 @@ public class DomElement {
 			}
 		}
 		++this.numManipulations_;
-		this.eventHandlers_.put(eventName, new DomElement.EventHandler(js
-				.toString(), signalName));
+		this.eventHandlers_.put(eventName,
+				new DomElement.EventHandler(js.toString(), signalName));
 	}
 
 	/**
@@ -470,14 +469,14 @@ public class DomElement {
 		StringBuilder code = new StringBuilder();
 		for (int i = 0; i < actions.size(); ++i) {
 			if (actions.get(i).jsCondition.length() != 0) {
-				code.append("if(").append(actions.get(i).jsCondition).append(
-						"){");
+				code.append("if(").append(actions.get(i).jsCondition)
+						.append("){");
 			}
 			code.append(actions.get(i).jsCode);
 			if (actions.get(i).exposed) {
 				code.append(WApplication.getInstance().getJavaScriptClass())
-						.append("._p_.update(o,'").append(
-								actions.get(i).updateCmd).append("',e,true);");
+						.append("._p_.update(o,'")
+						.append(actions.get(i).updateCmd).append("',e,true);");
 			}
 			if (actions.get(i).jsCondition.length() != 0) {
 				code.append("}");
@@ -694,13 +693,13 @@ public class DomElement {
 				if (this.removeAllChildren_ >= 0) {
 					this.declare(out);
 					if (this.removeAllChildren_ == 0) {
-						out.append("Wt3_3_4").append(".setHtml(").append(
-								this.var_).append(", '');\n");
+						out.append("Wt3_3_4").append(".setHtml(")
+								.append(this.var_).append(", '');\n");
 					} else {
-						out.append("$(").append(this.var_).append(
-								").children(':gt(").append(
-								this.removeAllChildren_ - 1).append(
-								")').remove();");
+						out.append("$(").append(this.var_)
+								.append(").children(':gt(")
+								.append(this.removeAllChildren_ - 1)
+								.append(")').remove();");
 					}
 				}
 			}
@@ -729,8 +728,8 @@ public class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_3_4.hide('").append(this.id_).append(
-								"');\n");
+						out.append("Wt3_3_4.hide('").append(this.id_)
+								.append("');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
@@ -768,14 +767,14 @@ public class DomElement {
 				String varr = this.replaced_.getCreateVar();
 				StringBuilder insertJs = new StringBuilder();
 				insertJs.append(this.var_).append(".parentNode.replaceChild(")
-						.append(varr).append(',').append(this.var_).append(
-								");\n");
+						.append(varr).append(',').append(this.var_)
+						.append(");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
 					out.append("Wt3_3_4.unstub(").append(this.var_).append(',')
-							.append(varr).append(',').append(
-									this.hideWithDisplay_ ? 1 : 0).append(
-									");\n");
+							.append(varr).append(',')
+							.append(this.hideWithDisplay_ ? 1 : 0)
+							.append(");\n");
 				}
 				return this.var_;
 			} else {
@@ -783,23 +782,23 @@ public class DomElement {
 					this.declare(out);
 					String varr = this.insertBefore_.getCreateVar();
 					StringBuilder insertJs = new StringBuilder();
-					insertJs.append(this.var_).append(
-							".parentNode.insertBefore(").append(varr).append(
-							",").append(this.var_ + ");\n");
-					this.insertBefore_.createElement(out, app, insertJs
-							.toString());
+					insertJs.append(this.var_)
+							.append(".parentNode.insertBefore(").append(varr)
+							.append(",").append(this.var_ + ");\n");
+					this.insertBefore_.createElement(out, app,
+							insertJs.toString());
 					return this.var_;
 				}
 			}
 			if (!this.childrenToSave_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_3_4").append(".saveReparented(").append(
-						this.var_).append(");");
+				out.append("Wt3_3_4").append(".saveReparented(")
+						.append(this.var_).append(");");
 			}
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-				out.append("var c").append(this.var_).append((int) i).append(
-						'=').append("$('#").append(this.childrenToSave_.get(i))
-						.append("')");
+				out.append("var c").append(this.var_).append((int) i)
+						.append('=').append("$('#")
+						.append(this.childrenToSave_.get(i)).append("')");
 				if (app.getEnvironment().agentIsIE()) {
 					out.append(".detach()");
 				}
@@ -819,9 +818,9 @@ public class DomElement {
 			}
 			this.renderInnerHtmlJS(out, app);
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-				out.append("$('#").append(this.childrenToSave_.get(i)).append(
-						"').replaceWith(c").append(this.var_).append((int) i)
-						.append(");");
+				out.append("$('#").append(this.childrenToSave_.get(i))
+						.append("').replaceWith(c").append(this.var_)
+						.append((int) i).append(");");
 			}
 			this.renderDeferredJavaScript(out);
 			if (!childrenUpdated) {
@@ -868,9 +867,7 @@ public class DomElement {
 					renderedType = DomElementType.DomElement_INPUT;
 					DomElement self = this;
 					self.setAttribute("type", "image");
-					self
-							.setAttribute("name", "signal="
-									+ clickEvent.signalName);
+					self.setAttribute("name", "signal=" + clickEvent.signalName);
 					needButtonWrap = false;
 				}
 			}
@@ -890,9 +887,9 @@ public class DomElement {
 				} else {
 					if (app.getTheme().isCanStyleAnchorAsButton()) {
 						DomElement self = this;
-						self.setAttribute("href", app
-								.url(app.getInternalPath())
-								+ "&signal=" + clickEvent.signalName);
+						self.setAttribute("href",
+								app.url(app.getInternalPath()) + "&signal="
+										+ clickEvent.signalName);
 						needButtonWrap = false;
 					}
 				}
@@ -912,8 +909,8 @@ public class DomElement {
 			if (!isSubmit) {
 				self.setAttribute("type", "button");
 			}
-			self.setAttribute("value", this.properties_
-					.get(Property.PropertyInnerHTML));
+			self.setAttribute("value",
+					this.properties_.get(Property.PropertyInnerHTML));
 			self.setProperty(Property.PropertyInnerHTML, "");
 		}
 		EscapeOStream attributeValues = out.push();
@@ -948,8 +945,8 @@ public class DomElement {
 					Map.Entry<String, String> j = j_it.next();
 					if (j.getKey().equals("title")) {
 						out.append(' ').append(j.getKey()).append('=');
-						fastHtmlAttributeValue(out, attributeValues, j
-								.getValue());
+						fastHtmlAttributeValue(out, attributeValues,
+								j.getValue());
 					}
 				}
 				if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror
@@ -1012,12 +1009,12 @@ public class DomElement {
 							&& app.getEnvironment().agentIsIE()
 							&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
 									.getValue()) {
-						this.setJavaScriptEvent(javaScript, i.getKey(), i
-								.getValue(), app);
+						this.setJavaScriptEvent(javaScript, i.getKey(),
+								i.getValue(), app);
 					} else {
 						out.append(" on").append(i.getKey()).append('=');
-						fastHtmlAttributeValue(out, attributeValues, i
-								.getValue().jsCode);
+						fastHtmlAttributeValue(out, attributeValues,
+								i.getValue().jsCode);
 					}
 				}
 			}
@@ -1140,8 +1137,9 @@ public class DomElement {
 				if (renderedType == DomElementType.DomElement_OTHER) {
 					out.append("</").append(this.elementTagName_).append(">");
 				} else {
-					out.append("</").append(
-							elementNames_[renderedType.getValue()]).append(">");
+					out.append("</")
+							.append(elementNames_[renderedType.getValue()])
+							.append(">");
 				}
 			} else {
 				out.append(" />");
@@ -1183,9 +1181,9 @@ public class DomElement {
 			final List<DomElement.TimeoutEvent> timeouts, WApplication app) {
 		for (int i = 0; i < timeouts.size(); ++i) {
 			out.append(app.getJavaScriptClass()).append("._p_.addTimerEvent('")
-					.append(timeouts.get(i).event).append("', ").append(
-							timeouts.get(i).msec).append(",").append(
-							timeouts.get(i).repeat).append(");\n");
+					.append(timeouts.get(i).event).append("', ")
+					.append(timeouts.get(i).msec).append(",")
+					.append(timeouts.get(i).repeat).append(");\n");
 		}
 	}
 
@@ -1207,8 +1205,8 @@ public class DomElement {
 	 */
 	public void declare(final EscapeOStream out) {
 		if (this.var_.length() == 0) {
-			out.append("var ").append(this.getCreateVar()).append(
-					"=Wt3_3_4.$('").append(this.id_).append("');\n");
+			out.append("var ").append(this.getCreateVar())
+					.append("=Wt3_3_4.$('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -1251,11 +1249,10 @@ public class DomElement {
 										style.append("-webkit-");
 									}
 								}
-								style
-										.append(
-												cssNames_[j.getKey().getValue()
-														- Property.PropertyStylePosition
-																.getValue()])
+								style.append(
+										cssNames_[j.getKey().getValue()
+												- Property.PropertyStylePosition
+														.getValue()])
 										.append(':').append(j.getValue())
 										.append(';');
 							}
@@ -1293,9 +1290,8 @@ public class DomElement {
 	public static void jsStringLiteral(final EscapeOStream out, final String s,
 			char delimiter) {
 		out.append(delimiter);
-		out
-				.pushEscape(delimiter == '\'' ? EscapeOStream.RuleSet.JsStringLiteralSQuote
-						: EscapeOStream.RuleSet.JsStringLiteralDQuote);
+		out.pushEscape(delimiter == '\'' ? EscapeOStream.RuleSet.JsStringLiteralSQuote
+				: EscapeOStream.RuleSet.JsStringLiteralDQuote);
 		out.append(s);
 		out.popEscape();
 		out.append(delimiter);
@@ -1548,8 +1544,7 @@ public class DomElement {
 				}
 				out.append("Wt3_3_4.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;
 				}
 				fastJsStringLiteral(out, escaped, i.getValue());
@@ -1563,8 +1558,7 @@ public class DomElement {
 			case PropertyValue:
 				out.append(this.var_).append(".value=");
 				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;
 				}
 				fastJsStringLiteral(out, escaped, i.getValue());
@@ -1575,8 +1569,8 @@ public class DomElement {
 						.append("';");
 				break;
 			case PropertyIndeterminate:
-				out.append(this.var_).append(".indeterminate=").append(
-						i.getValue()).append(";");
+				out.append(this.var_).append(".indeterminate=")
+						.append(i.getValue()).append(";");
 				break;
 			case PropertyDisabled:
 				if (this.type_ == DomElementType.DomElement_A) {
@@ -1588,8 +1582,8 @@ public class DomElement {
 								".removeAttribute('disabled', 'disabled');");
 					}
 				} else {
-					out.append(this.var_).append(".disabled=").append(
-							i.getValue()).append(';');
+					out.append(this.var_).append(".disabled=")
+							.append(i.getValue()).append(';');
 				}
 				break;
 			case PropertyReadOnly:
@@ -1609,8 +1603,8 @@ public class DomElement {
 						.append(';');
 				break;
 			case PropertySelectedIndex:
-				out.append(this.var_).append(".selectedIndex=").append(
-						i.getValue()).append(';');
+				out.append(this.var_).append(".selectedIndex=")
+						.append(i.getValue()).append(';');
 				break;
 			case PropertyMultiple:
 				out.append(this.var_).append(".multiple=").append(i.getValue())
@@ -1631,8 +1625,7 @@ public class DomElement {
 			case PropertyClass:
 				out.append(this.var_).append(".className=");
 				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;
 				}
 				fastJsStringLiteral(out, escaped, i.getValue());
@@ -1650,8 +1643,7 @@ public class DomElement {
 			case PropertyStyleWidthExpression:
 				out.append(this.var_).append(".style.setExpression('width',");
 				if (!pushed) {
-					escaped
-							.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;
 				}
 				fastJsStringLiteral(out, escaped, i.getValue());
@@ -1662,14 +1654,16 @@ public class DomElement {
 						&& i.getKey().getValue() <= Property.PropertyStyleBoxSizing
 								.getValue()) {
 					if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-						out.append(this.var_).append(".style['").append(
-								cssNames_[i.getKey().getValue()
+						out.append(this.var_)
+								.append(".style['")
+								.append(cssNames_[i.getKey().getValue()
 										- Property.PropertyStylePosition
 												.getValue()]).append("']='")
 								.append(i.getValue()).append("';");
 					} else {
-						out.append(this.var_).append(".style.").append(
-								cssCamelNames_[i.getKey().getValue()
+						out.append(this.var_)
+								.append(".style.")
+								.append(cssCamelNames_[i.getKey().getValue()
 										- Property.PropertyStyle.getValue()])
 								.append("='").append(i.getValue()).append("';");
 					}
@@ -1689,8 +1683,8 @@ public class DomElement {
 				jsStringLiteral(out, i.getValue(), '\'');
 				out.append(';').append('\n');
 			} else {
-				out.append(this.var_).append(".setAttribute('").append(
-						i.getKey()).append("',");
+				out.append(this.var_).append(".setAttribute('")
+						.append(i.getKey()).append("',");
 				jsStringLiteral(out, i.getValue(), '\'');
 				out.append(");\n");
 			}
@@ -1710,8 +1704,7 @@ public class DomElement {
 		int fid = nextId_++;
 		out.append("function f").append(fid).append("(event) { ");
 		if (globalUnfocused) {
-			out
-					.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_4.hasTag(t,'DIV') ||Wt3_3_4.hasTag(t,'BODY') ||Wt3_3_4.hasTag(t,'HTML'))) {");
+			out.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_4.hasTag(t,'DIV') ||Wt3_3_4.hasTag(t,'BODY') ||Wt3_3_4.hasTag(t,'HTML'))) {");
 		}
 		out.append(handler.jsCode);
 		if (globalUnfocused) {
@@ -1728,8 +1721,8 @@ public class DomElement {
 				&& app.getEnvironment().agentIsIE()
 				&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
 						.getValue()) {
-			out.append(".addEventListener('wheel', f").append(fid).append(
-					", false);\n");
+			out.append(".addEventListener('wheel', f").append(fid)
+					.append(", false);\n");
 		} else {
 			out.append(".on").append(eventName).append("=f").append(fid)
 					.append(";\n");
@@ -1757,8 +1750,8 @@ public class DomElement {
 			this.renderInnerHtmlJS(out, app);
 			this.renderDeferredJavaScript(out);
 		} else {
-			out.append("document.createElement('").append(
-					elementNames_[this.type_.getValue()]).append("');");
+			out.append("document.createElement('")
+					.append(elementNames_[this.type_.getValue()]).append("');");
 			out.append(domInsertJS);
 			this.asJavaScript(out, DomElement.Priority.Create);
 			this.asJavaScript(out, DomElement.Priority.Update);
@@ -1775,20 +1768,20 @@ public class DomElement {
 				out.append(parentVar).append(".insertCell(").append(pos)
 						.append(");\n");
 			} else {
-				out.append(parentVar).append(".insertRow(").append(pos).append(
-						");\n");
+				out.append(parentVar).append(".insertRow(").append(pos)
+						.append(");\n");
 			}
 			this.asJavaScript(out, DomElement.Priority.Create);
 			this.asJavaScript(out, DomElement.Priority.Update);
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_3_4.insertAt(").append(parentVar).append(
-						",").append(this.var_).append(",").append(pos).append(
-						");");
+				insertJS.append("Wt3_3_4.insertAt(").append(parentVar)
+						.append(",").append(this.var_).append(",").append(pos)
+						.append(");");
 			} else {
-				insertJS.append(parentVar).append(".appendChild(").append(
-						this.var_).append(");\n");
+				insertJS.append(parentVar).append(".appendChild(")
+						.append(this.var_).append(");\n");
 			}
 			this.createElement(out, app, insertJS.toString());
 		}
@@ -1835,11 +1828,11 @@ public class DomElement {
 				out.append("');\n");
 				timeouts.addAll(this.timeouts_);
 				for (int i = 0; i < timeouts.size(); ++i) {
-					out.append(app.getJavaScriptClass()).append(
-							"._p_.addTimerEvent('").append(
-							timeouts.get(i).event).append("', ").append(
-							timeouts.get(i).msec).append(',').append(
-							timeouts.get(i).repeat).append(");\n");
+					out.append(app.getJavaScriptClass())
+							.append("._p_.addTimerEvent('")
+							.append(timeouts.get(i).event).append("', ")
+							.append(timeouts.get(i).msec).append(',')
+							.append(timeouts.get(i).repeat).append(");\n");
 				}
 				out.append(js);
 			}

@@ -583,8 +583,9 @@ public class WTable extends WInteractWidget {
 			}
 			if (this.flags_.get(BIT_COLUMNS_CHANGED)) {
 				for (int i = 0; i < this.columns_.size(); ++i) {
-					DomElement e2 = DomElement.getForUpdate(this.columns_
-							.get(i), DomElementType.DomElement_COL);
+					DomElement e2 = DomElement
+							.getForUpdate(this.columns_.get(i),
+									DomElementType.DomElement_COL);
 					this.columns_.get(i).updateDom(e2, false);
 					result.add(e2);
 				}

@@ -397,8 +397,7 @@ public class WTestEnvironment extends WEnvironment {
 		this.serverSoftware_ = this.serverSignature_;
 		this.serverAdmin_ = "your@onyourown.here";
 		this.pathInfo_ = "";
-		this
-				.setUserAgent("Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.11) Gecko/2009060309 Ubuntu/9.04 (jaunty) Firefox/3.0.11");
+		this.setUserAgent("Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.0.11) Gecko/2009060309 Ubuntu/9.04 (jaunty) Firefox/3.0.11");
 		this.host_ = "localhost";
 		this.clientAddress_ = "127.0.0.1";
 		this.locale_ = new Locale("en");

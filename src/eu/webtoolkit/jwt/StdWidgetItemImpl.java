@@ -93,8 +93,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 			container.addWidget(this.item_.getWidget());
 		} else {
 			WContainerWidget wc = ((this.item_.getWidget().getParent()) instanceof WContainerWidget ? (WContainerWidget) (this.item_
-					.getWidget().getParent())
-					: null);
+					.getWidget().getParent()) : null);
 			if (wc != null) {
 				wc.removeFromLayout(this.item_.getWidget());
 			}
@@ -124,8 +123,8 @@ class StdWidgetItemImpl extends StdLayoutItemImpl {
 	}
 
 	public void setHint(final String name, final String value) {
-		logger.error(new StringWriter().append("unrecognized hint '").append(
-				name).append("'").toString());
+		logger.error(new StringWriter().append("unrecognized hint '")
+				.append(name).append("'").toString());
 	}
 
 	private WWidgetItem item_;

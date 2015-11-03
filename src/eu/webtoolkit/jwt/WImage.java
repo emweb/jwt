@@ -275,8 +275,8 @@ public class WImage extends WInteractWidget {
 		}
 		this.imageLink_ = link;
 		if (link.getType() == WLink.Type.Resource) {
-			link.getResource().dataChanged().addListener(this,
-					new Signal.Listener() {
+			link.getResource().dataChanged()
+					.addListener(this, new Signal.Listener() {
 						public void trigger() {
 							WImage.this.resourceChanged();
 						}
@@ -453,9 +453,10 @@ public class WImage extends WInteractWidget {
 	public String getUpdateAreasJS() {
 		StringBuilder ss = new StringBuilder();
 		if (this.targetJS_.length() != 0) {
-			ss.append("(function(){var o = jQuery.data(").append(
-					this.getJsRef()).append(
-					", 'obj');if (o) {o.updateAreas();}})();");
+			ss.append("(function(){var w = ").append(this.getJsRef())
+					.append(";if (w) {var o = jQuery.data(")
+					.append(this.getJsRef())
+					.append(", 'obj');if (o) { o.updateAreas(); }}})();");
 		}
 		return ss.toString();
 	}
@@ -463,9 +464,9 @@ public class WImage extends WInteractWidget {
 	public String getSetAreaCoordsJS() {
 		StringBuilder ss = new StringBuilder();
 		if (this.targetJS_.length() != 0) {
-			ss.append("jQuery.data(").append(this.getJsRef()).append(
-					", 'obj').setAreaCoordsJSON(").append(
-					this.getUpdateAreaCoordsJSON()).append(");");
+			ss.append("jQuery.data(").append(this.getJsRef())
+					.append(", 'obj').setAreaCoordsJSON(")
+					.append(this.getUpdateAreaCoordsJSON()).append(");");
 		}
 		return ss.toString();
 	}
@@ -535,8 +536,8 @@ public class WImage extends WInteractWidget {
 		app.loadJavaScript("js/WImage.js", wtjs1());
 		StringBuilder ss = new StringBuilder();
 		ss.append("new Wt3_3_4.WImage(").append(app.getJavaScriptClass())
-				.append(",").append(this.getJsRef()).append(",").append(
-						this.targetJS_).append(");");
+				.append(",").append(this.getJsRef()).append(",")
+				.append(this.targetJS_).append(");");
 		this.doJavaScript(ss.toString());
 	}
 

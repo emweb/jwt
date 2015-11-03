@@ -354,8 +354,9 @@ public class WTextEdit extends WTextArea {
 					config.append(',');
 				}
 				first = false;
-				config.append(it.getKey()).append(": ").append(
-						StringUtils.asJSLiteral(it.getValue(),
+				config.append(it.getKey())
+						.append(": ")
+						.append(StringUtils.asJSLiteral(it.getValue(),
 								TextFormat.XHTMLUnsafeText));
 			}
 			if (!first) {
@@ -422,8 +423,9 @@ public class WTextEdit extends WTextArea {
 		this.setInline(false);
 		initTinyMCE();
 		this.version_ = getTinyMCEVersion();
-		this.setJavaScriptMember(" WTextEdit", "new Wt3_3_4.WTextEdit("
-				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+		this.setJavaScriptMember(" WTextEdit",
+				"new Wt3_3_4.WTextEdit(" + app.getJavaScriptClass() + ","
+						+ this.getJsRef() + ");");
 		this.setJavaScriptMember(WT_RESIZE_JS,
 				"function(e, w, h) { var obj = $('#" + this.getId()
 						+ "').data('obj'); obj.wtResize(e, w, h); };");
@@ -448,9 +450,7 @@ public class WTextEdit extends WTextArea {
 			this.setConfigurationSetting("theme", "advanced");
 			this.setConfigurationSetting("theme_advanced_toolbar_location",
 					"top");
-			this
-					.setConfigurationSetting("theme_advanced_toolbar_align",
-							"left");
+			this.setConfigurationSetting("theme_advanced_toolbar_align", "left");
 		}
 		this.onChange_.addListener(this, new Signal.Listener() {
 			public void trigger() {
@@ -468,9 +468,7 @@ public class WTextEdit extends WTextArea {
 		WApplication app = WApplication.getInstance();
 		if (!app.isJavaScriptLoaded(THIS_JS)) {
 			if (app.getEnvironment().hasAjax()) {
-				app
-						.doJavaScript("window.tinyMCE_GZ = { loaded: true };",
-								false);
+				app.doJavaScript("window.tinyMCE_GZ = { loaded: true };", false);
 			}
 			String tinyMCEURL = "";
 			tinyMCEURL = WApplication.readConfigurationProperty("tinyMCEURL",

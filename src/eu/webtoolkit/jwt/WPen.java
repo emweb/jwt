@@ -150,8 +150,8 @@ public class WPen extends WJavaScriptExposableObject {
 		result.penJoinStyle_ = this.penJoinStyle_;
 		result.width_ = this.width_;
 		result.color_ = new WColor(this.color_.getRed(),
-				this.color_.getGreen(), this.color_.getBlue(), this.color_
-						.getAlpha());
+				this.color_.getGreen(), this.color_.getBlue(),
+				this.color_.getAlpha());
 		return result;
 	}
 
@@ -323,9 +323,9 @@ public class WPen extends WJavaScriptExposableObject {
 	public String getJsValue() {
 		StringBuilder ss = new StringBuilder();
 		ss.append("{\"color\":[").append(this.color_.getRed()).append(",")
-				.append(this.color_.getGreen()).append(",").append(
-						this.color_.getBlue()).append(",").append(
-						this.color_.getAlpha()).append("]}");
+				.append(this.color_.getGreen()).append(",")
+				.append(this.color_.getBlue()).append(",")
+				.append(this.color_.getAlpha()).append("]}");
 		return ss.toString();
 	}
 
@@ -339,10 +339,11 @@ public class WPen extends WJavaScriptExposableObject {
 					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(1)))
 					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(2)))
 					&& !JsonUtils.isNull(JsonUtils.toNumber(col.get(3)))) {
-				this.color_ = new WColor(JsonUtils.orIfNullInt(JsonUtils
-						.toNumber(col.get(0)), 0), JsonUtils.orIfNullInt(
-						JsonUtils.toNumber(col.get(1)), 0), JsonUtils
-						.orIfNullInt(JsonUtils.toNumber(col.get(2)), 0),
+				this.color_ = new WColor(
+						JsonUtils
+								.orIfNullInt(JsonUtils.toNumber(col.get(0)), 0),
+						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(1)), 0),
+						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(2)), 0),
 						JsonUtils.orIfNullInt(JsonUtils.toNumber(col.get(3)),
 								255));
 			} else {

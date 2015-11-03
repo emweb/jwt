@@ -211,8 +211,8 @@ public class WCssDecorationStyle extends WObject {
 	public void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
 		if (image.getType() == WLink.Type.Resource) {
-			image.getResource().dataChanged().addListener(this,
-					new Signal.Listener() {
+			image.getResource().dataChanged()
+					.addListener(this, new Signal.Listener() {
 						public void trigger() {
 							WCssDecorationStyle.this
 									.backgroundImageResourceChanged();
@@ -252,8 +252,8 @@ public class WCssDecorationStyle extends WObject {
 	 * EnumSet.noneOf(Side.class))}
 	 */
 	public final void setBackgroundImage(final WLink image) {
-		setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
-				.noneOf(Side.class));
+		setBackgroundImage(image, WCssDecorationStyle.Repeat.RepeatXY,
+				EnumSet.noneOf(Side.class));
 	}
 
 	/**
@@ -300,8 +300,8 @@ public class WCssDecorationStyle extends WObject {
 	 * EnumSet.noneOf(Side.class))}
 	 */
 	public final void setBackgroundImage(final String url) {
-		setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY, EnumSet
-				.noneOf(Side.class));
+		setBackgroundImage(url, WCssDecorationStyle.Repeat.RepeatXY,
+				EnumSet.noneOf(Side.class));
 	}
 
 	/**
@@ -539,9 +539,13 @@ public class WCssDecorationStyle extends WObject {
 				break;
 			}
 			if (this.cursorImage_.length() != 0) {
-				element.setProperty(Property.PropertyStyleCursor, "url("
-						+ this.cursorImage_ + "),"
-						+ element.getProperty(Property.PropertyStyleCursor));
+				element.setProperty(
+						Property.PropertyStyleCursor,
+						"url("
+								+ this.cursorImage_
+								+ "),"
+								+ element
+										.getProperty(Property.PropertyStyleCursor));
 			}
 			this.cursorChanged_ = false;
 		}
@@ -554,8 +558,8 @@ public class WCssDecorationStyle extends WObject {
 		if (this.borderChanged_ || all) {
 			for (int i = 0; i < 4; ++i) {
 				if (this.border_[i] != null) {
-					element.setProperty(properties[i], this.border_[i]
-							.getCssText());
+					element.setProperty(properties[i],
+							this.border_[i].getCssText());
 				} else {
 					if (this.borderChanged_) {
 						element.setProperty(properties[i], "");
@@ -591,11 +595,8 @@ public class WCssDecorationStyle extends WObject {
 							.encodeUntrustedUrl(app
 									.resolveRelativeUrl(this.backgroundImage_
 											.getUrl()));
-					element
-							.setProperty(Property.PropertyStyleBackgroundImage,
-									"url("
-											+ WWebWidget.jsStringLiteral(url,
-													'"') + ")");
+					element.setProperty(Property.PropertyStyleBackgroundImage,
+							"url(" + WWebWidget.jsStringLiteral(url, '"') + ")");
 				}
 				if (this.backgroundImageRepeat_ != WCssDecorationStyle.Repeat.RepeatXY
 						|| !this.backgroundImageLocation_.equals(0)) {

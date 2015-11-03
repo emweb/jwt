@@ -26,8 +26,8 @@ class ColorUtils {
 		String arg = argument.trim();
 		try {
 			if (arg.endsWith("%")) {
-				return (int) (Double.parseDouble(arg.substring(0, 0 + arg
-						.length() - 1)) * 255 / 100);
+				return (int) (Double.parseDouble(arg.substring(0,
+						0 + arg.length() - 1)) * 255 / 100);
 			} else {
 				return Integer.parseInt(arg);
 			}
@@ -61,8 +61,8 @@ class ColorUtils {
 					green = Utils.hexToInt(n.substring(3, 3 + 2));
 					blue = Utils.hexToInt(n.substring(5, 5 + 2));
 				} else {
-					logger.error(new StringWriter().append(
-							"could not parse rgb format: ").append(n)
+					logger.error(new StringWriter()
+							.append("could not parse rgb format: ").append(n)
 							.toString());
 					red = green = blue = -1;
 					return new WColor(red, green, blue, alpha);
@@ -71,8 +71,8 @@ class ColorUtils {
 		} else {
 			if (n.startsWith("rgb")) {
 				if (n.length() < 5) {
-					logger.error(new StringWriter().append(
-							"could not parse rgb format: ").append(n)
+					logger.error(new StringWriter()
+							.append("could not parse rgb format: ").append(n)
 							.toString());
 					return new WColor(red, green, blue, alpha);
 				}
@@ -80,8 +80,8 @@ class ColorUtils {
 				int start_bracket = 3 + (has_alpha ? 1 : 0);
 				if (n.charAt(start_bracket) != '('
 						|| n.charAt(n.length() - 1) != ')') {
-					logger.error(new StringWriter().append(
-							"could not parse rgb format: ").append(n)
+					logger.error(new StringWriter()
+							.append("could not parse rgb format: ").append(n)
 							.toString());
 					return new WColor(red, green, blue, alpha);
 				}
@@ -92,14 +92,14 @@ class ColorUtils {
 				arguments = new ArrayList<String>(Arrays.asList(argumentsStr
 						.split(",")));
 				if (!has_alpha && arguments.size() != 3) {
-					logger.error(new StringWriter().append(
-							"could not parse rgb format: ").append(n)
+					logger.error(new StringWriter()
+							.append("could not parse rgb format: ").append(n)
 							.toString());
 					return new WColor(red, green, blue, alpha);
 				}
 				if (has_alpha && arguments.size() != 4) {
-					logger.error(new StringWriter().append(
-							"could not parse rgb format: ").append(n)
+					logger.error(new StringWriter()
+							.append("could not parse rgb format: ").append(n)
 							.toString());
 					return new WColor(red, green, blue, alpha);
 				}
@@ -110,9 +110,9 @@ class ColorUtils {
 					try {
 						alpha = Integer.parseInt(arguments.get(3).trim());
 					} catch (final NumberFormatException e) {
-						logger.error(new StringWriter().append(
-								"could not parse rgb format: ").append(n)
-								.toString());
+						logger.error(new StringWriter()
+								.append("could not parse rgb format: ")
+								.append(n).toString());
 						alpha = 255;
 						return new WColor(red, green, blue, alpha);
 					}

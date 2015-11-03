@@ -311,9 +311,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 */
 	public void play() {
 		this.loadJavaScript();
-		this
-				.doJavaScript("jQuery.data(" + this.getJsRef()
-						+ ", 'obj').play();");
+		this.doJavaScript("jQuery.data(" + this.getJsRef() + ", 'obj').play();");
 	}
 
 	/**
@@ -502,10 +500,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			StringWriter ss = new StringWriter();
 			ss.append("function(self, w, h) {");
 			if (this.mediaId_.length() != 0) {
-				ss
-						.append("v="
-								+ this.getJsMediaRef()
-								+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
+				ss.append("v="
+						+ this.getJsMediaRef()
+						+ ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");
 			}
 			if (this.alternative_ != null) {
 				ss.append("a=" + this.alternative_.getJsRef() + ";if (a && a.")
@@ -530,32 +527,38 @@ public abstract class WAbstractMedia extends WInteractWidget {
 
 	void updateMediaDom(final DomElement element, boolean all) {
 		if (all && this.alternative_ != null) {
-			element
-					.setAttribute(
-							"onerror",
-							"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_3_4.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+			element.setAttribute(
+					"onerror",
+					"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_3_4.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
 					|| !EnumUtils.mask(this.flags_,
 							WAbstractMedia.Options.Controls).isEmpty()) {
-				element.setAttribute("controls", !EnumUtils.mask(this.flags_,
-						WAbstractMedia.Options.Controls).isEmpty() ? "controls"
-						: "");
+				element.setAttribute(
+						"controls",
+						!EnumUtils.mask(this.flags_,
+								WAbstractMedia.Options.Controls).isEmpty() ? "controls"
+								: "");
 			}
 			if (!all
 					|| !EnumUtils.mask(this.flags_,
 							WAbstractMedia.Options.Autoplay).isEmpty()) {
-				element.setAttribute("autoplay", !EnumUtils.mask(this.flags_,
-						WAbstractMedia.Options.Autoplay).isEmpty() ? "autoplay"
-						: "");
+				element.setAttribute(
+						"autoplay",
+						!EnumUtils.mask(this.flags_,
+								WAbstractMedia.Options.Autoplay).isEmpty() ? "autoplay"
+								: "");
 			}
 			if (!all
 					|| !EnumUtils
 							.mask(this.flags_, WAbstractMedia.Options.Loop)
 							.isEmpty()) {
-				element.setAttribute("loop", !EnumUtils.mask(this.flags_,
-						WAbstractMedia.Options.Loop).isEmpty() ? "loop" : "");
+				element.setAttribute(
+						"loop",
+						!EnumUtils.mask(this.flags_,
+								WAbstractMedia.Options.Loop).isEmpty() ? "loop"
+								: "");
 			}
 		}
 		if (all || this.preloadChanged_) {
@@ -640,8 +643,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			this.media = media;
 			this.link = link;
 			if (link.getType() == WLink.Type.Resource) {
-				this.connection = link.getResource().dataChanged().addListener(
-						this, new Signal.Listener() {
+				this.connection = link.getResource().dataChanged()
+						.addListener(this, new Signal.Listener() {
 							public void trigger() {
 								WAbstractMedia.Source.this.resourceChanged();
 							}
@@ -671,10 +674,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			element.setAttribute("media", source.media);
 		}
 		if (isLast && this.alternative_ != null) {
-			element
-					.setAttribute(
-							"onerror",
-							"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_3_4.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+			element.setAttribute(
+					"onerror",
+					"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_3_4.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 		} else {
 			element.setAttribute("onerror", "");
 		}

@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
  * 	&#064;code
  * 	WEnvironment env = WApplication.instance().environment();
  * 
- * 	// read an application startup argument 
+ * 	// read an application startup argument
  * 	// (passed as argument in the URL or POST'ed to the application).
  * 	if (!env.getParameterValues(&quot;login&quot;).isEmpty()) {
  * 		String login = env.getParameterValues(&quot;login&quot;).get(0);
- * 		//...
+ * 		// ...
  * 	}
  * 
  * 	// Check for JavaScript/AJAX availability before using JavaScript-only
@@ -273,7 +273,6 @@ public class WEnvironment {
 	 * One or more values may be associated with a single argument.
 	 * <p>
 	 * For example a JWt application <code>foo.wt</code> started as
-	 * 
 	 * <code><a href="http://.../foo.wt?hello=Hello&hello=World">http://.../foo.wt?hello=Hello&amp;hello=World</a></code>
 	 * will result in both values <code>&quot;Hello&quot;</code> and
 	 * <code>&quot;World&quot;</code> to be associated with the argument
@@ -650,7 +649,7 @@ public class WEnvironment {
 	 * internal path <code>&quot;/this/there&quot;</code>:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt/this/there
 	 *    http://www.mydomain.com/stuff/app.wt/this/there
 	 *   }
@@ -779,8 +778,7 @@ public class WEnvironment {
 	public boolean agentIsIElt(int version) {
 		if (this.agentIsIE()) {
 			return this.agent_.getValue() < WEnvironment.UserAgent.IEMobile
-					.getValue()
-					+ (version - 5);
+					.getValue() + (version - 5);
 		} else {
 			return false;
 		}
@@ -1226,8 +1224,8 @@ public class WEnvironment {
 		this.pathInfo_ = request.getPathInfo();
 		this.setUserAgent(str(request.getHeaderValue("User-Agent")));
 		this.updateUrlScheme(request);
-		logger.info(new StringWriter().append("UserAgent: ").append(
-				this.userAgent_).toString());
+		logger.info(new StringWriter().append("UserAgent: ")
+				.append(this.userAgent_).toString());
 		if (conf.isBehindReverseProxy()) {
 			String forwardedHost = str(request
 					.getHeaderValue("X-Forwarded-Host"));
@@ -1392,8 +1390,7 @@ public class WEnvironment {
 				int e = list.get(i).indexOf('=');
 				String cookieName = list.get(i).substring(0, 0 + e);
 				String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
-						.get(i).substring(e + 1)
-						: "";
+						.get(i).substring(e + 1) : "";
 				cookieName = cookieName.trim();
 				cookieValue = cookieValue.trim();
 				cookieName = java.net.URLDecoder.decode(cookieName, "UTF-8");

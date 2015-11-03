@@ -449,8 +449,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			return;
 		}
 		WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-				.headerWidget(column))
-				: null);
+				.headerWidget(column)) : null);
 		wc.setContentAlignment(alignment);
 		if (this.columnInfo(column).headerVAlignment == AlignmentFlag.AlignMiddle) {
 			wc.setLineHeight(this.headerLineHeight_);
@@ -520,8 +519,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		}
 		if (this.columnInfo(column).headerVAlignment == AlignmentFlag.AlignTop) {
 			WContainerWidget wc = ((this.headerWidget(column)) instanceof WContainerWidget ? (WContainerWidget) (this
-					.headerWidget(column))
-					: null);
+					.headerWidget(column)) : null);
 			wc.toggleStyleClass("Wt-wwrap", enabled);
 		}
 	}
@@ -575,9 +573,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (this.renderState_ != WAbstractItemView.RenderState.NeedRerender) {
 			WText t = this.headerSortIconWidget(this.currentSortColumn_);
 			if (t != null) {
-				t
-						.setStyleClass(order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
-								: "Wt-tv-sh Wt-tv-sh-down");
+				t.setStyleClass(order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
+						: "Wt-tv-sh Wt-tv-sh-down");
 			}
 		}
 		this.model_.sort(column, order);
@@ -677,8 +674,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	public void setColumnResizeEnabled(boolean enabled) {
 		if (enabled != this.columnResize_) {
 			this.columnResize_ = enabled;
-			this
-					.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
+			this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 		}
 	}
 
@@ -834,7 +830,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * This is a convenience method for:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    selectionModel().isSelected(index)
 	 *   }
 	 * </pre>
@@ -861,7 +857,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * This is a convenience method for:
 	 * 
 	 * <pre>
-	 * {@code
+	 *   {@code
 	 *    selectionModel().selectedIndexes()
 	 *   }
 	 * </pre>
@@ -1266,8 +1262,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	public void edit(final WModelIndex index) {
 		if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsEditable)
-				.isEmpty()
-				&& !this.isEditing(index)) {
+				.isEmpty() && !this.isEditing(index)) {
 			if (!EnumUtils.mask(this.editOptions_,
 					WAbstractItemView.EditOption.SingleEditor).isEmpty()) {
 				while (!this.editedItems_.isEmpty()) {
@@ -1821,8 +1816,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 					boolean internal = e.getSource() == this.selectionModel_;
 					DropAction action = internal ? DropAction.MoveAction
 							: DropAction.CopyAction;
-					this.model_.dropEvent(e, action, index.getRow(), index
-							.getColumn(), index.getParent());
+					this.model_.dropEvent(e, action, index.getRow(),
+							index.getColumn(), index.getParent());
 					this.setSelectedIndexes(new TreeSet<WModelIndex>());
 					return;
 				}
@@ -2016,12 +2011,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			if (orientation == Orientation.Horizontal) {
 				for (int i = start; i <= end; ++i) {
 					WContainerWidget hw = ((this.headerWidget(i, true)) instanceof WContainerWidget ? (WContainerWidget) (this
-							.headerWidget(i, true))
-							: null);
+							.headerWidget(i, true)) : null);
 					WWidget tw = hw.getWidget(hw.getCount() - 1);
-					this.headerItemDelegate_.update(tw, this.headerModel_
-							.getIndex(0, i), EnumSet
-							.noneOf(ViewItemRenderFlag.class));
+					this.headerItemDelegate_.update(tw,
+							this.headerModel_.getIndex(0, i),
+							EnumSet.noneOf(ViewItemRenderFlag.class));
 					tw.setInline(false);
 					tw.addStyleClass("Wt-label");
 					WWidget h = this.headerWidget(i, false);
@@ -2110,8 +2104,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			WWidget w = this.columnInfo(i).extraHeaderWidget;
 			if (w != null && w.getParent() != null) {
 				(((w.getParent()) instanceof WContainerWidget ? (WContainerWidget) (w
-						.getParent())
-						: null)).removeWidget(w);
+						.getParent()) : null)).removeWidget(w);
 			}
 		}
 	}
@@ -2126,9 +2119,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			sortIcon.setInline(false);
 			sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
 			if (this.currentSortColumn_ == column) {
-				sortIcon
-						.setStyleClass(info.sortOrder == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
-								: "Wt-tv-sh Wt-tv-sh-down");
+				sortIcon.setStyleClass(info.sortOrder == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up"
+						: "Wt-tv-sh Wt-tv-sh-down");
 			}
 		}
 		if (!EnumUtils.mask(
@@ -2138,8 +2130,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			WImage collapseIcon = new WImage(contents);
 			collapseIcon.setFloatSide(Side.Left);
 			collapseIcon.setImageLink(new WLink(WApplication
-					.getRelativeResourcesUrl()
-					+ "minus.gif"));
+					.getRelativeResourcesUrl() + "minus.gif"));
 			this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(),
 					info.id);
 		} else {
@@ -2148,8 +2139,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				WImage expandIcon = new WImage(contents);
 				expandIcon.setFloatSide(Side.Left);
 				expandIcon.setImageLink(new WLink(WApplication
-						.getRelativeResourcesUrl()
-						+ "plus.gif"));
+						.getRelativeResourcesUrl() + "plus.gif"));
 				this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(),
 						info.id);
 			}
@@ -2161,8 +2151,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		i.addStyleClass("Wt-label");
 		contents.addWidget(i);
 		int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
-		contents.setMargin(new WLength(headerLevel
-				* this.headerLineHeight_.toPixels()), EnumSet.of(Side.Top));
+		contents.setMargin(
+				new WLength(headerLevel * this.headerLineHeight_.toPixels()),
+				EnumSet.of(Side.Top));
 		int rightBorderLevel = headerLevel;
 		if (this.model_ != null) {
 			int rightColumn = this.modelColumnIndex(this
@@ -2417,14 +2408,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 							if (c.getRow() < start - count) {
 								toClose.add(c);
 							} else {
-								WModelIndex shifted = this.model_.getIndex(c
-										.getRow()
-										+ count, c.getColumn(), p);
+								WModelIndex shifted = this.model_.getIndex(
+										c.getRow() + count, c.getColumn(), p);
 								newMap.put(shifted, i.getValue());
 								if (i.getValue().widget != null) {
 									if (persistWhenShifted) {
-										this.persistEditor(shifted, i
-												.getValue());
+										this.persistEditor(shifted,
+												i.getValue());
 									}
 									result = true;
 								}
@@ -2479,13 +2469,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 							if (c.getColumn() < start - count) {
 								toClose.add(c);
 							} else {
-								WModelIndex shifted = this.model_.getIndex(c
-										.getRow(), c.getColumn() + count, p);
+								WModelIndex shifted = this.model_.getIndex(
+										c.getRow(), c.getColumn() + count, p);
 								newMap.put(shifted, i.getValue());
 								if (i.getValue().widget != null) {
 									if (persistWhenShifted) {
-										this.persistEditor(shifted, i
-												.getValue());
+										this.persistEditor(shifted,
+												i.getValue());
 									}
 									result = true;
 								}
@@ -2707,8 +2697,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	abstract void selectRange(final WModelIndex first, final WModelIndex last);
 
 	private void checkDragSelection() {
-		this.computedDragMimeType_ = new WString(this.selectionModel_
-				.getMimeType());
+		this.computedDragMimeType_ = new WString(
+				this.selectionModel_.getMimeType());
 		this.setAttributeValue("dmt", this.computedDragMimeType_.toString());
 		if (!(this.computedDragMimeType_.length() == 0)) {
 			this.setAttributeValue("drag", "true");
@@ -2762,11 +2752,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		if (column != this.currentSortColumn_) {
 			this.sortByColumn(column, this.columnInfo(column).sortOrder);
 		} else {
-			this
-					.sortByColumn(
-							column,
-							this.columnInfo(column).sortOrder == SortOrder.AscendingOrder ? SortOrder.DescendingOrder
-									: SortOrder.AscendingOrder);
+			this.sortByColumn(
+					column,
+					this.columnInfo(column).sortOrder == SortOrder.AscendingOrder ? SortOrder.DescendingOrder
+							: SortOrder.AscendingOrder);
 		}
 	}
 
@@ -2819,12 +2808,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	private void initDragDrop() {
-		this
-				.addCssRule("#" + this.getId() + "dw",
-						"width: 32px; height: 32px;background: url("
-								+ WApplication.getResourcesUrl()
-								+ "items-not-ok.gif);");
-		this.addCssRule("#" + this.getId() + "dw.Wt-valid-drop",
+		this.addCssRule(
+				"#" + this.getId() + "dw",
+				"width: 32px; height: 32px;background: url("
+						+ WApplication.getResourcesUrl() + "items-not-ok.gif);");
+		this.addCssRule(
+				"#" + this.getId() + "dw.Wt-valid-drop",
 				"width: 32px; height: 32px;background: url("
 						+ WApplication.getResourcesUrl() + "items-ok.gif);");
 		this.selectionChanged_.addListener(this, new Signal.Listener() {
