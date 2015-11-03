@@ -175,12 +175,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	public void setSelectedSeriesPen(final WPen pen) {
 		if (this.selectedSeriesPen_ != this.seriesPen_) {
 			;
-			if (!this.selectedSeriesPen_.equals(pen)) {
-				this.selectedSeriesPen_ = pen.clone();
-			}
-		} else {
-			this.selectedSeriesPen_ = pen.clone();
 		}
+		this.selectedSeriesPen_ = pen.clone();
 		this.update();
 	}
 
