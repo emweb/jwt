@@ -115,12 +115,20 @@ this.mouseDown = function(e) {
 
 this.mouseUp = function(e) {
   lastButtonUp = WT.button(e);
+  WT.buttons &= ~lastButtonUp;
+
+  /*
+   * mouse click will follow immediately and should still see the old
+   * value of mouseDragging
+   */
   setTimeout(function() {
     mouseDragging = 0;
-    WT.buttons &= ~lastButtonUp;
   }, 5);
 };
 
+/*
+ * Used to prevent a mouse click if we're actually dragging
+ */
 this.dragged = function(e) {
   return mouseDragging > 2;
 };
