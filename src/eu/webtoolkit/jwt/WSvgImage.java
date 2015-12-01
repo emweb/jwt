@@ -140,7 +140,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.finishPath();
 		this.makeNewGroup();
 		WApplication app = WApplication.getInstance();
-		String imageUri = "";
+		String imageUri = imgUri;
 		if (app != null) {
 			imageUri = app.resolveRelativeUrl(imgUri);
 		}

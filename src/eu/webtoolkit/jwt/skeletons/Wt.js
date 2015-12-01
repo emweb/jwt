@@ -1154,7 +1154,7 @@ this.boxSizing = function(w) {
 
 // Return if an element (or one of its ancestors) is hidden
 this.isHidden = function(w) {
-  if (w.style.display == 'none')
+  if (w.style.display == 'none' || $(w).hasClass('out'))
     return true;
   else {
     w = w.parentNode;

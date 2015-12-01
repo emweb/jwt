@@ -304,7 +304,7 @@ public class WDateEdit extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WDateEdit.js", wtjs1());
-		String jsObj = "new Wt3_3_4.WDateEdit(" + app.getJavaScriptClass()
+		String jsObj = "new Wt3_3_5.WDateEdit(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + "," + this.popup_.getJsRef() + ");";
 		this.setJavaScriptMember(" WDateEdit", jsObj);
 		final AbstractEventSignal b = this.mouseMoved();

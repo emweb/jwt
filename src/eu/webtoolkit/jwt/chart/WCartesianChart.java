@@ -1910,7 +1910,7 @@ public class WCartesianChart extends WAbstractChart {
 			char[] buf = new char[30];
 			WApplication app = WApplication.getInstance();
 			StringBuilder ss = new StringBuilder();
-			ss.append("new Wt3_3_4.WCartesianChart(")
+			ss.append("new Wt3_3_5.WCartesianChart(")
 					.append(app.getJavaScriptClass())
 					.append(",")
 					.append(this.getJsRef())

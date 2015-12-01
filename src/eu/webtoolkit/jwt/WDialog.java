@@ -475,7 +475,7 @@ public class WDialog extends WPopupWidget {
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this.setJavaScriptMember(
 						" Resizable",
-						"(new Wt3_3_4.Resizable(Wt3_3_4,"
+						"(new Wt3_3_5.Resizable(Wt3_3_5,"
 								+ this.getJsRef()
 								+ ")).onresize(function(w, h, done) {var obj = $('#"
 								+ this.getId()
@@ -682,7 +682,7 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_3_4.WDialog("
+			this.doJavaScript("new Wt3_3_5.WDialog("
 					+ app.getJavaScriptClass()
 					+ ","
 					+ this.getJsRef()

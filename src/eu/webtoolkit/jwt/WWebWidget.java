@@ -1243,7 +1243,7 @@ public abstract class WWebWidget extends WWidget {
 						i.setAttribute("frameborder", "0");
 						app.addAutoJavaScript("{var w = "
 								+ this.getJsRef()
-								+ ";if (w && !Wt3_3_4.isHidden(w)) {var i = Wt3_3_4.getElement('"
+								+ ";if (w && !Wt3_3_5.isHidden(w)) {var i = Wt3_3_5.getElement('"
 								+ i.getId()
 								+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1455,7 +1455,7 @@ public abstract class WWebWidget extends WWidget {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
 						String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true"
 								: "false";
-						element.callJavaScript("Wt3_3_4.toolTip("
+						element.callJavaScript("Wt3_3_5.toolTip("
 								+ app.getJavaScriptClass()
 								+ ","
 								+ jsStringLiteral(this.getId())
@@ -1525,7 +1525,7 @@ public abstract class WWebWidget extends WWidget {
 								.get(i);
 						if (js.charAt(0) == '_') {
 							element.callJavaScript(
-									"Wt3_3_4.remove('" + js.substring(1)
+									"Wt3_3_5.remove('" + js.substring(1)
 											+ "');", true);
 						} else {
 							element.callJavaScript(js, true);
@@ -1712,7 +1712,7 @@ public abstract class WWebWidget extends WWidget {
 				app.loadJavaScript(THIS_JS, wtjs2());
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
-					ss.append("Wt3_3_4")
+					ss.append("Wt3_3_5")
 							.append(".animateDisplay('")
 							.append(this.getId())
 							.append("',")
@@ -1738,7 +1738,7 @@ public abstract class WWebWidget extends WWidget {
 					}
 				} else {
 					StringBuilder ss = new StringBuilder();
-					ss.append("Wt3_3_4")
+					ss.append("Wt3_3_5")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1856,7 +1856,7 @@ public abstract class WWebWidget extends WWidget {
 			if (result.length() == 0) {
 				result = "_" + this.getId();
 			} else {
-				result += "Wt3_3_4.remove('" + this.getId() + "');";
+				result += "Wt3_3_5.remove('" + this.getId() + "');";
 			}
 		}
 		return result;
