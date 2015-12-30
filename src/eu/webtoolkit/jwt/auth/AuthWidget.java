@@ -395,10 +395,9 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a password prompt dialog.
 	 * <p>
-	 * This creates a dialog which prompts the user for his password. The user
-	 * is taken from the <code>login</code> object, which also signals an
-	 * eventual success using its {@link Login#changed() Login#changed()}
-	 * signal.
+	 * This creates a dialog password. The user is taken from the
+	 * <code>login</code> object, which also signals an eventual success using
+	 * its {@link Login#changed() Login#changed()} signal.
 	 * <p>
 	 * The default implementation instantiates a {@link PasswordPromptDialog}.
 	 */
@@ -417,6 +416,11 @@ public class AuthWidget extends WTemplateFormView {
 		}
 	}
 
+	/**
+	 * Displays the error message.
+	 * <p>
+	 * This method display an dialog showing the error
+	 */
 	void displayError(final CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
@@ -432,6 +436,11 @@ public class AuthWidget extends WTemplateFormView {
 		this.messageBox_ = box;
 	}
 
+	/**
+	 * Displays the info message.
+	 * <p>
+	 * This method display an dialog showing the info
+	 */
 	void displayInfo(final CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();

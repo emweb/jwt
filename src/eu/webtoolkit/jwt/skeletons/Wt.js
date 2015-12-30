@@ -2277,7 +2277,9 @@ function dragStart(obj, e) {
     display: ds.object.style.display,
     left: ds.object.style.left,
     top: ds.object.style.top,
-    className: ds.object.className
+    className: ds.object.className,
+    parent: ds.object.parentNode,
+    zIndex: ds.object.zIndex
   };
 
   ds.object.parentNode.removeChild(ds.object);
@@ -2400,6 +2402,10 @@ function dragEnd(e) {
       // could not be dropped, animate it floating back ?
     }
 
+    document.body.removeChild(ds.object);
+    ds.objectPrevStyle.parent.appendChild(ds.object);
+
+    ds.object.style.zIndex = ds.objectPrevStyle.zIndex;
     ds.object.style.position = ds.objectPrevStyle.position;
     ds.object.style.display = ds.objectPrevStyle.display;
     ds.object.style.left = ds.objectPrevStyle.left;

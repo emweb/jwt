@@ -674,12 +674,20 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		switch (pen.getStyle()) {
 		case DashLine:
 			pattern = "[4 2] 0";
+			break;
 		case DotLine:
-			pattern = "[1, 2] 0";
+			pattern = "[1 2] 0";
+			break;
 		case DashDotLine:
-			pattern = "[4, 2, 1, 2] 0";
+			pattern = "[4 2 1 2] 0";
+			break;
 		case DashDotDotLine:
-			pattern = "[4, 2, 1, 2, 1, 2] 0";
+			pattern = "[4 2 1 2 1 2] 0";
+			break;
+		default:
+			pattern = "[] 0";
+			break;
+			
 		}
 		
 		return new Stroke(cap, join, width, pattern);

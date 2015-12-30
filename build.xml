@@ -52,7 +52,7 @@
   </condition>
 
   <target name="run">
-    <java jar="lib/antlr-3.5-complete.jar" fork="true">
+    <java jar="lib/antlr-3.5.2-complete.jar" fork="true">
       <arg line="src/eu/webtoolkit/jwt/render/Css21.g"/>
     </java>
   </target>
@@ -116,6 +116,7 @@
        windowtitle="JWt Javadoc API"
        classpathref="project.javadoc.classpath"
        overview="overview.html"
+       additionalparam="-Xdoclint:none"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
 	<include name="eu/webtoolkit/jwt/*.java"/>

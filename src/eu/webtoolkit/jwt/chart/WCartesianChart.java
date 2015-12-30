@@ -706,7 +706,15 @@ public class WCartesianChart extends WAbstractChart {
 		if ((rect == null) || rect.isEmpty()) {
 			rect = painter.getWindow();
 		}
+		if (this.isInteractive()) {
+			this.xTransform_.assign(this.xTransformHandle_.getValue());
+			this.yTransform_.assign(this.yTransformHandle_.getValue());
+		}
 		this.render(painter, rect);
+		if (this.isInteractive()) {
+			this.xTransform_.assign(new WTransform());
+			this.yTransform_.assign(new WTransform());
+		}
 	}
 
 	/**
@@ -1991,24 +1999,16 @@ public class WCartesianChart extends WAbstractChart {
 	protected void render(final WPainter painter, final WRectF rectangle) {
 		painter.save();
 		painter.translate(rectangle.getTopLeft());
-		if (this.isInteractive()) {
-			this.xTransform_.assign(this.xTransformHandle_.getValue());
-			this.yTransform_.assign(this.yTransformHandle_.getValue());
-		}
 		if (this.initLayout(rectangle, painter.getDevice())) {
 			this.renderBackground(painter);
 			this.renderGrid(painter, this.getAxis(Axis.XAxis));
 			this.renderGrid(painter, this.getAxis(Axis.Y1Axis));
 			this.renderGrid(painter, this.getAxis(Axis.Y2Axis));
-			this.renderSeries(painter);
 			this.renderAxes(painter, EnumSet.of(AxisProperty.Line));
+			this.renderSeries(painter);
 			this.renderAxes(painter, EnumSet.of(AxisProperty.Labels));
 			this.renderBorder(painter);
 			this.renderLegend(painter);
-		}
-		if (this.isInteractive()) {
-			this.xTransform_.assign(new WTransform());
-			this.yTransform_.assign(new WTransform());
 		}
 		painter.restore();
 	}
@@ -3282,13 +3282,13 @@ public class WCartesianChart extends WAbstractChart {
 		if (!this.getAxis(Axis.XAxis).zoomDirty_) {
 			double z = this.xTransformHandle_.getValue().getM11();
 			if (z != this.getAxis(Axis.XAxis).getZoom()) {
-				this.getAxis(Axis.XAxis).setZoom(z);
+				this.getAxis(Axis.XAxis).setZoomFromClient(z);
 			}
 		}
 		if (!this.getAxis(Axis.Y1Axis).zoomDirty_) {
 			double z = this.yTransformHandle_.getValue().getM22();
 			if (z != this.getAxis(Axis.Y1Axis).getZoom()) {
-				this.getAxis(Axis.Y1Axis).setZoom(z);
+				this.getAxis(Axis.Y1Axis).setZoomFromClient(z);
 			}
 		}
 		WPointF devicePan = new WPointF(this.xTransformHandle_.getValue()
@@ -3301,13 +3301,13 @@ public class WCartesianChart extends WAbstractChart {
 		if (!this.getAxis(Axis.XAxis).panDirty_) {
 			double x = modelPan.getX();
 			if (x != this.getAxis(Axis.XAxis).getPan()) {
-				this.getAxis(Axis.XAxis).setPan(x);
+				this.getAxis(Axis.XAxis).setPanFromClient(x);
 			}
 		}
 		if (!this.getAxis(Axis.Y1Axis).panDirty_) {
 			double y = modelPan.getY();
 			if (y != this.getAxis(Axis.Y1Axis).getPan()) {
-				this.getAxis(Axis.Y1Axis).setPan(y);
+				this.getAxis(Axis.Y1Axis).setPanFromClient(y);
 			}
 		}
 	}
@@ -3459,7 +3459,7 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	private boolean isInteractive() {
+	boolean isInteractive() {
 		return (this.zoomEnabled_ || this.panEnabled_ || this.crosshairEnabled_
 				|| this.followCurve_ >= 0 || this.axisSliderWidgets_.size() > 0)
 				&& this.getMethod() == WPaintedWidget.Method.HtmlCanvas;

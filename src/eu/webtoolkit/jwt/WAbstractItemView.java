@@ -2259,12 +2259,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	void handleClick(final WModelIndex index, final WMouseEvent event) {
 		boolean doEdit = (index != null)
-				&& (!EnumUtils.mask(this.getEditTriggers(),
-						WAbstractItemView.EditTrigger.SelectedClicked)
-						.isEmpty()
-						&& this.isSelected(index) || !EnumUtils.mask(
-						this.getEditTriggers(),
-						WAbstractItemView.EditTrigger.SingleClicked).isEmpty());
+				&& !EnumUtils.mask(this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.SingleClicked).isEmpty();
 		if (doEdit) {
 			this.edit(index);
 		}
@@ -2298,8 +2294,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * signal.
 	 */
 	void handleMouseDown(final WModelIndex index, final WMouseEvent event) {
+		boolean doEdit = (index != null)
+				&& !EnumUtils.mask(this.getEditTriggers(),
+						WAbstractItemView.EditTrigger.SelectedClicked)
+						.isEmpty() && this.isSelected(index);
 		if ((index != null)) {
 			this.selectionHandleClick(index, event.getModifiers());
+		}
+		if (doEdit) {
+			this.edit(index);
 		}
 		this.mouseWentDown_.trigger(index, event);
 	}

@@ -72,6 +72,7 @@ public class WSelectionBox extends WComboBox {
 		this.selectionMode_ = SelectionMode.SingleSelection;
 		this.selection_ = new HashSet<Integer>();
 		this.configChanged_ = false;
+		this.noSelectionEnabled_ = true;
 	}
 
 	/**

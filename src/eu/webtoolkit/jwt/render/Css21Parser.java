@@ -1,4 +1,4 @@
-// $ANTLR 3.5 src/eu/webtoolkit/jwt/render/Css21.g 2015-12-01 09:29:11
+// $ANTLR 3.5.2 src/eu/webtoolkit/jwt/render/Css21.g 2015-12-30 14:08:59
 package eu.webtoolkit.jwt.render;
 
 import org.antlr.runtime.*;
@@ -1247,11 +1247,11 @@ public class Css21Parser extends Parser {
 
 	// Delegated rules
 
-	public final boolean synpred1_Css21() {
+	public final boolean synpred2_Css21() {
 		state.backtracking++;
 		int start = input.mark();
 		try {
-			synpred1_Css21_fragment(); // can never throw exception
+			synpred2_Css21_fragment(); // can never throw exception
 		} catch (RecognitionException re) {
 			System.err.println("impossible: "+re);
 		}
@@ -1261,11 +1261,11 @@ public class Css21Parser extends Parser {
 		state.failed=false;
 		return success;
 	}
-	public final boolean synpred2_Css21() {
+	public final boolean synpred1_Css21() {
 		state.backtracking++;
 		int start = input.mark();
 		try {
-			synpred2_Css21_fragment(); // can never throw exception
+			synpred1_Css21_fragment(); // can never throw exception
 		} catch (RecognitionException re) {
 			System.err.println("impossible: "+re);
 		}

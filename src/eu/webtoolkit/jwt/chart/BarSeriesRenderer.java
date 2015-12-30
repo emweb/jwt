@@ -63,18 +63,26 @@ class BarSeriesRenderer extends SeriesRenderer {
 		double width = this.groupWidth_ / g;
 		double left = topMid.getX() - this.groupWidth_ / 2 + this.group_
 				* width * (1 + this.chart_.getBarMargin());
+		boolean nonZeroWidth = this.chart_.isInteractive()
+				|| crisp(left) != crisp(left + width);
 		bar.moveTo(this.hv(left, topMid.getY()));
-		bar.lineTo(this.hv(left + width, topMid.getY()));
-		bar.lineTo(this.hv(left + width, bottomMid.getY()));
+		if (nonZeroWidth) {
+			bar.lineTo(this.hv(left + width, topMid.getY()));
+			bar.lineTo(this.hv(left + width, bottomMid.getY()));
+		}
 		bar.lineTo(this.hv(left, bottomMid.getY()));
-		bar.closeSubPath();
+		if (nonZeroWidth) {
+			bar.closeSubPath();
+		}
 		this.painter_.setShadow(this.series_.getShadow());
 		final WCartesianChart chart = this.chart_;
 		WTransform transform = chart.getCombinedTransform();
-		WBrush brush = this.series_.getBrush().clone();
-		SeriesIterator.setBrushColor(brush, xIndex, yIndex,
-				ItemDataRole.BarBrushColorRole);
-		this.painter_.fillPath(transform.map(bar).getCrisp(), brush);
+		if (nonZeroWidth) {
+			WBrush brush = this.series_.getBrush().clone();
+			SeriesIterator.setBrushColor(brush, xIndex, yIndex,
+					ItemDataRole.BarBrushColorRole);
+			this.painter_.fillPath(transform.map(bar), brush);
+		}
 		this.painter_.setShadow(new WShadow());
 		WPen pen = this.series_.getPen().clone();
 		SeriesIterator.setPenColor(pen, xIndex, yIndex,

@@ -42,6 +42,10 @@ abstract class SeriesRenderer {
 		this.it_ = it;
 	}
 
+	protected static double crisp(double u) {
+		return Math.floor(u) + 0.5;
+	}
+
 	protected WPointF hv(final WPointF p) {
 		return this.chart_.hv(p);
 	}

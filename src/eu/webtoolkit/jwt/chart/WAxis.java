@@ -1009,7 +1009,7 @@ public class WAxis {
 			update();
 		}
 		;
-		this.zoomDirty_ = true;
+		this.panDirty_ = true;
 	}
 
 	/**
@@ -2596,6 +2596,14 @@ public class WAxis {
 		default:
 			return 1;
 		}
+	}
+
+	void setZoomFromClient(double zoom) {
+		this.zoom_ = zoom;
+	}
+
+	void setPanFromClient(double pan) {
+		this.pan_ = pan;
 	}
 
 	private static double EPSILON = 1E-3;

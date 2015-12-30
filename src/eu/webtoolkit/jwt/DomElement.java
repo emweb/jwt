@@ -1603,8 +1603,9 @@ public class DomElement {
 						.append(';');
 				break;
 			case PropertySelectedIndex:
-				out.append(this.var_).append(".selectedIndex=")
-						.append(i.getValue()).append(';');
+				out.append("setTimeout(function() { ").append(this.var_)
+						.append(".selectedIndex=").append(i.getValue())
+						.append(";}, 0);");
 				break;
 			case PropertyMultiple:
 				out.append(this.var_).append(".multiple=").append(i.getValue())

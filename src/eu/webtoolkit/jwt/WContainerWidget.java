@@ -895,27 +895,33 @@ public class WContainerWidget extends WInteractWidget {
 				parent.setWasEmpty(this.isWasEmpty());
 			}
 			if (this.transientImpl_ != null) {
-				List<Integer> orderedInserts = new ArrayList<Integer>();
-				final List<WWidget> ac = this.transientImpl_.addedChildren_;
-				for (int i = 0; i < ac.size(); ++i) {
-					orderedInserts.add(this.children_.indexOf(ac.get(i)));
-				}
-				Collections.sort(orderedInserts);
-				int addedCount = this.transientImpl_.addedChildren_.size();
-				int totalCount = this.children_.size();
-				int insertCount = 0;
-				for (int i = 0; i < orderedInserts.size(); ++i) {
-					int pos = orderedInserts.get(i);
-					DomElement c = this.children_.get(pos).createSDomElement(
-							app);
-					if (pos + (addedCount - insertCount) == totalCount) {
-						parent.addChild(c);
-					} else {
-						parent.insertChildAt(c, pos + this.getFirstChildIndex());
+				for (;;) {
+					List<Integer> orderedInserts = new ArrayList<Integer>();
+					final List<WWidget> ac = this.transientImpl_.addedChildren_;
+					for (int i = 0; i < ac.size(); ++i) {
+						orderedInserts.add(this.children_.indexOf(ac.get(i)));
 					}
-					++insertCount;
+					Collections.sort(orderedInserts);
+					int addedCount = this.transientImpl_.addedChildren_.size();
+					int totalCount = this.children_.size();
+					int insertCount = 0;
+					this.transientImpl_.addedChildren_.clear();
+					for (int i = 0; i < orderedInserts.size(); ++i) {
+						int pos = orderedInserts.get(i);
+						DomElement c = this.children_.get(pos)
+								.createSDomElement(app);
+						if (pos + (addedCount - insertCount) == totalCount) {
+							parent.addChild(c);
+						} else {
+							parent.insertChildAt(c,
+									pos + this.getFirstChildIndex());
+						}
+						++insertCount;
+					}
+					if (this.transientImpl_.addedChildren_.isEmpty()) {
+						break;
+					}
 				}
-				this.transientImpl_.addedChildren_.clear();
 			}
 		}
 		if (this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
