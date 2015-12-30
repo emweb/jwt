@@ -421,7 +421,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * This method display an dialog showing the error
 	 */
-	void displayError(final CharSequence m) {
+	public void displayError(final CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
 		WMessageBox box = new WMessageBox(tr("Wt.Auth.error"), m, Icon.NoIcon,
@@ -441,7 +441,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * This method display an dialog showing the info
 	 */
-	void displayInfo(final CharSequence m) {
+	public void displayInfo(final CharSequence m) {
 		if (this.messageBox_ != null)
 			this.messageBox_.remove();
 		WMessageBox box = new WMessageBox(tr("Wt.Auth.notice"), m, Icon.NoIcon,
