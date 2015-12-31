@@ -54,10 +54,10 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Constructs a <code>null</code> rectangle.
+	 * Constructs an empty rectangle.
 	 * <p>
 	 * 
-	 * @see WRectF#()
+	 * @see WRectF#isEmpty()
 	 */
 	public WRectF() {
 		super();

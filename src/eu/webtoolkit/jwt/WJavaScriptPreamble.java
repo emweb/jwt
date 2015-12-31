@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * Javascript preamble.
  * <p>
  * 
- * This is an internal {@link } type.
+ * This is an internal JWt type.
  */
 public class WJavaScriptPreamble {
 	private static Logger logger = LoggerFactory

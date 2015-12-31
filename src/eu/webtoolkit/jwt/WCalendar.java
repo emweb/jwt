@@ -334,9 +334,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
-	 * Possible values or 1 to 7, as accepted by {@link }.
-	 * <p>
-	 * The default value is 1 (&quot;Monday&quot;).
+	 * Possible values are 1 to 7. The default value is 1 (&quot;Monday&quot;).
 	 */
 	public void setFirstDayOfWeek(int dayOfWeek) {
 		this.firstDayOfWeek_ = dayOfWeek;

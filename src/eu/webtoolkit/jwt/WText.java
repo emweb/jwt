@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * 
  * The text is provided through a {@link WString}, which may either hold a
  * literal text, or a key to localized text which is looked up in locale
- * dependent XML files (see {@link }).
+ * dependent XML files (see {@link WString#tr(String key) WString#tr()}).
  * <p>
  * Use {@link WText#setTextFormat(TextFormat textFormat) setTextFormat()} to
  * configure the textFormat of the text. The default textFormat is
@@ -94,8 +94,9 @@ public class WText extends WInteractWidget {
 	 * Creates a text widget with given text.
 	 * <p>
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
-	 * <code>text</code> is literal (not created using {@link }) and it could not
-	 * be parsed as valid XML. In that case the textFormat is set to
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}) and it could not be parsed
+	 * as valid XML. In that case the textFormat is set to
 	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Therefore, if you wish to use {@link TextFormat#XHTMLText}, but cannot be
@@ -129,7 +130,8 @@ public class WText extends WInteractWidget {
 	 * Creates a text widget with given text and format.
 	 * <p>
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and
-	 * <code>text</code> is not literal (not created using {@link }), then if the
+	 * <code>text</code> is not literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), then if the
 	 * <code>text</code> could not be parsed as valid XML, the textFormat is
 	 * changed to {@link TextFormat#PlainText}.
 	 * <p>
@@ -188,10 +190,11 @@ public class WText extends WInteractWidget {
 	 * Sets the text.
 	 * <p>
 	 * When the current format is {@link TextFormat#XHTMLText}, and
-	 * <code>text</code> is literal (not created using {@link }), it is parsed
-	 * using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is changed to {@link TextFormat#PlainText}.
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
+	 * parser which discards malicious tags and attributes silently. When the
+	 * parser encounters an XML parse error, the textFormat is changed to
+	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of <code>false</code> indicates that the textFormat was
@@ -220,10 +223,11 @@ public class WText extends WInteractWidget {
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link }), the current text is
-	 * parsed using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is left unchanged, and this method returns false.
+	 * current text is literal (not created using {@link WString#tr(String key)
+	 * WString#tr()}), the current text is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is left unchanged, and this
+	 * method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>

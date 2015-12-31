@@ -576,6 +576,8 @@ public class WImage extends WInteractWidget {
 				}
 			}
 			js.append("]");
+		} else {
+			js.append("null");
 		}
 		return js.toString();
 	}

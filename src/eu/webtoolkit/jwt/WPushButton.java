@@ -236,10 +236,11 @@ public class WPushButton extends WFormWidget {
 	 * The default text format is {@link TextFormat#PlainText}.
 	 * <p>
 	 * When the current text format is {@link TextFormat#XHTMLText}, and
-	 * <code>text</code> is literal (not created using {@link }), it is parsed
-	 * using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is changed to {@link TextFormat#PlainText}.
+	 * <code>text</code> is literal (not created using
+	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
+	 * parser which discards malicious tags and attributes silently. When the
+	 * parser encounters an XML parse error, the textFormat is changed to
+	 * {@link TextFormat#PlainText}.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of <code>false</code> indicates that the text format was
@@ -275,10 +276,11 @@ public class WPushButton extends WFormWidget {
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link }), the current text is
-	 * parsed using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is left unchanged, and this method returns false.
+	 * current text is literal (not created using {@link WString#tr(String key)
+	 * WString#tr()}), the current text is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is left unchanged, and this
+	 * method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>

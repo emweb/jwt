@@ -66,9 +66,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This class is an abstract class. A concrete class implements the pure virtual
  * methods to create an appropriate {@link WPaintDevice} for each page and to
- * provide page dimension information. The paint device needs to support font
- * metrics, which currently is only implemented by {@link WPdfImage} or
- * {@link WRasterImage}.
+ * provide page dimension information.
  * <p>
  * All coordinates and dimensions in the API below are pixel coordinates.
  */

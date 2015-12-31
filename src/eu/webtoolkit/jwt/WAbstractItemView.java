@@ -1563,7 +1563,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * {@link } when scrolling.
+	 * Signal emitted when scrolling.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>Works only if ajax is available. </i>

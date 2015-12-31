@@ -74,8 +74,8 @@ import org.slf4j.LoggerFactory;
  * There are four painting methods that you may implement in a specialization of
  * this class. The purpose of these functions is to register what JavaScript
  * code has to be executed to render a scene. Through invocations of the WebGL
- * functions documented below, {@link } records the JavaScript calls that have to
- * be invoked in the browser.
+ * functions documented below, JWt records the JavaScript calls that have to be
+ * invoked in the browser.
  * <ul>
  * <li>
  * <b>{@link WGLWidget#initializeGL() initializeGL()}</b>: this function is
@@ -101,9 +101,9 @@ import org.slf4j.LoggerFactory;
  * invocations may be triggered by calling repaint() with the RESIZE_GL flag.</li>
  * <li>
  * <b>{@link WGLWidget#paintGL() paintGL()}</b>: this is the main scene drawing
- * function. Through its execution, {@link } records what has to be done to
- * render a scene, and it is executed every time that the scene is to be
- * redrawn. You can use the VBO&apos;s and shaders prepared in the
+ * function. Through its execution, JWt records what has to be done to render a
+ * scene, and it is executed every time that the scene is to be redrawn. You can
+ * use the VBO&apos;s and shaders prepared in the
  * {@link WGLWidget#initializeGL() initializeGL()} phase. Usually, this function
  * sets uniforms and attributes, links attributes to VBO&apos;s, applies
  * textures, and draws primitives. You may also create local programs, buffers,
@@ -1592,8 +1592,10 @@ public class WGLWidget extends WInteractWidget {
 	 * returns an paintdevice that can be used to paint a GL texture
 	 * <p>
 	 * If the client has a webGL enabled browser this function returns a
-	 * {@link WCanvasPaintDevice}. If server-side rendering is used as fallback
-	 * then this function returns a {@link WRasterImage}
+	 * {@link WCanvasPaintDevice}.
+	 * <p>
+	 * If server-side rendering is used as fallback then this function returns a
+	 * {@link WRasterPaintDevice}.
 	 */
 	public WPaintDevice createPaintDevice(final WLength width,
 			final WLength height) {
@@ -3023,9 +3025,9 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Sets the content to be displayed when WebGL is not available.
 	 * <p>
-	 * If {@link } cannot create a working WebGL context, this content will be
-	 * shown to the user. This may be a text explanation, or a pre-rendered
-	 * image, or a video, a flash movie, ...
+	 * If JWt cannot create a working WebGL context, this content will be shown
+	 * to the user. This may be a text explanation, or a pre-rendered image, or
+	 * a video, a flash movie, ...
 	 * <p>
 	 * The default is a widget that explains to the user that he has no WebGL
 	 * support.

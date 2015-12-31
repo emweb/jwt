@@ -126,10 +126,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
 	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link }), the current text is
-	 * parsed using an XML parser which discards malicious tags and attributes
-	 * silently. When the parser encounters an XML parse error, the textFormat
-	 * is left unchanged, and this method returns false.
+	 * current text is literal (not created using {@link WString#tr(String key)
+	 * WString#tr()}), the current text is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is left unchanged, and this
+	 * method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>

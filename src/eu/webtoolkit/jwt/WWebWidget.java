@@ -2456,7 +2456,7 @@ public abstract class WWebWidget extends WWidget {
 				}
 				element.callMethod(combined.toString());
 			} else {
-				if (value.length() > 1) {
+				if (value.length() > 0) {
 					element.callMethod(name + "=" + value);
 				} else {
 					element.callMethod(name + "=null");

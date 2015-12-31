@@ -86,17 +86,12 @@ public class WFileUpload extends WWebWidget {
 		this.flags_ = new BitSet();
 		this.textSize_ = 20;
 		this.uploadedFiles_ = new ArrayList<UploadedFile>();
-		this.fileTooLarge_ = new Signal1<Long>(this);
+		this.fileTooLarge_ = new JSignal1<Long>(this, "fileTooLarge") {
+		};
 		this.dataReceived_ = new Signal2<Long, Long>(this);
 		this.progressBar_ = null;
 		this.acceptAttributes_ = "";
-		this.tooLargeSize_ = 0;
 		this.setInline(true);
-		this.fileTooLargeImpl().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WFileUpload.this.handleFileTooLargeImpl();
-			}
-		});
 		this.create();
 	}
 
@@ -291,7 +286,7 @@ public class WFileUpload extends WWebWidget {
 	 * @see WFileUpload#uploaded()
 	 * @see WApplication#requestTooLarge()
 	 */
-	public Signal1<Long> fileTooLarge() {
+	public JSignal1<Long> fileTooLarge() {
 		return this.fileTooLarge_;
 	}
 
@@ -417,7 +412,6 @@ public class WFileUpload extends WWebWidget {
 
 	private static String CHANGE_SIGNAL = "M_change";
 	private static String UPLOADED_SIGNAL = "M_uploaded";
-	private static String FILETOOLARGE_SIGNAL = "M_filetoolarge";
 	private static final int BIT_DO_UPLOAD = 0;
 	private static final int BIT_ENABLE_AJAX = 1;
 	private static final int BIT_UPLOADING = 2;
@@ -426,7 +420,7 @@ public class WFileUpload extends WWebWidget {
 	BitSet flags_;
 	private int textSize_;
 	private List<UploadedFile> uploadedFiles_;
-	private Signal1<Long> fileTooLarge_;
+	private JSignal1<Long> fileTooLarge_;
 	private Signal2<Long, Long> dataReceived_;
 	private WResource fileUploadTarget_;
 	private WProgressBar progressBar_;
@@ -468,10 +462,11 @@ public class WFileUpload extends WWebWidget {
 		long dataExceeded = 0L;
 		h.setRequest((WebRequest) null, (WebResponse) null);
 		if (dataExceeded != 0) {
+			this.doJavaScript("Wt3_3_5.$('if" + this.getId() + "').src='"
+					+ this.fileUploadTarget_.getUrl() + "';");
 			if (this.flags_.get(BIT_UPLOADING)) {
 				this.flags_.clear(BIT_UPLOADING);
-				this.tooLargeSize_ = dataExceeded;
-				this.handleFileTooLargeImpl();
+				this.handleFileTooLarge(dataExceeded);
 				WApplication app = WApplication.getInstance();
 				app.triggerUpdate();
 				app.enableUpdates(false);
@@ -502,7 +497,17 @@ public class WFileUpload extends WWebWidget {
 		}
 		if (this.fileUploadTarget_ != null && this.flags_.get(BIT_DO_UPLOAD)) {
 			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
-			element.callMethod("submit()");
+			String maxFileSize = String.valueOf(WApplication.getInstance()
+					.getMaximumRequestSize());
+			String command = "{var x = Wt3_3_5.$('in"
+					+ this.getId()
+					+ "');  if (x.files != null) {    for (var i = 0; i < x.files.length; i++) {       var f = x.files[i];      if(f.size < "
+					+ maxFileSize + ") {          " + this.getJsRef()
+					+ ".submit();       } else {          "
+					+ this.fileTooLarge().createCall("f.size")
+					+ "           }    }  } else     " + this.getJsRef()
+					+ ".submit();  };";
+			element.callJavaScript(command);
 			this.flags_.clear(BIT_DO_UPLOAD);
 			if (containsProgress) {
 				inputE = DomElement.getForUpdate("in" + this.getId(),
@@ -581,13 +586,14 @@ public class WFileUpload extends WWebWidget {
 				this.updateSignalConnection(input, change, "change", true);
 			}
 			form.addChild(input);
-			this.doJavaScript("window.addEventListener('message', function(event) {if ("
+			StringWriter s = new StringWriter();
+			this.doJavaScript("var f = function(event) {if ("
 					+ this.getJsRef()
-					+ ".action.indexOf(event.origin) === 0) {if (event.data.fu == '"
+					+ ".action.indexOf(event.origin) === 0) {var data = JSON.parse(event.data);if (data.fu == '"
 					+ this.getId()
 					+ "')"
 					+ app.getJavaScriptClass()
-					+ "._p_.update(null, event.data.signal, null, true);}}, false);");
+					+ "._p_.update(null, data.signal, null, true);}};if (window.addEventListener) window.addEventListener('message', f, false);else window.attachEvent('onmessage', f);");
 		} else {
 			result.setAttribute("type", "file");
 			if (this.flags_.get(BIT_MULTIPLE)) {
@@ -633,12 +639,8 @@ public class WFileUpload extends WWebWidget {
 		super.propagateSetEnabled(enabled);
 	}
 
-	EventSignal fileTooLargeImpl() {
-		return this.voidEventSignal(FILETOOLARGE_SIGNAL, true);
-	}
-
-	private void handleFileTooLargeImpl() {
-		this.fileTooLarge().trigger(this.tooLargeSize_);
+	private void handleFileTooLarge(long fileSize) {
+		this.fileTooLarge().trigger(fileSize);
 	}
 
 	private void onUploaded() {
@@ -647,8 +649,6 @@ public class WFileUpload extends WWebWidget {
 			this.flags_.clear(BIT_UPLOADING);
 		}
 	}
-
-	long tooLargeSize_;
 
 	protected void setFormData(final WObject.FormData formData) {
 		this.setFiles(formData.files);

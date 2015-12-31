@@ -834,9 +834,12 @@ public class WApplication extends WObject {
 	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)
 	 * setLocalizedStrings()}.
 	 * <p>
-	 * {@link } is used to create localized strings, whose localized translation
-	 * is looked up through this object, using a key.
+	 * {@link WString#tr(String key) WString#tr()} is used to create localized
+	 * strings, whose localized translation is looked up through this object,
+	 * using a key.
 	 * <p>
+	 * 
+	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		if (this.localizedStrings_.getItems().size() > 1) {
@@ -869,6 +872,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
+	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
@@ -907,6 +911,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
+	 * @see WString#tr(String key)
 	 */
 	public void setLocale(final Locale locale) {
 		this.locale_ = locale;
@@ -2476,7 +2481,8 @@ public class WApplication extends WObject {
 	 * Quits the application.
 	 * <p>
 	 * This quits the application with a default restart message resolved as
-	 * {@link }(&quot;Wt.QuittedMessage&quot;).
+	 * {@link WString#tr(String key) WString#tr()}
+	 * (&quot;Wt.QuittedMessage&quot;).
 	 * <p>
 	 * 
 	 * @see WApplication#quit(CharSequence restartMessage)
@@ -2731,7 +2737,7 @@ public class WApplication extends WObject {
 	 * This encodes an URL so that in case the session ID is present in the
 	 * current URL, this session ID does not leak to the refenced URL.
 	 * <p>
-	 * {@link } will safely handle URLs in the API (in {@link WImage} and
+	 * Wt will safely handle URLs in the API (in {@link WImage} and
 	 * {@link WAnchor}) but you may want to use this function to encode URLs
 	 * which you use in {@link WTemplate} texts.
 	 */

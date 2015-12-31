@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration for a JavaScript object scope.
  * <p>
- * This is an internal {@link } type.
+ * This is an internal JWt type.
  */
 public enum JavaScriptScope {
 	ApplicationScope, WtClassScope;

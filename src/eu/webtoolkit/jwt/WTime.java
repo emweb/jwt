@@ -269,8 +269,7 @@ public class WTime {
 	/**
 	 * Formats this time to a string using a specified format.
 	 * 
-	 * @see SimpleDateFormat
-	 * 
+	 * @see java.text.SimpleDateFormat
 	 */
 	public String toString(String format) {
 		StringBuilder result = new StringBuilder();

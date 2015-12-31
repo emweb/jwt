@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
  * This validator accepts input in the given date format, and optionally checks
  * if the date is within a given range.
  * <p>
- * The format string used for validating user input are the same as those used
- * by {@link }.
+ * The format string used are the ones accepted by java.text.SimpleDateFormat
  * <p>
  * <h3>i18n</h3>
  * <p>
@@ -103,8 +102,6 @@ public class WDateValidator extends WValidator {
 	 * Creates a date validator.
 	 * <p>
 	 * The validator will accept dates in the date format <code>format</code>.
-	 * <p>
-	 * The syntax for <code>format</code> is as in {@link }
 	 */
 	public WDateValidator(final String format, WObject parent) {
 		super(parent);
@@ -132,8 +129,6 @@ public class WDateValidator extends WValidator {
 	 * <p>
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
-	 * <p>
-	 * The syntax for <code>format</code> is as in {@link }
 	 */
 	public WDateValidator(final String format, final WDate bottom,
 			final WDate top, WObject parent) {

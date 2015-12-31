@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Since the template text may be supplied by a {@link WString}, you can
  * conveniently store the string in a message resource bundle, and make it
- * localized by using {@link }.
+ * localized by using {@link WString#tr(String key) WString#tr()}.
  * <p>
  * Placeholders (for variables and functions) are delimited by:
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
@@ -425,7 +425,7 @@ public class WTemplate extends WInteractWidget {
 		 * <p>
 		 * Use {@link WObject#setObjectName(String name)
 		 * WObject#setObjectName()} to prefix the ID with the varName. This is a
-		 * safe choice since {@link } still guarantees that the IDs are unique.
+		 * safe choice since JWt still guarantees that the IDs are unique.
 		 */
 		SetWidgetObjectName,
 		/**

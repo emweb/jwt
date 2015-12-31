@@ -1046,8 +1046,8 @@ public abstract class WWidget extends WObject {
 	 * Sets the value for an HTML attribute.
 	 * <p>
 	 * This is only useful for HTML features that are not supported directly in
-	 * {@link } (and beware that browsers have non-consisten support for many
-	 * more exotic HTML features).
+	 * JWt (and beware that browsers have non-consistent support for many more
+	 * exotic HTML features).
 	 * <p>
 	 * 
 	 * @see JSlot
@@ -1102,7 +1102,7 @@ public abstract class WWidget extends WObject {
 			final String args);
 
 	/**
-	 * Short hand for {@link }.
+	 * Short hand for {@link WString#tr(String key) WString#tr()}.
 	 * <p>
 	 * Creates a localized string with the given key.
 	 */

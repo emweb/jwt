@@ -94,9 +94,9 @@ public class WTimeEdit extends WLineEdit {
 	/**
 	 * Returns the time.
 	 * <p>
-	 * Returns an invalid time (for which {@link } returns <code>false</code>) if
-	 * the time coult not be parsed using the current
-	 * {@link WTimeEdit#getFormat() getFormat()}. <br>
+	 * Returns an invalid time (for which {@link WTime#isValid()
+	 * WTime#isValid()} returns <code>false</code>) if the time could not be
+	 * parsed using the current {@link WTimeEdit#getFormat() getFormat()}.
 	 * <p>
 	 * 
 	 * @see WTimeEdit#setTime(WTime time)
@@ -134,7 +134,7 @@ public class WTimeEdit extends WLineEdit {
 	}
 
 	/**
-	 * returns the format
+	 * Returns the format.
 	 */
 	public String getFormat() {
 		WTimeValidator tv = this.getValidator();

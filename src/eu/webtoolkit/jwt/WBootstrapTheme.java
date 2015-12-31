@@ -420,8 +420,7 @@ public class WBootstrapTheme extends WTheme {
 			WAbstractItemView itemView = ((widget) instanceof WAbstractItemView ? (WAbstractItemView) (widget)
 					: null);
 			if (itemView != null) {
-				element.addPropertyWord(Property.PropertyClass,
-						"form-horizontal");
+				element.addPropertyWord(Property.PropertyClass, "form-inline");
 				return;
 			}
 			WNavigationBar navBar = ((widget) instanceof WNavigationBar ? (WNavigationBar) (widget)

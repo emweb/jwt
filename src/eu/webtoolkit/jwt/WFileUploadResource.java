@@ -49,23 +49,31 @@ class WFileUploadResource extends WResource {
 				logger.debug(new StringWriter().append(
 						"Resource handleRequest(): signaling uploaded")
 						.toString());
-				o.append("window.parent.postMessage(").append("{ fu: '")
-						.append(this.fileUpload_.getId()).append("',")
-						.append("  signal: '")
-						.append(this.fileUpload_.uploaded().encodeCmd())
-						.append("'}, '*');");
+				WEnvironment.UserAgent agent = WApplication.getInstance()
+						.getEnvironment().getAgent();
+				if (agent == WEnvironment.UserAgent.IE6
+						|| agent == WEnvironment.UserAgent.IE7) {
+					o.append("window.parent.")
+							.append(WApplication.getInstance()
+									.getJavaScriptClass())
+							.append("._p_.update(null, '")
+							.append(this.fileUpload_.uploaded().encodeCmd())
+							.append("', null, true);");
+				} else {
+					o.append(" window.parent.postMessage(")
+							.append("JSON.stringify({ fu: '")
+							.append(this.fileUpload_.getId()).append("',")
+							.append("  signal: '")
+							.append(this.fileUpload_.uploaded().encodeCmd())
+							.append("'}), '*');");
+				}
 			} else {
 				if (0 != 0) {
 					logger.debug(new StringWriter()
 							.append("Resource handleRequest(): signaling file-too-large")
 							.toString());
-					o.append("window.parent.postMessage(")
-							.append("{ fu: '")
-							.append(this.fileUpload_.getId())
-							.append("',")
-							.append("  signal: '")
-							.append(this.fileUpload_.fileTooLargeImpl()
-									.encodeCmd()).append("'}, '*');");
+					String s = String.valueOf(0);
+					o.append(this.fileUpload_.fileTooLarge().createCall(s));
 				}
 			}
 		} else {
@@ -73,12 +81,8 @@ class WFileUploadResource extends WResource {
 					"Resource handleRequest(): no signal").toString());
 		}
 		o.append("}\n</script></head><body onload=\"load();\"></body></html>");
-		if (0 != 0) {
-			this.fileUpload_.tooLargeSize_ = 0;
-		} else {
-			if (!files.isEmpty()) {
-				this.fileUpload_.setFiles(files);
-			}
+		if (!(0 != 0) && !files.isEmpty()) {
+			this.fileUpload_.setFiles(files);
 		}
 	}
 

@@ -140,7 +140,7 @@ public interface AbstractPasswordService {
 		/**
 		 * Validates a password.
 		 * <p>
-		 * Calls validate(password, {@link }, &quot;&quot;);
+		 * Calls validate(password, {@link WString#Empty}, &quot;&quot;);
 		 */
 		public WValidator.Result validate(final String password) {
 			return this.validate(password, "", "");

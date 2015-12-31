@@ -584,6 +584,7 @@ class FormWidgets extends TopicWidget {
 		model.addString("United States");
 		model.setData(3, 0, "US", ItemDataRole.UserRole);
 		model.setFlags(3, EnumSet.noneOf(ItemFlag.class));
+		cb.setNoSelectionEnabled(true);
 		cb.setModel(model);
 		final WText out = new WText(container);
 		out.addStyleClass("help-block");
