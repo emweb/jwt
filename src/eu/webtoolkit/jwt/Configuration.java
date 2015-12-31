@@ -77,6 +77,7 @@ public class Configuration {
 	private String uaCompatible = "";
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
 	private int internalDeploymentSize = 0;
+	private long maxRequestSize = 1024*1024; // 1 Megabyte
 
 	/**
 	 * Creates a default configuration.
@@ -575,6 +576,15 @@ public class Configuration {
 		return sessionTimeout;
 	}
 	
+	/**
+	 * Sets the maximum request size (in bytes).
+	 * 
+	 * The default value is 1MB
+	 */
+	public void setMaximumRequestSize(long requestSize) {
+		this.maxRequestSize = requestSize;
+	}
+	
 	void setSessionTimeout(int sessionTimeout) {
 		if (sessionTimeout <= 0)
 			this.sessionTimeout = 10 * 60;
@@ -697,8 +707,10 @@ public class Configuration {
 		return false;
 	}
 	
-	int getMaxRequestSize() {
-		return 0;
+	/** Returns the maximum request size.
+	 */
+	public long getMaxRequestSize() {
+		return maxRequestSize;
 	}
 
 	SessionTracking getSessionTracking() {
