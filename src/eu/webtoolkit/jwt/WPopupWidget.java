@@ -76,6 +76,12 @@ public class WPopupWidget extends WCompositeWidget {
 				WPopupWidget.this.show();
 			}
 		});
+		WApplication.getInstance().internalPathChanged()
+				.addListener(this, new Signal1.Listener<String>() {
+					public void trigger(String e1) {
+						WPopupWidget.this.hide();
+					}
+				});
 	}
 
 	/**

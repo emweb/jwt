@@ -587,9 +587,13 @@ public class WFileUpload extends WWebWidget {
 			}
 			form.addChild(input);
 			StringWriter s = new StringWriter();
-			this.doJavaScript("var f = function(event) {if ("
+			this.doJavaScript("var a"
+					+ this.getId()
+					+ "="
 					+ this.getJsRef()
-					+ ".action.indexOf(event.origin) === 0) {var data = JSON.parse(event.data);if (data.fu == '"
+					+ ".action;var f = function(event) {if (a"
+					+ this.getId()
+					+ ".indexOf(event.origin) === 0) {var data = JSON.parse(event.data);if (data.fu == '"
 					+ this.getId()
 					+ "')"
 					+ app.getJavaScriptClass()
