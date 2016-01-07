@@ -682,6 +682,7 @@ public class WTreeView extends WAbstractItemView {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
+		WApplication app = WApplication.getInstance();
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 			if (!this.itemEvent_.isConnected()) {
@@ -696,7 +697,6 @@ public class WTreeView extends WAbstractItemView {
 									}
 								});
 				this.addCssRule("#" + this.getId() + " .cwidth", "");
-				WApplication app = WApplication.getInstance();
 				this.rowHeightRule_ = new WCssTemplateRule("#" + this.getId()
 						+ " .rh", this);
 				app.getStyleSheet().addRule(this.rowHeightRule_);
@@ -753,7 +753,8 @@ public class WTreeView extends WAbstractItemView {
 				break;
 			}
 		}
-		if (this.getRowHeaderCount() != 0 && this.renderedNodesAdded_) {
+		if (app.getEnvironment().hasAjax() && this.getRowHeaderCount() != 0
+				&& this.renderedNodesAdded_) {
 			this.doJavaScript("{var s=" + this.scrollBarC_.getJsRef()
 					+ ";if (s) {" + this.tieRowsScrollJS_.execJs("s") + "}}");
 			this.renderedNodesAdded_ = false;
@@ -762,7 +763,9 @@ public class WTreeView extends WAbstractItemView {
 		s.append("jQuery.data(").append(this.getJsRef())
 				.append(", 'obj').setRowHeight(")
 				.append((int) this.getRowHeight().toPixels()).append(");");
-		this.doJavaScript(s.toString());
+		if (app.getEnvironment().hasAjax()) {
+			this.doJavaScript(s.toString());
+		}
 		super.render(flags);
 	}
 

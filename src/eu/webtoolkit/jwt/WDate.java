@@ -362,8 +362,6 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Returns the difference between to time values (in seconds).
-	 * 
-	 * This returns a value between -86400 s and 86400 s.
 	 */
 	public int getSecondsTo(WDate d) {
 		return (int) (getMillisecondsTo(d) / 1000);
@@ -371,11 +369,9 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Returns the difference between to time values (in milliseconds).
-	 * 
-	 * This returns a value between -86400000 ms and 86400000 ms.
 	 */
-	public int getMillisecondsTo(WDate d) {
-		return (int) (d.d.getTime() - this.d.getTime());
+	public long getMillisecondsTo(WDate d) {
+		return d.d.getTime() - this.d.getTime();
 	}
 
 	/**
