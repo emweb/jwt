@@ -729,7 +729,7 @@ public class WGridLayout extends WLayout {
 			for (int a_row = 0; a_row < this.getRowCount(); ++a_row) {
 				{
 					int insertPos = this.grid_.items_.get(a_row).size();
-					for (int ii = 0; ii < extraColumns; ++ii)
+					for (int ii = 0; ii < (extraColumns); ++ii)
 						this.grid_.items_.get(a_row).add(insertPos + ii,
 								new Grid.Item());
 				}
@@ -737,7 +737,7 @@ public class WGridLayout extends WLayout {
 			}
 			{
 				int insertPos = this.grid_.columns_.size();
-				for (int ii = 0; ii < extraColumns; ++ii)
+				for (int ii = 0; ii < (extraColumns); ++ii)
 					this.grid_.columns_.add(insertPos + ii, new Grid.Section());
 			}
 			;
@@ -745,7 +745,7 @@ public class WGridLayout extends WLayout {
 		if (extraRows > 0) {
 			{
 				int insertPos = this.grid_.items_.size();
-				for (int ii = 0; ii < extraRows; ++ii)
+				for (int ii = 0; ii < (extraRows); ++ii)
 					this.grid_.items_.add(insertPos + ii,
 							new ArrayList<Grid.Item>());
 			}
@@ -755,14 +755,14 @@ public class WGridLayout extends WLayout {
 						.get(this.grid_.items_.size() - extraRows + i);
 				{
 					int insertPos = items.size();
-					for (int ii = 0; ii < newColumnCount; ++ii)
+					for (int ii = 0; ii < (newColumnCount); ++ii)
 						items.add(insertPos + ii, new Grid.Item());
 				}
 				;
 			}
 			{
 				int insertPos = this.grid_.rows_.size();
-				for (int ii = 0; ii < extraRows; ++ii)
+				for (int ii = 0; ii < (extraRows); ++ii)
 					this.grid_.rows_.add(insertPos + ii, new Grid.Section());
 			}
 			;

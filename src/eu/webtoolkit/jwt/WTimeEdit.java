@@ -35,6 +35,7 @@ public class WTimeEdit extends WLineEdit {
 	 */
 	public WTimeEdit(WContainerWidget parent) {
 		super(parent);
+		this.setValidator(new WTimeValidator(this));
 		this.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WTimeEdit.this.setFromLineEdit();
@@ -44,8 +45,8 @@ public class WTimeEdit extends WLineEdit {
 		WTemplate t = new WTemplate(new WString(TEMPLATE));
 		this.popup_ = new WPopupWidget(t, this);
 		this.popup_.setAnchorWidget(this);
-		this.popup_.setTransient(true, 2);
-		this.timePicker_ = new WTimePicker();
+		this.popup_.setTransient(true);
+		this.timePicker_ = new WTimePicker(this);
 		this.timePicker_.selectionChanged().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
@@ -65,7 +66,6 @@ public class WTimeEdit extends WLineEdit {
 				WTimeEdit.this.setFocus();
 			}
 		});
-		this.setValidator(new WTimeValidator("HH:mm", this));
 	}
 
 	/**
@@ -87,16 +87,18 @@ public class WTimeEdit extends WLineEdit {
 	 * @see WTimeEdit#getTime()
 	 */
 	public void setTime(final WTime time) {
-		this.setText(time.toString(this.getFormat()));
-		this.timePicker_.setTime(time);
+		if (!(time == null)) {
+			this.setText(time.toString(this.getFormat()));
+			this.timePicker_.setTime(time);
+		}
 	}
 
 	/**
 	 * Returns the time.
 	 * <p>
-	 * Returns an invalid time (for which {@link WTime#isValid()
-	 * WTime#isValid()} returns <code>false</code>) if the time could not be
-	 * parsed using the current {@link WTimeEdit#getFormat() getFormat()}.
+	 * Returns an invalid time (for which {@link } returns <code>false</code>) if
+	 * the time could not be parsed using the current
+	 * {@link WTimeEdit#getFormat() getFormat()}.
 	 * <p>
 	 * 
 	 * @see WTimeEdit#setTime(WTime time)
@@ -125,10 +127,11 @@ public class WTimeEdit extends WLineEdit {
 		if (tv != null) {
 			WTime t = this.getTime();
 			tv.setFormat(format);
+			this.timePicker_.configure();
 			this.setTime(t);
 		} else {
 			logger.warn(new StringWriter()
-					.append("setFormaT() ignored since validator is not WTimeValidator")
+					.append("setFormat() ignored since validator is not WTimeValidator")
 					.toString());
 		}
 	}
@@ -148,31 +151,53 @@ public class WTimeEdit extends WLineEdit {
 		}
 	}
 
-	/**
-	 * set the hidden status
-	 */
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
 		this.popup_.setHidden(hidden, animation);
 	}
 
 	/**
-	 * returns the minutes step
+	 * Sets the lower limit of the valid time range.
 	 */
-	public int getMinuteStep() {
-		return this.timePicker_.getMinuteStep();
+	public void setBottom(final WTime bottom) {
+		WTimeValidator tv = this.getValidator();
+		if (tv != null) {
+			tv.setBottom(bottom);
+		}
 	}
 
 	/**
-	 * sets the minute step
+	 * Returns the lower limit of the valid time range.
 	 */
-	public void setMinuteStep(int step) {
-		this.timePicker_.setMinuteStep(step);
+	public WTime getBottom() {
+		WTimeValidator tv = this.getValidator();
+		if (tv != null) {
+			return tv.getBottom();
+		}
+		return null;
 	}
 
 	/**
-	 * render the widget
+	 * Sets the upper limit of the valid time range.
 	 */
+	public void setTop(final WTime top) {
+		WTimeValidator tv = this.getValidator();
+		if (tv != null) {
+			tv.setTop(top);
+		}
+	}
+
+	/**
+	 * Returns the upper limit of the valid time range.
+	 */
+	public WTime getTop() {
+		WTimeValidator tv = this.getValidator();
+		if (tv != null) {
+			return tv.getTop();
+		}
+		return null;
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
@@ -180,9 +205,6 @@ public class WTimeEdit extends WLineEdit {
 		super.render(flags);
 	}
 
-	/**
-	 * enable or disable propagation
-	 */
 	protected void propagateSetEnabled(boolean enabled) {
 		super.propagateSetEnabled(enabled);
 	}
@@ -199,16 +221,9 @@ public class WTimeEdit extends WLineEdit {
 	 */
 	protected void setFromLineEdit() {
 		WTime t = WTime.fromString(this.getText(), this.getFormat());
-		if (t.isValid()) {
+		if ((t != null && t.isValid())) {
 			this.timePicker_.setTime(t);
 		}
-	}
-
-	/**
-	 * sets the text
-	 */
-	protected void setText(final CharSequence text) {
-		super.setText(text.toString());
 	}
 
 	private WPopupWidget popup_;

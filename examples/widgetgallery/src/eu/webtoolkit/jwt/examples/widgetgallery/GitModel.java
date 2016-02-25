@@ -196,7 +196,7 @@ class GitModel extends WAbstractItemModel {
 		}
 
 		public boolean equals(Object o) {
-			GitModel.ChildIndex other = (ChildIndex) o;
+			GitModel.ChildIndex other = ((ChildIndex) o);
 			return this.parentId == other.parentId && this.index == other.index;
 		}
 

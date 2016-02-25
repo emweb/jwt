@@ -25,6 +25,6 @@
 	<classpathentry kind="lib" path="lib/hamcrest-all-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
-	<classpathentry kind="lib" path="/home/koen/project/jwt/git/jwt/lib/antlr-3.5.2-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-3.5.2-runtime.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

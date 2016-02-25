@@ -44,7 +44,7 @@ class LabelRenderIterator extends SeriesIterator {
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,
-			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
+			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
 			return;
 		}
@@ -60,8 +60,9 @@ class LabelRenderIterator extends SeriesIterator {
 					y - stackY));
 		}
 		if (!(text.length() == 0)) {
-			WPointF p = this.chart_.map(x, y, series.getAxis(),
+			WPointF point = this.chart_.map(x, y, series.getAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
+			WPointF p = point;
 			if (series.getType() == SeriesType.BarSeries) {
 				double g = this.numGroups_ + (this.numGroups_ - 1)
 						* this.chart_.getBarMargin();
@@ -89,14 +90,29 @@ class LabelRenderIterator extends SeriesIterator {
 			final WCartesianChart chart = this.chart_;
 			WPen oldPen = chart.textPen_.clone();
 			chart.textPen_.setColor(series.getLabelColor());
-			WTransform t = new WTransform(1, 0, 0, -1,
-					chart.chartArea_.getLeft(), chart.chartArea_.getBottom())
-					.multiply(chart.xTransform_)
-					.multiply(chart.yTransform_)
-					.multiply(
-							new WTransform(1, 0, 0, -1, -chart.chartArea_
-									.getLeft(), chart.chartArea_.getBottom()));
-			chart.renderLabel(this.painter_, text, t.map(p), alignment, 0, 3);
+			WTransform t = this.chart_.getCombinedTransform();
+			WTransform ct = new WTransform();
+			WJavaScriptHandle<WTransform> transformHandle = this.chart_.curveTransforms_
+					.get(series);
+			if (transformHandle != null) {
+				ct.assign(this.chart_.curveTransform(series));
+			}
+			if (series.getType() == SeriesType.BarSeries) {
+				chart.renderLabel(
+						this.painter_,
+						text,
+						this.chart_.inverseHv(t.multiply(ct).map(
+								this.chart_.hv(p))), alignment, 0, 3);
+			} else {
+				double dx = p.getX() - point.getX();
+				double dy = p.getY() - point.getY();
+				chart.renderLabel(
+						this.painter_,
+						text,
+						this.chart_.inverseHv(t.multiply(ct)
+								.translate(new WPointF(dx, dy))
+								.map(this.chart_.hv(point))), alignment, 0, 3);
+			}
 			chart.textPen_ = oldPen;
 		}
 	}

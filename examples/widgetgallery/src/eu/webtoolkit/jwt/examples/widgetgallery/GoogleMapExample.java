@@ -205,7 +205,7 @@ class GoogleMapExample extends WContainerWidget {
 
 	private void setMapTypeControl(int row) {
 		Object mtc = this.mapTypeModel_.getData(row, 0, ItemDataRole.UserRole);
-		this.map_.setMapTypeControl((WGoogleMap.MapTypeControl) mtc);
+		this.map_.setMapTypeControl(((WGoogleMap.MapTypeControl) mtc));
 	}
 
 	private List<WGoogleMap.Coordinate> getRoadDescription() {

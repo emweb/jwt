@@ -54,8 +54,8 @@ class WChart2DImplementation implements WAbstractChartImplementation {
 
 	public WString categoryLabel(int u, Axis axis) {
 		if (this.chart_.XSeriesColumn() != -1) {
-			return StringUtils.asString(this.chart_.getModel().getData(u,
-					this.chart_.XSeriesColumn()));
+			return this.chart_.getModel().getDisplayData(u,
+					this.chart_.XSeriesColumn());
 		} else {
 			return new WString();
 		}

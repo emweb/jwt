@@ -1623,6 +1623,15 @@ public class DomElement {
 				out.append(this.var_).append(".rowSpan=").append(i.getValue())
 						.append(";");
 				break;
+			case PropertyLabel:
+				out.append(this.var_).append(".label=");
+				if (!pushed) {
+					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					pushed = true;
+				}
+				fastJsStringLiteral(out, escaped, i.getValue());
+				out.append(';');
+				break;
 			case PropertyClass:
 				out.append(this.var_).append(".className=");
 				if (!pushed) {

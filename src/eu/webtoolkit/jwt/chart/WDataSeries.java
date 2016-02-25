@@ -116,6 +116,7 @@ public class WDataSeries {
 	 */
 	public WDataSeries(int modelColumn, SeriesType type, Axis axis) {
 		this.chart_ = null;
+		this.model_ = null;
 		this.modelColumn_ = modelColumn;
 		this.XSeriesColumn_ = -1;
 		this.stacked_ = false;
@@ -138,6 +139,10 @@ public class WDataSeries {
 		this.barWidth_ = 0.8;
 		this.hidden_ = false;
 		this.customMarker_ = new WPainterPath();
+		this.offset_ = 0.0;
+		this.scale_ = 1.0;
+		this.offsetDirty_ = true;
+		this.scaleDirty_ = true;
 	}
 
 	/**
@@ -158,6 +163,44 @@ public class WDataSeries {
 	 */
 	public WDataSeries(int modelColumn, SeriesType type) {
 		this(modelColumn, type, Axis.Y1Axis);
+	}
+
+	/**
+	 * Copy constructor.
+	 * <p>
+	 * This does not copy over the associated chart.
+	 * <p>
+	 * 
+	 * @deprecated
+	 */
+	public WDataSeries(final WDataSeries other) {
+		this.chart_ = null;
+		this.model_ = other.model_;
+		this.modelColumn_ = other.modelColumn_;
+		this.XSeriesColumn_ = other.XSeriesColumn_;
+		this.stacked_ = other.stacked_;
+		this.type_ = other.type_;
+		this.axis_ = other.axis_;
+		this.customFlags_ = other.customFlags_;
+		this.pen_ = other.pen_;
+		this.markerPen_ = other.markerPen_;
+		this.brush_ = other.brush_;
+		this.markerBrush_ = other.markerBrush_;
+		this.labelColor_ = other.labelColor_;
+		this.shadow_ = other.shadow_;
+		this.fillRange_ = other.fillRange_;
+		this.marker_ = other.marker_;
+		this.markerSize_ = other.markerSize_;
+		this.legend_ = other.legend_;
+		this.xLabel_ = other.xLabel_;
+		this.yLabel_ = other.yLabel_;
+		this.barWidth_ = other.barWidth_;
+		this.hidden_ = other.hidden_;
+		this.customMarker_ = other.customMarker_;
+		this.offset_ = other.offset_;
+		this.scale_ = other.scale_;
+		this.offsetDirty_ = true;
+		this.scaleDirty_ = true;
 	}
 
 	/**
@@ -403,14 +446,15 @@ public class WDataSeries {
 			if (this.chart_ != null) {
 				if (this.type_ == SeriesType.BarSeries) {
 					return this.chart_.getPalette().getBorderPen(
-							this.chart_.getSeriesIndexOf(this.modelColumn_));
+							this.chart_.getSeriesIndexOf(this));
 				} else {
 					return this.chart_.getPalette().getStrokePen(
-							this.chart_.getSeriesIndexOf(this.modelColumn_));
+							this.chart_.getSeriesIndexOf(this));
 				}
 			} else {
 				WPen defaultPen = new WPen();
-				defaultPen.setCapStyle(PenCapStyle.SquareCap);
+				defaultPen.setCapStyle(PenCapStyle.RoundCap);
+				defaultPen.setJoinStyle(PenJoinStyle.RoundJoin);
 				return defaultPen;
 			}
 		}
@@ -450,7 +494,7 @@ public class WDataSeries {
 		} else {
 			if (this.chart_ != null) {
 				return this.chart_.getPalette().getBrush(
-						this.chart_.getSeriesIndexOf(this.modelColumn_));
+						this.chart_.getSeriesIndexOf(this));
 			} else {
 				return new WBrush();
 			}
@@ -770,7 +814,7 @@ public class WDataSeries {
 		} else {
 			if (this.chart_ != null) {
 				return this.chart_.getPalette().getFontColor(
-						this.chart_.getSeriesIndexOf(this.modelColumn_));
+						this.chart_.getSeriesIndexOf(this));
 			} else {
 				return WColor.black;
 			}
@@ -858,7 +902,127 @@ public class WDataSeries {
 		return mapToDevice(xValue, yValue, 0);
 	}
 
+	/**
+	 * Set an offset to draw the data series at.
+	 * <p>
+	 * The Y position of the data series will be drawn at an offset, expressed
+	 * in model coordinates. The axis labels won&apos;t follow the same offset.
+	 * <p>
+	 * The offset can be manipulated client side using a mouse or touch drag if
+	 * {@link WCartesianChart#isCurveManipulationEnabled()
+	 * WCartesianChart#isCurveManipulationEnabled()} is enabled.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only supported for axes with linear scale.</i>
+	 * </p>
+	 * 
+	 * @see WDataSeries#setScale(double scale)
+	 * @see WCartesianChart#setCurveManipulationEnabled(boolean enabled)
+	 */
+	public void setOffset(double offset) {
+		if (this.offset_ != offset) {
+			this.offset_ = offset;
+			this.update();
+		}
+		this.offsetDirty_ = true;
+	}
+
+	/**
+	 * Get the offset for this data series.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setOffset(double offset)
+	 */
+	public double getOffset() {
+		return this.offset_;
+	}
+
+	/**
+	 * Set the scale to draw the data series at.
+	 * <p>
+	 * The Y position of the data series will be scaled around the zero
+	 * position, and offset by {@link WDataSeries#getOffset() getOffset()}.
+	 * <p>
+	 * The scale can be manipulated client side using the scroll wheel or a
+	 * pinch motion if {@link WCartesianChart#isCurveManipulationEnabled()
+	 * WCartesianChart#isCurveManipulationEnabled()} is enabled.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only supported for axes with linear scale.</i>
+	 * </p>
+	 * 
+	 * @see WDataSeries#setOffset(double offset)
+	 * @see WCartesianChart#setCurveManipulationEnabled(boolean enabled)
+	 */
+	public void setScale(double scale) {
+		if (this.scale_ != scale) {
+			this.scale_ = scale;
+			this.update();
+		}
+		this.scaleDirty_ = true;
+	}
+
+	/**
+	 * Get the scale for this data series.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setScale(double scale)
+	 */
+	public double getScale() {
+		return this.scale_;
+	}
+
+	/**
+	 * Set a model for this data series.
+	 * <p>
+	 * If no model is set for this data series, the model of the chart will be
+	 * used.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Individual models per data series are only supported for
+	 * ScatterPlot type charts.</i>
+	 * </p>
+	 * 
+	 * @see WAbstractChart#setModel(WAbstractItemModel model)
+	 */
+	public void setModel(WAbstractChartModel model) {
+		this.model_ = model;
+		if (this.chart_ != null) {
+			this.chart_.update();
+		}
+	}
+
+	/**
+	 * Get the model for this data series.
+	 * <p>
+	 * This will return the model set for this data series, if it is set.
+	 * <p>
+	 * If no model is set for this data series, and the series is associated
+	 * with a chart, the model of the chart is returned.
+	 * <p>
+	 * If no model is set for this data series, and the series is not associated
+	 * with any data series, this will return null.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setModel(WAbstractChartModel model)
+	 * @see WAbstractChart#setModel(WAbstractItemModel model)
+	 */
+	public WAbstractChartModel getModel() {
+		if (this.model_ != null) {
+			return this.model_;
+		}
+		if (this.chart_ != null) {
+			return this.chart_.getModel();
+		}
+		return null;
+	}
+
+	public WCartesianChart getChart() {
+		return this.chart_;
+	}
+
 	private WCartesianChart chart_;
+	private WAbstractChartModel model_;
 	int modelColumn_;
 	private int XSeriesColumn_;
 	private boolean stacked_;
@@ -880,6 +1044,10 @@ public class WDataSeries {
 	private double barWidth_;
 	private boolean hidden_;
 	private WPainterPath customMarker_;
+	double offset_;
+	double scale_;
+	boolean offsetDirty_;
+	boolean scaleDirty_;
 
 	// private boolean (final T m, final T v) ;
 	void setChart(WCartesianChart chart) {

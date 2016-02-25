@@ -110,6 +110,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	public WPainterPath() {
 		super();
 		this.isRect_ = false;
+		this.openSubPathsEnabled_ = false;
 		this.segments_ = new ArrayList<WPainterPath.Segment>();
 	}
 
@@ -122,6 +123,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	public WPainterPath(final WPointF startPoint) {
 		super();
 		this.isRect_ = false;
+		this.openSubPathsEnabled_ = false;
 		this.segments_ = new ArrayList<WPainterPath.Segment>();
 		this.moveTo(startPoint);
 	}
@@ -132,6 +134,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	public WPainterPath(final WPainterPath path) {
 		super(path);
 		this.isRect_ = path.isRect_;
+		this.openSubPathsEnabled_ = path.openSubPathsEnabled_;
 		this.segments_ = new ArrayList<WPainterPath.Segment>();
 		Utils.copyList(path.segments_, this.segments_);
 	}
@@ -216,7 +219,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Moves the current position to a new location.
 	 * <p>
 	 * Moves the current position to a new point, implicitly closing the last
-	 * sub path.
+	 * sub path, unless {@link WPainterPath#isOpenSubPathsEnabled() open
+	 * subpaths are enabled}.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -224,6 +228,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 *            JavaScript bound}
 	 * @see WPainterPath#closeSubPath()
 	 * @see WPainterPath#moveTo(double x, double y)
+	 * @see WPainterPath#setOpenSubPathsEnabled(boolean enabled)
 	 */
 	public void moveTo(final WPointF point) {
 		this.moveTo(point.getX(), point.getY());
@@ -233,7 +238,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Moves the current position to a new location.
 	 * <p>
 	 * Moves the current position to a new point, implicitly closing the last
-	 * sub path.
+	 * sub path, unless {@link WPainterPath#isOpenSubPathsEnabled() open
+	 * subpaths are enabled}.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -241,10 +247,12 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 *            JavaScript bound}
 	 * @see WPainterPath#closeSubPath()
 	 * @see WPainterPath#moveTo(WPointF point)
+	 * @see WPainterPath#setOpenSubPathsEnabled(boolean enabled)
 	 */
 	public void moveTo(double x, double y) {
 		this.checkModifiable();
-		if (!this.segments_.isEmpty()
+		if (!this.openSubPathsEnabled_
+				&& !this.segments_.isEmpty()
 				&& this.segments_.get(this.segments_.size() - 1).getType() != WPainterPath.Segment.Type.MoveTo) {
 			WPointF startP = this.getSubPathStart();
 			WPointF currentP = this.getCurrentPosition();
@@ -483,8 +491,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	/**
 	 * Draws a rectangle.
 	 * <p>
-	 * This method closes the current sub path, and adds a rectangle that is
-	 * defined by <code>rectangle</code>.
+	 * This method closes the current sub path, unless
+	 * {@link WPainterPath#isOpenSubPathsEnabled() open subpaths are enabled},
+	 * and adds a rectangle that is defined by <code>rectangle</code>.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -501,9 +510,10 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	/**
 	 * Draws a rectangle.
 	 * <p>
-	 * This method closes the current sub path, and adds a rectangle that is
-	 * defined by top left position (<i>x</i>, <code>y</code>), and size
-	 * <i>width</i> x <code>height</code>.
+	 * This method closes the current sub path, unless
+	 * {@link WPainterPath#isOpenSubPathsEnabled() open subpaths are enabled},
+	 * and adds a rectangle that is defined by top left position (<i>x</i>,
+	 * <code>y</code>), and size <i>width</i> x <code>height</code>.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -527,8 +537,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Adds a polygon.
 	 * <p>
 	 * If the first point is different from the current position, the last sub
-	 * path is first closed, otherwise the last sub path is extended with the
-	 * polygon.
+	 * path is first closed, unless {@link WPainterPath#isOpenSubPathsEnabled()
+	 * open subpaths are enabled}, otherwise the last sub path is extended with
+	 * the polygon.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -555,7 +566,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
 	 * begin position is different from the current position, the last sub path
-	 * is first closed, otherwise the last sub path is extended with the
+	 * is first closed, unless {@link WPainterPath#isOpenSubPathsEnabled() open
+	 * subpaths are enabled}, otherwise the last sub path is extended with the
 	 * path&apos;s first sub path.
 	 * <p>
 	 * 
@@ -577,7 +589,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
 	 * begin position is different from the current position, the last sub path
-	 * is first closed, otherwise the last sub path is extended with the
+	 * is first closed, unless {@link WPainterPath#isOpenSubPathsEnabled() open
+	 * subpaths are enabled}, otherwise the last sub path is extended with the
 	 * path&apos;s first sub path.
 	 * <p>
 	 * 
@@ -885,6 +898,43 @@ public class WPainterPath extends WJavaScriptExposableObject {
 		return result;
 	}
 
+	/**
+	 * Disables automatically closing subpaths on moveTo.
+	 * <p>
+	 * By default, open sub paths are disabled, and moveTo and any operation
+	 * that relies on moveTo will automatically close the last subpath. Enabling
+	 * this option disables that feature.
+	 * <p>
+	 * 
+	 * @see WPainterPath#moveTo(WPointF point)
+	 * @see WPainterPath#addPath(WPainterPath path)
+	 * @see WPainterPath#connectPath(WPainterPath path)
+	 * @see WPainterPath#addRect(WRectF rectangle)
+	 */
+	public void setOpenSubPathsEnabled(boolean enabled) {
+		this.openSubPathsEnabled_ = enabled;
+	}
+
+	/**
+	 * Disables automatically closing subpaths on moveTo.
+	 * <p>
+	 * Calls {@link #setOpenSubPathsEnabled(boolean enabled)
+	 * setOpenSubPathsEnabled(true)}
+	 */
+	public final void setOpenSubPathsEnabled() {
+		setOpenSubPathsEnabled(true);
+	}
+
+	/**
+	 * Returns whether open subpaths are enabled.
+	 * <p>
+	 * 
+	 * @see WPainterPath#setOpenSubPathsEnabled(boolean enabled)
+	 */
+	public boolean isOpenSubPathsEnabled() {
+		return this.openSubPathsEnabled_;
+	}
+
 	boolean isPointInPath(final WPointF p) {
 		boolean res = false;
 		double ax = 0.0;
@@ -951,6 +1001,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	}
 
 	private boolean isRect_;
+	private boolean openSubPathsEnabled_;
 	List<WPainterPath.Segment> segments_;
 
 	private WPointF getSubPathStart() {

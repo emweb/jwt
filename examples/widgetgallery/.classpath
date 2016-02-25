@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/antlr-runtime-3.5.jar"/>
+	<classpathentry kind="lib" path="lib/jwt-lib/antlr-runtime-3.5-2.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.2.0.201212191850-r.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/pdfjet-4.75.jar"/>
 	<classpathentry kind="lib" path="lib/jwt-lib/vecmath-1.5.2.jar"/>

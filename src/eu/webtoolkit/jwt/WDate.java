@@ -9,7 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
@@ -31,7 +30,8 @@ import java.util.TimeZone;
  */
 public class WDate implements Comparable<WDate> {
 	static private TimeZone timeZone = null;
-	
+	private Date d;
+
 	static class RegExpInfo {
 		public String regexp;
 		public String yearGetJS;
@@ -56,8 +56,6 @@ public class WDate implements Comparable<WDate> {
 			return values()[day];
 		}
 	}
-
-	private Date d;
 
 	/**
 	 * Sets default timezone
@@ -215,8 +213,21 @@ public class WDate implements Comparable<WDate> {
 		this.setTime(hour, minute, 0, 0);
 	}
 	
+	/**
+	 * Sets this date's time by WTime
+	 * 
+	 * When the new date is invalid, an IllegalArgumentException is thrown.
+	 */
 	public void setTime(WTime time){
 		this.setTime(time.getHour(), time.getMinute(), time.getSecond(), time.getMsec());
+	}
+	
+	/**
+	 * Gets this date's time
+	 * @return WTime object
+	 */
+	public WTime getTime(){
+		return new WTime(this.getHour(), this.getMinute(), this.getSecond(), this.getMillisecond());
 	}
 
 	/**
@@ -522,11 +533,6 @@ public class WDate implements Comparable<WDate> {
 	 */
 	public static WDate getCurrentServerDate() {
 		return new WDate(createCalendar().getTime());
-	}
-
-	static boolean isLeapYear(int year) {
-		GregorianCalendar c = new GregorianCalendar();
-		return c.isLeapYear(year);
 	}
 
 	/**

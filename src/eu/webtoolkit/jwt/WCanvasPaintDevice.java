@@ -861,7 +861,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
 		if (penChanged) {
 			if (penColorChanged) {
+				PenCapStyle capStyle = this.currentPen_.getCapStyle();
+				PenJoinStyle joinStyle = this.currentPen_.getJoinStyle();
 				WPen tmpPen = new WPen();
+				tmpPen.setCapStyle(capStyle);
+				tmpPen.setJoinStyle(joinStyle);
 				tmpPen.setColor(this.getPainter().getPen().getColor());
 				tmpPen.setGradient(this.getPainter().getPen().getGradient());
 				this.currentPen_ = tmpPen;

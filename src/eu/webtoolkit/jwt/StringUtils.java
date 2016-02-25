@@ -99,8 +99,8 @@ public class StringUtils {
 		else if (data instanceof WDate) {
 			WDate d = (WDate) data;
 			return new WString(d.toString(format));
-		} else if (data instanceof Double) {
-			Double d = (Double) data;
+		} else if (data instanceof Number) {
+			Number d = (Number) data;
 			return new WString(new DecimalFormat(format).format(d));
 		} else
 			return asString(data);

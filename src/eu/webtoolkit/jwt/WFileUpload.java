@@ -499,14 +499,14 @@ public class WFileUpload extends WWebWidget {
 			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			String maxFileSize = String.valueOf(WApplication.getInstance()
 					.getMaximumRequestSize());
-			String command = "{var x = Wt3_3_5.$('in"
+			String command = "{var submit = false; var x = Wt3_3_5.$('in"
 					+ this.getId()
 					+ "');  if (x.files != null) {    for (var i = 0; i < x.files.length; i++) {       var f = x.files[i];      if(f.size < "
-					+ maxFileSize + ") {          " + this.getJsRef()
-					+ ".submit();       } else {          "
+					+ maxFileSize
+					+ ") {          submit = true;      } else {          submit = false;         "
 					+ this.fileTooLarge().createCall("f.size")
-					+ "           }    }  } else     " + this.getJsRef()
-					+ ".submit();  };";
+					+ ";         break;           }    }  } else     submit = true;  if (submit)    "
+					+ this.getJsRef() + ".submit();  };";
 			element.callJavaScript(command);
 			this.flags_.clear(BIT_DO_UPLOAD);
 			if (containsProgress) {
@@ -586,18 +586,19 @@ public class WFileUpload extends WWebWidget {
 				this.updateSignalConnection(input, change, "change", true);
 			}
 			form.addChild(input);
-			StringWriter s = new StringWriter();
 			this.doJavaScript("var a"
 					+ this.getId()
 					+ "="
 					+ this.getJsRef()
 					+ ".action;var f = function(event) {if (a"
 					+ this.getId()
-					+ ".indexOf(event.origin) === 0) {var data = JSON.parse(event.data);if (data.fu == '"
+					+ ".indexOf(event.origin) === 0) {var data = JSON.parse(event.data);if (data.type === 'upload') {if (data.fu == '"
 					+ this.getId()
 					+ "')"
 					+ app.getJavaScriptClass()
-					+ "._p_.update(null, data.signal, null, true);}};if (window.addEventListener) window.addEventListener('message', f, false);else window.attachEvent('onmessage', f);");
+					+ "._p_.update(null, data.signal, null, true);} else if (data.type === 'file_too_large')"
+					+ this.fileTooLarge().createCall("data.fileTooLargeSize")
+					+ "}};if (window.addEventListener) window.addEventListener('message', f, false);else window.attachEvent('onmessage', f);");
 		} else {
 			result.setAttribute("type", "file");
 			if (this.flags_.get(BIT_MULTIPLE)) {

@@ -309,7 +309,7 @@ public class WTemplateFormView extends WTemplate {
 				: null);
 		if (b != null) {
 			Object v = model.getValue(field);
-			if ((v == null) || (Boolean) v == false) {
+			if ((v == null) || ((Boolean) v) == false) {
 				b.setChecked(false);
 			} else {
 				b.setChecked(true);

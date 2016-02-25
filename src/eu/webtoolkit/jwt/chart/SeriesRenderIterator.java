@@ -83,11 +83,12 @@ class SeriesRenderIterator extends SeriesIterator {
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,
-			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
+			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
 		if (Double.isNaN(x) || Double.isNaN(y)) {
-			this.seriesRenderer_.paint();
+			this.seriesRenderer_.addBreak();
 		} else {
-			this.seriesRenderer_.addValue(x, y, stackY, xIndex, yIndex);
+			this.seriesRenderer_.addValue(x, y, stackY, xRow, xColumn, yRow,
+					yColumn);
 		}
 	}
 

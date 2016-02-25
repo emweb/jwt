@@ -177,7 +177,7 @@ public class WLink {
 	public String getUrl() {
 		switch (this.type_) {
 		case Url:
-			return (String) this.value_;
+			return ((String) this.value_);
 		case Resource:
 			return this.getResource().getUrl();
 		case InternalPath:
@@ -209,7 +209,7 @@ public class WLink {
 	 */
 	public WResource getResource() {
 		if (this.type_ == WLink.Type.Resource) {
-			return (WResource) this.value_;
+			return ((WResource) this.value_);
 		} else {
 			return null;
 		}
@@ -241,7 +241,7 @@ public class WLink {
 	 */
 	public String getInternalPath() {
 		if (this.type_ == WLink.Type.InternalPath) {
-			return (String) this.value_;
+			return ((String) this.value_);
 		} else {
 			return "";
 		}

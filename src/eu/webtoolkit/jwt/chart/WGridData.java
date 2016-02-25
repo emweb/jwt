@@ -282,8 +282,8 @@ public class WGridData extends WAbstractGridData {
 					coloredPtsArray
 							.putFloat((float) ((StringUtils
 									.asNumber(this.model_.getData(i, j)) - zMin) / (zMax - zMin)));
-					WColor color = (WColor) this.model_.getData(i, j,
-							ItemDataRole.MarkerBrushColorRole);
+					WColor color = ((WColor) this.model_.getData(i, j,
+							ItemDataRole.MarkerBrushColorRole));
 					coloredPtsColor.putFloat((float) color.getRed());
 					coloredPtsColor.putFloat((float) color.getGreen());
 					coloredPtsColor.putFloat((float) color.getBlue());
@@ -654,8 +654,8 @@ public class WGridData extends WAbstractGridData {
 							.putFloat(
 									(float) ((modelVal - zMin) / (zMax - zMin))
 											+ delta);
-					WColor color = (WColor) this.model_.getData(i + rowOffset,
-							j + colOffset, ItemDataRole.MarkerBrushColorRole);
+					WColor color = ((WColor) this.model_.getData(i + rowOffset,
+							j + colOffset, ItemDataRole.MarkerBrushColorRole));
 					for (int k = 0; k < 8; k++) {
 						coloredPtsColors.get(coloredBufferIndex).putFloat(
 								(float) color.getRed());

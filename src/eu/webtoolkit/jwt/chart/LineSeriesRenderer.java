@@ -33,10 +33,11 @@ class LineSeriesRenderer extends SeriesRenderer {
 		this.p_1 = new WPointF();
 		this.p0 = new WPointF();
 		this.c_ = new WPointF();
+		this.curve_.setOpenSubPathsEnabled(true);
 	}
 
-	public void addValue(double x, double y, double stacky,
-			final WModelIndex xIndex, final WModelIndex yIndex) {
+	public void addValue(double x, double y, double stacky, int xRow,
+			int xColumn, int yRow, int yColumn) {
 		WPointF p = this.chart_.map(x, y, this.series_.getAxis(),
 				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		if (this.curveLength_ == 0) {
@@ -72,11 +73,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 		++this.curveLength_;
 	}
 
-	public void paint() {
-		final WCartesianChart chart = this.chart_;
-		final WJavaScriptHandle<WPainterPath> curveHandle = chart.curvePaths_
-				.get(this.series_.getModelColumn());
-		WTransform transform = chart.getCombinedTransform();
+	public void addBreak() {
 		if (this.curveLength_ > 1) {
 			if (this.series_.getType() == SeriesType.CurveSeries) {
 				WPointF c1 = new WPointF();
@@ -91,18 +88,78 @@ class LineSeriesRenderer extends SeriesRenderer {
 							new WBrush(BrushStyle.NoBrush))) {
 				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
 				this.fill_.closeSubPath();
+			}
+		}
+		this.curveLength_ = 0;
+	}
+
+	public void paint() {
+		WJavaScriptHandle<WPainterPath> curveHandle = (this.chart_).curvePaths_
+				.get(this.series_);
+		WJavaScriptHandle<WTransform> transformHandle = (this.chart_).curveTransforms_
+				.get(this.series_);
+		WTransform transform = this.chart_.getCombinedTransform();
+		if (this.curveLength_ > 1) {
+			if (this.series_.getType() == SeriesType.CurveSeries) {
+				WPointF c1 = new WPointF();
+				computeC(this.p0, this.p_1, c1);
+				this.curve_.cubicTo(this.hv(this.c_), this.hv(c1),
+						this.hv(this.p0));
+				this.fill_.cubicTo(this.hv(this.c_), this.hv(c1),
+						this.hv(this.p0));
+			}
+			if (this.series_.getFillRange() != FillRangeType.NoFill
+					&& !this.series_.getBrush().equals(
+							new WBrush(BrushStyle.NoBrush))
+					&& !this.series_.isHidden()) {
+				this.fill_.lineTo(this.hv(this.fillOtherPoint(this.lastX_)));
+				this.fill_.closeSubPath();
 				this.painter_.setShadow(this.series_.getShadow());
-				this.painter_.fillPath(transform.map(this.fill_),
-						this.series_.getBrush());
+				WBrush brush = this.series_.getBrush();
+				if (this.chart_.isSeriesSelectionEnabled()
+						&& this.chart_.getSelectedSeries() != null
+						&& this.chart_.getSelectedSeries() != this.series_) {
+					brush.setColor(WCartesianChart.lightenColor(brush
+							.getColor()));
+				}
+				this.painter_.fillPath(transform.map(this.fill_), brush);
 			}
 			if (this.series_.getFillRange() == FillRangeType.NoFill) {
 				this.painter_.setShadow(this.series_.getShadow());
 			} else {
 				this.painter_.setShadow(new WShadow());
 			}
-			curveHandle.setValue(this.curve_);
-			this.painter_.strokePath(transform.map(curveHandle.getValue()),
-					this.series_.getPen());
+			WTransform ct = new WTransform();
+			WTransform t = this.chart_.calculateCurveTransform(this.series_);
+			if (transformHandle != null) {
+				transformHandle.setValue(t);
+				ct.assign(this.chart_.curveTransform(this.series_));
+			} else {
+				ct.assign(t);
+				if (this.chart_.getOrientation() == Orientation.Horizontal) {
+					ct.assign(new WTransform(0, 1, 1, 0, 0, 0).multiply(ct)
+							.multiply(new WTransform(0, 1, 1, 0, 0, 0)));
+				}
+			}
+			this.series_.scaleDirty_ = false;
+			this.series_.offsetDirty_ = false;
+			WPainterPath curve = null;
+			if (curveHandle != null) {
+				curveHandle.setValue(this.curve_);
+				curve = curveHandle.getValue();
+			} else {
+				curve = this.curve_;
+			}
+			if (!this.series_.isHidden()) {
+				WPen pen = this.series_.getPen();
+				if (this.chart_.isSeriesSelectionEnabled()
+						&& this.chart_.getSelectedSeries() != null
+						&& this.chart_.getSelectedSeries() != this.series_) {
+					pen.setColor(WCartesianChart.lightenColor(pen.getColor()));
+				}
+				this.painter_
+						.strokePath(transform.multiply(ct).map(curve), pen);
+			}
 		}
 		this.curveLength_ = 0;
 		this.curve_.assign(new WPainterPath());

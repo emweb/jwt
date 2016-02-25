@@ -49,6 +49,12 @@ class GraphicsWidgets extends TopicWidget {
 						return GraphicsWidgets.this.scatterPlot();
 					}
 				}));
+		menu.addItem("Axis slider widget",
+				DeferredWidget.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.axisSliderWidget();
+					}
+				}));
 		menu.addItem("Pie chart",
 				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
@@ -109,6 +115,14 @@ class GraphicsWidgets extends TopicWidget {
 		result.bindWidget("ScatterPlotData", ScatterPlotData());
 		result.bindWidget("ScatterPlotCurve", ScatterPlotCurve());
 		result.bindWidget("ScatterPlotInteractive", ScatterPlotInteractive());
+		return result;
+	}
+
+	private WWidget axisSliderWidget() {
+		WTemplate result = new TopicTemplate("graphics-AxisSliderWidget");
+		result.bindWidget("AxisSliderWidget", AxisSliderWidget());
+		result.bindWidget("AxisSliderWidgetDifferentDataSeries",
+				AxisSliderWidgetDifferentDataSeries());
 		return result;
 	}
 
@@ -443,7 +457,49 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setXSeriesColumn(0);
 		chart.setType(ChartType.ScatterPlot);
 		chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
-		chart.getAxis(Axis.XAxis).setMaxZoom(16.0);
+		double min = StringUtils.asNumber(model.getData(0, 0));
+		double max = StringUtils.asNumber(model.getData(
+				model.getRowCount() - 1, 0));
+		chart.getAxis(Axis.XAxis).setMinimumZoomRange((max - min) / 16.0);
+		{
+			WDataSeries s = new WDataSeries(2, SeriesType.LineSeries);
+			s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+			chart.addSeries(s);
+		}
+		{
+			WDataSeries s = new WDataSeries(3, SeriesType.LineSeries);
+			s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+			chart.addSeries(s);
+		}
+		chart.resize(new WLength(800), new WLength(400));
+		chart.setPanEnabled(true);
+		chart.setZoomEnabled(true);
+		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
+		return container;
+	}
+
+	WWidget AxisSliderWidget() {
+		WContainerWidget container = new WContainerWidget();
+		WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv",
+				container);
+		if (!(model != null)) {
+			return container;
+		}
+		for (int row = 0; row < model.getRowCount(); ++row) {
+			WString s = StringUtils.asString(model.getData(row, 0));
+			WDate date = WDate.fromString(s.toString(), "dd/MM/yy");
+			model.setData(row, 0, date);
+		}
+		WCartesianChart chart = new WCartesianChart(container);
+		chart.setBackground(new WBrush(new WColor(220, 220, 220)));
+		chart.setModel(model);
+		chart.setXSeriesColumn(0);
+		chart.setType(ChartType.ScatterPlot);
+		chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
+		double min = StringUtils.asNumber(model.getData(0, 0));
+		double max = StringUtils.asNumber(model.getData(
+				model.getRowCount() - 1, 0));
+		chart.getAxis(Axis.XAxis).setMinimumZoomRange((max - min) / 16.0);
 		WDataSeries s = new WDataSeries(2, SeriesType.LineSeries);
 		s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
 		chart.addSeries(s);
@@ -451,7 +507,70 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setPanEnabled(true);
 		chart.setZoomEnabled(true);
 		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
-		WAxisSliderWidget sliderWidget = new WAxisSliderWidget(chart, 2,
+		WAxisSliderWidget sliderWidget = new WAxisSliderWidget(s, container);
+		sliderWidget.resize(new WLength(800), new WLength(80));
+		sliderWidget.setSelectionAreaPadding(40,
+				EnumSet.of(Side.Left, Side.Right));
+		sliderWidget.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
+		return container;
+	}
+
+	WWidget AxisSliderWidgetDifferentDataSeries() {
+		WContainerWidget container = new WContainerWidget();
+		final ChartState state = new ChartState(container);
+		state.model = new SinModel(-3.14159265358979323846,
+				3.14159265358979323846);
+		final WCartesianChart chart = new WCartesianChart(container);
+		chart.setBackground(new WBrush(new WColor(220, 220, 220)));
+		chart.setType(ChartType.ScatterPlot);
+		WAbstractChartModel roughModel = new SinModel(-3.14159265358979323846,
+				3.14159265358979323846, container);
+		WDataSeries roughSeries = new WDataSeries(1, SeriesType.LineSeries);
+		roughSeries.setModel(roughModel);
+		roughSeries.setXSeriesColumn(0);
+		roughSeries.setHidden(true);
+		chart.addSeries(roughSeries);
+		final WDataSeries series = new WDataSeries(1, SeriesType.LineSeries);
+		series.setModel(state.model);
+		series.setXSeriesColumn(0);
+		series.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+		chart.addSeries(series);
+		chart.getAxis(Axis.XAxis).zoomRangeChanged()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						double minX = chart.getAxis(Axis.XAxis)
+								.getZoomMinimum();
+						double maxX = chart.getAxis(Axis.XAxis)
+								.getZoomMaximum();
+						double dX = maxX - minX;
+						minX = minX - dX / 2.0;
+						if (minX < -3.14159265358979323846) {
+							minX = -3.14159265358979323846;
+						}
+						maxX = maxX + dX / 2.0;
+						if (maxX > 3.14159265358979323846) {
+							maxX = 3.14159265358979323846;
+						}
+						if (state.model.getMinimum() != minX
+								|| state.model.getMaximum() != maxX) {
+							;
+							state.model = new SinModel(minX, maxX);
+							series.setModel(state.model);
+						}
+					}
+				});
+		chart.getAxis(Axis.XAxis).setMinimumZoomRange(
+				3.14159265358979323846 / 8.0);
+		chart.getAxis(Axis.XAxis).setMinimum(-3.5);
+		chart.getAxis(Axis.XAxis).setMaximum(3.5);
+		chart.getAxis(Axis.YAxis).setMinimumZoomRange(0.1);
+		chart.getAxis(Axis.YAxis).setMinimum(-1.5);
+		chart.getAxis(Axis.YAxis).setMaximum(1.5);
+		chart.resize(new WLength(800), new WLength(400));
+		chart.setPanEnabled(true);
+		chart.setZoomEnabled(true);
+		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
+		WAxisSliderWidget sliderWidget = new WAxisSliderWidget(roughSeries,
 				container);
 		sliderWidget.resize(new WLength(800), new WLength(80));
 		sliderWidget.setSelectionAreaPadding(40,

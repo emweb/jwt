@@ -54,7 +54,23 @@ public enum MarkerType {
 	/**
 	 * Mark points using a custom marker.
 	 */
-	CustomMarker;
+	CustomMarker,
+	/**
+	 * Mark points using a star.
+	 */
+	StarMarker,
+	/**
+	 * Mark points using an inverted (upside-down) triangle.
+	 */
+	InvertedTriangleMarker,
+	/**
+	 * Mark points using an asterisk (*).
+	 */
+	AsteriskMarker,
+	/**
+	 * Mark points using a diamond.
+	 */
+	DiamondMarker;
 
 	/**
 	 * Returns the numerical representation of this enum.

@@ -153,8 +153,8 @@ public class WStandardPalette implements WChartPalette {
 	public WPen getStrokePen(int index) {
 		WPen p = new WPen(this.color(index));
 		p.setWidth(new WLength(2));
-		p.setJoinStyle(PenJoinStyle.BevelJoin);
-		p.setCapStyle(PenCapStyle.SquareCap);
+		p.setJoinStyle(PenJoinStyle.RoundJoin);
+		p.setCapStyle(PenCapStyle.RoundCap);
 		return p;
 	}
 

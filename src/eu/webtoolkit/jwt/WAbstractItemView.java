@@ -187,6 +187,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.selectionModel_.setSelectionBehavior(oldSelectionModel
 				.getSelectionBehavior());
 		;
+		this.delayedClearAndSelectIndex_ = null;
 		this.editedItems_.clear();
 		if (!isReset) {
 			this.initDragDrop();
@@ -1721,6 +1722,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.rowHeaderCount_ = 0;
 		this.computedDragMimeType_ = new WString();
 		this.sortEnabled_ = true;
+		this.delayedClearAndSelectIndex_ = null;
 		this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_,
 				"columnResized") {
 		};
@@ -2258,6 +2260,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * or editing behaviour.
 	 */
 	void handleClick(final WModelIndex index, final WMouseEvent event) {
+		if (this.dragEnabled_ && (this.delayedClearAndSelectIndex_ != null)
+				&& event.getDragDelta().x < 4 && event.getDragDelta().y < 4) {
+			this.select(this.delayedClearAndSelectIndex_,
+					SelectionFlag.ClearAndSelect);
+		}
 		boolean doEdit = (index != null)
 				&& !EnumUtils.mask(this.getEditTriggers(),
 						WAbstractItemView.EditTrigger.SingleClicked).isEmpty();
@@ -2298,6 +2305,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 				&& !EnumUtils.mask(this.getEditTriggers(),
 						WAbstractItemView.EditTrigger.SelectedClicked)
 						.isEmpty() && this.isSelected(index);
+		this.delayedClearAndSelectIndex_ = null;
 		if ((index != null)) {
 			this.selectionHandleClick(index, event.getModifiers());
 		}
@@ -2552,6 +2560,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private int rowHeaderCount_;
 	private WString computedDragMimeType_;
 	private boolean sortEnabled_;
+	private WModelIndex delayedClearAndSelectIndex_;
 	private JSignal2<Integer, Integer> columnWidthChanged_;
 	private Signal2<Integer, WLength> columnResized_;
 	private WCssTemplateRule headerHeightRule_;
@@ -2648,8 +2657,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						modifiers,
 						EnumSet.of(KeyboardModifier.ControlModifier,
 								KeyboardModifier.MetaModifier)).isEmpty()) {
-					if (!this.isSelected(index)) {
+					if (!this.dragEnabled_) {
 						this.select(index, SelectionFlag.ClearAndSelect);
+					} else {
+						if (!this.isSelected(index)) {
+							this.select(index, SelectionFlag.ClearAndSelect);
+						} else {
+							this.delayedClearAndSelectIndex_ = index;
+						}
 					}
 				} else {
 					this.select(index, SelectionFlag.ToggleSelect);

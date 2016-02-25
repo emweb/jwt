@@ -45,12 +45,12 @@ class WFileUploadResource extends WResource {
 		Writer o = response.out();
 		o.append("<!DOCTYPE html><html>\n<head><script type=\"text/javascript\">\nfunction load() { ");
 		if (triggerUpdate || 0 != 0) {
+			WEnvironment.UserAgent agent = WApplication.getInstance()
+					.getEnvironment().getAgent();
 			if (triggerUpdate) {
 				logger.debug(new StringWriter().append(
 						"Resource handleRequest(): signaling uploaded")
 						.toString());
-				WEnvironment.UserAgent agent = WApplication.getInstance()
-						.getEnvironment().getAgent();
 				if (agent == WEnvironment.UserAgent.IE6
 						|| agent == WEnvironment.UserAgent.IE7) {
 					o.append("window.parent.")
@@ -60,12 +60,12 @@ class WFileUploadResource extends WResource {
 							.append(this.fileUpload_.uploaded().encodeCmd())
 							.append("', null, true);");
 				} else {
-					o.append(" window.parent.postMessage(")
+					o.append("window.parent.postMessage(")
 							.append("JSON.stringify({ fu: '")
 							.append(this.fileUpload_.getId()).append("',")
 							.append("  signal: '")
 							.append(this.fileUpload_.uploaded().encodeCmd())
-							.append("'}), '*');");
+							.append("',type: 'upload'").append("}), '*');");
 				}
 			} else {
 				if (0 != 0) {
@@ -73,7 +73,16 @@ class WFileUploadResource extends WResource {
 							.append("Resource handleRequest(): signaling file-too-large")
 							.toString());
 					String s = String.valueOf(0);
-					o.append(this.fileUpload_.fileTooLarge().createCall(s));
+					if (agent == WEnvironment.UserAgent.IE6
+							|| agent == WEnvironment.UserAgent.IE7) {
+						o.append(this.fileUpload_.fileTooLarge().createCall(s));
+					} else {
+						o.append(" window.parent.postMessage(")
+								.append("JSON.stringify({")
+								.append("fileTooLargeSize: '").append(s)
+								.append("',type: 'file_too_large'")
+								.append("'}), '*');");
+					}
 				}
 			}
 		} else {

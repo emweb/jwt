@@ -58,17 +58,38 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	}
 
 	/**
-	 * Set the model.
+	 * Sets the model.
 	 * <p>
 	 * The model is used by the chart to get its data. Ownership of the model is
 	 * not transferred, and if a previous model was set it is not deleted.
 	 * <p>
-	 * The default model is a 0 model.
+	 * The default model is a <code>null</code> model.
+	 * <p>
+	 * This creates an internal proxy model that presents the
+	 * {@link WAbstractItemModel} as a {@link WAbstractChartModel}. Use
+	 * {@link WAbstractChart#setModel(WAbstractChartModel model) setModel()}
+	 * directly for highest performance (avoiding the overhead of boost::any for
+	 * numeric data).
 	 * <p>
 	 * 
 	 * @see WAbstractChart#getModel()
 	 */
 	public void setModel(WAbstractItemModel model) {
+		this.setModel(new WStandardChartProxyModel(model));
+	}
+
+	/**
+	 * Sets the model.
+	 * <p>
+	 * The model is used by the chart to get its data. Ownership of the model is
+	 * not transferred, and if a previous model was set it is not deleted.
+	 * <p>
+	 * The default model is a <code>null</code> model.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#getModel()
+	 */
+	public void setModel(WAbstractChartModel model) {
 		if (this.model_ != null) {
 			for (int i = 0; i < this.modelConnections_.size(); ++i) {
 				this.modelConnections_.get(i).disconnect();
@@ -76,52 +97,10 @@ public abstract class WAbstractChart extends WPaintedWidget {
 			this.modelConnections_.clear();
 		}
 		this.model_ = model;
-		this.modelConnections_.add(this.model_.columnsInserted().addListener(
-				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WAbstractChart.this.modelColumnsInserted(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.columnsRemoved().addListener(
-				this, new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WAbstractChart.this.modelColumnsRemoved(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.rowsInserted().addListener(this,
-				new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WAbstractChart.this.modelRowsInserted(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.rowsRemoved().addListener(this,
-				new Signal3.Listener<WModelIndex, Integer, Integer>() {
-					public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-						WAbstractChart.this.modelRowsRemoved(e1, e2, e3);
-					}
-				}));
-		this.modelConnections_.add(this.model_.dataChanged().addListener(this,
-				new Signal2.Listener<WModelIndex, WModelIndex>() {
-					public void trigger(WModelIndex e1, WModelIndex e2) {
-						WAbstractChart.this.modelDataChanged(e1, e2);
-					}
-				}));
-		this.modelConnections_.add(this.model_.layoutChanged().addListener(
-				this, new Signal.Listener() {
-					public void trigger() {
-						WAbstractChart.this.modelReset();
-					}
-				}));
-		this.modelConnections_.add(this.model_.modelReset().addListener(this,
+		this.modelConnections_.add(this.model_.changed().addListener(this,
 				new Signal.Listener() {
 					public void trigger() {
 						WAbstractChart.this.modelReset();
-					}
-				}));
-		this.modelConnections_.add(this.model_.headerDataChanged().addListener(
-				this, new Signal3.Listener<Orientation, Integer, Integer>() {
-					public void trigger(Orientation e1, Integer e2, Integer e3) {
-						WAbstractChart.this.modelHeaderDataChanged(e1, e2, e3);
 					}
 				}));
 		this.modelChanged();
@@ -131,10 +110,30 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * Returns the model.
 	 * <p>
 	 * 
-	 * @see WAbstractChart#setModel(WAbstractItemModel model)
+	 * @see WAbstractChart#setModel(WAbstractChartModel model)
 	 */
-	public WAbstractItemModel getModel() {
+	public WAbstractChartModel getModel() {
 		return this.model_;
+	}
+
+	/**
+	 * Returns the model.
+	 * <p>
+	 * If a model was set using
+	 * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()},
+	 * then this model will be returned by this call.
+	 * <p>
+	 * 
+	 * @see WAbstractChart#setModel(WAbstractChartModel model)
+	 */
+	public WAbstractItemModel getItemModel() {
+		WStandardChartProxyModel proxy = ((this.model_) instanceof WStandardChartProxyModel ? (WStandardChartProxyModel) (this.model_)
+				: null);
+		if (proxy != null) {
+			return proxy.getSourceModel();
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -413,7 +412,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 		this.setPlotAreaPadding(5, EnumSet.of(Side.Top, Side.Bottom));
 	}
 
-	private WAbstractItemModel model_;
+	private WAbstractChartModel model_;
 	private WBrush background_;
 	private WChartPalette palette_;
 	private boolean autoPadding_;
@@ -423,78 +422,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	private WFont axisTitleFont_;
 	private List<AbstractSignal.Connection> modelConnections_;
 
-	/**
-	 * Method called whenever the entire model was changed.
-	 * <p>
-	 * 
-	 * @see WAbstractChart#setModel(WAbstractItemModel model)
-	 */
 	protected void modelChanged() {
 	}
 
-	/**
-	 * Method called whenever the entire model was reset.
-	 * <p>
-	 * Bound to the {@link WAbstractItemModel#modelReset()
-	 * WAbstractItemModel#modelReset()} and
-	 * {@link WAbstractItemModel#layoutChanged()
-	 * WAbstractItemModel#layoutChanged()} signals.
-	 */
 	protected void modelReset() {
 	}
-
-	/**
-	 * Method called when colums have been inserted in the model.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#columnsInserted()
-	 */
-	protected abstract void modelColumnsInserted(final WModelIndex parent,
-			int start, int end);
-
-	/**
-	 * Method called when colums have been removed from the model.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#columnsRemoved()
-	 */
-	protected abstract void modelColumnsRemoved(final WModelIndex parent,
-			int start, int end);
-
-	/**
-	 * Method called when rows have been inserted from the model.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#rowsInserted()
-	 */
-	protected abstract void modelRowsInserted(final WModelIndex parent,
-			int start, int end);
-
-	/**
-	 * Method called when rows have been removed from the model.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#rowsRemoved()
-	 */
-	protected abstract void modelRowsRemoved(final WModelIndex parent,
-			int start, int end);
-
-	/**
-	 * Method called when data has been changed in the model.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#dataChanged()
-	 */
-	protected abstract void modelDataChanged(final WModelIndex topLeft,
-			final WModelIndex bottomRight);
-
-	/**
-	 * Method called when header data has been changed in the model.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#headerDataChanged()
-	 */
-	protected abstract void modelHeaderDataChanged(Orientation orientation,
-			int start, int end);
 	// private void (final T m, final T v) ;
+	// private void modelDataChanged(int row1, int column1, int row2, int
+	// column2) ;
 }

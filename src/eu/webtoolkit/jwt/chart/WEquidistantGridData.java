@@ -244,8 +244,8 @@ public class WEquidistantGridData extends WAbstractGridData {
 					coloredPtsArray
 							.putFloat((float) ((StringUtils
 									.asNumber(this.model_.getData(i, j)) - zMin) / (zMax - zMin)));
-					WColor color = (WColor) this.model_.getData(i, j,
-							ItemDataRole.MarkerBrushColorRole);
+					WColor color = ((WColor) this.model_.getData(i, j,
+							ItemDataRole.MarkerBrushColorRole));
 					coloredPtsColor.putFloat((float) color.getRed());
 					coloredPtsColor.putFloat((float) color.getGreen());
 					coloredPtsColor.putFloat((float) color.getBlue());
@@ -545,8 +545,8 @@ public class WEquidistantGridData extends WAbstractGridData {
 					}
 					coloredPtsArrays.get(coloredBufferIndex).putFloat(
 							(float) ((modelVal - zMin) / (zMax - zMin)));
-					WColor color = (WColor) this.model_.getData(i, j,
-							ItemDataRole.MarkerBrushColorRole);
+					WColor color = ((WColor) this.model_.getData(i, j,
+							ItemDataRole.MarkerBrushColorRole));
 					for (int k = 0; k < 8; k++) {
 						coloredPtsColors.get(coloredBufferIndex).putFloat(
 								(float) color.getRed());

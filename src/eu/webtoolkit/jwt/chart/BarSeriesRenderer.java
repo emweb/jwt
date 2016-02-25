@@ -33,8 +33,8 @@ class BarSeriesRenderer extends SeriesRenderer {
 		this.group_ = group;
 	}
 
-	public void addValue(double x, double y, double stacky,
-			final WModelIndex xIndex, final WModelIndex yIndex) {
+	public void addValue(double x, double y, double stacky, int xRow,
+			int xColumn, int yRow, int yColumn) {
 		WPainterPath bar = new WPainterPath();
 		final WAxis yAxis = this.chart_.getAxis(this.series_.getAxis());
 		WPointF topMid = this.chart_.map(x, y, yAxis.getId(),
@@ -75,59 +75,73 @@ class BarSeriesRenderer extends SeriesRenderer {
 			bar.closeSubPath();
 		}
 		this.painter_.setShadow(this.series_.getShadow());
-		final WCartesianChart chart = this.chart_;
-		WTransform transform = chart.getCombinedTransform();
+		WTransform transform = this.chart_.getCombinedTransform();
 		if (nonZeroWidth) {
 			WBrush brush = this.series_.getBrush().clone();
-			SeriesIterator.setBrushColor(brush, xIndex, yIndex,
-					ItemDataRole.BarBrushColorRole);
+			SeriesIterator.setBrushColor(brush, this.series_, xRow, xColumn,
+					yRow, yColumn, ItemDataRole.BarBrushColorRole);
 			this.painter_.fillPath(transform.map(bar), brush);
 		}
 		this.painter_.setShadow(new WShadow());
 		WPen pen = this.series_.getPen().clone();
-		SeriesIterator.setPenColor(pen, xIndex, yIndex,
-				ItemDataRole.BarPenColorRole);
+		SeriesIterator.setPenColor(pen, this.series_, xRow, xColumn, yRow,
+				yColumn, ItemDataRole.BarPenColorRole);
 		this.painter_.strokePath(transform.map(bar).getCrisp(), pen);
-		Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
-		if (!(toolTip == null)) {
+		WString toolTip = this.series_.getModel().getToolTip(yRow, yColumn);
+		if (!(toolTip.length() == 0)) {
+			this.chart_.hasToolTips_ = true;
 			WTransform t = this.painter_.getWorldTransform();
 			WPointF tl = t.map(segmentPoint(bar, 0));
 			WPointF tr = t.map(segmentPoint(bar, 1));
 			WPointF br = t.map(segmentPoint(bar, 2));
 			WPointF bl = t.map(segmentPoint(bar, 3));
-			double tlx = 0;
-			double tly = 0;
-			double brx = 0;
-			double bry = 0;
-			boolean useRect = false;
-			if (fequal(tl.getY(), tr.getY())) {
-				tlx = Math.min(tl.getX(), tr.getX());
-				brx = Math.max(tl.getX(), tr.getX());
-				tly = Math.min(tl.getY(), bl.getY());
-				bry = Math.max(tl.getY(), br.getY());
-				useRect = true;
+			if (this.chart_.isInteractive()) {
+				WCartesianChart.BarTooltip btt = new WCartesianChart.BarTooltip(
+						this.series_, xRow, xColumn, yRow, yColumn);
+				btt.xs[0] = tl.getX();
+				btt.ys[0] = tl.getY();
+				btt.xs[1] = tr.getX();
+				btt.ys[1] = tr.getY();
+				btt.xs[2] = br.getX();
+				btt.ys[2] = br.getY();
+				btt.xs[3] = bl.getX();
+				btt.ys[3] = bl.getY();
+				this.chart_.barTooltips_.add(btt);
 			} else {
-				if (fequal(tl.getX(), tr.getX())) {
-					tlx = Math.min(tl.getX(), bl.getX());
-					brx = Math.max(tl.getX(), bl.getX());
-					tly = Math.min(tl.getY(), tr.getY());
-					bry = Math.max(tl.getY(), tr.getY());
+				double tlx = 0;
+				double tly = 0;
+				double brx = 0;
+				double bry = 0;
+				boolean useRect = false;
+				if (fequal(tl.getY(), tr.getY())) {
+					tlx = Math.min(tl.getX(), tr.getX());
+					brx = Math.max(tl.getX(), tr.getX());
+					tly = Math.min(tl.getY(), bl.getY());
+					bry = Math.max(tl.getY(), br.getY());
 					useRect = true;
+				} else {
+					if (fequal(tl.getX(), tr.getX())) {
+						tlx = Math.min(tl.getX(), bl.getX());
+						brx = Math.max(tl.getX(), bl.getX());
+						tly = Math.min(tl.getY(), tr.getY());
+						bry = Math.max(tl.getY(), tr.getY());
+						useRect = true;
+					}
 				}
+				WAbstractArea area;
+				if (useRect) {
+					area = new WRectArea(tlx, tly, brx - tlx, bry - tly);
+				} else {
+					WPolygonArea poly = new WPolygonArea();
+					poly.addPoint(tl.getX(), tl.getY());
+					poly.addPoint(tr.getX(), tr.getY());
+					poly.addPoint(br.getX(), br.getY());
+					poly.addPoint(bl.getX(), bl.getY());
+					area = poly;
+				}
+				area.setToolTip(toolTip);
+				this.chart_.addDataPointArea(this.series_, xRow, xColumn, area);
 			}
-			WAbstractArea area;
-			if (useRect) {
-				area = new WRectArea(tlx, tly, brx - tlx, bry - tly);
-			} else {
-				WPolygonArea poly = new WPolygonArea();
-				poly.addPoint(tl.getX(), tl.getY());
-				poly.addPoint(tr.getX(), tr.getY());
-				poly.addPoint(br.getX(), br.getY());
-				poly.addPoint(bl.getX(), bl.getY());
-				area = poly;
-			}
-			area.setToolTip(StringUtils.asString(toolTip));
-			this.chart_.addDataPointArea(this.series_, xIndex, area);
 		}
 		double bTopMidY = this.it_.breakY(topMid.getY());
 		double bBottomMidY = this.it_.breakY(bottomMid.getY());
@@ -161,6 +175,9 @@ class BarSeriesRenderer extends SeriesRenderer {
 			line.lineTo(this.hv(left + width + 10, bBottomMidY - 10));
 			this.painter_.drawPath(transform.map(line).getCrisp());
 		}
+	}
+
+	public void addBreak() {
 	}
 
 	public void paint() {

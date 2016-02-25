@@ -65,7 +65,7 @@ class FormWidgets extends TopicWidget {
 						return FormWidgets.this.autoComplete();
 					}
 				}));
-		menu.addItem("Date entry",
+		menu.addItem("Date & Time entry",
 				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
 						return FormWidgets.this.dateEntry();
@@ -185,6 +185,7 @@ class FormWidgets extends TopicWidget {
 		result.bindWidget("CalendarSimple", CalendarSimple());
 		result.bindWidget("CalendarExtended", CalendarExtended());
 		result.bindWidget("DateEdit", DateEdit());
+		result.bindWidget("TimeEdit", TimeEdit());
 		result.bindWidget("DatePicker", DatePicker());
 		return result;
 	}
@@ -592,8 +593,8 @@ class FormWidgets extends TopicWidget {
 			public void trigger() {
 				WString countryName = cb.getCurrentText();
 				int row = cb.getCurrentIndex();
-				String countryCode = (String) model.getData(
-						model.getIndex(row, 0), ItemDataRole.UserRole);
+				String countryCode = ((String) model.getData(
+						model.getIndex(row, 0), ItemDataRole.UserRole));
 				out.setText(new WString("You selected {1} with key {2}.").arg(
 						countryName).arg(countryCode));
 			}
@@ -775,6 +776,56 @@ class FormWidgets extends TopicWidget {
 						} else {
 							out.setText("Invalid period!");
 						}
+					}
+				}
+			}
+		});
+		return form;
+	}
+
+	WWidget TimeEdit() {
+		WTemplate form = new WTemplate(WString.tr("timeEdit-template"));
+		form.addFunction("id", WTemplate.Functions.id);
+		final WTimeEdit de1 = new WTimeEdit();
+		form.bindWidget("from", de1);
+		form.bindString("from-format", de1.getFormat());
+		de1.setTime(WTime.getCurrentTime());
+		final WTimeEdit de2 = new WTimeEdit();
+		form.bindWidget("to", de2);
+		de2.setFormat("h:mm:ss.SSS a");
+		de2.setTime(WTime.getCurrentTime().addSecs(60 * 15));
+		form.bindString("to-format", de2.getFormat());
+		WPushButton button = new WPushButton("Save");
+		form.bindWidget("save", button);
+		final WText out = new WText();
+		form.bindWidget("out", out);
+		de1.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				if (de1.validate() == WValidator.State.Valid) {
+					out.setText("Time picker 1 is changed.");
+				}
+			}
+		});
+		de2.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				if (de1.validate() == WValidator.State.Valid) {
+					out.setText("Time picker 2 is changed.");
+				}
+			}
+		});
+		button.clicked().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				if (de1.getText().length() == 0 || de2.getText().length() == 0) {
+					out.setText("You should enter two times!");
+				} else {
+					long secs = de1.getTime().secsTo(de2.getTime()) + 1;
+					if (secs <= 60 * 10) {
+						out.setText("This is a really small range of time");
+					} else {
+						out.setText(new WString(
+								"So, you want your package to be delivered between {1} and {2} ?...")
+								.arg(de1.getTime().toString()).arg(
+										de2.getTime().toString()));
 					}
 				}
 			}

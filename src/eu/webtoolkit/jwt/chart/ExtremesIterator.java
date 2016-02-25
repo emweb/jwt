@@ -37,7 +37,7 @@ class ExtremesIterator extends SeriesIterator {
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,
-			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
+			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
 		double v = this.axis_ == Axis.XAxis ? x : y;
 		if (!Double.isNaN(v) && (this.scale_ != AxisScale.LogScale || v > 0.0)) {
 			this.maximum_ = Math.max(v, this.maximum_);

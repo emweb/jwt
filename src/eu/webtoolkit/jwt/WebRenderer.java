@@ -32,6 +32,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.pageId_ = 0;
 		this.expectedAckId_ = 0;
 		this.scriptId_ = 0;
+		this.linkedCssCount_ = -1;
 		this.solution_ = "";
 		this.cookiesToSet_ = new HashMap<String, WebRenderer.CookieValue>();
 		this.currentFormObjects_ = new HashMap<String, WObject>();
@@ -221,7 +222,22 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			app.styleSheetsAdded_ = 0;
 			this.initialStyleRendered_ = true;
+			this.linkedCssCount_ = app.styleSheets_.size();
 			response.out().append(out.toString());
+		} else {
+			if (this.linkedCssCount_ > -1) {
+				WApplication app = this.session_.getApp();
+				StringBuilder out = new StringBuilder();
+				if (app.getTheme() != null) {
+					app.getTheme().serveCss(out);
+				}
+				int count = Math.min((int) this.linkedCssCount_,
+						app.styleSheets_.size());
+				for (int i = 0; i < count; ++i) {
+					app.styleSheets_.get(i).cssText(out, true);
+				}
+				response.out().append(out.toString());
+			}
 		}
 	}
 
@@ -372,6 +388,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private int pageId_;
 	private int expectedAckId_;
 	private int scriptId_;
+	private int linkedCssCount_;
 	private String solution_;
 	private Map<String, WebRenderer.CookieValue> cookiesToSet_;
 	private Map<String, WObject> currentFormObjects_;

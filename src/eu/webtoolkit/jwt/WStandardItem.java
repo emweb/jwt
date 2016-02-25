@@ -124,7 +124,7 @@ public class WStandardItem {
 				List<WStandardItem> c = new ArrayList<WStandardItem>();
 				{
 					int insertPos = c.size();
-					for (int ii = 0; ii < rows; ++ii)
+					for (int ii = 0; ii < (rows); ++ii)
 						c.add(insertPos + ii, (WStandardItem) null);
 				}
 				;
@@ -193,7 +193,7 @@ public class WStandardItem {
 	public String getIcon() {
 		Object d = this.getData(ItemDataRole.DecorationRole);
 		if (!(d == null) && d.getClass().equals(String.class)) {
-			return (String) d;
+			return ((String) d);
 		} else {
 			return "";
 		}
@@ -224,7 +224,7 @@ public class WStandardItem {
 	public WString getStyleClass() {
 		Object d = this.getData(ItemDataRole.StyleClassRole);
 		if (!(d == null) && d.getClass().equals(WString.class)) {
-			return (WString) d;
+			return ((WString) d);
 		} else {
 			return new WString();
 		}
@@ -255,7 +255,7 @@ public class WStandardItem {
 	public WString getToolTip() {
 		Object d = this.getData(ItemDataRole.ToolTipRole);
 		if (!(d == null) && d.getClass().equals(WString.class)) {
-			return (WString) d;
+			return ((WString) d);
 		} else {
 			return new WString();
 		}
@@ -282,7 +282,7 @@ public class WStandardItem {
 	public WLink getLink() {
 		Object d = this.getData(ItemDataRole.LinkRole);
 		if (!(d == null) && d.getClass().equals(WLink.class)) {
-			return (WLink) d;
+			return ((WLink) d);
 		} else {
 			return new WLink("");
 		}
@@ -425,10 +425,11 @@ public class WStandardItem {
 			return CheckState.Unchecked;
 		} else {
 			if (d.getClass().equals(Boolean.class)) {
-				return (Boolean) d ? CheckState.Checked : CheckState.Unchecked;
+				return ((Boolean) d) ? CheckState.Checked
+						: CheckState.Unchecked;
 			} else {
 				if (d.getClass().equals(CheckState.class)) {
-					return (CheckState) d;
+					return ((CheckState) d);
 				} else {
 					return CheckState.Unchecked;
 				}
@@ -846,7 +847,7 @@ public class WStandardItem {
 				List<WStandardItem> c = new ArrayList<WStandardItem>();
 				{
 					int insertPos = c.size();
-					for (int ii = 0; ii < rc; ++ii)
+					for (int ii = 0; ii < (rc); ++ii)
 						c.add(insertPos + ii, (WStandardItem) null);
 				}
 				;
@@ -881,7 +882,7 @@ public class WStandardItem {
 				final List<WStandardItem> c = this.columns_.get(i);
 				{
 					int insertPos = 0 + row;
-					for (int ii = 0; ii < count; ++ii)
+					for (int ii = 0; ii < (count); ++ii)
 						c.add(insertPos + ii, (WStandardItem) null);
 				}
 				;
@@ -1133,7 +1134,7 @@ public class WStandardItem {
 		List<WStandardItem> result = new ArrayList<WStandardItem>();
 		{
 			int insertPos = result.size();
-			for (int ii = 0; ii < this.getColumnCount(); ++ii)
+			for (int ii = 0; ii < (this.getColumnCount()); ++ii)
 				result.add(insertPos + ii, (WStandardItem) null);
 		}
 		;

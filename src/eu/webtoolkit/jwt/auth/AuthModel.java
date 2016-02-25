@@ -254,7 +254,7 @@ public class AuthModel extends FormBaseModel {
 			Object v = this.getValue(RememberMeField);
 			if (this.loginUser(login, user)) {
 				this.reset();
-				if (!(v == null) && (Boolean) v == true) {
+				if (!(v == null) && ((Boolean) v) == true) {
 					this.setRememberMeCookie(user);
 				}
 				return true;

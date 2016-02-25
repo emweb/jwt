@@ -316,6 +316,66 @@ public class WColor {
 		return getCssText(false);
 	}
 
+	public final void toHSL(double[] hsl) {
+		assert hsl.length == 3;
+		double h = 0.0, s = 0.0, l = 0.0;
+		double r = getRed() / 255.0;
+		double g = getGreen() / 255.0;
+		double b = getBlue() / 255.0;
+		double cmax = Math.max(r, Math.max(g, b));
+		double cmin = Math.min(r, Math.min(g, b));
+		double delta = cmax - cmin;
+		l = (cmax + cmin) / 2.0;
+		s = delta == 0 ? 0 : delta / (1.0 - Math.abs(2.0 * l - 1.0));
+		if (delta == 0) {
+			h = 0;
+		} else if (cmax == r) {
+			if (g >= b) {
+				h = 60.0 * (g - b) / delta;
+			} else {
+				h = 60.0 * ((g - b) / delta + 6.0);
+			}
+		} else if (cmax == g) {
+			h = 60.0 * ((b - r) / delta + 2.0);
+		} else if (cmax == b) {
+			h = 60.0 * ((r - g) / delta + 4.0);
+		}
+		hsl[0] = h; hsl[1] = s; hsl[2] = l;
+	}
+
+	public static WColor fromHSL(double h, double s, double l, int alpha) {
+		double c = (1.0 - Math.abs(2.0 * l - 1.0)) * s;
+		double x = c * (1.0 - Math.abs((h / 60.0) % 2.0 - 1.0));
+		double m = l - c/2.0;
+		double r, g, b;
+		if (0.0 <= h && h < 60.0) {
+			r = c;
+			g = x;
+			b = 0;
+		} else if (60.0 <= h && h < 120.0) {
+			r = x;
+			g = c;
+			b = 0;
+		} else if (120.0 <= h && h < 180.0) {
+			r = 0;
+			g = c;
+			b = x;
+		} else if (180.0 <= h && h < 240.0) {
+			r = 0;
+			g = x;
+			b = c;
+		} else if (240.0 <= h && h < 300.0) {
+			r = x;
+			g = 0;
+			b = c;
+		} else /* 300 <= h < 360 */ {
+			r = c;
+			g = 0;
+			b = x;
+		}
+		return new WColor((int)((r + m) * 255), (int)((g + m) * 255), (int)((b + m) * 255), alpha);
+	}
+
 	private boolean default_;
 	private int red_;
 	private int green_;

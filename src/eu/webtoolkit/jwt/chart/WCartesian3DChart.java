@@ -2005,29 +2005,29 @@ public class WCartesian3DChart extends WGLWidget {
 		for (int i = 0; i < this.objectsToDelete.size(); ++i) {
 			Object o = this.objectsToDelete.get(i);
 			if (o.getClass().equals(WGLWidget.Buffer.class)) {
-				WGLWidget.Buffer buf = (WGLWidget.Buffer) this.objectsToDelete
-						.get(i);
+				WGLWidget.Buffer buf = ((WGLWidget.Buffer) this.objectsToDelete
+						.get(i));
 				if (!buf.isNull()) {
 					this.deleteBuffer(buf);
 				}
 			} else {
 				if (o.getClass().equals(WGLWidget.Texture.class)) {
-					WGLWidget.Texture tex = (WGLWidget.Texture) this.objectsToDelete
-							.get(i);
+					WGLWidget.Texture tex = ((WGLWidget.Texture) this.objectsToDelete
+							.get(i));
 					if (!tex.isNull()) {
 						this.deleteTexture(tex);
 					}
 				} else {
 					if (o.getClass().equals(WGLWidget.Shader.class)) {
-						WGLWidget.Shader shader = (WGLWidget.Shader) this.objectsToDelete
-								.get(i);
+						WGLWidget.Shader shader = ((WGLWidget.Shader) this.objectsToDelete
+								.get(i));
 						if (!shader.isNull()) {
 							this.deleteShader(shader);
 						}
 					} else {
 						if (o.getClass().equals(WGLWidget.Program.class)) {
-							WGLWidget.Program prog = (WGLWidget.Program) this.objectsToDelete
-									.get(i);
+							WGLWidget.Program prog = ((WGLWidget.Program) this.objectsToDelete
+									.get(i));
 							if (!prog.isNull()) {
 								this.deleteProgram(prog);
 							}
@@ -2925,7 +2925,8 @@ public class WCartesian3DChart extends WGLWidget {
 		switch (plane) {
 		case XY_Plane:
 			if (this.XYGridEnabled_[0]) {
-				List<Double> pos = this.XAxis_.getGridLinePositions();
+				List<Double> pos = this.XAxis_
+						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
 						continue;
@@ -2936,7 +2937,8 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 			if (this.XYGridEnabled_[1]) {
-				List<Double> pos = this.YAxis_.getGridLinePositions();
+				List<Double> pos = this.YAxis_
+						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
 						continue;
@@ -2949,7 +2951,8 @@ public class WCartesian3DChart extends WGLWidget {
 			break;
 		case XZ_Plane:
 			if (this.XZGridEnabled_[0]) {
-				List<Double> pos = this.XAxis_.getGridLinePositions();
+				List<Double> pos = this.XAxis_
+						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
 						continue;
@@ -2960,7 +2963,8 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 			if (this.XZGridEnabled_[1]) {
-				List<Double> pos = this.ZAxis_.getGridLinePositions();
+				List<Double> pos = this.ZAxis_
+						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
 						continue;
@@ -2973,7 +2977,8 @@ public class WCartesian3DChart extends WGLWidget {
 			break;
 		case YZ_Plane:
 			if (this.YZGridEnabled_[0]) {
-				List<Double> pos = this.YAxis_.getGridLinePositions();
+				List<Double> pos = this.YAxis_
+						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
 						continue;
@@ -2984,7 +2989,8 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 			if (this.YZGridEnabled_[1]) {
-				List<Double> pos = this.ZAxis_.getGridLinePositions();
+				List<Double> pos = this.ZAxis_
+						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
 						continue;

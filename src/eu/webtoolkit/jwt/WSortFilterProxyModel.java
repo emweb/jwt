@@ -732,7 +732,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 		}
 		{
 			int insertPos = 0 + start;
-			for (int ii = 0; ii < count; ++ii)
+			for (int ii = 0; ii < (count); ++ii)
 				item.sourceRowMap_.add(insertPos + ii, -1);
 		}
 		;

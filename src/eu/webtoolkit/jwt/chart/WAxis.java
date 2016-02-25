@@ -447,6 +447,11 @@ public class WAxis {
 	 * use {@link WAxis#setBreak(double minimum, double maximum) setBreak()} to
 	 * specify the value range that needs to be omitted from the axis. The
 	 * omission is rendered in the axis and in BarSeries that cross the break.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This feature is incompatible with the interactive
+	 * features of {@link eu.webtoolkit.jwt.chart.WCartesianChart}. </i>
+	 * </p>
 	 */
 	public void setBreak(double minimum, double maximum) {
 		if (this.segments_.size() != 2) {
@@ -919,6 +924,108 @@ public class WAxis {
 	}
 
 	/**
+	 * Set the range to zoom to on this axis.
+	 * <p>
+	 * The minimum is the lowest value to be displayed, and the maximum is the
+	 * highest value to be displayed.
+	 * <p>
+	 * If the difference between minimum and maximum is less than
+	 * {@link WAxis#getMinimumZoomRange() getMinimumZoomRange()}, the zoom range
+	 * will be made more narrow around the center of minimum and maximum.
+	 * <p>
+	 * If the given minimum is larger than the given maximum, the two values are
+	 * swapped.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
+	 * has no effect on the second Y axis. </i>
+	 * </p>
+	 */
+	public void setZoomRange(double minimum, double maximum) {
+		if (maximum < minimum) {
+			double temp = maximum;
+			maximum = minimum;
+			minimum = temp;
+		}
+		if (minimum <= this.getMinimum()) {
+			minimum = AUTO_MINIMUM;
+		}
+		if (maximum >= this.getMaximum()) {
+			maximum = AUTO_MAXIMUM;
+		}
+		if (minimum != AUTO_MINIMUM && maximum != AUTO_MAXIMUM
+				&& maximum - minimum < this.getMinimumZoomRange()) {
+			minimum = (minimum + maximum) / 2.0 - this.getMinimumZoomRange()
+					/ 2.0;
+			maximum = (minimum + maximum) / 2.0 + this.getMinimumZoomRange()
+					/ 2.0;
+		}
+		if (!ChartUtils.equals(this.zoomMin_, minimum)) {
+			this.zoomMin_ = minimum;
+			update();
+		}
+		;
+		if (!ChartUtils.equals(this.zoomMax_, maximum)) {
+			this.zoomMax_ = maximum;
+			update();
+		}
+		;
+		this.zoomRangeDirty_ = true;
+	}
+
+	/**
+	 * Get the zoom range minimum for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * 
+	 * @see WAxis#setZoomRange(double minimum, double maximum)
+	 */
+	public double getZoomMinimum() {
+		double min = this.getDrawnMinimum();
+		if (this.zoomMin_ <= min) {
+			return min;
+		}
+		return this.zoomMin_;
+	}
+
+	/**
+	 * Get the zoom range maximum for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * 
+	 * @see WAxis#setZoomRange(double minimum, double maximum)
+	 */
+	public double getZoomMaximum() {
+		double max = this.getDrawnMaximum();
+		if (this.zoomMax_ >= max) {
+			return max;
+		}
+		return this.zoomMax_;
+	}
+
+	/**
+	 * A signal triggered when the zoom range is changed on the client side.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If you want to use this signal, you must connect a signal
+	 * listener before the chart is rendered. </i>
+	 * </p>
+	 */
+	public Signal2<Double, Double> zoomRangeChanged() {
+		return this.zoomRangeChanged_;
+	}
+
+	/**
 	 * Sets the zoom level for this axis.
 	 * <p>
 	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
@@ -927,45 +1034,61 @@ public class WAxis {
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis. </i>
+	 * has no effect on the second Y axis.</i>
 	 * </p>
+	 * 
+	 * @deprecated Use {@link WAxis#setZoomRange(double minimum, double maximum)
+	 *             setZoomRange()} instead.
 	 */
 	public void setZoom(double zoom) {
-		if (!ChartUtils.equals(this.zoom_, zoom)) {
-			this.zoom_ = zoom;
-			update();
-		}
-		;
-		this.zoomDirty_ = true;
+		double min = this.getDrawnMinimum();
+		double max = this.getDrawnMaximum();
+		this.setZoomRange(this.getZoomMinimum(), this.getZoomMinimum()
+				+ (max - min) / zoom);
 	}
 
 	/**
 	 * Get the zoom level for this axis.
 	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
 	 * <p>
-	 * <i><b>Note: </b>If the zoom level has been changed on the client side,
-	 * this may not reflect the actual zoom level.</i>
-	 * </p>
 	 * 
 	 * @see WAxis#setZoom(double zoom)
+	 * @deprecated Use {@link WAxis#getZoomMinimum() getZoomMinimum()} and
+	 *             {@link WAxis#getZoomMaximum() getZoomMaximum()} instead.
 	 */
 	public double getZoom() {
-		return this.zoom_;
+		if (this.zoomMin_ == AUTO_MINIMUM && this.zoomMax_ == AUTO_MAXIMUM) {
+			return 1.0;
+		}
+		double min = this.getDrawnMinimum();
+		double max = this.getDrawnMaximum();
+		return (max - min) / (this.getZoomMaximum() - this.getZoomMinimum());
 	}
 
 	/**
 	 * Sets the maximum zoom level for this axis.
 	 * <p>
 	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode. The zoom level should be &gt;= 1 (no zoom).
+	 * interactive mode. The zoom level should be &gt;= 1 (1 = no zoom).
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis. </i>
+	 * has no effect on the second Y axis.</i>
 	 * </p>
+	 * 
+	 * @deprecated Use {@link WAxis#setMinimumZoomRange(double size)
+	 *             setMinimumZoomRange()} instead
 	 */
 	public void setMaxZoom(double maxZoom) {
-		maxZoom = maxZoom < 1 ? 1 : maxZoom;
+		if (maxZoom < 1) {
+			maxZoom = 1;
+		}
+		if (this.minimumZoomRange_ != AUTO_MINIMUM) {
+			this.setMinimumZoomRange((this.getMaximum() - this.getMinimum())
+					/ maxZoom);
+		}
 		if (!ChartUtils.equals(this.maxZoom_, maxZoom)) {
 			this.maxZoom_ = maxZoom;
 			update();
@@ -976,11 +1099,65 @@ public class WAxis {
 	/**
 	 * Get the maximum zoom level for this axis.
 	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
 	 * 
 	 * @see WAxis#setMaxZoom(double maxZoom)
+	 * @deprecated Use {@link WAxis#getMinimumZoomRange() getMinimumZoomRange()}
+	 *             instead
 	 */
 	public double getMaxZoom() {
-		return this.maxZoom_;
+		double min = this.getDrawnMinimum();
+		double max = this.getDrawnMaximum();
+		double zoom = (max - min) / this.getMinimumZoomRange();
+		if (zoom < 1.0) {
+			return 1.0;
+		} else {
+			return (max - min) / this.getMinimumZoomRange();
+		}
+	}
+
+	/**
+	 * Sets the minimum zoom range for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * This range is the smallest difference there can be between
+	 * {@link WAxis#getZoomMinimum() getZoomMinimum()} and
+	 * {@link WAxis#getZoomMaximum() getZoomMaximum()}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
+	 * has no effect on the second Y axis. </i>
+	 * </p>
+	 */
+	public void setMinimumZoomRange(double size) {
+		if (!ChartUtils.equals(this.minimumZoomRange_, size)) {
+			this.minimumZoomRange_ = size;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Get the minimum zoom range for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * 
+	 * @see WAxis#setMinimumZoomRange(double size)
+	 */
+	public double getMinimumZoomRange() {
+		double min = this.getDrawnMinimum();
+		double max = this.getDrawnMaximum();
+		if (this.minimumZoomRange_ == AUTO_MINIMUM) {
+			return (max - min) / this.maxZoom_;
+		} else {
+			return this.minimumZoomRange_;
+		}
 	}
 
 	/**
@@ -1000,29 +1177,33 @@ public class WAxis {
 	 * has no effect on the second Y axis.
 	 * <p>
 	 * If the pan position has been changed on the client side, this may not
-	 * reflect the actual pan position. </i>
+	 * reflect the actual pan position.</i>
 	 * </p>
+	 * 
+	 * @deprecated Use {@link WAxis#setZoomRange(double minimum, double maximum)
+	 *             setZoomRange()} instead.
 	 */
 	public void setPan(double pan) {
-		if (!ChartUtils.equals(this.pan_, pan)) {
-			this.pan_ = pan;
-			update();
-		}
-		;
-		this.panDirty_ = true;
+		this.setZoomRange(pan,
+				this.getZoomMaximum() + pan - this.getZoomMinimum());
 	}
 
 	/**
 	 * Get the value to pan to for this axis, when pan is enabled on the chart.
 	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
 	 * <p>
-	 * <i><b>Note: </b></i>
-	 * </p>
 	 * 
 	 * @see WAxis#setPan(double pan)
+	 * @deprecated Use {@link WAxis#getZoomMinimum() getZoomMinimum()} instead.
 	 */
 	public double getPan() {
-		return this.pan_;
+		if (!this.isInverted()) {
+			return this.getZoomMinimum();
+		} else {
+			return this.getZoomMaximum();
+		}
 	}
 
 	/**
@@ -1130,7 +1311,7 @@ public class WAxis {
 	}
 
 	/**
-	 * Returns whether soft lable clipping is enabled.
+	 * Returns whether soft label clipping is enabled.
 	 * <p>
 	 */
 	public boolean isSoftLabelClipping() {
@@ -1146,16 +1327,31 @@ public class WAxis {
 	}
 
 	boolean prepareRender(Orientation orientation, double length) {
+		this.fullRenderLength_ = length;
 		double totalRenderRange = 0;
 		for (int i = 0; i < this.segments_.size(); ++i) {
 			final WAxis.Segment s = this.segments_.get(i);
 			this.computeRange(s);
 			totalRenderRange += s.renderMaximum - s.renderMinimum;
 		}
-		double clipMin = this.segments_.get(0).renderMinimum == 0 ? 0 : this
-				.getPadding();
-		double clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
-				: this.getPadding();
+		double clipMin = 0;
+		double clipMax = 0;
+		if (this.scale_ == AxisScale.CategoryScale
+				|| this.scale_ == AxisScale.LogScale) {
+			clipMin = clipMax = this.getPadding();
+		} else {
+			if (this.isInverted()) {
+				clipMin = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
+						: this.getPadding();
+				clipMax = this.segments_.get(0).renderMinimum == 0 ? 0 : this
+						.getPadding();
+			} else {
+				clipMin = this.segments_.get(0).renderMinimum == 0 ? 0 : this
+						.getPadding();
+				clipMax = this.segments_.get(this.segments_.size() - 1).renderMaximum == 0 ? 0
+						: this.getPadding();
+			}
+		}
 		double totalRenderLength = length;
 		double totalRenderStart = clipMin;
 		final double SEGMENT_MARGIN = 40;
@@ -1171,6 +1367,12 @@ public class WAxis {
 			totalRenderRange = 0;
 			for (int i = 0; i < this.segments_.size(); ++i) {
 				final WAxis.Segment s = this.segments_.get(i);
+				boolean roundMinimumLimit = i == 0
+						&& !EnumUtils.mask(this.roundLimits_,
+								AxisValue.MinimumValue).isEmpty();
+				boolean roundMaximumLimit = i == this.segments_.size() - 1
+						&& !EnumUtils.mask(this.roundLimits_,
+								AxisValue.MaximumValue).isEmpty();
 				double diff = s.renderMaximum - s.renderMinimum;
 				s.renderStart = rs;
 				s.renderLength = diff / TRR * totalRenderLength;
@@ -1201,8 +1403,7 @@ public class WAxis {
 				}
 				if (this.scale_ == AxisScale.LinearScale) {
 					if (it == 0) {
-						if (!EnumUtils.mask(this.roundLimits_,
-								AxisValue.MinimumValue).isEmpty()) {
+						if (roundMinimumLimit) {
 							s.renderMinimum = roundDown125(s.renderMinimum,
 									this.renderInterval_);
 							if (s.renderMinimum <= this.labelBasePoint_
@@ -1216,8 +1417,7 @@ public class WAxis {
 								s.renderMinimum = this.labelBasePoint_ - interv;
 							}
 						}
-						if (!EnumUtils.mask(this.roundLimits_,
-								AxisValue.MaximumValue).isEmpty()) {
+						if (roundMaximumLimit) {
 							s.renderMaximum = roundUp125(s.renderMaximum,
 									this.renderInterval_);
 						}
@@ -1250,14 +1450,12 @@ public class WAxis {
 							s.dateTimeRenderUnit = WAxis.DateTimeUnit.Years;
 							interval = Math.max(1,
 									(int) round125(daysInterval / 365));
-							if (!EnumUtils.mask(this.roundLimits_,
-									AxisValue.MinimumValue).isEmpty()) {
+							if (roundMinimumLimit) {
 								if (min.getDay() != 1 && min.getMonth() != 1) {
 									min = new WDate(min.getYear(), 1, 1);
 								}
 							}
-							if (!EnumUtils.mask(this.roundLimits_,
-									AxisValue.MaximumValue).isEmpty()) {
+							if (roundMaximumLimit) {
 								if (max.getDay() != 1 && max.getMonth() != 1) {
 									max = new WDate(max.getYear() + 1, 1, 1);
 								}
@@ -1283,8 +1481,7 @@ public class WAxis {
 										}
 									}
 								}
-								if (!EnumUtils.mask(this.roundLimits_,
-										AxisValue.MinimumValue).isEmpty()) {
+								if (roundMinimumLimit) {
 									if ((min.getMonth() - 1) % interval != 0) {
 										int m = roundDown(min.getMonth() - 1,
 												interval) + 1;
@@ -1296,8 +1493,7 @@ public class WAxis {
 										}
 									}
 								}
-								if (!EnumUtils.mask(this.roundLimits_,
-										AxisValue.MaximumValue).isEmpty()) {
+								if (roundMaximumLimit) {
 									if (max.getDay() != 1) {
 										max = new WDate(max.getYear(),
 												max.getMonth(), 1).addMonths(1);
@@ -1314,32 +1510,30 @@ public class WAxis {
 									s.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
 									if (daysInterval < 1.3) {
 										interval = 1;
-										if (!EnumUtils.mask(this.roundLimits_,
-												AxisValue.MinimumValue)
-												.isEmpty()) {
+										if (roundMinimumLimit) {
 											min.setTime(new WTime(0, 0));
 										}
-										if (!EnumUtils.mask(this.roundLimits_,
-												AxisValue.MaximumValue)
-												.isEmpty()) {
-											if (!max.equals(new WTime(0, 0))) {
+										if (roundMaximumLimit) {
+											if (!(max.getTime() == new WTime(0,
+													0) || (max.getTime() != null && max
+													.getTime().equals(
+															new WTime(0, 0))))) {
 												max = max.addDays(1);
 											}
 										}
 									} else {
 										interval = 7 * Math.max(1,
 												(int) ((daysInterval + 5) / 7));
-										if (!EnumUtils.mask(this.roundLimits_,
-												AxisValue.MinimumValue)
-												.isEmpty()) {
+										if (roundMinimumLimit) {
 											int dw = min.getDayOfWeek();
 											min = min.addDays(-(dw - 1));
 										}
-										if (!EnumUtils.mask(this.roundLimits_,
-												AxisValue.MaximumValue)
-												.isEmpty()) {
+										if (roundMaximumLimit) {
 											int days = min.getDaysTo(max);
-											if (!max.equals(new WTime(0, 0))) {
+											if (!(max.getTime() == new WTime(0,
+													0) || (max.getTime() != null && max
+													.getTime().equals(
+															new WTime(0, 0))))) {
 												++days;
 											}
 											days = roundUp(days, interval);
@@ -1372,31 +1566,30 @@ public class WAxis {
 												}
 											}
 										}
-										if (!EnumUtils.mask(this.roundLimits_,
-												AxisValue.MinimumValue)
-												.isEmpty()) {
-											if (min.getHour() % interval != 0) {
-												int h = roundDown(
-														min.getHour(), interval);
+										if (roundMinimumLimit) {
+											if (min.getTime().getHour()
+													% interval != 0) {
+												int h = roundDown(min.getTime()
+														.getHour(), interval);
 												min.setTime(new WTime(h, 0));
 											} else {
-												if (min.getMinute() != 0) {
+												if (min.getTime().getMinute() != 0) {
 													min.setTime(new WTime(min
+															.getTime()
 															.getHour(), 0));
 												}
 											}
 										}
-										if (!EnumUtils.mask(this.roundLimits_,
-												AxisValue.MaximumValue)
-												.isEmpty()) {
-											if (max.getMinute() != 0) {
+										if (roundMaximumLimit) {
+											if (max.getTime().getMinute() != 0) {
 												max.setTime(new WTime(max
-														.getHour(), 0));
+														.getTime().getHour(), 0));
 												max = max.addSeconds(60 * 60);
 											}
-											if (max.getHour() % interval != 0) {
-												int h = roundDown(
-														max.getHour(), interval);
+											if (max.getTime().getHour()
+													% interval != 0) {
+												int h = roundDown(max.getTime()
+														.getHour(), interval);
 												max.setTime(new WTime(h, 0));
 												max = max
 														.addSeconds(interval * 60 * 60);
@@ -1430,39 +1623,44 @@ public class WAxis {
 													}
 												}
 											}
-											if (!EnumUtils.mask(
-													this.roundLimits_,
-													AxisValue.MinimumValue)
-													.isEmpty()) {
-												if (min.getMinute() % interval != 0) {
-													int m = roundDown(
-															min.getMinute(),
+											if (roundMinimumLimit) {
+												if (min.getTime().getMinute()
+														% interval != 0) {
+													int m = roundDown(min
+															.getTime()
+															.getMinute(),
 															interval);
 													min.setTime(new WTime(min
+															.getTime()
 															.getHour(), m));
 												} else {
-													if (min.getSecond() != 0) {
+													if (min.getTime()
+															.getSecond() != 0) {
 														min.setTime(new WTime(
-																min.getHour(),
-																min.getMinute()));
+																min.getTime()
+																		.getHour(),
+																min.getTime()
+																		.getMinute()));
 													}
 												}
 											}
-											if (!EnumUtils.mask(
-													this.roundLimits_,
-													AxisValue.MaximumValue)
-													.isEmpty()) {
-												if (max.getSecond() != 0) {
+											if (roundMaximumLimit) {
+												if (max.getTime().getSecond() != 0) {
 													max.setTime(new WTime(max
+															.getTime()
 															.getHour(), max
+															.getTime()
 															.getMinute()));
 													max = max.addSeconds(60);
 												}
-												if (max.getMinute() % interval != 0) {
-													int m = roundDown(
-															max.getMinute(),
+												if (max.getTime().getMinute()
+														% interval != 0) {
+													int m = roundDown(max
+															.getTime()
+															.getMinute(),
 															interval);
 													max.setTime(new WTime(max
+															.getTime()
 															.getHour(), m));
 													max = max
 															.addSeconds(interval * 60);
@@ -1496,43 +1694,51 @@ public class WAxis {
 													}
 												}
 											}
-											if (!EnumUtils.mask(
-													this.roundLimits_,
-													AxisValue.MinimumValue)
-													.isEmpty()) {
-												if (min.getSecond() % interval != 0) {
-													int sec = roundDown(
-															min.getSecond(),
+											if (roundMinimumLimit) {
+												if (min.getTime().getSecond()
+														% interval != 0) {
+													int sec = roundDown(min
+															.getTime()
+															.getSecond(),
 															interval);
 													min.setTime(new WTime(min
+															.getTime()
 															.getHour(), min
+															.getTime()
 															.getMinute(), sec));
 												} else {
-													if (min.getMillisecond() != 0) {
+													if (min.getTime().getMsec() != 0) {
 														min.setTime(new WTime(
-																min.getHour(),
-																min.getMinute(),
-																min.getSecond()));
+																min.getTime()
+																		.getHour(),
+																min.getTime()
+																		.getMinute(),
+																min.getTime()
+																		.getSecond()));
 													}
 												}
 											}
-											if (!EnumUtils.mask(
-													this.roundLimits_,
-													AxisValue.MaximumValue)
-													.isEmpty()) {
-												if (max.getMillisecond() != 0) {
+											if (roundMaximumLimit) {
+												if (max.getTime().getMsec() != 0) {
 													max.setTime(new WTime(max
+															.getTime()
 															.getHour(), max
+															.getTime()
 															.getMinute(), max
+															.getTime()
 															.getSecond()));
 													max = max.addSeconds(1);
 												}
-												if (max.getSecond() % interval != 0) {
-													int sec = roundDown(
-															max.getSecond(),
+												if (max.getTime().getSecond()
+														% interval != 0) {
+													int sec = roundDown(max
+															.getTime()
+															.getSecond(),
 															interval);
 													max.setTime(new WTime(max
+															.getTime()
 															.getHour(), max
+															.getTime()
 															.getMinute(), sec));
 													max = max
 															.addSeconds(interval);
@@ -1566,11 +1772,11 @@ public class WAxis {
 			EnumSet<AxisProperty> properties, final WPointF axisStart,
 			final WPointF axisEnd, double tickStart, double tickEnd,
 			double labelPos, EnumSet<AlignmentFlag> labelFlags,
-			final WTransform transform) {
+			final WTransform transform, AxisValue side) {
 		List<WPen> pens = new ArrayList<WPen>();
 		List<WPen> textPens = new ArrayList<WPen>();
 		this.render(painter, properties, axisStart, axisEnd, tickStart,
-				tickEnd, labelPos, labelFlags, transform, pens, textPens);
+				tickEnd, labelPos, labelFlags, transform, side, pens, textPens);
 	}
 
 	public final void render(final WPainter painter,
@@ -1578,24 +1784,44 @@ public class WAxis {
 			final WPointF axisEnd, double tickStart, double tickEnd,
 			double labelPos, EnumSet<AlignmentFlag> labelFlags) {
 		render(painter, properties, axisStart, axisEnd, tickStart, tickEnd,
-				labelPos, labelFlags, new WTransform());
+				labelPos, labelFlags, new WTransform(), AxisValue.MinimumValue);
+	}
+
+	public final void render(final WPainter painter,
+			EnumSet<AxisProperty> properties, final WPointF axisStart,
+			final WPointF axisEnd, double tickStart, double tickEnd,
+			double labelPos, EnumSet<AlignmentFlag> labelFlags,
+			final WTransform transform) {
+		render(painter, properties, axisStart, axisEnd, tickStart, tickEnd,
+				labelPos, labelFlags, transform, AxisValue.MinimumValue);
 	}
 
 	public void render(final WPainter painter,
 			EnumSet<AxisProperty> properties, final WPointF axisStart,
 			final WPointF axisEnd, double tickStart, double tickEnd,
 			double labelPos, EnumSet<AlignmentFlag> labelFlags,
-			final WTransform transform, List<WPen> pens, List<WPen> textPens) {
+			final WTransform transform, AxisValue side, List<WPen> pens,
+			List<WPen> textPens) {
 		WFont oldFont1 = painter.getFont();
 		painter.setFont(this.labelFont_);
 		boolean vertical = axisStart.getX() == axisEnd.getX();
+		WPointF axStart = new WPointF();
+		WPointF axEnd = new WPointF();
+		if (this.isInverted()) {
+			axStart = axisEnd;
+			axEnd = axisStart;
+		} else {
+			axStart = axisStart;
+			axEnd = axisEnd;
+		}
 		for (int segment = 0; segment < this.getSegmentCount(); ++segment) {
 			final WAxis.Segment s = this.segments_.get(segment);
 			if (!EnumUtils.mask(properties, AxisProperty.Line).isEmpty()) {
 				painter.setPen(this.getPen().clone());
-				WPointF begin = interpolate(axisStart, axisEnd, s.renderStart);
-				WPointF end = interpolate(axisStart, axisEnd, s.renderStart
-						+ s.renderLength);
+				WPointF begin = interpolate(axisStart, axisEnd,
+						this.mapToDevice(s.renderMinimum, segment));
+				WPointF end = interpolate(axisStart, axisEnd,
+						this.mapToDevice(s.renderMaximum, segment));
 				{
 					WPainterPath path = new WPainterPath();
 					path.moveTo(begin);
@@ -1631,7 +1857,10 @@ public class WAxis {
 			for (int level = 1; level <= pens.size(); ++level) {
 				WPainterPath ticksPath = new WPainterPath();
 				List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
-				this.getLabelTicks(ticks, segment, level);
+				AxisConfig cfg = new AxisConfig();
+				cfg.zoomLevel = level;
+				cfg.side = side;
+				this.getLabelTicks(ticks, segment, cfg);
 				for (int i = 0; i < ticks.size(); ++i) {
 					double u = this.mapToDevice(ticks.get(i).u, segment);
 					WPointF p = interpolate(axisStart, axisEnd, u);
@@ -1678,17 +1907,11 @@ public class WAxis {
 		painter.setFont(oldFont1);
 	}
 
-	/**
-	 * Returns the positions for grid lines on this axis.
-	 * <p>
-	 * This returns a list of logical values at which a grid line should be
-	 * drawn on this axis.
-	 */
-	public List<Double> getGridLinePositions() {
+	public List<Double> gridLinePositions(AxisConfig config) {
 		List<Double> pos = new ArrayList<Double>();
 		for (int segment = 0; segment < this.segments_.size(); ++segment) {
 			List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
-			this.getLabelTicks(ticks, segment, 1);
+			this.getLabelTicks(ticks, segment, config);
 			for (int i = 0; i < ticks.size(); ++i) {
 				if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Long) {
 					pos.add(this.mapToDevice(ticks.get(i).u, segment));
@@ -1696,6 +1919,114 @@ public class WAxis {
 			}
 		}
 		return pos;
+	}
+
+	/**
+	 * Set whether this axis should be inverted.
+	 * <p>
+	 * When inverted, the axis will be drawn in the opposite direction, e.g. if
+	 * normally, the low values are on the left and high values on the right,
+	 * when inverted, the low values will be on the right and high values on the
+	 * left.
+	 */
+	public void setInverted(boolean inverted) {
+		if (!ChartUtils.equals(this.inverted_, inverted)) {
+			this.inverted_ = inverted;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Set whether this axis should be inverted.
+	 * <p>
+	 * Calls {@link #setInverted(boolean inverted) setInverted(true)}
+	 */
+	public final void setInverted() {
+		setInverted(true);
+	}
+
+	/**
+	 * Get whether this axis is inverted.
+	 * <p>
+	 * 
+	 * @see WAxis#setInverted(boolean inverted)
+	 */
+	public boolean isInverted() {
+		return this.inverted_;
+	}
+
+	/**
+	 * A label transform function.
+	 * <p>
+	 * 
+	 * The label transform is a function from double to double.
+	 * <p>
+	 * 
+	 * @see WAxis#setLabelTransform(WAxis.LabelTransform transform, AxisValue
+	 *      side)
+	 */
+	public static interface LabelTransform {
+		/**
+		 * Apply the label transform.
+		 */
+		public double apply(double d);
+	}
+
+	static class IdentityLabelTransform implements WAxis.LabelTransform {
+		private static Logger logger = LoggerFactory
+				.getLogger(IdentityLabelTransform.class);
+
+		public double apply(double d) {
+			return d;
+		}
+	}
+
+	/**
+	 * Set the transform function to apply to a given side.
+	 * <p>
+	 * The label transform must be a function from double to double, and will be
+	 * applied on the double value of the model coordinate of every axis tick.
+	 * <p>
+	 * The label transform will not move the position of the axis ticks, only
+	 * change the labels displayed at the ticks.
+	 * <p>
+	 * This can be useful in combination with a {@link WAxis#getLocation()
+	 * getLocation()} set to BothSides, to show different labels on each side.
+	 * <p>
+	 * If DateScale or DateTimeScale are used, the double value will be in
+	 * seconds since the Epoch (00:00:00 UTC, January 1, 1970).
+	 * <p>
+	 * Only MinimumValue, ZeroValue and MaximumValue are accepted for side. If
+	 * you set a label transform for another side, the label transform will not
+	 * be used.
+	 * <p>
+	 * The label transform will not be used if the {@link WAxis#getScale()
+	 * getScale()} is CategoryScale.
+	 */
+	public void setLabelTransform(final WAxis.LabelTransform transform,
+			AxisValue side) {
+		this.labelTransforms_.put(side, transform);
+		this.update();
+	}
+
+	/**
+	 * Get the label transform configured for the given side.
+	 * <p>
+	 * If no transform is configured for the given side, the identity function
+	 * is returned.
+	 * <p>
+	 * 
+	 * @see WAxis#setLabelTransform(WAxis.LabelTransform transform, AxisValue
+	 *      side)
+	 */
+	public WAxis.LabelTransform getLabelTransform(AxisValue side) {
+		WAxis.LabelTransform it = this.labelTransforms_.get(side);
+		if (it != null) {
+			return it;
+		} else {
+			return new WAxis.IdentityLabelTransform();
+		}
 	}
 
 	public void renderLabel(final WPainter painter, final CharSequence text,
@@ -1737,6 +2068,7 @@ public class WAxis {
 		}
 		WPen oldPen = painter.getPen().clone();
 		painter.setPen(pen.clone());
+		List<WString> splitText = splitLabel(text);
 		boolean clipping = painter.hasClipping();
 		if (!this.partialLabelClipping_ && clipping
 				&& this.getTickDirection() == TickDirection.Outwards
@@ -1745,23 +2077,38 @@ public class WAxis {
 		}
 		WPointF transformedPoint = transform.map(pos);
 		if (angle == 0) {
-			painter.drawText(transform
-					.map(new WRectF(left, top, width, height)), EnumSet.of(
-					horizontalAlign, verticalAlign), TextFlag.TextSingleLine,
-					text,
-					clipping && !this.partialLabelClipping_ ? transformedPoint
-							: null);
+			for (int i = 0; i < splitText.size(); ++i) {
+				double yOffset = calcYOffset(i, splitText.size(), height,
+						EnumSet.of(verticalAlign));
+				WTransform offsetTransform = new WTransform(1, 0, 0, 1, 0,
+						yOffset);
+				painter.drawText(
+						offsetTransform.multiply(transform).map(
+								new WRectF(left, top, width, height)),
+						EnumSet.of(horizontalAlign, verticalAlign),
+						TextFlag.TextSingleLine,
+						splitText.get(i),
+						clipping && !this.partialLabelClipping_ ? transformedPoint
+								: null);
+			}
 		} else {
 			painter.save();
 			painter.translate(transform.map(pos));
 			painter.rotate(-angle);
 			transformedPoint = painter.getWorldTransform().getInverted()
 					.map(transformedPoint);
-			painter.drawText(new WRectF(left - pos.getX(), top - pos.getY(),
-					width, height), EnumSet.of(horizontalAlign, verticalAlign),
-					TextFlag.TextSingleLine, text, clipping
-							&& !this.partialLabelClipping_ ? transformedPoint
-							: null);
+			for (int i = 0; i < splitText.size(); ++i) {
+				double yOffset = calcYOffset(i, splitText.size(), height,
+						EnumSet.of(verticalAlign));
+				painter.drawText(
+						new WRectF(left - pos.getX(), top - pos.getY()
+								+ yOffset, width, height),
+						EnumSet.of(horizontalAlign, verticalAlign),
+						TextFlag.TextSingleLine,
+						splitText.get(i),
+						clipping && !this.partialLabelClipping_ ? transformedPoint
+								: null);
+			}
 			painter.restore();
 		}
 		painter.setClipping(clipping);
@@ -1788,7 +2135,22 @@ public class WAxis {
 		painter.setFont(this.labelFont_);
 		List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
 		for (int i = 0; i < this.getSegmentCount(); ++i) {
-			this.getLabelTicks(ticks, i, 1);
+			AxisConfig cfg = new AxisConfig();
+			cfg.zoomLevel = 1;
+			if (this.getLocation() == AxisValue.MinimumValue
+					|| this.getLocation() == AxisValue.BothSides) {
+				cfg.side = AxisValue.MinimumValue;
+				this.getLabelTicks(ticks, i, cfg);
+			}
+			if (this.getLocation() == AxisValue.MaximumValue
+					|| this.getLocation() == AxisValue.BothSides) {
+				cfg.side = AxisValue.MaximumValue;
+				this.getLabelTicks(ticks, i, cfg);
+			}
+			if (this.getLocation() == AxisValue.ZeroValue) {
+				cfg.side = AxisValue.ZeroValue;
+				this.getLabelTicks(ticks, i, cfg);
+			}
 		}
 		for (int i = 0; i < ticks.size(); ++i) {
 			painter.drawText(0, 0, 100, 100,
@@ -1892,14 +2254,17 @@ public class WAxis {
 		this.titleOffset_ = 0;
 		this.textPen_ = new WPen(WColor.black);
 		this.titleOrientation_ = Orientation.Horizontal;
-		this.maxZoom_ = 4;
-		this.zoom_ = 1;
-		this.pan_ = 0;
-		this.zoomDirty_ = true;
-		this.panDirty_ = true;
+		this.maxZoom_ = 4.0;
+		this.minimumZoomRange_ = AUTO_MINIMUM;
+		this.zoomMin_ = AUTO_MINIMUM;
+		this.zoomMax_ = AUTO_MAXIMUM;
+		this.zoomRangeDirty_ = true;
 		this.padding_ = 0;
 		this.tickDirection_ = TickDirection.Outwards;
 		this.partialLabelClipping_ = true;
+		this.inverted_ = false;
+		this.labelTransforms_ = new HashMap<AxisValue, WAxis.LabelTransform>();
+		this.zoomRangeChanged_ = new Signal2<Double, Double>();
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
@@ -1914,8 +2279,8 @@ public class WAxis {
 	 * Returns the label (and ticks) information for this axis.
 	 */
 	protected void getLabelTicks(final List<WAxis.TickLabel> ticks,
-			int segment, int zoomLevel) {
-		double divisor = Math.pow(2.0, zoomLevel - 1);
+			int segment, AxisConfig config) {
+		double divisor = Math.pow(2.0, config.zoomLevel - 1);
 		final WAxis.Segment s = this.segments_.get(segment);
 		switch (this.scale_) {
 		case CategoryScale: {
@@ -1948,7 +2313,12 @@ public class WAxis {
 				}
 				WString t = new WString();
 				if (i % 2 == 0) {
-					t = this.getLabel(v);
+					if (this.hasLabelTransformOnSide(config.side)) {
+						t = this.getLabel(this.getLabelTransform(config.side)
+								.apply(v));
+					} else {
+						t = this.getLabel(v);
+					}
 				}
 				ticks.add(new WAxis.TickLabel(v,
 						i % 2 == 0 ? WAxis.TickLabel.TickLength.Long
@@ -1969,8 +2339,13 @@ public class WAxis {
 					i = 0;
 				}
 				if (i == 0) {
+					WString text = this.getLabel(v);
+					if (this.hasLabelTransformOnSide(config.side)) {
+						text = this.getLabel(this
+								.getLabelTransform(config.side).apply(v));
+					}
 					ticks.add(new WAxis.TickLabel(v,
-							WAxis.TickLabel.TickLength.Long, this.getLabel(v)));
+							WAxis.TickLabel.TickLength.Long, text));
 				} else {
 					ticks.add(new WAxis.TickLabel(v,
 							WAxis.TickLabel.TickLength.Short));
@@ -1995,7 +2370,7 @@ public class WAxis {
 			}
 			WAxis.DateTimeUnit unit;
 			int interval;
-			if (zoomLevel == 1) {
+			if (config.zoomLevel == 1) {
 				unit = s.dateTimeRenderUnit;
 				interval = s.dateTimeRenderInterval;
 			} else {
@@ -2157,7 +2532,17 @@ public class WAxis {
 					next = dt.addSeconds(interval);
 					break;
 				}
-				WString text = new WString(dt.toString(format.toString()));
+				WString text = new WString();
+				{
+					WDate transformedDt = dt;
+					if (this.hasLabelTransformOnSide(config.side)) {
+						transformedDt = new WDate(new Date((long) (long) this
+								.getLabelTransform(config.side).apply(
+										(double) dt.getDate().getTime())));
+					}
+					text = new WString(
+							transformedDt.toString(format.toString()));
+				}
 				if (dl >= s.renderMinimum) {
 					ticks.add(new WAxis.TickLabel((double) dl,
 							WAxis.TickLabel.TickLength.Long, atTick ? text
@@ -2187,27 +2572,27 @@ public class WAxis {
 			case Months:
 			case Years:
 			case Days:
-				if (dt.getSecond() != 0) {
+				if (dt.getTime().getSecond() != 0) {
 					return new WString("dd/MM/yy hh:mm:ss");
 				} else {
-					if (dt.getHour() != 0) {
+					if (dt.getTime().getHour() != 0) {
 						return new WString("dd/MM/yy hh:mm");
 					} else {
 						return new WString("dd/MM/yy");
 					}
 				}
 			case Hours:
-				if (dt.getSecond() != 0) {
+				if (dt.getTime().getSecond() != 0) {
 					return new WString("dd/MM hh:mm:ss");
 				} else {
-					if (dt.getMinute() != 0) {
+					if (dt.getTime().getMinute() != 0) {
 						return new WString("dd/MM hh:mm");
 					} else {
 						return new WString("h'h' dd/MM");
 					}
 				}
 			case Minutes:
-				if (dt.getSecond() != 0) {
+				if (dt.getTime().getSecond() != 0) {
 					return new WString("hh:mm:ss");
 				} else {
 					return new WString("hh:mm");
@@ -2260,14 +2645,17 @@ public class WAxis {
 	private WPen textPen_;
 	private Orientation titleOrientation_;
 	private double maxZoom_;
-	private double zoom_;
-	private double pan_;
-	boolean zoomDirty_;
-	boolean panDirty_;
+	private double minimumZoomRange_;
+	double zoomMin_;
+	double zoomMax_;
+	boolean zoomRangeDirty_;
 	private int padding_;
 	private TickDirection tickDirection_;
 	private boolean partialLabelClipping_;
+	private boolean inverted_;
+	private HashMap<AxisValue, WAxis.LabelTransform> labelTransforms_;
 	private boolean renderingMirror_;
+	private Signal2<Double, Double> zoomRangeChanged_;
 
 	static class Segment {
 		private static Logger logger = LoggerFactory.getLogger(Segment.class);
@@ -2291,10 +2679,22 @@ public class WAxis {
 			this.dateTimeRenderUnit = WAxis.DateTimeUnit.Days;
 			this.dateTimeRenderInterval = 0;
 		}
+
+		public Segment(final WAxis.Segment other) {
+			this.minimum = other.minimum;
+			this.maximum = other.maximum;
+			this.renderMinimum = other.renderMinimum;
+			this.renderMaximum = other.renderMaximum;
+			this.renderLength = other.renderLength;
+			this.renderStart = other.renderStart;
+			this.dateTimeRenderUnit = other.dateTimeRenderUnit;
+			this.dateTimeRenderInterval = other.dateTimeRenderInterval;
+		}
 	}
 
 	List<WAxis.Segment> segments_;
 	double renderInterval_;
+	double fullRenderLength_;
 
 	void init(WAbstractChartImplementation chart, Axis axis) {
 		this.chart_ = chart;
@@ -2451,28 +2851,6 @@ public class WAxis {
 		assert segment.renderMinimum < segment.renderMaximum;
 	}
 
-	void setOtherAxisLocation(AxisValue otherLocation) {
-		if (this.scale_ != AxisScale.LogScale) {
-			for (int i = 0; i < this.segments_.size(); ++i) {
-				final WAxis.Segment s = this.segments_.get(i);
-				int borderMin;
-				int borderMax;
-				if (this.scale_ == AxisScale.CategoryScale) {
-					borderMax = borderMin = this.getPadding();
-				} else {
-					borderMin = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0 : this
-							.getPadding();
-					borderMax = s.renderMinimum == 0
-							&& otherLocation == AxisValue.ZeroValue ? 0 : this
-							.getPadding();
-				}
-				s.renderLength -= borderMin + borderMax;
-				s.renderStart += borderMin;
-			}
-		}
-	}
-
 	private double getValue(final Object v) {
 		switch (this.scale_) {
 		case LinearScale:
@@ -2480,14 +2858,14 @@ public class WAxis {
 			return StringUtils.asNumber(v);
 		case DateScale:
 			if (v.getClass().equals(WDate.class)) {
-				WDate d = (WDate) v;
+				WDate d = ((WDate) v);
 				return (double) d.toJulianDay();
 			} else {
 				return Double.NaN;
 			}
 		case DateTimeScale:
 			if (v.getClass().equals(WDate.class)) {
-				WDate d = (WDate) v;
+				WDate d = ((WDate) v);
 				WDate dt = null;
 				dt = d;
 				return (double) dt.getDate().getTime();
@@ -2537,10 +2915,23 @@ public class WAxis {
 	}
 
 	double mapFromDevice(double d) {
+		final WAxis.Segment firstSegment = this.segments_.get(0);
+		final WAxis.Segment lastSegment = this.segments_.get(this.segments_
+				.size() - 1);
+		if (this.isInverted()) {
+			d = lastSegment.renderStart + lastSegment.renderLength - d
+					+ firstSegment.renderStart;
+		}
 		for (int i = 0; i < this.segments_.size(); ++i) {
 			final WAxis.Segment s = this.segments_.get(i);
-			boolean lastSegment = i == this.segments_.size() - 1;
-			if (lastSegment || d < this.mapToDevice(s.renderMaximum, i)) {
+			boolean isLastSegment = i == this.segments_.size() - 1;
+			if (isLastSegment
+					|| !this.isInverted()
+					&& d < this.mapToDevice(s.renderMaximum, i)
+					|| this.isInverted()
+					&& d < -(this.mapToDevice(s.renderMaximum, i)
+							- lastSegment.renderStart
+							- lastSegment.renderLength - firstSegment.renderStart)) {
 				d = d - s.renderStart;
 				if (this.scale_ != AxisScale.LogScale) {
 					return s.renderMinimum + d
@@ -2557,12 +2948,26 @@ public class WAxis {
 		return 0;
 	}
 
+	double mapToDevice(final Object value) {
+		return this.mapToDevice(this.getValue(value));
+	}
+
 	double mapToDevice(final Object value, int segment) {
 		return this.mapToDevice(this.getValue(value), segment);
 	}
 
-	final double mapToDevice(final Object value) {
-		return mapToDevice(value, 0);
+	private double mapToDevice(double value) {
+		if (Double.isNaN(value)) {
+			return value;
+		}
+		for (int i = 0; i < this.segments_.size(); ++i) {
+			if (value <= this.segments_.get(i).renderMaximum
+					|| i == this.segments_.size() - 1) {
+				return this.mapToDevice(value, i);
+			}
+		}
+		assert false;
+		return Double.NaN;
 	}
 
 	double mapToDevice(double u, int segment) {
@@ -2580,11 +2985,41 @@ public class WAxis {
 					/ (Math.log(s.renderMaximum) - Math.log(s.renderMinimum))
 					* s.renderLength;
 		}
-		return s.renderStart + d;
+		if (this.isInverted()) {
+			final WAxis.Segment firstSegment = this.segments_.get(0);
+			final WAxis.Segment lastSegment = this.segments_.get(this.segments_
+					.size() - 1);
+			return lastSegment.renderStart + lastSegment.renderLength
+					- (s.renderStart + d) + firstSegment.renderStart;
+		} else {
+			return s.renderStart + d;
+		}
 	}
 
-	final double mapToDevice(double u) {
-		return mapToDevice(u, 0);
+	boolean isOnAxis(double d) {
+		for (int i = 0; i < this.segments_.size(); ++i) {
+			if (d >= this.segments_.get(i).renderMinimum
+					&& d <= this.segments_.get(i).renderMaximum) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private double getDrawnMinimum() {
+		if (!this.isInverted()) {
+			return this.mapFromDevice(0.0);
+		} else {
+			return this.mapFromDevice(this.fullRenderLength_);
+		}
+	}
+
+	private double getDrawnMaximum() {
+		if (!this.isInverted()) {
+			return this.mapFromDevice(this.fullRenderLength_);
+		} else {
+			return this.mapFromDevice(0.0);
+		}
 	}
 
 	private long getDateNumber(WDate dt) {
@@ -2598,12 +3033,26 @@ public class WAxis {
 		}
 	}
 
-	void setZoomFromClient(double zoom) {
-		this.zoom_ = zoom;
+	void setZoomRangeFromClient(double minimum, double maximum) {
+		if (minimum > maximum) {
+			double temp = minimum;
+			minimum = maximum;
+			maximum = temp;
+		}
+		double min = this.getDrawnMinimum();
+		double max = this.getDrawnMaximum();
+		if (minimum <= min) {
+			minimum = AUTO_MINIMUM;
+		}
+		if (maximum >= max) {
+			maximum = AUTO_MAXIMUM;
+		}
+		this.zoomMin_ = minimum;
+		this.zoomMax_ = maximum;
 	}
 
-	void setPanFromClient(double pan) {
-		this.pan_ = pan;
+	private boolean hasLabelTransformOnSide(AxisValue side) {
+		return this.labelTransforms_.get(side) != null;
 	}
 
 	private static double EPSILON = 1E-3;
@@ -2662,5 +3111,40 @@ public class WAxis {
 			}
 		}
 		return new WPointF(x, y);
+	}
+
+	static List<WString> splitLabel(CharSequence text) {
+		String s = text.toString();
+		List<String> splitText = new ArrayList<String>();
+		splitText = new ArrayList<String>(Arrays.asList(s.split("\n")));
+		List<WString> result = new ArrayList<WString>();
+		for (int i = 0; i < splitText.size(); ++i) {
+			result.add(new WString(splitText.get(i)));
+		}
+		return result;
+	}
+
+	static double calcYOffset(int lineNb, int nbLines, double lineHeight,
+			EnumSet<AlignmentFlag> verticalAlign) {
+		if (verticalAlign.equals(AlignmentFlag.AlignMiddle)) {
+			return -((nbLines - 1) * lineHeight / 2.0) + lineNb * lineHeight;
+		} else {
+			if (verticalAlign.equals(AlignmentFlag.AlignTop)) {
+				return lineNb * lineHeight;
+			} else {
+				if (verticalAlign.equals(AlignmentFlag.AlignBottom)) {
+					return -(nbLines - 1 - lineNb) * lineHeight;
+				} else {
+					return 0;
+				}
+			}
+		}
+	}
+
+	private static final double calcYOffset(int lineNb, int nbLines,
+			double lineHeight, AlignmentFlag verticalAlig,
+			AlignmentFlag... verticalAlign) {
+		return calcYOffset(lineNb, nbLines, lineHeight,
+				EnumSet.of(verticalAlig, verticalAlign));
 	}
 }

@@ -20,149 +20,325 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract base class for iterating over series data in a chart.
+ * A curve label.
  * <p>
  * 
- * This class is specialized for rendering series data.
+ * Curve labels can be added with
+ * {@link WCartesianChart#addCurveLabel(CurveLabel label)
+ * WCartesianChart#addCurveLabel()}. They are associated with a particular
+ * series, and are drawn at the given point in model coordinates. When the chart
+ * is transformed (zoom or pan) or the associated series is manipulated, the
+ * curve label&apos;s position will change, but not its size.
  * <p>
+ * <div align="center"> <img src="doc-files//CurveLabel.png"
+ * alt="A curve label">
+ * <p>
+ * <strong>A curve label</strong>
+ * </p>
+ * </div>
  */
-public class SeriesIterator {
-	private static Logger logger = LoggerFactory
-			.getLogger(SeriesIterator.class);
+public class CurveLabel {
+	private static Logger logger = LoggerFactory.getLogger(CurveLabel.class);
 
 	/**
-	 * Start handling a new segment.
+	 * Create a new curve label.
 	 * <p>
-	 * Because of a &apos;break&apos; specified in an axis, axes may be divided
-	 * in one or two segments (in fact only the API limits this now to two). The
-	 * iterator will iterate all segments seperately, but each time with a
-	 * different clipping region specified in the painter, corresponding to that
-	 * segment.
-	 * <p>
-	 * The <i>currentSegmentArea</i> specifies the clipping area.
+	 * Create a new curve label for given series, at the given point with the
+	 * given text.
 	 */
-	public void startSegment(int currentXSegment, int currentYSegment,
-			final WRectF currentSegmentArea) {
-		this.currentXSegment_ = currentXSegment;
-		this.currentYSegment_ = currentYSegment;
+	public CurveLabel(final WDataSeries series, final WPointF point,
+			final String label) {
+		this.series_ = series;
+		this.point_ = point;
+		this.label_ = label;
+		this.offset_ = new WPointF(60, -20);
+		this.width_ = 0;
+		this.linePen_ = new WPen(new WColor(0, 0, 0));
+		this.textPen_ = new WPen(new WColor(0, 0, 0));
+		this.boxBrush_ = new WBrush(new WColor(255, 255, 255));
+		this.markerBrush_ = new WBrush(new WColor(0, 0, 0));
 	}
 
 	/**
-	 * End handling a particular segment.
+	 * Set the series this curve label is associated with.
+	 */
+	public void setSeries(final WDataSeries series) {
+		this.series_ = series;
+	}
+
+	/**
+	 * Get the series this curve label is associated with.
 	 * <p>
 	 * 
-	 * @see SeriesIterator#startSegment(int currentXSegment, int
-	 *      currentYSegment, WRectF currentSegmentArea)
+	 * @see CurveLabel#setSeries(WDataSeries series)
 	 */
-	public void endSegment() {
+	public WDataSeries getSeries() {
+		return this.series_;
 	}
 
 	/**
-	 * Start iterating a particular series.
+	 * Set the point in model coordinates this label is associated with.
+	 */
+	public void setPoint(final WPointF point) {
+		this.point_ = point;
+	}
+
+	/**
+	 * Get the point in model coordinates this label is associated with.
 	 * <p>
-	 * Returns whether the series values should be iterated. The
-	 * <i>groupWidth</i> is the width (in pixels) of a single bar group. The
-	 * chart contains <i>numBarGroups</i>, and the current series is in the
-	 * <i>currentBarGroup</i>&apos;th group.
+	 * 
+	 * @see CurveLabel#setPoint(WPointF point)
 	 */
-	public boolean startSeries(final WDataSeries series, double groupWidth,
-			int numBarGroups, int currentBarGroup) {
-		return true;
+	public WPointF getPoint() {
+		return this.point_;
 	}
 
 	/**
-	 * End iterating a particular series.
+	 * Set the label that should be drawn in the box.
 	 */
-	public void endSeries() {
+	public void setLabel(final String label) {
+		this.label_ = label;
 	}
 
 	/**
-	 * Process a value.
+	 * Get the label that should be drawn in the box.
 	 * <p>
-	 * Processes a value with model coordinates (<i>x</i>, <i>y</i>). The y
-	 * value may differ from the model&apos;s y value, because of stacked
-	 * series. The y value here corresponds to the location on the chart, after
-	 * stacking.
+	 * 
+	 * @see CurveLabel#setLabel(String label)
+	 */
+	public String getLabel() {
+		return this.label_;
+	}
+
+	/**
+	 * Set the offset the text should be placed at.
 	 * <p>
-	 * The <i>stackY</i> argument is the y value from the previous series (also
-	 * after stacking). It will be 0, unless this series is stacked.
+	 * The offset is defined in pixels, with x values going from left to right,
+	 * and y values from top to bottom.
+	 * <p>
+	 * The default offset is (60, -20), which means the middle of the
+	 * {@link CurveLabel#getLabel() getLabel()} is drawn 60 pixels to the right,
+	 * and 20 pixels above the point.
 	 */
-	public void newValue(final WDataSeries series, double x, double y,
-			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
+	public void setOffset(final WPointF offset) {
+		this.offset_ = offset;
 	}
 
 	/**
-	 * Returns the current X segment.
+	 * Get the offset the text should be placed at.
+	 * <p>
+	 * 
+	 * @see CurveLabel#setOffset(WPointF offset)
 	 */
-	public int getCurrentXSegment() {
-		return this.currentXSegment_;
+	public WPointF getOffset() {
+		return this.offset_;
 	}
 
 	/**
-	 * Returns the current Y segment.
+	 * Set the width of the box in pixels.
+	 * <p>
+	 * If the width is 0 (the default), server side font metrics will be used to
+	 * determine the size of the box.
 	 */
-	public int getCurrentYSegment() {
-		return this.currentYSegment_;
+	public void setWidth(int width) {
+		this.width_ = width;
 	}
 
-	public static void setPenColor(final WPen pen, final WDataSeries series,
-			int xRow, int xColumn, int yRow, int yColumn, int colorRole) {
-		WColor color = null;
-		if (yRow >= 0 && yColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerPenColorRole) {
-				color = series.getModel().getMarkerPenColor(yRow, yColumn);
-			} else {
-				if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-					color = series.getModel()
-							.getMarkerBrushColor(yRow, yColumn);
-				}
-			}
-		}
-		if (!(color != null) && xRow >= 0 && xColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerPenColorRole) {
-				color = series.getModel().getMarkerPenColor(xRow, xColumn);
-			} else {
-				if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-					color = series.getModel()
-							.getMarkerBrushColor(xRow, xColumn);
-				}
-			}
-		}
-		if (color != null) {
-			pen.setColor(color);
-		}
+	/**
+	 * Get the width of the box in pixels.
+	 * <p>
+	 * 
+	 * @see CurveLabel#setWidth(int width)
+	 */
+	public int getWidth() {
+		return this.width_;
 	}
 
-	public static void setBrushColor(final WBrush brush,
-			final WDataSeries series, int xRow, int xColumn, int yRow,
-			int yColumn, int colorRole) {
-		WColor color = null;
-		if (yRow >= 0 && yColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-				color = series.getModel().getMarkerBrushColor(yRow, yColumn);
-			} else {
-				if (colorRole == ItemDataRole.BarBrushColorRole) {
-					color = series.getModel().getBarBrushColor(yRow, yColumn);
-				}
-			}
-		}
-		if (!(color != null) && xRow >= 0 && xColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-				color = series.getModel().getMarkerBrushColor(xRow, xColumn);
-			} else {
-				if (colorRole == ItemDataRole.BarBrushColorRole) {
-					color = series.getModel().getBarBrushColor(xRow, xColumn);
-				}
-			}
-		}
-		if (color != null) {
-			brush.setColor(color);
-		}
-		;
+	/**
+	 * Set the pen to use for the connecting line.
+	 * <p>
+	 * This sets the pen to use for the line connecting the
+	 * {@link CurveLabel#getPoint() point} to the box with the
+	 * {@link CurveLabel#getLabel() label} at {@link CurveLabel#getOffset()
+	 * offset} pixels from the point.
+	 */
+	public void setLinePen(final WPen pen) {
+		this.linePen_ = pen;
 	}
 
-	private int currentXSegment_;
-	private int currentYSegment_;
+	/**
+	 * Get the pen to use for the connecting line.
+	 * <p>
+	 * 
+	 * @see CurveLabel#setLinePen(WPen pen)
+	 */
+	public WPen getLinePen() {
+		return this.linePen_;
+	}
+
+	/**
+	 * Set the pen for the text in the box.
+	 */
+	public void setTextPen(final WPen pen) {
+		this.textPen_ = pen;
+	}
+
+	/**
+	 * Get the pen for the text in the box.
+	 * <p>
+	 * 
+	 * @see CurveLabel#setTextPen(WPen pen)
+	 */
+	public WPen getTextPen() {
+		return this.textPen_;
+	}
+
+	/**
+	 * Set the brush to use for the box around the text.
+	 * <p>
+	 * This sets the brush used to fill the box with the text defined in
+	 * {@link CurveLabel#getLabel() getLabel()}.
+	 */
+	public void setBoxBrush(final WBrush brush) {
+		this.boxBrush_ = brush;
+	}
+
+	/**
+	 * Get the brush to use for the box around the text.
+	 * <p>
+	 * 
+	 * @see CurveLabel#setBoxBrush(WBrush brush)
+	 */
+	public WBrush getBoxBrush() {
+		return this.boxBrush_;
+	}
+
+	/**
+	 * Set the brush used to fill the circle at {@link CurveLabel#getPoint()
+	 * getPoint()}.
+	 */
+	public void setMarkerBrush(final WBrush brush) {
+		this.markerBrush_ = brush;
+	}
+
+	/**
+	 * Get the brush used to fill the circle at {@link CurveLabel#getPoint()
+	 * getPoint()}.
+	 * <p>
+	 * 
+	 * @see CurveLabel#setMarkerBrush(WBrush brush)
+	 */
+	public WBrush getMarkerBrush() {
+		return this.markerBrush_;
+	}
+
+	public void render(final WPainter painter) {
+		WRectF rect = null;
+		{
+			double rectWidth = DEFAULT_CURVE_LABEL_WIDTH;
+			if (this.getWidth() != 0) {
+				rectWidth = this.getWidth();
+			} else {
+				if (!EnumUtils.mask(painter.getDevice().getFeatures(),
+						WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
+					WMeasurePaintDevice device = new WMeasurePaintDevice(
+							painter.getDevice());
+					WPainter measPainter = new WPainter(device);
+					measPainter.drawText(new WRectF(0, 0, 100, 100), EnumSet
+							.of(AlignmentFlag.AlignMiddle,
+									AlignmentFlag.AlignCenter),
+							TextFlag.TextSingleLine, this.getLabel(),
+							(WPointF) null);
+					rectWidth = device.getBoundingRect().getWidth()
+							+ CURVE_LABEL_PADDING / 2;
+				}
+			}
+			rect = new WRectF(this.getOffset().getX() - rectWidth / 2, this
+					.getOffset().getY() - 10, rectWidth, 20).getNormalized();
+		}
+		WPointF closestAnchor = new WPointF();
+		{
+			List<WPointF> anchorPoints = new ArrayList<WPointF>();
+			anchorPoints.add(new WPointF(rect.getLeft(), rect.getCenter()
+					.getY()));
+			anchorPoints.add(new WPointF(rect.getRight(), rect.getCenter()
+					.getY()));
+			anchorPoints
+					.add(new WPointF(rect.getCenter().getX(), rect.getTop()));
+			anchorPoints.add(new WPointF(rect.getCenter().getX(), rect
+					.getBottom()));
+			double minSquareDist = Double.POSITIVE_INFINITY;
+			for (int k = 0; k < anchorPoints.size(); ++k) {
+				final WPointF anchorPoint = anchorPoints.get(k);
+				double d = anchorPoint.getX() * anchorPoint.getX()
+						+ anchorPoint.getY() * anchorPoint.getY();
+				if (d < minSquareDist
+						&& (k == 0 || !checkIntersectVertical(new WPointF(),
+								anchorPoint, rect.getTop(), rect.getBottom(),
+								rect.getLeft()))
+						&& (k == 1 || !checkIntersectVertical(new WPointF(),
+								anchorPoint, rect.getTop(), rect.getBottom(),
+								rect.getRight()))
+						&& (k == 2 || !checkIntersectHorizontal(new WPointF(),
+								anchorPoint, rect.getLeft(), rect.getRight(),
+								rect.getTop()))
+						&& (k == 3 || !checkIntersectHorizontal(new WPointF(),
+								anchorPoint, rect.getLeft(), rect.getRight(),
+								rect.getBottom()))) {
+					closestAnchor = anchorPoint;
+					minSquareDist = d;
+				}
+			}
+		}
+		WTransform translation = painter.getWorldTransform();
+		painter.setWorldTransform(new WTransform());
+		WPainterPath connectorLine = new WPainterPath();
+		connectorLine.moveTo(0, 0);
+		connectorLine.lineTo(closestAnchor);
+		painter.strokePath(translation.map(connectorLine).getCrisp(),
+				this.getLinePen());
+		WPainterPath circle = new WPainterPath();
+		circle.addEllipse(-2.5, -2.5, 5, 5);
+		painter.fillPath(translation.map(circle), this.getMarkerBrush());
+		WPainterPath rectPath = new WPainterPath();
+		rectPath.addRect(rect);
+		painter.fillPath(translation.map(rectPath), this.getBoxBrush());
+		painter.strokePath(translation.map(rectPath).getCrisp(),
+				this.getLinePen());
+		painter.setPen(this.getTextPen());
+		painter.drawText(translation.map(rect), EnumSet.of(
+				AlignmentFlag.AlignMiddle, AlignmentFlag.AlignCenter),
+				TextFlag.TextSingleLine, this.getLabel(), (WPointF) null);
+	}
+
+	private WDataSeries series_;
+	private WPointF point_;
+	private String label_;
+	private WPointF offset_;
+	private int width_;
+	private WPen linePen_;
+	private WPen textPen_;
+	private WBrush boxBrush_;
+	private WBrush markerBrush_;
+
+	private static boolean checkIntersectHorizontal(final WPointF p1,
+			final WPointF p2, double minX, double maxX, double y) {
+		if (p1.getY() == p2.getY()) {
+			return p1.getY() == y;
+		}
+		double t = (y - p1.getY()) / (p2.getY() - p1.getY());
+		if (t <= 0 || t >= 1) {
+			return false;
+		}
+		double x = p1.getX() * (1 - t) + p2.getX() * t;
+		return x > minX && x < maxX;
+	}
+
+	private static boolean checkIntersectVertical(final WPointF p1,
+			final WPointF p2, double minY, double maxY, double x) {
+		return checkIntersectHorizontal(new WPointF(p1.getY(), p1.getX()),
+				new WPointF(p2.getY(), p2.getX()), minY, maxY, x);
+	}
 
 	static WJavaScriptPreamble wtjs2() {
 		return new WJavaScriptPreamble(

@@ -400,22 +400,20 @@ public class WPieChart extends WAbstractChart {
 		double total = 0;
 		if (this.dataColumn_ != -1) {
 			for (int i = 0; i < this.getModel().getRowCount(); ++i) {
-				double v = StringUtils.asNumber(this.getModel().getData(i,
-						this.dataColumn_));
+				double v = this.getModel().getData(i, this.dataColumn_);
 				if (!Double.isNaN(v)) {
 					total += v;
 				}
 			}
 		}
-		double value = StringUtils.asNumber(this.getModel().getData(index,
-				this.dataColumn_));
+		double value = this.getModel().getData(index, this.dataColumn_);
 		if (!Double.isNaN(value)) {
 			WString label = this.labelText(index, value, total, options);
 			if (!(label.length() == 0)) {
 				WText l = new WText(label);
 				l.setPadding(new WLength(5), EnumSet.of(Side.Left));
-				l.setToolTip(StringUtils.asString(this.getModel().getData(
-						index, this.dataColumn_, ItemDataRole.ToolTipRole)));
+				l.setToolTip(this.getModel()
+						.getToolTip(index, this.dataColumn_));
 				legendItem.addWidget(l);
 			}
 		}
@@ -444,7 +442,7 @@ public class WPieChart extends WAbstractChart {
 	 * data at the data point is not empty. </i>
 	 * </p>
 	 */
-	public void addDataPointArea(final WModelIndex index, WAbstractArea area) {
+	public void addDataPointArea(int row, int column, WAbstractArea area) {
 		(this).addArea(area);
 	}
 
@@ -452,8 +450,7 @@ public class WPieChart extends WAbstractChart {
 		double total = 0;
 		if (this.dataColumn_ != -1) {
 			for (int i = 0; i < this.getModel().getRowCount(); ++i) {
-				double v = StringUtils.asNumber(this.getModel().getData(i,
-						this.dataColumn_));
+				double v = this.getModel().getData(i, this.dataColumn_);
 				if (!Double.isNaN(v)) {
 					total += v;
 				}
@@ -495,8 +492,7 @@ public class WPieChart extends WAbstractChart {
 			if (total != 0) {
 				double currentAngle = this.startAngle_;
 				for (int i = 0; i < this.getModel().getRowCount(); ++i) {
-					double v = StringUtils.asNumber(this.getModel().getData(i,
-							this.dataColumn_));
+					double v = this.getModel().getData(i, this.dataColumn_);
 					if (Double.isNaN(v)) {
 						continue;
 					}
@@ -633,7 +629,7 @@ public class WPieChart extends WAbstractChart {
 		this.pie_.clear();
 		{
 			int insertPos = 0;
-			for (int ii = 0; ii < this.getModel().getRowCount(); ++ii)
+			for (int ii = 0; ii < (this.getModel().getRowCount()); ++ii)
 				this.pie_.add(insertPos + ii, new WPieChart.PieData());
 		}
 		;
@@ -644,73 +640,6 @@ public class WPieChart extends WAbstractChart {
 		if (this.getModel().getRowCount() != (int) this.pie_.size()) {
 			this.modelChanged();
 		} else {
-			this.update();
-		}
-	}
-
-	protected void modelColumnsInserted(final WModelIndex parent, int start,
-			int end) {
-		if (this.labelsColumn_ >= start) {
-			this.labelsColumn_ += end - start + 1;
-		}
-		if (this.dataColumn_ >= start) {
-			this.dataColumn_ += end - start + 1;
-		}
-	}
-
-	protected void modelColumnsRemoved(final WModelIndex parent, int start,
-			int end) {
-		boolean needUpdate = false;
-		if (this.labelsColumn_ >= start) {
-			if (this.labelsColumn_ <= end) {
-				this.labelsColumn_ = -1;
-				needUpdate = true;
-			} else {
-				this.labelsColumn_ -= end - start + 1;
-			}
-		}
-		if (this.dataColumn_ >= start) {
-			if (this.dataColumn_ <= end) {
-				this.dataColumn_ = -1;
-				needUpdate = true;
-			} else {
-				this.dataColumn_ -= end - start + 1;
-			}
-		}
-		if (needUpdate) {
-			this.update();
-		}
-	}
-
-	protected void modelRowsInserted(final WModelIndex parent, int start,
-			int end) {
-		for (int i = start; i <= end; ++i) {
-			this.pie_.add(0 + i, new WPieChart.PieData());
-		}
-		this.update();
-	}
-
-	protected void modelRowsRemoved(final WModelIndex parent, int start, int end) {
-		for (int i = end; i >= start; --i) {
-			this.pie_.remove(0 + i);
-		}
-		this.update();
-	}
-
-	protected void modelDataChanged(final WModelIndex topLeft,
-			final WModelIndex bottomRight) {
-		if (this.labelsColumn_ >= topLeft.getColumn()
-				&& this.labelsColumn_ <= bottomRight.getColumn()
-				|| this.dataColumn_ >= topLeft.getColumn()
-				&& this.dataColumn_ <= bottomRight.getColumn()) {
-			this.update();
-		}
-	}
-
-	protected void modelHeaderDataChanged(Orientation orientation, int start,
-			int end) {
-		if (this.labelsColumn_ >= start && this.labelsColumn_ <= end
-				|| this.dataColumn_ >= start && this.dataColumn_ <= end) {
 			this.update();
 		}
 	}
@@ -737,13 +666,13 @@ public class WPieChart extends WAbstractChart {
 				List<Double> midAngles = new ArrayList<Double>();
 				{
 					int insertPos = startAngles.size();
-					for (int ii = 0; ii < this.getModel().getRowCount(); ++ii)
+					for (int ii = 0; ii < (this.getModel().getRowCount()); ++ii)
 						startAngles.add(insertPos + ii, 0.0);
 				}
 				;
 				{
 					int insertPos = midAngles.size();
-					for (int ii = 0; ii < this.getModel().getRowCount(); ++ii)
+					for (int ii = 0; ii < (this.getModel().getRowCount()); ++ii)
 						midAngles.add(insertPos + ii, 0.0);
 				}
 				;
@@ -751,8 +680,7 @@ public class WPieChart extends WAbstractChart {
 				double currentAngle = this.startAngle_;
 				for (int i = 0; i < this.getModel().getRowCount(); ++i) {
 					startAngles.set(i, currentAngle);
-					double v = StringUtils.asNumber(this.getModel().getData(i,
-							this.dataColumn_));
+					double v = this.getModel().getData(i, this.dataColumn_);
 					if (Double.isNaN(v)) {
 						continue;
 					}
@@ -773,8 +701,7 @@ public class WPieChart extends WAbstractChart {
 				}
 				for (int j = 0; j < this.getModel().getRowCount(); ++j) {
 					int i = (index90 + j) % this.getModel().getRowCount();
-					double v = StringUtils.asNumber(this.getModel().getData(i,
-							this.dataColumn_));
+					double v = this.getModel().getData(i, this.dataColumn_);
 					if (Double.isNaN(v)) {
 						continue;
 					}
@@ -804,8 +731,7 @@ public class WPieChart extends WAbstractChart {
 				}
 				for (int j = this.getModel().getRowCount(); j > 0; --j) {
 					int i = (index90 + j) % this.getModel().getRowCount();
-					double v = StringUtils.asNumber(this.getModel().getData(i,
-							this.dataColumn_));
+					double v = this.getModel().getData(i, this.dataColumn_);
 					if (Double.isNaN(v)) {
 						continue;
 					}
@@ -834,8 +760,7 @@ public class WPieChart extends WAbstractChart {
 				}
 				for (int j = 0; j < this.getModel().getRowCount(); ++j) {
 					int i = (index90 + j) % this.getModel().getRowCount();
-					double v = StringUtils.asNumber(this.getModel().getData(i,
-							this.dataColumn_));
+					double v = this.getModel().getData(i, this.dataColumn_);
 					if (Double.isNaN(v)) {
 						continue;
 					}
@@ -878,8 +803,7 @@ public class WPieChart extends WAbstractChart {
 			double r, double total, boolean shadow) {
 		double currentAngle = this.startAngle_;
 		for (int i = 0; i < this.getModel().getRowCount(); ++i) {
-			double v = StringUtils.asNumber(this.getModel().getData(i,
-					this.dataColumn_));
+			double v = this.getModel().getData(i, this.dataColumn_);
 			if (Double.isNaN(v)) {
 				continue;
 			}
@@ -899,10 +823,9 @@ public class WPieChart extends WAbstractChart {
 				painter.drawEllipse(pcx - r, pcy - r, r * 2, r * 2);
 			}
 			if (!shadow) {
-				WModelIndex index = this.getModel().getIndex(i,
+				WString toolTip = this.getModel().getToolTip(i,
 						this.dataColumn_);
-				Object toolTip = index.getData(ItemDataRole.ToolTipRole);
-				if (!(toolTip == null)) {
+				if (!(toolTip.length() == 0)) {
 					final int SEGMENT_ANGLE = 20;
 					WPolygonArea area = new WPolygonArea();
 					WTransform t = painter.getWorldTransform();
@@ -931,8 +854,8 @@ public class WPieChart extends WAbstractChart {
 							pcy
 									+ r
 									* Math.sin(-a / 180.0 * 3.14159265358979323846))));
-					area.setToolTip(StringUtils.asString(toolTip));
-					this.addDataPointArea(index, area);
+					area.setToolTip(toolTip);
+					this.addDataPointArea(i, this.dataColumn_, area);
 				}
 			}
 			double endAngle = currentAngle + spanAngle;
@@ -977,8 +900,7 @@ public class WPieChart extends WAbstractChart {
 			if (p < 0) {
 				p += r;
 			}
-			double v = StringUtils.asNumber(this.getModel().getData(p,
-					this.dataColumn_));
+			double v = this.getModel().getData(p, this.dataColumn_);
 			if (!Double.isNaN(v)) {
 				return p;
 			}
@@ -989,8 +911,7 @@ public class WPieChart extends WAbstractChart {
 	private int nextIndex(int i) {
 		int r = this.getModel().getRowCount();
 		for (int n = (i + 1) % r; n != i; ++n) {
-			double v = StringUtils.asNumber(this.getModel().getData(n,
-					this.dataColumn_));
+			double v = this.getModel().getData(n, this.dataColumn_);
 			if (!Double.isNaN(v)) {
 				return n;
 			}
@@ -1012,8 +933,8 @@ public class WPieChart extends WAbstractChart {
 		WString text = new WString();
 		if (!EnumUtils.mask(options, LabelOption.TextLabel).isEmpty()) {
 			if (this.labelsColumn_ != -1) {
-				text.append(StringUtils.asString(this.getModel().getData(index,
-						this.labelsColumn_)));
+				text.append(this.getModel().getDisplayData(index,
+						this.labelsColumn_));
 			}
 		}
 		if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {

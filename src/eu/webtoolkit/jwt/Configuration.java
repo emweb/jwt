@@ -78,6 +78,7 @@ public class Configuration {
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
+	private boolean behindReverseProxy = false;
 
 	/**
 	 * Creates a default configuration.
@@ -721,8 +722,24 @@ public class Configuration {
 		return true;
 	}
 
-	boolean isBehindReverseProxy() {
-		return false;
+	/**
+	 * Configures whether the application is hosted behind a reverse proxy.
+	 * 
+	 * @see #isBehindReverseProxy()
+	 */
+	public void setBehindReverseProxy(boolean enabled) {
+		this.behindReverseProxy = enabled;
+	}
+	
+	/**
+	 * Returns whether we are deployment behind a reverse proxy.
+	 * When configured behind a reverse proxy, typical headers set
+	 * by the reverse proxy are interpreted correctly:
+	 *  - X-Forwarded-Host
+	 *  - X-Forwarded-Proto
+	 */
+	public boolean isBehindReverseProxy() {
+		return this.behindReverseProxy;
 	}
 
 	public boolean isCookieChecks() {

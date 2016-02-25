@@ -799,9 +799,9 @@ public class WScatterData extends WAbstractDataSeries3D {
 							.putFloat((float) ((StringUtils
 									.asNumber(this.model_.getData(i,
 											this.ZSeriesColumn_)) - zMin) / (zMax - zMin)));
-					WColor color = (WColor) this.model_.getData(i,
+					WColor color = ((WColor) this.model_.getData(i,
 							this.ZSeriesColumn_,
-							ItemDataRole.MarkerBrushColorRole);
+							ItemDataRole.MarkerBrushColorRole));
 					coloredPtsColor.putFloat((float) color.getRed());
 					coloredPtsColor.putFloat((float) color.getGreen());
 					coloredPtsColor.putFloat((float) color.getBlue());
@@ -819,8 +819,8 @@ public class WScatterData extends WAbstractDataSeries3D {
 							.putFloat((float) ((StringUtils
 									.asNumber(this.model_.getData(i,
 											this.ZSeriesColumn_)) - zMin) / (zMax - zMin)));
-					WColor color = (WColor) this.model_.getData(i,
-							this.colorColumn_, this.asColorRole_);
+					WColor color = ((WColor) this.model_.getData(i,
+							this.colorColumn_, this.asColorRole_));
 					coloredPtsColor.putFloat((float) color.getRed());
 					coloredPtsColor.putFloat((float) color.getGreen());
 					coloredPtsColor.putFloat((float) color.getBlue());

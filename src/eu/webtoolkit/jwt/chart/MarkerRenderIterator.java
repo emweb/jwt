@@ -52,28 +52,40 @@ class MarkerRenderIterator extends SeriesIterator {
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,
-			double stackY, final WModelIndex xIndex, final WModelIndex yIndex) {
+			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
 			WPointF p = this.chart_.map(x, y, series.getAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
-			final WCartesianChart chart = this.chart_;
 			if (!this.marker_.isEmpty()) {
 				this.painter_.save();
 				WPen pen = series.getMarkerPen().clone();
-				setPenColor(pen, xIndex, yIndex,
-						ItemDataRole.MarkerPenColorRole);
+				SeriesIterator.setPenColor(pen, series, xRow, xColumn, yRow,
+						yColumn, ItemDataRole.MarkerPenColorRole);
+				if (this.chart_.isSeriesSelectionEnabled()
+						&& this.chart_.getSelectedSeries() != null
+						&& this.chart_.getSelectedSeries() != series) {
+					pen.setColor(WCartesianChart.lightenColor(pen.getColor()));
+				}
 				WBrush brush = series.getMarkerBrush().clone();
-				setBrushColor(brush, xIndex, yIndex,
-						ItemDataRole.MarkerBrushColorRole);
-				this.setMarkerSize(this.painter_, xIndex, yIndex,
-						series.getMarkerSize());
+				SeriesIterator.setBrushColor(brush, series, xRow, xColumn,
+						yRow, yColumn, ItemDataRole.MarkerBrushColorRole);
+				this.setMarkerSize(this.painter_, series, xRow, xColumn, yRow,
+						yColumn, series.getMarkerSize());
+				if (this.chart_.isSeriesSelectionEnabled()
+						&& this.chart_.getSelectedSeries() != null
+						&& this.chart_.getSelectedSeries() != series) {
+					brush.setColor(WCartesianChart.lightenColor(brush
+							.getColor()));
+				}
 				WTransform currentTransform = new WTransform().translate(
-						chart.getCombinedTransform().map(this.hv(p))).multiply(
-						this.scale_);
+						this.chart_.getCombinedTransform().map(this.hv(p)))
+						.multiply(this.scale_);
 				this.painter_.setWorldTransform(currentTransform, false);
 				this.painter_.setShadow(series.getShadow());
 				if (series.getMarker() != MarkerType.CrossMarker
-						&& series.getMarker() != MarkerType.XCrossMarker) {
+						&& series.getMarker() != MarkerType.XCrossMarker
+						&& series.getMarker() != MarkerType.AsteriskMarker
+						&& series.getMarker() != MarkerType.StarMarker) {
 					this.painter_.fillPath(this.marker_, brush);
 					this.painter_.setShadow(new WShadow());
 				}
@@ -81,15 +93,19 @@ class MarkerRenderIterator extends SeriesIterator {
 				this.painter_.restore();
 			}
 			if (series.getType() != SeriesType.BarSeries) {
-				Object toolTip = yIndex.getData(ItemDataRole.ToolTipRole);
-				if (!(toolTip == null)) {
-					WTransform t = this.painter_.getWorldTransform();
-					p = t.map(this.hv(p));
-					WCircleArea circleArea = new WCircleArea();
-					circleArea.setCenter(new WPointF(p.getX(), p.getY()));
-					circleArea.setRadius(5);
-					circleArea.setToolTip(StringUtils.asString(toolTip));
-					this.chart_.addDataPointArea(series, xIndex, circleArea);
+				WString toolTip = series.getModel().getToolTip(yRow, yColumn);
+				if (!(toolTip.length() == 0)) {
+					this.chart_.hasToolTips_ = true;
+					if (!this.chart_.isInteractive()) {
+						WTransform t = this.painter_.getWorldTransform();
+						p = t.map(this.hv(p));
+						WCircleArea circleArea = new WCircleArea();
+						circleArea.setCenter(new WPointF(p.getX(), p.getY()));
+						circleArea.setRadius(5);
+						circleArea.setToolTip(toolTip);
+						this.chart_.addDataPointArea(series, xRow, xColumn,
+								circleArea);
+					}
 				}
 			}
 		}
@@ -110,20 +126,21 @@ class MarkerRenderIterator extends SeriesIterator {
 	private WTransform scale_;
 
 	private void setMarkerSize(final WPainter painter,
-			final WModelIndex xIndex, final WModelIndex yIndex,
-			double markerSize) {
-		Object scale = new Object();
+			final WDataSeries series, int xRow, int xColumn, int yRow,
+			int yColumn, double markerSize) {
+		Double scale = null;
 		double dScale = 1;
-		if ((yIndex != null)) {
-			scale = yIndex.getData(ItemDataRole.MarkerScaleFactorRole);
+		if (yRow >= 0 && yColumn >= 0) {
+			scale = series.getModel().getMarkerScaleFactor(yRow, yColumn);
 		}
-		if ((scale == null) && (xIndex != null)) {
-			scale = xIndex.getData(ItemDataRole.MarkerScaleFactorRole);
+		if (!(scale != null) && xRow >= 0 && xColumn >= 0) {
+			scale = series.getModel().getMarkerScaleFactor(xRow, xColumn);
 		}
-		if (!(scale == null)) {
-			dScale = StringUtils.asNumber(scale);
+		if (scale != null) {
+			dScale = scale;
 		}
 		dScale = markerSize / 6 * dScale;
 		this.scale_.assign(new WTransform(dScale, 0, 0, dScale, 0, 0));
+		;
 	}
 }

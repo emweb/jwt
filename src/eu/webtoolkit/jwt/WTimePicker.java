@@ -35,8 +35,7 @@ public class WTimePicker extends WCompositeWidget {
 	 */
 	public WTimePicker(WContainerWidget parent) {
 		super(parent);
-		this.minuteStep_ = 1;
-		this.secondStep_ = 1;
+		this.format_ = "";
 		this.selectionChanged_ = new Signal(this);
 		this.init();
 	}
@@ -56,8 +55,7 @@ public class WTimePicker extends WCompositeWidget {
 	 */
 	public WTimePicker(final WTime time, WContainerWidget parent) {
 		super(parent);
-		this.minuteStep_ = 1;
-		this.secondStep_ = 1;
+		this.format_ = "";
 		this.selectionChanged_ = new Signal();
 		this.init(time);
 	}
@@ -72,67 +70,113 @@ public class WTimePicker extends WCompositeWidget {
 		this(time, (WContainerWidget) null);
 	}
 
+	/**
+	 * Creates a new time picker.
+	 */
+	public WTimePicker(WTimeEdit timeEdit, WContainerWidget parent) {
+		super(parent);
+		this.format_ = "";
+		this.timeEdit_ = timeEdit;
+		this.selectionChanged_ = new Signal();
+		this.init();
+	}
+
+	/**
+	 * Creates a new time picker.
+	 * <p>
+	 * Calls {@link #WTimePicker(WTimeEdit timeEdit, WContainerWidget parent)
+	 * this(timeEdit, (WContainerWidget)null)}
+	 */
+	public WTimePicker(WTimeEdit timeEdit) {
+		this(timeEdit, (WContainerWidget) null);
+	}
+
+	/**
+	 * Creates a new time picker.
+	 */
+	public WTimePicker(final WTime time, WTimeEdit timeEdit,
+			WContainerWidget parent) {
+		super(parent);
+		this.format_ = "";
+		this.timeEdit_ = timeEdit;
+		this.selectionChanged_ = new Signal();
+		this.init(time);
+	}
+
+	/**
+	 * Creates a new time picker.
+	 * <p>
+	 * Calls
+	 * {@link #WTimePicker(WTime time, WTimeEdit timeEdit, WContainerWidget parent)
+	 * this(time, timeEdit, (WContainerWidget)null)}
+	 */
+	public WTimePicker(final WTime time, WTimeEdit timeEdit) {
+		this(time, timeEdit, (WContainerWidget) null);
+	}
+
+	/**
+	 * Returns the time.
+	 */
 	public WTime getTime() {
 		int hours = 0;
 		int minutes = 0;
 		int seconds = 0;
+		int milliseconds = 0;
 		try {
-			hours = Integer.parseInt(this.hourText_.getText().toString());
-			minutes = Integer.parseInt(this.minuteText_.getText().toString());
-			seconds = Integer.parseInt(this.secondText_.getText().toString());
+			hours = Integer.parseInt(this.sbhour_.getText());
+			minutes = Integer.parseInt(this.sbminute_.getText());
+			seconds = Integer.parseInt(this.sbsecond_.getText());
+			if (this.isFormatMs()) {
+				milliseconds = Integer.parseInt(this.sbmillisecond_.getText());
+			}
+			if (this.isFormatAp()) {
+				if (this.cbAP_.getCurrentIndex() == 1) {
+					if (hours != 12) {
+						hours += 12;
+					}
+				} else {
+					if (hours == 12) {
+						hours = 0;
+					}
+				}
+			}
 		} catch (final NumberFormatException ex) {
 			logger.error(new StringWriter().append(
 					"boost::bad_lexical_cast caught in WTimePicker::time()")
 					.toString());
 		}
-		return new WTime(hours, minutes, seconds);
+		return new WTime(hours, minutes, seconds, milliseconds);
 	}
 
 	/**
-	 * sets the time
+	 * Sets the time.
 	 */
 	public void setTime(final WTime time) {
-		if (!time.isValid()) {
+		if (!(time != null && time.isValid())) {
 			logger.error(new StringWriter().append("Time is invalid!")
 					.toString());
 			return;
 		}
-		String hoursStr = "0";
-		String minutesStr = "00";
-		String secondsStr = "00";
-		try {
-			hoursStr = time.toString("hh");
-			minutesStr = time.toString("mm");
-			secondsStr = time.toString("ss");
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
+		int hours = 0;
+		if (this.isFormatAp()) {
+			hours = time.getPmHour();
+			if (time.getHour() < 12) {
+				this.cbAP_.setCurrentIndex(0);
+			} else {
+				this.cbAP_.setCurrentIndex(1);
+			}
+		} else {
+			hours = time.getHour();
 		}
-		this.hourText_.setText(hoursStr);
-		this.minuteText_.setText(minutesStr);
-		this.secondText_.setText(secondsStr);
-	}
-
-	/**
-	 * returns the minutes step
-	 */
-	public int getMinuteStep() {
-		return this.minuteStep_;
-	}
-
-	/**
-	 * sets the minute step
-	 */
-	public void setMinuteStep(int step) {
-		this.minuteStep_ = step;
-	}
-
-	/**
-	 * sets the second step
-	 */
-	public void setSecondStep(int step) {
-		this.secondStep_ = step;
+		int minutes = time.getMinute();
+		int seconds = time.getSecond();
+		int millisecond = time.getMsec();
+		this.sbhour_.setValue(hours);
+		this.sbminute_.setValue(minutes);
+		this.sbsecond_.setValue(seconds);
+		if (this.isFormatMs()) {
+			this.sbmillisecond_.setValue(millisecond);
+		}
 	}
 
 	/**
@@ -142,268 +186,134 @@ public class WTimePicker extends WCompositeWidget {
 		return this.selectionChanged_;
 	}
 
-	private int minuteStep_;
-	private int secondStep_;
+	public void configure() {
+		WTemplate container = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
+				.getImplementation()) : null);
+		container.bindWidget("hour", this.sbhour_);
+		container.bindWidget("minute", this.sbminute_);
+		container.bindWidget("second", this.sbsecond_);
+		if (this.isFormatMs()) {
+			container.bindWidget("millisecond", this.sbmillisecond_);
+		} else {
+			container.takeWidget("millisecond");
+			container.bindEmpty("millisecond");
+		}
+		if (this.isFormatAp()) {
+			this.sbhour_.setRange(1, 12);
+			container.bindWidget("ampm", this.cbAP_);
+		} else {
+			container.takeWidget("ampm");
+			container.bindEmpty("ampm");
+			this.sbhour_.setRange(0, 23);
+		}
+	}
 
 	private void init(final WTime time) {
-		StringBuilder text = new StringBuilder();
-		text.append("<table><tr><th>${incrementHour}</th><th></th><th>${incrementMinute}</th><th></th><th>${incrementSecond}</th></tr><tr><td valign=\"middle\" align=\"center\">${hourText}</td><td valign=\"middle\" align=\"center\">:</td><td valign=\"middle\" align=\"center\">${minuteText}</td><td valign=\"middle\" align=\"center\">:</td><td valign=\"middle\" align=\"center\">${secondText}</td></tr><tr><th>${decrementHour}</th><th></th><th>${decrementMinute}</th><th></th><th>${decrementSecond}</th></tr></table>");
-		WTemplate impl = new WTemplate();
-		this.setImplementation(impl);
-		impl.setTemplateText(new WString(text.toString()));
-		WIcon.loadIconFont();
-		WPushButton incHourButton = new WPushButton();
-		incHourButton.addStyleClass("fa fa-arrow-up");
-		WPushButton decHourButton = new WPushButton();
-		decHourButton.addStyleClass("fa fa-arrow-down");
-		WPushButton incMinuteButton = new WPushButton();
-		incMinuteButton.addStyleClass("fa fa-arrow-up");
-		WPushButton decMinuteButton = new WPushButton();
-		decMinuteButton.addStyleClass("fa fa-arrow-down");
-		WPushButton incSecondButton = new WPushButton();
-		incSecondButton.addStyleClass("fa fa-arrow-up");
-		WPushButton decSecondButton = new WPushButton();
-		decSecondButton.addStyleClass("fa fa-arrow-down");
-		this.hourText_ = new WText("0");
-		this.hourText_.setInline(false);
-		this.hourText_.setTextAlignment(AlignmentFlag.AlignCenter);
-		this.minuteText_ = new WText("00");
-		this.minuteText_.setInline(false);
-		this.minuteText_.setTextAlignment(AlignmentFlag.AlignCenter);
-		this.secondText_ = new WText("00");
-		this.secondText_.setInline(false);
-		this.secondText_.setTextAlignment(AlignmentFlag.AlignCenter);
-		impl.bindWidget("incrementHour", incHourButton);
-		impl.bindWidget("decrementHour", decHourButton);
-		impl.bindWidget("hourText", this.hourText_);
-		impl.bindWidget("minuteText", this.minuteText_);
-		impl.bindWidget("secondText", this.secondText_);
-		impl.bindWidget("incrementMinute", incMinuteButton);
-		impl.bindWidget("decrementMinute", decMinuteButton);
-		impl.bindWidget("incrementSecond", incSecondButton);
-		impl.bindWidget("decrementSecond", decSecondButton);
-		incHourButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WTimePicker.this.incrementHours();
-					}
-				});
-		decHourButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WTimePicker.this.decrementHours();
-					}
-				});
-		incMinuteButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WTimePicker.this.incrementMinutes();
-					}
-				});
-		decMinuteButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WTimePicker.this.decrementMinutes();
-					}
-				});
-		incSecondButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WTimePicker.this.incrementSeconds();
-					}
-				});
-		decSecondButton.clicked().addListener(this,
-				new Signal1.Listener<WMouseEvent>() {
-					public void trigger(WMouseEvent e1) {
-						WTimePicker.this.decrementSeconds();
-					}
-				});
+		WTemplate container = new WTemplate();
+		this.setImplementation(container);
+		container.addStyleClass("form-inline");
+		container.setTemplateText(tr("Wt.WTimePicker.template"));
+		this.createWidgets();
+		this.configure();
 	}
 
 	private final void init() {
-		init(new WTime());
+		init(null);
 	}
 
-	private WText hourText_;
-	private WText minuteText_;
-	private WText secondText_;
+	private String format_;
+	private WSpinBox sbhour_;
+	private WSpinBox sbminute_;
+	private WSpinBox sbsecond_;
+	private WSpinBox sbmillisecond_;
+	private WComboBox cbAP_;
+	private WTimeEdit timeEdit_;
 
-	private void incrementMinutes() {
-		String str = this.minuteText_.getText().toString();
-		int curVal = 0;
-		if (str.length() != 0) {
-			try {
-				curVal = Integer.parseInt(str);
-			} catch (final NumberFormatException ex) {
-				logger.error(new StringWriter()
-						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
-						.toString());
+	private void createWidgets() {
+		this.sbhour_ = new WSpinBox();
+		this.sbhour_.setWidth(new WLength(70));
+		this.sbhour_.setSingleStep(1);
+		this.sbhour_.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTimePicker.this.hourValueChanged();
 			}
-		}
-		if ((curVal += this.minuteStep_) >= 60) {
-			curVal -= 60;
-		}
-		try {
-			str = String.valueOf(curVal);
-			if (str.length() == 1) {
-				str = "0" + str;
+		});
+		this.sbminute_ = new WSpinBox();
+		this.sbminute_.setWidth(new WLength(70));
+		this.sbminute_.setRange(0, 59);
+		this.sbminute_.setSingleStep(1);
+		this.sbminute_.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTimePicker.this.minuteValueChanged();
 			}
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
-		}
-		this.minuteText_.setText(str);
-		this.selectionChanged_.trigger();
+		});
+		this.sbsecond_ = new WSpinBox();
+		this.sbsecond_.setWidth(new WLength(70));
+		this.sbsecond_.setRange(0, 59);
+		this.sbsecond_.setSingleStep(1);
+		this.sbsecond_.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTimePicker.this.secondValueChanged();
+			}
+		});
+		this.sbmillisecond_ = new WSpinBox();
+		this.sbmillisecond_.setWidth(new WLength(70));
+		this.sbmillisecond_.setRange(0, 999);
+		this.sbmillisecond_.setSingleStep(1);
+		this.sbmillisecond_.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTimePicker.this.msecValueChanged();
+			}
+		});
+		this.cbAP_ = new WComboBox();
+		this.cbAP_.setWidth(new WLength(70));
+		this.cbAP_.addItem("AM");
+		this.cbAP_.addItem("PM");
+		this.cbAP_.changed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTimePicker.this.ampmValueChanged();
+			}
+		});
 	}
 
-	private void decrementMinutes() {
-		String str = this.minuteText_.getText().toString();
-		int curVal = 0;
-		if (str.length() != 0) {
-			try {
-				curVal = Integer.parseInt(str);
-			} catch (final NumberFormatException ex) {
-				logger.error(new StringWriter()
-						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
-						.toString());
-			}
+	private void hourValueChanged() {
+		if (this.sbhour_.validate() == WValidator.State.Valid) {
+			this.selectionChanged_.trigger();
 		}
-		if ((curVal -= this.minuteStep_) < 0) {
-			curVal += 60;
-		}
-		try {
-			str = String.valueOf(curVal);
-			if (str.length() == 1) {
-				str = "0" + str;
-			}
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
-		}
-		this.minuteText_.setText(str);
-		this.selectionChanged_.trigger();
 	}
 
-	private void incrementHours() {
-		String str = this.hourText_.getText().toString();
-		int curVal = 0;
-		if (str.length() != 0) {
-			try {
-				curVal = Integer.parseInt(str);
-			} catch (final NumberFormatException ex) {
-				logger.error(new StringWriter()
-						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
-						.toString());
-			}
+	private void minuteValueChanged() {
+		if (this.sbminute_.validate() == WValidator.State.Valid) {
+			this.selectionChanged_.trigger();
 		}
-		if (curVal + 1 < 24) {
-			curVal++;
-		} else {
-			curVal -= 23;
-		}
-		try {
-			str = String.valueOf(curVal);
-			if (str.length() == 1) {
-				str = "0" + str;
-			}
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
-		}
-		this.hourText_.setText(str);
-		this.selectionChanged_.trigger();
 	}
 
-	private void decrementHours() {
-		String str = this.hourText_.getText().toString();
-		int curVal = 0;
-		if (str.length() != 0) {
-			try {
-				curVal = Integer.parseInt(str);
-			} catch (final NumberFormatException ex) {
-				logger.error(new StringWriter()
-						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
-						.toString());
-			}
+	private void secondValueChanged() {
+		if (this.sbsecond_.validate() == WValidator.State.Valid) {
+			this.selectionChanged_.trigger();
 		}
-		if (curVal - 1 >= 0) {
-			curVal--;
-		} else {
-			curVal += 23;
-		}
-		try {
-			str = String.valueOf(curVal);
-			if (str.length() == 1) {
-				str = "0" + str;
-			}
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
-		}
-		this.hourText_.setText(str);
-		this.selectionChanged_.trigger();
 	}
 
-	private void incrementSeconds() {
-		String str = this.secondText_.getText().toString();
-		int curVal = 0;
-		if (str.length() != 0) {
-			try {
-				curVal = Integer.parseInt(str);
-			} catch (final NumberFormatException ex) {
-				logger.error(new StringWriter()
-						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
-						.toString());
-			}
+	private void msecValueChanged() {
+		if (this.sbmillisecond_.validate() == WValidator.State.Valid) {
+			this.selectionChanged_.trigger();
 		}
-		if ((curVal += this.secondStep_) >= 60) {
-			curVal -= 60;
-		}
-		try {
-			str = String.valueOf(curVal);
-			if (str.length() == 1) {
-				str = "0" + str;
-			}
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
-		}
-		this.secondText_.setText(str);
-		this.selectionChanged_.trigger();
 	}
 
-	private void decrementSeconds() {
-		String str = this.secondText_.getText().toString();
-		int curVal = 0;
-		if (str.length() != 0) {
-			try {
-				curVal = Integer.parseInt(str);
-			} catch (final NumberFormatException ex) {
-				logger.error(new StringWriter()
-						.append("boost::bad_lexical_cast caught in WTimePicker::time()")
-						.toString());
-			}
+	private void ampmValueChanged() {
+		if (this.cbAP_.validate() == WValidator.State.Valid) {
+			this.selectionChanged_.trigger();
 		}
-		if ((curVal -= this.secondStep_) < 0) {
-			curVal += 60;
-		}
-		try {
-			str = String.valueOf(curVal);
-			if (str.length() == 1) {
-				str = "0" + str;
-			}
-		} catch (final NumberFormatException ex) {
-			logger.error(new StringWriter().append(
-					"boost::bad_lexical_cast caught in WTimePicker::time()")
-					.toString());
-		}
-		this.secondText_.setText(str);
-		this.selectionChanged_.trigger();
+	}
+
+	private boolean isFormatAp() {
+		return WTime.usesAmPm(this.timeEdit_.getFormat());
+	}
+
+	private boolean isFormatMs() {
+		String format = this.timeEdit_.getFormat();
+		return WTime.fromString(new WTime(4, 5, 6, 123).toString(format),
+				format).getMsec() == 123;
 	}
 
 	private Signal selectionChanged_;

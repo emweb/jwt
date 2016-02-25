@@ -23,8 +23,10 @@ abstract class SeriesRenderer {
 	private static Logger logger = LoggerFactory
 			.getLogger(SeriesRenderer.class);
 
-	public abstract void addValue(double x, double y, double stacky,
-			final WModelIndex xIndex, final WModelIndex yIndex);
+	public abstract void addBreak();
+
+	public abstract void addValue(double x, double y, double stacky, int xRow,
+			int xColumn, int yRow, int yColumn);
 
 	public abstract void paint();
 

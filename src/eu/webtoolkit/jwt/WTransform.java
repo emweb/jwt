@@ -131,6 +131,8 @@ public class WTransform extends WJavaScriptExposableObject {
 	public WTransform assign(final WTransform rhs) {
 		if (rhs.isJavaScriptBound()) {
 			this.assignBinding(rhs);
+		} else {
+			this.clientBinding_ = null;
 		}
 		for (int i = 0; i < 6; ++i) {
 			this.m_[i] = rhs.m_[i];

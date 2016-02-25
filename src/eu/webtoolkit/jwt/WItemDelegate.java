@@ -122,9 +122,9 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			Object checkedData = index.getData(ItemDataRole.CheckStateRole);
 			if (!(checkedData == null)) {
 				haveCheckBox = true;
-				CheckState state = checkedData.getClass().equals(Boolean.class) ? (Boolean) checkedData ? CheckState.Checked
+				CheckState state = checkedData.getClass().equals(Boolean.class) ? ((Boolean) checkedData) ? CheckState.Checked
 						: CheckState.Unchecked
-						: checkedData.getClass().equals(CheckState.class) ? (CheckState) checkedData
+						: checkedData.getClass().equals(CheckState.class) ? ((CheckState) checkedData)
 								: CheckState.Unchecked;
 				IndexCheckBox icb = this.checkBox(
 						widgetRef,
@@ -143,7 +143,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			}
 			Object linkData = index.getData(ItemDataRole.LinkRole);
 			if (!(linkData == null)) {
-				WLink link = (WLink) linkData;
+				WLink link = ((WLink) linkData);
 				IndexAnchor a = this.anchorWidget(widgetRef, index);
 				a.setLink(link);
 				a.setTarget(link.getTarget());
@@ -348,7 +348,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				: null);
 		WLineEdit lineEdit = ((w.getWidget(0)) instanceof WLineEdit ? (WLineEdit) (w
 				.getWidget(0)) : null);
-		lineEdit.setText((String) value);
+		lineEdit.setText(((String) value));
 	}
 
 	/**

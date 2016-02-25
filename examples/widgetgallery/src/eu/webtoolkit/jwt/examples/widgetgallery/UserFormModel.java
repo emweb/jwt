@@ -105,8 +105,8 @@ class UserFormModel extends WFormModel {
 	}
 
 	public String countryCode(int row) {
-		return (String) this.countryModel_.getData(row, 0,
-				ItemDataRole.UserRole);
+		return ((String) this.countryModel_.getData(row, 0,
+				ItemDataRole.UserRole));
 	}
 
 	private static final Map<String, List<String>> cities = getCityMap();

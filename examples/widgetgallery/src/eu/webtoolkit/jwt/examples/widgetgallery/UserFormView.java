@@ -42,8 +42,8 @@ class UserFormView extends WTemplateFormView {
 		this.setFormWidget(UserFormModel.CountryField, countryCB,
 				new WTemplateFormView.FieldView() {
 					public void updateViewValue() {
-						String code = (String) UserFormView.this.model
-								.getValue(UserFormModel.CountryField);
+						String code = ((String) UserFormView.this.model
+								.getValue(UserFormModel.CountryField));
 						int row = UserFormView.this.model.countryModelRow(code);
 						countryCB.setCurrentIndex(row);
 					}
@@ -62,8 +62,8 @@ class UserFormView extends WTemplateFormView {
 		this.setFormWidget(UserFormModel.BirthField, dateEdit,
 				new WTemplateFormView.FieldView() {
 					public void updateViewValue() {
-						WDate date = (WDate) UserFormView.this.model
-								.getValue(UserFormModel.BirthField);
+						WDate date = ((WDate) UserFormView.this.model
+								.getValue(UserFormModel.BirthField));
 						dateEdit.setDate(date);
 					}
 

@@ -104,7 +104,13 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
 			return;
 		}
+		if (this.isRendered() && this.flags_.get(BIT_NAKED)) {
+			logger.error(new StringWriter()
+					.append("setText() has no effect when already rendered as a naked checkbox (without label)")
+					.toString());
+		}
 		this.text_.setText(text);
+		this.flags_.clear(BIT_NAKED);
 		this.flags_.set(BIT_TEXT_CHANGED);
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 	}

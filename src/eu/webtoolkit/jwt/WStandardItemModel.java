@@ -726,14 +726,14 @@ public class WStandardItemModel extends WAbstractItemModel {
 		if (item == this.invisibleRootItem_) {
 			{
 				int insertPos = 0 + index;
-				for (int ii = 0; ii < count; ++ii)
+				for (int ii = 0; ii < (count); ++ii)
 					headerData.add(insertPos + ii,
 							new HashMap<Integer, Object>());
 			}
 			;
 			{
 				int insertPos = 0 + index;
-				for (int ii = 0; ii < count; ++ii)
+				for (int ii = 0; ii < (count); ++ii)
 					fl.add(insertPos + ii, EnumSet.noneOf(HeaderFlag.class));
 			}
 			;

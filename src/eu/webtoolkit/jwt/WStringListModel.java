@@ -165,7 +165,7 @@ public class WStringListModel extends WAbstractListModel {
 		if (this.flags_.isEmpty()) {
 			{
 				int insertPos = 0;
-				for (int ii = 0; ii < this.getRowCount(); ++ii)
+				for (int ii = 0; ii < (this.getRowCount()); ++ii)
 					this.flags_
 							.add(insertPos + ii, EnumSet.of(
 									ItemFlag.ItemIsSelectable,
@@ -246,14 +246,14 @@ public class WStringListModel extends WAbstractListModel {
 			this.beginInsertRows(parent, row, row + count - 1);
 			{
 				int insertPos = 0 + row;
-				for (int ii = 0; ii < count; ++ii)
+				for (int ii = 0; ii < (count); ++ii)
 					this.displayData_.add(insertPos + ii, new WString());
 			}
 			;
 			if (!this.flags_.isEmpty()) {
 				{
 					int insertPos = 0 + row;
-					for (int ii = 0; ii < count; ++ii)
+					for (int ii = 0; ii < (count); ++ii)
 						this.flags_.add(insertPos + ii, EnumSet.of(
 								ItemFlag.ItemIsSelectable,
 								ItemFlag.ItemIsEditable));
@@ -263,7 +263,7 @@ public class WStringListModel extends WAbstractListModel {
 			if (this.otherData_ != null) {
 				{
 					int insertPos = 0 + row;
-					for (int ii = 0; ii < count; ++ii)
+					for (int ii = 0; ii < (count); ++ii)
 						this.otherData_.add(insertPos + ii,
 								new TreeMap<Integer, Object>());
 				}
