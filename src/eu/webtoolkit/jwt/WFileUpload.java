@@ -499,14 +499,13 @@ public class WFileUpload extends WWebWidget {
 			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			String maxFileSize = String.valueOf(WApplication.getInstance()
 					.getMaximumRequestSize());
-			String command = "{var submit = false; var x = Wt3_3_5.$('in"
+			String command = "{var submit = true;var x = Wt3_3_5.$('in"
 					+ this.getId()
-					+ "');  if (x.files != null) {    for (var i = 0; i < x.files.length; i++) {       var f = x.files[i];      if(f.size < "
-					+ maxFileSize
-					+ ") {          submit = true;      } else {          submit = false;         "
+					+ "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > "
+					+ maxFileSize + ") {submit = false;"
 					+ this.fileTooLarge().createCall("f.size")
-					+ ";         break;           }    }  } else     submit = true;  if (submit)    "
-					+ this.getJsRef() + ".submit();  };";
+					+ ";break;}}}if (submit)" + this.getJsRef()
+					+ ".submit(); }";
 			element.callJavaScript(command);
 			this.flags_.clear(BIT_DO_UPLOAD);
 			if (containsProgress) {

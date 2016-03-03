@@ -2306,7 +2306,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						WAbstractItemView.EditTrigger.SelectedClicked)
 						.isEmpty() && this.isSelected(index);
 		this.delayedClearAndSelectIndex_ = null;
-		if ((index != null)) {
+		if ((index != null)
+				&& event.getButton() == WMouseEvent.Button.LeftButton) {
 			this.selectionHandleClick(index, event.getModifiers());
 		}
 		if (doEdit) {

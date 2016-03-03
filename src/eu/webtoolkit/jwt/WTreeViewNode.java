@@ -19,23 +19,25 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WTreeViewNode extends WTemplate {
+class WTreeViewNode extends WContainerWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTreeViewNode.class);
 
 	public WTreeViewNode(WTreeView view, final WModelIndex index,
 			int childrenHeight, boolean isLast, WTreeViewNode parent) {
-		super(tr("Wt.WTreeViewNode.template"));
+		super();
 		this.view_ = view;
+		this.nodeWidget_ = null;
+		this.childContainer_ = null;
 		this.index_ = index;
 		this.childrenHeight_ = childrenHeight;
 		this.parentNode_ = parent;
 		this.childrenLoaded_ = false;
-		this.bindEmpty("cols-row");
-		this.bindEmpty("selected");
-		this.bindEmpty("expand");
-		this.bindEmpty("no-expand");
-		this.bindEmpty("col0");
-		this.bindEmpty("children");
+		this.nodeWidget_ = new WTemplate(tr("Wt.WTreeViewNode.template"), this);
+		this.nodeWidget_.setStyleClass("Wt-item");
+		this.nodeWidget_.bindEmpty("cols-row");
+		this.nodeWidget_.bindEmpty("expand");
+		this.nodeWidget_.bindEmpty("no-expand");
+		this.nodeWidget_.bindEmpty("col0");
 		int selfHeight = 0;
 		boolean needLoad = this.view_.isExpanded(this.index_);
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
@@ -131,18 +133,17 @@ class WTreeViewNode extends WTemplate {
 				.getParent() != null && this.index_.getParent().equals(
 				this.view_.getRootIndex())))
 				&& !this.view_.isRootDecorated()) {
-			this.bindEmpty("expand");
-			this.bindEmpty("no-expand");
-			this.bindEmpty("trunk-class");
+			this.nodeWidget_.bindEmpty("expand");
+			this.nodeWidget_.bindEmpty("no-expand");
 			return;
 		}
 		if (!isEmpty) {
-			ToggleButton expandButton = (ToggleButton) this
+			ToggleButton expandButton = (ToggleButton) this.nodeWidget_
 					.resolveWidget("expand");
 			if (!(expandButton != null)) {
-				this.bindEmpty("no-expand");
+				this.nodeWidget_.bindEmpty("no-expand");
 				expandButton = new ToggleButton(this.view_.expandConfig_);
-				this.bindWidget("expand", expandButton);
+				this.nodeWidget_.bindWidget("expand", expandButton);
 				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
 					expandButton.setWidth(new WLength(19));
 				}
@@ -159,11 +160,12 @@ class WTreeViewNode extends WTemplate {
 				expandButton.setState(this.isExpanded() ? 1 : 0);
 			}
 		} else {
-			WText noExpandIcon = (WText) this.resolveWidget("no-expand");
+			WText noExpandIcon = (WText) this.nodeWidget_
+					.resolveWidget("no-expand");
 			if (!(noExpandIcon != null)) {
-				this.bindEmpty("expand");
+				this.nodeWidget_.bindEmpty("expand");
 				noExpandIcon = new WText();
-				this.bindWidget("no-expand", noExpandIcon);
+				this.nodeWidget_.bindWidget("no-expand", noExpandIcon);
 				noExpandIcon.setInline(false);
 				noExpandIcon.setStyleClass("Wt-ctrl rh noexpand");
 				if (WApplication.getInstance().getEnvironment().agentIsIE()) {
@@ -172,11 +174,12 @@ class WTreeViewNode extends WTemplate {
 			}
 		}
 		this.toggleStyleClass("Wt-trunk", !isLast);
-		this.bindString("trunk-class", isLast ? "Wt-end" : "Wt-trunk");
+		this.nodeWidget_.toggleStyleClass("Wt-end", isLast);
+		this.nodeWidget_.toggleStyleClass("Wt-trunk", !isLast);
 	}
 
 	public void insertColumns(int column, int count) {
-		WContainerWidget row = (WContainerWidget) this
+		WContainerWidget row = (WContainerWidget) this.nodeWidget_
 				.resolveWidget("cols-row");
 		if (this.view_.getColumnCount() > 1) {
 			if (!(row != null)) {
@@ -188,7 +191,7 @@ class WTreeViewNode extends WTemplate {
 					row = rowWrap;
 				}
 				row.setStyleClass("Wt-tv-row rh");
-				this.bindWidget("cols-row", row);
+				this.nodeWidget_.bindWidget("cols-row", row);
 			}
 		} else {
 			if (row != null)
@@ -363,18 +366,15 @@ class WTreeViewNode extends WTemplate {
 	}
 
 	public WContainerWidget getChildContainer() {
-		WContainerWidget result = (WContainerWidget) this
-				.resolveWidget("children");
-		if (!(result != null)) {
-			result = new WContainerWidget();
-			this.bindWidget("children", result);
-			result.setList(true);
+		if (!(this.childContainer_ != null)) {
+			this.childContainer_ = new WContainerWidget(this);
+			this.childContainer_.setList(true);
 			if ((this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
 					.equals(this.view_.getRootIndex())))) {
-				result.addStyleClass("Wt-tv-root");
+				this.childContainer_.addStyleClass("Wt-tv-root");
 			}
 		}
-		return result;
+		return this.childContainer_;
 	}
 
 	public void shiftModelIndexes(int start, int offset) {
@@ -528,7 +528,7 @@ class WTreeViewNode extends WTemplate {
 	public void renderSelected(boolean selected, int column) {
 		String cl = WApplication.getInstance().getTheme().getActiveClass();
 		if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows) {
-			this.bindString("selected", selected ? cl : "");
+			this.nodeWidget_.toggleStyleClass(cl, selected);
 		} else {
 			WWidget w = this.getCellWidget(column);
 			w.toggleStyleClass(cl, selected);
@@ -540,7 +540,8 @@ class WTreeViewNode extends WTemplate {
 			return;
 		}
 		this.loadChildren();
-		ToggleButton expandButton = (ToggleButton) this.resolveWidget("expand");
+		ToggleButton expandButton = (ToggleButton) this.nodeWidget_
+				.resolveWidget("expand");
 		if (expandButton != null) {
 			expandButton.setState(1);
 		}
@@ -559,7 +560,8 @@ class WTreeViewNode extends WTemplate {
 		if (!this.isExpanded()) {
 			return;
 		}
-		ToggleButton expandButton = (ToggleButton) this.resolveWidget("expand");
+		ToggleButton expandButton = (ToggleButton) this.nodeWidget_
+				.resolveWidget("expand");
 		if (expandButton != null) {
 			expandButton.setState(0);
 		}
@@ -575,9 +577,9 @@ class WTreeViewNode extends WTemplate {
 
 	public WWidget getCellWidget(int column) {
 		if (column == 0) {
-			return this.resolveWidget("col0");
+			return this.nodeWidget_.resolveWidget("col0");
 		} else {
-			WContainerWidget row = (WContainerWidget) this
+			WContainerWidget row = (WContainerWidget) this.nodeWidget_
 					.resolveWidget("cols-row");
 			if (this.view_.getRowHeaderCount() != 0) {
 				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row
@@ -588,6 +590,8 @@ class WTreeViewNode extends WTemplate {
 	}
 
 	private WTreeView view_;
+	private WTemplate nodeWidget_;
+	private WContainerWidget childContainer_;
 	private WModelIndex index_;
 	private int childrenHeight_;
 	private WTreeViewNode parentNode_;
@@ -618,9 +622,9 @@ class WTreeViewNode extends WTemplate {
 		}
 		if (column == 0) {
 			newW.setInline(false);
-			this.bindWidget("col0", newW);
+			this.nodeWidget_.bindWidget("col0", newW);
 		} else {
-			WContainerWidget row = (WContainerWidget) this
+			WContainerWidget row = (WContainerWidget) this.nodeWidget_
 					.resolveWidget("cols-row");
 			if (this.view_.getRowHeaderCount() != 0) {
 				row = ((row.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (row

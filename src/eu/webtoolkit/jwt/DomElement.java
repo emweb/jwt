@@ -318,6 +318,14 @@ public class DomElement {
 	 * This adds a word (delimited by a space) to an existing property value.
 	 */
 	public void addPropertyWord(Property property, final String value) {
+		String i = this.properties_.get(property);
+		if (i != null) {
+			Set<String> words = new HashSet<String>();
+			StringUtils.split(words, i, " ", true);
+			if (words.contains(value) != false) {
+				return;
+			}
+		}
 		this.setProperty(property,
 				StringUtils.addWord(this.getProperty(property), value));
 	}

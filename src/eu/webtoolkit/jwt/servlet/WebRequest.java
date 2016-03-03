@@ -103,6 +103,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 				for (int i = 0; i < configuration.internalDeploymentSize(); ++i) {
 					if (pathInfo.length() > 1) {
 						int slashPos = pathInfo.indexOf('/', 1);
+						if (slashPos == -1)
+							slashPos = pathInfo.length();
 						if (slashPos != -1) {
 							scriptName += pathInfo.substring(0, slashPos);
 							pathInfo = pathInfo.substring(slashPos);
@@ -130,6 +132,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 			for (int i = 0; i < configuration.internalDeploymentSize(); ++i) {
 				if (pathInfo.length() > 1) {
 					int slashPos = pathInfo.indexOf('/', 1);
+					if (slashPos == -1)
+						slashPos = pathInfo.length();
 					if (slashPos != -1) {
 						pathInfo = pathInfo.substring(slashPos);
 					}
