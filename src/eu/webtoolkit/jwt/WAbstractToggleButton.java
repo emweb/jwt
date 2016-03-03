@@ -377,6 +377,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 				input.setProperty(Property.PropertyReadOnly, v);
 				element.removeProperty(Property.PropertyReadOnly);
 			}
+			v = element.getProperty(Property.PropertyTabIndex);
+			if (v.length() != 0) {
+				input.setProperty(Property.PropertyTabIndex, v);
+				element.removeProperty(Property.PropertyTabIndex);
+			}
 			v = input.getAttribute("title");
 			if (v.length() != 0) {
 				element.setAttribute("title", v);

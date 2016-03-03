@@ -122,6 +122,8 @@ public class WTableView extends WAbstractItemView {
 		this.viewportWidth_ = 1000;
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 800;
+		this.scrollToRow_ = -1;
+		this.scrollToHint_ = WAbstractItemView.ScrollHint.EnsureVisible;
 		this.setSelectable(false);
 		this.setStyleClass("Wt-itemview Wt-tableview");
 		WApplication app = WApplication.getInstance();
@@ -457,6 +459,12 @@ public class WTableView extends WAbstractItemView {
 			if (!height.isAuto()) {
 				this.viewportHeight_ = (int) Math.ceil(height.toPixels()
 						- this.getHeaderHeight().toPixels());
+				if (this.scrollToRow_ != -1) {
+					WModelIndex index = this.getModel().getIndex(
+							this.scrollToRow_, 0, this.getRootIndex());
+					this.scrollToRow_ = -1;
+					this.scrollTo(index, this.scrollToHint_);
+				}
 			} else {
 				this.viewportHeight_ = 800;
 			}
@@ -605,6 +613,9 @@ public class WTableView extends WAbstractItemView {
 						this.computeRenderedArea();
 						this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 					}
+				} else {
+					this.scrollToRow_ = index.getRow();
+					this.scrollToHint_ = hint;
 				}
 				if (this.isRendered()) {
 					StringBuilder s = new StringBuilder();
@@ -850,6 +861,8 @@ public class WTableView extends WAbstractItemView {
 	private int renderedLastRow_;
 	private int renderedFirstColumn_;
 	private int renderedLastColumn_;
+	private int scrollToRow_;
+	private WAbstractItemView.ScrollHint scrollToHint_;
 
 	private void updateTableBackground() {
 		if (this.isAjaxMode()) {
@@ -1659,6 +1672,12 @@ public class WTableView extends WAbstractItemView {
 		this.viewportWidth_ = width;
 		this.viewportTop_ = top;
 		this.viewportHeight_ = height;
+		if (this.scrollToRow_ != -1) {
+			WModelIndex index = this.getModel().getIndex(this.scrollToRow_, 0,
+					this.getRootIndex());
+			this.scrollToRow_ = -1;
+			this.scrollTo(index, this.scrollToHint_);
+		}
 		this.computeRenderedArea();
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}

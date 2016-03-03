@@ -266,7 +266,7 @@ public class WTimePicker extends WCompositeWidget {
 			}
 		});
 		this.cbAP_ = new WComboBox();
-		this.cbAP_.setWidth(new WLength(70));
+		this.cbAP_.setWidth(new WLength(90));
 		this.cbAP_.addItem("AM");
 		this.cbAP_.addItem("PM");
 		this.cbAP_.changed().addListener(this, new Signal.Listener() {

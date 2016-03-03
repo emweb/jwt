@@ -597,8 +597,7 @@ public class WAxis {
 	 * Sets the label angle.
 	 * <p>
 	 * Sets the angle used for displaying the labels (in degrees). A 0 angle
-	 * corresponds to horizontal text. Note that this option is only supported
-	 * by the InlineSvgVml renderers, but not by HtmlCanvas.
+	 * corresponds to horizontal text.
 	 * <p>
 	 * The default value is 0.0.
 	 * <p>
@@ -2152,6 +2151,7 @@ public class WAxis {
 				this.getLabelTicks(ticks, i, cfg);
 			}
 		}
+		painter.rotate(-this.labelAngle_);
 		for (int i = 0; i < ticks.size(); ++i) {
 			painter.drawText(0, 0, 100, 100,
 					EnumSet.of(AlignmentFlag.AlignRight), ticks.get(i).label);
@@ -2880,10 +2880,19 @@ public class WAxis {
 	private double calcAutoNumLabels(Orientation orientation,
 			final WAxis.Segment s) {
 		if (orientation == Orientation.Horizontal) {
-			return s.renderLength
-					/ Math.max((double) AUTO_H_LABEL_PIXELS, new WLength(this
-							.defaultDateTimeFormat(s).toString().length(),
-							WLength.Unit.FontEm).toPixels());
+			if (Math.abs(this.labelAngle_) <= 15) {
+				return s.renderLength
+						/ Math.max((double) AUTO_H_LABEL_PIXELS, new WLength(
+								this.defaultDateTimeFormat(s).toString()
+										.length(), WLength.Unit.FontEm)
+								.toPixels());
+			} else {
+				if (Math.abs(this.labelAngle_) <= 40) {
+					return s.renderLength / (2 * AUTO_V_LABEL_PIXELS);
+				} else {
+					return s.renderLength / AUTO_V_LABEL_PIXELS;
+				}
+			}
 		} else {
 			return s.renderLength / AUTO_V_LABEL_PIXELS;
 		}

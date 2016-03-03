@@ -3056,7 +3056,7 @@ public class WCartesianChart extends WAbstractChart {
 			WFont f = painter.getFont();
 			if (this.isAutoLayoutEnabled()
 					&& !EnumUtils.mask(painter.getDevice().getFeatures(),
-							WPaintDevice.FeatureFlag.HasFontMetrics).equals(0)) {
+							WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
 				int columnWidth = 0;
 				for (int i = 0; i < this.getSeries().size(); ++i) {
 					if (this.getSeries().get(i).isLegendEnabled()) {
@@ -3071,9 +3071,14 @@ public class WCartesianChart extends WAbstractChart {
 						columnWidth = Math.max(columnWidth, (int) t.getWidth());
 					}
 				}
+				columnWidth += 25;
 				WCartesianChart self = this;
-				self.legend_
-						.setLegendColumnWidth(new WLength(columnWidth + 25));
+				self.legend_.setLegendColumnWidth(new WLength(columnWidth));
+				if (this.getLegendSide() == Side.Top
+						|| this.getLegendSide() == Side.Bottom) {
+					self.legend_.setLegendColumns(Math.max(1, w / columnWidth
+							- 1));
+				}
 			}
 			int numLegendRows = (numSeriesWithLegend - 1)
 					/ this.getLegendColumns() + 1;

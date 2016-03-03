@@ -214,6 +214,7 @@ public class WTimeEdit extends WLineEdit {
 	 */
 	protected void setFromTimePicker() {
 		this.setTime(this.timePicker_.getTime());
+		this.changed().trigger();
 	}
 
 	/**
