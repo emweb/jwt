@@ -1480,6 +1480,7 @@ public class WTableView extends WAbstractItemView {
 		this.saveExtraHeaderWidgets();
 		if (this.isAjaxMode()) {
 			this.headers_.clear();
+			this.headerColumnsHeaderContainer_.clear();
 			for (int i = 0; i < this.getColumnCount(); ++i) {
 				WWidget w = this.createHeaderWidget(i);
 				w.setFloatSide(Side.Left);

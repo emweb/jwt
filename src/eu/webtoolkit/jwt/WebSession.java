@@ -2126,7 +2126,11 @@ class WebSession {
 	}
 
 	private String getSessionQuery() {
-		return "?wtd=" + DomElement.urlEncodeS(this.sessionId_);
+		String result = "?wtd=" + DomElement.urlEncodeS(this.sessionId_);
+		if (this.getType() == EntryPointType.WidgetSet) {
+			result += "&wtt=widgetset";
+		}
+		return result;
 	}
 
 	private void flushBootStyleResponse() {

@@ -141,6 +141,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.hasToolTips_ = false;
+		this.jsDefined_ = false;
 		this.zoomEnabled_ = false;
 		this.panEnabled_ = false;
 		this.rubberBandEnabled_ = true;
@@ -204,6 +205,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.hasToolTips_ = false;
+		this.jsDefined_ = false;
 		this.zoomEnabled_ = false;
 		this.panEnabled_ = false;
 		this.rubberBandEnabled_ = true;
@@ -1669,7 +1671,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * The selected series can be changed using a long touch or mouse click.
 	 * <p>
-	 * If the argument provided is -1 or
+	 * If the argument provided is null or
 	 * {@link WCartesianChart#setSeriesSelectionEnabled(boolean enabled) series
 	 * selection} is not enabled, no series will be selected.
 	 * <p>
@@ -2047,6 +2049,7 @@ public class WCartesianChart extends WAbstractChart {
 	WRectF chartArea_;
 	private AxisValue[] location_ = new AxisValue[3];
 	boolean hasToolTips_;
+	private boolean jsDefined_;
 	private boolean zoomEnabled_;
 	private boolean panEnabled_;
 	private boolean rubberBandEnabled_;
@@ -2138,12 +2141,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.xTransform_.assign(new WTransform());
 		this.yTransform_.assign(new WTransform());
 		if (WApplication.getInstance() != null) {
-			WApplication app = WApplication.getInstance();
-			app.loadJavaScript("js/ChartCommon.js", wtjs2());
-			app.doJavaScript(
-					"if (!Wt3_3_5.chartCommon) {Wt3_3_5.chartCommon = new "
-							+ "Wt3_3_5.ChartCommon(" + app.getJavaScriptClass()
-							+ "); }", false);
 			this.mouseWentDown().addListener(
 					"function(o, e){var o=" + this.getCObjJsRef()
 							+ ";if(o){o.mouseDown(o, e);}}");
@@ -3815,8 +3812,10 @@ public class WCartesianChart extends WAbstractChart {
 
 	protected void render(EnumSet<RenderFlag> flags) {
 		super.render(flags);
-		WApplication app = WApplication.getInstance();
-		app.loadJavaScript("js/WCartesianChart.js", wtjs1());
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+				|| !this.jsDefined_) {
+			this.defineJavaScript();
+		}
 	}
 
 	protected void setFormData(final WObject.FormData formData) {
@@ -4449,6 +4448,21 @@ public class WCartesianChart extends WAbstractChart {
 		double y1 = this.chartArea_.getBottom() - yRenderEnd;
 		double y2 = this.chartArea_.getBottom() - yRenderStart;
 		return new WRectF(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	private void defineJavaScript() {
+		WApplication app = WApplication.getInstance();
+		if (app != null && this.isInteractive()) {
+			app.loadJavaScript("js/ChartCommon.js", wtjs2());
+			app.doJavaScript(
+					"if (!Wt3_3_5.chartCommon) {Wt3_3_5.chartCommon = new "
+							+ "Wt3_3_5.ChartCommon(" + app.getJavaScriptClass()
+							+ "); }", false);
+			app.loadJavaScript("js/WCartesianChart.js", wtjs1());
+			this.jsDefined_ = true;
+		} else {
+			this.jsDefined_ = false;
+		}
 	}
 
 	private boolean axisSliderWidgetForSeries(WDataSeries series) {

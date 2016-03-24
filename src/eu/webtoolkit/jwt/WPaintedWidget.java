@@ -156,6 +156,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 		this.repaintSlot_ = new JSlot("function() {var o=" + this.getObjJsRef()
 				+ ";if(o){o.repaint();}}", this);
 		this.jsObjects_ = new WJavaScriptObjectStorage(this.getObjJsRef());
+		this.jsDefined_ = false;
 		if (WApplication.getInstance() != null) {
 			final WEnvironment env = WApplication.getInstance()
 					.getEnvironment();
@@ -165,11 +166,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 			}
 		}
 		this.setInline(false);
-		if (WApplication.getInstance() != null) {
-			this.setFormObject(true);
-			WApplication app = WApplication.getInstance();
-			app.loadJavaScript("js/WPaintedWidget.js", wtjs2());
-		}
 	}
 
 	/**
@@ -603,7 +599,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+				|| !this.jsDefined_) {
 			this.defineJavaScript();
 		}
 		super.render(flags);
@@ -648,7 +645,14 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
-		app.loadJavaScript("js/WPaintedWidget.js", wtjs1());
+		if (app != null && this.jsObjects_.size() > 0) {
+			this.setFormObject(true);
+			app.loadJavaScript("js/WPaintedWidget.js", wtjs2());
+			app.loadJavaScript("js/WPaintedWidget.js", wtjs1());
+			this.jsDefined_ = true;
+		} else {
+			this.jsDefined_ = false;
+		}
 	}
 
 	private WPaintedWidget.Method preferredMethod_;
@@ -662,6 +666,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	int renderHeight_;
 	private JSlot repaintSlot_;
 	WJavaScriptObjectStorage jsObjects_;
+	private boolean jsDefined_;
 
 	private void resizeCanvas(int width, int height) {
 		if (this.renderWidth_ == width && this.renderHeight_ == height) {
