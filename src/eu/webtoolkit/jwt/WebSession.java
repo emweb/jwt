@@ -1620,6 +1620,8 @@ class WebSession {
 	public void queueEvent(final ApplicationEvent event) {
 		this.eventQueueMutex_.lock();
 		this.eventQueue_.addLast(event);
+		logger.debug(new StringWriter().append("queueEvent(): ")
+				.append(String.valueOf(this.eventQueue_.size())).toString());
 		this.eventQueueMutex_.unlock();
 	}
 
@@ -1927,14 +1929,14 @@ class WebSession {
 			if (!(signalE != null)) {
 				return;
 			}
-			this.renderer_.setRendered(true);
 			logger.debug(new StringWriter().append("signal: ").append(signalE)
 					.toString());
+			if (this.getType() != EntryPointType.WidgetSet
+					|| !signalE.equals("none") && !signalE.equals("load")) {
+				this.renderer_.setRendered(true);
+			}
 			if (signalE.equals("none") || signalE.equals("load")) {
 				if (signalE.equals("load")) {
-					if (this.getType() == EntryPointType.WidgetSet) {
-						this.renderer_.setRendered(false);
-					}
 					if (!this.renderer_.checkResponsePuzzle(request)) {
 						this.app_.quit();
 					} else {
@@ -2177,6 +2179,8 @@ class WebSession {
 	private ApplicationEvent getPopQueuedEvent() {
 		this.eventQueueMutex_.lock();
 		ApplicationEvent result = new ApplicationEvent();
+		logger.debug(new StringWriter().append("popQueuedEvent(): ")
+				.append(String.valueOf(this.eventQueue_.size())).toString());
 		if (!this.eventQueue_.isEmpty()) {
 			result = this.eventQueue_.getFirst();
 			this.eventQueue_.removeFirst();

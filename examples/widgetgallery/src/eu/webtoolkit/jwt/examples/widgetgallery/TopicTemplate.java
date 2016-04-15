@@ -29,7 +29,7 @@ class TopicTemplate extends WTemplate {
 		this.setCondition("if:cpp", false);
 		this.setCondition("if:java", true);
 		this.bindString("doc-url",
-				"http://www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
+				"//www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
 	}
 
 	public void resolveString(final String varName, final List<WString> args,
