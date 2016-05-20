@@ -83,8 +83,6 @@ public class WTimeEdit extends WLineEdit {
 	 * <p>
 	 * Does nothing if the current time is <code>Null</code>.
 	 * <p>
-	 * 
-	 * @see WTimeEdit#getTime()
 	 */
 	public void setTime(final WTime time) {
 		if (!(time == null)) {
@@ -97,8 +95,7 @@ public class WTimeEdit extends WLineEdit {
 	 * Returns the time.
 	 * <p>
 	 * Returns an invalid time (for which {@link } returns <code>false</code>) if
-	 * the time could not be parsed using the current
-	 * {@link WTimeEdit#getFormat() getFormat()}.
+	 * the time could not be parsed using the current {@link }.
 	 * <p>
 	 * 
 	 * @see WTimeEdit#setTime(WTime time)

@@ -59,12 +59,7 @@ public class DomElement {
 	 * basic CSS defaults for it (whether it is inline or a block element).
 	 * <p>
 	 * Typically, elements are created using one of the &apos;named&apos;
-	 * constructors: {@link DomElement#createNew(DomElementType type)
-	 * createNew()},
-	 * {@link DomElement#getForUpdate(String id, DomElementType type)
-	 * getForUpdate()} or
-	 * {@link DomElement#updateGiven(String var, DomElementType type)
-	 * updateGiven()}.
+	 * constructors: {@link }, {@link } or {@link }.
 	 */
 	public DomElement(DomElement.Mode mode, DomElementType type) {
 		this.mode_ = mode;
@@ -82,6 +77,7 @@ public class DomElement {
 		this.javaScript_ = new EscapeOStream();
 		this.javaScriptEvenWhenDeleted_ = "";
 		this.var_ = "";
+		this.globalUnfocused_ = false;
 		this.attributes_ = new HashMap<String, String>();
 		this.removedAttributes_ = new HashSet<String>();
 		this.properties_ = new TreeMap<Property, String>();
@@ -183,7 +179,7 @@ public class DomElement {
 	 * Creates a reference to an existing element, deriving the ID from an
 	 * object.
 	 * <p>
-	 * This uses object.{@link DomElement#getId() getId()} as the id.
+	 * This uses object.{@link } as the id.
 	 */
 	public static DomElement getForUpdate(WObject object, DomElementType type) {
 		return getForUpdate(object.getId(), type);
@@ -203,8 +199,7 @@ public class DomElement {
 	 * Returns the JavaScript variable name.
 	 * <p>
 	 * This variable name is only defined when the element is being rendered
-	 * using JavaScript, after {@link DomElement#declare(EscapeOStream out)
-	 * declare()} has been called.
+	 * using JavaScript, after {@link } has been called.
 	 */
 	public String getVar() {
 		return this.var_;
@@ -213,8 +208,7 @@ public class DomElement {
 	/**
 	 * Sets whether the element was initially empty.
 	 * <p>
-	 * Knowing that an element was empty allows optimization of
-	 * {@link DomElement#addChild(DomElement child) addChild()}
+	 * Knowing that an element was empty allows optimization of {@link }
 	 */
 	public void setWasEmpty(boolean how) {
 		this.wasEmpty_ = how;
@@ -1012,7 +1006,7 @@ public class DomElement {
 					.entrySet().iterator(); i_it.hasNext();) {
 				Map.Entry<String, DomElement.EventHandler> i = i_it.next();
 				if (i.getValue().jsCode.length() != 0) {
-					if (this.id_.equals(app.getDomRoot().getId())
+					if (this.globalUnfocused_
 							|| i.getKey() == WInteractWidget.WHEEL_SIGNAL
 							&& app.getEnvironment().agentIsIE()
 							&& app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9
@@ -1448,6 +1442,10 @@ public class DomElement {
 		return this.var_;
 	}
 
+	public void setGlobalUnfocused(boolean b) {
+		this.globalUnfocused_ = b;
+	}
+
 	static class EventHandler {
 		private static Logger logger = LoggerFactory
 				.getLogger(EventHandler.class);
@@ -1718,19 +1716,15 @@ public class DomElement {
 
 	private void setJavaScriptEvent(final EscapeOStream out, String eventName,
 			final DomElement.EventHandler handler, WApplication app) {
-		boolean globalUnfocused = this.id_.equals(app.getDomRoot().getId());
 		int fid = nextId_++;
 		out.append("function f").append(fid).append("(event) { ");
-		if (globalUnfocused) {
-			out.append("var g=event||window.event; var t=g.target||g.srcElement;if ((!t||Wt3_3_5.hasTag(t,'DIV') ||Wt3_3_5.hasTag(t,'BODY') ||Wt3_3_5.hasTag(t,'HTML'))) {");
-		}
 		out.append(handler.jsCode);
-		if (globalUnfocused) {
-			out.append('}');
-		}
 		out.append("}\n");
-		if (globalUnfocused) {
-			out.append("document");
+		if (this.globalUnfocused_) {
+			out.append(app.getJavaScriptClass()).append("._p_.bindGlobal('")
+					.append(eventName).append("', '").append(this.id_)
+					.append("', f").append(fid).append(")\n");
+			return;
 		} else {
 			this.declare(out);
 			out.append(this.var_);
@@ -1894,6 +1888,7 @@ public class DomElement {
 	private String javaScriptEvenWhenDeleted_;
 	private String var_;
 	private boolean declared_;
+	private boolean globalUnfocused_;
 	private Map<String, String> attributes_;
 	private Set<String> removedAttributes_;
 	private SortedMap<Property, String> properties_;

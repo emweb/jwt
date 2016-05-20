@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  * <p>
- * WRadioButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WRadioButton is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>

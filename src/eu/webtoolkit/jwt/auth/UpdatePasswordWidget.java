@@ -117,7 +117,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this(user, registrationModel, authModel, (WContainerWidget) null);
 	}
 
-	protected WFormWidget createFormWidget(String field) {
+	protected WWidget createFormWidget(String field) {
 		WFormWidget result = null;
 		if (field == RegistrationModel.LoginNameField) {
 			result = new WLineEdit();

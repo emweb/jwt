@@ -113,8 +113,6 @@ public class WScatterData extends WAbstractDataSeries3D {
 	 * the ground-plane of the chart&apos;s plotcube. By default the droplines
 	 * are disabled.
 	 * <p>
-	 * 
-	 * @see WScatterData#setDroplinesPen(WPen pen)
 	 */
 	public void setDroplinesEnabled(boolean enabled) {
 		if (this.droplinesEnabled_ != enabled) {
@@ -140,7 +138,6 @@ public class WScatterData extends WAbstractDataSeries3D {
 	 * <p>
 	 * 
 	 * @see WScatterData#setDroplinesEnabled(boolean enabled)
-	 * @see WScatterData#setDroplinesPen(WPen pen)
 	 */
 	public boolean isDroplinesEnabled() {
 		return this.droplinesEnabled_;

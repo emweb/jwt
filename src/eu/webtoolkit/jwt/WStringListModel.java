@@ -30,15 +30,9 @@ import org.slf4j.LoggerFactory;
  * roles, editing and addition and removal of data rows.
  * <p>
  * You can populate the model by passing a list of strings to its consructor, or
- * by using the {@link WStringListModel#setStringList(List strings)
- * setStringList()} method. You can set or retrieve data using the
- * {@link WStringListModel#setData(WModelIndex index, Object value, int role)
- * setData()} and {@link WStringListModel#getData(WModelIndex index, int role)
- * getData()} methods, and add or remove data using the
- * {@link WStringListModel#insertRows(int row, int count, WModelIndex parent)
- * insertRows()} and
- * {@link WStringListModel#removeRows(int row, int count, WModelIndex parent)
- * removeRows()} methods.
+ * by using the {@link } method. You can set or retrieve data using the {@link }
+ * and {@link } methods, and add or remove data using the {@link } and {@link }
+ * methods.
  * <p>
  * 
  * @see WComboBox
@@ -94,7 +88,6 @@ public class WStringListModel extends WAbstractListModel {
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#dataChanged()
-	 * @see WStringListModel#addString(CharSequence string)
 	 */
 	public void setStringList(final List<WString> strings) {
 		int currentSize = this.displayData_.size();
@@ -158,8 +151,8 @@ public class WStringListModel extends WAbstractListModel {
 	/**
 	 * Sets model flags for an item.
 	 * <p>
-	 * The default item flags are {@link ItemFlag#ItemIsSelectable
-	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
+	 * The default item flags are {@link ItemIsSelectable} |
+	 * {@link ItemIsEditable}.
 	 */
 	public void setFlags(int row, EnumSet<ItemFlag> flags) {
 		if (this.flags_.isEmpty()) {

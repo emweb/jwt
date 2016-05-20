@@ -276,8 +276,6 @@ public class WIntValidator extends WValidator {
 	/**
 	 * If true the validator will ignore trailing spaces.
 	 * <p>
-	 * 
-	 * @see WIntValidator#isIgnoreTrailingSpaces()
 	 */
 	public void setIgnoreTrailingSpaces(boolean b) {
 		if (this.ignoreTrailingSpaces_ != b) {

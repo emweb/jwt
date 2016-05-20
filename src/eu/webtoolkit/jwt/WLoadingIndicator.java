@@ -43,15 +43,12 @@ public interface WLoadingIndicator {
 	 * to indicate that a response is pending. The widget should be positioned
 	 * using CSS.
 	 * <p>
-	 * The widget will be shown and hidden using {@link WWidget#show()
-	 * WWidget#show()} and {@link WWidget#hide() WWidget#hide()}. If you want to
-	 * customize this behaviour, you should reimplement the
-	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
-	 * WWidget#setHidden()} method. Note that show() and hide() are stateless
-	 * slots, and thus you need to make sure that your implementation comforms
-	 * to that contract, so that it may be optimized to JavaScript (the
-	 * server-side implementation will only be called during stateless slot
-	 * prelearning).
+	 * The widget will be shown and hidden using {@link } and {@link }. If you
+	 * want to customize this behaviour, you should reimplement the {@link }
+	 * method. Note that show() and hide() are stateless slots, and thus you
+	 * need to make sure that your implementation comforms to that contract, so
+	 * that it may be optimized to JavaScript (the server-side implementation
+	 * will only be called during stateless slot prelearning).
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>The widget will not be added to the

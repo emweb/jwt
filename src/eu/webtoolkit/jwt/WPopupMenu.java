@@ -26,10 +26,9 @@ import org.slf4j.LoggerFactory;
  * The menu implements a typical context menu, with support for submenu&apos;s.
  * It is a specialized {@link WMenu} from which it inherits most of the API.
  * <p>
- * When initially created, the menu is invisible, until
- * {@link WPopupMenu#popup(WPoint p) popup()} or exec() is called. Then, the
- * menu will remain visible until an item is selected, or the user cancels the
- * menu (by hitting Escape or clicking elsewhere).
+ * When initially created, the menu is invisible, until {@link } or exec() is
+ * called. Then, the menu will remain visible until an item is selected, or the
+ * user cancels the menu (by hitting Escape or clicking elsewhere).
  * <p>
  * The implementation assumes availability of JavaScript to position the menu at
  * the current mouse position and provide feed-back of the currently selected
@@ -40,12 +39,9 @@ import org.slf4j.LoggerFactory;
  * event loop and waits until the user cancelled the popup menu (by hitting
  * Escape or clicking elsewhere), or selected an item.
  * <p>
- * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
- * popup()} methods to show the menu and listen to the
- * {@link WPopupMenu#triggered() triggered} signal where you read the
- * {@link WPopupMenu#getResult() getResult()}, or associate the menu with a
- * button using {@link WPushButton#setMenu(WPopupMenu popupMenu)
- * WPushButton#setMenu()}.
+ * Alternatively, you can use one of the {@link } methods to show the menu and
+ * listen to the {@link triggered} signal where you read the {@link }, or
+ * associate the menu with a button using {@link }.
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>
@@ -107,8 +103,8 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Creates a new popup menu.
 	 * <p>
-	 * The menu is hidden, by default, and must be shown using
-	 * {@link WPopupMenu#popup(WPoint p) popup()} or exec().
+	 * The menu is hidden, by default, and must be shown using {@link } or
+	 * exec().
 	 */
 	public WPopupMenu(WStackedWidget contentsStack) {
 		super(contentsStack);
@@ -179,7 +175,6 @@ public class WPopupMenu extends WMenu {
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
-	 * @see WMouseEvent#getDocument()
 	 */
 	public void popup(final WMouseEvent e) {
 		this.popup(new WPoint(e.getDocument().x, e.getDocument().y));
@@ -201,8 +196,6 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Shows the popup besides a widget.
 	 * <p>
-	 * 
-	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
 	 */
 	public void popup(WWidget location, Orientation orientation) {
 		this.location_ = location;
@@ -260,8 +253,6 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Executes the popup besides a widget.
 	 * <p>
-	 * 
-	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
 	 */
 	public WMenuItem exec(WWidget location, Orientation orientation) {
 		if (this.recursiveEventLoop_) {
@@ -315,15 +306,13 @@ public class WPopupMenu extends WMenu {
 	 * Signal emitted when the popup is hidden.
 	 * <p>
 	 * Unlike the {@link WMenu#itemSelected() WMenu#itemSelected()} signal,
-	 * {@link WPopupMenu#aboutToHide() aboutToHide()} is only emitted by the
-	 * toplevel popup menu (and not by submenus), and is also emitted when no
-	 * item was selected.
+	 * {@link } is only emitted by the toplevel popup menu (and not by submenus),
+	 * and is also emitted when no item was selected.
 	 * <p>
 	 * You can use {@link WPopupMenu#getResult() getResult()} to get the
 	 * selected item, which may be <code>null</code>.
 	 * <p>
 	 * 
-	 * @see WPopupMenu#triggered()
 	 * @see WMenu#itemSelected()
 	 */
 	public Signal aboutToHide() {
@@ -334,8 +323,7 @@ public class WPopupMenu extends WMenu {
 	 * Signal emitted when an item is selected.
 	 * <p>
 	 * Unlike the {@link WMenu#itemSelected() WMenu#itemSelected()} signal,
-	 * {@link WPopupMenu#triggered() triggered()} is only emitted by the
-	 * toplevel popup menu (and not by submenus).
+	 * {@link } is only emitted by the toplevel popup menu (and not by submenus).
 	 * <p>
 	 * 
 	 * @see WPopupMenu#aboutToHide()

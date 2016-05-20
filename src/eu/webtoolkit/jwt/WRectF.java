@@ -56,8 +56,6 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * <p>
 	 * Constructs an empty rectangle.
 	 * <p>
-	 * 
-	 * @see WRectF#isEmpty()
 	 */
 	public WRectF() {
 		super();
@@ -96,8 +94,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * <code>bottomRight</code>.
 	 * <p>
 	 * If you want to create a rectangle from two arbitrary corner points, you
-	 * can use this constructor too, but should call
-	 * {@link WRectF#getNormalized() getNormalized()} afterwords.
+	 * can use this constructor too, but should call {@link } afterwords.
 	 */
 	public WRectF(final WPointF topLeft, final WPointF bottomRight) {
 		super();
@@ -206,11 +203,8 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Returns the X-position (left side offset).
 	 * <p>
-	 * This is equivalent to {@link WRectF#getLeft() getLeft()}.
+	 * This is equivalent to {@link }.
 	 * <p>
-	 * 
-	 * @see WRectF#getY()
-	 * @see WRectF#getLeft()
 	 */
 	public double getX() {
 		return this.x_;
@@ -219,11 +213,10 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Returns the Y-position (top side offset).
 	 * <p>
-	 * This is equivalent to {@link WRectF#getTop() getTop()}.
+	 * This is equivalent to {@link }.
 	 * <p>
 	 * 
 	 * @see WRectF#getX()
-	 * @see WRectF#getTop()
 	 */
 	public double getY() {
 		return this.y_;
@@ -232,8 +225,6 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Returns the width.
 	 * <p>
-	 * 
-	 * @see WRectF#getHeight()
 	 */
 	public double getWidth() {
 		return this.width_;
@@ -254,7 +245,6 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * <p>
 	 * 
 	 * @see WRectF#getX()
-	 * @see WRectF#getRight()
 	 */
 	public double getLeft() {
 		return this.x_;
@@ -265,7 +255,6 @@ public class WRectF extends WJavaScriptExposableObject {
 	 * <p>
 	 * 
 	 * @see WRectF#getY()
-	 * @see WRectF#getBottom()
 	 */
 	public double getTop() {
 		return this.y_;

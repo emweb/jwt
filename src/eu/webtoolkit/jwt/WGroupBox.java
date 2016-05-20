@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * </pre>
  * <p>
  * Like {@link WContainerWidget}, WGroupBox is by default displayed as a
- * {@link WWidget#setInline(boolean inlined) block}.
+ * {@link block}.
  * <p>
  * <div align="center"> <img src="doc-files//WGroupBox-1.png"
  * alt="WGroupBox example">

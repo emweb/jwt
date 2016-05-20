@@ -103,8 +103,6 @@ public class WIconPair extends WCompositeWidget {
 	 * <p>
 	 * The default state is 0.
 	 * <p>
-	 * 
-	 * @see WIconPair#getState()
 	 */
 	public void setState(int num) {
 		if (num == 0) {

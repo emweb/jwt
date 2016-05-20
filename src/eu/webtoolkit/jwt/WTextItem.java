@@ -52,8 +52,7 @@ public class WTextItem {
 	 * Returns the measured text.
 	 * <p>
 	 * If the item was measured with word breaking enabled, then the text may
-	 * contain trailing whitespace that is not included in the
-	 * {@link WTextItem#getWidth() getWidth()}.
+	 * contain trailing whitespace that is not included in the {@link }.
 	 */
 	public WString getText() {
 		return this.text_;

@@ -28,11 +28,8 @@ import org.slf4j.LoggerFactory;
  * which a user may navigate (usually to obtain more detailed results related to
  * a single aggregate quantity).
  * <p>
- * To use this proxy model, you should provide a source model using
- * {@link WAggregateProxyModel#setSourceModel(WAbstractItemModel model)
- * setSourceModel()}, and define column ranges that can be aggregated using
- * {@link WAggregateProxyModel#addAggregate(int parentColumn, int firstColumn, int lastColumn)
- * addAggregate()}.
+ * To use this proxy model, you should provide a source model using {@link }, and
+ * define column ranges that can be aggregated using {@link }.
  * <p>
  * This example would render like this:
  * <p>

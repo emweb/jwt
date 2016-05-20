@@ -23,12 +23,9 @@ import org.slf4j.LoggerFactory;
  * A style class for a single widget or style sheet rule.
  * <p>
  * 
- * You can manipulate the decoration style of a single widget using
- * {@link WWidget#getDecorationStyle() WWidget#getDecorationStyle()} or you can
- * use a {@link WCssDecorationStyle} to add a rule to the inline style sheet
- * using
- * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)
- * WCssStyleSheet#addRule()}.
+ * You can manipulate the decoration style of a single widget using {@link } or
+ * you can use a {@link WCssDecorationStyle} to add a rule to the inline style
+ * sheet using {@link }.
  */
 public class WCssDecorationStyle extends WObject {
 	private static Logger logger = LoggerFactory
@@ -206,7 +203,7 @@ public class WCssDecorationStyle extends WObject {
 	 * The <code>link</code> may be a URL or a resource.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
-	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
+	 * OR&apos;ing {@link } values together, e.g. (Right | Top).
 	 */
 	public void setBackgroundImage(final WLink image,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {
@@ -272,7 +269,7 @@ public class WCssDecorationStyle extends WObject {
 	 * Sets a background image.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
-	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
+	 * OR&apos;ing {@link } values together, e.g. (Right | Top).
 	 */
 	public void setBackgroundImage(final String url,
 			WCssDecorationStyle.Repeat repeat, EnumSet<Side> sides) {

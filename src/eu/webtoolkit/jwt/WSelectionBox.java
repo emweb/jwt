@@ -24,21 +24,17 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * By default, a selection box may be used to let the user select one item from
- * a list. This may be changed to multiple selection mode using
- * {@link WSelectionBox#setSelectionMode(SelectionMode mode) setSelectionMode()}.
+ * a list. This may be changed to multiple selection mode using {@link }.
  * <p>
  * The current selection may be set and read using
  * {@link WComboBox#setCurrentIndex(int index) WComboBox#setCurrentIndex()} and
  * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()}, for
- * {@link SelectionMode#SingleSelection SingleSelection} mode, or
- * {@link WSelectionBox#setSelectedIndexes(Set selection) setSelectedIndexes()}
- * and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes()} for
- * {@link SelectionMode#ExtendedSelection} mode. The
+ * {@link SingleSelection} mode, or {@link } and {@link } for {@link } mode. The
  * {@link WComboBox#activated() WComboBox#activated()} and
  * {@link WComboBox#sactivated() WComboBox#sactivated()} signals are not emited
- * in the {@link SelectionMode#ExtendedSelection} mode, use the
- * {@link WFormWidget#changed() WFormWidget#changed()} signal
- * {@link WFormWidget#changed() WFormWidget#changed()}.
+ * in the {@link } mode, use the {@link WFormWidget#changed()
+ * WFormWidget#changed()} signal {@link WFormWidget#changed()
+ * WFormWidget#changed()}.
  * <p>
  * WSelectionBox is an MVC view class, using a simple string list model by
  * default. The model may be populated using
@@ -52,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * {@link WStringListModel}, use
  * {@link WComboBox#setModel(WAbstractItemModel model) WComboBox#setModel()}.
  * <p>
- * WSelectionBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WSelectionBox is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -106,9 +102,8 @@ public class WSelectionBox extends WComboBox {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is SingleSelection. You can change to
-	 * {@link SelectionMode#ExtendedSelection} to allow selection of multiple
-	 * items.
+	 * The default selection mode is SingleSelection. You can change to {@link }
+	 * to allow selection of multiple items.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (mode != this.selectionMode_) {
@@ -142,14 +137,12 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Returns the current selection (in {@link SelectionMode#ExtendedSelection}
-	 * mode).
+	 * Returns the current selection (in {@link } mode).
 	 * <p>
 	 * Get the list of currently selected items. This method is only defined
 	 * when {@link WSelectionBox#getSelectionMode() getSelectionMode()} is
-	 * {@link SelectionMode#ExtendedSelection}. Otherwise, you should use
-	 * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()} to get
-	 * item currently selected.
+	 * {@link }. Otherwise, you should use {@link WComboBox#getCurrentIndex()
+	 * WComboBox#getCurrentIndex()} to get item currently selected.
 	 * <p>
 	 * 
 	 * @see WComboBox#getCurrentIndex()
@@ -163,10 +156,9 @@ public class WSelectionBox extends WComboBox {
 	}
 
 	/**
-	 * Sets the selection (in {@link SelectionMode#ExtendedSelection} mode).
+	 * Sets the selection (in {@link } mode).
 	 * <p>
-	 * For an {@link SelectionMode#ExtendedSelection} mode, set the list of
-	 * currently selected items.
+	 * For an {@link } mode, set the list of currently selected items.
 	 * <p>
 	 * 
 	 * @see WSelectionBox#getSelectedIndexes()

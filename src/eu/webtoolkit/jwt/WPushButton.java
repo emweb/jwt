@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * To act on a button click, connect a slot to the
  * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal.
  * <p>
- * WPushButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WPushButton is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -148,8 +148,6 @@ public class WPushButton extends WFormWidget {
 	 * A checkable button can be checked and unchecked, and clicking will toggle
 	 * between these two states.
 	 * <p>
-	 * 
-	 * @see WPushButton#setChecked(boolean checked)
 	 */
 	public void setCheckable(boolean checkable) {
 		this.flags_.set(BIT_IS_CHECKABLE, checkable);
@@ -180,13 +178,10 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * This is ignored for a button which is not checkable.
 	 * <p>
-	 * This method does not emit one of the {@link WPushButton#checked()
-	 * checked()} or {@link WPushButton#unChecked() unChecked()} signals.
+	 * This method does not emit one of the {@link } or {@link } signals.
 	 * <p>
 	 * 
 	 * @see WPushButton#setCheckable(boolean checkable)
-	 * @see WPushButton#setChecked()
-	 * @see WPushButton#setUnChecked()
 	 */
 	public void setChecked(boolean checked) {
 		if (this.isCheckable()) {
@@ -199,7 +194,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Checks the button.
 	 * <p>
-	 * Does not emit the {@link WPushButton#checked() checked()} signal.
+	 * Does not emit the {@link } signal.
 	 * <p>
 	 * 
 	 * @see WPushButton#setChecked(boolean checked)
@@ -211,7 +206,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Unchecks the button.
 	 * <p>
-	 * Does not emit the {@link WPushButton#unChecked() unChecked()} signal.
+	 * Does not emit the {@link } signal.
 	 * <p>
 	 * 
 	 * @see WPushButton#setChecked(boolean checked)
@@ -233,21 +228,17 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the button text.
 	 * <p>
-	 * The default text format is {@link TextFormat#PlainText}.
+	 * The default text format is {@link }.
 	 * <p>
-	 * When the current text format is {@link TextFormat#XHTMLText}, and
-	 * <code>text</code> is literal (not created using
-	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
-	 * parser which discards malicious tags and attributes silently. When the
-	 * parser encounters an XML parse error, the textFormat is changed to
-	 * {@link TextFormat#PlainText}.
+	 * When the current text format is {@link }, and <code>text</code> is literal
+	 * (not created using {@link }), it is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is changed to {@link }.
 	 * <p>
 	 * Returns whether the text could be set using the current textFormat. A
 	 * return value of <code>false</code> indicates that the text format was
 	 * changed in order to be able to accept the new text.
 	 * <p>
-	 * 
-	 * @see WPushButton#setTextFormat(TextFormat textFormat)
 	 */
 	public boolean setText(final CharSequence text) {
 		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
@@ -275,16 +266,15 @@ public class WPushButton extends WFormWidget {
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
-	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link WString#tr(String key)
-	 * WString#tr()}), the current text is parsed using an XML parser which
-	 * discards malicious tags and attributes silently. When the parser
-	 * encounters an XML parse error, the textFormat is left unchanged, and this
-	 * method returns false.
+	 * When changing the textFormat to {@link }, and the current text is literal
+	 * (not created using {@link }), the current text is parsed using an XML
+	 * parser which discards malicious tags and attributes silently. When the
+	 * parser encounters an XML parse error, the textFormat is left unchanged,
+	 * and this method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>
-	 * The default format is {@link TextFormat#PlainText}.
+	 * The default format is {@link }.
 	 */
 	public boolean setTextFormat(TextFormat textFormat) {
 		return this.text_.setFormat(textFormat);
@@ -392,7 +382,6 @@ public class WPushButton extends WFormWidget {
 	 * <p>
 	 * 
 	 * @see WPushButton#setRef(String url)
-	 * @see WResource#getUrl()
 	 * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
 	 */
 	public String getRef() {

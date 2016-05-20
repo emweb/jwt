@@ -97,12 +97,10 @@ public class WVideo extends WAbstractMedia {
 	/**
 	 * Returns the JavaScript reference to the video object, or null.
 	 * <p>
-	 * It is possible, for compatibility reasons, that
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the video element.
-	 * {@link WVideo#getJsVideoRef() getJsVideoRef()} is guaranteed to be an
-	 * expression that evaluates to the video object. This expression may yield
-	 * null, if the video object is not rendered at all (e.g. on older versions
-	 * of Internet Explorer).
+	 * It is possible, for compatibility reasons, that {@link } is not the video
+	 * element. {@link } is guaranteed to be an expression that evaluates to the
+	 * video object. This expression may yield null, if the video object is not
+	 * rendered at all (e.g. on older versions of Internet Explorer).
 	 */
 	public String getJsVideoRef() {
 		return this.getJsMediaRef();

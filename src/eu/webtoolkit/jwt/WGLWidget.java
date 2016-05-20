@@ -49,27 +49,18 @@ import org.slf4j.LoggerFactory;
  * a good starting point to get familiar with WebGL.
  * <p>
  * To use a WGLWidget, you must derive from it and reimplement the painter
- * methods. Usually, you will always need to implement
- * {@link WGLWidget#initializeGL() initializeGL()} and
- * {@link WGLWidget#paintGL() paintGL()}. Optionally, you may choose to
- * implement {@link WGLWidget#resizeGL(int width, int height) resizeGL()} (if
- * your widget does not have a fixed size), and {@link WGLWidget#updateGL()
- * updateGL()}. If you need to modify the painting methods, a repaint is
- * triggered by calling the {@link WGLWidget#repaintGL(EnumSet which)
- * repaintGL()} method. The default behaviour for any of these four painting
- * functions is to do nothing.
+ * methods. Usually, you will always need to implement {@link } and {@link }.
+ * Optionally, you may choose to implement {@link } (if your widget does not have
+ * a fixed size), and {@link }. If you need to modify the painting methods, a
+ * repaint is triggered by calling the {@link } method. The default behaviour for
+ * any of these four painting functions is to do nothing.
  * <p>
- * The four painter methods ({@link WGLWidget#initializeGL() initializeGL()},
- * {@link WGLWidget#resizeGL(int width, int height) resizeGL()},
- * {@link WGLWidget#paintGL() paintGL()} and {@link WGLWidget#updateGL()
- * updateGL()}) all record JavaScript which is sent to the browser. The
- * JavaScript code of {@link WGLWidget#paintGL() paintGL()} is cached
- * client-side, and may be executed many times, e.g. to repaint a scene from
- * different viewpoints. The JavaScript code of {@link WGLWidget#initializeGL()
- * initializeGL()}, {@link WGLWidget#resizeGL(int width, int height) resizeGL()}
- * and {@link WGLWidget#updateGL() updateGL()} are intended for OpenGL state
- * updates, and is therefore only executed once on the client and is then
- * discarded.
+ * The four painter methods ({@link }, {@link }, {@link } and {@link }) all record
+ * JavaScript which is sent to the browser. The JavaScript code of {@link } is
+ * cached client-side, and may be executed many times, e.g. to repaint a scene
+ * from different viewpoints. The JavaScript code of {@link }, {@link } and
+ * {@link } are intended for OpenGL state updates, and is therefore only executed
+ * once on the client and is then discarded.
  * <p>
  * There are four painting methods that you may implement in a specialization of
  * this class. The purpose of these functions is to register what JavaScript
@@ -78,33 +69,27 @@ import org.slf4j.LoggerFactory;
  * invoked in the browser.
  * <ul>
  * <li>
- * <b>{@link WGLWidget#initializeGL() initializeGL()}</b>: this function is
- * executed after the GL context has been initialized. It is also executed when
- * the <code>webglcontextrestored</code> signal is fired. You can distinguish
- * between the first initialization and restoration of context using
- * {@link WGLWidget#isRestoringContext() isRestoringContext()}. This is the
- * ideal location to compose shader programs, send VBO&apos;s to the client,
- * extract uniform and attribute locations, ... Due to the presence of
- * VBO&apos;s, this function may generate a large amount of data to the client.</li>
+ * <b>{@link }</b>: this function is executed after the GL context has been
+ * initialized. It is also executed when the <code>webglcontextrestored</code>
+ * signal is fired. You can distinguish between the first initialization and
+ * restoration of context using {@link }. This is the ideal location to compose
+ * shader programs, send VBO&apos;s to the client, extract uniform and attribute
+ * locations, ... Due to the presence of VBO&apos;s, this function may generate
+ * a large amount of data to the client.</li>
  * <li>
- * <b>{@link WGLWidget#resizeGL(int width, int height) resizeGL()}</b>: this
- * function is executed whenever the canvas dimensions change. A change in
- * canvas size will require you to invoke the
- * {@link WGLWidget#viewport(int x, int y, int width, int height) viewport()}
+ * <b>{@link }</b>: this function is executed whenever the canvas dimensions
+ * change. A change in canvas size will require you to invoke the {@link }
  * function again, as well as recalculate the projection matrices (especially
- * when the aspect ratio has changed). The
- * {@link WGLWidget#resizeGL(int width, int height) resizeGL()} function is
- * therefore the ideal location to set those properties. The
- * {@link WGLWidget#resizeGL(int width, int height) resizeGL()} function is
- * invoked automatically on every resize, and after the first
- * {@link WGLWidget#initializeGL() initializeGL()} invocation. Additional
- * invocations may be triggered by calling repaint() with the RESIZE_GL flag.</li>
+ * when the aspect ratio has changed). The {@link } function is therefore the
+ * ideal location to set those properties. The {@link } function is invoked
+ * automatically on every resize, and after the first {@link } invocation.
+ * Additional invocations may be triggered by calling repaint() with the
+ * RESIZE_GL flag.</li>
  * <li>
- * <b>{@link WGLWidget#paintGL() paintGL()}</b>: this is the main scene drawing
- * function. Through its execution, JWt records what has to be done to render a
- * scene, and it is executed every time that the scene is to be redrawn. You can
- * use the VBO&apos;s and shaders prepared in the
- * {@link WGLWidget#initializeGL() initializeGL()} phase. Usually, this function
+ * <b>{@link }</b>: this is the main scene drawing function. Through its
+ * execution, JWt records what has to be done to render a scene, and it is
+ * executed every time that the scene is to be redrawn. You can use the
+ * VBO&apos;s and shaders prepared in the {@link } phase. Usually, this function
  * sets uniforms and attributes, links attributes to VBO&apos;s, applies
  * textures, and draws primitives. You may also create local programs, buffers,
  * ... Remember that this function is executed a lot of times, so every
@@ -112,28 +97,22 @@ import org.slf4j.LoggerFactory;
  * memory leaks. This function is transmitted once to the client, and is
  * executed when the scene needs to be redrawn. Redraws may be triggered from
  * mouse events, timer triggers, events on e.g. a video element, or whatever
- * other event. The {@link WGLWidget#paintGL() paintGL()} function can be
- * updated through invoking {@link WGLWidget#repaintGL(EnumSet which)
- * repaintGL()} with the PAINT_GL flag.</li>
+ * other event. The {@link } function can be updated through invoking {@link }
+ * with the PAINT_GL flag.</li>
  * <li>
- * <b>{@link WGLWidget#updateGL() updateGL()}</b>: VBO&apos;s, programs,
- * uniforms, GL properties, or anything else set during intializeGL() are not
- * necessarily immutable. If you want to change, add, remove or reconfigure
- * those properties, the execution of an {@link WGLWidget#updateGL() updateGL()}
- * function can be triggered by invoking
- * {@link WGLWidget#repaintGL(EnumSet which) repaintGL()} with the UPDATE_GL
- * flag. This signals that {@link WGLWidget#updateGL() updateGL()} needs to be
- * evaluated - just once. It is possible that the {@link WGLWidget#paintGL()
- * paintGL()} function also requires updates as consequence of the changes in
- * the {@link WGLWidget#updateGL() updateGL()} function; in this case, you
- * should also set the PAINT_GL flag of
- * {@link WGLWidget#repaintGL(EnumSet which) repaintGL()}.</li>
+ * <b>{@link }</b>: VBO&apos;s, programs, uniforms, GL properties, or anything
+ * else set during intializeGL() are not necessarily immutable. If you want to
+ * change, add, remove or reconfigure those properties, the execution of an
+ * {@link } function can be triggered by invoking {@link } with the UPDATE_GL
+ * flag. This signals that {@link } needs to be evaluated - just once. It is
+ * possible that the {@link } function also requires updates as consequence of
+ * the changes in the {@link } function; in this case, you should also set the
+ * PAINT_GL flag of {@link }.</li>
  * </ul>
  * <p>
  * The GL functions are intended to be used exclusively from within the
  * invocation of the four callback functions mentioned above. In order to
- * manually trigger the execution of these function, use the
- * {@link WGLWidget#repaintGL(EnumSet which) repaintGL()}.
+ * manually trigger the execution of these function, use the {@link }.
  * <p>
  * A {@link WGLWidget} must be given a size explicitly, or must be put inside a
  * layout manager that manages its width and height. The behaviour of a
@@ -141,24 +120,21 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>Binary buffer transfers</h3>
  * <p>
- * In {@link WGLWidget#activeTexture(WGLWidget.GLenum texture) activeTexture()},
- * there is an additional boolean argument where you can indicate that you want
- * the data to be transferred to the client in binary form. A
+ * In {@link }, there is an additional boolean argument where you can indicate
+ * that you want the data to be transferred to the client in binary form. A
  * {@link WMemoryResource} is created for each of these buffers. If you know all
  * previous resources are not required in the client anymore, you can free
- * memory with the method
- * {@link WGLWidget#activeTexture(WGLWidget.GLenum texture) activeTexture()}
- * (the memory is also managed, so this is not neccesary). If you want to manage
- * these resources entirely by yourself, the following method can be used.
+ * memory with the method {@link } (the memory is also managed, so this is not
+ * neccesary). If you want to manage these resources entirely by yourself, the
+ * following method can be used.
  * <p>
- * Using {@link WGLWidget#createAndLoadArrayBuffer(String url)
- * createAndLoadArrayBuffer()}, you can load an array buffer in binary format
- * from an URL. This will cause the client to fetch the given URL, and make the
- * contents of the file available in an {@link ArrayBuffer}, which can then be
- * used by BufferData() to bind them to an OpenGL buffer. This is ideal to load
- * VBO buffers in a faster way, as it avoids converting floats to text strings
- * on the server and then back to floats on the client. You can combine this
- * with the use of {@link WResource} (e.g. {@link WMemoryResource}) to send an
+ * Using {@link }, you can load an array buffer in binary format from an URL.
+ * This will cause the client to fetch the given URL, and make the contents of
+ * the file available in an {@link ArrayBuffer}, which can then be used by
+ * BufferData() to bind them to an OpenGL buffer. This is ideal to load VBO
+ * buffers in a faster way, as it avoids converting floats to text strings on
+ * the server and then back to floats on the client. You can combine this with
+ * the use of {@link WResource} (e.g. {@link WMemoryResource}) to send an
  * std::vector of vertices to the client. Note that using {@link ArrayBuffer} is
  * not possible when you want a fall-back in the form of server-side rendering.
  * <p>
@@ -442,11 +418,8 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Create a temporarily invalid {@link JavaScriptVector}.
 		 * <p>
-		 * Should be added to a WGLWidget with
-		 * {@link WGLWidget#addJavaScriptVector(WGLWidget.JavaScriptVector vec)
-		 * WGLWidget#addJavaScriptVector()}, and initialized with
-		 * {@link WGLWidget#initJavaScriptVector(WGLWidget.JavaScriptVector vec)
-		 * WGLWidget#initJavaScriptVector()}.
+		 * Should be added to a WGLWidget with {@link }, and initialized with
+		 * {@link }.
 		 */
 		public JavaScriptVector(int length) {
 			this.id_ = -1;
@@ -551,13 +524,11 @@ public class WGLWidget extends WInteractWidget {
 	 * {@link JavaScriptMatrix4x4} is updated server-side whenever an event is
 	 * sent to the server.
 	 * <p>
-	 * Important: only the {@link WGLWidget.JavaScriptMatrix4x4#getJsRef()
-	 * getJsRef()} of the return value from a call to
+	 * Important: only the {@link } of the return value from a call to
 	 * WGLWidget::createJavaScriptMatrix() is a variable name that can be used
 	 * in custom JavaScript to modify a matrix from external scripts. The
-	 * {@link WGLWidget.JavaScriptMatrix4x4#getJsRef() getJsRef()} of return
-	 * values of operations refer to unnamed temporary objects - rvalues in
-	 * C++-lingo.
+	 * {@link } of return values of operations refer to unnamed temporary objects
+	 * - rvalues in C++-lingo.
 	 * <p>
 	 * The {@link JavaScriptMatrix4x4} is represented in JavaScript as an array
 	 * of 16 elements. This array represents the values of the matrix in
@@ -571,11 +542,8 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Creates a temporarily invalid {@link JavaScriptMatrix4x4}.
 		 * <p>
-		 * Should be added to a WGLWidget with
-		 * {@link WGLWidget#addJavaScriptMatrix4(WGLWidget.JavaScriptMatrix4x4 mat)
-		 * WGLWidget#addJavaScriptMatrix4()}, and initialized with
-		 * {@link WGLWidget#initJavaScriptMatrix4(WGLWidget.JavaScriptMatrix4x4 mat)
-		 * WGLWidget#initJavaScriptMatrix4()}.
+		 * Should be added to a WGLWidget with {@link }, and initialized with
+		 * {@link }.
 		 */
 		public JavaScriptMatrix4x4() {
 			this.id_ = -1;
@@ -749,8 +717,6 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Enumeration for render options.
 	 * <p>
-	 * 
-	 * @see WGLWidget#setRenderOptions(EnumSet options)
 	 */
 	public enum RenderOption {
 		/**
@@ -898,16 +864,14 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Initialize the GL state when the widget is first shown.
 	 * <p>
-	 * {@link WGLWidget#initializeGL() initializeGL()} is called when the widget
-	 * is first rendered, and when the webglcontextrestored signal is fired. You
-	 * can distinguish between the first initialization and context restoration
-	 * using {@link WGLWidget#isRestoringContext() isRestoringContext()}. It
-	 * usually creates most of the GL related state: shaders, VBOs, uniform
-	 * locations, ...
+	 * {@link } is called when the widget is first rendered, and when the
+	 * webglcontextrestored signal is fired. You can distinguish between the
+	 * first initialization and context restoration using {@link }. It usually
+	 * creates most of the GL related state: shaders, VBOs, uniform locations,
+	 * ...
 	 * <p>
 	 * If this state is to be updated during the lifetime of the widget, you
-	 * should specialize the {@link WGLWidget#updateGL() updateGL()} to
-	 * accomodate for this.
+	 * should specialize the {@link } to accomodate for this.
 	 */
 	protected void initializeGL() {
 	}
@@ -918,10 +882,9 @@ public class WGLWidget extends WInteractWidget {
 	 * Usually, this method only contains functions to set the viewport and the
 	 * projection matrix (as this is aspect ration dependent).
 	 * <p>
-	 * {@link WGLWidget#resizeGL(int width, int height) resizeGL()} is rendered
-	 * after initializeGL, and whenever widget is resized. After this method
-	 * finishes, the widget is repainted with the cached client-side paint
-	 * function.
+	 * {@link } is rendered after initializeGL, and whenever widget is resized.
+	 * After this method finishes, the widget is repainted with the cached
+	 * client-side paint function.
 	 */
 	protected void resizeGL(int width, int height) {
 	}
@@ -930,10 +893,9 @@ public class WGLWidget extends WInteractWidget {
 	 * Update the client-side painting function.
 	 * <p>
 	 * This method is invoked client-side when a repaint is required, i.e. when
-	 * the {@link WGLWidget#getRepaintSlot() getRepaintSlot()} (a
-	 * JavaScript-side {@link JSlot}) is triggered. Typical examples are: after
-	 * mouse-based camera movements, after a timed update of a camera or an
-	 * object&apos;s position, after a resize event (
+	 * the {@link } (a JavaScript-side {@link JSlot}) is triggered. Typical
+	 * examples are: after mouse-based camera movements, after a timed update of
+	 * a camera or an object&apos;s position, after a resize event (
 	 * {@link WGLWidget#resizeGL(int width, int height) resizeGL()} will also be
 	 * called then), after an animation event, ... In many cases, this function
 	 * will be executed client-side many many times.
@@ -941,9 +903,8 @@ public class WGLWidget extends WInteractWidget {
 	 * Using the GL functions from this class, you construct a scene. The
 	 * implementation tracks all JavaScript calls that need to be performed to
 	 * draw the scenes, and will replay them verbatim on every trigger of the
-	 * {@link WGLWidget#getRepaintSlot() getRepaintSlot()}. There are a few
-	 * mechanisms that may be employed to change what is rendered without
-	 * updating the {@link WGLWidget#paintGL() paintGL()} cache:
+	 * {@link }. There are a few mechanisms that may be employed to change what
+	 * is rendered without updating the {@link } cache:
 	 * <ul>
 	 * <li>
 	 * Client-side matrices may be used to change camera viewpoints, manipilate
@@ -953,15 +914,13 @@ public class WGLWidget extends WInteractWidget {
 	 * function to be renewed</li>
 	 * </ul>
 	 * <p>
-	 * Updating the {@link WGLWidget#paintGL() paintGL()} cache is usually not
-	 * too expensive; the VBOs, which are large in many cases, are already at
-	 * the client side, while the {@link WGLWidget#paintGL() paintGL()} code
-	 * only draws the VBOs. Of course, if you have to draw many separate
-	 * objects, the {@link WGLWidget#paintGL() paintGL()} JS code may become
-	 * large and updating is more expensive.
+	 * Updating the {@link } cache is usually not too expensive; the VBOs, which
+	 * are large in many cases, are already at the client side, while the
+	 * {@link } code only draws the VBOs. Of course, if you have to draw many
+	 * separate objects, the {@link } JS code may become large and updating is
+	 * more expensive.
 	 * <p>
-	 * In order to update the {@link WGLWidget#paintGL() paintGL()} cache, call
-	 * {@link WGLWidget#repaintGL(EnumSet which) repaintGL()} with the PAINT_GL
+	 * In order to update the {@link } cache, call {@link } with the PAINT_GL
 	 * parameter, which will cause the invocation of this method.
 	 */
 	protected void paintGL() {
@@ -2715,8 +2674,7 @@ public class WGLWidget extends WInteractWidget {
 	 * {@link WGLWidget#paintGL() paintGL()}, {@link WGLWidget#updateGL()
 	 * updateGL()} or {@link WGLWidget#initializeGL() initializeGL()} methods.
 	 * After a {@link JavaScriptMatrix4x4} is added to a {@link WGLWidget}, its
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} becomes valid, and can be
-	 * used in a {@link JSlot}, for example.
+	 * {@link } becomes valid, and can be used in a {@link JSlot}, for example.
 	 */
 	public void addJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 mat) {
 		if (mat.hasContext()) {
@@ -2802,8 +2760,7 @@ public class WGLWidget extends WInteractWidget {
 	 * {@link WGLWidget#paintGL() paintGL()}, {@link WGLWidget#updateGL()
 	 * updateGL()} or {@link WGLWidget#initializeGL() initializeGL()} methods.
 	 * After a {@link JavaScriptVector} is added to a {@link WGLWidget}, its
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} becomes valid, and can be
-	 * used in a {@link JSlot}, for example.
+	 * {@link } becomes valid, and can be used in a {@link JSlot}, for example.
 	 */
 	public void addJavaScriptVector(final WGLWidget.JavaScriptVector vec) {
 		if (vec.hasContext()) {

@@ -193,11 +193,8 @@ public class WPopupWidget extends WCompositeWidget {
 	 * Lets the popup delete itself when hidden.
 	 * <p>
 	 * When this is enabled, the popup will delete itself when hidden. You need
-	 * to take care that when overriding
-	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()}, the popup may thus be deleted from within
-	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()}.
+	 * to take care that when overriding {@link }, the popup may thus be deleted
+	 * from within {@link }.
 	 * <p>
 	 * The default value is <code>false</code>.
 	 */
@@ -250,7 +247,7 @@ public class WPopupWidget extends WCompositeWidget {
 	 * This signal is emitted when the popup is being hidden because of a
 	 * client-side event (not when
 	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()} or {@link WWidget#hide() WWidget#hide()} is called).
+	 * setHidden()} or {@link } is called).
 	 */
 	public Signal hidden() {
 		return this.hidden_;
@@ -262,7 +259,7 @@ public class WPopupWidget extends WCompositeWidget {
 	 * This signal is emitted when the popup is being hidden because of a
 	 * client-side event (not when
 	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()} or {@link WWidget#show() WWidget#show()} is called).
+	 * setHidden()} or {@link } is called).
 	 */
 	public Signal shown() {
 		return this.shown_;

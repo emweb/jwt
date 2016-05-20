@@ -26,9 +26,7 @@ import org.slf4j.LoggerFactory;
  * This is a container widget which at all times has only one item visible. The
  * widget accomplishes this using setHidden(bool) on the children.
  * <p>
- * Using {@link WStackedWidget#getCurrentIndex() getCurrentIndex()} and
- * {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()} you can
- * retrieve or set the visible widget.
+ * Using {@link } and {@link } you can retrieve or set the visible widget.
  * <p>
  * WStackedWidget, like {@link WContainerWidget}, is by default not inline.
  * <p>
@@ -79,9 +77,6 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Returns the index of the widget that is currently shown.
 	 * <p>
-	 * 
-	 * @see WStackedWidget#setCurrentIndex(int index)
-	 * @see WStackedWidget#getCurrentWidget()
 	 */
 	public int getCurrentIndex() {
 		return this.currentIndex_;
@@ -91,7 +86,6 @@ public class WStackedWidget extends WContainerWidget {
 	 * Returns the widget that is currently shown.
 	 * <p>
 	 * 
-	 * @see WStackedWidget#setCurrentWidget(WWidget widget)
 	 * @see WStackedWidget#getCurrentIndex()
 	 */
 	public WWidget getCurrentWidget() {
@@ -120,15 +114,12 @@ public class WStackedWidget extends WContainerWidget {
 	 * widgets are hidden.
 	 * <p>
 	 * The change of current widget is done using the animation settings
-	 * specified by
-	 * {@link WStackedWidget#setTransitionAnimation(WAnimation animation, boolean autoReverse)
-	 * setTransitionAnimation()}.
+	 * specified by {@link }.
 	 * <p>
 	 * The default value for current index is 0 (provided thath
 	 * <p>
 	 * 
 	 * @see WStackedWidget#getCurrentIndex()
-	 * @see WStackedWidget#setCurrentWidget(WWidget widget)
 	 */
 	public void setCurrentIndex(int index) {
 		this.setCurrentIndex(index, this.animation_, this.autoReverseAnimation_);
@@ -139,7 +130,6 @@ public class WStackedWidget extends WContainerWidget {
 	 * <p>
 	 * 
 	 * @see WStackedWidget#getCurrentIndex()
-	 * @see WStackedWidget#setCurrentWidget(WWidget widget)
 	 */
 	public void setCurrentIndex(int index, final WAnimation animation,
 			boolean autoReverse) {

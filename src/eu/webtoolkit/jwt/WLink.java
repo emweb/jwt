@@ -39,8 +39,6 @@ public class WLink {
 	/**
 	 * An enumeration for a link type.
 	 * <p>
-	 * 
-	 * @see WLink#getType()
 	 */
 	public enum Type {
 		/**
@@ -79,8 +77,6 @@ public class WLink {
 	/**
 	 * Creates a link to a (static) URL.
 	 * <p>
-	 * 
-	 * @see WLink#setUrl(String url)
 	 */
 	public WLink(String url) {
 		this.value_ = new Object();
@@ -97,9 +93,6 @@ public class WLink {
 	 * path, the <code>value</code> will be interpreted as a UTF8 encoded
 	 * string.
 	 * <p>
-	 * 
-	 * @see WLink#setUrl(String url)
-	 * @see WLink#setInternalPath(String internalPath)
 	 */
 	public WLink(WLink.Type type, final String value) {
 		this.value_ = new Object();
@@ -120,8 +113,6 @@ public class WLink {
 	/**
 	 * Creates a link to a resource.
 	 * <p>
-	 * 
-	 * @see WLink#setResource(WResource resource)
 	 */
 	public WLink(WResource resource) {
 		this.value_ = new Object();
@@ -133,9 +124,7 @@ public class WLink {
 	 * Returns the link type.
 	 * <p>
 	 * The type is implicitly set depending on the constructor or after calling
-	 * {@link WLink#setUrl(String url) setUrl()},
-	 * {@link WLink#setResource(WResource resource) setResource()} or
-	 * {@link WLink#setInternalPath(String internalPath) setInternalPath()}.
+	 * {@link }, {@link } or {@link }.
 	 * <p>
 	 * The default type for a null link is {@link WLink.Type#Url}.
 	 */
@@ -170,8 +159,7 @@ public class WLink {
 	 * Returns the link URL.
 	 * <p>
 	 * The return value is the URL set by {@link WLink#setUrl(String url)
-	 * setUrl()}, the resource URL of the resource set using
-	 * {@link WLink#setResource(WResource resource) setResource()}, or the
+	 * setUrl()}, the resource URL of the resource set using {@link }, or the
 	 * canonical URL of an internal path within the current application context.
 	 */
 	public String getUrl() {
@@ -250,18 +238,15 @@ public class WLink {
 	/**
 	 * Sets the location where the linked content should be displayed.
 	 * <p>
-	 * By default, the linked content is displayed in the application (
-	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
-	 * document, the application is replaced with the new document. When the
-	 * link is to a document that cannot be displayed in the browser, it is
-	 * offered for download or opened using an external program, depending on
-	 * browser settings.
+	 * By default, the linked content is displayed in the application ({@link }).
+	 * When the destination is an HTML document, the application is replaced
+	 * with the new document. When the link is to a document that cannot be
+	 * displayed in the browser, it is offered for download or opened using an
+	 * external program, depending on browser settings.
 	 * <p>
-	 * By setting <code>target</code> to {@link AnchorTarget#TargetNewWindow},
-	 * the destination is displayed in a new browser window or tab.
+	 * By setting <code>target</code> to {@link }, the destination is displayed
+	 * in a new browser window or tab.
 	 * <p>
-	 * 
-	 * @see WLink#getTarget()
 	 */
 	public void setTarget(AnchorTarget target) {
 		this.target_ = target;

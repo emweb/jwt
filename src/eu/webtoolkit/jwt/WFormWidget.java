@@ -23,19 +23,17 @@ import org.slf4j.LoggerFactory;
  * An abstract widget that corresponds to an HTML form element.
  * <p>
  * 
- * A WFormWidget may receive focus (see {@link WFormWidget#isCanReceiveFocus()
- * isCanReceiveFocus()}), can be disabled, and can have a label that acts as
- * proxy for getting focus. It provides signals which reflect changes to its
- * value, or changes to its focus.
+ * A WFormWidget may receive focus (see {@link }), can be disabled, and can have
+ * a label that acts as proxy for getting focus. It provides signals which
+ * reflect changes to its value, or changes to its focus.
  * <p>
- * Form widgets also have built-in support for validation, using
- * {@link WFormWidget#setValidator(WValidator validator) setValidator()}. If the
+ * Form widgets also have built-in support for validation, using {@link }. If the
  * validator provide client-side validation, then an invalid validation state is
  * reflected using the style class <code>&quot;Wt-invalid&quot;</code>. All
  * validators provided by JWt implement client-side validation.
  * <p>
- * On the server-side, use {@link WFormWidget#validate() validate()} method to
- * validate the content using a validator previously set.
+ * On the server-side, use {@link } method to validate the content using a
+ * validator previously set.
  */
 public abstract class WFormWidget extends WInteractWidget {
 	private static Logger logger = LoggerFactory.getLogger(WFormWidget.class);
@@ -90,8 +88,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * Returns the label (if there is one) that acts as a proxy for this widget.
 	 * <p>
-	 * 
-	 * @see WLabel#setBuddy(WFormWidget buddy)
 	 */
 	public WLabel getLabel() {
 		return this.label_;
@@ -135,8 +131,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * The default value is <code>null</code>.
 	 * <p>
-	 * 
-	 * @see WFormWidget#validate()
 	 */
 	public void setValidator(WValidator validator) {
 		boolean firstValidator = !(this.validator_ != null);
@@ -175,8 +169,6 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Validates the field.
 	 * <p>
-	 * 
-	 * @see WFormWidget#validated()
 	 */
 	public WValidator.State validate() {
 		if (this.getValidator() != null) {
@@ -208,8 +200,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * A widget that is disabled cannot receive focus or user interaction.
 	 * <p>
-	 * This is the opposite of {@link WWebWidget#setDisabled(boolean disabled)
-	 * WWebWidget#setDisabled()}.
+	 * This is the opposite of {@link }.
 	 */
 	public void setEnabled(boolean enabled) {
 		this.setDisabled(!enabled);
@@ -246,9 +237,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * Sets the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use
-	 *             {@link WFormWidget#setPlaceholderText(CharSequence placeholderText)
-	 *             setPlaceholderText()} instead
+	 * @deprecated use {@link } instead
 	 */
 	public void setEmptyText(final CharSequence emptyText) {
 		this.setPlaceholderText(emptyText);
@@ -258,8 +247,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * Returns the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use {@link WFormWidget#getPlaceholderText()
-	 *             getPlaceholderText()} instead.
+	 * @deprecated use {@link } instead.
 	 */
 	public WString getEmptyText() {
 		return this.getPlaceholderText();

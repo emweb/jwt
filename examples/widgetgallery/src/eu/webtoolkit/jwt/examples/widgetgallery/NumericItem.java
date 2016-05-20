@@ -27,15 +27,17 @@ class NumericItem extends WStandardItem {
 	}
 
 	public void setData(final Object data, int role) {
-		Object dt = new Object();
 		if (role == ItemDataRole.EditRole) {
+			Object dt = new Object();
 			double d = StringUtils.asNumber(data);
 			if (d != d) {
 				dt = data;
 			} else {
 				dt = d;
 			}
+			super.setData(dt, role);
+		} else {
+			super.setData(data, role);
 		}
-		super.setData(dt, role);
 	}
 }

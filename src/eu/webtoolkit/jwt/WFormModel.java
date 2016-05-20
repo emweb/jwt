@@ -159,12 +159,9 @@ public class WFormModel extends WObject {
 	/**
 	 * Validates the current input.
 	 * <p>
-	 * The default implementation calls
-	 * {@link WFormModel#validateField(String field) validateField()} for each
-	 * field and returns <code>true</code> if all fields validated.
+	 * The default implementation calls {@link } for each field and returns
+	 * <code>true</code> if all fields validated.
 	 * <p>
-	 * 
-	 * @see WFormModel#validateField(String field)
 	 */
 	public boolean validate() {
 		boolean result = true;
@@ -181,9 +178,8 @@ public class WFormModel extends WObject {
 	/**
 	 * Returns the current overall validation state.
 	 * <p>
-	 * This checks the {@link WFormModel#getValidation(String field)
-	 * getValidation()} of all fields, and returns <code>true</code> if all all
-	 * fields have been validated and are valid.
+	 * This checks the {@link } of all fields, and returns <code>true</code> if
+	 * all all fields have been validated and are valid.
 	 * <p>
 	 * 
 	 * @see WFormModel#validate()
@@ -210,8 +206,6 @@ public class WFormModel extends WObject {
 	 * Fields are visible by default. An invisible field will be ignored during
 	 * validation (i.e. will be considered as valid).
 	 * <p>
-	 * 
-	 * @see WFormModel#isVisible(String field)
 	 */
 	public void setVisible(String field, boolean visible) {
 		WFormModel.FieldData i = this.fields_.get(field);
@@ -248,8 +242,6 @@ public class WFormModel extends WObject {
 	 * <p>
 	 * Fields are read-write by default.
 	 * <p>
-	 * 
-	 * @see WFormModel#isReadOnly(String field)
 	 */
 	public void setReadOnly(String field, boolean readOnly) {
 		WFormModel.FieldData i = this.fields_.get(field);
@@ -289,9 +281,6 @@ public class WFormModel extends WObject {
 	/**
 	 * Sets the field value.
 	 * <p>
-	 * 
-	 * @see WFormModel#getValue(String field)
-	 * @see WFormModel#valueText(String field)
 	 */
 	public void setValue(String field, final Object value) {
 		this.fields_.get(field).value = value;
@@ -301,7 +290,6 @@ public class WFormModel extends WObject {
 	 * Returns the field value.
 	 * <p>
 	 * 
-	 * @see WFormModel#valueText(String field)
 	 * @see WFormModel#setValue(String field, Object value)
 	 */
 	public Object getValue(String field) {
@@ -399,9 +387,7 @@ public class WFormModel extends WObject {
 	/**
 	 * Sets whether a field has been validated.
 	 * <p>
-	 * This is usually not used directly, but invoked by
-	 * {@link WFormModel#setValidation(String field, WValidator.Result result)
-	 * setValidation()}
+	 * This is usually not used directly, but invoked by {@link }
 	 * <p>
 	 * A field is initially (or after {@link WFormModel#reset() reset()}), not
 	 * validated.
@@ -420,8 +406,7 @@ public class WFormModel extends WObject {
 	 * Returns whether the field has been validated yet.
 	 * <p>
 	 * This is initially <code>false</code>, and set to <code>true</code> by
-	 * {@link WFormModel#setValidation(String field, WValidator.Result result)
-	 * setValidation()}.
+	 * {@link }.
 	 * <p>
 	 * 
 	 * @see WFormModel#setValidated(String field, boolean validated)

@@ -27,36 +27,30 @@ import org.slf4j.LoggerFactory;
  * WFormWidgets} (typically a {@link WLineEdit} or a {@link WTextArea}).
  * <p>
  * The popup provides the user with suggestions to enter input. The popup can be
- * used by one or more editors, using
- * {@link WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
- * forEdit()}. The popup will show when the user starts editing the edit field,
- * or when the user opens the suggestions explicitly using a drop down icon or
- * with the down key. The popup positions itself intelligently just below or
- * just on top of the edit field. It offers a list of suggestions that match in
- * some way with the current edit field, and dynamically adjusts this list. The
- * implementation for matching individual suggestions with the current text is
- * provided through a JavaScript function. This function may also highlight
- * part(s) of the suggestions to provide feed-back on how they match.
+ * used by one or more editors, using {@link }. The popup will show when the user
+ * starts editing the edit field, or when the user opens the suggestions
+ * explicitly using a drop down icon or with the down key. The popup positions
+ * itself intelligently just below or just on top of the edit field. It offers a
+ * list of suggestions that match in some way with the current edit field, and
+ * dynamically adjusts this list. The implementation for matching individual
+ * suggestions with the current text is provided through a JavaScript function.
+ * This function may also highlight part(s) of the suggestions to provide
+ * feed-back on how they match.
  * <p>
  * WSuggestionPopup is an MVC view class, using a simple
- * {@link WStringListModel} by default. You can set a custom model using
- * {@link WSuggestionPopup#setModel(WAbstractItemModel model) setModel()}. The
- * model can provide different text for the suggestion text (
- * {@link ItemDataRole#DisplayRole}) and value (
- * {@link WSuggestionPopup#getEditRole() getEditRole()}). The member methods
- * {@link WSuggestionPopup#clearSuggestions() clearSuggestions()} and
- * {@link WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
- * addSuggestion()} manipulate this model.
+ * {@link WStringListModel} by default. You can set a custom model using {@link }
+ * . The model can provide different text for the suggestion text ({@link }) and
+ * value ({@link }). The member methods {@link } and {@link } manipulate this
+ * model.
  * <p>
  * By default, the popup implements all filtering client-side. To support large
  * datasets, you may enable server-side filtering of suggestions based on the
  * input. The server-side filtering may provide a coarse filtering using a fixed
  * size prefix of the entered text, and complement the client-side filtering. To
- * enable server-side filtering, use
- * {@link WSuggestionPopup#setFilterLength(int length) setFilterLength()} and
- * listen to filter notification using the modelFilter() signal. Whenever a
- * filter event is generated you can adjust the model&apos;s content according
- * to the filter (e.g. using a {@link WSortFilterProxyModel}). By using
+ * enable server-side filtering, use {@link } and listen to filter notification
+ * using the modelFilter() signal. Whenever a filter event is generated you can
+ * adjust the model&apos;s content according to the filter (e.g. using a
+ * {@link WSortFilterProxyModel}). By using
  * {@link WCompositeWidget#setMaximumSize(WLength width, WLength height)
  * WCompositeWidget#setMaximumSize()} you can also limit the maximum height of
  * the popup, in which case scrolling is supported (similar to a combo-box).
@@ -174,16 +168,13 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Enumeration that defines a trigger for showing the popup.
 	 * <p>
-	 * 
-	 * @see WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
 	 */
 	public enum PopupTrigger {
 		/**
 		 * Shows popup when the user starts editing.
 		 * <p>
 		 * The popup is shown when the currently edited text has a length longer
-		 * than the {@link WSuggestionPopup#setFilterLength(int length) filter
-		 * length}.
+		 * than the {@link filter length}.
 		 */
 		Editing,
 		/**
@@ -295,10 +286,6 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * The popup using a standard matcher and replacer implementation that is
 	 * configured using the provided <code>options</code>.
 	 * <p>
-	 * 
-	 * @see WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)
-	 * @see WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options
-	 *      options)
 	 */
 	public WSuggestionPopup(final WSuggestionPopup.Options options,
 			WObject parent) {
@@ -388,8 +375,6 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * by the user editing the field by entering keys or by an explicit drop
 	 * down menu that is shown inside the edit).
 	 * <p>
-	 * 
-	 * @see WSuggestionPopup#removeEdit(WFormWidget edit)
 	 */
 	public void forEdit(WFormWidget edit,
 			EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
@@ -465,9 +450,6 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * <p>
 	 * This clears the underlying model.
 	 * <p>
-	 * 
-	 * @see WSuggestionPopup#addSuggestion(CharSequence suggestionText,
-	 *      CharSequence suggestionValue)
 	 */
 	public void clearSuggestions() {
 		this.model_.removeRows(0, this.model_.getRowCount());
@@ -477,14 +459,12 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * Adds a new suggestion.
 	 * <p>
 	 * This adds an entry to the underlying model. The
-	 * <code>suggestionText</code> is set as {@link ItemDataRole#DisplayRole}
-	 * and the <code>suggestionValue</code> (which is inserted into the edit
-	 * field on selection) is set as {@link WSuggestionPopup#getEditRole()
-	 * getEditRole()}.
+	 * <code>suggestionText</code> is set as {@link } and the
+	 * <code>suggestionValue</code> (which is inserted into the edit field on
+	 * selection) is set as {@link }.
 	 * <p>
 	 * 
 	 * @see WSuggestionPopup#clearSuggestions()
-	 * @see WSuggestionPopup#setModel(WAbstractItemModel model)
 	 */
 	public void addSuggestion(final CharSequence suggestionText,
 			final CharSequence suggestionValue) {
@@ -519,13 +499,10 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * The default value is a {@link WStringListModel} that is owned by the
 	 * suggestion popup.
 	 * <p>
-	 * The {@link ItemDataRole#DisplayRole} is used for the suggestion text. The
-	 * {@link WSuggestionPopup#getEditRole() getEditRole()} is used for the
+	 * The {@link } is used for the suggestion text. The {@link } is used for the
 	 * suggestion value, unless empty, in which case the suggestion text is used
 	 * as value.
 	 * <p>
-	 * 
-	 * @see WSuggestionPopup#setModelColumn(int modelColumn)
 	 */
 	public void setModel(WAbstractItemModel model) {
 		if (this.model_ != null) {
@@ -648,8 +625,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Sets the minimum input length before showing the popup.
 	 * <p>
-	 * When the user has typed this much characters,
-	 * {@link WSuggestionPopup#filterModel() filterModel()} is emitted which
+	 * When the user has typed this much characters, {@link } is emitted which
 	 * allows you to filter the model based on the initial input. The filtering
 	 * is done as long as the model indicates that results are partial by
 	 * setting a StyleClassRole of &quot;Wt-more-data&quot; on the last item.
@@ -660,8 +636,6 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * the last item always has &quot;Wt-more-data&quot; (for backwards
 	 * compatibility)
 	 * <p>
-	 * 
-	 * @see WSuggestionPopup#filterModel()
 	 */
 	public void setFilterLength(int length) {
 		this.filterLength_ = length;

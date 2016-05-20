@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * <code>&lt;div&gt;</code> to avoid click event handling misbehavior on
  * Microsoft Internet Explorer.
  * <p>
- * WLabel is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WLabel is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -137,8 +137,6 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Returns the buddy of this label.
 	 * <p>
-	 * 
-	 * @see WLabel#setBuddy(WFormWidget buddy)
 	 */
 	public WFormWidget getBuddy() {
 		return this.buddy_;
@@ -199,16 +197,15 @@ public class WLabel extends WInteractWidget {
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
-	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
-	 * current text is literal (not created using {@link WString#tr(String key)
-	 * WString#tr()}), the current text is parsed using an XML parser which
-	 * discards malicious tags and attributes silently. When the parser
-	 * encounters an XML parse error, the textFormat is left unchanged, and this
-	 * method returns false.
+	 * When changing the textFormat to {@link }, and the current text is literal
+	 * (not created using {@link }), the current text is parsed using an XML
+	 * parser which discards malicious tags and attributes silently. When the
+	 * parser encounters an XML parse error, the textFormat is left unchanged,
+	 * and this method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>
-	 * The default format is {@link TextFormat#XHTMLText}.
+	 * The default format is {@link }.
 	 */
 	public boolean setTextFormat(TextFormat format) {
 		if (!(this.text_ != null)) {
@@ -270,13 +267,11 @@ public class WLabel extends WInteractWidget {
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the
-	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
-	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
+	 * text contains end-of-lines (for {@link }) or &lt;br /&gt; tags or other
+	 * block-level tags (for {@link }).
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
-	 * 
-	 * @see WLabel#hasWordWrap()
 	 */
 	public void setWordWrap(boolean wordWrap) {
 		if (!(this.text_ != null)) {

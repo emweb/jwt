@@ -3239,16 +3239,18 @@
     <span class="o">}</span>
 
     <span class="kt">void</span> <span class="nf">setData</span><span class="o">(</span><span class="kd">final</span> <span class="n">Object</span> <span class="n">data</span><span class="o">,</span> <span class="kt">int</span> <span class="n">role</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Object</span> <span class="n">dt</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">role</span> <span class="o">==</span> <span class="n">ItemDataRole</span><span class="o">.</span><span class="na">EditRole</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">Object</span> <span class="n">dt</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">();</span>
             <span class="kt">double</span> <span class="n">d</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">d</span> <span class="o">!=</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
                 <span class="n">dt</span> <span class="o">=</span> <span class="n">data</span><span class="o">;</span>
             <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
                 <span class="n">dt</span> <span class="o">=</span> <span class="n">d</span><span class="o">;</span>
             <span class="o">}</span>
+            <span class="kd">super</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">dt</span><span class="o">,</span> <span class="n">role</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="kd">super</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="n">role</span><span class="o">);</span>
         <span class="o">}</span>
-        <span class="kd">super</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">dt</span><span class="o">,</span> <span class="n">role</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 

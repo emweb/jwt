@@ -256,8 +256,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Make it possible to close a tab interactively or by
-	 * {@link WTabWidget#closeTab(int index) closeTab}.
+	 * Make it possible to close a tab interactively or by {@link closeTab}.
 	 * <p>
 	 * A tab that has been closed is marked as hidden, but not removed from the
 	 * menu.

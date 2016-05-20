@@ -29,32 +29,24 @@ import org.slf4j.LoggerFactory;
  * Depending on availability of JavaScript, the behaviour of the widget is
  * different, but the API is designed in a way which facilitates a portable use.
  * <p>
- * When JavaScript is available, the file will not be uploaded until
- * {@link WFileUpload#upload() upload()} is called. This will start an
- * asynchronous upload (and thus return immediately).
+ * When JavaScript is available, the file will not be uploaded until {@link } is
+ * called. This will start an asynchronous upload (and thus return immediately).
  * <p>
  * When no JavaScript is available, the file will be uploaded with the next
- * click event. Thus, {@link WFileUpload#upload() upload()} has no effect -- the
- * file will already be uploaded, and the corresponding signals will already be
- * emitted. To test if {@link WFileUpload#upload() upload()} will start an
- * upload, you may check using the {@link WFileUpload#canUpload() canUpload()}
- * call.
+ * click event. Thus, {@link } has no effect -- the file will already be
+ * uploaded, and the corresponding signals will already be emitted. To test if
+ * {@link } will start an upload, you may check using the {@link } call.
  * <p>
  * Thus, to properly use the widget, one needs to follow these rules:
  * <ul>
  * <li>
- * Be prepared to handle the {@link WFileUpload#uploaded() uploaded()} or
- * {@link WFileUpload#fileTooLarge() fileTooLarge()} signals also when
- * {@link WFileUpload#upload() upload()} was not called.</li>
+ * Be prepared to handle the {@link } or {@link } signals also when {@link } was
+ * not called.</li>
  * <li>
- * Check using {@link WFileUpload#canUpload() canUpload()} if
- * {@link WFileUpload#upload() upload()} will schedule a new upload. if
- * (!canUpload()) then {@link WFileUpload#upload() upload()} will not have any
- * effect. if ({@link WFileUpload#canUpload() canUpload()}),
- * {@link WFileUpload#upload() upload()} will start a new file upload, which
- * completes succesfully using an {@link WFileUpload#uploaded() uploaded()}
- * signal or a {@link WFileUpload#fileTooLarge() fileTooLarge()} signals gets
- * emitted.</li>
+ * Check using {@link } if {@link } will schedule a new upload. if (!canUpload())
+ * then {@link } will not have any effect. if ({@link }), {@link } will start a new
+ * file upload, which completes succesfully using an {@link } signal or a {@link }
+ * signals gets emitted.</li>
  * </ul>
  * <p>
  * The WFileUpload widget must be hidden or deleted when a file is received. In
@@ -62,10 +54,10 @@ import org.slf4j.LoggerFactory;
  * the example below.
  * <p>
  * The uploaded file is automatically spooled to a local temporary file which
- * will be deleted together with the {@link WFileUpload} widget, unless
- * {@link WFileUpload#stealSpooledFile() stealSpooledFile()} is called.
+ * will be deleted together with the {@link WFileUpload} widget, unless {@link }
+ * is called.
  * <p>
- * WFileUpload is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WFileUpload is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -119,9 +111,8 @@ public class WFileUpload extends WWebWidget {
 	 * upload (to be part of HTML5) control, this will allow the user to select
 	 * multiple files at once.
 	 * <p>
-	 * All uploaded files are available from
-	 * {@link WFileUpload#getUploadedFiles() getUploadedFiles()}. The
-	 * single-file API will return only information on the first uploaded file.
+	 * All uploaded files are available from {@link }. The single-file API will
+	 * return only information on the first uploaded file.
 	 * <p>
 	 * The default value is <code>false</code>.
 	 */
@@ -163,9 +154,6 @@ public class WFileUpload extends WWebWidget {
 	 * When multiple files were uploaded, this returns the information from the
 	 * first file.
 	 * <p>
-	 * 
-	 * @see WFileUpload#stealSpooledFile()
-	 * @see WFileUpload#uploaded()
 	 */
 	public String getSpoolFileName() {
 		if (!this.isEmpty()) {
@@ -247,12 +235,11 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
-	 * Returns whether {@link WFileUpload#upload() upload()} will start a new
-	 * file upload.
+	 * Returns whether {@link } will start a new file upload.
 	 * <p>
-	 * A call to {@link WFileUpload#upload() upload()} will only start a new
-	 * file upload if there is no JavaScript support. Otherwise, the most recent
-	 * file will already be uploaded.
+	 * A call to {@link } will only start a new file upload if there is no
+	 * JavaScript support. Otherwise, the most recent file will already be
+	 * uploaded.
 	 */
 	public boolean canUpload() {
 		return this.fileUploadTarget_ != null;
@@ -265,9 +252,6 @@ public class WFileUpload extends WWebWidget {
 	 * practice to hide or delete the {@link WFileUpload} widget when a file has
 	 * been uploaded succesfully.
 	 * <p>
-	 * 
-	 * @see WFileUpload#upload()
-	 * @see WFileUpload#fileTooLarge()
 	 */
 	public EventSignal uploaded() {
 		return this.voidEventSignal(UPLOADED_SIGNAL, true);
@@ -298,7 +282,7 @@ public class WFileUpload extends WWebWidget {
 	 * <p>
 	 * Caveat: this signal is not emitted with konqueror and possibly other
 	 * browsers. Thus, in the above scenario you should still provide an
-	 * alternative way to call the {@link WFileUpload#upload() upload()} method.
+	 * alternative way to call the {@link } method.
 	 */
 	public EventSignal changed() {
 		return this.voidEventSignal(CHANGE_SIGNAL, true);
@@ -349,8 +333,6 @@ public class WFileUpload extends WWebWidget {
 	 * To update the progess bar server push is used, you should only use this
 	 * functionality when using a Servlet 3.0 compatible servlet container.
 	 * <p>
-	 * 
-	 * @see WFileUpload#dataReceived()
 	 */
 	public void setProgressBar(WProgressBar bar) {
 		if (this.progressBar_ != null)

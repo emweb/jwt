@@ -24,23 +24,17 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * A painter path represents a (complex) path that may be composed of lines,
- * arcs and bezier curve segments, and painted onto a paint device using
- * {@link WPainter#drawPath(WPainterPath path) WPainter#drawPath()}.
+ * arcs and bezier curve segments, and painted onto a paint device using {@link }.
  * <p>
  * The path that is composed in a painter path may consist of multiple closed
  * sub-paths. Only the last sub-path can be left open.
  * <p>
  * To compose a path, this class maintains a current position, which is the
  * starting point for the next drawing operation. An operation may draw a line
- * (see {@link WPainterPath#lineTo(WPointF point) lineTo()}), arc (see
- * {@link WPainterPath#arcTo(double cx, double cy, double radius, double startAngle, double sweepLength)
- * arcTo()}), or bezier curve (see
- * {@link WPainterPath#quadTo(WPointF c, WPointF endPoint) quadTo()} and
- * {@link WPainterPath#cubicTo(WPointF c1, WPointF c2, WPointF endPoint)
- * cubicTo()}) from the current position to a new position. A new sub path may
- * be started by moving the current position to a new location (see
- * {@link WPainterPath#moveTo(WPointF point) moveTo()}), which automatically
- * closes the previous sub path.
+ * (see {@link }), arc (see {@link }), or bezier curve (see {@link } and {@link })
+ * from the current position to a new position. A new sub path may be started by
+ * moving the current position to a new location (see {@link }), which
+ * automatically closes the previous sub path.
  * <p>
  * When sub paths overlap, the result is undefined (it is dependent on the
  * underlying painting device).
@@ -96,7 +90,6 @@ import org.slf4j.LoggerFactory;
  * modifying it will cause an exception to be thrown.</i>
  * </p>
  * 
- * @see WPainter#drawPath(WPainterPath path)
  * @see WPaintedWidget#createJSPainterPath()
  */
 public class WPainterPath extends WJavaScriptExposableObject {
@@ -219,16 +212,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Moves the current position to a new location.
 	 * <p>
 	 * Moves the current position to a new point, implicitly closing the last
-	 * sub path, unless {@link WPainterPath#isOpenSubPathsEnabled() open
-	 * subpaths are enabled}.
+	 * sub path, unless {@link open subpaths are enabled}.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 * @see WPainterPath#closeSubPath()
-	 * @see WPainterPath#moveTo(double x, double y)
-	 * @see WPainterPath#setOpenSubPathsEnabled(boolean enabled)
 	 */
 	public void moveTo(final WPointF point) {
 		this.moveTo(point.getX(), point.getY());
@@ -238,8 +228,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Moves the current position to a new location.
 	 * <p>
 	 * Moves the current position to a new point, implicitly closing the last
-	 * sub path, unless {@link WPainterPath#isOpenSubPathsEnabled() open
-	 * subpaths are enabled}.
+	 * sub path, unless {@link open subpaths are enabled}.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -247,7 +236,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 *            JavaScript bound}
 	 * @see WPainterPath#closeSubPath()
 	 * @see WPainterPath#moveTo(WPointF point)
-	 * @see WPainterPath#setOpenSubPathsEnabled(boolean enabled)
 	 */
 	public void moveTo(double x, double y) {
 		this.checkModifiable();
@@ -274,7 +262,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#lineTo(double x, double y)
 	 */
 	public void lineTo(final WPointF point) {
 		this.lineTo(point.getX(), point.getY());
@@ -309,8 +296,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#cubicTo(double c1x, double c1y, double c2x, double c2y,
-	 *      double endPointx, double endPointy)
 	 */
 	public void cubicTo(final WPointF c1, final WPointF c2,
 			final WPointF endPoint) {
@@ -356,8 +341,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#arcMoveTo(double cx, double cy, double radius, double
-	 *      angle)
 	 */
 	public void arcTo(double cx, double cy, double radius, double startAngle,
 			double sweepLength) {
@@ -416,8 +399,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#quadTo(double cx, double cy, double endPointX, double
-	 *      endPointY)
 	 */
 	public void quadTo(final WPointF c, final WPointF endPoint) {
 		this.quadTo(c.getX(), c.getY(), endPoint.getX(), endPoint.getY());
@@ -454,8 +435,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#addEllipse(double x, double y, double width, double
-	 *      height)
 	 * @see WPainterPath#arcTo(double cx, double cy, double radius, double
 	 *      startAngle, double sweepLength)
 	 */
@@ -491,16 +470,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	/**
 	 * Draws a rectangle.
 	 * <p>
-	 * This method closes the current sub path, unless
-	 * {@link WPainterPath#isOpenSubPathsEnabled() open subpaths are enabled},
-	 * and adds a rectangle that is defined by <code>rectangle</code>.
+	 * This method closes the current sub path, unless {@link open subpaths are
+	 * enabled}, and adds a rectangle that is defined by <code>rectangle</code>.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#addRect(double x, double y, double width, double
-	 *      height)
 	 */
 	public void addRect(final WRectF rectangle) {
 		this.addRect(rectangle.getX(), rectangle.getY(), rectangle.getWidth(),
@@ -510,10 +486,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	/**
 	 * Draws a rectangle.
 	 * <p>
-	 * This method closes the current sub path, unless
-	 * {@link WPainterPath#isOpenSubPathsEnabled() open subpaths are enabled},
-	 * and adds a rectangle that is defined by top left position (<i>x</i>,
-	 * <code>y</code>), and size <i>width</i> x <code>height</code>.
+	 * This method closes the current sub path, unless {@link open subpaths are
+	 * enabled}, and adds a rectangle that is defined by top left position
+	 * (<i>x</i>, <code>y</code>), and size <i>width</i> x <code>height</code>.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -537,9 +512,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * Adds a polygon.
 	 * <p>
 	 * If the first point is different from the current position, the last sub
-	 * path is first closed, unless {@link WPainterPath#isOpenSubPathsEnabled()
-	 * open subpaths are enabled}, otherwise the last sub path is extended with
-	 * the polygon.
+	 * path is first closed, unless {@link open subpaths are enabled}, otherwise
+	 * the last sub path is extended with the polygon.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
@@ -566,15 +540,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
 	 * begin position is different from the current position, the last sub path
-	 * is first closed, unless {@link WPainterPath#isOpenSubPathsEnabled() open
-	 * subpaths are enabled}, otherwise the last sub path is extended with the
-	 * path&apos;s first sub path.
+	 * is first closed, unless {@link open subpaths are enabled}, otherwise the
+	 * last sub path is extended with the path&apos;s first sub path.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#connectPath(WPainterPath path)
 	 */
 	public void addPath(final WPainterPath path) {
 		this.checkModifiable();
@@ -589,15 +561,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
 	 * <p>
 	 * Adds an entire <code>path</code> to the current path. If the path&apos;s
 	 * begin position is different from the current position, the last sub path
-	 * is first closed, unless {@link WPainterPath#isOpenSubPathsEnabled() open
-	 * subpaths are enabled}, otherwise the last sub path is extended with the
-	 * path&apos;s first sub path.
+	 * is first closed, unless {@link open subpaths are enabled}, otherwise the
+	 * last sub path is extended with the path&apos;s first sub path.
 	 * <p>
 	 * 
 	 * @exception {@link WException}if the path
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
-	 * @see WPainterPath#connectPath(WPainterPath path)
 	 */
 	public void connectPath(final WPainterPath path) {
 		this.checkModifiable();
@@ -680,8 +650,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 		 * <p>
 		 * The x parameter
 		 * <p>
-		 * Depending on the {@link WPainterPath.Segment#getType() getType()},
-		 * this is either the x position of the point, or something else.
+		 * Depending on the {@link }, this is either the x position of the point,
+		 * or something else.
 		 */
 		public double getX() {
 			return this.x_;
@@ -691,8 +661,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
 		 * <p>
 		 * The y parameter
 		 * <p>
-		 * Depending on the {@link WPainterPath.Segment#getType() getType()},
-		 * this is either the y position of the point, or something else.
+		 * Depending on the {@link }, this is either the y position of the point,
+		 * or something else.
 		 */
 		public double getY() {
 			return this.y_;

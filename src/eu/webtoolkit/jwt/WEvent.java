@@ -27,8 +27,7 @@ import org.slf4j.LoggerFactory;
  * timeout, an internal keep-alive event, or other event) using
  * {@link WApplication#notify(WEvent e) WApplication#notify()}.
  * <p>
- * You can check for a particular event type using {@link WEvent#getEventType()
- * getEventType()}.
+ * You can check for a particular event type using {@link }.
  */
 public class WEvent {
 	private static Logger logger = LoggerFactory.getLogger(WEvent.class);

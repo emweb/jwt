@@ -24,8 +24,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * This class provides font metrics for a given font. It is returned by an
- * implementation of {@link WPaintDevice#getFontMetrics()
- * WPaintDevice#getFontMetrics()}, and may differ between devices.
+ * implementation of {@link }, and may differ between devices.
  * <p>
  * All methods return pixel dimensions.
  * <p>

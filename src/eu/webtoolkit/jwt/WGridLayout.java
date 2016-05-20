@@ -35,17 +35,14 @@ import org.slf4j.LoggerFactory;
  * layout is resized to meet minimum size requirements.
  * <p>
  * The preferred width/height of a column/row is based on the natural size of
- * the widgets, where they present their contents without overflowing.
- * {@link WWidget#resize(WLength width, WLength height) WWidget#resize()} or
- * (CSS <code>width</code>, <code>height</code> properties) can be used to
+ * the widgets, where they present their contents without overflowing. {@link }
+ * or (CSS <code>width</code>, <code>height</code> properties) can be used to
  * adjust the preferred size of a widget.
  * <p>
  * The minimum width/height of a column/row is based on the minimum dimensions
  * of contained widgets or nested layouts. The default minimum height and width
- * for a widget is 0. It can be specified using
- * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()} or using CSS <code>min-width</code> and
- * <code>min-height</code> properties.
+ * for a widget is 0. It can be specified using {@link } or using CSS
+ * <code>min-width</code> and <code>min-height</code> properties.
  * <p>
  * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
@@ -53,30 +50,20 @@ import org.slf4j.LoggerFactory;
  * automatically show scrollbars for widgets inserted in the layout to cope with
  * a size set by the layout manager that is smaller than the preferred size.
  * <p>
- * When the container of a layout manager has a maximum size set using
- * {@link WWidget#setMaximumSize(WLength width, WLength height)
- * WWidget#setMaximumSize()}, then the size of the container will be based on
- * the preferred size of the contents, up to this maximum size, instead of the
- * default behaviour of constraining the size of the children based on the size
- * of the container.
+ * When the container of a layout manager has a maximum size set using {@link },
+ * then the size of the container will be based on the preferred size of the
+ * contents, up to this maximum size, instead of the default behaviour of
+ * constraining the size of the children based on the size of the container.
  * <p>
  * A layout manager may provide resize handles between columns or rows which
  * allow the user to change the automatic layout provided by the layout manager
- * (see
- * {@link WGridLayout#setRowResizable(int row, boolean enabled, WLength initialSize)
- * setRowResizable()} and
- * {@link WGridLayout#setColumnResizable(int column, boolean enabled, WLength initialSize)
- * setColumnResizable()}).
+ * (see {@link } and {@link }).
  * <p>
  * Columns and rows are separated using a constant spacing, which defaults to 6
- * pixels by default, and can be changed using
- * {@link WGridLayout#setHorizontalSpacing(int size) setHorizontalSpacing()} and
- * {@link WGridLayout#setVerticalSpacing(int size) setVerticalSpacing()}. In
- * addition, when this layout is a top-level layout (i.e. is not nested inside
- * another layout), a margin is set around the contents. This margin defaults to
- * 9 pixels, and can be changed using
- * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * WLayout#setContentsMargins()}.
+ * pixels by default, and can be changed using {@link } and {@link }. In addition,
+ * when this layout is a top-level layout (i.e. is not nested inside another
+ * layout), a margin is set around the contents. This margin defaults to 9
+ * pixels, and can be changed using {@link }.
  * <p>
  * For each column or row, a stretch factor may be defined, which controls how
  * remaining horizontal or vertical space is used. Each column and row is
@@ -191,17 +178,9 @@ public class WGridLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire grid cell. The alignment can be specified as
-	 * a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * a logical combination of a horizontal alignment ({@link }, {@link }, or
+	 * {@link }) and a vertical alignment ({@link }, {@link }, or {@link }).
 	 * <p>
-	 * 
-	 * @see WGridLayout#addLayout(WLayout layout, int row, int column, EnumSet
-	 *      alignment)
-	 * @see WGridLayout#addWidget(WWidget widget, int row, int column, EnumSet
-	 *      alignment)
 	 */
 	public void addItem(WLayoutItem item, int row, int column, int rowSpan,
 			int columnSpan, EnumSet<AlignmentFlag> alignment) {
@@ -283,15 +262,9 @@ public class WGridLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire grid cell. The alignment can be specified as
-	 * a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * a logical combination of a horizontal alignment ({@link }, {@link }, or
+	 * {@link }) and a vertical alignment ({@link }, {@link }, or {@link }).
 	 * <p>
-	 * 
-	 * @see WGridLayout#addLayout(WLayout layout, int row, int column, int
-	 *      rowSpan, int columnSpan, EnumSet alignment)
 	 */
 	public void addLayout(WLayout layout, int row, int column,
 			EnumSet<AlignmentFlag> alignment) {
@@ -333,11 +306,8 @@ public class WGridLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire grid cell. The alignment can be specified as
-	 * a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * a logical combination of a horizontal alignment ({@link }, {@link }, or
+	 * {@link }) and a vertical alignment ({@link }, {@link }, or {@link }).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addLayout(WLayout layout, int row, int column, EnumSet
@@ -386,15 +356,9 @@ public class WGridLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire grid cell. The alignment can be specified as
-	 * a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * a logical combination of a horizontal alignment ({@link }, {@link }, or
+	 * {@link }) and a vertical alignment ({@link }, {@link }, or {@link }).
 	 * <p>
-	 * 
-	 * @see WGridLayout#addWidget(WWidget widget, int row, int column, int
-	 *      rowSpan, int columnSpan, EnumSet alignment)
 	 */
 	public void addWidget(WWidget widget, int row, int column,
 			EnumSet<AlignmentFlag> alignment) {
@@ -436,11 +400,8 @@ public class WGridLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire grid cell. The alignment can be specified as
-	 * a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * a logical combination of a horizontal alignment ({@link }, {@link }, or
+	 * {@link }) and a vertical alignment ({@link }, {@link }, or {@link }).
 	 * <p>
 	 * 
 	 * @see WGridLayout#addWidget(WWidget widget, int row, int column, EnumSet
@@ -486,8 +447,6 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The default horizontal spacing is 9 pixels.
 	 * <p>
-	 * 
-	 * @see WGridLayout#setVerticalSpacing(int size)
 	 */
 	public void setHorizontalSpacing(int size) {
 		this.grid_.horizontalSpacing_ = size;
@@ -532,8 +491,6 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The grid dimensions change dynamically when adding contents to the grid.
 	 * <p>
-	 * 
-	 * @see WGridLayout#getRowCount()
 	 */
 	public int getColumnCount() {
 		return this.grid_.columns_.size();
@@ -556,8 +513,6 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * Sets the <i>stretch</i> factor for column <code>column</code>.
 	 * <p>
-	 * 
-	 * @see WGridLayout#getColumnStretch(int column)
 	 */
 	public void setColumnStretch(int column, int stretch) {
 		this.expand(0, column, 0, 1);
@@ -580,8 +535,6 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * Sets the <i>stretch</i> factor for row <code>row</code>.
 	 * <p>
-	 * 
-	 * @see WGridLayout#getRowStretch(int row)
 	 */
 	public void setRowStretch(int row, int stretch) {
 		this.expand(row, 0, 1, 0);
@@ -608,9 +561,9 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The default value is <i>false</i>.
 	 * <p>
-	 * If an <code>initialSize</code> is given (that is not {@link WLength#Auto}
-	 * ), then this size is used for the width of the column, overriding the
-	 * width it would be given by the layout manager.
+	 * If an <code>initialSize</code> is given (that is not {@link }), then this
+	 * size is used for the width of the column, overriding the width it would
+	 * be given by the layout manager.
 	 */
 	public void setColumnResizable(int column, boolean enabled,
 			final WLength initialSize) {
@@ -665,9 +618,9 @@ public class WGridLayout extends WLayout {
 	 * <p>
 	 * The default value is <i>false</i>.
 	 * <p>
-	 * If an <code>initialSize</code> is given (that is not {@link WLength#Auto}
-	 * ), then this size is used for the height of the row, overriding the
-	 * height it would be given by the layout manager.
+	 * If an <code>initialSize</code> is given (that is not {@link }), then this
+	 * size is used for the height of the row, overriding the height it would be
+	 * given by the layout manager.
 	 */
 	public void setRowResizable(int row, boolean enabled,
 			final WLength initialSize) {

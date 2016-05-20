@@ -27,8 +27,8 @@ import org.apache.commons.io.*;
  * Each user session of your application has a corresponding WApplication
  * instance. You need to create a new instance and return it as the result of
  * {@link WtServlet#createApplication(WEnvironment)}. The instance is the main
- * entry point to session information, and holds a reference to the
- * {@link WApplication#getRoot() getRoot()} of the widget tree.
+ * entry point to session information, and holds a reference to the {@link } of
+ * the widget tree.
  * <p>
  * The recipe for a JWt web application, which allocates new
  * {@link WApplication} instances for every user visiting the application is
@@ -55,51 +55,33 @@ import org.apache.commons.io.*;
  * </pre>
  * <p>
  * Throughout the session, the instance is available through the static method
- * {@link WApplication#getInstance() getInstance()}, which uses thread-specific
- * storage to keep track of the current session. The application may be exited
- * either using the method {@link WApplication#quit() quit()}, or because of a
- * timeout after the user has closed the window, but not because the user does
- * not interact: keep-alive messages in the background will keep the session
- * around as long as the user has the page opened.
+ * {@link }, which uses thread-specific storage to keep track of the current
+ * session. The application may be exited either using the method {@link }, or
+ * because of a timeout after the user has closed the window, but not because
+ * the user does not interact: keep-alive messages in the background will keep
+ * the session around as long as the user has the page opened.
  * <p>
  * The WApplication object provides access to session-wide settings, including:
  * <p>
  * <ul>
- * <li>circumstancial information through {@link WApplication#getEnvironment()
- * getEnvironment()}, which gives details about the user, start-up arguments,
- * and user agent capabilities.</li>
- * <li>the application title with
- * {@link WApplication#setTitle(CharSequence title) setTitle()}.</li>
- * <li>inline and external style sheets using
- * {@link WApplication#getStyleSheet() getStyleSheet()} and
- * {@link WApplication#useStyleSheet(WLink link, String media) useStyleSheet()}.
- * </li>
- * <li>inline and external JavaScript using
- * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
- * doJavaScript()} and {@link WApplication#addAutoJavaScript(String javascript)
- * addAutoJavaScript()}.</li>
- * <li>the top-level widget in {@link WApplication#getRoot() getRoot()},
- * representing the entire browser window, or multiple top-level widgets using
- * {@link WApplication#bindWidget(WWidget widget, String domId) bindWidget()}
- * when deployed in WidgetSet mode to manage a number of widgets within a 3rd
- * party page.</li>
- * <li>definition of cookies using
- * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
- * setCookie()} to persist information across sessions, which may be read using
- * {@link WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in
- * a future session.</li>
+ * <li>circumstantial information through {@link }, which gives details about the
+ * user, start-up arguments, and user agent capabilities.</li>
+ * <li>the application title with {@link }.</li>
+ * <li>inline and external style sheets using {@link } and {@link }.</li>
+ * <li>inline and external JavaScript using {@link } and {@link }.</li>
+ * <li>the top-level widget in {@link }, representing the entire browser window,
+ * or multiple top-level widgets using {@link } when deployed in WidgetSet mode
+ * to manage a number of widgets within a 3rd party page.</li>
+ * <li>definition of cookies using {@link } to persist information across
+ * sessions, which may be read using {@link } in a future session.</li>
  * <li>management of the internal path (that enables browser history and
- * bookmarks) using {@link WApplication#getBookmarkUrl() getBookmarkUrl()} and
- * related methods.</li>
- * <li>support for server-initiated updates with
- * {@link WApplication#enableUpdates(boolean enabled) enableUpdates()}</li>
+ * bookmarks) using {@link } and related methods.</li>
+ * <li>support for server-initiated updates with {@link }</li>
  * </ul>
  * <p>
  * <ul>
- * <li>localization information and message resources bundles, with
- * {@link WApplication#setLocale(Locale locale) setLocale()} and
- * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)
- * setLocalizedStrings()}</li>
+ * <li>localization information and message resources bundles, with {@link } and
+ * {@link }</li>
  * </ul>
  */
 public class WApplication extends WObject {
@@ -109,8 +91,6 @@ public class WApplication extends WObject {
 	 * Enumeration that indicates the method for dynamic (AJAX-alike) updates
 	 * ((<b>deprecated</b>).
 	 * <p>
-	 * 
-	 * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
 	 */
 	public enum AjaxMethod {
 		/**
@@ -235,6 +215,7 @@ public class WApplication extends WObject {
 			}
 		}
 		this.domRoot_ = new WContainerWidget();
+		this.domRoot_.setGlobalUnfocused(true);
 		this.domRoot_.setStyleClass("Wt-domRoot");
 		this.domRoot_.load();
 		if (this.session_.getType() == EntryPointType.Application) {
@@ -364,9 +345,6 @@ public class WApplication extends WObject {
 	 * constructing the application. The environment provides information on the
 	 * initial request, user agent, and deployment-related information.
 	 * <p>
-	 * 
-	 * @see WApplication#url(String internalPath)
-	 * @see WApplication#getSessionId()
 	 */
 	public WEnvironment getEnvironment() {
 		return this.session_.getEnv();
@@ -379,13 +357,11 @@ public class WApplication extends WObject {
 	 * corresponds to entire browser window. The user interface of your
 	 * application is represented by the content of this container.
 	 * <p>
-	 * The {@link WApplication#getRoot() getRoot()} widget is only defined when
-	 * the application manages the entire window. When deployed as a
-	 * {@link EntryPointType#WidgetSet WidgetSet} application, there is no
-	 * root() container, and <code>null</code> is returned. Instead, use
-	 * {@link WApplication#bindWidget(WWidget widget, String domId)
-	 * bindWidget()} to bind one or more root widgets to existing HTML
-	 * &lt;div&gt; (or other) elements on the page.
+	 * The {@link } widget is only defined when the application manages the
+	 * entire window. When deployed as a {@link WidgetSet} application, there is
+	 * no root() container, and <code>null</code> is returned. Instead, use
+	 * {@link } to bind one or more root widgets to existing HTML &lt;div&gt; (or
+	 * other) elements on the page.
 	 */
 	public WContainerWidget getRoot() {
 		return this.widgetRoot_;
@@ -400,9 +376,6 @@ public class WApplication extends WObject {
 	 * or other &quot;roots&quot; such as all the bound widgets in a widgetset
 	 * application.
 	 * <p>
-	 * 
-	 * @see WObject#setObjectName(String name)
-	 * @see WWidget#find(String name)
 	 */
 	public WWidget findWidget(final String name) {
 		WWidget result = this.domRoot_.find(name);
@@ -424,9 +397,6 @@ public class WApplication extends WObject {
 	 * rules may be dynamically updated, and it is easier to manage
 	 * logistically.
 	 * <p>
-	 * 
-	 * @see WApplication#useStyleSheet(WLink link, String media)
-	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public WCssStyleSheet getStyleSheet() {
 		return this.styleSheet_;
@@ -503,8 +473,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getStyleSheet()
-	 * @see WApplication#removeStyleSheet(WLink link)
-	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void useStyleSheet(final WCssStyleSheet styleSheet,
 			final String condition) {
@@ -640,7 +608,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getStyleSheet()
-	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void removeStyleSheet(final WLink link) {
 		for (int i = (int) this.styleSheets_.size() - 1; i > -1; --i) {
@@ -703,13 +670,10 @@ public class WApplication extends WObject {
 	 * text alignment and reverse the column orders of &lt;table&gt; elements.
 	 * <p>
 	 * In addition, JWt will take this setting into account in {@link WTextEdit}, {@link WTableView} and {@link WTreeView} (so that columns are
-	 * reverted), and swap the behaviour of {@link WWidget#setFloatSide(Side s)
-	 * WWidget#setFloatSide()} and
-	 * {@link WWidget#setOffsets(WLength offset, EnumSet sides)
-	 * WWidget#setOffsets()} for RightToLeft languages. Note that CSS settings
-	 * themselves are not affected by this setting, and thus for example
-	 * <code>&quot;float: right&quot;</code> will move a box to the right,
-	 * irrespective of the layout direction.
+	 * reverted), and swap the behaviour of {@link } and {@link } for RightToLeft
+	 * languages. Note that CSS settings themselves are not affected by this
+	 * setting, and thus for example <code>&quot;float: right&quot;</code> will
+	 * move a box to the right, irrespective of the layout direction.
 	 * <p>
 	 * The library sets <code>&quot;Wt-ltr&quot;</code> or
 	 * <code>&quot;Wt-rtl&quot;</code> as style classes for the document body.
@@ -750,8 +714,6 @@ public class WApplication extends WObject {
 	/**
 	 * Sets a style class to the entire page &lt;body&gt;.
 	 * <p>
-	 * 
-	 * @see WApplication#setHtmlClass(String styleClass)
 	 */
 	public void setBodyClass(final String styleClass) {
 		this.bodyClass_ = styleClass;
@@ -796,8 +758,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The default title is &quot;&quot;.
 	 * <p>
-	 * 
-	 * @see WApplication#getTitle()
 	 */
 	public void setTitle(final CharSequence title) {
 		if (this.session_.getRenderer().isPreLearning()
@@ -820,8 +780,6 @@ public class WApplication extends WObject {
 	/**
 	 * Returns the close message.
 	 * <p>
-	 * 
-	 * @see WApplication#setConfirmCloseMessage(CharSequence message)
 	 */
 	public WString getCloseMessage() {
 		return this.closeMessage_;
@@ -830,16 +788,11 @@ public class WApplication extends WObject {
 	/**
 	 * Returns the resource object that provides localized strings.
 	 * <p>
-	 * This returns the object previously set using
-	 * {@link WApplication#setLocalizedStrings(WLocalizedStrings translator)
-	 * setLocalizedStrings()}.
+	 * This returns the object previously set using {@link }.
 	 * <p>
-	 * {@link WString#tr(String key) WString#tr()} is used to create localized
-	 * strings, whose localized translation is looked up through this object,
-	 * using a key.
+	 * {@link } is used to create localized strings, whose localized translation
+	 * is looked up through this object, using a key.
 	 * <p>
-	 * 
-	 * @see WString#tr(String key)
 	 */
 	public WLocalizedStrings getLocalizedStrings() {
 		if (this.localizedStrings_.getItems().size() > 1) {
@@ -872,7 +825,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String key)
 	 */
 	public void setLocalizedStrings(WLocalizedStrings translator) {
 		if (!(this.localizedStrings_ != null)) {
@@ -900,18 +852,15 @@ public class WApplication extends WObject {
 	 * <p>
 	 * By passing an empty <code>locale</code>, the default locale is chosen.
 	 * <p>
-	 * When the locale is changed, {@link WApplication#refresh() refresh()} is
-	 * called, which will resolve the strings of the current user-interface in
-	 * the new locale.
+	 * When the locale is changed, {@link } is called, which will resolve the
+	 * strings of the current user-interface in the new locale.
 	 * <p>
-	 * At construction, the locale is copied from the environment (
-	 * {@link WEnvironment#getLocale() WEnvironment#getLocale()}), and this is
-	 * the locale that was configured by the user in his browser preferences,
-	 * and passed using an HTTP request header.
+	 * At construction, the locale is copied from the environment ({@link }), and
+	 * this is the locale that was configured by the user in his browser
+	 * preferences, and passed using an HTTP request header.
 	 * <p>
 	 * 
 	 * @see WApplication#getLocalizedStrings()
-	 * @see WString#tr(String key)
 	 */
 	public void setLocale(final Locale locale) {
 		this.locale_ = locale;
@@ -933,8 +882,8 @@ public class WApplication extends WObject {
 	 * Refreshes the application.
 	 * <p>
 	 * This lets the application to refresh its data, including strings from
-	 * message-resource bundles. This done by propagating
-	 * {@link WWidget#refresh() WWidget#refresh()} through the widget hierarchy.
+	 * message-resource bundles. This done by propagating {@link } through the
+	 * widget hierarchy.
 	 * <p>
 	 * This method is also called when the user hits the refresh (or reload)
 	 * button, if this can be caught within the current session.
@@ -942,8 +891,6 @@ public class WApplication extends WObject {
 	 * The reload button may only be caught when cookies for session tracking
 	 * are configured in the servlet container.
 	 * <p>
-	 * 
-	 * @see WWidget#refresh()
 	 */
 	public void refresh() {
 		if (this.localizedStrings_ != null) {
@@ -972,7 +919,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#getRoot()
-	 * @see EntryPointType#WidgetSet
 	 */
 	public void bindWidget(WWidget widget, final String domId) {
 		if (this.session_.getType() != EntryPointType.WidgetSet) {
@@ -1004,14 +950,8 @@ public class WApplication extends WObject {
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
+	 * state, to be used across sessions, use {@link } instead.
 	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String url(final String internalPath) {
 		return this.resolveRelativeUrl(this.session_
@@ -1098,14 +1038,8 @@ public class WApplication extends WObject {
 	 * <code>&quot;&amp;param1=value&amp;param2=value&quot;</code>.
 	 * <p>
 	 * To obtain a URL that is suitable for bookmarking the current application
-	 * state, to be used across sessions, use
-	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
+	 * state, to be used across sessions, use {@link } instead.
 	 * <p>
-	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
-	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl() {
 		return this.getBookmarkUrl(this.newInternalPath_);
@@ -1136,9 +1070,6 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getBookmarkUrl(final String internalPath) {
@@ -1207,12 +1138,11 @@ public class WApplication extends WObject {
 	 * <p>
 	 * When the internal path is changed, an entry is added to the browser
 	 * history. When the user navigates back and forward through this history
-	 * (using the browser back/forward buttons), an
-	 * {@link WApplication#internalPathChanged() internalPathChanged()} event is
-	 * emitted. You should listen to this signal to switch the application to
-	 * the corresponding state. When <code>emitChange</code> is
-	 * <code>true</code>, this signal is also emitted by setting the path (but
-	 * only if the path is actually changed).
+	 * (using the browser back/forward buttons), an {@link } event is emitted.
+	 * You should listen to this signal to switch the application to the
+	 * corresponding state. When <code>emitChange</code> is <code>true</code>,
+	 * this signal is also emitted by setting the path (but only if the path is
+	 * actually changed).
 	 * <p>
 	 * A url that includes the internal path may be obtained using
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()}.
@@ -1225,7 +1155,6 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#getBookmarkUrl()
 	 * @see WApplication#getBookmarkUrl()
-	 * @see WApplication#internalPathChanged()
 	 */
 	public void setInternalPath(final String path, boolean emitChange) {
 		this.enableInternalPaths();
@@ -1291,9 +1220,6 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean isInternalPathDefaultValid() {
@@ -1310,7 +1236,6 @@ public class WApplication extends WObject {
 	 * bootstrap settings, as this generates then a 404 Not-Found response.
 	 * <p>
 	 * 
-	 * @see WApplication#internalPathChanged()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public void setInternalPathValid(boolean valid) {
@@ -1342,9 +1267,6 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public boolean isInternalPathValid() {
@@ -1376,9 +1298,6 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPath() {
@@ -1410,9 +1329,6 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String getInternalPathNextPart(final String path) {
@@ -1450,9 +1366,6 @@ public class WApplication extends WObject {
 	 * {@link WApplication#getBookmarkUrl() getBookmarkUrl()} instead.
 	 * <p>
 	 * 
-	 * @see WApplication#redirect(String url)
-	 * @see WEnvironment#getHostName()
-	 * @see WEnvironment#getUrlScheme()
 	 * @see WApplication#getBookmarkUrl()
 	 */
 	public String internalSubPath(final String path) {
@@ -1472,8 +1385,7 @@ public class WApplication extends WObject {
 	 * Returns whether the current {@link WApplication#getBookmarkUrl()
 	 * getBookmarkUrl()} starts with <code>path</code> (or is equal to
 	 * <code>path</code>). You will typically use this method within a slot
-	 * conneted to the {@link WApplication#internalPathChanged()
-	 * internalPathChanged()} signal, to check that an internal path change
+	 * conneted to the {@link } signal, to check that an internal path change
 	 * affects the widget. It may also be useful before changing
 	 * <code>path</code> using {@link WApplication#getBookmarkUrl()
 	 * getBookmarkUrl()} if you do not intend to remove sub paths when the
@@ -1521,9 +1433,8 @@ public class WApplication extends WObject {
 	 * Redirects the application to another location.
 	 * <p>
 	 * The client will be redirected to a new location identified by
-	 * <code>url</code>. Use this in conjunction with
-	 * {@link WApplication#quit() quit()} if you want the application to be
-	 * terminated as well.
+	 * <code>url</code>. Use this in conjunction with {@link } if you want the
+	 * application to be terminated as well.
 	 * <p>
 	 * Calling redirect() does not imply quit() since it may be useful to switch
 	 * between a non-secure and secure (SSL) transport connection.
@@ -1535,8 +1446,7 @@ public class WApplication extends WObject {
 	/**
 	 * Returns the URL at which the resources are deployed.
 	 * <p>
-	 * Returns resolveRelativeUrl({@link WApplication#getRelativeResourcesUrl()
-	 * getRelativeResourcesUrl()})
+	 * Returns resolveRelativeUrl({@link })
 	 */
 	public static String getResourcesUrl() {
 		return WApplication.getInstance().resolveRelativeUrl(
@@ -1599,8 +1509,7 @@ public class WApplication extends WObject {
 	 * push&quot; (what is called &apos;comet&apos; in AJAX terminology).
 	 * Widgets may then be modified, created or deleted outside of the event
 	 * loop (e.g. in response to execution of another thread), and these changes
-	 * are propagated by calling {@link WApplication#triggerUpdate()
-	 * triggerUpdate()}.
+	 * are propagated by calling {@link }.
 	 * <p>
 	 * Note that you need to grab the application&apos;s update lock to avoid
 	 * concurrency problems, whenever you modify the application&apos;s state
@@ -1640,8 +1549,6 @@ public class WApplication extends WObject {
 	 * <i><b>Note: </b>This works only if JavaScript is available on the
 	 * client.</i>
 	 * </p>
-	 * 
-	 * @see WApplication#triggerUpdate()
 	 */
 	public void enableUpdates(boolean enabled) {
 		if (enabled) {
@@ -1720,8 +1627,6 @@ public class WApplication extends WObject {
 	 * outside of the event loop. Inside the event loop, this lock is already
 	 * held by the library itself.
 	 * <p>
-	 * 
-	 * @see WApplication#getUpdateLock()
 	 */
 	public static class UpdateLock {
 		private static Logger logger = LoggerFactory
@@ -1785,9 +1690,8 @@ public class WApplication extends WObject {
 	 * modify the application from within that thread without needing the update
 	 * lock.
 	 * <p>
-	 * Calling {@link WApplication#attachThread(boolean attach) attachThread()}
-	 * with <code>attach</code> = <code>false</code>, detaches the current
-	 * thread.
+	 * Calling {@link } with <code>attach</code> = <code>false</code>, detaches
+	 * the current thread.
 	 */
 	public void attachThread(boolean attach) {
 		if (attach) {
@@ -1816,12 +1720,8 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
-	 * In most situations, it&apos;s more robust to use
-	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * In most situations, it&apos;s more robust to use {@link } however.
 	 * <p>
-	 * 
-	 * @see WWidget#doJavaScript(String js)
-	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public void doJavaScript(final String javascript, boolean afterLoaded) {
 		if (afterLoaded) {
@@ -1854,12 +1754,8 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
-	 * In most situations, it&apos;s more robust to use
-	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * In most situations, it&apos;s more robust to use {@link } however.
 	 * <p>
-	 * 
-	 * @see WWidget#doJavaScript(String js)
-	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public void addAutoJavaScript(final String javascript) {
 		this.autoJavaScript_ += javascript;
@@ -1869,8 +1765,7 @@ public class WApplication extends WObject {
 	/**
 	 * Declares an application-wide JavaScript function.
 	 * <p>
-	 * The function is stored in {@link WApplication#getJavaScriptClass()
-	 * getJavaScriptClass()}.
+	 * The function is stored in {@link }.
 	 * <p>
 	 * The next code snippet declares and invokes function foo:
 	 */
@@ -1962,11 +1857,9 @@ public class WApplication extends WObject {
 	 * immediately. The JavaScript will be run after the normal event handling,
 	 * unless <code>afterLoaded</code> is set to <code>false</code>.
 	 * <p>
-	 * In most situations, it&apos;s more robust to use
-	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * In most situations, it&apos;s more robust to use {@link } however.
 	 * <p>
 	 * 
-	 * @see WWidget#doJavaScript(String js)
 	 * @see WApplication#addAutoJavaScript(String javascript)
 	 */
 	public boolean isCustomJQuery() {
@@ -2023,9 +1916,8 @@ public class WApplication extends WObject {
 	/**
 	 * Blocks the thread, waiting for an UI event.
 	 * <p>
-	 * This function is used by functions like
-	 * {@link WDialog#exec(WAnimation animation) WDialog#exec()} or
-	 * WPopupMenu::exec(), to block the current thread waiting for a new event.
+	 * This function is used by functions like {@link } or WPopupMenu::exec(), to
+	 * block the current thread waiting for a new event.
 	 * <p>
 	 * This requires that at least one additional thread is available to process
 	 * incoming requests, and is not scalable when working with a fixed size
@@ -2137,9 +2029,8 @@ public class WApplication extends WObject {
 	 * <p>
 	 * Use cookies to transfer information across different sessions (e.g. a
 	 * user name). In a subsequent session you will be able to read this cookie
-	 * using {@link WEnvironment#getCookie(String cookieName)
-	 * WEnvironment#getCookie()}. You cannot use a cookie to store information
-	 * in the current session.
+	 * using {@link }. You cannot use a cookie to store information in the
+	 * current session.
 	 * <p>
 	 * The name must be a valid cookie name (of type &apos;token&apos;: no
 	 * special characters or separators, see RFC2616 page 16). The value may be
@@ -2148,13 +2039,9 @@ public class WApplication extends WObject {
 	 * &apos;0&apos;.
 	 * <p>
 	 * By default the cookie only applies to the application deployment path (
-	 * {@link WEnvironment#getDeploymentPath() WEnvironment#getDeploymentPath()}
-	 * ) in the current domain. To set a proper value for domain, see also
-	 * RFC2109.
+	 * {@link }) in the current domain. To set a proper value for domain, see
+	 * also RFC2109.
 	 * <p>
-	 * 
-	 * @see WEnvironment#supportsCookies()
-	 * @see WEnvironment#getCookie(String cookieName)
 	 */
 	public void setCookie(final String name, final String value, int maxAge,
 			final String domain, final String path, boolean secure) {
@@ -2241,8 +2128,6 @@ public class WApplication extends WObject {
 	 * <code>media</code>, <code>hreflang</code>, <code>type</code> or
 	 * <code>sizes</code>, they will be ignored.
 	 * <p>
-	 * 
-	 * @see WApplication#removeMetaLink(String href)
 	 */
 	public void addMetaLink(final String href, final String rel,
 			final String media, final String hreflang, final String type,
@@ -2296,9 +2181,6 @@ public class WApplication extends WObject {
 	/**
 	 * Adds an HTML meta header.
 	 * <p>
-	 * 
-	 * @see WApplication#addMetaHeader(MetaHeaderType type, String name,
-	 *      CharSequence content, String lang)
 	 */
 	public void addMetaHeader(final String name, final CharSequence content,
 			final String lang) {
@@ -2332,12 +2214,11 @@ public class WApplication extends WObject {
 	 * href="overview.html#progressive_bootstrap">progressive bootstrap</a> is
 	 * used, you can set meta headers for any type of session, from within the
 	 * application constructor (which corresponds to the initial request).</li>
-	 * <li>but never for a {@link EntryPointType#WidgetSet} mode application
-	 * since then the application is hosted within a foreign HTML page.</li>
+	 * <li>but never for a {@link } mode application since then the application
+	 * is hosted within a foreign HTML page.</li>
 	 * </ul>
 	 * <p>
-	 * These situations coincide with {@link WEnvironment#hasAjax()
-	 * WEnvironment#hasAjax()} returning <code>false</code> (see
+	 * These situations coincide with {@link } returning <code>false</code> (see
 	 * {@link WApplication#getEnvironment() getEnvironment()}). The reason that
 	 * it other cases the HTML page has already been rendered, and will not be
 	 * rerendered since all updates are done dynamically.
@@ -2346,8 +2227,6 @@ public class WApplication extends WObject {
 	 * property in the configuration file, which will be applied in all
 	 * circumstances.
 	 * <p>
-	 * 
-	 * @see WApplication#removeMetaHeader(MetaHeaderType type, String name)
 	 */
 	public void addMetaHeader(MetaHeaderType type, final String name,
 			final CharSequence content, final String lang) {
@@ -2481,11 +2360,8 @@ public class WApplication extends WObject {
 	 * Quits the application.
 	 * <p>
 	 * This quits the application with a default restart message resolved as
-	 * {@link WString#tr(String key) WString#tr()}
-	 * (&quot;Wt.QuittedMessage&quot;).
+	 * {@link }(&quot;Wt.QuittedMessage&quot;).
 	 * <p>
-	 * 
-	 * @see WApplication#quit(CharSequence restartMessage)
 	 */
 	public void quit() {
 		this.quit(WString.tr("Wt.QuittedMessage"));
@@ -2518,7 +2394,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WApplication#quit()
-	 * @deprecated {@link WApplication#hasQuit() hasQuit()} is proper English
+	 * @deprecated {@link } is proper English
 	 */
 	public boolean isQuited() {
 		return this.quitted_;
@@ -2539,8 +2415,6 @@ public class WApplication extends WObject {
 	 * <p>
 	 * The returned value is the maximum request size in bytes.
 	 * <p>
-	 * 
-	 * @see WApplication#requestTooLarge()
 	 */
 	public long getMaximumRequestSize() {
 		return this.getEnvironment().getServer().getConfiguration()
@@ -2578,8 +2452,6 @@ public class WApplication extends WObject {
 	 * Otherwise, key events are handled by the widget in focus, and its
 	 * ancestors.
 	 * <p>
-	 * 
-	 * @see WInteractWidget#keyWentDown()
 	 */
 	public EventSignal1<WKeyEvent> globalKeyWentDown() {
 		return this.domRoot_.keyWentDown();
@@ -2592,8 +2464,6 @@ public class WApplication extends WObject {
 	 * Otherwise, key events are handled by the widget in focus, and its
 	 * ancestors.
 	 * <p>
-	 * 
-	 * @see WInteractWidget#keyPressed()
 	 */
 	public EventSignal1<WKeyEvent> globalKeyPressed() {
 		return this.domRoot_.keyPressed();
@@ -2606,8 +2476,6 @@ public class WApplication extends WObject {
 	 * Otherwise, key events are handled by the widget in focus, and its
 	 * ancestors.
 	 * <p>
-	 * 
-	 * @see WInteractWidget#keyWentUp()
 	 */
 	public EventSignal1<WKeyEvent> globalKeyWentUp() {
 		return this.domRoot_.keyWentUp();
@@ -2620,8 +2488,6 @@ public class WApplication extends WObject {
 	 * Otherwise, key events are handled by the widget in focus, and its
 	 * ancestors.
 	 * <p>
-	 * 
-	 * @see WInteractWidget#enterPressed()
 	 */
 	public EventSignal globalEnterPressed() {
 		return this.domRoot_.enterPressed();
@@ -2634,8 +2500,6 @@ public class WApplication extends WObject {
 	 * Otherwise, key events are handled by the widget in focus, and its
 	 * ancestors.
 	 * <p>
-	 * 
-	 * @see WInteractWidget#escapePressed()
 	 */
 	public EventSignal globalEscapePressed() {
 		return this.domRoot_.escapePressed();
@@ -2684,8 +2548,6 @@ public class WApplication extends WObject {
 	 * him to confirm leaving the page. This <code>message</code> is added to
 	 * the page.
 	 * <p>
-	 * 
-	 * @see WApplication#unload()
 	 */
 	public void setConfirmCloseMessage(final CharSequence message) {
 		if (!message.equals(this.closeMessage_)) {
@@ -2854,15 +2716,12 @@ public class WApplication extends WObject {
 	 * <p>
 	 * This method is called when the progressive bootstrap method is used, and
 	 * support for AJAX has been detected. The default behavior will propagate
-	 * the {@link WWidget#enableAjax() WWidget#enableAjax()} method through the
-	 * widget hierarchy.
+	 * the {@link } method through the widget hierarchy.
 	 * <p>
 	 * You may want to reimplement this method if you want to make changes to
 	 * the user-interface when AJAX is enabled. You should always call the base
 	 * implementation.
 	 * <p>
-	 * 
-	 * @see WWidget#enableAjax()
 	 */
 	protected void enableAjax() {
 		this.enableAjax_ = true;

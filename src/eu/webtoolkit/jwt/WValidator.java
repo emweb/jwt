@@ -42,17 +42,16 @@ import org.slf4j.LoggerFactory;
  * server-side validation.
  * <p>
  * If these validators are not suitable, you can inherit from this class, and
- * provide a suitable implementation to {@link WValidator#validate(String input)
- * validate()} which does the server-side validation. If you want to provide
- * client-side validation for your own validator, you may also reimplement
- * {@link WValidator#getJavaScriptValidate() getJavaScriptValidate()}.
+ * provide a suitable implementation to {@link } which does the server-side
+ * validation. If you want to provide client-side validation for your own
+ * validator, you may also reimplement {@link }.
  * <p>
  * <h3>i18n</h3>
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
  * <ul>
- * <li>{@link WValidator.State#Invalid}: This field cannot be empty</li>
+ * <li>{@link }: This field cannot be empty</li>
  * </ul>
  * <p>
  * 
@@ -169,8 +168,6 @@ public class WValidator extends WObject {
 	 * <p>
 	 * Indicate whether input is mandatory.
 	 * <p>
-	 * 
-	 * @see WValidator#setMandatory(boolean mandatory)
 	 */
 	public WValidator(boolean mandatory, WObject parent) {
 		super(parent);
@@ -277,8 +274,6 @@ public class WValidator extends WObject {
 	 * <i><b>Note: </b>The signature and contract changed changed in JWt
 	 * 3.1.9.</i>
 	 * </p>
-	 * 
-	 * @see WValidator#getInputFilter()
 	 */
 	public String getJavaScriptValidate() {
 		if (this.mandatory_) {

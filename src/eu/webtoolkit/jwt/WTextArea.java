@@ -30,10 +30,9 @@ import org.slf4j.LoggerFactory;
  * To act upon editing, connect a slot to the
  * {@link WInteractWidget#keyWentUp() WInteractWidget#keyWentUp()} signal.
  * <p>
- * At all times, the current content may be accessed with the
- * {@link WTextArea#getText() getText()} method.
+ * At all times, the current content may be accessed with the {@link } method.
  * <p>
- * WTextArea is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WTextArea is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -162,9 +161,6 @@ public class WTextArea extends WFormWidget {
 	 * <p>
 	 * Returns -1 if there is no selected text.
 	 * <p>
-	 * 
-	 * @see WTextArea#hasSelectedText()
-	 * @see WTextArea#getSelectedText()
 	 */
 	public int getSelectionStart() {
 		WApplication app = WApplication.getInstance();
@@ -185,8 +181,6 @@ public class WTextArea extends WFormWidget {
 	 * <p>
 	 * Returns an empty string if there is currently no selected text.
 	 * <p>
-	 * 
-	 * @see WTextArea#hasSelectedText()
 	 */
 	public String getSelectedText() {
 		if (this.getSelectionStart() != -1) {

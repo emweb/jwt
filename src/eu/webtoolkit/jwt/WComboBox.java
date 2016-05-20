@@ -27,28 +27,22 @@ import org.slf4j.LoggerFactory;
  * may be selected.
  * <p>
  * WComboBox is an MVC view class, using a simple string list model by default.
- * The model may be populated using {@link WComboBox#addItem(CharSequence text)
- * addItem()} or {@link WComboBox#insertItem(int index, CharSequence text)
- * insertItem()} and the contents can be cleared through
- * {@link WComboBox#clear() clear()}. These methods manipulate the underlying
- * {@link WComboBox#getModel() getModel()}.
+ * The model may be populated using {@link } or {@link } and the contents can be
+ * cleared through {@link }. These methods manipulate the underlying {@link }.
  * <p>
  * To use the combo box with a custom model instead of the default
- * {@link WStringListModel}, use
- * {@link WComboBox#setModel(WAbstractItemModel model) setModel()}.
+ * {@link WStringListModel}, use {@link }.
  * <p>
- * To react to selection events, connect to the {@link WFormWidget#changed()
- * WFormWidget#changed()}, {@link WComboBox#activated() activated()} or
- * {@link WComboBox#sactivated() sactivated()} signals.
+ * To react to selection events, connect to the {@link }, {@link } or {@link }
+ * signals.
  * <p>
- * At all times, the current selection index is available through
- * {@link WComboBox#getCurrentIndex() getCurrentIndex()} and the current
- * selection text using {@link WComboBox#getCurrentText() getCurrentText()}.
+ * At all times, the current selection index is available through {@link } and
+ * the current selection text using {@link }.
  * <p>
  * {@link WComboBox} does not have support for auto-completion, this behaviour
  * can be found in the {@link WSuggestionPopup}.
  * <p>
- * WComboBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WComboBox is an {@link inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -93,8 +87,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Adds an option item.
 	 * <p>
-	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
-	 * insertItem} ({@link WComboBox#getCount() getCount()}, <code>text</code>).
+	 * Equivalent to {@link insertItem} ({@link }, <code>text</code>).
 	 */
 	public void addItem(final CharSequence text) {
 		this.insertItem(this.getCount(), text);
@@ -112,9 +105,8 @@ public class WComboBox extends WFormWidget {
 	 * <p>
 	 * If no item is currently selected, the method returns -1.
 	 * <p>
-	 * By default, for a combo box, the first item is selected, and thus
-	 * {@link WComboBox#getCurrentIndex() getCurrentIndex()} = 0, while for a
-	 * selection box no item is selected.
+	 * By default, for a combo box, the first item is selected, and thus {@link }
+	 * = 0, while for a selection box no item is selected.
 	 */
 	public int getCurrentIndex() {
 		return this.currentIndex_;
@@ -124,12 +116,10 @@ public class WComboBox extends WFormWidget {
 	 * Inserts an item at the specified position.
 	 * <p>
 	 * The item is inserted in the underlying model at position
-	 * <code>index</code>. This requires that the {@link WComboBox#getModel()
-	 * getModel()} is editable.
+	 * <code>index</code>. This requires that the {@link } is editable.
 	 * <p>
 	 * 
 	 * @see WComboBox#addItem(CharSequence text)
-	 * @see WComboBox#removeItem(int index)
 	 */
 	public void insertItem(int index, final CharSequence text) {
 		if (this.model_.insertRow(index)) {
@@ -142,11 +132,10 @@ public class WComboBox extends WFormWidget {
 	 * Removes the item at the specified position.
 	 * <p>
 	 * The item is removed from the underlying model. This requires that the
-	 * {@link WComboBox#getModel() getModel()} is editable.
+	 * {@link } is editable.
 	 * <p>
 	 * 
 	 * @see WComboBox#insertItem(int index, CharSequence text)
-	 * @see WComboBox#clear()
 	 */
 	public void removeItem(int index) {
 		this.model_.removeRow(index);
@@ -178,7 +167,7 @@ public class WComboBox extends WFormWidget {
 	 * Changes the text for a specified option.
 	 * <p>
 	 * The text for the item at position <code>index</code> is changed. This
-	 * requires that the {@link WComboBox#getModel() getModel()} is editable.
+	 * requires that the {@link } is editable.
 	 */
 	public void setItemText(int index, final CharSequence text) {
 		this.model_.setData(index, this.modelColumn_, text);
@@ -189,7 +178,6 @@ public class WComboBox extends WFormWidget {
 	 * <p>
 	 * 
 	 * @see WComboBox#getCurrentIndex()
-	 * @see WComboBox#getItemText(int index)
 	 */
 	public WString getCurrentText() {
 		if (this.currentIndex_ != -1) {
@@ -227,8 +215,6 @@ public class WComboBox extends WFormWidget {
 	 * >Wt::asString</a>, and subsequent items of the same group are rendered as
 	 * children of a HTML <code> &lt;optgroup&gt; </code>element.
 	 * <p>
-	 * 
-	 * @see WComboBox#setModelColumn(int index)
 	 */
 	public void setModel(WAbstractItemModel model) {
 		if (this.model_ != null) {
@@ -333,8 +319,6 @@ public class WComboBox extends WFormWidget {
 	 * Always returns SingleSelection for a combo box, but may return
 	 * ExtendedSelection for a selection box
 	 * <p>
-	 * 
-	 * @see WSelectionBox#setSelectionMode(SelectionMode mode)
 	 */
 	public SelectionMode getSelectionMode() {
 		return SelectionMode.SingleSelection;
@@ -390,7 +374,6 @@ public class WComboBox extends WFormWidget {
 	 * The newly selected item is passed as an argument.
 	 * <p>
 	 * 
-	 * @see WComboBox#sactivated()
 	 * @see WComboBox#getCurrentIndex()
 	 */
 	public Signal1<Integer> activated() {

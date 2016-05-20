@@ -24,9 +24,7 @@ import org.slf4j.LoggerFactory;
  * each node.
  * <p>
  * 
- * Additional data for each column can be set using
- * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
- * setColumnWidget()}.
+ * Additional data for each column can be set using {@link }.
  * <p>
  * 
  * @see WTreeNode
@@ -127,8 +125,6 @@ public class WTreeTableNode extends WTreeNode {
 	/**
 	 * Returns the table for this node.
 	 * <p>
-	 * 
-	 * @see WTreeTableNode#setTable(WTreeTable table)
 	 */
 	WTreeTable getTable() {
 		return this.table_;

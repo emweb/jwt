@@ -29,14 +29,7 @@ import org.slf4j.LoggerFactory;
  * line edit.
  * <p>
  * You may provide special editing support for an item by specializing the
- * widget and reimplement
- * {@link WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
- * createEditor()},
- * {@link WItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex index)
- * setModelData()}, {@link WItemDelegate#getEditState(WWidget editor)
- * getEditState()}, and
- * {@link WItemDelegate#setEditState(WWidget editor, Object value)
- * setEditState()}.
+ * widget and reimplement {@link }, {@link }, {@link }, and {@link }.
  */
 public class WItemDelegate extends WAbstractItemDelegate {
 	private static Logger logger = LoggerFactory.getLogger(WItemDelegate.class);
@@ -64,23 +57,16 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * The following properties of an item are rendered:
 	 * <p>
 	 * <ul>
-	 * <li>text using the {@link ItemDataRole#DisplayRole} data, with the format
-	 * specified by {@link WItemDelegate#setTextFormat(String format)
-	 * setTextFormat()}</li>
-	 * <li>a check box depending on the {@link ItemFlag#ItemIsUserCheckable}
-	 * flag and {@link ItemDataRole#CheckStateRole} data</li>
+	 * <li>text using the {@link } data, with the format specified by {@link }</li>
+	 * <li>a check box depending on the {@link } flag and {@link } data</li>
 	 * <li>an anchor depending on Wt::InternalPathRole or Wt::UrlRole values</li>
-	 * <li>an icon depending on the value of {@link ItemDataRole#DecorationRole}
-	 * </li>
-	 * <li>a tooltip depending on the value of {@link ItemDataRole#ToolTipRole}</li>
-	 * <li>a custom style class depending on the value of
-	 * {@link ItemDataRole#StyleClassRole}</li>
+	 * <li>an icon depending on the value of {@link }</li>
+	 * <li>a tooltip depending on the value of {@link }</li>
+	 * <li>a custom style class depending on the value of {@link }</li>
 	 * </ul>
 	 * <p>
-	 * When the flags indicates {@link ViewItemRenderFlag#RenderEditing}, then
-	 * {@link WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
-	 * createEditor()} is called to create a suitable editor for editing the
-	 * item.
+	 * When the flags indicates {@link }, then {@link } is called to create a
+	 * suitable editor for editing the item.
 	 */
 	public WWidget update(WWidget widget, final WModelIndex index,
 			EnumSet<ViewItemRenderFlag> flags) {
@@ -277,9 +263,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 *   }
 	 * </pre>
 	 * <p>
-	 * 
-	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
-	 * @see WItemDelegate#getEditState(WWidget editor)
 	 */
 	public void setModelData(final Object editState, WAbstractItemModel model,
 			final WModelIndex index) {
@@ -307,8 +290,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * </pre>
 	 * <p>
 	 * 
-	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
-	 * @see WItemDelegate#setEditState(WWidget editor, Object value)
 	 * @see WItemDelegate#setModelData(Object editState, WAbstractItemModel
 	 *      model, WModelIndex index)
 	 */
@@ -340,8 +321,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 *   }
 	 * </pre>
 	 * <p>
-	 * 
-	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
 	 */
 	public void setEditState(WWidget editor, final Object value) {
 		IndexContainerWidget w = ((editor) instanceof IndexContainerWidget ? (IndexContainerWidget) (editor)
@@ -355,7 +334,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * Creates an editor for a data item.
 	 * <p>
 	 * The default implementation returns a {@link WLineEdit} which edits the
-	 * item&apos;s {@link ItemDataRole#EditRole} value.
+	 * item&apos;s {@link } value.
 	 * <p>
 	 * You may reimplement this method to provide a suitable editor, or to
 	 * attach a custom validator. In that case, you will probably also want to

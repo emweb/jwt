@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
  * By default, the theme will use CSS resources that are shipped together with
  * the JWt distribution, but since the Twitter Bootstrap CSS API is a popular
  * API for custom themes, you can easily replace the CSS with custom-built CSS
- * (by reimplementing {@link WBootstrapTheme#getStyleSheets() getStyleSheets()}
- * ).
+ * (by reimplementing {@link }).
  * <p>
  * Although this theme facilitates the use of Twitter Bootstrap with Wt, it is
  * still important to understand how Bootstrap expects markup to be, especially
@@ -47,8 +46,6 @@ import org.slf4j.LoggerFactory;
  * bootstrap documentation, see <a
  * href="http://getbootstrap.com">http://getbootstrap.com</a>
  * <p>
- * 
- * @see WApplication#setTheme(WTheme theme)
  */
 public class WBootstrapTheme extends WTheme {
 	private static Logger logger = LoggerFactory
@@ -57,8 +54,6 @@ public class WBootstrapTheme extends WTheme {
 	/**
 	 * Enumeration to select a bootstrap version.
 	 * <p>
-	 * 
-	 * @see WBootstrapTheme#setVersion(WBootstrapTheme.Version version)
 	 */
 	public enum Version {
 		/**

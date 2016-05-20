@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
  * {@link WPaintedWidget}. The area may be defined using different shapes
  * through {@link WRectArea}, {@link WCircleArea} or {@link WPolygonArea}.
  * <p>
- * 
- * @see WImage#addArea(WAbstractArea area)
- * @see WPaintedWidget#addArea(WAbstractArea area)
  */
 public abstract class WAbstractArea extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WAbstractArea.class);
@@ -41,9 +38,6 @@ public abstract class WAbstractArea extends WObject {
 	 * The area is automatically removed from the {@link WImage} or
 	 * {@link WPaintedWidget} to which it was added.
 	 * <p>
-	 * 
-	 * @see WImage#removeArea(WAbstractArea area)
-	 * @see WPaintedWidget#removeArea(WAbstractArea area)
 	 */
 	public void remove() {
 		if (this.impl_ != null) {
@@ -67,8 +61,6 @@ public abstract class WAbstractArea extends WObject {
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
-	 * 
-	 * @see WAbstractArea#isHole()
 	 */
 	public void setHole(boolean hole) {
 		this.hole_ = hole;
@@ -104,8 +96,7 @@ public abstract class WAbstractArea extends WObject {
 	 * <p>
 	 * <i><b>Note: </b>Even when no destination link is set, in some
 	 * circumstances, an identity URL (&apos;#&apos;) will be linked to on the
-	 * underlying HTML &lt;area&gt; element (see also
-	 * {@link WAbstractArea#setCursor(Cursor cursor) setCursor()}). </i>
+	 * underlying HTML &lt;area&gt; element (see also {@link }). </i>
 	 * </p>
 	 */
 	public void setLink(final WLink link) {
@@ -144,16 +135,15 @@ public abstract class WAbstractArea extends WObject {
 	 * By default, no destination URL is set (<code>ref</code> = &quot;&quot;).
 	 * <p>
 	 * This method should not be used when the area has been pointed to a
-	 * dynamically generated resource using
-	 * {@link WAbstractArea#setResource(WResource resource) setResource()}.
+	 * dynamically generated resource using {@link }.
 	 * <p>
 	 * 
-	 * @see WAbstractArea#setResource(WResource resource) <p>
-	 *      <i><b>Note: </b>Even when no destination URL is set, in some
-	 *      circumstances, a identity URL (&apos;#&apos;) will be set on the
-	 *      underlying HTML &lt;area&gt; element (see also
-	 *      {@link WAbstractArea#setCursor(Cursor cursor) setCursor()}).</i>
-	 *      </p>
+	 * <p>
+	 * <i><b>Note: </b>Even when no destination URL is set, in some
+	 * circumstances, a identity URL (&apos;#&apos;) will be set on the
+	 * underlying HTML &lt;area&gt; element (see also {@link }).</i>
+	 * </p>
+	 * 
 	 * @deprecated Use {@link WAbstractArea#setLink(WLink link) setLink()}
 	 *             instead.
 	 */
@@ -168,7 +158,6 @@ public abstract class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
-	 * @see WResource#getUrl()
 	 * @deprecated Use {@link WAbstractArea#getLink() getLink()} instead.
 	 */
 	public String getRef() {
@@ -230,20 +219,18 @@ public abstract class WAbstractArea extends WObject {
 	 * setRef()} or {@link WAbstractArea#setResource(WResource resource)
 	 * setResource()}.
 	 * <p>
-	 * By default, the reference is displayed in the application (
-	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
-	 * document, the application is replaced with the new document. When the
-	 * reference is a document that cannot be displayed in the browser, it is
-	 * offered for download or opened using an external program, depending on
-	 * browser settings.
+	 * By default, the reference is displayed in the application ({@link }). When
+	 * the destination is an HTML document, the application is replaced with the
+	 * new document. When the reference is a document that cannot be displayed
+	 * in the browser, it is offered for download or opened using an external
+	 * program, depending on browser settings.
 	 * <p>
-	 * By setting <code>target</code> to {@link AnchorTarget#TargetNewWindow},
-	 * the destination is displayed in a new browser window or tab.
+	 * By setting <code>target</code> to {@link }, the destination is displayed
+	 * in a new browser window or tab.
 	 * <p>
 	 * 
 	 * @see WAbstractArea#setRef(String ref)
 	 * @see WAbstractArea#setResource(WResource resource)
-	 * @see WAbstractArea#getTarget()
 	 */
 	public void setTarget(AnchorTarget target) {
 		this.createAnchorImpl();
@@ -272,14 +259,11 @@ public abstract class WAbstractArea extends WObject {
 	 * display an image. If no sensible fallback text can be provided, an empty
 	 * text is preferred over nonsense.
 	 * <p>
-	 * This should not be confused with {@link WAbstractArea#getToolTip()
-	 * getToolTip()} text, which provides additional information that is
-	 * displayed when the mouse hovers over the area.
+	 * This should not be confused with {@link } text, which provides additional
+	 * information that is displayed when the mouse hovers over the area.
 	 * <p>
 	 * The default alternate text is an empty text (&quot;&quot;).
 	 * <p>
-	 * 
-	 * @see WAbstractArea#getAlternateText()
 	 */
 	public void setAlternateText(final CharSequence text) {
 		this.createAnchorImpl();
@@ -419,15 +403,10 @@ public abstract class WAbstractArea extends WObject {
 	 * Event signal emitted when a keyboard key is pushed down.
 	 * <p>
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
-	 * (before the {@link WAbstractArea#keyPressed() keyPressed()} signal).
-	 * Unlike {@link WAbstractArea#keyPressed() keyPressed()} however it is also
-	 * emitted for modifier keys (such as &quot;shift&quot;,
-	 * &quot;control&quot;, ...) or keyboard navigation keys that do not have a
-	 * corresponding character.
+	 * (before the {@link } signal). Unlike {@link } however it is also emitted
+	 * for modifier keys (such as &quot;shift&quot;, &quot;control&quot;, ...)
+	 * or keyboard navigation keys that do not have a corresponding character.
 	 * <p>
-	 * 
-	 * @see WAbstractArea#keyPressed()
-	 * @see WAbstractArea#keyWentUp()
 	 */
 	public EventSignal1<WKeyEvent> keyWentDown() {
 		return this.impl_.keyWentDown();
@@ -468,7 +447,6 @@ public abstract class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyPressed()
-	 * @see Key#Key_Enter
 	 */
 	public EventSignal enterPressed() {
 		return this.impl_.enterPressed();
@@ -481,7 +459,6 @@ public abstract class WAbstractArea extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractArea#keyPressed()
-	 * @see Key#Key_Escape
 	 */
 	public EventSignal escapePressed() {
 		return this.impl_.escapePressed();
@@ -490,12 +467,9 @@ public abstract class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was clicked on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the event details contain
@@ -509,12 +483,9 @@ public abstract class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was double clicked on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -528,12 +499,9 @@ public abstract class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was pushed down on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -547,12 +515,9 @@ public abstract class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when a mouse key was released on this widget.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link button},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -618,12 +583,9 @@ public abstract class WAbstractArea extends WObject {
 	/**
 	 * Event signal emitted when the mouse scroll wheel was used.
 	 * <p>
-	 * The event details contains information such as the
-	 * {@link WMouseEvent#getWheelDelta() wheel delta}, optional
-	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * The event details contains information such as the {@link wheel delta},
+	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
+	 * the {@link widget}, the window {@link window}, or the {@link document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -637,6 +599,11 @@ public abstract class WAbstractArea extends WObject {
 	static class AnchorImpl {
 		private static Logger logger = LoggerFactory
 				.getLogger(AnchorImpl.class);
+
+		public AnchorImpl() {
+			this.linkState = new WAnchor.LinkState();
+			this.altText = new WString();
+		}
 
 		public WAnchor.LinkState linkState;
 		public WString altText;

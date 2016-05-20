@@ -101,8 +101,6 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * Does nothing if the current date is <code>Null</code>.
 	 * <p>
-	 * 
-	 * @see WDateEdit#getDate()
 	 */
 	public void setDate(final WDate date) {
 		if (!(date == null)) {
@@ -118,11 +116,10 @@ public class WDateEdit extends WLineEdit {
 	 * Reads the current date.
 	 * <p>
 	 * Returns <code>null</code> if the date could not be parsed using the
-	 * current {@link WDateEdit#getFormat() getFormat()}. <br>
+	 * current {@link }. <br>
 	 * <p>
 	 * 
 	 * @see WDateEdit#setDate(WDate date)
-	 * @see WLineEdit#getText()
 	 */
 	public WDate getDate() {
 		return WDate.fromString(this.getText(), this.getFormat());
@@ -145,8 +142,6 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * The default format is <code>&apos;dd/MM/yyyy&apos;</code>.
 	 * <p>
-	 * 
-	 * @see WDateValidator#setFormat(String format)
 	 */
 	public void setFormat(final String format) {
 		WDateValidator dv = this.getValidator();
@@ -184,8 +179,6 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * This sets the lower limit of the valid date range in the validator.
 	 * <p>
-	 * 
-	 * @see WDateValidator#setBottom(WDate bottom)
 	 */
 	public void setBottom(final WDate bottom) {
 		WDateValidator dv = this.getValidator();
@@ -210,8 +203,6 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * This sets the upper limit of the valid date range in the validator.
 	 * <p>
-	 * 
-	 * @see WDateValidator#setTop(WDate top)
 	 */
 	public void setTop(final WDate top) {
 		WDateValidator dv = this.getValidator();

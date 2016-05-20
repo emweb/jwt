@@ -28,8 +28,6 @@ import org.slf4j.LoggerFactory;
  * specified in pixel coordinates.
  * <p>
  * 
- * @see WImage#addArea(WAbstractArea area)
- * @see WPaintedWidget#addArea(WAbstractArea area)
  * @see WRectArea
  * @see WPolygonArea
  */

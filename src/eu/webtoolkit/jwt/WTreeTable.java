@@ -34,15 +34,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The actual data is organized and provided by {@link WTreeTableNode} widgets.
  * <p>
- * To use the tree table, you need <b>first</b> to call
- * {@link WTreeTable#addColumn(CharSequence header, WLength width) addColumn()}
- * to specify the additional data columns. Next, you need to set the tree root
- * using {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
- * setTreeRoot()} and bind additional information (text or other widgets) in
- * each node using
- * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
- * WTreeTableNode#setColumnWidget()}. Thus, you cannot change the number of
- * columns once the tree root has been set.
+ * To use the tree table, you need <b>first</b> to call {@link } to specify the
+ * additional data columns. Next, you need to set the tree root using {@link }
+ * and bind additional information (text or other widgets) in each node using
+ * {@link }. Thus, you cannot change the number of columns once the tree root has
+ * been set.
  * <p>
  * The table cannot be given a height using CSS style rules, instead you must
  * use layout managers, or use
@@ -71,12 +67,8 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Creates a new tree table.
 	 * <p>
-	 * The {@link WTreeTable#getTreeRoot() getTreeRoot()} is <code>null</code>.
-	 * The table should first be properly dimensioned using
-	 * {@link WTreeTable#addColumn(CharSequence header, WLength width)
-	 * addColumn()} calls, and then data using
-	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
-	 * setTreeRoot()}.
+	 * The {@link } is <code>null</code>. The table should first be properly
+	 * dimensioned using {@link } calls, and then data using {@link }.
 	 */
 	public WTreeTable(WContainerWidget parent) {
 		super(parent);
@@ -121,10 +113,8 @@ public class WTreeTable extends WCompositeWidget {
 	 * <p>
 	 * Add an extra column, specifying the column header and a column width. The
 	 * extra columns are numbered from 1 as column 0 contains the tree itself.
-	 * The header for column 0 (the tree itself) is specified in
-	 * {@link WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
-	 * setTreeRoot()}, and the width of column 0 takes the remaining available
-	 * width.
+	 * The header for column 0 (the tree itself) is specified in {@link }, and
+	 * the width of column 0 takes the remaining available width.
 	 */
 	public void addColumn(final CharSequence header, final WLength width) {
 		if (this.getTreeRoot() != null) {
@@ -160,9 +150,6 @@ public class WTreeTable extends WCompositeWidget {
 	 * <p>
 	 * The initial <code>root</code> is <code>null</code>.
 	 * <p>
-	 * 
-	 * @see WTreeTable#getTreeRoot()
-	 * @see WTreeTable#setTree(WTree root, CharSequence h)
 	 */
 	public void setTreeRoot(WTreeTableNode root, final CharSequence h) {
 		this.tree_.setTreeRoot(root);

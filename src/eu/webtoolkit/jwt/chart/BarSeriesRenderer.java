@@ -89,13 +89,17 @@ class BarSeriesRenderer extends SeriesRenderer {
 		this.painter_.strokePath(transform.map(bar).getCrisp(), pen);
 		WString toolTip = this.series_.getModel().getToolTip(yRow, yColumn);
 		if (!(toolTip.length() == 0)) {
-			this.chart_.hasToolTips_ = true;
 			WTransform t = this.painter_.getWorldTransform();
 			WPointF tl = t.map(segmentPoint(bar, 0));
 			WPointF tr = t.map(segmentPoint(bar, 1));
 			WPointF br = t.map(segmentPoint(bar, 2));
 			WPointF bl = t.map(segmentPoint(bar, 3));
-			if (this.chart_.isInteractive()) {
+			if (!EnumUtils.mask(this.series_.getModel().flags(yRow, yColumn),
+					ItemFlag.ItemHasDeferredTooltip).isEmpty()
+					|| !EnumUtils.mask(
+							this.series_.getModel().flags(yRow, yColumn),
+							ItemFlag.ItemIsXHTMLText).isEmpty()) {
+				this.chart_.hasDeferredToolTips_ = true;
 				WCartesianChart.BarTooltip btt = new WCartesianChart.BarTooltip(
 						this.series_, xRow, xColumn, yRow, yColumn);
 				btt.xs[0] = tl.getX();

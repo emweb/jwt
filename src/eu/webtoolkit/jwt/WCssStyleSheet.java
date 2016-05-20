@@ -82,8 +82,6 @@ public class WCssStyleSheet {
 	 * Optionally, you may give a <code>ruleName</code>, which may later be used
 	 * to check if the rule was already defined.
 	 * <p>
-	 * 
-	 * @see WCssStyleSheet#isDefined(String ruleName)
 	 */
 	public WCssTextRule addRule(final String selector,
 			final String declarations, final String ruleName) {
@@ -113,8 +111,6 @@ public class WCssStyleSheet {
 	 * Optionally, you may give a <code>ruleName</code>, which may later be used
 	 * to check if the rule was already defined.
 	 * <p>
-	 * 
-	 * @see WCssStyleSheet#isDefined(String ruleName)
 	 */
 	public WCssTemplateRule addRule(final String selector,
 			final WCssDecorationStyle style, final String ruleName) {
@@ -143,8 +139,6 @@ public class WCssStyleSheet {
 	 * to check if the rule was already defined. Note: you may not pass the same
 	 * rule to 2 diffrent applications.
 	 * <p>
-	 * 
-	 * @see WCssStyleSheet#isDefined(String ruleName)
 	 */
 	public WCssRule addRule(WCssRule rule, final String ruleName) {
 		this.rules_.add(rule);

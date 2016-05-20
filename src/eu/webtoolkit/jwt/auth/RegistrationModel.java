@@ -39,19 +39,13 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * <p>
  * The largest complexity is in the handling of third party identity providers,
- * which is initiated with a call to
- * {@link RegistrationModel#registerIdentified(Identity identity)
- * registerIdentified()}.
+ * which is initiated with a call to {@link }.
  * <p>
  * When a user is re-identified with the same identity, then the model may
  * require that the (original) user confirms this new identity. The model
- * indicates that this button should be made visible with
- * {@link RegistrationModel#isConfirmUserButtonVisible()
- * isConfirmUserButtonVisible()}, the action to take is determined by
- * {@link RegistrationModel#getConfirmIsExistingUser()
- * getConfirmIsExistingUser()}, and
- * {@link RegistrationModel#existingUserConfirmed() existingUserConfirmed()}
- * ends this process by merging the new identity into the existing user.
+ * indicates that this button should be made visible with {@link }, the action to
+ * take is determined by {@link }, and {@link } ends this process by merging the
+ * new identity into the existing user.
  * <p>
  * 
  * @see RegistrationWidget
@@ -318,8 +312,6 @@ public class RegistrationModel extends FormBaseModel {
 	 * existing user, he may be allowd to confirm that he is in fact this
 	 * existing user.
 	 * <p>
-	 * 
-	 * @see RegistrationModel#getConfirmIsExistingUser()
 	 */
 	public User getExistingUser() {
 		return this.existingUser_;
@@ -333,11 +325,8 @@ public class RegistrationModel extends FormBaseModel {
 	 * existing user.
 	 * <p>
 	 * The outcome of this method (if it is an online method, like a password
-	 * prompt), if successful, should be indicated using
-	 * {@link RegistrationModel#existingUserConfirmed() existingUserConfirmed()}.
+	 * prompt), if successful, should be indicated using {@link }.
 	 * <p>
-	 * 
-	 * @see RegistrationModel#existingUserConfirmed()
 	 */
 	public RegistrationModel.IdentityConfirmationMethod getConfirmIsExistingUser() {
 		if (this.existingUser_.isValid()) {

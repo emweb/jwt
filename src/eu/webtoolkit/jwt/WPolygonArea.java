@@ -117,7 +117,6 @@ public class WPolygonArea extends WAbstractArea {
 	 * <p>
 	 * 
 	 * @see WPolygonArea#setPoints(List points)
-	 * @see WPolygonArea#getPoints()
 	 */
 	public List<WPointF> getPointFs() {
 		return this.points_;

@@ -66,9 +66,6 @@ public class WLineF {
 	/**
 	 * Returns the X coordinate of the first point.
 	 * <p>
-	 * 
-	 * @see WLineF#getY1()
-	 * @see WLineF#getP1()
 	 */
 	public double getX1() {
 		return this.x1_;
@@ -79,7 +76,6 @@ public class WLineF {
 	 * <p>
 	 * 
 	 * @see WLineF#getX1()
-	 * @see WLineF#getP1()
 	 */
 	public double getY1() {
 		return this.y1_;
@@ -88,9 +84,6 @@ public class WLineF {
 	/**
 	 * Returns the X coordinate of the second point.
 	 * <p>
-	 * 
-	 * @see WLineF#getY2()
-	 * @see WLineF#getP2()
 	 */
 	public double getX2() {
 		return this.x2_;
@@ -101,7 +94,6 @@ public class WLineF {
 	 * <p>
 	 * 
 	 * @see WLineF#getX2()
-	 * @see WLineF#getP2()
 	 */
 	public double getY2() {
 		return this.y2_;

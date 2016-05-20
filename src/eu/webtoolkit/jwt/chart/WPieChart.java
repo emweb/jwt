@@ -28,20 +28,15 @@ import org.slf4j.LoggerFactory;
  * <p>
  * To use a pie chart, you need to set a model using
  * {@link WAbstractChart#setModel(WAbstractItemModel model)
- * WAbstractChart#setModel()}, and use
- * {@link WPieChart#setLabelsColumn(int modelColumn) setLabelsColumn()} and
- * {@link WPieChart#setDataColumn(int modelColumn) setDataColumn()} to specify
- * the model column that contains the category labels and data.
+ * WAbstractChart#setModel()}, and use {@link } and {@link } to specify the model
+ * column that contains the category labels and data.
  * <p>
- * The pie chart may be customized visually by enabling a 3D effect (
- * {@link WPieChart#setPerspectiveEnabled(boolean enabled, double height)
- * setPerspectiveEnabled()}), or by specifying the angle of the first segment.
- * One or more segments may be exploded, which seperates the segment from the
- * rest of the pie chart, using
- * {@link WPieChart#setExplode(int modelRow, double factor) setExplode()}.
+ * The pie chart may be customized visually by enabling a 3D effect ({@link }),
+ * or by specifying the angle of the first segment. One or more segments may be
+ * exploded, which seperates the segment from the rest of the pie chart, using
+ * {@link }.
  * <p>
- * The segments may be labeled in various ways using
- * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()}.
+ * The segments may be labeled in various ways using {@link }.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -91,16 +86,13 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the model column that holds the labels.
 	 * <p>
-	 * The labels are used only when
-	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
-	 * called with the {@link LabelOption#TextLabel TextLabel} option.
+	 * The labels are used only when {@link } is called with the
+	 * {@link TextLabel} option.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
 	 * 
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
-	 * @see WPieChart#setDisplayLabels(EnumSet options)
-	 * @see WPieChart#setDataColumn(int modelColumn)
 	 */
 	public void setLabelsColumn(int modelColumn) {
 		if (this.labelsColumn_ != modelColumn) {
@@ -314,13 +306,12 @@ public class WPieChart extends WAbstractChart {
 	 * Configures if and how labels should be displayed.
 	 * <p>
 	 * The <i>options</i> must be the logical OR of a placement option (
-	 * {@link LabelOption#Inside Inside} or {@link LabelOption#Outside Outside})
-	 * and {@link LabelOption#TextLabel TextLabel} and/or
-	 * {@link LabelOption#TextPercentage TextPercentage}. If both TextLabel and
-	 * TextPercentage are specified, then these are combined as
-	 * &quot;&lt;label&gt;: &lt;percentage&gt;&quot;.
+	 * {@link Inside} or {@link Outside}) and {@link TextLabel} and/or
+	 * {@link TextPercentage}. If both TextLabel and TextPercentage are
+	 * specified, then these are combined as &quot;&lt;label&gt;:
+	 * &lt;percentage&gt;&quot;.
 	 * <p>
-	 * The default value is {@link LabelOption#NoLabels NoLabels}.
+	 * The default value is {@link NoLabels}.
 	 */
 	public void setDisplayLabels(EnumSet<LabelOption> options) {
 		this.labelOptions_ = EnumSet.copyOf(options);
@@ -359,8 +350,6 @@ public class WPieChart extends WAbstractChart {
 	 * <p>
 	 * The default value is &quot;%.3g%%&quot;.
 	 * <p>
-	 * 
-	 * @see WPieChart#getLabelFormat()
 	 */
 	public void setLabelFormat(final CharSequence format) {
 		this.labelFormat_ = WString.toWString(format);
@@ -825,7 +814,8 @@ public class WPieChart extends WAbstractChart {
 			if (!shadow) {
 				WString toolTip = this.getModel().getToolTip(i,
 						this.dataColumn_);
-				if (!(toolTip.length() == 0)) {
+				WLink link = this.getModel().link(i, this.dataColumn_);
+				if (!(toolTip.length() == 0) || link != null) {
 					final int SEGMENT_ANGLE = 20;
 					WPolygonArea area = new WPolygonArea();
 					WTransform t = painter.getWorldTransform();
@@ -855,6 +845,9 @@ public class WPieChart extends WAbstractChart {
 									+ r
 									* Math.sin(-a / 180.0 * 3.14159265358979323846))));
 					area.setToolTip(toolTip);
+					if (link != null) {
+						area.setLink(link);
+					}
 					this.addDataPointArea(i, this.dataColumn_, area);
 				}
 			}
@@ -910,7 +903,7 @@ public class WPieChart extends WAbstractChart {
 
 	private int nextIndex(int i) {
 		int r = this.getModel().getRowCount();
-		for (int n = (i + 1) % r; n != i; ++n) {
+		for (int n = (i + 1) % r; n != i; n = (n + 1) % r) {
 			double v = this.getModel().getData(n, this.dataColumn_);
 			if (!Double.isNaN(v)) {
 				return n;

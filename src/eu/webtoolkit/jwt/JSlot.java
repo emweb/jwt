@@ -38,9 +38,8 @@ import org.slf4j.LoggerFactory;
  * you simply do not care. For these situations a JSlot can be used to add
  * client-side event handling.
  * <p>
- * The JavaScript code may be set (or changed) using the
- * {@link JSlot#setJavaScript(String js, int nbArgs) setJavaScript()} method
- * which takes a string that implements a JavaScript function with the following
+ * The JavaScript code may be set (or changed) using the {@link } method which
+ * takes a string that implements a JavaScript function with the following
  * signature:
  * <p>
  * 
@@ -61,9 +60,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * In the JavaScript code, you may use {@link WWidget#getJsRef()
  * WWidget#getJsRef()} to obtain the DOM element corresponding to any
- * {@link WWidget}, or {@link WObject#getId() WObject#getId()} to obtain the DOM
- * id. In addition you may trigger server-side events using the JavaScript
- * WtSignalEmit function (see {@link JSignal} documentation).
+ * {@link WWidget}, or {@link } to obtain the DOM id. In addition you may trigger
+ * server-side events using the JavaScript WtSignalEmit function (see
+ * {@link JSignal} documentation).
  * <p>
  * A JSlot can take up to six extra arguments. This is so that a {@link JSignal}
  * can pass its arguments directly on to a JSlot, without communicating with the
@@ -118,7 +117,6 @@ public class JSlot {
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
-	 * @see JSlot#setJavaScript(String js, int nbArgs)
 	 */
 	public JSlot(final String javaScript, WWidget parent) {
 		this.widget_ = parent;
@@ -143,7 +141,6 @@ public class JSlot {
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
-	 * @see JSlot#setJavaScript(String js, int nbArgs)
 	 */
 	public JSlot(int nbArgs, WWidget parent) {
 		this.widget_ = parent;
@@ -162,7 +159,6 @@ public class JSlot {
 	 * <p>
 	 * 
 	 * @see JSlot#JSlot(WWidget parent)
-	 * @see JSlot#setJavaScript(String js, int nbArgs)
 	 */
 	public JSlot(final String javaScript, int nbArgs, WWidget parent) {
 		this.widget_ = parent;

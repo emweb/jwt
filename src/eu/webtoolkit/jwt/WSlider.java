@@ -26,10 +26,9 @@ import org.slf4j.LoggerFactory;
  * A slider allows the user to specify an integer value within a particular
  * range using a visual slider.
  * <p>
- * The slider must be sized explicitly using
- * {@link WSlider#resize(WLength width, WLength height) resize()} or by a layout
- * manager. The default size is 150 x 50 pixels for a horizontal slider, and 50
- * x 150 pixels for a vertical slider.
+ * The slider must be sized explicitly using {@link } or by a layout manager. The
+ * default size is 150 x 50 pixels for a horizontal slider, and 50 x 150 pixels
+ * for a vertical slider.
  * <p>
  * <div align="center"> <img src="doc-files//WSlider-1.png"
  * alt="Horizontal slider with ticks on both sides.">
@@ -38,9 +37,8 @@ import org.slf4j.LoggerFactory;
  * </p>
  * </div> <h3>CSS</h3>
  * <p>
- * The non-native slider (HTML4, see
- * {@link WSlider#setNativeControl(boolean nativeControl) setNativeControl()})
- * is styled by the current CSS theme.
+ * The non-native slider (HTML4, see {@link }) is styled by the current CSS
+ * theme.
  */
 public class WSlider extends WFormWidget {
 	private static Logger logger = LoggerFactory.getLogger(WSlider.class);
@@ -212,8 +210,6 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the slider orientation.
 	 * <p>
-	 * 
-	 * @see WSlider#getOrientation()
 	 */
 	public void setOrientation(Orientation orientation) {
 		this.orientation_ = orientation;
@@ -240,9 +236,6 @@ public class WSlider extends WFormWidget {
 	 * value of 0 specifies an automatic tick interval, which defaults to 3
 	 * ticks spanning the whole range.
 	 * <p>
-	 * 
-	 * @see WSlider#getTickInterval()
-	 * @see WSlider#setTickPosition(EnumSet tickPosition)
 	 */
 	public void setTickInterval(int tickInterval) {
 		this.tickInterval_ = tickInterval;
@@ -268,7 +261,6 @@ public class WSlider extends WFormWidget {
 	 * slider groove.
 	 * <p>
 	 * 
-	 * @see WSlider#getTickPosition()
 	 * @see WSlider#setTickInterval(int tickInterval)
 	 */
 	public void setTickPosition(EnumSet<WSlider.TickPosition> tickPosition) {
@@ -303,12 +295,9 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the slider value.
 	 * <p>
-	 * The value is automatically trimmed to the valid range (
-	 * {@link WSlider#getMinimum() getMinimum()} to {@link WSlider#getMaximum()
-	 * getMaximum()}).
+	 * The value is automatically trimmed to the valid range ({@link } to {@link }
+	 * ).
 	 * <p>
-	 * 
-	 * @see WSlider#getValue()
 	 */
 	public void setValue(int value) {
 		this.value_ = Math.min(this.maximum_, Math.max(this.minimum_, value));
@@ -335,10 +324,6 @@ public class WSlider extends WFormWidget {
 	 * The maximum value defines the upper limit of the valid range. The lower
 	 * limit and current value are automatically adjusted to remain valid.
 	 * <p>
-	 * 
-	 * @see WSlider#getMaximum()
-	 * @see WSlider#setMinimum(int minimum)
-	 * @see WSlider#setRange(int minimum, int maximum)
 	 */
 	public void setMaximum(int maximum) {
 		this.maximum_ = maximum;
@@ -364,9 +349,7 @@ public class WSlider extends WFormWidget {
 	 * limit and current value are automatically adjusted to remain valid.
 	 * <p>
 	 * 
-	 * @see WSlider#getMinimum()
 	 * @see WSlider#setMaximum(int maximum)
-	 * @see WSlider#setRange(int minimum, int maximum)
 	 */
 	public void setMinimum(int minimum) {
 		this.minimum_ = minimum;
@@ -405,8 +388,6 @@ public class WSlider extends WFormWidget {
 	 * <p>
 	 * The new value is passed as the argument.
 	 * <p>
-	 * 
-	 * @see WSlider#sliderMoved()
 	 */
 	public Signal1<Integer> valueChanged() {
 		return this.valueChanged_;

@@ -73,8 +73,6 @@ public abstract class WAbstractColorMap extends WObject {
 	 * provided area (default = fill the entire paintdevice). This is no legend
 	 * with ticks and labels, only the colors are painted.
 	 * <p>
-	 * 
-	 * @see WAbstractColorMap#paintLegend(WPainter painter, WRectF area)
 	 */
 	public abstract void createStrip(WPainter painter, final WRectF area);
 
@@ -96,10 +94,6 @@ public abstract class WAbstractColorMap extends WObject {
 	 * legend should be drawn. When drawing the legend, the tickspacing,
 	 * labelformat and labelfont are taken into account.
 	 * <p>
-	 * 
-	 * @see WAbstractColorMap#setTickSpacing(int spacing)
-	 * @see WAbstractColorMap#setFormatString(CharSequence format)
-	 * @see WAbstractColorMap#setLabelFont(WFont font)
 	 */
 	public abstract void paintLegend(WPainter painter, final WRectF area);
 

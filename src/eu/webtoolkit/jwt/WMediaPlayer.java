@@ -39,9 +39,8 @@ import org.slf4j.LoggerFactory;
  * You need to specify the encoding types you are going to use when
  * instantiating the media player, since based on the chosen encodings, a
  * particular suitable implementation will be used. Thus, you need to call
- * {@link WMediaPlayer#addSource(WMediaPlayer.Encoding encoding, WLink link)
- * addSource()} immediately, but you may pass empty URLs if you do not yet want
- * to load media.
+ * {@link } immediately, but you may pass empty URLs if you do not yet want to
+ * load media.
  * <p>
  * The player provides a user-interface to control the playback which may be
  * freely customized, and which is independent of the underlying media
@@ -67,17 +66,11 @@ import org.slf4j.LoggerFactory;
  * </pre>
  * <p>
  * Alternatively, a custom widget may be set which implements the controls,
- * using {@link WMediaPlayer#setControlsWidget(WWidget controlsWidget)
- * setControlsWidget()}. In this case, you should add to this widget the
- * buttons, text place holders, and progress bars and bind them to the media
- * player using the
- * {@link WMediaPlayer#setButton(WMediaPlayer.ButtonControlId id, WInteractWidget w)
- * setButton()}, {@link WMediaPlayer#setText(WMediaPlayer.TextId id, WText w)
- * setText()} and
- * {@link WMediaPlayer#setProgressBar(WMediaPlayer.BarControlId id, WProgressBar w)
- * setProgressBar()} methods. The controls widget is integrated in the media
- * player, and this has as unique benefit (for a video player) that they may
- * also be shown when the video player is maximized.
+ * using {@link }. In this case, you should add to this widget the buttons, text
+ * place holders, and progress bars and bind them to the media player using the
+ * {@link }, {@link } and {@link } methods. The controls widget is integrated in
+ * the media player, and this has as unique benefit (for a video player) that
+ * they may also be shown when the video player is maximized.
  * <p>
  * Finally, you may want to control the media player only through widgets
  * external to the media player. This may be configured by setting
@@ -90,8 +83,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * An enumeration for a media encoding.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#addSource(WMediaPlayer.Encoding encoding, WLink link)
 	 */
 	public enum Encoding {
 		/**
@@ -171,10 +162,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * An enumeration for a button function.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#setButton(WMediaPlayer.ButtonControlId id,
-	 *      WInteractWidget w)
-	 * @see WMediaPlayer#getButton(WMediaPlayer.ButtonControlId id)
 	 */
 	public enum ButtonControlId {
 		/**
@@ -239,10 +226,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * An enumeration for a progressbar function.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#setProgressBar(WMediaPlayer.BarControlId id,
-	 *      WProgressBar w)
-	 * @see WMediaPlayer#getProgressBar(WMediaPlayer.BarControlId id)
 	 */
 	public enum BarControlId {
 		/**
@@ -265,9 +248,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * An enumeration for a text.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#setText(WMediaPlayer.TextId id, WText w)
-	 * @see WMediaPlayer#getText(WMediaPlayer.TextId id)
 	 */
 	public enum TextId {
 		/**
@@ -279,8 +259,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		 */
 		Duration,
 		/**
-		 * Displays the title set in
-		 * {@link WMediaPlayer#setTitle(CharSequence title) setTitle()}.
+		 * Displays the title set in {@link }.
 		 */
 		Title;
 
@@ -295,8 +274,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * An enumeration for the player state.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#getReadyState()
 	 */
 	public enum ReadyState {
 		/**
@@ -339,8 +316,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * <p>
 	 * The player is instantiated with default controls.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#setControlsWidget(WWidget controlsWidget)
 	 */
 	public WMediaPlayer(WMediaPlayer.MediaType mediaType,
 			WContainerWidget parent) {
@@ -465,12 +440,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * etc...) to allow the user to control the player.
 	 * <p>
 	 * Widgets that implement the buttons, bars, and text holders should be
-	 * bound to the player using
-	 * {@link WMediaPlayer#setButton(WMediaPlayer.ButtonControlId id, WInteractWidget w)
-	 * setButton()}, {@link WMediaPlayer#setText(WMediaPlayer.TextId id, WText w)
-	 * setText()} and
-	 * {@link WMediaPlayer#setProgressBar(WMediaPlayer.BarControlId id, WProgressBar w)
-	 * setProgressBar()} calls.
+	 * bound to the player using {@link }, {@link } and {@link } calls.
 	 * <p>
 	 * Setting a <code>null</code> widget will result in a player without
 	 * controls. For an audio player this has the effect of being entirely
@@ -684,8 +654,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Pauses the player.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#play()
 	 */
 	public void pause() {
 		this.playerDo("pause");
@@ -696,8 +664,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * <p>
 	 * The player starts or resumes playing at the current time.
 	 * <p>
-	 * 
-	 * @see WMediaPlayer#seek(double time)
 	 */
 	public void play() {
 		if (this.isRendered()) {
@@ -818,7 +784,6 @@ public class WMediaPlayer extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WMediaPlayer#getReadyState()
-	 * @see WMediaPlayer#getCurrentTime()
 	 */
 	public double getDuration() {
 		return this.status_.duration;

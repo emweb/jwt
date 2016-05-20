@@ -32,11 +32,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The tree is implemented as a hierarchy of {@link WTreeNode} widgets.
  * <p>
- * Selection is rendered by calling
- * {@link WTreeNode#renderSelected(boolean isSelected)
- * WTreeNode#renderSelected()}. Only tree nodes that are
- * {@link WTreeNode#setSelectable(boolean selectable) selectable} may
- * participate in the selection.
+ * Selection is rendered by calling {@link }. Only tree nodes that are
+ * {@link selectable} may participate in the selection.
  * <p>
  * A screenshot of the tree:
  * <table border="0" align="center" cellspacing="3" cellpadding="3">
@@ -114,7 +111,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is {@link SelectionMode#NoSelection}.
+	 * The default selection mode is {@link }.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (mode != this.selectionMode_) {

@@ -26,12 +26,11 @@ import org.slf4j.LoggerFactory;
  * 
  * <h3>General</h3>
  * <p>
- * The model that is provided at construction or with
- * {@link WAbstractDataSeries3D#setModel(WAbstractItemModel model) setModel()}
- * contains the data of a dataseries. Implementations of this class format the
- * data for representation on the chart and perform all necessary drawing
- * operations. Note that if a dataseries holds numerical data it should be added
- * to a chart of type DOCREF<a class="el" href=
+ * The model that is provided at construction or with {@link } contains the data
+ * of a dataseries. Implementations of this class format the data for
+ * representation on the chart and perform all necessary drawing operations.
+ * Note that if a dataseries holds numerical data it should be added to a chart
+ * of type DOCREF<a class="el" href=
  * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
  * >ScatterPlot</a>, if it holds categorical data it should be added to a chart
  * of type DOCREF<a class="el" href=
@@ -83,22 +82,15 @@ import org.slf4j.LoggerFactory;
  * determine which chart-setting affect which GL-resources, which can be a
  * complicated problem.
  * <p>
- * Therefore only unchanging GL resources are initialized in
- * {@link WAbstractDataSeries3D#initializeGL() initializeGL()}. The initializeGL
- * function in the chart is implemented to immediately request a call to
- * {@link WAbstractDataSeries3D#updateGL() updateGL()}, which then initializes
- * the rest of the GL resources. Every call to updateGL in the chart, will first
- * call {@link WAbstractDataSeries3D#deleteAllGLResources()
- * deleteAllGLResources()} on all dataseries and will then call
- * {@link WAbstractDataSeries3D#updateGL() updateGL()} on all dataseries. So,
- * when implementing a dataseries: initialize unchanging GL resources in
- * {@link WAbstractDataSeries3D#initializeGL() initializeGL()}, initialize the
- * rest of your GL resources in {@link WAbstractDataSeries3D#updateGL()
- * updateGL()} and make GL-delete calls to all resources initialized in
- * {@link WAbstractDataSeries3D#updateGL() updateGL()} in the function
- * {@link WAbstractDataSeries3D#deleteAllGLResources() deleteAllGLResources()}.
- * It is also best to check isNull() on each of your GL-resources when deleting
- * them.
+ * Therefore only unchanging GL resources are initialized in {@link }. The
+ * initializeGL function in the chart is implemented to immediately request a
+ * call to {@link }, which then initializes the rest of the GL resources. Every
+ * call to updateGL in the chart, will first call {@link } on all dataseries and
+ * will then call {@link } on all dataseries. So, when implementing a dataseries:
+ * initialize unchanging GL resources in {@link }, initialize the rest of your GL
+ * resources in {@link } and make GL-delete calls to all resources initialized in
+ * {@link } in the function {@link }. It is also best to check isNull() on each of
+ * your GL-resources when deleting them.
  */
 public abstract class WAbstractDataSeries3D extends WObject {
 	private static Logger logger = LoggerFactory
@@ -164,7 +156,6 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * derive from this one.
 	 * <p>
 	 * 
-	 * @see WAbstractDataSeries3D#getModel()
 	 * @see WAbstractDataSeries3D#WAbstractDataSeries3D(WAbstractItemModel
 	 *      model)
 	 */
@@ -249,8 +240,6 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * Returns the computed minimum value of this dataseries along the given
 	 * axis.
 	 * <p>
-	 * 
-	 * @see WAbstractDataSeries3D#maximum(Axis axis)
 	 */
 	public abstract double minimum(Axis axis);
 
@@ -338,14 +327,10 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * Ownership of the {@link WAbstractColorMap} is transferred to this class.
 	 * <p>
 	 * By default there is no colormap set. When a colormap is set on a
-	 * dataseries, the color of {@link WCartesian3DChart#getPalette()
-	 * WCartesian3DChart#getPalette()} is no longer used for this series. The
+	 * dataseries, the color of {@link } is no longer used for this series. The
 	 * colormap associates a color to the data based on the z-value of the data.
 	 * If the colormap is set to 0, the value of the palette will be used again.
 	 * <p>
-	 * 
-	 * @see WAbstractDataSeries3D#setColorMapVisible(boolean enabled)
-	 * @see WAbstractDataSeries3D#setColorMapSide(Side side)
 	 */
 	public void setColorMap(WAbstractColorMap colormap) {
 		this.colormap_ = colormap;
@@ -364,8 +349,6 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractDataSeries3D#setColorMap(WAbstractColorMap colormap)
-	 * @see WAbstractDataSeries3D#setColorMapVisible(boolean enabled)
-	 * @see WAbstractDataSeries3D#setColorMapSide(Side side)
 	 */
 	public WAbstractColorMap getColorMap() {
 		return this.colormap_;
@@ -379,7 +362,6 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * <p>
 	 * 
 	 * @see WAbstractDataSeries3D#setColorMap(WAbstractColorMap colormap)
-	 * @see WAbstractDataSeries3D#setColorMapSide(Side side)
 	 */
 	public void setColorMapVisible(boolean enabled) {
 		if (this.showColorMap_ == enabled) {
@@ -409,7 +391,6 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * 
 	 * @see WAbstractDataSeries3D#setColorMap(WAbstractColorMap colormap)
 	 * @see WAbstractDataSeries3D#setColorMapVisible(boolean enabled)
-	 * @see WAbstractDataSeries3D#setColorMapSide(Side side)
 	 */
 	public boolean isColorMapVisible() {
 		return this.showColorMap_;
@@ -609,37 +590,33 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Initialize GL resources.
 	 * <p>
-	 * This function is called by {@link WAbstractDataSeries3D#initializeGL()
-	 * initializeGL()} in the chart to which this dataseries was added.
+	 * This function is called by {@link } in the chart to which this dataseries
+	 * was added.
 	 */
 	public abstract void initializeGL();
 
 	/**
 	 * Update the client-side painting function.
 	 * <p>
-	 * This function is called by {@link WAbstractDataSeries3D#paintGL()
-	 * paintGL()} in the chart to which this dataseries was added.
+	 * This function is called by {@link } in the chart to which this dataseries
+	 * was added.
 	 */
 	public abstract void paintGL();
 
 	/**
 	 * Update GL resources.
 	 * <p>
-	 * This function is called by {@link WAbstractDataSeries3D#updateGL()
-	 * updateGL()} in the chart to which this dataseries was added. Before this
-	 * function is called, {@link WAbstractDataSeries3D#deleteAllGLResources()
-	 * deleteAllGLResources()} is called.
+	 * This function is called by {@link } in the chart to which this dataseries
+	 * was added. Before this function is called, {@link } is called.
 	 * <p>
-	 * 
-	 * @see WAbstractDataSeries3D#deleteAllGLResources()
 	 */
 	public abstract void updateGL();
 
 	/**
 	 * Act on resize events.
 	 * <p>
-	 * This function is called by {@link WAbstractDataSeries3D#resizeGL()
-	 * resizeGL()} in the chart to which this dataseries was added.
+	 * This function is called by {@link } in the chart to which this dataseries
+	 * was added.
 	 */
 	public abstract void resizeGL();
 

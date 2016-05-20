@@ -84,8 +84,6 @@ public class FormBaseModel extends WFormModel {
 	 * <p>
 	 * Only one password authentication service can be configured.
 	 * <p>
-	 * 
-	 * @see FormBaseModel#addOAuth(OAuthService auth)
 	 */
 	public void addPasswordAuth(AbstractPasswordService auth) {
 		this.passwordAuth_ = auth;
@@ -150,8 +148,8 @@ public class FormBaseModel extends WFormModel {
 	 * <p>
 	 * Logs in the user, after checking whether the user can actually be logged
 	 * in. A valid user may be refused to login if its account is disabled (see
-	 * {@link User#getStatus() User#getStatus()}) or if it&apos;s email address
-	 * is unconfirmed and email confirmation is required.
+	 * {@link }) or if it&apos;s email address is unconfirmed and email
+	 * confirmation is required.
 	 * <p>
 	 * Returns whether the user could be logged in.
 	 */

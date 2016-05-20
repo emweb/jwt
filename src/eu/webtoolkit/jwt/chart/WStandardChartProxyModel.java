@@ -169,6 +169,39 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	}
 
 	/**
+	 * Returns the item flags for the given row and column.
+	 * <p>
+	 * Returns the result of WAbstractItemModel::index(row, column).{@link } for
+	 * the given row and column.
+	 * <p>
+	 */
+	public EnumSet<ItemFlag> flags(int row, int column) {
+		return this.sourceModel_.getIndex(row, column).getFlags();
+	}
+
+	/**
+	 * Returns the link to use on a given row and column.
+	 * <p>
+	 * Returns the result of
+	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
+	 * WAbstractItemModel#getData()} for the given row and column with the
+	 * {@link LinkRole} as a {@link WLink}.
+	 * <p>
+	 * 
+	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
+	 */
+	public WLink link(int row, int column) {
+		Object result = this.sourceModel_.getData(row, column,
+				ItemDataRole.LinkRole);
+		if ((result == null)) {
+			return null;
+		} else {
+			WLink c = ((WLink) result);
+			return c;
+		}
+	}
+
+	/**
 	 * Returns the marker pen color to use for a given row and column.
 	 * <p>
 	 * Returns the result of

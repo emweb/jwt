@@ -95,8 +95,11 @@ class MarkerRenderIterator extends SeriesIterator {
 			if (series.getType() != SeriesType.BarSeries) {
 				WString toolTip = series.getModel().getToolTip(yRow, yColumn);
 				if (!(toolTip.length() == 0)) {
-					this.chart_.hasToolTips_ = true;
-					if (!this.chart_.isInteractive()) {
+					if (!(!EnumUtils.mask(
+							series.getModel().flags(yRow, yColumn),
+							ItemFlag.ItemHasDeferredTooltip).isEmpty() || !EnumUtils
+							.mask(series.getModel().flags(yRow, yColumn),
+									ItemFlag.ItemIsXHTMLText).isEmpty())) {
 						WTransform t = this.painter_.getWorldTransform();
 						p = t.map(this.hv(p));
 						WCircleArea circleArea = new WCircleArea();
@@ -105,6 +108,8 @@ class MarkerRenderIterator extends SeriesIterator {
 						circleArea.setToolTip(toolTip);
 						this.chart_.addDataPointArea(series, xRow, xColumn,
 								circleArea);
+					} else {
+						this.chart_.hasDeferredToolTips_ = true;
 					}
 				}
 			}

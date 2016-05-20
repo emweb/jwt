@@ -23,47 +23,36 @@ import org.slf4j.LoggerFactory;
  * Class which represents an axis of a cartesian chart.
  * <p>
  * 
- * A cartesian chart has two or three axes: an X axis ({@link Axis#XAxis XAxis}
- * ), a Y axis ({@link Axis#YAxis YAxis}) and optionally a second Y axis (
- * {@link Axis#Y2Axis Y2Axis}). Each of the up to three axes in a cartesian
- * chart has a unique {@link WAxis#getId() getId()} that identifies which of
- * these three axes it is in the enclosing chart().
+ * A cartesian chart has two or three axes: an X axis ({@link XAxis}), a Y axis
+ * ({@link YAxis}) and optionally a second Y axis ({@link Y2Axis}). Each of the
+ * up to three axes in a cartesian chart has a unique {@link } that identifies
+ * which of these three axes it is in the enclosing chart().
  * <p>
- * Use {@link WAxis#setVisible(boolean visible) setVisible()} to change the
- * visibility of an axis, {@link WAxis#setGridLinesEnabled(boolean enabled)
- * setGridLinesEnabled()} to show grid lines for an axis. The pen styles for
- * rendering the axis or grid lines may be changed using
- * {@link WAxis#setPen(WPen pen) setPen()} and
- * {@link WAxis#setGridLinesPen(WPen pen) setGridLinesPen()}. A margin between
- * the axis and the main plot area may be configured using
- * {@link WAxis#setMargin(int pixels) setMargin()}.
+ * Use {@link } to change the visibility of an axis, {@link } to show grid lines
+ * for an axis. The pen styles for rendering the axis or grid lines may be
+ * changed using {@link } and {@link }. A margin between the axis and the main
+ * plot area may be configured using {@link }.
  * <p>
  * By default, the axis will automatically adjust its range so that all data
- * will be visible. You may manually specify a range using
- * {@link WAxis#setMinimum(double minimum) setMinimum()}, setMaximum or
- * {@link WAxis#setRange(double minimum, double maximum) setRange()}. The
- * interval between labels is by default automatically adjusted depending on the
- * axis length and the range, but may be manually specified using
- * {@link WAxis#setLabelInterval(double labelInterval) setLabelInterval()}.
+ * will be visible. You may manually specify a range using {@link }, setMaximum
+ * or {@link }. The interval between labels is by default automatically adjusted
+ * depending on the axis length and the range, but may be manually specified
+ * using {@link }.
  * <p>
  * The axis has support for being &quot;broken&quot;, to support displaying data
  * with a few outliers which would otherwise swamp the chart. This is not done
- * automatically, but instead you need to use
- * {@link WAxis#setBreak(double minimum, double maximum) setBreak()} to specify
- * the value range that needs to be omitted from the axis. The omission is
- * rendered in the axis and in bars that cross the break.
+ * automatically, but instead you need to use {@link } to specify the value range
+ * that needs to be omitted from the axis. The omission is rendered in the axis
+ * and in bars that cross the break.
  * <p>
  * The labels are shown using a &quot;%.4g&quot; format string for numbers, and
- * a suitable format for {@link AxisScale#DateScale DateScale} or
- * {@link AxisScale#DateTimeScale DateTimeScale} scales, based on heuristics.
- * The format may be customized using
- * {@link WAxis#setLabelFormat(CharSequence format) setLabelFormat()}. The angle
- * of the label text may be changed using
- * {@link WAxis#setLabelAngle(double angle) setLabelAngle()}. By default, all
- * labels are printed horizontally.
+ * a suitable format for {@link DateScale} or {@link DateTimeScale} scales,
+ * based on heuristics. The format may be customized using {@link }. The angle of
+ * the label text may be changed using {@link }. By default, all labels are
+ * printed horizontally.
  * <p>
  * 
- * @see eu.webtoolkit.jwt.chart.WCartesianChart
+ * @see WCartesianChart
  */
 public class WAxis {
 	private static Logger logger = LoggerFactory.getLogger(WAxis.class);
@@ -71,23 +60,17 @@ public class WAxis {
 	/**
 	 * Constant which indicates automatic minimum calculation.
 	 * <p>
-	 * 
-	 * @see WAxis#setMinimum(double minimum)
 	 */
 	public static final double AUTO_MINIMUM = -Double.MAX_VALUE;
 	/**
 	 * Constant which indicates automatic maximum calculation.
 	 * <p>
-	 * 
-	 * @see WAxis#setMaximum(double maximum)
 	 */
 	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
 
 	/**
 	 * Returns the axis id.
 	 * <p>
-	 * 
-	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public Axis getId() {
 		return this.axis_;
@@ -97,14 +80,11 @@ public class WAxis {
 	 * Sets whether this axis is visible.
 	 * <p>
 	 * Changes whether the axis is displayed, including ticks and labels. The
-	 * rendering of the grid lines is controlled seperately by
-	 * {@link WAxis#setGridLinesEnabled(boolean enabled) setGridLinesEnabled()}.
+	 * rendering of the grid lines is controlled seperately by {@link }.
 	 * <p>
 	 * The default value is true for the X axis and first Y axis, but false for
 	 * the second Y axis.
 	 * <p>
-	 * 
-	 * @see WAxis#setGridLinesEnabled(boolean enabled)
 	 */
 	public void setVisible(boolean visible) {
 		if (!ChartUtils.equals(this.visible_, visible)) {
@@ -130,10 +110,8 @@ public class WAxis {
 	 * Configures the location of the axis, relative to values on the other axis
 	 * (i.e. Y values for the X axis, and X values for the Y axis).
 	 * <p>
-	 * The default value is {@link AxisValue#MinimumValue}.
+	 * The default value is {@link }.
 	 * <p>
-	 * 
-	 * @see WAxis#getLocation()
 	 */
 	public void setLocation(AxisValue location) {
 		if (!ChartUtils.equals(this.location_, location)) {
@@ -156,18 +134,14 @@ public class WAxis {
 	/**
 	 * Sets the scale of the axis.
 	 * <p>
-	 * For the X scale in a {@link ChartType#CategoryChart CategoryChart}, the
-	 * scale should be left unchanged to {@link AxisScale#CategoryScale
-	 * CategoryScale}.
+	 * For the X scale in a {@link CategoryChart}, the scale should be left
+	 * unchanged to {@link CategoryScale}.
 	 * <p>
-	 * For all other axes, the default value is {@link AxisScale#LinearScale
-	 * LinearScale}, but this may be changed to {@link AxisScale#LogScale
-	 * LogScale} or {@link AxisScale#DateScale DateScale}.
-	 * {@link AxisScale#DateScale DateScale} is only useful for the X axis in a
-	 * ScatterPlot which contains {@link eu.webtoolkit.jwt.WDate} values.
+	 * For all other axes, the default value is {@link LinearScale}, but this
+	 * may be changed to {@link LogScale} or {@link DateScale}.
+	 * {@link DateScale} is only useful for the X axis in a ScatterPlot which
+	 * contains {@link WDate} values.
 	 * <p>
-	 * 
-	 * @see WAxis#getScale()
 	 */
 	public void setScale(AxisScale scale) {
 		if (!ChartUtils.equals(this.scale_, scale)) {
@@ -196,9 +170,6 @@ public class WAxis {
 	 * The numerical value corresponding to a data point is defined by it&apos;s
 	 * AxisScale type.
 	 * <p>
-	 * 
-	 * @see WAxis#setMaximum(double maximum)
-	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMinimum(double minimum) {
 		final WAxis.Segment s = this.segments_.get(0);
@@ -228,8 +199,6 @@ public class WAxis {
 	 * <p>
 	 * 
 	 * @see WAxis#setMinimum(double minimum)
-	 * @see WAxis#setAutoLimits(EnumSet locations)
-	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMinimum() {
 		return !EnumUtils.mask(this.getAutoLimits(), AxisValue.MinimumValue)
@@ -248,7 +217,6 @@ public class WAxis {
 	 * <p>
 	 * 
 	 * @see WAxis#setMinimum(double minimum)
-	 * @see WAxis#setAutoLimits(EnumSet locations)
 	 */
 	public void setMaximum(double maximum) {
 		final WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
@@ -278,8 +246,6 @@ public class WAxis {
 	 * <p>
 	 * 
 	 * @see WAxis#setMaximum(double maximum)
-	 * @see WAxis#setAutoLimits(EnumSet locations)
-	 * @see WAxis#setRoundLimits(EnumSet locations)
 	 */
 	public double getMaximum() {
 		final WAxis.Segment s = this.segments_.get(this.segments_.size() - 1);
@@ -317,8 +283,6 @@ public class WAxis {
 	 * <p>
 	 * The default resolution is 0, which uses a built-in epsilon.
 	 * <p>
-	 * 
-	 * @see WAxis#getResolution()
 	 */
 	public void setResolution(final double resolution) {
 		this.resolution_ = resolution;
@@ -343,11 +307,9 @@ public class WAxis {
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()} or
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}.
 	 * <p>
-	 * <code>locations</code> can be {@link AxisValue#MinimumValue} and/or
-	 * {@link AxisValue#MaximumValue}.
+	 * <code>locations</code> can be {@link } and/or {@link }.
 	 * <p>
-	 * The default value is {@link AxisValue#MinimumValue} |
-	 * {@link AxisValue#MaximumValue}.
+	 * The default value is {@link } | {@link }.
 	 */
 	public void setAutoLimits(EnumSet<AxisValue> locations) {
 		if (!EnumUtils.mask(locations, AxisValue.MinimumValue).isEmpty()) {
@@ -383,9 +345,8 @@ public class WAxis {
 	/**
 	 * Returns the limits that are calculated automatically.
 	 * <p>
-	 * This returns the limits ({@link AxisValue#MinimumValue} and/or
-	 * {@link AxisValue#MaximumValue}) that are calculated automatically from
-	 * the data, rather than being specified manually using
+	 * This returns the limits ({@link } and/or {@link }) that are calculated
+	 * automatically from the data, rather than being specified manually using
 	 * {@link WAxis#setMinimum(double minimum) setMinimum()} and/or
 	 * {@link WAxis#setMaximum(double maximum) setMaximum()}.
 	 * <p>
@@ -444,13 +405,13 @@ public class WAxis {
 	 * <p>
 	 * This is useful to display data with a few outliers which would otherwise
 	 * swamp the chart. This is not done automatically, but instead you need to
-	 * use {@link WAxis#setBreak(double minimum, double maximum) setBreak()} to
-	 * specify the value range that needs to be omitted from the axis. The
-	 * omission is rendered in the axis and in BarSeries that cross the break.
+	 * use {@link } to specify the value range that needs to be omitted from the
+	 * axis. The omission is rendered in the axis and in BarSeries that cross
+	 * the break.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This feature is incompatible with the interactive
-	 * features of {@link eu.webtoolkit.jwt.chart.WCartesianChart}. </i>
+	 * features of {@link WCartesianChart}. </i>
 	 * </p>
 	 */
 	public void setBreak(double minimum, double maximum) {
@@ -473,8 +434,6 @@ public class WAxis {
 	 * The unit for the label interval is in logical units (i.e. the same as
 	 * minimum or maximum).
 	 * <p>
-	 * 
-	 * @see WAxis#setLabelFormat(CharSequence format)
 	 */
 	public void setLabelInterval(double labelInterval) {
 		if (!ChartUtils.equals(this.labelInterval_, labelInterval)) {
@@ -528,33 +487,26 @@ public class WAxis {
 	 * Sets the label format.
 	 * <p>
 	 * Sets a format string which is used to format values, both for the axis
-	 * labels as well as data series values (see
-	 * {@link WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
-	 * WDataSeries#setLabelsEnabled()}).
+	 * labels as well as data series values (see {@link }).
 	 * <p>
-	 * For an axis with a {@link AxisScale#LinearScale LinearScale} or
-	 * {@link AxisScale#LogScale LogScale} scale, the format string must be a
-	 * format string that is accepted by snprintf() and which formats one
-	 * double. If the format string is an empty string, then {@link } is used.
+	 * For an axis with a {@link LinearScale} or {@link LogScale} scale, the
+	 * format string must be a format string that is accepted by snprintf() and
+	 * which formats one double. If the format string is an empty string, then
+	 * {@link } is used.
 	 * <p>
-	 * For an axis with a {@link AxisScale#DateScale DateScale} scale, the
-	 * format string must be a format string accepted by
-	 * {@link WDate#toString() WDate#toString()}, to format a date. If the
-	 * format string is an empty string, a suitable format is chosen based on
+	 * For an axis with a {@link DateScale} scale, the format string must be a
+	 * format string accepted by {@link }, to format a date. If the format string
+	 * is an empty string, a suitable format is chosen based on heuristics.
+	 * <p>
+	 * For an axis with a {@link DateTimeScale} scale, the format string must be
+	 * a format string accepted by {@link }, to format a date. If the format
+	 * string is an empty string, a suitable format is chosen based on
 	 * heuristics.
-	 * <p>
-	 * For an axis with a {@link AxisScale#DateTimeScale DateTimeScale} scale,
-	 * the format string must be a format string accepted by
-	 * {@link WDateTime#toString() WDateTime#toString()}, to format a date. If
-	 * the format string is an empty string, a suitable format is chosen based
-	 * on heuristics.
 	 * <p>
 	 * The default value is &quot;%.4g&quot; for a numeric axis, and a suitable
 	 * format for date(time) scales based on a heuristic taking into account the
 	 * current axis range.
 	 * <p>
-	 * 
-	 * @see WAxis#getLabelFormat()
 	 */
 	public void setLabelFormat(final CharSequence format) {
 		if (!ChartUtils.equals(this.labelFormat_, WString.toWString(format))) {
@@ -601,8 +553,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is 0.0.
 	 * <p>
-	 * 
-	 * @see WAxis#getLabelAngle()
 	 */
 	public void setLabelAngle(double angle) {
 		if (this.renderingMirror_) {
@@ -633,8 +583,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is Horizontal
 	 * <p>
-	 * 
-	 * @see WAxis#getTitleOrientation()
 	 */
 	public void setTitleOrientation(final Orientation orientation) {
 		if (!ChartUtils.equals(this.titleOrientation_, orientation)) {
@@ -658,14 +606,11 @@ public class WAxis {
 	 * Sets whether gridlines are displayed for this axis.
 	 * <p>
 	 * When <i>enabled</i>, gird lines are drawn for each tick on this axis,
-	 * using the {@link WAxis#getGridLinesPen() getGridLinesPen()}.
+	 * using the {@link }.
 	 * <p>
 	 * Unlike all other visual aspects of an axis, rendering of the gridlines is
 	 * not controlled by setDisplayEnabled().
 	 * <p>
-	 * 
-	 * @see WAxis#setGridLinesPen(WPen pen)
-	 * @see WAxis#isGridLinesEnabled()
 	 */
 	public void setGridLinesEnabled(boolean enabled) {
 		if (!ChartUtils.equals(this.gridLines_, enabled)) {
@@ -690,8 +635,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is a black pen of 0 width.
 	 * <p>
-	 * 
-	 * @see WAxis#setGridLinesPen(WPen pen)
 	 */
 	public void setPen(final WPen pen) {
 		if (!ChartUtils.equals(this.pen_, pen)) {
@@ -717,9 +660,7 @@ public class WAxis {
 	 * The default value is a black pen of 0 width.
 	 * <p>
 	 * 
-	 * @see WAxis#setGridLinesPen(WPen pen)
 	 * @see WAxis#setPen(WPen pen)
-	 * @see WCartesianChart#setTextPen(WPen pen)
 	 */
 	public void setTextPen(final WPen pen) {
 		if (!ChartUtils.equals(this.textPen_, pen)) {
@@ -746,7 +687,6 @@ public class WAxis {
 	 * <p>
 	 * 
 	 * @see WAxis#setPen(WPen pen)
-	 * @see WAxis#getGridLinesPen()
 	 */
 	public void setGridLinesPen(final WPen pen) {
 		if (!ChartUtils.equals(this.gridLinesPen_, pen)) {
@@ -773,8 +713,6 @@ public class WAxis {
 	 * <p>
 	 * The default value is 0.
 	 * <p>
-	 * 
-	 * @see WAxis#getMargin()
 	 */
 	public void setMargin(int pixels) {
 		if (!ChartUtils.equals(this.margin_, pixels)) {
@@ -799,8 +737,6 @@ public class WAxis {
 	 * <p>
 	 * The default title is empty.
 	 * <p>
-	 * 
-	 * @see WAxis#getTitle()
 	 */
 	public void setTitle(final CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
@@ -825,8 +761,6 @@ public class WAxis {
 	 * <p>
 	 * The default title font is a 12 point Sans Serif font.
 	 * <p>
-	 * 
-	 * @see WAxis#getTitleFont()
 	 */
 	public void setTitleFont(final WFont titleFont) {
 		if (!ChartUtils.equals(this.titleFont_, titleFont)) {
@@ -865,8 +799,6 @@ public class WAxis {
 	 * <p>
 	 * The default label font is a 10 point Sans Serif font.
 	 * <p>
-	 * 
-	 * @see WAxis#getLabelFont()
 	 */
 	public void setLabelFont(final WFont labelFont) {
 		if (!ChartUtils.equals(this.labelFont_, labelFont)) {
@@ -928,15 +860,14 @@ public class WAxis {
 	 * The minimum is the lowest value to be displayed, and the maximum is the
 	 * highest value to be displayed.
 	 * <p>
-	 * If the difference between minimum and maximum is less than
-	 * {@link WAxis#getMinimumZoomRange() getMinimumZoomRange()}, the zoom range
-	 * will be made more narrow around the center of minimum and maximum.
+	 * If the difference between minimum and maximum is less than {@link }, the
+	 * zoom range will be made more narrow around the center of minimum and
+	 * maximum.
 	 * <p>
 	 * If the given minimum is larger than the given maximum, the two values are
 	 * swapped.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
@@ -978,8 +909,7 @@ public class WAxis {
 	/**
 	 * Get the zoom range minimum for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * 
 	 * @see WAxis#setZoomRange(double minimum, double maximum)
@@ -995,8 +925,7 @@ public class WAxis {
 	/**
 	 * Get the zoom range maximum for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * 
 	 * @see WAxis#setZoomRange(double minimum, double maximum)
@@ -1012,8 +941,7 @@ public class WAxis {
 	/**
 	 * A signal triggered when the zoom range is changed on the client side.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>If you want to use this signal, you must connect a signal
@@ -1027,9 +955,8 @@ public class WAxis {
 	/**
 	 * Sets the zoom level for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode. The zoom level should be &gt;= 1 and smaller than
-	 * {@link WAxis#getMaxZoom() getMaxZoom()}
+	 * Only applies to a {@link WCartesianChart} in interactive mode. The zoom
+	 * level should be &gt;= 1 and smaller than {@link }
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
@@ -1049,8 +976,7 @@ public class WAxis {
 	/**
 	 * Get the zoom level for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * 
 	 * @see WAxis#setZoom(double zoom)
@@ -1069,16 +995,15 @@ public class WAxis {
 	/**
 	 * Sets the maximum zoom level for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode. The zoom level should be &gt;= 1 (1 = no zoom).
+	 * Only applies to a {@link WCartesianChart} in interactive mode. The zoom
+	 * level should be &gt;= 1 (1 = no zoom).
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
 	 * has no effect on the second Y axis.</i>
 	 * </p>
 	 * 
-	 * @deprecated Use {@link WAxis#setMinimumZoomRange(double size)
-	 *             setMinimumZoomRange()} instead
+	 * @deprecated Use {@link } instead
 	 */
 	public void setMaxZoom(double maxZoom) {
 		if (maxZoom < 1) {
@@ -1098,13 +1023,11 @@ public class WAxis {
 	/**
 	 * Get the maximum zoom level for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * 
 	 * @see WAxis#setMaxZoom(double maxZoom)
-	 * @deprecated Use {@link WAxis#getMinimumZoomRange() getMinimumZoomRange()}
-	 *             instead
+	 * @deprecated Use {@link } instead
 	 */
 	public double getMaxZoom() {
 		double min = this.getDrawnMinimum();
@@ -1120,8 +1043,7 @@ public class WAxis {
 	/**
 	 * Sets the minimum zoom range for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * This range is the smallest difference there can be between
 	 * {@link WAxis#getZoomMinimum() getZoomMinimum()} and
@@ -1143,8 +1065,7 @@ public class WAxis {
 	/**
 	 * Get the minimum zoom range for this axis.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * 
 	 * @see WAxis#setMinimumZoomRange(double size)
@@ -1168,8 +1089,7 @@ public class WAxis {
 	 * Note that if this would cause the chart to go out of bounds, the panning
 	 * of the chart will be automatically adjusted.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
@@ -1190,8 +1110,7 @@ public class WAxis {
 	/**
 	 * Get the value to pan to for this axis, when pan is enabled on the chart.
 	 * <p>
-	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
-	 * interactive mode.
+	 * Only applies to a {@link WCartesianChart} in interactive mode.
 	 * <p>
 	 * 
 	 * @see WAxis#setPan(double pan)
@@ -1208,8 +1127,6 @@ public class WAxis {
 	/**
 	 * Sets the padding between the chart area and this axis.
 	 * <p>
-	 * 
-	 * @see WAxis#getPadding()
 	 */
 	public void setPadding(int padding) {
 		if (!ChartUtils.equals(this.padding_, padding)) {
@@ -1240,7 +1157,6 @@ public class WAxis {
 	 * getPadding()} will be set to 25.
 	 * <p>
 	 * 
-	 * @see WAxis#getTickDirection()
 	 * @see WAxis#setPadding(int padding)
 	 */
 	public void setTickDirection(TickDirection direction) {
@@ -1275,9 +1191,8 @@ public class WAxis {
 	 * by the paint device and may truncate labels. &quot;Soft&quot; clipping
 	 * will determine if the corresponding tick is visible, and draw the label
 	 * (unclipped), preventing labels from being truncated. For a 2D chart, this
-	 * feature is only relevant when
-	 * {@link WCartesianChart#setZoomEnabled(boolean zoomEnabled) zoom is
-	 * enabled} on a {@link eu.webtoolkit.jwt.chart.WCartesianChart}.
+	 * feature is only relevant when {@link zoom is enabled} on a
+	 * {@link WCartesianChart}.
 	 * <table border="1" cellspacing="3" cellpadding="3">
 	 * <tr>
 	 * <td><div align="center"> <img
@@ -1286,8 +1201,7 @@ public class WAxis {
 	 * <p>
 	 * <strong>Soft clipping enabled (slower).</strong>
 	 * </p>
-	 * </div> This is the default for
-	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart}. The tick for 0 is
+	 * </div> This is the default for {@link WCartesianChart}. The tick for 0 is
 	 * visible, and the 0 is shown completely. The tick for 01/01/86 is not
 	 * visible, so its label is not shown.</td>
 	 * <td><div align="center"> <img
@@ -1961,9 +1875,6 @@ public class WAxis {
 	 * 
 	 * The label transform is a function from double to double.
 	 * <p>
-	 * 
-	 * @see WAxis#setLabelTransform(WAxis.LabelTransform transform, AxisValue
-	 *      side)
 	 */
 	public static interface LabelTransform {
 		/**

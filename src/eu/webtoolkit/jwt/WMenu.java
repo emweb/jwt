@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
  * instances.
  * <p>
  * When used without a contents stack, you can react to menu item selection
- * using the {@link WMenu#itemSelected() itemSelected()} signal, to implement
- * some custom handling of item selection.
+ * using the {@link } signal, to implement some custom handling of item
+ * selection.
  * <p>
  * Usage example:
  * <p>
@@ -57,27 +57,21 @@ import org.slf4j.LoggerFactory;
  * </pre>
  * <p>
  * After contruction, the first entry will be selected. At any time, it is
- * possible to select a particular item using
- * {@link WMenu#select(WMenuItem item) select()}.
+ * possible to select a particular item using {@link }.
  * <p>
- * Each item of WMenu may be closeable (see
- * {@link WMenuItem#setCloseable(boolean closeable) WMenuItem#setCloseable()}.
- * Like selection, at any time, it is possible to close a particular item using
- * {@link WMenu#close(WMenuItem item) close()}. You can react to close of item
- * by using the {@link WMenu#itemClosed() itemClosed()} signal.
+ * Each item of WMenu may be closeable (see {@link }. Like selection, at any
+ * time, it is possible to close a particular item using {@link }. You can react
+ * to close of item by using the {@link } signal.
  * <p>
  * The WMenu implementation offers fine-grained control on how contents should
  * be preloaded. By default, all contents is lazy-loaded, only when needed. To
- * improve response time, an item may also be preloaded (using
- * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
- * addItem()}). In that case, the item will be loaded in the background, before
- * its first use. In any case, once the contents corresponding to a menu item is
- * loaded, subsequent navigation to it is handled entirely client-side.
+ * improve response time, an item may also be preloaded (using {@link }). In that
+ * case, the item will be loaded in the background, before its first use. In any
+ * case, once the contents corresponding to a menu item is loaded, subsequent
+ * navigation to it is handled entirely client-side.
  * <p>
  * The WMenu may participate in the application&apos;s internal path, which lets
- * menu items correspond to internal URLs, see
- * {@link WMenu#setInternalPathEnabled(String basePath)
- * setInternalPathEnabled()}.
+ * menu items correspond to internal URLs, see {@link }.
  * <p>
  * The layout of the menu may be Horizontal or Vertical. The look of the items
  * may be defined through style sheets. The default {@link WMenuItem}
@@ -108,14 +102,12 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Construct a menu with given <code>orientation</code>. The menu is not
 	 * associated with a contents stack, and thus you will want to react to the
-	 * {@link WMenu#itemSelected() itemSelected()} signal to react to menu
-	 * changes.
+	 * {@link } signal to react to menu changes.
 	 * <p>
 	 * 
 	 * @deprecated the <code>orientation</code> parameter is ignored, since
 	 *             menus are now always rendered using &lt;ul&gt; elements, and
-	 *             CSS will determine the orientation. Use
-	 *             {@link WMenu#WMenu(WContainerWidget parent) WMenu()} instead.
+	 *             CSS will determine the orientation. Use {@link } instead.
 	 */
 	public WMenu(Orientation orientation, WContainerWidget parent) {
 		super(parent);
@@ -143,8 +135,7 @@ public class WMenu extends WCompositeWidget {
 	 * Creates a new menu.
 	 * <p>
 	 * The menu is not associated with a contents stack, and thus you will want
-	 * to react to the {@link WMenu#itemSelected() itemSelected()} signal to
-	 * react to menu changes.
+	 * to react to the {@link } signal to react to menu changes.
 	 */
 	public WMenu(WContainerWidget parent) {
 		super(parent);
@@ -181,9 +172,7 @@ public class WMenu extends WCompositeWidget {
 	 * 
 	 * @deprecated the <code>orientation</code> parameter is ignored, since
 	 *             menus are now always rendered using &lt;ul&gt; elements, and
-	 *             CSS will determine the orientation. Use
-	 *             {@link WMenu#WMenu(WStackedWidget contentsStack, WContainerWidget parent)
-	 *             WMenu()} instead.
+	 *             CSS will determine the orientation. Use {@link } instead.
 	 */
 	public WMenu(WStackedWidget contentsStack, Orientation orientation,
 			WContainerWidget parent) {
@@ -251,16 +240,11 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds an item.
 	 * <p>
-	 * Use this version of
-	 * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
-	 * addItem()} if you do not want to specify an icon for this menu item.
+	 * Use this version of {@link } if you do not want to specify an icon for
+	 * this menu item.
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
-	 * 
-	 * @see WMenu#addItem(String iconPath, CharSequence name, WWidget contents,
-	 *      WMenuItem.LoadPolicy policy)
-	 * @see WMenu#addItem(WMenuItem item)
 	 */
 	public WMenuItem addItem(final CharSequence name, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
@@ -305,8 +289,6 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
-	 * 
-	 * @see WMenu#addItem(WMenuItem item)
 	 */
 	public WMenuItem addItem(final String iconPath, final CharSequence name,
 			WWidget contents, WMenuItem.LoadPolicy policy) {
@@ -391,16 +373,11 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * inserts an item.
 	 * <p>
-	 * Use this version of
-	 * {@link WMenu#insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
-	 * insertItem()} if you do not want to specify an icon for this menu item.
+	 * Use this version of {@link } if you do not want to specify an icon for
+	 * this menu item.
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
-	 * 
-	 * @see WMenu#insertItem(int index, String iconPath, CharSequence name,
-	 *      WWidget contents, WMenuItem.LoadPolicy policy)
-	 * @see WMenu#insertItem(int index, WMenuItem item)
 	 */
 	public WMenuItem insertItem(int index, final CharSequence name,
 			WWidget contents, WMenuItem.LoadPolicy policy) {
@@ -448,8 +425,6 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
-	 * 
-	 * @see WMenu#insertItem(int index, WMenuItem item)
 	 */
 	public WMenuItem insertItem(int index, final String iconPath,
 			final CharSequence name, WWidget contents,
@@ -606,10 +581,6 @@ public class WMenu extends WCompositeWidget {
 	 * When <code>item</code> is <code>null</code>, the current selection is
 	 * removed.
 	 * <p>
-	 * 
-	 * @see WMenu#select(int index)
-	 * @see WMenu#getCurrentItem()
-	 * @see WMenuItem#select()
 	 */
 	public void select(WMenuItem item) {
 		this.select(this.indexOf(item), true);
@@ -625,7 +596,6 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WMenu#select(WMenuItem item)
-	 * @see WMenu#getCurrentIndex()
 	 */
 	public void select(int index) {
 		this.select(index, true);
@@ -638,8 +608,6 @@ public class WMenu extends WCompositeWidget {
 	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)
 	 * select()} was invoked.
 	 * <p>
-	 * 
-	 * @see WMenu#itemSelectRendered()
 	 */
 	public Signal1<WMenuItem> itemSelected() {
 		return this.itemSelected_;
@@ -667,13 +635,9 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Closes an item.
 	 * <p>
-	 * Close the menu item <code>item</code>. Only
-	 * {@link WMenuItem#setCloseable(boolean closeable) closeable} items can be
-	 * closed.
+	 * Close the menu item <code>item</code>. Only {@link closeable} items can
+	 * be closed.
 	 * <p>
-	 * 
-	 * @see WMenu#close(int index)
-	 * @see WMenuItem#close()
 	 */
 	public void close(WMenuItem item) {
 		if (item.isCloseable()) {
@@ -700,8 +664,6 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * Returns the list of menu items in this menu.
 	 * <p>
-	 * 
-	 * @see WMenu#itemAt(int index)
 	 */
 	public List<WMenuItem> getItems() {
 		List<WMenuItem> result = new ArrayList<WMenuItem>();
@@ -729,11 +691,8 @@ public class WMenu extends WCompositeWidget {
 	 * visible.
 	 * <p>
 	 * If the item was currently selected, then the next item to be selected is
-	 * determined by {@link WMenu#nextAfterHide(int index) nextAfterHide()}.
+	 * determined by {@link }.
 	 * <p>
-	 * 
-	 * @see WMenu#setItemHidden(int index, boolean hidden)
-	 * @see WWidget#hide()
 	 */
 	public void setItemHidden(WMenuItem item, boolean hidden) {
 		item.setHidden(hidden);
@@ -781,9 +740,6 @@ public class WMenu extends WCompositeWidget {
 	 * Disables the menu item <code>item</code>. Only an item that is enabled
 	 * can be selected. By default, all menu items are enabled.
 	 * <p>
-	 * 
-	 * @see WMenu#setItemDisabled(int index, boolean disabled)
-	 * @see WMenuItem#setDisabled(boolean disabled)
 	 */
 	public void setItemDisabled(WMenuItem item, boolean disabled) {
 		item.setDisabled(disabled);
@@ -829,7 +785,6 @@ public class WMenu extends WCompositeWidget {
 	 * Returns the currently selected item.
 	 * <p>
 	 * 
-	 * @see WMenu#getCurrentIndex()
 	 * @see WMenu#select(WMenuItem item)
 	 */
 	public WMenuItem getCurrentItem() {
@@ -893,8 +848,7 @@ public class WMenu extends WCompositeWidget {
 	 * navigate through history of visited menu items, and allows indexing of
 	 * pages.
 	 * <p>
-	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
+	 * For each menu item, {@link } is appended to the <code>basePath</code>,
 	 * which defaults to the internal path (
 	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
 	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
@@ -903,8 +857,6 @@ public class WMenu extends WCompositeWidget {
 	 * By default, menu interaction does not change the application internal
 	 * path.
 	 * <p>
-	 * 
-	 * @see WMenuItem#setPathComponent(String path)
 	 */
 	public void setInternalPathEnabled(final String basePath) {
 		WApplication app = WApplication.getInstance();
@@ -953,7 +905,6 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WMenu#setInternalPathEnabled(String basePath)
-	 * @see WMenu#getInternalBasePath()
 	 */
 	public void setInternalBasePath(final String basePath) {
 		this.setInternalPathEnabled(basePath);
@@ -965,14 +916,13 @@ public class WMenu extends WCompositeWidget {
 	 * The default value is the application&apos;s internalPath (
 	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}) that
 	 * was recorded when {@link WMenu#setInternalPathEnabled(String basePath)
-	 * setInternalPathEnabled()} was called, and together with each
-	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
+	 * setInternalPathEnabled()} was called, and together with each {@link }
 	 * determines the paths for each item.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath() getInternalBasePath()}
-	 * is <code>&quot;/examples/&quot;</code> and pathComponent() for a
-	 * particular item is <code>&quot;charts/&quot;</code>, then the internal
-	 * path for that item will be <code>&quot;/examples/charts/&quot;</code>.
+	 * For example, if {@link } is <code>&quot;/examples/&quot;</code> and
+	 * pathComponent() for a particular item is <code>&quot;charts/&quot;</code>
+	 * , then the internal path for that item will be
+	 * <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * 
 	 * @see WMenu#setInternalPathEnabled(String basePath)
@@ -998,8 +948,6 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns the item by index.
 	 * <p>
-	 * 
-	 * @see WMenu#indexOf(WMenuItem item)
 	 */
 	public WMenuItem itemAt(int index) {
 		return ((this.getUl().getWidget(index)) instanceof WMenuItem ? (WMenuItem) (this

@@ -34,48 +34,38 @@ import org.slf4j.LoggerFactory;
  * minimum size requirements.
  * <p>
  * The preferred width or height of a widget is based on its natural size, where
- * it presents its contents without overflowing.
- * {@link WWidget#resize(WLength width, WLength height) WWidget#resize()} or
- * (CSS <code>width</code>, <code>height</code> properties) can be used to
- * adjust the preferred size of a widget.
+ * it presents its contents without overflowing. {@link } or (CSS
+ * <code>width</code>, <code>height</code> properties) can be used to adjust the
+ * preferred size of a widget.
  * <p>
  * The minimum width or height of a widget is based on the minimum dimensions of
  * the widget or the nested layout. The default minimum height or width for a
- * widget is 0. It can be specified using
- * {@link WWidget#setMinimumSize(WLength width, WLength height)
- * WWidget#setMinimumSize()} or using CSS <code>min-width</code> or
- * <code>min-height</code> properties.
+ * widget is 0. It can be specified using {@link } or using CSS
+ * <code>min-width</code> or <code>min-height</code> properties.
  * <p>
- * You should use
- * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
- * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
- * automatically show scrollbars for widgets inserted in the layout to cope with
- * a size set by the layout manager that is smaller than the preferred size.
+ * You should use {@link WContainerWidget::setOverflow(OverflowAuto)} or use a
+ * {@link WScrollArea} to automatically show scrollbars for widgets inserted in
+ * the layout to cope with a size set by the layout manager that is smaller than
+ * the preferred size.
  * <p>
  * When the container of a layout manager does not have a defined size (by
  * having an explicit size, or by being inside a layout manager), or has has
- * only a maximum size set using
- * {@link WWidget#setMaximumSize(WLength width, WLength height)
- * WWidget#setMaximumSize()}, then the size of the container will be based on
- * the preferred size of the contents, up to this maximum size, instead of the
- * default behaviour of constraining the size of the children based on the size
- * of the container. Note that because of the CSS defaults, a WContainer has by
- * default no height, but inherits the width of its parent widget. The width is
- * thus by default defined.
+ * only a maximum size set using {@link }, then the size of the container will be
+ * based on the preferred size of the contents, up to this maximum size, instead
+ * of the default behaviour of constraining the size of the children based on
+ * the size of the container. Note that because of the CSS defaults, a
+ * WContainer has by default no height, but inherits the width of its parent
+ * widget. The width is thus by default defined.
  * <p>
  * A layout manager may provide resize handles between items which allow the
  * user to change the automatic layout provided by the layout manager (see
- * {@link WBoxLayout#setResizable(int index, boolean enabled, WLength initialSize)
- * setResizable()}).
+ * {@link }).
  * <p>
  * Each item is separated using a constant spacing, which defaults to 6 pixels,
- * and can be changed using {@link WBoxLayout#setSpacing(int size) setSpacing()}
- * . In addition, when this layout is a top-level layout (i.e. is not nested
- * inside another layout), a margin is set around the contents. This margin
- * defaults to 9 pixels, and can be changed using
- * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
- * WLayout#setContentsMargins()}. You can add more space between two widgets
- * using {@link WBoxLayout#addSpacing(WLength size) addSpacing()}.
+ * and can be changed using {@link }. In addition, when this layout is a
+ * top-level layout (i.e. is not nested inside another layout), a margin is set
+ * around the contents. This margin defaults to 9 pixels, and can be changed
+ * using {@link }. You can add more space between two widgets using {@link }.
  * <p>
  * For each item a stretch factor may be defined, which controls how remaining
  * space is used. Each item is stretched using the stretch factor to fill the
@@ -206,8 +196,6 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Sets the layout direction.
 	 * <p>
-	 * 
-	 * @see WBoxLayout#getDirection()
 	 */
 	public void setDirection(WBoxLayout.Direction direction) {
 		if (this.direction_ != direction) {
@@ -258,16 +246,10 @@ public class WBoxLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire column or row. The alignment can be
-	 * specified as a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * specified as a logical combination of a horizontal alignment ({@link },
+	 * {@link }, or {@link }) and a vertical alignment ({@link }, {@link }, or
+	 * {@link }).
 	 * <p>
-	 * 
-	 * @see WBoxLayout#addLayout(WLayout layout, int stretch, EnumSet alignment)
-	 * @see WBoxLayout#insertWidget(int index, WWidget widget, int stretch,
-	 *      EnumSet alignment)
 	 */
 	public void addWidget(WWidget widget, int stretch,
 			EnumSet<AlignmentFlag> alignment) {
@@ -312,8 +294,6 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * 
 	 * @see WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
-	 * @see WBoxLayout#insertLayout(int index, WLayout layout, int stretch,
-	 *      EnumSet alignment)
 	 */
 	public void addLayout(WLayout layout, int stretch,
 			EnumSet<AlignmentFlag> alignment) {
@@ -356,9 +336,6 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * Adds extra spacing to the layout.
 	 * <p>
-	 * 
-	 * @see WBoxLayout#addStretch(int stretch)
-	 * @see WBoxLayout#insertStretch(int index, int stretch)
 	 */
 	public void addSpacing(final WLength size) {
 		this.insertSpacing(this.getCount(), size);
@@ -372,7 +349,6 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * 
 	 * @see WBoxLayout#addSpacing(WLength size)
-	 * @see WBoxLayout#insertStretch(int index, int stretch)
 	 */
 	public void addStretch(int stretch) {
 		this.insertStretch(this.getCount(), stretch);
@@ -398,15 +374,11 @@ public class WBoxLayout extends WLayout {
 	 * The <code>alignment</code> specifies the vertical and horizontal
 	 * alignment of the item. The default value 0 indicates that the item is
 	 * stretched to fill the entire column or row. The alignment can be
-	 * specified as a logical combination of a horizontal alignment (
-	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or
-	 * {@link AlignmentFlag#AlignRight}) and a vertical alignment (
-	 * {@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or
-	 * {@link AlignmentFlag#AlignBottom}).
+	 * specified as a logical combination of a horizontal alignment ({@link },
+	 * {@link }, or {@link }) and a vertical alignment ({@link }, {@link }, or
+	 * {@link }).
 	 * <p>
 	 * 
-	 * @see WBoxLayout#insertLayout(int index, WLayout layout, int stretch,
-	 *      EnumSet alignment)
 	 * @see WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
 	 */
 	public void insertWidget(int index, WWidget widget, int stretch,
@@ -511,7 +483,6 @@ public class WBoxLayout extends WLayout {
 	 * Inserts extra spacing in the layout at position <code>index</code>.
 	 * <p>
 	 * 
-	 * @see WBoxLayout#insertStretch(int index, int stretch)
 	 * @see WBoxLayout#addSpacing(WLength size)
 	 */
 	public void insertSpacing(int index, final WLength size) {
@@ -601,9 +572,9 @@ public class WBoxLayout extends WLayout {
 	 * <p>
 	 * The default value is <i>false</i>.
 	 * <p>
-	 * If an <code>initialSize</code> is given (that is not {@link WLength#Auto}
-	 * ), then this size is used for the size of the item, overriding the size
-	 * it would be given by the layout manager.
+	 * If an <code>initialSize</code> is given (that is not {@link }), then this
+	 * size is used for the size of the item, overriding the size it would be
+	 * given by the layout manager.
 	 */
 	public void setResizable(int index, boolean enabled,
 			final WLength initialSize) {

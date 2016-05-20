@@ -99,8 +99,7 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns keyboard modifiers.
 	 * <p>
-	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
-	 * flags.
+	 * The result is a logical OR of {@link KeyboardModifier} flags.
 	 */
 	public EnumSet<KeyboardModifier> getModifiers() {
 		return this.jsEvent_.modifiers;

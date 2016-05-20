@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
  * A WPen is JavaScript exposable. If a WPen
  * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
  * it can be accessed in your custom JavaScript code through {@link its
- * handle&apos;s jsRef()}. At the moment, only the {@link WPen#getColor()
- * getColor()} property is exposed, e.g. a pen with the color
- * WColor(10,20,30,255) will be represented in JavaScript as:
+ * handle&apos;s jsRef()}. At the moment, only the {@link } property is exposed,
+ * e.g. a pen with the color WColor(10,20,30,255) will be represented in
+ * JavaScript as:
  * 
  * <pre>
  * {@code
@@ -65,8 +65,8 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Creates a black cosmetic pen.
 	 * <p>
 	 * Constructs a black solid pen of 0 width (i.e. cosmetic single pixel
-	 * width), with {@link PenCapStyle#SquareCap SquareCap} line ends and
-	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
+	 * width), with {@link SquareCap} line ends and {@link BevelJoin} line join
+	 * style.
 	 */
 	public WPen() {
 		super();
@@ -82,8 +82,7 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Creates a black pen with a particular style.
 	 * <p>
 	 * Constructs a black pen of 0 width (i.e. cosmetic single pixel width),
-	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
-	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
+	 * with {@link SquareCap} line ends and {@link BevelJoin} line join style.
 	 * <p>
 	 * The line style is set to <code>style</code>.
 	 */
@@ -101,8 +100,7 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Creates a solid pen of a particular color.
 	 * <p>
 	 * Constructs a solid pen of 0 width (i.e. cosmetic single pixel width),
-	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
-	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
+	 * with {@link SquareCap} line ends and {@link BevelJoin} line join style.
 	 * <p>
 	 * The pen color is set to <code>color</code>.
 	 */
@@ -120,8 +118,7 @@ public class WPen extends WJavaScriptExposableObject {
 	 * Creates a solid pen with a gradient color.
 	 * <p>
 	 * Constructs a solid pen of 0 width (i.e. cosmetic single pixel width),
-	 * with {@link PenCapStyle#SquareCap SquareCap} line ends and
-	 * {@link PenJoinStyle#BevelJoin BevelJoin} line join style.
+	 * with {@link SquareCap} line ends and {@link BevelJoin} line join style.
 	 * <p>
 	 * The pen&apos;s color is defined by the gradient <code>color</code>.
 	 */
@@ -277,8 +274,7 @@ public class WPen extends WJavaScriptExposableObject {
 	 * 
 	 * @exception {@link WException}if the pen
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
-	 *            JavaScript bound}<i>
-	 *            {@link WPen#setGradient(WGradient gradient) setGradient()}</i>
+	 *            JavaScript bound}<i>{@link }</i>
 	 */
 	public void setColor(final WColor color) {
 		this.checkModifiable();

@@ -32,15 +32,13 @@ import org.slf4j.LoggerFactory;
  * When using a messagebox asynchronously, there is no API call that waits for
  * the messagebox to be processed. Instead, the usage is similar to
  * instantiating a {@link WDialog} (or any other widget). You need to connect to
- * the {@link WMessageBox#buttonClicked() buttonClicked()} signal to interpret
- * the result and delete the message box.
+ * the {@link } signal to interpret the result and delete the message box.
  * <p>
- * The synchronous use of a messagebox involves the use of the static
- * {@link WWidget#show() WWidget#show()} method, which blocks the current thread
- * until the user has processed the messabebox. Since this uses the
- * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, it suffers from
- * the same scalability issues as well as limitations. See documentation of
- * {@link WDialog} for more details.
+ * The synchronous use of a messagebox involves the use of the static {@link }
+ * method, which blocks the current thread until the user has processed the
+ * messabebox. Since this uses the {@link WDialog#exec(WAnimation animation)
+ * WDialog#exec()}, it suffers from the same scalability issues as well as
+ * limitations. See documentation of {@link WDialog} for more details.
  * <p>
  * This will show a message box that looks like this:
  * <p>
@@ -229,9 +227,7 @@ public class WMessageBox extends WDialog {
 	 * Sets standard buttons for the message box (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated this method has been renamed to
-	 *             {@link WMessageBox#setStandardButtons(EnumSet buttons)
-	 *             setStandardButtons()}.
+	 * @deprecated this method has been renamed to {@link }.
 	 */
 	public void setButtons(EnumSet<StandardButton> buttons) {
 		this.setStandardButtons(buttons);
@@ -292,10 +288,9 @@ public class WMessageBox extends WDialog {
 	 * Returns the buttons.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>{@link WMessageBox#getButtons() getButtons()} returning
-	 * WFlags&lt;StandardButton&gt; has been renamed to
-	 * {@link WMessageBox#getStandardButtons() getStandardButtons()} in JWt
-	 * 3.3.1 </i>
+	 * <i><b>Note: </b>{@link } returning WFlags&lt;StandardButton&gt; has been
+	 * renamed to {@link WMessageBox#getStandardButtons() getStandardButtons()}
+	 * in JWt 3.3.1 </i>
 	 * </p>
 	 */
 	public List<WPushButton> getButtons() {
@@ -329,7 +324,7 @@ public class WMessageBox extends WDialog {
 	 * button can be the default button.
 	 * <p>
 	 * If no default button is set, JWt will take a button that is associated
-	 * with a {@link StandardButton#Ok} or {@link StandardButton#Yes} result.
+	 * with a {@link } or {@link } result.
 	 */
 	public void setDefaultButton(WPushButton button) {
 		if (this.defaultButton_ != null) {
@@ -372,7 +367,7 @@ public class WMessageBox extends WDialog {
 	 * The escape button is pressed when the user presses escapes.
 	 * <p>
 	 * If no escape button is set, JWt will take a button that is associated
-	 * with a {@link StandardButton#Cancel} or {@link StandardButton#No} result.
+	 * with a {@link } or {@link } result.
 	 */
 	public void setEscapeButton(WPushButton button) {
 		this.escapeButton_ = button;
@@ -384,7 +379,7 @@ public class WMessageBox extends WDialog {
 	 * The escape button is pressed when the user presses escapes.
 	 * <p>
 	 * If no escape button is set, JWt will take a button that is associated
-	 * with a {@link StandardButton#Cancel} or {@link StandardButton#No} result.
+	 * with a {@link } or {@link } result.
 	 */
 	public void setEscapeButton(StandardButton button) {
 		WPushButton b = this.getButton(button);

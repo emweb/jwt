@@ -25,21 +25,17 @@ import org.slf4j.LoggerFactory;
  * 
  * This class loads a .swf Flash file in the browser.
  * <p>
- * Flash objects must have their size set, so do not forget to call
- * {@link WFlashObject#resize(WLength width, WLength height) resize()} after
- * instantiation or your content will be invisible. JWt will modify width and
- * height attributes of the Flash object if
- * {@link WFlashObject#resize(WLength width, WLength height) resize()} is called
- * after the object is instantiated; it is however not clear if this is
- * permitted by the Flash plugin.
+ * Flash objects must have their size set, so do not forget to call {@link }
+ * after instantiation or your content will be invisible. JWt will modify width
+ * and height attributes of the Flash object if {@link } is called after the
+ * object is instantiated; it is however not clear if this is permitted by the
+ * Flash plugin.
  * <p>
- * Any {@link WWidget} can be set with
- * {@link WFlashObject#setAlternativeContent(WWidget alternative)
- * setAlternativeContent()}, and this widget will be shown only when the browser
- * has no Flash support. By default, a &apos;Download Flash&apos; button will be
- * displayed that links to a website where the Flash player can be downloaded.
- * You may modify this to be any widget, such as a {@link WImage}, or a native
- * JWt implementation of the Flash movie.
+ * Any {@link WWidget} can be set with {@link }, and this widget will be shown
+ * only when the browser has no Flash support. By default, a &apos;Download
+ * Flash&apos; button will be displayed that links to a website where the Flash
+ * player can be downloaded. You may modify this to be any widget, such as a
+ * {@link WImage}, or a native JWt implementation of the Flash movie.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -138,16 +134,14 @@ public class WFlashObject extends WWebWidget {
 	/**
 	 * A JavaScript expression that returns the DOM node of the Flash object.
 	 * <p>
-	 * The Flash object is not stored in {@link WWidget#getJsRef()
-	 * WWidget#getJsRef()}, but in {@link WFlashObject#getJsFlashRef()
-	 * getJsFlashRef()}. Use this method in conjuction with
+	 * The Flash object is not stored in {@link }, but in {@link }. Use this
+	 * method in conjuction with
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 * WApplication#doJavaScript()} or {@link JSlot} in custom JavaScript code
 	 * to refer to the Flash content.
 	 * <p>
-	 * The expression returned by {@link WFlashObject#getJsFlashRef()
-	 * getJsFlashRef()} may be null, for example on IE when flash is not
-	 * installed.
+	 * The expression returned by {@link } may be null, for example on IE when
+	 * flash is not installed.
 	 */
 	public String getJsFlashRef() {
 		return "Wt3_3_5.getElement('" + this.getId() + "_flash')";

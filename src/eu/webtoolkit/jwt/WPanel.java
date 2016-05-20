@@ -88,9 +88,6 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * The default value is &quot;&quot; (no title).
 	 * <p>
-	 * 
-	 * @see WPanel#getTitle()
-	 * @see WPanel#setTitleBar(boolean enable)
 	 */
 	public void setTitle(final CharSequence title) {
 		this.setTitleBar(true);
@@ -129,7 +126,6 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPanel#setTitle(CharSequence title)
-	 * @see WPanel#setCollapsible(boolean on)
 	 */
 	public void setTitleBar(boolean enable) {
 		if (enable && !(this.getTitleBarWidget() != null)) {
@@ -161,10 +157,9 @@ public class WPanel extends WCompositeWidget {
 	 * Returns the title bar widget.
 	 * <p>
 	 * The title bar widget contains the collapse/expand icon (if the panel
-	 * {@link WPanel#isCollapsible() isCollapsible()}), and the title text (if a
-	 * title was set using {@link WPanel#setTitle(CharSequence title)
-	 * setTitle()}). You can access the title bar widget to customize the
-	 * contents of the title.
+	 * {@link }), and the title text (if a title was set using
+	 * {@link WPanel#setTitle(CharSequence title) setTitle()}). You can access
+	 * the title bar widget to customize the contents of the title.
 	 * <p>
 	 * The method returns <code>null</code> if {@link WPanel#isTitleBar()
 	 * isTitleBar()} is <code>false</code>. You need to call
@@ -189,8 +184,6 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPanel#setTitleBar(boolean enable)
-	 * @see WPanel#setCollapsed(boolean on)
-	 * @see WPanel#isCollapsed()
 	 */
 	public void setCollapsible(boolean on) {
 		if (on && !(this.collapseIcon_ != null)) {
@@ -258,9 +251,8 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Sets the panel expanded or collapsed.
 	 * <p>
-	 * When <code>on</code> is <code>true</code>, equivalent to
-	 * {@link WPanel#collapse() collapse()}, otherwise to
-	 * {@link WPanel#expand() expand()}.
+	 * When <code>on</code> is <code>true</code>, equivalent to {@link },
+	 * otherwise to {@link }.
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
@@ -280,8 +272,6 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPanel#setCollapsed(boolean on)
-	 * @see WPanel#collapsed()
-	 * @see WPanel#expanded()
 	 */
 	public boolean isCollapsed() {
 		return this.getCentralArea().isHidden();
@@ -295,7 +285,6 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPanel#setCollapsible(boolean on)
-	 * @see WPanel#expand()
 	 */
 	public void collapse() {
 		if (this.isCollapsible()) {
@@ -312,7 +301,6 @@ public class WPanel extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WPanel#setCollapsible(boolean on)
-	 * @see WPanel#expand()
 	 */
 	public void expand() {
 		if (this.isCollapsible()) {
@@ -369,8 +357,6 @@ public class WPanel extends WCompositeWidget {
 	 * tible bar, not when calling {@link WPanel#setCollapsed(boolean on)
 	 * setCollapsed()}.
 	 * <p>
-	 * 
-	 * @see WPanel#expanded()
 	 */
 	public Signal collapsed() {
 		return this.collapsed_;

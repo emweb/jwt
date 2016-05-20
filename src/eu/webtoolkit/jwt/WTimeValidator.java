@@ -111,8 +111,6 @@ public class WTimeValidator extends WRegExpValidator {
 	/**
 	 * Sets the validator format.
 	 * <p>
-	 * 
-	 * @see WTime#toString()
 	 */
 	public void setFormat(final String format) {
 		if (this.formats_.isEmpty() || !this.formats_.get(0).equals(format)) {

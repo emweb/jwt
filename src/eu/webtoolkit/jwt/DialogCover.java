@@ -108,12 +108,20 @@ class DialogCover extends WContainerWidget {
 				}
 				WApplication.getInstance().pushExposedConstraint(this);
 			}
+			dialog.doJavaScript("setTimeout(function() {"
+					+ WApplication.getInstance().getJavaScriptClass()
+					+ "._p_.updateGlobal('" + dialog.layoutContainer_.getId()
+					+ "') }, 0);");
 			this.setZIndex(dialog.getZIndex() - 1);
 			this.setStyleClass(this.userCoverClasses(dialog));
 			WApplication app = WApplication.getInstance();
 			app.getTheme().apply(app.getDomRoot(), this,
 					WidgetThemeRole.DialogCoverRole);
 		} else {
+			WApplication.getInstance().doJavaScript(
+					"setTimeout(function() {"
+							+ WApplication.getInstance().getJavaScriptClass()
+							+ "._p_.updateGlobal(null) });");
 			if (!this.isHidden()) {
 				if (!animation.isEmpty()) {
 					this.animateHide(new WAnimation(

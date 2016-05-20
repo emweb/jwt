@@ -25,23 +25,20 @@ import org.slf4j.LoggerFactory;
  * 
  * A WTable arranges its children in a table.
  * <p>
- * To insert or access contents, use
- * {@link WTable#getElementAt(int row, int column) getElementAt()} to access the
- * {@link WTableCell cell} at a particular location in the table. The WTable
- * expands automatically to create the indexed (row, column) as necessary.
+ * To insert or access contents, use {@link } to access the {@link WTableCell
+ * cell} at a particular location in the table. The WTable expands automatically
+ * to create the indexed (row, column) as necessary.
  * <p>
  * It is possible to insert and delete entire rows or columns from the table
- * using the insertColumn(int column), insertRow(int row),
- * {@link WTable#deleteColumn(int column) deleteColumn()}, or
- * {@link WTable#deleteRow(int row) deleteRow()} methods.
+ * using the insertColumn(int column), insertRow(int row), {@link }, or {@link }
+ * methods.
  * <p>
  * You may indicate a number of rows and columns that act as headers using
- * {@link WTable#setHeaderCount(int count, Orientation orientation)
- * setHeaderCount()}. Header cells are rendered as <code>&lt;th&gt;</code>
- * instead of <code>&lt;td&gt;</code> elements. By default, no rows or columns
- * are configured as headers.
+ * {@link }. Header cells are rendered as <code>&lt;th&gt;</code> instead of
+ * <code>&lt;td&gt;</code> elements. By default, no rows or columns are
+ * configured as headers.
  * <p>
- * WTable is displayed as a {@link WWidget#setInline(boolean inlined) block}.
+ * WTable is displayed as a {@link block}.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -119,7 +116,6 @@ public class WTable extends WInteractWidget {
 	 * <p>
 	 * 
 	 * @see WTable#getElementAt(int row, int column)
-	 * @see WTable#getColumnAt(int column)
 	 */
 	public WTableRow getRowAt(int row) {
 		this.expand(row, 0, 1, 0);
@@ -354,8 +350,6 @@ public class WTable extends WInteractWidget {
 	 * The table expands automatically when the <code>to</code> row is beyond
 	 * the current table dimensions.
 	 * <p>
-	 * 
-	 * @see WTable#moveColumn(int from, int to)
 	 */
 	public void moveRow(int from, int to) {
 		if (from < 0 || from >= (int) this.rows_.size()) {

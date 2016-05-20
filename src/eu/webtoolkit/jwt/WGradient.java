@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * A linear or radial gradient.
  * <p>
  * 
- * @see WPen#setGradient(WGradient gradient)
  * @see WBrush#setGradient(WGradient gradient)
  */
 public class WGradient {
@@ -36,8 +35,6 @@ public class WGradient {
 	 * A color stop is defined by a color and a (relative) position. The
 	 * interpretation of the position depends on the gradient style.
 	 * <p>
-	 * 
-	 * @see WGradient#addColorStop(double position, WColor color)
 	 */
 	public static class ColorStop {
 		private static Logger logger = LoggerFactory.getLogger(ColorStop.class);
@@ -82,8 +79,6 @@ public class WGradient {
 	 * Creates an empty linear gradient from (0,0) to (1,1) (without color
 	 * stops).
 	 * <p>
-	 * 
-	 * @see WGradient#isEmpty()
 	 */
 	public WGradient() {
 		this.style_ = GradientStyle.LinearGradient;
@@ -97,11 +92,6 @@ public class WGradient {
 	/**
 	 * Returns the gradient style.
 	 * <p>
-	 * 
-	 * @see WGradient#setLinearGradient(double x0, double y0, double x1, double
-	 *      y1)
-	 * @see WGradient#setRadialGradient(double cx, double cy, double r, double
-	 *      fx, double fy)
 	 */
 	public GradientStyle getStyle() {
 		return this.style_;

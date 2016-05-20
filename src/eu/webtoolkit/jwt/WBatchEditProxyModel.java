@@ -24,38 +24,23 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * This proxy model presents data from a source model, and caches any editing
- * operation without affecting the underlying source model, until
- * {@link WBatchEditProxyModel#commitAll() commitAll()} or
- * {@link WBatchEditProxyModel#revertAll() revertAll()} is called. In this way,
- * you can commit all the editing in batch to the underlying source model, only
- * when the user confirms the changes.
+ * operation without affecting the underlying source model, until {@link } or
+ * {@link } is called. In this way, you can commit all the editing in batch to
+ * the underlying source model, only when the user confirms the changes.
  * <p>
  * All editing operations are supported:
  * <ul>
- * <li>changing data (
- * {@link WBatchEditProxyModel#setData(WModelIndex index, Object value, int role)
- * setData()})</li>
- * <li>inserting and removing rows (
- * {@link WBatchEditProxyModel#insertRows(int row, int count, WModelIndex parent)
- * insertRows()} and
- * {@link WBatchEditProxyModel#removeRows(int row, int count, WModelIndex parent)
- * removeRows()})</li>
- * <li>inserting and removing columns (
- * {@link WBatchEditProxyModel#insertColumns(int column, int count, WModelIndex parent)
- * insertColumns()} and
- * {@link WBatchEditProxyModel#removeColumns(int column, int count, WModelIndex parent)
- * removeColumns()})</li>
+ * <li>changing data ({@link })</li>
+ * <li>inserting and removing rows ({@link } and {@link })</li>
+ * <li>inserting and removing columns ({@link } and {@link })</li>
  * </ul>
  * <p>
  * The model supports both simple tabular models, as well as hierarchical
  * (tree-like / treetable-like) models, with children under items in the first
  * column.
  * <p>
- * Default values for a newly inserted row can be set using
- * {@link WBatchEditProxyModel#setNewRowData(int column, Object data, int role)
- * setNewRowData()} and flags for its items using
- * {@link WBatchEditProxyModel#setNewRowFlags(int column, EnumSet flags)
- * setNewRowFlags()}.
+ * Default values for a newly inserted row can be set using {@link } and flags
+ * for its items using {@link }.
  */
 public class WBatchEditProxyModel extends WAbstractProxyModel {
 	private static Logger logger = LoggerFactory
@@ -88,8 +73,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * Returns whether changes have not yet been committed.
 	 * <p>
 	 * Returns whether have been made to the proxy model, which could be
-	 * committed using {@link WBatchEditProxyModel#commitAll() commitAll()} or
-	 * reverted using {@link WBatchEditProxyModel#revertAll() revertAll()}.
+	 * committed using {@link } or reverted using {@link }.
 	 */
 	public boolean isDirty() {
 		for (Iterator<Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem>> i_it = this.mappedIndexes_
@@ -114,8 +98,6 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * This commits all changes to the source model.
 	 * <p>
-	 * 
-	 * @see WBatchEditProxyModel#revertAll()
 	 */
 	public void commitAll() {
 		this.submitting_ = true;
@@ -225,8 +207,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets the item flags for items in a newly inserted row.
 	 * <p>
-	 * By default, {@link WBatchEditProxyModel#getFlags(WModelIndex index)
-	 * getFlags()} will return ItemIsSelectable.
+	 * By default, {@link } will return ItemIsSelectable.
 	 */
 	public void setNewRowFlags(int column, EnumSet<ItemFlag> flags) {
 		this.newRowFlags_.put(column, flags);
@@ -247,14 +228,11 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	 * Configures data used to indicate a modified item.
 	 * <p>
 	 * This sets <code>data</code> for item data role <code>role</code> to be
-	 * returned by
-	 * {@link WBatchEditProxyModel#getData(WModelIndex index, int role)
-	 * getData()} for an item that is dirty (e.g. because it belongs to a newly
-	 * inserted row/column, or because new data has been set for it.
+	 * returned by {@link } for an item that is dirty (e.g. because it belongs to
+	 * a newly inserted row/column, or because new data has been set for it.
 	 * <p>
-	 * When <code>role</code> is {@link ItemDataRole#StyleClassRole}, the style
-	 * class is appended to any style already returned by the source model or
-	 * set by
+	 * When <code>role</code> is {@link }, the style class is appended to any
+	 * style already returned by the source model or set by
 	 * {@link WBatchEditProxyModel#setNewRowData(int column, Object data, int role)
 	 * setNewRowData()}.
 	 * <p>
@@ -518,9 +496,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets item data.
 	 * <p>
-	 * The default implementation will copy {@link ItemDataRole#EditRole} data
-	 * to {@link ItemDataRole#DisplayRole}. You may want to specialize the model
-	 * to provide a more specialized editing behaviour.
+	 * The default implementation will copy {@link } data to {@link }. You may
+	 * want to specialize the model to provide a more specialized editing
+	 * behaviour.
 	 */
 	public boolean setData(final WModelIndex index, final Object value, int role) {
 		WBatchEditProxyModel.Item item = this.itemFromIndex(index.getParent());

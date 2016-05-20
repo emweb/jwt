@@ -100,8 +100,6 @@ public class WShadow {
 	/**
 	 * Changes the shadow color.
 	 * <p>
-	 * 
-	 * @see WShadow#getColor()
 	 */
 	public void setColor(final WColor color) {
 		this.color_ = color;
@@ -120,8 +118,6 @@ public class WShadow {
 	/**
 	 * Sets the blur.
 	 * <p>
-	 * 
-	 * @see WShadow#getBlur()
 	 */
 	public void setBlur(double blur) {
 		this.blur_ = blur;

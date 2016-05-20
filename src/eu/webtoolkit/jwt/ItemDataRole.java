@@ -26,8 +26,6 @@ import org.slf4j.LoggerFactory;
  * different roles. Each role may be used by the corresponding view class in a
  * different way.
  * <p>
- * 
- * @see WModelIndex#getData(int role)
  */
 public class ItemDataRole {
 	/**
@@ -50,9 +48,8 @@ public class ItemDataRole {
 	 * <p>
 	 * Role that indicates the check state.
 	 * <p>
-	 * Data for this role should be a <code>bool</code>. When the
-	 * {@link ItemFlag#ItemIsTristate} flag is set for the item, data for this
-	 * role should be of type {@link CheckState}.
+	 * Data for this role should be a <code>bool</code>. When the {@link } flag
+	 * is set for the item, data for this role should be of type {@link }.
 	 */
 	public final static int CheckStateRole = 4;
 	/**
@@ -72,23 +69,23 @@ public class ItemDataRole {
 	 */
 	public final static int LevelRole = 8;
 	/**
-	 * Marker pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker pen color (for {@link WCartesianChart}).
 	 */
 	public final static int MarkerPenColorRole = 16;
 	/**
-	 * Marker brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker brush color (for {@link WCartesianChart}).
 	 */
 	public final static int MarkerBrushColorRole = 17;
 	/**
-	 * Marker size (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker size (for {@link WCartesianChart}).
 	 */
 	public final static int MarkerScaleFactorRole = 20;
 	/**
-	 * Bar pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Bar pen color (for {@link WCartesianChart}).
 	 */
 	public final static int BarPenColorRole = 18;
 	/**
-	 * Bar brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Bar brush color (for {@link WCartesianChart}).
 	 */
 	public final static int BarBrushColorRole = 19;
 	/**

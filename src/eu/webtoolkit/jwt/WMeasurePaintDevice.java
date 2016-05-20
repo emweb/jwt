@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * device.
  * <p>
  * The only output of the device is the computation of a bounding rect which is
- * returned by {@link WMeasurePaintDevice#getBoundingRect() getBoundingRect()}.
+ * returned by {@link }.
  */
 public class WMeasurePaintDevice implements WPaintDevice {
 	private static Logger logger = LoggerFactory
