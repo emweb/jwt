@@ -29,8 +29,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The implementation is based on <a
  * href="http://tinymce.moxiecode.com/">TinyMCE</a>. The widget may be
- * configured and tailored using the {@link } and related methods that provide
- * direct access to the underlying TinyMCE component.
+ * configured and tailored using the
+ * {@link WTextEdit#setConfigurationSetting(String name, Object value)
+ * setConfigurationSetting()} and related methods that provide direct access to
+ * the underlying TinyMCE component.
  * <p>
  * You can use this widget with TinyMCE version 3 or version 4.
  * <p>
@@ -314,7 +316,8 @@ public class WTextEdit extends WTextArea {
 	 * A text edit is instantiated asynchronously as it depends on additional
 	 * JavaScript libraries and initialization. This signal is emitted when the
 	 * component is initialized. The underlying TinyMCE editor component is
-	 * accessible as {@link } + &quot;.ed&quot;.
+	 * accessible as {@link WWidget#getJsRef() WWidget#getJsRef()} +
+	 * &quot;.ed&quot;.
 	 */
 	public JSignal rendered() {
 		return this.onRender_;

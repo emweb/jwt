@@ -26,7 +26,8 @@ import org.slf4j.LoggerFactory;
  * This validator checks whether user input is within the specified range of
  * accepted string lengths.
  * <p>
- * If you only want to limit the length on a line edit, you may also use {@link }.
+ * If you only want to limit the length on a line edit, you may also use
+ * {@link WLineEdit#setMaxLength(int chars) WLineEdit#setMaxLength()}.
  * <p>
  * <h3>i18n</h3>
  * <p>

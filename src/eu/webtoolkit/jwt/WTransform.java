@@ -33,21 +33,30 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  * <p>
- * In this representation, {@link } (= {@link }) and {@link } (= {@link }) represent
- * the translation components, and m<i>xy</i> represent a 2D matrix that
- * contains the scale, rotation (and skew) components.
+ * In this representation, {@link WTransform#getDx() getDx()} (=
+ * {@link WTransform#getM31() getM31()}) and {@link WTransform#getDy() getDy()}
+ * (= {@link WTransform#getM32() getM32()}) represent the translation
+ * components, and m<i>xy</i> represent a 2D matrix that contains the scale,
+ * rotation (and skew) components.
  * <p>
  * The transformation is used to represent a tansformed coordinate system, and
- * provides methods to {@link }, {@link }, {@link } or {@link } this coordinate
- * system.
+ * provides methods to {@link WTransform#rotate(double angle) rotate()},
+ * {@link WTransform#scale(double sx, double sy) scale()},
+ * {@link WTransform#shear(double sh, double sv) shear()} or
+ * {@link WTransform#translate(double dx, double dy) translate()} this
+ * coordinate system.
  * <p>
  * There are also 2 methods to decompose an arbitrary matrix into elementary
  * operations:
  * <ul>
- * <li>{@link } decomposes into a <i>T</i> &#x2218; <i>R</i> &#x2218; <i>Sxx</i>
- * &#x2218; <i>Sxy</i></li>
- * <li>{@link } decomposes into a <i>T</i> &#x2218; <i>R1</i> &#x2218; <i>Sxx</i>
- * &#x2218; <i>R2</i></li>
+ * <li>
+ * {@link WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition result)
+ * decomposeTranslateRotateScaleSkew()} decomposes into a <i>T</i> &#x2218;
+ * <i>R</i> &#x2218; <i>Sxx</i> &#x2218; <i>Sxy</i></li>
+ * <li>
+ * {@link WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition result)
+ * decomposeTranslateRotateScaleRotate()} decomposes into a <i>T</i> &#x2218;
+ * <i>R1</i> &#x2218; <i>Sxx</i> &#x2218; <i>R2</i></li>
  * </ul>
  * <p>
  * with <i>T</i> a translation, <i>R</i> a rotation, <i>Sxx</i> a scale, and
@@ -222,7 +231,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the horizontal translation factor.
 	 * <p>
-	 * Is equivalent to {@link }
+	 * Is equivalent to {@link WTransform#getDx() getDx()}
 	 */
 	public double getM31() {
 		return this.m_[M13];
@@ -231,7 +240,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the vertical translation factor.
 	 * <p>
-	 * Is equivalent to {@link }
+	 * Is equivalent to {@link WTransform#getDy() getDy()}
 	 */
 	public double getM32() {
 		return this.m_[M23];
@@ -272,6 +281,8 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
 	 * bound}, the resulting point will also be JavaScript bound.</i>
 	 * </p>
+	 * 
+	 * @see WTransform#map(double x, double y, Double tx, Double ty)
 	 */
 	public WPointF map(final WPointF p) {
 		if (this.isIdentity()) {
@@ -421,6 +432,8 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <code>angle</code> degrees.
 	 * <p>
+	 * 
+	 * @see WTransform#rotateRadians(double angle)
 	 */
 	public WTransform rotate(double angle) {
 		this.rotateRadians(degreesToRadians(angle));
@@ -449,6 +462,8 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * <p>
 	 * Scales the current transformation.
 	 * <p>
+	 * 
+	 * @see WTransform#shear(double sh, double sv)
 	 */
 	public WTransform scale(double sx, double sy) {
 		return this.multiplyAndAssign(new WTransform(sx, 0, 0, sy, 0, 0));
@@ -611,6 +626,9 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Result of a TRSS decomposition.
 	 * <p>
+	 * 
+	 * @see WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition
+	 *      result)
 	 */
 	public static class TRSSDecomposition {
 		private static Logger logger = LoggerFactory
@@ -674,6 +692,9 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Result of a TRSR decomposition.
 	 * <p>
+	 * 
+	 * @see WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition
+	 *      result)
 	 */
 	public static class TRSRDecomposition {
 		private static Logger logger = LoggerFactory

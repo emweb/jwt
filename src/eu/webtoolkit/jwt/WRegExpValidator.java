@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
  * <ul>
- * <li>{@link }: Invalid input</li>
+ * <li>{@link WValidator.State#Invalid}: Invalid input</li>
  * </ul>
  */
 public class WRegExpValidator extends WValidator {

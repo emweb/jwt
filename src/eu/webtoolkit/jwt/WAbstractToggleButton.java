@@ -26,11 +26,13 @@ import org.slf4j.LoggerFactory;
  * A toggle button provides a button with a boolean state (checked or
  * unchecked), and a text label.
  * <p>
- * To act on a change of the state, either connect a slot to the {@link } signal,
- * or connect a slot to the {@link } or {@link } signals.
+ * To act on a change of the state, either connect a slot to the
+ * {@link WFormWidget#changed() WFormWidget#changed()} signal, or connect a slot
+ * to the {@link WAbstractToggleButton#checked() checked()} or
+ * {@link WAbstractToggleButton#unChecked() unChecked()} signals.
  * <p>
- * The current state (checked or unchecked) may be inspected using the {@link }
- * method.
+ * The current state (checked or unchecked) may be inspected using the
+ * {@link WAbstractToggleButton#isChecked() isChecked()} method.
  */
 public abstract class WAbstractToggleButton extends WFormWidget {
 	private static Logger logger = LoggerFactory
@@ -129,15 +131,16 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
-	 * When changing the textFormat to {@link }, and the current text is literal
-	 * (not created using {@link }), the current text is parsed using an XML
-	 * parser which discards malicious tags and attributes silently. When the
-	 * parser encounters an XML parse error, the textFormat is left unchanged,
-	 * and this method returns false.
+	 * When changing the textFormat to {@link TextFormat#XHTMLText}, and the
+	 * current text is literal (not created using {@link WString#tr(String key)
+	 * WString#tr()}), the current text is parsed using an XML parser which
+	 * discards malicious tags and attributes silently. When the parser
+	 * encounters an XML parse error, the textFormat is left unchanged, and this
+	 * method returns false.
 	 * <p>
 	 * Returns whether the textFormat could be set for the current text.
 	 * <p>
-	 * The default format is {@link }.
+	 * The default format is {@link TextFormat#PlainText}.
 	 */
 	public boolean setTextFormat(TextFormat format) {
 		return this.text_.setFormat(format);
@@ -156,6 +159,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Returns the button state.
 	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#setChecked()
 	 */
 	public boolean isChecked() {
 		return this.state_ == CheckState.Checked;
@@ -164,8 +169,13 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Sets the button state.
 	 * <p>
-	 * This method does not emit one of the {@link } or {@link } signals.
+	 * This method does not emit one of the
+	 * {@link WAbstractToggleButton#checked() checked()} or
+	 * {@link WAbstractToggleButton#unChecked() unChecked()} signals.
 	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#setChecked()
+	 * @see WAbstractToggleButton#setUnChecked()
 	 */
 	public void setChecked(boolean how) {
 		this.setCheckState(how ? CheckState.Checked : CheckState.Unchecked);
@@ -174,7 +184,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Checks the button.
 	 * <p>
-	 * Does not emit the {@link } signal.
+	 * Does not emit the {@link WAbstractToggleButton#checked() checked()}
+	 * signal.
 	 * <p>
 	 * 
 	 * @see WAbstractToggleButton#setChecked(boolean how)
@@ -187,7 +198,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Unchecks the button.
 	 * <p>
-	 * Does not emit the {@link } signal.
+	 * Does not emit the {@link WAbstractToggleButton#unChecked() unChecked()}
+	 * signal.
 	 * <p>
 	 * 
 	 * @see WAbstractToggleButton#setChecked(boolean how)
@@ -239,8 +251,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * <p>
 	 * This signal is emitted when the user checks the button.
 	 * <p>
-	 * You can use the {@link } signal to react to any change of the button
-	 * state.
+	 * You can use the {@link WFormWidget#changed() WFormWidget#changed()}
+	 * signal to react to any change of the button state.
 	 */
 	public EventSignal checked() {
 		return this.voidEventSignal(CHECKED_SIGNAL, true);
@@ -251,8 +263,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * <p>
 	 * This signal is emitted when the user unchecks the button.
 	 * <p>
-	 * You can use the {@link } signal to react to any change of the button
-	 * state.
+	 * You can use the {@link WFormWidget#changed() WFormWidget#changed()}
+	 * signal to react to any change of the button state.
 	 */
 	public EventSignal unChecked() {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
@@ -272,11 +284,13 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the
-	 * text contains end-of-lines (for {@link }) or &lt;br /&gt; tags or other
-	 * block-level tags (for {@link }).
+	 * text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
+	 * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
+	 * 
+	 * @see WAbstractToggleButton#isWordWrap()
 	 */
 	public void setWordWrap(boolean wordWrap) {
 		if (this.flags_.get(BIT_WORD_WRAP) != wordWrap) {

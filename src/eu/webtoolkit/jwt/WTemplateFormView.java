@@ -54,12 +54,18 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The View may render fields of more than one model, and does not necessarily
  * need to render all information of each model. The latter can be achieved by
- * either calling {@link } and {@link } for individual model fields, or by hiding
- * fields in the model that are not to be shown in the view.
+ * either calling
+ * {@link WTemplateFormView#updateViewField(WFormModel model, String field)
+ * updateViewField()} and
+ * {@link WTemplateFormView#updateModelField(WFormModel model, String field)
+ * updateModelField()} for individual model fields, or by hiding fields in the
+ * model that are not to be shown in the view.
  * <p>
- * The {@link } method updates the view based on a model (e.g. to propagate
- * changed values or validation feed-back), while the {@link } method updates the
- * model with values entered in the View.
+ * The {@link WTemplateFormView#updateView(WFormModel model) updateView()}
+ * method updates the view based on a model (e.g. to propagate changed values or
+ * validation feed-back), while the
+ * {@link WTemplateFormView#updateModel(WFormModel model) updateModel()} method
+ * updates the model with values entered in the View.
  * <p>
  * The view is passive: it will not perform any updates by itself of either the
  * View or Model. You will typically bind a method to the Ok button and do:
@@ -154,8 +160,12 @@ public class WTemplateFormView extends WTemplate {
 	 * the model with view data.
 	 * <p>
 	 * You can override this default behaviour by either using the overloaded
-	 * {@link } that allows to specify these functions, or reimplement {@link } or
-	 * {@link }.
+	 * {@link WTemplateFormView#setFormWidget(String field, WWidget formWidget)
+	 * setFormWidget()} that allows to specify these functions, or reimplement
+	 * {@link WTemplateFormView#updateViewValue(WFormModel model, String field, WFormWidget edit)
+	 * updateViewValue()} or
+	 * {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WFormWidget edit)
+	 * updateModelValue()}.
 	 */
 	public void setFormWidget(String field, WWidget formWidget) {
 		this.fields_.put(field, new WTemplateFormView.FieldData());
@@ -200,6 +210,7 @@ public class WTemplateFormView extends WTemplate {
 	 * This creates or updates all fields in the view.
 	 * <p>
 	 * 
+	 * @see WTemplateFormView#updateViewField(WFormModel model, String field)
 	 * @see WFormModel#getFields()
 	 */
 	public void updateView(WFormModel model) {
@@ -215,21 +226,27 @@ public class WTemplateFormView extends WTemplate {
 	 * <p>
 	 * This will update or create and bind widgets in the template to represent
 	 * the field. To create the form widget that implements the editing, it
-	 * calls {@link }.
+	 * calls {@link WTemplateFormView#createFormWidget(String field)
+	 * createFormWidget()}.
 	 * <p>
 	 * The default behaviour interprets
 	 * {@link WFormModel#isVisible(String field) WFormModel#isVisible()},
 	 * {@link WFormModel#isReadOnly(String field) WFormModel#isReadOnly()},
 	 * {@link WFormModel#label(String field) WFormModel#label()} and
 	 * {@link WFormModel#getValidator(String field) WFormModel#getValidator()}
-	 * to update the View, and calls {@link } to update the view value. If no
-	 * form widget has been set for the given <code>field</code> using
+	 * to update the View, and calls
+	 * {@link WTemplateFormView#updateViewValue(WFormModel model, String field, WFormWidget edit)
+	 * updateViewValue()} to update the view value. If no form widget has been
+	 * set for the given <code>field</code> using
 	 * {@link WTemplateFormView#setFormWidget(String field, WWidget formWidget)
-	 * setFormWidget()}, then it calls {@link } to try to create one.
+	 * setFormWidget()}, then it calls
+	 * {@link WTemplateFormView#createFormWidget(String field)
+	 * createFormWidget()} to try to create one.
 	 * <p>
-	 * It&apos;s usually more convenient to reimplement {@link } to override
-	 * specifically how the value from the model should be used to update the
-	 * form widget.
+	 * It&apos;s usually more convenient to reimplement
+	 * {@link WTemplateFormView#updateViewValue(WFormModel model, String field, WFormWidget edit)
+	 * updateViewValue()} to override specifically how the value from the model
+	 * should be used to update the form widget.
 	 */
 	public void updateViewField(WFormModel model, String field) {
 		final String var = field;
@@ -328,6 +345,7 @@ public class WTemplateFormView extends WTemplate {
 	 * This creates or updates all field values in the model.
 	 * <p>
 	 * 
+	 * @see WTemplateFormView#updateModelField(WFormModel model, String field)
 	 * @see WFormModel#getFields()
 	 */
 	public void updateModel(WFormModel model) {
@@ -341,7 +359,9 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates a field in the Model.
 	 * <p>
-	 * This calls {@link } to update the model value.
+	 * This calls
+	 * {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WFormWidget edit)
+	 * updateModelValue()} to update the model value.
 	 */
 	public void updateModelField(WFormModel model, String field) {
 		WWidget edit = this.resolveWidget(field);
@@ -357,9 +377,10 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates a value in the Model.
 	 * <p>
-	 * The default implementation calls {@link }. If this function returned
-	 * <code>false</code>, it calls
-	 * {@link WFormModel#setValue(String field, Object value)
+	 * The default implementation calls
+	 * {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WWidget edit)
+	 * updateModelValue()}. If this function returned <code>false</code>, it
+	 * calls {@link WFormModel#setValue(String field, Object value)
 	 * WFormModel#setValue()} with {@link WFormWidget#getValueText()
 	 * WFormWidget#getValueText()}.
 	 */
@@ -414,7 +435,9 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Indicates the validation result.
 	 * <p>
-	 * The default implementation calls {@link }
+	 * The default implementation calls
+	 * {@link WTheme#applyValidationStyle(WWidget widget, WValidator.Result validation, EnumSet flags)
+	 * WTheme#applyValidationStyle()}
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>We changed the signature to take an edit {@link WWidget}

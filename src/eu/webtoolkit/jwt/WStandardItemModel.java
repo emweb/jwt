@@ -27,14 +27,19 @@ import org.slf4j.LoggerFactory;
  * and can thus be used to represent tables, trees and tree tables.
  * <p>
  * The data itself are organized in {@link WStandardItem} objects. There is one
- * invisible root object ({@link }) that holds the toplevel data. Most methods in
- * this class that access or manipulate data internally operate on this root
- * item.
+ * invisible root object ({@link WStandardItemModel#getInvisibleRootItem()
+ * getInvisibleRootItem()}) that holds the toplevel data. Most methods in this
+ * class that access or manipulate data internally operate on this root item.
  * <p>
- * If you want to use the model as a table, then you can use {@link } to set the
- * initial table size, and use the {@link } and {@link } methods to set data. You
- * can change the geometry by inserting rows ({@link }) or columns ({@link }) or
- * removing rows (
+ * If you want to use the model as a table, then you can use
+ * {@link WStandardItemModel#WStandardItemModel(int rows, int columns, WObject parent)
+ * WStandardItemModel()} to set the initial table size, and use the
+ * {@link WStandardItemModel#getItem(int row, int column) getItem()} and
+ * {@link WStandardItemModel#setItem(int row, int column, WStandardItem item)
+ * setItem()} methods to set data. You can change the geometry by inserting rows
+ * ({@link WStandardItemModel#insertRow(int row, List items) insertRow()}) or
+ * columns ({@link WStandardItemModel#insertColumn(int column, List items)
+ * insertColumn()}) or removing rows (
  * {@link WAbstractItemModel#removeRow(int row, WModelIndex parent)
  * WAbstractItemModel#removeRow()}) or columns (
  * {@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)
@@ -42,13 +47,17 @@ import org.slf4j.LoggerFactory;
  * <p>
  * If you want to use the model as a tree (or tree table), then you can use the
  * default constructor to start with an empty tree, and use the
- * {@link WStandardItem} API on {@link } to manipulate the tree root. When you
- * are building a tree, the column count at each node is 1. When you are
- * building a tree table, you can add additional columns of data for each
- * internal node. Only the items in the first column have children that result
- * in a hierarchical tree structure.
+ * {@link WStandardItem} API on
+ * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem()} to
+ * manipulate the tree root. When you are building a tree, the column count at
+ * each node is 1. When you are building a tree table, you can add additional
+ * columns of data for each internal node. Only the items in the first column
+ * have children that result in a hierarchical tree structure.
  * <p>
- * When using the model with a view class, you can use the {@link } and {@link }
+ * When using the model with a view class, you can use the
+ * {@link WStandardItemModel#getItemFromIndex(WModelIndex index)
+ * getItemFromIndex()} and
+ * {@link WStandardItemModel#indexFromItem(WStandardItem item) indexFromItem()}
  * models to translate between model indexes (that are used by the view class)
  * and standard items.
  */
@@ -144,6 +153,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * {@link WStandardItemModel#getInvisibleRootItem() getInvisibleRootItem()},
 	 * then an invalid index is returned.
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#getItemFromIndex(WModelIndex index)
 	 */
 	public WModelIndex indexFromItem(WStandardItem item) {
 		if (item == this.invisibleRootItem_) {
@@ -182,6 +193,9 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 *   }
 	 * </pre>
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#insertColumn(int column, List items)
+	 * @see WStandardItemModel#appendRow(List items)
 	 */
 	public void appendColumn(final List<WStandardItem> items) {
 		this.insertColumn(this.getColumnCount(), items);
@@ -223,6 +237,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * </pre>
 	 * <p>
 	 * 
+	 * @see WStandardItemModel#insertRow(int row, List items)
 	 * @see WStandardItemModel#appendColumn(List items)
 	 */
 	public void appendRow(final List<WStandardItem> items) {
@@ -347,6 +362,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Returns the item prototype.
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#setItemPrototype(WStandardItem item)
 	 */
 	public WStandardItem getItemPrototype() {
 		return this.itemPrototype_;
@@ -365,6 +382,8 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * <p>
 	 * The default prototype is WStandardItem().
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#setItemPrototype(WStandardItem item)
 	 */
 	public void setItemPrototype(WStandardItem item) {
 		;
@@ -430,6 +449,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 	 * </pre>
 	 * <p>
 	 * 
+	 * @see WStandardItemModel#takeItem(int row, int column)
 	 * @see WStandardItem#takeRow(int row)
 	 * @see WStandardItem#takeColumn(int column)
 	 */
@@ -602,8 +622,10 @@ public class WStandardItemModel extends WAbstractItemModel {
 	/**
 	 * Set the role used to sort the model.
 	 * <p>
-	 * The default role is {@link DisplayRole}.
+	 * The default role is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#sort(int column, SortOrder order)
 	 */
 	public void setSortRole(int role) {
 		this.sortRole_ = role;

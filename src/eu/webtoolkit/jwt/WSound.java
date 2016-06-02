@@ -36,6 +36,8 @@ public class WSound extends WObject {
 	/**
 	 * Constructs a sound object.
 	 * <p>
+	 * 
+	 * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
 	 */
 	public WSound(WObject parent) {
 		super(parent);
@@ -57,6 +59,8 @@ public class WSound extends WObject {
 	 * <p>
 	 * The <code>url</code> will be assumed to be an MP3 file.
 	 * <p>
+	 * 
+	 * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
 	 */
 	public WSound(final String url, WObject parent) {
 		super(parent);
@@ -78,6 +82,8 @@ public class WSound extends WObject {
 	/**
 	 * Constructs a sound object.
 	 * <p>
+	 * 
+	 * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
 	 */
 	public WSound(WMediaPlayer.Encoding encoding, final WLink link,
 			WObject parent) {
@@ -137,8 +143,8 @@ public class WSound extends WObject {
 	/**
 	 * Sets the amount of times the sound has to be repeated.
 	 * <p>
-	 * A call to {@link } will play the sound <code>number</code> of times. The
-	 * default value is 1 (no repeats).
+	 * A call to {@link WSound#play() play()} will play the sound
+	 * <code>number</code> of times. The default value is 1 (no repeats).
 	 */
 	public void setLoops(int number) {
 		this.loops_ = number;
@@ -159,10 +165,12 @@ public class WSound extends WObject {
 	 * This method returns immediately. It will cause the sound to be played for
 	 * the configured amount of {@link WSound#getLoops() getLoops()}.
 	 * <p>
-	 * The behavior of {@link } when a sound is already playing is undefind: it
-	 * may be intermixed, sequentially queued, or a current playing sound may be
-	 * stopped. It is recommended to call {@link } before {@link } if you want to
-	 * avoid mixing multiple instances of a single {@link WSound} object.
+	 * The behavior of {@link WSound#play() play()} when a sound is already
+	 * playing is undefind: it may be intermixed, sequentially queued, or a
+	 * current playing sound may be stopped. It is recommended to call
+	 * {@link WSound#stop() stop()} before {@link WSound#play() play()} if you
+	 * want to avoid mixing multiple instances of a single {@link WSound}
+	 * object.
 	 */
 	public void play() {
 		WApplication.getInstance().getSoundManager().play(this, this.loops_);

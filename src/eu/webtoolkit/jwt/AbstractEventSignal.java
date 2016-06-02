@@ -52,6 +52,14 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			return javaScript != null;
 		}
 
+		final boolean isInvalidated() {
+			return invalidated_;
+		}
+
+		void invalidate() {
+			invalidated_ = true;
+		}
+
 		private String javaScript = null;
 
 		abstract SlotType getType();
@@ -75,6 +83,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		}
 
 		private List<WeakReference<AbstractEventSignal>> signals_;
+		private boolean invalidated_ = false;
 	}
 
 	/**

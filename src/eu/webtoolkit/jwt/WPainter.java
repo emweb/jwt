@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * The painter class provides a vector graphics interface for painting. It needs
  * to be used in conjunction with a {@link WPaintDevice}, onto which it paints.
  * To start painting on a device, either pass the device through the
- * constructor, or use {@link }.
+ * constructor, or use {@link WPainter#begin(WPaintDevice device) begin()}.
  * <p>
  * A typical use is to instantiate a WPainter from within a specialized
  * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice)
@@ -35,10 +35,14 @@ import org.slf4j.LoggerFactory;
  * paint device of choice, for example to create SVG, PDF or PNG images (as
  * resources).
  * <p>
- * The painter maintains state such as the current {@link pen}, {@link brush},
- * {@link font}, {@link shadow}, {@link transformation} and clipping settings
- * (see {@link } and {@link }). A particular state can be saved using {@link } and
- * later restored using {@link }.
+ * The painter maintains state such as the current
+ * {@link WPainter#setPen(WPen p) pen}, {@link WPainter#setBrush(WBrush b)
+ * brush}, {@link WPainter#setFont(WFont f) font}, {@link WPainter#getShadow()
+ * shadow}, {@link WPainter#getWorldTransform() transformation} and clipping
+ * settings (see {@link WPainter#setClipping(boolean enable) setClipping()} and
+ * {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath()}). A
+ * particular state can be saved using {@link WPainter#save() save()} and later
+ * restored using {@link WPainter#restore() restore()}.
  * <p>
  * The painting system distinguishes between device coordinates, logical
  * coordinates, and local coordinates. The device coordinate system ranges from
@@ -48,9 +52,11 @@ import org.slf4j.LoggerFactory;
  * of the geometry of the device, which is convenient to make abstraction of the
  * actual device size. Finally, the current local coordinate system may be
  * different from the logical coordinate system because of a transformation set
- * (using {@link }, {@link }, and {@link }). Initially, the local coordinate system
- * coincides with the logical coordinate system, which coincides with the device
- * coordinate system.
+ * (using {@link WPainter#translate(WPointF p) translate()},
+ * {@link WPainter#rotate(double angle) rotate()}, and
+ * {@link WPainter#scale(double sx, double sy) scale()}). Initially, the local
+ * coordinate system coincides with the logical coordinate system, which
+ * coincides with the device coordinate system.
  * <p>
  * The device coordinates are defined in terms of pixels. Even though most
  * underlying devices are actual vector graphics formats, when used in
@@ -70,10 +76,15 @@ import org.slf4j.LoggerFactory;
  * middle of a pixel to get a crisp one-pixel wide line, as in the example
  * figure.
  * <p>
- * By setting a {@link } and a {@link }, a viewPort transformation is defined
- * which maps logical coordinates onto device coordinates. By changing the world
- * transformation (using {@link }, or {@link }, {@link }, {@link } operations), it
- * is defined how current local coordinates map onto logical coordinates.
+ * By setting a {@link WPainter#getViewPort() getViewPort()} and a
+ * {@link WPainter#getWindow() getWindow()}, a viewPort transformation is
+ * defined which maps logical coordinates onto device coordinates. By changing
+ * the world transformation (using
+ * {@link WPainter#setWorldTransform(WTransform matrix, boolean combine)
+ * setWorldTransform()}, or {@link WPainter#translate(WPointF p) translate()},
+ * {@link WPainter#rotate(double angle) rotate()},
+ * {@link WPainter#scale(double sx, double sy) scale()} operations), it is
+ * defined how current local coordinates map onto logical coordinates.
  * <p>
  * The painter provides support for clipping using an arbitrary
  * {@link WPainterPath path}, but not that the WVmlImage paint device only has
@@ -115,8 +126,11 @@ public class WPainter {
 	/**
 	 * Default constructor.
 	 * <p>
-	 * Before painting, you must invoke {@link } on a paint device.
+	 * Before painting, you must invoke
+	 * {@link WPainter#begin(WPaintDevice device) begin()} on a paint device.
 	 * <p>
+	 * 
+	 * @see WPainter#WPainter(WPaintDevice device)
 	 */
 	public WPainter() {
 		this.device_ = null;
@@ -142,6 +156,9 @@ public class WPainter {
 	/**
 	 * Begins painting on a paint device.
 	 * <p>
+	 * 
+	 * @see WPainter#end()
+	 * @see WPainter#isActive()
 	 */
 	public boolean begin(WPaintDevice device) {
 		if (this.device_ != null) {
@@ -167,6 +184,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#begin(WPaintDevice device)
+	 * @see WPainter#end()
 	 */
 	public boolean isActive() {
 		return this.device_ != null;
@@ -248,6 +266,11 @@ public class WPainter {
 	 * 1/16th of a degree, and are measured counter-clockwise starting from the
 	 * 3 o&apos;clock position.
 	 * <p>
+	 * 
+	 * @see WPainter#drawEllipse(WRectF rectangle)
+	 * @see WPainter#drawChord(WRectF rectangle, int startAngle, int spanAngle)
+	 * @see WPainter#drawArc(double x, double y, double width, double height,
+	 *      int startAngle, int spanAngle)
 	 */
 	public void drawArc(final WRectF rectangle, int startAngle, int spanAngle) {
 		this.device_.drawArc(rectangle.getNormalized(), startAngle / 16.,
@@ -280,7 +303,10 @@ public class WPainter {
 	 * o&apos;clock.
 	 * <p>
 	 * 
+	 * @see WPainter#drawEllipse(WRectF rectangle)
 	 * @see WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
+	 * @see WPainter#drawChord(double x, double y, double width, double height,
+	 *      int startAngle, int spanAngle)
 	 */
 	public void drawChord(final WRectF rectangle, int startAngle, int spanAngle) {
 		WTransform oldTransform = this.getWorldTransform().clone();
@@ -320,6 +346,8 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
+	 * @see WPainter#drawEllipse(double x, double y, double width, double
+	 *      height)
 	 */
 	public void drawEllipse(final WRectF rectangle) {
 		this.device_.drawArc(rectangle.getNormalized(), 0, 360);
@@ -343,6 +371,8 @@ public class WPainter {
 	 * 
 	 * The image is specified in terms of a URL, and the width and height.
 	 * <p>
+	 * 
+	 * @see WPainter#drawImage(WPointF point, WPainter.Image image)
 	 */
 	public static class Image {
 		private static Logger logger = LoggerFactory.getLogger(Image.class);
@@ -550,6 +580,9 @@ public class WPainter {
 	 * <p>
 	 * Draws a line using the current pen.
 	 * <p>
+	 * 
+	 * @see WPainter#drawLine(WPointF p1, WPointF p2)
+	 * @see WPainter#drawLine(double x1, double y1, double x2, double y2)
 	 */
 	public void drawLine(final WLineF line) {
 		this.drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
@@ -562,6 +595,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#drawLine(WLineF line)
+	 * @see WPainter#drawLine(double x1, double y1, double x2, double y2)
 	 */
 	public void drawLine(final WPointF p1, final WPointF p2) {
 		this.drawLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
@@ -635,6 +669,9 @@ public class WPainter {
 	 * <p>
 	 * Draws and fills the given path using the current pen and brush.
 	 * <p>
+	 * 
+	 * @see WPainter#strokePath(WPainterPath path, WPen p)
+	 * @see WPainter#fillPath(WPainterPath path, WBrush b)
 	 */
 	public void drawPath(final WPainterPath path) {
 		this.device_.drawPath(path);
@@ -656,6 +693,8 @@ public class WPainter {
 	 * 
 	 * @see WPainter#drawEllipse(WRectF rectangle)
 	 * @see WPainter#drawArc(WRectF rectangle, int startAngle, int spanAngle)
+	 * @see WPainter#drawPie(double x, double y, double width, double height,
+	 *      int startAngle, int spanAngle)
 	 */
 	public void drawPie(final WRectF rectangle, int startAngle, int spanAngle) {
 		WTransform oldTransform = this.getWorldTransform().clone();
@@ -689,8 +728,11 @@ public class WPainter {
 	 * Draws a single point using the current pen. This is implemented by
 	 * drawing a very short line, centered around the given
 	 * <code>position</code>. To get the result of a single point, you should
-	 * use a pen with a {@link } or {@link } pen cap style.
+	 * use a pen with a {@link PenCapStyle#SquareCap} or
+	 * {@link PenCapStyle#RoundCap} pen cap style.
 	 * <p>
+	 * 
+	 * @see WPainter#drawPoint(double x, double y)
 	 */
 	public void drawPoint(final WPointF point) {
 		this.drawPoint(point.getX(), point.getY());
@@ -732,6 +774,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#drawPath(WPainterPath path)
+	 * @see WPainter#drawPolyline(WPointF[] points, int pointCount)
 	 */
 	public void drawPolygon(WPointF[] points, int pointCount) {
 		if (pointCount < 2) {
@@ -776,6 +819,8 @@ public class WPainter {
 	 * <p>
 	 * Draws and fills a rectangle using the current pen and brush.
 	 * <p>
+	 * 
+	 * @see WPainter#drawRect(double x, double y, double width, double height)
 	 */
 	public void drawRect(final WRectF rectangle) {
 		WCanvasPaintDevice cDevice = ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_)
@@ -840,7 +885,8 @@ public class WPainter {
 	 * Draws text using inside the rectangle, using the current font. The text
 	 * is aligned inside the rectangle following alignment indications given in
 	 * <code>flags</code>. The text is drawn using the current transformation,
-	 * pen color ({@link }) and font settings ({@link }).
+	 * pen color ({@link WPainter#getPen() getPen()}) and font settings (
+	 * {@link WPainter#getFont() getFont()}).
 	 * <p>
 	 * AlignmentFlags is the logical OR of a horizontal and vertical alignment.
 	 * Horizontal alignment may be one of AlignLeft, AlignCenter, or AlignRight.
@@ -850,7 +896,7 @@ public class WPainter {
 	 * be rendered on one line or by wrapping the words within the rectangle.
 	 * <p>
 	 * If a clipPoint is provided, the text will not be drawn if the point is
-	 * outside of the {@link }.
+	 * outside of the {@link WPainter#getClipPath() getClipPath()}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>If the clip path is not a polygon, i.e. it has rounded
@@ -967,6 +1013,7 @@ public class WPainter {
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
 	 *      textFlag, CharSequence text, WPointF clipPoint)
 	 * @see WRectF
+	 * @see TextFlag
 	 * @see WString
 	 */
 	public void drawText(double x, double y, double width, double height,
@@ -984,6 +1031,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#drawPath(WPainterPath path)
+	 * @see WPainter#strokePath(WPainterPath path, WPen p)
 	 */
 	public void fillPath(final WPainterPath path, final WBrush b) {
 		WBrush oldBrush = this.getBrush().clone();
@@ -1083,6 +1131,9 @@ public class WPainter {
 	 * <p>
 	 * Changes the fills style for subsequent draw operations.
 	 * <p>
+	 * 
+	 * @see WPainter#getBrush()
+	 * @see WPainter#setPen(WPen p)
 	 */
 	public void setBrush(final WBrush b) {
 		if (!this.getBrush().equals(b)) {
@@ -1118,6 +1169,7 @@ public class WPainter {
 	 * </pre>
 	 * <p>
 	 * 
+	 * @see WPainter#getFont()
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
 	 *      textFlag, CharSequence text, WPointF clipPoint)
 	 */
@@ -1134,6 +1186,7 @@ public class WPainter {
 	 * Changes the pen used for stroking subsequent draw operations.
 	 * <p>
 	 * 
+	 * @see WPainter#getPen()
 	 * @see WPainter#setBrush(WBrush b)
 	 */
 	public void setPen(final WPen p) {
@@ -1184,7 +1237,8 @@ public class WPainter {
 	 * Enables or disables clipping.
 	 * <p>
 	 * Enables are disables clipping for subsequent operations using the current
-	 * clip path set using {@link }.
+	 * clip path set using {@link WPainter#setClipPath(WPainterPath clipPath)
+	 * setClipPath()}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>Clipping support is limited for the VML renderer. Only
@@ -1193,6 +1247,9 @@ public class WPainter {
 	 * The rectangle must, after applying the combined transformation system, be
 	 * aligned with the window.</i>
 	 * </p>
+	 * 
+	 * @see WPainter#hasClipping()
+	 * @see WPainter#setClipPath(WPainterPath clipPath)
 	 */
 	public void setClipping(boolean enable) {
 		if (this.getS().clipping_ != enable) {
@@ -1212,6 +1269,7 @@ public class WPainter {
 	 * </p>
 	 * 
 	 * @see WPainter#setClipping(boolean enable)
+	 * @see WPainter#setClipPath(WPainterPath clipPath)
 	 */
 	public boolean hasClipping() {
 		return this.getS().clipping_;
@@ -1229,6 +1287,7 @@ public class WPainter {
 	 * <i><b>Note: </b>Clipping support is limited for the VML renderer.</i>
 	 * </p>
 	 * 
+	 * @see WPainter#getClipPath()
 	 * @see WPainter#setClipping(boolean enable)
 	 */
 	public void setClipPath(final WPainterPath clipPath) {
@@ -1276,6 +1335,8 @@ public class WPainter {
 	 * clock-wise.
 	 * <p>
 	 * 
+	 * @see WPainter#scale(double sx, double sy)
+	 * @see WPainter#translate(double dx, double dy)
 	 * @see WPainter#resetTransform()
 	 */
 	public void rotate(double angle) {
@@ -1294,6 +1355,7 @@ public class WPainter {
 	 * <p>
 	 * 
 	 * @see WPainter#rotate(double angle)
+	 * @see WPainter#translate(double dx, double dy)
 	 * @see WPainter#resetTransform()
 	 */
 	public void scale(double sx, double sy) {
@@ -1311,6 +1373,7 @@ public class WPainter {
 	 * relative to the current logical coordinate system.
 	 * <p>
 	 * 
+	 * @see WPainter#translate(double dx, double dy)
 	 * @see WPainter#rotate(double angle)
 	 * @see WPainter#scale(double sx, double sy)
 	 * @see WPainter#resetTransform()
@@ -1347,6 +1410,7 @@ public class WPainter {
 	 * transformation is combined with the current world transformation matrix.
 	 * <p>
 	 * 
+	 * @see WPainter#getWorldTransform()
 	 * @see WPainter#rotate(double angle)
 	 * @see WPainter#scale(double sx, double sy)
 	 * @see WPainter#translate(double dx, double dy)
@@ -1388,7 +1452,8 @@ public class WPainter {
 	 * Saves the current state.
 	 * <p>
 	 * A copy of the current state is saved on a stack. This state will may
-	 * later be restored by popping this state from the stack using {@link }.
+	 * later be restored by popping this state from the stack using
+	 * {@link WPainter#restore() restore()}.
 	 * <p>
 	 * The state that is saved is the current {@link WPainter#setPen(WPen p)
 	 * pen}, {@link WPainter#setBrush(WBrush b) brush},
@@ -1397,6 +1462,8 @@ public class WPainter {
 	 * settings (see {@link WPainter#setClipping(boolean enable) setClipping()}
 	 * and {@link WPainter#setClipPath(WPainterPath clipPath) setClipPath()}).
 	 * <p>
+	 * 
+	 * @see WPainter#restore()
 	 */
 	public void save() {
 		this.stateStack_.add(this.stateStack_.get(this.stateStack_.size() - 1)
@@ -1460,6 +1527,9 @@ public class WPainter {
 	 * 0) to (device.width(), device.height()). The window defines how the
 	 * viewport is mapped to logical coordinates.
 	 * <p>
+	 * 
+	 * @see WPainter#getViewPort()
+	 * @see WPainter#setWindow(WRectF window)
 	 */
 	public void setViewPort(final WRectF viewPort) {
 		this.viewPort_ = viewPort;
@@ -1499,6 +1569,7 @@ public class WPainter {
 	 * coordinates.
 	 * <p>
 	 * 
+	 * @see WPainter#getWindow()
 	 * @see WPainter#setViewPort(WRectF viewPort)
 	 */
 	public void setWindow(final WRectF window) {

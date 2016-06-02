@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * you rather need input of a fractional number, use {@link WDoubleSpinBox}
  * instead.
  * <p>
- * WSpinBox is an {@link inline} widget.
+ * WSpinBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * 
  * @see WDoubleSpinBox <p>

@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
  * 
  * A {@link WTable} provides a table of WTableCell container widgets. A
  * WTableCell may overspan more than one grid location in the table, by
- * specifying a {@link rowSpan} and {@link columnSpan}. Table cells at
+ * specifying a {@link WTableCell#setRowSpan(int rowSpan) rowSpan} and
+ * {@link WTableCell#setColumnSpan(int colSpan) columnSpan}. Table cells at
  * overspanned positions are hidden. You cannot directly create a WTableCell,
  * instead, they are created automatically by a table.
  * <p>

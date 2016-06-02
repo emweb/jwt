@@ -26,17 +26,23 @@ import org.slf4j.LoggerFactory;
  * This is an abstract class and should not be used directly.
  * <p>
  * As an abstract base for MVC-based charts, this class manages the model
- * {@link } and provides virtual methods that listen to model changes. In
- * addition, it gives access to generic chart properties such as the title
- * {@link } and title font {@link }, the chart palette {@link }, plot area padding
- * {@link }, and the background fill color {@link }.
+ * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()} and
+ * provides virtual methods that listen to model changes. In addition, it gives
+ * access to generic chart properties such as the title
+ * {@link WAbstractChart#setTitle(CharSequence title) setTitle()} and title font
+ * {@link WAbstractChart#setTitleFont(WFont titleFont) setTitleFont()}, the
+ * chart palette {@link WAbstractChart#setPalette(WChartPalette palette)
+ * setPalette()}, plot area padding
+ * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
+ * setPlotAreaPadding()}, and the background fill color
+ * {@link WAbstractChart#setBackground(WBrush background) setBackground()}.
  * <p>
  * <h3>CSS</h3>
  * <p>
  * Styling through CSS is not applicable.
  * <p>
  * 
- * @see WCartesianChart
+ * @see eu.webtoolkit.jwt.chart.WCartesianChart
  * @see WPieChart
  */
 public abstract class WAbstractChart extends WPaintedWidget {
@@ -60,10 +66,13 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * The default model is a <code>null</code> model.
 	 * <p>
 	 * This creates an internal proxy model that presents the
-	 * {@link WAbstractItemModel} as a {@link WAbstractChartModel}. Use {@link }
+	 * {@link WAbstractItemModel} as a {@link WAbstractChartModel}. Use
+	 * {@link WAbstractChart#setModel(WAbstractChartModel model) setModel()}
 	 * directly for highest performance (avoiding the overhead of boost::any for
 	 * numeric data).
 	 * <p>
+	 * 
+	 * @see WAbstractChart#getModel()
 	 */
 	public void setModel(WAbstractItemModel model) {
 		this.setModel(new WStandardChartProxyModel(model));
@@ -77,6 +86,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <p>
 	 * The default model is a <code>null</code> model.
 	 * <p>
+	 * 
+	 * @see WAbstractChart#getModel()
 	 */
 	public void setModel(WAbstractChartModel model) {
 		if (this.model_ != null) {
@@ -132,6 +143,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <p>
 	 * The default is a completely transparent background.
 	 * <p>
+	 * 
+	 * @see WAbstractChart#getBackground()
 	 */
 	public void setBackground(final WBrush background) {
 		if (!ChartUtils.equals(this.background_, background)) {
@@ -159,6 +172,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <p>
 	 * The default palette is dependent on the chart type.
 	 * <p>
+	 * 
+	 * @see WAbstractChart#getPalette()
 	 */
 	public void setPalette(WChartPalette palette) {
 		;
@@ -185,8 +200,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * The default is dependent on the chart type.
 	 * <p>
 	 * Alternatively, you can configure the chart layout to be computed
-	 * automatically using {@link }.
+	 * automatically using
+	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}.
 	 * <p>
+	 * 
+	 * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
 	 */
 	public void setPlotAreaPadding(int padding, EnumSet<Side> sides) {
 		if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
@@ -228,7 +247,9 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <p>
 	 * This is either the paddings set through
 	 * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
-	 * setPlotAreaPadding()} or computed using {@link }
+	 * setPlotAreaPadding()} or computed using
+	 * {@link WAbstractChart#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}
 	 * <p>
 	 * 
 	 * @see WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
@@ -288,10 +309,13 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Set a chart title.
 	 * <p>
-	 * The title is displayed on top of the chart, using the {@link }.
+	 * The title is displayed on top of the chart, using the
+	 * {@link WAbstractChart#getTitleFont() getTitleFont()}.
 	 * <p>
 	 * The default title is an empty title (&quot;&quot;).
 	 * <p>
+	 * 
+	 * @see WAbstractChart#getTitle()
 	 */
 	public void setTitle(final CharSequence title) {
 		if (!ChartUtils.equals(this.title_, WString.toWString(title))) {
@@ -304,6 +328,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Return the chart title.
 	 * <p>
+	 * 
+	 * @see WAbstractChart#getTitle()
 	 */
 	public WString getTitle() {
 		return this.title_;
@@ -317,6 +343,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * The default title font is a 15 point Sans Serif font.
 	 * <p>
 	 * 
+	 * @see WAbstractChart#getTitleFont()
 	 * @see WAbstractChart#setTitle(CharSequence title)
 	 */
 	public void setTitleFont(final WFont titleFont) {

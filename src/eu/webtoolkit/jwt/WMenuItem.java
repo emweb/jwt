@@ -69,9 +69,10 @@ public class WMenuItem extends WContainerWidget {
 	 * only when it the item is activated for the first time (LazyLoading) or
 	 * transmitted prior to first rendering.
 	 * <p>
-	 * If the menu supports internal path navigation, then a default {@link }
-	 * will be derived from the <code>label</code>, and can be customized using
-	 * {@link }.
+	 * If the menu supports internal path navigation, then a default
+	 * {@link WMenuItem#getPathComponent() getPathComponent()} will be derived
+	 * from the <code>label</code>, and can be customized using
+	 * {@link WMenuItem#setPathComponent(String path) setPathComponent()}.
 	 */
 	public WMenuItem(final CharSequence text, WWidget contents,
 			WMenuItem.LoadPolicy policy) {
@@ -137,11 +138,14 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets the text for this item.
 	 * <p>
-	 * Unless a custom path component was defined, the {@link } is also updated
+	 * Unless a custom path component was defined, the
+	 * {@link WMenuItem#getPathComponent() getPathComponent()} is also updated
 	 * based on the new text.
 	 * <p>
 	 * The item widget is updated using updateItemWidget().
 	 * <p>
+	 * 
+	 * @see WMenuItem#setPathComponent(String path)
 	 */
 	public void setText(final CharSequence text) {
 		if (!(this.text_ != null)) {
@@ -231,6 +235,9 @@ public class WMenuItem extends WContainerWidget {
 	 * When an item is checkable, a checkbox is displayed to the left of the
 	 * item text (instead of an icon).
 	 * <p>
+	 * 
+	 * @see WMenuItem#setChecked(boolean checked)
+	 * @see WMenuItem#isChecked()
 	 */
 	public void setCheckable(boolean checkable) {
 		if (this.isCheckable() != checkable) {
@@ -273,14 +280,15 @@ public class WMenuItem extends WContainerWidget {
 	 * <p>
 	 * For example, if {@link WMenu#getInternalBasePath()
 	 * WMenu#getInternalBasePath()} is <code>&quot;/examples/&quot;</code> and
-	 * {@link } for is <code>&quot;charts/&quot;</code>, then the internal path
-	 * for the item will be <code>&quot;/examples/charts/&quot;</code>.
+	 * {@link WMenuItem#getPathComponent() getPathComponent()} for is
+	 * <code>&quot;charts/&quot;</code>, then the internal path for the item
+	 * will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * By default, the path is automatically derived from
-	 * {@link WMenuItem#getText() getText()}. If a {@link literal text} is used,
-	 * the path is based on the text itself, otherwise on the {@link key}. It is
-	 * converted to lower case, and replacing white space and special characters
-	 * with &apos;_&apos;.
+	 * {@link WMenuItem#getText() getText()}. If a {@link WString#isLiteral()
+	 * literal text} is used, the path is based on the text itself, otherwise on
+	 * the {@link WString#getKey() key}. It is converted to lower case, and
+	 * replacing white space and special characters with &apos;_&apos;.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)
@@ -528,8 +536,12 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	/**
-	 * Make it possible to close this item interactively or by {@link }.
+	 * Make it possible to close this item interactively or by
+	 * {@link WMenuItem#close() close()}.
 	 * <p>
+	 * 
+	 * @see WMenuItem#close()
+	 * @see WMenuItem#isCloseable()
 	 */
 	public void setCloseable(boolean closeable) {
 		if (this.closeable_ != closeable) {
@@ -571,6 +583,7 @@ public class WMenuItem extends WContainerWidget {
 	 * <p>
 	 * 
 	 * @see WMenuItem#setCloseable(boolean closeable)
+	 * @see WWidget#hide()
 	 */
 	public void close() {
 		if (this.menu_ != null) {

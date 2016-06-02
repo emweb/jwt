@@ -59,6 +59,8 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	 * <p>
 	 * Ownership of the hash functions is transferred.
 	 * <p>
+	 * 
+	 * @see PasswordVerifier#getHashFunctions()
 	 */
 	public void addHashFunction(HashFunction function) {
 		this.hashFunctions_.add(function);
@@ -86,6 +88,8 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	 * This creates new salt and applies the &quot;preferred&quot; hash function
 	 * to the salt and clear text password to compute the hash.
 	 * <p>
+	 * 
+	 * @see PasswordVerifier#verify(CharSequence password, PasswordHash hash)
 	 */
 	public PasswordHash hashPassword(final CharSequence password) {
 		String msg = password.toString();

@@ -26,10 +26,11 @@ import org.slf4j.LoggerFactory;
  * A WPaintDevice is a device on which may be painted using a {@link WPainter}.
  * You should never paint directly on a paint device.
  * <p>
- * The device defines the size of the drawing area, using {@link } and {@link }.
- * These dimensions must be defined in pixel units. In the future, additional
- * information will be included to convert these pixel units to lengths (using
- * DPI information).
+ * The device defines the size of the drawing area, using
+ * {@link WPaintDevice#getWidth() getWidth()} and
+ * {@link WPaintDevice#getHeight() getHeight()}. These dimensions must be
+ * defined in pixel units. In the future, additional information will be
+ * included to convert these pixel units to lengths (using DPI information).
  * <p>
  * You should reimplement this class if you wish to extend the JWt paint system
  * to paint on other devices than the ones provided by the library.
@@ -44,6 +45,8 @@ public interface WPaintDevice {
 	/**
 	 * Enumeration to communicate painter state changes.
 	 * <p>
+	 * 
+	 * @see WPaintDevice#setChanged(EnumSet flags)
 	 */
 	public enum ChangeFlag {
 		/**
@@ -86,14 +89,20 @@ public interface WPaintDevice {
 	/**
 	 * Enumeration to indicate paint device features.
 	 * <p>
+	 * 
+	 * @see WPaintDevice#getFeatures()
 	 */
 	public enum FeatureFlag {
 		/**
-		 * Implements {@link } with {@link }.
+		 * Implements
+		 * {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF clipPoint)
+		 * drawText()} with {@link TextFlag#TextWordWrap}.
 		 */
 		CanWordWrap,
 		/**
-		 * Implements {@link } and {@link }.
+		 * Implements {@link WPaintDevice#getFontMetrics() getFontMetrics()} and
+		 * {@link WPaintDevice#measureText(CharSequence text, double maxWidth, boolean wordWrap)
+		 * measureText()}.
 		 */
 		HasFontMetrics;
 
@@ -254,6 +263,9 @@ public interface WPaintDevice {
 	 * <p>
 	 * This method is called when a {@link WPainter} starts painting.
 	 * <p>
+	 * 
+	 * @see WPainter#begin(WPaintDevice device)
+	 * @see WPaintDevice#getPainter()
 	 */
 	public void init();
 
@@ -262,6 +274,8 @@ public interface WPaintDevice {
 	 * <p>
 	 * This method is called when a {@link WPainter} stopped painting.
 	 * <p>
+	 * 
+	 * @see WPainter#end()
 	 */
 	public void done();
 
@@ -270,6 +284,7 @@ public interface WPaintDevice {
 	 * <p>
 	 * 
 	 * @see WPaintDevice#init()
+	 * @see WPaintDevice#getPainter()
 	 */
 	public boolean isPaintActive();
 

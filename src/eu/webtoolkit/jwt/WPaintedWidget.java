@@ -72,7 +72,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * If no JavaScript is available, the JavaScript-based HtmlCanvas will not be
  * used, and InlineSVG will be used instead. The method used may be changed by
- * using {@link }.
+ * using {@link WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)
+ * setPreferredMethod()}.
  * <p>
  * In some browsers, InlineSVG requires that the document is rendered as XHTML.
  * This must be enabled in the configuration file using the
@@ -82,9 +83,11 @@ import org.slf4j.LoggerFactory;
  * The PngImage is the most portable rendering method, and may be the fastest if
  * the painting is of high complexity and/or the image is fairly small.
  * <p>
- * To use a WPaintedWidget, you must derive from it and reimplement {@link }. To
+ * To use a WPaintedWidget, you must derive from it and reimplement
+ * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent()}. To
  * paint on a {@link WPaintDevice}, you will need to use a {@link WPainter}.
- * Repainting is triggered by calling the {@link } method.
+ * Repainting is triggered by calling the
+ * {@link WPaintedWidget#update(EnumSet flags) update()} method.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -92,13 +95,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <p>
  * <i><b>Note: </b>A WPaintedWidget requires that it is given a size using
- * {@link } or by a layout manager.</i>
+ * {@link WPaintedWidget#resize(WLength width, WLength height) resize()} or by a
+ * layout manager.</i>
  * </p>
  * <h3>Client side interaction and repainting</h3>
  * <p>
- * If the widget is drawn as an HTML canvas element, i.e. the {@link method} is
- * HtmlCanvas, a WPaintedWidget can expose certain objects to be modified client
- * side.
+ * If the widget is drawn as an HTML canvas element, i.e. the
+ * {@link WPaintedWidget#getMethod() method} is HtmlCanvas, a WPaintedWidget can
+ * expose certain objects to be modified client side.
  * <p>
  * 
  * @see WJavaScriptHandle
@@ -214,7 +218,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * Repainting is not immediate, but happens after when the event loop is
 	 * exited.
 	 * <p>
-	 * Unless a {@link } paint flag is set, the widget is first cleared.
+	 * Unless a {@link PaintFlag#PaintUpdate} paint flag is set, the widget is
+	 * first cleared.
 	 */
 	public void update(EnumSet<PaintFlag> flags) {
 		this.needRepaint_ = true;
@@ -266,6 +271,8 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * widget, and which is added as the last area (catching all events that
 	 * were not caught by preceding areas).</i>
 	 * </p>
+	 * 
+	 * @see WPaintedWidget#insertArea(int index, WAbstractArea area)
 	 */
 	public void addArea(WAbstractArea area) {
 		this.createAreaImage();
@@ -342,10 +349,13 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>This feature is currently only supported if the
-	 * {@link method} is HtmlCanvas. This will not cause a server roundtrip.
-	 * Instead, the resulting JavaScript of {@link } will be re-executed on the
-	 * client side.</i>
+	 * {@link WPaintedWidget#getMethod() method} is HtmlCanvas. This will not
+	 * cause a server roundtrip. Instead, the resulting JavaScript of
+	 * {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice) paintEvent()}
+	 * will be re-executed on the client side.</i>
 	 * </p>
+	 * 
+	 * @see WPaintedWidget#getObjJsRef()
 	 */
 	public JSlot getRepaintSlot() {
 		return this.repaintSlot_;

@@ -35,17 +35,13 @@ public class WTimeEdit extends WLineEdit {
 	 */
 	public WTimeEdit(WContainerWidget parent) {
 		super(parent);
+		this.popup_ = null;
 		this.setValidator(new WTimeValidator(this));
 		this.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WTimeEdit.this.setFromLineEdit();
 			}
 		});
-		String TEMPLATE = "${timePicker}";
-		WTemplate t = new WTemplate(new WString(TEMPLATE));
-		this.popup_ = new WPopupWidget(t, this);
-		this.popup_.setAnchorWidget(this);
-		this.popup_.setTransient(true);
 		this.timePicker_ = new WTimePicker(this);
 		this.timePicker_.selectionChanged().addListener(this,
 				new Signal.Listener() {
@@ -53,19 +49,6 @@ public class WTimeEdit extends WLineEdit {
 						WTimeEdit.this.setFromTimePicker();
 					}
 				});
-		t.bindWidget("timePicker", this.timePicker_);
-		WApplication.getInstance().getTheme()
-				.apply(this, this.popup_, WidgetThemeRole.TimePickerPopupRole);
-		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
-			public void trigger() {
-				WTimeEdit.this.popup_.hide();
-			}
-		});
-		this.escapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WTimeEdit.this.setFocus();
-			}
-		});
 	}
 
 	/**
@@ -83,6 +66,8 @@ public class WTimeEdit extends WLineEdit {
 	 * <p>
 	 * Does nothing if the current time is <code>Null</code>.
 	 * <p>
+	 * 
+	 * @see WTimeEdit#getTime()
 	 */
 	public void setTime(final WTime time) {
 		if (!(time == null)) {
@@ -95,7 +80,8 @@ public class WTimeEdit extends WLineEdit {
 	 * Returns the time.
 	 * <p>
 	 * Returns an invalid time (for which {@link } returns <code>false</code>) if
-	 * the time could not be parsed using the current {@link }.
+	 * the time could not be parsed using the current
+	 * {@link WTimeEdit#getFormat() getFormat()}.
 	 * <p>
 	 * 
 	 * @see WTimeEdit#setTime(WTime time)
@@ -150,7 +136,9 @@ public class WTimeEdit extends WLineEdit {
 
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
-		this.popup_.setHidden(hidden, animation);
+		if (this.popup_ != null) {
+			this.popup_.setHidden(hidden, animation);
+		}
 	}
 
 	/**
@@ -195,6 +183,35 @@ public class WTimeEdit extends WLineEdit {
 		return null;
 	}
 
+	public void load() {
+		boolean wasLoaded = this.isLoaded();
+		super.load();
+		if (wasLoaded) {
+			return;
+		}
+		String TEMPLATE = "${timePicker}";
+		WTemplate t = new WTemplate(new WString(TEMPLATE));
+		this.popup_ = new WPopupWidget(t, this);
+		if (this.isHidden()) {
+			this.popup_.setHidden(true);
+		}
+		this.popup_.setAnchorWidget(this);
+		this.popup_.setTransient(true);
+		t.bindWidget("timePicker", this.timePicker_);
+		WApplication.getInstance().getTheme()
+				.apply(this, this.popup_, WidgetThemeRole.TimePickerPopupRole);
+		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
+			public void trigger() {
+				WTimeEdit.this.popup_.hide();
+			}
+		});
+		this.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WTimeEdit.this.setFocus();
+			}
+		});
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
@@ -231,7 +248,8 @@ public class WTimeEdit extends WLineEdit {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTimeEdit.js", wtjs1());
 		String jsObj = "new Wt3_3_5.WTimeEdit(" + app.getJavaScriptClass()
-				+ "," + this.getJsRef() + "," + this.popup_.getJsRef() + ");";
+				+ "," + this.getJsRef() + ","
+				+ jsStringLiteral(this.popup_.getId()) + ");";
 		this.setJavaScriptMember(" WTimeEdit", jsObj);
 		final AbstractEventSignal b = this.mouseMoved();
 		final AbstractEventSignal c = this.keyWentDown();
@@ -254,6 +272,6 @@ public class WTimeEdit extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTimeEdit",
-				"function(g,a,h){function f(){return a.readOnly}function i(){var b=$(\"#\"+h.id).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&&c.removeClass(\"hover\")}; this.mouseDown=function(b,d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&c.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
+				"function(g,a,h){function f(){return a.readOnly}function i(){var b=$(\"#\"+h).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&&c.removeClass(\"hover\")}; this.mouseDown=function(b,d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&c.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
 	}
 }

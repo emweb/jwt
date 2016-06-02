@@ -32,24 +32,33 @@ import org.slf4j.LoggerFactory;
  * WAbstractItemModel#sort()}), or you do not want to reorder the underlying
  * model since that affects all views on the model.
  * <p>
- * To use the proxy model to filter data, you use the methods {@link }, {@link }
- * and {@link } to specify a filtering operation based on the values of a single
- * column. If this filtering mechanism is too limiting, you can provide
- * specialized filtering by reimplementing the {@link } method.
+ * To use the proxy model to filter data, you use the methods
+ * {@link WSortFilterProxyModel#setFilterKeyColumn(int column)
+ * setFilterKeyColumn()},
+ * {@link WSortFilterProxyModel#setFilterRegExp(String pattern)
+ * setFilterRegExp()} and {@link WSortFilterProxyModel#setFilterRole(int role)
+ * setFilterRole()} to specify a filtering operation based on the values of a
+ * single column. If this filtering mechanism is too limiting, you can provide
+ * specialized filtering by reimplementing the
+ * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
+ * filterAcceptRow()} method.
  * <p>
  * Sorting is provided by reimplementing the standard
  * {@link WAbstractItemModel#sort(int column, SortOrder order)
  * WAbstractItemModel#sort()} method. In this way, a view class such as
- * {@link WTreeView} may resort the model as indicated by the user. Use {@link }
- * to indicate on what data role sorting should be done, or reimplement the
- * lessThan() method to provide a specialized sorting method.
+ * {@link WTreeView} may resort the model as indicated by the user. Use
+ * {@link WSortFilterProxyModel#setSortRole(int role) setSortRole()} to indicate
+ * on what data role sorting should be done, or reimplement the lessThan()
+ * method to provide a specialized sorting method.
  * <p>
  * By default, the proxy does not automatically refilter and resort when the
  * original model changes. Data changes or row additions to the source model are
  * not automatically reflected in the proxy model, but to maintain integrity,
  * row removals in the source model are always reflected in the proxy model. You
  * can enable the model to always refilter and resort when the underlying model
- * changes using {@link }.
+ * changes using
+ * {@link WSortFilterProxyModel#setDynamicSortFilter(boolean enable)
+ * setDynamicSortFilter()}.
  * <p>
  * Usage example:
  * <p>
@@ -281,10 +290,15 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Specify the column on which the filtering is applied.
 	 * <p>
-	 * This configures the column on which the {@link } is applied.
+	 * This configures the column on which the
+	 * {@link WSortFilterProxyModel#getFilterRegExp() getFilterRegExp()} is
+	 * applied.
 	 * <p>
 	 * The default value is 0.
 	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#setFilterRegExp(String pattern)
+	 * @see WSortFilterProxyModel#setFilterRole(int role)
 	 */
 	public void setFilterKeyColumn(int column) {
 		this.filterKeyColumn_ = column;
@@ -310,6 +324,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
+	 * @see WSortFilterProxyModel#setFilterRole(int role)
 	 */
 	public void setFilterRegExp(final String pattern) {
 		if (!(this.regex_ != null)) {
@@ -357,7 +372,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * This configures the data role used for filtering on
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn()}.
 	 * <p>
-	 * The default value is {@link DisplayRole}.
+	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
@@ -382,7 +397,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * <p>
 	 * This configures the data role used for sorting.
 	 * <p>
-	 * The default value is {@link DisplayRole}.
+	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
 	 * <p>
 	 */
 	public void setSortRole(int role) {
@@ -402,9 +417,12 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the current sort column.
 	 * <p>
-	 * When {@link } has not been called, the model is unsorted, and this method
+	 * When {@link WSortFilterProxyModel#sort(int column, SortOrder order)
+	 * sort()} has not been called, the model is unsorted, and this method
 	 * returns -1.
 	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#sort(int column, SortOrder order)
 	 */
 	public int getSortColumn() {
 		return this.sortKeyColumn_;
@@ -413,6 +431,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the current sort order.
 	 * <p>
+	 * 
+	 * @see WSortFilterProxyModel#sort(int column, SortOrder order)
 	 */
 	public SortOrder getSortOrder() {
 		return this.sortOrder_;
@@ -449,7 +469,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	 * Invalidates the current filter.
 	 * <p>
 	 * This refilters and resorts the model, and is useful only if you have
-	 * reimplemented {@link } and/or lessThan()
+	 * reimplemented
+	 * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
+	 * filterAcceptRow()} and/or lessThan()
 	 */
 	public void invalidate() {
 		if (this.getSourceModel() != null) {

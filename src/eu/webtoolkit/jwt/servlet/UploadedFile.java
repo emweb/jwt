@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Details about a file uploaded with a request to a resource.
  * <p>
+ * 
+ * @see WResource#handleRequest(WebRequest request, WebResponse response)
  */
 public class UploadedFile {
 	private static Logger logger = LoggerFactory.getLogger(UploadedFile.class);
@@ -40,8 +42,9 @@ public class UploadedFile {
 	 * Return the spool file name.
 	 * <p>
 	 * This is the location on the local (server) filesystem where the uploaded
-	 * file is temporarily stored. Unless you call {@link }, this file is deleted
-	 * automatically.
+	 * file is temporarily stored. Unless you call
+	 * {@link UploadedFile#stealSpoolFile() stealSpoolFile()}, this file is
+	 * deleted automatically.
 	 */
 	public String getSpoolFileName() {
 		return this.fileInfo_.spoolFileName;

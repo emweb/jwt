@@ -25,12 +25,13 @@ import org.slf4j.LoggerFactory;
  * 
  * The progress bar can be used to indicate the progress of a certain operation.
  * The text displayed in the progress bar can be customized by specializing
- * {@link }.
+ * {@link WProgressBar#getText() getText()}.
  * <p>
  * To use the progress bar, you need to give it a range (minimum and maximum
- * value), and update the progress using {@link }.
+ * value), and update the progress using
+ * {@link WProgressBar#setValue(double value) setValue()}.
  * <p>
- * WProgressBar is an {@link inline} widget.
+ * WProgressBar is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * <p>
  * <i><b>Note: </b>With the advent of HTML5, this widget will be implemented
@@ -154,7 +155,8 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the progress format string.
 	 * <p>
-	 * The format is used by {@link } to indicate the progress value.
+	 * The format is used by {@link WProgressBar#getText() getText()} to
+	 * indicate the progress value.
 	 * <p>
 	 * The default value is &quot;%.0f %%&quot;
 	 */
@@ -241,8 +243,9 @@ public class WProgressBar extends WInteractWidget {
 	 * progress bar accordingly.
 	 * <p>
 	 * You can reimplement this method to apply certain style changes to the
-	 * progress bar according to the value. Don&apos;t forget to call {@link } if
-	 * you still want the width to change.
+	 * progress bar according to the value. Don&apos;t forget to call
+	 * {@link WProgressBar#updateBar(DomElement bar) updateBar()} if you still
+	 * want the width to change.
 	 */
 	protected void updateBar(final DomElement bar) {
 		bar.setProperty(Property.PropertyStyleWidth,

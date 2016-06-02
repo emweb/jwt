@@ -511,6 +511,17 @@ this.remove = function(id)
   }
 };
 
+this.replaceWith = function(w1Id, $w2)
+{
+  var $w1 = $("#" + w1Id);
+  $w1.replaceWith($w2);
+
+  /* Reapply client-side validation, bootstrap applys validation classes
+     also outside the element into its ancestors */
+  if ($w2.get(0).wtValidate && WT.validate)
+    WT.validate($w2.get(0));
+}
+
 this.contains = function(w1, w2) {
   var p = w2.parentNode;
 
@@ -3550,7 +3561,7 @@ function updateGlobal(id) {
   }
 
   for (var i = 0; i < keyEvents.length ; ++i) {
-    var elemEvents = globalEventsFunctions[domId]
+    var elemEvents = globalEventsFunctions ? globalEventsFunctions[domId] : null;
     var eventFunc = null;
 
     if (elemEvents) 
@@ -3578,12 +3589,13 @@ function updateGlobal(id) {
   }
 
   // cleanup functions of widgets that do no longer exist
-  for (var i in globalEventsFunctions) {
-    if (! document.getElementById(i) ) {
-      delete globalEventsFunctions[i];
+  if (globalEventsFunctions) {
+    for (var i in globalEventsFunctions) {
+      if (!document.getElementById(i)) {
+	delete globalEventsFunctions[i];
+      }
     }
   }
-
 }
 
 function bindGlobal(event, id, f) {

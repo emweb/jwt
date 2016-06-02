@@ -25,9 +25,11 @@ import org.slf4j.LoggerFactory;
  * 
  * The WInPlaceEdit provides a text that may be edited in place by the user by
  * clicking on it. When clicked, the text turns into a line edit, with
- * optionally a save and cancel button (see {@link }).
+ * optionally a save and cancel button (see
+ * {@link WInPlaceEdit#setButtonsEnabled(boolean enabled) setButtonsEnabled()}).
  * <p>
- * When the user saves the edit, the {@link } signal is emitted.
+ * When the user saves the edit, the {@link WInPlaceEdit#valueChanged()
+ * valueChanged()} signal is emitted.
  * <p>
  * Usage example:
  * <p>
@@ -123,6 +125,8 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * The first parameter configures whether buttons are available in edit
 	 * mode.
 	 * <p>
+	 * 
+	 * @see WInPlaceEdit#setButtonsEnabled(boolean enabled)
 	 */
 	public WInPlaceEdit(boolean buttons, final CharSequence text,
 			WContainerWidget parent) {
@@ -148,6 +152,8 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
+	 * @see WInPlaceEdit#setText(CharSequence text)
 	 */
 	public WString getText() {
 		return new WString(this.edit_.getText());
@@ -173,7 +179,8 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * Sets the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use {@link }x instead
+	 * @deprecated use {@link WInPlaceEdit#setPlaceholderText(CharSequence text)
+	 *             setPlaceholderText()}x instead
 	 */
 	public void setEmptyText(final CharSequence text) {
 		this.setPlaceholderText(text);
@@ -183,7 +190,8 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * Returns the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use {@link } instead.
+	 * @deprecated use {@link WInPlaceEdit#getPlaceholderText()
+	 *             getPlaceholderText()} instead.
 	 */
 	public WString getEmptyText() {
 		return this.getPlaceholderText();
@@ -235,6 +243,9 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * <p>
 	 * This method returns <code>null</code> if the buttons were disabled.
 	 * <p>
+	 * 
+	 * @see WInPlaceEdit#getCancelButton()
+	 * @see WInPlaceEdit#setButtonsEnabled(boolean enabled)
 	 */
 	public WPushButton getSaveButton() {
 		return this.save_;
@@ -247,6 +258,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WInPlaceEdit#getSaveButton()
+	 * @see WInPlaceEdit#setButtonsEnabled(boolean enabled)
 	 */
 	public WPushButton getCancelButton() {
 		return this.cancel_;

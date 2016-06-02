@@ -25,12 +25,15 @@ import org.slf4j.LoggerFactory;
  * 
  * A tree list is constructed by combining several tree node objects in a tree
  * hierarchy, by passing the parent tree node as the last argument in the child
- * node constructor, or by using {@link }, to add a child to its parent.
+ * node constructor, or by using {@link WTreeNode#addChildNode(WTreeNode node)
+ * addChildNode()}, to add a child to its parent.
  * <p>
  * Each tree node has a label, and optionally a label icon pair. The icon pair
  * offers the capability to show a different icon depending on the state of the
  * node (expanded or collapsed). When the node has any children, a child count
- * may be displayed next to the label using {@link }.
+ * may be displayed next to the label using
+ * {@link WTreeNode#setChildCountPolicy(WTreeNode.ChildCountPolicy policy)
+ * setChildCountPolicy()}.
  * <p>
  * Expanding a tree node it will collapse all its children, so that a user may
  * collapse/expand a node as a short-cut to collapsing all children.
@@ -39,34 +42,38 @@ import org.slf4j.LoggerFactory;
  * the tree to the client (if possible):
  * <ul>
  * <li>
- * {@link }: the entire tree is transmitted to the client, and all tree
- * navigation requires no further communication.</li>
+ * {@link WTreeNode.LoadPolicy#PreLoading}: the entire tree is transmitted to
+ * the client, and all tree navigation requires no further communication.</li>
  * <li>
- * {@link }: only the minimum is transmitted to the client. When expanding a node
- * for the first time, only then it is transmitted to the client, and this may
- * thus have some latency.</li>
+ * {@link WTreeNode.LoadPolicy#LazyLoading}: only the minimum is transmitted to
+ * the client. When expanding a node for the first time, only then it is
+ * transmitted to the client, and this may thus have some latency.</li>
  * <li>
- * {@link }: all leafs of visible children are transmitted, but not their
- * children. This provides a good trade-off between bandwith use and
- * interactivity, since expanding any tree node will happen instantly, and at
- * the same time trigger some communication in the back-ground to load the next
- * level of invisible nodes.</li>
+ * {@link WTreeNode.LoadPolicy#NextLevelLoading}: all leafs of visible children
+ * are transmitted, but not their children. This provides a good trade-off
+ * between bandwith use and interactivity, since expanding any tree node will
+ * happen instantly, and at the same time trigger some communication in the
+ * back-ground to load the next level of invisible nodes.</li>
  * </ul>
  * <p>
- * The default policy is {@link }. Another load policy may be specified using
- * {@link } on the root node and before adding any children. The load policy is
- * inherited by all children in the tree.
+ * The default policy is {@link WTreeNode.LoadPolicy#LazyLoading}. Another load
+ * policy may be specified using
+ * {@link WTreeNode#setLoadPolicy(WTreeNode.LoadPolicy loadPolicy)
+ * setLoadPolicy()} on the root node and before adding any children. The load
+ * policy is inherited by all children in the tree.
  * <p>
  * There are a few scenarios where it makes sense to specialize the WTreeNode
  * class. One scenario is create a tree that is populated dynamically while
- * browsing. For this purpose you should reimplement the {@link } method, whose
- * default implementation does nothing. This method is called when
- * &apos;loading&apos; the node. The exact moment for loading a treenode depends
- * on the LoadPolicy.
+ * browsing. For this purpose you should reimplement the
+ * {@link WTreeNode#populate() populate()} method, whose default implementation
+ * does nothing. This method is called when &apos;loading&apos; the node. The
+ * exact moment for loading a treenode depends on the LoadPolicy.
  * <p>
  * A second scenario that is if you want to customize the look of the tree label
- * (see {@link }) or if you want to modify or augment the event collapse/expand
- * event handling (see {@link } and {@link }).
+ * (see {@link WTreeNode#getLabelArea() getLabelArea()}) or if you want to
+ * modify or augment the event collapse/expand event handling (see
+ * {@link WTreeNode#doExpand() doExpand()} and {@link WTreeNode#doCollapse()
+ * doCollapse()}).
  * <p>
  * See {@link WTree} for a usage example.
  * <p>
@@ -435,6 +442,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * By default, all nodes may be selected.
 	 * <p>
 	 * 
+	 * @see WTreeNode#isSelectable()
 	 * @see WTree#select(WTreeNode node, boolean selected)
 	 */
 	public void setSelectable(boolean selectable) {
@@ -504,6 +512,9 @@ public class WTreeNode extends WCompositeWidget {
 	 * loading and population of the node children, or of the children&apos;s
 	 * children.
 	 * <p>
+	 * 
+	 * @see WTreeNode#collapse()
+	 * @see WTreeNode#doExpand()
 	 */
 	public void expand() {
 		if (!this.isExpanded()) {
@@ -527,6 +538,7 @@ public class WTreeNode extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WTreeNode#expand()
+	 * @see WTreeNode#doCollapse()
 	 */
 	public void collapse() {
 		if (this.isExpanded()) {
@@ -537,6 +549,8 @@ public class WTreeNode extends WCompositeWidget {
 	/**
 	 * Signal emitted when the node is expanded by the user.
 	 * <p>
+	 * 
+	 * @see WTreeNode#collapsed()
 	 */
 	public EventSignal1<WMouseEvent> expanded() {
 		return this.expandIcon_.icon1Clicked();
@@ -564,7 +578,8 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a tree node with empty {@link }.
+	 * Creates a tree node with empty {@link WTreeNode#getLabelArea()
+	 * getLabelArea()}.
 	 * <p>
 	 * This tree node has no label or labelicon, and is therefore ideally suited
 	 * to provide a custom look.
@@ -592,7 +607,8 @@ public class WTreeNode extends WCompositeWidget {
 	}
 
 	/**
-	 * Creates a tree node with empty {@link }.
+	 * Creates a tree node with empty {@link WTreeNode#getLabelArea()
+	 * getLabelArea()}.
 	 * <p>
 	 * Calls {@link #WTreeNode(WTreeNode parent) this((WTreeNode)null)}
 	 */
@@ -709,10 +725,12 @@ public class WTreeNode extends WCompositeWidget {
 	 * This method, which is implemented as a stateless slot, performs the
 	 * actual expansion of the node.
 	 * <p>
-	 * You may want to reimplement this function (and {@link }) if you wish to do
+	 * You may want to reimplement this function (and
+	 * {@link WTreeNode#undoDoExpand() undoDoExpand()}) if you wish to do
 	 * additional things on node expansion.
 	 * <p>
 	 * 
+	 * @see WTreeNode#doCollapse()
 	 * @see WTreeNode#expand()
 	 */
 	protected void doExpand() {
@@ -734,7 +752,8 @@ public class WTreeNode extends WCompositeWidget {
 	 * This method, which is implemented as a stateless slot, performs the
 	 * actual collapse of the node.
 	 * <p>
-	 * You may want to reimplement this function (and {@link }) if you wish to do
+	 * You may want to reimplement this function (and
+	 * {@link WTreeNode#undoDoCollapse() undoDoCollapse()}) if you wish to do
 	 * additional things on node expansion.
 	 * <p>
 	 * 

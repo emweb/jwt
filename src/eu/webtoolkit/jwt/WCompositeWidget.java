@@ -24,7 +24,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * Composite widgets, built on top of the WebWidgets, should derive from this
- * class, and use {@link } to set the widget that implements the composite widget
+ * class, and use {@link WCompositeWidget#setImplementation(WWidget widget)
+ * setImplementation()} to set the widget that implements the composite widget
  * (which is typically a {@link WContainerWidget} or a {@link WTable}, or
  * another widget that allows composition, including perhaps another
  * WCompositeWidget).
@@ -39,8 +40,9 @@ public class WCompositeWidget extends WWidget {
 	/**
 	 * Creates a WCompositeWidget.
 	 * <p>
-	 * You need to set an implemetation using {@link } directly after
-	 * construction.
+	 * You need to set an implemetation using
+	 * {@link WCompositeWidget#setImplementation(WWidget widget)
+	 * setImplementation()} directly after construction.
 	 */
 	public WCompositeWidget(WContainerWidget parent) {
 		super(parent);
@@ -63,6 +65,8 @@ public class WCompositeWidget extends WWidget {
 	/**
 	 * Creates a WCompositeWidget with given implementation.
 	 * <p>
+	 * 
+	 * @see WCompositeWidget#setImplementation(WWidget widget)
 	 */
 	public WCompositeWidget(WWidget implementation, WContainerWidget parent) {
 		super(parent);
@@ -404,6 +408,10 @@ public class WCompositeWidget extends WWidget {
 
 	public void propagateSetEnabled(boolean enabled) {
 		this.impl_.getWebWidget().propagateSetEnabled(enabled);
+	}
+
+	public void propagateSetVisible(boolean visible) {
+		this.impl_.getWebWidget().propagateSetVisible(visible);
 	}
 
 	void addChild(WWidget child) {

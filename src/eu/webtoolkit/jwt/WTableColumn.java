@@ -41,7 +41,8 @@ public class WTableColumn extends WObject {
 	 * <p>
 	 * Table columns must be added to a table using
 	 * {@link WTable#insertColumn(int column, WTableColumn tableColumn)
-	 * WTable#insertColumn()} before you can access contents in it using {@link }.
+	 * WTable#insertColumn()} before you can access contents in it using
+	 * {@link WTableColumn#elementAt(int row) elementAt()}.
 	 */
 	public WTableColumn() {
 		super();
@@ -95,6 +96,9 @@ public class WTableColumn extends WObject {
 	 * <p>
 	 * The default column width is {@link WLength#Auto}.
 	 * <p>
+	 * 
+	 * @see WTableColumn#getWidth()
+	 * @see WWidget#resize(WLength width, WLength height)
 	 */
 	public void setWidth(final WLength width) {
 		this.width_ = width;
@@ -116,6 +120,9 @@ public class WTableColumn extends WObject {
 	 * <p>
 	 * The style is inherited by all table cells in this column.
 	 * <p>
+	 * 
+	 * @see WTableColumn#getStyleClass()
+	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void setStyleClass(final String style) {
 		if (WWebWidget.canOptimizeUpdates() && style.equals(this.styleClass_)) {
@@ -128,6 +135,9 @@ public class WTableColumn extends WObject {
 	/**
 	 * Returns the CSS style class for this column.
 	 * <p>
+	 * 
+	 * @see WTableColumn#getStyleClass()
+	 * @see WWidget#getStyleClass()
 	 */
 	public String getStyleClass() {
 		return this.styleClass_;
@@ -139,6 +149,8 @@ public class WTableColumn extends WObject {
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.
 	 * <p>
+	 * 
+	 * @see WObject#getId()
 	 */
 	public void setId(final String id) {
 		if (!(this.id_ != null)) {

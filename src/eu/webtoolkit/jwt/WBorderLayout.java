@@ -207,6 +207,8 @@ public class WBorderLayout extends WLayout {
 	 * <p>
 	 * Only one widget per position is supported.
 	 * <p>
+	 * 
+	 * @see WBorderLayout#add(WLayoutItem item, WBorderLayout.Position position)
 	 */
 	public void addWidget(WWidget w, WBorderLayout.Position position) {
 		this.add(new WWidgetItem(w), position);

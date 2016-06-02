@@ -38,9 +38,10 @@ import org.slf4j.LoggerFactory;
  * transiently on the server. Therefore the View does not require session
  * resources. This may increase scalability for Internet-deployments.
  * <p>
- * The rendered View widget returned by {@link } should reflect the current model
- * state. Whenever the model changes, rerendering can be triggered by calling
- * {@link }.
+ * The rendered View widget returned by {@link WViewWidget#getRenderView()
+ * getRenderView()} should reflect the current model state. Whenever the model
+ * changes, rerendering can be triggered by calling {@link WViewWidget#update()
+ * update()}.
  * <p>
  * Currently, the View cannot enclose {@link WFormWidget WFormWidgets} which
  * would allow direct manipulation of the model (but we are working to remove
@@ -92,8 +93,8 @@ public abstract class WViewWidget extends WWebWidget {
 	 * Typically, the model will want to update the view when the model has
 	 * changed.
 	 * <p>
-	 * This will trigger a call to {@link } to ask for a new rendering of the
-	 * view.
+	 * This will trigger a call to {@link WViewWidget#getRenderView()
+	 * getRenderView()} to ask for a new rendering of the view.
 	 */
 	public void update() {
 		this.needContentsUpdate_ = true;

@@ -81,6 +81,8 @@ public class WLength {
 	/**
 	 * An &apos;auto&apos; length.
 	 * <p>
+	 * 
+	 * @see WLength#WLength()
 	 */
 	public static WLength Auto = new WLength();
 
@@ -143,6 +145,8 @@ public class WLength {
 	/**
 	 * Returns the value.
 	 * <p>
+	 * 
+	 * @see WLength#getUnit()
 	 */
 	public double getValue() {
 		return this.value_;

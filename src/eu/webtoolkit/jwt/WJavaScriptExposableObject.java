@@ -64,7 +64,8 @@ public abstract class WJavaScriptExposableObject {
 	 * <i><b>Note: </b>The value returned will reflect the current server side
 	 * value of the object. If this object is JavaScript bound, this value may
 	 * not reflect the actual client side value. If you need access to the
-	 * client side value, use {@link } intead. </i>
+	 * client side value, use {@link WJavaScriptExposableObject#getJsRef()
+	 * getJsRef()} intead. </i>
 	 * </p>
 	 */
 	public abstract String getJsValue();

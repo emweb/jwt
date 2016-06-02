@@ -342,6 +342,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * application-under-test, by WServer::post(), you need to simulate the
 	 * release of the session lock.
 	 * <p>
+	 * 
+	 * @see WTestEnvironment#startRequest()
 	 */
 	public void endRequest() {
 		;

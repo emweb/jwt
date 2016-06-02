@@ -27,8 +27,9 @@ import org.slf4j.LoggerFactory;
  * them exclusive of each other.
  * <p>
  * It is not a widget, but instead provides only a logical grouping. Radio
- * buttons are aware of the group in which they have been added, see {@link }.
- * When a button is deleted, it is automatically removed its button group.
+ * buttons are aware of the group in which they have been added, see
+ * {@link WRadioButton#getGroup() WRadioButton#getGroup()}. When a button is
+ * deleted, it is automatically removed its button group.
  * <p>
  * It allows you to associate id&apos;s with each button, which you may use to
  * identify a particular button. The special value of -1 is reserved to indicate
@@ -65,6 +66,8 @@ public class WButtonGroup extends WObject {
 	 * You can assign an id to the button. If <code>id</code> is -1, then a
 	 * unique id will be generated.
 	 * <p>
+	 * 
+	 * @see WButtonGroup#removeButton(WRadioButton button)
 	 */
 	public void addButton(WRadioButton button, int id) {
 		WButtonGroup.Button b = new WButtonGroup.Button();
@@ -112,6 +115,7 @@ public class WButtonGroup extends WObject {
 	 * Returns the button for the given id.
 	 * <p>
 	 * 
+	 * @see WButtonGroup#getId(WRadioButton button)
 	 * @see WButtonGroup#addButton(WRadioButton button, int id)
 	 */
 	public WRadioButton getButton(int id) {
@@ -204,6 +208,7 @@ public class WButtonGroup extends WObject {
 	 * <p>
 	 * 
 	 * @see WButtonGroup#setCheckedButton(WRadioButton button)
+	 * @see WButtonGroup#getSelectedButtonIndex()
 	 */
 	public WRadioButton getCheckedButton() {
 		int idx = this.getSelectedButtonIndex();

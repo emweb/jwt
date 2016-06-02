@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * A widget that provides a line break between inline widgets.
  * <p>
  * 
- * This is an {@link inline} widget that provides a line break inbetween its
- * sibling widgets (such as {@link WText}).
+ * This is an {@link WWidget#setInline(boolean inlined) inline} widget that
+ * provides a line break inbetween its sibling widgets (such as {@link WText}).
  * <p>
  * <h3>CSS</h3>
  * <p>

@@ -37,7 +37,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Data that can be shown on the chart derives from
  * {@link WAbstractDataSeries3D}. Multiple dataseries can be added to the chart
- * using {@link }. The color of the dataseries is by default determined by the
+ * using
+ * {@link WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries)
+ * addDataSeries()}. The color of the dataseries is by default determined by the
  * colors of the {@link WChartPalette}. This way a separate color is assigned to
  * each new dataseries. All rendering logic of the data is contained in the
  * dataseries-classes and further styling is often possible there. For example,
@@ -84,6 +86,8 @@ public class WCartesian3DChart extends WGLWidget {
 		 * given position on that axis, and the color that the intersection
 		 * lines should have.
 		 * <p>
+		 * 
+		 * @see WCartesian3DChart#setIntersectionPlanes(List intersectionPlanes)
 		 */
 		public IntersectionPlane(Axis axis, double position, WColor col) {
 			this.axis = axis;
@@ -96,7 +100,8 @@ public class WCartesian3DChart extends WGLWidget {
 	 * Constructor.
 	 * <p>
 	 * Constructs a cartesian 3D chart, with the type set to ScatterPlot, a
-	 * transparent background, a {@link } palette and no gridlines.
+	 * transparent background, a {@link WStandardPalette.Flavour#Muted} palette
+	 * and no gridlines.
 	 */
 	public WCartesian3DChart(WContainerWidget parent) {
 		super(parent);
@@ -288,7 +293,8 @@ public class WCartesian3DChart extends WGLWidget {
 	 * Constructor.
 	 * <p>
 	 * Construct a cartesian 3D chart with the specified type , a transparent
-	 * background, a {@link } palette and no gridlines.
+	 * background, a {@link WStandardPalette.Flavour#Muted} palette and no
+	 * gridlines.
 	 */
 	public WCartesian3DChart(ChartType type, WContainerWidget parent) {
 		super(parent);
@@ -494,6 +500,8 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * Note that a dataseries can only be added once.
 	 * <p>
+	 * 
+	 * @see WCartesian3DChart#removeDataSeries(WAbstractDataSeries3D dataseries)
 	 */
 	public void addDataSeries(WAbstractDataSeries3D dataseries) {
 		if (dataseries == null) {
@@ -687,6 +695,8 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * The default pen for drawing gridlines is a black pen of width 0.
 	 * <p>
+	 * 
+	 * @see WCartesian3DChart#getGridLinesPen()
 	 */
 	public void setGridLinesPen(final WPen pen) {
 		this.gridLinesPen_ = pen;
@@ -795,6 +805,8 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * The title is always put at the top of the chart and in the center.
 	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setTitleFont(WFont titleFont)
 	 */
 	public void setTitle(final CharSequence title) {
 		this.title_ = WString.toWString(title);
@@ -806,6 +818,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * <p>
 	 * 
 	 * @see WCartesian3DChart#setTitle(CharSequence title)
+	 * @see WCartesian3DChart#setTitleFont(WFont titleFont)
 	 */
 	public WString getTitle() {
 		return this.title_;
@@ -838,11 +851,16 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Enables the legend.
 	 * <p>
-	 * The location of the legend can be configured using {@link }. Only series
-	 * for which the legend is enabled are included in this legend.
+	 * The location of the legend can be configured using
+	 * {@link WCartesian3DChart#setLegendLocation(Side side, AlignmentFlag alignment)
+	 * setLegendLocation()}. Only series for which the legend is enabled are
+	 * included in this legend.
 	 * <p>
 	 * The default value is <code>false</code>.
 	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setLegendLocation(Side side, AlignmentFlag
+	 *      alignment)
 	 */
 	public void setLegendEnabled(boolean enabled) {
 		this.legend_.setLegendEnabled(enabled);
@@ -930,6 +948,8 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Returns the number of legend columns.
 	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setLegendColumns(int columns, WLength columnWidth)
 	 */
 	public int getLegendColumns() {
 		return this.legend_.getLegendColumns();
@@ -938,6 +958,8 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Returns the legend column width.
 	 * <p>
+	 * 
+	 * @see WCartesian3DChart#setLegendColumns(int columns, WLength columnWidth)
 	 */
 	public WLength getLegendColumnWidth() {
 		return this.legend_.getLegendColumnWidth();

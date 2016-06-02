@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
  * This abstract widget provides access to event signals that correspond to
  * user-interface interaction through mouse or keyboard.
  * <p>
- * When JavaScript is disabled, only the {@link } event will propagate (but
- * without event details information).
+ * When JavaScript is disabled, only the {@link WInteractWidget#clicked()
+ * clicked()} event will propagate (but without event details information).
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -65,9 +65,11 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when a keyboard key is pushed down.
 	 * <p>
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
-	 * (before the keyPressed signal). Unlike {@link } however it is also emitted
-	 * for modifier keys (such as &quot;shift&quot;, &quot;control&quot;, ...)
-	 * or keyboard navigation keys that do not have a corresponding character.
+	 * (before the keyPressed signal). Unlike
+	 * {@link WInteractWidget#keyPressed() keyPressed()} however it is also
+	 * emitted for modifier keys (such as &quot;shift&quot;,
+	 * &quot;control&quot;, ...) or keyboard navigation keys that do not have a
+	 * corresponding character.
 	 * <p>
 	 * Form widgets (like {@link WLineEdit}) will receive key events when
 	 * focussed. Other widgets will receive key events when they contain
@@ -76,6 +78,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * To capture a key down event when no element has focus, see
 	 * {@link WApplication#globalKeyWentDown() WApplication#globalKeyWentDown()}
 	 * <p>
+	 * 
+	 * @see WInteractWidget#keyPressed()
+	 * @see WInteractWidget#keyWentUp()
 	 */
 	public EventSignal1<WKeyEvent> keyWentDown() {
 		return this.keyEventSignal(KEYDOWN_SIGNAL, true);
@@ -138,6 +143,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
+	 * @see Key#Key_Enter
 	 */
 	public EventSignal enterPressed() {
 		return this.voidEventSignal(ENTER_PRESS_SIGNAL, true);
@@ -158,6 +164,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
+	 * @see Key#Key_Escape
 	 */
 	public EventSignal escapePressed() {
 		return this.voidEventSignal(ESCAPE_PRESS_SIGNAL, true);
@@ -166,9 +173,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was clicked on this widget.
 	 * <p>
-	 * The event details contains information such as the {@link button},
-	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
-	 * the {@link widget}, the window {@link window}, or the {@link document}.
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the event details contain
@@ -182,9 +192,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was double clicked on this widget.
 	 * <p>
-	 * The event details contains information such as the {@link button},
-	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
-	 * the {@link widget}, the window {@link window}, or the {@link document}.
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -198,9 +211,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was pushed down on this widget.
 	 * <p>
-	 * The event details contains information such as the {@link button},
-	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
-	 * the {@link widget}, the window {@link window}, or the {@link document}.
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -214,12 +230,16 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was released on this widget.
 	 * <p>
-	 * The event details contains information such as the {@link button},
-	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
-	 * the {@link widget}, the window {@link window}, or the {@link document}.
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * If you connect also the {@link WInteractWidget#mouseWentDown()
-	 * mouseWentDown()} signal, then a subsequent {@link } will be received by
+	 * mouseWentDown()} signal, then a subsequent
+	 * {@link WInteractWidget#mouseWentUp() mouseWentUp()} will be received by
 	 * the same widget, even if mouse is no longer over the original widget.
 	 * <p>
 	 * <p>
@@ -247,7 +267,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when the mouse entered this widget.
 	 * <p>
 	 * The signal is emitted as soon as the mouse enters the widget, or after
-	 * some delay as configured by {@link }
+	 * some delay as configured by
+	 * {@link WInteractWidget#setMouseOverDelay(int delay) setMouseOverDelay()}
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -293,9 +314,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse scroll wheel was used.
 	 * <p>
-	 * The event details contains information such as the {@link wheel delta},
-	 * optional {@link keyboard modifiers}, and mouse coordinates relative to
-	 * the {@link widget}, the window {@link window}, or the {@link document}.
+	 * The event details contains information such as the
+	 * {@link WMouseEvent#getWheelDelta() wheel delta}, optional
+	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
+	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
+	 * window {@link WMouseEvent#getWindow() window}, or the
+	 * {@link WMouseEvent#getDocument() document}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -314,8 +338,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a finger is placed on the screen.
 	 * <p>
-	 * The event details contains information such as the {@link touches},
-	 * {@link target touches} and {@link changed touches}.
+	 * The event details contains information such as the
+	 * {@link WTouchEvent#getTouches() touches},
+	 * {@link WTouchEvent#getTargetTouches() target touches} and
+	 * {@link WTouchEvent#getChangedTouches() changed touches}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -329,8 +355,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a finger is removed from the screen.
 	 * <p>
-	 * The event details contains information such as the {@link touches},
-	 * {@link target touches} and {@link changed touches}.
+	 * The event details contains information such as the
+	 * {@link WTouchEvent#getTouches() touches},
+	 * {@link WTouchEvent#getTargetTouches() target touches} and
+	 * {@link WTouchEvent#getChangedTouches() changed touches}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -345,8 +373,10 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when a finger, which is already placed on the
 	 * screen, is moved across the screen.
 	 * <p>
-	 * The event details contains information such as the {@link touches},
-	 * {@link target touches} and {@link changed touches}.
+	 * The event details contains information such as the
+	 * {@link WTouchEvent#getTouches() touches},
+	 * {@link WTouchEvent#getTargetTouches() target touches} and
+	 * {@link WTouchEvent#getChangedTouches() changed touches}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -360,8 +390,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a gesture is started.
 	 * <p>
-	 * The event details contains information about the {@link scale} and the
-	 * {@link rotation}.
+	 * The event details contains information about the
+	 * {@link WGestureEvent#getScale() scale} and the
+	 * {@link WGestureEvent#getRotation() rotation}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -375,8 +406,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a gesture is changed.
 	 * <p>
-	 * The event details contains information about the {@link scale} and the
-	 * {@link rotation}.
+	 * The event details contains information about the
+	 * {@link WGestureEvent#getScale() scale} and the
+	 * {@link WGestureEvent#getRotation() rotation}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -390,8 +422,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a gesture is ended.
 	 * <p>
-	 * The event details contains information about the {@link scale} and the
-	 * {@link rotation}.
+	 * The event details contains information about the
+	 * {@link WGestureEvent#getScale() scale} and the
+	 * {@link WGestureEvent#getRotation() rotation}.
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
@@ -421,6 +454,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * work.</i>
 	 * </p>
 	 * 
+	 * @see WWidget#dropEvent(WDropEvent event)
+	 * @see WWidget#acceptDrops(String mimeType, String hoverStyleClass)
 	 * @see WDropEvent
 	 */
 	public void setDraggable(final String mimeType, WWidget dragWidget,

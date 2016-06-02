@@ -43,6 +43,8 @@ public class User {
 	/**
 	 * Enumeration for a user&apos;s account status.
 	 * <p>
+	 * 
+	 * @see User#getStatus()
 	 */
 	public enum Status {
 		/**
@@ -88,6 +90,8 @@ public class User {
 	 * <p>
 	 * Creates an invalid user.
 	 * <p>
+	 * 
+	 * @see User#isValid()
 	 */
 	public User() {
 		this.id_ = "";
@@ -160,11 +164,13 @@ public class User {
 	 * Adds an identity.
 	 * <p>
 	 * Depending on whether the database supports multiple identities per
-	 * provider, this may change (like {@link }), or add another identity to the
-	 * user. For some identity providers (e.g. a 3rd party identity provider),
-	 * it may be sensible to have more than one identity of the same provider
-	 * for a single user (e.g. multiple email accounts managed by the same
-	 * provider, that in fact identify the same user).
+	 * provider, this may change (like
+	 * {@link User#setIdentity(String provider, String identity) setIdentity()}
+	 * ), or add another identity to the user. For some identity providers (e.g.
+	 * a 3rd party identity provider), it may be sensible to have more than one
+	 * identity of the same provider for a single user (e.g. multiple email
+	 * accounts managed by the same provider, that in fact identify the same
+	 * user).
 	 */
 	public void addIdentity(final String provider, final String identity) {
 		this.checkValid();
@@ -365,6 +371,9 @@ public class User {
 	 * This changes the number of failed login attempts, and stores the current
 	 * date as the last login attempt time.
 	 * <p>
+	 * 
+	 * @see User#getFailedLoginAttempts()
+	 * @see User#getLastLoginAttempt()
 	 */
 	public void setAuthenticated(boolean success) {
 		this.checkValid();

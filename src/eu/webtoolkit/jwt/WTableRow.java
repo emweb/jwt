@@ -41,7 +41,8 @@ public class WTableRow extends WObject {
 	 * <p>
 	 * Table rows must be added to a table using
 	 * {@link WTable#insertRow(int row, WTableRow tableRow) WTable#insertRow()}
-	 * before you can access contents in it using {@link }.
+	 * before you can access contents in it using
+	 * {@link WTableRow#elementAt(int column) elementAt()}.
 	 */
 	public WTableRow() {
 		super();
@@ -95,6 +96,9 @@ public class WTableRow extends WObject {
 	 * <p>
 	 * The default row height is {@link WLength#Auto}.
 	 * <p>
+	 * 
+	 * @see WTableRow#getHeight()
+	 * @see WWidget#resize(WLength width, WLength height)
 	 */
 	public void setHeight(final WLength height) {
 		this.height_ = height;
@@ -116,6 +120,9 @@ public class WTableRow extends WObject {
 	 * <p>
 	 * The style is inherited by all table cells in this row.
 	 * <p>
+	 * 
+	 * @see WTableRow#getStyleClass()
+	 * @see WWidget#setStyleClass(String styleClass)
 	 */
 	public void setStyleClass(final String style) {
 		if (WWebWidget.canOptimizeUpdates() && style.equals(this.styleClass_)) {
@@ -128,6 +135,9 @@ public class WTableRow extends WObject {
 	/**
 	 * Returns the CSS style class for this row.
 	 * <p>
+	 * 
+	 * @see WTableRow#getStyleClass()
+	 * @see WWidget#getStyleClass()
 	 */
 	public String getStyleClass() {
 		return this.styleClass_;
@@ -168,6 +178,9 @@ public class WTableRow extends WObject {
 	 * <p>
 	 * The default value is <code>false</code> (row is not hidden).
 	 * <p>
+	 * 
+	 * @see WTableRow#hide()
+	 * @see WTableRow#show()
 	 */
 	public void setHidden(boolean how) {
 		if (WWebWidget.canOptimizeUpdates() && this.hidden_ == how) {
@@ -215,6 +228,8 @@ public class WTableRow extends WObject {
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.
 	 * <p>
+	 * 
+	 * @see WObject#getId()
 	 */
 	public void setId(final String id) {
 		if (!(this.id_ != null)) {

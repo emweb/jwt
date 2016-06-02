@@ -29,16 +29,17 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The rendering (and editing) of items is handled by a
  * {@link WAbstractItemDelegate}, by default it uses {@link WItemDelegate} which
- * renders data of all predefined roles (see also {@link }), including text,
- * icons, checkboxes, and tooltips.
+ * renders data of all predefined roles (see also {@link ItemDataRole}),
+ * including text, icons, checkboxes, and tooltips.
  * <p>
  * The view provides virtual scrolling in both horizontal and vertical
  * directions, and can therefore be used to display large data models (with
  * large number of columns and rows).
  * <p>
  * The view may support editing of items, if the model indicates support (see
- * the {@link } flag). You can define triggers that initiate editing of an item
- * using {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
+ * the {@link ItemFlag#ItemIsEditable} flag). You can define triggers that
+ * initiate editing of an item using
+ * {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
  * WAbstractItemView#setEditTriggers()}. The actual editing is provided by the
  * item delegate (you can set an appropriate delegate for one column using
  * {@link WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
@@ -48,8 +49,9 @@ import org.slf4j.LoggerFactory;
  * deals with multiple editors.
  * <p>
  * By default, all columns are given a width of 150px. Column widths of all
- * columns can be set through the API method {@link }, and also by the user using
- * handles provided in the header.
+ * columns can be set through the API method
+ * {@link WTableView#setColumnWidth(int column, WLength width) setColumnWidth()}
+ * , and also by the user using handles provided in the header.
  * <p>
  * If the model supports sorting (
  * {@link WAbstractItemModel#sort(int column, SortOrder order)
@@ -72,13 +74,14 @@ import org.slf4j.LoggerFactory;
  * {@link WAbstractItemView#setDragEnabled(boolean enable)
  * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
  * but only when all items in the selection indicate support for dragging
- * (controlled by the {@link ItemIsDragEnabled} flag), and if the model
- * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()
- * WAbstractItemModel#getMimeType()}). Likewise, by enabling support for
- * dropping (see {@link WAbstractItemView#setDropsEnabled(boolean enable)
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
+ * flag), and if the model indicates a mime-type (controlled by
+ * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
+ * Likewise, by enabling support for dropping (see
+ * {@link WAbstractItemView#setDropsEnabled(boolean enable)
  * WAbstractItemView#setDropsEnabled()}), the view may receive a drop event on a
  * particular item, at least if the item indicates support for drops (controlled
- * by the {@link ItemIsDropEnabled} flag).
+ * by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
  * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
@@ -86,7 +89,8 @@ import org.slf4j.LoggerFactory;
  * signals.
  * <p>
  * If a {@link WTableView} is not constrained in height (either by a layout
- * manager or by {@link }), then it will grow according to the size of the model.
+ * manager or by {@link WWidget#setHeight(WLength height) WWidget#setHeight()}),
+ * then it will grow according to the size of the model.
  */
 public class WTableView extends WAbstractItemView {
 	private static Logger logger = LoggerFactory.getLogger(WTableView.class);
@@ -159,6 +163,8 @@ public class WTableView extends WAbstractItemView {
 						}
 					});
 			this.canvas_.mouseWentDown().preventPropagation();
+			this.canvas_.mouseWentDown().addListener(
+					"function(o, e) { $(document).trigger('mousedown', e);}");
 			this.canvas_.mouseWentUp().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {

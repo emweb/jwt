@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Flags that indicate data item options.
  * <p>
+ * 
+ * @see WModelIndex#getFlags()
  */
 public enum ItemFlag {
 	/**
@@ -48,7 +50,8 @@ public enum ItemFlag {
 	 * <p>
 	 * Item has tree states.
 	 * <p>
-	 * When set, {@link ItemDataRole#CheckStateRole} data is of type {@link }
+	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
+	 * {@link CheckState}
 	 */
 	ItemIsTristate,
 	/**

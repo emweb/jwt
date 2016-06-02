@@ -27,11 +27,13 @@ import org.slf4j.LoggerFactory;
  * for the duration of the session.
  * <p>
  * Widgets that implement authentication (and thus produce authentication
- * changes), will indicate their result in this object using the {@link } or
- * {@link } methods.
+ * changes), will indicate their result in this object using the
+ * {@link Login#login(User user, LoginState state) login()} or
+ * {@link Login#logout() logout()} methods.
  * <p>
  * Widgets that want to react to login state changes (typically, as user logging
- * in or out) should listen to the {@link } signal of this object.
+ * in or out) should listen to the {@link Login#changed() changed()} signal of
+ * this object.
  * <p>
  * 
  * @see AuthWidget
@@ -56,8 +58,12 @@ public class Login extends WObject {
 	 * <p>
 	 * A user can be logged in using either a DisabledLogin, WeakLogin or
 	 * StrongLogin <code>state</code>. The login state is forced to
-	 * DisabledLogin if {@link } returns Disabled.
+	 * DisabledLogin if {@link User#getStatus() User#getStatus()} returns
+	 * Disabled.
 	 * <p>
+	 * 
+	 * @see Login#logout()
+	 * @see Login#isLoggedIn()
 	 */
 	public void login(final User user, LoginState state) {
 		if (state == LoginState.LoggedOut || !user.isValid()) {
@@ -147,10 +153,11 @@ public class Login extends WObject {
 	 * <p>
 	 * This signal is emitted as a result of
 	 * {@link Login#login(User user, LoginState state) login()} or
-	 * {@link Login#logout() logout()}. If no user was logged in, then a {@link }
-	 * signal does not necessarily mean that user is {@link Login#isLoggedIn()
-	 * isLoggedIn()} as the user may have been identified correctly but have a
-	 * DisabledLogin {@link Login#getState() getState()} for example.
+	 * {@link Login#logout() logout()}. If no user was logged in, then a
+	 * {@link Login#changed() changed()} signal does not necessarily mean that
+	 * user is {@link Login#isLoggedIn() isLoggedIn()} as the user may have been
+	 * identified correctly but have a DisabledLogin {@link Login#getState()
+	 * getState()} for example.
 	 */
 	public Signal changed() {
 		return this.changed_;

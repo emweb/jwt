@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * the key to a string using the current application locale.
  * <p>
  * 
+ * @see WString#tr(String key)
  * @see WApplication#setLocalizedStrings(WLocalizedStrings translator)
  */
 public abstract class WLocalizedStrings {
@@ -66,6 +67,7 @@ public abstract class WLocalizedStrings {
 	 * <p>
 	 * 
 	 * @see WApplication#getLocale()
+	 * @see WString#tr(String key)
 	 */
 	public abstract String resolveKey(final String key);
 }

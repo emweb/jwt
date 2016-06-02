@@ -32,9 +32,12 @@ import org.slf4j.LoggerFactory;
  * By default it uses a pixel resolution of 72 DPI, which is the default for a
  * {@link WPdfImage}, but differs from the default used by most browsers (which
  * is 96 DPI and has nothing to do with the actual screen resolution). The pixel
- * resolution can be configured using {@link }. Increasing the resolution has the
- * effect of scaling down the rendering. This can be used in conjunction with
- * {@link } to scale the font size differently than other content.
+ * resolution can be configured using {@link WPdfRenderer#setDpi(int dpi)
+ * setDpi()}. Increasing the resolution has the effect of scaling down the
+ * rendering. This can be used in conjunction with
+ * {@link WTextRenderer#setFontScale(double factor)
+ * WTextRenderer#setFontScale()} to scale the font size differently than other
+ * content.
  */
 public class WPdfRenderer extends WTextRenderer {
 	private static Logger logger = LoggerFactory.getLogger(WPdfRenderer.class);
@@ -122,8 +125,9 @@ public class WPdfRenderer extends WTextRenderer {
 	 * pixels. Instead it has the effect of scaling down or up the rendered
 	 * XHTML on the page.
 	 * <p>
-	 * The dpi setting also affects the {@link }, {@link }, and {@link } pixel
-	 * calculations.
+	 * The dpi setting also affects the {@link WPdfRenderer#pageWidth(int page)
+	 * pageWidth()}, {@link WPdfRenderer#pageHeight(int page) pageHeight()}, and
+	 * {@link WPdfRenderer#getMargin(Side side) getMargin()} pixel calculations.
 	 * <p>
 	 * The default resolution is 72 DPI.
 	 */
@@ -162,8 +166,9 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Returns the current page.
 	 * <p>
-	 * This returns the page last created using {@link }, or the page set with
-	 * {@link WPdfRenderer#setCurrentPage(com.pdfjet.Page page)
+	 * This returns the page last created using
+	 * {@link WPdfRenderer#createPage(int page) createPage()}, or the page set
+	 * with {@link WPdfRenderer#setCurrentPage(com.pdfjet.Page page)
 	 * setCurrentPage()} page.
 	 */
 	public com.pdfjet.Page getCurrentPage() {

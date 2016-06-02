@@ -98,6 +98,8 @@ public class WToolBar extends WCompositeWidget {
 	 * non-compact, since otherwise the split button functionality cannot be
 	 * distinguished from other buttons.
 	 * <p>
+	 * 
+	 * @see WToolBar#setCompact(boolean compact)
 	 */
 	public void addButton(WSplitButton button, AlignmentFlag alignmentFlag) {
 		this.setCompact(false);
@@ -167,6 +169,8 @@ public class WToolBar extends WCompositeWidget {
 	 * <p>
 	 * The toolbar automatically becomes non-compact.
 	 * <p>
+	 * 
+	 * @see WToolBar#setCompact(boolean compact)
 	 */
 	public void addSeparator() {
 		this.setCompact(false);
@@ -176,6 +180,8 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Returns the number of buttons.
 	 * <p>
+	 * 
+	 * @see WToolBar#widget(int index)
 	 */
 	public int getCount() {
 		if (this.compact_) {

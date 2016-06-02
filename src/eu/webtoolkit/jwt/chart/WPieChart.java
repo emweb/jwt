@@ -28,15 +28,20 @@ import org.slf4j.LoggerFactory;
  * <p>
  * To use a pie chart, you need to set a model using
  * {@link WAbstractChart#setModel(WAbstractItemModel model)
- * WAbstractChart#setModel()}, and use {@link } and {@link } to specify the model
- * column that contains the category labels and data.
+ * WAbstractChart#setModel()}, and use
+ * {@link WPieChart#setLabelsColumn(int modelColumn) setLabelsColumn()} and
+ * {@link WPieChart#setDataColumn(int modelColumn) setDataColumn()} to specify
+ * the model column that contains the category labels and data.
  * <p>
- * The pie chart may be customized visually by enabling a 3D effect ({@link }),
- * or by specifying the angle of the first segment. One or more segments may be
- * exploded, which seperates the segment from the rest of the pie chart, using
- * {@link }.
+ * The pie chart may be customized visually by enabling a 3D effect (
+ * {@link WPieChart#setPerspectiveEnabled(boolean enabled, double height)
+ * setPerspectiveEnabled()}), or by specifying the angle of the first segment.
+ * One or more segments may be exploded, which seperates the segment from the
+ * rest of the pie chart, using
+ * {@link WPieChart#setExplode(int modelRow, double factor) setExplode()}.
  * <p>
- * The segments may be labeled in various ways using {@link }.
+ * The segments may be labeled in various ways using
+ * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()}.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -86,13 +91,16 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the model column that holds the labels.
 	 * <p>
-	 * The labels are used only when {@link } is called with the
-	 * {@link TextLabel} option.
+	 * The labels are used only when
+	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
+	 * called with the {@link LabelOption#TextLabel TextLabel} option.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
 	 * 
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
+	 * @see WPieChart#setDisplayLabels(EnumSet options)
+	 * @see WPieChart#setDataColumn(int modelColumn)
 	 */
 	public void setLabelsColumn(int modelColumn) {
 		if (this.labelsColumn_ != modelColumn) {
@@ -306,12 +314,13 @@ public class WPieChart extends WAbstractChart {
 	 * Configures if and how labels should be displayed.
 	 * <p>
 	 * The <i>options</i> must be the logical OR of a placement option (
-	 * {@link Inside} or {@link Outside}) and {@link TextLabel} and/or
-	 * {@link TextPercentage}. If both TextLabel and TextPercentage are
-	 * specified, then these are combined as &quot;&lt;label&gt;:
-	 * &lt;percentage&gt;&quot;.
+	 * {@link LabelOption#Inside Inside} or {@link LabelOption#Outside Outside})
+	 * and {@link LabelOption#TextLabel TextLabel} and/or
+	 * {@link LabelOption#TextPercentage TextPercentage}. If both TextLabel and
+	 * TextPercentage are specified, then these are combined as
+	 * &quot;&lt;label&gt;: &lt;percentage&gt;&quot;.
 	 * <p>
-	 * The default value is {@link NoLabels}.
+	 * The default value is {@link LabelOption#NoLabels NoLabels}.
 	 */
 	public void setDisplayLabels(EnumSet<LabelOption> options) {
 		this.labelOptions_ = EnumSet.copyOf(options);
@@ -350,6 +359,8 @@ public class WPieChart extends WAbstractChart {
 	 * <p>
 	 * The default value is &quot;%.3g%%&quot;.
 	 * <p>
+	 * 
+	 * @see WPieChart#getLabelFormat()
 	 */
 	public void setLabelFormat(final CharSequence format) {
 		this.labelFormat_ = WString.toWString(format);
@@ -433,6 +444,125 @@ public class WPieChart extends WAbstractChart {
 	 */
 	public void addDataPointArea(int row, int column, WAbstractArea area) {
 		(this).addArea(area);
+	}
+
+	/**
+	 * createLabelWidget possition textWidget where the text would be rendered.
+	 * Assuming that textWidget is added to a container with same dimensions as
+	 * the {@link WPieChart}. This should be used in combinaltion with
+	 * {@link WPieChart#drawLabel(WPainter painter, WRectF rect, EnumSet alignmentFlags, CharSequence text, int row)
+	 * drawLabel()}.
+	 * <p>
+	 * 
+	 * @return The new {@link WContainerWidget} that contains textWidget and can
+	 *         be placed on an other layer that has the same dimensions as the
+	 *         {@link WPieChart}.
+	 * @see WPieChart#drawLabel(WPainter painter, WRectF rect, EnumSet
+	 *      alignmentFlags, CharSequence text, int row) Usage example, PieChart
+	 *      with label links.
+	 * 
+	 *      <pre>
+	 *   {@code
+	 *    class PChart : public Wt::Chart::WPieChart {
+	 *    private:
+	 *      Wt::WContainerWidget *widgetsLayer_;
+	 *    public:
+	 *      PChart(Wt::WContainerWidget *widgetsLayer) :
+	 *        Wt::Chart::WPieChart(widgetsLayer),
+	 *        widgetsLayer_(widgetsLayer)
+	 *      {
+	 *        widgetsLayer_.resize(800, 300);
+	 *        resize(800, 300);
+	 *        widgetsLayer_.setPositionScheme(Wt::Relative);
+	 *      }
+	 *      virtual void drawLabel(Wt::WPainter* painter, const Wt::WRectF& rect,
+	 *                               Wt::WFlags<Wt::AlignmentFlag> alignmentFlags,
+	 *                               const Wt::WString& text, int row) const
+	 *      {
+	 *        if (model().link(row, dataColumn()) == 0){
+	 *          Wt::Chart::WPieChart::drawLabel(painter, rect, alignmentFlags,
+	 *                                        text, row);
+	 *      } else {
+	 *         Wt::WAnchor *a = new Wt::WAnchor(*model().link(row, dataColumn()),
+	 *                                           text);
+	 *          widgetsLayer_.addWidget(createLabelWidget(a, painter, rect,
+	 *                                                     alignmentFlags));
+	 *        }
+	 *      }
+	 *    };
+	 *   }
+	 * </pre>
+	 */
+	public WContainerWidget createLabelWidget(WWidget textWidget,
+			WPainter painter, final WRectF rect,
+			EnumSet<AlignmentFlag> alignmentFlags) {
+		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				alignmentFlags, AlignmentFlag.AlignVerticalMask));
+		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				alignmentFlags, AlignmentFlag.AlignHorizontalMask));
+		WContainerWidget c = new WContainerWidget();
+		c.addWidget(textWidget);
+		c.setPositionScheme(PositionScheme.Absolute);
+		c.setAttributeValue("style", "display: flex;");
+		final WRectF normRect = rect.getNormalized();
+		WTransform t = painter.getWorldTransform();
+		WPointF p = t.map(new WPointF(normRect.getLeft(), normRect.getTop()));
+		c.setWidth(new WLength(normRect.getWidth() * t.getM11()));
+		c.setHeight(new WLength(normRect.getHeight() * t.getM22()));
+		c.getDecorationStyle().setFont(painter.getFont());
+		StringWriter containerStyle = new StringWriter();
+		containerStyle.append("top:").append(String.valueOf(p.getY()))
+				.append("px; left:").append(String.valueOf(p.getX()))
+				.append("px; ").append("display: flex;");
+		switch (horizontalAlign) {
+		case AlignLeft:
+			containerStyle.append(" justify-content: flex-start;");
+			break;
+		case AlignRight:
+			containerStyle.append(" justify-content: flex-end;");
+			break;
+		case AlignCenter:
+			containerStyle.append(" justify-content: center;");
+			break;
+		default:
+			break;
+		}
+		c.setAttributeValue("style", containerStyle.toString());
+		StringWriter innerStyle = new StringWriter();
+		switch (verticalAlign) {
+		case AlignTop:
+			innerStyle.append("align-self: flex-start;");
+			break;
+		case AlignBottom:
+			innerStyle.append("align-self: flex-end;");
+			break;
+		case AlignMiddle:
+			innerStyle.append(" align-self: center;");
+			break;
+		default:
+			break;
+		}
+		textWidget.setAttributeValue("style", innerStyle.toString());
+		return c;
+	}
+
+	/**
+	 * createLabelWidget possition textWidget where the text would be rendered.
+	 * Assuming that textWidget is added to a container with same dimensions as
+	 * the {@link WPieChart}. This should be used in combinaltion with
+	 * {@link WPieChart#drawLabel(WPainter painter, WRectF rect, EnumSet alignmentFlags, CharSequence text, int row)
+	 * drawLabel()}.
+	 * <p>
+	 * Returns
+	 * {@link #createLabelWidget(WWidget textWidget, WPainter painter, WRectF rect, EnumSet alignmentFlags)
+	 * createLabelWidget(textWidget, painter, rect, EnumSet.of(alignmentFlag,
+	 * alignmentFlags))}
+	 */
+	public final WContainerWidget createLabelWidget(WWidget textWidget,
+			WPainter painter, final WRectF rect, AlignmentFlag alignmentFlag,
+			AlignmentFlag... alignmentFlags) {
+		return createLabelWidget(textWidget, painter, rect,
+				EnumSet.of(alignmentFlag, alignmentFlags));
 	}
 
 	public void paint(final WPainter painter, final WRectF rectangle) {
@@ -560,9 +690,9 @@ public class WPieChart extends WAbstractChart {
 					}
 					if (v / total * 100 >= this.avoidLabelRendering_) {
 						painter.setPen(new WPen(c));
-						painter.drawText(new WRectF(left, top, width, height),
-								alignment,
-								this.labelText(i, v, total, this.labelOptions_));
+						this.drawLabel(painter, new WRectF(left, top, width,
+								height), alignment, this.labelText(i, v, total,
+								this.labelOptions_), i);
 					}
 					currentAngle = endAngle;
 				}
@@ -587,6 +717,21 @@ public class WPieChart extends WAbstractChart {
 		WPainter painter = new WPainter(paintDevice);
 		painter.setRenderHint(WPainter.RenderHint.Antialiasing, true);
 		this.paint(painter);
+	}
+
+	/**
+	 * drawLabel draw a label on the chart. Will be called by paint.
+	 * <p>
+	 * You may want to specialize this if you wish to replace the label by a
+	 * widget.
+	 * 
+	 * @see WPieChart#createLabelWidget(WWidget textWidget, WPainter painter,
+	 *      WRectF rect, EnumSet alignmentFlags)
+	 */
+	protected void drawLabel(WPainter painter, final WRectF rect,
+			EnumSet<AlignmentFlag> alignmentFlags, final CharSequence text,
+			int row) {
+		painter.drawText(rect, alignmentFlags, text);
 	}
 
 	private int labelsColumn_;

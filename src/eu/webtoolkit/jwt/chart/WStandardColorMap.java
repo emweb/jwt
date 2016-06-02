@@ -34,7 +34,10 @@ import org.slf4j.LoggerFactory;
  * value&apos;s color, all values below the minimum value in the list map to the
  * minimum value&apos;s color. The range indicated by the minimum and maximum
  * passed to the constructor determines which part of the colormap is drawn by
- * {@link } or {@link }.
+ * {@link WStandardColorMap#createStrip(WPainter painter, WRectF area)
+ * createStrip()} or
+ * {@link WStandardColorMap#paintLegend(WPainter painter, WRectF area)
+ * paintLegend()}.
  * <p>
  * The figure below illustrates the possible colormaps that can be constructed
  * from the list {&quot;0.0 - darkRed&quot;, &quot;1.0 - red&quot;, &quot;2.0 -

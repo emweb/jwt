@@ -35,8 +35,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <p>
  * <i><b>Note: </b>When applying a layout manager to a {@link WContainerWidget},
- * you may not define any padding for the container widget. Instead, use {@link }
- * . </i>
+ * you may not define any padding for the container widget. Instead, use
+ * {@link WLayout#setContentsMargins(int left, int top, int right, int bottom)
+ * setContentsMargins()}. </i>
  * </p>
  */
 public abstract class WLayout extends WObject implements WLayoutItem {
@@ -51,6 +52,9 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * specific to the layout manager. In some cases, a layout manager will
 	 * overload this method with extra arguments that specify layout options.
 	 * <p>
+	 * 
+	 * @see WLayout#removeItem(WLayoutItem item)
+	 * @see WLayout#addWidget(WWidget w)
 	 */
 	public abstract void addItem(WLayoutItem item);
 
@@ -65,6 +69,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * overload this method with extra arguments that specify layout options.
 	 * <p>
 	 * 
+	 * @see WLayout#removeWidget(WWidget w)
 	 * @see WLayout#addItem(WLayoutItem item)
 	 */
 	public void addWidget(WWidget w) {
@@ -76,6 +81,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * <p>
 	 * 
 	 * @see WLayout#addItem(WLayoutItem item)
+	 * @see WLayout#removeWidget(WWidget w)
 	 */
 	public abstract void removeItem(WLayoutItem item);
 
@@ -108,7 +114,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * <p>
 	 * This may be a theoretical number, which is greater than the actual number
 	 * of items. It can be used to iterate over the items in the layout, in
-	 * conjunction with {@link }.
+	 * conjunction with {@link WLayout#getItemAt(int index) getItemAt()}.
 	 */
 	public abstract int getCount();
 
@@ -119,6 +125,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * returned.
 	 * <p>
 	 * 
+	 * @see WLayout#indexOf(WLayoutItem item)
 	 * @see WLayout#getCount()
 	 */
 	public abstract WLayoutItem getItemAt(int index);
@@ -203,6 +210,8 @@ public abstract class WLayout extends WObject implements WLayoutItem {
 	 * <i><b>Note: </b>Only used when the layout manager is applied to a
 	 * {@link WContainerWidget}.</i>
 	 * </p>
+	 * 
+	 * @see WLayout#setContentsMargins(int left, int top, int right, int bottom)
 	 */
 	public void setContentsMargins(int left, int top, int right, int bottom) {
 		if (!(this.margins_ != null)) {

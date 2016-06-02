@@ -558,7 +558,8 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Stores the current map position and zoom level.
 	 * <p>
-	 * You can later restore this position using {@link }.
+	 * You can later restore this position using
+	 * {@link WGoogleMap#returnToSavedPosition() returnToSavedPosition()}.
 	 */
 	public void savePosition() {
 		if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {

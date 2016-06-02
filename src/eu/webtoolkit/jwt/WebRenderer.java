@@ -34,6 +34,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.scriptId_ = 0;
 		this.linkedCssCount_ = -1;
 		this.solution_ = "";
+		this.currentStatelessSlotIsActuallyStateless_ = true;
 		this.cookiesToSet_ = new HashMap<String, WebRenderer.CookieValue>();
 		this.currentFormObjects_ = new HashMap<String, WObject>();
 		this.currentFormObjectsList_ = "";
@@ -352,6 +353,10 @@ class WebRenderer implements SlotLearnerInterface {
 		this.invisibleJS_.setLength(0);
 	}
 
+	public void setStatelessSlotNotStateless() {
+		this.currentStatelessSlotIsActuallyStateless_ = false;
+	}
+
 	static class CookieValue {
 		private static Logger logger = LoggerFactory
 				.getLogger(CookieValue.class);
@@ -390,6 +395,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private int scriptId_;
 	private int linkedCssCount_;
 	private String solution_;
+	private boolean currentStatelessSlotIsActuallyStateless_;
 	private Map<String, WebRenderer.CookieValue> cookiesToSet_;
 	private Map<String, WObject> currentFormObjects_;
 	private String currentFormObjectsList_;
@@ -1607,10 +1613,14 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public String learn(AbstractEventSignal.LearningListener slot)
 			throws IOException {
+		if (slot.isInvalidated()) {
+			return "";
+		}
 		if (slot.getType() == SlotType.PreLearnStateless) {
 			this.learning_ = true;
 		}
 		this.learningIncomplete_ = false;
+		this.currentStatelessSlotIsActuallyStateless_ = true;
 		slot.trigger();
 		StringBuilder js = new StringBuilder();
 		this.collectJS(js);
@@ -1624,8 +1634,13 @@ class WebRenderer implements SlotLearnerInterface {
 		} else {
 			this.statelessJS_.append(result);
 		}
-		if (!this.learningIncomplete_) {
+		if (this.currentStatelessSlotIsActuallyStateless_
+				&& !this.learningIncomplete_) {
 			slot.setJavaScript(result);
+		} else {
+			if (!this.currentStatelessSlotIsActuallyStateless_) {
+				slot.invalidate();
+			}
 		}
 		this.collectJS(this.statelessJS_);
 		return result;

@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
  * value. If you rather need input of an integer number number, use
  * {@link WSpinBox} instead.
  * <p>
- * WDoubleSpinBox is an {@link inline} widget.
+ * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
+ * widget.
  * <p>
  * 
  * @see WSpinBox <p>

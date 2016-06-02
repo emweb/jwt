@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Since the template text may be supplied by a {@link WString}, you can
  * conveniently store the string in a message resource bundle, and make it
- * localized by using {@link }.
+ * localized by using {@link WString#tr(String key) WString#tr()}.
  * <p>
  * Placeholders (for variables and functions) are delimited by:
  * <code>${...}</code>. To use a literal <code>&quot;${&quot;</code>, use
@@ -62,9 +62,16 @@ import org.slf4j.LoggerFactory;
  * <code>${var}</code> defines a placeholder for the variable &quot;var&quot;,
  * and gets replaced with whatever is bound to that variable:
  * <ul>
- * <li>a widget, using {@link }</li>
- * <li>a string value, using {@link } or {@link }</li>
- * <li>or in general, the result of {@link } and {@link } methods.</li>
+ * <li>a widget, using
+ * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}</li>
+ * <li>a string value, using
+ * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
+ * bindString()} or {@link WTemplate#bindInt(String varName, int value)
+ * bindInt()}</li>
+ * <li>or in general, the result of
+ * {@link WTemplate#resolveString(String varName, List args, Writer result)
+ * resolveString()} and {@link WTemplate#resolveWidget(String varName)
+ * resolveWidget()} methods.</li>
  * </ul>
  * <p>
  * Optionally, additional arguments can be specified using the following syntax:
@@ -72,11 +79,18 @@ import org.slf4j.LoggerFactory;
  * <code>${var arg1=&quot;A value&quot; arg2=&apos;A second value&apos;}</code>
  * <p>
  * The arguments can thus be simple simple strings or quoted strings (single or
- * double quoted). These arguments are applied to a resolved widget in {@link }
- * and currently supports only style classes.
+ * double quoted). These arguments are applied to a resolved widget in
+ * {@link WTemplate#applyArguments(WWidget w, List args) applyArguments()} and
+ * currently supports only style classes.
  * <p>
- * You can bind widgets and values to variables using {@link }, {@link } or
- * {@link } or by reimplementing the {@link } and {@link } methods.
+ * You can bind widgets and values to variables using
+ * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()},
+ * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
+ * bindString()} or {@link WTemplate#bindInt(String varName, int value)
+ * bindInt()} or by reimplementing the
+ * {@link WTemplate#resolveString(String varName, List args, Writer result)
+ * resolveString()} and {@link WTemplate#resolveWidget(String varName)
+ * resolveWidget()} methods.
  * <p>
  * <p>
  * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
@@ -92,18 +106,22 @@ import org.slf4j.LoggerFactory;
  * Optionally, additional arguments can be specified as with a variable
  * placeholder.
  * <p>
- * {@link Functions} are resolved by {@link }, and the default implementation
- * considers functions bound with {@link }. There are currently three functions
- * that are generally useful:
+ * {@link Functions} are resolved by
+ * {@link WTemplate#resolveFunction(String name, List args, Writer result)
+ * resolveFunction()}, and the default implementation considers functions bound
+ * with {@link WTemplate#addFunction(String name, WTemplate.Function function)
+ * addFunction()}. There are currently three functions that are generally
+ * useful:
  * <ul>
- * <li>{@link Functions::tr} : resolves a localized strings, this is convenient
- * to create a language neutral template, which contains translated strings</li>
- * <li>{@link Functions::id} : resolves the id of a bound widget, this is
- * convenient to bind &lt;label&gt; elements to a form widget using its for
- * attribute.</li>
- * <li>{@link Functions::block} : recursively renders another string as macro
- * block optional arguments substituted before processing template substitution.
- * </li>
+ * <li>{@link WTemplate.Functions#tr Functions::tr} : resolves a localized
+ * strings, this is convenient to create a language neutral template, which
+ * contains translated strings</li>
+ * <li>{@link WTemplate.Functions#id Functions::id} : resolves the id of a bound
+ * widget, this is convenient to bind &lt;label&gt; elements to a form widget
+ * using its for attribute.</li>
+ * <li>{@link WTemplate.Functions#block Functions::block} : recursively renders
+ * another string as macro block optional arguments substituted before
+ * processing template substitution.</li>
  * </ul>
  * <p>
  * For example, the following template uses the &quot;tr&quot; function to
@@ -139,7 +157,8 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  * <p>
- * Conditions are set using {@link }.
+ * Conditions are set using
+ * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -211,6 +230,12 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * A function interface type.
 	 * <p>
+	 * 
+	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
+	 * @see WTemplate.Functions#tr
+	 * @see WTemplate.Functions#id
+	 * @see WTemplate.Functions#block
+	 * @see WTemplate.Functions#while_f
 	 */
 	public static interface Function {
 		public boolean evaluate(WTemplate t, final List<WString> args,
@@ -276,6 +301,8 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * A collection of predefined functions.
 	 * <p>
+	 * 
+	 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 	 */
 	public static class Functions {
 		private static Logger logger = LoggerFactory.getLogger(Functions.class);
@@ -300,6 +327,8 @@ public class WTemplate extends WInteractWidget {
 		 *     }
 		 * </pre>
 		 * <p>
+		 * 
+		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 		 */
 		public static final WTemplate.Function tr = new WTemplate.TrFunction();
 		/**
@@ -378,6 +407,8 @@ public class WTemplate extends WInteractWidget {
 		 * <p>
 		 * This is useful for binding labels to input elements.
 		 * <p>
+		 * 
+		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
 		 */
 		public static final WTemplate.Function id = new WTemplate.IdFunction();
 	}
@@ -385,6 +416,8 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Enumeration that indicates how a widget&apos;s ID may be set.
 	 * <p>
+	 * 
+	 * @see WTemplate#setWidgetIdMode(WTemplate.WidgetIdMode mode)
 	 */
 	public enum WidgetIdMode {
 		/**
@@ -394,13 +427,15 @@ public class WTemplate extends WInteractWidget {
 		SetNoWidgetId,
 		/**
 		 * <p>
-		 * Use {@link } to prefix the ID with the varName. This is a safe choice
-		 * since JWt still guarantees that the IDs are unique.
+		 * Use {@link WWidget#setObjectName(String name)
+		 * WWidget#setObjectName()} to prefix the ID with the varName. This is a
+		 * safe choice since JWt still guarantees that the IDs are unique.
 		 */
 		SetWidgetObjectName,
 		/**
 		 * <p>
-		 * Use {@link } to set the ID as the varName.
+		 * Use {@link WWebWidget#setId(String id) WWebWidget#setId()} to set the
+		 * ID as the varName.
 		 * <p>
 		 * <p>
 		 * <i><b>Warning:</b>You must be careful that there are no two widgets
@@ -455,8 +490,8 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The <code>templateText</code> must be proper XHTML, and this is checked
 	 * unless the XHTML is resolved from a message resource bundle. This
-	 * behavior is similar to a {@link WText} when configured with the {@link }
-	 * textformat.
+	 * behavior is similar to a {@link WText} when configured with the
+	 * {@link TextFormat#XHTMLText} textformat.
 	 */
 	public WTemplate(final CharSequence text, WContainerWidget parent) {
 		super(parent);
@@ -497,6 +532,8 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Returns the template.
 	 * <p>
+	 * 
+	 * @see WTemplate#setTemplateText(CharSequence text, TextFormat textFormat)
 	 */
 	public WString getTemplateText() {
 		return this.text_;
@@ -507,11 +544,15 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The <code>text</code> must be proper XHTML, and this is checked unless
 	 * the XHTML is resolved from a message resource bundle or TextFormat is
-	 * {@link }. This behavior is similar to a {@link WText} when configured with
-	 * the {@link } textformat.
+	 * {@link TextFormat#XHTMLUnsafeText}. This behavior is similar to a
+	 * {@link WText} when configured with the {@link TextFormat#XHTMLText}
+	 * textformat.
 	 * <p>
-	 * Changing the template text does not {@link } bound widgets or values.
+	 * Changing the template text does not {@link WTemplate#clear() clear()}
+	 * bound widgets or values.
 	 * <p>
+	 * 
+	 * @see WTemplate#clear()
 	 */
 	public void setTemplateText(final CharSequence text, TextFormat textFormat) {
 		this.text_ = WString.toWString(text);
@@ -574,6 +615,10 @@ public class WTemplate extends WInteractWidget {
 	 * default (XHTMLText) filters &quot;active&quot; content, to avoid
 	 * XSS-based security risks.</i>
 	 * </p>
+	 * 
+	 * @see WTemplate#bindWidget(String varName, WWidget widget)
+	 * @see WTemplate#bindInt(String varName, int value)
+	 * @see WTemplate#resolveString(String varName, List args, Writer result)
 	 */
 	public void bindString(final String varName, final CharSequence value,
 			TextFormat textFormat) {
@@ -644,6 +689,7 @@ public class WTemplate extends WInteractWidget {
 	 * 
 	 * @see WTemplate#bindString(String varName, CharSequence value, TextFormat
 	 *      textFormat)
+	 * @see WTemplate#resolveWidget(String varName)
 	 */
 	public void bindWidget(final String varName, WWidget widget) {
 		WWidget i = this.widgets_.get(varName);
@@ -786,9 +832,11 @@ public class WTemplate extends WInteractWidget {
 	 * using
 	 * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
 	 * bindString()}. If so, that string is returned. If not, it will attempt to
-	 * resolve a widget with that variable name using {@link }, and render it as
-	 * XHTML. If that fails too, {@link } is called, passing the initial
-	 * arguments.
+	 * resolve a widget with that variable name using
+	 * {@link WTemplate#resolveWidget(String varName) resolveWidget()}, and
+	 * render it as XHTML. If that fails too,
+	 * {@link WTemplate#handleUnresolvedVariable(String varName, List args, Writer result)
+	 * handleUnresolvedVariable()} is called, passing the initial arguments.
 	 * <p>
 	 * You may want to reimplement this method to provide on-demand loading of
 	 * strings for your template.
@@ -798,8 +846,12 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * <i><b>Warning:</b>When specializing this class, you need to make sure
 	 * that you append proper XHTML to the <code>result</code>, without unsafe
-	 * active contents. The {@link } methods may be used for this purpose.</i>
+	 * active contents. The
+	 * {@link WTemplate#format(Writer result, String s, TextFormat textFormat)
+	 * format()} methods may be used for this purpose.</i>
 	 * </p>
+	 * 
+	 * @see WTemplate#renderTemplate(Writer result)
 	 */
 	public void resolveString(final String varName, final List<WString> args,
 			final Writer result) throws IOException {
@@ -842,7 +894,9 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * <i><b>Warning:</b>When specializing this class, you need to make sure
 	 * that you append proper XHTML to the <code>result</code>, without unsafe
-	 * active contents. The {@link } methods may be used for this purpose.</i>
+	 * active contents. The
+	 * {@link WTemplate#format(Writer result, String s, TextFormat textFormat)
+	 * format()} methods may be used for this purpose.</i>
 	 * </p>
 	 * 
 	 * @see WTemplate#resolveString(String varName, List args, Writer result)
@@ -861,8 +915,8 @@ public class WTemplate extends WInteractWidget {
 	 * You may want to reimplement this method to create widgets on-demand. All
 	 * widgets that are returned by this method are reparented to the
 	 * {@link WTemplate}, so they will be deleted when the template is
-	 * destroyed, but they are not deleted by {@link } (unless bind was called on
-	 * them as in the example below).
+	 * destroyed, but they are not deleted by {@link WTemplate#clear() clear()}
+	 * (unless bind was called on them as in the example below).
 	 * <p>
 	 * This method is typically used for delayed binding of widgets. Usage
 	 * example:
@@ -1041,8 +1095,10 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Renders the template into the given result stream.
 	 * <p>
-	 * The default implementation will call {@link } with the
-	 * {@link WTemplate#getTemplateText() getTemplateText()}.
+	 * The default implementation will call
+	 * {@link WTemplate#renderTemplateText(Writer result, CharSequence templateText)
+	 * renderTemplateText()} with the {@link WTemplate#getTemplateText()
+	 * getTemplateText()}.
 	 */
 	public void renderTemplate(final Writer result) throws IOException {
 		this.renderTemplateText(result, this.getTemplateText());
@@ -1061,6 +1117,8 @@ public class WTemplate extends WInteractWidget {
 	 * custom template language.
 	 * <p>
 	 * Return: true if rendered successfully.
+	 * 
+	 * @see WTemplate#getErrorText()
 	 */
 	public boolean renderTemplateText(final Writer result,
 			final CharSequence templateText) throws IOException {
@@ -1191,7 +1249,9 @@ public class WTemplate extends WInteractWidget {
 	 * Applies arguments to a resolved widget.
 	 * <p>
 	 * Currently only a <code>class</code> argument is handled, which adds one
-	 * or more style classes to the widget <code>w</code>, using {@link }.
+	 * or more style classes to the widget <code>w</code>, using
+	 * {@link WWidget#addStyleClass(String styleClass, boolean force)
+	 * WWidget#addStyleClass()}.
 	 */
 	protected void applyArguments(WWidget w, final List<WString> args) {
 		for (int i = 0; i < args.size(); ++i) {

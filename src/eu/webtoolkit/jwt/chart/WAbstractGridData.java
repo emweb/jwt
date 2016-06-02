@@ -659,7 +659,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Set the color map for the isolines.
 	 * <p>
-	 * When no color map is defined for the isolines, i.e. {@link } is set to
+	 * When no color map is defined for the isolines, i.e.
+	 * {@link WAbstractGridData#getIsoColorMap() getIsoColorMap()} is set to
 	 * NULL, the color map of this {@link WAbstractGridData} will be used.
 	 * <p>
 	 * The isolines are only drawn if the type is SurfaceSeries3D.

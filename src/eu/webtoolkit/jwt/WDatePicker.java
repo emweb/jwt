@@ -27,18 +27,23 @@ import org.slf4j.LoggerFactory;
  * {@link WCalendar} for editing the date. Any date entered in the line edit is
  * reflected in the calendar, and vice-versa.
  * <p>
- * Each of these widgets may be accessed individually ({@link }, {@link }, and
- * {@link }) and there is a constructor that allows you to specify an existing
- * line edit and display widget.
+ * Each of these widgets may be accessed individually (
+ * {@link WDatePicker#getLineEdit() getLineEdit()},
+ * {@link WDatePicker#getCalendar() getCalendar()}, and
+ * {@link WDatePicker#getDisplayWidget() getDisplayWidget()}) and there is a
+ * constructor that allows you to specify an existing line edit and display
+ * widget.
  * <p>
  * The date format used by default is <code>&quot;dd/MM/yyyy&quot;</code> and
- * can be changed using {@link }. At any time, the date set may be read using
- * {@link }, or can be changed using {@link }.
+ * can be changed using {@link WDatePicker#setFormat(String format) setFormat()}
+ * . At any time, the date set may be read using {@link WDatePicker#getDate()
+ * getDate()}, or can be changed using {@link WDatePicker#setDate(WDate date)
+ * setDate()}.
  * <p>
  * <h3>i18n</h3>
  * <p>
  * Internationalization of {@link WDatePicker} is mostly handled through the
- * internationalization mechanism of {@link WDate}.
+ * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}.
  */
 public class WDatePicker extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WDatePicker.class);
@@ -147,6 +152,9 @@ public class WDatePicker extends WCompositeWidget {
 	 * <p>
 	 * The default format is <code>&apos;dd/MM/yyyy&apos;</code>.
 	 * <p>
+	 * 
+	 * @see WDatePicker#getFormat()
+	 * @see WDate#toString()
 	 */
 	public void setFormat(final String format) {
 		WDate d = this.getDate();
@@ -214,6 +222,9 @@ public class WDatePicker extends WCompositeWidget {
 	 * Returns <code>null</code> if the date could not be parsed using the
 	 * current {@link WDatePicker#getFormat() getFormat()}. <br>
 	 * <p>
+	 * 
+	 * @see WDatePicker#setDate(WDate date)
+	 * @see WLineEdit#getText()
 	 */
 	public WDate getDate() {
 		return WDate.fromString(this.forEdit_.getText(), this.format_);
@@ -238,7 +249,8 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Sets whether the widget is enabled.
 	 * <p>
-	 * This is the oppositie of {@link }.
+	 * This is the oppositie of {@link WDatePicker#setDisabled(boolean disabled)
+	 * setDisabled()}.
 	 */
 	public void setEnabled(boolean enabled) {
 		this.setDisabled(!enabled);

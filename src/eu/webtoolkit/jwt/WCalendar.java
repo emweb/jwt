@@ -27,17 +27,21 @@ import org.slf4j.LoggerFactory;
  * day.
  * <p>
  * You can listen for single click or double click events on a calendar cell
- * using the {@link } and {@link } methods.
+ * using the {@link WCalendar#clicked() clicked()} and
+ * {@link WCalendar#activated() activated()} methods.
  * <p>
  * The calendar may be configured to allow selection of single or multiple days
- * using {@link }, and you may listen for changes in the selection using the
- * {@link } signals. Selection can also be entirely disabled in which case you
- * can implement your own selection handling by listening for cell click events.
+ * using {@link WCalendar#setSelectionMode(SelectionMode mode)
+ * setSelectionMode()}, and you may listen for changes in the selection using
+ * the {@link WCalendar#selectionChanged() selectionChanged()} signals.
+ * Selection can also be entirely disabled in which case you can implement your
+ * own selection handling by listening for cell click events.
  * <p>
- * Cell rendering may be customized by reimplementing {@link }.
+ * Cell rendering may be customized by reimplementing
+ * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
  * <p>
  * Internationalization is provided by the internationalization features of the
- * {@link WDate} class.
+ * {@link eu.webtoolkit.jwt.WDate} class.
  * <p>
  * Here is a snapshot, taken on 19/01/2010 (shown as today), and 14/01/2010
  * currently selected.
@@ -118,7 +122,8 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is {@link SingleSelection}.
+	 * The default selection mode is {@link SelectionMode#SingleSelection
+	 * SingleSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (this.selectionMode_ != mode) {
@@ -137,7 +142,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Displays the same month in the previous year. This does not affect the
 	 * selection.
 	 * <p>
-	 * This will emit the {@link } singal.
+	 * This will emit the {@link WCalendar#currentPageChanged()
+	 * currentPageChanged()} singal.
 	 */
 	public void browseToPreviousYear() {
 		--this.currentYear_;
@@ -150,7 +156,8 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * Displays the previous month. This does not affect the selection.
 	 * <p>
-	 * This will emit the {@link } singal.
+	 * This will emit the {@link WCalendar#currentPageChanged()
+	 * currentPageChanged()} singal.
 	 */
 	public void browseToPreviousMonth() {
 		if (--this.currentMonth_ == 0) {
@@ -167,7 +174,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Displays the same month in the next year. This does not change the
 	 * current selection.
 	 * <p>
-	 * This will emit the {@link } singal.
+	 * This will emit the {@link WCalendar#currentPageChanged()
+	 * currentPageChanged()} singal.
 	 */
 	public void browseToNextYear() {
 		++this.currentYear_;
@@ -180,7 +188,8 @@ public class WCalendar extends WCompositeWidget {
 	 * <p>
 	 * Displays the next month. This does not change the current selection.
 	 * <p>
-	 * This will emit the {@link } singal.
+	 * This will emit the {@link WCalendar#currentPageChanged()
+	 * currentPageChanged()} singal.
 	 */
 	public void browseToNextMonth() {
 		if (++this.currentMonth_ == 13) {
@@ -197,7 +206,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Displays the month which contains the given date. This does not change
 	 * the current selection.
 	 * <p>
-	 * This will emit the {@link } signal if another month is displayed.
+	 * This will emit the {@link WCalendar#currentPageChanged()
+	 * currentPageChanged()} signal if another month is displayed.
 	 */
 	public void browseTo(final WDate date) {
 		boolean rerender = false;
@@ -236,7 +246,8 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Clears the current selection.
 	 * <p>
-	 * Clears the current selection. Will result in a {@link } that is empty().
+	 * Clears the current selection. Will result in a
+	 * {@link WCalendar#getSelection() getSelection()} that is empty().
 	 */
 	public void clearSelection() {
 		this.selection_.clear();
@@ -247,7 +258,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Selects a date.
 	 * <p>
 	 * Select one date. Both in single or multiple selection mode, this results
-	 * in a {@link } that contains exactly one date.
+	 * in a {@link WCalendar#getSelection() getSelection()} that contains
+	 * exactly one date.
 	 */
 	public void select(final WDate date) {
 		this.selection_.clear();
@@ -259,8 +271,8 @@ public class WCalendar extends WCompositeWidget {
 	 * Selects multiple dates.
 	 * <p>
 	 * Select multiple dates. In multiple selection mode, this results in a
-	 * {@link } that contains exactly the given dates. In single selection mode,
-	 * at most one date is set.
+	 * {@link WCalendar#getSelection() getSelection()} that contains exactly the
+	 * given dates. In single selection mode, at most one date is set.
 	 */
 	public void select(final Set<WDate> dates) {
 		if (this.selectionMode_ == SelectionMode.ExtendedSelection) {

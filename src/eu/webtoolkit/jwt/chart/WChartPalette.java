@@ -50,6 +50,7 @@ public interface WChartPalette {
 	 * brush at the same <i>index</i>.
 	 * <p>
 	 * 
+	 * @see WChartPalette#getStrokePen(int index)
 	 * @see WChartPalette#getBrush(int index)
 	 */
 	public WPen getBorderPen(int index);
@@ -59,6 +60,8 @@ public interface WChartPalette {
 	 * <p>
 	 * Returns the pen for stroking lines for the style with given <i>index</i>.
 	 * <p>
+	 * 
+	 * @see WChartPalette#getStrokePen(int index)
 	 */
 	public WPen getStrokePen(int index);
 

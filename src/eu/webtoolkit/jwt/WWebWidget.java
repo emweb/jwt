@@ -36,6 +36,8 @@ public abstract class WWebWidget extends WWidget {
 	/**
 	 * Construct a WebWidget with a given parent.
 	 * <p>
+	 * 
+	 * @see WWidget#WWidget(WContainerWidget parent)
 	 */
 	public WWebWidget(WContainerWidget parent) {
 		super(parent);
@@ -319,6 +321,7 @@ public abstract class WWebWidget extends WWidget {
 				&& (animation.isEmpty() && hidden == this.isHidden())) {
 			return;
 		}
+		boolean wasVisible = this.isVisible();
 		this.flags_.set(BIT_HIDDEN, hidden);
 		this.flags_.set(BIT_HIDDEN_CHANGED);
 		if (!animation.isEmpty()
@@ -329,6 +332,13 @@ public abstract class WWebWidget extends WWidget {
 				this.transientImpl_ = new WWebWidget.TransientImpl();
 			}
 			this.transientImpl_.animation_ = animation;
+		}
+		boolean shouldBeVisible = !hidden;
+		if (shouldBeVisible && this.getParent() != null) {
+			shouldBeVisible = this.getParent().isVisible();
+		}
+		if (!canOptimizeUpdates() || shouldBeVisible != wasVisible) {
+			this.propagateSetVisible(shouldBeVisible);
 		}
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, true);
@@ -848,6 +858,8 @@ public abstract class WWebWidget extends WWidget {
 	/**
 	 * returns the current html tag name
 	 * <p>
+	 * 
+	 * @see WWebWidget#setHtmlTagName(String tag)
 	 */
 	public String getHtmlTagName() {
 		if (this.elementTagName_.length() > 0) {
@@ -1876,6 +1888,17 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
+	protected void propagateSetVisible(boolean visible) {
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				WWidget c = this.children_.get(i);
+				if (!c.isHidden()) {
+					c.getWebWidget().propagateSetVisible(visible);
+				}
+			}
+		}
+	}
+
 	boolean isStubbed() {
 		if (this.flags_.get(BIT_STUBBED)) {
 			return true;
@@ -1995,9 +2018,6 @@ public abstract class WWebWidget extends WWidget {
 		WWebWidget ww = child.getWebWidget();
 		if (ww != null) {
 			ww.gotParent();
-		}
-		if (this.flags_.get(BIT_LOADED)) {
-			this.doLoad(child);
 		}
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, false);

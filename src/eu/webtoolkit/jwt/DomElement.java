@@ -59,7 +59,12 @@ public class DomElement {
 	 * basic CSS defaults for it (whether it is inline or a block element).
 	 * <p>
 	 * Typically, elements are created using one of the &apos;named&apos;
-	 * constructors: {@link }, {@link } or {@link }.
+	 * constructors: {@link DomElement#createNew(DomElementType type)
+	 * createNew()},
+	 * {@link DomElement#getForUpdate(String id, DomElementType type)
+	 * getForUpdate()} or
+	 * {@link DomElement#updateGiven(String var, DomElementType type)
+	 * updateGiven()}.
 	 */
 	public DomElement(DomElement.Mode mode, DomElementType type) {
 		this.mode_ = mode;
@@ -179,7 +184,7 @@ public class DomElement {
 	 * Creates a reference to an existing element, deriving the ID from an
 	 * object.
 	 * <p>
-	 * This uses object.{@link } as the id.
+	 * This uses object.{@link DomElement#getId() getId()} as the id.
 	 */
 	public static DomElement getForUpdate(WObject object, DomElementType type) {
 		return getForUpdate(object.getId(), type);
@@ -199,7 +204,8 @@ public class DomElement {
 	 * Returns the JavaScript variable name.
 	 * <p>
 	 * This variable name is only defined when the element is being rendered
-	 * using JavaScript, after {@link } has been called.
+	 * using JavaScript, after {@link DomElement#declare(EscapeOStream out)
+	 * declare()} has been called.
 	 */
 	public String getVar() {
 		return this.var_;
@@ -208,7 +214,8 @@ public class DomElement {
 	/**
 	 * Sets whether the element was initially empty.
 	 * <p>
-	 * Knowing that an element was empty allows optimization of {@link }
+	 * Knowing that an element was empty allows optimization of
+	 * {@link DomElement#addChild(DomElement child) addChild()}
 	 */
 	public void setWasEmpty(boolean how) {
 		this.wasEmpty_ = how;
@@ -820,9 +827,9 @@ public class DomElement {
 			}
 			this.renderInnerHtmlJS(out, app);
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-				out.append("$('#").append(this.childrenToSave_.get(i))
-						.append("').replaceWith(c").append(this.var_)
-						.append((int) i).append(");");
+				out.append("Wt3_3_5.replaceWith('")
+						.append(this.childrenToSave_.get(i)).append("',c")
+						.append(this.var_).append((int) i).append(");");
 			}
 			this.renderDeferredJavaScript(out);
 			if (!childrenUpdated) {
@@ -1101,6 +1108,10 @@ public class DomElement {
 				break;
 			case PropertyLabel:
 				out.append(" label=");
+				fastHtmlAttributeValue(out, attributeValues, i.getValue());
+				break;
+			case PropertyPlaceholder:
+				out.append(" placeholder=");
 				fastHtmlAttributeValue(out, attributeValues, i.getValue());
 				break;
 			default:
@@ -1631,6 +1642,15 @@ public class DomElement {
 				break;
 			case PropertyLabel:
 				out.append(this.var_).append(".label=");
+				if (!pushed) {
+					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+					pushed = true;
+				}
+				fastJsStringLiteral(out, escaped, i.getValue());
+				out.append(';');
+				break;
+			case PropertyPlaceholder:
+				out.append(this.var_).append(".placeholder=");
 				if (!pushed) {
 					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;

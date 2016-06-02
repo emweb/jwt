@@ -171,9 +171,12 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the item flags for the given row and column.
 	 * <p>
-	 * Returns the result of WAbstractItemModel::index(row, column).{@link } for
+	 * Returns the result of WAbstractItemModel::index(row, column).
+	 * {@link WStandardChartProxyModel#flags(int row, int column) flags()} for
 	 * the given row and column.
 	 * <p>
+	 * 
+	 * @see WModelIndex#getFlags()
 	 */
 	public EnumSet<ItemFlag> flags(int row, int column) {
 		return this.sourceModel_.getIndex(row, column).getFlags();

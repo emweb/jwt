@@ -26,9 +26,10 @@ import org.slf4j.LoggerFactory;
  * The menu implements a typical context menu, with support for submenu&apos;s.
  * It is a specialized {@link WMenu} from which it inherits most of the API.
  * <p>
- * When initially created, the menu is invisible, until {@link } or exec() is
- * called. Then, the menu will remain visible until an item is selected, or the
- * user cancels the menu (by hitting Escape or clicking elsewhere).
+ * When initially created, the menu is invisible, until
+ * {@link WPopupMenu#popup(WPoint p) popup()} or exec() is called. Then, the
+ * menu will remain visible until an item is selected, or the user cancels the
+ * menu (by hitting Escape or clicking elsewhere).
  * <p>
  * The implementation assumes availability of JavaScript to position the menu at
  * the current mouse position and provide feed-back of the currently selected
@@ -39,9 +40,12 @@ import org.slf4j.LoggerFactory;
  * event loop and waits until the user cancelled the popup menu (by hitting
  * Escape or clicking elsewhere), or selected an item.
  * <p>
- * Alternatively, you can use one of the {@link } methods to show the menu and
- * listen to the {@link triggered} signal where you read the {@link }, or
- * associate the menu with a button using {@link }.
+ * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
+ * popup()} methods to show the menu and listen to the
+ * {@link WPopupMenu#triggered() triggered} signal where you read the
+ * {@link WPopupMenu#getResult() getResult()}, or associate the menu with a
+ * button using {@link WPushButton#setMenu(WPopupMenu popupMenu)
+ * WPushButton#setMenu()}.
  * <p>
  * You have several options to react to the selection of an item:
  * <ul>
@@ -103,8 +107,8 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Creates a new popup menu.
 	 * <p>
-	 * The menu is hidden, by default, and must be shown using {@link } or
-	 * exec().
+	 * The menu is hidden, by default, and must be shown using
+	 * {@link WPopupMenu#popup(WPoint p) popup()} or exec().
 	 */
 	public WPopupMenu(WStackedWidget contentsStack) {
 		super(contentsStack);
@@ -175,6 +179,7 @@ public class WPopupMenu extends WMenu {
 	 * <p>
 	 * 
 	 * @see WPopupMenu#popup(WPoint p)
+	 * @see WMouseEvent#getDocument()
 	 */
 	public void popup(final WMouseEvent e) {
 		this.popup(new WPoint(e.getDocument().x, e.getDocument().y));
@@ -196,6 +201,8 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Shows the popup besides a widget.
 	 * <p>
+	 * 
+	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
 	 */
 	public void popup(WWidget location, Orientation orientation) {
 		this.location_ = location;
@@ -253,6 +260,8 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Executes the popup besides a widget.
 	 * <p>
+	 * 
+	 * @see WWidget#positionAt(WWidget widget, Orientation orientation)
 	 */
 	public WMenuItem exec(WWidget location, Orientation orientation) {
 		if (this.recursiveEventLoop_) {
@@ -306,13 +315,15 @@ public class WPopupMenu extends WMenu {
 	 * Signal emitted when the popup is hidden.
 	 * <p>
 	 * Unlike the {@link WMenu#itemSelected() WMenu#itemSelected()} signal,
-	 * {@link } is only emitted by the toplevel popup menu (and not by submenus),
-	 * and is also emitted when no item was selected.
+	 * {@link WPopupMenu#aboutToHide() aboutToHide()} is only emitted by the
+	 * toplevel popup menu (and not by submenus), and is also emitted when no
+	 * item was selected.
 	 * <p>
 	 * You can use {@link WPopupMenu#getResult() getResult()} to get the
 	 * selected item, which may be <code>null</code>.
 	 * <p>
 	 * 
+	 * @see WPopupMenu#triggered()
 	 * @see WMenu#itemSelected()
 	 */
 	public Signal aboutToHide() {
@@ -323,7 +334,8 @@ public class WPopupMenu extends WMenu {
 	 * Signal emitted when an item is selected.
 	 * <p>
 	 * Unlike the {@link WMenu#itemSelected() WMenu#itemSelected()} signal,
-	 * {@link } is only emitted by the toplevel popup menu (and not by submenus).
+	 * {@link WPopupMenu#triggered() triggered()} is only emitted by the
+	 * toplevel popup menu (and not by submenus).
 	 * <p>
 	 * 
 	 * @see WPopupMenu#aboutToHide()
@@ -503,6 +515,6 @@ public class WPopupMenu extends WMenu {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupMenu",
-				"function(q,c,r){function i(){j(c,null);c.style.display=\"none\";setTimeout(function(){q.emit(c.id,\"cancel\")},0)}function s(a,b){$(a).toggleClass(\"active\",b)}function k(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&d.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(t);l(b);return b}else return null}}function z(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}var b= d.px(a,\"paddingTop\")+d.px(a,\"borderTopWidth\");d.positionAtWidget(a.id,a.parentItem.id,d.Horizontal,-b);j(a,null)}function j(a,b){function u(h,e){if(h==e)return true;else if(e)return(e=e.parentNode.parentItem)?u(h,e):false;else return false}function m(h){var e,v;e=0;for(v=h.childNodes.length;e<v;++e){var f=h.childNodes[e];if(u(f,b)){if(f!==b)(f=k(f))&&m(f)}else{s(f,false);if(f=k(f)){f.style.display=\"none\";m(f)}}}}m(a)}function t(a){for(a=d.target(a);a&&!d.hasTag(a,\"LI\")&&!d.hasTag(a,\"UL\");)a=a.parentNode; if(d.hasTag(a,\"LI\"))if(a!==n){n=a;s(a,true);var b=k(a);b&&z(b);j(c,a)}}function A(){o=false;clearTimeout(g);if(r>=0)g=setTimeout(i,r)}function B(){o=true;clearTimeout(g)}function l(a){$(a).mouseleave(A).mouseenter(B)}function p(){return document.getElementById(c.id)!=null}function w(a){p()&&d.button(a)!=1&&i()}function x(){p()&&i()}function y(a){p()&&a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var d=q.WT,g=null,o=false,n=null;this.setHidden=function(a){if(g){clearTimeout(g);g=null}o=false;n=null; if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"mousedown\",w);$(document).unbind(\"click\",x);$(document).unbind(\"keydown\",y)}else{setTimeout(function(){$(document).bind(\"mousedown\",w);$(document).bind(\"click\",x);$(document).bind(\"keydown\",y)},0);c.style.display=\"block\"}j(c,null)};this.popupAt=function(a){l(a)};setTimeout(function(){l(c)},0);$(c).mousemove(t)}");
+				"function(q,c,r){function i(){j(c,null);c.style.display=\"none\";setTimeout(function(){q.emit(c.id,\"cancel\")},0)}function s(a,b){$(a).toggleClass(\"active\",b)}function k(a){if(a.subMenu)return a.subMenu;else{var b=a.lastChild;if(b&&d.hasTag(b,\"UL\")){a.subMenu=b;b.parentItem=a;$(b).mousemove(t);l(b);return b}else return null}}function A(a){a.style.display=\"block\";if(a.parentNode==a.parentItem){a.parentNode.removeChild(a);c.parentNode.appendChild(a)}var b= d.px(a,\"paddingTop\")+d.px(a,\"borderTopWidth\");d.positionAtWidget(a.id,a.parentItem.id,d.Horizontal,-b);j(a,null)}function j(a,b){function u(h,e){if(h==e)return true;else if(e)return(e=e.parentNode.parentItem)?u(h,e):false;else return false}function m(h){var e,v;e=0;for(v=h.childNodes.length;e<v;++e){var f=h.childNodes[e];if(u(f,b)){if(f!==b)(f=k(f))&&m(f)}else{s(f,false);if(f=k(f)){f.style.display=\"none\";m(f)}}}}m(a)}function t(a){for(a=d.target(a);a&&!d.hasTag(a,\"LI\")&&!d.hasTag(a,\"UL\");)a=a.parentNode; if(d.hasTag(a,\"LI\"))if(a!==n){n=a;s(a,true);var b=k(a);b&&A(b);j(c,a)}}function B(){o=false;clearTimeout(g);if(r>=0)g=setTimeout(i,r)}function C(){o=true;clearTimeout(g)}function l(a){$(a).mouseleave(B).mouseenter(C)}function p(){return document.getElementById(c.id)!=null}function w(a){x=true;p()&&d.button(a)!=1&&i()}function y(){x&&p()&&i()}function z(a){p()&&a.keyCode==27&&i()}jQuery.data(c,\"obj\",this);var d=q.WT,g=null,o=false,n=null,x=false;this.setHidden=function(a){if(g){clearTimeout(g);g=null}o= false;n=null;if(a){c.style.position=\"\";c.style.display=\"\";c.style.left=\"\";c.style.top=\"\";$(document).unbind(\"mousedown\",w);$(document).unbind(\"click\",y);$(document).unbind(\"keydown\",z)}else{setTimeout(function(){$(document).bind(\"mousedown\",w);$(document).bind(\"click\",y);$(document).bind(\"keydown\",z)},0);c.style.display=\"block\"}j(c,null)};this.popupAt=function(a){l(a)};setTimeout(function(){l(c)},0);$(c).mousemove(t)}");
 	}
 }

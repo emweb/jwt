@@ -29,9 +29,11 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li><code>google-oauth2-redirect-endpoint</code>: the URL of the local
  * redirect endpoint, to which the google OAuth service redirects the user after
- * authentication. See also {@link }</li>
+ * authentication. See also {@link GoogleService#getRedirectEndpoint()
+ * getRedirectEndpoint()}</li>
  * <li><code>google-oauth2-redirect-endpoint-path</code>: optionally, the
- * deployment path that corresponds to the redirect endpoint. See also {@link }</li>
+ * deployment path that corresponds to the redirect endpoint. See also
+ * {@link GoogleService#getRedirectEndpointPath() getRedirectEndpointPath()}</li>
  * <li><code>google-oauth2-client-id</code>: The client ID</li>
  * <li><code>google-oauth2-client-secret</code>: The client secret.</li>
  * </ul>

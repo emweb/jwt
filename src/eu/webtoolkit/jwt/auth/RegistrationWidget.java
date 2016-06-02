@@ -214,8 +214,9 @@ public class RegistrationWidget extends WTemplateFormView {
 	 * The default implementation checks if the information is valid with
 	 * {@link RegistrationWidget#validate() validate()}, and then calls
 	 * {@link RegistrationModel#doRegister() RegistrationModel#doRegister()}. If
-	 * registration was successful, it calls {@link } and subsequently logs the
-	 * user in.
+	 * registration was successful, it calls
+	 * {@link RegistrationWidget#registerUserDetails(User user)
+	 * registerUserDetails()} and subsequently logs the user in.
 	 */
 	protected void doRegister() {
 		AbstractUserDatabase.Transaction t = this.model_.getUsers()

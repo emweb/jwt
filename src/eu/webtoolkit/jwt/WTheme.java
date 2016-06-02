@@ -50,8 +50,8 @@ public abstract class WTheme extends WObject {
 	 * Returns a theme name.
 	 * <p>
 	 * Returns a unique name for the theme. This name is used by the default
-	 * implementation of {@link } to compute a location for the theme&apos;s
-	 * resources.
+	 * implementation of {@link WTheme#getResourcesUrl() getResourcesUrl()} to
+	 * compute a location for the theme&apos;s resources.
 	 */
 	public abstract String getName();
 
@@ -71,7 +71,8 @@ public abstract class WTheme extends WObject {
 	 * <p>
 	 * This must serve CSS declarations for the theme.
 	 * <p>
-	 * The default implementation serves all the {@link }.
+	 * The default implementation serves all the {@link WTheme#getStyleSheets()
+	 * getStyleSheets()}.
 	 */
 	public void serveCss(final StringBuilder out) {
 		List<WCssStyleSheet> sheets = this.getStyleSheets();

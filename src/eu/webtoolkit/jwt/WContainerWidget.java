@@ -26,29 +26,35 @@ import org.slf4j.LoggerFactory;
  * A WContainerWidget acts as a container for child widgets. Child widgets may
  * be added directly to the container or using a layout manager.
  * <p>
- * Use {@link } or pass the container as constructor argument to a widget to
- * directly add children to the container, without using a layout manager. In
- * that case, CSS-based layout is used, and the resulting display is determined
- * by properties of the children and the container. By default, a
- * WContainerWidget is displayed as a {@link block} and manages its children
+ * Use {@link WContainerWidget#addWidget(WWidget widget) addWidget()} or pass
+ * the container as constructor argument to a widget to directly add children to
+ * the container, without using a layout manager. In that case, CSS-based layout
+ * is used, and the resulting display is determined by properties of the
+ * children and the container. By default, a WContainerWidget is displayed as a
+ * {@link WWidget#setInline(boolean inlined) block} and manages its children
  * within a rectangle. Inline child widgets are layed out in lines, wrapping
  * around as needed, while block child widgets are stacked vertically. The
- * container may add padding at the container edges using {@link }, and provide
- * alignment of contents using {@link }. A container is rendered by default using
- * a HTML <code>div</code> tag, but this may be changed to an HTML
- * <code>ul</code> or <code>ol</code> tag to make use of other CSS layout
- * techniques, using {@link }. In addition, specializations of this class as
- * implemented by {@link WAnchor}, {@link WGroupBox}, {@link WStackedWidget} and
- * {@link WTableCell} provide other alternative rendering of the container.
+ * container may add padding at the container edges using
+ * {@link WContainerWidget#setPadding(WLength length, EnumSet sides)
+ * setPadding()}, and provide alignment of contents using
+ * {@link WContainerWidget#setContentAlignment(EnumSet alignment)
+ * setContentAlignment()}. A container is rendered by default using a HTML
+ * <code>div</code> tag, but this may be changed to an HTML <code>ul</code> or
+ * <code>ol</code> tag to make use of other CSS layout techniques, using
+ * {@link WContainerWidget#setList(boolean list, boolean ordered) setList()}. In
+ * addition, specializations of this class as implemented by {@link WAnchor},
+ * {@link WGroupBox}, {@link WStackedWidget} and {@link WTableCell} provide
+ * other alternative rendering of the container.
  * <p>
- * When setting the WContainerWidget {@link inline} the container only acts as a
- * conceptual container, offering a common style to its children. Inline
- * children are still layed out inline within the flow of the parent container
- * of this container, as if they were inserted directly into that parent
- * container. Block children are then not allowed (according to the HTML
- * specification).
+ * When setting the WContainerWidget {@link WWidget#setInline(boolean inlined)
+ * inline} the container only acts as a conceptual container, offering a common
+ * style to its children. Inline children are still layed out inline within the
+ * flow of the parent container of this container, as if they were inserted
+ * directly into that parent container. Block children are then not allowed
+ * (according to the HTML specification).
  * <p>
- * To use a layout manager instead of CSS-based layout, use {@link } or pass the
+ * To use a layout manager instead of CSS-based layout, use
+ * {@link WContainerWidget#setLayout(WLayout layout) setLayout()} or pass the
  * container as constructor argument to a layout manager. In that case you
  * should not define any padding for the container, and widgets and nested
  * layout managers must be added to the layout manager, instead of to the
@@ -84,9 +90,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * When using a layout manager, you need to carefully consider the alignment of
  * the layout manager with respect to the container: when the container&apos;s
- * height is unconstrained (not specified explicitly using {@link } or a style
- * class, and the container is not included in a layout manager), you should
- * pass AlignTop to {@link }.
+ * height is unconstrained (not specified explicitly using
+ * {@link WWebWidget#resize(WLength width, WLength height) WWebWidget#resize()}
+ * or a style class, and the container is not included in a layout manager), you
+ * should pass AlignTop to {@link WContainerWidget#setLayout(WLayout layout)
+ * setLayout()}.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -100,8 +108,9 @@ import org.slf4j.LoggerFactory;
  * <code>&lt;ul&gt;</code>.</li>
  * <li>When configured with setList(true, true), the widget corresponds to a
  * <code>&lt;ol&gt;</code>.</li>
- * <li>When inserted into a container widget that {@link }, the widget
- * corresponds to a <code>&lt;li&gt;</code>.</li>
+ * <li>When inserted into a container widget that
+ * {@link WContainerWidget#isList() isList()}, the widget corresponds to a
+ * <code>&lt;li&gt;</code>.</li>
  * </ul>
  * <p>
  * This widget does not provide styling, and can be styled using inline or
@@ -191,6 +200,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * that were part of the previous layout to the new layout, or delete them,
 	 * to avoid memory leaks.
 	 * <p>
+	 * 
+	 * @see WContainerWidget#getLayout()
 	 */
 	public void setLayout(WLayout layout) {
 		this.setLayout(layout, EnumSet.of(AlignmentFlag.AlignJustify));
@@ -207,19 +218,21 @@ public class WContainerWidget extends WInteractWidget {
 	 * In general, <code>alignment</code> is the logical OR of a horizontal and
 	 * a vertical flag:
 	 * <ul>
-	 * <li>The horizontal alignment option may be one of {@link }, {@link },
-	 * {@link }, or {@link }.</li>
+	 * <li>The horizontal alignment option may be one of
+	 * {@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter},
+	 * {@link AlignmentFlag#AlignRight}, or {@link AlignmentFlag#AlignJustify}.</li>
 	 * <li>The vertical alignment option may be &apos;0&apos; (corresponding to
-	 * vertical justification to the full height), or {@link }.</li>
+	 * vertical justification to the full height), or
+	 * {@link AlignmentFlag#AlignTop}.</li>
 	 * </ul>
 	 * <p>
-	 * When using a horizontal alignment different from {@link }, and a vertical
-	 * alignment different from &apos;0&apos;, the widget is sized in that
-	 * direction to fit the contents, instead of the contents being adjusted to
-	 * the widget size. This is useful when the container does not have a
-	 * specific size in that direction and when the layout manager does not
-	 * contain any widgets that wish to consume all remaining space in that
-	 * direction.
+	 * When using a horizontal alignment different from
+	 * {@link AlignmentFlag#AlignJustify}, and a vertical alignment different
+	 * from &apos;0&apos;, the widget is sized in that direction to fit the
+	 * contents, instead of the contents being adjusted to the widget size. This
+	 * is useful when the container does not have a specific size in that
+	 * direction and when the layout manager does not contain any widgets that
+	 * wish to consume all remaining space in that direction.
 	 * <p>
 	 * The widget will take ownership of <code>layout</code>.
 	 * <p>
@@ -227,8 +240,11 @@ public class WContainerWidget extends WInteractWidget {
 	 * @deprecated using {@link WContainerWidget#setLayout(WLayout layout)
 	 *             setLayout()} instead, use spacers or a nested layout to
 	 *             control the overall alignment of the layout contents within
-	 *             the container, and use {@link } (if needed) to let the layout
+	 *             the container, and use
+	 *             {@link WWebWidget#setMaximumSize(WLength width, WLength height)
+	 *             WWebWidget#setMaximumSize()} (if needed) to let the layout
 	 *             contents determine the size of the container.
+	 * @see WContainerWidget#getLayout()
 	 */
 	public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
 		if (this.layout_ != null && layout != this.layout_) {
@@ -314,6 +330,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * The <i>widget</i> is inserted at the place of the <code>before</code>
 	 * widget, and subsequent widgets are shifted.
 	 * <p>
+	 * 
+	 * @see WContainerWidget#insertWidget(int index, WWidget widget)
 	 */
 	public void insertBefore(WWidget widget, WWidget before) {
 		if (before.getParent() != this) {
@@ -419,7 +437,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * children are always pushed to the top of the container.
 	 * <p>
 	 * For a {@link WTableCell}, this may also specify the vertical alignment.
-	 * The default alignment is ({@link } | {@link }).
+	 * The default alignment is ({@link AlignmentFlag#AlignTop} |
+	 * {@link AlignmentFlag#AlignLeft}).
 	 */
 	public void setContentAlignment(EnumSet<AlignmentFlag> alignment) {
 		this.contentAlignment_ = EnumSet.copyOf(alignment);
@@ -599,6 +618,10 @@ public class WContainerWidget extends WInteractWidget {
 	 * By default, a container is rendered using a <code>&lt;div&gt;</code>
 	 * element.
 	 * <p>
+	 * 
+	 * @see WContainerWidget#isList()
+	 * @see WContainerWidget#isOrderedList()
+	 * @see WContainerWidget#isUnorderedList()
 	 */
 	public void setList(boolean list, boolean ordered) {
 		this.flags_.set(BIT_LIST, list);
@@ -620,6 +643,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * <p>
 	 * 
 	 * @see WContainerWidget#setList(boolean list, boolean ordered)
+	 * @see WContainerWidget#isOrderedList()
+	 * @see WContainerWidget#isUnorderedList()
 	 */
 	public boolean isList() {
 		return this.flags_.get(BIT_LIST);
@@ -631,6 +656,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * 
 	 * @see WContainerWidget#setList(boolean list, boolean ordered)
 	 * @see WContainerWidget#isList()
+	 * @see WContainerWidget#isOrderedList()
 	 */
 	public boolean isUnorderedList() {
 		return this.flags_.get(BIT_LIST) && !this.flags_.get(BIT_ORDERED_LIST);
@@ -674,6 +700,7 @@ public class WContainerWidget extends WInteractWidget {
 	 * 
 	 * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value,
 	 *      EnumSet orientation)
+	 * @see WContainerWidget#getScrollLeft()
 	 */
 	public int getScrollTop() {
 		return this.scrollTop_;

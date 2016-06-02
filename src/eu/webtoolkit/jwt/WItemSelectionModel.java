@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
  * in drag &amp; drop of an item selection.
  * <p>
  * When an item selection is dragged from a view widget, the generated drop
- * events will have as source object (see {@link }) this selection model.
+ * events will have as source object (see {@link WDropEvent#getSource()
+ * WDropEvent#getSource()}) this selection model.
  * <p>
  * Although this class does not (yet) allow you to modify the selection, note
  * that manipulations to the model may modify the selection (row insertions and
@@ -60,9 +61,9 @@ public class WItemSelectionModel extends WObject {
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
-	 * When selection operates on rows ({@link SelectRows}), this method only
-	 * returns the model index of first column&apos;s element of the selected
-	 * rows.
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method only returns the model index of first
+	 * column&apos;s element of the selected rows.
 	 */
 	public SortedSet<WModelIndex> getSelectedIndexes() {
 		return this.selection_;
@@ -71,8 +72,9 @@ public class WItemSelectionModel extends WObject {
 	/**
 	 * Returns wheter an item is selected.
 	 * <p>
-	 * When selection operates on rows ({@link SelectRows}), this method returns
-	 * true for each element in a selected row.
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
+	 * SelectRows}), this method returns true for each element in a selected
+	 * row.
 	 * <p>
 	 * 
 	 * @see WItemSelectionModel#getSelectedIndexes()
@@ -99,12 +101,12 @@ public class WItemSelectionModel extends WObject {
 	/**
 	 * Sets the selection behaviour.
 	 * <p>
-	 * By default, the selection contains rows ({@link SelectRows}), in which
-	 * case model indexes will always be have column 0, but represent the whole
-	 * row.
+	 * By default, the selection contains rows (
+	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
+	 * indexes will always be have column 0, but represent the whole row.
 	 * <p>
 	 * Alternatively, you can allow selection for individual items (
-	 * {@link SelectItems}).
+	 * {@link SelectionBehavior#SelectItems SelectItems}).
 	 */
 	public void setSelectionBehavior(SelectionBehavior behavior) {
 		this.selectionBehavior_ = behavior;
@@ -128,7 +130,7 @@ public class WItemSelectionModel extends WObject {
 	 * <p>
 	 * The default implementation returns the mime type based on MimeTypeRole
 	 * data if all selected items indicate the same mime type, or the model
-	 * {@link } otherwise.
+	 * {@link WItemSelectionModel#getMimeType() getMimeType()} otherwise.
 	 * <p>
 	 * If one or more items indicate that they cannot be dragged, then an empty
 	 * string is returned.

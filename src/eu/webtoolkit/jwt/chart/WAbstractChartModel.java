@@ -124,8 +124,11 @@ public abstract class WAbstractChartModel extends WObject {
 	 * <p>
 	 * This is used as the color of the outline of markers when drawing a
 	 * PointSeries. The default is null, indicating that the default color, as
-	 * determined by {@link }, should be used.
+	 * determined by {@link WDataSeries#getMarkerPen()
+	 * WDataSeries#getMarkerPen()}, should be used.
 	 * <p>
+	 * 
+	 * @see WDataSeries#setMarkerPen(WPen pen)
 	 */
 	public WColor getMarkerPenColor(int row, int column) {
 		return null;
@@ -136,8 +139,11 @@ public abstract class WAbstractChartModel extends WObject {
 	 * <p>
 	 * This is used as the color of the brush used when drawing a PointSeries.
 	 * The default is null, indicating that the default color, as determined by
-	 * {@link }, should be used.
+	 * {@link WDataSeries#getMarkerBrush() WDataSeries#getMarkerBrush()}, should
+	 * be used.
 	 * <p>
+	 * 
+	 * @see WDataSeries#setMarkerBrush(WBrush brush)
 	 */
 	public WColor getMarkerBrushColor(int row, int column) {
 		return null;
@@ -148,8 +154,11 @@ public abstract class WAbstractChartModel extends WObject {
 	 * <p>
 	 * This is used as the color of the outline of bars when drawing a
 	 * BarSeries. The default is null, indicating that the default color, as
-	 * determined by {@link }, should be used.
+	 * determined by {@link WDataSeries#getPen() WDataSeries#getPen()}, should
+	 * be used.
 	 * <p>
+	 * 
+	 * @see WDataSeries#setPen(WPen pen)
 	 */
 	public WColor getBarPenColor(int row, int column) {
 		return null;
@@ -160,8 +169,10 @@ public abstract class WAbstractChartModel extends WObject {
 	 * <p>
 	 * This is used as the color of the brush used when drawing a BarSeries. The
 	 * default is null, indicating that the default color, as determined by
-	 * {@link }, should be used.
+	 * {@link WDataSeries#getBrush() WDataSeries#getBrush()}, should be used.
 	 * <p>
+	 * 
+	 * @see WDataSeries#setBrush(WBrush brush)
 	 */
 	public WColor getBarBrushColor(int row, int column) {
 		return null;
@@ -180,6 +191,8 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the number of columns.
 	 * <p>
+	 * 
+	 * @see WAbstractChartModel#getRowCount()
 	 */
 	public abstract int getColumnCount();
 

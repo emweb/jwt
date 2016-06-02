@@ -23,20 +23,30 @@ import org.slf4j.LoggerFactory;
  * An item in a {@link WStandardItemModel}.
  * <p>
  * 
- * The item provides access to various data properties: {@link text},
- * {@link icon}, {@link CSS style class}, {@link tool tip}, and {@link check
- * state}, and data flags ({@link } and {@link }).
+ * The item provides access to various data properties:
+ * {@link WStandardItem#setText(CharSequence text) text},
+ * {@link WStandardItem#setIcon(String uri) icon},
+ * {@link WStandardItem#setStyleClass(CharSequence styleClass) CSS style class},
+ * {@link WStandardItem#setToolTip(CharSequence toolTip) tool tip}, and
+ * {@link WStandardItem#setChecked(boolean checked) check state}, and data flags
+ * ({@link WStandardItem#setFlags(EnumSet flags) setFlags()} and
+ * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()}).
  * <p>
  * An item may contain a table of children items: the initial geometry may be
- * specified in the constructor, or using the methods {@link } and
+ * specified in the constructor, or using the methods
+ * {@link WStandardItem#setRowCount(int rows) setRowCount()} and
  * setModelCount(). Unspecified items are 0. You can set or inspect children
- * items using the {@link } and {@link } methods.
+ * items using the
+ * {@link WStandardItem#setChild(int row, int column, WStandardItem item)
+ * setChild()} and {@link WStandardItem#getChild(int row, int column)
+ * getChild()} methods.
  * <p>
  * It is possible to reimplement this class and specialize the methods for data
- * acess ({@link } and {@link }), or provide custom sorting functionality by
- * reimplementing
+ * acess ({@link WStandardItem#setData(Object d, int role) setData()} and
+ * {@link WStandardItem#getData(int role) getData()}), or provide custom sorting
+ * functionality by reimplementing
  * <p>
- * {@link }.
+ * {@link WStandardItem#compare(WStandardItem other) compare()}.
  */
 public class WStandardItem {
 	private static Logger logger = LoggerFactory.getLogger(WStandardItem.class);
@@ -57,6 +67,8 @@ public class WStandardItem {
 	/**
 	 * Creates an item with a text.
 	 * <p>
+	 * 
+	 * @see WStandardItem#setText(CharSequence text)
 	 */
 	public WStandardItem(final CharSequence text) {
 		this.model_ = null;
@@ -72,6 +84,9 @@ public class WStandardItem {
 	/**
 	 * Creates an item with an icon and a text.
 	 * <p>
+	 * 
+	 * @see WStandardItem#setText(CharSequence text)
+	 * @see WStandardItem#setIcon(String uri)
 	 */
 	public WStandardItem(final String iconUri, final CharSequence text) {
 		this.model_ = null;
@@ -88,6 +103,9 @@ public class WStandardItem {
 	/**
 	 * Creates an item with an initial geometry.
 	 * <p>
+	 * 
+	 * @see WStandardItem#setRowCount(int rows)
+	 * @see WStandardItem#setColumnCount(int columns)
 	 */
 	public WStandardItem(int rows, int columns) {
 		this.model_ = null;
@@ -127,10 +145,13 @@ public class WStandardItem {
 	/**
 	 * Sets the text.
 	 * <p>
-	 * The text is stored as {@link DisplayRole} data.
+	 * The text is stored as {@link ItemDataRole#DisplayRole DisplayRole} data.
 	 * <p>
 	 * The default text is empty (&quot;&quot;).
 	 * <p>
+	 * 
+	 * @see WStandardItem#getText()
+	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setText(final CharSequence text) {
 		this.setData(text, ItemDataRole.DisplayRole);
@@ -150,10 +171,14 @@ public class WStandardItem {
 	/**
 	 * Sets the icon url.
 	 * <p>
-	 * The icon is stored as {@link DecorationRole} data.
+	 * The icon is stored as {@link ItemDataRole#DecorationRole DecorationRole}
+	 * data.
 	 * <p>
 	 * The default icon url is empty (&quot;&quot;).
 	 * <p>
+	 * 
+	 * @see WStandardItem#getIcon()
+	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setIcon(final String uri) {
 		this.setData(uri, ItemDataRole.DecorationRole);
@@ -177,10 +202,14 @@ public class WStandardItem {
 	/**
 	 * Sets the CSS style class.
 	 * <p>
-	 * The style class is stored as {@link StyleClassRole} data.
+	 * The style class is stored as {@link ItemDataRole#StyleClassRole
+	 * StyleClassRole} data.
 	 * <p>
 	 * The default style class is empty (&quot;&quot;).
 	 * <p>
+	 * 
+	 * @see WStandardItem#getStyleClass()
+	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setStyleClass(final CharSequence styleClass) {
 		this.setData(styleClass, ItemDataRole.StyleClassRole);
@@ -204,10 +233,14 @@ public class WStandardItem {
 	/**
 	 * Sets a tool tip.
 	 * <p>
-	 * The tool tip is stored as {@link ToolTipRole} data.
+	 * The tool tip is stored as {@link ItemDataRole#ToolTipRole ToolTipRole}
+	 * data.
 	 * <p>
 	 * The default tool tip is empty (&quot;&quot;).
 	 * <p>
+	 * 
+	 * @see WStandardItem#getToolTip()
+	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setToolTip(final CharSequence toolTip) {
 		this.setData(toolTip, ItemDataRole.ToolTipRole);
@@ -231,8 +264,10 @@ public class WStandardItem {
 	/**
 	 * Sets a link.
 	 * <p>
-	 * The link is stored as {@link LinkRole} data.
+	 * The link is stored as {@link ItemDataRole#LinkRole LinkRole} data.
 	 * <p>
+	 * 
+	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setLink(final WLink link) {
 		this.setData(link, ItemDataRole.LinkRole);
@@ -256,7 +291,8 @@ public class WStandardItem {
 	/**
 	 * Sets a link to an internal path (<b>deprecated</b>).
 	 * <p>
-	 * The internal path is stored as {@link LinkRole} data..
+	 * The internal path is stored as {@link ItemDataRole#LinkRole LinkRole}
+	 * data..
 	 * <p>
 	 * 
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
@@ -285,7 +321,7 @@ public class WStandardItem {
 	/**
 	 * Sets a link to a URL (<b>deprecated</b>).
 	 * <p>
-	 * The URL is stored as {@link LinkRole} data.
+	 * The URL is stored as {@link ItemDataRole#LinkRole LinkRole} data.
 	 * <p>
 	 * 
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
@@ -314,16 +350,22 @@ public class WStandardItem {
 	/**
 	 * Checks or unchecks the item.
 	 * <p>
-	 * The value is stored as {@link CheckStateRole} data.
+	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
+	 * data.
 	 * <p>
 	 * By default, an item is not checked.
 	 * <p>
 	 * Note: the checkbox will only be enabled if the item is checkable (see
-	 * {@link }).
+	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()}).
 	 * <p>
-	 * If the item is tri-state, you may consider using {@link } instead which
-	 * supports also setting the third {@link } state.
+	 * If the item is tri-state, you may consider using
+	 * {@link WStandardItem#setCheckState(CheckState state) setCheckState()}
+	 * instead which supports also setting the third
+	 * {@link CheckState#PartiallyChecked} state.
 	 * <p>
+	 * 
+	 * @see WStandardItem#setCheckable(boolean checkable)
+	 * @see WStandardItem#setCheckState(CheckState state)
 	 */
 	public void setChecked(boolean checked) {
 		Object d = this.getData(ItemDataRole.CheckStateRole);
@@ -347,11 +389,16 @@ public class WStandardItem {
 	 * Sets the check state.
 	 * <p>
 	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked()}, this
-	 * sets the check state, but allows also setting the {@link } state when the
-	 * item is tri-state checkable.
+	 * sets the check state, but allows also setting the
+	 * {@link CheckState#PartiallyChecked} state when the item is tri-state
+	 * checkable.
 	 * <p>
-	 * The value is stored as {@link CheckStateRole} data.
+	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
+	 * data.
 	 * <p>
+	 * 
+	 * @see WStandardItem#setCheckable(boolean checkable)
+	 * @see WStandardItem#setData(Object d, int role)
 	 */
 	public void setCheckState(CheckState state) {
 		Object d = this.getData(ItemDataRole.CheckStateRole);
@@ -393,8 +440,13 @@ public class WStandardItem {
 	/**
 	 * Sets the flags.
 	 * <p>
-	 * The default flag value is {@link ItemIsSelectable}.
+	 * The default flag value is {@link ItemFlag#ItemIsSelectable
+	 * ItemIsSelectable}.
 	 * <p>
+	 * 
+	 * @see ItemFlag
+	 * @see WStandardItem#getFlags()
+	 * @see WStandardItem#setCheckable(boolean checkable)
 	 */
 	public void setFlags(EnumSet<ItemFlag> flags) {
 		if (!this.flags_.equals(flags)) {
@@ -425,7 +477,8 @@ public class WStandardItem {
 	/**
 	 * Makes the item checkable.
 	 * <p>
-	 * Adds {@link ItemIsUserCheckable} to the item&apos;s flags.
+	 * Adds {@link ItemFlag#ItemIsUserCheckable ItemIsUserCheckable} to the
+	 * item&apos;s flags.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setFlags(EnumSet flags)
@@ -460,7 +513,8 @@ public class WStandardItem {
 	 * Makes the item tri-state checkable.
 	 * <p>
 	 * When <code>tristate</code> is <code>true</code>, the item is checkable
-	 * with three states: {@link }, {@link }, and {@link }.
+	 * with three states: {@link CheckState#Unchecked},
+	 * {@link CheckState#Checked}, and {@link CheckState#PartiallyChecked}.
 	 * <p>
 	 * This requires that the item is also checkable (see
 	 * {@link WStandardItem#setCheckable(boolean checkable) setCheckable()})
@@ -507,6 +561,8 @@ public class WStandardItem {
 	 * <p>
 	 * Sets item data for the given role.
 	 * <p>
+	 * 
+	 * @see WStandardItem#getData(int role)
 	 */
 	public void setData(final Object d, int role) {
 		if (role == ItemDataRole.EditRole) {
@@ -535,6 +591,8 @@ public class WStandardItem {
 	 * <p>
 	 * Returns item data for the given role.
 	 * <p>
+	 * 
+	 * @see WStandardItem#getData(int role)
 	 */
 	public Object getData(int role) {
 		Object i = this.data_.get(role);
@@ -561,9 +619,14 @@ public class WStandardItem {
 	/**
 	 * Returns whether the item has any children.
 	 * <p>
-	 * This is a convenience method and checks whether {@link } and {@link }
-	 * differ both from 0.
+	 * This is a convenience method and checks whether
+	 * {@link WStandardItem#getRowCount() getRowCount()} and
+	 * {@link WStandardItem#getColumnCount() getColumnCount()} differ both from
+	 * 0.
 	 * <p>
+	 * 
+	 * @see WStandardItem#getRowCount()
+	 * @see WStandardItem#getColumnCount()
 	 */
 	public boolean hasChildren() {
 		return this.columns_ != null;
@@ -579,9 +642,13 @@ public class WStandardItem {
 	 * deleted at the end.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>If <code>rows</code> &gt; 0, and {@link } == 0,
-	 * columnCount is first increased to 1 using setColumnCount(1).</i>
+	 * <i><b>Note: </b>If <code>rows</code> &gt; 0, and
+	 * {@link WStandardItem#getColumnCount() getColumnCount()} == 0, columnCount
+	 * is first increased to 1 using setColumnCount(1).</i>
 	 * </p>
+	 * 
+	 * @see WStandardItem#setColumnCount(int columns)
+	 * @see WStandardItem#getRowCount()
 	 */
 	public void setRowCount(int rows) {
 		if (rows > this.getRowCount()) {
@@ -614,6 +681,7 @@ public class WStandardItem {
 	 * <p>
 	 * 
 	 * @see WStandardItem#setRowCount(int rows)
+	 * @see WStandardItem#getColumnCount()
 	 */
 	public void setColumnCount(int columns) {
 		if (columns > this.getColumnCount()) {
@@ -650,6 +718,9 @@ public class WStandardItem {
 	 *   }
 	 * </pre>
 	 * <p>
+	 * 
+	 * @see WStandardItem#insertColumn(int column, List items)
+	 * @see WStandardItem#appendRow(List items)
 	 */
 	public void appendColumn(final List<WStandardItem> items) {
 		this.insertColumn(this.getColumnCount(), items);
@@ -661,6 +732,8 @@ public class WStandardItem {
 	 * Inserts a single column of <code>items</code> at column
 	 * <code>column</code>. If necessary, the row count is increased.
 	 * <p>
+	 * 
+	 * @see WStandardItem#insertRow(int row, List items)
 	 */
 	public void insertColumn(int column, final List<WStandardItem> items) {
 		int rc = this.getRowCount();
@@ -712,6 +785,7 @@ public class WStandardItem {
 	 * </pre>
 	 * <p>
 	 * 
+	 * @see WStandardItem#insertRow(int row, List items)
 	 * @see WStandardItem#appendColumn(List items)
 	 */
 	public void appendRow(final List<WStandardItem> items) {
@@ -756,6 +830,8 @@ public class WStandardItem {
 	 * <p>
 	 * Inserts <i>count</i> empty columns at position <code>column</code>.
 	 * <p>
+	 * 
+	 * @see WStandardItem#insertRows(int row, int count)
 	 */
 	public void insertColumns(int column, int count) {
 		if (count > 0) {
@@ -832,6 +908,8 @@ public class WStandardItem {
 	 *   }
 	 * </pre>
 	 * <p>
+	 * 
+	 * @see WStandardItem#insertRow(int row, WStandardItem item)
 	 */
 	public void appendRow(WStandardItem item) {
 		this.insertRow(this.getRowCount(), item);
@@ -877,6 +955,8 @@ public class WStandardItem {
 	 *   }
 	 * </pre>
 	 * <p>
+	 * 
+	 * @see WStandardItem#insertRows(int row, List items)
 	 */
 	public void appendRows(final List<WStandardItem> items) {
 		this.insertRows(this.getRowCount(), items);
@@ -911,6 +991,8 @@ public class WStandardItem {
 	 * and/or the {@link WStandardItem#getColumnCount() getColumnCount()} is
 	 * increased.
 	 * <p>
+	 * 
+	 * @see WStandardItem#getChild(int row, int column)
 	 */
 	public void setChild(int row, int column, WStandardItem item) {
 		if (column >= this.getColumnCount()) {
@@ -1010,6 +1092,9 @@ public class WStandardItem {
 	 * model (reducing the column count by one). Ownership of all items is
 	 * transferred to the caller.
 	 * <p>
+	 * 
+	 * @see WStandardItem#takeRow(int row)
+	 * @see WStandardItem#removeColumn(int column)
 	 */
 	public List<WStandardItem> takeColumn(int column) {
 		if (this.model_ != null) {
@@ -1040,6 +1125,7 @@ public class WStandardItem {
 	 * <p>
 	 * 
 	 * @see WStandardItem#takeColumn(int column)
+	 * @see WStandardItem#removeRow(int row)
 	 */
 	public List<WStandardItem> takeRow(int row) {
 		if (this.model_ != null) {
@@ -1078,6 +1164,7 @@ public class WStandardItem {
 	 * </pre>
 	 * <p>
 	 * 
+	 * @see WStandardItem#removeColumns(int column, int count)
 	 * @see WStandardItem#takeColumn(int column)
 	 */
 	public void removeColumn(int column) {
@@ -1092,6 +1179,7 @@ public class WStandardItem {
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeColumn(int column)
+	 * @see WStandardItem#removeRows(int row, int count)
 	 */
 	public void removeColumns(int column, int count) {
 		if (this.model_ != null) {
@@ -1129,6 +1217,7 @@ public class WStandardItem {
 	 * </pre>
 	 * <p>
 	 * 
+	 * @see WStandardItem#removeRows(int row, int count)
 	 * @see WStandardItem#takeRow(int row)
 	 */
 	public void removeRow(int row) {
@@ -1167,6 +1256,8 @@ public class WStandardItem {
 	/**
 	 * Returns the model index for this item.
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#indexFromItem(WStandardItem item)
 	 */
 	public WModelIndex getIndex() {
 		if (this.model_ != null) {
@@ -1203,6 +1294,8 @@ public class WStandardItem {
 	 * <p>
 	 * Returns the row index of this item in the parent.
 	 * <p>
+	 * 
+	 * @see WStandardItem#getColumn()
 	 */
 	public int getRow() {
 		return this.row_;
@@ -1213,6 +1306,8 @@ public class WStandardItem {
 	 * <p>
 	 * Returns the column index of this item in the parent.
 	 * <p>
+	 * 
+	 * @see WStandardItem#getColumn()
 	 */
 	public int getColumn() {
 		return this.column_;
@@ -1221,6 +1316,8 @@ public class WStandardItem {
 	/**
 	 * Returns a clone of this item.
 	 * <p>
+	 * 
+	 * @see WStandardItemModel#setItemPrototype(WStandardItem item)
 	 */
 	public WStandardItem clone() {
 		WStandardItem result = new WStandardItem();
@@ -1243,6 +1340,9 @@ public class WStandardItem {
 	 * the operation so that you get a chance to invalidate or update model
 	 * indexes.
 	 * <p>
+	 * 
+	 * @see WStandardItem#compare(WStandardItem other)
+	 * @see WStandardItemModel#setSortRole(int role)
 	 */
 	public void sortChildren(int column, SortOrder order) {
 		if (this.model_ != null) {
@@ -1280,10 +1380,12 @@ public class WStandardItem {
 	 * on their data.
 	 * <p>
 	 * The default implementation compares the data based on the value
-	 * corresponding to the {@link }.
+	 * corresponding to the {@link WStandardItemModel#getSortRole()
+	 * WStandardItemModel#getSortRole()}.
 	 * <p>
 	 * 
 	 * @see WStandardItem#sortChildren(int column, SortOrder order)
+	 * @see WStandardItemModel#setSortRole(int role)
 	 */
 	int compare(final WStandardItem other) {
 		int role = this.model_ != null ? this.model_.getSortRole()

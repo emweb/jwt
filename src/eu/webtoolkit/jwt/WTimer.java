@@ -24,11 +24,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * To use a timer, create a WTimer instance, set the timer interval using
- * {@link } and connect a slot to the timeout signal. Then, start the timer using
- * {@link }. An active timer may be cancelled at any time using {@link }.
+ * {@link WTimer#setInterval(int msec) setInterval()} and connect a slot to the
+ * timeout signal. Then, start the timer using {@link WTimer#start() start()}.
+ * An active timer may be cancelled at any time using {@link WTimer#stop()
+ * stop()}.
  * <p>
- * By default, a timer will continue to generate events until you {@link } it. To
- * create a timer that will fire only once, use {@link }.
+ * By default, a timer will continue to generate events until you
+ * {@link WTimer#stop() stop()} it. To create a timer that will fire only once,
+ * use {@link WTimer#setSingleShot(boolean singleShot) setSingleShot()}.
  * <p>
  * When connecting stateless slot implementations to the timeout signal, these
  * stateless slot implementations will be used as for any other signal (when
@@ -112,7 +115,7 @@ public class WTimer extends WObject {
 	 * <p>
 	 * The timer will be {@link WTimer#isActive() isActive()}, until either the
 	 * interval has elapsed, after which the timeout signal is activated, or
-	 * until {@link } is called.
+	 * until {@link WTimer#stop() stop()} is called.
 	 */
 	public void start() {
 		if (!this.active_) {
@@ -140,8 +143,8 @@ public class WTimer extends WObject {
 	/**
 	 * Stops the timer.
 	 * <p>
-	 * You may stop the timer during its {@link }, or cancel a running timer at
-	 * any other time.
+	 * You may stop the timer during its {@link WTimer#timeout() timeout()}, or
+	 * cancel a running timer at any other time.
 	 * <p>
 	 * 
 	 * @see WTimer#start()

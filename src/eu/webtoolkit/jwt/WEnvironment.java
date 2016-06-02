@@ -57,6 +57,8 @@ public class WEnvironment {
 	/**
 	 * An enumeration type for specific user agent.
 	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
 	 */
 	public enum UserAgent {
 		/**
@@ -256,6 +258,8 @@ public class WEnvironment {
 	 * Arguments passed to the application, either in the URL for a http GET, or
 	 * in both the URL and data submitted in a http POST.
 	 * <p>
+	 * 
+	 * @see WEnvironment#getParameterValues(String name)
 	 */
 	public Map<String, String[]> getParameterMap() {
 		return this.parameters_;
@@ -316,6 +320,10 @@ public class WEnvironment {
 	 * not all clients may support cookies or may some clients may be configured
 	 * to block cookies.
 	 * <p>
+	 * 
+	 * @see WEnvironment#supportsCookies()
+	 * @see WEnvironment#getCookie(String cookieName)
+	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
 	public Map<String, String> getCookies() {
 		return this.cookies_;
@@ -327,6 +335,8 @@ public class WEnvironment {
 	 * Throws a <code>RuntimeException(&quot;Missing cookie: ...&quot;)</code>
 	 * when the cookie is missing, or returns cookie value otherwise.
 	 * <p>
+	 * 
+	 * @see WEnvironment#getCookieValue(String cookieName)
 	 */
 	public String getCookie(final String cookieName) {
 		String i = this.cookies_.get(cookieName);
@@ -385,9 +395,11 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for JavaScript.
 	 * <p>
-	 * This is the same as {@link }: JWt only considers using JavaScript when it
-	 * has detected AJAX support.
+	 * This is the same as {@link WEnvironment#hasAjax() hasAjax()}: JWt only
+	 * considers using JavaScript when it has detected AJAX support.
 	 * <p>
+	 * 
+	 * @see WEnvironment#hasAjax()
 	 */
 	public boolean hasJavaScript() {
 		return this.doesAjax_;
@@ -397,8 +409,10 @@ public class WEnvironment {
 	 * Returns whether the browser has enabled support for AJAX.
 	 * <p>
 	 * Without support for JavaScript/AJAX, JWt will still be able to serve the
-	 * application, but with one considerable limitation: only the {@link },
-	 * {@link }, {@link WApplication#internalPathChanged()
+	 * application, but with one considerable limitation: only the
+	 * {@link WTimer#timeout() WTimer#timeout()},
+	 * {@link WInteractWidget#clicked() WInteractWidget#clicked()},
+	 * {@link WApplication#internalPathChanged()
 	 * WApplication#internalPathChanged()}, and {@link WAbstractArea#clicked()
 	 * WAbstractArea#clicked()} signals (and any derived signals) will generate
 	 * events.
@@ -427,6 +441,8 @@ public class WEnvironment {
 	 * <p>
 	 * Returns -1 if screen width is not known.
 	 * <p>
+	 * 
+	 * @see WEnvironment#getScreenHeight()
 	 */
 	public int getScreenWidth() {
 		return this.screenWidth_;
@@ -529,6 +545,8 @@ public class WEnvironment {
 	 * <p>
 	 * The user agent, as reported in the HTTP <code>User-Agent</code> field.
 	 * <p>
+	 * 
+	 * @see WEnvironment#getAgent()
 	 */
 	public String getUserAgent() {
 		return this.userAgent_;
@@ -639,6 +657,7 @@ public class WEnvironment {
 	 * <p>
 	 * 
 	 * @see WApplication#getBookmarkUrl()
+	 * @see WEnvironment#getDeploymentPath()
 	 */
 	public String getInternalPath() {
 		return this.internalPath_;
@@ -723,6 +742,13 @@ public class WEnvironment {
 	 * getUserAgent()}. It should be used only for user-agent specific
 	 * work-arounds (as a last resort).
 	 * <p>
+	 * 
+	 * @see WEnvironment#agentIsIE()
+	 * @see WEnvironment#agentIsOpera()
+	 * @see WEnvironment#agentIsGecko()
+	 * @see WEnvironment#agentIsChrome()
+	 * @see WEnvironment#agentIsSafari()
+	 * @see WEnvironment#agentIsWebKit()
 	 */
 	public WEnvironment.UserAgent getAgent() {
 		return this.agent_;

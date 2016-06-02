@@ -40,24 +40,14 @@ public class WDateEdit extends WLineEdit {
 	 */
 	public WDateEdit(WContainerWidget parent) {
 		super(parent);
+		this.popup_ = null;
 		this.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WDateEdit.this.setFromLineEdit();
 			}
 		});
-		String TEMPLATE = "${calendar}";
-		WTemplate t = new WTemplate(new WString(TEMPLATE));
-		this.popup_ = new WPopupWidget(t, this);
-		this.popup_.setAnchorWidget(this);
-		this.popup_.setTransient(true);
 		this.calendar_ = new WCalendar();
 		this.calendar_.setSingleClickSelect(true);
-		this.calendar_.activated().addListener(this.popup_,
-				new Signal1.Listener<WDate>() {
-					public void trigger(WDate e1) {
-						WDateEdit.this.popup_.hide();
-					}
-				});
 		this.calendar_.activated().addListener(this,
 				new Signal1.Listener<WDate>() {
 					public void trigger(WDate e1) {
@@ -70,19 +60,6 @@ public class WDateEdit extends WLineEdit {
 						WDateEdit.this.setFromCalendar();
 					}
 				});
-		t.bindWidget("calendar", this.calendar_);
-		WApplication.getInstance().getTheme()
-				.apply(this, this.popup_, WidgetThemeRole.DatePickerPopupRole);
-		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
-			public void trigger() {
-				WDateEdit.this.popup_.hide();
-			}
-		});
-		this.escapePressed().addListener(this, new Signal.Listener() {
-			public void trigger() {
-				WDateEdit.this.setFocus();
-			}
-		});
 		this.setValidator(new WDateValidator("dd/MM/yyyy", this));
 	}
 
@@ -101,6 +78,8 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * Does nothing if the current date is <code>Null</code>.
 	 * <p>
+	 * 
+	 * @see WDateEdit#getDate()
 	 */
 	public void setDate(final WDate date) {
 		if (!(date == null)) {
@@ -116,10 +95,11 @@ public class WDateEdit extends WLineEdit {
 	 * Reads the current date.
 	 * <p>
 	 * Returns <code>null</code> if the date could not be parsed using the
-	 * current {@link }. <br>
+	 * current {@link WDateEdit#getFormat() getFormat()}. <br>
 	 * <p>
 	 * 
 	 * @see WDateEdit#setDate(WDate date)
+	 * @see WLineEdit#getText()
 	 */
 	public WDate getDate() {
 		return WDate.fromString(this.getText(), this.getFormat());
@@ -142,6 +122,8 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * The default format is <code>&apos;dd/MM/yyyy&apos;</code>.
 	 * <p>
+	 * 
+	 * @see WDateValidator#setFormat(String format)
 	 */
 	public void setFormat(final String format) {
 		WDateValidator dv = this.getValidator();
@@ -179,6 +161,8 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * This sets the lower limit of the valid date range in the validator.
 	 * <p>
+	 * 
+	 * @see WDateValidator#setBottom(WDate bottom)
 	 */
 	public void setBottom(final WDate bottom) {
 		WDateValidator dv = this.getValidator();
@@ -203,6 +187,8 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * This sets the upper limit of the valid date range in the validator.
 	 * <p>
+	 * 
+	 * @see WDateValidator#setTop(WDate top)
 	 */
 	public void setTop(final WDate top) {
 		WDateValidator dv = this.getValidator();
@@ -236,9 +222,44 @@ public class WDateEdit extends WLineEdit {
 	 */
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		super.setHidden(hidden, animation);
-		if (hidden) {
+		if (this.popup_ != null && hidden) {
 			this.popup_.setHidden(hidden, animation);
 		}
+	}
+
+	public void load() {
+		boolean wasLoaded = this.isLoaded();
+		super.load();
+		if (wasLoaded) {
+			return;
+		}
+		String TEMPLATE = "${calendar}";
+		WTemplate t = new WTemplate(new WString(TEMPLATE));
+		this.popup_ = new WPopupWidget(t, this);
+		if (this.isHidden()) {
+			this.popup_.setHidden(true);
+		}
+		this.popup_.setAnchorWidget(this);
+		this.popup_.setTransient(true);
+		this.calendar_.activated().addListener(this.popup_,
+				new Signal1.Listener<WDate>() {
+					public void trigger(WDate e1) {
+						WDateEdit.this.popup_.hide();
+					}
+				});
+		t.bindWidget("calendar", this.calendar_);
+		WApplication.getInstance().getTheme()
+				.apply(this, this.popup_, WidgetThemeRole.DatePickerPopupRole);
+		this.escapePressed().addListener(this.popup_, new Signal.Listener() {
+			public void trigger() {
+				WDateEdit.this.popup_.hide();
+			}
+		});
+		this.escapePressed().addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WDateEdit.this.setFocus();
+			}
+		});
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
@@ -296,7 +317,8 @@ public class WDateEdit extends WLineEdit {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WDateEdit.js", wtjs1());
 		String jsObj = "new Wt3_3_5.WDateEdit(" + app.getJavaScriptClass()
-				+ "," + this.getJsRef() + "," + this.popup_.getJsRef() + ");";
+				+ "," + this.getJsRef() + ","
+				+ jsStringLiteral(this.popup_.getId()) + ");";
 		this.setJavaScriptMember(" WDateEdit", jsObj);
 		final AbstractEventSignal b = this.mouseMoved();
 		final AbstractEventSignal c = this.keyWentDown();
@@ -319,6 +341,6 @@ public class WDateEdit extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WDateEdit",
-				"function(g,a,h){function f(){return a.readOnly}function i(){var b=$(\"#\"+h.id).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&&c.removeClass(\"hover\")}; this.mouseDown=function(b,d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&c.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
+				"function(g,a,h){function f(){return a.readOnly}function i(){var b=$(\"#\"+h).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&&c.removeClass(\"hover\")}; this.mouseDown=function(b,d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&c.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
 	}
 }

@@ -188,6 +188,8 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Scrolls the viewport of the image over a distance.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#scrollTo(long newX, long newY)
 	 */
 	public void scroll(long dx, long dy) {
 		this.scrollTo(this.currentX_ + dx, this.currentY_ + dy);
@@ -208,6 +210,9 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Returns the virtual image width.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#getImageHeight()
+	 * @see WVirtualImage#resizeImage(long w, long h)
 	 */
 	public long getImageWidth() {
 		return this.imageWidth_;
@@ -218,6 +223,7 @@ public class WVirtualImage extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @see WVirtualImage#getImageWidth()
+	 * @see WVirtualImage#resizeImage(long w, long h)
 	 */
 	public long getImageHeight() {
 		return this.imageHeight_;
@@ -242,6 +248,8 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Returns the viewport width.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#getViewPortHeight()
 	 */
 	public int getViewPortWidth() {
 		return this.viewPortWidth_;
@@ -270,6 +278,8 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Returns the current top left X coordinate.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#getCurrentTopLeftY()
 	 */
 	public long getCurrentTopLeftX() {
 		return this.currentX_;
@@ -288,6 +298,8 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Returns the current bottom right X coordinate.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#getCurrentBottomRightY()
 	 */
 	public long getCurrentBottomRightX() {
 		return this.currentX_ + this.viewPortWidth_;
@@ -324,12 +336,15 @@ public class WVirtualImage extends WCompositeWidget {
 	 * {@link WVirtualImage#getGridImageSize() getGridImageSize()}, if the the
 	 * image is not infinite sized.
 	 * <p>
-	 * The default implementation calls {@link } and creates an image for the
-	 * resource returned.
+	 * The default implementation calls
+	 * {@link WVirtualImage#render(long x, long y, int width, int height)
+	 * render()} and creates an image for the resource returned.
 	 * <p>
 	 * You should override this method if you wish to serve for example static
 	 * image content.
 	 * <p>
+	 * 
+	 * @see WVirtualImage#render(long x, long y, int width, int height)
 	 */
 	protected WImage createImage(long x, long y, int width, int height) {
 		WResource r = this.render(x, y, width, height);

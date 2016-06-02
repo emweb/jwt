@@ -23,17 +23,19 @@ import org.slf4j.LoggerFactory;
  * An abstract widget that corresponds to an HTML form element.
  * <p>
  * 
- * A WFormWidget may receive focus (see {@link }), can be disabled, and can have
- * a label that acts as proxy for getting focus. It provides signals which
- * reflect changes to its value, or changes to its focus.
+ * A WFormWidget may receive focus (see {@link WFormWidget#isCanReceiveFocus()
+ * isCanReceiveFocus()}), can be disabled, and can have a label that acts as
+ * proxy for getting focus. It provides signals which reflect changes to its
+ * value, or changes to its focus.
  * <p>
- * Form widgets also have built-in support for validation, using {@link }. If the
+ * Form widgets also have built-in support for validation, using
+ * {@link WFormWidget#setValidator(WValidator validator) setValidator()}. If the
  * validator provide client-side validation, then an invalid validation state is
  * reflected using the style class <code>&quot;Wt-invalid&quot;</code>. All
  * validators provided by JWt implement client-side validation.
  * <p>
- * On the server-side, use {@link } method to validate the content using a
- * validator previously set.
+ * On the server-side, use {@link WFormWidget#validate() validate()} method to
+ * validate the content using a validator previously set.
  */
 public abstract class WFormWidget extends WInteractWidget {
 	private static Logger logger = LoggerFactory.getLogger(WFormWidget.class);
@@ -88,6 +90,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * Returns the label (if there is one) that acts as a proxy for this widget.
 	 * <p>
+	 * 
+	 * @see WLabel#setBuddy(WFormWidget buddy)
 	 */
 	public WLabel getLabel() {
 		return this.label_;
@@ -131,6 +135,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * The default value is <code>null</code>.
 	 * <p>
+	 * 
+	 * @see WFormWidget#validate()
 	 */
 	public void setValidator(WValidator validator) {
 		boolean firstValidator = !(this.validator_ != null);
@@ -169,6 +175,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Validates the field.
 	 * <p>
+	 * 
+	 * @see WFormWidget#validated()
 	 */
 	public WValidator.State validate() {
 		if (this.getValidator() != null) {
@@ -200,7 +208,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * <p>
 	 * A widget that is disabled cannot receive focus or user interaction.
 	 * <p>
-	 * This is the opposite of {@link }.
+	 * This is the opposite of {@link WWebWidget#setDisabled(boolean disabled)
+	 * WWebWidget#setDisabled()}.
 	 */
 	public void setEnabled(boolean enabled) {
 		this.setDisabled(!enabled);
@@ -237,7 +246,9 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * Sets the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use {@link } instead
+	 * @deprecated use
+	 *             {@link WFormWidget#setPlaceholderText(CharSequence placeholderText)
+	 *             setPlaceholderText()} instead
 	 */
 	public void setEmptyText(final CharSequence emptyText) {
 		this.setPlaceholderText(emptyText);
@@ -247,7 +258,8 @@ public abstract class WFormWidget extends WInteractWidget {
 	 * Returns the placeholder text (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated use {@link } instead.
+	 * @deprecated use {@link WFormWidget#getPlaceholderText()
+	 *             getPlaceholderText()} instead.
 	 */
 	public WString getEmptyText() {
 		return this.getPlaceholderText();
@@ -262,28 +274,36 @@ public abstract class WFormWidget extends WInteractWidget {
 		this.emptyText_ = WString.toWString(placeholderText);
 		WApplication app = WApplication.getInstance();
 		final WEnvironment env = app.getEnvironment();
-		if (env.hasAjax()) {
-			if (!(this.emptyText_.length() == 0)) {
-				if (!this.flags_.get(BIT_JS_OBJECT)) {
-					this.defineJavaScript();
+		if (!env.agentIsIElt(10)
+				&& (this.getDomElementType() == DomElementType.DomElement_INPUT || this
+						.getDomElementType() == DomElementType.DomElement_TEXTAREA)) {
+			this.flags_.set(BIT_PLACEHOLDER_CHANGED);
+			this.repaint();
+		} else {
+			if (env.hasAjax()) {
+				if (!(this.emptyText_.length() == 0)) {
+					if (!this.flags_.get(BIT_JS_OBJECT)) {
+						this.defineJavaScript();
+					} else {
+						this.updateEmptyText();
+					}
+					if (!(this.removeEmptyText_ != null)) {
+						this.removeEmptyText_ = new JSlot(this);
+						this.focussed().addListener(this.removeEmptyText_);
+						this.blurred().addListener(this.removeEmptyText_);
+						this.keyWentDown().addListener(this.removeEmptyText_);
+						String jsFunction = "function(obj, event) {jQuery.data("
+								+ this.getJsRef()
+								+ ", 'obj').applyEmptyText();}";
+						this.removeEmptyText_.setJavaScript(jsFunction);
+					}
 				} else {
-					this.updateEmptyText();
-				}
-				if (!(this.removeEmptyText_ != null)) {
-					this.removeEmptyText_ = new JSlot(this);
-					this.focussed().addListener(this.removeEmptyText_);
-					this.blurred().addListener(this.removeEmptyText_);
-					this.keyWentDown().addListener(this.removeEmptyText_);
-					String jsFunction = "function(obj, event) {jQuery.data("
-							+ this.getJsRef() + ", 'obj').applyEmptyText();}";
-					this.removeEmptyText_.setJavaScript(jsFunction);
+					;
+					this.removeEmptyText_ = null;
 				}
 			} else {
-				;
-				this.removeEmptyText_ = null;
+				this.setToolTip(placeholderText);
 			}
-		} else {
-			this.setToolTip(placeholderText);
 		}
 	}
 
@@ -363,7 +383,10 @@ public abstract class WFormWidget extends WInteractWidget {
 	static String CHANGE_SIGNAL = "M_change";
 
 	void applyEmptyText() {
-		if (this.isRendered() && !(this.emptyText_.length() == 0)) {
+		WApplication app = WApplication.getInstance();
+		final WEnvironment env = app.getEnvironment();
+		if (env.agentIsIElt(10) && this.isRendered()
+				&& !(this.emptyText_.length() == 0)) {
 			this.doJavaScript("jQuery.data(" + this.getJsRef()
 					+ ", 'obj').applyEmptyText();");
 		}
@@ -384,6 +407,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	private static final int BIT_READONLY_CHANGED = 2;
 	private static final int BIT_JS_OBJECT = 3;
 	private static final int BIT_VALIDATION_CHANGED = 4;
+	private static final int BIT_PLACEHOLDER_CHANGED = 5;
 	BitSet flags_;
 	private Signal1<WValidator.Result> validated_;
 	private WString validationToolTip_;
@@ -454,7 +478,9 @@ public abstract class WFormWidget extends WInteractWidget {
 	}
 
 	private void updateEmptyText() {
-		if (this.isRendered()) {
+		WApplication app = WApplication.getInstance();
+		final WEnvironment env = app.getEnvironment();
+		if (env.agentIsIElt(10) && this.isRendered()) {
 			this.doJavaScript("jQuery.data(" + this.getJsRef()
 					+ ", 'obj').setEmptyText("
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
@@ -487,6 +513,13 @@ public abstract class WFormWidget extends WInteractWidget {
 						this.isReadOnly() ? "true" : "false");
 			}
 			this.flags_.clear(BIT_READONLY_CHANGED);
+		}
+		if (this.flags_.get(BIT_PLACEHOLDER_CHANGED) || all) {
+			if (!all || !(this.emptyText_.length() == 0)) {
+				element.setProperty(Property.PropertyPlaceholder,
+						this.emptyText_.toString());
+			}
+			this.flags_.clear(BIT_PLACEHOLDER_CHANGED);
 		}
 		super.updateDom(element, all);
 		if (this.flags_.get(BIT_VALIDATION_CHANGED)) {

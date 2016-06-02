@@ -41,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Because the focus of the WtAuth library is authentication, the OAuth class
  * also contains the implementation for using the access token for
- * authentication ({@link }).
+ * authentication ({@link OAuthProcess#getIdentity(OAuthAccessToken token)
+ * OAuthProcess#getIdentity()}).
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
@@ -104,6 +105,8 @@ public abstract class OAuthService {
 	 * This creates a new authorization process for the indicated scope. Valid
 	 * names for the scope are service provider dependent.
 	 * <p>
+	 * 
+	 * @see OAuthService#getAuthenticationScope()
 	 */
 	public abstract OAuthProcess createProcess(final String scope);
 
@@ -112,6 +115,8 @@ public abstract class OAuthService {
 	 * <p>
 	 * This is a short identifier.
 	 * <p>
+	 * 
+	 * @see OAuthService#getDescription()
 	 */
 	public abstract String getName();
 
@@ -128,6 +133,8 @@ public abstract class OAuthService {
 	/**
 	 * Returns the desired width for the popup window.
 	 * <p>
+	 * 
+	 * @see OAuthService#getPopupHeight()
 	 */
 	public abstract int getPopupWidth();
 
@@ -145,6 +152,9 @@ public abstract class OAuthService {
 	 * This returns the scope that is needed (and sufficient) for obtaining
 	 * identity information, and thus to authenticate the user.
 	 * <p>
+	 * 
+	 * @see OAuthProcess#getIdentity(OAuthAccessToken token)
+	 * @see OAuthProcess#startAuthenticate()
 	 */
 	public abstract String getAuthenticationScope();
 
@@ -218,7 +228,8 @@ public abstract class OAuthService {
 	 * request.
 	 * <p>
 	 * In the default implementation the state is the <code>sessionId</code>,
-	 * crytpographically signed. This signature is verified in {@link }.
+	 * crytpographically signed. This signature is verified in
+	 * {@link OAuthService#decodeState(String state) decodeState()}.
 	 */
 	public String encodeState(final String url) {
 		String msg = this.impl_.secret_ + url;

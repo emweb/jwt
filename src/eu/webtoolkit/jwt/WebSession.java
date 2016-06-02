@@ -42,7 +42,6 @@ class WebSession {
 		this.type_ = type;
 		this.favicon_ = favicon;
 		this.state_ = WebSession.State.JustCreated;
-		this.useUrlRewriting_ = true;
 		this.sessionId_ = sessionId;
 		this.sessionIdCookie_ = "";
 		this.sessionIdChanged_ = false;
@@ -101,7 +100,7 @@ class WebSession {
 			this.sessionIdCookie_ = MathUtils.randomId();
 			this.sessionIdCookieChanged_ = true;
 			this.getRenderer().setCookie("Wt" + this.sessionIdCookie_, "1",
-					null, "", "", false);
+					null, "", "", this.env_.getUrlScheme().equals("https"));
 		}
 	}
 
@@ -174,7 +173,9 @@ class WebSession {
 	}
 
 	public boolean isUseUrlRewriting() {
-		return this.useUrlRewriting_;
+		final Configuration conf = this.controller_.getConfiguration();
+		return !(conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL && this.env_
+				.supportsCookies());
 	}
 
 	public boolean isDebug() {
@@ -722,7 +723,7 @@ class WebSession {
 			final String internalPath) {
 		if (internalPath.length() == 0 || internalPath.equals("/")) {
 			if (baseUrl.length() == 0) {
-				return "?";
+				return ".";
 			} else {
 				return baseUrl;
 			}
@@ -1670,7 +1671,6 @@ class WebSession {
 	private EntryPointType type_;
 	private String favicon_;
 	private WebSession.State state_;
-	private boolean useUrlRewriting_;
 	private String sessionId_;
 	private String sessionIdCookie_;
 	boolean sessionIdChanged_;
@@ -2063,11 +2063,6 @@ class WebSession {
 
 	private void init(final WebRequest request) {
 		this.env_.init(request);
-		final Configuration conf = this.controller_.getConfiguration();
-		if (conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL
-				&& this.env_.supportsCookies()) {
-			this.useUrlRewriting_ = false;
-		}
 		String hashE = request.getParameter("_");
 		this.absoluteBaseUrl_ = this.env_.getUrlScheme() + "://"
 				+ this.env_.getHostName() + this.basePath_;

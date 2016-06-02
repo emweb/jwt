@@ -260,7 +260,9 @@ public class WFont {
 	 * generic font will be used.
 	 * <p>
 	 * Careful, for a font family name that contains a space, you need to add
-	 * quotes, to {@link }, e.g.
+	 * quotes, to
+	 * {@link WFont#setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
+	 * setFamily()}, e.g.
 	 * <p>
 	 * 
 	 * <pre>
@@ -402,7 +404,8 @@ public class WFont {
 	/**
 	 * Sets the font size (<b>deprecated</b>).
 	 * <p>
-	 * Use {@link } or {@link } instead.
+	 * Use {@link WFont#setSize(WFont.Size size) setSize()} or
+	 * {@link WFont#setSize(WLength size) setSize()} instead.
 	 */
 	public void setSize(WFont.Size size, final WLength length) {
 		if (size == WFont.Size.FixedSize) {
@@ -489,7 +492,9 @@ public class WFont {
 	 * Returns the font size as a numerical value (<b>deprecated</b>).
 	 * <p>
 	 * 
-	 * @deprecated This method has been renamed to {@link }
+	 * @deprecated This method has been renamed to
+	 *             {@link WFont#getSizeLength(double mediumSize)
+	 *             getSizeLength()}
 	 */
 	public WLength getFixedSize() {
 		return this.getSizeLength();

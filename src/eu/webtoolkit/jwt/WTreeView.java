@@ -30,12 +30,13 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The rendering (and editing) of items is handled by a
  * {@link WAbstractItemDelegate}, by default it uses {@link WItemDelegate} which
- * renders data of all predefined roles (see also {@link }), including text,
- * icons, checkboxes, and tooltips.
+ * renders data of all predefined roles (see also {@link ItemDataRole}),
+ * including text, icons, checkboxes, and tooltips.
  * <p>
  * The view may support editing of items, if the model indicates support (see
- * the {@link } flag). You can define triggers that initiate editing of an item
- * using {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
+ * the {@link ItemFlag#ItemIsEditable} flag). You can define triggers that
+ * initiate editing of an item using
+ * {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
  * WAbstractItemView#setEditTriggers()}. The actual editing is provided by the
  * item delegate (you can set an appropriate delegate for one column using
  * {@link WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
@@ -48,7 +49,8 @@ import org.slf4j.LoggerFactory;
  * first column takes the remaining size. <b>Note that this may have as
  * consequence that the first column&apos;s size is reduced to 0.</b> Column
  * widths of all columns, including the first column, can be set through the API
- * method {@link }, and also by the user using handles provided in the header.
+ * method {@link WTreeView#setColumnWidth(int column, WLength width)
+ * setColumnWidth()}, and also by the user using handles provided in the header.
  * <p>
  * Optionally, the treeview may be configured so that the first column is always
  * visible while scrolling through the other columns, which may be convenient if
@@ -77,13 +79,15 @@ import org.slf4j.LoggerFactory;
  * {@link WAbstractItemView#setDragEnabled(boolean enable)
  * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
  * but only when all items in the selection indicate support for dragging
- * (controlled by the {@link ItemIsDragEnabled} flag), and if the model
- * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()
- * WAbstractItemModel#getMimeType()}). Likewise, by enabling support for
- * dropping (see {@link WAbstractItemView#setDropsEnabled(boolean enable)
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
+ * flag), and if the model indicates a mime-type (controlled by
+ * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
+ * Likewise, by enabling support for dropping (see
+ * {@link WAbstractItemView#setDropsEnabled(boolean enable)
  * WAbstractItemView#setDropsEnabled()}), the treeview may receive a drop event
  * on a particular item, at least if the item indicates support for drops
- * (controlled by the {@link ItemIsDropEnabled} flag).
+ * (controlled by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled}
+ * flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
  * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
@@ -96,8 +100,9 @@ import org.slf4j.LoggerFactory;
  * availability. When Ajax is not available, a page navigation bar is used
  * instead, see {@link WAbstractItemView#getCreatePageNavigationBar()
  * WAbstractItemView#getCreatePageNavigationBar()}. In that case, the widget
- * needs to be given an explicit height using {@link } which determines the
- * number of rows that are displayed at a time.
+ * needs to be given an explicit height using
+ * {@link WTreeView#resize(WLength width, WLength height) resize()} which
+ * determines the number of rows that are displayed at a time.
  * <p>
  * A snapshot of the {@link WTreeView}: <div align="center"> <img
  * src="doc-files//WTreeView-default-1.png" alt="WTreeView example (default)">
@@ -185,6 +190,9 @@ public class WTreeView extends WAbstractItemView {
 	/**
 	 * Expands or collapses a node.
 	 * <p>
+	 * 
+	 * @see WTreeView#expand(WModelIndex index)
+	 * @see WTreeView#collapse(WModelIndex index)
 	 */
 	public void setExpanded(final WModelIndex index, boolean expanded) {
 		if (this.isExpanded(index) != expanded) {
@@ -236,7 +244,8 @@ public class WTreeView extends WAbstractItemView {
 	 * Collapses a node.
 	 * <p>
 	 * 
-	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded) <p>
+	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
+	 * @see WTreeView#expand(WModelIndex index) <p>
 	 *      <i><b>Note: </b>until 3.3.4, selection was removed from within nodes
 	 *      that were collapsed. This (inconsistent) behavior has been removed
 	 *      in 3.3.4. </i>
@@ -336,6 +345,7 @@ public class WTreeView extends WAbstractItemView {
 	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
+	 * @see WTreeView#expanded()
 	 */
 	public Signal1<WModelIndex> collapsed() {
 		return this.collapsed_;
@@ -454,6 +464,8 @@ public class WTreeView extends WAbstractItemView {
 	 * <i><b>Note: </b>The actual space occupied by each column is the column
 	 * width augmented by 7 pixels for internal padding and a border.</i>
 	 * </p>
+	 * 
+	 * @see WTreeView#setRowHeight(WLength rowHeight)
 	 */
 	public void setColumnWidth(int column, final WLength width) {
 		if (!width.isAuto()) {

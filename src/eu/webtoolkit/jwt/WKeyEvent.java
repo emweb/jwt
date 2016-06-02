@@ -47,6 +47,9 @@ public class WKeyEvent implements WAbstractEvent {
 	 * <p>
 	 * All three types of key events provide this information.
 	 * <p>
+	 * 
+	 * @see WKeyEvent#getModifiers()
+	 * @see WKeyEvent#getCharCode()
 	 */
 	public Key getKey() {
 		int key = this.jsEvent_.keyCode;
@@ -59,12 +62,14 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns keyboard modifiers.
 	 * <p>
-	 * The result is a logical OR of {@link KeyboardModifier} flags.
+	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
+	 * flags.
 	 * <p>
 	 * All three types of key events provide this information.
 	 * <p>
 	 * 
 	 * @see WKeyEvent#getKey()
+	 * @see WKeyEvent#getCharCode()
 	 */
 	public EnumSet<KeyboardModifier> getModifiers() {
 		return this.jsEvent_.modifiers;
@@ -81,13 +86,14 @@ public class WKeyEvent implements WAbstractEvent {
 	 * {@link WInteractWidget#keyWentUp() keyWentUp} events, &apos;0&apos; is
 	 * returned.
 	 * <p>
-	 * The {@link } may be different from {@link WKeyEvent#getKey() getKey()}.
-	 * For example, a {@link Key_M} key may correspond to &apos;m&apos; or
-	 * &apos;M&apos; character, depending on whether the shift key is pressed
-	 * simultaneously.
+	 * The {@link WKeyEvent#getCharCode() getCharCode()} may be different from
+	 * {@link WKeyEvent#getKey() getKey()}. For example, a {@link Key#Key_M
+	 * Key_M} key may correspond to &apos;m&apos; or &apos;M&apos; character,
+	 * depending on whether the shift key is pressed simultaneously.
 	 * <p>
 	 * 
 	 * @see WKeyEvent#getKey()
+	 * @see WKeyEvent#getText()
 	 */
 	public int getCharCode() {
 		return this.jsEvent_.charCode;

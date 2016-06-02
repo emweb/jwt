@@ -25,6 +25,83 @@ newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.3.6 (?, 2016)</h2>
+<p>
+ This release has a focus on bug fixes and some new features:
+</p>
+<dl>
+  <dt>
+    Time entry improvements
+  </dt>
+  <dd>
+    <a href="eu/webtoolkit/jwt/WTimeEdit.html">WTimeEdit</a> now supports AM/PM in its format,
+    <a href="eu/webtoolkit/jwt/WTimeValidator.html">WTimeValidator</a> now allows to select a minimum
+    and maximum time and supports multiple formats,
+    <a href="eu/webtoolkit/jwt/WTimePicker.html">WTimePicker</a> can now work up to
+    millisecond precision, and is now rendered with spinboxes.
+  </dd>
+  <dt>
+    Scroll position
+  </dt>
+  <dd>
+    It's now possible to retrieve the scroll position of a
+    <a href="eu/webtoolkit/jwt/WContainerWidget.html">WContainerWidget</a>
+    with
+    <a href="eu/webtoolkit/jwt/WContainerWidget.html#getScrollTop--">getScrollTop()</a>
+    and
+    <a href="eu/webtoolkit/jwt/WContainerWidget.html#getScrollLeft--">getScrollLeft()</a>.
+  </dd>
+  <dt>
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">Chart::WCartesianChart</a>
+  </dt>
+  <dd>
+    There have been many bug fixes and improvements to the charting library and the interactive features
+    introduced in Wt 3.3.5:
+    <ul>
+      <li>Series <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#setSeriesSelectionEnabled-boolean-">can be selected</a>
+      on a <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a>.
+      LineSeries <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#setCurveManipulationEnabled-boolean-">can be manipulated</a>.</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WAxis.html#setZoom-double-">WAxis::setZoom()</a> and
+	  <a href="eu/webtoolkit/jwt/chart/WAxis.html#setPan-double-">WAxis::setPan()</a>
+	  have been deprecated in favor of the easier to use
+	  <a href="eu/webtoolkit/jwt/chart/WAxis.html#setZoomRange-double-double-">WAxis::setZoomRange()</a>.
+	  You can listen to changes in zoom range with the
+	  <a href="eu/webtoolkit/jwt/chart/WAxis.html#zoomRangeChanged--">WAxis::zoomRangeChanged()</a> signal.</li>
+       <li>Series set as hidden will still be shown on a <a href="eu/webtoolkit/jwt/chart/WAxisSliderWidget.html">WAxisSliderWidget</a>.
+	   The typical application for this is to show a coarse model on the slider widget, and a more detailed one on the chart.</li>
+      <li>
+	  In order to provide better performance for charts containing a lot of data, the charting library has been
+	  overhauled to use <a href="eu/webtoolkit/jwt/chart/WAbstractChartModel.html">WAbstractChartModel</a>s,
+	  instead of <a href="eu/webtoolkit/jwt/WAbstractItemModel.html">WAbstractItemModel</a>s, avoiding the use of
+	  boost::any. The <a href="eu/webtoolkit/jwt/chart/WStandardChartProxyModel.html">WStandardChartProxyModel</a>
+	  wraps a <a href="eu/webtoolkit/jwt/WAbstractItemModel.html">WAbstractItemModel</a> so that those can still be used with charts.
+	  Note that this changes the return type of the
+	  <a href="eu/webtoolkit/jwt/chart/WAbstractChart.html#getModel--">WAbstractChart::getModel()</a> method.
+      </li>
+      <li>A chart's axes can now be <a href="eu/webtoolkit/jwt/chart/WAxis.html#setInverted-boolean-">inverted</a>.
+      <li>Stacked series: negative values are now stacked separately from positive values.</li>
+      <li><a href="eu/webtoolkit/jwt/chart/CurveLabel.html">Curve labels</a> can now be drawn on charts, so that curves,
+          or certain points on curves, can be labeled.</li>
+	  <li><a href="eu/webtoolkit/jwt/chart/WAxis.html#getLabelTicks-java.util.List-int-eu.webtoolkit.jwt.chart.AxisConfig-">WAxis::getLabelTicks()</a>
+	  has been modified with an argument
+          <a href="eu/webtoolkit/jwt/chart/AxisConfig.html">AxisConfig</a>, so that different axis ticks can be drawn depending
+	  on the side that the axis is dawn on, or the zoom level it is drawn at. This is a breaking change if you override getLabelTicks.
+	  <a href="eu/webtoolkit/jwt/chart/WAxis.html#setLabelTransform-eu.webtoolkit.jwt.chart.WAxis.LabelTransform-eu.webtoolkit.jwt.chart.AxisValue-">WAxis::setLabelTransform()</a>
+	  as a simpler method to change the tick
+	  labels depending on the side the axis is drawn on.</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WDataSeries.html">WDataSeries</a> is no longer a simple value class. The interface of
+          <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a> has been modified to reflect that: the old
+	  interface that copies WDataSeries over has been deprecated in favor of an interface that takes pointers to
+	  <a href="eu/webtoolkit/jwt/chart/WDataSeries.html">WDataSeries</a>.</li>
+      <li>It's now possible to <a href="eu/webtoolkit/jwt/chart/WDataSeries.html#setModel-eu.webtoolkit.jwt.chart.WAbstractChartModel-">specify a different model</a>
+      for each <a href="eu/webtoolkit/jwt/chart/WDataSeries.html">WDataSeries</a>.</li>
+      <li><a href="eu/webtoolkit/jwt/chart/WPieChart.html#createLabelWidget-eu.webtoolkit.jwt.WWidget-eu.webtoolkit.jwt.WPainter-eu.webtoolkit.jwt.WRectF-java.util.EnumSet-">Chart::WPieChart::createLabelWidget()</a>
+      has been added, making it possible to replace the labels of a
+      <a href="eu/webtoolkit/jwt/chart/WPieChart.html">WPieChart</a>
+      with widgets.</li>
+    </ul>
+  </dd>
+</dl>
 
 <h2>Release 3.3.5 (Dec 31, 2015)</h2>
 
@@ -35,7 +112,7 @@ behaviour. It also indicates the main changes from version to verison.
 
 <dl>
   <dt>
-    <a href="classWt_1_1Chart_1_1WCartesianChart.html">Chart::WCartesianChart</a>
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">Chart::WCartesianChart</a>
   </dt>
   <dd>
 	WCartesianChart has several new features that allow interaction with the
@@ -50,13 +127,13 @@ behaviour. It also indicates the main changes from version to verison.
 	(according to X axis and the first Y axis)  corresponding to this position.
   </dd>
   <dt>
-  <a href="classWt_1_1Chart_1_1WAxisSliderWidget.html">WAxisSliderWidget</a>
+  <a href="eu/webtoolkit/jwt/chart/WAxisSliderWidget.html">WAxisSliderWidget</a>
   </dt>
   <dd>
 	WAxisSliderWidget lets you easily focus on a particular range by selecting an XAxis. It will create a sliding widget where you can change the size of the focused region by dragging the blue handles, and change the position by dragging the selected area. When using touch, the size of this area can also be changed using a pinch movement.
   </dd>
   <dt>
-  <a href="classWt_1_1WPainter.html">WPainter</a>, <a href="classWt_1_1WJavaScriptHandle.html">WJavascriptHandle</a>, <a href="classWt_1_1WCanvasDevice.html">WCanvasDevice</a>
+  <a href="eu/webtoolkit/jwt/WPainter.html">WPainter</a>, <a href="eu/webtoolkit/jwt/WJavaScriptHandle.html">WJavascriptHandle</a>, <a href="eu/webtoolkit/jwt/WCanvasDevice.html">WCanvasDevice</a>
   </dt>
   <dd>
   Support client-side interaction (when rendered with WCanvasPaintDevice) by using a WTransform which you can manipulate client side using a WJavascriptHandle
@@ -64,7 +141,7 @@ behaviour. It also indicates the main changes from version to verison.
   This is useful to avoid server roundtrips when frequently updating something,
   </dd>
 
-  <dt> <a href=classWt_1_1WAnchor.html">WAnchor</a> target type moved to <a href="classWt_1_1WLink.html#afda591cd277562d5c8ea723733290790">WLink</a></dt>
+  <dt> <a href=eu/webtoolkit/jwt/WAnchor.html">WAnchor</a> target type moved to <a href="eu/webtoolkit/jwt/WLink.html#afda591cd277562d5c8ea723733290790">WLink</a></dt>
   <dd> Before, the WAnchor was the owner of the TargetType, however from now on, WLink has the ownership of the TargetType.
   This may break WAnchors in existing applications if the WAnchor target type is set before setting a WLink to the WAnchor.
   </dd>
@@ -74,21 +151,21 @@ behaviour. It also indicates the main changes from version to verison.
   This is done with the HTML5 download attribute or, if not supported by targeting a hidden iFrame contained in the page.
   </dd>
 
-  <dt>Added seconds to <a href="classWt_1_1WTimePicker.html#a4d19d3ad8bdf0a9a3e35d84f3d298994">WTimePicker</a></dt>
+  <dt>Added seconds to <a href="eu/webtoolkit/jwt/WTimePicker.html#a4d19d3ad8bdf0a9a3e35d84f3d298994">WTimePicker</a></dt>
   <dd>WTimePicker was missing the seconds, we've also added the setSecondStep() method.
   </dd>
 
-  <dt><a href="classWt_1_1WCheckBox.html#a2d741874682e9a683d40527b03615d32">WCheckBox::setPartialStateSelectable()</a></dt>
+  <dt><a href="eu/webtoolkit/jwt/WCheckBox.html#a2d741874682e9a683d40527b03615d32">WCheckBox::setPartialStateSelectable()</a></dt>
   <dd>Before it was only possible to set the partial state of the WCheckbox when creating the Widget.
   We've added a method WCheckBox::setPartialStateSelectable(bool) which will allow the user to select indeterminate state. This is false by default;
   </dd>
 
   <dt>New client side connection monitor</dt>
-  <dd>The <a href="classWt_1_1WApplication.html#ab6ae1117e316f1a7b31449aaeb83c9cf">WApplication::setConnectionMonitor()</a> method will let the user register a Javascript object that will be notified on connection changes (connection, disconnection, websockets enabled/disabled..)
+  <dd>The <a href="eu/webtoolkit/jwt/WApplication.html#ab6ae1117e316f1a7b31449aaeb83c9cf">WApplication::setConnectionMonitor()</a> method will let the user register a Javascript object that will be notified on connection changes (connection, disconnection, websockets enabled/disabled..)
   The monitor will trigger the onChange method of the provided Javascript object</dd>
 
   <dt> Support custom tags for widgets </dt>
-  <dd> We've added <a href="classWt_1_1WWebWidget.html#adf6034e0e715138cae479eae6e324ce6">WWebWidget::setHtmlTagName()</a> that will change the current html tag to the one provided. This allows the user to create widgets that are not provided by Wt, for example an iframe.
+  <dd> We've added <a href="eu/webtoolkit/jwt/WWebWidget.html#adf6034e0e715138cae479eae6e324ce6">WWebWidget::setHtmlTagName()</a> that will change the current html tag to the one provided. This allows the user to create widgets that are not provided by Wt, for example an iframe.
   </dd>
 
 <h2>Release 3.3.4 (Mar 25, 2015)</h2>

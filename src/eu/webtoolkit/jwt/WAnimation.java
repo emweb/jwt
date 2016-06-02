@@ -30,6 +30,10 @@ import org.slf4j.LoggerFactory;
  * optionally combined with a fade effect. A timing function defines how the
  * effects(s) are animated during the total duration of the animation.
  * <p>
+ * 
+ * @see WWidget#animateShow(WAnimation animation)
+ * @see WWidget#animateHide(WAnimation animation)
+ * @see WWidget#setHidden(boolean hidden, WAnimation animation)
  */
 public class WAnimation {
 	private static Logger logger = LoggerFactory.getLogger(WAnimation.class);
@@ -49,6 +53,8 @@ public class WAnimation {
 	 * <p>
 	 * You can specify only one motion effect.
 	 * <p>
+	 * 
+	 * @see WAnimation#setEffects(EnumSet effects)
 	 */
 	public enum AnimationEffect {
 		/**
@@ -128,7 +134,7 @@ public class WAnimation {
 	 * Default constructor.
 	 * <p>
 	 * Creates an animation that actually represent <i>no</i> animation. (
-	 * {@link } == 0).
+	 * {@link WAnimation#getEffects() getEffects()} == 0).
 	 */
 	public WAnimation() {
 		this.effects_ = EnumSet.noneOf(WAnimation.AnimationEffect.class);
@@ -309,6 +315,8 @@ public class WAnimation {
 	 * <p>
 	 * The default animation duration is 250 ms.
 	 * <p>
+	 * 
+	 * @see WAnimation#getDuration()
 	 */
 	public void setDuration(int msecs) {
 		this.duration_ = msecs;

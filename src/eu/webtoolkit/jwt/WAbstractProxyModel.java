@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
  * This abstract proxy model may be used as a starting point for implementing a
  * custom proxy model, when {@link WSortFilterProxyModel} is not adequate. It
  * implements data access and manipulation using the a virtual mapping method (
- * {@link }) to access and manipulate the underlying {@link }.
+ * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex) mapToSource()}
+ * ) to access and manipulate the underlying
+ * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
  */
 public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	private static Logger logger = LoggerFactory
@@ -60,8 +62,12 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * This method returns a model index in the proxy model that corresponds to
 	 * the model index <code>sourceIndex</code> in the source model. This method
 	 * must only be implemented for source model indexes that are mapped and
-	 * thus are the result of {@link }.
+	 * thus are the result of
+	 * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
+	 * mapToSource()}.
 	 * <p>
+	 * 
+	 * @see WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
 	 */
 	public abstract WModelIndex mapFromSource(final WModelIndex sourceIndex);
 
@@ -86,8 +92,10 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * Note that the source model&apos;s signals are not forwarded to the proxy
 	 * model by default, but some specializations, like
 	 * {@link WBatchEditProxyModel} and {@link WSortFilterProxyModel} do. If you
-	 * want to reimplement {@link } with no changes to row or column indices,
-	 * consider the use of {@link WIdentityProxyModel}.
+	 * want to reimplement
+	 * {@link WAbstractProxyModel#getData(WModelIndex index, int role)
+	 * getData()} with no changes to row or column indices, consider the use of
+	 * {@link WIdentityProxyModel}.
 	 */
 	public void setSourceModel(WAbstractItemModel sourceModel) {
 		this.sourceModel_ = sourceModel;
@@ -108,7 +116,9 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * <p>
 	 * The default proxy implementation translates the index to the source
 	 * model, and calls {@link WAbstractProxyModel#getSourceModel()
-	 * getSourceModel()}.{@link } with this index.
+	 * getSourceModel()}.
+	 * {@link WAbstractProxyModel#getData(WModelIndex index, int role)
+	 * getData()} with this index.
 	 */
 	public Object getData(final WModelIndex index, int role) {
 		return this.sourceModel_.getData(this.mapToSource(index), role);
@@ -119,13 +129,15 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * <p>
 	 * The default proxy implementation constructs a dummy {@link WModelIndex}
 	 * with the row set to 0 and column set to <code>section</code> if the
-	 * orientation is {@link }, or with the row set to <code>section</code> and
-	 * the column set to 0 if the orientation is {@link }.
+	 * orientation is {@link Orientation#Horizontal}, or with the row set to
+	 * <code>section</code> and the column set to 0 if the orientation is
+	 * {@link Orientation#Vertical}.
 	 * <p>
 	 * The resulting section that is forwarded to
-	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.{@link }
-	 * depends on how the {@link WModelIndex} is transformed with
-	 * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
+	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
+	 * {@link WAbstractProxyModel#getHeaderData(int section, Orientation orientation, int role)
+	 * getHeaderData()} depends on how the {@link WModelIndex} is transformed
+	 * with {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
 	 * mapToSource()}.
 	 */
 	public Object getHeaderData(int section, Orientation orientation, int role) {
@@ -178,13 +190,15 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * <p>
 	 * The default proxy implementation constructs a dummy {@link WModelIndex}
 	 * with the row set to 0 and column set to <code>section</code> if the
-	 * orientation is {@link }, or with the row set to <code>section</code> and
-	 * the column set to 0 if the orientation is {@link }.
+	 * orientation is {@link Orientation#Horizontal}, or with the row set to
+	 * <code>section</code> and the column set to 0 if the orientation is
+	 * {@link Orientation#Vertical}.
 	 * <p>
 	 * The resulting section that is forwarded to
-	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.{@link }
-	 * depends on how the {@link WModelIndex} is transformed with
-	 * {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
+	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
+	 * {@link WAbstractProxyModel#getHeaderFlags(int section, Orientation orientation)
+	 * getHeaderFlags()} depends on how the {@link WModelIndex} is transformed
+	 * with {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex)
 	 * mapToSource()}.
 	 */
 	public EnumSet<HeaderFlag> getHeaderFlags(int section,
@@ -225,7 +239,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * Returns a mime-type for dragging a set of indexes.
 	 * <p>
 	 * The default proxy implementation calls
-	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.{@link }
+	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
+	 * {@link WAbstractProxyModel#getMimeType() getMimeType()}
 	 */
 	public String getMimeType() {
 		return this.sourceModel_.getMimeType();
@@ -235,7 +250,9 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * Returns a list of mime-types that could be accepted for a drop event.
 	 * <p>
 	 * The default proxy implementation calls
-	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.{@link }
+	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
+	 * {@link WAbstractProxyModel#getAcceptDropMimeTypes()
+	 * getAcceptDropMimeTypes()}
 	 */
 	public List<String> getAcceptDropMimeTypes() {
 		return this.sourceModel_.getAcceptDropMimeTypes();
@@ -305,14 +322,18 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * columns to proxy rows or columns, per hierarchical parent.
 	 * <p>
 	 * It may be convenient to start from this item class as a base class so
-	 * that {@link } can be used to update this data structure when the source
-	 * model adds or removes rows.
+	 * that
+	 * {@link WAbstractProxyModel#shiftModelIndexes(WModelIndex sourceParent, int start, int count, SortedMap items)
+	 * WAbstractProxyModel#shiftModelIndexes()} can be used to update this data
+	 * structure when the source model adds or removes rows.
 	 * <p>
 	 * You will typically use your derived class of this item as the internal
 	 * pointer for proxy model indexes: a proxy model index will have an item as
 	 * internal pointer whose sourceIndex_ corresponds to the source equivalent
 	 * of the proxy model index parent.
 	 * <p>
+	 * 
+	 * @see WAbstractItemModel#createIndex(int row, int column, Object ptr)
 	 */
 	protected static class BaseItem {
 		private static Logger logger = LoggerFactory.getLogger(BaseItem.class);

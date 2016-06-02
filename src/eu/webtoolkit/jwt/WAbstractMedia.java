@@ -90,8 +90,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * The HTML5 media ReadyState flag indicates how much of the media is
 	 * loaded.
 	 * <p>
-	 * This is often used in conjunction with the &gt; operator, e.g. {@link }
-	 * &gt; HaveCurrentData
+	 * This is often used in conjunction with the &gt; operator, e.g.
+	 * {@link WAbstractMedia#getReadyState() getReadyState()} &gt;
+	 * HaveCurrentData
 	 */
 	public enum ReadyState {
 		/**
@@ -223,7 +224,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * Removes all source elements.
 	 * <p>
 	 * This method can be used to remove all media sources. Afterward, you may
-	 * add new media sources with calls to {@link }.
+	 * add new media sources with calls to
+	 * {@link WAbstractMedia#addSource(WLink link, String type, String media)
+	 * addSource()}.
 	 * <p>
 	 * Use this to reuse a {@link WAbstractMedia} instantiation to play
 	 * something else.
@@ -302,7 +305,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	}
 
 	/**
-	 * Invoke {@link } on the media element.
+	 * Invoke {@link WAbstractMedia#play() play()} on the media element.
 	 * <p>
 	 * JavaScript must be available for this function to work.
 	 */
@@ -312,7 +315,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	}
 
 	/**
-	 * Invoke {@link } on the media element.
+	 * Invoke {@link WAbstractMedia#pause() pause()} on the media element.
 	 * <p>
 	 * JavaScript must be available for this function to work.
 	 */
@@ -407,11 +410,12 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Returns the JavaScript reference to the media object, or null.
 	 * <p>
-	 * It is possible, for browser compatibility reasons, that {@link } is not
-	 * the media element. {@link } is guaranteed to be an expression that
-	 * evaluates to the media object. This expression may yield null, if the
-	 * video object is not rendered at all (e.g. on older versions of Internet
-	 * Explorer).
+	 * It is possible, for browser compatibility reasons, that
+	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the media element.
+	 * {@link WAbstractMedia#getJsMediaRef() getJsMediaRef()} is guaranteed to
+	 * be an expression that evaluates to the media object. This expression may
+	 * yield null, if the video object is not rendered at all (e.g. on older
+	 * versions of Internet Explorer).
 	 */
 	public String getJsMediaRef() {
 		if (this.mediaId_.length() == 0) {

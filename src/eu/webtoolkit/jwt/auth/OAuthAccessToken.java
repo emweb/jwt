@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
  * A access token is the result of an authorization process, and encapsulates
  * the authorization to access protected information.
  * <p>
- * Next to its {@link }, it also contains optionally an expires date and a
- * refresh token.
+ * Next to its {@link OAuthAccessToken#getValue() getValue()}, it also contains
+ * optionally an expires date and a refresh token.
  * <p>
  * 
  * @see OAuthProcess#startAuthorize()

@@ -27,8 +27,10 @@ import org.slf4j.LoggerFactory;
  * one-dimensional lists (i.e. a model with 1 column and no children).
  * <p>
  * It cannot be used directly but must be subclassed. Subclassed models must at
- * least reimplement {@link } to return the number of rows, and {@link } to return
- * data.
+ * least reimplement {@link WAbstractItemModel#getRowCount(WModelIndex parent)
+ * WAbstractItemModel#getRowCount()} to return the number of rows, and
+ * {@link WAbstractItemModel#getData(WModelIndex index, int role)
+ * WAbstractItemModel#getData()} to return data.
  */
 public abstract class WAbstractListModel extends WAbstractItemModel {
 	private static Logger logger = LoggerFactory

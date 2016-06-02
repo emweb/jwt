@@ -40,12 +40,14 @@ import org.slf4j.LoggerFactory;
  * remember-me functionality.</li>
  * </ul>
  * <p>
- * The {@link } method initiates this process, and should typically be called
- * only at application startup time.
+ * The {@link AuthWidget#processEnvironment() processEnvironment()} method
+ * initiates this process, and should typically be called only at application
+ * startup time.
  * <p>
  * The authentication widget is implemented as a View for an {@link AuthModel},
- * which can be set using {@link }. The login logic (at this moment only for
- * password-based authentication) is handled by this model.
+ * which can be set using {@link AuthWidget#setModel(AuthModel model)
+ * setModel()}. The login logic (at this moment only for password-based
+ * authentication) is handled by this model.
  * <p>
  * It is very likely that the off-the shelf authentication widget does not
  * satisfy entirely to your taste or functional requirements. The widget uses
@@ -73,7 +75,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * The result of authentication changes is propagated to the rest of the
 	 * application using a <code>login</code> object.
 	 * <p>
-	 * Authentication services need to be configured in the {@link }.
+	 * Authentication services need to be configured in the
+	 * {@link AuthWidget#getModel() getModel()}.
 	 */
 	public AuthWidget(final AuthService baseAuth,
 			final AbstractUserDatabase users, final Login login,
@@ -105,7 +108,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * The result of authentication changes is propagated to the rest of the
 	 * application using a <code>login</code> object.
 	 * <p>
-	 * You need to call {@link } to configure a model for this view.
+	 * You need to call {@link AuthWidget#setModel(AuthModel model) setModel()}
+	 * to configure a model for this view.
 	 */
 	public AuthWidget(final Login login, WContainerWidget parent) {
 		super(WString.Empty, parent);
@@ -191,12 +195,14 @@ public class AuthWidget extends WTemplateFormView {
 	 * Configures registration capabilities.
 	 * <p>
 	 * Although the {@link AuthWidget} itself does not implement a registration
-	 * view, it may offer a button/link to do so, and calls {@link } when a user
-	 * wishes to register.
+	 * view, it may offer a button/link to do so, and calls
+	 * {@link AuthWidget#registerNewUser() registerNewUser()} when a user wishes
+	 * to register.
 	 * <p>
 	 * Even if registration is not enabled, the result of an
 	 * {@link OAuthService} login process may be that a new user is identified.
-	 * Then the {@link } is also used to present this new user with a
+	 * Then the {@link AuthWidget#createRegistrationView(Identity id)
+	 * createRegistrationView()} is also used to present this new user with a
 	 * registration view, passing the information obtained through OAuth.
 	 */
 	public void setRegistrationEnabled(boolean enabled) {
@@ -220,8 +226,11 @@ public class AuthWidget extends WTemplateFormView {
 	 * procedure which identified a new user. In the latter case, the
 	 * OAuth-provided information is passed as parameter <code>oauth</code>.
 	 * <p>
-	 * The default implementation creates a view using {@link }, and shows it in
-	 * a dialog using {@link }.
+	 * The default implementation creates a view using
+	 * {@link AuthWidget#createRegistrationView(Identity id)
+	 * createRegistrationView()}, and shows it in a dialog using
+	 * {@link AuthWidget#showDialog(CharSequence title, WWidget contents)
+	 * showDialog()}.
 	 */
 	public void registerNewUser(final Identity oauth) {
 		this.showDialog(tr("Wt.Auth.registration"),
@@ -246,9 +255,13 @@ public class AuthWidget extends WTemplateFormView {
 	 * authentication token, the login is considered &quot;weak&quot; (since a
 	 * user may have inadvertently forgotten to logout from a public computer).
 	 * You should let the user authenticate using another, primary method before
-	 * doing sensitive operations. The {@link } method may be useful for this.</li>
+	 * doing sensitive operations. The
+	 * {@link AuthWidget#createPasswordPromptDialog(Login login)
+	 * createPasswordPromptDialog()} method may be useful for this.</li>
 	 * </ul>
 	 * <p>
+	 * 
+	 * @see AuthWidget#letUpdatePassword(User user, boolean promptPassword)
 	 */
 	public void processEnvironment() {
 		final WEnvironment env = WApplication.getInstance().getEnvironment();
@@ -290,8 +303,11 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * This creates a view to let the user enter his new password.
 	 * <p>
-	 * The default implementation creates a new view using {@link } and shows it
-	 * in a dialog using {@link }.
+	 * The default implementation creates a new view using
+	 * {@link AuthWidget#createUpdatePasswordView(User user, boolean promptPassword)
+	 * createUpdatePasswordView()} and shows it in a dialog using
+	 * {@link AuthWidget#showDialog(CharSequence title, WWidget contents)
+	 * showDialog()}.
 	 */
 	public void letUpdatePassword(final User user, boolean promptPassword) {
 		this.showDialog(tr("Wt.Auth.updatepassword"),
@@ -304,8 +320,11 @@ public class AuthWidget extends WTemplateFormView {
 	 * This creates a view to let the user enter his email address, used to send
 	 * an email containing instructions to enter a new password.
 	 * <p>
-	 * The default implementation creates a new view using {@link } and shows it
-	 * in a dialog using {@link }.
+	 * The default implementation creates a new view using
+	 * {@link AuthWidget#getCreateLostPasswordView()
+	 * getCreateLostPasswordView()} and shows it in a dialog using
+	 * {@link AuthWidget#showDialog(CharSequence title, WWidget contents)
+	 * showDialog()}.
 	 */
 	public void handleLostPassword() {
 		this.showDialog(tr("Wt.Auth.lostpassword"),
@@ -339,7 +358,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * provider).
 	 * <p>
 	 * The default implementation creates a new {@link RegistrationWidget} with
-	 * a model created using {@link }.
+	 * a model created using {@link AuthWidget#getCreateRegistrationModel()
+	 * getCreateRegistrationModel()}.
 	 * <p>
 	 * 
 	 * @see AuthWidget#registerNewUser()
@@ -377,7 +397,7 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * This creates a dialog password. The user is taken from the
 	 * <code>login</code> object, which also signals an eventual success using
-	 * its {@link } signal.
+	 * its {@link Login#changed() Login#changed()} signal.
 	 * <p>
 	 * The default implementation instantiates a {@link PasswordPromptDialog}.
 	 */
@@ -442,8 +462,9 @@ public class AuthWidget extends WTemplateFormView {
 	 * This method is called just before an initial rendering, and creates the
 	 * initial view.
 	 * <p>
-	 * The default implementation calls {@link } or {@link } depending on whether
-	 * a user is currently logged in.
+	 * The default implementation calls {@link AuthWidget#createLoginView()
+	 * createLoginView()} or {@link AuthWidget#createLoggedInView()
+	 * createLoggedInView()} depending on whether a user is currently logged in.
 	 */
 	protected void create() {
 		if (this.created_) {
@@ -466,7 +487,9 @@ public class AuthWidget extends WTemplateFormView {
 	 * <p>
 	 * The default implementation renders the
 	 * <code>&quot;Wt.Auth.template.login&quot;</code> template, and binds
-	 * fields using {@link } and {@link }.
+	 * fields using {@link AuthWidget#createPasswordLoginView()
+	 * createPasswordLoginView()} and {@link AuthWidget#createOAuthLoginView()
+	 * createOAuthLoginView()}.
 	 */
 	protected void createLoginView() {
 		this.setTemplateText(tr("Wt.Auth.template.login"));
@@ -587,7 +610,8 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Returns the registration model.
 	 * <p>
-	 * Calls {@link } or resets a previously created one.
+	 * Calls {@link AuthWidget#getCreateRegistrationModel()
+	 * getCreateRegistrationModel()} or resets a previously created one.
 	 * <p>
 	 * 
 	 * @see AuthWidget#registerNewUser()

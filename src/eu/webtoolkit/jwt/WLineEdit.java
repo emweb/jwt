@@ -33,20 +33,22 @@ import org.slf4j.LoggerFactory;
  * signal is fired before the line edit has interpreted the keypress to change
  * its text.
  * <p>
- * At all times, the current content may be accessed with the {@link } method.
+ * At all times, the current content may be accessed with the
+ * {@link WLineEdit#getText() getText()} method.
  * <p>
- * You may specify a maximum length for the input using {@link }. If you wish to
+ * You may specify a maximum length for the input using
+ * {@link WLineEdit#setMaxLength(int chars) setMaxLength()}. If you wish to
  * provide more detailed input validation, you may set a validator using the
  * {@link WFormWidget#setValidator(WValidator validator)
  * WFormWidget#setValidator()} method. Validators provide, in general, both
  * client-side validation (as visual feed-back only) and server-side validation
- * when calling {@link }.
+ * when calling {@link WLineEdit#validate() validate()}.
  * <p>
  * The widget corresponds to the HTML
  * <code>&lt;input type=&quot;text&quot;&gt;</code> or
  * <code>&lt;input type=&quot;password&quot;&gt;</code> tag.
  * <p>
- * WLineEdit is an {@link inline} widget.
+ * WLineEdit is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -62,6 +64,8 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Enumeration that describes how the contents is displayed.
 	 * <p>
+	 * 
+	 * @see WLineEdit#setEchoMode(WLineEdit.EchoMode echoMode)
 	 */
 	public enum EchoMode {
 		/**
@@ -84,6 +88,8 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Enumeration that describes options for input masks.
 	 * <p>
+	 * 
+	 * @see WLineEdit#setInputMask(String mask, EnumSet flags)
 	 */
 	public enum InputMaskFlag {
 		/**
@@ -173,7 +179,8 @@ public class WLineEdit extends WFormWidget {
 	 * <p>
 	 * This specifies the width of the line edit that is roughly equivalent with
 	 * <code>chars</code> characters. This does not limit the maximum length of
-	 * a string that may be entered, which may be set using {@link }.
+	 * a string that may be entered, which may be set using
+	 * {@link WLineEdit#setMaxLength(int chars) setMaxLength()}.
 	 * <p>
 	 * The default value is 10.
 	 */
@@ -200,6 +207,8 @@ public class WLineEdit extends WFormWidget {
 	 * <p>
 	 * The default value is &quot;&quot;.
 	 * <p>
+	 * 
+	 * @see WLineEdit#getText()
 	 */
 	public void setText(final String text) {
 		String newDisplayText = this.inputText(text);
@@ -233,14 +242,15 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Returns the displayed text.
 	 * <p>
-	 * If {@link } is set to Normal, and no input mask is defined, this returns
-	 * the same as {@link WLineEdit#getText() getText()}.
+	 * If {@link WLineEdit#getEchoMode() getEchoMode()} is set to Normal, and no
+	 * input mask is defined, this returns the same as
+	 * {@link WLineEdit#getText() getText()}.
 	 * <p>
 	 * If an input mask is defined, then the text is returned including space
 	 * characters.
 	 * <p>
-	 * If {@link } is set to Password, then a string of asterisks is returned
-	 * equal to the length of the text.
+	 * If {@link WLineEdit#getEchoMode() getEchoMode()} is set to Password, then
+	 * a string of asterisks is returned equal to the length of the text.
 	 * <p>
 	 * 
 	 * @see WLineEdit#setText(String text)
@@ -338,6 +348,9 @@ public class WLineEdit extends WFormWidget {
 	 * <p>
 	 * Returns -1 if there is no selected text.
 	 * <p>
+	 * 
+	 * @see WLineEdit#hasSelectedText()
+	 * @see WLineEdit#getSelectedText()
 	 */
 	public int getSelectionStart() {
 		WApplication app = WApplication.getInstance();
@@ -358,6 +371,8 @@ public class WLineEdit extends WFormWidget {
 	 * <p>
 	 * Returns an empty string if there is currently no selected text.
 	 * <p>
+	 * 
+	 * @see WLineEdit#hasSelectedText()
 	 */
 	public String getSelectedText() {
 		if (this.getSelectionStart() != -1) {
@@ -425,6 +440,8 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Returns the input mask.
 	 * <p>
+	 * 
+	 * @see WLineEdit#setInputMask(String mask, EnumSet flags)
 	 */
 	public String getInputMask() {
 		return this.inputMask_;
@@ -504,7 +521,8 @@ public class WLineEdit extends WFormWidget {
 	 * </tr>
 	 * </table>
 	 * The distinction between required and optional characters won&apos;t be
-	 * apparent on the client side, but will affect the result of {@link }.
+	 * apparent on the client side, but will affect the result of
+	 * {@link WLineEdit#validate() validate()}.
 	 * <p>
 	 * There are also a few special characters, that won&apos;t be checked
 	 * against, but modify the value in some way:

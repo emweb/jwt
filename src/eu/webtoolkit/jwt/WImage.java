@@ -27,15 +27,16 @@ import org.slf4j.LoggerFactory;
  * by a {@link WResource}.
  * <p>
  * You may listen to events by attaching event listeners to signals such as
- * {@link }. Since mouse events pass the coordinates through a
- * {@link WMouseEvent} object, it is possible to react to clicks in specific
- * parts of the image. An alternative is to define interactive areas on the
- * image using {@link }, which in addition allows to have customized tool tips
- * for certain image areas (using
+ * {@link WInteractWidget#clicked() WInteractWidget#clicked()}. Since mouse
+ * events pass the coordinates through a {@link WMouseEvent} object, it is
+ * possible to react to clicks in specific parts of the image. An alternative is
+ * to define interactive areas on the image using
+ * {@link WImage#addArea(WAbstractArea area) addArea()}, which in addition
+ * allows to have customized tool tips for certain image areas (using
  * {@link WAbstractArea#setToolTip(CharSequence text)
  * WAbstractArea#setToolTip()}).
  * <p>
- * WImage is an {@link inline} widget.
+ * WImage is an {@link WWidget#setInline(boolean inlined) inline} widget.
  * <p>
  * <h3>CSS</h3>
  * <p>
@@ -232,11 +233,14 @@ public class WImage extends WInteractWidget {
 	 * display an image. If no sensible fallback text can be provided, an empty
 	 * text is preferred over nonsense.
 	 * <p>
-	 * This should not be confused with {@link } text, which provides additional
-	 * information that is displayed when the mouse hovers over the image.
+	 * This should not be confused with {@link WWebWidget#getToolTip()
+	 * WWebWidget#getToolTip()} text, which provides additional information that
+	 * is displayed when the mouse hovers over the image.
 	 * <p>
 	 * The default alternate text is an empty text (&quot;&quot;).
 	 * <p>
+	 * 
+	 * @see WImage#getAlternateText()
 	 */
 	public void setAlternateText(final CharSequence text) {
 		if (canOptimizeUpdates() && text.equals(this.altText_)) {
@@ -349,11 +353,11 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * <p>
-	 * <i><b>Note: </b>Currently it is not possible to add a first area after
-	 * the image has been rendered. If you want to use interactive areas you
-	 * need to add one immediately. </i>
-	 * </p>
+	 * @see WImage#insertArea(int index, WAbstractArea area) <p>
+	 *      <i><b>Note: </b>Currently it is not possible to add a first area
+	 *      after the image has been rendered. If you want to use interactive
+	 *      areas you need to add one immediately. </i>
+	 *      </p>
 	 */
 	public void addArea(WAbstractArea area) {
 		this.insertArea(this.map_ != null ? this.map_.getCount() : 0, area);

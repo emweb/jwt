@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A widget for selecting an X axis range to display on an associated
- * {@link WCartesianChart}.
+ * {@link eu.webtoolkit.jwt.chart.WCartesianChart}.
  * <p>
  * 
  * <p>
@@ -219,8 +219,12 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	 * available for the axes and labels, and the handles.
 	 * <p>
 	 * Alternatively, you can configure the chart layout to be computed
-	 * automatically using {@link }.
+	 * automatically using
+	 * {@link WAxisSliderWidget#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}.
 	 * <p>
+	 * 
+	 * @see WAxisSliderWidget#setAutoLayoutEnabled(boolean enabled)
 	 */
 	public void setSelectionAreaPadding(int padding, EnumSet<Side> sides) {
 		if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
@@ -263,7 +267,9 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	 * <p>
 	 * This is either the padding set through
 	 * {@link WAxisSliderWidget#setSelectionAreaPadding(int padding, EnumSet sides)
-	 * setSelectionAreaPadding()} or computed using {@link }.
+	 * setSelectionAreaPadding()} or computed using
+	 * {@link WAxisSliderWidget#setAutoLayoutEnabled(boolean enabled)
+	 * setAutoLayoutEnabled()}.
 	 * <p>
 	 */
 	public int getSelectionAreaPadding(Side side) {
