@@ -59,13 +59,13 @@ public enum ItemFlag {
 	 */
 	ItemIsXHTMLText,
 	/**
-	 * Item&apos;s tooltip is deferred.
-	 */
-	ItemHasDeferredTooltip,
-	/**
 	 * Item&apos;s value has been modified.
 	 */
-	ItemIsDirty;
+	ItemIsDirty,
+	/**
+	 * Item&apos;s tooltip is deferred.
+	 */
+	ItemHasDeferredTooltip;
 
 	/**
 	 * Returns the numerical representation of this enum.

@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.auth.AbstractUserDatabase;
+import eu.webtoolkit.jwt.auth.AuthService;
+import eu.webtoolkit.jwt.auth.IdentityPolicy;
 import eu.webtoolkit.jwt.auth.PasswordHash;
 import eu.webtoolkit.jwt.auth.Token;
 import eu.webtoolkit.jwt.auth.User;
@@ -27,7 +29,15 @@ public class UserDatabase extends AbstractUserDatabase {
 	 * Constructor
 	 */
 	public UserDatabase(EntityManager entityManager) {
+		this(entityManager, null);
+	}
+
+	/**
+	 * Constructor
+	 */
+	public UserDatabase(EntityManager entityManager, AuthService authService) {
 		entityManager_ = entityManager;
+		authService_ = authService;
 		maxAuthTokensPerUser_ = 50;
 	}
 
@@ -69,8 +79,12 @@ public class UserDatabase extends AbstractUserDatabase {
 			"select a_info " +
 			"	from AuthInfo a_info, AuthIdentity a_id " +
 			"	where a_id.provider = :provider" +
-			"		and a_id.identity = :identity" +
 			"		and a_id.authInfo.id = a_info.id";
+		if (authService_ != null && authService_.getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+			q += " and LOWER(a_id.identity) = LOWER(:identity)";
+		} else {
+			q += " and a_id.identity = :identity";
+		}
 
 		Query query = entityManager_.createQuery(q);
 		query.setParameter("provider", provider);
@@ -159,7 +173,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	@Override
 	public boolean setEmail(User user, String address) {
 		Query query = entityManager_
-				.createQuery("select a_info from AuthInfo a_info where email = :email");
+				.createQuery("select a_info from AuthInfo a_info where LOWER(email) = LOWER(:email)");
 		query.setParameter("email", address);
 		if (query.getResultList().size() != 0) {
 			return false;
@@ -191,7 +205,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	@Override
 	public User findWithEmail(String address) {
 		Query query = entityManager_
-				.createQuery("select a_info from AuthInfo a_info where email = :email");
+				.createQuery("select a_info from AuthInfo a_info where LOWER(email) = LOWER(:email)");
 		query.setParameter("email", address);
 		List<AuthInfo> result = (List<AuthInfo>) query.getResultList();
 		if (result.size() == 1)
@@ -312,6 +326,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	}
 
 	private EntityManager entityManager_;
+	private AuthService authService_;
 	private int maxAuthTokensPerUser_;
 
 	private class TransactionImpl implements Transaction {

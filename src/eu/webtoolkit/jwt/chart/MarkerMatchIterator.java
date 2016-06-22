@@ -43,7 +43,9 @@ class MarkerMatchIterator extends SeriesIterator {
 	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
 		return this.matchedSeries_ == null
-				&& series.getType() == SeriesType.PointSeries;
+				&& (series.getType() == SeriesType.PointSeries
+						|| series.getType() == SeriesType.LineSeries || series
+						.getType() == SeriesType.CurveSeries);
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,

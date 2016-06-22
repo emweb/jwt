@@ -52,7 +52,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.painter_ = null;
 		this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
 		this.paintUpdate_ = paintUpdate;
-		this.busyWithPath_ = false;
 		this.currentTransform_ = new WTransform();
 		this.currentBrush_ = new WBrush();
 		this.currentPen_ = new WPen();
@@ -138,7 +137,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
-		this.finishPath();
 		if (rect.getWidth() < EPSILON || rect.getHeight() < EPSILON) {
 			return;
 		}
@@ -196,7 +194,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public void drawImage(final WRectF rect, final String imageUri,
 			int imgWidth, int imgHeight, final WRectF sourceRect) {
-		this.finishPath();
 		this.renderStateChanges(true);
 		WApplication app = WApplication.getInstance();
 		String imgUri = "";
@@ -228,27 +225,22 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void drawPath(final WPainterPath path) {
-		this.renderStateChanges(false);
 		if (path.isJavaScriptBound()) {
-			this.finishPath();
+			this.renderStateChanges(true);
 			this.js_.append("Wt3_3_5.gfxUtils.drawPath(ctx,")
 					.append(path.getJsRef()).append(",")
 					.append(this.currentNoBrush_ ? "false" : "true")
 					.append(",").append(this.currentNoPen_ ? "false" : "true")
 					.append(");");
 		} else {
+			this.renderStateChanges(false);
 			this.drawPlainPath(this.js_, path);
-			if (this.painter_.getBrush().getColor().getAlpha() != 255
-					|| this.painter_.getBrush().isJavaScriptBound()
-					|| this.painter_.getPen().getColor().getAlpha() != 255
-					|| this.painter_.getPen().isJavaScriptBound()) {
-				this.finishPath();
-			}
+			this.finishPath();
 		}
 	}
 
 	public void drawRect(final WRectF rectangle) {
-		this.renderStateChanges(false);
+		this.renderStateChanges(true);
 		this.js_.append("Wt3_3_5").append(".gfxUtils.drawRect(ctx,")
 				.append(rectangle.getJsRef()).append(",")
 				.append(this.currentNoBrush_ ? "false" : "true").append(",")
@@ -266,7 +258,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
 				flags, AlignmentFlag.AlignVerticalMask));
 		if (this.textMethod_ != WCanvasPaintDevice.TextMethod.DomText) {
-			this.finishPath();
 			this.renderStateChanges(true);
 		}
 		switch (this.textMethod_) {
@@ -585,7 +576,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	public void done() {
-		this.finishPath();
 	}
 
 	public boolean isPaintActive() {
@@ -671,7 +661,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
 	private boolean paintUpdate_;
 	private WCanvasPaintDevice.TextMethod textMethod_;
-	private boolean busyWithPath_;
 	private boolean currentNoPen_;
 	private boolean currentNoBrush_;
 	private boolean lastTransformWasIdentity_;
@@ -693,16 +682,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private List<String> images_;
 
 	private void finishPath() {
-		if (this.busyWithPath_) {
-			if (!this.currentNoBrush_) {
-				this.js_.append("ctx.fill();");
-			}
-			if (!this.currentNoPen_) {
-				this.js_.append("ctx.stroke();");
-			}
-			this.js_.append('\n');
-			this.busyWithPath_ = false;
+		if (!this.currentNoBrush_) {
+			this.js_.append("ctx.fill();");
 		}
+		if (!this.currentNoPen_) {
+			this.js_.append("ctx.stroke();");
+		}
+		this.js_.append('\n');
 	}
 
 	private void renderTransform(final StringWriter s, final WTransform t) {
@@ -725,10 +711,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	private void renderStateChanges(boolean resetPathTranslation) {
-		if (resetPathTranslation
-				&& (!fequal(this.pathTranslation_.getX(), 0) || !fequal(
-						this.pathTranslation_.getY(), 0))) {
-			this.changeFlags_.add(WPaintDevice.ChangeFlag.Transform);
+		if (resetPathTranslation) {
+			if (!fequal(this.pathTranslation_.getX(), 0)
+					|| !fequal(this.pathTranslation_.getY(), 0)) {
+				this.changeFlags_.add(WPaintDevice.ChangeFlag.Transform);
+			}
 		}
 		if (!!this.changeFlags_.isEmpty()) {
 			return;
@@ -776,7 +763,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				|| clippingChanged) {
 			boolean resetTransform = false;
 			if (clippingChanged) {
-				this.finishPath();
 				this.js_.append("ctx.restore();ctx.save();");
 				this.lastTransformWasIdentity_ = true;
 				final WTransform t = this.getPainter().getClipPathTransform();
@@ -797,7 +783,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 								.getClipPath());
 						this.js_.append("ctx.clip();");
 					}
-					this.busyWithPath_ = false;
 					this.currentClipPath_.assign(this.getPainter()
 							.getClipPath());
 				} else {
@@ -817,53 +802,44 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				if (!EnumUtils.mask(this.changeFlags_,
 						WPaintDevice.ChangeFlag.Transform).isEmpty()) {
 					WTransform f = this.getPainter().getCombinedTransform();
-					resetTransform = !this.currentTransform_.equals(f);
-					if (this.busyWithPath_) {
-						if (!this.getPainter().getBrush().getGradient()
-								.isEmpty()
-								|| !this.getPainter().getPen().getGradient()
-										.isEmpty()) {
-							resetTransform = true;
-						} else {
-							if (!this.currentTransform_.isJavaScriptBound()
-									&& !f.isJavaScriptBound()
-									&& fequal(f.getM11(),
-											this.currentTransform_.getM11())
-									&& fequal(f.getM12(),
-											this.currentTransform_.getM12())
-									&& fequal(f.getM21(),
-											this.currentTransform_.getM21())
-									&& fequal(f.getM22(),
-											this.currentTransform_.getM22())) {
-								double det = f.getM11() * f.getM22()
-										- f.getM12() * f.getM21();
-								double a11 = f.getM22() / det;
-								double a12 = -f.getM12() / det;
-								double a21 = -f.getM21() / det;
-								double a22 = f.getM11() / det;
-								double fdx = f.getDx() * a11 + f.getDy() * a21;
-								double fdy = f.getDx() * a12 + f.getDy() * a22;
-								final WTransform g = this.currentTransform_;
-								double gdx = g.getDx() * a11 + g.getDy() * a21;
-								double gdy = g.getDx() * a12 + g.getDy() * a22;
-								double dx = fdx - gdx;
-								double dy = fdy - gdy;
-								this.pathTranslation_.setX(dx);
-								this.pathTranslation_.setY(dy);
-								this.changeFlags_.clear();
-								resetTransform = false;
-							}
-						}
+					resetTransform = !this.currentTransform_.equals(f)
+							|| (!fequal(this.pathTranslation_.getX(), 0) || !fequal(
+									this.pathTranslation_.getY(), 0))
+							&& resetPathTranslation;
+					if (!this.getPainter().getBrush().getGradient().isEmpty()
+							|| !this.getPainter().getPen().getGradient()
+									.isEmpty()) {
+						resetTransform = true;
 					} else {
-						if (!resetTransform) {
-							if (!fequal(this.pathTranslation_.getX(), 0)
-									|| !fequal(this.pathTranslation_.getY(), 0)) {
-								resetTransform = true;
-							}
+						if (!resetPathTranslation
+								&& !this.currentTransform_.isJavaScriptBound()
+								&& !f.isJavaScriptBound()
+								&& fequal(f.getM11(),
+										this.currentTransform_.getM11())
+								&& fequal(f.getM12(),
+										this.currentTransform_.getM12())
+								&& fequal(f.getM21(),
+										this.currentTransform_.getM21())
+								&& fequal(f.getM22(),
+										this.currentTransform_.getM22())) {
+							double det = f.getM11() * f.getM22() - f.getM12()
+									* f.getM21();
+							double a11 = f.getM22() / det;
+							double a12 = -f.getM12() / det;
+							double a21 = -f.getM21() / det;
+							double a22 = f.getM11() / det;
+							double fdx = f.getDx() * a11 + f.getDy() * a21;
+							double fdy = f.getDx() * a12 + f.getDy() * a22;
+							final WTransform g = this.currentTransform_;
+							double gdx = g.getDx() * a11 + g.getDy() * a21;
+							double gdy = g.getDx() * a12 + g.getDy() * a22;
+							double dx = fdx - gdx;
+							double dy = fdy - gdy;
+							this.pathTranslation_.setX(dx);
+							this.pathTranslation_.setY(dy);
+							this.changeFlags_.clear();
+							resetTransform = false;
 						}
-					}
-					if (resetTransform) {
-						this.finishPath();
 					}
 				}
 			}
@@ -874,13 +850,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				this.pathTranslation_.setX(0);
 				this.pathTranslation_.setY(0);
 			}
-		}
-		boolean newNoPen = this.getPainter().getPen().getStyle() == PenStyle.NoPen;
-		boolean newNoBrush = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
-		if (penChanged || brushChanged || shadowChanged
-				|| newNoBrush != this.currentNoBrush_
-				|| newNoPen != this.currentNoPen_) {
-			this.finishPath();
 		}
 		this.currentNoPen_ = this.getPainter().getPen().getStyle() == PenStyle.NoPen;
 		this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
@@ -1029,10 +998,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	// private void resetPathTranslation() ;
 	private void drawPlainPath(final StringWriter out, final WPainterPath path) {
 		char[] buf = new char[30];
-		if (!this.busyWithPath_) {
-			out.append("ctx.beginPath();");
-			this.busyWithPath_ = true;
-		}
+		out.append("ctx.beginPath();");
 		final List<WPainterPath.Segment> segments = path.getSegments();
 		if (segments.size() > 0
 				&& segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {

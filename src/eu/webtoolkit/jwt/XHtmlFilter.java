@@ -2,19 +2,15 @@ package eu.webtoolkit.jwt;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.n3.nanoxml.IXMLBuilder;
 import net.n3.nanoxml.IXMLEntityResolver;
 import net.n3.nanoxml.IXMLReader;
 import net.n3.nanoxml.XMLParseException;
-import net.n3.nanoxml.XMLUtil;
 
 public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	protected static Map<String, Integer> xhtmlEntities = new HashMap<String, Integer>();
@@ -389,5 +385,36 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	@Override
 	public Object getResult() throws Exception {
 		return null;
+	}
+	
+	protected static String htmlAttributeDecode(String attribute) {
+		Pattern p = Pattern.compile("&(?:[A-Za-z]+|#?[0-9]+);");
+		Matcher m = p.matcher(attribute);
+
+		StringBuilder result = new StringBuilder();
+		int cur = 0;
+		while (m.find()) {
+			result.append(attribute.substring(cur, m.start()));
+			String entity = m.group();
+			entity = entity.substring(1, entity.length() - 1);
+			Integer unicodeSymbol = xhtmlEntities.get(entity);
+			if (unicodeSymbol != null)
+				result.append((char)unicodeSymbol.intValue() + "");
+			else {
+				int i = Integer.valueOf(entity);
+				result.append((char)i + "");
+			}
+			cur = m.end();
+		}
+
+		result.append(attribute.substring(cur));
+		
+		return result.toString();
+	}
+	
+	protected static String htmlAttributeEncode(String attribute) {
+		StringBuilder result = new StringBuilder();
+		DomElement.htmlAttributeValue(result, attribute);
+		return result.toString();
 	}
 }

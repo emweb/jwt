@@ -682,7 +682,7 @@ class WebSession {
 	}
 
 	public String getApplicationUrl() {
-		return this.applicationUrl_ + this.getSessionQuery();
+		return this.applicationUrl_;
 	}
 
 	public String getDeploymentPath() {
@@ -1223,7 +1223,7 @@ class WebSession {
 						response.addHeader("Access-Control-Allow-Methods",
 								"POST, OPTIONS");
 						response.addHeader("Access-Control-Max-Age", "1728000");
-						response.flush();
+						handler.flushResponse();
 						return;
 					}
 				} else {

@@ -146,6 +146,5 @@ class MarkerRenderIterator extends SeriesIterator {
 		}
 		dScale = markerSize / 6 * dScale;
 		this.scale_.assign(new WTransform(dScale, 0, 0, dScale, 0, 0));
-		;
 	}
 }

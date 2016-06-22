@@ -28,6 +28,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 			final SeriesRenderIterator it) {
 		super(chart, painter, series, it);
 		this.curveLength_ = 0;
+		this.curveFragmentLength_ = 0;
 		this.curve_ = new WPainterPath();
 		this.fill_ = new WPainterPath();
 		this.p_1 = new WPointF();
@@ -40,7 +41,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 			int xColumn, int yRow, int yColumn) {
 		WPointF p = this.chart_.map(x, y, this.series_.getAxis(),
 				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
-		if (this.curveLength_ == 0) {
+		if (this.curveFragmentLength_ == 0) {
 			this.curve_.moveTo(this.hv(p));
 			if (this.series_.getFillRange() != FillRangeType.NoFill
 					&& !this.series_.getBrush().equals(
@@ -53,7 +54,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 				this.curve_.lineTo(this.hv(p));
 				this.fill_.lineTo(this.hv(p));
 			} else {
-				if (this.curveLength_ == 1) {
+				if (this.curveFragmentLength_ == 1) {
 					computeC(this.p0, p, this.c_);
 				} else {
 					WPointF c1 = new WPointF();
@@ -71,10 +72,11 @@ class LineSeriesRenderer extends SeriesRenderer {
 		this.p0 = p;
 		this.lastX_ = x;
 		++this.curveLength_;
+		++this.curveFragmentLength_;
 	}
 
 	public void addBreak() {
-		if (this.curveLength_ > 1) {
+		if (this.curveFragmentLength_ > 1) {
 			if (this.series_.getType() == SeriesType.CurveSeries) {
 				WPointF c1 = new WPointF();
 				computeC(this.p0, this.p_1, c1);
@@ -90,7 +92,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 				this.fill_.closeSubPath();
 			}
 		}
-		this.curveLength_ = 0;
+		this.curveFragmentLength_ = 0;
 	}
 
 	public void paint() {
@@ -162,11 +164,13 @@ class LineSeriesRenderer extends SeriesRenderer {
 			}
 		}
 		this.curveLength_ = 0;
+		this.curveFragmentLength_ = 0;
 		this.curve_.assign(new WPainterPath());
 		this.fill_.assign(new WPainterPath());
 	}
 
 	private int curveLength_;
+	private int curveFragmentLength_;
 	private WPainterPath curve_;
 	private WPainterPath fill_;
 	private double lastX_;

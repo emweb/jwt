@@ -677,7 +677,7 @@ public class WDialog extends WPopupWidget {
 	}
 
 	/**
-	 * Event signal emitted when a keyboard key is pushed down.
+	 * Event signal emitted when a &quot;character&quot; was entered.
 	 * <p>
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
@@ -687,7 +687,7 @@ public class WDialog extends WPopupWidget {
 	}
 
 	/**
-	 * Event signal emitted when a keyboard key is pushed down.
+	 * Event signal emitted when a keyboard key is released.
 	 * <p>
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
@@ -697,7 +697,7 @@ public class WDialog extends WPopupWidget {
 	}
 
 	/**
-	 * Event signal emitted when a keyboard key is pushed down.
+	 * Event signal emitted when enter was pressed.
 	 * <p>
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
@@ -707,7 +707,7 @@ public class WDialog extends WPopupWidget {
 	}
 
 	/**
-	 * Event signal emitted when a keyboard key is pushed down.
+	 * Event signal emitted when escape was pressed.
 	 * <p>
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
@@ -716,12 +716,6 @@ public class WDialog extends WPopupWidget {
 		return this.layoutContainer_.escapePressed();
 	}
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
@@ -781,153 +775,27 @@ public class WDialog extends WPopupWidget {
 		super.render(flags);
 	}
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WTemplate impl_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WText caption_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WText closeIcon_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WContainerWidget titleBar_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WContainerWidget contents_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	WContainerWidget layoutContainer_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WContainerWidget footer_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private boolean modal_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private boolean resizable_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private boolean escapeIsReject_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private boolean autoFocus_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private JSignal2<Integer, Integer> moved_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private JSignal2<Integer, Integer> resized_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private Signal1<WDialog.DialogCode> finished_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private WDialog.DialogCode result_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private boolean recursiveEventLoop_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private AbstractSignal.Connection escapeConnection1_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private AbstractSignal.Connection escapeConnection2_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private AbstractSignal.Connection enterConnection1_;
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private AbstractSignal.Connection enterConnection2_;
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private void create() {
 		this.closeIcon_ = null;
 		this.footer_ = null;
@@ -1003,12 +871,6 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private void onEscapePressed() {
 		DialogCover c = this.getCover();
 		if (c != null && c.isTopDialogRendered(this)) {
@@ -1016,12 +878,6 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private void onDefaultPressed() {
 		DialogCover c = this.getCover();
 		if (this.footer_ != null && c != null && c.isTopDialogRendered(this)) {
@@ -1038,12 +894,6 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private void bringToFront(final WMouseEvent e) {
 		if (e.getButton() == WMouseEvent.Button.LeftButton
 				&& e.getModifiers().equals(KeyboardModifier.NoModifier)) {
@@ -1051,12 +901,6 @@ public class WDialog extends WPopupWidget {
 		}
 	}
 
-	/**
-	 * Event signal emitted when a keyboard key is pushed down.
-	 * <p>
-	 * The event will be triggered if nothing in the {@link WDialog} has focus
-	 * <p>
-	 */
 	private DialogCover getCover() {
 		WApplication app = WApplication.getInstance();
 		if (app.getDomRoot() != null) {

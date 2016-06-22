@@ -2296,7 +2296,8 @@ public class WAxis {
 		final WAxis.Segment s = this.segments_.get(segment);
 		switch (this.scale_) {
 		case CategoryScale: {
-			int renderInterval = Math.max(1, (int) this.renderInterval_);
+			int renderInterval = Math.max(1,
+					(int) (this.renderInterval_ / divisor));
 			if (renderInterval == 1) {
 				ticks.add(new WAxis.TickLabel(s.renderMinimum,
 						WAxis.TickLabel.TickLength.Long));

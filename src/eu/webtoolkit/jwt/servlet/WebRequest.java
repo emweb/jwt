@@ -26,6 +26,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;
+import eu.webtoolkit.jwt.Utils;
 
 /**
  * A WebRequest which wraps the HttpServletRequest to add support for file uploads and
@@ -359,6 +360,12 @@ public class WebRequest extends HttpServletRequestWrapper {
 		      if (!fields[0].equals(""))
 		    	  parameters_.put(fields[0], new String [] { fields[1] });
 		    }
+		}
+
+		String[] wtParamsAr = parameters_.get("Wt-params");
+		if (wtParamsAr != null) {
+			String wtParams = wtParamsAr[0];
+			Utils.parseFormUrlEncoded(wtParams, parameters_);
 		}
 	}
 	

@@ -73,6 +73,14 @@ public class WDateEdit extends WLineEdit {
 		this((WContainerWidget) null);
 	}
 
+	public void remove() {
+		if (!(this.popup_ != null)) {
+			if (this.calendar_ != null)
+				this.calendar_.remove();
+		}
+		super.remove();
+	}
+
 	/**
 	 * Sets the date.
 	 * <p>

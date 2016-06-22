@@ -124,6 +124,7 @@ public class WTableView extends WAbstractItemView {
 		this.viewportHeight_ = 800;
 		this.scrollToRow_ = -1;
 		this.scrollToHint_ = WAbstractItemView.ScrollHint.EnsureVisible;
+		this.columnResizeConnected_ = false;
 		this.setSelectable(false);
 		this.setStyleClass("Wt-itemview Wt-tableview");
 		WApplication app = WApplication.getInstance();
@@ -866,6 +867,7 @@ public class WTableView extends WAbstractItemView {
 	private int renderedLastColumn_;
 	private int scrollToRow_;
 	private WAbstractItemView.ScrollHint scrollToHint_;
+	private boolean columnResizeConnected_;
 
 	private void updateTableBackground() {
 		if (this.isAjaxMode()) {
@@ -1686,6 +1688,11 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
+	private void onColumnResize() {
+		this.computeRenderedArea();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+	}
+
 	private void resetGeometry() {
 		if (this.isAjaxMode()) {
 			this.reset();
@@ -1956,6 +1963,15 @@ public class WTableView extends WAbstractItemView {
 							WTableView.this.onViewportChange(e1, e2, e3, e4);
 						}
 					});
+		}
+		if (!this.columnResizeConnected_) {
+			this.columnResized().addListener(this,
+					new Signal2.Listener<Integer, WLength>() {
+						public void trigger(Integer e1, WLength e2) {
+							WTableView.this.onColumnResize();
+						}
+					});
+			this.columnResizeConnected_ = true;
 		}
 		if (this.viewportTop_ != 0) {
 			StringBuilder s = new StringBuilder();

@@ -58,6 +58,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 		this.currentShadowId_ = -1;
 		this.nextShadowId_ = 0;
 		this.pathTranslation_ = new WPointF();
+		this.pathBoundingBox_ = null;
 		this.shapes_ = new StringBuilder();
 		this.fontMetrics_ = null;
 		this.fillStyle_ = "";
@@ -211,6 +212,17 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public void drawPath(final WPainterPath path) {
+		WRectF bbox = this.getPainter().getWorldTransform()
+				.map(path.getControlPointRect());
+		if (this.busyWithPath_) {
+			if (this.pathBoundingBox_.intersects(bbox)) {
+				this.finishPath();
+			} else {
+				this.pathBoundingBox_ = this.pathBoundingBox_.united(bbox);
+			}
+		} else {
+			this.pathBoundingBox_ = bbox;
+		}
 		this.makeNewGroup();
 		this.drawPlainPath(this.shapes_, path);
 	}
@@ -415,6 +427,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	private int currentShadowId_;
 	private int nextShadowId_;
 	private WPointF pathTranslation_;
+	private WRectF pathBoundingBox_;
 	private StringBuilder shapes_;
 	private ServerSideFontMetrics fontMetrics_;
 

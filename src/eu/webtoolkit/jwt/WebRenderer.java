@@ -563,8 +563,14 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setVar("CLOSE_CONNECTION", false);
 			String params = "";
 			if (this.session_.getType() == EntryPointType.WidgetSet) {
-				final Map<String, String[]> m = this.session_.getEnv()
+				Map<String, String[]> m = this.session_.getEnv()
 						.getParameterMap();
+				String[] it = m.get("Wt-params");
+				Map<String, String[]> wtParams = new HashMap<String, String[]>();
+				if (it != null) {
+					Utils.parseFormUrlEncoded(it[0], wtParams);
+					m = wtParams;
+				}
 				for (Iterator<Map.Entry<String, String[]>> i_it = m.entrySet()
 						.iterator(); i_it.hasNext();) {
 					Map.Entry<String, String[]> i = i_it.next();

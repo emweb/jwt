@@ -752,6 +752,10 @@ public class Configuration {
 	
 	public void setInternalDeploymentSize(int size) {
 		this.internalDeploymentSize = size;
+    if (size == 0)
+      getProperties().put(WApplication.RESOURCES_URL, "/wt-resources/");
+    else
+      getProperties().put(WApplication.RESOURCES_URL, "wt-resources/");
 	}
 
 	/**

@@ -52,7 +52,16 @@ behaviour. It also indicates the main changes from version to verison.
     <a href="eu/webtoolkit/jwt/WContainerWidget.html#getScrollLeft--">getScrollLeft()</a>.
   </dd>
   <dt>
-    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">Chart::WCartesianChart</a>
+    <a href="eu/webtoolkit/jwt/auth/jpa/UserDatabase.html">auth.jpa.UserDatabase</a>
+  </dt>
+  <dd>
+    The <a href="eu/webtoolkit/jwt/auth/jpa/UserDatabase.html">JPA UserDatabase</a> implementation now
+    compares e-mail addresses case insensitively. The <a href="eu/webtoolkit/jwt/auth/AuthService.html">AuthService</a>
+    can be passed in the constructor, so the <a href="eu/webtoolkit/jwt/auth/jpa/UserDatabase.html">UserDatabase</a>
+    knows whether the IdentityPolicy is EmailAddressIdentity.
+  </dd>
+  <dt>
+    Charting library
   </dt>
   <dd>
     There have been many bug fixes and improvements to the charting library and the interactive features
@@ -95,10 +104,11 @@ behaviour. It also indicates the main changes from version to verison.
 	  <a href="eu/webtoolkit/jwt/chart/WDataSeries.html">WDataSeries</a>.</li>
       <li>It's now possible to <a href="eu/webtoolkit/jwt/chart/WDataSeries.html#setModel-eu.webtoolkit.jwt.chart.WAbstractChartModel-">specify a different model</a>
       for each <a href="eu/webtoolkit/jwt/chart/WDataSeries.html">WDataSeries</a>.</li>
-      <li><a href="eu/webtoolkit/jwt/chart/WPieChart.html#createLabelWidget-eu.webtoolkit.jwt.WWidget-eu.webtoolkit.jwt.WPainter-eu.webtoolkit.jwt.WRectF-java.util.EnumSet-">Chart::WPieChart::createLabelWidget()</a>
+      <li><a href="eu/webtoolkit/jwt/chart/WPieChart.html#createLabelWidget-eu.webtoolkit.jwt.WWidget-eu.webtoolkit.jwt.WPainter-eu.webtoolkit.jwt.WRectF-java.util.EnumSet-">chart.WPieChart::createLabelWidget()</a>
       has been added, making it possible to replace the labels of a
       <a href="eu/webtoolkit/jwt/chart/WPieChart.html">WPieChart</a>
       with widgets.</li>
+      <li>Tooltips on charts can now be deferred, which can improve performance of interactive charts, and if you have a lot of tooltips.</li>
     </ul>
   </dd>
 </dl>
@@ -112,7 +122,7 @@ behaviour. It also indicates the main changes from version to verison.
 
 <dl>
   <dt>
-    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">Chart::WCartesianChart</a>
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">chart.WCartesianChart</a>
   </dt>
   <dd>
 	WCartesianChart has several new features that allow interaction with the
@@ -186,7 +196,7 @@ behaviour. It also indicates the main changes from version to verison.
   </dd>
 
   <dt>
-    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#setAxis(eu.webtoolkit.jwt.chart.WAxis,%20eu.webtoolkit.jwt.chart.Axis)">Chart::WCartesianChart::setAxis()</a>
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#setAxis(eu.webtoolkit.jwt.chart.WAxis,%20eu.webtoolkit.jwt.chart.Axis)">chart.WCartesianChart::setAxis()</a>
   </dt>
   <dd>
     Up till now, a chart axis was a value class, but this has been
@@ -196,7 +206,7 @@ behaviour. It also indicates the main changes from version to verison.
   </dd>  
 
   <dt>
-    <a href="eu/webtoolkit/jwt/chart/WAbstractChart.html#setAutoLayoutEnabled(boolean)">Chart::WAbstractChart::setAutoLayoutEnabled()</a>
+    <a href="eu/webtoolkit/jwt/chart/WAbstractChart.html#setAutoLayoutEnabled(boolean)">chart.WAbstractChart::setAutoLayoutEnabled()</a>
   </dt>
   <dd>
     Until now, you were responsible for configuring the padding around

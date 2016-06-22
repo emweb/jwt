@@ -72,7 +72,7 @@ class RefEncoder extends XHtmlFilter {
 
 				if (options.contains(RefEncoderOption.EncodeInternalPaths)
 				    && path.startsWith("#/")) {
-					path = path.substring(1);
+					path = htmlAttributeDecode(path.substring(1));
 
 					String addClass, url;
 
@@ -94,7 +94,7 @@ class RefEncoder extends XHtmlFilter {
 
 					aClass = StringUtils.addWord(aClass, addClass);
 
-					value = app.resolveRelativeUrl(url);
+					value = htmlAttributeEncode(app.resolveRelativeUrl(url));
 				} else if (options.contains(RefEncoderOption.EncodeRedirectTrampoline)) {
 					if (path.indexOf("://") != -1) {
 						path = "?request=redirect&url=" + StringUtils.urlEncode(path);

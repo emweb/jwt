@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 public class Utils {
 	/** Computes an MD5 hash.
@@ -78,6 +80,45 @@ public class Utils {
 		}
 
 		return result.toString();
+	}
+
+	public static void parseFormUrlEncoded(String s, Map<String, String[]> parameters) {
+		for (int pos = 0; pos < s.length();) {
+			int nextAmp = s.indexOf("&", pos);
+			int nextEq = s.indexOf("=", pos);
+			int next = nextAmp != -1 && nextAmp < nextEq ? nextAmp : nextEq;
+			if (next == -1 || s.charAt(next) == '&') {
+				if (next == -1)
+					next = s.length();
+				String key = urlDecode(s.substring(pos, next));
+				if (parameters.containsKey(key)) {
+					String[] oldValues = parameters.get(key);
+					String[] newValues = Arrays.copyOf(oldValues, oldValues.length + 1);
+					newValues[oldValues.length] = "";
+					parameters.put(key, newValues);
+				} else {
+					parameters.put(key, new String[] {""});
+				}
+				pos = next + 1;
+			} else {
+				nextAmp = s.indexOf("&", next + 1);
+				if (nextAmp == -1)
+					nextAmp = s.length();
+
+				String key = urlDecode(s.substring(pos, next));
+				String value = urlDecode(s.substring(next + 1, nextAmp));
+
+				if (parameters.containsKey(key)) {
+					String[] oldValues = parameters.get(key);
+					String[] newValues = Arrays.copyOf(oldValues, oldValues.length + 1);
+					newValues[oldValues.length] = value;
+					parameters.put(key, newValues);
+				} else {
+					parameters.put(key, new String[] {value});
+				}
+				pos = nextAmp + 1;
+			}
+		}
 	}
 	
 
