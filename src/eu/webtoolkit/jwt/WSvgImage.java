@@ -229,7 +229,8 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags,
 			TextFlag textFlag, final CharSequence text, WPointF clipPoint) {
-		if (clipPoint != null && this.getPainter() != null) {
+		if (clipPoint != null && this.getPainter() != null
+				&& !this.getPainter().getClipPath().isEmpty()) {
 			if (!this
 					.getPainter()
 					.getClipPathTransform()

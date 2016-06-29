@@ -1166,7 +1166,7 @@ public class WEnvironment {
 				}
 			}
 		}
-		if (this.userAgent_.indexOf("Edge/12") != -1) {
+		if (this.userAgent_.indexOf("Edge/") != -1) {
 			this.agent_ = WEnvironment.UserAgent.Edge;
 		}
 		if (conf.agentIsBot(this.userAgent_)) {

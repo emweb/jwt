@@ -257,6 +257,7 @@ public class WDatePicker extends WCompositeWidget {
 	}
 
 	public void setDisabled(boolean disabled) {
+		super.setDisabled(disabled);
 		this.forEdit_.setDisabled(disabled);
 		this.displayWidget_.setHidden(disabled);
 	}

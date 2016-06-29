@@ -61,6 +61,14 @@ public class WTimeEdit extends WLineEdit {
 		this((WContainerWidget) null);
 	}
 
+	public void remove() {
+		if (!(this.popup_ != null)) {
+			if (this.timePicker_ != null)
+				this.timePicker_.remove();
+		}
+		super.remove();
+	}
+
 	/**
 	 * Sets the time.
 	 * <p>

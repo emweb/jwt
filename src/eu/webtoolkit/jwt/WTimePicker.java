@@ -114,6 +114,27 @@ public class WTimePicker extends WCompositeWidget {
 		this(time, timeEdit, (WContainerWidget) null);
 	}
 
+	public void remove() {
+		WTemplate container = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
+				.getImplementation()) : null);
+		container.takeWidget("hour");
+		container.takeWidget("minute");
+		container.takeWidget("second");
+		container.takeWidget("millisecond");
+		container.takeWidget("ampm");
+		if (this.sbhour_ != null)
+			this.sbhour_.remove();
+		if (this.sbminute_ != null)
+			this.sbminute_.remove();
+		if (this.sbsecond_ != null)
+			this.sbsecond_.remove();
+		if (this.sbmillisecond_ != null)
+			this.sbmillisecond_.remove();
+		if (this.cbAP_ != null)
+			this.cbAP_.remove();
+		super.remove();
+	}
+
 	/**
 	 * Returns the time.
 	 */

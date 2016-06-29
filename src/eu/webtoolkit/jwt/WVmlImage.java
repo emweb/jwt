@@ -310,7 +310,8 @@ public class WVmlImage implements WVectorImage {
 			throw new WException(
 					"WVmlImage::drawText(): TextWordWrap is not supported");
 		}
-		if (clipPoint != null && this.getPainter() != null) {
+		if (clipPoint != null && this.getPainter() != null
+				&& !this.getPainter().getClipPath().isEmpty()) {
 			if (!this
 					.getPainter()
 					.getClipPathTransform()
