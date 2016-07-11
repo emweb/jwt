@@ -620,7 +620,7 @@ public class WBootstrapTheme extends WTheme {
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_3_5.setValidationState(")
+			js.append("Wt3_3_6.setValidationState(")
 					.append(widget.getJsRef())
 					.append(",")
 					.append(validation.getState() == WValidator.State.Valid ? 1

@@ -955,8 +955,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * Maps a position in the chart back to model coordinates.
 	 * <p>
 	 * This uses the axis dimensions that are based on the latest chart
-	 * rendering. If you have not yet rendered the chart, or wish to already the
-	 * mapping reflect model changes since the last rendering, you should call
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
 	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * initLayout()} first.
 	 * <p>
@@ -970,7 +971,7 @@ public class WCartesianChart extends WAbstractChart {
 	public WPointF mapFromDevice(final WPointF point, Axis ordinateAxis) {
 		if (this.isInteractive()) {
 			return this.mapFromDeviceWithoutTransform(
-					this.combinedTransform(this.xTransformHandle_.getValue(),
+					this.zoomRangeTransform(this.xTransformHandle_.getValue(),
 							this.yTransformHandle_.getValue()).getInverted()
 							.map(point), ordinateAxis);
 		} else {
@@ -989,14 +990,61 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
+	 * Maps from device coordinates to model coordinates, ignoring the current
+	 * zoom range.
+	 * <p>
+	 * Maps a position in the chart back to model coordinates, as if the chart
+	 * was zoomed in on, or panned.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
+	 * <p>
+	 * mapFromDeviceWithoutTransform will not take the current zoom range into
+	 * account. The mapping will be performed as if
+	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
+	 * is the identity transform.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapToDeviceWithoutTransform(Object xValue, Object
+	 *      yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 */
+	public WPointF mapFromDeviceWithoutTransform(final WPointF point,
+			Axis ordinateAxis) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(ordinateAxis);
+		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
+				.toPixels());
+		return new WPointF(xAxis.mapFromDevice(p.getX()
+				- this.chartArea_.getLeft()),
+				yAxis.mapFromDevice(this.chartArea_.getBottom() - p.getY()));
+	}
+
+	/**
+	 * Maps from device coordinates to model coordinates, ignoring the current
+	 * zoom range.
+	 * <p>
+	 * Returns
+	 * {@link #mapFromDeviceWithoutTransform(WPointF point, Axis ordinateAxis)
+	 * mapFromDeviceWithoutTransform(point, Axis.OrdinateAxis)}
+	 */
+	public final WPointF mapFromDeviceWithoutTransform(final WPointF point) {
+		return mapFromDeviceWithoutTransform(point, Axis.OrdinateAxis);
+	}
+
+	/**
 	 * Maps model values onto chart coordinates.
 	 * <p>
 	 * This returns the chart device coordinates for a (x,y) pair of model
 	 * values.
 	 * <p>
 	 * This uses the axis dimensions that are based on the latest chart
-	 * rendering. If you have not yet rendered the chart, or wish to already the
-	 * mapping reflect model changes since the last rendering, you should call
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
 	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * initLayout()} first.
 	 * <p>
@@ -1015,7 +1063,7 @@ public class WCartesianChart extends WAbstractChart {
 	public WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis axis, int xSegment, int ySegment) {
 		if (this.isInteractive()) {
-			return this.combinedTransform(this.xTransformHandle_.getValue(),
+			return this.zoomRangeTransform(this.xTransformHandle_.getValue(),
 					this.yTransformHandle_.getValue()).map(
 					this.mapToDeviceWithoutTransform(xValue, yValue, axis,
 							xSegment, ySegment));
@@ -1058,6 +1106,87 @@ public class WCartesianChart extends WAbstractChart {
 	public final WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis axis, int xSegment) {
 		return mapToDevice(xValue, yValue, axis, xSegment, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * This returns the chart device coordinates for a (x,y) pair of model
+	 * values.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
+	 * <p>
+	 * The <code>xSegment</code> and <code>ySegment</code> arguments are
+	 * relevant only when the corresponding axis is broken using
+	 * {@link WAxis#setBreak(double minimum, double maximum) WAxis#setBreak()}.
+	 * Then, its possible values may be 0 (below the break) or 1 (above the
+	 * break).
+	 * <p>
+	 * mapToDeviceWithoutTransform will not take the current zoom range into
+	 * account. The mapping will be performed as if
+	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
+	 * is the identity transform.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapFromDeviceWithoutTransform(WPointF point, Axis
+	 *      ordinateAxis)
+	 */
+	public WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue, Axis ordinateAxis, int xSegment, int ySegment) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.getAxis(ordinateAxis);
+		double x = this.chartArea_.getLeft()
+				+ xAxis.mapToDevice(xValue, xSegment);
+		double y = this.chartArea_.getBottom()
+				- yAxis.mapToDevice(yValue, ySegment);
+		return this.hv(x, y, this.getWidth().toPixels());
+	}
+
+	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDeviceWithoutTransform(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDeviceWithoutTransform(xValue, yValue, Axis.OrdinateAxis, 0, 0)}
+	 */
+	public final WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue) {
+		return mapToDeviceWithoutTransform(xValue, yValue, Axis.OrdinateAxis,
+				0, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDeviceWithoutTransform(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, 0, 0)}
+	 */
+	public final WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue, Axis ordinateAxis) {
+		return mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, 0, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDeviceWithoutTransform(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, xSegment, 0)}
+	 */
+	public final WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue, Axis ordinateAxis, int xSegment) {
+		return mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis,
+				xSegment, 0);
 	}
 
 	/**
@@ -2344,7 +2473,7 @@ public class WCartesianChart extends WAbstractChart {
 					.getSeriesIndexOf(this.selectedSeries_) : -1;
 			int followCurve = this.followCurve_ != null ? this
 					.getSeriesIndexOf(this.followCurve_) : -1;
-			ss.append("new Wt3_3_5.WCartesianChart(")
+			ss.append("new Wt3_3_6.WCartesianChart(")
 					.append(app.getJavaScriptClass())
 					.append(",")
 					.append(this.getJsRef())
@@ -2478,6 +2607,7 @@ public class WCartesianChart extends WAbstractChart {
 			this.renderBorder(painter);
 			this.renderCurveLabels(painter);
 			this.renderLegend(painter);
+			this.renderOther(painter);
 		}
 		painter.restore();
 	}
@@ -2919,7 +3049,7 @@ public class WCartesianChart extends WAbstractChart {
 			for (int j = 0; j < this.series_.size(); ++j) {
 				final WDataSeries series = this.series_.get(j);
 				if (series == label.getSeries()) {
-					WTransform t = this.getCombinedTransform();
+					WTransform t = this.getZoomRangeTransform();
 					if (series.getType() == SeriesType.LineSeries
 							|| series.getType() == SeriesType.CurveSeries) {
 						t.assign(t.multiply(this.curveTransform(series)));
@@ -3803,12 +3933,37 @@ public class WCartesianChart extends WAbstractChart {
 					gridPath.lineTo(this.hv(u, oun));
 				}
 			}
-			painter.strokePath(this.getCombinedTransform().map(gridPath)
+			painter.strokePath(this.getZoomRangeTransform().map(gridPath)
 					.getCrisp(), pens.get(level - 1));
 		}
 		if (this.isInteractive()) {
 			painter.restore();
 		}
+	}
+
+	/**
+	 * Renders other, user-defined things.
+	 * <p>
+	 * The default implementation sets the painter&apos;s
+	 * {@link WPainter#setClipPath(WPainterPath clipPath) clip path} to the
+	 * chart area, but does not enable clipping.
+	 * <p>
+	 * This method can be overridden to draw extra content onto the chart.
+	 * <p>
+	 * {@link } coordinates can be mapped to device coordinates with
+	 * {@link WCartesianChart#mapToDeviceWithoutTransform(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 * mapToDeviceWithoutTransform()}. If these need to move and scale along
+	 * with the zoom range, those points can be transformed with
+	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}.
+	 * <p>
+	 * This method is called last by default. If you want to render other things
+	 * at some other moment, you can override render(WPainter&amp;, const
+	 * WRectF&amp;).
+	 */
+	protected void renderOther(final WPainter painter) {
+		WPainterPath clipPath = new WPainterPath();
+		clipPath.addRect(this.chartArea_);
+		painter.setClipPath(clipPath);
 	}
 
 	/**
@@ -3911,6 +4066,26 @@ public class WCartesianChart extends WAbstractChart {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns the current zoom range transform.
+	 * <p>
+	 * This transform maps device coordinates from the fully zoomed out position
+	 * to the current zoom range.
+	 * <p>
+	 * This transform is a
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() JavaScript bound}
+	 * transform if this chart is interactive. Otherwise, this transform is just
+	 * the identity transform.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#setZoomEnabled(boolean zoomEnabled)
+	 * @see WCartesianChart#setPanEnabled(boolean panEnabled)
+	 * @see WAxis#setZoomRange(double minimum, double maximum)
+	 */
+	protected WTransform getZoomRangeTransform() {
+		return this.zoomRangeTransform(this.xTransform_, this.yTransform_);
 	}
 
 	private int getSeriesIndexOf(int modelColumn) {
@@ -4152,11 +4327,7 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	WTransform getCombinedTransform() {
-		return this.combinedTransform(this.xTransform_, this.yTransform_);
-	}
-
-	private WTransform combinedTransform(WTransform xTransform,
+	private WTransform zoomRangeTransform(WTransform xTransform,
 			WTransform yTransform) {
 		if (this.getOrientation() == Orientation.Vertical) {
 			return new WTransform(1, 0, 0, -1, this.chartArea_.getLeft(),
@@ -4234,8 +4405,8 @@ public class WCartesianChart extends WAbstractChart {
 			yTransform.assign(new WTransform(1, 0, 0, yZoom, 0, yZoom * yPan));
 		}
 		WRectF chartArea = this.hv(this.getInsideChartArea());
-		WRectF transformedArea = this.combinedTransform(xTransform, yTransform)
-				.map(chartArea);
+		WRectF transformedArea = this
+				.zoomRangeTransform(xTransform, yTransform).map(chartArea);
 		if (transformedArea.getLeft() > chartArea.getLeft()) {
 			double diff = chartArea.getLeft() - transformedArea.getLeft();
 			if (this.getOrientation() == Orientation.Vertical) {
@@ -4245,7 +4416,7 @@ public class WCartesianChart extends WAbstractChart {
 				yTransform.assign(new WTransform(1, 0, 0, 1, 0, diff)
 						.multiply(yTransform));
 			}
-			transformedArea = this.combinedTransform(xTransform, yTransform)
+			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
 					.map(chartArea);
 		}
 		if (transformedArea.getRight() < chartArea.getRight()) {
@@ -4257,7 +4428,7 @@ public class WCartesianChart extends WAbstractChart {
 				yTransform.assign(new WTransform(1, 0, 0, 1, 0, diff)
 						.multiply(yTransform));
 			}
-			transformedArea = this.combinedTransform(xTransform, yTransform)
+			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
 					.map(chartArea);
 		}
 		if (transformedArea.getTop() > chartArea.getTop()) {
@@ -4269,7 +4440,7 @@ public class WCartesianChart extends WAbstractChart {
 				xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
 						.multiply(xTransform));
 			}
-			transformedArea = this.combinedTransform(xTransform, yTransform)
+			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
 					.map(chartArea);
 		}
 		if (transformedArea.getBottom() < chartArea.getBottom()) {
@@ -4281,7 +4452,7 @@ public class WCartesianChart extends WAbstractChart {
 				xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
 						.multiply(xTransform));
 			}
-			transformedArea = this.combinedTransform(xTransform, yTransform)
+			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
 					.map(chartArea);
 		}
 		this.xTransformHandle_.setValue(xTransform);
@@ -4331,7 +4502,7 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		WPointF p = this
-				.combinedTransform(this.xTransformHandle_.getValue(),
+				.zoomRangeTransform(this.xTransformHandle_.getValue(),
 						this.yTransformHandle_.getValue()).getInverted()
 				.map(new WPointF(x, y));
 		double smallestSqDistance = Double.POSITIVE_INFINITY;
@@ -4376,7 +4547,7 @@ public class WCartesianChart extends WAbstractChart {
 
 	private void loadTooltip(double x, double y) {
 		WPointF p = this
-				.combinedTransform(this.xTransformHandle_.getValue(),
+				.zoomRangeTransform(this.xTransformHandle_.getValue(),
 						this.yTransformHandle_.getValue()).getInverted()
 				.map(new WPointF(x, y));
 		MarkerMatchIterator iterator = new MarkerMatchIterator(this, p.getX(),
@@ -4494,8 +4665,8 @@ public class WCartesianChart extends WAbstractChart {
 		if (app != null && (this.isInteractive() || this.hasDeferredToolTips_)) {
 			app.loadJavaScript("js/ChartCommon.js", wtjs2());
 			app.doJavaScript(
-					"if (!Wt3_3_5.chartCommon) {Wt3_3_5.chartCommon = new "
-							+ "Wt3_3_5.ChartCommon(" + app.getJavaScriptClass()
+					"if (!Wt3_3_6.chartCommon) {Wt3_3_6.chartCommon = new "
+							+ "Wt3_3_6.ChartCommon(" + app.getJavaScriptClass()
 							+ "); }", false);
 			app.loadJavaScript("js/WCartesianChart.js", wtjs1());
 			this.jsDefined_ = true;
@@ -4511,49 +4682,6 @@ public class WCartesianChart extends WAbstractChart {
 			}
 		}
 		return false;
-	}
-
-	private WPointF mapFromDeviceWithoutTransform(final WPointF point,
-			Axis ordinateAxis) {
-		final WAxis xAxis = this.getAxis(Axis.XAxis);
-		final WAxis yAxis = this.getAxis(ordinateAxis);
-		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
-				.toPixels());
-		return new WPointF(xAxis.mapFromDevice(p.getX()
-				- this.chartArea_.getLeft()),
-				yAxis.mapFromDevice(this.chartArea_.getBottom() - p.getY()));
-	}
-
-	private final WPointF mapFromDeviceWithoutTransform(final WPointF point) {
-		return mapFromDeviceWithoutTransform(point, Axis.OrdinateAxis);
-	}
-
-	private WPointF mapToDeviceWithoutTransform(final Object xValue,
-			final Object yValue, Axis ordinateAxis, int xSegment, int ySegment) {
-		final WAxis xAxis = this.getAxis(Axis.XAxis);
-		final WAxis yAxis = this.getAxis(ordinateAxis);
-		double x = this.chartArea_.getLeft()
-				+ xAxis.mapToDevice(xValue, xSegment);
-		double y = this.chartArea_.getBottom()
-				- yAxis.mapToDevice(yValue, ySegment);
-		return this.hv(x, y, this.getWidth().toPixels());
-	}
-
-	private final WPointF mapToDeviceWithoutTransform(final Object xValue,
-			final Object yValue) {
-		return mapToDeviceWithoutTransform(xValue, yValue, Axis.OrdinateAxis,
-				0, 0);
-	}
-
-	private final WPointF mapToDeviceWithoutTransform(final Object xValue,
-			final Object yValue, Axis ordinateAxis) {
-		return mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, 0, 0);
-	}
-
-	private final WPointF mapToDeviceWithoutTransform(final Object xValue,
-			final Object yValue, Axis ordinateAxis, int xSegment) {
-		return mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis,
-				xSegment, 0);
 	}
 
 	static class IconWidget extends WPaintedWidget {

@@ -78,7 +78,7 @@ class MarkerRenderIterator extends SeriesIterator {
 							.getColor()));
 				}
 				WTransform currentTransform = new WTransform().translate(
-						this.chart_.getCombinedTransform().map(this.hv(p)))
+						this.chart_.getZoomRangeTransform().map(this.hv(p)))
 						.multiply(this.scale_);
 				this.painter_.setWorldTransform(currentTransform, false);
 				this.painter_.setShadow(series.getShadow());

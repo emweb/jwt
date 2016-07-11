@@ -1,0 +1,24 @@
+body, html {
+    height: 100%; margin: 0px;
+    font-family: verdana,helvetica,tahoma,sans-serif;
+    font-size: 10pt;
+}
+
+.maindiv {
+    background-color: #F2F2F2
+}
+
+.Wt-treeview {
+    background-color: white;
+    border: 1px solid #98B0D0;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.about {
+    background-color: white;
+    border: 1px solid #98B0D0;
+    font-size: 80%;
+}

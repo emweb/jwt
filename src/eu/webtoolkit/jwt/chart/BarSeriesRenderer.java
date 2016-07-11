@@ -75,7 +75,7 @@ class BarSeriesRenderer extends SeriesRenderer {
 			bar.closeSubPath();
 		}
 		this.painter_.setShadow(this.series_.getShadow());
-		WTransform transform = this.chart_.getCombinedTransform();
+		WTransform transform = this.chart_.getZoomRangeTransform();
 		if (nonZeroWidth) {
 			WBrush brush = this.series_.getBrush().clone();
 			SeriesIterator.setBrushColor(brush, this.series_, xRow, xColumn,

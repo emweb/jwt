@@ -371,7 +371,9 @@ public class WGoogleMap extends WCompositeWidget {
 					.append(",  strokeColor:\"")
 					.append(strokeColor.getCssText())
 					.append("\",  strokeOpacity: ")
-					.append(String.valueOf(strokeOpacity)).append("} );");
+					.append(String.valueOf(strokeOpacity)).append("} );")
+					.append(this.getJsRef())
+					.append(".map.overlays.push(circle);");
 			this.doGmJavaScript(strm.toString());
 		}
 	}

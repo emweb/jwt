@@ -1930,7 +1930,7 @@ public class WTableView extends WAbstractItemView {
 		app.loadJavaScript("js/WTableView.js", wtjs1());
 		this.setJavaScriptMember(
 				" WTableView",
-				"new Wt3_3_5.WTableView("
+				"new Wt3_3_6.WTableView("
 						+ app.getJavaScriptClass()
 						+ ","
 						+ this.getJsRef()

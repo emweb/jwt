@@ -462,7 +462,7 @@ public class WFileUpload extends WWebWidget {
 		long dataExceeded = 0L;
 		h.setRequest((WebRequest) null, (WebResponse) null);
 		if (dataExceeded != 0) {
-			this.doJavaScript("Wt3_3_5.$('if" + this.getId() + "').src='"
+			this.doJavaScript("Wt3_3_6.$('if" + this.getId() + "').src='"
 					+ this.fileUploadTarget_.getUrl() + "';");
 			if (this.flags_.get(BIT_UPLOADING)) {
 				this.flags_.clear(BIT_UPLOADING);
@@ -499,7 +499,7 @@ public class WFileUpload extends WWebWidget {
 			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			String maxFileSize = String.valueOf(WApplication.getInstance()
 					.getMaximumRequestSize());
-			String command = "{var submit = true;var x = Wt3_3_5.$('in"
+			String command = "{var submit = true;var x = Wt3_3_6.$('in"
 					+ this.getId()
 					+ "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > "
 					+ maxFileSize + ") {submit = false;"
@@ -595,9 +595,9 @@ public class WFileUpload extends WWebWidget {
 					+ this.getId()
 					+ "')"
 					+ app.getJavaScriptClass()
-					+ "._p_.update(null, data.signal, null, true);} else if (data.type === 'file_too_large')"
+					+ "._p_.update(null, data.signal, null, true);} else if (data.type === 'file_too_large') {"
 					+ this.fileTooLarge().createCall("data.fileTooLargeSize")
-					+ "}};if (window.addEventListener) window.addEventListener('message', f, false);else window.attachEvent('onmessage', f);");
+					+ "  }}};if (window.addEventListener) window.addEventListener('message', f, false);else window.attachEvent('onmessage', f);");
 		} else {
 			result.setAttribute("type", "file");
 			if (this.flags_.get(BIT_MULTIPLE)) {
@@ -641,6 +641,20 @@ public class WFileUpload extends WWebWidget {
 		this.flags_.set(BIT_ENABLED_CHANGED);
 		this.repaint();
 		super.propagateSetEnabled(enabled);
+	}
+
+	String renderRemoveJs(boolean recursive) {
+		boolean isIE = WApplication.getInstance().getEnvironment().agentIsIE();
+		if (this.isRendered() && isIE) {
+			String result = "Wt3_3_6.$('if" + this.getId()
+					+ "').innerHTML = \"\";";
+			if (!recursive) {
+				result += "Wt3_3_6.remove('" + this.getId() + "');";
+			}
+			return result;
+		} else {
+			return super.renderRemoveJs(recursive);
+		}
 	}
 
 	private void handleFileTooLarge(long fileSize) {

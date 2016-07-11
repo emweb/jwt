@@ -67,7 +67,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		if (hasJsObjects) {
 			StringBuilder ss = new StringBuilder();
 			WApplication app = WApplication.getInstance();
-			ss.append("new Wt3_3_5.WPaintedWidget(")
+			ss.append("new Wt3_3_6.WPaintedWidget(")
 					.append(app.getJavaScriptClass()).append(",")
 					.append(this.widget_.getJsRef()).append(");");
 			this.widget_.jsObjects_.updateJs(ss);

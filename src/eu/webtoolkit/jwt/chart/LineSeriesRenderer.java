@@ -100,7 +100,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 				.get(this.series_);
 		WJavaScriptHandle<WTransform> transformHandle = (this.chart_).curveTransforms_
 				.get(this.series_);
-		WTransform transform = this.chart_.getCombinedTransform();
+		WTransform transform = this.chart_.getZoomRangeTransform();
 		if (this.curveLength_ > 1) {
 			if (this.series_.getType() == SeriesType.CurveSeries) {
 				WPointF c1 = new WPointF();

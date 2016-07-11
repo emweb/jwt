@@ -227,7 +227,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	public void drawPath(final WPainterPath path) {
 		if (path.isJavaScriptBound()) {
 			this.renderStateChanges(true);
-			this.js_.append("Wt3_3_5.gfxUtils.drawPath(ctx,")
+			this.js_.append("Wt3_3_6.gfxUtils.drawPath(ctx,")
 					.append(path.getJsRef()).append(",")
 					.append(this.currentNoBrush_ ? "false" : "true")
 					.append(",").append(this.currentNoPen_ ? "false" : "true")
@@ -241,7 +241,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	public void drawRect(final WRectF rectangle) {
 		this.renderStateChanges(true);
-		this.js_.append("Wt3_3_5").append(".gfxUtils.drawRect(ctx,")
+		this.js_.append("Wt3_3_6").append(".gfxUtils.drawRect(ctx,")
 				.append(rectangle.getJsRef()).append(",")
 				.append(this.currentNoBrush_ ? "false" : "true").append(",")
 				.append(this.currentNoPen_ ? "false" : "true").append(");");
@@ -301,7 +301,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				this.currentTextVAlign_ = verticalAlign;
 			}
 			if (this.currentPen_.isJavaScriptBound()) {
-				this.js_.append("ctx.fillStyle=Wt3_3_5.gfxUtils.css_text(")
+				this.js_.append("ctx.fillStyle=Wt3_3_6.gfxUtils.css_text(")
 						.append(this.currentPen_.getJsRef()).append(".color);");
 			} else {
 				if (!this.currentBrush_.getColor().equals(
@@ -318,14 +318,14 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				String s_y = "";
 				switch (horizontalAlign) {
 				case AlignLeft:
-					s_x = "Wt3_3_5.gfxUtils.rect_left(" + rect.getJsRef() + ')';
+					s_x = "Wt3_3_6.gfxUtils.rect_left(" + rect.getJsRef() + ')';
 					break;
 				case AlignRight:
-					s_x = "Wt3_3_5.gfxUtils.rect_right(" + rect.getJsRef()
+					s_x = "Wt3_3_6.gfxUtils.rect_right(" + rect.getJsRef()
 							+ ')';
 					break;
 				case AlignCenter:
-					s_x = "Wt3_3_5.gfxUtils.rect_center(" + rect.getJsRef()
+					s_x = "Wt3_3_6.gfxUtils.rect_center(" + rect.getJsRef()
 							+ ").x";
 					break;
 				default:
@@ -333,21 +333,21 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				}
 				switch (verticalAlign) {
 				case AlignTop:
-					s_y = "Wt3_3_5.gfxUtils.rect_top(" + rect.getJsRef() + ')';
+					s_y = "Wt3_3_6.gfxUtils.rect_top(" + rect.getJsRef() + ')';
 					break;
 				case AlignBottom:
-					s_y = "Wt3_3_5.gfxUtils.rect_bottom(" + rect.getJsRef()
+					s_y = "Wt3_3_6.gfxUtils.rect_bottom(" + rect.getJsRef()
 							+ ')';
 					break;
 				case AlignMiddle:
-					s_y = "Wt3_3_5.gfxUtils.rect_center(" + rect.getJsRef()
+					s_y = "Wt3_3_6.gfxUtils.rect_center(" + rect.getJsRef()
 							+ ").y";
 					break;
 				default:
 					break;
 				}
 				if (clipPoint != null && this.getPainter() != null) {
-					this.js_.append("if (Wt3_3_5.gfxUtils.pnpoly(")
+					this.js_.append("if (Wt3_3_6.gfxUtils.pnpoly(")
 							.append(this.getPainter().getWorldTransform()
 									.map(clipPoint).getJsRef())
 							.append(",")
@@ -390,7 +390,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					break;
 				}
 				if (clipPoint != null && this.getPainter() != null) {
-					this.js_.append("if (Wt3_3_5.gfxUtils.pnpoly(")
+					this.js_.append("if (Wt3_3_6.gfxUtils.pnpoly(")
 							.append(this.getPainter().getWorldTransform()
 									.map(clipPoint).getJsRef())
 							.append(",")
@@ -408,7 +408,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				}
 			}
 			if (this.currentBrush_.isJavaScriptBound()) {
-				this.js_.append("ctx.fillStyle=Wt3_3_5.gfxUtils.css_text(")
+				this.js_.append("ctx.fillStyle=Wt3_3_6.gfxUtils.css_text(")
 						.append(this.currentBrush_.getJsRef())
 						.append(".color);");
 			} else {
@@ -469,7 +469,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			this.js_.append("ctx.translate(").append(x).append(", ")
 					.append(String.valueOf(y)).append(");");
 			if (this.currentPen_.isJavaScriptBound()) {
-				this.js_.append("ctx.fillStyle=Wt3_3_5.gfxUtils.css_text(")
+				this.js_.append("ctx.fillStyle=Wt3_3_6.gfxUtils.css_text(")
 						.append(this.currentPen_.getJsRef()).append(".color);");
 			} else {
 				if (!this.currentBrush_.getColor().equals(
@@ -583,7 +583,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	void render(final String canvasId, DomElement text) {
-		String canvasVar = "Wt3_3_5.getElement('" + canvasId + "')";
+		String canvasVar = "Wt3_3_6.getElement('" + canvasId + "')";
 		this.recordedJs_ = new StringWriter();
 		final StringWriter tmp = this.recordedJs_;
 		tmp.append("if(").append(canvasVar).append(".getContext){");
@@ -773,7 +773,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					this.pathTranslation_.setX(0);
 					this.pathTranslation_.setY(0);
 					if (this.getPainter().getClipPath().isJavaScriptBound()) {
-						this.js_.append("Wt3_3_5")
+						this.js_.append("Wt3_3_6")
 								.append(".gfxUtils.drawPath(ctx,")
 								.append(this.getPainter().getClipPath()
 										.getJsRef())
@@ -872,7 +872,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				} else {
 					if (this.getPainter().getPen().isJavaScriptBound()) {
 						this.js_.append(
-								"ctx.strokeStyle=Wt3_3_5.gfxUtils.css_text(")
+								"ctx.strokeStyle=Wt3_3_6.gfxUtils.css_text(")
 								.append(this.getPainter().getPen().getJsRef())
 								.append(".color);");
 					} else {
@@ -948,7 +948,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 				this.renderStateChanges(true);
 			} else {
 				if (this.currentBrush_.isJavaScriptBound()) {
-					this.js_.append("ctx.fillStyle=Wt3_3_5.gfxUtils.css_text(")
+					this.js_.append("ctx.fillStyle=Wt3_3_6.gfxUtils.css_text(")
 							.append(this.currentBrush_.getJsRef())
 							.append(".color);");
 				} else {
