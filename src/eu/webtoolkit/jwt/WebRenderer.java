@@ -32,6 +32,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.pageId_ = 0;
 		this.expectedAckId_ = 0;
 		this.scriptId_ = 0;
+		this.ackErrs_ = 0;
 		this.linkedCssCount_ = -1;
 		this.solution_ = "";
 		this.currentStatelessSlotIsActuallyStateless_ = true;
@@ -267,12 +268,14 @@ class WebRenderer implements SlotLearnerInterface {
 					"jsSynced(false) after ackUpdate okay").toString());
 			this.setJSSynced(false);
 			++this.expectedAckId_;
+			this.ackErrs_ = 0;
 			return true;
 		} else {
 			if (updateId < this.expectedAckId_
 					&& this.expectedAckId_ - updateId < 5
 					|| this.expectedAckId_ - 5 < updateId) {
-				return true;
+				++this.ackErrs_;
+				return this.ackErrs_ < 3;
 			} else {
 				return false;
 			}
@@ -393,6 +396,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private int pageId_;
 	private int expectedAckId_;
 	private int scriptId_;
+	private int ackErrs_;
 	private int linkedCssCount_;
 	private String solution_;
 	private boolean currentStatelessSlotIsActuallyStateless_;
@@ -505,6 +509,7 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		} else {
 			this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
+			this.ackErrs_ = 0;
 		}
 		WApplication app = this.session_.getApp();
 		final boolean innerHtml = true;
@@ -1376,6 +1381,7 @@ class WebRenderer implements SlotLearnerInterface {
 						WebSession.BootstrapOption.ClearInternalPath)));
 		bootJs.setVar("SESSION_ID", this.session_.getSessionId());
 		this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
+		this.ackErrs_ = 0;
 		bootJs.setVar("SCRIPT_ID", this.scriptId_);
 		bootJs.setVar("RANDOMSEED", MathUtils.randomInt());
 		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.reloadIsNewSession());
@@ -1386,7 +1392,7 @@ class WebRenderer implements SlotLearnerInterface {
 				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
 		bootJs.setVar("APP_CLASS", "Wt");
 		bootJs.setVar("PATH_INFO",
-				WWebWidget.jsStringLiteral(this.session_.pagePathInfo_));
+				this.safeJsStringLiteral(this.session_.pagePathInfo_));
 		bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
 		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
 		bootJs.setCondition("HYBRID", hybrid);
