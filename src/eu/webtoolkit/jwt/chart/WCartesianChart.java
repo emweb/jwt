@@ -994,7 +994,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * zoom range.
 	 * <p>
 	 * Maps a position in the chart back to model coordinates, as if the chart
-	 * was zoomed in on, or panned.
+	 * was not zoomed in (nor panned).
 	 * <p>
 	 * This uses the axis dimensions that are based on the latest chart
 	 * rendering. If you have not yet rendered the chart, or wish that the
@@ -1003,8 +1003,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 * initLayout()} first.
 	 * <p>
-	 * mapFromDeviceWithoutTransform will not take the current zoom range into
-	 * account. The mapping will be performed as if
+	 * This function will not take the current zoom range into account. The
+	 * mapping will be performed as if
 	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
 	 * is the identity transform.
 	 * <p>
@@ -1128,8 +1128,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * Then, its possible values may be 0 (below the break) or 1 (above the
 	 * break).
 	 * <p>
-	 * mapToDeviceWithoutTransform will not take the current zoom range into
-	 * account. The mapping will be performed as if
+	 * This function will not take the current zoom range into account.The
+	 * mapping will be performed as if
 	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
 	 * is the identity transform.
 	 * <p>
