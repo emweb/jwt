@@ -139,10 +139,14 @@ public class WTreeView extends WAbstractItemView {
 		this.expanded_ = new Signal1<WModelIndex>(this);
 		this.viewportTop_ = 0;
 		this.viewportHeight_ = 30;
+		this.firstRenderedRow_ = 0;
+		this.validRowCount_ = 0;
 		this.nodeLoad_ = 0;
 		this.headerContainer_ = null;
 		this.contentsContainer_ = null;
 		this.scrollBarC_ = null;
+		this.firstRemovedRow_ = 0;
+		this.removedHeight_ = 0;
 		this.itemEvent_ = new JSignal5<String, String, String, String, WMouseEvent>(
 				this.impl_, "itemEvent") {
 		};

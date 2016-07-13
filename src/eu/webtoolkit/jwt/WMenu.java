@@ -540,7 +540,6 @@ public class WMenu extends WCompositeWidget {
 						this.contentsStack_.setCurrentWidget(contents);
 					}
 					this.renderSelected(item, true);
-					item.loadContents();
 				} else {
 					this.renderSelected(item, false);
 				}
@@ -1026,6 +1025,17 @@ public class WMenu extends WCompositeWidget {
 		return this.parentItem_;
 	}
 
+	public void load() {
+		boolean wasLoaded = this.isLoaded();
+		super.load();
+		if (wasLoaded) {
+			return;
+		}
+		if (this.getCurrentItem() != null) {
+			this.getCurrentItem().loadContents();
+		}
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needSelectionEventUpdate_) {
 			for (int i = 0; i < this.getCount(); ++i) {
@@ -1134,7 +1144,9 @@ public class WMenu extends WCompositeWidget {
 		if (index != -1) {
 			WMenuItem item = this.itemAt(index);
 			item.show();
-			item.loadContents();
+			if (this.isLoaded()) {
+				item.loadContents();
+			}
 			WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
 			if (changePath && this.emitPathChange_) {
 				WApplication app = WApplication.getInstance();

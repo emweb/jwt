@@ -84,6 +84,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	public WInPlaceEdit(WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
+		this.placeholderText_ = new WString();
 		this.c2_ = new AbstractSignal.Connection();
 		this.create();
 	}
@@ -104,6 +105,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	public WInPlaceEdit(final CharSequence text, WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
+		this.placeholderText_ = new WString();
 		this.c2_ = new AbstractSignal.Connection();
 		this.create();
 		this.setText(text);
@@ -132,6 +134,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 			WContainerWidget parent) {
 		super(parent);
 		this.valueChanged_ = new Signal1<WString>(this);
+		this.placeholderText_ = new WString();
 		this.c2_ = new AbstractSignal.Connection();
 		this.create();
 		this.setText(text);
@@ -203,6 +206,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * This sets the text that is shown when the field is empty.
 	 */
 	public void setPlaceholderText(final CharSequence text) {
+		this.placeholderText_ = WString.toWString(text);
 		this.edit_.setPlaceholderText(text);
 		if (this.empty_) {
 			this.text_.setText(text);
@@ -216,7 +220,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	 * @see WInPlaceEdit#setPlaceholderText(CharSequence text)
 	 */
 	public WString getPlaceholderText() {
-		return this.edit_.getPlaceholderText();
+		return this.placeholderText_;
 	}
 
 	/**
@@ -469,6 +473,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	private WLineEdit edit_;
 	private WPushButton save_;
 	private WPushButton cancel_;
+	private WString placeholderText_;
 	private AbstractSignal.Connection c2_;
 	private boolean empty_;
 }

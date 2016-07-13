@@ -112,9 +112,17 @@ public abstract class WResource extends WObject {
 			else
 				currentUrl_ = "";
 		} else {
+			if (trackUploadProgress_) {
+				WtServlet c = WebSession.getInstance().getController();
+				c.removeUploadProgressUrl(getUrl());
+			}
 			int randPos = currentUrl_.lastIndexOf('=') + 1;
 			currentUrl_ = currentUrl_.substring(0, randPos)
 				+ (Integer.valueOf(currentUrl_.substring(randPos)) + 1);
+			if (trackUploadProgress_) {
+				WtServlet c = WebSession.getInstance().getController();
+				c.addUploadProgressUrl(getUrl());
+			}
 		}
 		return currentUrl_;
 	}

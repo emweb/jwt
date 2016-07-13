@@ -10,6 +10,7 @@ package eu.webtoolkit.jwt.utils;
 
 import java.util.EnumSet;
 
+import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Key;
 import eu.webtoolkit.jwt.KeyboardModifier;
 import eu.webtoolkit.jwt.ValidationStyleFlag;
@@ -78,6 +79,8 @@ public class EnumUtils {
 				return valueOfValidationStyleFlags(enumSet);
 			else if (o instanceof KeyboardModifier)
 				return valueOfKeyboardModifiers(enumSet);
+			else if (o instanceof AlignmentFlag)
+				return valueOfAlignmentFlags(enumSet);
 			else
 				throw new RuntimeException("Not supported valueOf()");
 		} else
@@ -123,6 +126,16 @@ public class EnumUtils {
 		for (Enum<E> e : enumSet) {
 			if (e.ordinal() != 0)
 				result |= 1 << (e.ordinal() - 1);
+		}
+
+		return result;
+	}
+
+	private static <E extends Enum<E>> int valueOfAlignmentFlags(EnumSet<E> enumSet) {
+		int result = 0;
+
+		for (Enum<E> e : enumSet) {
+			result |= 1 << e.ordinal();
 		}
 
 		return result;
