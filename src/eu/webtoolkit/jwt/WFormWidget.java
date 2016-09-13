@@ -452,8 +452,10 @@ public abstract class WFormWidget extends WInteractWidget {
 			this.filterInput_.setJavaScript("function(o,e){Wt3_3_6.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
-			;
-			this.filterInput_ = null;
+			if (this.filterInput_ != null) {
+				this.keyPressed().removeListener(this.filterInput_);
+				this.filterInput_ = null;
+			}
 		}
 		this.validate();
 	}

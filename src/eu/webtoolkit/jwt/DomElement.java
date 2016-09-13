@@ -939,7 +939,7 @@ public class DomElement {
 				out.append('"');
 				String wrapStyle = this.getCssStyle();
 				if (!this.isDefaultInline()) {
-					wrapStyle += "display: block;";
+					wrapStyle = "display: block;" + wrapStyle;
 				}
 				if (wrapStyle.length() != 0) {
 					out.append(" style=");
@@ -1087,7 +1087,8 @@ public class DomElement {
 					out.append(" value=");
 					fastHtmlAttributeValue(out, attributeValues, i.getValue());
 				} else {
-					innerHTML += i.getValue();
+					String v = i.getValue();
+					innerHTML += WWebWidget.escapeText(v, false);
 				}
 				break;
 			case PropertySrc:

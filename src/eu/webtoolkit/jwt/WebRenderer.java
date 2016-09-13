@@ -41,6 +41,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.currentFormObjectsList_ = "";
 		this.formObjectsChanged_ = true;
 		this.updateLayout_ = false;
+		this.wsRequestsToHandle_ = new ArrayList<Integer>();
 		this.collectedJS1_ = new StringBuilder();
 		this.collectedJS2_ = new StringBuilder();
 		this.invisibleJS_ = new StringBuilder();
@@ -267,7 +268,6 @@ class WebRenderer implements SlotLearnerInterface {
 			logger.debug(new StringWriter().append(
 					"jsSynced(false) after ackUpdate okay").toString());
 			this.setJSSynced(false);
-			++this.expectedAckId_;
 			this.ackErrs_ = 0;
 			return true;
 		} else {
@@ -405,6 +405,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private String currentFormObjectsList_;
 	private boolean formObjectsChanged_;
 	private boolean updateLayout_;
+	private List<Integer> wsRequestsToHandle_;
 
 	private void setHeaders(final WebResponse response, final String mimeType) {
 		for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it = this.cookiesToSet_
@@ -481,6 +482,7 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append(this.collectedJS1_.toString()).append(
 					this.collectedJS2_.toString());
 			if (response.isWebSocketMessage()) {
+				this.renderWsRequestsDone(out);
 				logger.debug(new StringWriter().append(
 						"jsSynced(false) after rendering websocket message")
 						.toString());
@@ -1438,7 +1440,7 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 		}
 		out.append(this.session_.getApp().getJavaScriptClass())
-				.append("._p_.response(").append(this.expectedAckId_);
+				.append("._p_.response(").append(++this.expectedAckId_);
 		if (puzzle.length() != 0) {
 			out.append(",").append(puzzle);
 		}
@@ -1621,6 +1623,25 @@ class WebRenderer implements SlotLearnerInterface {
 	private String safeJsStringLiteral(final String value) {
 		String s = WWebWidget.jsStringLiteral(value);
 		return StringUtils.replace(s, "<", "<'+'");
+	}
+
+	private void addWsRequestId(int wsRqId) {
+		this.wsRequestsToHandle_.add(wsRqId);
+	}
+
+	private void renderWsRequestsDone(final StringBuilder out) {
+		if (!this.wsRequestsToHandle_.isEmpty()) {
+			out.append(this.session_.getApp().getJavaScriptClass()).append(
+					"._p_.wsRqsDone(");
+			for (int i = 0; i < this.wsRequestsToHandle_.size(); ++i) {
+				if (i != 0) {
+					out.append(',');
+				}
+				out.append(this.wsRequestsToHandle_.get(i));
+			}
+			out.append(");");
+			this.wsRequestsToHandle_.clear();
+		}
 	}
 
 	public String learn(AbstractEventSignal.LearningListener slot)

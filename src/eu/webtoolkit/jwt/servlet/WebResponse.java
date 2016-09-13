@@ -145,7 +145,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
-			System.err.println("Exception occurred when flushing the writer");
+			e.printStackTrace();
 		} finally {
 			if (request != null)
 				WtServlet.getServletApi().completeAsyncContext(request);

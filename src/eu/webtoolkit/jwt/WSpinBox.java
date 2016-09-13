@@ -166,6 +166,14 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	/**
 	 * Returns the value.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This value may not correctly reflect the
+	 * {@link WLineEdit#getValueText() WLineEdit#getValueText()} of the spin box
+	 * if {@link WLineEdit#getValueText() WLineEdit#getValueText()} is empty or
+	 * if the contents are not in a {@link WFormWidget#validate() valid state}.
+	 * </i>
+	 * </p>
 	 */
 	public int getValue() {
 		return this.value_;
@@ -243,6 +251,7 @@ public class WSpinBox extends WAbstractSpinBox {
 
 	WValidator createValidator() {
 		WIntValidator validator = new WIntValidator();
+		validator.setMandatory(true);
 		validator.setRange(this.min_, this.max_);
 		return validator;
 	}

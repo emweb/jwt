@@ -29,7 +29,11 @@ class MarkerRenderIterator extends SeriesIterator {
 		this.chart_ = chart;
 		this.painter_ = painter;
 		this.marker_ = new WPainterPath();
-		this.scale_ = new WTransform();
+		this.pathFragment_ = new WPainterPath();
+		this.currentPen_ = new WPen();
+		this.currentBrush_ = new WBrush();
+		this.currentScale_ = 0;
+		this.series_ = null;
 	}
 
 	public boolean startSeries(final WDataSeries series, double groupWidth,
@@ -46,6 +50,8 @@ class MarkerRenderIterator extends SeriesIterator {
 	}
 
 	public void endSeries() {
+		this.finishPathFragment(this.series_);
+		this.series_ = null;
 		if (this.needRestore_) {
 			this.painter_.restore();
 		}
@@ -57,7 +63,6 @@ class MarkerRenderIterator extends SeriesIterator {
 			WPointF p = this.chart_.map(x, y, series.getAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
 			if (!this.marker_.isEmpty()) {
-				this.painter_.save();
 				WPen pen = series.getMarkerPen().clone();
 				SeriesIterator.setPenColor(pen, series, xRow, xColumn, yRow,
 						yColumn, ItemDataRole.MarkerPenColorRole);
@@ -69,28 +74,27 @@ class MarkerRenderIterator extends SeriesIterator {
 				WBrush brush = series.getMarkerBrush().clone();
 				SeriesIterator.setBrushColor(brush, series, xRow, xColumn,
 						yRow, yColumn, ItemDataRole.MarkerBrushColorRole);
-				this.setMarkerSize(this.painter_, series, xRow, xColumn, yRow,
-						yColumn, series.getMarkerSize());
+				double scale = this.calculateMarkerScale(series, xRow, xColumn,
+						yRow, yColumn, series.getMarkerSize());
 				if (this.chart_.isSeriesSelectionEnabled()
 						&& this.chart_.getSelectedSeries() != null
 						&& this.chart_.getSelectedSeries() != series) {
 					brush.setColor(WCartesianChart.lightenColor(brush
 							.getColor()));
 				}
-				WTransform currentTransform = new WTransform().translate(
-						this.chart_.getZoomRangeTransform().map(this.hv(p)))
-						.multiply(this.scale_);
-				this.painter_.setWorldTransform(currentTransform, false);
-				this.painter_.setShadow(series.getShadow());
-				if (series.getMarker() != MarkerType.CrossMarker
-						&& series.getMarker() != MarkerType.XCrossMarker
-						&& series.getMarker() != MarkerType.AsteriskMarker
-						&& series.getMarker() != MarkerType.StarMarker) {
-					this.painter_.fillPath(this.marker_, brush);
-					this.painter_.setShadow(new WShadow());
+				if (!(this.series_ != null)
+						|| !brush.equals(this.currentBrush_)
+						|| !pen.equals(this.currentPen_)
+						|| scale != this.currentScale_) {
+					if (this.series_ != null) {
+						this.finishPathFragment(this.series_);
+					}
+					this.series_ = series;
+					this.currentBrush_ = brush;
+					this.currentPen_ = pen;
+					this.currentScale_ = scale;
 				}
-				this.painter_.strokePath(this.marker_, pen);
-				this.painter_.restore();
+				this.pathFragment_.moveTo(this.hv(p));
 			}
 			if (series.getType() != SeriesType.BarSeries) {
 				WString toolTip = series.getModel().getToolTip(yRow, yColumn);
@@ -128,11 +132,14 @@ class MarkerRenderIterator extends SeriesIterator {
 	private final WPainter painter_;
 	private WPainterPath marker_;
 	private boolean needRestore_;
-	private WTransform scale_;
+	private WPainterPath pathFragment_;
+	private WPen currentPen_;
+	private WBrush currentBrush_;
+	private double currentScale_;
+	private WDataSeries series_;
 
-	private void setMarkerSize(final WPainter painter,
-			final WDataSeries series, int xRow, int xColumn, int yRow,
-			int yColumn, double markerSize) {
+	private double calculateMarkerScale(final WDataSeries series, int xRow,
+			int xColumn, int yRow, int yColumn, double markerSize) {
 		Double scale = null;
 		double dScale = 1;
 		if (yRow >= 0 && yColumn >= 0) {
@@ -145,6 +152,40 @@ class MarkerRenderIterator extends SeriesIterator {
 			dScale = scale;
 		}
 		dScale = markerSize / 6 * dScale;
-		this.scale_.assign(new WTransform(dScale, 0, 0, dScale, 0, 0));
+		return dScale;
+	}
+
+	private void finishPathFragment(final WDataSeries series) {
+		if (this.pathFragment_.getSegments().isEmpty()) {
+			return;
+		}
+		this.painter_.save();
+		this.painter_.setWorldTransform(new WTransform(this.currentScale_, 0,
+				0, this.currentScale_, 0, 0));
+		WTransform currentTransform = new WTransform(1.0 / this.currentScale_,
+				0, 0, 1.0 / this.currentScale_, 0, 0).multiply(this.chart_
+				.getZoomRangeTransform());
+		this.painter_.setPen(new WPen(PenStyle.NoPen));
+		this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
+		this.painter_.setShadow(series.getShadow());
+		if (series.getMarker() != MarkerType.CrossMarker
+				&& series.getMarker() != MarkerType.XCrossMarker
+				&& series.getMarker() != MarkerType.AsteriskMarker
+				&& series.getMarker() != MarkerType.StarMarker) {
+			this.painter_.setBrush(this.currentBrush_);
+			if (!series.getShadow().isNone()) {
+				this.painter_.drawStencilAlongPath(this.marker_,
+						currentTransform.map(this.pathFragment_), false);
+			}
+			this.painter_.setShadow(new WShadow());
+		}
+		this.painter_.setPen(this.currentPen_);
+		if (!series.getShadow().isNone()) {
+			this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
+		}
+		this.painter_.drawStencilAlongPath(this.marker_,
+				currentTransform.map(this.pathFragment_), false);
+		this.painter_.restore();
+		this.pathFragment_.assign(new WPainterPath());
 	}
 }

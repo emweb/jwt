@@ -503,6 +503,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * </p>
 	 */
 	public WTransform translate(final WPointF p) {
+		boolean identity = this.isIdentity();
 		String refBefore = this.getJsRef();
 		this.translate(p.getX(), p.getY());
 		if (this.isJavaScriptBound() || p.isJavaScriptBound()) {
@@ -510,12 +511,16 @@ public class WTransform extends WJavaScriptExposableObject {
 			if (!this.isJavaScriptBound()) {
 				o = p;
 			}
-			this.assignBinding(
-					o,
-					"Wt3_3_6.gfxUtils.transform_mult((function(){var p="
-							+ p.getJsRef()
-							+ ";return [1,0,0,1,p[0],p[1]];})(),(" + refBefore
-							+ "))");
+			if (identity) {
+				this.assignBinding(o, "((function(){var p=" + p.getJsRef()
+						+ ";return [1,0,0,1,p[0],p[1]];})())");
+			} else {
+				this.assignBinding(o,
+						"Wt3_3_6.gfxUtils.transform_mult((function(){var p="
+								+ p.getJsRef()
+								+ ";return [1,0,0,1,p[0],p[1]];})(),("
+								+ refBefore + "))");
+			}
 		}
 		return this;
 	}

@@ -504,6 +504,7 @@ this.insertAt = function(p, c, pos) {
 
 this.remove = function(id)
 {
+  // TODO(Roel): what about removal?
   var e = WT.getElement(id);
   if (e) {
     WT.saveReparented(e);
@@ -2772,6 +2773,37 @@ function waitFeedback() {
   showLoadingIndicator();
 }
 
+var nextWsRqId = 0;
+var pendingWsRequests = {};
+
+function wsWaitFeedback() {
+  var now = Date.now();
+  var maxRqId = -1;
+  for (var wsReq in pendingWsRequests) {
+    if (pendingWsRequests.hasOwnProperty(wsReq)) {
+      if (now - pendingWsRequests[wsReq].time >= _$_INDICATOR_TIMEOUT_$_) {
+        if (currentHideLoadingIndicator == null)
+          waitFeedback();
+        return;
+      }
+      if (wsReq > maxRqId)
+	maxRqId = wsReq;
+    }
+  }
+  nextWsRqId = maxRqId + 1;
+  // We're not waiting on any WebSocket requests for longer than
+  // INDICATOR_TIMEOUT, so hide the loading indicator and reset
+  // the cursor.
+  document.body.style.cursor = 'auto';
+  if (currentHideLoadingIndicator != null) {
+    try {
+      currentHideLoadingIndicator();
+    } catch (e) {
+    }
+    currentHideLoadingIndicator = null;
+  }
+}
+
 /** @const */ var WebSocketUnknown = 0;
 /** @const */ var WebSocketConnecting = 1;
 /** @const */ var WebSocketAckConnect = 2;
@@ -3151,6 +3183,17 @@ function responseReceived(updateId, puzzle) {
   comm.responseReceived(updateId);
 }
 
+function wsRqsDone() {
+  for (var i = 0; i < arguments.length; ++i) {
+    var wsRqId = arguments[i];
+    if (wsRqId in pendingWsRequests) {
+      clearTimeout(pendingWsRequests[wsRqId].tm);
+      delete pendingWsRequests[wsRqId];
+    }
+  }
+  wsWaitFeedback();
+}
+
 var pageId = 0;
 function setPage(id) {
   pageId = id;
@@ -3184,9 +3227,13 @@ function sendUpdate() {
 
   var data, tm, poll;
 
+  var useWebSockets = websocket.socket !== null &&
+                      websocket.socket.readyState === 1 &&
+                      websocket.state === WebSocketWorking;
+
   if (pendingEvents.length > 0) {
     data = encodePendingEvents();
-    tm = data.feedback ? setTimeout(waitFeedback, _$_INDICATOR_TIMEOUT_$_)
+    tm = data.feedback ? setTimeout(useWebSockets ? wsWaitFeedback : waitFeedback, _$_INDICATOR_TIMEOUT_$_)
       : null;
     poll = false;
   } else {
@@ -3195,7 +3242,11 @@ function sendUpdate() {
     poll = true;
   }
 
-  data.result += '&ackId=' + ackUpdateId + '&pageId=' + pageId;
+  if (!useWebSockets) {
+    data.result += '&ackId=' + ackUpdateId;
+  }
+
+  data.result += '&pageId=' + pageId;
 
   if (ackPuzzle) {
     var solution = '';
@@ -3218,17 +3269,17 @@ function sendUpdate() {
   if (params.length > 0)
     data.result += '&Wt-params=' + encodeURIComponent(params);
 
-  if ((websocket.socket != null) &&
-      (websocket.socket.readyState == 1) &&
-      (websocket.state == WebSocketWorking)) {
+  if (useWebSockets) {
     responsePending = null;
 
-    if (tm != null) {
-      clearTimeout(tm);
-      tm = null;
-    }
-
     if (!poll) {
+      if (tm) {
+	var wsRqId = nextWsRqId;
+	pendingWsRequests[wsRqId] = {time: Date.now(), tm: tm};
+	++nextWsRqId;
+	data.result += '&wsRqId=' + wsRqId;
+      }
+
       websocket.socket.send(data.result);
     }
   } else {
@@ -3650,6 +3701,7 @@ this._p_ = {
   autoJavaScript : function() { },
 
   response : responseReceived,
+  wsRqsDone : wsRqsDone,
   setPage : setPage,
   setCloseMessage : setCloseMessage,
   setConnectionMonitor : setConnectionMonitor,

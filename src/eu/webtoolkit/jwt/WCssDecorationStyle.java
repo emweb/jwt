@@ -121,6 +121,26 @@ public class WCssDecorationStyle extends WObject {
 	}
 
 	/**
+	 * Copy constructor.
+	 */
+	public WCssDecorationStyle(final WCssDecorationStyle other) {
+		super();
+		this.widget_ = null;
+		this.cursorImage_ = "";
+		this.backgroundColor_ = new WColor();
+		this.foregroundColor_ = new WColor();
+		this.backgroundImage_ = new WLink();
+		this.backgroundImageLocation_ = EnumSet.noneOf(Side.class);
+		this.font_ = new WFont();
+		this.textDecoration_ = EnumSet
+				.noneOf(WCssDecorationStyle.TextDecoration.class);
+		for (int i = 0; i < 4; ++i) {
+			this.border_[i] = null;
+		}
+		this.copy(other);
+	}
+
+	/**
 	 * Sets the cursor style.
 	 */
 	public void setCursor(Cursor c) {
@@ -726,6 +746,26 @@ public class WCssDecorationStyle extends WObject {
 		} else {
 			return new WBorder();
 		}
+	}
+
+	private void copy(final WCssDecorationStyle other) {
+		this.setCursor(other.cursor_);
+		this.setBackgroundColor(other.getBackgroundColor());
+		this.setBackgroundImage(other.getBackgroundImage(),
+				other.getBackgroundImageRepeat(),
+				other.backgroundImageLocation_);
+		this.setForegroundColor(other.getForegroundColor());
+		for (int i = 0; i < 4; ++i) {
+			;
+			if (other.border_[i] != null) {
+				this.border_[i] = other.border_[i].clone();
+			} else {
+				this.border_[i] = null;
+			}
+		}
+		this.borderChanged_ = true;
+		this.setFont(other.font_);
+		this.setTextDecoration(other.getTextDecoration());
 	}
 
 	void setWebWidget(WWebWidget w) {

@@ -2293,7 +2293,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Adds an HTML meta header.
+	 * Adds a &quot;name&quot; HTML meta header.
 	 * <p>
 	 * 
 	 * @see WApplication#addMetaHeader(MetaHeaderType type, String name,
@@ -2305,7 +2305,7 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Adds an HTML meta header.
+	 * Adds a &quot;name&quot; HTML meta header.
 	 * <p>
 	 * Calls {@link #addMetaHeader(String name, CharSequence content, String lang)
 	 * addMetaHeader(name, content, "")}
@@ -2381,6 +2381,23 @@ public class WApplication extends WObject {
 	public final void addMetaHeader(MetaHeaderType type, final String name,
 			final CharSequence content) {
 		addMetaHeader(type, name, content, "");
+	}
+
+	/**
+	 * Returns a meta header value.
+	 * <p>
+	 * 
+	 * @see WApplication#addMetaHeader(String name, CharSequence content, String
+	 *      lang)
+	 */
+	public WString metaHeader(MetaHeaderType type, final String name) {
+		for (int i = 0; i < this.metaHeaders_.size(); ++i) {
+			final MetaHeader m = this.metaHeaders_.get(i);
+			if (m.type == type && m.name.equals(name)) {
+				return m.content;
+			}
+		}
+		return WString.Empty;
 	}
 
 	/**

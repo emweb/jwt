@@ -22,6 +22,17 @@ import org.slf4j.LoggerFactory;
 class FontSupport {
 	private static Logger logger = LoggerFactory.getLogger(FontSupport.class);
 
+	enum EnabledFontFormats {
+		AnyFont, TrueTypeOnly;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
 	static class FontMatch {
 		private static Logger logger = LoggerFactory.getLogger(FontMatch.class);
 
@@ -59,7 +70,7 @@ class FontSupport {
 		private double quality_;
 	}
 
-	public FontSupport(WPaintDevice device) {
+	public FontSupport(WPaintDevice device, FontSupport.EnabledFontFormats anon2) {
 		this.device_ = device;
 		this.fontCollections_ = new ArrayList<FontSupport.FontCollection>();
 		this.cache_ = new LinkedList<FontSupport.Matched>();
@@ -67,6 +78,10 @@ class FontSupport {
 		for (int i = 0; i < 5; ++i) {
 			this.cache_.addLast(new FontSupport.Matched());
 		}
+	}
+
+	public FontSupport(WPaintDevice device) {
+		this(device, FontSupport.EnabledFontFormats.AnyFont);
 	}
 
 	public void setDevice(WPaintDevice device) {

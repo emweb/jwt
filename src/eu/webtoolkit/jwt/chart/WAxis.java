@@ -1360,7 +1360,8 @@ public class WAxis {
 			this.renderInterval_ = 1.0;
 			return false;
 		}
-		for (int it = 0; it < 2; ++it) {
+		int numIterations = 2;
+		for (int it = 0; it < numIterations; ++it) {
 			double rs = totalRenderStart;
 			double TRR = totalRenderRange;
 			totalRenderRange = 0;
@@ -1375,7 +1376,8 @@ public class WAxis {
 				double diff = s.renderMaximum - s.renderMinimum;
 				s.renderStart = rs;
 				s.renderLength = diff / TRR * totalRenderLength;
-				if (i == 0) {
+				if (i == 0 && it != 2) {
+					double oldRenderInterval = this.renderInterval_;
 					this.renderInterval_ = this.labelInterval_;
 					if (this.renderInterval_ == 0) {
 						if (this.scale_ == AxisScale.CategoryScale) {
@@ -1392,6 +1394,10 @@ public class WAxis {
 										orientation, s);
 								this.renderInterval_ = round125(diff
 										/ numLabels);
+								if (it == 1
+										&& this.renderInterval_ != oldRenderInterval) {
+									numIterations = 3;
+								}
 							}
 						}
 					}
@@ -1401,7 +1407,7 @@ public class WAxis {
 					return false;
 				}
 				if (this.scale_ == AxisScale.LinearScale) {
-					if (it == 0) {
+					if (it < numIterations - 1) {
 						if (roundMinimumLimit) {
 							s.renderMinimum = roundDown125(s.renderMinimum,
 									this.renderInterval_);
@@ -1854,53 +1860,65 @@ public class WAxis {
 				textPens.add(this.getTextPen());
 			}
 			for (int level = 1; level <= pens.size(); ++level) {
-				WPainterPath ticksPath = new WPainterPath();
+				WPainterPath shortTicksPath = new WPainterPath();
+				WPainterPath longTicksPath = new WPainterPath();
 				List<WAxis.TickLabel> ticks = new ArrayList<WAxis.TickLabel>();
 				AxisConfig cfg = new AxisConfig();
 				cfg.zoomLevel = level;
 				cfg.side = side;
 				this.getLabelTicks(ticks, segment, cfg);
+				List<WString> labels = new ArrayList<WString>();
+				WPainterPath path = new WPainterPath();
 				for (int i = 0; i < ticks.size(); ++i) {
 					double u = this.mapToDevice(ticks.get(i).u, segment);
 					WPointF p = interpolate(axisStart, axisEnd, u);
 					if (!EnumUtils.mask(properties, AxisProperty.Line)
 							.isEmpty()
 							&& ticks.get(i).tickLength != WAxis.TickLabel.TickLength.Zero) {
-						double ts = tickStart;
-						double te = tickEnd;
 						if (ticks.get(i).tickLength == WAxis.TickLabel.TickLength.Short) {
-							ts = tickStart / 2;
-							te = tickEnd / 2;
-						}
-						if (vertical) {
-							ticksPath.moveTo(new WPointF(p.getX() + ts, p
-									.getY()));
-							ticksPath.lineTo(new WPointF(p.getX() + te, p
-									.getY()));
+							shortTicksPath.moveTo(p);
 						} else {
-							ticksPath.moveTo(new WPointF(p.getX(), p.getY()
-									+ ts));
-							ticksPath.lineTo(new WPointF(p.getX(), p.getY()
-									+ te));
+							longTicksPath.moveTo(p);
 						}
 					}
 					if (!EnumUtils.mask(properties, AxisProperty.Labels)
 							.isEmpty() && !(ticks.get(i).label.length() == 0)) {
-						WPointF labelP = new WPointF();
-						if (vertical) {
-							labelP = new WPointF(p.getX() + labelPos, p.getY());
-						} else {
-							labelP = new WPointF(p.getX(), p.getY() + labelPos);
-						}
-						this.renderLabel(painter, ticks.get(i).label, labelP,
-								labelFlags, this.getLabelAngle(), 3, transform,
-								textPens.get(level - 1));
+						path.moveTo(p);
+						labels.add(ticks.get(i).label);
 					}
 				}
-				if (!ticksPath.isEmpty()) {
-					painter.strokePath(transform.map(ticksPath).getCrisp(),
-							pens.get(level - 1));
+				WTransform t = vertical ? new WTransform(1, 0, 0, 1, labelPos,
+						0) : new WTransform(1, 0, 0, 1, 0, labelPos);
+				this.renderLabels(painter, labels, path, labelFlags,
+						this.getLabelAngle(), 3, t.multiply(transform),
+						textPens.get(level - 1));
+				WPen oldPen = painter.getPen();
+				painter.setPen(pens.get(level - 1));
+				if (shortTicksPath.getSegments().size() != 0) {
+					WPainterPath stencil = new WPainterPath();
+					if (vertical) {
+						stencil.moveTo(tickStart / 2, 0);
+						stencil.lineTo(tickEnd / 2, 0);
+					} else {
+						stencil.moveTo(0, tickStart / 2);
+						stencil.lineTo(0, tickEnd / 2);
+					}
+					painter.drawStencilAlongPath(stencil,
+							transform.map(shortTicksPath).getCrisp(), false);
 				}
+				if (longTicksPath.getSegments().size() != 0) {
+					WPainterPath stencil = new WPainterPath();
+					if (vertical) {
+						stencil.moveTo(tickStart, 0);
+						stencil.lineTo(tickEnd, 0);
+					} else {
+						stencil.moveTo(0, tickStart);
+						stencil.lineTo(0, tickEnd);
+					}
+					painter.drawStencilAlongPath(stencil,
+							transform.map(longTicksPath).getCrisp(), false);
+				}
+				painter.setPen(oldPen);
 			}
 		}
 		painter.setFont(oldFont1);
@@ -2026,104 +2044,6 @@ public class WAxis {
 		} else {
 			return new WAxis.IdentityLabelTransform();
 		}
-	}
-
-	public void renderLabel(final WPainter painter, final CharSequence text,
-			final WPointF p, EnumSet<AlignmentFlag> flags, double angle,
-			int margin, WTransform transform, final WPen pen) {
-		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
-				flags, AlignmentFlag.AlignHorizontalMask));
-		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
-				flags, AlignmentFlag.AlignVerticalMask));
-		double width = 1000;
-		double height = 14;
-		WPointF pos = p;
-		double left = pos.getX();
-		double top = pos.getY();
-		switch (horizontalAlign) {
-		case AlignLeft:
-			left += margin;
-			break;
-		case AlignCenter:
-			left -= width / 2;
-			break;
-		case AlignRight:
-			left -= width + margin;
-		default:
-			break;
-		}
-		switch (verticalAlign) {
-		case AlignTop:
-			top += margin;
-			break;
-		case AlignMiddle:
-			top -= height / 2;
-			break;
-		case AlignBottom:
-			top -= height + margin;
-			break;
-		default:
-			break;
-		}
-		WPen oldPen = painter.getPen().clone();
-		painter.setPen(pen.clone());
-		List<WString> splitText = splitLabel(text);
-		double lineHeight = height;
-		if (splitText.size() > 1
-				&& !EnumUtils.mask(painter.getDevice().getFeatures(),
-						WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
-			WMeasurePaintDevice device = new WMeasurePaintDevice(
-					painter.getDevice());
-			WPainter measPainter = new WPainter(device);
-			measPainter.drawText(new WRectF(0, 0, 100, 100), EnumSet.of(
-					AlignmentFlag.AlignMiddle, AlignmentFlag.AlignCenter),
-					TextFlag.TextSingleLine, splitText.get(0), (WPointF) null);
-			lineHeight = device.getBoundingRect().getHeight();
-		}
-		boolean clipping = painter.hasClipping();
-		if (!this.partialLabelClipping_ && clipping
-				&& this.getTickDirection() == TickDirection.Outwards
-				&& this.getLocation() != AxisValue.ZeroValue) {
-			painter.setClipping(false);
-		}
-		WPointF transformedPoint = transform.map(pos);
-		if (angle == 0) {
-			for (int i = 0; i < splitText.size(); ++i) {
-				double yOffset = calcYOffset(i, splitText.size(), lineHeight,
-						EnumSet.of(verticalAlign));
-				WTransform offsetTransform = new WTransform(1, 0, 0, 1, 0,
-						yOffset);
-				painter.drawText(
-						offsetTransform.multiply(transform).map(
-								new WRectF(left, top, width, height)),
-						EnumSet.of(horizontalAlign, verticalAlign),
-						TextFlag.TextSingleLine,
-						splitText.get(i),
-						clipping && !this.partialLabelClipping_ ? transformedPoint
-								: null);
-			}
-		} else {
-			painter.save();
-			painter.translate(transform.map(pos));
-			painter.rotate(-angle);
-			transformedPoint = painter.getWorldTransform().getInverted()
-					.map(transformedPoint);
-			for (int i = 0; i < splitText.size(); ++i) {
-				double yOffset = calcYOffset(i, splitText.size(), lineHeight,
-						EnumSet.of(verticalAlign));
-				painter.drawText(
-						new WRectF(left - pos.getX(), top - pos.getY()
-								+ yOffset, width, height),
-						EnumSet.of(horizontalAlign, verticalAlign),
-						TextFlag.TextSingleLine,
-						splitText.get(i),
-						clipping && !this.partialLabelClipping_ ? transformedPoint
-								: null);
-			}
-			painter.restore();
-		}
-		painter.setClipping(clipping);
-		painter.setPen(oldPen);
 	}
 
 	void setRenderMirror(boolean enable) {
@@ -2276,6 +2196,7 @@ public class WAxis {
 		this.partialLabelClipping_ = true;
 		this.inverted_ = false;
 		this.labelTransforms_ = new HashMap<AxisValue, WAxis.LabelTransform>();
+		this.renderingMirror_ = false;
 		this.zoomRangeChanged_ = new Signal2<Double, Double>();
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
@@ -2319,13 +2240,24 @@ public class WAxis {
 		}
 		case LinearScale: {
 			double interval = this.renderInterval_ / divisor;
+			double minimum = roundUp125(s.renderMinimum, interval);
+			boolean firstTickIsLong = true;
+			if (this.labelBasePoint_ >= minimum
+					&& this.labelBasePoint_ <= s.renderMaximum) {
+				int n = (int) ((minimum - this.labelBasePoint_) / (-2.0 * interval));
+				minimum = this.labelBasePoint_ - n * 2.0 * interval;
+				if (minimum - interval >= s.renderMinimum) {
+					minimum -= interval;
+					firstTickIsLong = false;
+				}
+			}
 			for (int i = 0;; ++i) {
-				double v = s.renderMinimum + interval * i;
+				double v = minimum + interval * i;
 				if (v - s.renderMaximum > EPSILON * interval) {
 					break;
 				}
 				WString t = new WString();
-				if (i % 2 == 0) {
+				if (i % 2 == (firstTickIsLong ? 0 : 1)) {
 					if (this.hasLabelTransformOnSide(config.side)) {
 						t = this.getLabel(this.getLabelTransform(config.side)
 								.apply(v));
@@ -2333,9 +2265,9 @@ public class WAxis {
 						t = this.getLabel(v);
 					}
 				}
-				ticks.add(new WAxis.TickLabel(v,
-						i % 2 == 0 ? WAxis.TickLabel.TickLength.Long
-								: WAxis.TickLabel.TickLength.Short, t));
+				ticks.add(new WAxis.TickLabel(v, i % 2 == (firstTickIsLong ? 0
+						: 1) ? WAxis.TickLabel.TickLength.Long
+						: WAxis.TickLabel.TickLength.Short, t));
 			}
 			break;
 		}
@@ -3063,10 +2995,11 @@ public class WAxis {
 		}
 		double min = this.getDrawnMinimum();
 		double max = this.getDrawnMaximum();
-		if (minimum <= min) {
+		double zoom = (max - min) / (maximum - minimum);
+		if (minimum <= min || !(zoom > 1.01)) {
 			minimum = AUTO_MINIMUM;
 		}
-		if (maximum >= max) {
+		if (maximum >= max || !(zoom > 1.01)) {
 			maximum = AUTO_MAXIMUM;
 		}
 		this.zoomMin_ = minimum;
@@ -3075,6 +3008,73 @@ public class WAxis {
 
 	private boolean hasLabelTransformOnSide(AxisValue side) {
 		return this.labelTransforms_.get(side) != null;
+	}
+
+	private void renderLabels(final WPainter painter,
+			final List<WString> labels, final WPainterPath path,
+			EnumSet<AlignmentFlag> flags, double angle, int margin,
+			final WTransform transform, final WPen pen) {
+		if (path.getSegments().size() == 0) {
+			return;
+		}
+		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignHorizontalMask));
+		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(
+				flags, AlignmentFlag.AlignVerticalMask));
+		double width = 1000;
+		double height = 14;
+		double left = 0.0;
+		double top = 0.0;
+		switch (horizontalAlign) {
+		case AlignLeft:
+			left += margin;
+			break;
+		case AlignCenter:
+			left -= width / 2;
+			break;
+		case AlignRight:
+			left -= width + margin;
+		default:
+			break;
+		}
+		switch (verticalAlign) {
+		case AlignTop:
+			top += margin;
+			break;
+		case AlignMiddle:
+			top -= height / 2;
+			break;
+		case AlignBottom:
+			top -= height + margin;
+			break;
+		default:
+			break;
+		}
+		WPen oldPen = painter.getPen().clone();
+		painter.setPen(pen.clone());
+		double lineHeight = height;
+		if (!EnumUtils.mask(painter.getDevice().getFeatures(),
+				WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
+			WMeasurePaintDevice device = new WMeasurePaintDevice(
+					painter.getDevice());
+			WPainter measPainter = new WPainter(device);
+			measPainter.drawText(new WRectF(0, 0, 100, 100), EnumSet.of(
+					AlignmentFlag.AlignMiddle, AlignmentFlag.AlignCenter),
+					TextFlag.TextSingleLine, "Sfjh", (WPointF) null);
+			lineHeight = device.getBoundingRect().getHeight();
+		}
+		boolean clipping = painter.hasClipping();
+		if (!this.partialLabelClipping_ && clipping
+				&& this.getTickDirection() == TickDirection.Outwards
+				&& this.getLocation() != AxisValue.ZeroValue) {
+			painter.setClipping(false);
+		}
+		painter.drawTextOnPath(new WRectF(left, top, width, height),
+				EnumSet.of(horizontalAlign, verticalAlign), labels, transform,
+				path, angle, lineHeight, clipping
+						&& !this.partialLabelClipping_);
+		painter.setClipping(clipping);
+		painter.setPen(oldPen);
 	}
 
 	private static double EPSILON = 1E-3;

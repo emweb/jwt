@@ -239,6 +239,18 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
+	public void drawStencilAlongPath(final WPainterPath stencil,
+			final WPainterPath path, boolean softClipping) {
+		this.renderStateChanges(true);
+		this.js_.append("Wt3_3_6")
+				.append(".gfxUtils.drawStencilAlongPath(ctx,")
+				.append(stencil.getJsRef()).append(",").append(path.getJsRef())
+				.append(",").append(this.currentNoBrush_ ? "false" : "true")
+				.append(",").append(this.currentNoPen_ ? "false" : "true")
+				.append(",").append(softClipping ? "true" : "false")
+				.append(");");
+	}
+
 	public void drawRect(final WRectF rectangle) {
 		this.renderStateChanges(true);
 		this.js_.append("Wt3_3_6").append(".gfxUtils.drawRect(ctx,")
@@ -262,166 +274,17 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 		switch (this.textMethod_) {
 		case Html5Text: {
-			double x = 0;
-			double y = 0;
-			if (horizontalAlign != this.currentTextHAlign_) {
-				this.js_.append("ctx.textAlign='");
-				switch (horizontalAlign) {
-				case AlignLeft:
-					this.js_.append("left");
-					break;
-				case AlignRight:
-					this.js_.append("right");
-					break;
-				case AlignCenter:
-					this.js_.append("center");
-					break;
-				default:
-					break;
-				}
-				this.js_.append("';");
-				this.currentTextHAlign_ = horizontalAlign;
+			this.js_.append("Wt3_3_6.gfxUtils.drawText(ctx,")
+					.append(rect.getJsRef()).append(',')
+					.append(String.valueOf(EnumUtils.valueOf(flags)))
+					.append(',')
+					.append(WString.toWString(text).getJsStringLiteral());
+			if (clipPoint != null && this.getPainter() != null) {
+				this.js_.append(',').append(
+						this.getPainter().getWorldTransform().map(clipPoint)
+								.getJsRef());
 			}
-			if (verticalAlign != this.currentTextVAlign_) {
-				this.js_.append("ctx.textBaseline='");
-				switch (verticalAlign) {
-				case AlignTop:
-					this.js_.append("top");
-					break;
-				case AlignBottom:
-					this.js_.append("bottom");
-					break;
-				case AlignMiddle:
-					this.js_.append("middle");
-					break;
-				default:
-					break;
-				}
-				this.js_.append("';");
-				this.currentTextVAlign_ = verticalAlign;
-			}
-			if (this.currentPen_.isJavaScriptBound()) {
-				this.js_.append("ctx.fillStyle=Wt3_3_6.gfxUtils.css_text(")
-						.append(this.currentPen_.getJsRef()).append(".color);");
-			} else {
-				if (!this.currentBrush_.getColor().equals(
-						this.currentPen_.getColor())
-						|| this.currentBrush_.isJavaScriptBound()) {
-					this.js_.append("ctx.fillStyle=")
-							.append(WWebWidget.jsStringLiteral(this.currentPen_
-									.getColor().getCssText(true))).append(";");
-				}
-			}
-			char[] buf = new char[30];
-			if (rect.isJavaScriptBound()) {
-				String s_x = "";
-				String s_y = "";
-				switch (horizontalAlign) {
-				case AlignLeft:
-					s_x = "Wt3_3_6.gfxUtils.rect_left(" + rect.getJsRef() + ')';
-					break;
-				case AlignRight:
-					s_x = "Wt3_3_6.gfxUtils.rect_right(" + rect.getJsRef()
-							+ ')';
-					break;
-				case AlignCenter:
-					s_x = "Wt3_3_6.gfxUtils.rect_center(" + rect.getJsRef()
-							+ ").x";
-					break;
-				default:
-					break;
-				}
-				switch (verticalAlign) {
-				case AlignTop:
-					s_y = "Wt3_3_6.gfxUtils.rect_top(" + rect.getJsRef() + ')';
-					break;
-				case AlignBottom:
-					s_y = "Wt3_3_6.gfxUtils.rect_bottom(" + rect.getJsRef()
-							+ ')';
-					break;
-				case AlignMiddle:
-					s_y = "Wt3_3_6.gfxUtils.rect_center(" + rect.getJsRef()
-							+ ").y";
-					break;
-				default:
-					break;
-				}
-				if (clipPoint != null && this.getPainter() != null) {
-					this.js_.append("if (Wt3_3_6.gfxUtils.pnpoly(")
-							.append(this.getPainter().getWorldTransform()
-									.map(clipPoint).getJsRef())
-							.append(",")
-							.append(this.getPainter().getClipPathTransform()
-									.map(this.getPainter().getClipPath())
-									.getJsRef()).append(")) {");
-				}
-				this.js_.append("ctx.fillText(")
-						.append(WString.toWString(text).getJsStringLiteral())
-						.append(',').append(s_x).append(',').append(s_y)
-						.append(");");
-				if (clipPoint != null && this.getPainter() != null) {
-					this.js_.append("}");
-				}
-			} else {
-				switch (horizontalAlign) {
-				case AlignLeft:
-					x = rect.getLeft();
-					break;
-				case AlignRight:
-					x = rect.getRight();
-					break;
-				case AlignCenter:
-					x = rect.getCenter().getX();
-					break;
-				default:
-					break;
-				}
-				switch (verticalAlign) {
-				case AlignTop:
-					y = rect.getTop();
-					break;
-				case AlignBottom:
-					y = rect.getBottom();
-					break;
-				case AlignMiddle:
-					y = rect.getCenter().getY();
-					break;
-				default:
-					break;
-				}
-				if (clipPoint != null && this.getPainter() != null) {
-					this.js_.append("if (Wt3_3_6.gfxUtils.pnpoly(")
-							.append(this.getPainter().getWorldTransform()
-									.map(clipPoint).getJsRef())
-							.append(",")
-							.append(this.getPainter().getClipPathTransform()
-									.map(this.getPainter().getClipPath())
-									.getJsRef()).append(")) {");
-				}
-				this.js_.append("ctx.fillText(")
-						.append(WString.toWString(text).getJsStringLiteral())
-						.append(',').append(MathUtils.roundJs(x, 3))
-						.append(',');
-				this.js_.append(MathUtils.roundJs(y, 3)).append(");");
-				if (clipPoint != null && this.getPainter() != null) {
-					this.js_.append("}");
-				}
-			}
-			if (this.currentBrush_.isJavaScriptBound()) {
-				this.js_.append("ctx.fillStyle=Wt3_3_6.gfxUtils.css_text(")
-						.append(this.currentBrush_.getJsRef())
-						.append(".color);");
-			} else {
-				if (!this.currentBrush_.getColor().equals(
-						this.currentPen_.getColor())
-						|| this.currentPen_.isJavaScriptBound()) {
-					this.js_.append("ctx.fillStyle=")
-							.append(WWebWidget
-									.jsStringLiteral(this.currentBrush_
-											.getColor().getCssText(true)))
-							.append(";");
-				}
-			}
+			this.js_.append(");");
 		}
 			break;
 		case MozText: {
@@ -538,6 +401,30 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 	}
 
+	public void drawTextOnPath(final WRectF rect,
+			EnumSet<AlignmentFlag> alignmentFlags, final List<WString> text,
+			final WTransform transform, final WPainterPath path, double angle,
+			double lineHeight, boolean softClipping) {
+		this.renderStateChanges(true);
+		this.js_.append("Wt3_3_6.gfxUtils.drawTextOnPath(ctx,[");
+		for (int i = 0; i < text.size(); ++i) {
+			if (i != 0) {
+				this.js_.append(',');
+			}
+			this.js_.append(WString.toWString(text.get(i)).getJsStringLiteral());
+		}
+		this.js_.append("],");
+		this.js_.append(rect.getJsRef()).append(',');
+		this.js_.append(transform.getJsRef()).append(',');
+		this.js_.append(path.getJsRef()).append(',');
+		char[] buf = new char[30];
+		this.js_.append(MathUtils.roundJs(angle, 3)).append(',');
+		this.js_.append(MathUtils.roundJs(lineHeight, 3)).append(',');
+		this.js_.append(String.valueOf(EnumUtils.valueOf(alignmentFlags)))
+				.append(',');
+		this.js_.append(softClipping ? "true" : "false").append(");");
+	}
+
 	public WTextItem measureText(final CharSequence text, double maxWidth,
 			boolean wordWrap) {
 		if (!(this.fontMetrics_ != null)) {
@@ -571,7 +458,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentPen_.setCapStyle(PenCapStyle.FlatCap);
 		this.currentShadow_ = new WShadow();
 		this.currentFont_ = new WFont();
-		this.currentTextVAlign_ = this.currentTextHAlign_ = AlignmentFlag.AlignSuper;
 		this.changeFlags_.clear();
 	}
 
@@ -670,8 +556,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private WShadow currentShadow_;
 	private WFont currentFont_;
 	private WPointF pathTranslation_;
-	private AlignmentFlag currentTextHAlign_;
-	private AlignmentFlag currentTextVAlign_;
 	private WPainterPath currentClipPath_;
 	private WTransform currentClipTransform_;
 	private boolean currentClippingEnabled_;
@@ -754,9 +638,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						|| !this.currentClipPath_.equals(this.getPainter()
 								.getClipPath()) || !this.currentClipTransform_
 							.equals(this.getPainter().getClipPathTransform()));
-		if (!this.getPainter().hasClipping() && !this.currentClippingEnabled_) {
-			clippingChanged = false;
-		}
 		this.changeFlags_.remove(WPaintDevice.ChangeFlag.Clipping);
 		if (!EnumUtils.mask(this.changeFlags_,
 				WPaintDevice.ChangeFlag.Transform).isEmpty()
@@ -765,36 +646,30 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			if (clippingChanged) {
 				this.js_.append("ctx.restore();ctx.save();");
 				this.lastTransformWasIdentity_ = true;
+				this.pathTranslation_.setX(0);
+				this.pathTranslation_.setY(0);
 				final WTransform t = this.getPainter().getClipPathTransform();
-				this.renderTransform(this.js_, t);
-				this.currentClipTransform_.assign(this.getPainter()
-						.getClipPathTransform());
-				if (this.getPainter().hasClipping()) {
-					this.pathTranslation_.setX(0);
-					this.pathTranslation_.setY(0);
-					if (this.getPainter().getClipPath().isJavaScriptBound()) {
-						this.js_.append("Wt3_3_6")
-								.append(".gfxUtils.drawPath(ctx,")
-								.append(this.getPainter().getClipPath()
-										.getJsRef())
-								.append(",false,false,true);");
-					} else {
-						this.drawPlainPath(this.js_, this.getPainter()
-								.getClipPath());
-						this.js_.append("ctx.clip();");
-					}
-					this.currentClipPath_.assign(this.getPainter()
-							.getClipPath());
+				final WPainterPath p = this.getPainter().getClipPath();
+				if (!p.isEmpty()) {
+					this.js_.append("Wt3_3_6")
+							.append(".gfxUtils.setClipPath(ctx,")
+							.append(p.getJsRef())
+							.append(",")
+							.append(t.getJsRef())
+							.append(",")
+							.append(this.getPainter().hasClipping() ? "true"
+									: "false").append(");");
 				} else {
-					this.currentClipPath_.assign(new WPainterPath());
+					this.js_.append("Wt3_3_6").append(
+							".gfxUtils.removeClipPath(ctx);");
 				}
-				this.renderTransform(this.js_, new WTransform());
+				this.currentClipTransform_.assign(t);
+				this.currentClipPath_.assign(p);
 				penChanged = true;
 				penColorChanged = true;
 				brushChanged = true;
 				shadowChanged = true;
 				fontChanged = true;
-				this.currentTextHAlign_ = this.currentTextVAlign_ = AlignmentFlag.AlignSuper;
 				this.init();
 				resetTransform = true;
 				this.currentClippingEnabled_ = this.getPainter().hasClipping();

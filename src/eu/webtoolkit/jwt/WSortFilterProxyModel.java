@@ -714,7 +714,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private void sourceRowsInserted(final WModelIndex parent, int start, int end) {
-		this.shiftModelIndexes(parent, start, end - start + 1,
+		this.shiftModelIndexes(parent, end + 1, end - start + 1,
 				this.mappedIndexes_);
 		if (this.inserting_) {
 			return;

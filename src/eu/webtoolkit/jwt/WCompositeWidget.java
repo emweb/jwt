@@ -414,6 +414,30 @@ public class WCompositeWidget extends WWidget {
 		this.impl_.getWebWidget().propagateSetVisible(visible);
 	}
 
+	public boolean isScrollVisibilityEnabled() {
+		return this.impl_.getWebWidget().isScrollVisibilityEnabled();
+	}
+
+	public void setScrollVisibilityEnabled(boolean enabled) {
+		this.impl_.getWebWidget().setScrollVisibilityEnabled(enabled);
+	}
+
+	public int getScrollVisibilityMargin() {
+		return this.impl_.getWebWidget().getScrollVisibilityMargin();
+	}
+
+	public void setScrollVisibilityMargin(int margin) {
+		this.impl_.getWebWidget().setScrollVisibilityMargin(margin);
+	}
+
+	public Signal1<Boolean> scrollVisibilityChanged() {
+		return this.impl_.getWebWidget().scrollVisibilityChanged();
+	}
+
+	public boolean isScrollVisible() {
+		return this.impl_.getWebWidget().isScrollVisible();
+	}
+
 	void addChild(WWidget child) {
 		if (child != this.impl_) {
 			this.impl_.addChild(child);

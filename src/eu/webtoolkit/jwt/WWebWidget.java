@@ -356,7 +356,8 @@ public abstract class WWebWidget extends WWidget {
 			if (this.getParent() != null) {
 				return this.getParent().isVisible();
 			} else {
-				return this.isLoaded();
+				return this == WApplication.getInstance().getDomRoot()
+						|| this == WApplication.getInstance().getDomRoot2();
 			}
 		}
 	}
@@ -1123,6 +1124,53 @@ public abstract class WWebWidget extends WWidget {
 		return this.voidEventSignal(FOCUS_SIGNAL, true);
 	}
 
+	public boolean isScrollVisibilityEnabled() {
+		return this.flags_.get(BIT_SCROLL_VISIBILITY_ENABLED);
+	}
+
+	public void setScrollVisibilityEnabled(boolean enabled) {
+		if (enabled && !(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
+		}
+		if (this.isScrollVisibilityEnabled() != enabled) {
+			this.flags_.set(BIT_SCROLL_VISIBILITY_ENABLED, enabled);
+			this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
+			this.repaint();
+		}
+	}
+
+	public int getScrollVisibilityMargin() {
+		if (!(this.otherImpl_ != null)) {
+			return 0;
+		} else {
+			return this.otherImpl_.scrollVisibilityMargin_;
+		}
+	}
+
+	public void setScrollVisibilityMargin(int margin) {
+		if (this.getScrollVisibilityMargin() != margin) {
+			if (!(this.otherImpl_ != null)) {
+				this.otherImpl_ = new WWebWidget.OtherImpl(this);
+			}
+			this.otherImpl_.scrollVisibilityMargin_ = margin;
+			if (this.isScrollVisibilityEnabled()) {
+				this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
+				this.repaint();
+			}
+		}
+	}
+
+	public Signal1<Boolean> scrollVisibilityChanged() {
+		if (!(this.otherImpl_ != null)) {
+			this.otherImpl_ = new WWebWidget.OtherImpl(this);
+		}
+		return this.otherImpl_.scrollVisibilityChanged_;
+	}
+
+	public boolean isScrollVisible() {
+		return this.flags_.get(BIT_IS_SCROLL_VISIBLE);
+	}
+
 	void repaint(EnumSet<RepaintFlag> flags) {
 		if (this.isStubbed()) {
 			final WebRenderer renderer = WApplication.getInstance()
@@ -1823,6 +1871,39 @@ public abstract class WWebWidget extends WWidget {
 			}
 			this.flags_.clear(BIT_TABINDEX_CHANGED);
 		}
+		if (all || this.flags_.get(BIT_SCROLL_VISIBILITY_CHANGED)) {
+			String SCROLL_JS = "js/ScrollVisibility.js";
+			if (!(app != null)) {
+				app = WApplication.getInstance();
+			}
+			if (!app.isJavaScriptLoaded(SCROLL_JS)
+					&& this.isScrollVisibilityEnabled()) {
+				app.loadJavaScript(SCROLL_JS, wtjs3());
+				StringBuilder ss = new StringBuilder();
+				ss.append("if (!Wt3_3_6.scrollVisibility) {Wt3_3_6.scrollVisibility = new ");
+				ss.append("Wt3_3_6.ScrollVisibility(").append(
+						app.getJavaScriptClass() + "); }");
+				element.callJavaScript(ss.toString());
+			}
+			if (this.isScrollVisibilityEnabled()) {
+				StringBuilder ss = new StringBuilder();
+				ss.append("Wt3_3_6.scrollVisibility.add({");
+				ss.append("el:").append(this.getJsRef()).append(',');
+				ss.append("margin:").append(this.getScrollVisibilityMargin())
+						.append(',');
+				ss.append("visible:").append(this.isScrollVisible());
+				ss.append("});");
+				element.callJavaScript(ss.toString());
+				this.flags_.set(BIT_SCROLL_VISIBILITY_LOADED);
+			} else {
+				if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
+					element.callJavaScript("Wt3_3_6.scrollVisibility.remove("
+							+ jsStringLiteral(this.getId()) + ");");
+					this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
+				}
+			}
+			this.flags_.clear(BIT_SCROLL_VISIBILITY_CHANGED);
+		}
 		this.renderOk();
 		;
 		this.transientImpl_ = null;
@@ -1845,6 +1926,7 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.clear(BIT_DISABLED_CHANGED);
 		this.flags_.clear(BIT_ZINDEX_CHANGED);
 		this.flags_.clear(BIT_TABINDEX_CHANGED);
+		this.flags_.clear(BIT_SCROLL_VISIBILITY_CHANGED);
 		this.renderOk();
 		if (deep && this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
@@ -1861,6 +1943,12 @@ public abstract class WWebWidget extends WWidget {
 
 	String renderRemoveJs(boolean recursive) {
 		String result = "";
+		if (this.isRendered() && this.isScrollVisibilityEnabled()) {
+			result += "Wt3_3_6.scrollVisibility.remove("
+					+ jsStringLiteral(this.getId()) + ");";
+			this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
+			this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
+		}
 		if (this.children_ != null) {
 			for (int i = 0; i < this.children_.size(); ++i) {
 				result += this.children_.get(i).getWebWidget()
@@ -2065,6 +2153,10 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_TOOLTIP_DEFERRED = 28;
 	private static final int BIT_GOT_FOCUS = 29;
 	private static final int BIT_TABINDEX_CHANGED = 30;
+	private static final int BIT_SCROLL_VISIBILITY_ENABLED = 31;
+	private static final int BIT_SCROLL_VISIBILITY_LOADED = 32;
+	private static final int BIT_IS_SCROLL_VISIBLE = 33;
+	private static final int BIT_SCROLL_VISIBILITY_CHANGED = 34;
 	private static String FOCUS_SIGNAL = "focus";
 	private static String BLUR_SIGNAL = "blur";
 	private String elementTagName_;
@@ -2226,8 +2318,11 @@ public abstract class WWebWidget extends WWidget {
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 		public Signal childrenChanged_;
+		public int scrollVisibilityMargin_;
+		public Signal1<Boolean> scrollVisibilityChanged_;
+		public JSignal1<Boolean> jsScrollVisibilityChanged_;
 
-		public OtherImpl(WWebWidget self) {
+		public OtherImpl(final WWebWidget self) {
 			this.id_ = null;
 			this.attributes_ = null;
 			this.jsMembers_ = null;
@@ -2237,6 +2332,17 @@ public abstract class WWebWidget extends WWidget {
 			this.dropSignal_ = null;
 			this.acceptedDropMimeTypes_ = null;
 			this.childrenChanged_ = new Signal(self);
+			this.scrollVisibilityMargin_ = 0;
+			this.scrollVisibilityChanged_ = new Signal1<Boolean>(self);
+			this.jsScrollVisibilityChanged_ = new JSignal1<Boolean>(self,
+					"scrollVisibilityChanged") {
+			};
+			this.jsScrollVisibilityChanged_.addListener(self,
+					new Signal1.Listener<Boolean>() {
+						public void trigger(Boolean e1) {
+							self.jsScrollVisibilityChanged(e1);
+						}
+					});
 		}
 	}
 
@@ -2498,6 +2604,13 @@ public abstract class WWebWidget extends WWidget {
 	private void undoSetFocus() {
 	}
 
+	private void jsScrollVisibilityChanged(boolean visible) {
+		this.flags_.set(BIT_IS_SCROLL_VISIBLE, visible);
+		if (this.otherImpl_ != null) {
+			this.otherImpl_.scrollVisibilityChanged_.trigger(visible);
+		}
+	}
+
 	void setRendered(boolean rendered) {
 		if (rendered) {
 			this.flags_.set(BIT_RENDERED);
@@ -2682,6 +2795,14 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptObjectType.JavaScriptFunction,
 				"toolTip",
 				"function(l,m,n,s,t,u){var c=$(\"#\"+m),d=c.get(0),o=l.WT,g=d.toolTip;if(!g)d.toolTip=new (function(){function v(){$(\"#\"+m+\":hover\").length||p()}function w(){h=true;l.emit(d,\"Wt-loadToolTip\")}function p(){clearTimeout(e);setTimeout(function(){if(!i)if(a){$(a).parent().remove();a=null;clearInterval(j);j=null}},x)}function q(b){clearTimeout(e);k=o.pageCoordinates(b);a||(e=setTimeout(function(){d.toolTip.showToolTip()},y))}var e=null,j=null,k=null,a= null,y=500,x=200,h=false,f=n,i=false;this.setToolTipText=function(b){f=b;if(h){this.showToolTip();clearTimeout(e);waitingforText=false}};this.showToolTip=function(){s&&!f&&!h&&w();if(f){a=document.createElement(\"div\");a.className=t;a.innerHTML=f;outerDiv=document.createElement(\"div\");outerDiv.className=u;document.body.appendChild(outerDiv);outerDiv.appendChild(a);var b=k.x,r=k.y;o.fitToWindow(outerDiv,b+10,r+10,b-10,r-10);$(a).mouseenter(function(){i=true});$(a).mouseleave(function(){i=false})}j= setInterval(function(){v()},200)};c.mouseenter(q);c.mousemove(q);c.mouseleave(p)});g&&g.setToolTipText(n)}");
+	}
+
+	static WJavaScriptPreamble wtjs3() {
+		return new WJavaScriptPreamble(
+				JavaScriptScope.WtClassScope,
+				JavaScriptObjectType.JavaScriptConstructor,
+				"ScrollVisibility",
+				"function(h){function l(a){if(a.style.visibility==\"hidden\"||a.style.display==\"none\"||$(a).hasClass(\"out\"))return false;else return(a=a.parentNode)&&!m.hasTag(a,\"BODY\")?l(a):true}function n(a,c){if(!l(a))return false;var e=m.widgetPageCoordinates(a),d=e.x-document.body.scrollLeft-document.documentElement.scrollLeft;e=e.y-document.body.scrollTop-document.documentElement.scrollTop;var f=m.windowSize(),q=a.offsetHeight,o=-c,r=f.x+2*c,p=-c; c=f.y+2*c;return d+a.offsetWidth>=o&&o+r>=d&&e+q>=p&&p+c>=e}function i(){if(j)for(var a in b){if(b.hasOwnProperty(a)){var c=l(b[a].el);if(b[a].visibleIfNotHidden&&b[a].visible!==c){b[a].visible=c;h.emit(b[a].el,\"scrollVisibilityChanged\",c)}}}else for(a in b)if(b.hasOwnProperty(a)){c=n(b[a].el,b[a].margin);if(c!==b[a].visible){b[a].visible=c;h.emit(b[a].el,\"scrollVisibilityChanged\",c)}}}function s(a){for(var c=0;c<a.length;++c){var e=a[c],d=e.target,f=d.id;d=l(d);if(e.intersectionRatio>0||e.intersectionRect.top!== 0||e.intersectionRect.left!==0){b[f].visibleIfNotHidden=true;if(b[f].visible!==d){b[f].visible=d;h.emit(b[f].el,\"scrollVisibilityChanged\",d)}}else{b[f].visibleIfNotHidden=false;if(b[f].visible){b[f].visible=false;h.emit(b[f].el,\"scrollVisibilityChanged\",false)}}}}function t(){if(g){g.observe(document,{childList:true,attributes:true,subtree:true,characterData:true});if(!j){window.addEventListener(\"resize\",i,true);window.addEventListener(\"scroll\",i,true)}}else g=setInterval(i,100)}function u(){if(g){g.disconnect(); if(!j){window.removeEventListener(\"resize\",i,{capture:true});window.removeEventListener(\"scroll\",i,{capture:true})}}else{clearInterval(g);g=null}}var m=h.WT,k=0,b={},j=false,g=null;if(\"MutationObserver\"in window)g=new MutationObserver(i);this.add=function(a){k===0&&t();var c=a.el.id,e=c in b;j&&e&&b[c].observer&&b[c].observer.disconnect();var d=n(a.el,a.margin);if(a.visible!==d){a.visible=d;h.emit(a.el,\"scrollVisibilityChanged\",d)}b[c]=a;if(j){d=new IntersectionObserver(s,{rootMargin:\"\"+a.margin+ \"px\"});d.observe(a.el);b[c].observer=d}e||++k};this.remove=function(a){if(k!==0){if(a in b){j&&b[a].observer&&b[a].observer.disconnect();delete b[a];--k}k===0&&u()}}}");
 	}
 
 	static WLength nonNegative(final WLength w) {

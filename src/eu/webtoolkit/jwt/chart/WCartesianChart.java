@@ -2284,7 +2284,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.yTransformHandle_ = this.createJSTransform();
 		this.xTransform_.assign(new WTransform());
 		this.yTransform_.assign(new WTransform());
-		if (WApplication.getInstance() != null) {
+		if (WApplication.getInstance() != null
+				&& WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.mouseWentDown().addListener(
 					"function(o, e){var o=" + this.getCObjJsRef()
 							+ ";if(o){o.mouseDown(o, e);}}");
@@ -3048,6 +3049,9 @@ public class WCartesianChart extends WAbstractChart {
 			final CurveLabel label = this.curveLabels_.get(i);
 			for (int j = 0; j < this.series_.size(); ++j) {
 				final WDataSeries series = this.series_.get(j);
+				if (series.isHidden()) {
+					continue;
+				}
 				if (series == label.getSeries()) {
 					WTransform t = this.getZoomRangeTransform();
 					if (series.getType() == SeriesType.LineSeries
@@ -3387,7 +3391,9 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		boolean vertical = axis.getId() != Axis.XAxis;
-		if (this.isInteractive()) {
+		if (this.isInteractive()
+				&& ((painter.getDevice()) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (painter
+						.getDevice()) : null) != null) {
 			WRectF clipRect = null;
 			WRectF area = this.hv(this.chartArea_);
 			if (axis.getLocation() == AxisValue.ZeroValue

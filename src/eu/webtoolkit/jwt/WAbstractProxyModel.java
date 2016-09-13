@@ -365,12 +365,27 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 			final SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> items) {
 		List<WAbstractProxyModel.BaseItem> shifted = new ArrayList<WAbstractProxyModel.BaseItem>();
 		List<WAbstractProxyModel.BaseItem> erased = new ArrayList<WAbstractProxyModel.BaseItem>();
+		WModelIndex startIndex = null;
+		if (this.getSourceModel().getRowCount(sourceParent) == 0) {
+			startIndex = sourceParent;
+		} else {
+			if (start >= this.getSourceModel().getRowCount(sourceParent)) {
+				startIndex = this.getSourceModel().getIndex(
+						this.getSourceModel().getRowCount(sourceParent) - 1, 0,
+						sourceParent);
+			} else {
+				startIndex = this.getSourceModel().getIndex(start, 0,
+						sourceParent);
+			}
+		}
 		for (Iterator<Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem>> it_it = items
-				.tailMap(this.getSourceModel().getIndex(start, 0, sourceParent))
-				.entrySet().iterator(); it_it.hasNext();) {
+				.tailMap(startIndex).entrySet().iterator(); it_it.hasNext();) {
 			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> it = it_it
 					.next();
 			WModelIndex i = it.getKey();
+			if ((i == sourceParent || (i != null && i.equals(sourceParent)))) {
+				continue;
+			}
 			if ((i != null)) {
 				WModelIndex p = i.getParent();
 				if (!(p == sourceParent || (p != null && p.equals(sourceParent)))

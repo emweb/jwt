@@ -205,8 +205,12 @@ public class WBootstrapTheme extends WTheme {
 						.toString() + "bootstrap-responsive.css")));
 			} else {
 				if (app != null) {
-					app.addMetaHeader("viewport",
-							"width=device-width, initial-scale=1");
+					WString v = app.metaHeader(MetaHeaderType.MetaName,
+							"viewport");
+					if ((v.length() == 0)) {
+						app.addMetaHeader("viewport",
+								"width=device-width, initial-scale=1");
+					}
 				}
 			}
 		}

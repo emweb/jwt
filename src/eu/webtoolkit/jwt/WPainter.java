@@ -678,6 +678,64 @@ public class WPainter {
 	}
 
 	/**
+	 * Draws a {@link WPainterPath} on every anchor point of a path.
+	 * <p>
+	 * Draws the first {@link WPainterPath} on every anchor point of the second
+	 * path. When rendering to an HTML canvas, this will cause far less
+	 * JavaScript to be generated than separate calls to drawPath. Also,
+	 * it&apos;s possible for either path to be
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound() JavaScript bound}
+	 * through, e.g. applying a JavaScript bound {@link WTransform} without
+	 * deforming the other path. This is used by WCartesianChart to draw data
+	 * series markers that don&apos;t change size when zooming in.
+	 * <p>
+	 * If one of the anchor points of the path is outside of the current
+	 * clipping area, the stencil will be drawn if softClipping is disabled, and
+	 * it will not be drawn when softClipping is enabled.
+	 */
+	public void drawStencilAlongPath(final WPainterPath stencil,
+			final WPainterPath path, boolean softClipping) {
+		WCanvasPaintDevice cDevice = ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_)
+				: null);
+		if (cDevice != null) {
+			cDevice.drawStencilAlongPath(stencil, path, softClipping);
+		} else {
+			for (int i = 0; i < path.getSegments().size(); ++i) {
+				final WPainterPath.Segment seg = path.getSegments().get(i);
+				if (softClipping
+						&& !this.getClipPath().isEmpty()
+						&& !this.getClipPathTransform()
+								.map(this.getClipPath())
+								.isPointInPath(
+										this.getWorldTransform().map(
+												new WPointF(seg.getX(), seg
+														.getY())))) {
+					continue;
+				}
+				if (seg.getType() == WPainterPath.Segment.Type.LineTo
+						|| seg.getType() == WPainterPath.Segment.Type.MoveTo
+						|| seg.getType() == WPainterPath.Segment.Type.CubicEnd
+						|| seg.getType() == WPainterPath.Segment.Type.QuadEnd) {
+					WPointF p = new WPointF(seg.getX(), seg.getY());
+					this.drawPath(new WTransform().translate(p).map(stencil));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Draws a {@link WPainterPath} on every anchor point of a path.
+	 * <p>
+	 * Calls
+	 * {@link #drawStencilAlongPath(WPainterPath stencil, WPainterPath path, boolean softClipping)
+	 * drawStencilAlongPath(stencil, path, false)}
+	 */
+	public final void drawStencilAlongPath(final WPainterPath stencil,
+			final WPainterPath path) {
+		drawStencilAlongPath(stencil, path, false);
+	}
+
+	/**
 	 * Draws a pie.
 	 * <p>
 	 * Draws an arc using the current pen, and connects start and end point with
@@ -968,6 +1026,56 @@ public class WPainter {
 			EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag,
 			final CharSequence text) {
 		drawText(rectangle, alignmentFlags, textFlag, text, (WPointF) null);
+	}
+
+	public void drawTextOnPath(final WRectF rect,
+			EnumSet<AlignmentFlag> alignmentFlags, final List<WString> text,
+			final WTransform transform, final WPainterPath path, double angle,
+			double lineHeight, boolean softClipping) {
+		if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignVerticalMask)
+				.isEmpty()) {
+			alignmentFlags.add(AlignmentFlag.AlignTop);
+		}
+		if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask)
+				.isEmpty()) {
+			alignmentFlags.add(AlignmentFlag.AlignLeft);
+		}
+		WCanvasPaintDevice cDevice = ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_)
+				: null);
+		if (cDevice != null) {
+			cDevice.drawTextOnPath(rect, alignmentFlags, text, transform, path,
+					angle, lineHeight, softClipping);
+		} else {
+			WPainterPath tpath = transform.map(path);
+			for (int i = 0; i < path.getSegments().size(); ++i) {
+				if (i >= text.size()) {
+					break;
+				}
+				final WPainterPath.Segment seg = path.getSegments().get(i);
+				final WPainterPath.Segment tseg = tpath.getSegments().get(i);
+				List<WString> splitText = splitLabel(text.get(i));
+				if (seg.getType() == WPainterPath.Segment.Type.MoveTo
+						|| seg.getType() == WPainterPath.Segment.Type.LineTo
+						|| seg.getType() == WPainterPath.Segment.Type.QuadEnd
+						|| seg.getType() == WPainterPath.Segment.Type.CubicEnd) {
+					this.save();
+					this.setClipping(false);
+					this.translate(tseg.getX(), tseg.getY());
+					this.rotate(-angle);
+					for (int j = 0; j < splitText.size(); ++j) {
+						double yOffset = calcYOffset(j, splitText.size(),
+								lineHeight, EnumUtils.mask(alignmentFlags,
+										AlignmentFlag.AlignVerticalMask));
+						WPointF p = new WPointF(tseg.getX(), tseg.getY());
+						this.drawText(new WRectF(rect.getLeft(), rect.getTop()
+								+ yOffset, rect.getWidth(), rect.getHeight()),
+								alignmentFlags, TextFlag.TextSingleLine,
+								splitText.get(j), softClipping ? p : null);
+					}
+					this.restore();
+				}
+			}
+		}
 	}
 
 	/**
@@ -1716,6 +1824,41 @@ public class WPainter {
 					.of(WPaintDevice.ChangeFlag.Transform));
 		}
 	}
+
 	// private void drawMultilineText(final WRectF rect, EnumSet<AlignmentFlag>
 	// alignmentFlags, final CharSequence text) ;
+	static List<WString> splitLabel(CharSequence text) {
+		String s = text.toString();
+		List<String> splitText = new ArrayList<String>();
+		splitText = new ArrayList<String>(Arrays.asList(s.split("\n")));
+		List<WString> result = new ArrayList<WString>();
+		for (int i = 0; i < splitText.size(); ++i) {
+			result.add(new WString(splitText.get(i)));
+		}
+		return result;
+	}
+
+	static double calcYOffset(int lineNb, int nbLines, double lineHeight,
+			EnumSet<AlignmentFlag> verticalAlign) {
+		if (verticalAlign.equals(AlignmentFlag.AlignMiddle)) {
+			return -((nbLines - 1) * lineHeight / 2.0) + lineNb * lineHeight;
+		} else {
+			if (verticalAlign.equals(AlignmentFlag.AlignTop)) {
+				return lineNb * lineHeight;
+			} else {
+				if (verticalAlign.equals(AlignmentFlag.AlignBottom)) {
+					return -(nbLines - 1 - lineNb) * lineHeight;
+				} else {
+					return 0;
+				}
+			}
+		}
+	}
+
+	private static final double calcYOffset(int lineNb, int nbLines,
+			double lineHeight, AlignmentFlag verticalAlig,
+			AlignmentFlag... verticalAlign) {
+		return calcYOffset(lineNb, nbLines, lineHeight,
+				EnumSet.of(verticalAlig, verticalAlign));
+	}
 }

@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * The abstract base class for a user-interface component.
  * <p>
  * 
- * The user-interface is organized in a tree structure, in which each nodes is a
- * widgets. All widgets, except for the application&apos;s root widget and
+ * The user-interface is organized in a tree structure, in which each node is a
+ * widget. All widgets, except for the application&apos;s root widget and
  * dialogs, have a parent which is usually a {@link WContainerWidget}.
  * <p>
  * This is an abstract base class. Implementations derive either from the
@@ -1496,6 +1496,96 @@ public abstract class WWidget extends WObject {
 		return this.flags_.get(BIT_RESIZE_AWARE);
 	}
 
+	/**
+	 * Returns whether scroll visibility detection is enabled for this widget.
+	 * <p>
+	 * 
+	 * @see WWidget#setScrollVisibilityEnabled(boolean enabled)
+	 */
+	public abstract boolean isScrollVisibilityEnabled();
+
+	/**
+	 * Sets whether scroll visibility detection is enabled for this widget.
+	 * <p>
+	 * Disabled by default. When enabled, the client keeps track of whether this
+	 * widget is currently visible inside of the browser window. A widget is
+	 * &quot;scroll visible&quot; if it is currently visible according to
+	 * {@link WWidget#isVisible() isVisible()}, and its position is inside of
+	 * the browser window, with an extra margin determined by
+	 * {@link WWidget#getScrollVisibilityMargin() getScrollVisibilityMargin()}.
+	 * <p>
+	 * If scroll visibility changes, the
+	 * {@link WWidget#scrollVisibilityChanged() scrollVisibilityChanged()}
+	 * signal is fired, and {@link WWidget#isScrollVisible() isScrollVisible()}
+	 * is updated.
+	 * <p>
+	 * This feature can be useful to implement infinite scroll, where a sentinel
+	 * widget placed at the bottom of the page causes more content to be loaded
+	 * when it becomes visible, see the <code>infinite-scroll</code> example.
+	 * <p>
+	 * This feature can also be used to lazy load widgets when they become
+	 * visible.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If the widget is &quot;scroll visible&quot; when scroll
+	 * visibility detection is first enabled, the
+	 * {@link WWidget#scrollVisibilityChanged() scrollVisibilityChanged()}
+	 * signal will be emitted. If it is outside of the browser&apos;s viewport
+	 * when first enabled, the {@link WWidget#scrollVisibilityChanged()
+	 * scrollVisibilityChanged()} signal will not be emitted.
+	 * <p>
+	 * If scroll visibility is enabled, disabled, and then enabled again,
+	 * {@link WWidget#isScrollVisible() isScrollVisible()} may not be correctly
+	 * updated, and {@link WWidget#scrollVisibilityChanged()
+	 * scrollVisibilityChanged()} may not be correctly emitted, because then
+	 * {@link } can&apos;t properly keep track of the state that the widget is in
+	 * on the client side. This feature is not intended to be toggled on and
+	 * off, but rather enabled once and disabled once after that. </i>
+	 * </p>
+	 */
+	public abstract void setScrollVisibilityEnabled(boolean enabled);
+
+	/**
+	 * Returns the margin around the viewport within which the widget is
+	 * considered visible.
+	 * <p>
+	 * 
+	 * @see WWidget#setScrollVisibilityMargin(int margin)
+	 */
+	public abstract int getScrollVisibilityMargin();
+
+	/**
+	 * Sets the margin around the viewport within which the widget is considered
+	 * visible.
+	 * <p>
+	 * This causes the widget to be considered &quot;scroll visible&quot; before
+	 * it is within the viewport. Setting this margin could be useful to trigger
+	 * the loading of content before it is in view.
+	 */
+	public abstract void setScrollVisibilityMargin(int margin);
+
+	/**
+	 * {@link Signal} triggered when the scroll visibility of this widget
+	 * changes.
+	 * <p>
+	 * The boolean parameter indicates whether the widget is currently scroll
+	 * visible.
+	 * <p>
+	 * 
+	 * @see WWidget#setScrollVisibilityEnabled(boolean enabled)
+	 */
+	public abstract Signal1<Boolean> scrollVisibilityChanged();
+
+	/**
+	 * Returns whether this widget is currently considered scroll visible.
+	 * <p>
+	 * {@link WWidget#isScrollVisible() isScrollVisible()} is initially false.
+	 * <p>
+	 * 
+	 * @see WWidget#setScrollVisibilityEnabled(boolean enabled)
+	 */
+	public abstract boolean isScrollVisible();
+
 	DomElement createSDomElement(WApplication app) {
 		if (!this.isLoaded()) {
 			this.load();
@@ -1955,6 +2045,7 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_NEED_RERENDER_SIZE_CHANGE = 3;
 	private static final int BIT_HAS_PARENT = 4;
 	private static final int BIT_RESIZE_AWARE = 5;
+	private static final int BIT_SCROLL_VISIBILITY_ENABLED = 6;
 	private BitSet flags_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
 	private List<AbstractEventSignal> jsignals_;
