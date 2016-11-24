@@ -70,6 +70,9 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 			ss.append("new Wt3_3_6.WPaintedWidget(")
 					.append(app.getJavaScriptClass()).append(",")
 					.append(this.widget_.getJsRef()).append(");");
+			ss.append("new Wt3_3_6.WJavaScriptObjectStorage(")
+					.append(app.getJavaScriptClass()).append(",")
+					.append(this.widget_.getJsRef()).append(");");
 			this.widget_.jsObjects_.updateJs(ss);
 			el.callJavaScript(ss.toString());
 		}

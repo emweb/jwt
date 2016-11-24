@@ -42,6 +42,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.formObjectsChanged_ = true;
 		this.updateLayout_ = false;
 		this.wsRequestsToHandle_ = new ArrayList<Integer>();
+		this.multiSessionCookieUpdateNeeded_ = false;
 		this.collectedJS1_ = new StringBuilder();
 		this.collectedJS2_ = new StringBuilder();
 		this.invisibleJS_ = new StringBuilder();
@@ -153,7 +154,9 @@ class WebRenderer implements SlotLearnerInterface {
 				|| this.session_.getApp().internalPathIsChanged_
 				|| !(this.collectedJS1_.length() == 0)
 				|| !(this.collectedJS2_.length() == 0)
-				|| !(this.invisibleJS_.length() == 0);
+				|| !(this.invisibleJS_.length() == 0)
+				|| !this.wsRequestsToHandle_.isEmpty()
+				|| this.multiSessionCookieUpdateNeeded_;
 	}
 
 	public int getScriptId() {
@@ -406,6 +409,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private boolean formObjectsChanged_;
 	private boolean updateLayout_;
 	private List<Integer> wsRequestsToHandle_;
+	boolean multiSessionCookieUpdateNeeded_;
 
 	private void setHeaders(final WebResponse response, final String mimeType) {
 		for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it = this.cookiesToSet_
@@ -420,7 +424,7 @@ class WebRenderer implements SlotLearnerInterface {
 			header.append(Utils.urlEncode(i.getKey())).append('=')
 					.append(Utils.urlEncode(value)).append("; Version=1;");
 			if (!(cookie.expires == null)) {
-				String formatString = "EEE, dd-MMM-yyyy hh:mm:ss 'GMT'";
+				String formatString = "EEE, dd-MMM-yyyy HH:mm:ss 'GMT'";
 				String d = cookie.expires.toString(
 						new WString(formatString).toString(), false);
 				header.append("Expires=").append(d).append(';');
@@ -482,6 +486,7 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append(this.collectedJS1_.toString()).append(
 					this.collectedJS2_.toString());
 			if (response.isWebSocketMessage()) {
+				this.renderMultiSessionCookieUpdate(out);
 				this.renderWsRequestsDone(out);
 				logger.debug(new StringWriter().append(
 						"jsSynced(false) after rendering websocket message")
@@ -557,13 +562,14 @@ class WebRenderer implements SlotLearnerInterface {
 				deployPath = this.session_.getDeploymentPath();
 			}
 			script.setVar("DEPLOY_PATH", WWebWidget.jsStringLiteral(deployPath));
-			int keepAlive;
-			if (conf.getSessionTimeout() == -1) {
-				keepAlive = 1000000;
-			} else {
-				keepAlive = conf.getSessionTimeout() / 2;
-			}
-			script.setVar("KEEP_ALIVE", String.valueOf(keepAlive));
+			script.setVar(
+					"WS_PATH",
+					WWebWidget.jsStringLiteral(this.session_.getController()
+							.getContextPath() + "/ws"));
+			script.setVar("WS_ID",
+					WWebWidget.jsStringLiteral(String.valueOf(this.session_
+							.getController().getIdForWebSocket())));
+			script.setVar("KEEP_ALIVE", String.valueOf(conf.getKeepAlive()));
 			script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
 			script.setVar("SERVER_PUSH_TIMEOUT",
 					conf.getServerPushTimeout() * 1000);
@@ -1625,7 +1631,7 @@ class WebRenderer implements SlotLearnerInterface {
 		return StringUtils.replace(s, "<", "<'+'");
 	}
 
-	private void addWsRequestId(int wsRqId) {
+	void addWsRequestId(int wsRqId) {
 		this.wsRequestsToHandle_.add(wsRqId);
 	}
 
@@ -1641,6 +1647,24 @@ class WebRenderer implements SlotLearnerInterface {
 			}
 			out.append(");");
 			this.wsRequestsToHandle_.clear();
+		}
+	}
+
+	void updateMultiSessionCookie(final WebRequest request) {
+		final Configuration conf = this.session_.getController()
+				.getConfiguration();
+		this.setCookie("ms" + request.getScriptName(), this.session_
+				.getMultiSessionId(),
+				WDate.getCurrentDate().addSeconds(conf.getSessionTimeout()),
+				"", this.session_.getEnv().getDeploymentPath(), this.session_
+						.getEnv().getUrlScheme().equals("https"));
+	}
+
+	private void renderMultiSessionCookieUpdate(final StringBuilder out) {
+		if (this.multiSessionCookieUpdateNeeded_) {
+			out.append(this.session_.getApp().getJavaScriptClass()).append(
+					"._p_.refreshCookie();");
+			this.multiSessionCookieUpdateNeeded_ = false;
 		}
 	}
 

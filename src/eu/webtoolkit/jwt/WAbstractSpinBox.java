@@ -172,6 +172,10 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		super.refresh();
 	}
 
+	public JSignal2<Integer, Integer> jsValueChanged() {
+		return this.jsValueChanged_;
+	}
+
 	/**
 	 * Constructor.
 	 */
@@ -183,6 +187,9 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		this.setup_ = false;
 		this.prefix_ = new WString();
 		this.suffix_ = new WString();
+		this.jsValueChanged_ = new JSignal2<Integer, Integer>(this,
+				"spinboxValueChanged", true) {
+		};
 	}
 
 	/**
@@ -227,6 +234,20 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 				&& !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.setup();
 		}
+		if (this.jsValueChanged().needsUpdate(true)) {
+			StringBuilder function = new StringBuilder();
+			function.append("jQuery.data(" + this.getJsRef()
+					+ ",'obj').jsValueChanged=");
+			if (this.jsValueChanged().isConnected()) {
+				function.append("function(oldv, v){")
+						.append("var o=null;var e=null;")
+						.append(this.jsValueChanged().createCall("oldv", "v"))
+						.append("};");
+			} else {
+				function.append("function() {};");
+			}
+			this.doJavaScript(function.toString());
+		}
 		super.render(flags);
 	}
 
@@ -270,25 +291,29 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WSpinBox.js", wtjs1());
-		String jsObj = "new Wt3_3_6.WSpinBox("
-				+ app.getJavaScriptClass()
-				+ ","
-				+ this.getJsRef()
-				+ ","
-				+ String.valueOf(this.getDecimals())
-				+ ","
-				+ WString.toWString(this.getPrefix()).getJsStringLiteral()
-				+ ","
-				+ WString.toWString(this.getSuffix()).getJsStringLiteral()
-				+ ","
-				+ this.getJsMinMaxStep()
-				+ ","
-				+ jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils
-						.getCurrentLocale()))
-				+ ","
-				+ jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils
-						.getCurrentLocale())) + ");";
-		this.setJavaScriptMember(" WSpinBox", jsObj);
+		StringBuilder ss = new StringBuilder();
+		ss.append("new Wt3_3_6.WSpinBox(")
+				.append(app.getJavaScriptClass())
+				.append(",")
+				.append(this.getJsRef())
+				.append(",")
+				.append(this.getDecimals())
+				.append(",")
+				.append(WString.toWString(this.getPrefix())
+						.getJsStringLiteral())
+				.append(",")
+				.append(WString.toWString(this.getSuffix())
+						.getJsStringLiteral())
+				.append(",")
+				.append(this.getJsMinMaxStep())
+				.append(",")
+				.append(jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils
+						.getCurrentLocale())))
+				.append(",")
+				.append(jsStringLiteral(LocaleUtils
+						.getGroupSeparator(LocaleUtils.getCurrentLocale())))
+				.append(");");
+		this.setJavaScriptMember(" WSpinBox", ss.toString());
 	}
 
 	private void connectJavaScript(final AbstractEventSignal s,
@@ -343,11 +368,13 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		return valid;
 	}
 
+	private JSignal2<Integer, Integer> jsValueChanged_;
+
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSpinBox",
-				"function(A,c,t,g,f,k,l,m,p,q){function n(){return c.readOnly}function r(){var a=e.data(\"lobj\"),b=\"\";if(a!==undefined){b=a.getValue();if(b===\"\")b=g+\"0\"+f}else b=c.value;if(b.substr(0,g.length)==g){b=b.substr(g.length);if(b.length>f.length&&b.substr(b.length-f.length,f.length)==f){b=b.substr(0,b.length-f.length);if(q)b=b.split(q).join(\"\");b=b.replace(p,\".\");return Number(b)}}return null}function u(a){var b=e.data(\"lobj\");if(a>l)a=l;else if(a<k)a= k;a=a.toFixed(t);a=a.replace(\".\",p);var i=a.indexOf(p),h=\"\";if(i!==-1){for(var j=0;j<i;j++){h+=a.charAt(j);if(j<i-1&&(i-j-1)%3===0)h+=q}h+=a.substr(i)}else h=a;if(b!==undefined)b.setValue(g+h+f);else c.value=g+h+f;s=true}function w(){var a=r();if(a!==null){a+=m;u(a)}}function x(){var a=r();if(a!==null){a-=m;u(a)}}jQuery.data(c,\"obj\",this);var d=A.WT,e=$(c),o=null,y,s=false,z=null,v=false;this.setIsDoubleSpinBox=function(a){v=a;this.configure(t,g,f,k,l,m)};this.configure=function(a,b,i,h,j,B){t=a; g=b;f=i;k=h;l=j;m=B;z=new (v||typeof d.WIntValidator===\"undefined\"?d.WDoubleValidator:d.WIntValidator)(true,k,l,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+k,\"The number may be at most \"+l)};this.mouseOut=function(){e.removeClass(\"dn\").removeClass(\"up\")};this.mouseMove=function(a,b){if(!n())if(o){a=d.pageCoordinates(b).y-o.y;b=y;if(b!==null){b-=a*m;u(b)}}else{a=d.widgetCoordinates(c,b);if(e.hasClass(\"dn\")||e.hasClass(\"up\"))e.removeClass(\"dn\").removeClass(\"up\");if(a.x>c.offsetWidth- 16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?e.addClass(\"up\"):e.addClass(\"dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!n())if(c.style.cursor==\"crosshair\"){d.capture(null);d.capture(c);e.addClass(\"unselectable\");o=d.pageCoordinates(b);y=r()}else{a=d.widgetCoordinates(c,b);if(a.x>c.offsetWidth-16){d.cancelEvent(b);d.capture(c);e.addClass(\"unselectable\");a.y<c.offsetHeight/2?d.eventRepeat(function(){w()}): d.eventRepeat(function(){x()})}}};this.mouseUp=function(a){e.removeClass(\"unselectable\");if(!n()){if(s||o!=null){o=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!n())if(b.keyCode==40)d.eventRepeat(function(){x()});else b.keyCode==38&&d.eventRepeat(function(){w()})};this.keyUp=function(a){if(!n()){if(s){s=false;a.onchange()}d.stopRepeat()}};this.setLocale=function(a,b){p=a;q=b};this.validate=function(){var a=r();if(a===null)a=\"a\";return z.validate(a)};this.setIsDoubleSpinBox(v)}");
+				"function(C,c,u,j,g,e,i,n,q,r){function o(){return c.readOnly}function s(){var a=f.data(\"lobj\"),b=\"\";if(a!==undefined){b=a.getValue();if(b===\"\")b=j+\"0\"+g}else b=c.value;if(b.substr(0,j.length)==j){b=b.substr(j.length);if(b.length>g.length&&b.substr(b.length-g.length,g.length)==g){b=b.substr(0,b.length-g.length);if(r)b=b.split(r).join(\"\");b=b.replace(q,\".\");return Number(b)}}return null}function v(a){var b=f.data(\"lobj\");if(a>i)if(w){range=i-e; a=e+(a-e)%(range+1)}else a=i;else if(a<e)if(w){range=i-e;a=i-(Math.abs(a-e)-1)%(range+1)}else a=e;var h=a.toFixed(u);h=h.replace(\".\",q);var l=h.indexOf(q),k=\"\";if(l!==-1){for(var m=0;m<l;m++){k+=h.charAt(m);if(m<l-1&&(l-m-1)%3===0)k+=r}k+=h.substr(l)}else k=h;h=c.value;if(b!==undefined)b.setValue(j+k+g);else c.value=j+k+g;t=true;D.jsValueChanged(h,a)}function y(){var a=s();if(a!==null){a+=n;v(a)}}function z(){var a=s();if(a!==null){a-=n;v(a)}}jQuery.data(c,\"obj\",this);var D=this,d=C.WT,f=$(c),p=null, A,t=false,B=null,x=false,w=false;this.setIsDoubleSpinBox=function(a){x=a;this.configure(u,j,g,e,i,n)};this.setWrapAroundEnabled=function(a){w=a};this.configure=function(a,b,h,l,k,m){u=a;j=b;g=h;e=l;i=k;n=m;B=new (x||typeof d.WIntValidator===\"undefined\"?d.WDoubleValidator:d.WIntValidator)(true,e,i,\"Must be a number\",\"Must be a number\",\"The number must be at least \"+e,\"The number may be at most \"+i)};this.mouseOut=function(){f.removeClass(\"dn\").removeClass(\"up\")};this.mouseMove=function(a,b){if(!o())if(p){a= d.pageCoordinates(b).y-p.y;b=A;if(b!==null){b-=a*n;v(b)}}else{a=d.widgetCoordinates(c,b);if(f.hasClass(\"dn\")||f.hasClass(\"up\"))f.removeClass(\"dn\").removeClass(\"up\");if(a.x>c.offsetWidth-16){b=c.offsetHeight/2;if(a.y>=b-1&&a.y<=b+1)c.style.cursor=\"crosshair\";else{c.style.cursor=\"default\";a.y<b-1?f.addClass(\"up\"):f.addClass(\"dn\")}}else if(c.style.cursor!=\"\")c.style.cursor=\"\"}};this.mouseDown=function(a,b){d.capture(null);if(!o())if(c.style.cursor==\"crosshair\"){d.capture(null);d.capture(c);f.addClass(\"unselectable\"); p=d.pageCoordinates(b);A=s()}else{a=d.widgetCoordinates(c,b);if(a.x>c.offsetWidth-16){d.cancelEvent(b);d.capture(c);f.addClass(\"unselectable\");a.y<c.offsetHeight/2?d.eventRepeat(function(){y()}):d.eventRepeat(function(){z()})}}};this.mouseUp=function(a){f.removeClass(\"unselectable\");if(!o()){if(t||p!=null){p=null;a.onchange()}d.stopRepeat()}};this.keyDown=function(a,b){if(!o())if(b.keyCode==40)d.eventRepeat(function(){z()});else b.keyCode==38&&d.eventRepeat(function(){y()})};this.keyUp=function(a){if(!o()){if(t){t= false;a.onchange()}d.stopRepeat()}};this.setLocale=function(a,b){q=a;r=b};this.validate=function(){var a=s();if(a===null)a=\"a\";return B.validate(a)};this.jsValueChanged=function(){};this.setIsDoubleSpinBox(x)}");
 	}
 }

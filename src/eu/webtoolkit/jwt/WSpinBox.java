@@ -52,6 +52,7 @@ public class WSpinBox extends WAbstractSpinBox {
 		this.min_ = 0;
 		this.max_ = 99;
 		this.step_ = 1;
+		this.wrapAroundEnabled_ = false;
 		this.valueChanged_ = new Signal1<Integer>(this);
 		this.setValidator(this.createValidator());
 		this.setValue(0);
@@ -180,6 +181,31 @@ public class WSpinBox extends WAbstractSpinBox {
 	}
 
 	/**
+	 * Sets if this spinbox wraps around to stay in the valid range.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Not supported by the native controls. </i>
+	 * </p>
+	 */
+	public void setWrapAroundEnabled(boolean enabled) {
+		if (this.wrapAroundEnabled_ != enabled) {
+			this.wrapAroundEnabled_ = enabled;
+			this.changed_ = true;
+			this.repaint();
+		}
+	}
+
+	/**
+	 * Returns if the spinbox wraps around.
+	 * <p>
+	 * 
+	 * @see WSpinBox#setWrapAroundEnabled(boolean enabled)
+	 */
+	public boolean isWrapAroundEnabled() {
+		return this.wrapAroundEnabled_;
+	}
+
+	/**
 	 * A signal that indicates when the value has changed.
 	 * <p>
 	 * This signal is emitted when {@link WSpinBox#setValue(int value)
@@ -201,6 +227,10 @@ public class WSpinBox extends WAbstractSpinBox {
 			} else {
 				final WIntValidator v = new WIntValidator();
 				v.getJavaScriptValidate();
+				this.doJavaScript("jQuery.data(" + this.getJsRef() + ", 'obj')"
+						+ ".setWrapAroundEnabled("
+						+ (this.isWrapAroundEnabled() ? "true" : "false")
+						+ ");");
 			}
 		}
 		super.updateDom(element, all);
@@ -275,6 +305,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	private int min_;
 	private int max_;
 	private int step_;
+	private boolean wrapAroundEnabled_;
 	private Signal1<Integer> valueChanged_;
 
 	private void onChange() {

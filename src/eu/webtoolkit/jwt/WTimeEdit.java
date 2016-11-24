@@ -49,6 +49,7 @@ public class WTimeEdit extends WLineEdit {
 						WTimeEdit.this.setFromTimePicker();
 					}
 				});
+		this.timePicker_.setWrapAroundEnabled(true);
 	}
 
 	/**
@@ -189,6 +190,46 @@ public class WTimeEdit extends WLineEdit {
 			return tv.getTop();
 		}
 		return null;
+	}
+
+	public void setHourStep(int step) {
+		this.timePicker_.setHourStep(step);
+	}
+
+	public int getHourStep() {
+		return this.timePicker_.getHourStep();
+	}
+
+	public void setMinuteStep(int step) {
+		this.timePicker_.setMinuteStep(step);
+	}
+
+	public int getMinuteStep() {
+		return this.timePicker_.getMinuteStep();
+	}
+
+	public void setSecondStep(int step) {
+		this.timePicker_.setSecondStep(step);
+	}
+
+	public int getSecondStep() {
+		return this.timePicker_.getSecondStep();
+	}
+
+	public void setMillisecondStep(int step) {
+		this.timePicker_.setMillisecondStep(step);
+	}
+
+	public int getMillisecondStep() {
+		return this.timePicker_.getMillisecondStep();
+	}
+
+	public void setWrapAroundEnabled(boolean enabled) {
+		this.timePicker_.setWrapAroundEnabled(enabled);
+	}
+
+	public boolean isWrapAroundEnabled() {
+		return this.timePicker_.isWrapAroundEnabled();
 	}
 
 	public void load() {

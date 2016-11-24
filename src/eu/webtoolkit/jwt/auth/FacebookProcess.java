@@ -59,7 +59,7 @@ class FacebookProcess extends OAuthProcess {
 			} else {
 				String id = me.get("id").getAsString();
 				String userName = me.get("name").getAsString();
-				String email = me.get("email").getAsString();
+				String email = JsonUtils.orIfNullString(me.get("email"), "");
 				boolean emailVerified = JsonUtils.orIfNullBoolean(
 						me.get("verified"), false);
 				this.authenticated().trigger(

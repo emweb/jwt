@@ -378,6 +378,9 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 						sourceParent);
 			}
 		}
+		if (!(startIndex != null)) {
+			return;
+		}
 		for (Iterator<Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem>> it_it = items
 				.tailMap(startIndex).entrySet().iterator(); it_it.hasNext();) {
 			Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> it = it_it

@@ -1022,11 +1022,18 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the column border color.
+	 * Sets the column border color (deprecated).
 	 * <p>
-	 * The default border color is defined by the CSS theme.
+	 * This method has no effect. The border color should be set using CSS.
+	 * <p>
+	 * 
+	 * @deprecated
 	 */
-	public abstract void setColumnBorder(final WColor color);
+	public void setColumnBorder(final WColor anon1) {
+		logger.warn(new StringWriter()
+				.append("setColumnBorder has no effect and has been deprecated. Use CSS instead!")
+				.toString());
+	}
 
 	/**
 	 * Sets the header height.
@@ -1462,6 +1469,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
+	 * Signal emitted when a finger is placed on the screen.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * item that was touched.
+	 */
+	public Signal2<WModelIndex, WTouchEvent> touchStart() {
+		return this.touchStart_;
+	}
+
+	/**
 	 * Signal emitted when the selection is changed.
 	 * <p>
 	 * 
@@ -1739,12 +1756,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentUp_ = new Signal2<WModelIndex, WMouseEvent>(this);
+		this.touchStart_ = new Signal2<WModelIndex, WTouchEvent>(this);
 		this.selectionChanged_ = new Signal(this);
 		this.pageChanged_ = new Signal(this);
 		this.editTriggers_ = EnumSet
 				.of(WAbstractItemView.EditTrigger.DoubleClicked);
 		this.editOptions_ = EnumSet
 				.of(WAbstractItemView.EditOption.SingleEditor);
+		this.touchRegistered_ = false;
 		this.setImplementation(this.impl_);
 		this.setItemDelegate(new WItemDelegate(this));
 		this.setHeaderItemDelegate(new WItemDelegate(this));
@@ -2301,6 +2320,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * signal.
 	 */
 	void handleMouseDown(final WModelIndex index, final WMouseEvent event) {
+		if (this.touchRegistered_) {
+			return;
+		}
 		boolean doEdit = (index != null)
 				&& !EnumUtils.mask(this.getEditTriggers(),
 						WAbstractItemView.EditTrigger.SelectedClicked)
@@ -2314,6 +2336,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.edit(index);
 		}
 		this.mouseWentDown_.trigger(index, event);
+		this.touchRegistered_ = false;
 	}
 
 	/**
@@ -2324,6 +2347,30 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	void handleMouseUp(final WModelIndex index, final WMouseEvent event) {
 		this.mouseWentUp_.trigger(index, event);
+	}
+
+	/**
+	 * Handles a touch started event.
+	 */
+	protected void handleTouchStart(final List<WModelIndex> indices,
+			final WTouchEvent event) {
+		final WModelIndex index = indices.get(0);
+		this.touchRegistered_ = true;
+		this.delayedClearAndSelectIndex_ = null;
+		if (indices.size() == 1) {
+			boolean doEdit = (index != null)
+					&& !EnumUtils.mask(this.getEditTriggers(),
+							WAbstractItemView.EditTrigger.SelectedClicked)
+							.isEmpty() && this.isSelected(index);
+			if (doEdit) {
+				this.edit(index);
+			}
+		}
+		if ((indices.get(0) != null)
+				&& (indices.get(indices.size() - 1) != null)) {
+			this.selectionHandleTouch(indices, event);
+		}
+		this.touchStart_.trigger(index, event);
 	}
 
 	boolean internalSelect(final WModelIndex index, SelectionFlag option) {
@@ -2579,10 +2626,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private Signal2<WModelIndex, WMouseEvent> doubleClicked_;
 	private Signal2<WModelIndex, WMouseEvent> mouseWentDown_;
 	private Signal2<WModelIndex, WMouseEvent> mouseWentUp_;
+	private Signal2<WModelIndex, WTouchEvent> touchStart_;
 	private Signal selectionChanged_;
 	private Signal pageChanged_;
 	private EnumSet<WAbstractItemView.EditTrigger> editTriggers_;
 	private EnumSet<WAbstractItemView.EditOption> editOptions_;
+	private boolean touchRegistered_;
 
 	private void closeEditorWidget(WWidget editor, boolean saveData) {
 		for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it = this.editedItems_
@@ -2690,6 +2739,36 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		selectionHandleClick(index, EnumSet.of(modifier, modifiers));
 	}
 
+	private void selectionHandleTouch(final List<WModelIndex> indices,
+			final WTouchEvent event) {
+		if (this.selectionMode_ == SelectionMode.NoSelection) {
+			return;
+		}
+		final WModelIndex index = indices.get(0);
+		if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
+			if (event.getTouches().size() > 1) {
+				this.extendSelection(indices);
+			} else {
+				if (!this.dragEnabled_) {
+					this.select(index, SelectionFlag.ToggleSelect);
+				} else {
+					if (!this.isSelected(index)) {
+						this.select(index, SelectionFlag.ToggleSelect);
+					} else {
+						this.delayedClearAndSelectIndex_ = index;
+					}
+				}
+			}
+		} else {
+			if (this.isSelected(index)) {
+				this.clearSelection();
+				this.selectionChanged_.trigger();
+			} else {
+				this.select(index, SelectionFlag.ClearAndSelect);
+			}
+		}
+	}
+
 	private void extendSelection(final WModelIndex index) {
 		if (this.selectionModel_.selection_.isEmpty()) {
 			this.internalSelect(index, SelectionFlag.Select);
@@ -2700,14 +2779,27 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 						index.getParent()));
 				return;
 			}
-			WModelIndex top = this.selectionModel_.selection_.iterator().next();
-			if (top.compareTo(index) < 0) {
-				this.clearSelection();
-				this.selectRange(top, index);
+		}
+		WModelIndex top = this.selectionModel_.selection_.iterator().next();
+		if (top.compareTo(index) < 0) {
+			this.clearSelection();
+			this.selectRange(top, index);
+		} else {
+			WModelIndex bottom = this.selectionModel_.selection_.last();
+			this.clearSelection();
+			this.selectRange(index, bottom);
+		}
+		this.selectionChanged_.trigger();
+	}
+
+	private void extendSelection(final List<WModelIndex> indices) {
+		final WModelIndex firstIndex = indices.get(0);
+		final WModelIndex secondIndex = indices.get(indices.size() - 1);
+		if (indices.size() > 1) {
+			if (firstIndex.getRow() > secondIndex.getRow()) {
+				this.selectRange(secondIndex, firstIndex);
 			} else {
-				WModelIndex bottom = this.selectionModel_.selection_.last();
-				this.clearSelection();
-				this.selectRange(index, bottom);
+				this.selectRange(firstIndex, secondIndex);
 			}
 		}
 		this.selectionChanged_.trigger();

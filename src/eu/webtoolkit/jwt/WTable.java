@@ -179,8 +179,8 @@ public class WTable extends WInteractWidget {
 			tableRow = this.createRow(row);
 		}
 		tableRow.table_ = this;
-		tableRow.expand(this.getColumnCount());
 		this.rows_.add(0 + row, tableRow);
+		tableRow.expand(this.getColumnCount());
 		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
 		return tableRow;
 	}

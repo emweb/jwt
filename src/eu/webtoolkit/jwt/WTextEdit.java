@@ -475,8 +475,20 @@ public class WTextEdit extends WTextArea {
 					tinyMCEURL);
 			if (tinyMCEURL.length() == 0) {
 				int version = getTinyMCEVersion();
-				String folder = version == 3 ? "tiny_mce/" : "tinymce/";
-				String jsFile = version == 3 ? "tiny_mce.js" : "tinymce.js";
+				String folder = "";
+				String jsFile = "";
+				if (version < 3) {
+					folder = "tinymce/";
+					jsFile = "tinymce.js";
+				} else {
+					if (version == 3) {
+						folder = "tiny_mce/";
+						jsFile = "tiny_mce.js";
+					} else {
+						folder = "tinymce/";
+						jsFile = "tinymce.min.js";
+					}
+				}
 				String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl()
 						+ folder;
 				tinyMCEBaseURL = WApplication.readConfigurationProperty(

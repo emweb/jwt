@@ -287,7 +287,7 @@ public class WColor {
 				&& this.name_.equals(other.name_);
 	}
 
-	String getCssText(boolean withAlpha) {
+	public final String getCssText(boolean withAlpha) {
 		if (this.default_) {
 			return "";
 		} else {

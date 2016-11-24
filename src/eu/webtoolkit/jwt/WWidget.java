@@ -650,6 +650,15 @@ public abstract class WWidget extends WObject {
 	 * descendant widgets that are not hidden will be shown. A widget is only
 	 * visible if it and all its ancestors in the widget tree are visible, which
 	 * may be checked using {@link WWidget#isVisible() isVisible()}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>{@link WWidget#hide() hide()} and {@link WWidget#show()
+	 * show()} are considered to be stateless slots by default. If you override
+	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
+	 * setHidden()} and need to modify server state whenever it is called,
+	 * you&apos;ll need to call {@link WObject#isNotStateless()
+	 * WObject#isNotStateless()}. </i>
+	 * </p>
 	 */
 	public abstract void setHidden(boolean hidden, final WAnimation animation);
 
@@ -703,6 +712,14 @@ public abstract class WWidget extends WObject {
 	 * Typically, a disabled form widget will not allow changing the value, and
 	 * disabled widgets will not react to mouse click events.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>{@link WWidget#enable() enable()} and
+	 * {@link WWidget#disable() disable()} are considered to be stateless slots
+	 * by default. If you override {@link WWidget#setDisabled(boolean disabled)
+	 * setDisabled()} and need to modify server state whenever it is called,
+	 * you&apos;ll need to call {@link WObject#isNotStateless()
+	 * WObject#isNotStateless()}.</i>
+	 * </p>
 	 * 
 	 * @see WWidget#disable()
 	 * @see WWidget#enable()
@@ -1240,6 +1257,12 @@ public abstract class WWidget extends WObject {
 					new Signal3.Listener<String, String, WMouseEvent>() {
 						public void trigger(String e1, String e2, WMouseEvent e3) {
 							WWidget.this.getDrop(e1, e2, e3);
+						}
+					});
+			thisWebWidget.otherImpl_.dropSignal2_.addListener(this,
+					new Signal3.Listener<String, String, WTouchEvent>() {
+						public void trigger(String e1, String e2, WTouchEvent e3) {
+							WWidget.this.getDropTouch(e1, e2, e3);
 						}
 					});
 		}
@@ -1817,6 +1840,13 @@ public abstract class WWidget extends WObject {
 	protected abstract void propagateSetVisible(boolean visible);
 
 	void getDrop(final String sourceId, final String mimeType, WMouseEvent event) {
+		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
+				sourceId), mimeType, event);
+		this.dropEvent(e);
+	}
+
+	protected void getDropTouch(final String sourceId, final String mimeType,
+			WTouchEvent event) {
 		WDropEvent e = new WDropEvent(WApplication.getInstance().decodeObject(
 				sourceId), mimeType, event);
 		this.dropEvent(e);

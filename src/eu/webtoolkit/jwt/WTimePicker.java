@@ -37,6 +37,7 @@ public class WTimePicker extends WCompositeWidget {
 		super(parent);
 		this.format_ = "";
 		this.selectionChanged_ = new Signal(this);
+		this.toggleAmPm_ = new JSlot(2, this);
 		this.init();
 	}
 
@@ -57,6 +58,7 @@ public class WTimePicker extends WCompositeWidget {
 		super(parent);
 		this.format_ = "";
 		this.selectionChanged_ = new Signal();
+		this.toggleAmPm_ = new JSlot(2, this);
 		this.init(time);
 	}
 
@@ -78,6 +80,7 @@ public class WTimePicker extends WCompositeWidget {
 		this.format_ = "";
 		this.timeEdit_ = timeEdit;
 		this.selectionChanged_ = new Signal();
+		this.toggleAmPm_ = new JSlot(2, this);
 		this.init();
 	}
 
@@ -100,6 +103,7 @@ public class WTimePicker extends WCompositeWidget {
 		this.format_ = "";
 		this.timeEdit_ = timeEdit;
 		this.selectionChanged_ = new Signal();
+		this.toggleAmPm_ = new JSlot(2, this);
 		this.init(time);
 	}
 
@@ -207,12 +211,65 @@ public class WTimePicker extends WCompositeWidget {
 		return this.selectionChanged_;
 	}
 
+	public void setHourStep(int step) {
+		this.sbhour_.setSingleStep(step);
+	}
+
+	public int getHourStep() {
+		return this.sbhour_.getSingleStep();
+	}
+
+	public void setMinuteStep(int step) {
+		this.sbminute_.setSingleStep(step);
+	}
+
+	public int getMinuteStep() {
+		return this.sbminute_.getSingleStep();
+	}
+
+	public void setSecondStep(int step) {
+		this.sbsecond_.setSingleStep(step);
+	}
+
+	public int getSecondStep() {
+		return this.sbsecond_.getSingleStep();
+	}
+
+	public void setMillisecondStep(int step) {
+		this.sbmillisecond_.setSingleStep(step);
+	}
+
+	public int getMillisecondStep() {
+		return this.sbmillisecond_.getSingleStep();
+	}
+
+	public void setWrapAroundEnabled(boolean enabled) {
+		this.sbhour_.setWrapAroundEnabled(enabled);
+		this.sbminute_.setWrapAroundEnabled(enabled);
+		this.sbsecond_.setWrapAroundEnabled(enabled);
+		this.sbmillisecond_.setWrapAroundEnabled(enabled);
+		if (enabled) {
+			this.sbhour_.jsValueChanged().addListener(this.toggleAmPm_);
+		} else {
+			this.sbhour_.jsValueChanged().removeListener(this.toggleAmPm_);
+		}
+	}
+
+	public boolean isWrapAroundEnabled() {
+		return this.sbhour_.isWrapAroundEnabled();
+	}
+
 	public void configure() {
 		WTemplate container = ((this.getImplementation()) instanceof WTemplate ? (WTemplate) (this
 				.getImplementation()) : null);
 		container.bindWidget("hour", this.sbhour_);
 		container.bindWidget("minute", this.sbminute_);
-		container.bindWidget("second", this.sbsecond_);
+		if (this.isFormatS()) {
+			container.bindWidget("second", this.sbsecond_);
+		} else {
+			container.takeWidget("second");
+			container.bindEmpty("second");
+		}
 		if (this.isFormatMs()) {
 			container.bindWidget("millisecond", this.sbmillisecond_);
 		} else {
@@ -295,6 +352,15 @@ public class WTimePicker extends WCompositeWidget {
 				WTimePicker.this.ampmValueChanged();
 			}
 		});
+		StringBuilder jsValueChanged = new StringBuilder();
+		jsValueChanged.append("function(o,e,oldv,v){").append("var obj = ")
+				.append(this.cbAP_.getJsRef()).append(";").append("if(obj){")
+				.append("if (v==12 && oldv==11) {")
+				.append("obj.selectedIndex = (obj.selectedIndex + 1) % 2;")
+				.append("}").append("if (v==11 && oldv==12) {")
+				.append("obj.selectedIndex = (obj.selectedIndex + 1) % 2;")
+				.append("}").append("}").append("}");
+		this.toggleAmPm_.setJavaScript(jsValueChanged.toString());
 	}
 
 	private void hourValueChanged() {
@@ -337,5 +403,12 @@ public class WTimePicker extends WCompositeWidget {
 				format).getMsec() == 123;
 	}
 
+	private boolean isFormatS() {
+		String format = this.timeEdit_.getFormat();
+		return WTime.fromString(new WTime(4, 5, 6, 123).toString(format),
+				format).getSecond() == 6;
+	}
+
 	private Signal selectionChanged_;
+	private JSlot toggleAmPm_;
 }

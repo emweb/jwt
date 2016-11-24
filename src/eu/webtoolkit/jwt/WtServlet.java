@@ -27,14 +27,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+import javax.websocket.Endpoint;
+import javax.websocket.WebSocketContainer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.servlet.WebRequest.ProgressListener;
-import eu.webtoolkit.jwt.utils.JarUtils;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
 
@@ -93,6 +94,8 @@ public abstract class WtServlet extends HttpServlet {
 	
 	private List<WResource> staticResources = new ArrayList<WResource>();
 
+	private int idForWebSocket = -1;
+
 	static final String Boot_html;
 	static final String Plain_html;
 	static final String Wt_js;
@@ -149,7 +152,7 @@ public abstract class WtServlet extends HttpServlet {
 	 * @see #getConfiguration()
 	 */
 	public WtServlet() {
-		this.progressListener = new ProgressListener() {
+        this.progressListener = new ProgressListener() {
 			public void update(WebRequest request, long pBytesRead, long pContentLength) {
 				requestDataReceived(request, pBytesRead, pContentLength);
 			}
@@ -160,7 +163,7 @@ public abstract class WtServlet extends HttpServlet {
 		redirectSecret_ = MathUtils.randomId(32);
 		
 		if (instance == null)
-			instance = this;
+			instance = this;		
 	}
 	
 	/**
@@ -178,6 +181,11 @@ public abstract class WtServlet extends HttpServlet {
 			this.configuration = new Configuration(new File(configFile));
 		
 		servletApi = ServletInit.getInstance(config.getServletContext()).getServletApi();
+		
+		if (getConfiguration().webSockets()) {
+			if (this.idForWebSocket < 0)
+				this.idForWebSocket = WebSocketRegistry.getInstance().addServlet(this);
+		}
 	}
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
@@ -512,7 +520,7 @@ public abstract class WtServlet extends HttpServlet {
 		}
 	}
 
-    public boolean limitPlainHtmlSessions() {
+    boolean limitPlainHtmlSessions() {
     	return false; // FIXME
 	}
 	
@@ -524,12 +532,12 @@ public abstract class WtServlet extends HttpServlet {
 			return result;
 	}
 	
-	private InputStream getResourceStream(final String fileName) throws FileNotFoundException {
-		return this.getClass().getResourceAsStream("/eu/webtoolkit/jwt/" + fileName);
+	private InputStream getResourceStream(final String fileName) throws IOException {
+		return FileUtils.getResourceAsStream("/eu/webtoolkit/jwt/" + fileName);
 	}
 
 	private static String readFile(final String fileName) {
-		return JarUtils.getInstance().readTextFromJar(fileName);
+		return FileUtils.resourceToString(fileName);
 	}
 
 	String computeRedirectHash(String url) {
@@ -569,5 +577,17 @@ public abstract class WtServlet extends HttpServlet {
 	
 	public static WtServlet getInstance() {
 		return instance;
+	}
+	
+	WebSession getSession(String name) {
+		return sessions.get(name);
+	}
+	
+	int getIdForWebSocket() {
+		return idForWebSocket;
+	}
+	
+	String getContextPath() {
+		return getServletContext().getContextPath();
 	}
 }

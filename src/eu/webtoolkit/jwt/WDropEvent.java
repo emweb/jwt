@@ -29,6 +29,27 @@ public class WDropEvent {
 	private static Logger logger = LoggerFactory.getLogger(WDropEvent.class);
 
 	/**
+	 * The type of the original event.
+	 */
+	public enum OriginalEventType {
+		/**
+		 * The original event was a {@link WMouseEvent}.
+		 */
+		MouseEvent,
+		/**
+		 * The original event was a {@link WTouchEvent}.
+		 */
+		TouchEvent;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	/**
 	 * Constructor.
 	 */
 	public WDropEvent(WObject source, final String mimeType,
@@ -36,6 +57,18 @@ public class WDropEvent {
 		this.dropSource_ = source;
 		this.dropMimeType_ = mimeType;
 		this.mouseEvent_ = mouseEvent;
+		this.touchEvent_ = null;
+	}
+
+	/**
+	 * Constructor.
+	 */
+	public WDropEvent(WObject source, final String mimeType,
+			final WTouchEvent touchEvent) {
+		this.dropSource_ = source;
+		this.dropMimeType_ = mimeType;
+		this.mouseEvent_ = null;
+		this.touchEvent_ = touchEvent;
 	}
 
 	/**
@@ -58,14 +91,36 @@ public class WDropEvent {
 
 	/**
 	 * Returns the original mouse event.
+	 * <p>
+	 * If eventType() == MouseEvent, this returns the original mouse event,
+	 * otherwise this returns null.
 	 */
 	public WMouseEvent getMouseEvent() {
 		return this.mouseEvent_;
 	}
 
+	/**
+	 * Returns the original touch event.
+	 * <p>
+	 * If eventType() == TouchEvent, this returns the original touch event,
+	 * otherwise this returns null.
+	 */
+	public WTouchEvent getTouchEvent() {
+		return this.touchEvent_;
+	}
+
+	/**
+	 * Returns the type of the original event.
+	 */
+	public WDropEvent.OriginalEventType getOriginalEventType() {
+		return this.mouseEvent_ != null ? WDropEvent.OriginalEventType.MouseEvent
+				: WDropEvent.OriginalEventType.TouchEvent;
+	}
+
 	private WObject dropSource_;
 	private String dropMimeType_;
-	private final WMouseEvent mouseEvent_;
+	private WMouseEvent mouseEvent_;
+	private WTouchEvent touchEvent_;
 
 	static String concat(final String prefix, int prefixLength, String s2) {
 		return prefix + s2;

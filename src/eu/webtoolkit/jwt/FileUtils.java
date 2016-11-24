@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 
 public class FileUtils {
@@ -82,9 +81,12 @@ public class FileUtils {
 	 *  - a file path
 	 */
 	public static String resourceToString(String path) {
+		InputStream is = null;
+		Scanner s = null;
 		try {
-			InputStream is = getResourceAsStream(path);
-			Scanner s = new Scanner(is, "UTF-8").useDelimiter("\\Z");
+			is = getResourceAsStream(path);
+			s = new Scanner(is, "UTF-8");
+			s.useDelimiter("\\Z");
 			String str = new String();
 			while (s.hasNext())
 				str = str + s.next();
@@ -92,6 +94,16 @@ public class FileUtils {
 		} catch (IOException e) {
 			System.err.println("resourceToString: " + e.getMessage());
 			return null;
+		} finally {
+			try {
+				if (is != null)
+					is.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			if (s != null)
+				s.close();
 		}
 	}
 

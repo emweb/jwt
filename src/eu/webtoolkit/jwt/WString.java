@@ -330,7 +330,7 @@ public class WString implements Comparable<WString>, CharSequence {
 		return getValue();
 	}
 
-	private static List<WString> stArguments;
+	private static List<WString> stArguments = new ArrayList<WString>();
 
 	/**
 	 * Converts a CharSequence to a WString.

@@ -105,24 +105,20 @@ public abstract class WResource extends WObject {
 	 * @return the url.
 	 */
 	public String generateUrl() {
-		if (currentUrl_ == null) {
-			WApplication app = WApplication.getInstance();
-			if (app != null)	
-				currentUrl_ = app.addExposedResource(this);
-			else
-				currentUrl_ = "";
-		} else {
-			if (trackUploadProgress_) {
+		WApplication app = WApplication.getInstance();
+		
+		if (app != null) {
+			if (currentUrl_ != null && trackUploadProgress_) {
 				WtServlet c = WebSession.getInstance().getController();
 				c.removeUploadProgressUrl(getUrl());
 			}
-			int randPos = currentUrl_.lastIndexOf('=') + 1;
-			currentUrl_ = currentUrl_.substring(0, randPos)
-				+ (Integer.valueOf(currentUrl_.substring(randPos)) + 1);
+			currentUrl_ = app.addExposedResource(this);
 			if (trackUploadProgress_) {
 				WtServlet c = WebSession.getInstance().getController();
 				c.addUploadProgressUrl(getUrl());
 			}
+		} else {
+			currentUrl_ = internalPath_;
 		}
 		return currentUrl_;
 	}

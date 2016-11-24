@@ -443,19 +443,22 @@ public class WCalendar extends WCompositeWidget {
 	}
 
 	/**
-	 * Configures the calendar to use single click for activation
-	 * (<b>deprecated</b>).
+	 * Configures the calendar to use single click for activation.
 	 * <p>
 	 * By default, double click will trigger activate(). Use this method if you
 	 * want a single click to trigger activate() (and the now deprecated
 	 * {@link WCalendar#selected() selected()} method). This only applies to a
 	 * single-selection calendar.
 	 * <p>
+	 * If selectionMode() is set to {@link SelectionMode#SingleSelection
+	 * SingleSelection}, this will cause the selection to change on a single
+	 * click instead of a double click.
+	 * <p>
 	 * Instead of enabling single click, you can also listen to the
 	 * {@link WCalendar#clicked() clicked()} signal to process a single click.
 	 * <p>
 	 * 
-	 * @see WCalendar#setMultipleSelection(boolean multiple)
+	 * @see WCalendar#setSelectionMode(SelectionMode mode)
 	 */
 	public void setSingleClickSelect(boolean single) {
 		this.singleClickSelect_ = single;

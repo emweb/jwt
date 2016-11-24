@@ -41,6 +41,7 @@ public class WDateEdit extends WLineEdit {
 	public WDateEdit(WContainerWidget parent) {
 		super(parent);
 		this.popup_ = null;
+		this.customFormat_ = false;
 		this.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WDateEdit.this.setFromLineEdit();
@@ -60,7 +61,8 @@ public class WDateEdit extends WLineEdit {
 						WDateEdit.this.setFromCalendar();
 					}
 				});
-		this.setValidator(new WDateValidator("dd/MM/yyyy", this));
+		this.setValidator(new WDateValidator(LocaleUtils
+				.getDateFormat(WApplication.getInstance().getLocale()), this));
 	}
 
 	/**
@@ -128,7 +130,7 @@ public class WDateEdit extends WLineEdit {
 	 * <p>
 	 * This sets the format in the validator.
 	 * <p>
-	 * The default format is <code>&apos;dd/MM/yyyy&apos;</code>.
+	 * The default format is based on the current {@link WLocale}.
 	 * <p>
 	 * 
 	 * @see WDateValidator#setFormat(String format)
@@ -139,6 +141,7 @@ public class WDateEdit extends WLineEdit {
 			WDate d = this.getDate();
 			dv.setFormat(format);
 			this.setDate(d);
+			this.customFormat_ = true;
 		} else {
 			logger.warn(new StringWriter()
 					.append("setFormat() ignored since validator is not a WDateValidator")
@@ -270,6 +273,21 @@ public class WDateEdit extends WLineEdit {
 		});
 	}
 
+	public void refresh() {
+		super.refresh();
+		WDateValidator dv = this.getValidator();
+		if (!this.customFormat_ && dv != null) {
+			WDate d = this.getDate();
+			dv.setFormat(LocaleUtils.getDateFormat(WApplication.getInstance()
+					.getLocale()));
+			this.setDate(d);
+		} else {
+			logger.warn(new StringWriter()
+					.append("setFormat() ignored since validator is not a WDateValidator")
+					.toString());
+		}
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
@@ -277,7 +295,6 @@ public class WDateEdit extends WLineEdit {
 			if (dv != null) {
 				this.setTop(dv.getTop());
 				this.setBottom(dv.getBottom());
-				this.setFormat(dv.getFormat());
 			}
 		}
 		super.render(flags);
@@ -320,6 +337,7 @@ public class WDateEdit extends WLineEdit {
 
 	private WPopupWidget popup_;
 	private WCalendar calendar_;
+	private boolean customFormat_;
 
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();

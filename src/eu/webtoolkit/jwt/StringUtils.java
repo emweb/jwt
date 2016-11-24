@@ -480,4 +480,10 @@ public class StringUtils {
 	    
 	    return encodedString;
 	}
+
+	static String unicodeSubstring(String string, int start, int end) {
+	    int s = string.offsetByCodePoints(0, start);
+	    int e = string.offsetByCodePoints(s, end - start);
+	    return string.substring(s, e);
+	}
 }

@@ -740,6 +740,28 @@ public class WDialog extends WPopupWidget {
 		return this.layoutContainer_.escapePressed();
 	}
 
+	/**
+	 * Event signal emitted when a finger is placed on the screen.
+	 */
+	public EventSignal1<WTouchEvent> touchStarted() {
+		return this.layoutContainer_.touchStarted();
+	}
+
+	/**
+	 * Event signal emitted when a finger is removed from the screen.
+	 */
+	public EventSignal1<WTouchEvent> touchEnded() {
+		return this.layoutContainer_.touchEnded();
+	}
+
+	/**
+	 * Event signal emitted when a finger, which is already placed on the
+	 * screen, is moved across the screen.
+	 */
+	public EventSignal1<WTouchEvent> touchMoved() {
+		return this.layoutContainer_.touchMoved();
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();

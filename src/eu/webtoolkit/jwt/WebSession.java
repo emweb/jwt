@@ -44,6 +44,7 @@ class WebSession {
 		this.state_ = WebSession.State.JustCreated;
 		this.sessionId_ = sessionId;
 		this.sessionIdCookie_ = "";
+		this.multiSessionId_ = "";
 		this.sessionIdChanged_ = false;
 		this.sessionIdCookieChanged_ = false;
 		this.sessionIdInUrl_ = false;
@@ -156,6 +157,14 @@ class WebSession {
 		return this.sessionId_;
 	}
 
+	public String getMultiSessionId() {
+		return this.multiSessionId_;
+	}
+
+	public void setMultiSessionId(final String multiSessionId) {
+		this.multiSessionId_ = multiSessionId;
+	}
+
 	public WtServlet getController() {
 		return this.controller_;
 	}
@@ -201,7 +210,8 @@ class WebSession {
 
 	public void externalNotify(final WEvent.Impl event) {
 		try {
-			if (this.recursiveEventHandler_ != null) {
+			if (this.recursiveEventHandler_ != null
+					&& !(this.newRecursiveEvent_ != null)) {
 				this.newRecursiveEvent_ = new WEvent.Impl(event);
 				this.recursiveEvent_.signal();
 				while (this.newRecursiveEvent_ != null) {
@@ -910,10 +920,15 @@ class WebSession {
 		if (isAbsoluteUrl(url)) {
 			return url;
 		} else {
-			if (url.length() == 0 || url.charAt(0) != '/') {
-				return this.absoluteBaseUrl_ + url;
+			if (url.length() != 0 && url.charAt(0) == '.'
+					&& (url.length() == 1 || url.charAt(1) != '.')) {
+				return this.absoluteBaseUrl_ + (url.charAt(1));
 			} else {
-				return host(this.absoluteBaseUrl_) + url;
+				if (url.length() == 0 || url.charAt(0) != '/') {
+					return this.absoluteBaseUrl_ + url;
+				} else {
+					return host(this.absoluteBaseUrl_) + url;
+				}
 			}
 		}
 	}
@@ -988,7 +1003,8 @@ class WebSession {
 					if (signalE != null) {
 						if (signalE.equals("none") || signalE.equals("load")
 								|| signalE.equals("hash")
-								|| signalE.equals("poll")) {
+								|| signalE.equals("poll")
+								|| signalE.equals("keepAlive")) {
 							return EventType.OtherEvent;
 						} else {
 							List<Integer> signalOrder = this
@@ -1234,6 +1250,7 @@ class WebSession {
 				}
 			}
 			String requestE = request.getParameter("request");
+			final Configuration conf = this.controller_.getConfiguration();
 			if (requestE != null && requestE.equals("ws")
 					&& !request.isWebSocketRequest()) {
 				logger.error(new StringWriter().append(
@@ -1253,16 +1270,13 @@ class WebSession {
 				return;
 			}
 			if (request.isWebSocketRequest()) {
-				if (this.state_ != WebSession.State.JustCreated) {
-					this.handleWebSocketRequest(handler);
-					return;
-				} else {
+				if (conf.webSockets()) {
+					handler.getResponse().setStatus(500);
 					handler.flushResponse();
-					this.kill();
-					return;
+					throw new WException(
+							"Server does not implement JSR-356 for WebSockets");
 				}
 			}
-			final Configuration conf = this.controller_.getConfiguration();
 			handler.getResponse().setResponseType(WebRequest.ResponseType.Page);
 			if (!(requestE != null && requestE.equals("resource")
 					|| isEqual(request.getRequestMethod(), "POST") || isEqual(
@@ -1288,6 +1302,10 @@ class WebSession {
 				try {
 					switch (this.state_) {
 					case JustCreated: {
+						if (conf.getSessionTracking() == Configuration.SessionTracking.Combined) {
+							this.getRenderer()
+									.updateMultiSessionCookie(request);
+						}
 						switch (this.type_) {
 						case Application: {
 							this.init(request);
@@ -1406,6 +1424,21 @@ class WebSession {
 					}
 					case ExpectLoad:
 					case Loaded: {
+						if (conf.getSessionTracking() == Configuration.SessionTracking.Combined) {
+							String signalE = handler.getRequest().getParameter(
+									"signal");
+							boolean isKeepAlive = requestE != null
+									&& signalE != null
+									&& signalE.equals("keepAlive");
+							if (isKeepAlive || !this.env_.hasAjax()) {
+								if (request.isWebSocketMessage()) {
+									this.getRenderer().multiSessionCookieUpdateNeeded_ = true;
+								} else {
+									this.getRenderer()
+											.updateMultiSessionCookie(request);
+								}
+							}
+						}
 						if (requestE != null) {
 							if (requestE.equals("jsupdate")
 									|| requestE.equals("jserror")) {
@@ -1626,19 +1659,44 @@ class WebSession {
 		this.eventQueueMutex_.unlock();
 	}
 
-	private void handleWebSocketRequest(final WebSession.Handler handler) {
-	}
-
-	private static void handleWebSocketMessage(WebSession session,
-			WebReadEvent event) {
-	}
-
-	private static void webSocketConnect(WebSession session, WebWriteEvent event) {
-		logger.debug(new StringWriter().append("webSocketConnect()").toString());
-	}
-
-	private static void webSocketReady(WebSession session, WebWriteEvent event) {
-		logger.debug(new StringWriter().append("webSocketReady()").toString());
+	public void handleWebSocketMessage(final WebSession.Handler handler)
+			throws IOException {
+		WebRequest message = handler.getRequest();
+		boolean closing = message.getContentLength() == 0;
+		if (!closing) {
+			String connectedE = message.getParameter("connected");
+			if (connectedE != null) {
+				this.renderer_.ackUpdate(Integer.parseInt(connectedE));
+				this.webSocketConnected_ = true;
+				this.canWriteWebSocket_ = true;
+			}
+			String wsRqIdE = message.getParameter("wsRqId");
+			if (wsRqIdE != null) {
+				int wsRqId = Integer.parseInt(wsRqIdE);
+				this.renderer_.addWsRequestId(wsRqId);
+			}
+			String signalE = message.getParameter("signal");
+			if (signalE != null && signalE.equals("ping")) {
+				logger.debug(new StringWriter().append("ws: handle ping")
+						.toString());
+				if (this.canWriteWebSocket_) {
+					this.webSocket_.out().append("{}");
+					this.webSocket_.flushBuffer();
+					return;
+				}
+			}
+			String pageIdE = message.getParameter("pageId");
+			if (pageIdE != null
+					&& !pageIdE.equals(String.valueOf(this.renderer_
+							.getPageId()))) {
+				closing = true;
+			}
+			if (!closing) {
+				this.handleRequest(handler);
+			} else {
+				this.webSocket_.flush();
+			}
+		}
 	}
 
 	private void checkTimers() {
@@ -1673,6 +1731,7 @@ class WebSession {
 	private WebSession.State state_;
 	private String sessionId_;
 	private String sessionIdCookie_;
+	private String multiSessionId_;
 	boolean sessionIdChanged_;
 	private boolean sessionIdCookieChanged_;
 	private boolean sessionIdInUrl_;
@@ -1688,7 +1747,7 @@ class WebSession {
 	private String redirect_;
 	String pagePathInfo_;
 	private WebResponse asyncResponse_;
-	private WebResponse webSocket_;
+	WebResponse webSocket_;
 	private WebResponse bootStyleResponse_;
 	private boolean canWriteWebSocket_;
 	private boolean webSocketConnected_;
@@ -1711,7 +1770,7 @@ class WebSession {
 	private List<WObject> emitStack_;
 	private WebSession.Handler recursiveEventHandler_;
 
-	private void pushUpdates() {
+	void pushUpdates() {
 		try {
 			logger.debug(new StringWriter().append("pushUpdates()").toString());
 			this.triggerUpdate_ = false;
@@ -1738,6 +1797,12 @@ class WebSession {
 						return;
 					}
 					if (this.canWriteWebSocket_) {
+						this.webSocket_
+								.setResponseType(WebRequest.ResponseType.Update);
+						this.app_.notify(new WEvent(new WEvent.Impl(
+								this.webSocket_)));
+						this.updatesPending_ = false;
+						this.webSocket_.flushBuffer();
 					}
 				}
 			}
@@ -1893,7 +1958,7 @@ class WebSession {
 			}
 			if (!signalE.equals("user") && !signalE.equals("hash")
 					&& !signalE.equals("none") && !signalE.equals("poll")
-					&& !signalE.equals("load")) {
+					&& !signalE.equals("load") && !signalE.equals("keepAlive")) {
 				AbstractEventSignal signal = this.decodeSignal(signalE, true);
 				if (!(signal != null)) {
 				} else {
@@ -1945,48 +2010,56 @@ class WebSession {
 				}
 				this.renderer_.setVisibleOnly(false);
 			} else {
-				if (!signalE.equals("poll")) {
-					this.propagateFormValues(e, se);
-					boolean discardStateless = !request.isWebSocketMessage()
-							&& i == 0;
-					if (discardStateless) {
-						this.renderer_.saveChanges();
-					}
-					handler.nextSignal = i + 1;
-					if (signalE.equals("hash")) {
-						String hashE = request.getParameter(se + "_");
-						if (hashE != null) {
-							this.changeInternalPath(hashE,
-									handler.getResponse());
-							this.app_.doJavaScript("Wt3_3_6.scrollIntoView("
-									+ WWebWidget.jsStringLiteral(hashE) + ");");
-						} else {
-							this.changeInternalPath("", handler.getResponse());
+				if (signalE.equals("keepAlive")) {
+				} else {
+					if (!signalE.equals("poll")) {
+						this.propagateFormValues(e, se);
+						boolean discardStateless = !request
+								.isWebSocketMessage() && i == 0;
+						if (discardStateless) {
+							this.renderer_.saveChanges();
 						}
-					} else {
-						for (int k = 0; k < 3; ++k) {
-							WebSession.SignalKind kind = WebSession.SignalKind
-									.values()[k];
-							if (kind == WebSession.SignalKind.AutoLearnStateless
-									&& 0L != 0) {
-								break;
+						handler.nextSignal = i + 1;
+						if (signalE.equals("hash")) {
+							String hashE = request.getParameter(se + "_");
+							if (hashE != null) {
+								this.changeInternalPath(hashE,
+										handler.getResponse());
+								this.app_
+										.doJavaScript("Wt3_3_6.scrollIntoView("
+												+ WWebWidget
+														.jsStringLiteral(hashE)
+												+ ");");
+							} else {
+								this.changeInternalPath("",
+										handler.getResponse());
 							}
-							AbstractEventSignal s;
-							if (signalE.equals("user")) {
-								String idE = request.getParameter(se + "id");
-								String nameE = request
-										.getParameter(se + "name");
-								if (!(idE != null) || !(nameE != null)) {
+						} else {
+							for (int k = 0; k < 3; ++k) {
+								WebSession.SignalKind kind = WebSession.SignalKind
+										.values()[k];
+								if (kind == WebSession.SignalKind.AutoLearnStateless
+										&& 0L != 0) {
 									break;
 								}
-								s = this.decodeSignal(idE, nameE, k == 0);
-							} else {
-								s = this.decodeSignal(signalE, k == 0);
-							}
-							this.processSignal(s, se, request, kind);
-							if (kind == WebSession.SignalKind.LearnedStateless
-									&& discardStateless) {
-								this.renderer_.discardChanges();
+								AbstractEventSignal s;
+								if (signalE.equals("user")) {
+									String idE = request
+											.getParameter(se + "id");
+									String nameE = request.getParameter(se
+											+ "name");
+									if (!(idE != null) || !(nameE != null)) {
+										break;
+									}
+									s = this.decodeSignal(idE, nameE, k == 0);
+								} else {
+									s = this.decodeSignal(signalE, k == 0);
+								}
+								this.processSignal(s, se, request, kind);
+								if (kind == WebSession.SignalKind.LearnedStateless
+										&& discardStateless) {
+									this.renderer_.discardChanges();
+								}
 							}
 						}
 					}

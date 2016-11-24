@@ -1036,6 +1036,10 @@ public class WApplication extends WObject {
 	 * returned. This is the absolute URL at which the application is deployed,
 	 * up to the last &apos;/&apos;.
 	 * <p>
+	 * The default implementation is not complete: it does not handle relative
+	 * URL path segments with &apos;..&apos;. It just handles the cases that are
+	 * necessary for {@link }.
+	 * <p>
 	 * This is not used in the library, except when a public URL is needed, e.g.
 	 * for inclusion in an email.
 	 * <p>
@@ -2570,18 +2574,6 @@ public class WApplication extends WObject {
 	 */
 	public Signal1<Long> requestTooLarge() {
 		return this.requestTooLarge_;
-	}
-
-	void redirectToSession(final String newSessionId) {
-		String redirectUrl = this.getBookmarkUrl();
-		if (!this.session_.isUseUrlRewriting()) {
-			String cookieName = this.getEnvironment().getDeploymentPath();
-			this.setCookie(cookieName, newSessionId, -1, "", "", this
-					.getEnvironment().getUrlScheme().equals("https"));
-		} else {
-			redirectUrl += "?wtd=" + DomElement.urlEncodeS(newSessionId);
-		}
-		this.redirect(redirectUrl);
 	}
 
 	boolean isConnected() {

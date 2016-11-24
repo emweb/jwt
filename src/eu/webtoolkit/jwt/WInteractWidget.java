@@ -43,6 +43,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	public WInteractWidget(WContainerWidget parent) {
 		super(parent);
 		this.dragSlot_ = null;
+		this.dragTouchSlot_ = null;
+		this.dragTouchEndSlot_ = null;
 		this.mouseOverDelay_ = 0;
 	}
 
@@ -57,6 +59,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	public void remove() {
+		;
+		;
 		;
 		super.remove();
 	}
@@ -478,7 +482,20 @@ public abstract class WInteractWidget extends WWebWidget {
 			this.dragSlot_.setJavaScript("function(o,e){"
 					+ app.getJavaScriptClass() + "._p_.dragStart(o,e);" + "}");
 		}
+		if (!(this.dragTouchSlot_ != null)) {
+			this.dragTouchSlot_ = new JSlot();
+			this.dragTouchSlot_.setJavaScript("function(o,e){"
+					+ app.getJavaScriptClass() + "._p_.touchStart(o,e);" + "}");
+		}
+		if (!(this.dragTouchEndSlot_ != null)) {
+			this.dragTouchEndSlot_ = new JSlot();
+			this.dragTouchEndSlot_.setJavaScript("function(){"
+					+ app.getJavaScriptClass() + "._p_.touchEnded();" + "}");
+		}
 		this.mouseWentDown().addListener(this.dragSlot_);
+		this.touchStarted().addListener(this.dragTouchSlot_);
+		this.touchStarted().preventDefaultAction(true);
+		this.touchEnded().addListener(this.dragTouchEndSlot_);
 	}
 
 	/**
@@ -527,6 +544,16 @@ public abstract class WInteractWidget extends WWebWidget {
 			this.mouseWentDown().removeListener(this.dragSlot_);
 			;
 			this.dragSlot_ = null;
+		}
+		if (this.dragTouchSlot_ != null) {
+			this.touchStarted().removeListener(this.dragTouchSlot_);
+			;
+			this.dragTouchSlot_ = null;
+		}
+		if (this.dragTouchEndSlot_ != null) {
+			this.touchEnded().removeListener(this.dragTouchEndSlot_);
+			;
+			this.dragTouchEndSlot_ = null;
 		}
 	}
 
@@ -721,6 +748,59 @@ public abstract class WInteractWidget extends WWebWidget {
 			}
 			element.setEvent("mousemove", actions);
 		}
+		EventSignal1<WTouchEvent> touchStart = this.touchEventSignal(
+				TOUCH_START_SIGNAL, false);
+		EventSignal1<WTouchEvent> touchEnd = this.touchEventSignal(
+				TOUCH_END_SIGNAL, false);
+		EventSignal1<WTouchEvent> touchMove = this.touchEventSignal(
+				TOUCH_MOVE_SIGNAL, false);
+		boolean updateTouchMove = touchMove != null
+				&& touchMove.needsUpdate(all);
+		boolean updateTouchStart = touchStart != null
+				&& touchStart.needsUpdate(all) || updateTouchMove;
+		boolean updateTouchEnd = touchEnd != null && touchEnd.needsUpdate(all)
+				|| updateTouchMove;
+		if (updateTouchStart) {
+			StringBuilder js = new StringBuilder();
+			js.append(CheckDisabled);
+			if (touchEnd != null && touchEnd.isConnected()) {
+				js.append(app.getJavaScriptClass()).append(
+						"._p_.saveDownPos(event);");
+			}
+			if (touchStart != null
+					&& touchStart.isConnected()
+					&& (touchEnd != null && touchEnd.isConnected() || touchMove != null
+							&& touchMove.isConnected())) {
+				js.append("Wt3_3_6.capture(this);");
+			}
+			if (touchStart != null) {
+				js.append(touchStart.getJavaScript());
+				element.setEvent("touchstart", js.toString(),
+						touchStart.encodeCmd(), touchStart.isExposedSignal());
+				touchStart.updateOk();
+			} else {
+				element.setEvent("touchstart", js.toString(), "", false);
+			}
+		}
+		if (updateTouchEnd) {
+			StringBuilder js = new StringBuilder();
+			js.append(CheckDisabled);
+			if (touchEnd != null) {
+				js.append(touchEnd.getJavaScript());
+				element.setEvent("touchend", js.toString(),
+						touchEnd.encodeCmd(), touchEnd.isExposedSignal());
+				touchEnd.updateOk();
+			} else {
+				element.setEvent("touchend", js.toString(), "", false);
+			}
+		}
+		if (updateTouchMove) {
+			if (touchMove != null) {
+				element.setEvent("touchmove", touchMove.getJavaScript(),
+						touchMove.encodeCmd(), touchMove.isExposedSignal());
+				touchMove.updateOk();
+			}
+		}
 		EventSignal1<WMouseEvent> mouseClick = this.mouseEventSignal(
 				M_CLICK_SIGNAL, false);
 		EventSignal1<WMouseEvent> mouseDblClick = this.mouseEventSignal(
@@ -875,6 +955,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	}
 
 	JSlot dragSlot_;
+	protected JSlot dragTouchSlot_;
+	protected JSlot dragTouchEndSlot_;
 	static String M_CLICK_SIGNAL = "M_click";
 	static String CLICK_SIGNAL = "click";
 	private static String KEYDOWN_SIGNAL = "M_keydown";

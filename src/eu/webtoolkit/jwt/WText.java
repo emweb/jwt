@@ -487,7 +487,8 @@ public class WText extends WInteractWidget {
 		}
 
 		public boolean isCheckWellFormed() {
-			if (this.format == TextFormat.XHTMLText && this.text.isLiteral()) {
+			if (this.format == TextFormat.XHTMLText
+					&& (this.text.isLiteral() || !this.text.getArgs().isEmpty())) {
 				return removeScript(this.text);
 			} else {
 				return true;

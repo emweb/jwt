@@ -32,7 +32,7 @@ public class Configuration {
 	private static Logger logger = LoggerFactory.getLogger(AbstractJSignal.class);
 
 	public enum SessionTracking {
-		CookiesURL, Auto
+		CookiesURL, Auto, Combined
 	}
 
 	/**
@@ -79,6 +79,7 @@ public class Configuration {
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
+	private boolean webSocketsEnabled = false;
 
 	/**
 	 * Creates a default configuration.
@@ -567,6 +568,10 @@ public class Configuration {
 	public boolean progressiveBootstrap(String internalPath) {
 		return this.progressiveBootstrap ;
 	}
+
+	public int getKeepAlive() {
+		return getSessionTimeout() / 2;
+	}
 	
 	/**
 	 * Returns the session timeout.
@@ -689,12 +694,20 @@ public class Configuration {
 		this.properties_.put("tinyMCEVersion", "" + version);
 	}
 
+	/**
+	 * Enables or disables the use of web sockets
+	 */
+	public void setWebSocketsEnabled(boolean enabled) {
+		this.webSocketsEnabled = enabled;
+	}
+	
+	boolean webSockets() {
+		return webSocketsEnabled;
+	}
+
 	/*
 	 * The following are not yet enabled for JWt
 	 */
-	boolean webSockets() {
-		return false;
-	}
 
 	boolean splitScript() {
 		return false;

@@ -110,6 +110,8 @@ public class RegistrationWidget extends WTemplateFormView {
 			if (password != null && password2 != null && password2Info != null) {
 				this.model_.validatePasswordsMatchJS(password, password2,
 						password2Info);
+			} else {
+				this.bindEmpty("password-description");
 			}
 		}
 		WAnchor isYou = (WAnchor) this.resolveWidget("confirm-is-you");

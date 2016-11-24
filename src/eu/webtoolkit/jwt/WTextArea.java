@@ -191,8 +191,9 @@ public class WTextArea extends WFormWidget {
 	public String getSelectedText() {
 		if (this.getSelectionStart() != -1) {
 			WApplication app = WApplication.getInstance();
-			return this.getText().substring(app.getSelectionStart(),
+			String result = this.getText().substring(app.getSelectionStart(),
 					app.getSelectionEnd() - app.getSelectionStart());
+			return result;
 		} else {
 			return WString.Empty.toString();
 		}

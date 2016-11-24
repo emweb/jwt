@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -350,16 +351,27 @@ public class WebRequest extends HttpServletRequestWrapper {
 		if (paramContentType != null && paramContentType[0].equals("x-www-form-urlencoded") && this.getContentType() == null) {
 			byte[] buf = new byte[this.getContentLength()];
 			this.getInputStream().read(buf);
+			readParameters(buf);
+		}
+	}
+	
+	/**
+	 * Read and store query parameters
+	 * @param buf UTF-8 encoded byte array with the URI query part
+	 */
+	protected void readParameters(byte[] buf) {
+		try {
 			String[] pairs = new String(buf, "UTF-8").split("\\&");
-
 			for (int i = 0; i < pairs.length; i++) {
-		      String[] fields = {"", ""};
-		      String[] pair = pairs[i].split("=");
-		      for (int j = 0; j < pair.length && j < 2; j++)
-		    	  fields[j] = URLDecoder.decode(pair[j], "UTF-8");
-		      if (!fields[0].equals(""))
-		    	  parameters_.put(fields[0], new String [] { fields[1] });
-		    }
+				String[] fields = { "", "" };
+				String[] pair = pairs[i].split("=");
+				for (int j = 0; j < pair.length && j < 2; j++)
+					fields[j] = URLDecoder.decode(pair[j], "UTF-8");
+				if (!fields[0].equals(""))
+					parameters_.put(fields[0], new String[] { fields[1] });
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
 
 		String[] wtParamsAr = parameters_.get("Wt-params");
@@ -433,7 +445,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketRequest() {
-		return false;
+		return getHeader("Connection").equalsIgnoreCase("Upgrade") && getHeader("Upgrade").equalsIgnoreCase("WebSocket");
 	}
 
 	/**

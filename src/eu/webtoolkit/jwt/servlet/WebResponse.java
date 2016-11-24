@@ -53,7 +53,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 		this.request = request;
 
 		try {
-			outWriter = new OutputStreamWriter(getOutputStream(), "UTF-8");
+			this.outWriter = new OutputStreamWriter(getOutputStream(), "UTF-8");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,6 +82,13 @@ public class WebResponse extends HttpServletResponseWrapper {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Create a response with no real ServletOutputStream. Used to set up a web socket response
+	 */
+	public WebResponse() {
+		super(WtServlet.getServletApi().getMockupHttpServletResponse());
 	}
 
 	/**

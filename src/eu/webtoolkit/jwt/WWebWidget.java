@@ -2316,6 +2316,7 @@ public abstract class WWebWidget extends WWidget {
 		public JSignal2<Integer, Integer> resized_;
 		public int tabIndex_;
 		public JSignal3<String, String, WMouseEvent> dropSignal_;
+		public JSignal3<String, String, WTouchEvent> dropSignal2_;
 		public Map<String, WWebWidget.DropMimeType> acceptedDropMimeTypes_;
 		public Signal childrenChanged_;
 		public int scrollVisibilityMargin_;
@@ -2330,6 +2331,7 @@ public abstract class WWebWidget extends WWidget {
 			this.resized_ = null;
 			this.tabIndex_ = Integer.MIN_VALUE;
 			this.dropSignal_ = null;
+			this.dropSignal2_ = null;
 			this.acceptedDropMimeTypes_ = null;
 			this.childrenChanged_ = new Signal(self);
 			this.scrollVisibilityMargin_ = 0;
@@ -2463,6 +2465,11 @@ public abstract class WWebWidget extends WWidget {
 		if (result && !(this.otherImpl_.dropSignal_ != null)) {
 			this.otherImpl_.dropSignal_ = new JSignal3<String, String, WMouseEvent>(
 					this, "_drop") {
+			};
+		}
+		if (result && !(this.otherImpl_.dropSignal2_ != null)) {
+			this.otherImpl_.dropSignal2_ = new JSignal3<String, String, WTouchEvent>(
+					this, "_drop2") {
 			};
 		}
 		return result;
@@ -2802,7 +2809,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"ScrollVisibility",
-				"function(h){function l(a){if(a.style.visibility==\"hidden\"||a.style.display==\"none\"||$(a).hasClass(\"out\"))return false;else return(a=a.parentNode)&&!m.hasTag(a,\"BODY\")?l(a):true}function n(a,c){if(!l(a))return false;var e=m.widgetPageCoordinates(a),d=e.x-document.body.scrollLeft-document.documentElement.scrollLeft;e=e.y-document.body.scrollTop-document.documentElement.scrollTop;var f=m.windowSize(),q=a.offsetHeight,o=-c,r=f.x+2*c,p=-c; c=f.y+2*c;return d+a.offsetWidth>=o&&o+r>=d&&e+q>=p&&p+c>=e}function i(){if(j)for(var a in b){if(b.hasOwnProperty(a)){var c=l(b[a].el);if(b[a].visibleIfNotHidden&&b[a].visible!==c){b[a].visible=c;h.emit(b[a].el,\"scrollVisibilityChanged\",c)}}}else for(a in b)if(b.hasOwnProperty(a)){c=n(b[a].el,b[a].margin);if(c!==b[a].visible){b[a].visible=c;h.emit(b[a].el,\"scrollVisibilityChanged\",c)}}}function s(a){for(var c=0;c<a.length;++c){var e=a[c],d=e.target,f=d.id;d=l(d);if(e.intersectionRatio>0||e.intersectionRect.top!== 0||e.intersectionRect.left!==0){b[f].visibleIfNotHidden=true;if(b[f].visible!==d){b[f].visible=d;h.emit(b[f].el,\"scrollVisibilityChanged\",d)}}else{b[f].visibleIfNotHidden=false;if(b[f].visible){b[f].visible=false;h.emit(b[f].el,\"scrollVisibilityChanged\",false)}}}}function t(){if(g){g.observe(document,{childList:true,attributes:true,subtree:true,characterData:true});if(!j){window.addEventListener(\"resize\",i,true);window.addEventListener(\"scroll\",i,true)}}else g=setInterval(i,100)}function u(){if(g){g.disconnect(); if(!j){window.removeEventListener(\"resize\",i,{capture:true});window.removeEventListener(\"scroll\",i,{capture:true})}}else{clearInterval(g);g=null}}var m=h.WT,k=0,b={},j=false,g=null;if(\"MutationObserver\"in window)g=new MutationObserver(i);this.add=function(a){k===0&&t();var c=a.el.id,e=c in b;j&&e&&b[c].observer&&b[c].observer.disconnect();var d=n(a.el,a.margin);if(a.visible!==d){a.visible=d;h.emit(a.el,\"scrollVisibilityChanged\",d)}b[c]=a;if(j){d=new IntersectionObserver(s,{rootMargin:\"\"+a.margin+ \"px\"});d.observe(a.el);b[c].observer=d}e||++k};this.remove=function(a){if(k!==0){if(a in b){j&&b[a].observer&&b[a].observer.disconnect();delete b[a];--k}k===0&&u()}}}");
+				"function(h){function l(a){if(a.style.visibility==\"hidden\"||a.style.display==\"none\"||$(a).hasClass(\"out\"))return false;else return(a=a.parentNode)&&!m.hasTag(a,\"BODY\")?l(a):true}function n(a,c){if(!l(a))return false;var e=m.widgetPageCoordinates(a),d=e.x-document.body.scrollLeft-document.documentElement.scrollLeft;e=e.y-document.body.scrollTop-document.documentElement.scrollTop;var f=m.windowSize(),q=a.offsetHeight,o=-c,r=f.x+2*c,p=-c; c=f.y+2*c;return d+a.offsetWidth>=o&&o+r>=d&&e+q>=p&&p+c>=e}function i(){if(j)for(var a in b){if(b.hasOwnProperty(a)){var c=l(b[a].el);if(b[a].visibleIfNotHidden&&b[a].visible!==c){b[a].visible=c;h.emit(b[a].el,\"scrollVisibilityChanged\",c)}}}else for(a in b)if(b.hasOwnProperty(a)){c=n(b[a].el,b[a].margin);if(c!==b[a].visible){b[a].visible=c;h.emit(b[a].el,\"scrollVisibilityChanged\",c)}}}function s(a){for(var c=0;c<a.length;++c){var e=a[c],d=e.target,f=d.id;d=l(d);if(e.intersectionRatio>0||e.intersectionRect.top!== 0||e.intersectionRect.left!==0){b[f].visibleIfNotHidden=true;if(b[f].visible!==d){b[f].visible=d;h.emit(b[f].el,\"scrollVisibilityChanged\",d)}}else{b[f].visibleIfNotHidden=false;if(b[f].visible){b[f].visible=false;h.emit(b[f].el,\"scrollVisibilityChanged\",false)}}}}function t(){if(g){g.observe(document,{childList:true,attributes:true,subtree:true,characterData:true});if(!j){window.addEventListener(\"resize\",i,true);window.addEventListener(\"scroll\",i,true)}}else g=setInterval(i,100)}function u(){if(g){g.disconnect(); if(!j){window.removeEventListener(\"resize\",i,{capture:true});window.removeEventListener(\"scroll\",i,{capture:true})}}else{clearInterval(g);g=null}}var m=h.WT,k=0,b={},j=false,g=null;if(window.hasOwnProperty(\"MutationObserver\"))g=new MutationObserver(i);this.add=function(a){k===0&&t();var c=a.el.id,e=c in b;j&&e&&b[c].observer&&b[c].observer.disconnect();var d=n(a.el,a.margin);if(a.visible!==d){a.visible=d;h.emit(a.el,\"scrollVisibilityChanged\",d)}b[c]=a;if(j){d=new IntersectionObserver(s,{rootMargin:\"\"+ a.margin+\"px\"});d.observe(a.el);b[c].observer=d}e||++k};this.remove=function(a){if(k!==0){if(a in b){j&&b[a].observer&&b[a].observer.disconnect();delete b[a];--k}k===0&&u()}}}");
 	}
 
 	static WLength nonNegative(final WLength w) {

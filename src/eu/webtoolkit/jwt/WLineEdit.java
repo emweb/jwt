@@ -377,10 +377,9 @@ public class WLineEdit extends WFormWidget {
 	public String getSelectedText() {
 		if (this.getSelectionStart() != -1) {
 			WApplication app = WApplication.getInstance();
-			return new WString(this.getText().substring(
-					app.getSelectionStart(),
-					app.getSelectionEnd() - app.getSelectionStart()))
-					.toString();
+			String result = this.getText().substring(app.getSelectionStart(),
+					app.getSelectionEnd() - app.getSelectionStart());
+			return result;
 		} else {
 			return WString.Empty.toString();
 		}
@@ -401,8 +400,8 @@ public class WLineEdit extends WFormWidget {
 	public void setSelection(int start, int length) {
 		String s = String.valueOf(start);
 		String e = String.valueOf(start + length);
-		this.doJavaScript("Wt3_3_6.setSelectionRange(" + this.getJsRef() + ","
-				+ s + "," + e + ")");
+		this.doJavaScript("Wt3_3_6.setUnicodeSelectionRange(" + this.getJsRef()
+				+ "," + s + "," + e + ")");
 	}
 
 	/**

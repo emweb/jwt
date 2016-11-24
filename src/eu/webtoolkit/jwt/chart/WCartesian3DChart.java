@@ -301,6 +301,7 @@ public class WCartesian3DChart extends WGLWidget {
 		this.worldTransform_ = new javax.vecmath.Matrix4f(1.0f, 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f);
+		this.isViewSet_ = false;
 		this.dataSeriesVector_ = new ArrayList<WAbstractDataSeries3D>();
 		this.XAxis_ = new WAxis();
 		this.YAxis_ = new WAxis();

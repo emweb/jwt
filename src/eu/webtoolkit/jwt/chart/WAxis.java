@@ -3134,39 +3134,4 @@ public class WAxis {
 		}
 		return new WPointF(x, y);
 	}
-
-	static List<WString> splitLabel(CharSequence text) {
-		String s = text.toString();
-		List<String> splitText = new ArrayList<String>();
-		splitText = new ArrayList<String>(Arrays.asList(s.split("\n")));
-		List<WString> result = new ArrayList<WString>();
-		for (int i = 0; i < splitText.size(); ++i) {
-			result.add(new WString(splitText.get(i)));
-		}
-		return result;
-	}
-
-	static double calcYOffset(int lineNb, int nbLines, double lineHeight,
-			EnumSet<AlignmentFlag> verticalAlign) {
-		if (verticalAlign.equals(AlignmentFlag.AlignMiddle)) {
-			return -((nbLines - 1) * lineHeight / 2.0) + lineNb * lineHeight;
-		} else {
-			if (verticalAlign.equals(AlignmentFlag.AlignTop)) {
-				return lineNb * lineHeight;
-			} else {
-				if (verticalAlign.equals(AlignmentFlag.AlignBottom)) {
-					return -(nbLines - 1 - lineNb) * lineHeight;
-				} else {
-					return 0;
-				}
-			}
-		}
-	}
-
-	private static final double calcYOffset(int lineNb, int nbLines,
-			double lineHeight, AlignmentFlag verticalAlig,
-			AlignmentFlag... verticalAlign) {
-		return calcYOffset(lineNb, nbLines, lineHeight,
-				EnumSet.of(verticalAlig, verticalAlign));
-	}
 }

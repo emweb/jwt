@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="bin/|eu/webtoolkit/jwt/ServletApi3.java|eu/webtoolkit/jwt/WServerGLWidget.java" kind="src" path="src"/>
+	<classpathentry excluding="bin/|eu/webtoolkit/jwt/WServerGLWidget.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-fileupload-1.2.1.jar"/>
@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-3.5.2-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api/javax.websocket-api-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
