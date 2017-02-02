@@ -930,6 +930,78 @@
 <span class="o">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-FileDrop"><![CDATA[
+<div class="highlight"><pre><span class="kt">void</span> <span class="nf">FileDrop</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">WFileDropWidget</span> <span class="n">dropWidget</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WFileDropWidget</span><span class="o">();</span>
+    <span class="n">dropWidget</span><span class="o">.</span><span class="na">drop</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
+            <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;&gt;()</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;</span> <span class="n">files</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="kd">final</span> <span class="kt">int</span> <span class="n">maxFiles</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+                    <span class="kt">int</span> <span class="n">prevNbFiles</span> <span class="o">=</span> <span class="n">dropWidget</span><span class="o">.</span><span class="na">getUploads</span><span class="o">().</span><span class="na">size</span><span class="o">()</span>
+                            <span class="o">-</span> <span class="n">files</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+                    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">files</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">prevNbFiles</span> <span class="o">+</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">maxFiles</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">dropWidget</span><span class="o">.</span><span class="na">cancelUpload</span><span class="o">(</span><span class="n">files</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+                            <span class="k">continue</span><span class="o">;</span>
+                        <span class="o">}</span>
+                        <span class="n">WContainerWidget</span> <span class="n">block</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">(</span>
+                                <span class="n">dropWidget</span><span class="o">);</span>
+                        <span class="n">block</span><span class="o">.</span><span class="na">setToolTip</span><span class="o">(</span><span class="n">files</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">getClientFileName</span><span class="o">());</span>
+                        <span class="n">block</span><span class="o">.</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;upload-block spinner&quot;</span><span class="o">);</span>
+                    <span class="o">}</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">dropWidget</span><span class="o">.</span><span class="na">getUploads</span><span class="o">().</span><span class="na">size</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="n">maxFiles</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">dropWidget</span><span class="o">.</span><span class="na">setAcceptDrops</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+    <span class="n">dropWidget</span><span class="o">.</span><span class="na">uploaded</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
+            <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;()</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">List</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;</span> <span class="n">uploads</span> <span class="o">=</span> <span class="n">dropWidget</span>
+                            <span class="o">.</span><span class="na">getUploads</span><span class="o">();</span>
+                    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                    <span class="k">for</span> <span class="o">(;</span> <span class="n">idx</span> <span class="o">!=</span> <span class="n">uploads</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="o">++</span><span class="n">idx</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">uploads</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">idx</span><span class="o">)</span> <span class="o">==</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">break</span><span class="o">;</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                    <span class="n">dropWidget</span><span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="n">idx</span><span class="o">).</span><span class="na">removeStyleClass</span><span class="o">(</span><span class="s">&quot;spinner&quot;</span><span class="o">);</span>
+                    <span class="n">dropWidget</span><span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="n">idx</span><span class="o">).</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;ready&quot;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+    <span class="n">dropWidget</span><span class="o">.</span><span class="na">tooLarge</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
+            <span class="k">new</span> <span class="n">Signal2</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;()</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span> <span class="n">file</span><span class="o">,</span> <span class="n">Long</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">List</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;</span> <span class="n">uploads</span> <span class="o">=</span> <span class="n">dropWidget</span>
+                            <span class="o">.</span><span class="na">getUploads</span><span class="o">();</span>
+                    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                    <span class="k">for</span> <span class="o">(;</span> <span class="n">idx</span> <span class="o">!=</span> <span class="n">uploads</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="o">++</span><span class="n">idx</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">uploads</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">idx</span><span class="o">)</span> <span class="o">==</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">break</span><span class="o">;</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                    <span class="n">dropWidget</span><span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="n">idx</span><span class="o">).</span><span class="na">removeStyleClass</span><span class="o">(</span><span class="s">&quot;spinner&quot;</span><span class="o">);</span>
+                    <span class="n">dropWidget</span><span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="n">idx</span><span class="o">).</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;failed&quot;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+    <span class="n">dropWidget</span><span class="o">.</span><span class="na">uploadFailed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
+            <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;()</span> <span class="o">{</span>
+                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">List</span><span class="o">&lt;</span><span class="n">WFileDropWidget</span><span class="o">.</span><span class="na">File</span><span class="o">&gt;</span> <span class="n">uploads</span> <span class="o">=</span> <span class="n">dropWidget</span>
+                            <span class="o">.</span><span class="na">getUploads</span><span class="o">();</span>
+                    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                    <span class="k">for</span> <span class="o">(;</span> <span class="n">idx</span> <span class="o">!=</span> <span class="n">uploads</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="o">++</span><span class="n">idx</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">uploads</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">idx</span><span class="o">)</span> <span class="o">==</span> <span class="n">file</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="k">break</span><span class="o">;</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                    <span class="n">dropWidget</span><span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="n">idx</span><span class="o">).</span><span class="na">removeStyleClass</span><span class="o">(</span><span class="s">&quot;spinner&quot;</span><span class="o">);</span>
+                    <span class="n">dropWidget</span><span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="n">idx</span><span class="o">).</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;failed&quot;</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">});</span>
+<span class="o">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-FileUpload"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">FileUpload</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
@@ -4279,503 +4351,6 @@
 <span class="o">}</span>
 </pre></div>
   ]]></message>
-  <message id="src-Tabs"><![CDATA[
-<div class="highlight"><pre><span class="n">ChartSettings</span><span class="o">(</span><span class="kd">final</span> <span class="n">WCartesian3DChart</span> <span class="n">chart</span><span class="o">,</span> <span class="n">WContainerWidget</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kd">super</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
-    <span class="n">WTemplate</span> <span class="n">template_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;chartconfig-template&quot;</span><span class="o">),</span>
-            <span class="k">this</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">initLayout</span><span class="o">();</span>
-    <span class="kd">final</span> <span class="n">WCheckBox</span> <span class="n">autoRangeX</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;xAuto&quot;</span><span class="o">,</span> <span class="n">autoRangeX</span><span class="o">);</span>
-    <span class="n">autoRangeX</span><span class="o">.</span><span class="na">setCheckState</span><span class="o">(</span><span class="n">CheckState</span><span class="o">.</span><span class="na">Checked</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">xMin</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;xAxisMin&quot;</span><span class="o">,</span> <span class="n">xMin</span><span class="o">);</span>
-    <span class="n">xMin</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span><span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>
-            <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="n">xMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">xMax</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;xAxisMax&quot;</span><span class="o">,</span> <span class="n">xMax</span><span class="o">);</span>
-    <span class="n">xMax</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span><span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>
-            <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="n">xMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WCheckBox</span> <span class="n">autoRangeY</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;yAuto&quot;</span><span class="o">,</span> <span class="n">autoRangeY</span><span class="o">);</span>
-    <span class="n">autoRangeY</span><span class="o">.</span><span class="na">setCheckState</span><span class="o">(</span><span class="n">CheckState</span><span class="o">.</span><span class="na">Checked</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">yMin</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;yAxisMin&quot;</span><span class="o">,</span> <span class="n">yMin</span><span class="o">);</span>
-    <span class="n">yMin</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span><span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>
-            <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="n">yMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">yMax</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;yAxisMax&quot;</span><span class="o">,</span> <span class="n">yMax</span><span class="o">);</span>
-    <span class="n">yMax</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span><span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>
-            <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="n">yMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WCheckBox</span> <span class="n">autoRangeZ</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;zAuto&quot;</span><span class="o">,</span> <span class="n">autoRangeZ</span><span class="o">);</span>
-    <span class="n">autoRangeZ</span><span class="o">.</span><span class="na">setCheckState</span><span class="o">(</span><span class="n">CheckState</span><span class="o">.</span><span class="na">Checked</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">zMin</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;zAxisMin&quot;</span><span class="o">,</span> <span class="n">zMin</span><span class="o">);</span>
-    <span class="n">zMin</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span><span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>
-            <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="n">zMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">zMax</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="n">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;zAxisMax&quot;</span><span class="o">,</span> <span class="n">zMax</span><span class="o">);</span>
-    <span class="n">zMax</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span><span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span>
-            <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="n">zMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-    <span class="n">autoRangeX</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">switch</span> <span class="o">(</span><span class="n">autoRangeX</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">case</span> <span class="n">Unchecked</span><span class="o">:</span>
-                <span class="n">xMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="n">xMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">case</span> <span class="n">Checked</span><span class="o">:</span>
-                <span class="n">xMin</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">xMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">xMax</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">xMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
-                        <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
-                                <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">autoRangeX</span><span class="o">.</span><span class="na">unChecked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">switch</span> <span class="o">(</span><span class="n">autoRangeX</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">case</span> <span class="n">Unchecked</span><span class="o">:</span>
-                <span class="n">xMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="n">xMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">case</span> <span class="n">Checked</span><span class="o">:</span>
-                <span class="n">xMin</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">xMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">xMax</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">xMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
-                        <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
-                                <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">autoRangeY</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">switch</span> <span class="o">(</span><span class="n">autoRangeY</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">case</span> <span class="n">Unchecked</span><span class="o">:</span>
-                <span class="n">yMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="n">yMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">case</span> <span class="n">Checked</span><span class="o">:</span>
-                <span class="n">yMin</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">yMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">yMax</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">yMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
-                        <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
-                                <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">autoRangeY</span><span class="o">.</span><span class="na">unChecked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">switch</span> <span class="o">(</span><span class="n">autoRangeY</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">case</span> <span class="n">Unchecked</span><span class="o">:</span>
-                <span class="n">yMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="n">yMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">case</span> <span class="n">Checked</span><span class="o">:</span>
-                <span class="n">yMin</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">yMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">yMax</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">yMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
-                        <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
-                                <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">autoRangeZ</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">switch</span> <span class="o">(</span><span class="n">autoRangeZ</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">case</span> <span class="n">Unchecked</span><span class="o">:</span>
-                <span class="n">zMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="n">zMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">case</span> <span class="n">Checked</span><span class="o">:</span>
-                <span class="n">zMin</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">zMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">zMax</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">zMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
-                        <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
-                                <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">autoRangeZ</span><span class="o">.</span><span class="na">unChecked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="k">switch</span> <span class="o">(</span><span class="n">autoRangeZ</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">())</span> <span class="o">{</span>
-            <span class="k">case</span> <span class="n">Unchecked</span><span class="o">:</span>
-                <span class="n">zMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="n">zMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">case</span> <span class="n">Checked</span><span class="o">:</span>
-                <span class="n">zMin</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">getMinimum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">zMin</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">zMax</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>
-                        <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">getMaximum</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-                <span class="n">zMax</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">setAutoLimits</span><span class="o">(</span>
-                        <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">AxisValue</span><span class="o">.</span><span class="na">MinimumValue</span><span class="o">,</span>
-                                <span class="n">AxisValue</span><span class="o">.</span><span class="na">MaximumValue</span><span class="o">));</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="k">default</span><span class="o">:</span>
-                <span class="k">break</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">xMin</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">setRange</span><span class="o">(</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">xMin</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">xMax</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">xMax</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis_3D</span><span class="o">).</span><span class="na">setRange</span><span class="o">(</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">xMin</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">xMax</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">yMin</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">setRange</span><span class="o">(</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">yMin</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">yMax</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">yMax</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis_3D</span><span class="o">).</span><span class="na">setRange</span><span class="o">(</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">yMin</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">yMax</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">zMin</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">setRange</span><span class="o">(</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">zMin</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">zMax</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="n">zMax</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">chart</span><span class="o">.</span><span class="na">axis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">ZAxis_3D</span><span class="o">).</span><span class="na">setRange</span><span class="o">(</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">zMin</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">zMax</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="nf">ChartSettings</span><span class="o">(</span><span class="kd">final</span> <span class="n">WCartesian3DChart</span> <span class="n">chart</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">(</span><span class="n">chart</span><span class="o">,</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="n">GridDataSettings</span><span class="o">(</span><span class="n">WCartesian3DChart</span>  <span class="n">chart</span><span class="o">,</span> <span class="kd">final</span> <span class="n">WAbstractGridData</span>  <span class="n">data</span><span class="o">,</span> <span class="n">WContainerWidget</span>  <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
-<span class="kd">super</span> <span class="o">(</span><span class="n">parent</span><span class="o">);</span>
-<span class="k">this</span><span class="o">.</span><span class="na">data_</span> <span class="o">=</span> <span class="n">data</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">chart_</span> <span class="o">=</span> <span class="n">chart</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">xStart_</span> <span class="o">=</span> <span class="o">-</span> <span class="mf">10.0</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">xEnd_</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">yStart_</span> <span class="o">=</span> <span class="o">-</span> <span class="mf">10.0</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">yEnd_</span> <span class="o">=</span> <span class="mf">10.0</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">nbXPts_</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>
-<span class="k">this</span><span class="o">.</span><span class="na">nbYPts_</span> <span class="o">=</span> <span class="mi">20</span><span class="o">;</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">template_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span> <span class="o">(</span><span class="s">&quot;dataconfig-template&quot;</span><span class="o">),</span> <span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">addFunction</span> <span class="o">(</span><span class="s">&quot;id&quot;</span><span class="o">,</span> <span class="n">WTemplate</span><span class="o">.</span><span class="na">Functions</span><span class="o">.</span><span class="na">id</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">addFunction</span> <span class="o">(</span><span class="s">&quot;tr&quot;</span><span class="o">,</span> <span class="n">WTemplate</span><span class="o">.</span><span class="na">Functions</span><span class="o">.</span><span class="na">tr</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">addFunction</span> <span class="o">(</span><span class="s">&quot;block&quot;</span><span class="o">,</span> <span class="n">WTemplate</span><span class="o">.</span><span class="na">Functions</span><span class="o">.</span><span class="na">block</span><span class="o">);</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">typeSelection_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WComboBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">typeSelection_</span><span class="o">.</span><span class="na">addItem</span> <span class="o">(</span><span class="s">&quot;Points&quot;</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">typeSelection_</span><span class="o">.</span><span class="na">addItem</span> <span class="o">(</span><span class="s">&quot;Surface&quot;</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;typeSelection&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">typeSelection_</span><span class="o">);</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">xMin_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;x-axisMin&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">xMax_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;x-axisMax&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">xMax_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">xMax_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">yMin_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;y-axisMin&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">yMax_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;y-axisMax&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WIntValidator</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">50</span><span class="o">));</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;nbXPoints&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">);</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WIntValidator</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">50</span><span class="o">));</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;nbYPoints&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">);</span>
- <span class="kd">final</span> <span class="n">WLineEdit</span>  <span class="n">ptSize_</span> <span class="o">=</span><span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
- <span class="n">ptSize_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;pointSize&quot;</span><span class="o">,</span> <span class="n">ptSize_</span><span class="o">);</span> 
- <span class="n">ptSize_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>   <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">getPointSize</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">enableMesh_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;meshEnabled&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">enableMesh_</span><span class="o">);</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">hidden_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">hidden_</span><span class="o">.</span><span class="na">setCheckState</span> <span class="o">(</span><span class="n">CheckState</span><span class="o">.</span><span class="na">Unchecked</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;hiddenEnabled&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">hidden_</span><span class="o">);</span>
-<span class="k">if</span> <span class="o">(</span> <span class="o">((</span> <span class="n">data</span><span class="o">.</span><span class="na">getModel</span><span class="o">())</span> <span class="k">instanceof</span> <span class="n">EquidistantGrid</span> <span class="o">?</span> <span class="o">(</span><span class="n">EquidistantGrid</span><span class="o">)(</span> <span class="n">data</span><span class="o">.</span><span class="na">getModel</span><span class="o">())</span> <span class="o">:</span> <span class="kc">null</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">EquidistantGrid</span>  <span class="n">model</span> <span class="o">=((</span> <span class="n">data</span><span class="o">.</span><span class="na">getModel</span><span class="o">())</span> <span class="k">instanceof</span> <span class="n">EquidistantGrid</span> <span class="o">?</span> <span class="o">(</span><span class="n">EquidistantGrid</span><span class="o">)(</span> <span class="n">data</span><span class="o">.</span><span class="na">getModel</span><span class="o">())</span> <span class="o">:</span> <span class="kc">null</span><span class="o">);</span> 
-     <span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span> <span class="n">model</span><span class="o">.</span><span class="na">getXMin</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span> 
-     <span class="k">this</span><span class="o">.</span><span class="na">xMax_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span> <span class="n">model</span><span class="o">.</span><span class="na">getXMax</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span> 
-     <span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span> <span class="n">model</span><span class="o">.</span><span class="na">getYMin</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span> 
-     <span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span> <span class="n">model</span><span class="o">.</span><span class="na">getYMax</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span> 
-     <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span> <span class="n">model</span><span class="o">.</span><span class="na">getNbXPts</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span> 
-     <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span> <span class="n">model</span><span class="o">.</span><span class="na">getNbYPts</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">xMax_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">updateData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">enableMesh_</span><span class="o">.</span><span class="na">checked</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">enableMesh</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">enableMesh_</span><span class="o">.</span><span class="na">unChecked</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">enableMesh</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hidden_</span><span class="o">.</span><span class="na">checked</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">hideData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hidden_</span><span class="o">.</span><span class="na">unChecked</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">hideData</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">typeSelection_</span><span class="o">.</span><span class="na">sactivated</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WString</span><span class="o">&gt;(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">WString</span> <span class="n">e1</span><span class="o">){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">changeChartType</span><span class="o">(</span><span class="n">e1</span><span class="o">);</span>
-<span class="o">}</span>
-  <span class="n">ptSize_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span> <span class="o">()</span> <span class="o">{</span> 
-   <span class="n">data</span><span class="o">.</span><span class="na">setPointSize</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span> <span class="n">ptSize_</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-
-<span class="kd">public</span> <span class="nf">GridDataSettings</span><span class="o">(</span><span class="n">WCartesian3DChart</span> <span class="n">chart</span><span class="o">,</span>
-        <span class="kd">final</span> <span class="n">WAbstractGridData</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">(</span><span class="n">chart</span><span class="o">,</span> <span class="n">data</span><span class="o">,</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">remove</span><span class="o">()</span> <span class="o">{</span>
-    <span class="kd">super</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">updateData</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">!=</span> <span class="n">WValidator</span><span class="o">.</span><span class="na">State</span><span class="o">.</span><span class="na">Valid</span>
-            <span class="o">||</span> <span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">validate</span><span class="o">()</span> <span class="o">!=</span> <span class="n">WValidator</span><span class="o">.</span><span class="na">State</span><span class="o">.</span><span class="na">Valid</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-    <span class="n">WAbstractItemModel</span> <span class="n">model</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">getModel</span><span class="o">();</span>
-    <span class="n">SombreroData</span> <span class="n">sombreroModel</span> <span class="o">=</span> <span class="o">((</span><span class="n">model</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">SombreroData</span> <span class="o">?</span> <span class="o">(</span><span class="n">SombreroData</span><span class="o">)</span> <span class="o">(</span><span class="n">model</span><span class="o">)</span>
-            <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">sombreroModel</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">sombreroModel</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">xMax_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="n">StringUtils</span>
-                        <span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="n">StringUtils</span>
-                        <span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span>
-                        <span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(((</span><span class="n">model</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">PlaneData</span> <span class="o">?</span> <span class="o">(</span><span class="n">PlaneData</span><span class="o">)</span> <span class="o">(</span><span class="n">model</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">PlaneData</span> <span class="n">planeModel</span> <span class="o">=</span> <span class="o">((</span><span class="n">model</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">PlaneData</span> <span class="o">?</span> <span class="o">(</span><span class="n">PlaneData</span><span class="o">)</span> <span class="o">(</span><span class="n">model</span><span class="o">)</span>
-                    <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
-            <span class="kt">double</span> <span class="n">xDelta</span> <span class="o">=</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">xMax_</span><span class="o">.</span><span class="na">getText</span><span class="o">())</span> <span class="o">-</span> <span class="n">StringUtils</span>
-                    <span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">.</span><span class="na">getText</span><span class="o">()))</span>
-                    <span class="o">/</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span><span class="o">.</span><span class="na">getText</span><span class="o">());</span>
-            <span class="kt">double</span> <span class="n">yDelta</span> <span class="o">=</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">yMax_</span><span class="o">.</span><span class="na">getText</span><span class="o">())</span> <span class="o">-</span> <span class="n">StringUtils</span>
-                    <span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">.</span><span class="na">getText</span><span class="o">()))</span>
-                    <span class="o">/</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">getText</span><span class="o">());</span>
-            <span class="n">planeModel</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">xMin_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">xDelta</span><span class="o">,</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">yMin_</span><span class="o">.</span><span class="na">getText</span><span class="o">()),</span>
-                    <span class="n">yDelta</span><span class="o">,</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsX_</span>
-                            <span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span>
-                            <span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">nbPtsY_</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-            <span class="o">(((</span><span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WEquidistantGridData</span> <span class="o">?</span> <span class="o">(</span><span class="n">WEquidistantGridData</span><span class="o">)</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">)</span>
-                    <span class="o">:</span> <span class="kc">null</span><span class="o">)).</span><span class="na">setXAbscis</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">xMin_</span>
-                    <span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="n">xDelta</span><span class="o">);</span>
-            <span class="o">(((</span><span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WEquidistantGridData</span> <span class="o">?</span> <span class="o">(</span><span class="n">WEquidistantGridData</span><span class="o">)</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">)</span>
-                    <span class="o">:</span> <span class="kc">null</span><span class="o">)).</span><span class="na">setYAbscis</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">yMin_</span>
-                    <span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="n">yDelta</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">enableMesh</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">getType</span><span class="o">()</span> <span class="o">!=</span> <span class="n">Series3DType</span><span class="o">.</span><span class="na">SurfaceSeries3D</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">enableMesh_</span><span class="o">.</span><span class="na">setCheckState</span><span class="o">(</span><span class="n">CheckState</span><span class="o">.</span><span class="na">Unchecked</span><span class="o">);</span>
-        <span class="k">return</span><span class="o">;</span>
-    <span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">data_</span>
-            <span class="o">.</span><span class="na">setSurfaceMeshEnabled</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">enableMesh_</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">()</span> <span class="o">==</span> <span class="n">CheckState</span><span class="o">.</span><span class="na">Checked</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">changeChartType</span><span class="o">(</span><span class="n">CharSequence</span> <span class="n">selection</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">selection</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;Points&quot;</span><span class="o">)))</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">PointSeries3D</span><span class="o">);</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">selection</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="k">new</span> <span class="n">WString</span><span class="o">(</span><span class="s">&quot;Surface&quot;</span><span class="o">)))</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">Series3DType</span><span class="o">.</span><span class="na">SurfaceSeries3D</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">hideData</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">hidden_</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">()</span> <span class="o">==</span> <span class="n">CheckState</span><span class="o">.</span><span class="na">Checked</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">setHidden</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">hidden_</span><span class="o">.</span><span class="na">getCheckState</span><span class="o">()</span> <span class="o">==</span> <span class="n">CheckState</span><span class="o">.</span><span class="na">Unchecked</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">setHidden</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="n">ScatterDataSettings</span><span class="o">(</span><span class="kd">final</span> <span class="n">WScatterData</span> <span class="n">data</span><span class="o">,</span> <span class="n">WContainerWidget</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kd">super</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">template_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;scatterdata-config&quot;</span><span class="o">),</span> <span class="k">this</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WLineEdit</span> <span class="n">ptSize_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="n">ptSize_</span><span class="o">.</span><span class="na">setValidator</span><span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(</span><span class="mf">0.0</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;pointSize&quot;</span><span class="o">,</span> <span class="n">ptSize_</span><span class="o">);</span>
-    <span class="n">ptSize_</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getPointSize</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">enableDroplines_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;enableDroplines&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">enableDroplines_</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hide_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span><span class="o">(</span><span class="s">&quot;hide&quot;</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">hide_</span><span class="o">);</span>
-    <span class="n">ptSize_</span><span class="o">.</span><span class="na">changed</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">data</span><span class="o">.</span><span class="na">setPointSize</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">ptSize_</span><span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">enableDroplines_</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                    <span class="n">data</span><span class="o">.</span><span class="na">setDroplinesEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">});</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">enableDroplines_</span><span class="o">.</span><span class="na">unChecked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
-            <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                    <span class="n">data</span><span class="o">.</span><span class="na">setDroplinesEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">});</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hide_</span><span class="o">.</span><span class="na">checked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">data</span><span class="o">.</span><span class="na">setHidden</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hide_</span><span class="o">.</span><span class="na">unChecked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">data</span><span class="o">.</span><span class="na">setHidden</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">});</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="nf">ScatterDataSettings</span><span class="o">(</span><span class="kd">final</span> <span class="n">WScatterData</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="n">CategoryDataSettings</span><span class="o">(</span><span class="kd">final</span> <span class="n">WAbstractGridData</span>  <span class="n">data</span><span class="o">,</span> <span class="n">WContainerWidget</span>  <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
-<span class="kd">super</span> <span class="o">(</span><span class="n">parent</span><span class="o">);</span>
-<span class="k">this</span><span class="o">.</span><span class="na">data_</span> <span class="o">=</span> <span class="n">data</span><span class="o">;</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">template_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span> <span class="o">(</span><span class="s">&quot;categorydata-config&quot;</span><span class="o">),</span> <span class="k">this</span><span class="o">);</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">barWidthX_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;barWidthX&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">barWidthX_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">barWidthX_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">barWidthX_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>   <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">getBarWidthX</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">barWidthY_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;barWidthY&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">barWidthY_</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">barWidthY_</span><span class="o">.</span><span class="na">setValidator</span> <span class="o">(</span><span class="k">new</span> <span class="n">WDoubleValidator</span><span class="o">(-</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">,</span> <span class="n">Double</span><span class="o">.</span><span class="na">MAX_VALUE</span><span class="o">));</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">barWidthY_</span><span class="o">.</span><span class="na">setText</span> <span class="o">(</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asString</span><span class="o">(</span>   <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">getBarWidthY</span><span class="o">()).</span><span class="na">toString</span> <span class="o">());</span>  
-<span class="k">this</span><span class="o">.</span><span class="na">hideData_</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="o">(</span><span class="k">this</span><span class="o">);</span> 
-   <span class="k">this</span><span class="o">.</span><span class="na">template_</span><span class="o">.</span><span class="na">bindWidget</span> <span class="o">(</span><span class="s">&quot;hide&quot;</span><span class="o">,</span>   <span class="k">this</span><span class="o">.</span><span class="na">hideData_</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">barWidthX_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">adjustBarWidth</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">barWidthY_</span><span class="o">.</span><span class="na">changed</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">(){</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(){</span>
-    <span class="o">.</span><span class="na">this</span><span class="o">.</span><span class="na">adjustBarWidth</span><span class="o">();</span>
-<span class="o">}</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hideData_</span><span class="o">.</span><span class="na">checked</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span> <span class="o">()</span> <span class="o">{</span> 
-   <span class="n">data</span><span class="o">.</span><span class="na">setHidden</span> <span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">hideData_</span><span class="o">.</span><span class="na">unChecked</span> <span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span> <span class="o">()</span> <span class="o">{</span> 
-   <span class="n">data</span><span class="o">.</span><span class="na">setHidden</span> <span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-
-<span class="kd">public</span> <span class="nf">CategoryDataSettings</span><span class="o">(</span><span class="kd">final</span> <span class="n">WAbstractGridData</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kt">void</span> <span class="nf">adjustBarWidth</span><span class="o">()</span> <span class="o">{</span>
-    <span class="k">this</span><span class="o">.</span><span class="na">data_</span><span class="o">.</span><span class="na">setBarWidth</span><span class="o">((</span><span class="kt">float</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">barWidthX_</span>
-            <span class="o">.</span><span class="na">getText</span><span class="o">()),</span> <span class="o">(</span><span class="kt">float</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">barWidthY_</span>
-            <span class="o">.</span><span class="na">getText</span><span class="o">()));</span>
-<span class="o">}</span>
-</pre></div>
-  ]]></message>
   <message id="src-Template"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">Template</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WTemplate</span> <span class="n">t</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="o">(</span><span class="n">WString</span><span class="o">.</span><span class="na">tr</span><span class="o">(</span><span class="s">&quot;WTemplate-example&quot;</span><span class="o">));</span>
@@ -4946,14 +4521,6 @@
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">TextXSS</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WText</span> <span class="n">text</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span>
             <span class="s">&quot;&lt;p&gt;This XHTML text contains JavaScript, wich is filtered by the XSS filter.&lt;/p&gt;&lt;script&gt;alert(\&quot;XSS Attack!\&quot;);&lt;/script&gt;&lt;p&gt;A warning is printed in the logs.&lt;/p&gt;&quot;</span><span class="o">);</span>
-<span class="o">}</span>
-</pre></div>
-  ]]></message>
-  <message id="src-Theme"><![CDATA[
-<div class="highlight"><pre><span class="kt">void</span> <span class="nf">Theme</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
-    <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
-    <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;some text&quot;</span><span class="o">);</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
@@ -5128,22 +4695,6 @@
   ]]></message>
   <message id="src-VBoxLayoutStretch"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">VBoxLayoutStretch</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
-    <span class="n">container</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">150</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">150</span><span class="o">));</span>
-    <span class="n">container</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;yellow-box centered&quot;</span><span class="o">);</span>
-    <span class="n">WVBoxLayout</span> <span class="n">vbox</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WVBoxLayout</span><span class="o">();</span>
-    <span class="n">container</span><span class="o">.</span><span class="na">setLayout</span><span class="o">(</span><span class="n">vbox</span><span class="o">);</span>
-    <span class="n">WText</span> <span class="n">item</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;Item 1&quot;</span><span class="o">);</span>
-    <span class="n">item</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;green-box&quot;</span><span class="o">);</span>
-    <span class="n">vbox</span><span class="o">.</span><span class="na">addWidget</span><span class="o">(</span><span class="n">item</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-    <span class="n">item</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;Item 2&quot;</span><span class="o">);</span>
-    <span class="n">item</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;blue-box&quot;</span><span class="o">);</span>
-    <span class="n">vbox</span><span class="o">.</span><span class="na">addWidget</span><span class="o">(</span><span class="n">item</span><span class="o">);</span>
-<span class="o">}</span>
-</pre></div>
-  ]]></message>
-  <message id="src-VBoxLayoutStretched"><![CDATA[
-<div class="highlight"><pre><span class="kt">void</span> <span class="nf">VBoxLayout</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">container</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">150</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">150</span><span class="o">));</span>
     <span class="n">container</span><span class="o">.</span><span class="na">setStyleClass</span><span class="o">(</span><span class="s">&quot;yellow-box centered&quot;</span><span class="o">);</span>
@@ -5824,6 +5375,53 @@
 <span class="nc">.dl-horizontal.no-clear</span><span class="nd">:after</span> <span class="p">{</span>
   <span class="nb">clear</span><span class="o">:</span> <span class="nb">none</span><span class="p">;</span>
 <span class="p">}</span>
+</pre></div>
+  ]]></message>
+  <message id="src-filedrop"><![CDATA[
+<div class="highlight"><pre><span class="nc">.upload-block</span> <span class="p">{</span>
+    <span class="nb">width</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nb">height</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nb">margin</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+    <span class="nb">border</span><span class="o">:</span> <span class="m">1px</span> <span class="nb">solid</span> <span class="nb">black</span><span class="p">;</span>
+    <span class="nb">display</span><span class="o">:</span> <span class="nb">inline</span><span class="o">-</span><span class="nb">block</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.upload-block.ready</span> <span class="p">{</span>
+    <span class="nb">background-color</span><span class="o">:</span> <span class="nb">green</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.upload-block.failed</span> <span class="p">{</span>
+    <span class="nb">background-color</span><span class="o">:</span> <span class="nb">red</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c">/* spinner styling from http://tobiasahlin.com/spinkit/ */</span>
+<span class="nc">.spinner</span> <span class="p">{</span>
+  <span class="nb">width</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="nb">height</span><span class="o">:</span> <span class="m">10px</span><span class="p">;</span>
+  <span class="nb">background-color</span><span class="o">:</span> <span class="m">#333</span><span class="p">;</span>
+
+  <span class="nb">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span> <span class="m">100%</span><span class="p">;</span>  
+  <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">animation</span><span class="o">:</span> <span class="n">sk</span><span class="o">-</span><span class="n">scaleout</span> <span class="m">1.0s</span> <span class="n">infinite</span> <span class="n">ease</span><span class="o">-</span><span class="n">in</span><span class="o">-</span><span class="n">out</span><span class="p">;</span>
+  <span class="n">animation</span><span class="o">:</span> <span class="n">sk</span><span class="o">-</span><span class="n">scaleout</span> <span class="m">1.0s</span> <span class="n">infinite</span> <span class="n">ease</span><span class="o">-</span><span class="n">in</span><span class="o">-</span><span class="n">out</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@-webkit-keyframes</span> <span class="nt">sk-scaleout</span> <span class="p">{</span>
+  <span class="nt">0</span><span class="o">%</span> <span class="p">{</span> <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">transform</span><span class="o">:</span> <span class="n">scale</span><span class="p">(</span><span class="m">0</span><span class="p">)</span> <span class="p">}</span>
+  <span class="nt">100</span><span class="o">%</span> <span class="p">{</span>
+    <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">transform</span><span class="o">:</span> <span class="n">scale</span><span class="p">(</span><span class="m">1</span><span class="o">.</span><span class="m">0</span><span class="p">);</span>
+    <span class="nb">opacity</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">@keyframes</span> <span class="nt">sk-scaleout</span> <span class="p">{</span>
+  <span class="nt">0</span><span class="o">%</span> <span class="p">{</span>
+    <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">transform</span><span class="o">:</span> <span class="n">scale</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+    <span class="n">transform</span><span class="o">:</span> <span class="n">scale</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+  <span class="p">}</span> <span class="nt">100</span><span class="o">%</span> <span class="p">{</span>
+    <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">transform</span><span class="o">:</span> <span class="n">scale</span><span class="p">(</span><span class="m">1</span><span class="o">.</span><span class="m">0</span><span class="p">);</span>
+    <span class="n">transform</span><span class="o">:</span> <span class="n">scale</span><span class="p">(</span><span class="m">1</span><span class="o">.</span><span class="m">0</span><span class="p">);</span>
+    <span class="nb">opacity</span><span class="o">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="p">}</span>
 </pre></div>
   ]]></message>
   <message id="src-layout"><![CDATA[

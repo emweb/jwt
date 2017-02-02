@@ -102,7 +102,22 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		}
 		WItemDelegate.WidgetRef widgetRef = new WItemDelegate.WidgetRef(widget);
 		boolean isNew = false;
+		boolean haveCheckBox = (index != null) ? !(index
+				.getData(ItemDataRole.CheckStateRole) == null) : false;
+		boolean haveLink = (index != null) ? !(index
+				.getData(ItemDataRole.LinkRole) == null) : false;
+		boolean haveIcon = (index != null) ? !(index
+				.getData(ItemDataRole.DecorationRole) == null) : false;
 		if (!!EnumUtils.mask(flags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
+			if (widgetRef.w != null) {
+				if (haveCheckBox != (this.checkBox(widgetRef, index, false) != null)
+						|| haveLink != (this.anchorWidget(widgetRef, index,
+								false) != null)
+						|| haveIcon != (this
+								.iconWidget(widgetRef, index, false) != null)) {
+					widgetRef.w = null;
+				}
+			}
 			if (!(widgetRef.w != null)) {
 				isNew = true;
 				IndexText t = new IndexText(index);
@@ -118,10 +133,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			if (!(index != null)) {
 				return widgetRef.w;
 			}
-			boolean haveCheckBox = false;
 			Object checkedData = index.getData(ItemDataRole.CheckStateRole);
 			if (!(checkedData == null)) {
-				haveCheckBox = true;
 				CheckState state = checkedData.getClass().equals(Boolean.class) ? ((Boolean) checkedData) ? CheckState.Checked
 						: CheckState.Unchecked
 						: checkedData.getClass().equals(CheckState.class) ? ((CheckState) checkedData)
@@ -129,6 +142,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				IndexCheckBox icb = this.checkBox(
 						widgetRef,
 						index,
+						true,
 						true,
 						!EnumUtils.mask(index.getFlags(),
 								ItemFlag.ItemIsTristate).isEmpty());
@@ -144,7 +158,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			Object linkData = index.getData(ItemDataRole.LinkRole);
 			if (!(linkData == null)) {
 				WLink link = ((WLink) linkData);
-				IndexAnchor a = this.anchorWidget(widgetRef, index);
+				IndexAnchor a = this.anchorWidget(widgetRef, index, true);
 				a.setLink(link);
 				a.setTarget(link.getTarget());
 			}
@@ -211,7 +225,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		WItemDelegate.WidgetRef w = new WItemDelegate.WidgetRef(widget);
 		if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsUserCheckable)
 				.isEmpty()) {
-			IndexCheckBox cb = this.checkBox(w, index, false, false);
+			IndexCheckBox cb = this.checkBox(w, index, false);
 			if (cb != null) {
 				cb.setIndex(index);
 			}
@@ -467,7 +481,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	}
 
 	private IndexCheckBox checkBox(final WItemDelegate.WidgetRef w,
-			final WModelIndex index, boolean autoCreate, boolean triState) {
+			final WModelIndex index, boolean autoCreate, boolean update,
+			boolean triState) {
 		IndexCheckBox checkBox = ((w.w.find("c")) instanceof IndexCheckBox ? (IndexCheckBox) (w.w
 				.find("c")) : null);
 		if (!(checkBox != null)) {
@@ -500,13 +515,20 @@ public class WItemDelegate extends WAbstractItemDelegate {
 				return null;
 			}
 		}
-		checkBox.setTristate(triState);
+		if (update) {
+			checkBox.setTristate(triState);
+		}
 		return checkBox;
 	}
 
 	private final IndexCheckBox checkBox(final WItemDelegate.WidgetRef w,
 			final WModelIndex index, boolean autoCreate) {
-		return checkBox(w, index, autoCreate, false);
+		return checkBox(w, index, autoCreate, false, false);
+	}
+
+	private final IndexCheckBox checkBox(final WItemDelegate.WidgetRef w,
+			final WModelIndex index, boolean autoCreate, boolean update) {
+		return checkBox(w, index, autoCreate, update, false);
 	}
 
 	private IndexText textWidget(final WItemDelegate.WidgetRef w,
@@ -522,7 +544,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 		if (image != null || !autoCreate) {
 			return image;
 		}
-		IndexContainerWidget wc = ((w.w.find("a")) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
+		WContainerWidget wc = ((w.w.find("a")) instanceof IndexAnchor ? (IndexAnchor) (w.w
 				.find("a")) : null);
 		if (!(wc != null)) {
 			wc = ((w.w.find("o")) instanceof IndexContainerWidget ? (IndexContainerWidget) (w.w
@@ -554,10 +576,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	}
 
 	private IndexAnchor anchorWidget(final WItemDelegate.WidgetRef w,
-			final WModelIndex index) {
+			final WModelIndex index, boolean autoCreate) {
 		IndexAnchor anchor = ((w.w.find("a")) instanceof IndexAnchor ? (IndexAnchor) (w.w
 				.find("a")) : null);
-		if (anchor != null) {
+		if (anchor != null || !autoCreate) {
 			return anchor;
 		}
 		anchor = new IndexAnchor(index);
@@ -582,6 +604,11 @@ public class WItemDelegate extends WAbstractItemDelegate {
 			w.w = anchor;
 		}
 		return anchor;
+	}
+
+	private final IndexAnchor anchorWidget(final WItemDelegate.WidgetRef w,
+			final WModelIndex index) {
+		return anchorWidget(w, index, false);
 	}
 
 	private void onCheckedChange(IndexCheckBox cb) {

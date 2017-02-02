@@ -3069,7 +3069,7 @@ public class WApplication extends WObject {
 	}
 
 	String encodeSignal(final String objectId, final String name) {
-		return (objectId.equals("app") ? this.getId() : objectId) + '.' + name;
+		return objectId + '.' + name;
 	}
 
 	WeakValueMap<String, AbstractEventSignal> exposedSignals() {

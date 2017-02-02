@@ -760,6 +760,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 		if (this.isRemoved(parent)) {
 			return;
 		}
+		this.startShiftModelIndexes(parent, start, end - start + 1,
+				this.mappedIndexes_);
 		WModelIndex pparent = this.mapFromSource(parent);
 		WBatchEditProxyModel.Item item = this.itemFromIndex(pparent);
 		int count = end - start + 1;
@@ -793,8 +795,6 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				this.endInsertRows();
 			}
 		}
-		this.shiftModelIndexes(parent, start, end - start + 1,
-				this.mappedIndexes_);
 	}
 
 	private void sourceRowsAboutToBeRemoved(final WModelIndex parent,
@@ -817,13 +817,15 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 				item.removedRows_.remove(0 + remi);
 			}
 		}
+		this.startShiftModelIndexes(parent, start, -(end - start + 1),
+				this.mappedIndexes_);
 	}
 
 	private void sourceRowsRemoved(final WModelIndex parent, int start, int end) {
 		if (this.isRemoved(parent)) {
 			return;
 		}
-		this.shiftModelIndexes(parent, start, -(end - start + 1),
+		this.endShiftModelIndexes(parent, start, -(end - start + 1),
 				this.mappedIndexes_);
 	}
 

@@ -565,13 +565,12 @@ public class WDialog extends WPopupWidget {
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		if (this.contents_ != null && this.isHidden() != hidden) {
 			if (!hidden) {
-				WApplication app = WApplication.getInstance();
 				if (this.footer_ != null) {
 					for (int i = 0; i < this.getFooter().getCount(); ++i) {
 						WPushButton b = ((this.getFooter().getWidget(i)) instanceof WPushButton ? (WPushButton) (this
 								.getFooter().getWidget(i)) : null);
 						if (b != null && b.isDefault()) {
-							this.enterConnection1_ = app.globalEnterPressed()
+							this.enterConnection1_ = this.enterPressed()
 									.addListener(this, new Signal.Listener() {
 										public void trigger() {
 											WDialog.this.onDefaultPressed();
@@ -588,12 +587,22 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 				if (this.escapeIsReject_) {
-					this.escapeConnection1_ = app.globalEscapePressed()
-							.addListener(this, new Signal.Listener() {
-								public void trigger() {
-									WDialog.this.onEscapePressed();
-								}
-							});
+					if (this.isModal()) {
+						this.escapeConnection1_ = this.escapePressed()
+								.addListener(this, new Signal.Listener() {
+									public void trigger() {
+										WDialog.this.onEscapePressed();
+									}
+								});
+					} else {
+						this.escapeConnection1_ = WApplication.getInstance()
+								.globalEscapePressed()
+								.addListener(this, new Signal.Listener() {
+									public void trigger() {
+										WDialog.this.onEscapePressed();
+									}
+								});
+					}
 					this.escapeConnection2_ = this.impl_.escapePressed()
 							.addListener(this, new Signal.Listener() {
 								public void trigger() {
@@ -796,7 +805,8 @@ public class WDialog extends WPopupWidget {
 					+ ","
 					+ (this.resized_.isConnected() ? '"' + this.resized_
 							.getName() + '"' : "null") + ");");
-			if (!app.getEnvironment().agentIsIElt(9)) {
+			if (!app.getEnvironment().agentIsIElt(9)
+					&& !app.getEnvironment().hasAjax()) {
 				String js = WString.tr("Wt.WDialog.CenterJS").toString();
 				StringUtils.replace(js, "$el", "'" + this.getId() + "'");
 				StringUtils.replace(js, "$centerX", centerX ? "1" : "0");

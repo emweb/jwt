@@ -453,6 +453,9 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * The widget to be identified as source in the dropEvent may be given
 	 * explicitly, and will default to this widget otherwise.
 	 * <p>
+	 * When using a touch interface, the widget can also be dragged after a long
+	 * press.
+	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, drag&amp;drop does not
 	 * work.</i>

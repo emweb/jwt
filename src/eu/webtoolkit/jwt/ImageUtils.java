@@ -78,7 +78,7 @@ class ImageUtils {
 	}
 
 	public static WPoint getJpegSize(final String fileName) {
-		List<Byte> header = FileUtils.fileHeader(fileName, 1000);
+		List<Byte> header = FileUtils.fileHeader(fileName, 2048);
 		int pos = 2;
 		while (toUnsigned(header.get(pos)) == 0xFF) {
 			if (toUnsigned(header.get(pos + 1)) == 0xC0

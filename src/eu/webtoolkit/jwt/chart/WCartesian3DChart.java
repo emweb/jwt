@@ -2202,32 +2202,32 @@ public class WCartesian3DChart extends WGLWidget {
 	private void deleteOffscreenBuffer() {
 		if (!this.offscreenDepthbuffer_.isNull()) {
 			this.deleteRenderbuffer(this.offscreenDepthbuffer_);
+			this.offscreenDepthbuffer_.clear();
 		}
-		this.offscreenDepthbuffer_.clear();
 		if (!this.intersectionLinesFramebuffer_.isNull()) {
 			this.deleteFramebuffer(this.intersectionLinesFramebuffer_);
+			this.intersectionLinesFramebuffer_.clear();
 		}
-		this.intersectionLinesFramebuffer_.clear();
 		if (!this.positionFramebuffer_.isNull()) {
 			this.deleteFramebuffer(this.positionFramebuffer_);
+			this.positionFramebuffer_.clear();
 		}
-		this.positionFramebuffer_.clear();
 		if (!this.meshIndexFramebuffer_.isNull()) {
 			this.deleteFramebuffer(this.meshIndexFramebuffer_);
+			this.meshIndexFramebuffer_.clear();
 		}
-		this.meshIndexFramebuffer_.clear();
 		if (!this.intersectionLinesTexture_.isNull()) {
 			this.deleteTexture(this.intersectionLinesTexture_);
+			this.intersectionLinesTexture_.clear();
 		}
-		this.intersectionLinesTexture_.clear();
 		if (!this.meshIndexTexture_.isNull()) {
 			this.deleteTexture(this.meshIndexTexture_);
+			this.meshIndexTexture_.clear();
 		}
-		this.meshIndexTexture_.clear();
 		if (!this.positionTexture_.isNull()) {
 			this.deleteTexture(this.positionTexture_);
+			this.positionTexture_.clear();
 		}
-		this.positionTexture_.clear();
 	}
 
 	private void renderIntersectionLines() {

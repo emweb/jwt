@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
  * 
  * @see WTimeEdit
  * @see WTime
- * @see WTimePicker
  */
 public class WTimeValidator extends WRegExpValidator {
 	private static Logger logger = LoggerFactory

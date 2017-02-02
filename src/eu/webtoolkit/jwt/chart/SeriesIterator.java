@@ -182,6 +182,7 @@ public class SeriesIterator {
 	private static final int TICK_LENGTH = 5;
 	private static final int CURVE_LABEL_PADDING = 10;
 	private static final int DEFAULT_CURVE_LABEL_WIDTH = 100;
+	private static final int CURVE_SELECTION_DISTANCE_SQUARED = 400;
 
 	static int toZoomLevel(double zoomFactor) {
 		return (int) Math.floor(Math.log(zoomFactor) / Math.log(2.0) + 0.5) + 1;

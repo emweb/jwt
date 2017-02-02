@@ -403,6 +403,12 @@ public class WMenuItem extends WContainerWidget {
 	 * <p>
 	 * Ownership of the <code>subMenu</code> is transferred to the item. In most
 	 * cases, the sub menu would use the same contents stack as the parent menu.
+	 * <p>
+	 * Note that adding a submenu makes this item not
+	 * {@link WMenuItem#isSelectable() selectable} by default.
+	 * <p>
+	 * 
+	 * @see WMenuItem#setSelectable(boolean selectable)
 	 */
 	public void setMenu(WMenu menu) {
 		this.subMenu_ = menu;
@@ -413,6 +419,12 @@ public class WMenuItem extends WContainerWidget {
 			sparent.removeWidget(this.subMenu_);
 		}
 		this.addWidget(this.subMenu_);
+		if (this.subMenu_.isPopup() && this.getParentMenu() != null
+				&& this.getParentMenu().isPopup()) {
+			this.subMenu_.getWebWidget().setZIndex(
+					Math.max(this.getParentMenu().getZIndex() + 100,
+							this.subMenu_.getZIndex()));
+		}
 		WPopupMenu popup = ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_)
 				: null);
 		if (popup != null) {
@@ -925,6 +937,13 @@ public class WMenuItem extends WContainerWidget {
 	void setParentMenu(WMenu menu) {
 		this.menu_ = menu;
 		this.updateInternalPath();
+		if (menu != null && menu.isPopup() && this.subMenu_ != null
+				&& this.subMenu_.isPopup()) {
+			this.subMenu_.getWebWidget()
+					.setZIndex(
+							Math.max(menu.getZIndex() + 100,
+									this.subMenu_.getZIndex()));
+		}
 	}
 
 	private void selectNotLoaded() {

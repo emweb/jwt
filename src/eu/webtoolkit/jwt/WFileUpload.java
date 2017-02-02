@@ -408,6 +408,8 @@ public class WFileUpload extends WWebWidget {
 	 */
 	public void setFilters(final String acceptAttributes) {
 		this.acceptAttributes_ = acceptAttributes;
+		this.flags_.set(BIT_ACCEPT_ATTRIBUTE_CHANGED, true);
+		this.repaint();
 	}
 
 	private static String CHANGE_SIGNAL = "M_change";
@@ -417,6 +419,7 @@ public class WFileUpload extends WWebWidget {
 	private static final int BIT_UPLOADING = 2;
 	private static final int BIT_MULTIPLE = 3;
 	private static final int BIT_ENABLED_CHANGED = 4;
+	private static final int BIT_ACCEPT_ATTRIBUTE_CHANGED = 5;
 	BitSet flags_;
 	private int textSize_;
 	private List<UploadedFile> uploadedFiles_;
@@ -436,6 +439,12 @@ public class WFileUpload extends WWebWidget {
 					new Signal2.Listener<Long, Long>() {
 						public void trigger(Long e1, Long e2) {
 							WFileUpload.this.onData(e1, e2);
+						}
+					});
+			this.fileUploadTarget_.dataExceeded().addListener(this,
+					new Signal1.Listener<Long>() {
+						public void trigger(Long e1) {
+							WFileUpload.this.onDataExceeded(e1);
 						}
 					});
 			this.setJavaScriptMember(WT_RESIZE_JS,
@@ -458,26 +467,23 @@ public class WFileUpload extends WWebWidget {
 
 	private void onData(long current, long total) {
 		this.dataReceived_.trigger(current, total);
-		WebSession.Handler h = WebSession.Handler.getInstance();
-		long dataExceeded = 0L;
-		h.setRequest((WebRequest) null, (WebResponse) null);
-		if (dataExceeded != 0) {
-			this.doJavaScript("Wt3_3_6.$('if" + this.getId() + "').src='"
-					+ this.fileUploadTarget_.getUrl() + "';");
-			if (this.flags_.get(BIT_UPLOADING)) {
-				this.flags_.clear(BIT_UPLOADING);
-				this.handleFileTooLarge(dataExceeded);
-				WApplication app = WApplication.getInstance();
-				app.triggerUpdate();
-				app.enableUpdates(false);
-			}
-			return;
-		}
 		if (this.progressBar_ != null && this.flags_.get(BIT_UPLOADING)) {
 			this.progressBar_.setRange(0, (double) total);
 			this.progressBar_.setValue((double) current);
 			WApplication app = WApplication.getInstance();
 			app.triggerUpdate();
+		}
+	}
+
+	private void onDataExceeded(long dataExceeded) {
+		this.doJavaScript("Wt3_3_6.$('if" + this.getId() + "').src='"
+				+ this.fileUploadTarget_.getUrl() + "';");
+		if (this.flags_.get(BIT_UPLOADING)) {
+			this.flags_.clear(BIT_UPLOADING);
+			this.handleFileTooLarge(dataExceeded);
+			WApplication app = WApplication.getInstance();
+			app.triggerUpdate();
+			app.enableUpdates(false);
 		}
 	}
 
@@ -524,9 +530,17 @@ public class WFileUpload extends WWebWidget {
 			} else {
 				inputE.callMethod("disabled=true");
 			}
-			inputE.setAttribute("accept", this.acceptAttributes_);
-			this.flags_.clear(BIT_ENABLED_CHANGED);
 		}
+		if (this.flags_.get(BIT_ACCEPT_ATTRIBUTE_CHANGED)
+				|| this.flags_.get(BIT_ENABLED_CHANGED)) {
+			if (!(inputE != null)) {
+				inputE = DomElement.getForUpdate("in" + this.getId(),
+						DomElementType.DomElement_INPUT);
+			}
+			inputE.setAttribute("accept", this.acceptAttributes_);
+		}
+		this.flags_.clear(BIT_ENABLED_CHANGED);
+		this.flags_.clear(BIT_ACCEPT_ATTRIBUTE_CHANGED);
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
 		if (change != null && change.needsUpdate(all)) {
 			if (!(inputE != null)) {

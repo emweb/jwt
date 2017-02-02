@@ -213,6 +213,7 @@ class FormWidgets extends TopicWidget {
 	private WWidget fileUpload() {
 		WTemplate result = new TopicTemplate("forms-fileUpload");
 		result.bindWidget("FileUpload", FileUpload());
+		result.bindWidget("FileDrop", FileDrop());
 		return result;
 	}
 
@@ -1029,6 +1030,77 @@ class FormWidgets extends TopicWidget {
 			}
 		});
 		return container;
+	}
+
+	WWidget FileDrop() {
+		final WFileDropWidget dropWidget = new WFileDropWidget();
+		dropWidget.drop().addListener(this,
+				new Signal1.Listener<List<WFileDropWidget.File>>() {
+					public void trigger(List<WFileDropWidget.File> files) {
+						final int maxFiles = 5;
+						int prevNbFiles = dropWidget.getUploads().size()
+								- files.size();
+						for (int i = 0; i < files.size(); i++) {
+							if (prevNbFiles + i >= maxFiles) {
+								dropWidget.cancelUpload(files.get(i));
+								continue;
+							}
+							WContainerWidget block = new WContainerWidget(
+									dropWidget);
+							block.setToolTip(files.get(i).getClientFileName());
+							block.addStyleClass("upload-block spinner");
+						}
+						if (dropWidget.getUploads().size() >= maxFiles) {
+							dropWidget.setAcceptDrops(false);
+						}
+					}
+				});
+		dropWidget.uploaded().addListener(this,
+				new Signal1.Listener<WFileDropWidget.File>() {
+					public void trigger(WFileDropWidget.File file) {
+						List<WFileDropWidget.File> uploads = dropWidget
+								.getUploads();
+						int idx = 0;
+						for (; idx != uploads.size(); ++idx) {
+							if (uploads.get(idx) == file) {
+								break;
+							}
+						}
+						dropWidget.getWidget(idx).removeStyleClass("spinner");
+						dropWidget.getWidget(idx).addStyleClass("ready");
+					}
+				});
+		dropWidget.tooLarge().addListener(this,
+				new Signal2.Listener<WFileDropWidget.File, Long>() {
+					public void trigger(WFileDropWidget.File file, Long size) {
+						List<WFileDropWidget.File> uploads = dropWidget
+								.getUploads();
+						int idx = 0;
+						for (; idx != uploads.size(); ++idx) {
+							if (uploads.get(idx) == file) {
+								break;
+							}
+						}
+						dropWidget.getWidget(idx).removeStyleClass("spinner");
+						dropWidget.getWidget(idx).addStyleClass("failed");
+					}
+				});
+		dropWidget.uploadFailed().addListener(this,
+				new Signal1.Listener<WFileDropWidget.File>() {
+					public void trigger(WFileDropWidget.File file) {
+						List<WFileDropWidget.File> uploads = dropWidget
+								.getUploads();
+						int idx = 0;
+						for (; idx != uploads.size(); ++idx) {
+							if (uploads.get(idx) == file) {
+								break;
+							}
+						}
+						dropWidget.getWidget(idx).removeStyleClass("spinner");
+						dropWidget.getWidget(idx).addStyleClass("failed");
+					}
+				});
+		return dropWidget;
 	}
 
 	WWidget PushButton() {

@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * A Time field editor.
  * <p>
  * 
- * @see WTimePicker
  * @see WTime
  * @see WTimeValidator Styling through CSS is not applicable.
  */
@@ -192,42 +191,74 @@ public class WTimeEdit extends WLineEdit {
 		return null;
 	}
 
+	/**
+	 * Sets the step size for the hours.
+	 */
 	public void setHourStep(int step) {
 		this.timePicker_.setHourStep(step);
 	}
 
+	/**
+	 * Returns the step size for the hours.
+	 */
 	public int getHourStep() {
 		return this.timePicker_.getHourStep();
 	}
 
+	/**
+	 * Sets the step size for the minutes.
+	 */
 	public void setMinuteStep(int step) {
 		this.timePicker_.setMinuteStep(step);
 	}
 
+	/**
+	 * Returns the step size for the minutes.
+	 */
 	public int getMinuteStep() {
 		return this.timePicker_.getMinuteStep();
 	}
 
+	/**
+	 * Sets the step size for the seconds.
+	 */
 	public void setSecondStep(int step) {
 		this.timePicker_.setSecondStep(step);
 	}
 
+	/**
+	 * Returns the step size for the seconds.
+	 */
 	public int getSecondStep() {
 		return this.timePicker_.getSecondStep();
 	}
 
+	/**
+	 * Sets the step size for the milliseconds.
+	 */
 	public void setMillisecondStep(int step) {
 		this.timePicker_.setMillisecondStep(step);
 	}
 
+	/**
+	 * Returns the step size for the milliseconds.
+	 */
 	public int getMillisecondStep() {
 		return this.timePicker_.getMillisecondStep();
 	}
 
+	/**
+	 * Enables or disables wraparound.
+	 * <p>
+	 * Wraparound is enabled by default
+	 */
 	public void setWrapAroundEnabled(boolean enabled) {
 		this.timePicker_.setWrapAroundEnabled(enabled);
 	}
 
+	/**
+	 * Returns whether wraparound is enabled.
+	 */
 	public boolean isWrapAroundEnabled() {
 		return this.timePicker_.isWrapAroundEnabled();
 	}
@@ -272,18 +303,12 @@ public class WTimeEdit extends WLineEdit {
 		super.propagateSetEnabled(enabled);
 	}
 
-	/**
-	 * Sets the value from the time scroller to the line edit.
-	 */
-	protected void setFromTimePicker() {
+	private void setFromTimePicker() {
 		this.setTime(this.timePicker_.getTime());
 		this.changed().trigger();
 	}
 
-	/**
-	 * Sets the value from the line edit to the time scroller.
-	 */
-	protected void setFromLineEdit() {
+	private void setFromLineEdit() {
 		WTime t = WTime.fromString(this.getText(), this.getFormat());
 		if ((t != null && t.isValid())) {
 			this.timePicker_.setTime(t);

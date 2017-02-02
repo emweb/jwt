@@ -228,7 +228,8 @@ public class RegistrationWidget extends WTemplateFormView {
 			User user = this.model_.doRegister();
 			if (user.isValid()) {
 				this.registerUserDetails(user);
-				if (!this.model_.getBaseAuth().isEmailVerificationRequired()) {
+				if (!this.model_.getBaseAuth().isEmailVerificationRequired()
+						|| user.getUnverifiedEmail().length() == 0) {
 					this.model_.loginUser(this.model_.getLogin(), user);
 				} else {
 					if (this.authWidget_ != null) {

@@ -28,6 +28,10 @@ import org.slf4j.LoggerFactory;
 public class UploadedFile {
 	private static Logger logger = LoggerFactory.getLogger(UploadedFile.class);
 
+	public UploadedFile() {
+		this.fileInfo_ = null;
+	}
+
 	UploadedFile(final String spoolName, final String clientFileName,
 			final String contentType) {
 		this.fileInfo_ = null;

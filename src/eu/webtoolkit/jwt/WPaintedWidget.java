@@ -646,16 +646,15 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
-			app.loadJavaScript("js/WPaintedWidget.js", wtjs11());
-		}
-		if (app != null && this.getMethod() == WPaintedWidget.Method.HtmlCanvas
-				&& this.jsObjects_.size() > 0) {
-			this.setFormObject(true);
 			app.loadJavaScript("js/WPaintedWidget.js", wtjs10());
-			app.loadJavaScript("js/WJavaScriptObjectStorage.js", wtjs20());
-			this.jsDefined_ = true;
-		} else {
-			this.jsDefined_ = false;
+			app.loadJavaScript("js/WPaintedWidget.js", wtjs11());
+			if (this.jsObjects_.size() > 0) {
+				this.setFormObject(true);
+				app.loadJavaScript("js/WJavaScriptObjectStorage.js", wtjs20());
+				this.jsDefined_ = true;
+			} else {
+				this.jsDefined_ = false;
+			}
 		}
 	}
 
@@ -733,7 +732,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPaintedWidget",
-				"function(J,p){jQuery.data(p,\"obj\",this);this.canvas=document.getElementById(\"c\"+p.id);this.repaint=function(){};this.widget=p}");
+				"function(J,p){jQuery.data(p,\"obj\",this);var q=this;this.imagePreloader=null;this.images=[];this.canvas=document.getElementById(\"c\"+p.id);this.repaint=function(){};this.widget=p;this.cancelPreloader=function(){var r=q.imagePreloader;r&&r.cancel();q.imagePreloader=null}}");
 	}
 
 	static WJavaScriptPreamble wtjs11() {

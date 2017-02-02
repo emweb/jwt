@@ -507,14 +507,15 @@ public class WImage extends WInteractWidget {
 			img.setId("i" + this.getId());
 		}
 		if (this.flags_.get(BIT_IMAGE_LINK_CHANGED) || all) {
+			String url = "";
 			if (!this.imageLink_.isNull()) {
-				String url = resolveRelativeUrl(this.imageLink_.getUrl());
-				WApplication app = WApplication.getInstance();
-				url = app.encodeUntrustedUrl(url);
-				img.setProperty(Property.PropertySrc, url);
+				url = resolveRelativeUrl(this.imageLink_.getUrl());
 			} else {
-				img.setProperty(Property.PropertySrc, "#");
+				url = WApplication.getRelativeResourcesUrl() + "1pxtrans.gif";
 			}
+			WApplication app = WApplication.getInstance();
+			url = app.encodeUntrustedUrl(url);
+			img.setProperty(Property.PropertySrc, url);
 			this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
 		}
 		if (this.flags_.get(BIT_ALT_TEXT_CHANGED) || all) {

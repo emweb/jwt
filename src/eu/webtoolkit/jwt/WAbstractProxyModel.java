@@ -44,6 +44,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 */
 	public WAbstractProxyModel(WObject parent) {
 		super(parent);
+		this.itemsToShift_ = new ArrayList<WAbstractProxyModel.BaseItem>();
 		this.sourceModel_ = null;
 	}
 
@@ -322,10 +323,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * columns to proxy rows or columns, per hierarchical parent.
 	 * <p>
 	 * It may be convenient to start from this item class as a base class so
-	 * that
-	 * {@link WAbstractProxyModel#shiftModelIndexes(WModelIndex sourceParent, int start, int count, SortedMap items)
-	 * WAbstractProxyModel#shiftModelIndexes()} can be used to update this data
-	 * structure when the source model adds or removes rows.
+	 * that shiftModelIndexes() can be used to update this data structure when
+	 * the source model adds or removes rows.
 	 * <p>
 	 * You will typically use your derived class of this item as the internal
 	 * pointer for proxy model indexes: a proxy model index will have an item as
@@ -360,19 +359,16 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * inserted or removed rows. When removing rows (count &lt; 0), items may
 	 * possibly be removed and deleted.
 	 */
-	protected void shiftModelIndexes(final WModelIndex sourceParent, int start,
-			int count,
+	protected void startShiftModelIndexes(final WModelIndex sourceParent,
+			int start, int count,
 			final SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> items) {
-		List<WAbstractProxyModel.BaseItem> shifted = new ArrayList<WAbstractProxyModel.BaseItem>();
 		List<WAbstractProxyModel.BaseItem> erased = new ArrayList<WAbstractProxyModel.BaseItem>();
 		WModelIndex startIndex = null;
 		if (this.getSourceModel().getRowCount(sourceParent) == 0) {
 			startIndex = sourceParent;
 		} else {
 			if (start >= this.getSourceModel().getRowCount(sourceParent)) {
-				startIndex = this.getSourceModel().getIndex(
-						this.getSourceModel().getRowCount(sourceParent) - 1, 0,
-						sourceParent);
+				return;
 			} else {
 				startIndex = this.getSourceModel().getIndex(start, 0,
 						sourceParent);
@@ -396,7 +392,12 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 					break;
 				}
 				if ((p == sourceParent || (p != null && p.equals(sourceParent)))) {
-					shifted.add(it.getValue());
+					if (count < 0 && i.getRow() >= start
+							&& i.getRow() < start + -count) {
+						erased.add(it.getValue());
+					} else {
+						this.itemsToShift_.add(it.getValue());
+					}
 				} else {
 					if (count < 0) {
 						do {
@@ -404,7 +405,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 									.getParent() != null && p.getParent()
 									.equals(sourceParent)))
 									&& p.getRow() >= start
-									&& p.getRow() < start - count) {
+									&& p.getRow() < start + -count) {
 								erased.add(it.getValue());
 								break;
 							} else {
@@ -416,28 +417,32 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 				}
 			}
 		}
+		for (int i = 0; i < this.itemsToShift_.size(); ++i) {
+			WAbstractProxyModel.BaseItem item = this.itemsToShift_.get(i);
+			items.remove(item.sourceIndex_);
+			item.sourceIndex_ = this.getSourceModel().getIndex(
+					item.sourceIndex_.getRow() + count,
+					item.sourceIndex_.getColumn(), sourceParent);
+		}
 		for (int i = 0; i < erased.size(); ++i) {
 			items.remove(erased.get(i).sourceIndex_);
 			;
 		}
-		for (int i = 0; i < shifted.size(); ++i) {
-			WAbstractProxyModel.BaseItem item = shifted.get(i);
-			items.remove(item.sourceIndex_);
-			if (item.sourceIndex_.getRow() + count >= start) {
-				item.sourceIndex_ = this.getSourceModel().getIndex(
-						item.sourceIndex_.getRow() + count,
-						item.sourceIndex_.getColumn(), sourceParent);
-			} else {
-				;
-				shifted.set(i, null);
-			}
-		}
-		for (int i = 0; i < shifted.size(); ++i) {
-			if (shifted.get(i) != null) {
-				items.put(shifted.get(i).sourceIndex_, shifted.get(i));
-			}
+		if (count > 0) {
+			this.endShiftModelIndexes(sourceParent, start, count, items);
 		}
 	}
 
+	protected void endShiftModelIndexes(final WModelIndex sourceParent,
+			int start, int count,
+			final SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> items) {
+		for (int i = 0; i < this.itemsToShift_.size(); ++i) {
+			items.put(this.itemsToShift_.get(i).sourceIndex_,
+					this.itemsToShift_.get(i));
+		}
+		this.itemsToShift_.clear();
+	}
+
+	private List<WAbstractProxyModel.BaseItem> itemsToShift_;
 	private WAbstractItemModel sourceModel_;
 }

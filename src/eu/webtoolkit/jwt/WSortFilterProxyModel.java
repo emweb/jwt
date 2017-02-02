@@ -714,7 +714,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	}
 
 	private void sourceRowsInserted(final WModelIndex parent, int start, int end) {
-		this.shiftModelIndexes(parent, end + 1, end - start + 1,
+		this.startShiftModelIndexes(parent, end + 1, end - start + 1,
 				this.mappedIndexes_);
 		if (this.inserting_) {
 			return;
@@ -768,11 +768,13 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 				this.endRemoveRows();
 			}
 		}
+		int count = end - start + 1;
+		this.startShiftModelIndexes(parent, start, -count, this.mappedIndexes_);
 	}
 
 	private void sourceRowsRemoved(final WModelIndex parent, int start, int end) {
 		int count = end - start + 1;
-		this.shiftModelIndexes(parent, start, -count, this.mappedIndexes_);
+		this.endShiftModelIndexes(parent, start, -count, this.mappedIndexes_);
 		WModelIndex pparent = this.mapFromSource(parent);
 		if ((parent != null) && !(pparent != null)) {
 			return;

@@ -64,36 +64,29 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		}
 		DomElement el = text != null ? text : result;
 		boolean hasJsObjects = this.widget_.jsObjects_.size() > 0;
-		if (hasJsObjects) {
+		WApplication app = WApplication.getInstance();
+		{
 			StringBuilder ss = new StringBuilder();
-			WApplication app = WApplication.getInstance();
 			ss.append("new Wt3_3_6.WPaintedWidget(")
 					.append(app.getJavaScriptClass()).append(",")
 					.append(this.widget_.getJsRef()).append(");");
+			el.callJavaScript(ss.toString());
+		}
+		String updateAreasJs = "";
+		if (hasJsObjects) {
+			StringBuilder ss = new StringBuilder();
 			ss.append("new Wt3_3_6.WJavaScriptObjectStorage(")
 					.append(app.getJavaScriptClass()).append(",")
 					.append(this.widget_.getJsRef()).append(");");
 			this.widget_.jsObjects_.updateJs(ss);
 			el.callJavaScript(ss.toString());
-		}
-		canvasDevice.render('c' + this.widget_.getId(), el);
-		if (hasJsObjects) {
-			StringBuilder ss = new StringBuilder();
-			ss.append(this.widget_.getObjJsRef())
-					.append(".repaint=function(){");
-			ss.append(canvasDevice.recordedJs_.toString());
 			if (this.widget_.areaImage_ != null) {
 				this.widget_.areaImage_.setTargetJS(this.widget_.getObjJsRef());
-				ss.append(this.widget_.areaImage_.getUpdateAreasJS());
+				updateAreasJs = this.widget_.areaImage_.getUpdateAreasJS();
 			}
-			ss.append("};");
-			ss.append(this.widget_.getObjJsRef()).append(".repaint();");
-			el.callJavaScript(ss.toString());
-		} else {
-			StringBuilder ss = new StringBuilder();
-			ss.append(canvasDevice.recordedJs_.toString());
-			el.callJavaScript(ss.toString());
 		}
+		canvasDevice.render(this.widget_.getObjJsRef(),
+				'c' + this.widget_.getId(), el, updateAreasJs);
 		if (text != null) {
 			result.addChild(text);
 		}
@@ -123,29 +116,18 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 			el.removeAllChildren();
 		}
 		boolean hasJsObjects = this.widget_.jsObjects_.size() > 0;
+		String updateAreasJs = "";
 		if (hasJsObjects) {
 			StringBuilder ss = new StringBuilder();
 			this.widget_.jsObjects_.updateJs(ss);
 			el.callJavaScript(ss.toString());
-		}
-		canvasDevice.render('c' + this.widget_.getId(), el);
-		if (hasJsObjects) {
-			StringBuilder ss = new StringBuilder();
-			ss.append(this.widget_.getObjJsRef())
-					.append(".repaint=function(){");
-			ss.append(canvasDevice.recordedJs_.toString());
 			if (this.widget_.areaImage_ != null) {
 				this.widget_.areaImage_.setTargetJS(this.widget_.getObjJsRef());
-				ss.append(this.widget_.areaImage_.getUpdateAreasJS());
+				updateAreasJs = this.widget_.areaImage_.getUpdateAreasJS();
 			}
-			ss.append("};");
-			ss.append(this.widget_.getObjJsRef()).append(".repaint();");
-			el.callJavaScript(ss.toString());
-		} else {
-			StringBuilder ss = new StringBuilder();
-			ss.append(canvasDevice.recordedJs_.toString());
-			el.callJavaScript(ss.toString());
 		}
+		canvasDevice.render(this.widget_.getObjJsRef(),
+				'c' + this.widget_.getId(), el, updateAreasJs);
 		result.add(el);
 		;
 	}

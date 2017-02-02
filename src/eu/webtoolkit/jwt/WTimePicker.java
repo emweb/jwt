@@ -19,103 +19,16 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A Time Picker.
- * <p>
- * 
- * @see WTimeEdit
- * @see WTime
- * @see WTimeValidator Styling through CSS is not applicable.
- */
-public class WTimePicker extends WCompositeWidget {
+class WTimePicker extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WTimePicker.class);
 
-	/**
-	 * Creates a new time picker.
-	 */
-	public WTimePicker(WContainerWidget parent) {
-		super(parent);
-		this.format_ = "";
-		this.selectionChanged_ = new Signal(this);
-		this.toggleAmPm_ = new JSlot(2, this);
-		this.init();
-	}
-
-	/**
-	 * Creates a new time picker.
-	 * <p>
-	 * Calls {@link #WTimePicker(WContainerWidget parent)
-	 * this((WContainerWidget)null)}
-	 */
-	public WTimePicker() {
-		this((WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a new time picker.
-	 */
-	public WTimePicker(final WTime time, WContainerWidget parent) {
-		super(parent);
-		this.format_ = "";
-		this.selectionChanged_ = new Signal();
-		this.toggleAmPm_ = new JSlot(2, this);
-		this.init(time);
-	}
-
-	/**
-	 * Creates a new time picker.
-	 * <p>
-	 * Calls {@link #WTimePicker(WTime time, WContainerWidget parent) this(time,
-	 * (WContainerWidget)null)}
-	 */
-	public WTimePicker(final WTime time) {
-		this(time, (WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a new time picker.
-	 */
-	public WTimePicker(WTimeEdit timeEdit, WContainerWidget parent) {
-		super(parent);
-		this.format_ = "";
-		this.timeEdit_ = timeEdit;
-		this.selectionChanged_ = new Signal();
-		this.toggleAmPm_ = new JSlot(2, this);
-		this.init();
-	}
-
-	/**
-	 * Creates a new time picker.
-	 * <p>
-	 * Calls {@link #WTimePicker(WTimeEdit timeEdit, WContainerWidget parent)
-	 * this(timeEdit, (WContainerWidget)null)}
-	 */
 	public WTimePicker(WTimeEdit timeEdit) {
-		this(timeEdit, (WContainerWidget) null);
-	}
-
-	/**
-	 * Creates a new time picker.
-	 */
-	public WTimePicker(final WTime time, WTimeEdit timeEdit,
-			WContainerWidget parent) {
-		super(parent);
+		super();
 		this.format_ = "";
 		this.timeEdit_ = timeEdit;
 		this.selectionChanged_ = new Signal();
 		this.toggleAmPm_ = new JSlot(2, this);
-		this.init(time);
-	}
-
-	/**
-	 * Creates a new time picker.
-	 * <p>
-	 * Calls
-	 * {@link #WTimePicker(WTime time, WTimeEdit timeEdit, WContainerWidget parent)
-	 * this(time, timeEdit, (WContainerWidget)null)}
-	 */
-	public WTimePicker(final WTime time, WTimeEdit timeEdit) {
-		this(time, timeEdit, (WContainerWidget) null);
+		this.init();
 	}
 
 	public void remove() {
@@ -139,9 +52,6 @@ public class WTimePicker extends WCompositeWidget {
 		super.remove();
 	}
 
-	/**
-	 * Returns the time.
-	 */
 	public WTime getTime() {
 		int hours = 0;
 		int minutes = 0;
@@ -173,9 +83,6 @@ public class WTimePicker extends WCompositeWidget {
 		return new WTime(hours, minutes, seconds, milliseconds);
 	}
 
-	/**
-	 * Sets the time.
-	 */
 	public void setTime(final WTime time) {
 		if (!(time != null && time.isValid())) {
 			logger.error(new StringWriter().append("Time is invalid!")
@@ -204,9 +111,6 @@ public class WTimePicker extends WCompositeWidget {
 		}
 	}
 
-	/**
-	 * {@link Signal} emitted when the value is changed.
-	 */
 	public Signal selectionChanged() {
 		return this.selectionChanged_;
 	}

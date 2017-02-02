@@ -2749,15 +2749,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			if (event.getTouches().size() > 1) {
 				this.extendSelection(indices);
 			} else {
-				if (!this.dragEnabled_) {
-					this.select(index, SelectionFlag.ToggleSelect);
-				} else {
-					if (!this.isSelected(index)) {
-						this.select(index, SelectionFlag.ToggleSelect);
-					} else {
-						this.delayedClearAndSelectIndex_ = index;
-					}
-				}
+				this.select(index, SelectionFlag.ToggleSelect);
 			}
 		} else {
 			if (this.isSelected(index)) {

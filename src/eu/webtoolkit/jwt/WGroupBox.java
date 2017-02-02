@@ -121,7 +121,7 @@ public class WGroupBox extends WContainerWidget {
 	}
 
 	/**
-	 * Returns the title.
+	 * Sets the title.
 	 */
 	public void setTitle(final CharSequence title) {
 		this.title_ = WString.toWString(title);

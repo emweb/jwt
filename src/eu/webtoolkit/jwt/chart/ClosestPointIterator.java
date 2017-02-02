@@ -3,7 +3,7 @@
  *
  * See the LICENSE file for terms of use.
  */
-package eu.webtoolkit.jwt.examples.widgetgallery;
+package eu.webtoolkit.jwt.chart;
 
 import java.util.*;
 import java.util.regex.*;

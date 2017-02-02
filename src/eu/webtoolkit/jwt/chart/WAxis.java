@@ -84,6 +84,56 @@ public class WAxis {
 	public static final double AUTO_MAXIMUM = Double.MAX_VALUE;
 
 	/**
+	 * Constructor.
+	 */
+	public WAxis() {
+		this.chart_ = null;
+		this.axis_ = Axis.XAxis;
+		this.visible_ = true;
+		this.location_ = AxisValue.MinimumValue;
+		this.scale_ = AxisScale.LinearScale;
+		this.resolution_ = 0.0;
+		this.labelInterval_ = 0;
+		this.labelBasePoint_ = 0;
+		this.labelFormat_ = new WString();
+		this.defaultLabelFormat_ = true;
+		this.gridLines_ = false;
+		this.pen_ = new WPen();
+		this.gridLinesPen_ = new WPen(WColor.gray);
+		this.margin_ = 0;
+		this.labelAngle_ = 0;
+		this.title_ = new WString();
+		this.titleFont_ = new WFont();
+		this.labelFont_ = new WFont();
+		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
+				AxisValue.MaximumValue);
+		this.segmentMargin_ = 40;
+		this.titleOffset_ = 0;
+		this.textPen_ = new WPen(WColor.black);
+		this.titleOrientation_ = Orientation.Horizontal;
+		this.maxZoom_ = 4.0;
+		this.minimumZoomRange_ = AUTO_MINIMUM;
+		this.zoomMin_ = AUTO_MINIMUM;
+		this.zoomMax_ = AUTO_MAXIMUM;
+		this.zoomRangeDirty_ = true;
+		this.padding_ = 0;
+		this.tickDirection_ = TickDirection.Outwards;
+		this.partialLabelClipping_ = true;
+		this.inverted_ = false;
+		this.labelTransforms_ = new HashMap<AxisValue, WAxis.LabelTransform>();
+		this.renderingMirror_ = false;
+		this.zoomRangeChanged_ = new Signal2<Double, Double>();
+		this.segments_ = new ArrayList<WAxis.Segment>();
+		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
+		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
+				WLength.Unit.Point));
+		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
+		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
+				WLength.Unit.Point));
+		this.segments_.add(new WAxis.Segment());
+	}
+
+	/**
 	 * Returns the axis id.
 	 * <p>
 	 * 
@@ -2109,7 +2159,7 @@ public class WAxis {
 	/**
 	 * Represents a label/tick on the axis.
 	 */
-	static class TickLabel {
+	protected static class TickLabel {
 		private static Logger logger = LoggerFactory.getLogger(TickLabel.class);
 
 		/**
@@ -2159,53 +2209,6 @@ public class WAxis {
 		public TickLabel(double v, WAxis.TickLabel.TickLength length) {
 			this(v, length, new WString());
 		}
-	}
-
-	WAxis() {
-		this.chart_ = null;
-		this.axis_ = Axis.XAxis;
-		this.visible_ = true;
-		this.location_ = AxisValue.MinimumValue;
-		this.scale_ = AxisScale.LinearScale;
-		this.resolution_ = 0.0;
-		this.labelInterval_ = 0;
-		this.labelBasePoint_ = 0;
-		this.labelFormat_ = new WString();
-		this.defaultLabelFormat_ = true;
-		this.gridLines_ = false;
-		this.pen_ = new WPen();
-		this.gridLinesPen_ = new WPen(WColor.gray);
-		this.margin_ = 0;
-		this.labelAngle_ = 0;
-		this.title_ = new WString();
-		this.titleFont_ = new WFont();
-		this.labelFont_ = new WFont();
-		this.roundLimits_ = EnumSet.of(AxisValue.MinimumValue,
-				AxisValue.MaximumValue);
-		this.segmentMargin_ = 40;
-		this.titleOffset_ = 0;
-		this.textPen_ = new WPen(WColor.black);
-		this.titleOrientation_ = Orientation.Horizontal;
-		this.maxZoom_ = 4.0;
-		this.minimumZoomRange_ = AUTO_MINIMUM;
-		this.zoomMin_ = AUTO_MINIMUM;
-		this.zoomMax_ = AUTO_MAXIMUM;
-		this.zoomRangeDirty_ = true;
-		this.padding_ = 0;
-		this.tickDirection_ = TickDirection.Outwards;
-		this.partialLabelClipping_ = true;
-		this.inverted_ = false;
-		this.labelTransforms_ = new HashMap<AxisValue, WAxis.LabelTransform>();
-		this.renderingMirror_ = false;
-		this.zoomRangeChanged_ = new Signal2<Double, Double>();
-		this.segments_ = new ArrayList<WAxis.Segment>();
-		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
-		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
-				WLength.Unit.Point));
-		this.labelFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
-		this.labelFont_.setSize(WFont.Size.FixedSize, new WLength(10,
-				WLength.Unit.Point));
-		this.segments_.add(new WAxis.Segment());
 	}
 
 	/**

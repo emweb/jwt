@@ -63,7 +63,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.currentClippingEnabled_ = false;
 		this.fontMetrics_ = null;
 		this.js_ = new StringWriter();
-		this.recordedJs_ = new StringWriter();
 		this.textElements_ = new ArrayList<DomElement>();
 		this.images_ = new ArrayList<String>();
 		this.textMethod_ = WCanvasPaintDevice.TextMethod.Html5Text;
@@ -468,37 +467,49 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		return this.painter_ != null;
 	}
 
-	void render(final String canvasId, DomElement text) {
+	public void render(final String paintedWidgetJsRef, final String canvasId,
+			DomElement text, final String updateAreasJs) {
 		String canvasVar = "Wt3_3_6.getElement('" + canvasId + "')";
-		this.recordedJs_ = new StringWriter();
-		final StringWriter tmp = this.recordedJs_;
+		StringBuilder tmp = new StringBuilder();
+		tmp.append(paintedWidgetJsRef).append(".repaint=function(){");
 		tmp.append("if(").append(canvasVar).append(".getContext){");
 		if (!this.images_.isEmpty()) {
-			tmp.append("new Wt._p_.ImagePreloader([");
+			tmp.append("var images=").append(paintedWidgetJsRef)
+					.append(".images;");
+		}
+		tmp.append("var ctx=").append(canvasVar).append(".getContext('2d');");
+		tmp.append("if (!ctx.setLineDash) {ctx.setLineDash = function(a){};}");
+		if (!this.paintUpdate_) {
+			tmp.append("ctx.clearRect(0,0,").append(this.getWidth().getValue())
+					.append(",").append(this.getHeight().getValue())
+					.append(");");
+		}
+		this.lastTransformWasIdentity_ = true;
+		tmp.append("ctx.save();").append(this.js_.toString())
+				.append("ctx.restore();");
+		tmp.append("}");
+		tmp.append(updateAreasJs);
+		tmp.append("};");
+		if (!this.images_.isEmpty()) {
+			tmp.append("var o=").append(paintedWidgetJsRef).append(";");
+			tmp.append("o.cancelPreloader();");
+			tmp.append("if(").append(canvasVar).append(".getContext){");
+			tmp.append("o.imagePreloader=new Wt._p_.ImagePreloader([");
 			for (int i = 0; i < this.images_.size(); ++i) {
 				if (i != 0) {
 					tmp.append(',');
 				}
 				tmp.append('\'').append(this.images_.get(i)).append('\'');
 			}
-			tmp.append("],function(images)");
+			tmp.append("],function(images){");
+			tmp.append("var o=").append(paintedWidgetJsRef).append(";");
+			tmp.append("o.images=images;");
+			tmp.append("o.repaint();");
+			tmp.append("});}");
+		} else {
+			tmp.append(paintedWidgetJsRef).append(".repaint();");
 		}
-		tmp.append("{var ctx=").append(canvasVar).append(".getContext('2d');");
-		tmp.append("if (!ctx.setLineDash) {ctx.setLineDash = function(a){};}");
-		if (!this.paintUpdate_) {
-			tmp.append("ctx.clearRect(0,0,")
-					.append(String.valueOf(this.getWidth().getValue()))
-					.append(",")
-					.append(String.valueOf(this.getHeight().getValue()))
-					.append(");");
-		}
-		this.lastTransformWasIdentity_ = true;
-		tmp.append("ctx.save();").append(this.js_.toString())
-				.append("ctx.restore();}");
-		if (!this.images_.isEmpty()) {
-			tmp.append(");");
-		}
-		tmp.append("}");
+		text.callJavaScript(tmp.toString());
 		for (int i = 0; i < this.textElements_.size(); ++i) {
 			text.addChild(this.textElements_.get(i));
 		}
@@ -561,7 +572,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	private boolean currentClippingEnabled_;
 	private ServerSideFontMetrics fontMetrics_;
 	private StringWriter js_;
-	StringWriter recordedJs_;
 	private List<DomElement> textElements_;
 	private List<String> images_;
 
@@ -777,14 +787,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			case NoPen:
 				break;
 			}
-			this.js_.append("ctx.lineWidth=")
-					.append(String
-							.valueOf(this
-									.getPainter()
-									.normalizedPenWidth(
-											this.getPainter().getPen()
-													.getWidth(), true)
-									.getValue())).append(';');
+			char[] buf = new char[30];
+			double lw = this
+					.getPainter()
+					.normalizedPenWidth(this.getPainter().getPen().getWidth(),
+							true).getValue();
+			this.js_.append("ctx.lineWidth=").append(MathUtils.roundJs(lw, 3))
+					.append(';');
 			if (this.currentPen_.getCapStyle() != this.getPainter().getPen()
 					.getCapStyle()) {
 				switch (this.getPainter().getPen().getCapStyle()) {
@@ -837,14 +846,16 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		}
 		if (shadowChanged) {
 			this.currentShadow_ = this.painter_.getShadow();
+			double offsetX = this.currentShadow_.getOffsetX();
+			double offsetY = this.currentShadow_.getOffsetY();
+			double blur = this.currentShadow_.getBlur();
+			char[] buf = new char[30];
 			this.js_.append("ctx.shadowOffsetX=")
-					.append(String.valueOf(this.currentShadow_.getOffsetX()))
-					.append(';')
-					.append("ctx.shadowOffsetY=")
-					.append(String.valueOf(this.currentShadow_.getOffsetY()))
-					.append(';')
-					.append("ctx.shadowBlur=")
-					.append(String.valueOf(this.currentShadow_.getBlur()))
+					.append(MathUtils.roundJs(offsetX, 3)).append(';');
+			this.js_.append("ctx.shadowOffsetY=")
+					.append(MathUtils.roundJs(offsetY, 3)).append(';');
+			this.js_.append("ctx.shadowBlur=")
+					.append(MathUtils.roundJs(blur, 3))
 					.append(';')
 					.append("ctx.shadowColor=")
 					.append(WWebWidget.jsStringLiteral(this.currentShadow_

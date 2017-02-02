@@ -414,4 +414,10 @@ public abstract class WResource extends WObject {
 	}
 
 	private Signal2<Long, Long> dataReceived_ = new Signal2<Long, Long>();
+
+	public Signal1<Long> dataExceeded() {
+		return dataExceeded_;
+	}
+
+	private Signal1<Long> dataExceeded_ = new Signal1<Long>();
 }

@@ -1822,9 +1822,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * A signal that notifies the selection of a new curve.
 	 * <p>
 	 * This signal is emitted if a series is selected using a mouse click or
-	 * long press. The first argument is the model column of the selected
-	 * series. The second argument is the point that was selected, in model
-	 * coordinates.
+	 * long press. The first argument is the selected series. The second
+	 * argument is the point that was selected, in model coordinates.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#setSeriesSelectionEnabled(boolean enabled)
@@ -3092,25 +3091,30 @@ public class WCartesianChart extends WAbstractChart {
 						t.assign(t.multiply(this.curveTransform(series)));
 					}
 					int xSegment = 0;
-					while (xSegment < this.getAxis(Axis.XAxis)
-							.getSegmentCount()
-							&& (this.getAxis(Axis.XAxis).segments_
-									.get(xSegment).renderMinimum > label
-									.getPoint().getX() || this
-									.getAxis(Axis.XAxis).segments_
-									.get(xSegment).renderMaximum < label
-									.getPoint().getX())) {
-						++xSegment;
+					if (!this.isInteractive()) {
+						while (xSegment < this.getAxis(Axis.XAxis)
+								.getSegmentCount()
+								&& (this.getAxis(Axis.XAxis).segments_
+										.get(xSegment).renderMinimum > label
+										.getPoint().getX() || this
+										.getAxis(Axis.XAxis).segments_
+										.get(xSegment).renderMaximum < label
+										.getPoint().getX())) {
+							++xSegment;
+						}
 					}
 					int ySegment = 0;
-					while (ySegment < this.getAxis(series.getAxis())
-							.getSegmentCount()
-							&& (this.getAxis(series.getAxis()).segments_
-									.get(ySegment).renderMinimum > label
-									.getPoint().getY() || this.getAxis(series
-									.getAxis()).segments_.get(ySegment).renderMaximum < label
-									.getPoint().getY())) {
-						++ySegment;
+					if (!this.isInteractive()) {
+						while (ySegment < this.getAxis(series.getAxis())
+								.getSegmentCount()
+								&& (this.getAxis(series.getAxis()).segments_
+										.get(ySegment).renderMinimum > label
+										.getPoint().getY() || this
+										.getAxis(series.getAxis()).segments_
+										.get(ySegment).renderMaximum < label
+										.getPoint().getY())) {
+							++ySegment;
+						}
 					}
 					if (xSegment < this.getAxis(Axis.XAxis).getSegmentCount()
 							&& ySegment < this.getAxis(series.getAxis())
@@ -4540,13 +4544,14 @@ public class WCartesianChart extends WAbstractChart {
 		if (!this.isSeriesSelectionEnabled()) {
 			return;
 		}
-		WPointF p = this
-				.zoomRangeTransform(this.xTransformHandle_.getValue(),
-						this.yTransformHandle_.getValue()).getInverted()
-				.map(new WPointF(x, y));
+		WTransform transform = this.zoomRangeTransform(
+				this.xTransformHandle_.getValue(),
+				this.yTransformHandle_.getValue());
+		WPointF p = transform.getInverted().map(new WPointF(x, y));
 		double smallestSqDistance = Double.POSITIVE_INFINITY;
 		WDataSeries closestSeries = null;
-		WPointF closestPoint = new WPointF();
+		WPointF closestPointPx = new WPointF();
+		WPointF closestPointBeforeSeriesTransform = new WPointF();
 		for (int i = 0; i < this.series_.size(); ++i) {
 			final WDataSeries series = this.series_.get(i);
 			if (!series.isHidden()
@@ -4563,24 +4568,37 @@ public class WCartesianChart extends WAbstractChart {
 								.map(new WPointF(seg.getX(), seg.getY()));
 						double dx = p.getX() - segP.getX();
 						double dy = p.getY() - segP.getY();
-						double d = dx * dx + dy * dy;
-						if (d < smallestSqDistance) {
-							smallestSqDistance = d;
+						double d2 = dx * dx + dy * dy;
+						if (d2 < smallestSqDistance) {
+							smallestSqDistance = d2;
 							closestSeries = series;
-							closestPoint = p;
+							closestPointPx = segP;
+							closestPointBeforeSeriesTransform = new WPointF(
+									seg.getX(), seg.getY());
 						}
 					}
 				}
 			}
 		}
+		{
+			WPointF closestDisplayPoint = transform.map(closestPointPx);
+			double dx = closestDisplayPoint.getX() - x;
+			double dy = closestDisplayPoint.getY() - y;
+			double d2 = dx * dx + dy * dy;
+			if (d2 > CURVE_SELECTION_DISTANCE_SQUARED) {
+				return;
+			}
+		}
 		this.setSelectedSeries(closestSeries);
 		if (closestSeries != null) {
 			this.seriesSelected_.trigger(closestSeries, this
-					.mapFromDeviceWithoutTransform(closestPoint,
+					.mapFromDeviceWithoutTransform(
+							closestPointBeforeSeriesTransform,
 							closestSeries.getAxis()));
 		} else {
 			this.seriesSelected_.trigger((WDataSeries) null, this
-					.mapFromDeviceWithoutTransform(closestPoint, Axis.YAxis));
+					.mapFromDeviceWithoutTransform(
+							closestPointBeforeSeriesTransform, Axis.YAxis));
 		}
 	}
 
@@ -4769,6 +4787,7 @@ public class WCartesianChart extends WAbstractChart {
 	private static final int TICK_LENGTH = 5;
 	private static final int CURVE_LABEL_PADDING = 10;
 	private static final int DEFAULT_CURVE_LABEL_WIDTH = 100;
+	private static final int CURVE_SELECTION_DISTANCE_SQUARED = 400;
 
 	static int toZoomLevel(double zoomFactor) {
 		return (int) Math.floor(Math.log(zoomFactor) / Math.log(2.0) + 0.5) + 1;

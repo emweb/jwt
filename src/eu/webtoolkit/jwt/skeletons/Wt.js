@@ -73,20 +73,7 @@ this.button = function(e)
     return 0;
   }
 
-  if (!WT.isGecko && 
-      typeof e.which !== UNDEFINED && 
-      typeof e.which !== UNKNOWN) {
-    if (e.which == 3)
-      return 4;
-    else if (e.which == 2)
-      return 2;
-    else if (e.which == 1)
-      return 1;
-    else
-      return 0;
-  } else if (WT.isIE && 
-	     typeof e.which !== UNDEFINED &&
-	     typeof e.which !== UNKNOWN) {
+  if (WT.isIElt9) {
     if (e.button == 2)
       return 4;
     else if (e.button == 4)
@@ -95,16 +82,15 @@ this.button = function(e)
       return 1;
     else
       return 0;
-  } else if (typeof e.which !== UNDEFINED &&
-	     typeof e.which !== UNKNOWN) {
-    if (e.button == 2)
-      return 4;
+  } else {
+    if (e.button == 0)
+      return 1;
     else if (e.button == 1)
       return 2;
+    else if (e.button == 2)
+      return 4;
     else
-      return 1;
-  } else {
-    return 0;
+      return 0;
   }
 };
 
@@ -277,13 +263,9 @@ this.initAjaxComm = function(url, handler) {
 	  if (!sessionUrl)
 	    return;
 
-	  if (good) {
-	    handled = true;
-	    handler(0, request.responseText, userData);
-	  } else {
-	    handler(1, null, userData); 
-	  }
+	  handled = true;
 
+	  var rq = request;
 	  if (request) {
 	    request.onreadystatechange = new Function;
 	    try {
@@ -296,7 +278,11 @@ this.initAjaxComm = function(url, handler) {
 	    request = null;
 	  }
 
-	  handled = true;
+	  if (good) {
+	    handler(0, rq.responseText, userData);
+	  } else {
+	    handler(1, null, userData); 
+	  }
 	}
 
 	function recvCallback() {
@@ -311,6 +297,9 @@ this.initAjaxComm = function(url, handler) {
 	}
 
 	function handleTimeout() {
+	  if (handled)
+	    return;
+
 	  if (!sessionUrl)
 	    return;
 
@@ -1820,7 +1809,6 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
   
     for (p = pp.parentNode; p != domRoot; p = p.parentNode) {
       if (p.wtResize) {
-	p = pp;
 	break;
       }
 
@@ -3403,7 +3391,11 @@ function sendUpdate() {
     data.result += '&ackPuzzle=' + encodeURIComponent(solution);
   }
 
-  var params = "_$_PARAMS_$_";
+  function getParams() {
+    // Prevent minifier from optimizing away the length check.
+    return "_$_PARAMS_$_";
+  }
+  var params = getParams();
   if (params.length > 0)
     data.result += '&Wt-params=' + encodeURIComponent(params);
 
@@ -3421,6 +3413,20 @@ function sendUpdate() {
       websocket.socket.send(data.result);
     }
   } else {
+    if (responsePending) {
+      try {
+	throw new Error("responsePending is true before comm.sendUpdate");
+      } catch (e) {
+	var stack = e.stack || e.stacktrace;
+	var description = e.description || e.message;
+	var err = { "exception_description" : description };
+	err.stack = stack;
+	sendError(err, "Wt internal error; description: " + description);
+	throw e;
+      }
+    }
+
+    responsePending = 1;
     responsePending = comm.sendUpdate
       ('request=jsupdate' + data.result, tm, ackUpdateId, -1);
 
@@ -3624,9 +3630,20 @@ ImagePreloader.prototype.preload = function(uri) {
 };
 
 ImagePreloader.prototype.onload = function() {
+  // Called from the image: this = the image
   var preloader = this.imagePreloader;
   if (--preloader.work == 0)
     preloader.callback(preloader.images);
+};
+
+ImagePreloader.prototype.cancel = function() {
+  var images = this.images;
+  for (var i = 0; i < images.length; ++i) {
+    images[i].onload = function(){};
+    images[i].onerror = function(){};
+    images[i].onabort = function(){};
+  }
+  this.callback = function(){};
 };
 
 /////////////////////////////////////////////////////////////////////

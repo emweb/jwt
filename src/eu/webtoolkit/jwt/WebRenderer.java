@@ -267,6 +267,10 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public boolean ackUpdate(int updateId) {
+		logger.debug(new StringWriter().append("ackUpdate: expecting ")
+				.append(String.valueOf(this.expectedAckId_))
+				.append(", received ").append(String.valueOf(updateId))
+				.toString());
 		if (updateId == this.expectedAckId_) {
 			logger.debug(new StringWriter().append(
 					"jsSynced(false) after ackUpdate okay").toString());
@@ -1445,8 +1449,12 @@ class WebRenderer implements SlotLearnerInterface {
 				this.solution_ += l;
 			}
 		}
+		++this.expectedAckId_;
+		logger.debug(new StringWriter()
+				.append("addResponseAckPuzzle: incremented expectedAckId to ")
+				.append(String.valueOf(this.expectedAckId_)).toString());
 		out.append(this.session_.getApp().getJavaScriptClass())
-				.append("._p_.response(").append(++this.expectedAckId_);
+				.append("._p_.response(").append(this.expectedAckId_);
 		if (puzzle.length() != 0) {
 			out.append(",").append(puzzle);
 		}

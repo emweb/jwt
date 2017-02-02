@@ -377,7 +377,8 @@ public class WLineEdit extends WFormWidget {
 	public String getSelectedText() {
 		if (this.getSelectionStart() != -1) {
 			WApplication app = WApplication.getInstance();
-			String result = this.getText().substring(app.getSelectionStart(),
+			String result = StringUtils.unicodeSubstring(this.getText(),
+					app.getSelectionStart(),
 					app.getSelectionEnd() - app.getSelectionStart());
 			return result;
 		} else {
