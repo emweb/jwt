@@ -37,7 +37,7 @@ class FacebookProcess extends OAuthProcess {
 						FacebookProcess.this.handleMe(event1, event2);
 					}
 				});
-		client.get("https://graph.facebook.com/me?access_token="
+		client.get("https://graph.facebook.com/me?fields=name,id,email&access_token="
 				+ token.getValue());
 	}
 
@@ -60,8 +60,7 @@ class FacebookProcess extends OAuthProcess {
 				String id = me.get("id").getAsString();
 				String userName = me.get("name").getAsString();
 				String email = JsonUtils.orIfNullString(me.get("email"), "");
-				boolean emailVerified = JsonUtils.orIfNullBoolean(
-						me.get("verified"), false);
+				boolean emailVerified = !JsonUtils.isNull(me.get("email"));
 				this.authenticated().trigger(
 						new Identity(this.getService().getName(), id, userName,
 								email, emailVerified));

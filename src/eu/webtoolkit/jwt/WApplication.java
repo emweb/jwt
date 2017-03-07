@@ -76,8 +76,8 @@ import org.apache.commons.io.*;
  * </li>
  * <li>inline and external JavaScript using
  * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
- * doJavaScript()} and {@link WApplication#addAutoJavaScript(String javascript)
- * addAutoJavaScript()}.</li>
+ * doJavaScript()} and {@link WApplication#require(String uri, String symbol)
+ * require()}.</li>
  * <li>the top-level widget in {@link WApplication#getRoot() getRoot()},
  * representing the entire browser window, or multiple top-level widgets using
  * {@link WApplication#bindWidget(WWidget widget, String domId) bindWidget()}
@@ -1824,7 +1824,7 @@ public class WApplication extends WObject {
 	 * <p>
 	 * 
 	 * @see WWidget#doJavaScript(String js)
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WApplication#declareJavaScriptFunction(String name, String function)
 	 */
 	public void doJavaScript(final String javascript, boolean afterLoaded) {
 		if (afterLoaded) {
@@ -1848,21 +1848,15 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Executes some JavaScript code.
+	 * Adds JavaScript statements that should be run continuously.
 	 * <p>
-	 * This method may be used to call some custom <code>javaScript</code> code
-	 * as part of an event response.
+	 * This is an internal method.
 	 * <p>
-	 * This function does not wait until the JavaScript is run, but returns
-	 * immediately. The JavaScript will be run after the normal event handling,
-	 * unless <code>afterLoaded</code> is set to <code>false</code>.
-	 * <p>
-	 * In most situations, it&apos;s more robust to use
-	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * It is used by for example layout managers to adjust the layout whenever
+	 * the DOM tree is manipulated.
 	 * <p>
 	 * 
-	 * @see WWidget#doJavaScript(String js)
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 */
 	public void addAutoJavaScript(final String javascript) {
 		this.autoJavaScript_ += javascript;
@@ -1906,8 +1900,7 @@ public class WApplication extends WObject {
 	 * Although JWt includes an off-the-shelf JQuery version (which can also be
 	 * used by your own JavaScript code), you can override the one used by JWt
 	 * and load another JQuery version instead, but this needs to be done using
-	 * {@link WApplication#addAutoJavaScript(String javascript)
-	 * addAutoJavaScript()}.
+	 * {@link WApplication#requireJQuery(String uri) requireJQuery()}.
 	 */
 	public boolean require(final String uri, final String symbol) {
 		WApplication.ScriptLibrary sl = new WApplication.ScriptLibrary(uri,
@@ -1956,21 +1949,10 @@ public class WApplication extends WObject {
 	}
 
 	/**
-	 * Executes some JavaScript code.
-	 * <p>
-	 * This method may be used to call some custom <code>javaScript</code> code
-	 * as part of an event response.
-	 * <p>
-	 * This function does not wait until the JavaScript is run, but returns
-	 * immediately. The JavaScript will be run after the normal event handling,
-	 * unless <code>afterLoaded</code> is set to <code>false</code>.
-	 * <p>
-	 * In most situations, it&apos;s more robust to use
-	 * {@link WWidget#doJavaScript(String js) WWidget#doJavaScript()} however.
+	 * Returns whether a custom JQuery library is used.
 	 * <p>
 	 * 
-	 * @see WWidget#doJavaScript(String js)
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WApplication#requireJQuery(String uri)
 	 */
 	public boolean isCustomJQuery() {
 		return this.customJQuery_;
@@ -2666,7 +2648,7 @@ public class WApplication extends WObject {
 	 * This is an internal function and should not be called directly.
 	 * <p>
 	 * 
-	 * @see WApplication#addAutoJavaScript(String javascript)
+	 * @see WApplication#require(String uri, String symbol)
 	 * @see WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 */
 	public void loadJavaScript(String jsFile, final WJavaScriptPreamble preamble) {

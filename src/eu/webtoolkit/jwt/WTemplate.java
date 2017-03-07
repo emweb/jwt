@@ -1423,6 +1423,22 @@ public class WTemplate extends WInteractWidget {
 		super.enableAjax();
 	}
 
+	/**
+	 * Notifies the template that it has changed and must be rerendered.
+	 * <p>
+	 * If you update a {@link WTemplate} with e.g bindWidget or setCondition, or
+	 * change the template text, the template will automatically be rerendered.
+	 * <p>
+	 * However, if you create a subclass of {@link WTemplate} and override
+	 * resolveString or resolveWidget, you will have to notify the
+	 * {@link WTemplate} if it has changed with a call to
+	 * {@link WTemplate#reset() reset()}.
+	 */
+	protected void reset() {
+		this.changed_ = true;
+		this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+	}
+
 	private Set<WWidget> previouslyRendered_;
 	private List<WWidget> newlyRendered_;
 	private Map<String, WTemplate.Function> functions_;

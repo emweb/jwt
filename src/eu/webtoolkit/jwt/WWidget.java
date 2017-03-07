@@ -1609,6 +1609,30 @@ public abstract class WWidget extends WObject {
 	 */
 	public abstract boolean isScrollVisible();
 
+	/**
+	 * Sets whether theme styling for a widget is enabled or disabled.
+	 * <p>
+	 * By default all widgets are styled according to the chosen theme.
+	 * Disabling the theme style could be useful to completely customize the
+	 * style of the widget outside of the theme.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This should be changed after the construction but before
+	 * the rendering of the widget. </i>
+	 * </p>
+	 */
+	public abstract void setThemeStyleEnabled(boolean enabled);
+
+	/**
+	 * Returns whether this widget is currently styled by the chosen theme.
+	 * <p>
+	 * isThemeEnabled() is initially true.
+	 * <p>
+	 * 
+	 * @see WWidget#setThemeStyleEnabled(boolean enabled)
+	 */
+	public abstract boolean isThemeStyleEnabled();
+
 	DomElement createSDomElement(WApplication app) {
 		if (!this.isLoaded()) {
 			this.load();
@@ -1617,6 +1641,8 @@ public abstract class WWidget extends WObject {
 			DomElement result = this.getWebWidget().createStubElement(app);
 			this.renderOk();
 			this.scheduleRerender(true);
+			WApplication.getInstance().getSession().getRenderer()
+					.markAsStubbed(this);
 			return result;
 		} else {
 			this.getWebWidget().setRendered(true);

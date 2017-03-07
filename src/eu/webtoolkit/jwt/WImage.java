@@ -508,13 +508,13 @@ public class WImage extends WInteractWidget {
 		}
 		if (this.flags_.get(BIT_IMAGE_LINK_CHANGED) || all) {
 			String url = "";
+			WApplication app = WApplication.getInstance();
 			if (!this.imageLink_.isNull()) {
 				url = resolveRelativeUrl(this.imageLink_.getUrl());
+				url = app.encodeUntrustedUrl(url);
 			} else {
-				url = WApplication.getRelativeResourcesUrl() + "1pxtrans.gif";
+				url = app.getOnePixelGifUrl();
 			}
-			WApplication app = WApplication.getInstance();
-			url = app.encodeUntrustedUrl(url);
 			img.setProperty(Property.PropertySrc, url);
 			this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
 		}

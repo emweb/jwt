@@ -441,6 +441,9 @@ public class WCssTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, WWidget child, int widgetRole) {
+		if (!widget.isThemeStyleEnabled()) {
+			return;
+		}
 		switch (widgetRole) {
 		case WidgetThemeRole.MenuItemIconRole:
 			child.addStyleClass("Wt-icon");
@@ -453,7 +456,7 @@ public class WCssTheme extends WTheme {
 			child.addStyleClass("closeicon");
 			break;
 		case WidgetThemeRole.DialogCoverRole:
-			child.setStyleClass("Wt-dialogcover");
+			child.setStyleClass("Wt-dialogcover in");
 			break;
 		case WidgetThemeRole.DialogTitleBarRole:
 			child.addStyleClass("titlebar");
@@ -503,6 +506,9 @@ public class WCssTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, final DomElement element, int elementRole) {
+		if (!widget.isThemeStyleEnabled()) {
+			return;
+		}
 		boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
 		{
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)

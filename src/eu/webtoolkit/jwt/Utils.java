@@ -125,8 +125,12 @@ public class Utils {
 	/** Performs Base64-encoding of data.
 	 */
 	public static String base64Encode(String s) {
+		return base64Encode(s, true);
+	}
+	
+	public static String base64Encode(String s, boolean crlf) {
 		try {
-			return base64Encode(s.getBytes("UTF-8"));
+			return base64Encode(s.getBytes("UTF-8"), crlf);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -137,6 +141,9 @@ public class Utils {
 	 */
 	public static String base64Encode(byte[] bytes) {
 		return Base64.encodeBytes(bytes);
+	}
+	public static String base64Encode(byte[] bytes, boolean crlf) {
+		return Base64.encodeBytes(bytes, crlf);
 	}
 	
 	/** Performs Base64-decoding of data.
@@ -304,7 +311,7 @@ public class Utils {
 
 	public static String createDataUrl(byte[] data, String mimeType) {
 	  String url = "data:"+mimeType+";base64,";
-	  String datab64 = base64Encode(data);
+	  String datab64 = base64Encode(data, false);
 	  return url+datab64;
 	}
 }

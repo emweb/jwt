@@ -38,6 +38,11 @@ import org.slf4j.LoggerFactory;
  * {@link WTextRenderer#setFontScale(double factor)
  * WTextRenderer#setFontScale()} to scale the font size differently than other
  * content.
+ * <p>
+ * Font information is embedded in the PDF. Fonts supported are native
+ * PostScript fonts (Base-14) (only ASCII-7), or true type fonts (Unicode). See
+ * {@link WPdfRenderer#addFontCollection(String directory, boolean recursive)
+ * addFontCollection()} for more information on how fonts are located.
  */
 public class WPdfRenderer extends WTextRenderer {
 	private static Logger logger = LoggerFactory.getLogger(WPdfRenderer.class);
@@ -137,6 +142,23 @@ public class WPdfRenderer extends WTextRenderer {
 
 	/**
 	 * Adds a font collection.
+	 * <p>
+	 * If JWt has been configured to use <code>libpango</code>, then font
+	 * matching and character selection is done by libpango, and calls to this
+	 * method are ignored. See {@link } for more details.
+	 * <p>
+	 * If JWt was not configured to use <code>libpango</code>, you will have to
+	 * add the directories where JWt should look for fonts. You will also have
+	 * to specify the required font in the HTML source, e.g.:
+	 * <p>
+	 * 
+	 * <pre>
+	 *   {@code
+	 *    Render::WPdfRenderer renderer(pdf, page);
+	 *    // ...
+	 *    renderer.render("<p style=\"font-family: 'DejaVuSans', Arial\">élève, fenêtre, âme</p>");
+	 *   }
+	 * </pre>
 	 * <p>
 	 */
 	public void addFontCollection(final String directory, boolean recursive) {

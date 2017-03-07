@@ -220,6 +220,9 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, WWidget child, int widgetRole) {
+		if (!widget.isThemeStyleEnabled()) {
+			return;
+		}
 		switch (widgetRole) {
 		case WidgetThemeRole.MenuItemIconRole:
 			child.addStyleClass("Wt-icon");
@@ -244,7 +247,7 @@ public class WBootstrapTheme extends WTheme {
 			if (this.version_ == WBootstrapTheme.Version.Version3) {
 				child.addStyleClass("modal-backdrop in");
 			} else {
-				child.addStyleClass("modal-backdrop");
+				child.addStyleClass("modal-backdrop Wt-bootstrap2");
 			}
 			break;
 		case WidgetThemeRole.DialogTitleBarRole:
@@ -316,6 +319,9 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	public void apply(WWidget widget, final DomElement element, int elementRole) {
+		if (!widget.isThemeStyleEnabled()) {
+			return;
+		}
 		boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
 		{
 			WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget)
@@ -330,12 +336,17 @@ public class WBootstrapTheme extends WTheme {
 			}
 		}
 		switch (element.getType()) {
-		case DomElement_A:
+		case DomElement_A: {
 			if (creating
 					&& ((widget) instanceof WPushButton ? (WPushButton) (widget)
 							: null) != null) {
 				element.addPropertyWord(Property.PropertyClass,
-						this.getClassBtn());
+						this.classBtn(widget));
+			}
+			WPushButton btn = ((widget) instanceof WPushButton ? (WPushButton) (widget)
+					: null);
+			if (creating && btn != null && btn.isDefault()) {
+				element.addPropertyWord(Property.PropertyClass, "btn-primary");
 			}
 			if (element.getProperty(Property.PropertyClass).indexOf(
 					"dropdown-toggle") != -1) {
@@ -350,10 +361,11 @@ public class WBootstrapTheme extends WTheme {
 				}
 			}
 			break;
+		}
 		case DomElement_BUTTON: {
-			if (creating) {
+			if (creating && !widget.hasStyleClass("list-group-item")) {
 				element.addPropertyWord(Property.PropertyClass,
-						this.getClassBtn());
+						this.classBtn(widget));
 			}
 			WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget)
 					: null);
@@ -655,9 +667,12 @@ public class WBootstrapTheme extends WTheme {
 	private boolean responsive_;
 	private boolean formControlStyle_;
 
-	private String getClassBtn() {
-		return this.version_ == WBootstrapTheme.Version.Version2 ? "btn"
-				: "btn btn-default";
+	private String classBtn(WWidget widget) {
+		WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget)
+				: null);
+		return this.version_ == WBootstrapTheme.Version.Version2
+				|| this.hasButtonStyleClass(widget) || button != null
+				&& button.isDefault() ? "btn" : "btn btn-default";
 	}
 
 	private String getClassBar() {
@@ -730,6 +745,16 @@ public class WBootstrapTheme extends WTheme {
 				: "navbar-toggle";
 	}
 
+	private boolean hasButtonStyleClass(WWidget widget) {
+		int size = btnClasses.length;
+		for (int i = 0; i < size; ++i) {
+			if (widget.hasStyleClass(btnClasses[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(
 				JavaScriptScope.WtClassScope,
@@ -745,4 +770,7 @@ public class WBootstrapTheme extends WTheme {
 				"setValidationState",
 				"function(a,b,h,e){var i=b==1&&(e&2)!=0;e=b!=1&&(e&1)!=0;var d=$(a);d.toggleClass(\"Wt-valid\",i).toggleClass(\"Wt-invalid\",e);var c,f,g;c=d.closest(\".control-group\");if(c.length>0){f=\"success\";g=\"error\"}else{c=d.closest(\".form-group\");if(c.length>0){f=\"has-success\";g=\"has-error\"}}if(c.length>0){if(d=c.find(\".Wt-validation-message\"))b?d.text(a.defaultTT):d.text(h);c.toggleClass(f,i).toggleClass(g,e)}if(typeof a.defaultTT===\"undefined\")a.defaultTT= a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",h)}");
 	}
+
+	private static String[] btnClasses = { "btn-default", "btn-primary",
+			"btn-success", "btn-info", "btn-warning", "btn-danger", "btn-link" };
 }

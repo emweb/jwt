@@ -388,6 +388,11 @@ public class WPopupMenu extends WMenu {
 		this.willPopup_ = false;
 	}
 
+	protected void render(EnumSet<RenderFlag> flags) {
+		super.render(flags);
+		this.willPopup_ = false;
+	}
+
 	private WPopupMenu topLevel_;
 	WMenuItem result_;
 	private WWidget location_;

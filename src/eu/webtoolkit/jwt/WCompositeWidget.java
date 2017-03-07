@@ -438,6 +438,14 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.getWebWidget().isScrollVisible();
 	}
 
+	public void setThemeStyleEnabled(boolean enabled) {
+		this.impl_.setThemeStyleEnabled(enabled);
+	}
+
+	public boolean isThemeStyleEnabled() {
+		return this.impl_.isThemeStyleEnabled();
+	}
+
 	void addChild(WWidget child) {
 		if (child != this.impl_) {
 			this.impl_.addChild(child);

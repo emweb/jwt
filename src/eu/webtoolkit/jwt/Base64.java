@@ -712,12 +712,16 @@ class Base64
      * @since 1.4
      */
     public static String encodeBytes( byte[] source ) {
+    	return encodeBytes(source, true);
+    }
+    
+    public static String encodeBytes( byte[] source, boolean crlf ) {
         // Since we're not going to have the GZIP encoding turned on,
         // we're not going to have an java.io.IOException thrown, so
         // we should not force the user to have to catch it.
         String encoded = null;
         try {
-            encoded = encodeBytes(source, 0, source.length, NO_OPTIONS);
+            encoded = encodeBytes(source, 0, source.length, crlf ? DO_BREAK_LINES : NO_OPTIONS);
         } catch (java.io.IOException ex) {
             assert false : ex.getMessage();
         }   // end catch

@@ -429,10 +429,12 @@ class WebSession {
 						String ackIdE = request.getParameter("ackId");
 						boolean invalidAckId = this.env_.hasAjax()
 								&& !request.isWebSocketMessage();
+						WebRenderer.AckState ackState = WebRenderer.AckState.CorrectAck;
 						if (invalidAckId && ackIdE != null) {
 							try {
-								if (this.renderer_.ackUpdate(Integer
-										.parseInt(ackIdE))) {
+								ackState = this.renderer_.ackUpdate(Integer
+										.parseInt(ackIdE));
+								if (ackState != WebRenderer.AckState.BadAck) {
 									invalidAckId = false;
 								}
 							} catch (final NumberFormatException e) {
@@ -449,6 +451,14 @@ class WebSession {
 										.append("invalid ackId").toString());
 							}
 							this.serveError(403, handler, "Forbidden");
+							return;
+						}
+						if (signalE.equals("poll")
+								&& ackState != WebRenderer.AckState.CorrectAck) {
+							logger.debug(new StringWriter()
+									.append("Ignoring poll with incorrect ack -- was rescheduled in browser?")
+									.toString());
+							handler.flushResponse();
 							return;
 						}
 						if (this.asyncResponse_ != null) {
@@ -891,11 +901,25 @@ class WebSession {
 			} else {
 				if (this.env_.publicDeploymentPath_.length() != 0) {
 					String dp = this.env_.publicDeploymentPath_;
-					if (url.charAt(0) != '?') {
-						int s = dp.lastIndexOf('/');
-						dp = dp.substring(0, 0 + s + 1);
+					if (url.equals(".")) {
+						return dp;
+					} else {
+						if (url.length() >= 2 && url.charAt(0) == '.'
+								&& url.charAt(1) == '/') {
+							if (dp.charAt(dp.length() - 1) == '/') {
+								return dp + url.substring(2);
+							} else {
+								return dp + url.substring(1);
+							}
+						} else {
+							if (url.charAt(0) == '?') {
+								return dp + url;
+							} else {
+								int s = dp.lastIndexOf('/');
+								return dp.substring(0, 0 + s + 1) + url;
+							}
+						}
 					}
-					return dp + url;
 				} else {
 					if (this.env_.isInternalPathUsingFragments()) {
 						return url;
@@ -1910,7 +1934,8 @@ class WebSession {
 	}
 
 	enum SignalKind {
-		LearnedStateless(0), AutoLearnStateless(1), Dynamic(2);
+		LearnedStateless(0), StubbedStateless(1), AutoLearnStateless(2), Dynamic(
+				3);
 
 		private int value;
 
@@ -1927,13 +1952,19 @@ class WebSession {
 	}
 
 	private void processSignal(AbstractEventSignal s, final String se,
-			final WebRequest request, WebSession.SignalKind kind) {
+			final WebRequest request, WebSession.SignalKind kind,
+			boolean checkWasStubbed) {
 		if (!(s != null)) {
 			return;
 		}
 		switch (kind) {
 		case LearnedStateless:
-			s.processLearnedStateless();
+			s.processLearnedStateless(checkWasStubbed);
+			break;
+		case StubbedStateless:
+			if (checkWasStubbed) {
+				s.processStubbedStateless();
+			}
 			break;
 		case AutoLearnStateless:
 			s.processAutoLearnStateless(this.renderer_);
@@ -2020,6 +2051,10 @@ class WebSession {
 							this.renderer_.saveChanges();
 						}
 						handler.nextSignal = i + 1;
+						String evAckIdE = request.getParameter(se + "evAckId");
+						boolean checkWasStubbed = evAckIdE != null
+								&& Integer.parseInt(evAckIdE) <= this.renderer_
+										.getScriptId() + 1;
 						if (signalE.equals("hash")) {
 							String hashE = request.getParameter(se + "_");
 							if (hashE != null) {
@@ -2035,7 +2070,7 @@ class WebSession {
 										handler.getResponse());
 							}
 						} else {
-							for (int k = 0; k < 3; ++k) {
+							for (int k = 0; k < 4; ++k) {
 								WebSession.SignalKind kind = WebSession.SignalKind
 										.values()[k];
 								if (kind == WebSession.SignalKind.AutoLearnStateless
@@ -2055,7 +2090,8 @@ class WebSession {
 								} else {
 									s = this.decodeSignal(signalE, k == 0);
 								}
-								this.processSignal(s, se, request, kind);
+								this.processSignal(s, se, request, kind,
+										checkWasStubbed);
 								if (kind == WebSession.SignalKind.LearnedStateless
 										&& discardStateless) {
 									this.renderer_.discardChanges();

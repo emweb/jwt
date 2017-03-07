@@ -183,6 +183,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	static final int BIT_SIGNAL_SERVER_ANYWAY = 0x40;
 
 	private ArrayList<LearningListener> learningListeners;
+	private ArrayList<WeakReference<WObject>> listenerOwners;
 	private byte flags_;
 	private int id_;
 	private String name_;
@@ -193,6 +194,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		sender_ = sender;
 		name_ = name;
 		learningListeners = null;
+		listenerOwners = null;
 		flags_ = 0;
 		id_ = nextId_++;
 		
@@ -230,7 +232,11 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		if (learningListeners == null)
 			learningListeners = new ArrayList<LearningListener>();
 
+		if (listenerOwners == null)
+			listenerOwners = new ArrayList<WeakReference<WObject>>();
+
 		learningListeners.add(listener);
+		listenerOwners.add(new WeakReference(listenerOwner));
 		listener.addSignal(this);
 
 		if (!(listener instanceof JavaScriptListener))
@@ -272,9 +278,14 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * @param listener a learning listener that was previously added
 	 */
 	public void removeListener(LearningListener listener) {
-		if (learningListeners.remove(listener)) {
-			listener.removeSignal(this);
-			listenerRemoved();
+		for (int i = 0; i < learningListeners.size(); ++i) {
+			if (learningListeners.get(i) == listener) {
+				learningListeners.remove(i);
+				listenerOwners.remove(i);
+				listener.removeSignal(this);
+				listenerRemoved();
+				return;
+			}
 		}
 	}
 
@@ -459,10 +470,26 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			ownerRepaint();
 	}
 
-	void processLearnedStateless() {
+	void processLearnedStateless(boolean checkWasStubbed) {
 		if (learningListeners != null)
-			for (LearningListener l : learningListeners) {
-				if (l.isLearned()) {
+			for (int i = 0; i < learningListeners.size(); ++i) {
+				LearningListener l = learningListeners.get(i);
+				if (l.isLearned() &&
+						(!checkWasStubbed ||
+						 !WebSession.getInstance().getRenderer().wasStubbed(
+							 listenerOwners.get(i).get()))) {
+					l.trigger();
+				}
+			}
+	}
+
+	void processStubbedStateless() {
+		if (learningListeners != null)
+			for (int i = 0; i < learningListeners.size(); ++i) {
+				LearningListener l = learningListeners.get(i);
+				WObject o = listenerOwners.get(i).get();
+				if (l.isLearned() &&
+						WebSession.getInstance().getRenderer().wasStubbed(o)) {
 					l.trigger();
 				}
 			}

@@ -445,7 +445,10 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketRequest() {
-		return getHeader("Connection").equalsIgnoreCase("Upgrade") && getHeader("Upgrade").equalsIgnoreCase("WebSocket");
+		String connectionHeader = getHeader("Connection");
+		String upgradeHeader = getHeader("Upgrade");
+		return connectionHeader != null && upgradeHeader != null &&
+			   connectionHeader.equalsIgnoreCase("Upgrade") && upgradeHeader.equalsIgnoreCase("WebSocket");
 	}
 
 	/**

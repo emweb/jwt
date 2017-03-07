@@ -521,6 +521,13 @@ public class WCalendar extends WCompositeWidget {
 		return this.top_;
 	}
 
+	public void load() {
+		super.load();
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
+			this.monthEdit_.enable();
+		}
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (this.needRenderMonth_) {
 			boolean create = this.cellClickMapper_ == null;

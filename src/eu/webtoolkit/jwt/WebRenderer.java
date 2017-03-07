@@ -43,6 +43,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.updateLayout_ = false;
 		this.wsRequestsToHandle_ = new ArrayList<Integer>();
 		this.multiSessionCookieUpdateNeeded_ = false;
+		this.stubbedWidgets_ = new ArrayList<WWidget>();
 		this.collectedJS1_ = new StringBuilder();
 		this.collectedJS2_ = new StringBuilder();
 		this.invisibleJS_ = new StringBuilder();
@@ -266,7 +267,18 @@ class WebRenderer implements SlotLearnerInterface {
 		this.updateLayout_ = true;
 	}
 
-	public boolean ackUpdate(int updateId) {
+	enum AckState {
+		CorrectAck, ReasonableAck, BadAck;
+
+		/**
+		 * Returns the numerical representation of this enum.
+		 */
+		public int getValue() {
+			return ordinal();
+		}
+	}
+
+	public WebRenderer.AckState ackUpdate(int updateId) {
 		logger.debug(new StringWriter().append("ackUpdate: expecting ")
 				.append(String.valueOf(this.expectedAckId_))
 				.append(", received ").append(String.valueOf(updateId))
@@ -276,15 +288,16 @@ class WebRenderer implements SlotLearnerInterface {
 					"jsSynced(false) after ackUpdate okay").toString());
 			this.setJSSynced(false);
 			this.ackErrs_ = 0;
-			return true;
+			return WebRenderer.AckState.CorrectAck;
 		} else {
 			if (updateId < this.expectedAckId_
 					&& this.expectedAckId_ - updateId < 5
 					|| this.expectedAckId_ - 5 < updateId) {
 				++this.ackErrs_;
-				return this.ackErrs_ < 3;
+				return this.ackErrs_ < 3 ? WebRenderer.AckState.ReasonableAck
+						: WebRenderer.AckState.BadAck;
 			} else {
-				return false;
+				return WebRenderer.AckState.BadAck;
 			}
 		}
 	}
@@ -300,9 +313,10 @@ class WebRenderer implements SlotLearnerInterface {
 					.append(WWebWidget.jsStringLiteral(this.session_.getApp().newInternalPath_))
 					.append(", false);\n");
 		}
-		out.append("if (window.location.replace) window.location.replace('")
-				.append(redirect).append("');else window.location.href='")
-				.append(redirect).append("';\n");
+		out.append("if (window.location.replace) window.location.replace(")
+				.append(WWebWidget.jsStringLiteral(redirect))
+				.append(");else window.location.href=")
+				.append(WWebWidget.jsStringLiteral(redirect)).append(";\n");
 	}
 
 	public boolean checkResponsePuzzle(final WebRequest request) {
@@ -367,6 +381,19 @@ class WebRenderer implements SlotLearnerInterface {
 		this.currentStatelessSlotIsActuallyStateless_ = false;
 	}
 
+	public void markAsStubbed(WWidget widget) {
+		this.stubbedWidgets_.add(widget);
+	}
+
+	public boolean wasStubbed(WObject widget) {
+		for (int i = 0; i < this.stubbedWidgets_.size(); ++i) {
+			if (this.stubbedWidgets_.get(i) == widget) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	static class CookieValue {
 		private static Logger logger = LoggerFactory
 				.getLogger(CookieValue.class);
@@ -414,6 +441,7 @@ class WebRenderer implements SlotLearnerInterface {
 	private boolean updateLayout_;
 	private List<Integer> wsRequestsToHandle_;
 	boolean multiSessionCookieUpdateNeeded_;
+	private List<WWidget> stubbedWidgets_;
 
 	private void setHeaders(final WebResponse response, final String mimeType) {
 		for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it = this.cookiesToSet_
@@ -437,9 +465,15 @@ class WebRenderer implements SlotLearnerInterface {
 				header.append(" Domain=").append(cookie.domain).append(';');
 			}
 			if (cookie.path.length() == 0) {
-				header.append(" Path=")
-						.append(this.session_.getEnv().getDeploymentPath())
-						.append(';');
+				if (this.session_.getEnv().publicDeploymentPath_.length() != 0) {
+					header.append(" Path=")
+							.append(this.session_.getEnv().publicDeploymentPath_)
+							.append(';');
+				} else {
+					header.append(" Path=")
+							.append(this.session_.getEnv().getDeploymentPath())
+							.append(';');
+				}
 			} else {
 				header.append(" Path=").append(cookie.path).append(';');
 			}
@@ -516,6 +550,7 @@ class WebRenderer implements SlotLearnerInterface {
 			String redirect = this.session_.getRedirect();
 			if (redirect.length() != 0) {
 				this.streamRedirectJS(out, redirect);
+				response.out().append(out.toString());
 				return;
 			}
 		} else {
@@ -654,6 +689,7 @@ class WebRenderer implements SlotLearnerInterface {
 				this.currentFormObjectsList_ = "";
 				this.collectJavaScript();
 				this.updateLoadIndicator(this.collectedJS1_, app, true);
+				this.clearStubbedWidgets();
 				logger.debug(new StringWriter().append("js: ")
 						.append(this.collectedJS1_.toString())
 						.append(this.collectedJS2_.toString()).toString());
@@ -960,11 +996,6 @@ class WebRenderer implements SlotLearnerInterface {
 				.append(this.invisibleJS_.toString()).toString());
 		this.collectedJS1_.append(this.invisibleJS_.toString());
 		this.invisibleJS_.setLength(0);
-		if (conf.isInlineCss()) {
-			app.getStyleSheet()
-					.javaScriptUpdate(app, this.collectedJS1_, false);
-		}
-		this.loadStyleSheets(this.collectedJS1_, app);
 		if (app.bodyHtmlClassChanged_) {
 			boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
 			String op = widgetset ? "+=" : "=";
@@ -1007,6 +1038,11 @@ class WebRenderer implements SlotLearnerInterface {
 						"._p_.update(null, 'none', null, false);");
 			}
 		}
+		if (conf.isInlineCss()) {
+			app.getStyleSheet()
+					.javaScriptUpdate(app, this.collectedJS1_, false);
+		}
+		this.loadStyleSheets(this.collectedJS1_, app);
 		if (app.autoJavaScriptChanged_) {
 			this.collectedJS1_.append(app.getJavaScriptClass())
 					.append("._p_.autoJavaScript=function(){")
@@ -1664,8 +1700,7 @@ class WebRenderer implements SlotLearnerInterface {
 		this.setCookie("ms" + request.getScriptName(), this.session_
 				.getMultiSessionId(),
 				WDate.getCurrentDate().addSeconds(conf.getSessionTimeout()),
-				"", this.session_.getEnv().getDeploymentPath(), this.session_
-						.getEnv().getUrlScheme().equals("https"));
+				"", "", this.session_.getEnv().getUrlScheme().equals("https"));
 	}
 
 	private void renderMultiSessionCookieUpdate(final StringBuilder out) {
@@ -1673,6 +1708,12 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append(this.session_.getApp().getJavaScriptClass()).append(
 					"._p_.refreshCookie();");
 			this.multiSessionCookieUpdateNeeded_ = false;
+		}
+	}
+
+	private void clearStubbedWidgets() {
+		if (this.expectedAckId_ - this.scriptId_ > 1) {
+			this.stubbedWidgets_.clear();
 		}
 	}
 
