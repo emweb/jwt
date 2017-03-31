@@ -717,7 +717,7 @@ public class WFont {
 			family += "cursive";
 			break;
 		case Fantasy:
-			family += "fantasay";
+			family += "fantasy";
 			break;
 		case Monospace:
 			family += "monospace";

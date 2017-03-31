@@ -572,7 +572,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_3_6.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_3_7.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -841,7 +841,7 @@ public class WTreeView extends WAbstractItemView {
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
 		this.setJavaScriptMember(
 				" WTreeView",
-				"new Wt3_3_6.WTreeView("
+				"new Wt3_3_7.WTreeView("
 						+ app.getJavaScriptClass()
 						+ ","
 						+ this.getJsRef()
@@ -1368,22 +1368,13 @@ public class WTreeView extends WAbstractItemView {
 			return;
 		}
 		WModelIndex parent = topLeft.getParent();
-		WWidget parentWidget = this.widgetForIndex(parent);
-		if (parentWidget != null) {
-			WTreeViewNode parentNode = ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget)
-					: null);
-			if (parentNode != null) {
-				if (parentNode.isChildrenLoaded()) {
-					for (int r = topLeft.getRow(); r <= bottomRight.getRow(); ++r) {
-						WModelIndex index = this.getModel().getIndex(r, 0,
-								parent);
-						WTreeViewNode n = ((this.widgetForIndex(index)) instanceof WTreeViewNode ? (WTreeViewNode) (this
-								.widgetForIndex(index)) : null);
-						if (n != null) {
-							n.update(topLeft.getColumn(),
-									bottomRight.getColumn());
-						}
-					}
+		WTreeViewNode parentNode = this.nodeForIndex(parent);
+		if (parentNode != null && parentNode.isChildrenLoaded()) {
+			for (int r = topLeft.getRow(); r <= bottomRight.getRow(); ++r) {
+				WModelIndex index = this.getModel().getIndex(r, 0, parent);
+				WTreeViewNode n = this.nodeForIndex(index);
+				if (n != null) {
+					n.update(topLeft.getColumn(), bottomRight.getColumn());
 				}
 			}
 		}
@@ -1872,8 +1863,8 @@ public class WTreeView extends WAbstractItemView {
 				.equals(this.getRootIndex())))) {
 			return this.rootNode_;
 		} else {
-			WModelIndex column0Index = this.getModel().getIndex(index.getRow(),
-					0, index.getParent());
+			WModelIndex column0Index = index.getColumn() == 0 ? index : this
+					.getModel().getIndex(index.getRow(), 0, index.getParent());
 			WTreeViewNode i = this.renderedNodes_.get(column0Index);
 			return i != null ? i : null;
 		}

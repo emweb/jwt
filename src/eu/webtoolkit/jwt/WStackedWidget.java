@@ -313,7 +313,7 @@ public class WStackedWidget extends WContainerWidget {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WStackedWidget.js", wtjs1());
 			this.setJavaScriptMember(" WStackedWidget",
-					"new Wt3_3_6.WStackedWidget(" + app.getJavaScriptClass()
+					"new Wt3_3_7.WStackedWidget(" + app.getJavaScriptClass()
 							+ "," + this.getJsRef() + ");");
 			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
 					+ "').data('obj').wtResize");

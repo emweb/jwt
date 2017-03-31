@@ -263,7 +263,15 @@ class WebSession {
 		}
 		String requestE = request.getParameter("request");
 		if (requestE != null && requestE.equals("jserror")) {
-			this.app_.handleJavaScriptError(request.getParameter("err"));
+			String err = request.getParameter("err");
+			if (err != null) {
+				this.app_.handleJavaScriptError(err);
+			} else {
+				logger.error(new StringWriter().append(
+						"malformed jserror request: missing err parameter")
+						.toString());
+				this.app_.handleJavaScriptError("unknown error");
+			}
 			this.renderer_.setJSSynced(false);
 			this.render(handler);
 			return;
@@ -770,7 +778,11 @@ class WebSession {
 		}
 		int questionPos = result.indexOf('?');
 		if (questionPos == -1) {
-			result += this.getSessionQuery();
+			if (result.equals(".")) {
+				result = this.getSessionQuery();
+			} else {
+				result += this.getSessionQuery();
+			}
 		} else {
 			if (questionPos == result.length() - 1) {
 				result += this.getSessionQuery().substring(1);
@@ -926,8 +938,10 @@ class WebSession {
 					} else {
 						String rel = "";
 						String pi = this.pagePathInfo_;
-						for (int i = 0; i < pi.length(); ++i) {
-							if (pi.charAt(i) == '/') {
+						int i = 0;
+						for (; i < pi.length(); ++i) {
+							if ((pi.charAt(i) == '/' || i == pi.length() - 1)
+									&& i != 0 && pi.charAt(i - 1) != '/') {
 								rel += "../";
 							}
 						}
@@ -1360,11 +1374,12 @@ class WebSession {
 									}
 								}
 							}
-							try {
+							{
 								String internalPath = this.env_
-										.getCookie("WtInternalPath");
-								this.env_.setInternalPath(internalPath);
-							} catch (final RuntimeException e) {
+										.getCookieValue("WtInternalPath");
+								if (internalPath != null) {
+									this.env_.setInternalPath(internalPath);
+								}
 							}
 							boolean forcePlain = this.env_.agentIsSpiderBot()
 									|| !this.env_.agentSupportsAjax();
@@ -2061,7 +2076,7 @@ class WebSession {
 								this.changeInternalPath(hashE,
 										handler.getResponse());
 								this.app_
-										.doJavaScript("Wt3_3_6.scrollIntoView("
+										.doJavaScript("Wt3_3_7.scrollIntoView("
 												+ WWebWidget
 														.jsStringLiteral(hashE)
 												+ ");");

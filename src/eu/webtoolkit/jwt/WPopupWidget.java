@@ -304,7 +304,7 @@ public class WPopupWidget extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WPopupWidget.js", wtjs1());
 		StringBuilder jsObj = new StringBuilder();
-		jsObj.append("new Wt3_3_6.WPopupWidget(")
+		jsObj.append("new Wt3_3_7.WPopupWidget(")
 				.append(app.getJavaScriptClass()).append(',')
 				.append(this.getJsRef()).append(',').append(this.transient_)
 				.append(',').append(this.autoHideDelay_).append(',')
@@ -317,6 +317,6 @@ public class WPopupWidget extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupWidget",
-				"function(g,b,o,p,q){function r(){clearTimeout(h);if(i>0)h=setTimeout(function(){j.hide()},i)}function s(){clearTimeout(h)}function t(){return b.style.display==\"hidden\"}function k(a){function d(n,c){if(n==c)return true;for(c=c.parentNode;c;c=c.parentNode)if(n==c)return true;return false}a=e.target(a);if(a==document)if(e.WPopupWidget.popupClicked!==null)a=e.WPopupWidget.popupClicked;d(b,a)||j.hide()}jQuery.data(b,\"popup\",this);var j=this,e= g.WT,h=null,f=o,i=p,l=null,m=null;this.bindShow=function(a){l=a};this.bindHide=function(a){m=a};this.shown=function(){f&&setTimeout(function(){$(document).bind(\"click\",k)},0);l&&l()};this.show=function(a,d){if(b.style.display!=\"\"){b.style.display=\"\";a&&e.positionAtWidget(b.id,a.id,d);g.emit(b,\"shown\")}};this.hidden=function(){m&&m();f&&$(document).unbind(\"click\",k)};this.hide=function(){if(b.style.display!=\"none\")b.style.display=\"none\";g.emit(b,\"hidden\");j.hidden()};this.setTransient=function(a,d){f= a;i=d;f&&!t()&&setTimeout(function(){$(document).bind(\"click\",k)},0)};$(b).mouseleave(r).mouseenter(s);q&&this.shown()}");
+				"function(h,b,r,s,t){function n(a){if(e.isIOS){a(\"touchstart\",u);a(\"touchend\",v)}else a(\"click\",o)}function p(){n($(document).bind)}function w(){n($(document).unbind)}function u(a){a=a.originalEvent.touches;f=a.length>1?null:{x:a[0].screenX,y:a[0].screenY}}function v(a){if(f){var c=a.originalEvent.changedTouches[0];Math.abs(f.x-c.screenX)<20&&Math.abs(f.y-c.screenY)<20&&o(a)}}function x(){clearTimeout(i);if(j>0)i=setTimeout(function(){k.hide()}, j)}function y(){clearTimeout(i)}function z(){return b.style.display==\"hidden\"}function o(a){function c(q,d){if(q==d)return true;for(d=d.parentNode;d;d=d.parentNode)if(q==d)return true;return false}a=e.target(a);if(a==document)if(e.WPopupWidget.popupClicked!==null)a=e.WPopupWidget.popupClicked;c(b,a)||k.hide()}jQuery.data(b,\"popup\",this);var k=this,e=h.WT,i=null,g=r,j=s,f=null,l=null,m=null;this.bindShow=function(a){l=a};this.bindHide=function(a){m=a};this.shown=function(){g&&setTimeout(function(){p()}, 0);l&&l()};this.show=function(a,c){if(b.style.display!=\"\"){b.style.display=\"\";a&&e.positionAtWidget(b.id,a.id,c);h.emit(b,\"shown\")}};this.hidden=function(){m&&m();g&&w()};this.hide=function(){if(b.style.display!=\"none\")b.style.display=\"none\";h.emit(b,\"hidden\");k.hidden()};this.setTransient=function(a,c){g=a;j=c;g&&!z()&&setTimeout(function(){p()},0)};$(b).mouseleave(x).mouseenter(y);t&&this.shown()}");
 	}
 }

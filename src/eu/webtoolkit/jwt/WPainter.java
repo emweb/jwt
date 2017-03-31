@@ -1121,6 +1121,7 @@ public class WPainter {
 	 * @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag
 	 *      textFlag, CharSequence text, WPointF clipPoint)
 	 * @see WRectF
+	 * @see Item
 	 * @see TextFlag
 	 * @see WString
 	 */

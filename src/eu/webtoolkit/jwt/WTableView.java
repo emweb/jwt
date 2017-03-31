@@ -1621,9 +1621,9 @@ public class WTableView extends WAbstractItemView {
 			}
 			int left = Math.max(0, this.viewportLeft_ - this.viewportWidth_
 					- borderColumnPixels);
-			int right = Math.min((int) this.canvas_.getWidth().toPixels(),
-					this.viewportLeft_ + 2 * this.viewportWidth_
-							+ borderColumnPixels);
+			int right = Math.min(Math.max((int) this.canvas_.getWidth()
+					.toPixels(), this.viewportWidth_), this.viewportLeft_ + 2
+					* this.viewportWidth_ + borderColumnPixels);
 			int total = 0;
 			this.renderedFirstColumn_ = this.getRowHeaderCount();
 			this.renderedLastColumn_ = this.getColumnCount() - 1;
@@ -1706,19 +1706,9 @@ public class WTableView extends WAbstractItemView {
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
-	private void onColumnResize(int col, WLength length) {
-		assert this.isAjaxMode();
-		WTableView.ColumnWidget w = null;
-		if (col < this.getRowHeaderCount()) {
-			w = this.columnContainer(col);
-		} else {
-			w = this.columnContainer(this.getRowHeaderCount() + col
-					- this.getFirstColumn());
-		}
-		if (w != null && length.toPixels() < w.getWidth().toPixels()) {
-			this.computeRenderedArea();
-			this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
-		}
+	private void onColumnResize() {
+		this.computeRenderedArea();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
 	private void resetGeometry() {
@@ -1989,7 +1979,7 @@ public class WTableView extends WAbstractItemView {
 		app.loadJavaScript("js/WTableView.js", wtjs1());
 		this.setJavaScriptMember(
 				" WTableView",
-				"new Wt3_3_6.WTableView("
+				"new Wt3_3_7.WTableView("
 						+ app.getJavaScriptClass()
 						+ ","
 						+ this.getJsRef()
@@ -2035,7 +2025,7 @@ public class WTableView extends WAbstractItemView {
 			this.columnResized().addListener(this,
 					new Signal2.Listener<Integer, WLength>() {
 						public void trigger(Integer e1, WLength e2) {
-							WTableView.this.onColumnResize(e1, e2);
+							WTableView.this.onColumnResize();
 						}
 					});
 			this.columnResizeConnected_ = true;

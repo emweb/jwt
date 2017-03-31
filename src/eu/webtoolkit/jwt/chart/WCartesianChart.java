@@ -1226,10 +1226,14 @@ public class WCartesianChart extends WAbstractChart {
 		for (int i = 0; i < 3; ++i) {
 			this.location_[i] = AxisValue.MinimumValue;
 		}
+		WPaintDevice d = device;
+		if (!(d != null)) {
+			d = this.getCreatePaintDevice();
+		}
 		boolean autoLayout = this.isAutoLayoutEnabled();
 		if (autoLayout
-				&& (!(device != null) || EnumUtils.mask(device.getFeatures(),
-						WPaintDevice.FeatureFlag.HasFontMetrics).equals(0))) {
+				&& EnumUtils.mask(d.getFeatures(),
+						WPaintDevice.FeatureFlag.HasFontMetrics).equals(0)) {
 			logger.error(new StringWriter()
 					.append("setAutoLayout(): device does not have font metrics (not even server-side font metrics).")
 					.toString());
@@ -1250,10 +1254,6 @@ public class WCartesianChart extends WAbstractChart {
 					this.yTransform_.assign(this.yTransformHandle_.getValue());
 				}
 				return false;
-			}
-			WPaintDevice d = device;
-			if (!(d != null)) {
-				d = this.getCreatePaintDevice();
 			}
 			{
 				WMeasurePaintDevice md = new WMeasurePaintDevice(d);
@@ -1280,9 +1280,9 @@ public class WCartesianChart extends WAbstractChart {
 				self.setPlotAreaPadding(this.getPlotAreaPadding(Side.Bottom)
 						+ corrBottom, EnumSet.of(Side.Bottom));
 			}
-			if (!(device != null)) {
-				;
-			}
+		}
+		if (!(device != null)) {
+			;
 		}
 		this.calcChartArea();
 		boolean result = this.chartArea_.getWidth() > 5
@@ -2507,7 +2507,7 @@ public class WCartesianChart extends WAbstractChart {
 					.getSeriesIndexOf(this.selectedSeries_) : -1;
 			int followCurve = this.followCurve_ != null ? this
 					.getSeriesIndexOf(this.followCurve_) : -1;
-			ss.append("new Wt3_3_6.WCartesianChart(")
+			ss.append("new Wt3_3_7.WCartesianChart(")
 					.append(app.getJavaScriptClass())
 					.append(",")
 					.append(this.getJsRef())
@@ -4726,8 +4726,8 @@ public class WCartesianChart extends WAbstractChart {
 		if (app != null && (this.isInteractive() || this.hasDeferredToolTips_)) {
 			app.loadJavaScript("js/ChartCommon.js", wtjs2());
 			app.doJavaScript(
-					"if (!Wt3_3_6.chartCommon) {Wt3_3_6.chartCommon = new "
-							+ "Wt3_3_6.ChartCommon(" + app.getJavaScriptClass()
+					"if (!Wt3_3_7.chartCommon) {Wt3_3_7.chartCommon = new "
+							+ "Wt3_3_7.ChartCommon(" + app.getJavaScriptClass()
 							+ "); }", false);
 			app.loadJavaScript("js/WCartesianChart.js", wtjs1());
 			this.jsDefined_ = true;

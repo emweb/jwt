@@ -407,6 +407,10 @@ public class WMenuItem extends WContainerWidget {
 	 * Note that adding a submenu makes this item not
 	 * {@link WMenuItem#isSelectable() selectable} by default.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>If the {@link WMenuItem#getParentMenu() parent menu} is a
+	 * {@link WPopupMenu}, the submenu should also be a {@link WPopupMenu}.</i>
+	 * </p>
 	 * 
 	 * @see WMenuItem#setSelectable(boolean selectable)
 	 */

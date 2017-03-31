@@ -293,7 +293,7 @@ public class WMessageBox extends WDialog {
 	 * <p>
 	 * <p>
 	 * <i><b>Note: </b>{@link WMessageBox#getButtons() getButtons()} returning
-	 * WFlags&lt;StandardButton&gt; has been renamed to
+	 * {@link MessageBox} has been renamed to
 	 * {@link WMessageBox#getStandardButtons() getStandardButtons()} in JWt
 	 * 3.3.1 </i>
 	 * </p>
