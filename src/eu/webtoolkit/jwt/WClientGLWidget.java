@@ -2243,7 +2243,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 					|| this.preloadArrayBuffers_.size() > 0;
 			if (preloadingSomething) {
 				if (this.preloadImages_.size() > 0) {
-					tmp.append("o.preloadingTextures++;new Wt._p_.ImagePreloader([");
+					tmp.append("o.preloadingTextures++;new ")
+							.append(WApplication.getInstance()
+									.getJavaScriptClass())
+							.append("._p_.ImagePreloader([");
 					for (int i = 0; i < this.preloadImages_.size(); ++i) {
 						if (i != 0) {
 							tmp.append(',');
@@ -2272,7 +2275,10 @@ class WClientGLWidget extends WAbstractGLImplementation {
 					this.preloadImages_.clear();
 				}
 				if (this.preloadArrayBuffers_.size() > 0) {
-					tmp.append("o.preloadingBuffers++;new Wt._p_.ArrayBufferPreloader([");
+					tmp.append("o.preloadingBuffers++;new ")
+							.append(WApplication.getInstance()
+									.getJavaScriptClass())
+							.append("._p_.ArrayBufferPreloader([");
 					for (int i = 0; i < this.preloadArrayBuffers_.size(); ++i) {
 						if (i != 0) {
 							tmp.append(',');

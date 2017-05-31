@@ -476,6 +476,12 @@ public class WSlider extends WFormWidget {
 		}
 	}
 
+	public void enableAjax() {
+		if (this.paintedSlider_ != null) {
+			this.paintedSlider_.connectSlots();
+		}
+	}
+
 	/**
 	 * Paints a slider ticks (for a non-native widget).
 	 * <p>

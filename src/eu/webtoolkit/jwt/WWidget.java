@@ -1337,13 +1337,13 @@ public abstract class WWidget extends WObject {
 	 */
 	public void setObjectName(final String name) {
 		WApplication app = WApplication.getInstance();
-		super.setObjectName(name);
 		for (int i = 0; i < this.jsignals_.size(); ++i) {
 			AbstractEventSignal signal = this.jsignals_.get(i);
 			if (signal.isExposedSignal()) {
 				app.removeExposedSignal(signal);
 			}
 		}
+		super.setObjectName(name);
 		for (int i = 0; i < this.jsignals_.size(); ++i) {
 			AbstractEventSignal signal = this.jsignals_.get(i);
 			if (signal.isExposedSignal()) {
@@ -2104,7 +2104,7 @@ public abstract class WWidget extends WObject {
 	private static final int BIT_SCROLL_VISIBILITY_ENABLED = 6;
 	private BitSet flags_;
 	private LinkedList<AbstractEventSignal> eventSignals_;
-	private List<AbstractEventSignal> jsignals_;
+	List<AbstractEventSignal> jsignals_;
 
 	void setHasParent(boolean hasParent) {
 		this.flags_.set(BIT_HAS_PARENT, hasParent);

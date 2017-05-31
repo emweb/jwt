@@ -366,6 +366,12 @@ class WebRenderer implements SlotLearnerInterface {
 		}
 	}
 
+	public boolean isJsSynced() {
+		return (this.collectedJS1_.length() == 0)
+				&& (this.collectedJS2_.length() == 0)
+				&& (this.invisibleJS_.length() == 0);
+	}
+
 	public void setJSSynced(boolean invisibleToo) {
 		logger.debug(new StringWriter().append("setJSSynced: ")
 				.append(String.valueOf(invisibleToo)).toString());
@@ -1661,7 +1667,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (isAbsoluteUrl(result)) {
 			return this.session_.appendSessionQuery(result);
 		} else {
-			return this.session_.appendSessionQuery(".");
+			return this.session_.appendSessionQuery(".").substring(1);
 		}
 	}
 

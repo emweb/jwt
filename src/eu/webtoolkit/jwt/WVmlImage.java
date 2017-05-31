@@ -164,6 +164,9 @@ public class WVmlImage implements WVectorImage {
 	}
 
 	public void drawPath(final WPainterPath path) {
+		if (path.isEmpty()) {
+			return;
+		}
 		if (this.penBrushShadowChanged_) {
 			if (!this.currentPen_.equals(this.getPainter().getPen())
 					|| !this.currentBrush_.equals(this.getPainter().getBrush())

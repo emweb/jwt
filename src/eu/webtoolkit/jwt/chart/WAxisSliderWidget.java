@@ -672,8 +672,14 @@ public class WAxisSliderWidget extends WPaintedWidget {
 			painter.drawPath(curve);
 			painter.setClipping(false);
 		} else {
+			WPainterPath clipPath = new WPainterPath();
+			clipPath.addRect(this.hv(new WRectF(left, top, maxW, h - top
+					- bottom)));
+			painter.setClipPath(clipPath);
+			painter.setClipping(true);
 			painter.setPen(this.getSeriesPen());
 			painter.drawPath(curve);
+			painter.setClipping(false);
 		}
 		if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
 			WApplication app = WApplication.getInstance();

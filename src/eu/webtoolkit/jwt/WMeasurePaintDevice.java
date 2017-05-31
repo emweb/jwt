@@ -92,6 +92,9 @@ public class WMeasurePaintDevice implements WPaintDevice {
 	}
 
 	public void drawPath(final WPainterPath path) {
+		if (path.isEmpty()) {
+			return;
+		}
 		this.expandBounds(path.getControlPointRect());
 	}
 

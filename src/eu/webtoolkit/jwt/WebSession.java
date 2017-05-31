@@ -235,16 +235,22 @@ class WebSession {
 				this.renderer_.serveResponse(event.impl_.response);
 			} catch (final RuntimeException e) {
 				logger.error(new StringWriter()
-						.append("Exception in WApplication::notify()")
+						.append("Exception in WApplication::notify(): ")
 						.append(e.toString()).toString());
 			}
 			return;
 		}
 		if (event.impl_.function != null) {
-			event.impl_.function.run();
-			;
-			if (event.impl_.handler.getRequest() != null) {
-				this.render(event.impl_.handler);
+			try {
+				event.impl_.function.run();
+				;
+				if (event.impl_.handler.getRequest() != null) {
+					this.render(event.impl_.handler);
+				}
+			} catch (final RuntimeException e) {
+				logger.error(new StringWriter()
+						.append("Exception in WApplication::notify(): ")
+						.append(e.toString()).toString());
 			}
 			return;
 		}
@@ -462,7 +468,8 @@ class WebSession {
 							return;
 						}
 						if (signalE.equals("poll")
-								&& ackState != WebRenderer.AckState.CorrectAck) {
+								&& ackState != WebRenderer.AckState.CorrectAck
+								&& this.renderer_.isJsSynced()) {
 							logger.debug(new StringWriter()
 									.append("Ignoring poll with incorrect ack -- was rescheduled in browser?")
 									.toString());
@@ -476,7 +483,8 @@ class WebSession {
 						if (signalE.equals("poll")) {
 							if (!WtServlet.isAsyncSupported()) {
 								this.updatesPendingEvent_.signal();
-								if (!this.updatesPending_) {
+								if (!this.updatesPending_
+										&& this.renderer_.isJsSynced()) {
 									try {
 										this.updatesPendingEvent_
 												.await(this.controller_
@@ -486,12 +494,14 @@ class WebSession {
 									} catch (final InterruptedException e) {
 									}
 								}
-								if (!this.updatesPending_) {
+								if (!this.updatesPending_
+										&& this.renderer_.isJsSynced()) {
 									handler.flushResponse();
 									return;
 								}
 							}
-							if (!this.updatesPending_) {
+							if (!this.updatesPending_
+									&& this.renderer_.isJsSynced()) {
 								if (!(this.webSocket_ != null)
 										|| this.pollRequestsIgnored_ == 2) {
 									if (this.webSocket_ != null) {
@@ -751,7 +761,11 @@ class WebSession {
 			final String internalPath) {
 		if (internalPath.length() == 0 || internalPath.equals("/")) {
 			if (baseUrl.length() == 0) {
-				return ".";
+				if (this.applicationName_.length() == 0) {
+					return ".";
+				} else {
+					return this.applicationName_;
+				}
 			} else {
 				return baseUrl;
 			}
@@ -778,11 +792,7 @@ class WebSession {
 		}
 		int questionPos = result.indexOf('?');
 		if (questionPos == -1) {
-			if (result.equals(".")) {
-				result = this.getSessionQuery();
-			} else {
-				result += this.getSessionQuery();
-			}
+			result += this.getSessionQuery();
 		} else {
 			if (questionPos == result.length() - 1) {
 				result += this.getSessionQuery().substring(1);
@@ -908,27 +918,32 @@ class WebSession {
 			}
 		}
 		if (!isAbsoluteUrl(this.applicationUrl_)) {
-			if (url.length() == 0 || url.charAt(0) == '/') {
+			if (url.length() != 0 && url.charAt(0) == '/') {
 				return url;
 			} else {
 				if (this.env_.publicDeploymentPath_.length() != 0) {
 					String dp = this.env_.publicDeploymentPath_;
-					if (url.equals(".")) {
+					if (url.length() == 0) {
 						return dp;
 					} else {
-						if (url.length() >= 2 && url.charAt(0) == '.'
-								&& url.charAt(1) == '/') {
-							if (dp.charAt(dp.length() - 1) == '/') {
-								return dp + url.substring(2);
-							} else {
-								return dp + url.substring(1);
-							}
+						if (url.charAt(0) == '?') {
+							return dp + url;
 						} else {
-							if (url.charAt(0) == '?') {
-								return dp + url;
+							int s = dp.lastIndexOf('/');
+							String parentDir = dp.substring(0, 0 + s + 1);
+							if (url.charAt(0) == '.'
+									&& (url.length() == 1
+											|| url.charAt(1) == '?'
+											|| url.charAt(1) == '#' || url
+											.charAt(1) == ';')) {
+								return parentDir + url.substring(1);
 							} else {
-								int s = dp.lastIndexOf('/');
-								return dp.substring(0, 0 + s + 1) + url;
+								if (url.length() >= 2 && url.charAt(0) == '.'
+										&& url.charAt(1) == '/') {
+									return parentDir + url.substring(2);
+								} else {
+									return parentDir + url;
+								}
 							}
 						}
 					}
@@ -938,14 +953,16 @@ class WebSession {
 					} else {
 						String rel = "";
 						String pi = this.pagePathInfo_;
-						int i = 0;
-						for (; i < pi.length(); ++i) {
-							if ((pi.charAt(i) == '/' || i == pi.length() - 1)
-									&& i != 0 && pi.charAt(i - 1) != '/') {
+						for (int i = 0; i < pi.length(); ++i) {
+							if (pi.charAt(i) == '/') {
 								rel += "../";
 							}
 						}
-						return rel + url;
+						if (url.length() == 0) {
+							return rel + this.applicationName_;
+						} else {
+							return rel + url;
+						}
 					}
 				}
 			}

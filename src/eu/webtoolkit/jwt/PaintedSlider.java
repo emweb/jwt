@@ -47,23 +47,31 @@ class PaintedSlider extends WPaintedWidget {
 		this.fill_.setStyleClass("fill");
 		this.handle_.setPositionScheme(PositionScheme.Absolute);
 		this.handle_.setStyleClass("handle");
-		this.handle_.mouseWentDown().addListener(this.mouseDownJS_);
-		this.handle_.touchStarted().addListener(this.mouseDownJS_);
-		this.handle_.mouseMoved().addListener(this.mouseMovedJS_);
-		this.handle_.touchMoved().addListener(this.mouseMovedJS_);
-		this.handle_.mouseWentUp().addListener(this.mouseUpJS_);
-		this.handle_.touchEnded().addListener(this.mouseUpJS_);
-		this.handle_.clicked().addListener(this.handleClickedJS_);
-		slider.clicked().addListener(this, new Signal1.Listener<WMouseEvent>() {
-			public void trigger(WMouseEvent e1) {
-				PaintedSlider.this.onSliderClick(e1);
-			}
-		});
-		this.sliderReleased_.addListener(this, new Signal1.Listener<Integer>() {
-			public void trigger(Integer e1) {
-				PaintedSlider.this.onSliderReleased(e1);
-			}
-		});
+		this.connectSlots();
+	}
+
+	public void connectSlots() {
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
+			this.handle_.mouseWentDown().addListener(this.mouseDownJS_);
+			this.handle_.touchStarted().addListener(this.mouseDownJS_);
+			this.handle_.mouseMoved().addListener(this.mouseMovedJS_);
+			this.handle_.touchMoved().addListener(this.mouseMovedJS_);
+			this.handle_.mouseWentUp().addListener(this.mouseUpJS_);
+			this.handle_.touchEnded().addListener(this.mouseUpJS_);
+			this.handle_.clicked().addListener(this.handleClickedJS_);
+			this.slider_.clicked().addListener(this,
+					new Signal1.Listener<WMouseEvent>() {
+						public void trigger(WMouseEvent e1) {
+							PaintedSlider.this.onSliderClick(e1);
+						}
+					});
+			this.sliderReleased_.addListener(this,
+					new Signal1.Listener<Integer>() {
+						public void trigger(Integer e1) {
+							PaintedSlider.this.onSliderReleased(e1);
+						}
+					});
+		}
 	}
 
 	public void updateState() {
@@ -93,6 +101,7 @@ class PaintedSlider extends WPaintedWidget {
 		char u = o == Orientation.Horizontal ? 'x' : 'y';
 		double max = l - this.slider_.getHandleWidth();
 		boolean horizontal = o == Orientation.Horizontal;
+		char[] buf = new char[30];
 		StringBuilder mouseDownJS = new StringBuilder();
 		mouseDownJS.append("obj.setAttribute('down', Wt3_3_7")
 				.append(".widgetCoordinates(obj, event).").append(u)
@@ -107,22 +116,27 @@ class PaintedSlider extends WPaintedWidget {
 				.append(u).append(",").append("pos = page_u - widget_page_u,")
 				.append("rtl = ").append(rtl).append(",")
 				.append("horizontal = ").append(horizontal).append(";")
-				.append("if (rtl && horizontal)").append("pos = ").append(l)
-				.append(" - pos;").append("var d = pos - down;");
+				.append("if (rtl && horizontal)");
+		computeD.append("pos = ").append(MathUtils.roundJs(l, 3))
+				.append(" - pos;");
+		computeD.append("var d = pos - down;");
 		StringBuilder mouseMovedJS = new StringBuilder();
 		mouseMovedJS.append("var down = obj.getAttribute('down');")
 				.append("var WT = Wt3_3_7;")
 				.append("if (down != null && down != '') {")
-				.append(computeD.toString())
-				.append("d = Math.max(0, Math.min(d, ").append(max)
-				.append("));").append("var v = Math.round(d/")
-				.append(pixelsPerUnit).append(");").append("var intd = v*")
-				.append(pixelsPerUnit).append(";")
-				.append("if (Math.abs(WT.pxself(objh, '").append(dir)
+				.append(computeD.toString());
+		mouseMovedJS.append("d = Math.max(0, Math.min(d, ")
+				.append(MathUtils.roundJs(max, 3)).append("));");
+		mouseMovedJS.append("var v = Math.round(d/")
+				.append(MathUtils.roundJs(pixelsPerUnit, 3)).append(");");
+		mouseMovedJS.append("var intd = v*")
+				.append(MathUtils.roundJs(pixelsPerUnit, 3)).append(";");
+		mouseMovedJS.append("if (Math.abs(WT.pxself(objh, '").append(dir)
 				.append("') - intd) > 1) {").append("objf.style.").append(size)
 				.append(" = ");
 		if (o == Orientation.Vertical) {
-			mouseMovedJS.append('(').append(max).append(" - intd + ")
+			mouseMovedJS.append('(').append(MathUtils.roundJs(max, 3));
+			mouseMovedJS.append(" - intd + ")
 					.append(this.slider_.getHandleWidth() / 2).append(")");
 		} else {
 			mouseMovedJS.append("intd + ").append(

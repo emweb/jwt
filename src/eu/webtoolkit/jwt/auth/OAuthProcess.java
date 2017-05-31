@@ -303,12 +303,31 @@ public class OAuthProcess extends WObject {
 	 */
 	protected OAuthAccessToken parseTokenResponse(final HttpMessage response) {
 		if (response.getStatus() == 200 || response.getStatus() == 400) {
-			String type = response.getHeader("Content-Type");
-			if (type != null) {
-				if (type.startsWith("text/plain; charset=UTF-8")) {
-					return this.parseUrlEncodedToken(response);
+			String contenttype = response.getHeader("Content-Type");
+			if (contenttype != null) {
+				String mimetype = contenttype.trim();
+				List<String> tokens = new ArrayList<String>();
+				tokens = new ArrayList<String>(Arrays.asList(mimetype
+						.split(";")));
+				String combinedType = "";
+				String params = "";
+				if (tokens.size() > 0) {
+					combinedType = tokens.get(0);
+					combinedType = combinedType.trim();
+				}
+				if (tokens.size() > 1) {
+					params = tokens.get(1);
+					params = params.trim();
+				}
+				if (combinedType.equals("text/plain")) {
+					if (params.startsWith("charset=UTF-8")) {
+						return this.parseUrlEncodedToken(response);
+					} else {
+						throw new OAuthProcess.TokenError(
+								WString.tr("Wt.Auth.OAuthService.badresponse"));
+					}
 				} else {
-					if (type.startsWith("application/json")) {
+					if (combinedType.equals("application/json")) {
 						return this.parseJsonToken(response);
 					} else {
 						throw new OAuthProcess.TokenError(
@@ -353,12 +372,9 @@ public class OAuthProcess extends WObject {
 	void requestToken(final String authorizationCode) {
 		try {
 			String url = this.service_.getTokenEndpoint();
+			Method m = this.service_.getTokenRequestMethod();
 			StringBuilder ss = new StringBuilder();
 			ss.append("grant_type=authorization_code")
-					.append("&client_id=")
-					.append(Utils.urlEncode(this.service_.getClientId()))
-					.append("&client_secret=")
-					.append(Utils.urlEncode(this.service_.getClientSecret()))
 					.append("&redirect_uri=")
 					.append(Utils.urlEncode(this.service_
 							.getGenerateRedirectEndpoint())).append("&code=")
@@ -371,15 +387,41 @@ public class OAuthProcess extends WObject {
 							OAuthProcess.this.handleToken(event1, event2);
 						}
 					});
-			Method m = this.service_.getTokenRequestMethod();
+			String clientId = Utils.urlEncode(this.service_.getClientId());
+			String clientSecret = Utils.urlEncode(this.service_
+					.getClientSecret());
 			if (m == Method.Get) {
+				List<org.apache.http.Header> headers = new ArrayList<org.apache.http.Header>();
+				if (this.service_.getClientSecretMethod() == ClientSecretMethod.HttpAuthorizationBasic) {
+					headers.add(new org.apache.http.message.BasicHeader(
+							"Authorization", "Basic "
+									+ Utils.base64Encode(clientId + ":"
+											+ clientSecret, false)));
+				} else {
+					if (this.service_.getClientSecretMethod() == ClientSecretMethod.PlainUrlParameter) {
+						ss.append("&client_id=").append(clientId)
+								.append("&client_secret=").append(clientSecret);
+					}
+				}
 				boolean hasQuery = url.indexOf('?') != -1;
 				url += (hasQuery ? '&' : '?') + ss.toString();
-				client.get(url);
+				client.get(url, headers);
 			} else {
 				HttpMessage post = new HttpMessage();
 				post.setHeader("Content-Type",
 						"application/x-www-form-urlencoded");
+				if (this.service_.getClientSecretMethod() == ClientSecretMethod.HttpAuthorizationBasic) {
+					post.setHeader(
+							"Authorization",
+							"Basic "
+									+ Utils.base64Encode(clientId + ":"
+											+ clientSecret, false));
+				} else {
+					if (this.service_.getClientSecretMethod() == ClientSecretMethod.RequestBodyParameter) {
+						ss.append("&client_id=").append(clientId)
+								.append("&client_secret=").append(clientSecret);
+					}
+				}
 				post.addBodyText(ss.toString());
 				client.post(url, post);
 			}
@@ -462,8 +504,10 @@ public class OAuthProcess extends WObject {
 					}
 					String refreshToken = JsonUtils.orIfNullString(
 							root.get("refreshToken"), "");
+					String idToken = JsonUtils.orIfNullString(
+							root.get("id_token"), "");
 					return new OAuthAccessToken(accessToken, expires,
-							refreshToken);
+							refreshToken, idToken);
 				} catch (final RuntimeException e) {
 					logger.error(new StringWriter()
 							.append("token response error: ")

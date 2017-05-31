@@ -124,6 +124,7 @@ public class WAxis {
 		this.renderingMirror_ = false;
 		this.zoomRangeChanged_ = new Signal2<Double, Double>();
 		this.segments_ = new ArrayList<WAxis.Segment>();
+		this.renderInterval_ = 0.0;
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
 				WLength.Unit.Point));

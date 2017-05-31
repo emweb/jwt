@@ -4110,7 +4110,7 @@
   <message id="src-Slider"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">Slider</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
-    <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;In which year are you born?&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+    <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="s">&quot;In which year were you born?&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="k">new</span> <span class="n">WBreak</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="kd">final</span> <span class="n">WSlider</span> <span class="n">slider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WSlider</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">slider</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">500</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">50</span><span class="o">));</span>
@@ -4123,7 +4123,7 @@
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">slider</span><span class="o">.</span><span class="na">valueChanged</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;I&#39;m born in the year &quot;</span> <span class="o">+</span> <span class="n">slider</span><span class="o">.</span><span class="na">getValueText</span><span class="o">()</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;I was born in the year &quot;</span> <span class="o">+</span> <span class="n">slider</span><span class="o">.</span><span class="na">getValueText</span><span class="o">()</span>
                     <span class="o">+</span> <span class="s">&quot;.&quot;</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">});</span>

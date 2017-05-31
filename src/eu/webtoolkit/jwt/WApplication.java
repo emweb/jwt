@@ -1054,6 +1054,22 @@ public class WApplication extends WObject {
 	/**
 	 * &quot;Resolves&quot; a relative URL taking into account internal paths.
 	 * <p>
+	 * This resolves the relative URL against the base path of the application,
+	 * so that it will point to the correct path regardless of the current
+	 * internal path, e.g. if the application is deployed at
+	 * <code>http://example.com/one</code> and we&apos;re at the internal path
+	 * <code>/two/</code>, so that the full URL is
+	 * <code>http://example.com/one/two/</code>, the output of the input URL
+	 * <code>three</code> will point to <code>http://example.com/three</code>,
+	 * and not <code>http://example.com/one/two/three</code>.
+	 * <p>
+	 * If the given url is the empty string, the result will point to the base
+	 * path of the application.
+	 * <p>
+	 * See the table below for more examples.
+	 * <p>
+	 * <h3>When you would want to use resolveRelativeUrl:</h3>
+	 * <p>
 	 * Using HTML5 History API or in a plain HTML session (without ugly internal
 	 * paths), the internal path is present as a full part of the URL. This has
 	 * a consequence that relative URLs, if not dealt with, would be resolved
@@ -1072,9 +1088,66 @@ public class WApplication extends WObject {
 	 * correct for the internal path. When passed an absolute URL (i.e. starting
 	 * with &apos;/&apos;), the url is returned unchanged.
 	 * <p>
-	 * For URLs passed to the JWt API (and of which the library knows it is
+	 * For URLs passed to the JWt API (and of which the library knows it
 	 * represents a URL) this method is called internally by the library. But it
 	 * may be useful for URLs which are set e.g. inside a {@link WTemplate}.
+	 * <p>
+	 * <h3>Examples</h3>
+	 * <p>
+	 * Note that whether the deployment path and entry point ends with a slash
+	 * is significant. Below are some examples with the <span>deployment
+	 * path</span> in <span>red</span> and the <span>internal path</span> in
+	 * <span>blue</span>.
+	 * <p>
+	 * <table border="1" cellspacing="3" cellpadding="3">
+	 * <tr>
+	 * <th>Current full path</th>
+	 * <th>url argument</th>
+	 * <th>Result points to</th>
+	 * </tr>
+	 * <tr>
+	 * <td rowspan="4"><code>http://example.com</code><code>/foo/bar</code>
+	 * <code>/internal/path</code><br>
+	 * Deployment path: <code>/foo/bar</code> (no slash at the end)<br>
+	 * Internal path: <code>/internal/path</code></td>
+	 * <td><i>(empty string)</i></td>
+	 * <td><code>http://example.com/foo/bar</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td><code>.</code></td>
+	 * <td><code>http://example.com/foo/</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td><code>./</code></td>
+	 * <td><code>http://example.com/foo/</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td><code>../</code></td>
+	 * <td><code>http://example.com/</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td rowspan="4"><code>http://example.com</code><code>/foo/bar</code>
+	 * <code>/</code><code>internal/path</code><br>
+	 * Deployment path: <code>/foo/bar/</code> (with slash at the end)<br>
+	 * Internal path: <code>/internal/path</code><br>
+	 * Note that the slash between the deployment path and the internal path is
+	 * shared</td>
+	 * <td><i>(empty string)</i></td>
+	 * <td><code>http://example.com/foo/bar/</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td><code>.</code></td>
+	 * <td><code>http://example.com/foo/bar/</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td><code>./</code></td>
+	 * <td><code>http://example.com/foo/bar/</code></td>
+	 * </tr>
+	 * <tr>
+	 * <td><code>../</code></td>
+	 * <td><code>http://example.com/foo/</code></td>
+	 * </tr>
+	 * </table>
 	 */
 	public String resolveRelativeUrl(final String url) {
 		return this.session_.fixRelativeUrl(url);

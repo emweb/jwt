@@ -100,7 +100,7 @@ public abstract class OAuthService {
 	}
 
 	/**
-	 * Creates a new authorizaiton process.
+	 * Creates a new authorization process.
 	 * <p>
 	 * This creates a new authorization process for the indicated scope. Valid
 	 * names for the scope are service provider dependent.
@@ -204,6 +204,11 @@ public abstract class OAuthService {
 	 */
 	public abstract String getTokenEndpoint();
 
+	public String getUserInfoEndpoint() {
+		throw new WException(
+				"OAuth::Process::userInfoEndpoint(): not specialized");
+	}
+
 	/**
 	 * Returns the client ID.
 	 * <p>
@@ -232,9 +237,9 @@ public abstract class OAuthService {
 	 * {@link OAuthService#decodeState(String state) decodeState()}.
 	 */
 	public String encodeState(final String url) {
-		String msg = this.impl_.secret_ + url;
-		String hash = new String(Utils.sha1(msg));
-		String b = Utils.base64Encode(hash + "|" + url);
+		String hash = Utils.base64Encode(Utils.hmac_sha1(url,
+				this.impl_.secret_));
+		String b = Utils.base64Encode(hash + "|" + url, false);
 		b = StringUtils.replace(b, "+", "-");
 		b = StringUtils.replace(b, "/", "_");
 		b = StringUtils.replace(b, "=", ".");
@@ -280,6 +285,18 @@ public abstract class OAuthService {
 	public Method getTokenRequestMethod() {
 		return Method.Post;
 	}
+
+	/**
+	 * Returns the method to transfer the client secret.
+	 * <p>
+	 * Some implementations (like Facebook) encode the secret in the GET request
+	 * parameters, while this is explicitly not allowed in the OAuth 2.0
+	 * specification.
+	 * <p>
+	 * The default implementation returns HttpAuthorizationBasic (the
+	 * recommended method).
+	 */
+	public abstract ClientSecretMethod getClientSecretMethod();
 
 	public String getGenerateRedirectEndpoint() {
 		this.configureRedirectEndpoint();

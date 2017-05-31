@@ -494,7 +494,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			tmp.append("var o=").append(paintedWidgetJsRef).append(";");
 			tmp.append("o.cancelPreloader();");
 			tmp.append("if(").append(canvasVar).append(".getContext){");
-			tmp.append("o.imagePreloader=new Wt._p_.ImagePreloader([");
+			tmp.append("o.imagePreloader=new ");
+			tmp.append(WApplication.getInstance().getJavaScriptClass()).append(
+					"._p_.ImagePreloader([");
 			for (int i = 0; i < this.images_.size(); ++i) {
 				if (i != 0) {
 					tmp.append(',');

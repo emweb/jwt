@@ -47,14 +47,13 @@ public class Token {
 		this.expirationTime_ = null;
 	}
 
-	/**
-	 * Constructor.
-	 */
 	public Token(final String hash, final WDate expirationTime) {
 		this.hash_ = hash;
 		this.expirationTime_ = expirationTime;
 	}
 
+	// public Token(final String hash, final WDate expirationTime, final String
+	// purpose, final String scope, final String redirectUri) ;
 	/**
 	 * Returns whether the token is empty.
 	 * <p>

@@ -212,6 +212,9 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	public void drawPath(final WPainterPath path) {
+		if (path.isEmpty()) {
+			return;
+		}
 		WRectF bbox = this.getPainter().getWorldTransform()
 				.map(path.getControlPointRect());
 		if (this.busyWithPath_) {

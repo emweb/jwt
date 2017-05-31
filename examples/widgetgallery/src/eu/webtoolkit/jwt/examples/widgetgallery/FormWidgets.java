@@ -903,7 +903,7 @@ class FormWidgets extends TopicWidget {
 
 	WWidget Slider() {
 		WContainerWidget container = new WContainerWidget();
-		new WText("In which year are you born?", container);
+		new WText("In which year were you born?", container);
 		new WBreak(container);
 		final WSlider slider = new WSlider(container);
 		slider.resize(new WLength(500), new WLength(50));
@@ -916,7 +916,7 @@ class FormWidgets extends TopicWidget {
 		final WText out = new WText(container);
 		slider.valueChanged().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				out.setText("I'm born in the year " + slider.getValueText()
+				out.setText("I was born in the year " + slider.getValueText()
 						+ ".");
 			}
 		});

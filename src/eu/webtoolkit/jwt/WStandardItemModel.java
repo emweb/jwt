@@ -619,6 +619,41 @@ public class WStandardItemModel extends WAbstractItemModel {
 		return this.indexFromItem((WStandardItem) rawIndex);
 	}
 
+	public void dropEvent(final WDropEvent e, DropAction action, int row,
+			int column, final WModelIndex parent) {
+		WItemSelectionModel selectionModel = ((e.getSource()) instanceof WItemSelectionModel ? (WItemSelectionModel) (e
+				.getSource()) : null);
+		if (selectionModel != null
+				&& selectionModel.getModel() == this
+				&& selectionModel.getSelectionBehavior() == SelectionBehavior.SelectRows
+				&& action == DropAction.MoveAction) {
+			SortedSet<WModelIndex> selection = selectionModel
+					.getSelectedIndexes();
+			int r = row;
+			List<List<WStandardItem>> rows = new ArrayList<List<WStandardItem>>();
+			for (Iterator<WModelIndex> i_it = selection.iterator(); i_it
+					.hasNext();) {
+				WModelIndex i = i_it.next();
+				WModelIndex sourceIndex = i;
+				if ((sourceIndex.getParent() == parent || (sourceIndex
+						.getParent() != null && sourceIndex.getParent().equals(
+						parent)))
+						&& sourceIndex.getRow() < row) {
+					r--;
+				}
+				WStandardItem parentItem = this.getItemFromIndex(sourceIndex
+						.getParent());
+				rows.add(parentItem.takeRow(sourceIndex.getRow()));
+			}
+			for (int i = 0; i < rows.size(); i++) {
+				WStandardItem parentItem = this.getItemFromIndex(parent);
+				parentItem.insertRow(r + i, rows.get(i));
+			}
+		} else {
+			super.dropEvent(e, action, row, column, parent);
+		}
+	}
+
 	/**
 	 * Set the role used to sort the model.
 	 * <p>

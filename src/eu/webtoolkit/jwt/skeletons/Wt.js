@@ -163,7 +163,7 @@ this.isAndroid = (agent.indexOf("safari") != -1)
 		  && (agent.indexOf("android") != -1);
 this.isWebKit = (agent.indexOf("applewebkit") != -1);
 this.isGecko = agent.indexOf("gecko") != -1 && !this.isWebKit;
-this.isIOS = agent.indexOf("ipod") != -1 || agent.indexOf("ipad") != -1;
+this.isIOS = agent.indexOf("iphone") != -1 || agent.indexOf("ipad") != -1 || agent.indexOf("ipod") != -1;
 
 this.updateDelay = this.isIE ? 10 : 51;
 
@@ -1072,7 +1072,7 @@ this.setSelectionRange = function(elem, start, end, unicode) {
 this.isKeyPress = function(e) {
   if (!e) e = window.event;
 
-  if (e.altKey || e.ctrlKey || e.metaKey)
+  if (e.ctrlKey || e.metaKey)
     return false;
 
   var charCode = (typeof e.charCode !== UNDEFINED) ? e.charCode : 0;
@@ -1817,10 +1817,14 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
       // with only absolutely positioned children. We are a bit more liberal
       // here to catch other simular situations, and 100px seems like space
       // needed anyway?
+      //
+      // We need to check whether overflowX or overflowY is not visible, because
+      // of an issue on Firefox where clientWidth !== scrollWidth and
+      // clientHeight !== scrollHeight when using the border-collapse CSS property.
       if (WT.css(p, 'display') != 'inline' &&
 	  p.clientHeight > 100 &&
-	  (p.scrollHeight > p.clientHeight ||
-	   p.scrollWidth > p.clientWidth)) {
+	  ((p.scrollHeight > p.clientHeight && getComputedStyle(p).overflowY !== 'visible') ||
+	   (p.scrollWidth > p.clientWidth && getComputedStyle(p).overflowX !== 'visible'))) {
 	break;
       }
 

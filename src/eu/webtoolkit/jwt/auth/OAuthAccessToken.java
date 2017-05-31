@@ -45,6 +45,7 @@ public class OAuthAccessToken {
 	public OAuthAccessToken() {
 		this.accessToken_ = "";
 		this.refreshToken_ = "";
+		this.idToken_ = "";
 		this.expires_ = null;
 	}
 
@@ -55,6 +56,18 @@ public class OAuthAccessToken {
 			final String refreshToken) {
 		this.accessToken_ = accessToken;
 		this.refreshToken_ = refreshToken;
+		this.idToken_ = "";
+		this.expires_ = expires;
+	}
+
+	/**
+	 * Constructor with an OpenID Connect ID token.
+	 */
+	public OAuthAccessToken(final String accessToken, final WDate expires,
+			final String refreshToken, final String idToken) {
+		this.accessToken_ = accessToken;
+		this.refreshToken_ = refreshToken;
+		this.idToken_ = idToken;
 		this.expires_ = expires;
 	}
 
@@ -98,6 +111,10 @@ public class OAuthAccessToken {
 		return this.refreshToken_;
 	}
 
+	public String getIdToken() {
+		return this.idToken_;
+	}
+
 	/**
 	 * An invalid token constant.
 	 * <p>
@@ -106,5 +123,6 @@ public class OAuthAccessToken {
 	public static final OAuthAccessToken Invalid = new OAuthAccessToken();
 	private String accessToken_;
 	private String refreshToken_;
+	private String idToken_;
 	private WDate expires_;
 }

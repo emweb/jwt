@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li><code>google-oauth2-redirect-endpoint</code>: the URL of the local
  * redirect endpoint, to which the google OAuth service redirects the user after
- * authentication. See also {@link GoogleService#getRedirectEndpoint()
- * getRedirectEndpoint()}</li>
+ * authentication. See also {@link OidcService#getRedirectEndpoint()
+ * OidcService#getRedirectEndpoint()}</li>
  * <li><code>google-oauth2-redirect-endpoint-path</code>: optionally, the
  * deployment path that corresponds to the redirect endpoint. See also
  * {@link GoogleService#getRedirectEndpointPath() getRedirectEndpointPath()}</li>
@@ -61,10 +61,12 @@ import org.slf4j.LoggerFactory;
  * since its state (the configuration) is read-only.
  * <p>
  * See also: <a
- * href="http://code.google.com/apis/accounts/docs/OAuth2.html">http
- * ://code.google.com/apis/accounts/docs/OAuth2.html</a>
+ * href="https://developers.google.com/identity/protocols/OAuth2">https
+ * ://developers.google.com/identity/protocols/OAuth2</a> <a
+ * href="https://developers.google.com/identity/protocols/OpenIDConnect"
+ * >https://developers.google.com/identity/protocols/OpenIDConnect</a>
  */
-public class GoogleService extends OAuthService {
+public class GoogleService extends OidcService {
 	private static Logger logger = LoggerFactory.getLogger(GoogleService.class);
 
 	/**
@@ -72,6 +74,15 @@ public class GoogleService extends OAuthService {
 	 */
 	public GoogleService(final AuthService baseAuth) {
 		super(baseAuth);
+		this.setRedirectEndpoint(configurationProperty(RedirectEndpointProperty));
+		this.setClientId(configurationProperty(ClientIdProperty));
+		this.setClientSecret(configurationProperty(ClientSecretProperty));
+		this.setAuthEndpoint("https://accounts.google.com/o/oauth2/v2/auth");
+		this.setTokenEndpoint("https://www.googleapis.com/oauth2/v4/token");
+		this.setUserInfoEndpoint("https://www.googleapis.com/oauth2/v3/userinfo");
+		this.setAuthenticationScope("openid email profile");
+		this.setName("google");
+		this.setDescription("Google Account");
 	}
 
 	/**
@@ -93,30 +104,6 @@ public class GoogleService extends OAuthService {
 		}
 	}
 
-	public String getName() {
-		return "google";
-	}
-
-	public WString getDescription() {
-		return new WString("Google Account");
-	}
-
-	public int getPopupWidth() {
-		return 550;
-	}
-
-	public int getPopupHeight() {
-		return 400;
-	}
-
-	public String getAuthenticationScope() {
-		return ProfileScope + " " + EmailScope;
-	}
-
-	public String getRedirectEndpoint() {
-		return configurationProperty(RedirectEndpointProperty);
-	}
-
 	public String getRedirectEndpointPath() {
 		try {
 			return configurationProperty(RedirectEndpointPathProperty);
@@ -125,32 +112,8 @@ public class GoogleService extends OAuthService {
 		}
 	}
 
-	public String getAuthorizationEndpoint() {
-		return AuthUrl;
-	}
-
-	public String getTokenEndpoint() {
-		return TokenUrl;
-	}
-
-	public String getClientId() {
-		return configurationProperty(ClientIdProperty);
-	}
-
-	public String getClientSecret() {
-		return configurationProperty(ClientSecretProperty);
-	}
-
-	public OAuthProcess createProcess(final String scope) {
-		return new GoogleProcess(this, scope);
-	}
-
 	private static String RedirectEndpointProperty = "google-oauth2-redirect-endpoint";
 	private static String RedirectEndpointPathProperty = "google-oauth2-redirect-endpoint-path";
 	private static String ClientIdProperty = "google-oauth2-client-id";
 	private static String ClientSecretProperty = "google-oauth2-client-secret";
-	private static String AuthUrl = "https://accounts.google.com/o/oauth2/auth";
-	private static String TokenUrl = "https://accounts.google.com/o/oauth2/token";
-	private static String ProfileScope = "https://www.googleapis.com/auth/userinfo.profile";
-	private static String EmailScope = "https://www.googleapis.com/auth/userinfo.email";
 }

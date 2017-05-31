@@ -142,6 +142,10 @@ public class FacebookService extends OAuthService {
 		return configurationProperty(ClientSecretProperty);
 	}
 
+	public ClientSecretMethod getClientSecretMethod() {
+		return ClientSecretMethod.PlainUrlParameter;
+	}
+
 	public Method getTokenRequestMethod() {
 		return Method.Get;
 	}

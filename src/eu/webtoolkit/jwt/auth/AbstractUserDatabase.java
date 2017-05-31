@@ -26,13 +26,14 @@ import org.slf4j.LoggerFactory;
  * This class defines the interface for managing user data related to
  * authentication. You need to implement this interface to allow the
  * authentication service classes ({@link AuthService}, {@link PasswordService},
- * and {@link OAuthService}) to locate and update user credentials. Except for
- * functions which do work on a single user, it is more convenient to use the
- * {@link User} API. Obviously, you may have more data associated with a user,
- * including roles for access control, other personal information, address
- * information. This information cannot be accessed through the {@link User}
- * class, but you should make it available through your own {@link User} class,
- * which is then als the basis of this user database implementation.
+ * {@link OAuthService}, and {@link OidcService}) to locate and update user
+ * credentials. Except for functions which do work on a single user, it is more
+ * convenient to use the {@link User} API. Obviously, you may have more data
+ * associated with a user, including roles for access control, other personal
+ * information, address information. This information cannot be accessed through
+ * the {@link User} class, but you should make it available through your own
+ * {@link User} class, which is then als the basis of this user database
+ * implementation.
  * <p>
  * The only assumption made by the authentication system is that an id uniquely
  * defines the user. This is usually an internal identifier, for example an
@@ -52,6 +53,12 @@ import org.slf4j.LoggerFactory;
  * database for each different session, and will try to wrap database access
  * within a transaction. {@link Transaction} support can thus be optionally
  * provided by a database implementation.
+ * <p>
+ * This class is also used by OAuthAuthorizationEndpoint,
+ * {@link OAuthTokenEndpoint}, and {@link OidcUserInfoEndpoint} when
+ * implementing an OAuth/OpenID Connect provider to retrieve information not
+ * only about the {@link User}, but also the {@link OAuthClient}, and an
+ * {@link IssuedToken}.
  * <p>
  * 
  * @see User
@@ -495,6 +502,205 @@ public abstract class AbstractUserDatabase {
 		return new WDate(1970, 1, 1);
 	}
 
+	/**
+	 * Returns the value of a claim for a user.
+	 * <p>
+	 * Should return a null {@link } value when the claim is unavailable.
+	 */
+	public com.google.gson.JsonElement idpJsonClaim(final User user,
+			final String claim) {
+		logger.error(new StringWriter().append(
+				new Require("idpClaim()", IDP_SUPPORT).toString()).toString());
+		return com.google.gson.JsonNull.INSTANCE;
+	}
+
+	/**
+	 * Adds a new {@link IssuedToken} to the database and returns it. S.
+	 */
+	public IssuedToken idpTokenAdd(final String value,
+			final WDate expirationTime, final String purpose,
+			final String scope, final String redirectUri, final User user,
+			final OAuthClient authClient) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenAdd()", IDP_SUPPORT).toString())
+				.toString());
+		return new IssuedToken();
+	}
+
+	/**
+	 * Removes an issued token from the database.
+	 */
+	public void idpTokenRemove(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenRemove()", IDP_SUPPORT).toString())
+				.toString());
+	}
+
+	/**
+	 * Finds a token in the database with a given value.
+	 */
+	public IssuedToken idpTokenFindWithValue(final String purpose,
+			final String value) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenFindWithValue()", IDP_SUPPORT).toString())
+				.toString());
+		return new IssuedToken();
+	}
+
+	/**
+	 * Gets the expiration time for a token.
+	 */
+	public WDate idpTokenExpirationTime(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenExpirationTime)", IDP_SUPPORT).toString())
+				.toString());
+		return new WDate(1970, 1, 1);
+	}
+
+	/**
+	 * Gets the value for a token.
+	 */
+	public String idpTokenValue(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenValue()", IDP_SUPPORT).toString())
+				.toString());
+		return "";
+	}
+
+	/**
+	 * Gets the token purpose (authorization_code, access_token, id_token,
+	 * refresh_token).
+	 */
+	public String idpTokenPurpose(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenPurpose()", IDP_SUPPORT).toString())
+				.toString());
+		return "";
+	}
+
+	/**
+	 * Gets the scope associated with the token.
+	 */
+	public String idpTokenScope(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenScope()", IDP_SUPPORT).toString())
+				.toString());
+		return "";
+	}
+
+	/**
+	 * Returns the redirect URI that was used with the token request.
+	 */
+	public String idpTokenRedirectUri(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenRedirectUri()", IDP_SUPPORT).toString())
+				.toString());
+		return "";
+	}
+
+	/**
+	 * Returns the user associated with the token.
+	 */
+	public User idpTokenUser(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenUser()", IDP_SUPPORT).toString())
+				.toString());
+		return new User();
+	}
+
+	/**
+	 * Returns the authorization client (relying party) that is associated with
+	 * the token.
+	 */
+	public OAuthClient idpTokenOAuthClient(final IssuedToken token) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenOAuthClient()", IDP_SUPPORT).toString())
+				.toString());
+		return new OAuthClient();
+	}
+
+	/**
+	 * Finds the authorization client (relying party) with this identifier.
+	 */
+	public OAuthClient idpClientFindWithId(final String clientId) {
+		logger.error(new StringWriter().append(
+				new Require("idpClientFindWithId()", IDP_SUPPORT).toString())
+				.toString());
+		return new OAuthClient();
+	}
+
+	/**
+	 * Returns the secret for this client.
+	 */
+	public String idpClientSecret(final OAuthClient client) {
+		logger.error(new StringWriter().append(
+				new Require("idpClientSecret()", IDP_SUPPORT).toString())
+				.toString());
+		return "";
+	}
+
+	/**
+	 * Returns true if the given secret is correct for the given client.
+	 */
+	public boolean idpVerifySecret(final OAuthClient client, final String secret) {
+		logger.error(new StringWriter().append(
+				new Require("idpVerifySecret()", IDP_SUPPORT).toString())
+				.toString());
+		return false;
+	}
+
+	/**
+	 * Returns the redirect URI for this client.
+	 */
+	public Set<String> idpClientRedirectUris(final OAuthClient client) {
+		logger.error(new StringWriter().append(
+				new Require("idpClientRedirectUris()", IDP_SUPPORT).toString())
+				.toString());
+		return new HashSet<String>();
+	}
+
+	/**
+	 * Returns the identifier for this client.
+	 */
+	public String idpClientId(final OAuthClient client) {
+		logger.error(new StringWriter().append(
+				new Require("idpClientId()", IDP_SUPPORT).toString())
+				.toString());
+		return "";
+	}
+
+	/**
+	 * Returns whether the client is confidential or public.
+	 */
+	public boolean idpClientConfidential(final OAuthClient client) {
+		logger.error(new StringWriter().append(
+				new Require("idpClientConfidential()", IDP_SUPPORT).toString())
+				.toString());
+		return false;
+	}
+
+	/**
+	 * Returns the client authentication method (see OIDC Core chapter 9).
+	 */
+	public ClientSecretMethod idpClientAuthMethod(final OAuthClient client) {
+		logger.error(new StringWriter().append(
+				new Require("idpClientAuthMethod()", IDP_SUPPORT).toString())
+				.toString());
+		return ClientSecretMethod.HttpAuthorizationBasic;
+	}
+
+	/**
+	 * Add a new client to the database and returns it.
+	 */
+	public OAuthClient idpClientAdd(final String clientId,
+			boolean confidential, final Set<String> redirectUris,
+			ClientSecretMethod authMethod, final String secret) {
+		logger.error(new StringWriter().append(
+				new Require("idpTokenAdd()", IDP_SUPPORT).toString())
+				.toString());
+		return new OAuthClient();
+	}
+
 	protected AbstractUserDatabase() {
 	}
 
@@ -504,4 +710,5 @@ public abstract class AbstractUserDatabase {
 	private static String PASSWORDS = "password handling";
 	private static String THROTTLING = "password attempt throttling";
 	private static String REGISTRATION = "user registration";
+	private static String IDP_SUPPORT = "identity provider support";
 }

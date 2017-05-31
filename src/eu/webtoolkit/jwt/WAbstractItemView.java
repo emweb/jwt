@@ -1653,6 +1653,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	public void setObjectName(final String name) {
 		super.setObjectName(name);
+		this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
 		this.headerHeightRule_.setSelector("#" + this.getId() + " .headerrh");
 		for (int i = 0; i < this.columns_.size(); ++i) {
 			final WAbstractItemView.ColumnInfo ci = this.columns_.get(i);

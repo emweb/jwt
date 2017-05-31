@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -314,4 +317,29 @@ public class Utils {
 	  String datab64 = base64Encode(data, false);
 	  return url+datab64;
 	}
+
+	public static byte[] hmac(String msg, String key, String algo) {
+        byte[] result = null;
+		try {
+			SecretKeySpec key_ = new SecretKeySpec((key).getBytes("UTF-8"), algo);
+			Mac mac = Mac.getInstance(algo);
+			mac.init(key_);
+			result = mac.doFinal(msg.getBytes("ASCII"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+        return result;
+	}
+
+	public static byte[] hmac_sha1(String msg, String key) {
+        return hmac(msg,key,"HmacSHA1");
+    }
+
+	public static byte[] hmac_md5(String msg, String key) {
+        return hmac(msg,key,"HmacMD5");
+    }
 }
