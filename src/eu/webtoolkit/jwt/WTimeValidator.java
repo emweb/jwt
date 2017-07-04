@@ -306,7 +306,7 @@ public class WTimeValidator extends WRegExpValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_3_7.WTimeValidator(").append(this.isMandatory())
+		js.append("new Wt3_3_8.WTimeValidator(").append(this.isMandatory())
 				.append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WTime.RegExpInfo r = WTime.formatToRegExp(this.formats_.get(i));

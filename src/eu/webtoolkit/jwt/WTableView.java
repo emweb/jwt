@@ -611,6 +611,12 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+				&& !this.isAjaxMode()
+				&& WApplication.getInstance().getEnvironment().hasAjax()) {
+			this.plainTable_ = null;
+			this.setup();
+		}
 		if (this.isAjaxMode()) {
 			if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 				this.defineJavaScript();
@@ -690,6 +696,7 @@ public class WTableView extends WAbstractItemView {
 		this.plainTable_ = null;
 		this.setup();
 		this.defineJavaScript();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
 	}
 
 	static class ColumnWidget extends WContainerWidget {
@@ -1979,7 +1986,7 @@ public class WTableView extends WAbstractItemView {
 		app.loadJavaScript("js/WTableView.js", wtjs1());
 		this.setJavaScriptMember(
 				" WTableView",
-				"new Wt3_3_7.WTableView("
+				"new Wt3_3_8.WTableView("
 						+ app.getJavaScriptClass()
 						+ ","
 						+ this.getJsRef()

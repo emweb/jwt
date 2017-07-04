@@ -65,6 +65,8 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 				return !jse.userEventArgs.get(index).equals("0");
 			else if (toClass == WMouseEvent.class)
 				return new WMouseEvent(jse);
+			else if (toClass == WTouchEvent.class)
+				return new WTouchEvent(jse);
 			else if (toClass == WKeyEvent.class)
 				return new WKeyEvent(jse);
 			else if (toClass == WGoogleMap.Coordinate.class) {

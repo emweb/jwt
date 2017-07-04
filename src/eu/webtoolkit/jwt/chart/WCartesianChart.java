@@ -2507,7 +2507,7 @@ public class WCartesianChart extends WAbstractChart {
 					.getSeriesIndexOf(this.selectedSeries_) : -1;
 			int followCurve = this.followCurve_ != null ? this
 					.getSeriesIndexOf(this.followCurve_) : -1;
-			ss.append("new Wt3_3_7.WCartesianChart(")
+			ss.append("new Wt3_3_8.WCartesianChart(")
 					.append(app.getJavaScriptClass())
 					.append(",")
 					.append(this.getJsRef())
@@ -4726,8 +4726,8 @@ public class WCartesianChart extends WAbstractChart {
 		if (app != null && (this.isInteractive() || this.hasDeferredToolTips_)) {
 			app.loadJavaScript("js/ChartCommon.js", wtjs2());
 			app.doJavaScript(
-					"if (!Wt3_3_7.chartCommon) {Wt3_3_7.chartCommon = new "
-							+ "Wt3_3_7.ChartCommon(" + app.getJavaScriptClass()
+					"if (!Wt3_3_8.chartCommon) {Wt3_3_8.chartCommon = new "
+							+ "Wt3_3_8.ChartCommon(" + app.getJavaScriptClass()
 							+ "); }", false);
 			app.loadJavaScript("js/WCartesianChart.js", wtjs1());
 			this.jsDefined_ = true;

@@ -34,7 +34,7 @@ class WMediaPlayerImpl extends WTemplate {
 			String result = this.player_.getJsPlayerRef()
 					+ ".jPlayer('destroy');";
 			if (!recursive) {
-				result += "Wt3_3_7.remove('" + this.getId() + "');";
+				result += "Wt3_3_8.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {

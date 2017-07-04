@@ -7,11 +7,11 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.webtoolkit</groupId>
-  <artifactId>jwt</artifactId>
+  <artifactId>jwt-auth</artifactId>
   <packaging>jar</packaging>
-  <name>Java Web Toolkit</name>
-  <version>3.3.7</version>
-  <description>Java library for developing web applications</description>
+  <name>Java Web Toolkit Authentication Library</name>
+  <version>3.3.8</version>
+  <description>Authentication library for the Java Web Toolkit</description>
   <url>http://webtoolkit.eu/jwt/</url>
 
   <licenses>
@@ -29,33 +29,27 @@
 
   <dependencies>
     <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.2.2</version>
+      <groupId>eu.webtoolkit</groupId>
+      <artifactId>jwt</artifactId>
+      <version>3.3.8</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>1.3.2</version>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.0</version>
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.6.4</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.1.2</version>
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.4</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>java3d</groupId>
-      <artifactId>vecmath</artifactId>
-      <version>1.5.2</version>
+      <groupId>edu.vt.middleware</groupId>
+      <artifactId>vt-password</artifactId>
+      <version>3.1.1</version>
     </dependency>
   </dependencies>
 </project>

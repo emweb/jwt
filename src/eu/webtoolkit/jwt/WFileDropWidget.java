@@ -380,7 +380,7 @@ public class WFileDropWidget extends WContainerWidget {
 		String maxFileSize = String.valueOf(WApplication.getInstance()
 				.getMaximumRequestSize());
 		this.setJavaScriptMember(" WFileDropWidget",
-				"new Wt3_3_7.WFileDropWidget(" + app.getJavaScriptClass() + ","
+				"new Wt3_3_8.WFileDropWidget(" + app.getJavaScriptClass() + ","
 						+ this.getJsRef() + "," + maxFileSize + ");");
 		this.dropSignal_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {

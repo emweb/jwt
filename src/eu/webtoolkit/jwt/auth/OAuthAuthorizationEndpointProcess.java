@@ -90,6 +90,9 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 		super();
 		this.db_ = db;
 		this.authCodeExpSecs_ = 600;
+		this.redirectUri_ = "";
+		this.state_ = "";
+		this.scope_ = "";
 		this.client_ = new OAuthClient();
 		this.validRequest_ = false;
 		this.login_ = login;
@@ -104,13 +107,14 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	 */
 	public void processEnvironment() {
 		final WEnvironment env = WApplication.getInstance().getEnvironment();
-		this.redirectUri_ = env.getParameter("redirect_uri");
-		if (!(this.redirectUri_ != null)) {
+		String redirectUri = env.getParameter("redirect_uri");
+		if (!(redirectUri != null)) {
 			logger.error(new StringWriter().append(
 					"The client application did not pass a redirection URI.")
 					.toString());
 			return;
 		}
+		this.redirectUri_ = redirectUri;
 		String clientId = env.getParameter("client_id");
 		if (!(clientId != null)) {
 			logger.error(new StringWriter().append(
@@ -130,15 +134,19 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 					.toString());
 			return;
 		}
-		this.scope_ = env.getParameter("scope");
+		String scope = env.getParameter("scope");
 		String responseType = env.getParameter("response_type");
-		this.state_ = env.getParameter("state");
-		if (!(this.scope_ != null) || !(responseType != null)
+		String state = env.getParameter("state");
+		if (!(scope != null) || !(responseType != null)
 				|| !responseType.equals("code")) {
 			this.sendResponse("error=invalid_request");
 			return;
 		}
 		this.validRequest_ = true;
+		this.scope_ = scope;
+		if (state != null) {
+			this.state_ = state;
+		}
 		this.login_.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				OAuthAuthorizationEndpointProcess.this.authEvent();
@@ -223,7 +231,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	private void sendResponse(final String param) {
 		String redirectParam = this.redirectUri_.indexOf("?") != -1 ? "&" : "?";
 		redirectParam += param;
-		if (this.state_ != null) {
+		if (this.state_.length() != 0) {
 			redirectParam += "&state=" + Utils.urlEncode(this.state_);
 		}
 		WApplication.getInstance().redirect(this.redirectUri_ + redirectParam);

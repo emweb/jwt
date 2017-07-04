@@ -160,7 +160,11 @@ public class OidcUserInfoEndpoint extends WResource {
 		Set<String> claims = new HashSet<String>();
 		for (Iterator<String> s_it = scope.iterator(); s_it.hasNext();) {
 			String s = s_it.next();
-			final Set<String> c = this.claimMap_.get(s);
+			Set<String> it = this.claimMap_.get(s);
+			if (it == null) {
+				continue;
+			}
+			final Set<String> c = it;
 			for (Iterator<String> s2_it = c.iterator(); s2_it.hasNext();) {
 				String s2 = s2_it.next();
 				claims.add(s2);

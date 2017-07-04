@@ -368,8 +368,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	public boolean isJsSynced() {
 		return (this.collectedJS1_.length() == 0)
-				&& (this.collectedJS2_.length() == 0)
-				&& (this.invisibleJS_.length() == 0);
+				&& (this.collectedJS2_.length() == 0);
 	}
 
 	public void setJSSynced(boolean invisibleToo) {
@@ -590,7 +589,7 @@ class WebRenderer implements SlotLearnerInterface {
 			script.setCondition("UGLY_INTERNAL_PATHS",
 					this.session_.isUseUglyInternalPaths());
 			script.setCondition("DYNAMIC_JS", false);
-			script.setVar("WT_CLASS", "Wt3_3_7");
+			script.setVar("WT_CLASS", "Wt3_3_8");
 			script.setVar("APP_CLASS", app.getJavaScriptClass());
 			script.setCondition("STRICTLY_SERIALIZED_EVENTS",
 					conf.serializedEvents());
@@ -660,17 +659,17 @@ class WebRenderer implements SlotLearnerInterface {
 				boolean enabledAjax = app.enableAjax_;
 				if (app.enableAjax_) {
 					this.collectedJS1_
-							.append("var form = Wt3_3_7.getElement('Wt-form'); if (form) {")
+							.append("var form = Wt3_3_8.getElement('Wt-form'); if (form) {")
 							.append(this.beforeLoadJS_.toString());
 					this.beforeLoadJS_.setLength(0);
 					this.collectedJS1_.append("var domRoot=")
 							.append(app.domRoot_.getJsRef()).append(';')
-							.append("Wt3_3_7.progressed(domRoot);");
+							.append("Wt3_3_8.progressed(domRoot);");
 					int librariesLoaded = this.loadScriptLibraries(
 							this.collectedJS1_, app);
 					app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
 					this.collectedJS2_
-							.append("Wt3_3_7.resolveRelativeAnchors();")
+							.append("Wt3_3_8.resolveRelativeAnchors();")
 							.append("domRoot.style.visibility = 'visible';")
 							.append(app.getJavaScriptClass())
 							.append("._p_.doAutoJavaScript();");
@@ -971,7 +970,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (widgetset) {
 			String historyE = app.getEnvironment().getParameter("Wt-history");
 			if (historyE != null) {
-				out.append("Wt3_3_7").append(".history.initialize('")
+				out.append("Wt3_3_8").append(".history.initialize('")
 						.append(historyE.charAt(0)).append("-field', '")
 						.append(historyE.charAt(0)).append("-iframe', '');\n");
 			}
@@ -1169,7 +1168,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void loadStyleSheet(final StringBuilder out, WApplication app,
 			final WCssStyleSheet sheet) {
-		out.append("Wt3_3_7").append(".addStyleSheet('")
+		out.append("Wt3_3_8").append(".addStyleSheet('")
 				.append(sheet.getLink().resolveUrl(app)).append("', '")
 				.append(sheet.getMedia()).append("');\n ");
 	}
@@ -1185,7 +1184,7 @@ class WebRenderer implements SlotLearnerInterface {
 
 	private void removeStyleSheets(final StringBuilder out, WApplication app) {
 		for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
-			out.append("Wt3_3_7")
+			out.append("Wt3_3_8")
 					.append(".removeStyleSheet('")
 					.append(app.styleSheetsToRemove_.get(i).getLink()
 							.resolveUrl(app)).append("');\n ");

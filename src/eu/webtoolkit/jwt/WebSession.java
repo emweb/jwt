@@ -481,10 +481,10 @@ class WebSession {
 							this.asyncResponse_ = null;
 						}
 						if (signalE.equals("poll")) {
-							if (!WtServlet.isAsyncSupported()) {
+							if (!WtServlet.isAsyncSupported()
+									&& this.renderer_.isJsSynced()) {
 								this.updatesPendingEvent_.signal();
-								if (!this.updatesPending_
-										&& this.renderer_.isJsSynced()) {
+								if (!this.updatesPending_) {
 									try {
 										this.updatesPendingEvent_
 												.await(this.controller_
@@ -494,8 +494,7 @@ class WebSession {
 									} catch (final InterruptedException e) {
 									}
 								}
-								if (!this.updatesPending_
-										&& this.renderer_.isJsSynced()) {
+								if (!this.updatesPending_) {
 									handler.flushResponse();
 									return;
 								}
@@ -2093,7 +2092,7 @@ class WebSession {
 								this.changeInternalPath(hashE,
 										handler.getResponse());
 								this.app_
-										.doJavaScript("Wt3_3_7.scrollIntoView("
+										.doJavaScript("Wt3_3_8.scrollIntoView("
 												+ WWebWidget
 														.jsStringLiteral(hashE)
 												+ ");");

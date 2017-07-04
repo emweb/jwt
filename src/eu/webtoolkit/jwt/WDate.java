@@ -520,9 +520,23 @@ public class WDate implements Comparable<WDate> {
 	public static WDate getCurrentDate() {
 		if (WApplication.getInstance() != null) {
 			int timeZoneOffset = WApplication.getInstance().getEnvironment().getTimeZoneOffset();
-			return getCurrentServerDate().addSeconds(60 * timeZoneOffset);
+			return getUTCDate().addSeconds(60 * timeZoneOffset);
 		} else
 			return getCurrentServerDate();
+	}
+	
+	private static WDate getUTCDate() {
+		// http://stackoverflow.com/a/2528480/1896048
+		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+		//Local time zone
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+		
+		Date utcDate = new Date();
+		try { //Time in GMT
+			utcDate = dateFormatLocal.parse(dateFormatGmt.format(new Date()));
+		} catch (ParseException e) {}
+		return new WDate(utcDate);
 	}
 
 	/**

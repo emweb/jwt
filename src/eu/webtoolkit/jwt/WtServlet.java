@@ -428,7 +428,7 @@ public abstract class WtServlet extends HttpServlet {
 				WebSession.Handler handler = null;
 				
 				try {
-					handler = new WebSession.Handler(wsession,request, null);
+					handler = new WebSession.Handler(wsession, null, null);
 
 					if (!wsession.isDead() && wsession.getApp() != null) {
 						String requestE = request.getParameter("request");
