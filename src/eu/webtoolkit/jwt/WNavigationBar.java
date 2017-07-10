@@ -271,7 +271,7 @@ public class WNavigationBar extends WTemplate {
 			contents.hide();
 		} else {
 			if (canOptimizeUpdates()) {
-				contents.show();
+				contents.hide();
 			} else {
 				contents.animateHide(new WAnimation(
 						WAnimation.AnimationEffect.SlideInFromTop,
