@@ -248,13 +248,9 @@ public class WNavigationBar extends WTemplate {
 		if (!this.isAnimatedResponsive()) {
 			contents.show();
 		} else {
-			if (canOptimizeUpdates()) {
-				contents.show();
-			} else {
-				contents.animateShow(new WAnimation(
-						WAnimation.AnimationEffect.SlideInFromTop,
-						WAnimation.TimingFunction.Ease));
-			}
+			contents.animateShow(new WAnimation(
+					WAnimation.AnimationEffect.SlideInFromTop,
+					WAnimation.TimingFunction.Ease));
 		}
 	}
 
@@ -270,13 +266,9 @@ public class WNavigationBar extends WTemplate {
 		if (!this.isAnimatedResponsive()) {
 			contents.hide();
 		} else {
-			if (canOptimizeUpdates()) {
-				contents.show();
-			} else {
-				contents.animateHide(new WAnimation(
-						WAnimation.AnimationEffect.SlideInFromTop,
-						WAnimation.TimingFunction.Ease));
-			}
+			contents.animateHide(new WAnimation(
+					WAnimation.AnimationEffect.SlideInFromTop,
+					WAnimation.TimingFunction.Ease));
 		}
 	}
 

@@ -1671,6 +1671,8 @@ public abstract class WWidget extends WObject {
 		this.jsignals_.add(signal);
 	}
 
+	public abstract int getBaseZIndex();
+
 	static String WT_RESIZE_JS = "wtResize";
 	static String WT_GETPS_JS = "wtGetPS";
 
@@ -2053,7 +2055,7 @@ public abstract class WWidget extends WObject {
 		scheduleRerender(laterOnly, EnumSet.noneOf(RepaintFlag.class));
 	}
 
-	boolean needsRerender() {
+	public boolean needsRerender() {
 		return this.flags_.get(BIT_NEED_RERENDER);
 	}
 

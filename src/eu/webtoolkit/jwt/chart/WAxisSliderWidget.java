@@ -398,13 +398,13 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	}
 
 	protected void paintEvent(WPaintDevice paintDevice) {
-		if (this.getChart() != null && !this.getChart().cObjCreated_) {
-			return;
-		}
 		if (!(this.getChart() != null)) {
 			logger.error(new StringWriter()
 					.append("Attempted to draw a slider widget not associated with a chart.")
 					.toString());
+			return;
+		}
+		if (!this.getChart().cObjCreated_ || this.getChart().needsRerender()) {
 			return;
 		}
 		if (this.series_.getType() != SeriesType.LineSeries

@@ -446,6 +446,10 @@ public class WCompositeWidget extends WWidget {
 		return this.impl_.isThemeStyleEnabled();
 	}
 
+	public int getBaseZIndex() {
+		return this.impl_.getBaseZIndex();
+	}
+
 	void addChild(WWidget child) {
 		if (child != this.impl_) {
 			this.impl_.addChild(child);

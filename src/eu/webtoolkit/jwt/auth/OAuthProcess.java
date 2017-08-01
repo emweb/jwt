@@ -255,14 +255,6 @@ public class OAuthProcess extends WObject {
 				OAuthProcess.this.onOAuthDone();
 			}
 		});
-		if (!app.getEnvironment().hasJavaScript()) {
-			app.internalPathChanged().addListener(this,
-					new Signal1.Listener<String>() {
-						public void trigger(String e1) {
-							OAuthProcess.this.handleRedirectPath(e1);
-						}
-					});
-		}
 	}
 
 	/**
@@ -442,7 +434,6 @@ public class OAuthProcess extends WObject {
 		if (app.getEnvironment().hasAjax()) {
 		} else {
 			this.onOAuthDone();
-			app.redirect(app.url(this.startInternalPath_));
 		}
 	}
 
@@ -540,35 +531,6 @@ public class OAuthProcess extends WObject {
 		logger.info(new StringWriter().append("authorize URL: ")
 				.append(url.toString()).toString());
 		return url.toString();
-	}
-
-	private void handleRedirectPath(final String internalPath) {
-		if (internalPath.equals(this.service_.getRedirectInternalPath())) {
-			WApplication app = WApplication.getInstance();
-			final WEnvironment env = app.getEnvironment();
-			if (!env.hasAjax()) {
-				String stateE = env.getParameter("state");
-				if (!(stateE != null) || !stateE.equals(this.oAuthState_)) {
-					this.setError(WString
-							.tr("Wt.Auth.OAuthService.invalid-state"));
-				} else {
-					String errorE = env.getParameter("error");
-					if (errorE != null) {
-						this.setError(WString.tr("Wt.Auth.OAuthService."
-								+ errorE));
-					} else {
-						String codeE = env.getParameter("code");
-						if (!(codeE != null)) {
-							this.setError(WString
-									.tr("Wt.Auth.OAuthService.missing-code"));
-						} else {
-							this.requestToken(codeE);
-						}
-					}
-				}
-				this.onOAuthDone();
-			}
-		}
 	}
 
 	private void doParseTokenResponse(final HttpMessage response) {

@@ -1161,10 +1161,10 @@ public class WAxis {
 		double min = this.getDrawnMinimum();
 		double max = this.getDrawnMaximum();
 		double zoom = (max - min) / this.getMinimumZoomRange();
-		if (zoom < 1.0) {
+		if (zoom < 1.0 || zoom != zoom) {
 			return 1.0;
 		} else {
-			return (max - min) / this.getMinimumZoomRange();
+			return zoom;
 		}
 	}
 

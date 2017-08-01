@@ -7,7 +7,10 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -80,6 +83,8 @@ public class Configuration {
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
 	private boolean webSocketsEnabled = false;
+
+	private Collection<String> allowedOrigins_ = Collections.<String>emptySet();
 
 	/**
 	 * Creates a default configuration.
@@ -174,6 +179,16 @@ public class Configuration {
 							parseUserAgents(errorMessage, node, ajaxAgentList);
 						} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("bot")) {
 							parseUserAgents(errorMessage, node, botList);
+						}
+					} else if (node.getNodeName().equalsIgnoreCase("allowed-origins")) {
+						String origins = node.getTextContent().trim();
+						for (String origin : origins.split(",")) {
+							origin = origin.trim();
+							if (origin.isEmpty())
+								continue;
+							if (this.allowedOrigins_.isEmpty())
+								this.allowedOrigins_ = new HashSet<String>();
+							this.allowedOrigins_.add(origin);
 						}
 					}
 				}
@@ -785,5 +800,23 @@ public class Configuration {
 	 */
 	public void setMetaHeaders(List<MetaHeader> headers) {
 		this.metaHeaders = headers;
+	}
+
+	public boolean isAllowedOrigin(String origin) {
+		if (this.allowedOrigins_.size() == 1 &&
+			"*".equals(this.allowedOrigins_.iterator().next()))
+			return true;
+		else
+			return this.allowedOrigins_.contains(origin);
+	}
+
+	/**
+	 * Sets the list of origins that are allowed for CORS
+	 * (only supported for WidgetSet entry points)
+	 * 
+	 * The default is empty (no origins are allowed).
+	 */
+	public void setAllowedOrigins(Collection<String> origins) {
+		this.allowedOrigins_ = origins;
 	}
 }

@@ -159,7 +159,8 @@ public class WSpinBox extends WAbstractSpinBox {
 	 * The default value is 0
 	 */
 	public void setValue(int value) {
-		if (this.value_ != value) {
+		if (this.value_ != value
+				|| !this.getText().equals(this.getTextFromValue())) {
 			this.value_ = value;
 			this.setText(this.getTextFromValue());
 		}

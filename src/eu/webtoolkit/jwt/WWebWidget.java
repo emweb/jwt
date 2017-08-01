@@ -1192,6 +1192,21 @@ public abstract class WWebWidget extends WWidget {
 		return !this.flags_.get(BIT_THEME_STYLE_DISABLED);
 	}
 
+	public int getBaseZIndex() {
+		if (!(this.layoutImpl_ != null)) {
+			return DEFAULT_BASE_Z_INDEX;
+		} else {
+			return this.layoutImpl_.baseZIndex_;
+		}
+	}
+
+	public void setBaseZIndex(int zIndex) {
+		if (!(this.layoutImpl_ != null)) {
+			this.layoutImpl_ = new WWebWidget.LayoutImpl();
+		}
+		this.layoutImpl_.baseZIndex_ = zIndex;
+	}
+
 	void repaint(EnumSet<RepaintFlag> flags) {
 		if (this.isStubbed()) {
 			final WebRenderer renderer = WApplication.getInstance()
@@ -2183,6 +2198,7 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_THEME_STYLE_DISABLED = 35;
 	private static String FOCUS_SIGNAL = "focus";
 	private static String BLUR_SIGNAL = "blur";
+	private static final int DEFAULT_BASE_Z_INDEX = 100;
 	private String elementTagName_;
 
 	private void loadToolTip() {
@@ -2235,6 +2251,7 @@ public abstract class WWebWidget extends WWidget {
 		public WLength minimumHeight_;
 		public WLength maximumWidth_;
 		public WLength maximumHeight_;
+		public int baseZIndex_;
 		public int zIndex_;
 		public AlignmentFlag verticalAlignment_;
 		public WLength verticalAlignmentLength_;
@@ -2249,6 +2266,7 @@ public abstract class WWebWidget extends WWidget {
 			this.minimumHeight_ = new WLength(0);
 			this.maximumWidth_ = new WLength();
 			this.maximumHeight_ = new WLength();
+			this.baseZIndex_ = DEFAULT_BASE_Z_INDEX;
 			this.zIndex_ = 0;
 			this.verticalAlignment_ = AlignmentFlag.AlignBaseline;
 			this.verticalAlignmentLength_ = new WLength();
@@ -2389,9 +2407,12 @@ public abstract class WWebWidget extends WWidget {
 			int maxZ = 0;
 			for (int i = 0; i < children.size(); ++i) {
 				WWebWidget wi = children.get(i).getWebWidget();
-				maxZ = Math.max(maxZ, wi.getZIndex());
+				if (wi.getBaseZIndex() <= this.getBaseZIndex()) {
+					maxZ = Math.max(maxZ, wi.getZIndex());
+				}
 			}
-			this.layoutImpl_.zIndex_ = maxZ + 100;
+			this.layoutImpl_.zIndex_ = Math.max(this.getBaseZIndex(),
+					maxZ + 100);
 		}
 	}
 

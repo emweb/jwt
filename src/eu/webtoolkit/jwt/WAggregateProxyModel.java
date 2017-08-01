@@ -261,6 +261,12 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 						WAggregateProxyModel.this.sourceLayoutChanged();
 					}
 				}));
+		this.modelConnections_.add(this.getSourceModel().modelReset()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WAggregateProxyModel.this.sourceModelReset();
+					}
+				}));
 		this.topLevel_ = new WAggregateProxyModel.Aggregate();
 	}
 
@@ -768,6 +774,11 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 
 	private void sourceLayoutChanged() {
 		this.layoutChanged().trigger();
+	}
+
+	private void sourceModelReset() {
+		this.topLevel_ = new WAggregateProxyModel.Aggregate();
+		this.reset();
 	}
 
 	static boolean contains2(int a1, int a2, int b1, int b2) {

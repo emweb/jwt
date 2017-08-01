@@ -41,6 +41,13 @@ import org.slf4j.LoggerFactory;
  * that content in a WText is intended to be passive, and not contain any
  * scripting elements.
  * <p>
+ * The {@link TextFormat#XHTMLText} format will automatically change to
+ * {@link TextFormat#PlainText} if the text is not valid XML. Properly formatted
+ * HTML, which is not valid XHTML (e.g. a <br>
+ * tag without closing tag) will thus be shown literally, since the HTML markup
+ * will be escaped. {@link } does this as a safety measure, since it cannot
+ * reliably run the XSS filter without parsing the XML successfully.
+ * <p>
  * The {@link TextFormat#PlainText} format will display the text literally
  * (escaping any HTML special characters).
  * <p>

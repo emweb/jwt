@@ -43,7 +43,7 @@ public class WidgetGalleryServlet extends WtServlet {
 		WBootstrapTheme theme = new WBootstrapTheme();
 		theme.setVersion(Version.Version3);
 		// load the default bootstrap3 (sub-)theme
-	    app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "/themes/bootstrap/3/bootstrap-theme.min.css"));
+	    app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "themes/bootstrap/3/bootstrap-theme.min.css"));
 
 		app.setTheme(theme);
 

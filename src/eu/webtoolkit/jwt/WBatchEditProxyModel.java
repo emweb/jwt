@@ -446,6 +446,12 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 						WBatchEditProxyModel.this.sourceLayoutChanged();
 					}
 				}));
+		this.modelConnections_.add(this.getSourceModel().modelReset()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WBatchEditProxyModel.this.sourceModelReset();
+					}
+				}));
 		this.resetMappings();
 	}
 
@@ -869,6 +875,11 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 
 	private void sourceLayoutChanged() {
 		this.layoutChanged().trigger();
+	}
+
+	private void sourceModelReset() {
+		this.resetMappings();
+		this.reset();
 	}
 
 	private WBatchEditProxyModel.Item itemFromSourceIndex(

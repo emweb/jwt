@@ -2406,6 +2406,13 @@ public class WCartesianChart extends WAbstractChart {
 				Math.min(l + 0.2, 1.0), in.getAlpha());
 	}
 
+	protected void getDomChanges(final List<DomElement> result, WApplication app) {
+		super.getDomChanges(result, app);
+		for (int i = 0; i < this.axisSliderWidgets_.size(); ++i) {
+			this.axisSliderWidgets_.get(i).update();
+		}
+	}
+
 	protected void modelChanged() {
 		this.XSeriesColumn_ = -1;
 		while (this.axisSliderWidgets_.size() > 0) {
@@ -2615,9 +2622,6 @@ public class WCartesianChart extends WAbstractChart {
 			ss.append("});");
 			this.doJavaScript(ss.toString());
 			this.cObjCreated_ = true;
-			for (int i = 0; i < this.axisSliderWidgets_.size(); ++i) {
-				this.axisSliderWidgets_.get(i).update();
-			}
 		}
 	}
 

@@ -1630,16 +1630,21 @@ public class WApplication extends WObject {
 		final Configuration conf = app.getEnvironment().getServer()
 				.getConfiguration();
 		String path = conf.getProperty(WApplication.RESOURCES_URL);
-		if (path == "/wt-resources/") {
-			String result = app.getEnvironment().getDeploymentPath();
-			if (result.length() != 0
-					&& result.charAt(result.length() - 1) == '/') {
-				return result + path.substring(1);
+		if (app.getEnvironment().getServer().getServletContext()
+				.getMajorVersion() < 3) {
+			if (path == "/wt-resources/") {
+				String result = app.getEnvironment().getDeploymentPath();
+				if (result.length() != 0
+						&& result.charAt(result.length() - 1) == '/') {
+					return result + path.substring(1);
+				} else {
+					return result + path;
+				}
 			} else {
-				return result + path;
+				return path;
 			}
 		} else {
-			return path;
+			return app.getEnvironment().getServer().getContextPath() + path;
 		}
 	}
 
@@ -2899,6 +2904,13 @@ public class WApplication extends WObject {
 	 * from certain widgets even when they are inserted in the widget hierachy.
 	 */
 	protected boolean isExposed(WWidget w) {
+		if (!w.isVisible()
+				&& !(((w) instanceof WFileUpload ? (WFileUpload) (w) : null) != null)) {
+			return false;
+		}
+		if (!w.isEnabled()) {
+			return false;
+		}
 		if (w == this.domRoot_) {
 			return true;
 		}

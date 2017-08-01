@@ -792,6 +792,7 @@ class WebRenderer implements SlotLearnerInterface {
 		if (redirect.length() != 0) {
 			response.setStatus(302);
 			response.sendRedirect(redirect);
+			this.setHeaders(response, "text/html; charset=UTF-8");
 			return;
 		}
 		WWebWidget mainWebWidget = app.domRoot_;

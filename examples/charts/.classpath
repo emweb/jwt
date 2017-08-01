@@ -2,12 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/servlet-api/servlet-api-3.0.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/jwt-3.3.8.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/gson/gson-2.0.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/servlet-api/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-3.3.8.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-simple-1.6.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

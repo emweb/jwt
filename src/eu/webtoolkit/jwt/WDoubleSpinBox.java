@@ -189,7 +189,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	 * The default value is 0
 	 */
 	public void setValue(double value) {
-		if (this.value_ != value) {
+		if (this.value_ != value
+				|| !this.getText().equals(this.getTextFromValue())) {
 			this.value_ = value;
 			this.setText(this.getTextFromValue());
 		}

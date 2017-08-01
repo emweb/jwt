@@ -284,6 +284,12 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 						WSortFilterProxyModel.this.sourceLayoutChanged();
 					}
 				}));
+		this.modelConnections_.add(this.getSourceModel().modelReset()
+				.addListener(this, new Signal.Listener() {
+					public void trigger() {
+						WSortFilterProxyModel.this.sourceModelReset();
+					}
+				}));
 		this.resetMappings();
 	}
 
@@ -867,6 +873,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
 	private void sourceLayoutChanged() {
 		this.layoutChanged().trigger();
+	}
+
+	private void sourceModelReset() {
+		this.resetMappings();
+		this.reset();
 	}
 
 	private WSortFilterProxyModel.Item itemFromSourceIndex(

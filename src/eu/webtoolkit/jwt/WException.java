@@ -38,7 +38,7 @@ public class WException extends RuntimeException {
 	 */
 	public WException(final String what, final RuntimeException wrapped) {
 		super();
-		this.what_ = what + "\nCaused by exception: " + wrapped.toString();
+		this.what_ = what + "\nCaused by: " + wrapped.toString();
 	}
 
 	/**
@@ -56,4 +56,8 @@ public class WException extends RuntimeException {
 	}
 
 	private String what_;
+
+	public static String backtrace() {
+		return "N/A";
+	}
 }

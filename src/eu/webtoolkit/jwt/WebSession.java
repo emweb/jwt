@@ -1276,35 +1276,64 @@ class WebSession {
 		try {
 			final WebRequest request = handler.getRequest();
 			String wtdE = request.getParameter("wtd");
+			final Configuration conf = this.controller_.getConfiguration();
 			String origin = request.getHeaderValue("Origin");
-			if (origin != null) {
-				if (wtdE != null && wtdE.equals(this.sessionId_)
-						|| this.state_ == WebSession.State.JustCreated) {
-					if (isEqual(origin, "null")) {
-						origin = "*";
-					}
-					handler.getResponse().addHeader(
-							"Access-Control-Allow-Origin", origin);
-					handler.getResponse().addHeader(
-							"Access-Control-Allow-Credentials", "true");
-					if (isEqual(request.getRequestMethod(), "OPTIONS")) {
-						WebResponse response = handler.getResponse();
-						response.setStatus(200);
-						response.addHeader("Access-Control-Allow-Methods",
-								"POST, OPTIONS");
-						response.addHeader("Access-Control-Max-Age", "1728000");
-						handler.flushResponse();
-						return;
-					}
+			if (request.isWebSocketRequest()) {
+				String trustedOrigin = this.env_.getUrlScheme() + "://"
+						+ this.env_.getHostName();
+				if (origin != null
+						&& (trustedOrigin.equals(origin) || this.getType() == EntryPointType.WidgetSet
+								&& conf.isAllowedOrigin(origin))
+						&& wtdE != null && wtdE.equals(this.sessionId_)) {
 				} else {
-					if (request.isWebSocketRequest()) {
-						handler.flushResponse();
-						return;
+					if (origin != null) {
+						logger.error(new StringWriter()
+								.append("WebSocket request refused: Origin '")
+								.append(origin).append("' not allowed")
+								.toString());
+					} else {
+						logger.error(new StringWriter().append(
+								"WebSocket request refused: missing Origin")
+								.toString());
+					}
+					handler.getResponse().setStatus(403);
+					handler.flushResponse();
+					return;
+				}
+			} else {
+				if (origin != null) {
+					if (this.getType() == EntryPointType.WidgetSet
+							&& (wtdE != null && wtdE.equals(this.sessionId_) || this.state_ == WebSession.State.JustCreated)
+							&& conf.isAllowedOrigin(origin)) {
+						if (isEqual(origin, "null")) {
+							origin = "*";
+						}
+						handler.getResponse().addHeader(
+								"Access-Control-Allow-Origin", origin);
+						handler.getResponse().addHeader(
+								"Access-Control-Allow-Credentials", "true");
+						handler.getResponse().addHeader("Vary", "Origin");
+						if (isEqual(request.getRequestMethod(), "OPTIONS")) {
+							WebResponse response = handler.getResponse();
+							response.setStatus(200);
+							response.addHeader("Access-Control-Allow-Methods",
+									"POST, OPTIONS");
+							response.addHeader("Access-Control-Max-Age",
+									"1728000");
+							String requestHeaders = request
+									.getHeaderValue("Access-Control-Request-Headers");
+							if (requestHeaders != null) {
+								response.addHeader(
+										"Access-Control-Allow-Headers",
+										requestHeaders);
+							}
+							handler.flushResponse();
+							return;
+						}
 					}
 				}
 			}
 			String requestE = request.getParameter("request");
-			final Configuration conf = this.controller_.getConfiguration();
 			if (requestE != null && requestE.equals("ws")
 					&& !request.isWebSocketRequest()) {
 				logger.error(new StringWriter().append(
@@ -2167,6 +2196,10 @@ class WebSession {
 			String formName = i.getKey();
 			WObject obj = i.getValue();
 			if (!(0L != 0)) {
+				WWidget w = ((obj) instanceof WWidget ? (WWidget) (obj) : null);
+				if (w != null && (!w.isEnabled() || !w.isVisible())) {
+					continue;
+				}
 				obj.setFormData(getFormData(request, se + formName));
 			} else {
 				obj.setRequestTooLarge(0L);

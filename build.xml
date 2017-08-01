@@ -88,7 +88,7 @@
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/skeletons"/>
     </copy>
-    <copy todir="${build.dir}/eu/webtoolkit/jwt/wt-resources">
+    <copy todir="${build.dir}/resources/wt-resources">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/wt-resources"/>
     </copy>
     <copy todir="${build.dir}">
@@ -201,7 +201,9 @@
     <jar  destfile="dist/jwt-${proj.version}.jar" 
           basedir="${build.dir}" 
           defaultexcludes="yes" 
-          includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/render/* eu/webtoolkit/jwt/utils/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/* eu/webtoolkit/jwt/wt-resources/**/*" />
+          includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/render/* eu/webtoolkit/jwt/utils/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/*">
+      <metainf dir="${build.dir}" includes="resources/wt-resources/**/*"/>
+    </jar>
     <jar  destfile="dist/jwt-auth-${proj.version}.jar" 
           basedir="${build.dir}" 
           defaultexcludes="yes" 

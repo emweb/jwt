@@ -921,7 +921,17 @@ public class WTreeNode extends WCompositeWidget {
 			this.layout_.bindString("selected", "Wt-root");
 			this.getChildContainer().addStyleClass("Wt-root");
 		} else {
-			this.layout_.bindEmpty("selected");
+			if (this.getTree() != null) {
+				final Set<WTreeNode> s = this.getTree().getSelectedNodes();
+				if (s.contains(this) != false) {
+					this.layout_.bindString("selected", WApplication
+							.getInstance().getTheme().getActiveClass());
+				} else {
+					this.layout_.bindEmpty("selected");
+				}
+			} else {
+				this.layout_.bindEmpty("selected");
+			}
 			this.getChildContainer().removeStyleClass("Wt-root");
 		}
 		WTreeNode parent = this.getParentNode();

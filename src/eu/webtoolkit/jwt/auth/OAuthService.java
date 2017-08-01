@@ -393,7 +393,7 @@ public abstract class OAuthService {
 						if (redirectUrl.length() != 0) {
 							boolean hasQuery = redirectUrl.indexOf('?') != -1;
 							redirectUrl += hasQuery ? '&' : '?';
-							redirectUrl += "&state=" + Utils.urlEncode(stateE);
+							redirectUrl += "state=" + Utils.urlEncode(stateE);
 							String errorE = request.getParameter("error");
 							if (errorE != null) {
 								redirectUrl += "&error="

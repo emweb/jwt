@@ -144,7 +144,9 @@ public class WCssDecorationStyle extends WObject {
 	 * Sets the cursor style.
 	 */
 	public void setCursor(Cursor c) {
-		if (!WWebWidget.canOptimizeUpdates() || this.cursor_ != c) {
+		if (!WWebWidget.canOptimizeUpdates() || this.cursorImage_.length() != 0
+				|| this.cursor_ != c) {
+			this.cursorImage_ = "";
 			this.cursor_ = c;
 			this.cursorChanged_ = true;
 			this.changed();
