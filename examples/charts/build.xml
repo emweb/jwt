@@ -14,11 +14,7 @@
 
   <!-- Classpath declaration -->
   <path id="project.classpath">
-    <fileset dir="." />
-    <fileset dir="${jwt.dir}/dist" />
-    <fileset dir="${jwt.dir}/lib" />
-    <fileset dir="${jwt.dir}/lib/servlet-api" />
-    <fileset dir="${jwt.dir}/lib/gson" />
+    <fileset dir="${jwt-lib.dir}" />
   </path>
 
   <target name="all" depends="dist">
@@ -37,7 +33,7 @@
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
     
     <mkdir dir="${jwt-lib.dir}"/>
-    <copy todir="${jwt-lib.dir}">
+    <copy todir="${jwt-lib.dir}" flatten="true">
       <fileset dir="${jwt.dir}/dist" />
       <fileset dir="${jwt.dir}/lib" 
 	       includes="*.jar servlet-api/*.jar gson/*.jar"/>
@@ -63,15 +59,12 @@
                includes="**/*.xml,**/*.properties,**/*.csv" />
     </copy>
 
-    <jar destfile="${dist.dir}/${proj.name}.jar" 
-	 basedir="${build.dir}" />
-
     <war destfile="${dist.dir}/${proj.name}.war" 
 	 webxml="WebRoot/WEB-INF/web.xml"
 	 duplicate="preserve">
       <fileset dir="WebRoot"/>
       <lib dir="${jwt-lib.dir}" 
-	   includes="**/*.jar" 
+	   includes="*.jar" 
 	   excludes="servlet-api-*.jar">
       </lib>
       <classes dir="${build.dir}"/>
