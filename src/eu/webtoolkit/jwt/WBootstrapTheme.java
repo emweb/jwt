@@ -232,12 +232,11 @@ public class WBootstrapTheme extends WTheme {
 			((WFormWidget) child).getLabel().addStyleClass("checkbox-inline");
 			break;
 		case WidgetThemeRole.MenuItemCloseRole: {
-			WText txt = ((child) instanceof WText ? (WText) (child) : null);
-			if (txt != null) {
-				txt.setText("<button class='close'>&times;</button>");
-			}
-		}
+			child.addStyleClass("close");
+			WText t = ((child) instanceof WText ? (WText) (child) : null);
+			t.setText("&times;");
 			break;
+		}
 		case WidgetThemeRole.DialogContent:
 			if (this.version_ == WBootstrapTheme.Version.Version3) {
 				child.addStyleClass("modal-content");

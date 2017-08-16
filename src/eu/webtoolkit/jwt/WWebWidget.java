@@ -1948,6 +1948,13 @@ public abstract class WWebWidget extends WWidget {
 	}
 
 	boolean domCanBeSaved() {
+		if (this.children_ != null) {
+			for (int i = 0; i < this.children_.size(); ++i) {
+				if (!this.children_.get(i).getWebWidget().domCanBeSaved()) {
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 

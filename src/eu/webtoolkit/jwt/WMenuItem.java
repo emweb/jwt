@@ -436,6 +436,10 @@ public class WMenuItem extends WContainerWidget {
 			this.setSelectable(false);
 			popup.setButton(this.getAnchor());
 			this.updateInternalPath();
+			if (((this.menu_) instanceof WPopupMenu ? (WPopupMenu) (this.menu_)
+					: null) != null) {
+				popup.show();
+			}
 		}
 	}
 

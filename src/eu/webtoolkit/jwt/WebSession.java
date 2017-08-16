@@ -2121,10 +2121,7 @@ class WebSession {
 								this.changeInternalPath(hashE,
 										handler.getResponse());
 								this.app_
-										.doJavaScript("Wt3_3_8.scrollIntoView("
-												+ WWebWidget
-														.jsStringLiteral(hashE)
-												+ ");");
+										.doJavaScript("Wt3_3_8.scrollHistory();");
 							} else {
 								this.changeInternalPath("",
 										handler.getResponse());
@@ -2197,7 +2194,7 @@ class WebSession {
 			WObject obj = i.getValue();
 			if (!(0L != 0)) {
 				WWidget w = ((obj) instanceof WWidget ? (WWidget) (obj) : null);
-				if (w != null && (!w.isEnabled() || !w.isVisible())) {
+				if (w != null && !w.isEnabled()) {
 					continue;
 				}
 				obj.setFormData(getFormData(request, se + formName));

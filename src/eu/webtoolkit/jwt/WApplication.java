@@ -2904,10 +2904,6 @@ public class WApplication extends WObject {
 	 * from certain widgets even when they are inserted in the widget hierachy.
 	 */
 	protected boolean isExposed(WWidget w) {
-		if (!w.isVisible()
-				&& !(((w) instanceof WFileUpload ? (WFileUpload) (w) : null) != null)) {
-			return false;
-		}
 		if (!w.isEnabled()) {
 			return false;
 		}
