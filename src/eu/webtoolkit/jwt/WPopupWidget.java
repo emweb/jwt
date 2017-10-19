@@ -79,7 +79,7 @@ public class WPopupWidget extends WCompositeWidget {
 		WApplication.getInstance().internalPathChanged()
 				.addListener(this, new Signal1.Listener<String>() {
 					public void trigger(String e1) {
-						WPopupWidget.this.hide();
+						WPopupWidget.this.onPathChange();
 					}
 				});
 	}
@@ -288,6 +288,10 @@ public class WPopupWidget extends WCompositeWidget {
 		}
 	}
 
+	protected void onPathChange() {
+		this.hide();
+	}
+
 	private WObject fakeParent_;
 	private WWidget anchorWidget_;
 	private Orientation orientation_;
@@ -304,7 +308,7 @@ public class WPopupWidget extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WPopupWidget.js", wtjs1());
 		StringBuilder jsObj = new StringBuilder();
-		jsObj.append("new Wt3_3_8.WPopupWidget(")
+		jsObj.append("new Wt3_3_9.WPopupWidget(")
 				.append(app.getJavaScriptClass()).append(',')
 				.append(this.getJsRef()).append(',').append(this.transient_)
 				.append(',').append(this.autoHideDelay_).append(',')

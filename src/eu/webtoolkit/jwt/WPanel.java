@@ -65,7 +65,7 @@ public class WPanel extends WCompositeWidget {
 		this.impl_.bindWidget("contents", centralArea);
 		this.setJavaScriptMember(
 				WT_RESIZE_JS,
-				"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_3_8.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_3_8.boxSizing(self)) {h -= Wt3_3_8.px(self, 'borderTopWidth') + Wt3_3_8.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
+				"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_3_9.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_3_9.boxSizing(self)) {h -= Wt3_3_9.px(self, 'borderTopWidth') + Wt3_3_9.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
 		this.setJavaScriptMember(WT_GETPS_JS,
 				StdWidgetItemImpl.getSecondGetPSJS());
 	}

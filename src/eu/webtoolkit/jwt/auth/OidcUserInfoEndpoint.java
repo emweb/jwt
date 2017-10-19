@@ -87,6 +87,9 @@ public class OidcUserInfoEndpoint extends WResource {
 		if (!authHeader.startsWith(AUTH_TYPE)) {
 			response.setStatus(400);
 			response.addHeader("WWW-Authenticate", "error=\"invalid_request\"");
+			logger.info(new StringWriter().append(
+					"error=\"invalid_request\": Authorization header missing")
+					.toString());
 			return;
 		}
 		String tokenValue = authHeader.substring(AUTH_TYPE.length());
@@ -97,6 +100,8 @@ public class OidcUserInfoEndpoint extends WResource {
 						.after(accessToken.getExpirationTime())) {
 			response.setStatus(401);
 			response.addHeader("WWW-Authenticate", "error=\"invalid_token\"");
+			logger.info(new StringWriter().append("error=\"invalid_token\" ")
+					.append(authHeader).toString());
 			return;
 		}
 		response.setContentType("application/json");
@@ -109,6 +114,9 @@ public class OidcUserInfoEndpoint extends WResource {
 			response.out()
 					.append(this.generateUserInfo(user, scopeSet).toString())
 					.append('\n');
+			logger.info(new StringWriter().append("Response sent for ")
+					.append(user.getId()).append("(")
+					.append(this.db_.getEmail(user)).append(")").toString());
 		} catch (IOException ioe) {
 			logger.error(new StringWriter().append(ioe.getMessage()).toString());
 		}

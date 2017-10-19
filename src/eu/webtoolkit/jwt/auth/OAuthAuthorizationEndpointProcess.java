@@ -123,15 +123,16 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 		}
 		this.client_ = this.db_.idpClientFindWithId(clientId);
 		if (!this.client_.isCheckValid()) {
-			logger.error(new StringWriter().append(
-					"Unknown or invalid client_id.").toString());
+			logger.error(new StringWriter()
+					.append("Unknown or invalid client_id ").append(clientId)
+					.toString());
 			return;
 		}
 		Set<String> redirectUris = this.client_.getRedirectUris();
 		if (redirectUris.contains(this.redirectUri_) == false) {
 			logger.error(new StringWriter()
-					.append("The client application passed an unregistered redirection URI.")
-					.toString());
+					.append("The client application passed the  unregistered redirection URI ")
+					.append(this.redirectUri_).toString());
 			return;
 		}
 		String scope = env.getParameter("scope");
@@ -140,6 +141,11 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 		if (!(scope != null) || !(responseType != null)
 				|| !responseType.equals("code")) {
 			this.sendResponse("error=invalid_request");
+			logger.info(new StringWriter().append("error=invalid_request: ")
+					.append(" scope: ").append(scope != null ? scope : "NULL")
+					.append(" response_type: ")
+					.append(responseType != null ? responseType : "NULL")
+					.toString());
 			return;
 		}
 		this.validRequest_ = true;
@@ -160,6 +166,8 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 		} else {
 			if (prompt != null && prompt.equals("none")) {
 				this.sendResponse("error=login_required");
+				logger.info(new StringWriter().append(
+						"error=login_required but prompt == none").toString());
 				return;
 			}
 		}
@@ -202,6 +210,11 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 					"authorization_code", scope, this.redirectUri_,
 					this.login_.getUser(), this.client_);
 			this.sendResponse("code=" + authCodeValue);
+			logger.info(new StringWriter()
+					.append("authorization_code created for ")
+					.append(this.login_.getUser().getId()).append("(")
+					.append(this.login_.getUser().getEmail()).append(")")
+					.append(", code = " + authCodeValue).toString());
 		} else {
 			throw new WException(
 					"Wt::Auth::OAuthAuthorizationEndpointProcess::authorizeScope: request isn't valid");
@@ -235,6 +248,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 			redirectParam += "&state=" + Utils.urlEncode(this.state_);
 		}
 		WApplication.getInstance().redirect(this.redirectUri_ + redirectParam);
+		WApplication.getInstance().quit();
 	}
 
 	private int authCodeExpSecs_;

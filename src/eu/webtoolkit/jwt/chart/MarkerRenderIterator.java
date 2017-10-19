@@ -108,7 +108,14 @@ class MarkerRenderIterator extends SeriesIterator {
 						p = t.map(this.hv(p));
 						WCircleArea circleArea = new WCircleArea();
 						circleArea.setCenter(new WPointF(p.getX(), p.getY()));
-						circleArea.setRadius(5);
+						Double scaleFactorP = series.getModel()
+								.getMarkerScaleFactor(yRow, yColumn);
+						double scaleFactor = scaleFactorP != null ? scaleFactorP
+								: 1.0;
+						if (scaleFactor < 1.0) {
+							scaleFactor = 1.0;
+						}
+						circleArea.setRadius((int) (scaleFactor * 5.0));
 						circleArea.setToolTip(toolTip);
 						this.chart_.addDataPointArea(series, xRow, xColumn,
 								circleArea);

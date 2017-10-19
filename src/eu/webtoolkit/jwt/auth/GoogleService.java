@@ -83,6 +83,7 @@ public class GoogleService extends OidcService {
 		this.setAuthenticationScope("openid email profile");
 		this.setName("google");
 		this.setDescription("Google Account");
+		this.setPopupWidth(550);
 	}
 
 	/**

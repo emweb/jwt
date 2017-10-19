@@ -1285,8 +1285,12 @@ public class WTemplate extends WInteractWidget {
 						.entrySet().iterator(); i_it.hasNext();) {
 					Map.Entry<String, WWidget> i = i_it.next();
 					WWidget w = i.getValue();
-					if (w.isRendered() && w.getWebWidget().domCanBeSaved()) {
-						previouslyRendered.add(w);
+					if (w.isRendered()) {
+						if (w.getWebWidget().domCanBeSaved()) {
+							previouslyRendered.add(w);
+						} else {
+							this.unrenderWidget(w, element);
+						}
 					}
 				}
 				boolean saveWidgets = element.getMode() == DomElement.Mode.ModeUpdate;
@@ -1313,7 +1317,6 @@ public class WTemplate extends WInteractWidget {
 					element.setProperty(Property.PropertyInnerHTML,
 							this.encode(html.toString()));
 				}
-				this.changed_ = false;
 				for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it
 						.hasNext();) {
 					WWidget i = i_it.next();
@@ -1322,13 +1325,14 @@ public class WTemplate extends WInteractWidget {
 							.entrySet().iterator(); j_it.hasNext();) {
 						Map.Entry<String, WWidget> j = j_it.next();
 						if (j.getValue() == w) {
-							w.getWebWidget().setRendered(false);
+							this.unrenderWidget(w, element);
 							break;
 						}
 					}
 				}
 				WApplication.getInstance().getSession().getRenderer()
 						.updateFormObjects(this, true);
+				this.changed_ = false;
 			}
 			super.updateDom(element, all);
 		} catch (IOException ioe) {
@@ -1565,6 +1569,17 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		return pos == text.length() ? -1 : pos;
+	}
+
+	private void unrenderWidget(WWidget w, final DomElement el) {
+		String removeJs = w.getWebWidget().renderRemoveJs(false);
+		if (removeJs.charAt(0) == '_') {
+			el.callJavaScript("Wt3_3_9.remove('" + removeJs.substring(1)
+					+ "');", true);
+		} else {
+			el.callJavaScript(removeJs, true);
+		}
+		w.getWebWidget().setRendered(false);
 	}
 
 	private EscapeOStream plainTextNewLineEscStream_;

@@ -38,6 +38,17 @@ import org.slf4j.LoggerFactory;
  * No conditional expressions, i.e. the consturct (?ifthen|else).</li>
  * </ul>
  * <p>
+ * See <a href=
+ * "http://www.boost.org/doc/libs/release/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html"
+ * >http://www.boost.org/doc/libs/release/libs/regex/doc/html/boost_regex/syntax
+ * /perl_syntax.html</a> for a full overview of the supported regular expression
+ * syntax. However, if you want client-side validation to work correctly, you
+ * will have to limit your regular expressions to those features supported by
+ * JavaScript (ECMAScript style regular expressions). See <a
+ * href="http://en.cppreference.com/w/cpp/regex/ecmascript"
+ * >http://en.cppreference.com/w/cpp/regex/ecmascript</a> for an overview of the
+ * ECMAScript regular expression syntax.
+ * <p>
  * Usage example:
  * <p>
  * 
@@ -177,7 +188,12 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Sets the text to be shown if no match can be found.
 	 * <p>
-	 * Sets the text to be shown if no match can be found.
+	 * This calls {@link WRegExpValidator#getInvalidNoMatchText()
+	 * getInvalidNoMatchText()}
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WRegExpValidator#getInvalidNoMatchText()
+	 *             getInvalidNoMatchText()} instead
 	 */
 	public void setNoMatchText(final CharSequence text) {
 		this.setInvalidNoMatchText(text);
@@ -197,7 +213,7 @@ public class WRegExpValidator extends WValidator {
 	 * Returns the message displayed when the input does not match.
 	 * <p>
 	 * 
-	 * @see WRegExpValidator#setInvalidNoMatchText(CharSequence text)
+	 * @see WRegExpValidator#getInvalidNoMatchText()
 	 */
 	public WString getInvalidNoMatchText() {
 		if (!(this.noMatchText_.length() == 0)) {
@@ -210,7 +226,7 @@ public class WRegExpValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_3_8.WRegExpValidator(").append(this.isMandatory())
+		js.append("new Wt3_3_9.WRegExpValidator(").append(this.isMandatory())
 				.append(',');
 		if (this.regexp_ != null) {
 			js.append(WWebWidget.jsStringLiteral(this.regexp_.pattern()))
@@ -243,6 +259,6 @@ public class WRegExpValidator extends WValidator {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WRegExpValidator",
-				"function(d,a,e,f,g){var b=a?new RegExp(\"^(\"+a+\")$\",e):null;this.validate=function(c){if(c.length==0)return d?{valid:false,message:f}:{valid:true};return b?b.test(c)?{valid:true}:{valid:false,message:g}:{valid:true}}}");
+				"function(e,b,f,g,h){var c=b?new RegExp(b,f):null;this.validate=function(a){if(a.length==0)return e?{valid:false,message:g}:{valid:true};if(c){var d=c.exec(a);return d!==null&&d[0].length===a.length?{valid:true}:{valid:false,message:h}}else return{valid:true}}}");
 	}
 }

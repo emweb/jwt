@@ -40,9 +40,9 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			app.loadJavaScript(THIS_JS, appjs1());
 			app.doJavaScript(app.getJavaScriptClass()
 					+ ".layouts2.scheduleAdjust();");
-			app.doJavaScript("$(window).load(function() { "
-					+ app.getJavaScriptClass() + ".layouts2.scheduleAdjust();"
-					+ "});");
+			app.doJavaScript("(function(){var f=function(){"
+					+ app.getJavaScriptClass()
+					+ ".layouts2.scheduleAdjust();};if($().jquery.indexOf('1.') === 0)$(window).load(f);else $(window).on('load',f);})();");
 			WApplication.getInstance().addAutoJavaScript(
 					"if(" + app.getJavaScriptClass() + ".layouts2) "
 							+ app.getJavaScriptClass()
@@ -107,7 +107,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 		StringBuilder js = new StringBuilder();
 		js.append(app.getJavaScriptClass())
-				.append(".layouts2.add(new Wt3_3_8.StdLayout2(")
+				.append(".layouts2.add(new Wt3_3_9.StdLayout2(")
 				.append(app.getJavaScriptClass()).append(",'")
 				.append(this.getId()).append("',");
 		if (this.getLayout().getParentLayout() != null) {
@@ -412,7 +412,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			this.addedItems_.clear();
 			for (int i = 0; i < this.removedItems_.size(); ++i) {
 				parent.callJavaScript(
-						"Wt3_3_8.remove('" + this.removedItems_.get(i) + "');",
+						"Wt3_3_9.remove('" + this.removedItems_.get(i) + "');",
 						true);
 			}
 			this.removedItems_.clear();

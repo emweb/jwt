@@ -66,7 +66,7 @@ public class OidcService extends OAuthService {
 		this.name_ = "";
 		this.description_ = "";
 		this.scope_ = "openid";
-		this.popupWidth_ = 550;
+		this.popupWidth_ = 670;
 		this.popupHeight_ = 400;
 		this.method_ = ClientSecretMethod.HttpAuthorizationBasic;
 		this.configured_ = false;
@@ -101,7 +101,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the desired width for the popup window.
 	 * <p>
-	 * Defaults to 550 pixels.
+	 * Defaults to 670 pixels.
 	 * <p>
 	 * 
 	 * @see OidcService#setPopupWidth(int width)

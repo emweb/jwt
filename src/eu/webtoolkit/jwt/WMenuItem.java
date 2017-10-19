@@ -798,6 +798,9 @@ public class WMenuItem extends WContainerWidget {
 		if (this.menu_.isInternalPathEnabled()) {
 			this.resetLearnedSlots();
 		}
+		if (this.contents_ != null && !this.isContentsLoaded()) {
+			this.contents_.enableAjax();
+		}
 		super.enableAjax();
 	}
 

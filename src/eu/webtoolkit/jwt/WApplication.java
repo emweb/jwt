@@ -1298,6 +1298,10 @@ public class WApplication extends WObject {
 	 * initiated in the browser to paths that do not start with a &apos;/&apos;
 	 * are ignored.
 	 * <p>
+	 * The <code>emitChange</code> parameter determines whether calling this
+	 * method causes the {@link WApplication#internalPathChanged()
+	 * internalPathChanged()} signal to be emitted.
+	 * <p>
 	 * 
 	 * @see WApplication#getBookmarkUrl()
 	 * @see WApplication#getBookmarkUrl()
@@ -1630,8 +1634,14 @@ public class WApplication extends WObject {
 		final Configuration conf = app.getEnvironment().getServer()
 				.getConfiguration();
 		String path = conf.getProperty(WApplication.RESOURCES_URL);
-		if (app.getEnvironment().getServer().getServletContext()
-				.getMajorVersion() < 3) {
+		int version;
+		try {
+			version = app.getEnvironment().getServer().getServletContext()
+					.getMajorVersion();
+		} catch (final RuntimeException e) {
+			return "";
+		}
+		if (version < 3) {
 			if (path == "/wt-resources/") {
 				String result = app.getEnvironment().getDeploymentPath();
 				if (result.length() != 0
@@ -2522,9 +2532,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_3_8.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_3_9.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_3_8.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_3_9.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2945,7 +2955,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_3_8.ajaxInternalPaths("
+		this.doJavaScript("Wt3_3_9.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -3244,7 +3254,7 @@ public class WApplication extends WObject {
 			final WJavaScriptPreamble preamble = this.javaScriptPreamble_
 					.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
-					.getJavaScriptClass() : "Wt3_3_8";
+					.getJavaScriptClass() : "Wt3_3_9";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name)
 						.append(" = function() { return (")

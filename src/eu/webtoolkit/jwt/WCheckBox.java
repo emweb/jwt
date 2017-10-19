@@ -263,9 +263,9 @@ public class WCheckBox extends WAbstractToggleButton {
 		}
 		if (this.partialStateSelectable_) {
 			this.doJavaScript(this.getJsRef() + ".nextState='" + nextState
-					+ "'");
+					+ "';");
 		} else {
-			this.doJavaScript(this.getJsRef() + ".nextState=null");
+			this.doJavaScript(this.getJsRef() + ".nextState=null;");
 		}
 	}
 

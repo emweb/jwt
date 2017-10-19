@@ -300,7 +300,7 @@ public class WDoubleValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_3_8.WDoubleValidator(").append(this.isMandatory())
+		js.append("new Wt3_3_9.WDoubleValidator(").append(this.isMandatory())
 				.append(',').append(this.ignoreTrailingSpaces_).append(',');
 		if (this.bottom_ != -Double.MAX_VALUE
 				&& this.bottom_ != -Double.POSITIVE_INFINITY) {

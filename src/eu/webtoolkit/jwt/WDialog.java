@@ -477,7 +477,7 @@ public class WDialog extends WPopupWidget {
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this.setJavaScriptMember(
 						" Resizable",
-						"(new Wt3_3_8.Resizable(Wt3_3_8,"
+						"(new Wt3_3_9.Resizable(Wt3_3_9,"
 								+ this.getJsRef()
 								+ ")).onresize(function(w, h, done) {var obj = $('#"
 								+ this.getId()
@@ -787,7 +787,7 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_3_8.WDialog("
+			this.doJavaScript("new Wt3_3_9.WDialog("
 					+ app.getJavaScriptClass()
 					+ ","
 					+ this.getJsRef()
@@ -831,6 +831,9 @@ public class WDialog extends WPopupWidget {
 			this.impl_.isSetFirstFocus();
 		}
 		super.render(flags);
+	}
+
+	protected void onPathChange() {
 	}
 
 	private WTemplate impl_;

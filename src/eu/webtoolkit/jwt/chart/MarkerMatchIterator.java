@@ -54,14 +54,22 @@ class MarkerMatchIterator extends SeriesIterator {
 			return;
 		}
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
+			Double scaleFactorP = series.getModel().getMarkerScaleFactor(yRow,
+					yColumn);
+			double scaleFactor = scaleFactorP != null ? scaleFactorP : 1.0;
+			if (scaleFactor < 1.0) {
+				scaleFactor = 1.0;
+			}
+			double scaledRx = scaleFactor * this.rX_;
+			double scaledRy = scaleFactor * this.rY_;
 			WPointF p = this.chart_.map(x, y, series.getAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
 			double dx = p.getX() - this.matchX_;
 			double dy = p.getY() - this.matchY_;
 			double dx2 = dx * dx;
 			double dy2 = dy * dy;
-			double rx2 = this.rX_ * this.rX_;
-			double ry2 = this.rY_ * this.rY_;
+			double rx2 = scaledRx * scaledRx;
+			double ry2 = scaledRy * scaledRy;
 			if (dx2 / rx2 + dy2 / ry2 <= 1) {
 				this.matchedXRow_ = xRow;
 				this.matchedXColumn_ = xColumn;

@@ -663,8 +663,8 @@ public class WGLWidget extends WInteractWidget {
 						"JavaScriptMatrix4x4: matrix not initialized");
 			}
 			WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
-			copy.jsRef_ = "Wt3_3_8.glMatrix.mat4.inverse(" + this.jsRef_
-					+ ", Wt3_3_8.glMatrix.mat4.create())";
+			copy.jsRef_ = "Wt3_3_9.glMatrix.mat4.inverse(" + this.jsRef_
+					+ ", Wt3_3_9.glMatrix.mat4.create())";
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
 			return copy;
 		}
@@ -675,8 +675,8 @@ public class WGLWidget extends WInteractWidget {
 						"JavaScriptMatrix4x4: matrix not initialized");
 			}
 			WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
-			copy.jsRef_ = "Wt3_3_8.glMatrix.mat4.transpose(" + this.jsRef_
-					+ ", Wt3_3_8.glMatrix.mat4.create())";
+			copy.jsRef_ = "Wt3_3_9.glMatrix.mat4.transpose(" + this.jsRef_
+					+ ", Wt3_3_9.glMatrix.mat4.create())";
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
 			return copy;
 		}
@@ -689,11 +689,11 @@ public class WGLWidget extends WInteractWidget {
 			}
 			WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
 			StringWriter ss = new StringWriter();
-			ss.append("Wt3_3_8.glMatrix.mat4.multiply(").append(this.jsRef_)
+			ss.append("Wt3_3_9.glMatrix.mat4.multiply(").append(this.jsRef_)
 					.append(",");
 			javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
 			WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
-			ss.append(", Wt3_3_8.glMatrix.mat4.create())");
+			ss.append(", Wt3_3_9.glMatrix.mat4.create())");
 			copy.jsRef_ = ss.toString();
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
 			copy.matrices_.add(m);
@@ -3361,7 +3361,7 @@ public class WGLWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPaintedWidget",
-				"function(J,p){jQuery.data(p,\"obj\",this);var q=this;this.imagePreloader=null;this.images=[];this.canvas=document.getElementById(\"c\"+p.id);this.repaint=function(){};this.widget=p;this.cancelPreloader=function(){var r=q.imagePreloader;r&&r.cancel();q.imagePreloader=null}}");
+				"function(J,p){jQuery.data(p,\"obj\",this);var q=this;this.imagePreloaders=[];this.images=[];this.canvas=document.getElementById(\"c\"+p.id);this.repaint=function(){};this.widget=p;this.cancelPreloaders=function(){for(var r=0;r<q.imagePreloaders.length;++r)q.imagePreloaders[r].cancel();q.imagePreloaders=[]}}");
 	}
 
 	static WJavaScriptPreamble wtjs11() {

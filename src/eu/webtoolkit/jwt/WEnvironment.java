@@ -249,7 +249,7 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_3_8";
+		return "Wt3_3_9";
 	}
 
 	/**
@@ -685,7 +685,7 @@ public class WEnvironment {
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.3.8";
+		return "3.3.9";
 	}
 
 	// public void libraryVersion(final bad java simple ref int series, final
@@ -1388,6 +1388,9 @@ public class WEnvironment {
 			list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
 			for (int i = 0; i < list.size(); ++i) {
 				int e = list.get(i).indexOf('=');
+				if (e == -1) {
+					continue;
+				}
 				String cookieName = list.get(i).substring(0, 0 + e);
 				String cookieValue = e != -1 && list.get(i).length() > e + 1 ? list
 						.get(i).substring(e + 1) : "";

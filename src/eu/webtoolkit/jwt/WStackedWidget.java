@@ -296,6 +296,12 @@ public class WStackedWidget extends WContainerWidget {
 		}
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
+			if (this.currentIndex_ >= 0 && this.isRendered()
+					&& this.javaScriptDefined_) {
+				this.doJavaScript("$('#" + this.getId()
+						+ "').data('obj').setCurrent("
+						+ this.getWidget(this.currentIndex_).getJsRef() + ");");
+			}
 		}
 		super.render(flags);
 	}
@@ -313,7 +319,7 @@ public class WStackedWidget extends WContainerWidget {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WStackedWidget.js", wtjs1());
 			this.setJavaScriptMember(" WStackedWidget",
-					"new Wt3_3_8.WStackedWidget(" + app.getJavaScriptClass()
+					"new Wt3_3_9.WStackedWidget(" + app.getJavaScriptClass()
 							+ "," + this.getJsRef() + ");");
 			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
 					+ "').data('obj').wtResize");

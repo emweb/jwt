@@ -2280,10 +2280,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * or editing behaviour.
 	 */
 	void handleClick(final WModelIndex index, final WMouseEvent event) {
-		if (this.dragEnabled_ && (this.delayedClearAndSelectIndex_ != null)
-				&& event.getDragDelta().x < 4 && event.getDragDelta().y < 4) {
-			this.select(this.delayedClearAndSelectIndex_,
-					SelectionFlag.ClearAndSelect);
+		if (this.dragEnabled_ && (this.delayedClearAndSelectIndex_ != null)) {
+			Coordinates delta = event.getDragDelta();
+			if ((delta.x < 0 ? -delta.x : delta.x) < 4
+					&& (delta.y < 0 ? -delta.y : delta.y) < 4) {
+				this.select(this.delayedClearAndSelectIndex_,
+						SelectionFlag.ClearAndSelect);
+			}
 		}
 		boolean doEdit = (index != null)
 				&& !EnumUtils.mask(this.getEditTriggers(),

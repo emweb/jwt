@@ -26,8 +26,8 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/servlet-api/servlet-api-3.0.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-3.3.8.jar"/>
-	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-auth-3.3.8.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-3.3.9.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-auth-3.3.9.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.6.4.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-simple-1.6.4.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/vt-password/bcprov-jdk15-1.45.jar"/>

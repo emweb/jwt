@@ -732,7 +732,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPaintedWidget",
-				"function(J,p){jQuery.data(p,\"obj\",this);var q=this;this.imagePreloader=null;this.images=[];this.canvas=document.getElementById(\"c\"+p.id);this.repaint=function(){};this.widget=p;this.cancelPreloader=function(){var r=q.imagePreloader;r&&r.cancel();q.imagePreloader=null}}");
+				"function(J,p){jQuery.data(p,\"obj\",this);var q=this;this.imagePreloaders=[];this.images=[];this.canvas=document.getElementById(\"c\"+p.id);this.repaint=function(){};this.widget=p;this.cancelPreloaders=function(){for(var r=0;r<q.imagePreloaders.length;++r)q.imagePreloaders[r].cancel();q.imagePreloaders=[]}}");
 	}
 
 	static WJavaScriptPreamble wtjs11() {

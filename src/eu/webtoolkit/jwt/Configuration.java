@@ -587,6 +587,10 @@ public class Configuration {
 	public int getKeepAlive() {
 		return getSessionTimeout() / 2;
 	}
+
+	public int getMultiSessionCookieTimeout() {
+		return getSessionTimeout() * 2;
+	}
 	
 	/**
 	 * Returns the session timeout.

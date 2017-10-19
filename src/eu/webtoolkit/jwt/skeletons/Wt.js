@@ -2711,8 +2711,20 @@ function encodeEvent(event, i) {
       }
     }
 
-    if (v != null)
-      result += se + formObjects[x] + '=' + encodeURIComponent(v);
+    if (v != null) {
+      var component;
+      try {
+	component = encodeURIComponent(v);
+	result += se + formObjects[x] + '=' + component;
+      } catch (e) {
+	// encoding failed, omit this form field
+	// This can happen on Windows when typing a character
+	// with a high and low surrogate pair (like an emoji).
+	// On Chrome and Firefox this is split out into two pairs
+	// of keydown/keyup events instead of one.
+	console.error("Form object " + formObjects[x] + " failed to encode, discarded", e);
+      }
+    }
   }
 
 
@@ -3702,7 +3714,7 @@ function ImagePreloader(uris, callback) {
   this.images = [];
 
   if (uris.length == 0)
-    callback(this.images);
+    this.callback(this.images);
   else
     for (var i = 0; i < uris.length; i++)
       this.preload(uris[i]);

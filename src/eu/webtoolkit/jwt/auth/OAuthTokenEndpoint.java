@@ -131,6 +131,19 @@ public class OAuthTokenEndpoint extends WResource {
 				response.setStatus(400);
 				response.out().append("{\"error\": \"invalid_request\"}")
 						.append('\n');
+				logger.info(new StringWriter()
+						.append("{\"error\": \"invalid_request\"}:")
+						.append(" code:")
+						.append(code != null ? code : "NULL")
+						.append(" clientId: ")
+						.append(clientId)
+						.append(" clientSecret: ")
+						.append(clientSecret.length() == 0 ? "MISSING"
+								: "NOT MISSING").append(" grantType: ")
+						.append(grantType != null ? grantType : "NULL")
+						.append(" redirectUri: ")
+						.append(redirectUri != null ? redirectUri : "NULL")
+						.toString());
 				return;
 			}
 			OAuthClient client = this.db_.idpClientFindWithId(clientId);
@@ -147,6 +160,18 @@ public class OAuthTokenEndpoint extends WResource {
 				}
 				response.out().append("{\n\"error\": \"invalid_client\"\n}")
 						.append('\n');
+				logger.info(new StringWriter()
+						.append("{\"error\": \"invalid_client\"}: ")
+						.append(" id: ")
+						.append(clientId)
+						.append(" client: ")
+						.append(client.isCheckValid() ? "valid" : "not valid")
+						.append(" secret: ")
+						.append(client.verifySecret(clientSecret) ? "correct"
+								: "incorrect")
+						.append(" method: ")
+						.append(client.getAuthMethod() != authMethod ? "no match"
+								: "match").toString());
 				return;
 			}
 			if (!grantType.equals(GRANT_TYPE)) {
@@ -154,6 +179,11 @@ public class OAuthTokenEndpoint extends WResource {
 				response.out()
 						.append("{\n\"error\": \"unsupported_grant_type\"\n}")
 						.append('\n');
+				logger.info(new StringWriter()
+						.append("{\"error\": \"unsupported_grant_type\"}: ")
+						.append(" id: ").append(clientId)
+						.append(" grantType: ")
+						.append(String.valueOf(grantType != null)).toString());
 				return;
 			}
 			IssuedToken authCode = this.db_.idpTokenFindWithValue(GRANT_TYPE,
@@ -165,6 +195,23 @@ public class OAuthTokenEndpoint extends WResource {
 				response.setStatus(400);
 				response.out().append("{\n\"error\": \"invalid_grant\"\n}")
 						.append('\n');
+				logger.info(new StringWriter()
+						.append("{\"error\": \"invalid_grant\"}:")
+						.append(" id: ")
+						.append(clientId)
+						.append(" code: ")
+						.append(code)
+						.append(" authCode: ")
+						.append(authCode.isCheckValid() ? "valid" : "not valid")
+						.append(" redirectUri: ")
+						.append(redirectUri)
+						.append(!authCode.getRedirectUri().equals(redirectUri) ? " - invalid"
+								: " - valid")
+						.append(" timestamp: ")
+						.append(authCode.getExpirationTime().toString())
+						.append(WDate.getCurrentDate().after(
+								authCode.getExpirationTime()) ? ", expired"
+								: ", not expired").toString());
 				return;
 			}
 			String accessTokenValue = MathUtils.randomId();
@@ -197,6 +244,9 @@ public class OAuthTokenEndpoint extends WResource {
 						+ "." + payload + "." + signature)));
 			}
 			response.out().append(root.toString());
+			logger.info(new StringWriter().append("success: ").append(clientId)
+					.append(", ").append(user.getId()).append(", ")
+					.append(this.db_.getEmail(user)).toString());
 		} catch (IOException ioe) {
 			logger.error(new StringWriter().append(ioe.getMessage()).toString());
 		}
