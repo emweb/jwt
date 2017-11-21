@@ -305,6 +305,7 @@ public class WTimeEdit extends WLineEdit {
 
 	private void setFromTimePicker() {
 		this.setTime(this.timePicker_.getTime());
+		this.textInput().trigger();
 		this.changed().trigger();
 	}
 

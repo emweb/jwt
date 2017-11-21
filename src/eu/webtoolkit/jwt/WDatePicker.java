@@ -474,6 +474,7 @@ public class WDatePicker extends WCompositeWidget {
 			final WDate calDate = this.calendar_.getSelection().iterator()
 					.next();
 			this.forEdit_.setText(calDate.toString(this.format_));
+			this.forEdit_.textInput().trigger();
 			this.forEdit_.changed().trigger();
 		}
 		this.changed_.trigger();

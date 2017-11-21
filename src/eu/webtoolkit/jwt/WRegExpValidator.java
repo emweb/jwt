@@ -188,12 +188,14 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Sets the text to be shown if no match can be found.
 	 * <p>
-	 * This calls {@link WRegExpValidator#getInvalidNoMatchText()
-	 * getInvalidNoMatchText()}
+	 * This calls
+	 * {@link WRegExpValidator#setInvalidNoMatchText(CharSequence text)
+	 * setInvalidNoMatchText()}
 	 * <p>
 	 * 
-	 * @deprecated Use {@link WRegExpValidator#getInvalidNoMatchText()
-	 *             getInvalidNoMatchText()} instead
+	 * @deprecated Use
+	 *             {@link WRegExpValidator#setInvalidNoMatchText(CharSequence text)
+	 *             setInvalidNoMatchText()} instead
 	 */
 	public void setNoMatchText(final CharSequence text) {
 		this.setInvalidNoMatchText(text);
@@ -213,7 +215,7 @@ public class WRegExpValidator extends WValidator {
 	 * Returns the message displayed when the input does not match.
 	 * <p>
 	 * 
-	 * @see WRegExpValidator#getInvalidNoMatchText()
+	 * @see WRegExpValidator#setInvalidNoMatchText(CharSequence text)
 	 */
 	public WString getInvalidNoMatchText() {
 		if (!(this.noMatchText_.length() == 0)) {

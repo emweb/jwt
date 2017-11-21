@@ -840,6 +840,17 @@ public class WSuggestionPopup extends WPopupWidget {
 				this.currentItem_ = i;
 				this.activated_.trigger(i, edit);
 				if (edit != null) {
+					WLineEdit le = ((edit) instanceof WLineEdit ? (WLineEdit) (edit)
+							: null);
+					WTextArea ta = ((edit) instanceof WTextArea ? (WTextArea) (edit)
+							: null);
+					if (le != null) {
+						le.textInput().trigger();
+					} else {
+						if (ta != null) {
+							ta.textInput().trigger();
+						}
+					}
 					edit.changed().trigger();
 				}
 				return;

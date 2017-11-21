@@ -1415,24 +1415,33 @@ public class WTableView extends WAbstractItemView {
 			this.headerColumnsCanvas_ = new WContainerWidget();
 			this.headerColumnsCanvas_
 					.setPositionScheme(PositionScheme.Relative);
+			this.headerColumnsCanvas_.clicked().preventPropagation();
 			this.headerColumnsCanvas_.clicked().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleSingleClick(true, event);
 						}
 					});
+			this.headerColumnsCanvas_.clicked().addListener(
+					"function(o, e) { $(document).trigger($.event.fix(e));}");
+			this.headerColumnsCanvas_.mouseWentDown().preventPropagation();
 			this.headerColumnsCanvas_.mouseWentDown().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleMouseWentDown(true, event);
 						}
 					});
+			this.headerColumnsCanvas_.mouseWentDown().addListener(
+					"function(o, e) { $(document).trigger($.event.fix(e));}");
+			this.headerColumnsCanvas_.mouseWentUp().preventPropagation();
 			this.headerColumnsCanvas_.mouseWentUp().addListener(this,
 					new Signal1.Listener<WMouseEvent>() {
 						public void trigger(WMouseEvent event) {
 							WTableView.this.handleMouseWentUp(true, event);
 						}
 					});
+			this.headerColumnsCanvas_.mouseWentUp().addListener(
+					"function(o, e) { $(document).trigger($.event.fix(e));}");
 			this.headerColumnsCanvas_.addWidget(this.headerColumnsTable_);
 			this.headerColumnsContainer_ = new WContainerWidget();
 			this.headerColumnsContainer_

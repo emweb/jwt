@@ -1654,7 +1654,17 @@ public class WApplication extends WObject {
 				return path;
 			}
 		} else {
-			return app.getEnvironment().getServer().getContextPath() + path;
+			String contextPath = app.getEnvironment().getServer()
+					.getContextPath();
+			if (contextPath.length() != 0
+					&& contextPath.charAt(contextPath.length() - 1) != '/') {
+				contextPath = contextPath + "/";
+			}
+			if (path == "/wt-resources/") {
+				return contextPath + path.substring(1);
+			} else {
+				return contextPath + path;
+			}
 		}
 	}
 

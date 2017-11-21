@@ -1546,10 +1546,14 @@ public abstract class WWebWidget extends WWidget {
 							&& app.getEnvironment().hasAjax()) {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
 						WString tooltipText = this.lookImpl_.toolTip_;
-						if (this.lookImpl_.toolTipTextFormat_ != TextFormat.XHTMLUnsafeText) {
-							boolean res = removeScript(tooltipText);
-							if (!res) {
-								tooltipText = escapeText(this.lookImpl_.toolTip_);
+						if (this.lookImpl_.toolTipTextFormat_ == TextFormat.PlainText) {
+							tooltipText = escapeText(this.lookImpl_.toolTip_);
+						} else {
+							if (this.lookImpl_.toolTipTextFormat_ == TextFormat.XHTMLText) {
+								boolean res = removeScript(tooltipText);
+								if (!res) {
+									tooltipText = escapeText(this.lookImpl_.toolTip_);
+								}
 							}
 						}
 						String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true"

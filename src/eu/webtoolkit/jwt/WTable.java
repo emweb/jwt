@@ -147,6 +147,8 @@ public class WTable extends WInteractWidget {
 	 * <p>
 	 * The table cell at that position is recreated.
 	 * <p>
+	 * 
+	 * @see WTable#removeCell(int row, int column)
 	 */
 	public void removeCell(WTableCell item) {
 		this.removeCell(item.getRow(), item.getColumn());

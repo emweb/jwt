@@ -1121,49 +1121,57 @@ class WebRenderer implements SlotLearnerInterface {
 	private void collectJavaScriptUpdate(final StringBuilder out) {
 		WApplication app = this.session_.getApp();
 		out.append('{');
-		if (this.session_.sessionIdChanged_) {
-			if (this.session_.hasSessionIdInUrl()) {
-				if (app.getEnvironment().hasAjax()
-						&& !app.getEnvironment().isInternalPathUsingFragments()) {
-					this.streamRedirectJS(out, app.url(app.getInternalPath()));
-				} else {
-					this.streamRedirectJS(out, app.url(app.getInternalPath()));
+		try {
+			if (this.session_.sessionIdChanged_) {
+				if (this.session_.hasSessionIdInUrl()) {
+					if (app.getEnvironment().hasAjax()
+							&& !app.getEnvironment()
+									.isInternalPathUsingFragments()) {
+						this.streamRedirectJS(out,
+								app.url(app.getInternalPath()));
+					} else {
+						this.streamRedirectJS(out,
+								app.url(app.getInternalPath()));
+					}
+					out.append('}');
+					return;
 				}
-				out.append('}');
-				return;
+				out.append(this.session_.getApp().getJavaScriptClass())
+						.append("._p_.setSessionUrl(")
+						.append(WWebWidget.jsStringLiteral(this.getSessionUrl()))
+						.append(");");
+				this.session_.sessionIdChanged_ = false;
 			}
-			out.append(this.session_.getApp().getJavaScriptClass())
-					.append("._p_.setSessionUrl(")
-					.append(WWebWidget.jsStringLiteral(this.getSessionUrl()))
-					.append(");");
-			this.session_.sessionIdChanged_ = false;
-		}
-		this.collectJS(out);
-		this.preLearnStateless(app, out);
-		if (this.formObjectsChanged_) {
-			String formObjectsList = this.createFormObjectsList(app);
-			if (!formObjectsList.equals(this.currentFormObjectsList_)) {
-				this.currentFormObjectsList_ = formObjectsList;
+			this.collectJS(out);
+			this.preLearnStateless(app, out);
+			if (this.formObjectsChanged_) {
+				String formObjectsList = this.createFormObjectsList(app);
+				if (!formObjectsList.equals(this.currentFormObjectsList_)) {
+					this.currentFormObjectsList_ = formObjectsList;
+					out.append(app.getJavaScriptClass())
+							.append("._p_.setFormObjects([")
+							.append(this.currentFormObjectsList_).append("]);");
+				}
+			}
+			app.streamAfterLoadJavaScript(out);
+			if (app.isQuited()) {
 				out.append(app.getJavaScriptClass())
-						.append("._p_.setFormObjects([")
-						.append(this.currentFormObjectsList_).append("]);");
+						.append("._p_.quit(")
+						.append(((app.quittedMessage_.length() == 0) ? "null"
+								: WString.toWString(app.quittedMessage_)
+										.getJsStringLiteral())
+								+ ");");
 			}
+			if (this.updateLayout_) {
+				out.append("window.onresize();");
+				this.updateLayout_ = false;
+			}
+			app.renderedInternalPath_ = app.newInternalPath_;
+			this.updateLoadIndicator(out, app, false);
+		} catch (final RuntimeException e) {
+			out.append('}');
+			throw e;
 		}
-		app.streamAfterLoadJavaScript(out);
-		if (app.isQuited()) {
-			out.append(app.getJavaScriptClass())
-					.append("._p_.quit(")
-					.append(((app.quittedMessage_.length() == 0) ? "null"
-							: WString.toWString(app.quittedMessage_)
-									.getJsStringLiteral())
-							+ ");");
-		}
-		if (this.updateLayout_) {
-			out.append("window.onresize();");
-			this.updateLayout_ = false;
-		}
-		app.renderedInternalPath_ = app.newInternalPath_;
-		this.updateLoadIndicator(out, app, false);
 		out.append('}');
 	}
 

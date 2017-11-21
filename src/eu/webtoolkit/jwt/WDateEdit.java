@@ -311,6 +311,7 @@ public class WDateEdit extends WLineEdit {
 		if (!this.calendar_.getSelection().isEmpty()) {
 			WDate calDate = this.calendar_.getSelection().iterator().next();
 			this.setText(calDate.toString(this.getFormat()));
+			this.textInput().trigger();
 			this.changed().trigger();
 		}
 	}
