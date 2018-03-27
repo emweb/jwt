@@ -89,6 +89,8 @@ public class WFileUpload extends WWebWidget {
 		this.fileTooLarge_ = new JSignal1<Long>(this, "fileTooLarge") {
 		};
 		this.dataReceived_ = new Signal2<Long, Long>(this);
+		this.displayWidget_ = null;
+		this.displayWidgetRedirect_ = new JSlot(this);
 		this.progressBar_ = null;
 		this.acceptAttributes_ = "";
 		this.setInline(true);
@@ -259,6 +261,26 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	/**
+	 * Use the click signal of another widget to open the file picker.
+	 * <p>
+	 * This hides the default {@link WFileUpload} widget and uses the
+	 * click-signal of the argument to open the file picker. The upload logic is
+	 * still handled by {@link WFileUpload} behind the scenes. This action
+	 * cannot be undone.
+	 * <p>
+	 * {@link WFileUpload} does not take ownership of the widget, nor does it
+	 * display it. You must still place it in the widget tree yourself.
+	 */
+	public void setDisplayWidget(WInteractWidget widget) {
+		if (this.displayWidget_ != null || !(widget != null)) {
+			return;
+		}
+		this.displayWidget_ = widget;
+		this.flags_.set(BIT_USE_DISPLAY_WIDGET, true);
+		this.repaint();
+	}
+
+	/**
 	 * Signal emitted when a new file was uploaded.
 	 * <p>
 	 * This signal is emitted when file upload has been completed. It is good
@@ -420,11 +442,14 @@ public class WFileUpload extends WWebWidget {
 	private static final int BIT_MULTIPLE = 3;
 	private static final int BIT_ENABLED_CHANGED = 4;
 	private static final int BIT_ACCEPT_ATTRIBUTE_CHANGED = 5;
+	private static final int BIT_USE_DISPLAY_WIDGET = 6;
 	BitSet flags_;
 	private int textSize_;
 	private List<UploadedFile> uploadedFiles_;
 	private JSignal1<Long> fileTooLarge_;
 	private Signal2<Long, Long> dataReceived_;
+	private WInteractWidget displayWidget_;
+	private JSlot displayWidgetRedirect_;
 	private WResource fileUploadTarget_;
 	private WProgressBar progressBar_;
 	private String acceptAttributes_;
@@ -453,6 +478,8 @@ public class WFileUpload extends WWebWidget {
 			this.fileUploadTarget_ = null;
 		}
 		this.setFormObject(!(this.fileUploadTarget_ != null));
+		this.displayWidgetRedirect_.setJavaScript(this
+				.getDisplayWidgetClickJS());
 		this.uploaded().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WFileUpload.this.onUploaded();
@@ -476,7 +503,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	private void onDataExceeded(long dataExceeded) {
-		this.doJavaScript("Wt3_3_9.$('if" + this.getId() + "').src='"
+		this.doJavaScript("Wt3_3_10.$('if" + this.getId() + "').src='"
 				+ this.fileUploadTarget_.getUrl() + "';");
 		if (this.flags_.get(BIT_UPLOADING)) {
 			this.flags_.clear(BIT_UPLOADING);
@@ -485,6 +512,21 @@ public class WFileUpload extends WWebWidget {
 			app.triggerUpdate();
 			app.enableUpdates(false);
 		}
+	}
+
+	private String getDisplayWidgetClickJS() {
+		return ""
+				+ "function(sender, event) {"
+				+ "  function redirectClick(el) {"
+				+ "    if (el && el.tagName && el.tagName.toLowerCase() === 'input') {"
+				+ "      el.click();" + "      return true;" + "    } else {"
+				+ "      return false;" + "    }" + "  };" + "  "
+				+ "  var ok = redirectClick(" + this.getJsRef() + ");"
+				+ "  if (!ok) {" + "    var children = " + this.getJsRef()
+				+ ".children;"
+				+ "    for (var i=0; i < children.length; i++) {"
+				+ "      if (redirectClick(children[i])) {" + "        return;"
+				+ "      }" + "    }" + "  }" + "}";
 	}
 
 	void setRequestTooLarge(long size) {
@@ -501,11 +543,17 @@ public class WFileUpload extends WWebWidget {
 			element.addChild(this.progressBar_.createSDomElement(WApplication
 					.getInstance()));
 		}
+		if (this.fileUploadTarget_ != null
+				&& this.flags_.get(BIT_USE_DISPLAY_WIDGET)) {
+			this.addStyleClass("Wt-fileupload-hidden");
+			this.displayWidget_.clicked().addListener(
+					this.displayWidgetRedirect_);
+		}
 		if (this.fileUploadTarget_ != null && this.flags_.get(BIT_DO_UPLOAD)) {
 			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			String maxFileSize = String.valueOf(WApplication.getInstance()
 					.getMaximumRequestSize());
-			String command = "{var submit = true;var x = Wt3_3_9.$('in"
+			String command = "{var submit = true;var x = Wt3_3_10.$('in"
 					+ this.getId()
 					+ "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > "
 					+ maxFileSize + ") {submit = false;"
@@ -541,6 +589,7 @@ public class WFileUpload extends WWebWidget {
 		}
 		this.flags_.clear(BIT_ENABLED_CHANGED);
 		this.flags_.clear(BIT_ACCEPT_ATTRIBUTE_CHANGED);
+		this.flags_.clear(BIT_USE_DISPLAY_WIDGET);
 		EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
 		if (change != null && change.needsUpdate(all)) {
 			if (!(inputE != null)) {
@@ -656,10 +705,10 @@ public class WFileUpload extends WWebWidget {
 	String renderRemoveJs(boolean recursive) {
 		boolean isIE = WApplication.getInstance().getEnvironment().agentIsIE();
 		if (this.isRendered() && isIE) {
-			String result = "Wt3_3_9.$('if" + this.getId()
+			String result = "Wt3_3_10.$('if" + this.getId()
 					+ "').innerHTML = \"\";";
 			if (!recursive) {
-				result += "Wt3_3_9.remove('" + this.getId() + "');";
+				result += "Wt3_3_10.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {

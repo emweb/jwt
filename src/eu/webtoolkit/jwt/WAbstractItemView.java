@@ -1473,9 +1473,54 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * <p>
 	 * When the event happened over an item, the first argument indicates the
 	 * item that was touched.
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WAbstractItemView#touchStarted() touchStarted()}
+	 *             instead.
 	 */
 	public Signal2<WModelIndex, WTouchEvent> touchStart() {
 		return this.touchStart_;
+	}
+
+	/**
+	 * Signal emitted when one or more fingers are placed on the screen.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * items that were touched. The indices in the model index vector match the
+	 * indices in the {@link WTouchEvent#getChangedTouches() changedTouches() of
+	 * the WTouchEvent}.
+	 */
+	public Signal2<List<WModelIndex>, WTouchEvent> touchStarted() {
+		return this.touchStarted_;
+	}
+
+	/**
+	 * Signal emitted when one or more fingers are moved on the screen.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * items that were touched. The indices in the model index vector match the
+	 * indices in the {@link WTouchEvent#getChangedTouches() changedTouches() of
+	 * the WTouchEvent}.
+	 */
+	public Signal2<List<WModelIndex>, WTouchEvent> touchMoved() {
+		return this.touchMoved_;
+	}
+
+	/**
+	 * Signal emitted when one or more fingers are removed from the screen.
+	 * <p>
+	 * When the event happened over an item, the first argument indicates the
+	 * items where the touch ended. The indices in the model index vector match
+	 * the indices in the {@link WTouchEvent#getChangedTouches()
+	 * changedTouches() of the WTouchEvent}.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
+	 * </i>
+	 * </p>
+	 */
+	public Signal2<List<WModelIndex>, WTouchEvent> touchEnded() {
+		return this.touchEnded_;
 	}
 
 	/**
@@ -1758,6 +1803,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.mouseWentUp_ = new Signal2<WModelIndex, WMouseEvent>(this);
 		this.touchStart_ = new Signal2<WModelIndex, WTouchEvent>(this);
+		this.touchStarted_ = new Signal2<List<WModelIndex>, WTouchEvent>(this);
+		this.touchMoved_ = new Signal2<List<WModelIndex>, WTouchEvent>();
+		this.touchEnded_ = new Signal2<List<WModelIndex>, WTouchEvent>(this);
 		this.selectionChanged_ = new Signal(this);
 		this.pageChanged_ = new Signal(this);
 		this.editTriggers_ = EnumSet
@@ -2354,9 +2402,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Handles a touch started event.
+	 * Handles a touch select event.
 	 */
-	protected void handleTouchStart(final List<WModelIndex> indices,
+	protected void handleTouchSelect(final List<WModelIndex> indices,
 			final WTouchEvent event) {
 		final WModelIndex index = indices.get(0);
 		this.touchRegistered_ = true;
@@ -2375,6 +2423,30 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 			this.selectionHandleTouch(indices, event);
 		}
 		this.touchStart_.trigger(index, event);
+	}
+
+	/**
+	 * Handles a touch started event.
+	 */
+	protected void handleTouchStart(final List<WModelIndex> indices,
+			final WTouchEvent event) {
+		this.touchStarted_.trigger(indices, event);
+	}
+
+	/**
+	 * Handles a touch moved event.
+	 */
+	protected void handleTouchMove(final List<WModelIndex> indices,
+			final WTouchEvent event) {
+		this.touchMoved_.trigger(indices, event);
+	}
+
+	/**
+	 * Handles a touch ended event.
+	 */
+	protected void handleTouchEnd(final List<WModelIndex> indices,
+			final WTouchEvent event) {
+		this.touchEnded_.trigger(indices, event);
 	}
 
 	boolean internalSelect(final WModelIndex index, SelectionFlag option) {
@@ -2631,6 +2703,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	private Signal2<WModelIndex, WMouseEvent> mouseWentDown_;
 	private Signal2<WModelIndex, WMouseEvent> mouseWentUp_;
 	private Signal2<WModelIndex, WTouchEvent> touchStart_;
+	private Signal2<List<WModelIndex>, WTouchEvent> touchStarted_;
+	private Signal2<List<WModelIndex>, WTouchEvent> touchMoved_;
+	private Signal2<List<WModelIndex>, WTouchEvent> touchEnded_;
 	private Signal selectionChanged_;
 	private Signal pageChanged_;
 	private EnumSet<WAbstractItemView.EditTrigger> editTriggers_;

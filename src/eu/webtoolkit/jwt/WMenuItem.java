@@ -130,6 +130,11 @@ public class WMenuItem extends WContainerWidget {
 			if (this.contents_ != null)
 				this.contents_.remove();
 		}
+		if (this.contentsContainer_ != null
+				&& this.contentsContainer_.getParent() == null) {
+			if (this.contentsContainer_ != null)
+				this.contentsContainer_.remove();
+		}
 		if (this.subMenu_ != null)
 			this.subMenu_.remove();
 		super.remove();

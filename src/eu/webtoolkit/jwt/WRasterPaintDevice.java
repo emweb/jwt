@@ -16,6 +16,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
@@ -24,12 +25,17 @@ import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.webtoolkit.jwt.WPainterPath.Segment;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 public class WRasterPaintDevice extends WResource implements WPaintDevice {
+	private static Logger logger = LoggerFactory.getLogger(WRasterPaintDevice.class);
+
 	private static final int MITER_LIMIT = 10;
 
 	enum Format { PngFormat }
@@ -76,7 +82,17 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	
 	public void drawImage(WRectF rect, String imageUri, int imgWidth, int imgHeight, WRectF sourceRect) {
-		// TODO Auto-generated method stub
+		processChangeFlags();
+		try {
+			BufferedImage image = ImageIO.read(new File(imageUri));
+			BufferedImage subImg = image.getSubimage((int)sourceRect.getLeft(), (int)sourceRect.getTop(), (int)sourceRect.getWidth(), (int)sourceRect.getHeight());
+			float xScale = (float)(rect.getWidth() / sourceRect.getWidth());
+			float yScale = (float)(rect.getHeight() / sourceRect.getHeight());
+			AffineTransform t = new AffineTransform(xScale, 0f, 0f, yScale, rect.getLeft(), rect.getTop());
+			g2.drawImage(subImg, t, null);
+		} catch (IOException e) {
+			logger.error("IOException when reading image: " + imageUri, e);
+		}
 	}
 
 	

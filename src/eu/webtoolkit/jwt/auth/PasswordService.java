@@ -204,7 +204,7 @@ public class PasswordService implements AbstractPasswordService {
 					.getFailedLoginAttempts());
 			if (throttlingNeeded != 0) {
 				WDate t = user.getLastLoginAttempt();
-				int diff = t.getSecondsTo(WDate.getCurrentDate());
+				int diff = t.getSecondsTo(WDate.getCurrentServerDate());
 				if (diff < throttlingNeeded) {
 					return throttlingNeeded - diff;
 				} else {

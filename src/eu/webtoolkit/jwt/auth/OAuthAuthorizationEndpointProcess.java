@@ -204,7 +204,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	public void authorizeScope(final String scope) {
 		if (this.validRequest_ && this.login_.isLoggedIn()) {
 			String authCodeValue = MathUtils.randomId();
-			WDate expirationTime = WDate.getCurrentDate().addSeconds(
+			WDate expirationTime = WDate.getCurrentServerDate().addSeconds(
 					this.authCodeExpSecs_);
 			this.db_.idpTokenAdd(authCodeValue, expirationTime,
 					"authorization_code", scope, this.redirectUri_,

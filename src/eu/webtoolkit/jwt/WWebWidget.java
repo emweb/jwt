@@ -572,6 +572,8 @@ public abstract class WWebWidget extends WWidget {
 			}
 			if (!(this.lookImpl_.toolTip_ != null)) {
 				this.lookImpl_.toolTip_ = new WString();
+			} else {
+				this.lookImpl_.toolTip_ = new WString();
 			}
 			this.lookImpl_.toolTipTextFormat_ = textFormat;
 			this.flags_.set(BIT_TOOLTIP_CHANGED);
@@ -1335,7 +1337,7 @@ public abstract class WWebWidget extends WWidget {
 						i.setAttribute("frameborder", "0");
 						app.addAutoJavaScript("{var w = "
 								+ this.getJsRef()
-								+ ";if (w && !Wt3_3_9.isHidden(w)) {var i = Wt3_3_9.getElement('"
+								+ ";if (w && !Wt3_3_10.isHidden(w)) {var i = Wt3_3_10.getElement('"
 								+ i.getId()
 								+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1558,7 +1560,7 @@ public abstract class WWebWidget extends WWidget {
 						}
 						String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true"
 								: "false";
-						element.callJavaScript("Wt3_3_9.toolTip("
+						element.callJavaScript("Wt3_3_10.toolTip("
 								+ app.getJavaScriptClass()
 								+ ","
 								+ jsStringLiteral(this.getId())
@@ -1628,7 +1630,7 @@ public abstract class WWebWidget extends WWidget {
 								.get(i);
 						if (js.charAt(0) == '_') {
 							element.callJavaScript(
-									"Wt3_3_9.remove('" + js.substring(1)
+									"Wt3_3_10.remove('" + js.substring(1)
 											+ "');", true);
 						} else {
 							element.callJavaScript(js, true);
@@ -1815,7 +1817,7 @@ public abstract class WWebWidget extends WWidget {
 				app.loadJavaScript(THIS_JS, wtjs2());
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
-					ss.append("Wt3_3_9")
+					ss.append("Wt3_3_10")
 							.append(".animateDisplay(")
 							.append(app.getJavaScriptClass())
 							.append(",'")
@@ -1843,7 +1845,7 @@ public abstract class WWebWidget extends WWidget {
 					}
 				} else {
 					StringBuilder ss = new StringBuilder();
-					ss.append("Wt3_3_9")
+					ss.append("Wt3_3_10")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1922,14 +1924,14 @@ public abstract class WWebWidget extends WWidget {
 					&& this.isScrollVisibilityEnabled()) {
 				app.loadJavaScript(SCROLL_JS, wtjs3());
 				StringBuilder ss = new StringBuilder();
-				ss.append("if (!Wt3_3_9.scrollVisibility) {Wt3_3_9.scrollVisibility = new ");
-				ss.append("Wt3_3_9.ScrollVisibility(").append(
+				ss.append("if (!Wt3_3_10.scrollVisibility) {Wt3_3_10.scrollVisibility = new ");
+				ss.append("Wt3_3_10.ScrollVisibility(").append(
 						app.getJavaScriptClass() + "); }");
 				element.callJavaScript(ss.toString());
 			}
 			if (this.isScrollVisibilityEnabled()) {
 				StringBuilder ss = new StringBuilder();
-				ss.append("Wt3_3_9.scrollVisibility.add({");
+				ss.append("Wt3_3_10.scrollVisibility.add({");
 				ss.append("el:").append(this.getJsRef()).append(',');
 				ss.append("margin:").append(this.getScrollVisibilityMargin())
 						.append(',');
@@ -1939,7 +1941,7 @@ public abstract class WWebWidget extends WWidget {
 				this.flags_.set(BIT_SCROLL_VISIBILITY_LOADED);
 			} else {
 				if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
-					element.callJavaScript("Wt3_3_9.scrollVisibility.remove("
+					element.callJavaScript("Wt3_3_10.scrollVisibility.remove("
 							+ jsStringLiteral(this.getId()) + ");");
 					this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 				}
@@ -1993,7 +1995,7 @@ public abstract class WWebWidget extends WWidget {
 	String renderRemoveJs(boolean recursive) {
 		String result = "";
 		if (this.isRendered() && this.isScrollVisibilityEnabled()) {
-			result += "Wt3_3_9.scrollVisibility.remove("
+			result += "Wt3_3_10.scrollVisibility.remove("
 					+ jsStringLiteral(this.getId()) + ");";
 			this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
 			this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
@@ -2008,7 +2010,7 @@ public abstract class WWebWidget extends WWidget {
 			if (result.length() == 0) {
 				result = "_" + this.getId();
 			} else {
-				result += "Wt3_3_9.remove('" + this.getId() + "');";
+				result += "Wt3_3_10.remove('" + this.getId() + "');";
 			}
 		}
 		return result;
@@ -2857,7 +2859,7 @@ public abstract class WWebWidget extends WWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptFunction,
 				"toolTip",
-				"function(l,m,n,s,t,u){var c=$(\"#\"+m),d=c.get(0),o=l.WT,g=d.toolTip;if(!g)d.toolTip=new (function(){function v(){$(\"#\"+m+\":hover\").length||p()}function w(){h=true;l.emit(d,\"Wt-loadToolTip\")}function p(){clearTimeout(e);setTimeout(function(){if(!i)if(a){$(a).parent().remove();a=null;clearInterval(j);j=null}},x)}function q(b){clearTimeout(e);k=o.pageCoordinates(b);a||(e=setTimeout(function(){d.toolTip.showToolTip()},y))}var e=null,j=null,k=null,a= null,y=500,x=200,h=false,f=n,i=false;this.setToolTipText=function(b){f=b;if(h){this.showToolTip();clearTimeout(e);waitingforText=false}};this.showToolTip=function(){s&&!f&&!h&&w();if(f){a=document.createElement(\"div\");a.className=t;a.innerHTML=f;outerDiv=document.createElement(\"div\");outerDiv.className=u;document.body.appendChild(outerDiv);outerDiv.appendChild(a);var b=k.x,r=k.y;o.fitToWindow(outerDiv,b+10,r+10,b-10,r-10);$(a).mouseenter(function(){i=true});$(a).mouseleave(function(){i=false})}j= setInterval(function(){v()},200)};c.mouseenter(q);c.mousemove(q);c.mouseleave(p)});g&&g.setToolTipText(n)}");
+				"function(l,m,n,s,t,u){var d=$(\"#\"+m),e=d.get(0),o=l.WT,i=e.toolTip;if(!i)e.toolTip=new (function(){function v(){$(\"#\"+m+\":hover\").length||p()}function w(){f=true;l.emit(e,\"Wt-loadToolTip\")}function p(){clearTimeout(g);setTimeout(function(){if(!j)if(a){$(a).parent().remove();a=null;clearInterval(c);c=null}},x)}function q(b){clearTimeout(g);k=o.pageCoordinates(b);a||(g=setTimeout(function(){e.toolTip.showToolTip()},y))}var g=null,c=null,k=null,a= null,y=500,x=200,f=false,h=n,j=false;this.setToolTipText=function(b){h=b;if(f){this.showToolTip();clearTimeout(g);f=false}};this.showToolTip=function(){s&&!h&&!f&&w();if(h){a=document.createElement(\"div\");a.className=t;a.innerHTML=h;outerDiv=document.createElement(\"div\");outerDiv.className=u;document.body.appendChild(outerDiv);outerDiv.appendChild(a);var b=k.x,r=k.y;o.fitToWindow(outerDiv,b+10,r+10,b-10,r-10);$(a).mouseenter(function(){j=true});$(a).mouseleave(function(){j=false})}clearInterval(c); c=null;c=setInterval(function(){v()},200)};d.mouseenter(q);d.mousemove(q);d.mouseleave(p)});i&&i.setToolTipText(n)}");
 	}
 
 	static WJavaScriptPreamble wtjs3() {

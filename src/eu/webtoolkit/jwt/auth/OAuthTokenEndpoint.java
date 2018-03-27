@@ -190,7 +190,7 @@ public class OAuthTokenEndpoint extends WResource {
 					code);
 			if (!authCode.isCheckValid()
 					|| !authCode.getRedirectUri().equals(redirectUri)
-					|| WDate.getCurrentDate().after(
+					|| WDate.getCurrentServerDate().after(
 							authCode.getExpirationTime())) {
 				response.setStatus(400);
 				response.out().append("{\n\"error\": \"invalid_grant\"\n}")
@@ -209,13 +209,13 @@ public class OAuthTokenEndpoint extends WResource {
 								: " - valid")
 						.append(" timestamp: ")
 						.append(authCode.getExpirationTime().toString())
-						.append(WDate.getCurrentDate().after(
+						.append(WDate.getCurrentServerDate().after(
 								authCode.getExpirationTime()) ? ", expired"
 								: ", not expired").toString());
 				return;
 			}
 			String accessTokenValue = MathUtils.randomId();
-			WDate expirationTime = WDate.getCurrentDate().addSeconds(
+			WDate expirationTime = WDate.getCurrentServerDate().addSeconds(
 					this.accessExpSecs_);
 			final User user = authCode.getUser();
 			final OAuthClient authClient = authCode.getAuthClient();
@@ -280,7 +280,7 @@ public class OAuthTokenEndpoint extends WResource {
 		root.add("iss", (new com.google.gson.JsonPrimitive(this.iss_)));
 		root.add("sub", (new com.google.gson.JsonPrimitive(user.getId())));
 		root.add("aud", (new com.google.gson.JsonPrimitive(clientId)));
-		WDate curTime = WDate.getCurrentDate();
+		WDate curTime = WDate.getCurrentServerDate();
 		root.add("exp", (new com.google.gson.JsonPrimitive((long) curTime
 				.addSeconds(this.idExpSecs_).getDate().getTime())));
 		root.add("iat", (new com.google.gson.JsonPrimitive((long) curTime

@@ -10,9 +10,9 @@
   <artifactId>jwt</artifactId>
   <packaging>jar</packaging>
   <name>Java Web Toolkit</name>
-  <version>3.3.9</version>
+  <version>3.3.10</version>
   <description>Java library for developing web applications</description>
-  <url>http://webtoolkit.eu/jwt/</url>
+  <url>https://webtoolkit.eu/jwt/</url>
 
   <licenses>
     <license>
@@ -23,8 +23,8 @@
   </licenses>
 
   <scm>
-    <url>http://www.webtoolkit.eu/git/jwt.git</url>
-    <connection>http://www.webtoolkit.eu/git/jwt.git</connection>
+    <url>https://github.com/emweb/jwt.git</url>
+    <connection>https://github.com/emweb/jwt.git</connection>
   </scm>
 
   <dependencies>

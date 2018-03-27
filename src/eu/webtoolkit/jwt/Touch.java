@@ -31,7 +31,7 @@ public class Touch {
 	/**
 	 * Constructor.
 	 */
-	public Touch(int identifier, int clientX, int clientY, int documentX,
+	public Touch(long identifier, int clientX, int clientY, int documentX,
 			int documentY, int screenX, int screenY, int widgetX, int widgetY) {
 		this.clientX_ = clientX;
 		this.clientY_ = clientY;
@@ -75,6 +75,13 @@ public class Touch {
 		return new Coordinates(this.widgetX_, this.widgetY_);
 	}
 
+	/**
+	 * Returns the identifier for this touch.
+	 */
+	public long getIdentifier() {
+		return this.identifier_;
+	}
+
 	private int clientX_;
 	private int clientY_;
 	private int documentX_;
@@ -83,7 +90,7 @@ public class Touch {
 	private int screenY_;
 	private int widgetX_;
 	private int widgetY_;
-	private int identifier_;
+	private long identifier_;
 
 	static String concat(final String prefix, int prefixLength, String s2) {
 		return prefix + s2;
@@ -93,8 +100,8 @@ public class Touch {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(final String v) {
-		return Integer.parseInt(v);
+	static long asLongLong(final String v) {
+		return Long.parseLong(v);
 	}
 
 	static int parseIntParameter(final WebRequest request, final String name,
@@ -137,9 +144,9 @@ public class Touch {
 		}
 		try {
 			for (int i = 0; i < s.size(); i += 9) {
-				result.add(new Touch(asUInt(s.get(i + 0)), asInt(s.get(i + 1)),
-						asInt(s.get(i + 2)), asInt(s.get(i + 3)), asInt(s
-								.get(i + 4)), asInt(s.get(i + 5)), asInt(s
+				result.add(new Touch(asLongLong(s.get(i + 0)), asInt(s
+						.get(i + 1)), asInt(s.get(i + 2)), asInt(s.get(i + 3)),
+						asInt(s.get(i + 4)), asInt(s.get(i + 5)), asInt(s
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}

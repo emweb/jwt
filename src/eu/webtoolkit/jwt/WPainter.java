@@ -402,7 +402,8 @@ public class WPainter {
 			this.setUrl(url);
 			if (DataUri.isDataUri(url)) {
 				DataUri uri = new DataUri(url);
-				WPoint size = ImageUtils.getSize(uri.data);
+				WPoint size = eu.webtoolkit.jwt.utils.ImageUtils
+						.getSize(uri.data);
 				if (size.getX() == 0 || size.getY() == 0) {
 					throw new WException("data url: (" + uri.mimeType
 							+ "): could not determine image size");
@@ -410,7 +411,8 @@ public class WPainter {
 				this.width_ = size.getX();
 				this.height_ = size.getY();
 			} else {
-				WPoint size = ImageUtils.getSize(fileName);
+				WPoint size = eu.webtoolkit.jwt.utils.ImageUtils
+						.getSize(fileName);
 				if (size.getX() == 0 || size.getY() == 0) {
 					throw new WException("'" + fileName
 							+ "': could not determine image size");

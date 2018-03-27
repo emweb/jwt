@@ -369,7 +369,7 @@ class FormWidgets extends TopicWidget {
 		ta.changed().addListener(this, new Signal.Listener() {
 			public void trigger() {
 				out.setText("<p>Text area changed at "
-						+ WDate.getCurrentDate().toString() + ".</p>");
+						+ WDate.getCurrentServerDate().toString() + ".</p>");
 			}
 		});
 		return container;

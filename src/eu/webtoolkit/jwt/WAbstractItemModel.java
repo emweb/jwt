@@ -260,9 +260,7 @@ public abstract class WAbstractItemModel extends WObject {
 	public abstract WModelIndex getParent(final WModelIndex index);
 
 	/**
-	 * Returns data at a specific model index.
-	 * <p>
-	 * Return data for a given role at a given index.
+	 * Returns data at a specified model index for the given role.
 	 * <p>
 	 * You should check the <code>role</code> to decide what data to return.
 	 * Usually a View class will ask for data for several roles which affect not
@@ -281,7 +279,7 @@ public abstract class WAbstractItemModel extends WObject {
 	public abstract Object getData(final WModelIndex index, int role);
 
 	/**
-	 * Returns data at a specific model index.
+	 * Returns data at a specified model index for the given role.
 	 * <p>
 	 * Returns {@link #getData(WModelIndex index, int role) getData(index,
 	 * ItemDataRole.DisplayRole)}

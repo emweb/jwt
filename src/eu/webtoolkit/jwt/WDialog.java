@@ -477,7 +477,7 @@ public class WDialog extends WPopupWidget {
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this.setJavaScriptMember(
 						" Resizable",
-						"(new Wt3_3_9.Resizable(Wt3_3_9,"
+						"(new Wt3_3_10.Resizable(Wt3_3_10,"
 								+ this.getJsRef()
 								+ ")).onresize(function(w, h, done) {var obj = $('#"
 								+ this.getId()
@@ -557,6 +557,9 @@ public class WDialog extends WPopupWidget {
 
 	/**
 	 * Set focus on the first widget in the dialog.
+	 * <p>
+	 * Autofocus is enabled by default. If a widget inside of this dialog
+	 * already has focus, the focus will not be changed.
 	 */
 	public void setAutoFocus(boolean enable) {
 		this.autoFocus_ = enable;
@@ -787,7 +790,7 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_3_9.WDialog("
+			this.doJavaScript("new Wt3_3_10.WDialog("
 					+ app.getJavaScriptClass()
 					+ ","
 					+ this.getJsRef()
@@ -828,7 +831,9 @@ public class WDialog extends WPopupWidget {
 		}
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
 				&& this.autoFocus_) {
-			this.impl_.isSetFirstFocus();
+			if (!(this.impl_.findById(WApplication.getInstance().getFocus()) != null)) {
+				this.impl_.isSetFirstFocus();
+			}
 		}
 		super.render(flags);
 	}

@@ -57,7 +57,7 @@ class ClippingWidget extends WPaintedWidget {
 
 	private void drawStars(final WPainter painter) {
 		Random random = new Random();
-		random.setSeed(WDate.getCurrentDate().getDate().getTime());
+		random.setSeed(WDate.getCurrentServerDate().getDate().getTime());
 		painter.save();
 		painter.translate(75, 75);
 		for (int star = 1; star < 50; star++) {

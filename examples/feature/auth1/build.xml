@@ -53,8 +53,8 @@
        srcdir="${src.dir}"
        destdir="${build.dir}"
        debug="on"
-       source="1.5"
-       target="1.5">
+       source="1.6"
+       target="1.6">
       <classpath refid="project.classpath"/>
     </javac>
   </target>

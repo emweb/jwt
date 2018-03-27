@@ -93,7 +93,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * <h3>CSS</h3>
  * <p>
- * The menu is rendered as a &gt;ul&lt;. Unless you use the bootstrap theme, you
+ * The menu is rendered as a &lt;ul&gt;. Unless you use the bootstrap theme, you
  * will want to customize the menu using inline or external styles to hide the
  * bullets and provide the appropriate horizontal or vertical layout.
  * <p>

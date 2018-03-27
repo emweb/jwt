@@ -104,8 +104,8 @@ public class WScrollEvent implements WAbstractEvent {
 		return Integer.parseInt(v);
 	}
 
-	static int asUInt(final String v) {
-		return Integer.parseInt(v);
+	static long asLongLong(final String v) {
+		return Long.parseLong(v);
 	}
 
 	static int parseIntParameter(final WebRequest request, final String name,
@@ -148,9 +148,9 @@ public class WScrollEvent implements WAbstractEvent {
 		}
 		try {
 			for (int i = 0; i < s.size(); i += 9) {
-				result.add(new Touch(asUInt(s.get(i + 0)), asInt(s.get(i + 1)),
-						asInt(s.get(i + 2)), asInt(s.get(i + 3)), asInt(s
-								.get(i + 4)), asInt(s.get(i + 5)), asInt(s
+				result.add(new Touch(asLongLong(s.get(i + 0)), asInt(s
+						.get(i + 1)), asInt(s.get(i + 2)), asInt(s.get(i + 3)),
+						asInt(s.get(i + 4)), asInt(s.get(i + 5)), asInt(s
 								.get(i + 6)), asInt(s.get(i + 7)), asInt(s
 								.get(i + 8))));
 			}

@@ -121,8 +121,8 @@ public class WFileDropWidget extends WContainerWidget {
 			return this.uploaded_;
 		}
 
-		public File(int id, final String fileName, final String type,
-				long size, WObject parent) {
+		File(int id, final String fileName, final String type, long size,
+				WObject parent) {
 			super(parent);
 			this.id_ = id;
 			this.clientFileName_ = fileName;
@@ -135,16 +135,16 @@ public class WFileDropWidget extends WContainerWidget {
 			this.cancelled_ = false;
 		}
 
-		public int getUploadId() {
+		int getUploadId() {
 			return this.id_;
 		}
 
-		public void setUploadedFile(final UploadedFile file) {
+		void setUploadedFile(final UploadedFile file) {
 			this.uploadFinished_ = true;
 			this.uploadedFile_ = file;
 		}
 
-		public void cancel() {
+		void cancel() {
 			this.cancelled_ = true;
 		}
 
@@ -170,6 +170,11 @@ public class WFileDropWidget extends WContainerWidget {
 		super(parent);
 		this.resource_ = null;
 		this.currentFileIdx_ = 0;
+		this.hoverStyleClass_ = "Wt-filedropzone-hover";
+		this.acceptDrops_ = true;
+		this.acceptAttributes_ = "";
+		this.dropIndicationEnabled_ = false;
+		this.globalDropEnabled_ = false;
 		this.dropSignal_ = new JSignal1<String>(this, "dropsignal") {
 		};
 		this.requestSend_ = new JSignal1<Integer>(this, "requestsend") {
@@ -185,6 +190,7 @@ public class WFileDropWidget extends WContainerWidget {
 		this.tooLarge_ = new Signal2<WFileDropWidget.File, Long>();
 		this.uploadFailed_ = new Signal1<WFileDropWidget.File>();
 		this.uploads_ = new ArrayList<WFileDropWidget.File>();
+		this.updateFlags_ = new BitSet();
 		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().hasAjax()) {
 			return;
@@ -267,8 +273,12 @@ public class WFileDropWidget extends WContainerWidget {
 	 * When set to false, the widget no longer accepts any files.
 	 */
 	public void setAcceptDrops(boolean enable) {
-		this.doJavaScript(this.getJsRef() + ".setAcceptDrops("
-				+ (enable ? "true" : "false") + ");");
+		if (enable == this.acceptDrops_) {
+			return;
+		}
+		this.acceptDrops_ = enable;
+		this.updateFlags_.set(BIT_ACCEPTDROPS_CHANGED);
+		this.repaint();
 	}
 
 	/**
@@ -276,8 +286,96 @@ public class WFileDropWidget extends WContainerWidget {
 	 * widget.
 	 */
 	public void setHoverStyleClass(final String className) {
-		this.doJavaScript(this.getJsRef() + ".configureHoverClass('"
-				+ className + "');");
+		if (className.equals(this.hoverStyleClass_)) {
+			return;
+		}
+		this.hoverStyleClass_ = className;
+		this.updateFlags_.set(BIT_HOVERSTYLE_CHANGED);
+		this.repaint();
+	}
+
+	/**
+	 * Sets input accept attributes.
+	 * <p>
+	 * The accept attribute may be specified to provide user agents with a hint
+	 * of what file types will be accepted. Use html input accept attributes as
+	 * input. This only affects the popup that is shown when users click on the
+	 * widget. A user can still drop any file type.
+	 */
+	public void setFilters(final String acceptAttributes) {
+		if (acceptAttributes.equals(this.acceptAttributes_)) {
+			return;
+		}
+		this.acceptAttributes_ = acceptAttributes;
+		this.updateFlags_.set(BIT_FILTERS_CHANGED);
+		this.repaint();
+	}
+
+	/**
+	 * Highlight widget if a file is dragged anywhere on the page.
+	 * <p>
+	 * As soon as a drag enters anywhere on the page the hover-styleclass is
+	 * applied, which can be useful to point the user to the correct place to
+	 * drop the file. If not enabled, the style will only be applied when the
+	 * file is dragged over the widget. This can be enabled for multiple
+	 * dropwidgets if only one of them is visible at the same time.
+	 * <p>
+	 * 
+	 * @see WFileDropWidget#setGlobalDropEnabled(boolean enable)
+	 */
+	public void setDropIndicationEnabled(boolean enable) {
+		if (enable == this.dropIndicationEnabled_) {
+			return;
+		}
+		this.dropIndicationEnabled_ = enable;
+		if (!this.dropIndicationEnabled_ && this.globalDropEnabled_) {
+			this.globalDropEnabled_ = false;
+		}
+		this.updateFlags_.set(BIT_DRAGOPTIONS_CHANGED);
+		this.repaint();
+	}
+
+	/**
+	 * Returns if the widget is highlighted for drags anywhere on the page.
+	 * <p>
+	 * 
+	 * @see WFileDropWidget#setDropIndicationEnabled(boolean enable)
+	 */
+	public boolean isDropIndicationEnabled() {
+		return this.dropIndicationEnabled_;
+	}
+
+	/**
+	 * Allow dropping the files anywhere on the page.
+	 * <p>
+	 * This only works if
+	 * {@link WFileDropWidget#setDropIndicationEnabled(boolean enable)
+	 * setDropIndicationEnabled()} is enabled. If enabled, a drop anywhere on
+	 * the page will be forwarded to this widget.
+	 * <p>
+	 * 
+	 * @see WFileDropWidget#setDropIndicationEnabled(boolean enable)
+	 */
+	public void setGlobalDropEnabled(boolean enable) {
+		if (enable == this.globalDropEnabled_) {
+			return;
+		}
+		if (!this.dropIndicationEnabled_ && enable) {
+			throw new RuntimeException();
+		}
+		this.globalDropEnabled_ = enable;
+		this.updateFlags_.set(BIT_DRAGOPTIONS_CHANGED);
+		this.repaint();
+	}
+
+	/**
+	 * Returns if all drops are forwarded to this widget.
+	 * <p>
+	 * 
+	 * @see WFileDropWidget#setGlobalDropEnabled(boolean enable)
+	 */
+	public boolean isGlobalDropEnabled() {
+		return this.globalDropEnabled_;
 	}
 
 	/**
@@ -324,8 +422,41 @@ public class WFileDropWidget extends WContainerWidget {
 		return this.uploadFailed_;
 	}
 
+	String renderRemoveJs(boolean recursive) {
+		return this.getJsRef() + ".destructor();";
+	}
+
 	protected void enableAjax() {
 		this.setup();
+		this.repaint();
+		super.enableAjax();
+	}
+
+	void updateDom(final DomElement element, boolean all) {
+		WApplication app = WApplication.getInstance();
+		if (app.getEnvironment().hasAjax()) {
+			if (this.updateFlags_.get(BIT_HOVERSTYLE_CHANGED) || all) {
+				this.doJavaScript(this.getJsRef() + ".configureHoverClass('"
+						+ this.hoverStyleClass_ + "');");
+			}
+			if (this.updateFlags_.get(BIT_ACCEPTDROPS_CHANGED) || all) {
+				this.doJavaScript(this.getJsRef() + ".setAcceptDrops("
+						+ (this.acceptDrops_ ? "true" : "false") + ");");
+			}
+			if (this.updateFlags_.get(BIT_FILTERS_CHANGED) || all) {
+				this.doJavaScript(this.getJsRef() + ".setFilters("
+						+ jsStringLiteral(this.acceptAttributes_) + ");");
+			}
+			if (this.updateFlags_.get(BIT_DRAGOPTIONS_CHANGED) || all) {
+				this.doJavaScript(this.getJsRef() + ".setBodyAware("
+						+ (this.dropIndicationEnabled_ ? "true" : "false")
+						+ ");");
+				this.doJavaScript(this.getJsRef() + ".setDropForward("
+						+ (this.globalDropEnabled_ ? "true" : "false") + ");");
+			}
+			this.updateFlags_.clear();
+		}
+		super.updateDom(element, all);
 	}
 
 	static class WFileDropUploadResource extends WResource {
@@ -380,8 +511,8 @@ public class WFileDropWidget extends WContainerWidget {
 		String maxFileSize = String.valueOf(WApplication.getInstance()
 				.getMaximumRequestSize());
 		this.setJavaScriptMember(" WFileDropWidget",
-				"new Wt3_3_9.WFileDropWidget(" + app.getJavaScriptClass() + ","
-						+ this.getJsRef() + "," + maxFileSize + ");");
+				"new Wt3_3_10.WFileDropWidget(" + app.getJavaScriptClass()
+						+ "," + this.getJsRef() + "," + maxFileSize + ");");
 		this.dropSignal_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {
 				WFileDropWidget.this.handleDrop(e1);
@@ -569,6 +700,11 @@ public class WFileDropWidget extends WContainerWidget {
 
 	private WFileDropWidget.WFileDropUploadResource resource_;
 	private int currentFileIdx_;
+	private String hoverStyleClass_;
+	private boolean acceptDrops_;
+	private String acceptAttributes_;
+	private boolean dropIndicationEnabled_;
+	private boolean globalDropEnabled_;
 	private JSignal1<String> dropSignal_;
 	private JSignal1<Integer> requestSend_;
 	private JSignal1<Long> fileTooLarge_;
@@ -580,12 +716,17 @@ public class WFileDropWidget extends WContainerWidget {
 	private Signal2<WFileDropWidget.File, Long> tooLarge_;
 	private Signal1<WFileDropWidget.File> uploadFailed_;
 	private List<WFileDropWidget.File> uploads_;
+	private static final int BIT_HOVERSTYLE_CHANGED = 0;
+	private static final int BIT_ACCEPTDROPS_CHANGED = 1;
+	private static final int BIT_FILTERS_CHANGED = 2;
+	private static final int BIT_DRAGOPTIONS_CHANGED = 3;
+	private BitSet updateFlags_;
 
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WFileDropWidget",
-				"function(h,d,m){jQuery.data(d,\"lobj\",this);var f=this,k=\"Wt-filedropzone-hover\",c=[],l=false,j=true;this.eventContainsFile=function(a){var b=a.dataTransfer.types!=null&&a.dataTransfer.types.length>0&&a.dataTransfer.types[0]==\"Files\";return a.dataTransfer.items!=null&&a.dataTransfer.items.length>0&&a.dataTransfer.items[0].kind==\"file\"||b};this.validFileCheck=function(a,b,g){var e=new FileReader;e.onload=function(){b(true,g)};e.onerror= function(){b(false,g)};e.readAsText(a)};d.setAcceptDrops=function(a){j=a};d.ondragenter=function(a){j&&f.eventContainsFile(a)&&f.setHoverStyle(true)};d.ondragleave=function(){j&&f.setHoverStyle(false)};d.ondragover=function(a){a.preventDefault()};d.ondrop=function(a){a.preventDefault();if(j){f.setHoverStyle(false);if(!(window.FormData===undefined||a.dataTransfer.files==null||a.dataTransfer.files.length==0)){Math.floor(Math.random()*32768);for(var b=[],g=0;g<a.dataTransfer.files.length;g++){var e= new XMLHttpRequest;e.id=Math.floor(Math.random()*Math.pow(2,31));e.file=a.dataTransfer.files[g];c.push(e);var i={};i.id=e.id;i.filename=e.file.name;i.type=e.file.type;i.size=e.file.size;b.push(i)}console.log(b);h.emit(d,\"dropsignal\",JSON.stringify(b))}}};d.markForSending=function(a){for(var b=0;b<a.length;b++)for(var g=a[b].id,e=0;e<c.length;e++)if(c[e].id==g){c[e].ready=true;break}l||c[0].ready&&f.requestSend()};this.requestSend=function(){if(c[0].skip)f.uploadFinished(null);else{l=true;h.emit(d, \"requestsend\",c[0].id)}};d.send=function(a){console.log(\"sending file\");xhr=c[0];if(xhr.file.size>m){h.emit(d,\"filetoolarge\",xhr.file.size);f.uploadFinished(null)}else f.validFileCheck(xhr.file,f.actualSend,a)};this.actualSend=function(a,b){if(a){xhr=c[0];xhr.addEventListener(\"load\",f.uploadFinished);xhr.addEventListener(\"error\",f.uploadFinished);xhr.addEventListener(\"abort\",f.uploadFinished);xhr.addEventListener(\"timeout\",f.uploadFinished);xhr.open(\"POST\",b);a=new FormData;a.append(\"file-id\",xhr.id); a.append(\"data\",xhr.file);xhr.send(a)}else f.uploadFinished(null)};this.uploadFinished=function(a){console.log(\"finished sending (type = \"+a+\")\");a!=null&&a.type==\"load\"&&a.currentTarget.status==200&&h.emit(d,\"uploadfinished\",c[0].id);c.splice(0,1);if(c[0]&&c[0].ready)f.requestSend();else{l=false;h.emit(d,\"donesending\")}};d.cancelUpload=function(a){if(c[0].id==a)c[0].abort();else for(var b=1;b<c.length;b++)if(c[b].id==a)c[b].skip=true};this.setHoverStyle=function(a){a?$(d).addClass(k):$(d).removeClass(k)}; d.configureHoverClass=function(a){k=a}}");
+				"function(k,b,r){jQuery.data(b,\"lobj\",this);var c=this,o=\"Wt-filedropzone-hover\",d=[],p=false,j=true,n=false,q=false,l=0,h=document.createElement(\"input\");h.type=\"file\";h.setAttribute(\"multiple\",\"multiple\");$(h).hide();b.appendChild(h);var g=document.createElement(\"div\");$(g).addClass(\"Wt-dropcover\");document.body.appendChild(g);this.eventContainsFile=function(a){var e=a.dataTransfer.types!=null&&a.dataTransfer.types.length>0&&a.dataTransfer.types[0]== \"Files\";return a.dataTransfer.items!=null&&a.dataTransfer.items.length>0&&a.dataTransfer.items[0].kind==\"file\"||e};this.validFileCheck=function(a,e,i){var f=new FileReader;f.onload=function(){e(true,i)};f.onerror=function(){e(false,i)};f.readAsText(a.slice(0,32))};b.setAcceptDrops=function(a){j=a};b.setBodyAware=function(a){n=a};b.setDropForward=function(a){q=a};b.ondragenter=function(a){if(j){if(c.eventContainsFile(a)){l=2;c.setHoverStyle(true)}a.stopPropagation()}};b.ondragleave=function(a){if(document.elementFromPoint(a.clientX, a.clientY)===g)l=1;else j&&c.setHoverStyle(false)};b.ondragover=function(a){a.preventDefault()};bodyDragEnter=function(){if(n&&$(b).is(\":visible\")){l=1;c.setHoverStyle(true)}};document.body.addEventListener(\"dragenter\",bodyDragEnter);g.ondragover=function(a){a.preventDefault();a.stopPropagation()};g.ondragleave=function(){!j||l!=1||c.setHoverStyle(false)};g.ondrop=function(a){a.preventDefault();q?b.ondrop(a):c.setHoverStyle(false)};b.ondrop=function(a){a.preventDefault();if(j){c.setHoverStyle(false); window.FormData===undefined||a.dataTransfer.files==null||a.dataTransfer.files.length==0||c.addFiles(a.dataTransfer.files)}};this.addFiles=function(a){for(var e=[],i=0;i<a.length;i++){var f=new XMLHttpRequest;f.id=Math.floor(Math.random()*Math.pow(2,31));f.file=a[i];d.push(f);var m={};m.id=f.id;m.filename=f.file.name;m.type=f.file.type;m.size=f.file.size;e.push(m)}k.emit(b,\"dropsignal\",JSON.stringify(e))};b.addEventListener(\"click\",function(){if(j){$(h).val(\"\");h.click()}});b.markForSending=function(a){for(var e= 0;e<a.length;e++)for(var i=a[e].id,f=0;f<d.length;f++)if(d[f].id==i){d[f].ready=true;break}p||d[0].ready&&c.requestSend()};this.requestSend=function(){if(d[0].skip)c.uploadFinished(null);else{p=true;k.emit(b,\"requestsend\",d[0].id)}};b.send=function(a){xhr=d[0];if(xhr.file.size>r){k.emit(b,\"filetoolarge\",xhr.file.size);c.uploadFinished(null)}else c.validFileCheck(xhr.file,c.actualSend,a)};this.actualSend=function(a,e){if(a){xhr=d[0];xhr.addEventListener(\"load\",c.uploadFinished);xhr.addEventListener(\"error\", c.uploadFinished);xhr.addEventListener(\"abort\",c.uploadFinished);xhr.addEventListener(\"timeout\",c.uploadFinished);xhr.open(\"POST\",e);a=new FormData;a.append(\"file-id\",xhr.id);a.append(\"data\",xhr.file);xhr.send(a)}else c.uploadFinished(null)};this.uploadFinished=function(a){a!=null&&a.type==\"load\"&&a.currentTarget.status==200&&k.emit(b,\"uploadfinished\",d[0].id);d.splice(0,1);if(d[0]&&d[0].ready)c.requestSend();else{p=false;k.emit(b,\"donesending\")}};b.cancelUpload=function(a){if(d[0]&&d[0].id==a)d[0].abort(); else for(var e=1;e<d.length;e++)if(d[e].id==a)d[e].skip=true};h.onchange=function(){if(j)window.FormData===undefined||this.files==null||this.files.length==0||c.addFiles(this.files)};this.setHoverStyle=function(a){if(a){$(b).addClass(o);if(n){$(b).addClass(\"drag-style\");$(g).addClass(\"drag-style\")}}else{$(b).removeClass(o);if(n){$(b).removeClass(\"drag-style\");$(g).removeClass(\"drag-style\")}l=0}};b.configureHoverClass=function(a){o=a};b.setFilters=function(a){h.setAttribute(\"accept\",a)};b.destructor= function(){document.body.removeEventListener(\"dragenter\",bodyDragEnter);document.body.removeChild(g)}}");
 	}
 }

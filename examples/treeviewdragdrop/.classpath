@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/servlet-api/servlet-api-3.0.jar"/>
-	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-3.3.9.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-3.3.10.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.6.4.jar"/>

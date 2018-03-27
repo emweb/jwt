@@ -96,8 +96,8 @@ public class OidcUserInfoEndpoint extends WResource {
 		IssuedToken accessToken = this.db_.idpTokenFindWithValue(
 				"access_token", tokenValue);
 		if (!accessToken.isCheckValid()
-				|| WDate.getCurrentDate()
-						.after(accessToken.getExpirationTime())) {
+				|| WDate.getCurrentServerDate().after(
+						accessToken.getExpirationTime())) {
 			response.setStatus(401);
 			response.addHeader("WWW-Authenticate", "error=\"invalid_token\"");
 			logger.info(new StringWriter().append("error=\"invalid_token\" ")

@@ -40,69 +40,6 @@ class ImageUtils {
 		}
 	}
 
-	public static WPoint getSize(final String fileName) {
-		List<Byte> header = FileUtils.fileHeader(fileName, 25);
-		if (header.isEmpty()) {
-			return new WPoint();
-		} else {
-			String mimeType = identifyMimeType(header);
-			if (mimeType.equals("image/jpeg")) {
-				return getJpegSize(fileName);
-			} else {
-				return getSize(header);
-			}
-		}
-	}
-
-	public static WPoint getSize(final List<Byte> header) {
-		String mimeType = identifyMimeType(header);
-		if (mimeType.equals("image/png")) {
-			int width = ((toUnsigned(header.get(16)) << 8 | toUnsigned(header
-					.get(17))) << 8 | toUnsigned(header.get(18))) << 8
-					| toUnsigned(header.get(19));
-			int height = ((toUnsigned(header.get(20)) << 8 | toUnsigned(header
-					.get(21))) << 8 | toUnsigned(header.get(22))) << 8
-					| toUnsigned(header.get(23));
-			return new WPoint(width, height);
-		} else {
-			if (mimeType.equals("image/gif")) {
-				int width = toUnsigned(header.get(7)) << 8
-						| toUnsigned(header.get(6));
-				int height = toUnsigned(header.get(9)) << 8
-						| toUnsigned(header.get(8));
-				return new WPoint(width, height);
-			} else {
-				return new WPoint();
-			}
-		}
-	}
-
-	public static WPoint getJpegSize(final String fileName) {
-		List<Byte> header = FileUtils.fileHeader(fileName, 2048);
-		int pos = 2;
-		while (toUnsigned(header.get(pos)) == 0xFF) {
-			if (toUnsigned(header.get(pos + 1)) == 0xC0
-					|| toUnsigned(header.get(pos + 1)) == 0xC1
-					|| toUnsigned(header.get(pos + 1)) == 0xC2
-					|| toUnsigned(header.get(pos + 1)) == 0xC3
-					|| toUnsigned(header.get(pos + 1)) == 0xC9
-					|| toUnsigned(header.get(pos + 1)) == 0xCA
-					|| toUnsigned(header.get(pos + 1)) == 0xCB) {
-				break;
-			}
-			pos += 2 + (toUnsigned(header.get(pos + 2)) << 8)
-					+ toUnsigned(header.get(pos + 3));
-			if (pos + 12 > (int) header.size()) {
-				break;
-			}
-		}
-		int height = toUnsigned(header.get(pos + 5) << 8)
-				+ toUnsigned(header.get(pos + 6));
-		int width = toUnsigned(header.get(pos + 7) << 8)
-				+ toUnsigned(header.get(pos + 8));
-		return new WPoint(width, height);
-	}
-
 	private static final int mimeTypeCount = 10;
 	private static String[] imageMimeTypes = { "image/png", "image/jpeg",
 			"image/gif", "image/gif", "image/bmp", "image/bmp", "image/bmp",
