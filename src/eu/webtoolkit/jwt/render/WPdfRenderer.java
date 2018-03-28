@@ -153,11 +153,12 @@ public class WPdfRenderer extends WTextRenderer {
 	 * <p>
 	 * 
 	 * <pre>
-	 *   {@code
-	 *    Render::WPdfRenderer renderer(pdf, page);
-	 *    // ...
-	 *    renderer.render("<p style=\"font-family: 'DejaVuSans', Arial\">élève, fenêtre, âme</p>");
-	 *   }
+	 * {
+	 * 	&#064;code
+	 * 	WPdfRenderer renderer = new WPdfRenderer(pdf, page);
+	 * 	// ...
+	 * 	renderer.render(&quot;&lt;p style=\&quot;font-family: 'DejaVuSans', Arial\&quot;&gt;\u00E9l\u00E8ve, fen\u00EAtre, \u00E2me&lt;/p&gt;&quot;);
+	 * }
 	 * </pre>
 	 * <p>
 	 */
