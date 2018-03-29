@@ -1368,7 +1368,8 @@ public class WEnvironment {
 			for (int i = 0; i < ips.size(); ++i) {
 				result = ips.get(i);
 				result = result.trim();
-				if (result.length() != 0 && !result.startsWith("10.")
+				if (result.length() != 0 && !result.startsWith("127.")
+						&& !result.startsWith("10.")
 						&& !result.startsWith("172.16.")
 						&& !result.startsWith("192.168.")) {
 					break;

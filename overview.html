@@ -25,6 +25,30 @@ newer version of Wt. It lists changes in the library that may break
 the way you build Wt, the way you configure Wt or the Wt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.3.10 (April 2018)</h2>
+<p>This release fixes some bugs and adds some functionality:</p>
+<dl>
+  <dt>WFileUpload: added display widget</dt>
+  <dd>Often, native file upload field look out of place in the rest of a web application's design.
+      A common trick is to hide the file upload field, and add another widget that forwards its click
+      signal to the file upload field. We added
+      <a href="eu/webtoolkit/jwt/WFileUpload.html#setDisplayWidget-eu.webtoolkit.jwt.WInteractWidget-">setDisplayWidget()</a>
+      to make it easy to implement that trick.</dd>
+  <dt>WFileDropWidget: added drop indication and global drop</dt>
+  <dd>When <a href="eu/webtoolkit/jwt/WFileDropWidget.html#setDropIndicationEnabled-boolean-">drop indication</a>
+  is enabled, a WFileDropWidget will be highlighted as soon
+  as a file being dragged enters the page. When
+  <a href="eu/webtoolkit/jwt/WFileDropWidget.html#setGlobalDropEnabled-boolean-">global drop</a> is enabled, then a drop
+  anywhere on the page will put the file in the WFileDropWidget.</dd>
+  <dt>WTableView: exposed touch events</dt>
+  <dd>
+    We made it possible to define custom behaviour upon touch events on WTableView, by
+    adding the <a href="eu/webtoolkit/jwt/WAbstractItemView.html#touchStarted--">touchStarted()</a>,
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html#touchMoved--">touchMoved()</a>, and
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html#touchEnded--">touchEnded()</a> signals.
+  </dd>
+</dl>
+
 <h2>Release 3.3.9 (November 21, 2017)</h2>
 <p>
   This release consists entirely of bug fixes.

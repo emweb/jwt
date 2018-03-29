@@ -714,7 +714,19 @@ public class WCartesian3DChart extends WGLWidget {
 		return this.gridLinesPen_;
 	}
 
-	// public void setCubeLinesPen(final WPen pen) ;
+	/**
+	 * Sets the pen used to draw the edges of the plotcube.
+	 * <p>
+	 * The default pen for drawing cubelines is a black pen of width 0.
+	 * <p>
+	 * Note: Only width and color of the pen are used, all other styling is
+	 * ignored.
+	 */
+	public void setCubeLinesPen(final WPen pen) {
+		this.cubeLinesPen_ = pen;
+		this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+	}
+
 	/**
 	 * Returns a reference to the pen used for drawing the edges of the
 	 * plotcube.
