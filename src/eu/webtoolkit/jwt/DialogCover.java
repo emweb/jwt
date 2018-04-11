@@ -108,7 +108,7 @@ class DialogCover extends WContainerWidget {
 				}
 				WApplication.getInstance().pushExposedConstraint(this);
 			}
-			dialog.doJavaScript("setTimeout(function() {"
+			dialog.doJSAfterLoad("setTimeout(function() {"
 					+ WApplication.getInstance().getJavaScriptClass()
 					+ "._p_.updateGlobal('" + dialog.layoutContainer_.getId()
 					+ "') }, 0);");

@@ -31,11 +31,9 @@ import org.slf4j.LoggerFactory;
  * {@link WFileDropWidget#getCurrentIndex() getCurrentIndex()} have either
  * finished, failed or have been cancelled.
  * <p>
- * The widget has the default style-class &apos;Wt-filedropzone&apos;. An
- * additional style class is applied when files are hovered over the widget.
- * This can be configured using the method
- * {@link WFileDropWidget#setHoverStyleClass(String className)
- * setHoverStyleClass()}.
+ * The widget has the default style-class &apos;Wt-filedropzone&apos;. The
+ * style-class &apos;Wt-dropzone-hover&apos; is added when files are hovered
+ * over the widget.
  */
 public class WFileDropWidget extends WContainerWidget {
 	private static Logger logger = LoggerFactory
@@ -170,7 +168,7 @@ public class WFileDropWidget extends WContainerWidget {
 		super(parent);
 		this.resource_ = null;
 		this.currentFileIdx_ = 0;
-		this.hoverStyleClass_ = "Wt-filedropzone-hover";
+		this.hoverStyleClass_ = "Wt-dropzone-hover";
 		this.acceptDrops_ = true;
 		this.acceptAttributes_ = "";
 		this.dropIndicationEnabled_ = false;
@@ -284,6 +282,10 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Set the style class that is applied when a file is hovered over the
 	 * widget.
+	 * <p>
+	 * 
+	 * @deprecated Override the css rule
+	 *             &apos;.Wt-filedropzone.Wt-dropzone-hover&apos; instead.
 	 */
 	public void setHoverStyleClass(final String className) {
 		if (className.equals(this.hoverStyleClass_)) {
@@ -314,11 +316,12 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Highlight widget if a file is dragged anywhere on the page.
 	 * <p>
-	 * As soon as a drag enters anywhere on the page the hover-styleclass is
-	 * applied, which can be useful to point the user to the correct place to
-	 * drop the file. If not enabled, the style will only be applied when the
-	 * file is dragged over the widget. This can be enabled for multiple
-	 * dropwidgets if only one of them is visible at the same time.
+	 * As soon as a drag enters anywhere on the page the styleclass
+	 * &apos;Wt-dropzone-indication&apos; is added to this widget. This can be
+	 * useful to point the user to the correct place to drop the file. Once the
+	 * user drags a file over the widget itself, the styleclass
+	 * &apos;Wt-dropzone-hover&apos; is also added. This can be enabled for
+	 * multiple dropwidgets if only one of them is visible at the same time.
 	 * <p>
 	 * 
 	 * @see WFileDropWidget#setGlobalDropEnabled(boolean enable)
@@ -328,9 +331,6 @@ public class WFileDropWidget extends WContainerWidget {
 			return;
 		}
 		this.dropIndicationEnabled_ = enable;
-		if (!this.dropIndicationEnabled_ && this.globalDropEnabled_) {
-			this.globalDropEnabled_ = false;
-		}
 		this.updateFlags_.set(BIT_DRAGOPTIONS_CHANGED);
 		this.repaint();
 	}
@@ -348,10 +348,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Allow dropping the files anywhere on the page.
 	 * <p>
-	 * This only works if
-	 * {@link WFileDropWidget#setDropIndicationEnabled(boolean enable)
-	 * setDropIndicationEnabled()} is enabled. If enabled, a drop anywhere on
-	 * the page will be forwarded to this widget.
+	 * If enabled, a drop anywhere on the page will be forwarded to this widget.
 	 * <p>
 	 * 
 	 * @see WFileDropWidget#setDropIndicationEnabled(boolean enable)
@@ -359,9 +356,6 @@ public class WFileDropWidget extends WContainerWidget {
 	public void setGlobalDropEnabled(boolean enable) {
 		if (enable == this.globalDropEnabled_) {
 			return;
-		}
-		if (!this.dropIndicationEnabled_ && enable) {
-			throw new RuntimeException();
 		}
 		this.globalDropEnabled_ = enable;
 		this.updateFlags_.set(BIT_DRAGOPTIONS_CHANGED);
@@ -423,7 +417,15 @@ public class WFileDropWidget extends WContainerWidget {
 	}
 
 	String renderRemoveJs(boolean recursive) {
-		return this.getJsRef() + ".destructor();";
+		if (this.isRendered()) {
+			String result = this.getJsRef() + ".destructor();";
+			if (!recursive) {
+				result += "Wt3_3_10.remove('" + this.getId() + "');";
+			}
+			return result;
+		} else {
+			return super.renderRemoveJs(recursive);
+		}
 	}
 
 	protected void enableAjax() {
@@ -448,7 +450,7 @@ public class WFileDropWidget extends WContainerWidget {
 						+ jsStringLiteral(this.acceptAttributes_) + ");");
 			}
 			if (this.updateFlags_.get(BIT_DRAGOPTIONS_CHANGED) || all) {
-				this.doJavaScript(this.getJsRef() + ".setBodyAware("
+				this.doJavaScript(this.getJsRef() + ".setDropIndication("
 						+ (this.dropIndicationEnabled_ ? "true" : "false")
 						+ ");");
 				this.doJavaScript(this.getJsRef() + ".setDropForward("
@@ -493,6 +495,7 @@ public class WFileDropWidget extends WContainerWidget {
 				return;
 			}
 			this.parent_.setUploadedFile(files.get(0));
+			response.setContentType("text/plain");
 			lock.release();
 		}
 
@@ -727,6 +730,6 @@ public class WFileDropWidget extends WContainerWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WFileDropWidget",
-				"function(k,b,r){jQuery.data(b,\"lobj\",this);var c=this,o=\"Wt-filedropzone-hover\",d=[],p=false,j=true,n=false,q=false,l=0,h=document.createElement(\"input\");h.type=\"file\";h.setAttribute(\"multiple\",\"multiple\");$(h).hide();b.appendChild(h);var g=document.createElement(\"div\");$(g).addClass(\"Wt-dropcover\");document.body.appendChild(g);this.eventContainsFile=function(a){var e=a.dataTransfer.types!=null&&a.dataTransfer.types.length>0&&a.dataTransfer.types[0]== \"Files\";return a.dataTransfer.items!=null&&a.dataTransfer.items.length>0&&a.dataTransfer.items[0].kind==\"file\"||e};this.validFileCheck=function(a,e,i){var f=new FileReader;f.onload=function(){e(true,i)};f.onerror=function(){e(false,i)};f.readAsText(a.slice(0,32))};b.setAcceptDrops=function(a){j=a};b.setBodyAware=function(a){n=a};b.setDropForward=function(a){q=a};b.ondragenter=function(a){if(j){if(c.eventContainsFile(a)){l=2;c.setHoverStyle(true)}a.stopPropagation()}};b.ondragleave=function(a){if(document.elementFromPoint(a.clientX, a.clientY)===g)l=1;else j&&c.setHoverStyle(false)};b.ondragover=function(a){a.preventDefault()};bodyDragEnter=function(){if(n&&$(b).is(\":visible\")){l=1;c.setHoverStyle(true)}};document.body.addEventListener(\"dragenter\",bodyDragEnter);g.ondragover=function(a){a.preventDefault();a.stopPropagation()};g.ondragleave=function(){!j||l!=1||c.setHoverStyle(false)};g.ondrop=function(a){a.preventDefault();q?b.ondrop(a):c.setHoverStyle(false)};b.ondrop=function(a){a.preventDefault();if(j){c.setHoverStyle(false); window.FormData===undefined||a.dataTransfer.files==null||a.dataTransfer.files.length==0||c.addFiles(a.dataTransfer.files)}};this.addFiles=function(a){for(var e=[],i=0;i<a.length;i++){var f=new XMLHttpRequest;f.id=Math.floor(Math.random()*Math.pow(2,31));f.file=a[i];d.push(f);var m={};m.id=f.id;m.filename=f.file.name;m.type=f.file.type;m.size=f.file.size;e.push(m)}k.emit(b,\"dropsignal\",JSON.stringify(e))};b.addEventListener(\"click\",function(){if(j){$(h).val(\"\");h.click()}});b.markForSending=function(a){for(var e= 0;e<a.length;e++)for(var i=a[e].id,f=0;f<d.length;f++)if(d[f].id==i){d[f].ready=true;break}p||d[0].ready&&c.requestSend()};this.requestSend=function(){if(d[0].skip)c.uploadFinished(null);else{p=true;k.emit(b,\"requestsend\",d[0].id)}};b.send=function(a){xhr=d[0];if(xhr.file.size>r){k.emit(b,\"filetoolarge\",xhr.file.size);c.uploadFinished(null)}else c.validFileCheck(xhr.file,c.actualSend,a)};this.actualSend=function(a,e){if(a){xhr=d[0];xhr.addEventListener(\"load\",c.uploadFinished);xhr.addEventListener(\"error\", c.uploadFinished);xhr.addEventListener(\"abort\",c.uploadFinished);xhr.addEventListener(\"timeout\",c.uploadFinished);xhr.open(\"POST\",e);a=new FormData;a.append(\"file-id\",xhr.id);a.append(\"data\",xhr.file);xhr.send(a)}else c.uploadFinished(null)};this.uploadFinished=function(a){a!=null&&a.type==\"load\"&&a.currentTarget.status==200&&k.emit(b,\"uploadfinished\",d[0].id);d.splice(0,1);if(d[0]&&d[0].ready)c.requestSend();else{p=false;k.emit(b,\"donesending\")}};b.cancelUpload=function(a){if(d[0]&&d[0].id==a)d[0].abort(); else for(var e=1;e<d.length;e++)if(d[e].id==a)d[e].skip=true};h.onchange=function(){if(j)window.FormData===undefined||this.files==null||this.files.length==0||c.addFiles(this.files)};this.setHoverStyle=function(a){if(a){$(b).addClass(o);if(n){$(b).addClass(\"drag-style\");$(g).addClass(\"drag-style\")}}else{$(b).removeClass(o);if(n){$(b).removeClass(\"drag-style\");$(g).removeClass(\"drag-style\")}l=0}};b.configureHoverClass=function(a){o=a};b.setFilters=function(a){h.setAttribute(\"accept\",a)};b.destructor= function(){document.body.removeEventListener(\"dragenter\",bodyDragEnter);document.body.removeChild(g)}}");
+				"function(l,b,r){jQuery.data(b,\"lobj\",this);var c=this,p=\"Wt-dropzone-hover\",e=[],q=false,j=true,n=false,o=false,k=0,i=document.createElement(\"input\");i.type=\"file\";i.setAttribute(\"multiple\",\"multiple\");$(i).hide();b.appendChild(i);var h=document.createElement(\"div\");$(h).addClass(\"Wt-dropcover\");document.body.appendChild(h);this.eventContainsFile=function(a){var d=a.dataTransfer.types!=null&&a.dataTransfer.types.length>0&&a.dataTransfer.types[0]== \"Files\";return a.dataTransfer.items!=null&&a.dataTransfer.items.length>0&&a.dataTransfer.items[0].kind==\"file\"||d};this.validFileCheck=function(a,d,g){var f=new FileReader;f.onload=function(){d(true,g)};f.onerror=function(){d(false,g)};f.readAsText(a.slice(0,32))};b.setAcceptDrops=function(a){j=a};b.setDropIndication=function(a){n=a};b.setDropForward=function(a){o=a};b.ondragenter=function(a){if(j){if(c.eventContainsFile(a)){k===0&&c.setPageHoverStyle();k=2;c.setWidgetHoverStyle(true)}a.stopPropagation()}}; b.ondragleave=function(a){var d=a.clientX;a=a.clientY;var g=document.elementFromPoint(d,a);if(d===0&&a===0)g=null;if(g===h){c.setWidgetHoverStyle(false);k=1}else c.resetDragDrop()};b.ondragover=function(a){a.preventDefault()};bodyDragEnter=function(){if((n||o)&&$(b).is(\":visible\")){k=1;c.setPageHoverStyle()}};document.body.addEventListener(\"dragenter\",bodyDragEnter);h.ondragover=function(a){a.preventDefault();a.stopPropagation()};h.ondragleave=function(){!j||k!=1||c.resetDragDrop()};h.ondrop=function(a){a.preventDefault(); o?b.ondrop(a):c.resetDragDrop()};b.ondrop=function(a){a.preventDefault();if(j){c.resetDragDrop();window.FormData===undefined||a.dataTransfer.files==null||a.dataTransfer.files.length==0||c.addFiles(a.dataTransfer.files)}};this.addFiles=function(a){for(var d=[],g=0;g<a.length;g++){var f=new XMLHttpRequest;f.id=Math.floor(Math.random()*Math.pow(2,31));f.file=a[g];e.push(f);var m={};m.id=f.id;m.filename=f.file.name;m.type=f.file.type;m.size=f.file.size;d.push(m)}l.emit(b,\"dropsignal\",JSON.stringify(d))}; b.addEventListener(\"click\",function(){if(j){$(i).val(\"\");i.click()}});b.markForSending=function(a){for(var d=0;d<a.length;d++)for(var g=a[d].id,f=0;f<e.length;f++)if(e[f].id==g){e[f].ready=true;break}q||e[0].ready&&c.requestSend()};this.requestSend=function(){if(e[0].skip)c.uploadFinished(null);else{q=true;l.emit(b,\"requestsend\",e[0].id)}};b.send=function(a){xhr=e[0];if(xhr.file.size>r){l.emit(b,\"filetoolarge\",xhr.file.size);c.uploadFinished(null)}else c.validFileCheck(xhr.file,c.actualSend,a)};this.actualSend= function(a,d){if(a){xhr=e[0];xhr.addEventListener(\"load\",c.uploadFinished);xhr.addEventListener(\"error\",c.uploadFinished);xhr.addEventListener(\"abort\",c.uploadFinished);xhr.addEventListener(\"timeout\",c.uploadFinished);xhr.open(\"POST\",d);a=new FormData;a.append(\"file-id\",xhr.id);a.append(\"data\",xhr.file);xhr.send(a)}else c.uploadFinished(null)};this.uploadFinished=function(a){a!=null&&a.type==\"load\"&&a.currentTarget.status==200&&l.emit(b,\"uploadfinished\",e[0].id);e.splice(0,1);if(e[0]&&e[0].ready)c.requestSend(); else{q=false;l.emit(b,\"donesending\")}};b.cancelUpload=function(a){if(e[0]&&e[0].id==a)e[0].abort();else for(var d=1;d<e.length;d++)if(e[d].id==a)e[d].skip=true};i.onchange=function(){if(j)window.FormData===undefined||this.files==null||this.files.length==0||c.addFiles(this.files)};this.setPageHoverStyle=function(){if(n||o){$(h).addClass(\"Wt-dropzone-dragstyle\");$(b).addClass(\"Wt-dropzone-dragstyle\");n&&$(b).addClass(\"Wt-dropzone-indication\")}};this.setWidgetHoverStyle=function(a){a?$(b).addClass(p): $(b).removeClass(p)};this.resetDragDrop=function(){$(b).removeClass(\"Wt-dropzone-indication\");$(b).removeClass(\"Wt-dropzone-dragstyle\");$(h).removeClass(\"Wt-dropzone-dragstyle\");c.setWidgetHoverStyle(false);k=0};b.configureHoverClass=function(a){p=a};b.setFilters=function(a){i.setAttribute(\"accept\",a)};b.destructor=function(){document.body.removeEventListener(\"dragenter\",bodyDragEnter);document.body.removeChild(h)}}");
 	}
 }

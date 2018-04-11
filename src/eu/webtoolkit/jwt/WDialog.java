@@ -135,6 +135,7 @@ public class WDialog extends WPopupWidget {
 		};
 		this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
 		};
+		this.delayedJs_ = new ArrayList<String>();
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
 		this.escapeConnection2_ = new AbstractSignal.Connection();
@@ -165,6 +166,7 @@ public class WDialog extends WPopupWidget {
 		};
 		this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {
 		};
+		this.delayedJs_ = new ArrayList<String>();
 		this.finished_ = new Signal1<WDialog.DialogCode>(this);
 		this.escapeConnection1_ = new AbstractSignal.Connection();
 		this.escapeConnection2_ = new AbstractSignal.Connection();
@@ -625,7 +627,7 @@ public class WDialog extends WPopupWidget {
 					c.pushDialog(this, animation);
 				}
 				if (this.modal_) {
-					this.doJavaScript("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
+					this.doJSAfterLoad("try {var ae=document.activeElement;if (ae && ae.blur && ae.nodeName != 'BODY') {document.activeElement.blur();}} catch (e) { }");
 				}
 			} else {
 				if (c != null) {
@@ -660,7 +662,7 @@ public class WDialog extends WPopupWidget {
 	 * Raises this dialog to be the top-most dialog.
 	 */
 	public void raiseToFront() {
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
+		this.doJSAfterLoad("jQuery.data(" + this.getJsRef()
 				+ ", 'obj').bringToFront()");
 		DialogCover c = this.getCover();
 		c.bringToFront(this);
@@ -808,6 +810,10 @@ public class WDialog extends WPopupWidget {
 					+ ","
 					+ (this.resized_.isConnected() ? '"' + this.resized_
 							.getName() + '"' : "null") + ");");
+			for (int i = 0; i < this.delayedJs_.size(); ++i) {
+				this.doJavaScript(this.delayedJs_.get(i));
+			}
+			this.delayedJs_.clear();
 			if (!app.getEnvironment().agentIsIElt(9)
 					&& !app.getEnvironment().hasAjax()) {
 				String js = WString.tr("Wt.WDialog.CenterJS").toString();
@@ -855,6 +861,7 @@ public class WDialog extends WPopupWidget {
 	private boolean autoFocus_;
 	private JSignal2<Integer, Integer> moved_;
 	private JSignal2<Integer, Integer> resized_;
+	private List<String> delayedJs_;
 	private Signal1<WDialog.DialogCode> finished_;
 	private WDialog.DialogCode result_;
 	private boolean recursiveEventLoop_;
@@ -966,6 +973,14 @@ public class WDialog extends WPopupWidget {
 		if (e.getButton() == WMouseEvent.Button.LeftButton
 				&& e.getModifiers().equals(KeyboardModifier.NoModifier)) {
 			this.raiseToFront();
+		}
+	}
+
+	void doJSAfterLoad(String js) {
+		if (this.isRendered()) {
+			this.doJavaScript(js);
+		} else {
+			this.delayedJs_.add(js);
 		}
 	}
 
