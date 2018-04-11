@@ -1035,7 +1035,7 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
 
 .Wt-filedropzone.Wt-dropzone-dragstyle {
     position: relative;
-    z-index: 2001;
+    z-index: 20001;
 }
 
 .Wt-filedropzone.Wt-dropzone-indication {
@@ -1051,5 +1051,5 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
     z-index: -100;
 }
 .Wt-dropcover.Wt-dropzone-drag {
-    z-index: 2000;
+    z-index: 20000;
 }

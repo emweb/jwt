@@ -1226,7 +1226,7 @@ table.x-grid3-row-table {
 
 .Wt-filedropzone.Wt-dropzone-dragstyle {
     position: relative;
-    z-index: 2001;
+    z-index: 20001;
 }
 
 .Wt-filedropzone.Wt-dropzone-indication {
@@ -1242,5 +1242,5 @@ table.x-grid3-row-table {
     z-index: -100;
 }
 .Wt-dropcover.Wt-dropzone-dragstyle {
-    z-index: 2000;
+    z-index: 20000;
 }

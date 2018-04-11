@@ -63,6 +63,7 @@ public class WidgetGalleryServlet extends WtServlet {
 		app.useStyleSheet(new WLink("style/dragdrop.css"));
 		app.useStyleSheet(new WLink("style/combostyle.css"));
 		app.useStyleSheet(new WLink("style/pygments.css"));
+		app.useStyleSheet(new WLink("style/filedrop.css"));
 
 		return app;
 	}
