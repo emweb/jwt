@@ -28,7 +28,7 @@ class WidgetGallery extends WContainerWidget {
 		this.navigation_ = new WNavigationBar();
 		this.navigation_.addStyleClass("main-nav");
 		this.navigation_.setTitle("Wt Widget Gallery", new WLink(
-				"http://www.webtoolkit.eu/widgets"));
+				"https://www.webtoolkit.eu/widgets"));
 		this.navigation_.setResponsive(true);
 		this.contentsStack_ = new WStackedWidget();
 		WAnimation animation = new WAnimation(WAnimation.AnimationEffect.Fade,

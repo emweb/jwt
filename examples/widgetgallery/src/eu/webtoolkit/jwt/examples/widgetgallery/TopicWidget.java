@@ -76,7 +76,7 @@ class TopicWidget extends WContainerWidget {
 		StringWriter ss = new StringWriter();
 		String cn = classname;
 		cn = cn = StringUtils.replaceAll(cn, "Chart::", "chart/");
-		ss.append("<a href=\"http://www.webtoolkit.eu/")
+		ss.append("<a href=\"https://www.webtoolkit.eu/")
 				.append("jwt/latest/doc/javadoc/eu/webtoolkit/jwt/").append(cn)
 				.append(".html\" target=\"_blank\">doc</a>");
 		return ss.toString();

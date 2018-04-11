@@ -2,7 +2,7 @@
 <messages>
   <message id="src-Anchor"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">Anchor</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WAnchor</span> <span class="n">anchor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAnchor</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;http://www.webtoolkit.eu/&quot;</span><span class="o">),</span>
+    <span class="n">WAnchor</span> <span class="n">anchor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAnchor</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;https://www.webtoolkit.eu/&quot;</span><span class="o">),</span>
             <span class="s">&quot;Wt homepage (in a new window)&quot;</span><span class="o">);</span>
     <span class="n">anchor</span><span class="o">.</span><span class="na">setTarget</span><span class="o">(</span><span class="n">AnchorTarget</span><span class="o">.</span><span class="na">TargetNewWindow</span><span class="o">);</span>
 <span class="o">}</span>
@@ -10,16 +10,17 @@
   ]]></message>
   <message id="src-AnchorImage"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">AnchorImage</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">WAnchor</span> <span class="n">anchor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAnchor</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;http://www.emweb.be/&quot;</span><span class="o">));</span>
+    <span class="n">WAnchor</span> <span class="n">anchor</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAnchor</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;https://www.emweb.be/&quot;</span><span class="o">));</span>
     <span class="n">anchor</span><span class="o">.</span><span class="na">setTarget</span><span class="o">(</span><span class="n">AnchorTarget</span><span class="o">.</span><span class="na">TargetNewWindow</span><span class="o">);</span>
-    <span class="k">new</span> <span class="n">WImage</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;pics/emweb_small.jpg&quot;</span><span class="o">),</span> <span class="n">anchor</span><span class="o">);</span>
+    <span class="k">new</span> <span class="n">WImage</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="s">&quot;https://www.emweb.be/css/emweb_small.png&quot;</span><span class="o">),</span>
+            <span class="n">anchor</span><span class="o">);</span>
 <span class="o">}</span>
 </pre></div>
   ]]></message>
   <message id="src-Audio"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">Audio</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">mp3Audio</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3&quot;</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">oggAudio</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">mp3Audio</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">oggAudio</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg&quot;</span><span class="o">;</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WAudio</span> <span class="n">audio</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAudio</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">audio</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">mp3Audio</span><span class="o">));</span>
@@ -1044,7 +1045,7 @@
     <span class="n">String</span> <span class="n">poster</span> <span class="o">=</span> <span class="s">&quot;pics/sintel_trailer.jpg&quot;</span><span class="o">;</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WFlashObject</span> <span class="n">flash</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WFlashObject</span><span class="o">(</span>
-            <span class="s">&quot;http://www.youtube.com/v/HOfdboHvshg&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+            <span class="s">&quot;https://www.youtube.com/v/HOfdboHvshg&quot;</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">flash</span><span class="o">.</span><span class="na">setFlashParameter</span><span class="o">(</span><span class="s">&quot;allowFullScreen&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">);</span>
     <span class="n">flash</span><span class="o">.</span><span class="na">setAlternativeContent</span><span class="o">(</span><span class="k">new</span> <span class="n">WImage</span><span class="o">(</span><span class="n">poster</span><span class="o">));</span>
     <span class="n">flash</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">640</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">360</span><span class="o">));</span>
@@ -1766,7 +1767,7 @@
         <span class="k">this</span><span class="o">.</span><span class="na">map_</span>
                 <span class="o">.</span><span class="na">openInfoWindow</span><span class="o">(</span>
                         <span class="n">road</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span>
-                        <span class="s">&quot;&lt;img src=\&quot;http://www.emweb.be/css/emweb_small.jpg\&quot; /&gt;&lt;p&gt;&lt;strong&gt;Emweb office&lt;/strong&gt;&lt;/p&gt;&quot;</span><span class="o">);</span>
+                        <span class="s">&quot;&lt;p&gt;&lt;img src=\&quot;https://www.emweb.be/css/emweb_small.png\&quot; /&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Emweb office&lt;/strong&gt;&lt;/p&gt;&quot;</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">map_</span><span class="o">.</span><span class="na">clicked</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span>
                 <span class="k">new</span> <span class="n">Signal1</span><span class="o">.</span><span class="na">Listener</span><span class="o">&lt;</span><span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span><span class="o">&gt;()</span> <span class="o">{</span>
                     <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">(</span><span class="n">WGoogleMap</span><span class="o">.</span><span class="na">Coordinate</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
@@ -2131,8 +2132,8 @@
   ]]></message>
   <message id="src-MediaPlayerAudio"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">MediaPlayerAudio</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">mp3Audio</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3&quot;</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">oggAudio</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">mp3Audio</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">oggAudio</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg&quot;</span><span class="o">;</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WMediaPlayer</span> <span class="n">player</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WMediaPlayer</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">MediaType</span><span class="o">.</span><span class="na">Audio</span><span class="o">,</span>
             <span class="n">container</span><span class="o">);</span>
@@ -2165,8 +2166,8 @@
   ]]></message>
   <message id="src-MediaPlayerVideo"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">MediaPlayerVideo</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">mp4Video</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/videos/sintel_trailer.mp4&quot;</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">ogvVideo</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/videos/sintel_trailer.ogv&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">mp4Video</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/videos/sintel_trailer.mp4&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">ogvVideo</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/videos/sintel_trailer.ogv&quot;</span><span class="o">;</span>
     <span class="n">String</span> <span class="n">poster</span> <span class="o">=</span> <span class="s">&quot;pics/sintel_trailer.jpg&quot;</span><span class="o">;</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WMediaPlayer</span> <span class="n">player</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WMediaPlayer</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">MediaType</span><span class="o">.</span><span class="na">Video</span><span class="o">,</span>
@@ -2174,7 +2175,7 @@
     <span class="n">player</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">Encoding</span><span class="o">.</span><span class="na">M4V</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">mp4Video</span><span class="o">));</span>
     <span class="n">player</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">Encoding</span><span class="o">.</span><span class="na">OGV</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">ogvVideo</span><span class="o">));</span>
     <span class="n">player</span><span class="o">.</span><span class="na">addSource</span><span class="o">(</span><span class="n">WMediaPlayer</span><span class="o">.</span><span class="na">Encoding</span><span class="o">.</span><span class="na">PosterImage</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span><span class="n">poster</span><span class="o">));</span>
-    <span class="n">player</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;&lt;a href=\&quot;http://durian.blender.org/\&quot;target=\&quot;_blank\&quot;&gt;Sintel&lt;/a&gt;, (c) copyright Blender Foundation&quot;</span><span class="o">);</span>
+    <span class="n">player</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;&lt;a href=\&quot;https://durian.blender.org/\&quot;target=\&quot;_blank\&quot;&gt;Sintel&lt;/a&gt;, (c) copyright Blender Foundation&quot;</span><span class="o">);</span>
     <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">player</span><span class="o">.</span><span class="na">playbackStarted</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
         <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
@@ -2274,7 +2275,7 @@
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WNavigationBar</span> <span class="n">navigation</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WNavigationBar</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">navigation</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;Corpy Inc.&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">WLink</span><span class="o">(</span>
-            <span class="s">&quot;http://www.google.com/search?q=corpy+inc&quot;</span><span class="o">));</span>
+            <span class="s">&quot;https://www.google.com/search?q=corpy+inc&quot;</span><span class="o">));</span>
     <span class="n">navigation</span><span class="o">.</span><span class="na">setResponsive</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">WStackedWidget</span> <span class="n">contentsStack</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WStackedWidget</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">contentsStack</span><span class="o">.</span><span class="na">addStyleClass</span><span class="o">(</span><span class="s">&quot;contents&quot;</span><span class="o">);</span>
@@ -4870,8 +4871,8 @@
   ]]></message>
   <message id="src-Video"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">Video</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">mp4Video</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/videos/sintel_trailer.mp4&quot;</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">ogvVideo</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/videos/sintel_trailer.ogv&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">mp4Video</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/videos/sintel_trailer.mp4&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">ogvVideo</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/videos/sintel_trailer.ogv&quot;</span><span class="o">;</span>
     <span class="n">String</span> <span class="n">poster</span> <span class="o">=</span> <span class="s">&quot;pics/sintel_trailer.jpg&quot;</span><span class="o">;</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WVideo</span> <span class="n">video</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WVideo</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
@@ -4906,12 +4907,12 @@
   ]]></message>
   <message id="src-VideoFallback"><![CDATA[
 <div class="highlight"><pre><span class="kt">void</span> <span class="nf">VideoFallback</span><span class="o">()</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">mp4Video</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/videos/sintel_trailer.mp4&quot;</span><span class="o">;</span>
-    <span class="n">String</span> <span class="n">ogvVideo</span> <span class="o">=</span> <span class="s">&quot;http://www.webtoolkit.eu/videos/sintel_trailer.ogv&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">mp4Video</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/videos/sintel_trailer.mp4&quot;</span><span class="o">;</span>
+    <span class="n">String</span> <span class="n">ogvVideo</span> <span class="o">=</span> <span class="s">&quot;https://www.webtoolkit.eu/videos/sintel_trailer.ogv&quot;</span><span class="o">;</span>
     <span class="n">String</span> <span class="n">poster</span> <span class="o">=</span> <span class="s">&quot;pics/sintel_trailer.jpg&quot;</span><span class="o">;</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
     <span class="n">WFlashObject</span> <span class="n">flash</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WFlashObject</span><span class="o">(</span>
-            <span class="s">&quot;http://www.webtoolkit.eu/videos/player_flv_maxi.swf&quot;</span><span class="o">);</span>
+            <span class="s">&quot;https://www.webtoolkit.eu/videos/player_flv_maxi.swf&quot;</span><span class="o">);</span>
     <span class="n">flash</span><span class="o">.</span><span class="na">setFlashVariable</span><span class="o">(</span><span class="s">&quot;startimage&quot;</span><span class="o">,</span> <span class="s">&quot;pics/sintel_trailer.jpg&quot;</span><span class="o">);</span>
     <span class="n">flash</span><span class="o">.</span><span class="na">setFlashParameter</span><span class="o">(</span><span class="s">&quot;allowFullScreen&quot;</span><span class="o">,</span> <span class="s">&quot;true&quot;</span><span class="o">);</span>
     <span class="n">flash</span><span class="o">.</span><span class="na">setFlashVariable</span><span class="o">(</span><span class="s">&quot;flv&quot;</span><span class="o">,</span> <span class="n">mp4Video</span><span class="o">);</span>

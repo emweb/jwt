@@ -118,8 +118,8 @@ class Media extends TopicWidget {
 	}
 
 	WWidget MediaPlayerVideo() {
-		String mp4Video = "http://www.webtoolkit.eu/videos/sintel_trailer.mp4";
-		String ogvVideo = "http://www.webtoolkit.eu/videos/sintel_trailer.ogv";
+		String mp4Video = "https://www.webtoolkit.eu/videos/sintel_trailer.mp4";
+		String ogvVideo = "https://www.webtoolkit.eu/videos/sintel_trailer.ogv";
 		String poster = "pics/sintel_trailer.jpg";
 		WContainerWidget container = new WContainerWidget();
 		WMediaPlayer player = new WMediaPlayer(WMediaPlayer.MediaType.Video,
@@ -127,7 +127,7 @@ class Media extends TopicWidget {
 		player.addSource(WMediaPlayer.Encoding.M4V, new WLink(mp4Video));
 		player.addSource(WMediaPlayer.Encoding.OGV, new WLink(ogvVideo));
 		player.addSource(WMediaPlayer.Encoding.PosterImage, new WLink(poster));
-		player.setTitle("<a href=\"http://durian.blender.org/\"target=\"_blank\">Sintel</a>, (c) copyright Blender Foundation");
+		player.setTitle("<a href=\"https://durian.blender.org/\"target=\"_blank\">Sintel</a>, (c) copyright Blender Foundation");
 		final WText out = new WText(container);
 		player.playbackStarted().addListener(this, new Signal.Listener() {
 			public void trigger() {
@@ -153,8 +153,8 @@ class Media extends TopicWidget {
 	}
 
 	WWidget MediaPlayerAudio() {
-		String mp3Audio = "http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3";
-		String oggAudio = "http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg";
+		String mp3Audio = "https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3";
+		String oggAudio = "https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg";
 		WContainerWidget container = new WContainerWidget();
 		WMediaPlayer player = new WMediaPlayer(WMediaPlayer.MediaType.Audio,
 				container);
@@ -210,8 +210,8 @@ class Media extends TopicWidget {
 	}
 
 	WWidget Audio() {
-		String mp3Audio = "http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3";
-		String oggAudio = "http://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg";
+		String mp3Audio = "https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.mp3";
+		String oggAudio = "https://www.webtoolkit.eu/audio/LaSera-NeverComeAround.ogg";
 		WContainerWidget container = new WContainerWidget();
 		WAudio audio = new WAudio(container);
 		audio.addSource(new WLink(mp3Audio));
@@ -244,8 +244,8 @@ class Media extends TopicWidget {
 	}
 
 	WWidget Video() {
-		String mp4Video = "http://www.webtoolkit.eu/videos/sintel_trailer.mp4";
-		String ogvVideo = "http://www.webtoolkit.eu/videos/sintel_trailer.ogv";
+		String mp4Video = "https://www.webtoolkit.eu/videos/sintel_trailer.mp4";
+		String ogvVideo = "https://www.webtoolkit.eu/videos/sintel_trailer.ogv";
 		String poster = "pics/sintel_trailer.jpg";
 		WContainerWidget container = new WContainerWidget();
 		WVideo video = new WVideo(container);
@@ -279,12 +279,12 @@ class Media extends TopicWidget {
 	}
 
 	WWidget VideoFallback() {
-		String mp4Video = "http://www.webtoolkit.eu/videos/sintel_trailer.mp4";
-		String ogvVideo = "http://www.webtoolkit.eu/videos/sintel_trailer.ogv";
+		String mp4Video = "https://www.webtoolkit.eu/videos/sintel_trailer.mp4";
+		String ogvVideo = "https://www.webtoolkit.eu/videos/sintel_trailer.ogv";
 		String poster = "pics/sintel_trailer.jpg";
 		WContainerWidget container = new WContainerWidget();
 		WFlashObject flash = new WFlashObject(
-				"http://www.webtoolkit.eu/videos/player_flv_maxi.swf");
+				"https://www.webtoolkit.eu/videos/player_flv_maxi.swf");
 		flash.setFlashVariable("startimage", "pics/sintel_trailer.jpg");
 		flash.setFlashParameter("allowFullScreen", "true");
 		flash.setFlashVariable("flv", mp4Video);
@@ -326,7 +326,7 @@ class Media extends TopicWidget {
 		String poster = "pics/sintel_trailer.jpg";
 		WContainerWidget container = new WContainerWidget();
 		WFlashObject flash = new WFlashObject(
-				"http://www.youtube.com/v/HOfdboHvshg", container);
+				"https://www.youtube.com/v/HOfdboHvshg", container);
 		flash.setFlashParameter("allowFullScreen", "true");
 		flash.setAlternativeContent(new WImage(poster));
 		flash.resize(new WLength(640), new WLength(360));

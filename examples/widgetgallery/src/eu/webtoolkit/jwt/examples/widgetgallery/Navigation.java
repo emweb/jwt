@@ -172,16 +172,17 @@ class Navigation extends TopicWidget {
 	}
 
 	WWidget Anchor() {
-		WAnchor anchor = new WAnchor(new WLink("http://www.webtoolkit.eu/"),
+		WAnchor anchor = new WAnchor(new WLink("https://www.webtoolkit.eu/"),
 				"Wt homepage (in a new window)");
 		anchor.setTarget(AnchorTarget.TargetNewWindow);
 		return anchor;
 	}
 
 	WWidget AnchorImage() {
-		WAnchor anchor = new WAnchor(new WLink("http://www.emweb.be/"));
+		WAnchor anchor = new WAnchor(new WLink("https://www.emweb.be/"));
 		anchor.setTarget(AnchorTarget.TargetNewWindow);
-		new WImage(new WLink("pics/emweb_small.jpg"), anchor);
+		new WImage(new WLink("https://www.emweb.be/css/emweb_small.png"),
+				anchor);
 		return anchor;
 	}
 
@@ -247,7 +248,7 @@ class Navigation extends TopicWidget {
 		WContainerWidget container = new WContainerWidget();
 		WNavigationBar navigation = new WNavigationBar(container);
 		navigation.setTitle("Corpy Inc.", new WLink(
-				"http://www.google.com/search?q=corpy+inc"));
+				"https://www.google.com/search?q=corpy+inc"));
 		navigation.setResponsive(true);
 		WStackedWidget contentsStack = new WStackedWidget(container);
 		contentsStack.addStyleClass("contents");

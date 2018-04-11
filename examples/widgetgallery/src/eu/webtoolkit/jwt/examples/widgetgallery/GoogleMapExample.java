@@ -167,7 +167,7 @@ class GoogleMapExample extends WContainerWidget {
 		this.map_
 				.openInfoWindow(
 						road.get(0),
-						"<img src=\"http://www.emweb.be/css/emweb_small.jpg\" /><p><strong>Emweb office</strong></p>");
+						"<p><img src=\"https://www.emweb.be/css/emweb_small.png\" /></p><p><strong>Emweb office</strong></p>");
 		this.map_.clicked().addListener(this,
 				new Signal1.Listener<WGoogleMap.Coordinate>() {
 					public void trigger(WGoogleMap.Coordinate c) {
