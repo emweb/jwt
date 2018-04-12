@@ -619,6 +619,12 @@ public class WCssTheme extends WTheme {
 				element.addPropertyWord(Property.PropertyClass, "Wt-dateedit");
 				return;
 			}
+			WTimeEdit timeEdit = ((widget) instanceof WTimeEdit ? (WTimeEdit) (widget)
+					: null);
+			if (timeEdit != null) {
+				element.addPropertyWord(Property.PropertyClass, "Wt-timeedit");
+				return;
+			}
 		}
 			break;
 		default:

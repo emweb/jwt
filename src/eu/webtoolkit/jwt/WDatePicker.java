@@ -387,7 +387,7 @@ public class WDatePicker extends WCompositeWidget {
 
 	private void createDefault(WLineEdit forEdit) {
 		WImage icon = new WImage(WApplication.getRelativeResourcesUrl()
-				+ "calendar_edit.png");
+				+ "date.gif");
 		icon.resize(new WLength(16), new WLength(16));
 		icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);
 		if (!(forEdit != null)) {
