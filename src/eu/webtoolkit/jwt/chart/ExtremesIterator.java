@@ -23,9 +23,10 @@ class ExtremesIterator extends SeriesIterator {
 	private static Logger logger = LoggerFactory
 			.getLogger(ExtremesIterator.class);
 
-	public ExtremesIterator(Axis axis, AxisScale scale) {
+	public ExtremesIterator(Axis axis, int yAxis, AxisScale scale) {
 		super();
 		this.axis_ = axis;
+		this.yAxis_ = yAxis;
 		this.scale_ = scale;
 		this.minimum_ = Double.MAX_VALUE;
 		this.maximum_ = -Double.MAX_VALUE;
@@ -33,7 +34,7 @@ class ExtremesIterator extends SeriesIterator {
 
 	public boolean startSeries(final WDataSeries series, double groupWidth,
 			int numBarGroups, int currentBarGroup) {
-		return this.axis_ == Axis.XAxis || series.getAxis() == this.axis_;
+		return this.axis_ == Axis.XAxis || series.getYAxis() == this.yAxis_;
 	}
 
 	public void newValue(final WDataSeries series, double x, double y,
@@ -54,6 +55,7 @@ class ExtremesIterator extends SeriesIterator {
 	}
 
 	private Axis axis_;
+	private int yAxis_;
 	private AxisScale scale_;
 	private double minimum_;
 	private double maximum_;

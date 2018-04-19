@@ -41,7 +41,7 @@ interface WAbstractChartImplementation {
 	public WString categoryLabel(int u, Axis axis);
 
 	public WAbstractChartImplementation.RenderRange computeRenderRange(
-			Axis axis, AxisScale scale);
+			Axis axis, int yAxis, AxisScale scale);
 
 	public void update();
 }

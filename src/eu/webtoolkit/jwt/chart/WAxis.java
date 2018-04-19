@@ -89,6 +89,7 @@ public class WAxis {
 	public WAxis() {
 		this.chart_ = null;
 		this.axis_ = Axis.XAxis;
+		this.yAxis_ = 0;
 		this.visible_ = true;
 		this.location_ = AxisValue.MinimumValue;
 		this.scale_ = AxisScale.LinearScale;
@@ -142,6 +143,18 @@ public class WAxis {
 	 */
 	public Axis getId() {
 		return this.axis_;
+	}
+
+	/**
+	 * Returns the Y axis id.
+	 * <p>
+	 * Returns 0 if this axis is not a Y axis.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#yAxis(int i)
+	 */
+	public int getYAxisId() {
+		return this.yAxis_;
 	}
 
 	/**
@@ -2572,6 +2585,7 @@ public class WAxis {
 
 	private WAbstractChartImplementation chart_;
 	private Axis axis_;
+	private int yAxis_;
 	private boolean visible_;
 	private AxisValue location_;
 	private AxisScale scale_;
@@ -2648,6 +2662,7 @@ public class WAxis {
 	void init(WAbstractChartImplementation chart, Axis axis) {
 		this.chart_ = chart;
 		this.axis_ = axis;
+		this.yAxis_ = axis == Axis.Y2Axis ? 1 : 0;
 		if (axis == Axis.XAxis || this.axis_ == Axis.XAxis_3D
 				|| this.axis_ == Axis.YAxis_3D) {
 			if (this.chart_.getChartType() == ChartType.CategoryChart) {
@@ -2660,6 +2675,20 @@ public class WAxis {
 		}
 		if (axis == Axis.Y2Axis) {
 			this.visible_ = false;
+		}
+	}
+
+	void initYAxis(WAbstractChartImplementation chart, int yAxis) {
+		if (yAxis == 0) {
+			this.init(chart, Axis.Y1Axis);
+		} else {
+			if (yAxis == 1) {
+				this.init(chart, Axis.Y2Axis);
+			} else {
+				this.chart_ = chart;
+				this.axis_ = Axis.YAxis;
+				this.yAxis_ = yAxis;
+			}
 		}
 	}
 
@@ -2689,7 +2718,8 @@ public class WAxis {
 				double minimum = Double.MAX_VALUE;
 				double maximum = -Double.MAX_VALUE;
 				WAbstractChartImplementation.RenderRange rr = this.chart_
-						.computeRenderRange(this.axis_, this.scale_);
+						.computeRenderRange(this.axis_, this.yAxis_,
+								this.scale_);
 				minimum = rr.minimum;
 				maximum = rr.maximum;
 				if (minimum == Double.MAX_VALUE) {

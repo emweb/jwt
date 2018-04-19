@@ -56,7 +56,7 @@ class LabelRenderIterator extends SeriesIterator {
 			if (!(text.length() == 0)) {
 				text.append(": ");
 			}
-			text.append(this.chart_.getAxis(series.getAxis()).getLabel(
+			text.append(this.chart_.yAxis(series.getYAxis()).getLabel(
 					y - stackY));
 		}
 		if (!(text.length() == 0)) {

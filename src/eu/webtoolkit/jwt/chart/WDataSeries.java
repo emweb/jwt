@@ -121,7 +121,7 @@ public class WDataSeries {
 		this.XSeriesColumn_ = -1;
 		this.stacked_ = false;
 		this.type_ = type;
-		this.axis_ = axis;
+		this.yAxis_ = axis == Axis.Y1Axis ? 0 : 1;
 		this.customFlags_ = EnumSet.noneOf(WDataSeries.CustomFlag.class);
 		this.pen_ = new WPen();
 		this.markerPen_ = new WPen();
@@ -166,6 +166,48 @@ public class WDataSeries {
 	}
 
 	/**
+	 * Constructs a new data series.
+	 * <p>
+	 * Creates a new data series which plots the Y values from the model column
+	 * <i>modelColumn</i>, with the indicated <i>seriesType</i>. The Y values
+	 * are mapped to the indicated <i>yAxis</i>, which should correspond to one
+	 * of the two Y axes.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#addSeries(WDataSeries series)
+	 */
+	public WDataSeries(int modelColumn, SeriesType type, int yAxis) {
+		this.chart_ = null;
+		this.model_ = null;
+		this.modelColumn_ = modelColumn;
+		this.XSeriesColumn_ = -1;
+		this.stacked_ = false;
+		this.type_ = type;
+		this.yAxis_ = yAxis;
+		this.customFlags_ = EnumSet.noneOf(WDataSeries.CustomFlag.class);
+		this.pen_ = new WPen();
+		this.markerPen_ = new WPen();
+		this.brush_ = new WBrush();
+		this.markerBrush_ = new WBrush();
+		this.labelColor_ = new WColor();
+		this.shadow_ = new WShadow();
+		this.fillRange_ = FillRangeType.NoFill;
+		this.marker_ = type == SeriesType.PointSeries ? MarkerType.CircleMarker
+				: MarkerType.NoMarker;
+		this.markerSize_ = 6;
+		this.legend_ = true;
+		this.xLabel_ = false;
+		this.yLabel_ = false;
+		this.barWidth_ = 0.8;
+		this.hidden_ = false;
+		this.customMarker_ = new WPainterPath();
+		this.offset_ = 0.0;
+		this.scale_ = 1.0;
+		this.offsetDirty_ = true;
+		this.scaleDirty_ = true;
+	}
+
+	/**
 	 * Copy constructor.
 	 * <p>
 	 * This does not copy over the associated chart.
@@ -180,7 +222,7 @@ public class WDataSeries {
 		this.XSeriesColumn_ = other.XSeriesColumn_;
 		this.stacked_ = other.stacked_;
 		this.type_ = other.type_;
-		this.axis_ = other.axis_;
+		this.yAxis_ = other.yAxis_;
 		this.customFlags_ = other.customFlags_;
 		this.pen_ = other.pen_;
 		this.markerPen_ = other.markerPen_;
@@ -347,8 +389,8 @@ public class WDataSeries {
 	/**
 	 * Binds this series to a chart axis.
 	 * <p>
-	 * A data series may be bound to either the first or second Y axis. Note
-	 * that the second Y axis is by default not displayed.
+	 * A data series can only be bound to a Y axis. Note that the second Y axis
+	 * will not be displayed by default.
 	 * <p>
 	 * The default value is the first Y axis.
 	 * <p>
@@ -356,8 +398,27 @@ public class WDataSeries {
 	 * @see WAxis#setVisible(boolean visible)
 	 */
 	public void bindToAxis(Axis axis) {
-		if (!ChartUtils.equals(this.axis_, axis)) {
-			this.axis_ = axis;
+		if (!ChartUtils.equals(this.yAxis_, axis == Axis.Y1Axis ? 0 : 1)) {
+			this.yAxis_ = axis == Axis.Y1Axis ? 0 : 1;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Binds this series to a chart axis.
+	 * <p>
+	 * A data series can only be bound to a Y axis. Note that the second Y axis
+	 * will not be displayed by default.
+	 * <p>
+	 * The default value is the first Y axis.
+	 * <p>
+	 * 
+	 * @see WAxis#setVisible(boolean visible)
+	 */
+	public void bindToYAxis(int yAxis) {
+		if (!ChartUtils.equals(this.yAxis_, yAxis)) {
+			this.yAxis_ = yAxis;
 			update();
 		}
 		;
@@ -370,7 +431,17 @@ public class WDataSeries {
 	 * @see WDataSeries#bindToAxis(Axis axis)
 	 */
 	public Axis getAxis() {
-		return this.axis_;
+		return this.yAxis_ == 1 ? Axis.Y2Axis : Axis.Y1Axis;
+	}
+
+	/**
+	 * Returns the Y axis used for this series.
+	 * <p>
+	 * 
+	 * @see WDataSeries#bindToYAxis(int yAxis)
+	 */
+	public int getYAxis() {
+		return this.yAxis_;
 	}
 
 	/**
@@ -860,7 +931,7 @@ public class WDataSeries {
 	 */
 	public WPointF mapFromDevice(final WPointF deviceCoordinates) {
 		if (this.chart_ != null) {
-			return this.chart_.mapFromDevice(deviceCoordinates, this.axis_);
+			return this.chart_.mapFromDevice(deviceCoordinates, this.yAxis_);
 		} else {
 			return new WPointF();
 		}
@@ -886,7 +957,8 @@ public class WDataSeries {
 	public WPointF mapToDevice(final Object xValue, final Object yValue,
 			int segment) {
 		if (this.chart_ != null) {
-			return this.chart_.mapToDevice(xValue, yValue, this.axis_, segment);
+			return this.chart_
+					.mapToDevice(xValue, yValue, this.yAxis_, segment);
 		} else {
 			return new WPointF();
 		}
@@ -1027,7 +1099,7 @@ public class WDataSeries {
 	private int XSeriesColumn_;
 	private boolean stacked_;
 	private SeriesType type_;
-	private Axis axis_;
+	private int yAxis_;
 	private EnumSet<WDataSeries.CustomFlag> customFlags_;
 	private WPen pen_;
 	private WPen markerPen_;

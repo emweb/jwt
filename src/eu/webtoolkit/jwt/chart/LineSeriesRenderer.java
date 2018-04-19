@@ -39,7 +39,7 @@ class LineSeriesRenderer extends SeriesRenderer {
 
 	public void addValue(double x, double y, double stacky, int xRow,
 			int xColumn, int yRow, int yColumn) {
-		WPointF p = this.chart_.map(x, y, this.series_.getAxis(),
+		WPointF p = this.chart_.map(x, y, this.series_.getYAxis(),
 				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		if (this.curveFragmentLength_ == 0) {
 			this.curve_.moveTo(this.hv(p));
@@ -210,17 +210,17 @@ class LineSeriesRenderer extends SeriesRenderer {
 		FillRangeType fr = this.series_.getFillRange();
 		switch (fr) {
 		case MinimumValueFill:
-			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getYAxis(),
 					this.it_.getCurrentXSegment(),
 					this.it_.getCurrentYSegment()).getX(),
 					this.chart_.chartArea_.getBottom());
 		case MaximumValueFill:
-			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getYAxis(),
 					this.it_.getCurrentXSegment(),
 					this.it_.getCurrentYSegment()).getX(),
 					this.chart_.chartArea_.getTop());
 		case ZeroValueFill:
-			return new WPointF(this.chart_.map(x, 0, this.series_.getAxis(),
+			return new WPointF(this.chart_.map(x, 0, this.series_.getYAxis(),
 					this.it_.getCurrentXSegment(),
 					this.it_.getCurrentYSegment()));
 		default:

@@ -134,6 +134,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.XSeriesColumn_ = -1;
 		this.type_ = ChartType.CategoryChart;
 		this.series_ = new ArrayList<WDataSeries>();
+		this.yAxes_ = new ArrayList<WAxis>();
 		this.barMargin_ = 0;
 		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
@@ -141,12 +142,14 @@ public class WCartesianChart extends WAbstractChart {
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.hasDeferredToolTips_ = false;
+		this.yAxisLocations_ = new ArrayList<WCartesianChart.AxisLocation>();
 		this.jsDefined_ = false;
 		this.zoomEnabled_ = false;
 		this.panEnabled_ = false;
 		this.rubberBandEnabled_ = true;
 		this.crosshairEnabled_ = false;
 		this.crosshairColor_ = WColor.black;
+		this.crosshairYAxis_ = 0;
 		this.seriesSelectionEnabled_ = false;
 		this.selectedSeries_ = null;
 		this.followCurve_ = null;
@@ -199,6 +202,7 @@ public class WCartesianChart extends WAbstractChart {
 		this.XSeriesColumn_ = -1;
 		this.type_ = type;
 		this.series_ = new ArrayList<WDataSeries>();
+		this.yAxes_ = new ArrayList<WAxis>();
 		this.barMargin_ = 0;
 		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
@@ -206,12 +210,14 @@ public class WCartesianChart extends WAbstractChart {
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.hasDeferredToolTips_ = false;
+		this.yAxisLocations_ = new ArrayList<WCartesianChart.AxisLocation>();
 		this.jsDefined_ = false;
 		this.zoomEnabled_ = false;
 		this.panEnabled_ = false;
 		this.rubberBandEnabled_ = true;
 		this.crosshairEnabled_ = false;
-		this.crosshairColor_ = new WColor();
+		this.crosshairColor_ = WColor.black;
+		this.crosshairYAxis_ = 0;
 		this.seriesSelectionEnabled_ = false;
 		this.selectedSeries_ = null;
 		this.followCurve_ = null;
@@ -253,9 +259,11 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	public void remove() {
-		for (int i = 2; i > -1; i--) {
+		while (!this.yAxes_.isEmpty()) {
 			;
+			this.yAxes_.remove(this.yAxes_.size() - 1);
 		}
+		;
 		;
 		List<WAxisSliderWidget> copy = new ArrayList<WAxisSliderWidget>(
 				this.axisSliderWidgets_);
@@ -288,7 +296,7 @@ public class WCartesianChart extends WAbstractChart {
 	public void setType(ChartType type) {
 		if (this.type_ != type) {
 			this.type_ = type;
-			this.axes_[Axis.XAxis.getValue()].init(this.interface_, Axis.XAxis);
+			this.xAxis_.init(this.interface_, Axis.XAxis);
 			this.update();
 		}
 	}
@@ -374,8 +382,9 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		this.textPen_ = pen;
-		for (int i = 0; i < 3; ++i) {
-			this.axes_[i].setTextPen(pen);
+		this.xAxis_.setTextPen(pen);
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			this.yAxes_.get(i).setTextPen(pen);
 		}
 	}
 
@@ -523,7 +532,11 @@ public class WCartesianChart extends WAbstractChart {
 	 * Returns a reference to the specified <code>axis</code>.
 	 */
 	public WAxis getAxis(Axis axis) {
-		return this.axes_[axis.getValue()];
+		if (axis == Axis.XAxis) {
+			return this.xAxis_;
+		} else {
+			return this.yAxis(axis == Axis.Y1Axis ? 0 : 1);
+		}
 	}
 
 	/**
@@ -533,8 +546,75 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#getAxis(Axis axis)
 	 */
 	public void setAxis(WAxis waxis, Axis axis) {
-		this.axes_[axis.getValue()] = waxis;
-		this.axes_[axis.getValue()].init(this.interface_, axis);
+		if (this.getAxis(axis) == waxis) {
+			return;
+		}
+		if (axis == Axis.XAxis) {
+			;
+			this.xAxis_ = waxis;
+			this.xAxis_.init(this.interface_, axis);
+		} else {
+			int yIndex = axis == Axis.Y1Axis ? 0 : 1;
+			;
+			this.yAxes_.set(yIndex, waxis);
+			this.yAxes_.get(yIndex).init(this.interface_, axis);
+		}
+	}
+
+	/**
+	 * Returns a vector of all Y axes associated with this chart.
+	 * <p>
+	 * This defaults to a vector of two axes: the Y1 and Y2 axes. Y1 will be at
+	 * index 0, and Y2 will be at index 1.
+	 */
+	public List<WAxis> getYAxes() {
+		return this.yAxes_;
+	}
+
+	/**
+	 * Returns the number of Y axes associated with this chart.
+	 */
+	public int getYAxisCount() {
+		return (int) this.yAxes_.size();
+	}
+
+	/**
+	 * Retrieves the Y axis at index i.
+	 * <p>
+	 * The following expressions are always true:
+	 * <p>
+	 * 
+	 * <pre>
+	 *   {@code
+	 *    axis(Y1) == yAxis(0)
+	 *    axis(Y2) == yAxis(1)
+	 *   }
+	 * </pre>
+	 */
+	public WAxis yAxis(int i) {
+		return this.yAxes_.get(i);
+	}
+
+	/**
+	 * Adds a Y axis to this chart.
+	 * <p>
+	 * The first extra axis will have index 2, the next index 3,...
+	 * <p>
+	 * Returns the index of the added axis.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This transfers ownership of the given {@link WAxis} to
+	 * this chart. </i>
+	 * </p>
+	 */
+	public int addYAxis(WAxis waxis) {
+		int idx = (int) this.yAxes_.size();
+		this.yAxes_.add(waxis);
+		this.yAxisLocations_.add(new WCartesianChart.AxisLocation());
+		this.yAxes_.get(idx).initYAxis(this.interface_, idx);
+		this.yAxes_.get(idx).setPadding(this.getAxisPadding());
+		this.yAxes_.get(idx).setSoftLabelClipping(true);
+		return idx;
 	}
 
 	/**
@@ -975,14 +1055,7 @@ public class WCartesianChart extends WAbstractChart {
 	 *      int xSegment, int ySegment)
 	 */
 	public WPointF mapFromDevice(final WPointF point, Axis ordinateAxis) {
-		if (this.isInteractive()) {
-			return this.mapFromDeviceWithoutTransform(
-					this.zoomRangeTransform(this.xTransformHandle_.getValue(),
-							this.yTransformHandle_.getValue()).getInverted()
-							.map(point), ordinateAxis);
-		} else {
-			return this.mapFromDeviceWithoutTransform(point, ordinateAxis);
-		}
+		return this.mapFromDevice(point, ordinateAxis == Axis.Y1Axis ? 0 : 1);
 	}
 
 	/**
@@ -993,6 +1066,36 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public final WPointF mapFromDevice(final WPointF point) {
 		return mapFromDevice(point, Axis.OrdinateAxis);
+	}
+
+	/**
+	 * Maps from device coordinates to model coordinates.
+	 * <p>
+	 * Maps a position in the chart back to model coordinates.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
+	 * <p>
+	 * If the chart is interactive, mapFromDevice will correctly take the
+	 * current zoom range into account.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis axis,
+	 *      int xSegment, int ySegment)
+	 */
+	public WPointF mapFromDevice(final WPointF point, int ordinateAxis) {
+		if (this.isInteractive()) {
+			return this.mapFromDeviceWithoutTransform(
+					this.zoomRangeTransform(this.xTransformHandle_.getValue(),
+							this.yTransformHandle_.getValue()).getInverted()
+							.map(point), ordinateAxis);
+		} else {
+			return this.mapFromDeviceWithoutTransform(point, ordinateAxis);
+		}
 	}
 
 	/**
@@ -1020,13 +1123,8 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WPointF mapFromDeviceWithoutTransform(final WPointF point,
 			Axis ordinateAxis) {
-		final WAxis xAxis = this.getAxis(Axis.XAxis);
-		final WAxis yAxis = this.getAxis(ordinateAxis);
-		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
-				.toPixels());
-		return new WPointF(xAxis.mapFromDevice(p.getX()
-				- this.chartArea_.getLeft()),
-				yAxis.mapFromDevice(this.chartArea_.getBottom() - p.getY()));
+		return this.mapFromDeviceWithoutTransform(point,
+				ordinateAxis == Axis.Y1Axis ? 0 : 1);
 	}
 
 	/**
@@ -1039,6 +1137,40 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public final WPointF mapFromDeviceWithoutTransform(final WPointF point) {
 		return mapFromDeviceWithoutTransform(point, Axis.OrdinateAxis);
+	}
+
+	/**
+	 * Maps from device coordinates to model coordinates, ignoring the current
+	 * zoom range.
+	 * <p>
+	 * Maps a position in the chart back to model coordinates, as if the chart
+	 * was not zoomed in (nor panned).
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
+	 * <p>
+	 * This function will not take the current zoom range into account. The
+	 * mapping will be performed as if
+	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
+	 * is the identity transform.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapToDeviceWithoutTransform(Object xValue, Object
+	 *      yValue, Axis ordinateAxis, int xSegment, int ySegment)
+	 */
+	public WPointF mapFromDeviceWithoutTransform(final WPointF point,
+			int ordinateAxis) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.yAxis(ordinateAxis);
+		WPointF p = this.inverseHv(point.getX(), point.getY(), this.getWidth()
+				.toPixels());
+		return new WPointF(xAxis.mapFromDevice(p.getX()
+				- this.chartArea_.getLeft()),
+				yAxis.mapFromDevice(this.chartArea_.getBottom() - p.getY()));
 	}
 
 	/**
@@ -1068,15 +1200,8 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WPointF mapToDevice(final Object xValue, final Object yValue,
 			Axis axis, int xSegment, int ySegment) {
-		if (this.isInteractive()) {
-			return this.zoomRangeTransform(this.xTransformHandle_.getValue(),
-					this.yTransformHandle_.getValue()).map(
-					this.mapToDeviceWithoutTransform(xValue, yValue, axis,
-							xSegment, ySegment));
-		} else {
-			return this.mapToDeviceWithoutTransform(xValue, yValue, axis,
-					xSegment, ySegment);
-		}
+		return this.mapToDevice(xValue, yValue, axis == Axis.Y1Axis ? 0 : 1,
+				xSegment, ySegment);
 	}
 
 	/**
@@ -1115,6 +1240,68 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * This returns the chart device coordinates for a (x,y) pair of model
+	 * values.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
+	 * <p>
+	 * The <code>xSegment</code> and <code>ySegment</code> arguments are
+	 * relevant only when the corresponding axis is broken using
+	 * {@link WAxis#setBreak(double minimum, double maximum) WAxis#setBreak()}.
+	 * Then, its possible values may be 0 (below the break) or 1 (above the
+	 * break).
+	 * <p>
+	 * If the chart is interactive, mapToDevice will correctly take the current
+	 * zoom range into account.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapFromDevice(WPointF point, Axis ordinateAxis)
+	 */
+	public WPointF mapToDevice(final Object xValue, final Object yValue,
+			int axis, int xSegment, int ySegment) {
+		if (this.isInteractive()) {
+			return this.zoomRangeTransform(this.xTransformHandle_.getValue(),
+					this.yTransformHandle_.getValue()).map(
+					this.mapToDeviceWithoutTransform(xValue, yValue, axis,
+							xSegment, ySegment));
+		} else {
+			return this.mapToDeviceWithoutTransform(xValue, yValue, axis,
+					xSegment, ySegment);
+		}
+	}
+
+	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDevice(Object xValue, Object yValue, int axis, int xSegment, int ySegment)
+	 * mapToDevice(xValue, yValue, axis, 0, 0)}
+	 */
+	public final WPointF mapToDevice(final Object xValue, final Object yValue,
+			int axis) {
+		return mapToDevice(xValue, yValue, axis, 0, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDevice(Object xValue, Object yValue, int axis, int xSegment, int ySegment)
+	 * mapToDevice(xValue, yValue, axis, xSegment, 0)}
+	 */
+	public final WPointF mapToDevice(final Object xValue, final Object yValue,
+			int axis, int xSegment) {
+		return mapToDevice(xValue, yValue, axis, xSegment, 0);
+	}
+
+	/**
 	 * Maps model values onto chart coordinates, ignoring the current zoom
 	 * range.
 	 * <p>
@@ -1145,13 +1332,8 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WPointF mapToDeviceWithoutTransform(final Object xValue,
 			final Object yValue, Axis ordinateAxis, int xSegment, int ySegment) {
-		final WAxis xAxis = this.getAxis(Axis.XAxis);
-		final WAxis yAxis = this.getAxis(ordinateAxis);
-		double x = this.chartArea_.getLeft()
-				+ xAxis.mapToDevice(xValue, xSegment);
-		double y = this.chartArea_.getBottom()
-				- yAxis.mapToDevice(yValue, ySegment);
-		return this.hv(x, y, this.getWidth().toPixels());
+		return this.mapToDeviceWithoutTransform(xValue, yValue,
+				ordinateAxis == Axis.Y1Axis ? 0 : 1, xSegment, ySegment);
 	}
 
 	/**
@@ -1196,6 +1378,73 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * This returns the chart device coordinates for a (x,y) pair of model
+	 * values.
+	 * <p>
+	 * This uses the axis dimensions that are based on the latest chart
+	 * rendering. If you have not yet rendered the chart, or wish that the
+	 * mapping already reflects model changes since the last rendering, you
+	 * should call
+	 * {@link WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
+	 * initLayout()} first.
+	 * <p>
+	 * The <code>xSegment</code> and <code>ySegment</code> arguments are
+	 * relevant only when the corresponding axis is broken using
+	 * {@link WAxis#setBreak(double minimum, double maximum) WAxis#setBreak()}.
+	 * Then, its possible values may be 0 (below the break) or 1 (above the
+	 * break).
+	 * <p>
+	 * This function will not take the current zoom range into account.The
+	 * mapping will be performed as if
+	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
+	 * is the identity transform.
+	 * <p>
+	 * 
+	 * @see WCartesianChart#mapFromDeviceWithoutTransform(WPointF point, Axis
+	 *      ordinateAxis)
+	 */
+	public WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue, int ordinateAxis, int xSegment, int ySegment) {
+		final WAxis xAxis = this.getAxis(Axis.XAxis);
+		final WAxis yAxis = this.yAxis(ordinateAxis);
+		double x = this.chartArea_.getLeft()
+				+ xAxis.mapToDevice(xValue, xSegment);
+		double y = this.chartArea_.getBottom()
+				- yAxis.mapToDevice(yValue, ySegment);
+		return this.hv(x, y, this.getWidth().toPixels());
+	}
+
+	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDeviceWithoutTransform(Object xValue, Object yValue, int ordinateAxis, int xSegment, int ySegment)
+	 * mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, 0, 0)}
+	 */
+	public final WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue, int ordinateAxis) {
+		return mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, 0, 0);
+	}
+
+	/**
+	 * Maps model values onto chart coordinates, ignoring the current zoom
+	 * range.
+	 * <p>
+	 * Returns
+	 * {@link #mapToDeviceWithoutTransform(Object xValue, Object yValue, int ordinateAxis, int xSegment, int ySegment)
+	 * mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis, xSegment, 0)}
+	 */
+	public final WPointF mapToDeviceWithoutTransform(final Object xValue,
+			final Object yValue, int ordinateAxis, int xSegment) {
+		return mapToDeviceWithoutTransform(xValue, yValue, ordinateAxis,
+				xSegment, 0);
+	}
+
+	/**
 	 * Initializes the chart layout.
 	 * <p>
 	 * The mapping between model and device coordinates is only established
@@ -1223,8 +1472,9 @@ public class WCartesianChart extends WAbstractChart {
 			this.width_ = (int) rect.getHeight();
 			this.height_ = (int) rect.getWidth();
 		}
-		for (int i = 0; i < 3; ++i) {
-			this.location_[i] = AxisValue.MinimumValue;
+		this.xAxisLocation_ = AxisValue.MinimumValue;
+		for (int i = 0; i < this.yAxisLocations_.size(); ++i) {
+			this.yAxisLocations_.get(i).loc = AxisValue.MinimumValue;
 		}
 		WPaintDevice d = device;
 		if (!(d != null)) {
@@ -1372,8 +1622,9 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public void setAxisPadding(int padding) {
 		this.axisPadding_ = padding;
-		for (int i = 0; i < 3; ++i) {
-			this.axes_[i].setPadding(padding);
+		this.xAxis_.setPadding(padding);
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			this.yAxes_.get(i).setPadding(padding);
 		}
 	}
 
@@ -1626,6 +1877,24 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	/**
+	 * Sets the Y axis to use for the crosshair.
+	 * <p>
+	 * Defaults to 0 (first Y axis)
+	 */
+	public void setCrosshairYAxis(int yAxis) {
+		if (this.crosshairYAxis_ != yAxis) {
+			this.crosshairYAxis_ = yAxis;
+		}
+	}
+
+	/**
+	 * Returns the Y axis to use for the crosshair.
+	 */
+	public int getCrosshairYAxis() {
+		return this.crosshairYAxis_;
+	}
+
+	/**
 	 * Enables the follow curve functionality for a data series.
 	 * <p>
 	 * This enables follow curve functionality for the data series corresponding
@@ -1780,8 +2049,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WAxis#setSoftLabelClipping(boolean enabled)
 	 */
 	public void setSoftLabelClipping(boolean enabled) {
-		for (int i = 0; i < 3; ++i) {
-			this.axes_[i].setSoftLabelClipping(enabled);
+		this.xAxis_.setSoftLabelClipping(enabled);
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			this.yAxes_.get(i).setSoftLabelClipping(enabled);
 		}
 	}
 
@@ -1970,12 +2240,12 @@ public class WCartesianChart extends WAbstractChart {
 					}
 					if (reverseStacked) {
 						endSeries = g;
-						Axis a = this.series_.get(g).getAxis();
+						int a = this.series_.get(g).getYAxis();
 						for (;;) {
 							if (g < this.series_.size()
 									&& ((int) g == endSeries || this.series_
 											.get(g).isStacked())
-									&& this.series_.get(g).getAxis() == a) {
+									&& this.series_.get(g).getYAxis() == a) {
 								if (this.series_.get(g).getType() == SeriesType.BarSeries) {
 									containsBars = true;
 								}
@@ -2008,7 +2278,7 @@ public class WCartesianChart extends WAbstractChart {
 						startSeries = g;
 					} else {
 						startSeries = g;
-						Axis a = this.series_.get(g).getAxis();
+						int a = this.series_.get(g).getYAxis();
 						if (this.series_.get(g).getType() == SeriesType.BarSeries) {
 							containsBars = true;
 						}
@@ -2016,7 +2286,7 @@ public class WCartesianChart extends WAbstractChart {
 						for (;;) {
 							if (g < this.series_.size()
 									&& this.series_.get(g).isStacked()
-									&& this.series_.get(g).getAxis() == a) {
+									&& this.series_.get(g).getYAxis() == a) {
 								if (this.series_.get(g).getType() == SeriesType.BarSeries) {
 									containsBars = true;
 								}
@@ -2043,17 +2313,16 @@ public class WCartesianChart extends WAbstractChart {
 					for (int currentXSegment = 0; currentXSegment < this
 							.getAxis(Axis.XAxis).getSegmentCount(); ++currentXSegment) {
 						for (int currentYSegment = 0; currentYSegment < this
-								.getAxis(this.series_.get(i).getAxis())
+								.yAxis(this.series_.get(i).getYAxis())
 								.getSegmentCount(); ++currentYSegment) {
 							posStackedValues.clear();
 							posStackedValues.addAll(posStackedValuesInit);
 							minStackedValues.clear();
 							minStackedValues.addAll(minStackedValuesInit);
 							if (painter != null) {
-								WRectF csa = this.chartSegmentArea(
-										this.getAxis(this.series_.get(i)
-												.getAxis()), currentXSegment,
-										currentYSegment);
+								WRectF csa = this.chartSegmentArea(this
+										.yAxis(this.series_.get(i).getYAxis()),
+										currentXSegment, currentYSegment);
 								iterator.startSegment(currentXSegment,
 										currentYSegment, csa);
 								painter.save();
@@ -2214,7 +2483,8 @@ public class WCartesianChart extends WAbstractChart {
 	private int XSeriesColumn_;
 	private ChartType type_;
 	private List<WDataSeries> series_;
-	private WAxis[] axes_ = new WAxis[3];
+	private WAxis xAxis_;
+	private List<WAxis> yAxes_;
 	private double barMargin_;
 	private WLegend legend_;
 	private int axisPadding_;
@@ -2223,14 +2493,32 @@ public class WCartesianChart extends WAbstractChart {
 	private int width_;
 	private int height_;
 	WRectF chartArea_;
-	private AxisValue[] location_ = new AxisValue[3];
+	private AxisValue xAxisLocation_;
 	boolean hasDeferredToolTips_;
+
+	static class AxisLocation {
+		private static Logger logger = LoggerFactory
+				.getLogger(AxisLocation.class);
+
+		public AxisLocation() {
+			this.minOffset = 0;
+			this.maxOffset = 0;
+			this.loc = AxisValue.MinimumValue;
+		}
+
+		public int minOffset;
+		public int maxOffset;
+		public AxisValue loc;
+	}
+
+	private List<WCartesianChart.AxisLocation> yAxisLocations_;
 	private boolean jsDefined_;
 	private boolean zoomEnabled_;
 	private boolean panEnabled_;
 	private boolean rubberBandEnabled_;
 	private boolean crosshairEnabled_;
 	private WColor crosshairColor_;
+	private int crosshairYAxis_;
 	private boolean seriesSelectionEnabled_;
 	private WDataSeries selectedSeries_;
 	private WDataSeries followCurve_;
@@ -2299,18 +2587,23 @@ public class WCartesianChart extends WAbstractChart {
 
 	private void init() {
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Muted));
-		for (int i = 0; i < 3; ++i) {
-			this.axes_[i] = new WAxis();
-		}
-		this.axes_[Axis.XAxis.getValue()].init(this.interface_, Axis.XAxis);
-		this.axes_[Axis.YAxis.getValue()].init(this.interface_, Axis.YAxis);
-		this.axes_[Axis.Y2Axis.getValue()].init(this.interface_, Axis.Y2Axis);
-		this.axes_[Axis.XAxis.getValue()].setPadding(this.axisPadding_);
-		this.axes_[Axis.YAxis.getValue()].setPadding(this.axisPadding_);
-		this.axes_[Axis.Y2Axis.getValue()].setPadding(this.axisPadding_);
-		this.axes_[Axis.XAxis.getValue()].setSoftLabelClipping(true);
-		this.axes_[Axis.YAxis.getValue()].setSoftLabelClipping(true);
-		this.axes_[Axis.Y2Axis.getValue()].setSoftLabelClipping(true);
+		this.xAxis_ = new WAxis();
+		this.xAxisLocation_ = AxisValue.MinimumValue;
+		this.yAxes_.add(new WAxis());
+		this.yAxisLocations_.add(new WCartesianChart.AxisLocation());
+		WAxis y2axis = new WAxis();
+		y2axis.setLocation(AxisValue.MaximumValue);
+		this.yAxes_.add(y2axis);
+		this.yAxisLocations_.add(new WCartesianChart.AxisLocation());
+		this.getAxis(Axis.XAxis).init(this.interface_, Axis.XAxis);
+		this.getAxis(Axis.YAxis).init(this.interface_, Axis.YAxis);
+		this.getAxis(Axis.Y2Axis).init(this.interface_, Axis.Y2Axis);
+		this.getAxis(Axis.XAxis).setPadding(this.axisPadding_);
+		this.getAxis(Axis.YAxis).setPadding(this.axisPadding_);
+		this.getAxis(Axis.Y2Axis).setPadding(this.axisPadding_);
+		this.getAxis(Axis.XAxis).setSoftLabelClipping(true);
+		this.getAxis(Axis.YAxis).setSoftLabelClipping(true);
+		this.getAxis(Axis.Y2Axis).setSoftLabelClipping(true);
 		this.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
 		this.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
 		this.xTransformHandle_ = this.createJSTransform();
@@ -2640,8 +2933,9 @@ public class WCartesianChart extends WAbstractChart {
 		if (this.initLayout(rectangle, painter.getDevice())) {
 			this.renderBackground(painter);
 			this.renderGrid(painter, this.getAxis(Axis.XAxis));
-			this.renderGrid(painter, this.getAxis(Axis.Y1Axis));
-			this.renderGrid(painter, this.getAxis(Axis.Y2Axis));
+			for (int i = 0; i < this.yAxes_.size(); ++i) {
+				this.renderGrid(painter, this.yAxis(i));
+			}
 			this.renderAxes(painter, EnumSet.of(AxisProperty.Line));
 			this.renderSeries(painter);
 			this.renderAxes(painter, EnumSet.of(AxisProperty.Labels));
@@ -2662,13 +2956,8 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	protected WPointF map(double xValue, double yValue, Axis yAxis,
 			int currentXSegment, int currentYSegment) {
-		final WAxis xAx = this.getAxis(Axis.XAxis);
-		final WAxis yAx = this.getAxis(yAxis);
-		double x = this.chartArea_.getLeft()
-				+ xAx.mapToDevice(xValue, currentXSegment);
-		double y = this.chartArea_.getBottom()
-				- yAx.mapToDevice(yValue, currentYSegment);
-		return new WPointF(x, y);
+		return this.map(xValue, yValue, yAxis == Axis.Y1Axis ? 0 : 1,
+				currentXSegment, currentYSegment);
 	}
 
 	/**
@@ -2701,6 +2990,47 @@ public class WCartesianChart extends WAbstractChart {
 	 * map(xValue, yValue, yAxis, currentXSegment, 0)}
 	 */
 	protected final WPointF map(double xValue, double yValue, Axis yAxis,
+			int currentXSegment) {
+		return map(xValue, yValue, yAxis, currentXSegment, 0);
+	}
+
+	/**
+	 * Map (x, y) value pair to chart coordinates coordinates.
+	 * <p>
+	 * The result needs further transformation using
+	 * {@link WCartesianChart#hv(double x, double y) hv()} to painter
+	 * coordinates.
+	 */
+	protected WPointF map(double xValue, double yValue, int yAxis,
+			int currentXSegment, int currentYSegment) {
+		final WAxis xAx = this.getAxis(Axis.XAxis);
+		final WAxis yAx = this.yAxis(yAxis);
+		double x = this.chartArea_.getLeft()
+				+ xAx.mapToDevice(xValue, currentXSegment);
+		double y = this.chartArea_.getBottom()
+				- yAx.mapToDevice(yValue, currentYSegment);
+		return new WPointF(x, y);
+	}
+
+	/**
+	 * Map (x, y) value pair to chart coordinates coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #map(double xValue, double yValue, int yAxis, int currentXSegment, int currentYSegment)
+	 * map(xValue, yValue, yAxis, 0, 0)}
+	 */
+	protected final WPointF map(double xValue, double yValue, int yAxis) {
+		return map(xValue, yValue, yAxis, 0, 0);
+	}
+
+	/**
+	 * Map (x, y) value pair to chart coordinates coordinates.
+	 * <p>
+	 * Returns
+	 * {@link #map(double xValue, double yValue, int yAxis, int currentXSegment, int currentYSegment)
+	 * map(xValue, yValue, yAxis, currentXSegment, 0)}
+	 */
+	protected final WPointF map(double xValue, double yValue, int yAxis,
 			int currentXSegment) {
 		return map(xValue, yValue, yAxis, currentXSegment, 0);
 	}
@@ -2924,78 +3254,105 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	protected boolean isPrepareAxes() {
 		final WAxis xAxis = this.getAxis(Axis.XAxis);
-		final WAxis yAxis = this.getAxis(Axis.YAxis);
-		final WAxis y2Axis = this.getAxis(Axis.Y2Axis);
 		Orientation yDir = this.orientation_;
 		Orientation xDir = this.orientation_ == Orientation.Vertical ? Orientation.Horizontal
 				: Orientation.Vertical;
 		if (!xAxis.prepareRender(xDir, this.chartArea_.getWidth())) {
 			return false;
 		}
-		if (!yAxis.prepareRender(yDir, this.chartArea_.getHeight())) {
-			return false;
-		}
-		if (!y2Axis.prepareRender(yDir, this.chartArea_.getHeight())) {
-			return false;
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			if (!this.yAxes_.get(i).prepareRender(yDir,
+					this.chartArea_.getHeight())) {
+				return false;
+			}
 		}
 		if (xAxis.getScale() == AxisScale.CategoryScale) {
 			switch (xAxis.getLocation()) {
 			case MinimumValue:
 			case ZeroValue:
-				this.location_[Axis.XAxis.getValue()] = AxisValue.MinimumValue;
+				this.xAxisLocation_ = AxisValue.MinimumValue;
 				break;
 			case MaximumValue:
-				this.location_[Axis.XAxis.getValue()] = AxisValue.MaximumValue;
+				this.xAxisLocation_ = AxisValue.MaximumValue;
 				break;
 			case BothSides:
-				this.location_[Axis.XAxis.getValue()] = AxisValue.BothSides;
+				this.xAxisLocation_ = AxisValue.BothSides;
 			}
 		}
-		for (int i = 0; i < 2; ++i) {
-			final WAxis axis = i == 0 ? xAxis : yAxis;
-			final WAxis other = i == 0 ? yAxis : xAxis;
-			AxisValue location = axis.getLocation();
-			if (location == AxisValue.ZeroValue) {
-				if (other.segments_.get(other.segments_.size() - 1).renderMaximum < 0) {
-					location = AxisValue.MaximumValue;
+		AxisValue xLocation = this.xAxis_.getLocation();
+		if (xLocation == AxisValue.ZeroValue) {
+			if (this.yAxes_.get(0).segments_.get(this.yAxes_.get(0).segments_
+					.size() - 1).renderMaximum < 0) {
+				xLocation = AxisValue.MaximumValue;
+			} else {
+				if (this.yAxes_.get(0).segments_
+						.get(this.yAxes_.get(0).segments_.size() - 1).renderMinimum > 0) {
+					xLocation = AxisValue.MinimumValue;
 				} else {
-					if (other.segments_.get(0).renderMinimum > 0) {
-						location = AxisValue.MinimumValue;
-					} else {
-						if (!other.isOnAxis(0.0)) {
-							location = AxisValue.MinimumValue;
-						}
+					if (!this.yAxes_.get(0).isOnAxis(0.0)) {
+						xLocation = AxisValue.MinimumValue;
 					}
+				}
+			}
+		} else {
+			if (xLocation == AxisValue.MinimumValue) {
+				if (this.yAxes_.get(0).segments_.get(0).renderMinimum == 0
+						&& this.yAxes_.get(0).getTickDirection() == TickDirection.Outwards) {
+					xLocation = AxisValue.ZeroValue;
 				}
 			} else {
-				if (location == AxisValue.MinimumValue) {
-					if (other.segments_.get(0).renderMinimum == 0
-							&& axis.getTickDirection() == TickDirection.Outwards) {
-						location = AxisValue.ZeroValue;
-					}
-				} else {
-					if (location != AxisValue.BothSides) {
-						if (other.segments_.get(other.segments_.size() - 1).renderMaximum == 0) {
-							location = AxisValue.MaximumValue;
-						}
+				if (xLocation == AxisValue.MaximumValue) {
+					if (this.yAxes_.get(0).segments_
+							.get(this.yAxes_.get(0).segments_.size() - 1).renderMaximum == 0) {
+						xLocation = AxisValue.ZeroValue;
 					}
 				}
 			}
-			this.location_[axis.getId().getValue()] = location;
 		}
-		if (y2Axis.isVisible()) {
-			if (this.location_[Axis.Y1Axis.getValue()] == AxisValue.BothSides
-					&& xAxis.segments_.get(0).renderMinimum == 0) {
-				this.location_[Axis.Y1Axis.getValue()] = AxisValue.ZeroValue;
+		this.xAxisLocation_ = xLocation;
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			this.yAxisLocations_.get(i).loc = this.yAxes_.get(i).getLocation();
+		}
+		List<WAxis> minimumYaxes = this
+				.collectYAxesAtLocation(AxisValue.MinimumValue);
+		int offset = 0;
+		for (int i = 0; i < minimumYaxes.size(); ++i) {
+			final WAxis axis = minimumYaxes.get(i);
+			if (axis.getLocation() != AxisValue.BothSides) {
+				this.yAxisLocations_.get(axis.getYAxisId()).loc = AxisValue.MinimumValue;
 			}
-			if (this.location_[Axis.Y1Axis.getValue()] == AxisValue.BothSides
-					|| !(this.location_[Axis.Y1Axis.getValue()] == AxisValue.ZeroValue && xAxis.segments_
-							.get(0).renderMinimum == 0)) {
-				this.location_[Axis.Y1Axis.getValue()] = AxisValue.MinimumValue;
+			this.yAxisLocations_.get(axis.getYAxisId()).minOffset = offset;
+			if (i == 0 && axis.getTickDirection() == TickDirection.Inwards) {
+				offset += 10;
+			} else {
+				offset += this.calcYAxisSize(axis);
 			}
-			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
-		} else {
-			this.location_[Axis.Y2Axis.getValue()] = AxisValue.MaximumValue;
+		}
+		List<WAxis> maximumYaxes = this
+				.collectYAxesAtLocation(AxisValue.MaximumValue);
+		offset = 0;
+		for (int i = 0; i < maximumYaxes.size(); ++i) {
+			final WAxis axis = maximumYaxes.get(i);
+			if (axis.getLocation() != AxisValue.BothSides) {
+				this.yAxisLocations_.get(axis.getYAxisId()).loc = AxisValue.MaximumValue;
+			}
+			this.yAxisLocations_.get(axis.getYAxisId()).maxOffset = offset;
+			if (i == 0 && axis.getTickDirection() == TickDirection.Inwards) {
+				offset += 10;
+			} else {
+				offset += this.calcYAxisSize(axis);
+			}
+		}
+		if (!minimumYaxes.isEmpty()
+				&& minimumYaxes.get(0).getLocation() == AxisValue.MinimumValue
+				&& this.xAxis_.segments_.get(0).renderMinimum == 0
+				&& minimumYaxes.get(0).getTickDirection() == TickDirection.Outwards) {
+			this.yAxisLocations_.get(minimumYaxes.get(0).getYAxisId()).loc = AxisValue.ZeroValue;
+		}
+		if (!maximumYaxes.isEmpty()
+				&& maximumYaxes.get(0).getLocation() == AxisValue.MaximumValue
+				&& this.xAxis_.segments_.get(this.xAxis_.segments_.size() - 1).renderMaximum == 0) {
+			this.yAxisLocations_.get(maximumYaxes.get(0).getYAxisId()).loc = AxisValue.ZeroValue;
 		}
 		return true;
 	}
@@ -3024,9 +3381,10 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	protected void renderAxes(final WPainter painter,
 			EnumSet<AxisProperty> properties) {
-		this.renderAxis(painter, this.getAxis(Axis.XAxis), properties);
-		this.renderAxis(painter, this.getAxis(Axis.Y1Axis), properties);
-		this.renderAxis(painter, this.getAxis(Axis.Y2Axis), properties);
+		this.renderAxis(painter, this.xAxis_, properties);
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			this.renderAxis(painter, this.yAxes_.get(i), properties);
+		}
 	}
 
 	/**
@@ -3051,12 +3409,7 @@ public class WCartesianChart extends WAbstractChart {
 		WPainterPath area = new WPainterPath();
 		int horizontalShift = 0;
 		int verticalShift = 0;
-		if (this.getAxis(Axis.Y1Axis).isVisible()
-				&& this.getAxis(Axis.Y1Axis).getTickDirection() == TickDirection.Inwards
-				&& (this.location_[Axis.Y1Axis.getValue()] == AxisValue.BothSides || this.location_[Axis.Y1Axis
-						.getValue()] == AxisValue.MaximumValue)
-				|| this.getAxis(Axis.Y2Axis).isVisible()
-				&& this.getAxis(Axis.Y2Axis).getTickDirection() == TickDirection.Inwards) {
+		if (this.hasInwardsYAxisOnMaximumSide()) {
 			horizontalShift = -1;
 		}
 		if (this.getAxis(Axis.XAxis).isVisible()
@@ -3198,14 +3551,13 @@ public class WCartesianChart extends WAbstractChart {
 			WAxis caxis = null;
 			Orientation titleOrientation = Orientation.Horizontal;
 			if (this.getLegendSide() == Side.Right) {
-				if (this.axes_[Axis.Y2Axis.getValue()].isVisible()) {
-					caxis = this.axes_[Axis.Y2Axis.getValue()];
+				if (this.yAxes_.get(1).isVisible()) {
+					caxis = this.yAxes_.get(1);
 				} else {
-					if (this.axes_[Axis.Y1Axis.getValue()].isVisible()
-							&& (this.axes_[Axis.Y1Axis.getValue()]
-									.getLocation() == AxisValue.BothSides || this.axes_[Axis.Y1Axis
-									.getValue()].getLocation() == AxisValue.MaximumValue)) {
-						caxis = this.axes_[Axis.Y1Axis.getValue()];
+					if (this.yAxes_.get(0).isVisible()
+							&& (this.yAxes_.get(0).getLocation() == AxisValue.BothSides || this.yAxes_
+									.get(0).getLocation() == AxisValue.MaximumValue)) {
+						caxis = this.yAxes_.get(0);
 					}
 				}
 				if (caxis != null
@@ -3214,7 +3566,7 @@ public class WCartesianChart extends WAbstractChart {
 				}
 			} else {
 				if (this.getLegendSide() == Side.Left) {
-					caxis = this.axes_[Axis.YAxis.getValue()];
+					caxis = this.yAxes_.get(0);
 					if (caxis.getTitleOrientation() == Orientation.Vertical) {
 						titleOrientation = Orientation.Vertical;
 					}
@@ -3225,9 +3577,9 @@ public class WCartesianChart extends WAbstractChart {
 			if (titleOrientation == Orientation.Vertical && caxis != null) {
 				if (fontMetrics) {
 					margin = (int) (caxis.calcTitleSize(device,
-							Orientation.Vertical) + this.axes_[Axis.Y2Axis
-							.getValue()].calcMaxTickLabelSize(device,
-							Orientation.Horizontal));
+							Orientation.Vertical) + this.yAxes_.get(1)
+							.calcMaxTickLabelSize(device,
+									Orientation.Horizontal));
 				} else {
 					margin = 30;
 				}
@@ -3435,27 +3787,29 @@ public class WCartesianChart extends WAbstractChart {
 		if (!axis.isVisible()) {
 			return;
 		}
-		boolean vertical = axis.getId() != Axis.XAxis;
+		boolean isYAxis = axis.getId() != Axis.XAxis;
+		final AxisValue location = axis.getId() == Axis.XAxis ? this.xAxisLocation_
+				: this.yAxisLocations_.get(axis.getYAxisId()).loc;
 		if (this.isInteractive()
 				&& ((painter.getDevice()) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (painter
 						.getDevice()) : null) != null) {
 			WRectF clipRect = null;
 			WRectF area = this.hv(this.chartArea_);
 			if (axis.getLocation() == AxisValue.ZeroValue
-					&& this.location_[axis.getId().getValue()] == AxisValue.ZeroValue) {
+					&& location == AxisValue.ZeroValue) {
 				clipRect = area;
 			} else {
-				if (vertical != (this.getOrientation() == Orientation.Horizontal)) {
+				if (isYAxis != (this.getOrientation() == Orientation.Horizontal)) {
 					double h = area.getHeight();
-					if (this.location_[Axis.XAxis.getValue()] == AxisValue.ZeroValue
+					if (this.xAxisLocation_ == AxisValue.ZeroValue
 							&& this.getOrientation() == Orientation.Vertical) {
 						h += 1;
 					}
 					clipRect = new WRectF(0.0, area.getTop(),
-							vertical ? this.width_ : this.height_, h);
+							isYAxis ? this.width_ : this.height_, h);
 				} else {
 					clipRect = new WRectF(area.getLeft(), 0.0, area.getWidth(),
-							vertical ? this.height_ : this.width_);
+							isYAxis ? this.height_ : this.width_);
 				}
 			}
 			if (properties.equals(AxisProperty.Labels)) {
@@ -3470,11 +3824,11 @@ public class WCartesianChart extends WAbstractChart {
 			painter.setClipping(true);
 		}
 		List<AxisValue> locations = new ArrayList<AxisValue>();
-		if (this.location_[axis.getId().getValue()] == AxisValue.BothSides) {
+		if (location == AxisValue.BothSides) {
 			locations.add(AxisValue.MinimumValue);
 			locations.add(AxisValue.MaximumValue);
 		} else {
-			locations.add(this.location_[axis.getId().getValue()]);
+			locations.add(location);
 		}
 		for (int l = 0; l < locations.size(); ++l) {
 			WPointF axisStart = new WPointF();
@@ -3484,7 +3838,7 @@ public class WCartesianChart extends WAbstractChart {
 			double labelPos = 0.0;
 			AlignmentFlag labelHFlag = AlignmentFlag.AlignCenter;
 			AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
-			if (vertical) {
+			if (isYAxis) {
 				labelVFlag = AlignmentFlag.AlignMiddle;
 				axisStart.setY(this.chartArea_.getBottom());
 				axisEnd.setY(this.chartArea_.getTop());
@@ -3495,13 +3849,14 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			switch (locations.get(l)) {
 			case MinimumValue:
-				if (vertical) {
+				if (isYAxis) {
+					double x = this.chartArea_.getLeft()
+							- this.yAxisLocations_.get(axis.getYAxisId()).minOffset;
 					if (axis.getTickDirection() == TickDirection.Inwards) {
 						tickStart = 0;
 						tickEnd = TICK_LENGTH;
 						labelPos = TICK_LENGTH;
 						labelHFlag = AlignmentFlag.AlignLeft;
-						double x = this.chartArea_.getLeft();
 						axisStart.setX(x);
 						axisEnd.setX(x);
 					} else {
@@ -3509,7 +3864,7 @@ public class WCartesianChart extends WAbstractChart {
 						tickEnd = 0;
 						labelPos = -TICK_LENGTH;
 						labelHFlag = AlignmentFlag.AlignRight;
-						double x = this.chartArea_.getLeft() - axis.getMargin();
+						x -= axis.getMargin();
 						axisStart.setX(x);
 						axisEnd.setX(x);
 					}
@@ -3535,13 +3890,15 @@ public class WCartesianChart extends WAbstractChart {
 				}
 				break;
 			case MaximumValue:
-				if (vertical) {
+				if (isYAxis) {
+					double x = this.chartArea_.getRight()
+							+ this.yAxisLocations_.get(axis.getYAxisId()).maxOffset;
 					if (axis.getTickDirection() == TickDirection.Inwards) {
 						tickStart = -TICK_LENGTH;
 						tickEnd = 0;
 						labelPos = -TICK_LENGTH;
 						labelHFlag = AlignmentFlag.AlignRight;
-						double x = this.chartArea_.getRight() - 1;
+						x -= 1;
 						axisStart.setX(x);
 						axisEnd.setX(x);
 					} else {
@@ -3549,8 +3906,7 @@ public class WCartesianChart extends WAbstractChart {
 						tickEnd = TICK_LENGTH;
 						labelPos = TICK_LENGTH;
 						labelHFlag = AlignmentFlag.AlignLeft;
-						double x = this.chartArea_.getRight()
-								+ axis.getMargin();
+						x += axis.getMargin();
 						axisStart.setX(x);
 						axisEnd.setX(x);
 					}
@@ -3577,7 +3933,7 @@ public class WCartesianChart extends WAbstractChart {
 			case ZeroValue:
 				tickStart = -TICK_LENGTH;
 				tickEnd = TICK_LENGTH;
-				if (vertical) {
+				if (isYAxis) {
 					double x = this.chartArea_.getLeft()
 							+ this.getAxis(Axis.XAxis).mapToDevice(0.0);
 					axisStart.setX(x);
@@ -3616,7 +3972,7 @@ public class WCartesianChart extends WAbstractChart {
 				WFont titleFont = axis.getTitleFont();
 				painter.setFont(titleFont);
 				boolean chartVertical = this.getOrientation() == Orientation.Vertical;
-				if (vertical) {
+				if (isYAxis) {
 					double u = axisStart.getX();
 					if (chartVertical) {
 						if (axis.getTitleOrientation() == Orientation.Horizontal) {
@@ -3758,7 +4114,7 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			final double ANGLE1 = 15;
 			final double ANGLE2 = 80;
-			if (vertical) {
+			if (isYAxis) {
 				if (axis.getLabelAngle() > ANGLE1) {
 					labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom
 							: AlignmentFlag.AlignTop;
@@ -3824,7 +4180,7 @@ public class WCartesianChart extends WAbstractChart {
 				}
 				labelHFlag = rHFlag;
 				labelVFlag = rVFlag;
-				boolean invertTicks = !vertical;
+				boolean invertTicks = !isYAxis;
 				if (invertTicks) {
 					tickStart = -tickStart;
 					tickEnd = -tickEnd;
@@ -3833,14 +4189,16 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			List<WPen> pens = new ArrayList<WPen>();
 			List<WPen> textPens = new ArrayList<WPen>();
-			final Map<Axis, List<WCartesianChart.PenAssignment>> penMap = this.pens_;
 			if (this.isInteractive()
-					&& (axis.getId() == Axis.XAxis || axis.getId() == Axis.YAxis)
-					&& penMap.get(axis.getId()) != null) {
-				for (int i = 0; i < penMap.get(axis.getId()).size(); ++i) {
-					pens.add(penMap.get(axis.getId()).get(i).pen.getValue());
-					textPens.add(penMap.get(axis.getId()).get(i).textPen
-							.getValue());
+					&& (axis.getId() == Axis.XAxis || axis.getId() == Axis.YAxis)) {
+				List<WCartesianChart.PenAssignment> it = this.pens_.get(axis
+						.getId());
+				if (it != null) {
+					final List<WCartesianChart.PenAssignment> ass = it;
+					for (int i = 0; i < ass.size(); ++i) {
+						pens.add(ass.get(i).pen.getValue());
+						textPens.add(ass.get(i).textPen.getValue());
+					}
 				}
 			}
 			WTransform transform = new WTransform();
@@ -3854,12 +4212,12 @@ public class WCartesianChart extends WAbstractChart {
 								new WTransform(1, 0, 0, -1, -area.getLeft(),
 										area.getBottom())));
 			} else {
-				if (vertical && this.getOrientation() == Orientation.Vertical) {
+				if (isYAxis && this.getOrientation() == Orientation.Vertical) {
 					transform.assign(new WTransform(1, 0, 0, -1, 0, area
 							.getBottom()).multiply(this.yTransform_).multiply(
 							new WTransform(1, 0, 0, -1, 0, area.getBottom())));
 				} else {
-					if (vertical
+					if (isYAxis
 							&& this.getOrientation() == Orientation.Horizontal) {
 						transform.assign(new WTransform(0, 1, 1, 0, area
 								.getLeft(), 0).multiply(this.yTransform_)
@@ -3883,8 +4241,8 @@ public class WCartesianChart extends WAbstractChart {
 					}
 				}
 			}
-			AxisValue side = this.location_[axis.getId().getValue()] == AxisValue.BothSides ? locations
-					.get(l) : axis.getLocation();
+			AxisValue side = location == AxisValue.BothSides ? locations.get(l)
+					: axis.getLocation();
 			axis.render(painter, properties, axisStart, axisEnd, tickStart,
 					tickEnd, labelPos, EnumSet.of(labelHFlag, labelVFlag),
 					transform, side, pens, textPens);
@@ -4051,7 +4409,7 @@ public class WCartesianChart extends WAbstractChart {
 		WPointF devicePan = new WPointF(xTransform.getDx()
 				/ xTransform.getM11(), yTransform.getDy() / yTransform.getM22());
 		WPointF modelPan = new WPointF(this.getAxis(Axis.XAxis).mapFromDevice(
-				-devicePan.getX()), this.getAxis(Axis.Y1Axis).mapFromDevice(
+				-devicePan.getX()), this.getAxis(Axis.YAxis).mapFromDevice(
 				-devicePan.getY()));
 		if (!this.getAxis(Axis.XAxis).zoomRangeDirty_) {
 			if (xTransform.isIdentity()) {
@@ -4067,9 +4425,9 @@ public class WCartesianChart extends WAbstractChart {
 				this.getAxis(Axis.XAxis).setZoomRangeFromClient(x, x2);
 			}
 		}
-		if (!this.getAxis(Axis.Y1Axis).zoomRangeDirty_) {
+		if (!this.getAxis(Axis.YAxis).zoomRangeDirty_) {
 			if (yTransform.isIdentity()) {
-				this.getAxis(Axis.Y1Axis).setZoomRangeFromClient(
+				this.getAxis(Axis.YAxis).setZoomRangeFromClient(
 						WAxis.AUTO_MINIMUM, WAxis.AUTO_MAXIMUM);
 			} else {
 				double z = yTransform.getM22();
@@ -4078,7 +4436,7 @@ public class WCartesianChart extends WAbstractChart {
 				double max = this.getAxis(Axis.YAxis).mapFromDevice(
 						this.getAxis(Axis.YAxis).fullRenderLength_);
 				double y2 = y + (max - min) / z;
-				this.getAxis(Axis.Y1Axis).setZoomRangeFromClient(y, y2);
+				this.getAxis(Axis.YAxis).setZoomRangeFromClient(y, y2);
 			}
 		}
 		if (this.curveTransforms_.size() != 0) {
@@ -4091,7 +4449,7 @@ public class WCartesianChart extends WAbstractChart {
 								.getM22();
 					}
 					if (!s.offsetDirty_) {
-						Axis yAxis = s.getAxis();
+						int yAxis = s.getYAxis();
 						double origin;
 						if (this.getOrientation() == Orientation.Horizontal) {
 							origin = this.mapToDeviceWithoutTransform(0.0, 0.0,
@@ -4105,13 +4463,12 @@ public class WCartesianChart extends WAbstractChart {
 						double scale = this.curveTransforms_.get(s).getValue()
 								.getM22();
 						double offset = -dy + origin * (1 - scale)
-								+ this.getAxis(yAxis).mapToDevice(0.0, 0);
+								+ this.yAxis(yAxis).mapToDevice(0.0, 0);
 						if (this.getOrientation() == Orientation.Horizontal) {
-							s.offset_ = -this.getAxis(yAxis).mapFromDevice(
-									offset);
+							s.offset_ = -this.yAxis(yAxis)
+									.mapFromDevice(offset);
 						} else {
-							s.offset_ = this.getAxis(yAxis).mapFromDevice(
-									offset);
+							s.offset_ = this.yAxis(yAxis).mapFromDevice(offset);
 						}
 					}
 				}
@@ -4139,6 +4496,44 @@ public class WCartesianChart extends WAbstractChart {
 		return this.zoomRangeTransform(this.xTransform_, this.yTransform_);
 	}
 
+	private List<WAxis> collectYAxesAtLocation(AxisValue side) {
+		List<WAxis> result = new ArrayList<WAxis>();
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			final WAxis axis = this.yAxes_.get(i);
+			if (!axis.isVisible()) {
+				continue;
+			}
+			if (axis.getLocation() == AxisValue.ZeroValue) {
+				if (side == AxisValue.MinimumValue) {
+					if (this.xAxis_.segments_.get(0).renderMinimum >= 0
+							|| !this.xAxis_.isOnAxis(0.0)
+							&& this.xAxis_.segments_.get(this.xAxis_.segments_
+									.size() - 1).renderMaximum > 0) {
+						result.add(axis);
+					}
+				} else {
+					if (side == AxisValue.MaximumValue) {
+						if (this.xAxis_.segments_.get(this.xAxis_.segments_
+								.size() - 1).renderMaximum <= 0) {
+							result.add(axis);
+						}
+					}
+				}
+			}
+		}
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			final WAxis axis = this.yAxes_.get(i);
+			if (!axis.isVisible()) {
+				continue;
+			}
+			if (axis.getLocation() == side
+					|| axis.getLocation() == AxisValue.BothSides) {
+				result.add(axis);
+			}
+		}
+		return result;
+	}
+
 	private int getSeriesIndexOf(int modelColumn) {
 		for (int i = 0; i < this.series_.size(); ++i) {
 			if (this.series_.get(i).getModelColumn() == modelColumn) {
@@ -4155,6 +4550,13 @@ public class WCartesianChart extends WAbstractChart {
 			}
 		}
 		return -1;
+	}
+
+	private boolean hasInwardsYAxisOnMaximumSide() {
+		List<WAxis> maximumYaxes = this
+				.collectYAxesAtLocation(AxisValue.MaximumValue);
+		return !maximumYaxes.isEmpty()
+				&& maximumYaxes.get(0).getTickDirection() == TickDirection.Inwards;
 	}
 
 	private void clearPens() {
@@ -4400,15 +4802,15 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	WTransform calculateCurveTransform(final WDataSeries series) {
-		Axis yAxis = series.getAxis();
+		int yAxis = series.getYAxis();
 		double origin;
 		if (this.getOrientation() == Orientation.Horizontal) {
 			origin = this.mapToDeviceWithoutTransform(0.0, 0.0, yAxis).getX();
 		} else {
 			origin = this.mapToDeviceWithoutTransform(0.0, 0.0, yAxis).getY();
 		}
-		double offset = this.getAxis(yAxis).mapToDevice(0.0, 0)
-				- this.getAxis(yAxis).mapToDevice(series.getOffset(), 0);
+		double offset = this.yAxis(yAxis).mapToDevice(0.0, 0)
+				- this.yAxis(yAxis).mapToDevice(series.getOffset(), 0);
 		if (this.getOrientation() == Orientation.Horizontal) {
 			offset = -offset;
 		}
@@ -4723,6 +5125,10 @@ public class WCartesianChart extends WAbstractChart {
 		double y1 = this.chartArea_.getBottom() - yRenderEnd;
 		double y2 = this.chartArea_.getBottom() - yRenderStart;
 		return new WRectF(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	private int calcYAxisSize(final WAxis axis) {
+		return 50;
 	}
 
 	private void defineJavaScript() {

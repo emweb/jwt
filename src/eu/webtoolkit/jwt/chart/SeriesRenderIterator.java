@@ -34,7 +34,7 @@ class SeriesRenderIterator extends SeriesIterator {
 	public void startSegment(int currentXSegment, int currentYSegment,
 			final WRectF currentSegmentArea) {
 		super.startSegment(currentXSegment, currentYSegment, currentSegmentArea);
-		final WAxis yAxis = this.chart_.getAxis(this.series_.getAxis());
+		final WAxis yAxis = this.chart_.yAxis(this.series_.getYAxis());
 		if (currentYSegment == 0) {
 			this.maxY_ = Double.MAX_VALUE;
 		} else {

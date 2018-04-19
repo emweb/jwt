@@ -89,7 +89,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 	}
 
 	public WAbstractChartImplementation.RenderRange computeRenderRange(
-			Axis axis, AxisScale scale) {
+			Axis axis, int yAxis, AxisScale scale) {
 		WAbstractChartImplementation.RenderRange range = new WAbstractChartImplementation.RenderRange();
 		final List<WAbstractDataSeries3D> series = this.chart_.getDataSeries();
 		if (series.size() == 0) {
@@ -163,8 +163,8 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 	}
 
 	public final WAbstractChartImplementation.RenderRange computeRenderRange(
-			Axis axis) {
-		return computeRenderRange(axis, AxisScale.LinearScale);
+			Axis axis, int yAxis) {
+		return computeRenderRange(axis, yAxis, AxisScale.LinearScale);
 	}
 
 	public void update() {

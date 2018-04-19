@@ -36,22 +36,22 @@ class BarSeriesRenderer extends SeriesRenderer {
 	public void addValue(double x, double y, double stacky, int xRow,
 			int xColumn, int yRow, int yColumn) {
 		WPainterPath bar = new WPainterPath();
-		final WAxis yAxis = this.chart_.getAxis(this.series_.getAxis());
-		WPointF topMid = this.chart_.map(x, y, yAxis.getId(),
+		final WAxis yAxis = this.chart_.yAxis(this.series_.getYAxis());
+		WPointF topMid = this.chart_.map(x, y, yAxis.getYAxisId(),
 				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
-		WPointF bottomMid = this.chart_.map(x, stacky, yAxis.getId(),
+		WPointF bottomMid = this.chart_.map(x, stacky, yAxis.getYAxisId(),
 				this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
 		FillRangeType fr = this.series_.getFillRange();
 		switch (fr) {
 		case MinimumValueFill:
-			bottomMid = new WPointF(this.chart_.map(x, stacky, yAxis.getId(),
-					this.it_.getCurrentXSegment(),
+			bottomMid = new WPointF(this.chart_.map(x, stacky,
+					yAxis.getYAxisId(), this.it_.getCurrentXSegment(),
 					this.it_.getCurrentYSegment()).getX(),
 					this.chart_.chartArea_.getBottom());
 			break;
 		case MaximumValueFill:
-			bottomMid = new WPointF(this.chart_.map(x, stacky, yAxis.getId(),
-					this.it_.getCurrentXSegment(),
+			bottomMid = new WPointF(this.chart_.map(x, stacky,
+					yAxis.getYAxisId(), this.it_.getCurrentXSegment(),
 					this.it_.getCurrentYSegment()).getX(),
 					this.chart_.chartArea_.getTop());
 			break;
