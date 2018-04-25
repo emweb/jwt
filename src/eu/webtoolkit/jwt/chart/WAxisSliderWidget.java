@@ -512,13 +512,14 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		final WRectF chartArea = this.getChart().chartArea_;
 		WRectF selectionRect = null;
 		{
-			double u = -this.getChart().xTransformHandle_.getValue().getDx()
-					/ (chartArea.getWidth() * this.getChart().xTransformHandle_
+			double u = -this.getChart().xAxis_.transformHandle.getValue()
+					.getDx()
+					/ (chartArea.getWidth() * this.getChart().xAxis_.transformHandle
 							.getValue().getM11());
 			selectionRect = new WRectF(0, top, maxW, h - (top + bottom));
 			this.transform_.setValue(new WTransform(
-					1 / this.getChart().xTransformHandle_.getValue().getM11(),
-					0, 0, 1, u * maxW, 0));
+					1 / this.getChart().xAxis_.transformHandle.getValue()
+							.getM11(), 0, 0, 1, u * maxW, 0));
 		}
 		WRectF seriesArea = new WRectF(left, top + 5, maxW, h
 				- (top + bottom + 5));

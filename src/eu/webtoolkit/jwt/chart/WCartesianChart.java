@@ -134,7 +134,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.XSeriesColumn_ = -1;
 		this.type_ = ChartType.CategoryChart;
 		this.series_ = new ArrayList<WDataSeries>();
-		this.yAxes_ = new ArrayList<WAxis>();
+		this.xAxis_ = new WCartesianChart.AxisStruct();
+		this.yAxes_ = new ArrayList<WCartesianChart.AxisStruct>();
 		this.barMargin_ = 0;
 		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
@@ -142,7 +143,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.hasDeferredToolTips_ = false;
-		this.yAxisLocations_ = new ArrayList<WCartesianChart.AxisLocation>();
 		this.jsDefined_ = false;
 		this.zoomEnabled_ = false;
 		this.panEnabled_ = false;
@@ -155,8 +155,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.followCurve_ = null;
 		this.curveManipulationEnabled_ = false;
 		this.cObjCreated_ = false;
-		this.xTransformChanged_ = new JSignal(this, "xTransformChanged");
-		this.yTransformChanged_ = new JSignal(this, "yTransformChanged");
 		this.seriesSelected_ = new Signal2<WDataSeries, WPointF>();
 		this.jsSeriesSelected_ = new JSignal2<Double, Double>(this,
 				"seriesSelected") {
@@ -165,11 +163,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.freePainterPaths_ = new ArrayList<WJavaScriptHandle<WPainterPath>>();
 		this.curveTransforms_ = new HashMap<WDataSeries, WJavaScriptHandle<WTransform>>();
 		this.freeTransforms_ = new ArrayList<WJavaScriptHandle<WTransform>>();
-		this.xTransform_ = new WTransform();
-		this.yTransform_ = new WTransform();
-		this.xTransformHandle_ = null;
-		this.yTransformHandle_ = null;
-		this.pens_ = new HashMap<Axis, List<WCartesianChart.PenAssignment>>();
 		this.freePens_ = new ArrayList<WJavaScriptHandle<WPen>>();
 		this.curveLabels_ = new ArrayList<CurveLabel>();
 		this.axisSliderWidgets_ = new ArrayList<WAxisSliderWidget>();
@@ -202,7 +195,8 @@ public class WCartesianChart extends WAbstractChart {
 		this.XSeriesColumn_ = -1;
 		this.type_ = type;
 		this.series_ = new ArrayList<WDataSeries>();
-		this.yAxes_ = new ArrayList<WAxis>();
+		this.xAxis_ = new WCartesianChart.AxisStruct();
+		this.yAxes_ = new ArrayList<WCartesianChart.AxisStruct>();
 		this.barMargin_ = 0;
 		this.legend_ = new WLegend();
 		this.axisPadding_ = 5;
@@ -210,7 +204,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.textPen_ = new WPen();
 		this.chartArea_ = null;
 		this.hasDeferredToolTips_ = false;
-		this.yAxisLocations_ = new ArrayList<WCartesianChart.AxisLocation>();
 		this.jsDefined_ = false;
 		this.zoomEnabled_ = false;
 		this.panEnabled_ = false;
@@ -223,8 +216,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.followCurve_ = null;
 		this.curveManipulationEnabled_ = false;
 		this.cObjCreated_ = false;
-		this.xTransformChanged_ = new JSignal(this, "xTransformChanged");
-		this.yTransformChanged_ = new JSignal(this, "yTransformChanged");
 		this.seriesSelected_ = new Signal2<WDataSeries, WPointF>();
 		this.jsSeriesSelected_ = new JSignal2<Double, Double>(this,
 				"seriesSelected") {
@@ -233,11 +224,6 @@ public class WCartesianChart extends WAbstractChart {
 		this.freePainterPaths_ = new ArrayList<WJavaScriptHandle<WPainterPath>>();
 		this.curveTransforms_ = new HashMap<WDataSeries, WJavaScriptHandle<WTransform>>();
 		this.freeTransforms_ = new ArrayList<WJavaScriptHandle<WTransform>>();
-		this.xTransform_ = new WTransform();
-		this.yTransform_ = new WTransform();
-		this.xTransformHandle_ = null;
-		this.yTransformHandle_ = null;
-		this.pens_ = new HashMap<Axis, List<WCartesianChart.PenAssignment>>();
 		this.freePens_ = new ArrayList<WJavaScriptHandle<WPen>>();
 		this.curveLabels_ = new ArrayList<CurveLabel>();
 		this.axisSliderWidgets_ = new ArrayList<WAxisSliderWidget>();
@@ -263,7 +249,6 @@ public class WCartesianChart extends WAbstractChart {
 			;
 			this.yAxes_.remove(this.yAxes_.size() - 1);
 		}
-		;
 		;
 		List<WAxisSliderWidget> copy = new ArrayList<WAxisSliderWidget>(
 				this.axisSliderWidgets_);
@@ -296,7 +281,7 @@ public class WCartesianChart extends WAbstractChart {
 	public void setType(ChartType type) {
 		if (this.type_ != type) {
 			this.type_ = type;
-			this.xAxis_.init(this.interface_, Axis.XAxis);
+			this.xAxis_.axis.init(this.interface_, Axis.XAxis);
 			this.update();
 		}
 	}
@@ -382,9 +367,9 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		this.textPen_ = pen;
-		this.xAxis_.setTextPen(pen);
+		this.xAxis_.axis.setTextPen(pen);
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			this.yAxes_.get(i).setTextPen(pen);
+			this.yAxes_.get(i).axis.setTextPen(pen);
 		}
 	}
 
@@ -533,7 +518,7 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public WAxis getAxis(Axis axis) {
 		if (axis == Axis.XAxis) {
-			return this.xAxis_;
+			return this.xAxis_.axis;
 		} else {
 			return this.yAxis(axis == Axis.Y1Axis ? 0 : 1);
 		}
@@ -551,13 +536,13 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		if (axis == Axis.XAxis) {
 			;
-			this.xAxis_ = waxis;
-			this.xAxis_.init(this.interface_, axis);
+			this.xAxis_.axis = waxis;
+			this.xAxis_.axis.init(this.interface_, axis);
 		} else {
 			int yIndex = axis == Axis.Y1Axis ? 0 : 1;
 			;
-			this.yAxes_.set(yIndex, waxis);
-			this.yAxes_.get(yIndex).init(this.interface_, axis);
+			this.yAxes_.get(yIndex).axis = waxis;
+			this.yAxes_.get(yIndex).axis.init(this.interface_, axis);
 		}
 	}
 
@@ -568,7 +553,12 @@ public class WCartesianChart extends WAbstractChart {
 	 * index 0, and Y2 will be at index 1.
 	 */
 	public List<WAxis> getYAxes() {
-		return this.yAxes_;
+		List<WAxis> result = new ArrayList<WAxis>();
+		;
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			result.add(this.yAxes_.get(i).axis);
+		}
+		return result;
 	}
 
 	/**
@@ -592,7 +582,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * </pre>
 	 */
 	public WAxis yAxis(int i) {
-		return this.yAxes_.get(i);
+		return this.yAxes_.get(i).axis;
 	}
 
 	/**
@@ -609,11 +599,13 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public int addYAxis(WAxis waxis) {
 		int idx = (int) this.yAxes_.size();
-		this.yAxes_.add(waxis);
-		this.yAxisLocations_.add(new WCartesianChart.AxisLocation());
-		this.yAxes_.get(idx).initYAxis(this.interface_, idx);
-		this.yAxes_.get(idx).setPadding(this.getAxisPadding());
-		this.yAxes_.get(idx).setSoftLabelClipping(true);
+		this.yAxes_.add(new WCartesianChart.AxisStruct(waxis));
+		this.yAxes_.get(idx).axis.initYAxis(this.interface_, idx);
+		this.yAxes_.get(idx).axis.setPadding(this.getAxisPadding());
+		this.yAxes_.get(idx).axis.setSoftLabelClipping(true);
+		this.yAxes_.get(idx).transformHandle = this.createJSTransform();
+		this.yAxes_.get(idx).transformChanged = new JSignal(this,
+				"yTransformChanged" + String.valueOf(idx));
 		return idx;
 	}
 
@@ -1090,9 +1082,11 @@ public class WCartesianChart extends WAbstractChart {
 	public WPointF mapFromDevice(final WPointF point, int ordinateAxis) {
 		if (this.isInteractive()) {
 			return this.mapFromDeviceWithoutTransform(
-					this.zoomRangeTransform(this.xTransformHandle_.getValue(),
-							this.yTransformHandle_.getValue()).getInverted()
-							.map(point), ordinateAxis);
+					this.zoomRangeTransform(
+							this.xAxis_.transformHandle.getValue(),
+							this.yAxes_.get(ordinateAxis).transformHandle
+									.getValue()).getInverted().map(point),
+					ordinateAxis);
 		} else {
 			return this.mapFromDeviceWithoutTransform(point, ordinateAxis);
 		}
@@ -1114,8 +1108,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * This function will not take the current zoom range into account. The
 	 * mapping will be performed as if
-	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
-	 * is the identity transform.
+	 * {@link WCartesianChart#zoomRangeTransform(int yAxis)
+	 * zoomRangeTransform()} is the identity transform.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#mapToDeviceWithoutTransform(Object xValue, Object
@@ -1155,8 +1149,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * This function will not take the current zoom range into account. The
 	 * mapping will be performed as if
-	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
-	 * is the identity transform.
+	 * {@link WCartesianChart#zoomRangeTransform(int yAxis)
+	 * zoomRangeTransform()} is the identity transform.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#mapToDeviceWithoutTransform(Object xValue, Object
@@ -1267,8 +1261,9 @@ public class WCartesianChart extends WAbstractChart {
 	public WPointF mapToDevice(final Object xValue, final Object yValue,
 			int axis, int xSegment, int ySegment) {
 		if (this.isInteractive()) {
-			return this.zoomRangeTransform(this.xTransformHandle_.getValue(),
-					this.yTransformHandle_.getValue()).map(
+			return this.zoomRangeTransform(
+					this.xAxis_.transformHandle.getValue(),
+					this.yAxes_.get(axis).transformHandle.getValue()).map(
 					this.mapToDeviceWithoutTransform(xValue, yValue, axis,
 							xSegment, ySegment));
 		} else {
@@ -1323,8 +1318,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * This function will not take the current zoom range into account.The
 	 * mapping will be performed as if
-	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
-	 * is the identity transform.
+	 * {@link WCartesianChart#zoomRangeTransform(int yAxis)
+	 * zoomRangeTransform()} is the identity transform.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#mapFromDeviceWithoutTransform(WPointF point, Axis
@@ -1399,8 +1394,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * <p>
 	 * This function will not take the current zoom range into account.The
 	 * mapping will be performed as if
-	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}
-	 * is the identity transform.
+	 * {@link WCartesianChart#zoomRangeTransform(int yAxis)
+	 * zoomRangeTransform()} is the identity transform.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#mapFromDeviceWithoutTransform(WPointF point, Axis
@@ -1472,9 +1467,9 @@ public class WCartesianChart extends WAbstractChart {
 			this.width_ = (int) rect.getHeight();
 			this.height_ = (int) rect.getWidth();
 		}
-		this.xAxisLocation_ = AxisValue.MinimumValue;
-		for (int i = 0; i < this.yAxisLocations_.size(); ++i) {
-			this.yAxisLocations_.get(i).loc = AxisValue.MinimumValue;
+		this.xAxis_.location.loc = AxisValue.MinimumValue;
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			this.yAxes_.get(i).location.loc = AxisValue.MinimumValue;
 		}
 		WPaintDevice d = device;
 		if (!(d != null)) {
@@ -1494,14 +1489,21 @@ public class WCartesianChart extends WAbstractChart {
 			self.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
 			self.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
 			this.calcChartArea();
-			this.xTransform_.assign(new WTransform());
-			this.yTransform_.assign(new WTransform());
+			this.xAxis_.transform.assign(new WTransform());
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				this.yAxes_.get(i).transform.assign(new WTransform());
+			}
 			if (this.chartArea_.getWidth() <= 5
 					|| this.chartArea_.getHeight() <= 5
-					|| !this.isPrepareAxes()) {
+					|| !this.prepareAxes(device)) {
 				if (this.isInteractive()) {
-					this.xTransform_.assign(this.xTransformHandle_.getValue());
-					this.yTransform_.assign(this.yTransformHandle_.getValue());
+					this.xAxis_.transform.assign(this.xAxis_.transformHandle
+							.getValue());
+					for (int i = 0; i < this.getYAxisCount(); ++i) {
+						this.yAxes_.get(i).transform
+								.assign(this.yAxes_.get(i).transformHandle
+										.getValue());
+					}
 				}
 				return false;
 			}
@@ -1536,19 +1538,27 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		this.calcChartArea();
 		boolean result = this.chartArea_.getWidth() > 5
-				&& this.chartArea_.getHeight() > 5 && this.isPrepareAxes();
+				&& this.chartArea_.getHeight() > 5 && this.prepareAxes(device);
 		if (this.isInteractive()) {
-			this.xTransform_.assign(this.xTransformHandle_.getValue());
-			this.yTransform_.assign(this.yTransformHandle_.getValue());
+			this.xAxis_.transform
+					.assign(this.xAxis_.transformHandle.getValue());
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				this.yAxes_.get(i).transform
+						.assign(this.yAxes_.get(i).transformHandle.getValue());
+			}
 		} else {
-			this.xTransform_.assign(new WTransform());
-			this.yTransform_.assign(new WTransform());
+			this.xAxis_.transform.assign(new WTransform());
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				this.yAxes_.get(i).transform.assign(new WTransform());
+			}
 		}
 		if (this.isInteractive()) {
 			WCartesianChart self = this;
 			self.clearPens();
-			self.createPensForAxis(Axis.XAxis);
-			self.createPensForAxis(Axis.YAxis);
+			self.createPensForAxis(Axis.XAxis, -1);
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				self.createPensForAxis(Axis.YAxis, i);
+			}
 			if (this.curvePaths_.isEmpty()) {
 				self.assignJSHandlesForAllSeries();
 			}
@@ -1622,9 +1632,9 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	public void setAxisPadding(int padding) {
 		this.axisPadding_ = padding;
-		this.xAxis_.setPadding(padding);
+		this.xAxis_.axis.setPadding(padding);
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			this.yAxes_.get(i).setPadding(padding);
+			this.yAxes_.get(i).axis.setPadding(padding);
 		}
 	}
 
@@ -1884,6 +1894,7 @@ public class WCartesianChart extends WAbstractChart {
 	public void setCrosshairYAxis(int yAxis) {
 		if (this.crosshairYAxis_ != yAxis) {
 			this.crosshairYAxis_ = yAxis;
+			this.updateJSConfig("crosshairAxis", yAxis);
 		}
 	}
 
@@ -2049,9 +2060,9 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WAxis#setSoftLabelClipping(boolean enabled)
 	 */
 	public void setSoftLabelClipping(boolean enabled) {
-		this.xAxis_.setSoftLabelClipping(enabled);
+		this.xAxis_.axis.setSoftLabelClipping(enabled);
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			this.yAxes_.get(i).setSoftLabelClipping(enabled);
+			this.yAxes_.get(i).axis.setSoftLabelClipping(enabled);
 		}
 	}
 
@@ -2478,24 +2489,6 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	private WChart2DImplementation interface_;
-	private Orientation orientation_;
-	private int XSeriesColumn_;
-	private ChartType type_;
-	private List<WDataSeries> series_;
-	private WAxis xAxis_;
-	private List<WAxis> yAxes_;
-	private double barMargin_;
-	private WLegend legend_;
-	private int axisPadding_;
-	private WPen borderPen_;
-	WPen textPen_;
-	private int width_;
-	private int height_;
-	WRectF chartArea_;
-	private AxisValue xAxisLocation_;
-	boolean hasDeferredToolTips_;
-
 	static class AxisLocation {
 		private static Logger logger = LoggerFactory
 				.getLogger(AxisLocation.class);
@@ -2510,32 +2503,6 @@ public class WCartesianChart extends WAbstractChart {
 		public int maxOffset;
 		public AxisValue loc;
 	}
-
-	private List<WCartesianChart.AxisLocation> yAxisLocations_;
-	private boolean jsDefined_;
-	private boolean zoomEnabled_;
-	private boolean panEnabled_;
-	private boolean rubberBandEnabled_;
-	private boolean crosshairEnabled_;
-	private WColor crosshairColor_;
-	private int crosshairYAxis_;
-	private boolean seriesSelectionEnabled_;
-	private WDataSeries selectedSeries_;
-	private WDataSeries followCurve_;
-	private boolean curveManipulationEnabled_;
-	boolean cObjCreated_;
-	private JSignal xTransformChanged_;
-	private JSignal yTransformChanged_;
-	private Signal2<WDataSeries, WPointF> seriesSelected_;
-	private JSignal2<Double, Double> jsSeriesSelected_;
-	Map<WDataSeries, WJavaScriptHandle<WPainterPath>> curvePaths_;
-	private List<WJavaScriptHandle<WPainterPath>> freePainterPaths_;
-	Map<WDataSeries, WJavaScriptHandle<WTransform>> curveTransforms_;
-	private List<WJavaScriptHandle<WTransform>> freeTransforms_;
-	WTransform xTransform_;
-	WTransform yTransform_;
-	WJavaScriptHandle<WTransform> xTransformHandle_;
-	WJavaScriptHandle<WTransform> yTransformHandle_;
 
 	static class PenAssignment {
 		private static Logger logger = LoggerFactory
@@ -2554,7 +2521,73 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	private Map<Axis, List<WCartesianChart.PenAssignment>> pens_;
+	static class AxisStruct {
+		private static Logger logger = LoggerFactory
+				.getLogger(AxisStruct.class);
+
+		public AxisStruct() {
+			this.axis = new WAxis();
+			this.calculatedWidth = 0;
+			this.location = new WCartesianChart.AxisLocation();
+			this.transform = new WTransform();
+			this.transformHandle = null;
+			this.transformChanged = null;
+			this.pens = new ArrayList<WCartesianChart.PenAssignment>();
+		}
+
+		public AxisStruct(WAxis ax) {
+			this.axis = ax;
+			this.calculatedWidth = 0;
+			this.location = new WCartesianChart.AxisLocation();
+			this.transform = new WTransform();
+			this.transformHandle = null;
+			this.transformChanged = null;
+			this.pens = new ArrayList<WCartesianChart.PenAssignment>();
+		}
+
+		public WAxis axis;
+		public int calculatedWidth;
+		public WCartesianChart.AxisLocation location;
+		public WTransform transform;
+		public WJavaScriptHandle<WTransform> transformHandle;
+		public JSignal transformChanged;
+		public List<WCartesianChart.PenAssignment> pens;
+	}
+
+	private WChart2DImplementation interface_;
+	private Orientation orientation_;
+	private int XSeriesColumn_;
+	private ChartType type_;
+	private List<WDataSeries> series_;
+	WCartesianChart.AxisStruct xAxis_;
+	private List<WCartesianChart.AxisStruct> yAxes_;
+	private double barMargin_;
+	private WLegend legend_;
+	private int axisPadding_;
+	private WPen borderPen_;
+	WPen textPen_;
+	private int width_;
+	private int height_;
+	WRectF chartArea_;
+	boolean hasDeferredToolTips_;
+	private boolean jsDefined_;
+	private boolean zoomEnabled_;
+	private boolean panEnabled_;
+	private boolean rubberBandEnabled_;
+	private boolean crosshairEnabled_;
+	private WColor crosshairColor_;
+	private int crosshairYAxis_;
+	private boolean seriesSelectionEnabled_;
+	private WDataSeries selectedSeries_;
+	private WDataSeries followCurve_;
+	private boolean curveManipulationEnabled_;
+	boolean cObjCreated_;
+	private Signal2<WDataSeries, WPointF> seriesSelected_;
+	private JSignal2<Double, Double> jsSeriesSelected_;
+	Map<WDataSeries, WJavaScriptHandle<WPainterPath>> curvePaths_;
+	private List<WJavaScriptHandle<WPainterPath>> freePainterPaths_;
+	Map<WDataSeries, WJavaScriptHandle<WTransform>> curveTransforms_;
+	private List<WJavaScriptHandle<WTransform>> freeTransforms_;
 	private List<WJavaScriptHandle<WPen>> freePens_;
 	private List<CurveLabel> curveLabels_;
 	private List<WAxisSliderWidget> axisSliderWidgets_;
@@ -2587,14 +2620,10 @@ public class WCartesianChart extends WAbstractChart {
 
 	private void init() {
 		this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Muted));
-		this.xAxis_ = new WAxis();
-		this.xAxisLocation_ = AxisValue.MinimumValue;
-		this.yAxes_.add(new WAxis());
-		this.yAxisLocations_.add(new WCartesianChart.AxisLocation());
-		WAxis y2axis = new WAxis();
-		y2axis.setLocation(AxisValue.MaximumValue);
-		this.yAxes_.add(y2axis);
-		this.yAxisLocations_.add(new WCartesianChart.AxisLocation());
+		this.yAxes_.add(new WCartesianChart.AxisStruct());
+		this.yAxes_.add(new WCartesianChart.AxisStruct());
+		this.yAxes_.get(this.yAxes_.size() - 1).axis
+				.setLocation(AxisValue.MaximumValue);
 		this.getAxis(Axis.XAxis).init(this.interface_, Axis.XAxis);
 		this.getAxis(Axis.YAxis).init(this.interface_, Axis.YAxis);
 		this.getAxis(Axis.Y2Axis).init(this.interface_, Axis.Y2Axis);
@@ -2606,10 +2635,13 @@ public class WCartesianChart extends WAbstractChart {
 		this.getAxis(Axis.Y2Axis).setSoftLabelClipping(true);
 		this.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
 		this.setPlotAreaPadding(30, EnumSet.of(Side.Top, Side.Bottom));
-		this.xTransformHandle_ = this.createJSTransform();
-		this.yTransformHandle_ = this.createJSTransform();
-		this.xTransform_.assign(new WTransform());
-		this.yTransform_.assign(new WTransform());
+		this.xAxis_.transformHandle = this.createJSTransform();
+		this.xAxis_.transformChanged = new JSignal(this, "xTransformChanged");
+		for (int i = 0; i < 2; ++i) {
+			this.yAxes_.get(i).transformHandle = this.createJSTransform();
+			this.yAxes_.get(i).transformChanged = new JSignal(this,
+					"yTransformChanged" + String.valueOf(i));
+		}
 		if (WApplication.getInstance() != null
 				&& WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.mouseWentDown().addListener(
@@ -2742,14 +2774,18 @@ public class WCartesianChart extends WAbstractChart {
 		}
 		if (this.isInteractive() || this.hasDeferredToolTips_) {
 			this.setZoomAndPan();
-			double modelBottom = this.getAxis(Axis.Y1Axis).mapFromDevice(0);
-			double modelTop = this.getAxis(Axis.Y1Axis).mapFromDevice(
-					this.chartArea_.getHeight());
-			double modelLeft = this.getAxis(Axis.XAxis).mapFromDevice(0);
-			double modelRight = this.getAxis(Axis.XAxis).mapFromDevice(
-					this.chartArea_.getWidth());
-			WRectF modelArea = new WRectF(modelLeft, modelBottom, modelRight
-					- modelLeft, modelTop - modelBottom);
+			List<WRectF> modelAreas = new ArrayList<WRectF>();
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				double modelBottom = this.yAxis(i).mapFromDevice(0);
+				double modelTop = this.yAxis(i).mapFromDevice(
+						this.chartArea_.getHeight());
+				double modelLeft = this.getAxis(Axis.XAxis).mapFromDevice(0);
+				double modelRight = this.getAxis(Axis.XAxis).mapFromDevice(
+						this.chartArea_.getWidth());
+				WRectF modelArea = new WRectF(modelLeft, modelBottom,
+						modelRight - modelLeft, modelTop - modelBottom);
+				modelAreas.add(modelArea);
+			}
 			WRectF insideArea = this.getInsideChartArea();
 			int coordPaddingX = 5;
 			int coordPaddingY = 5;
@@ -2783,22 +2819,26 @@ public class WCartesianChart extends WAbstractChart {
 				}
 			}
 			if (this.getAxis(Axis.XAxis).zoomRangeChanged().isConnected()
-					&& !this.xTransformChanged_.isConnected()) {
-				this.xTransformChanged_.addListener(this,
+					&& !this.xAxis_.transformChanged.isConnected()) {
+				this.xAxis_.transformChanged.addListener(this,
 						new Signal.Listener() {
 							public void trigger() {
 								WCartesianChart.this.xTransformChanged();
 							}
 						});
 			}
-			if (this.getAxis(Axis.YAxis).zoomRangeChanged().isConnected()
-					&& !this.yTransformChanged_.isConnected()) {
-				this.yTransformChanged_.addListener(this,
-						new Signal.Listener() {
-							public void trigger() {
-								WCartesianChart.this.yTransformChanged();
-							}
-						});
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				if (this.yAxis(i).zoomRangeChanged().isConnected()
+						&& !this.yAxes_.get(i).transformChanged.isConnected()) {
+					final int axis = i;
+					this.yAxes_.get(i).transformChanged.addListener(this,
+							new Signal.Listener() {
+								public void trigger() {
+									WCartesianChart.this
+											.yTransformChanged(axis);
+								}
+							});
+				}
 			}
 			char[] buf = new char[30];
 			WApplication app = WApplication.getInstance();
@@ -2833,33 +2873,47 @@ public class WCartesianChart extends WAbstractChart {
 					.append(",crosshair:")
 					.append(StringUtils.asString(this.crosshairEnabled_)
 							.toString())
+					.append(",crosshairAxis:")
+					.append(this.crosshairYAxis_)
 					.append(",crosshairColor:")
 					.append(jsStringLiteral(this.crosshairColor_
-							.getCssText(true)))
-					.append(",followCurve:")
-					.append(followCurve)
-					.append(",xTransform:")
-					.append(this.xTransformHandle_.getJsRef())
-					.append(",yTransform:")
-					.append(this.yTransformHandle_.getJsRef())
-					.append(",area:")
-					.append(this.hv(this.chartArea_).getJsRef())
+							.getCssText(true))).append(",followCurve:")
+					.append(followCurve).append(",xTransform:")
+					.append(this.xAxis_.transformHandle.getJsRef())
+					.append(",yTransforms:[");
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				if (i != 0) {
+					ss.append(',');
+				}
+				ss.append(this.yAxes_.get(i).transformHandle.getJsRef());
+			}
+			ss.append("],area:").append(this.hv(this.chartArea_).getJsRef())
 					.append(",insideArea:")
 					.append(this.hv(insideArea).getJsRef())
-					.append(",modelArea:")
-					.append(modelArea.getJsRef())
-					.append(",hasToolTips:")
+					.append(",modelAreas:[");
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				if (i != 0) {
+					ss.append(',');
+				}
+				ss.append(modelAreas.get(i).getJsRef());
+			}
+			ss.append("],");
+			ss.append("hasToolTips:")
 					.append(StringUtils.asString(this.hasDeferredToolTips_)
 							.toString())
 					.append(",notifyTransform:{x:")
 					.append(StringUtils.asString(
 							this.getAxis(Axis.XAxis).zoomRangeChanged()
-									.isConnected()).toString())
-					.append(",y:")
-					.append(StringUtils.asString(
-							this.getAxis(Axis.YAxis).zoomRangeChanged()
-									.isConnected()).toString())
-					.append("},ToolTipInnerStyle:")
+									.isConnected()).toString()).append(",y:[");
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				if (i != 0) {
+					ss.append(',');
+				}
+				ss.append(StringUtils.asString(
+						this.yAxis(i).zoomRangeChanged().isConnected())
+						.toString());
+			}
+			ss.append("]},ToolTipInnerStyle:")
 					.append(jsStringLiteral(app.getTheme().utilityCssClass(
 							UtilityCssClassRole.ToolTipInner)))
 					.append(",ToolTipOuterStyle:")
@@ -2881,21 +2935,27 @@ public class WCartesianChart extends WAbstractChart {
 								.append(this.curvePaths_.get(
 										this.series_.get(i)).getJsRef())
 								.append(",");
-						ss.append("transform:").append(
-								this.curveTransforms_.get(this.series_.get(i))
-										.getJsRef());
+						ss.append("transform:")
+								.append(this.curveTransforms_.get(
+										this.series_.get(i)).getJsRef())
+								.append(",");
+						ss.append("axis:").append(
+								this.series_.get(i).getYAxis());
 						ss.append("}");
 					}
 				}
 			}
 			ss.append("},");
-			ss.append("maxZoom:[")
+			ss.append("maxZoom:{x:")
 					.append(MathUtils.roundJs(this.getAxis(Axis.XAxis)
-							.getMaxZoom(), 3)).append(",");
-			ss.append(
-					MathUtils
-							.roundJs(this.getAxis(Axis.Y1Axis).getMaxZoom(), 3))
-					.append("],");
+							.getMaxZoom(), 3)).append(",y:[");
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				if (i != 0) {
+					ss.append(',');
+				}
+				ss.append(MathUtils.roundJs(this.yAxis(i).getMaxZoom(), 3));
+			}
+			ss.append("]},");
 			ss.append("rubberBand:").append(this.rubberBandEnabled_)
 					.append(',');
 			ss.append("sliders:[");
@@ -2911,8 +2971,41 @@ public class WCartesianChart extends WAbstractChart {
 					.append(wheelActionsToJson(this.wheelActions_)).append(",");
 			ss.append("coordinateOverlayPadding:[").append(coordPaddingX)
 					.append(",");
-			ss.append(coordPaddingY).append("]");
-			ss.append("});");
+			ss.append(coordPaddingY).append("],");
+			ss.append("yAxes:[");
+			for (int i = 0; i < this.getYAxisCount(); ++i) {
+				if (i != 0) {
+					ss.append(',');
+				}
+				ss.append('{');
+				ss.append("width:")
+						.append(MathUtils.roundJs(
+								this.yAxes_.get(i).calculatedWidth, 3))
+						.append(',');
+				ss.append("side:'");
+				switch (this.yAxes_.get(i).location.loc) {
+				case MinimumValue:
+					ss.append("min");
+					break;
+				case MaximumValue:
+					ss.append("max");
+					break;
+				case ZeroValue:
+					ss.append("zero");
+					break;
+				case BothSides:
+					ss.append("both");
+					break;
+				}
+				ss.append("',");
+				ss.append("minOffset:")
+						.append(this.yAxes_.get(i).location.minOffset)
+						.append(',');
+				ss.append("maxOffset:").append(
+						this.yAxes_.get(i).location.maxOffset);
+				ss.append('}');
+			}
+			ss.append("]});");
 			this.doJavaScript(ss.toString());
 			this.cObjCreated_ = true;
 		}
@@ -3252,7 +3345,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * 
 	 * @see WCartesianChart#initLayout(WRectF rectangle, WPaintDevice device)
 	 */
-	protected boolean isPrepareAxes() {
+	protected boolean prepareAxes(WPaintDevice device) {
 		final WAxis xAxis = this.getAxis(Axis.XAxis);
 		Orientation yDir = this.orientation_;
 		Orientation xDir = this.orientation_ == Orientation.Vertical ? Orientation.Horizontal
@@ -3261,7 +3354,7 @@ public class WCartesianChart extends WAbstractChart {
 			return false;
 		}
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			if (!this.yAxes_.get(i).prepareRender(yDir,
+			if (!this.yAxes_.get(i).axis.prepareRender(yDir,
 					this.chartArea_.getHeight())) {
 				return false;
 			}
@@ -3270,48 +3363,49 @@ public class WCartesianChart extends WAbstractChart {
 			switch (xAxis.getLocation()) {
 			case MinimumValue:
 			case ZeroValue:
-				this.xAxisLocation_ = AxisValue.MinimumValue;
+				this.xAxis_.location.loc = AxisValue.MinimumValue;
 				break;
 			case MaximumValue:
-				this.xAxisLocation_ = AxisValue.MaximumValue;
+				this.xAxis_.location.loc = AxisValue.MaximumValue;
 				break;
 			case BothSides:
-				this.xAxisLocation_ = AxisValue.BothSides;
+				this.xAxis_.location.loc = AxisValue.BothSides;
 			}
 		}
-		AxisValue xLocation = this.xAxis_.getLocation();
+		AxisValue xLocation = this.xAxis_.axis.getLocation();
 		if (xLocation == AxisValue.ZeroValue) {
-			if (this.yAxes_.get(0).segments_.get(this.yAxes_.get(0).segments_
-					.size() - 1).renderMaximum < 0) {
+			if (this.yAxes_.get(0).axis.segments_
+					.get(this.yAxes_.get(0).axis.segments_.size() - 1).renderMaximum < 0) {
 				xLocation = AxisValue.MaximumValue;
 			} else {
-				if (this.yAxes_.get(0).segments_
-						.get(this.yAxes_.get(0).segments_.size() - 1).renderMinimum > 0) {
+				if (this.yAxes_.get(0).axis.segments_
+						.get(this.yAxes_.get(0).axis.segments_.size() - 1).renderMinimum > 0) {
 					xLocation = AxisValue.MinimumValue;
 				} else {
-					if (!this.yAxes_.get(0).isOnAxis(0.0)) {
+					if (!this.yAxes_.get(0).axis.isOnAxis(0.0)) {
 						xLocation = AxisValue.MinimumValue;
 					}
 				}
 			}
 		} else {
 			if (xLocation == AxisValue.MinimumValue) {
-				if (this.yAxes_.get(0).segments_.get(0).renderMinimum == 0
-						&& this.yAxes_.get(0).getTickDirection() == TickDirection.Outwards) {
+				if (this.yAxes_.get(0).axis.segments_.get(0).renderMinimum == 0
+						&& this.yAxes_.get(0).axis.getTickDirection() == TickDirection.Outwards) {
 					xLocation = AxisValue.ZeroValue;
 				}
 			} else {
 				if (xLocation == AxisValue.MaximumValue) {
-					if (this.yAxes_.get(0).segments_
-							.get(this.yAxes_.get(0).segments_.size() - 1).renderMaximum == 0) {
+					if (this.yAxes_.get(0).axis.segments_.get(this.yAxes_
+							.get(0).axis.segments_.size() - 1).renderMaximum == 0) {
 						xLocation = AxisValue.ZeroValue;
 					}
 				}
 			}
 		}
-		this.xAxisLocation_ = xLocation;
+		this.xAxis_.location.loc = xLocation;
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			this.yAxisLocations_.get(i).loc = this.yAxes_.get(i).getLocation();
+			this.yAxes_.get(i).location.loc = this.yAxes_.get(i).axis
+					.getLocation();
 		}
 		List<WAxis> minimumYaxes = this
 				.collectYAxesAtLocation(AxisValue.MinimumValue);
@@ -3319,13 +3413,15 @@ public class WCartesianChart extends WAbstractChart {
 		for (int i = 0; i < minimumYaxes.size(); ++i) {
 			final WAxis axis = minimumYaxes.get(i);
 			if (axis.getLocation() != AxisValue.BothSides) {
-				this.yAxisLocations_.get(axis.getYAxisId()).loc = AxisValue.MinimumValue;
+				this.yAxes_.get(axis.getYAxisId()).location.loc = AxisValue.MinimumValue;
 			}
-			this.yAxisLocations_.get(axis.getYAxisId()).minOffset = offset;
+			this.yAxes_.get(axis.getYAxisId()).location.minOffset = offset;
+			this.yAxes_.get(axis.getYAxisId()).calculatedWidth = this
+					.calcYAxisSize(axis, device) + 10;
 			if (i == 0 && axis.getTickDirection() == TickDirection.Inwards) {
 				offset += 10;
 			} else {
-				offset += this.calcYAxisSize(axis);
+				offset += this.yAxes_.get(axis.getYAxisId()).calculatedWidth;
 			}
 		}
 		List<WAxis> maximumYaxes = this
@@ -3334,25 +3430,16 @@ public class WCartesianChart extends WAbstractChart {
 		for (int i = 0; i < maximumYaxes.size(); ++i) {
 			final WAxis axis = maximumYaxes.get(i);
 			if (axis.getLocation() != AxisValue.BothSides) {
-				this.yAxisLocations_.get(axis.getYAxisId()).loc = AxisValue.MaximumValue;
+				this.yAxes_.get(axis.getYAxisId()).location.loc = AxisValue.MaximumValue;
 			}
-			this.yAxisLocations_.get(axis.getYAxisId()).maxOffset = offset;
+			this.yAxes_.get(axis.getYAxisId()).location.maxOffset = offset;
+			this.yAxes_.get(axis.getYAxisId()).calculatedWidth = this
+					.calcYAxisSize(axis, device) + 10;
 			if (i == 0 && axis.getTickDirection() == TickDirection.Inwards) {
 				offset += 10;
 			} else {
-				offset += this.calcYAxisSize(axis);
+				offset += this.yAxes_.get(axis.getYAxisId()).calculatedWidth;
 			}
-		}
-		if (!minimumYaxes.isEmpty()
-				&& minimumYaxes.get(0).getLocation() == AxisValue.MinimumValue
-				&& this.xAxis_.segments_.get(0).renderMinimum == 0
-				&& minimumYaxes.get(0).getTickDirection() == TickDirection.Outwards) {
-			this.yAxisLocations_.get(minimumYaxes.get(0).getYAxisId()).loc = AxisValue.ZeroValue;
-		}
-		if (!maximumYaxes.isEmpty()
-				&& maximumYaxes.get(0).getLocation() == AxisValue.MaximumValue
-				&& this.xAxis_.segments_.get(this.xAxis_.segments_.size() - 1).renderMaximum == 0) {
-			this.yAxisLocations_.get(maximumYaxes.get(0).getYAxisId()).loc = AxisValue.ZeroValue;
 		}
 		return true;
 	}
@@ -3381,9 +3468,9 @@ public class WCartesianChart extends WAbstractChart {
 	 */
 	protected void renderAxes(final WPainter painter,
 			EnumSet<AxisProperty> properties) {
-		this.renderAxis(painter, this.xAxis_, properties);
+		this.renderAxis(painter, this.xAxis_.axis, properties);
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			this.renderAxis(painter, this.yAxes_.get(i), properties);
+			this.renderAxis(painter, this.yAxes_.get(i).axis, properties);
 		}
 	}
 
@@ -3446,7 +3533,7 @@ public class WCartesianChart extends WAbstractChart {
 					continue;
 				}
 				if (series == label.getSeries()) {
-					WTransform t = this.getZoomRangeTransform();
+					WTransform t = this.zoomRangeTransform(series.getYAxis());
 					if (series.getType() == SeriesType.LineSeries
 							|| series.getType() == SeriesType.CurveSeries) {
 						t.assign(t.multiply(this.curveTransform(series)));
@@ -3551,13 +3638,13 @@ public class WCartesianChart extends WAbstractChart {
 			WAxis caxis = null;
 			Orientation titleOrientation = Orientation.Horizontal;
 			if (this.getLegendSide() == Side.Right) {
-				if (this.yAxes_.get(1).isVisible()) {
-					caxis = this.yAxes_.get(1);
+				if (this.yAxes_.get(1).axis.isVisible()) {
+					caxis = this.yAxes_.get(1).axis;
 				} else {
-					if (this.yAxes_.get(0).isVisible()
-							&& (this.yAxes_.get(0).getLocation() == AxisValue.BothSides || this.yAxes_
-									.get(0).getLocation() == AxisValue.MaximumValue)) {
-						caxis = this.yAxes_.get(0);
+					if (this.yAxes_.get(0).axis.isVisible()
+							&& (this.yAxes_.get(0).axis.getLocation() == AxisValue.BothSides || this.yAxes_
+									.get(0).axis.getLocation() == AxisValue.MaximumValue)) {
+						caxis = this.yAxes_.get(0).axis;
 					}
 				}
 				if (caxis != null
@@ -3566,7 +3653,7 @@ public class WCartesianChart extends WAbstractChart {
 				}
 			} else {
 				if (this.getLegendSide() == Side.Left) {
-					caxis = this.yAxes_.get(0);
+					caxis = this.yAxes_.get(0).axis;
 					if (caxis.getTitleOrientation() == Orientation.Vertical) {
 						titleOrientation = Orientation.Vertical;
 					}
@@ -3577,7 +3664,7 @@ public class WCartesianChart extends WAbstractChart {
 			if (titleOrientation == Orientation.Vertical && caxis != null) {
 				if (fontMetrics) {
 					margin = (int) (caxis.calcTitleSize(device,
-							Orientation.Vertical) + this.yAxes_.get(1)
+							Orientation.Vertical) + this.yAxes_.get(1).axis
 							.calcMaxTickLabelSize(device,
 									Orientation.Horizontal));
 				} else {
@@ -3788,8 +3875,8 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		boolean isYAxis = axis.getId() != Axis.XAxis;
-		final AxisValue location = axis.getId() == Axis.XAxis ? this.xAxisLocation_
-				: this.yAxisLocations_.get(axis.getYAxisId()).loc;
+		final AxisValue location = axis.getId() == Axis.XAxis ? this.xAxis_.location.loc
+				: this.yAxes_.get(axis.getYAxisId()).location.loc;
 		if (this.isInteractive()
 				&& ((painter.getDevice()) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (painter
 						.getDevice()) : null) != null) {
@@ -3801,7 +3888,7 @@ public class WCartesianChart extends WAbstractChart {
 			} else {
 				if (isYAxis != (this.getOrientation() == Orientation.Horizontal)) {
 					double h = area.getHeight();
-					if (this.xAxisLocation_ == AxisValue.ZeroValue
+					if (this.xAxis_.location.loc == AxisValue.ZeroValue
 							&& this.getOrientation() == Orientation.Vertical) {
 						h += 1;
 					}
@@ -3851,7 +3938,7 @@ public class WCartesianChart extends WAbstractChart {
 			case MinimumValue:
 				if (isYAxis) {
 					double x = this.chartArea_.getLeft()
-							- this.yAxisLocations_.get(axis.getYAxisId()).minOffset;
+							- this.yAxes_.get(axis.getYAxisId()).location.minOffset;
 					if (axis.getTickDirection() == TickDirection.Inwards) {
 						tickStart = 0;
 						tickEnd = TICK_LENGTH;
@@ -3892,7 +3979,7 @@ public class WCartesianChart extends WAbstractChart {
 			case MaximumValue:
 				if (isYAxis) {
 					double x = this.chartArea_.getRight()
-							+ this.yAxisLocations_.get(axis.getYAxisId()).maxOffset;
+							+ this.yAxes_.get(axis.getYAxisId()).location.maxOffset;
 					if (axis.getTickDirection() == TickDirection.Inwards) {
 						tickStart = -TICK_LENGTH;
 						tickEnd = 0;
@@ -4027,8 +4114,14 @@ public class WCartesianChart extends WAbstractChart {
 						double extraMargin = 0;
 						WPaintDevice device = painter.getDevice();
 						if (axis.getTickDirection() == TickDirection.Outwards) {
-							extraMargin = axis.calcMaxTickLabelSize(device,
-									Orientation.Vertical);
+							if (!EnumUtils.mask(device.getFeatures(),
+									WPaintDevice.FeatureFlag.HasFontMetrics)
+									.isEmpty()) {
+								extraMargin = axis.calcMaxTickLabelSize(device,
+										Orientation.Vertical);
+							} else {
+								extraMargin = 15;
+							}
 						}
 						if (locations.get(l) != AxisValue.MaximumValue) {
 							extraMargin = -extraMargin;
@@ -4189,15 +4282,14 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			List<WPen> pens = new ArrayList<WPen>();
 			List<WPen> textPens = new ArrayList<WPen>();
-			if (this.isInteractive()
-					&& (axis.getId() == Axis.XAxis || axis.getId() == Axis.YAxis)) {
-				List<WCartesianChart.PenAssignment> it = this.pens_.get(axis
-						.getId());
-				if (it != null) {
-					final List<WCartesianChart.PenAssignment> ass = it;
-					for (int i = 0; i < ass.size(); ++i) {
-						pens.add(ass.get(i).pen.getValue());
-						textPens.add(ass.get(i).textPen.getValue());
+			if (this.isInteractive()) {
+				final List<WCartesianChart.PenAssignment> assignment = axis
+						.getId() == Axis.XAxis ? this.xAxis_.pens : this.yAxes_
+						.get(axis.getYAxisId()).pens;
+				if (!assignment.isEmpty()) {
+					for (int i = 0; i < assignment.size(); ++i) {
+						pens.add(assignment.get(i).pen.getValue());
+						textPens.add(assignment.get(i).textPen.getValue());
 					}
 				}
 			}
@@ -4206,37 +4298,41 @@ public class WCartesianChart extends WAbstractChart {
 			if (axis.getLocation() == AxisValue.ZeroValue) {
 				transform.assign(new WTransform(1, 0, 0, -1, area.getLeft(),
 						area.getBottom())
-						.multiply(this.xTransform_)
-						.multiply(this.yTransform_)
+						.multiply(this.xAxis_.transform)
+						.multiply(this.yAxes_.get(axis.getYAxisId()).transform)
 						.multiply(
 								new WTransform(1, 0, 0, -1, -area.getLeft(),
 										area.getBottom())));
 			} else {
 				if (isYAxis && this.getOrientation() == Orientation.Vertical) {
 					transform.assign(new WTransform(1, 0, 0, -1, 0, area
-							.getBottom()).multiply(this.yTransform_).multiply(
-							new WTransform(1, 0, 0, -1, 0, area.getBottom())));
+							.getBottom()).multiply(
+							this.yAxes_.get(axis.getYAxisId()).transform)
+							.multiply(
+									new WTransform(1, 0, 0, -1, 0, area
+											.getBottom())));
 				} else {
 					if (isYAxis
 							&& this.getOrientation() == Orientation.Horizontal) {
 						transform.assign(new WTransform(0, 1, 1, 0, area
-								.getLeft(), 0).multiply(this.yTransform_)
+								.getLeft(), 0).multiply(
+								this.yAxes_.get(axis.getYAxisId()).transform)
 								.multiply(
 										new WTransform(0, 1, 1, 0, 0, -area
 												.getLeft())));
 					} else {
 						if (this.getOrientation() == Orientation.Horizontal) {
 							transform.assign(new WTransform(0, 1, 1, 0, 0, area
-									.getTop()).multiply(this.xTransform_)
+									.getTop()).multiply(this.xAxis_.transform)
 									.multiply(
 											new WTransform(0, 1, 1, 0, -area
 													.getTop(), 0)));
 						} else {
 							transform.assign(new WTransform(1, 0, 0, 1, area
-									.getLeft(), 0).multiply(this.xTransform_)
-									.multiply(
-											new WTransform(1, 0, 0, 1, -area
-													.getLeft(), 0)));
+									.getLeft(), 0).multiply(
+									this.xAxis_.transform).multiply(
+									new WTransform(1, 0, 0, 1, -area.getLeft(),
+											0)));
 						}
 					}
 				}
@@ -4273,15 +4369,15 @@ public class WCartesianChart extends WAbstractChart {
 		if (!ax.isGridLinesEnabled()) {
 			return;
 		}
-		boolean vertical = ax.getId() != Axis.XAxis;
-		final WAxis other = vertical ? this.getAxis(Axis.XAxis) : this
+		boolean isYAxis = ax.getId() != Axis.XAxis;
+		final WAxis other = isYAxis ? this.getAxis(Axis.XAxis) : this
 				.getAxis(Axis.Y1Axis);
 		final WAxis.Segment s0 = other.segments_.get(0);
 		final WAxis.Segment sn = other.segments_
 				.get(other.segments_.size() - 1);
 		double ou0 = s0.renderStart;
 		double oun = sn.renderStart + sn.renderLength;
-		if (!vertical && this.getAxis(Axis.Y2Axis).isGridLinesEnabled()) {
+		if (!isYAxis && this.getAxis(Axis.Y2Axis).isGridLinesEnabled()) {
 			final WAxis other2 = this.getAxis(Axis.Y2Axis);
 			final WAxis.Segment s0_2 = other2.segments_.get(0);
 			final WAxis.Segment sn_2 = other2.segments_.get(other2.segments_
@@ -4295,8 +4391,7 @@ public class WCartesianChart extends WAbstractChart {
 				oun = sn_2.renderStart + sn_2.renderLength;
 			}
 		}
-		boolean otherVertical = !vertical;
-		if (otherVertical) {
+		if (!isYAxis) {
 			ou0 = this.chartArea_.getBottom() - ou0;
 			oun = this.chartArea_.getBottom() - oun;
 		} else {
@@ -4311,11 +4406,11 @@ public class WCartesianChart extends WAbstractChart {
 			painter.setClipping(true);
 		}
 		List<WPen> pens = new ArrayList<WPen>();
-		if (this.pens_.get(ax.getId()) == null) {
+		final List<WCartesianChart.PenAssignment> assignments = ax.getId() == Axis.XAxis ? this.xAxis_.pens
+				: this.yAxes_.get(ax.getYAxisId()).pens;
+		if (assignments.isEmpty()) {
 			pens.add(ax.getGridLinesPen());
 		} else {
-			final List<WCartesianChart.PenAssignment> assignments = this.pens_
-					.get(ax.getId());
 			for (int i = 0; i < assignments.size(); ++i) {
 				pens.add(assignments.get(i).gridPen.getValue());
 			}
@@ -4332,7 +4427,7 @@ public class WCartesianChart extends WAbstractChart {
 			List<Double> gridPos = ax.gridLinePositions(axisConfig);
 			for (int i = 0; i < gridPos.size(); ++i) {
 				double u = gridPos.get(i);
-				if (vertical) {
+				if (isYAxis) {
 					u = this.chartArea_.getBottom() - u;
 					gridPath.moveTo(this.hv(ou0, u));
 					gridPath.lineTo(this.hv(oun, u));
@@ -4342,8 +4437,9 @@ public class WCartesianChart extends WAbstractChart {
 					gridPath.lineTo(this.hv(u, oun));
 				}
 			}
-			painter.strokePath(this.getZoomRangeTransform().map(gridPath)
-					.getCrisp(), pens.get(level - 1));
+			painter.strokePath(
+					this.zoomRangeTransform(isYAxis ? ax.getYAxisId() : 0)
+							.map(gridPath).getCrisp(), pens.get(level - 1));
 		}
 		if (this.isInteractive()) {
 			painter.restore();
@@ -4363,7 +4459,8 @@ public class WCartesianChart extends WAbstractChart {
 	 * {@link WCartesianChart#mapToDeviceWithoutTransform(Object xValue, Object yValue, Axis ordinateAxis, int xSegment, int ySegment)
 	 * mapToDeviceWithoutTransform()}. If these need to move and scale along
 	 * with the zoom range, those points can be transformed with
-	 * {@link WCartesianChart#getZoomRangeTransform() getZoomRangeTransform()}.
+	 * {@link WCartesianChart#zoomRangeTransform(int yAxis)
+	 * zoomRangeTransform()}.
 	 * <p>
 	 * This method is called last by default. If you want to render other things
 	 * at some other moment, you can override render(WPainter&amp;, const
@@ -4404,14 +4501,16 @@ public class WCartesianChart extends WAbstractChart {
 
 	protected void setFormData(final WObject.FormData formData) {
 		super.setFormData(formData);
-		final WTransform xTransform = this.xTransformHandle_.getValue();
-		final WTransform yTransform = this.yTransformHandle_.getValue();
-		WPointF devicePan = new WPointF(xTransform.getDx()
-				/ xTransform.getM11(), yTransform.getDy() / yTransform.getM22());
-		WPointF modelPan = new WPointF(this.getAxis(Axis.XAxis).mapFromDevice(
-				-devicePan.getX()), this.getAxis(Axis.YAxis).mapFromDevice(
-				-devicePan.getY()));
+		final WTransform xTransform = this.xAxis_.transformHandle.getValue();
+		List<WTransform> yTransforms = new ArrayList<WTransform>();
+		for (int i = 0; i < this.yAxes_.size(); ++i) {
+			yTransforms.add(this.yAxes_.get(i).transformHandle.getValue());
+		}
 		if (!this.getAxis(Axis.XAxis).zoomRangeDirty_) {
+			WPointF devicePan = new WPointF(xTransform.getDx()
+					/ xTransform.getM11(), 0.0);
+			WPointF modelPan = new WPointF(this.getAxis(Axis.XAxis)
+					.mapFromDevice(-devicePan.getX()), 0.0);
 			if (xTransform.isIdentity()) {
 				this.getAxis(Axis.XAxis).setZoomRangeFromClient(
 						WAxis.AUTO_MINIMUM, WAxis.AUTO_MAXIMUM);
@@ -4425,18 +4524,24 @@ public class WCartesianChart extends WAbstractChart {
 				this.getAxis(Axis.XAxis).setZoomRangeFromClient(x, x2);
 			}
 		}
-		if (!this.getAxis(Axis.YAxis).zoomRangeDirty_) {
-			if (yTransform.isIdentity()) {
-				this.getAxis(Axis.YAxis).setZoomRangeFromClient(
-						WAxis.AUTO_MINIMUM, WAxis.AUTO_MAXIMUM);
-			} else {
-				double z = yTransform.getM22();
-				double y = modelPan.getY();
-				double min = this.getAxis(Axis.YAxis).mapFromDevice(0.0);
-				double max = this.getAxis(Axis.YAxis).mapFromDevice(
-						this.getAxis(Axis.YAxis).fullRenderLength_);
-				double y2 = y + (max - min) / z;
-				this.getAxis(Axis.YAxis).setZoomRangeFromClient(y, y2);
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			if (!this.yAxis(i).zoomRangeDirty_) {
+				WPointF devicePan = new WPointF(0.0, yTransforms.get(i).getDy()
+						/ yTransforms.get(i).getM22());
+				WPointF modelPan = new WPointF(0.0, this.yAxis(i)
+						.mapFromDevice(-devicePan.getY()));
+				if (yTransforms.get(i).isIdentity()) {
+					this.yAxis(i).setZoomRangeFromClient(WAxis.AUTO_MINIMUM,
+							WAxis.AUTO_MAXIMUM);
+				} else {
+					double z = yTransforms.get(i).getM22();
+					double y = modelPan.getY();
+					double min = this.yAxis(i).mapFromDevice(0.0);
+					double max = this.yAxis(i).mapFromDevice(
+							this.yAxis(i).fullRenderLength_);
+					double y2 = y + (max - min) / z;
+					this.yAxis(i).setZoomRangeFromClient(y, y2);
+				}
 			}
 		}
 		if (this.curveTransforms_.size() != 0) {
@@ -4492,29 +4597,30 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setPanEnabled(boolean panEnabled)
 	 * @see WAxis#setZoomRange(double minimum, double maximum)
 	 */
-	protected WTransform getZoomRangeTransform() {
-		return this.zoomRangeTransform(this.xTransform_, this.yTransform_);
+	protected WTransform zoomRangeTransform(int yAxis) {
+		return this.zoomRangeTransform(this.xAxis_.transform,
+				this.yAxes_.get(yAxis).transform);
 	}
 
 	private List<WAxis> collectYAxesAtLocation(AxisValue side) {
 		List<WAxis> result = new ArrayList<WAxis>();
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			final WAxis axis = this.yAxes_.get(i);
+			final WAxis axis = this.yAxes_.get(i).axis;
 			if (!axis.isVisible()) {
 				continue;
 			}
 			if (axis.getLocation() == AxisValue.ZeroValue) {
 				if (side == AxisValue.MinimumValue) {
-					if (this.xAxis_.segments_.get(0).renderMinimum >= 0
-							|| !this.xAxis_.isOnAxis(0.0)
-							&& this.xAxis_.segments_.get(this.xAxis_.segments_
-									.size() - 1).renderMaximum > 0) {
+					if (this.xAxis_.axis.segments_.get(0).renderMinimum >= 0
+							|| !this.xAxis_.axis.isOnAxis(0.0)
+							&& this.xAxis_.axis.segments_
+									.get(this.xAxis_.axis.segments_.size() - 1).renderMaximum > 0) {
 						result.add(axis);
 					}
 				} else {
 					if (side == AxisValue.MaximumValue) {
-						if (this.xAxis_.segments_.get(this.xAxis_.segments_
-								.size() - 1).renderMaximum <= 0) {
+						if (this.xAxis_.axis.segments_
+								.get(this.xAxis_.axis.segments_.size() - 1).renderMaximum <= 0) {
 							result.add(axis);
 						}
 					}
@@ -4522,7 +4628,7 @@ public class WCartesianChart extends WAbstractChart {
 			}
 		}
 		for (int i = 0; i < this.yAxes_.size(); ++i) {
-			final WAxis axis = this.yAxes_.get(i);
+			final WAxis axis = this.yAxes_.get(i).axis;
 			if (!axis.isVisible()) {
 				continue;
 			}
@@ -4560,37 +4666,42 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	private void clearPens() {
-		for (Iterator<Map.Entry<Axis, List<WCartesianChart.PenAssignment>>> it_it = this.pens_
-				.entrySet().iterator(); it_it.hasNext();) {
-			Map.Entry<Axis, List<WCartesianChart.PenAssignment>> it = it_it
-					.next();
-			final List<WCartesianChart.PenAssignment> assignments = it
-					.getValue();
-			for (int i = 0; i < assignments.size(); ++i) {
-				final WCartesianChart.PenAssignment assignment = assignments
-						.get(i);
-				this.freePens_.add(assignment.pen);
-				this.freePens_.add(assignment.textPen);
-				this.freePens_.add(assignment.gridPen);
-			}
+		this.clearPensForAxis(Axis.XAxis, -1);
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			this.clearPensForAxis(Axis.YAxis, i);
 		}
-		this.pens_.clear();
 	}
 
-	private void createPensForAxis(Axis ax) {
+	private void clearPensForAxis(Axis ax, int yAxis) {
+		final List<WCartesianChart.PenAssignment> assignments = ax == Axis.XAxis ? this.xAxis_.pens
+				: this.yAxes_.get(yAxis).pens;
+		for (int i = 0; i < assignments.size(); ++i) {
+			final WCartesianChart.PenAssignment assignment = assignments.get(i);
+			this.freePens_.add(assignment.pen);
+			this.freePens_.add(assignment.textPen);
+			this.freePens_.add(assignment.gridPen);
+		}
+		assignments.clear();
+	}
+
+	private void createPensForAxis(Axis ax, int yAxis) {
 		if (!this.getAxis(ax).isVisible()
 				|| this.getAxis(ax).getScale() == AxisScale.LogScale) {
 			return;
 		}
-		double zoom = this.getAxis(ax).getZoom();
-		if (zoom > this.getAxis(ax).getMaxZoom()) {
-			zoom = this.getAxis(ax).getMaxZoom();
+		final WAxis axis = ax == Axis.XAxis ? this.getAxis(Axis.XAxis) : this
+				.yAxis(yAxis);
+		final WCartesianChart.AxisStruct axisStruct = ax == Axis.XAxis ? this.xAxis_
+				: this.yAxes_.get(yAxis);
+		double zoom = axis.getZoom();
+		if (zoom > axis.getMaxZoom()) {
+			zoom = axis.getMaxZoom();
 		}
 		int level = toZoomLevel(zoom);
 		List<WCartesianChart.PenAssignment> assignments = new ArrayList<WCartesianChart.PenAssignment>();
 		for (int i = 1;; ++i) {
 			double z = Math.pow(2.0, i - 1);
-			if (z > this.getAxis(ax).getMaxZoom()) {
+			if (z > axis.getMaxZoom()) {
 				break;
 			}
 			WJavaScriptHandle<WPen> pen = null;
@@ -4600,7 +4711,7 @@ public class WCartesianChart extends WAbstractChart {
 			} else {
 				pen = this.createJSPen();
 			}
-			WPen p = this.getAxis(ax).getPen().clone();
+			WPen p = axis.getPen().clone();
 			p.setColor(new WColor(p.getColor().getRed(), p.getColor()
 					.getGreen(), p.getColor().getBlue(), i == level ? p
 					.getColor().getAlpha() : 0));
@@ -4612,7 +4723,7 @@ public class WCartesianChart extends WAbstractChart {
 			} else {
 				textPen = this.createJSPen();
 			}
-			p = this.getAxis(ax).getTextPen().clone();
+			p = axis.getTextPen().clone();
 			p.setColor(new WColor(p.getColor().getRed(), p.getColor()
 					.getGreen(), p.getColor().getBlue(), i == level ? p
 					.getColor().getAlpha() : 0));
@@ -4624,7 +4735,7 @@ public class WCartesianChart extends WAbstractChart {
 			} else {
 				gridPen = this.createJSPen();
 			}
-			p = this.getAxis(ax).getGridLinesPen().clone();
+			p = axis.getGridLinesPen().clone();
 			p.setColor(new WColor(p.getColor().getRed(), p.getColor()
 					.getGreen(), p.getColor().getBlue(), i == level ? p
 					.getColor().getAlpha() : 0));
@@ -4632,7 +4743,7 @@ public class WCartesianChart extends WAbstractChart {
 			assignments.add(new WCartesianChart.PenAssignment(pen, textPen,
 					gridPen));
 		}
-		this.pens_.put(ax, assignments);
+		Utils.copyList(assignments, axisStruct.pens);
 	}
 
 	String getCObjJsRef() {
@@ -4719,10 +4830,15 @@ public class WCartesianChart extends WAbstractChart {
 
 	private void updateJSPens(final StringBuilder js) {
 		js.append("pens:{x:");
-		this.updateJSPensForAxis(js, Axis.XAxis);
-		js.append(",y:");
-		this.updateJSPensForAxis(js, Axis.YAxis);
-		js.append("},");
+		this.updateJSPensForAxis(js, Axis.XAxis, -1);
+		js.append(",y:[");
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			if (i != 0) {
+				js.append(',');
+			}
+			this.updateJSPensForAxis(js, Axis.YAxis, i);
+		}
+		js.append("]},");
 		js.append("penAlpha:{x:[");
 		js.append(this.getAxis(Axis.XAxis).getPen().getColor().getAlpha())
 				.append(',');
@@ -4731,24 +4847,30 @@ public class WCartesianChart extends WAbstractChart {
 		js.append(this.getAxis(Axis.XAxis).getGridLinesPen().getColor()
 				.getAlpha());
 		js.append("],y:[");
-		js.append(this.getAxis(Axis.YAxis).getPen().getColor().getAlpha())
-				.append(',');
-		js.append(this.getAxis(Axis.YAxis).getTextPen().getColor().getAlpha())
-				.append(',');
-		js.append(
-				this.getAxis(Axis.YAxis).getGridLinesPen().getColor()
-						.getAlpha()).append("]},");
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			if (i != 0) {
+				js.append(',');
+			}
+			js.append('[').append(this.yAxis(i).getPen().getColor().getAlpha())
+					.append(',');
+			js.append(this.yAxis(i).getTextPen().getColor().getAlpha()).append(
+					',');
+			js.append(this.yAxis(i).getGridLinesPen().getColor().getAlpha())
+					.append(']');
+		}
+		js.append("]},");
 	}
 
-	private void updateJSPensForAxis(final StringBuilder js, Axis axis) {
-		final Map<Axis, List<WCartesianChart.PenAssignment>> pens = this.pens_;
+	private void updateJSPensForAxis(final StringBuilder js, Axis axis,
+			int yAxis) {
+		final List<WCartesianChart.PenAssignment> pens = axis == Axis.XAxis ? this.xAxis_.pens
+				: this.yAxes_.get(yAxis).pens;
 		js.append("[");
-		for (int i = 0; i < pens.get(axis).size(); ++i) {
+		for (int i = 0; i < pens.size(); ++i) {
 			if (i != 0) {
 				js.append(",");
 			}
-			final WCartesianChart.PenAssignment assignment = pens.get(axis)
-					.get(i);
+			final WCartesianChart.PenAssignment assignment = pens.get(i);
 			js.append("[");
 			js.append(assignment.pen.getJsRef());
 			js.append(",");
@@ -4780,8 +4902,8 @@ public class WCartesianChart extends WAbstractChart {
 		}
 	}
 
-	private WTransform zoomRangeTransform(WTransform xTransform,
-			WTransform yTransform) {
+	private WTransform zoomRangeTransform(final WTransform xTransform,
+			final WTransform yTransform) {
 		if (this.getOrientation() == Orientation.Vertical) {
 			return new WTransform(1, 0, 0, -1, this.chartArea_.getLeft(),
 					this.chartArea_.getBottom())
@@ -4846,72 +4968,84 @@ public class WCartesianChart extends WAbstractChart {
 			}
 			xTransform.assign(new WTransform(xZoom, 0, 0, 1, xZoom * xPan, 0));
 		}
-		WTransform yTransform = new WTransform();
-		if (this.getAxis(Axis.YAxis).zoomMin_ != WAxis.AUTO_MINIMUM
-				|| this.getAxis(Axis.YAxis).zoomMax_ != WAxis.AUTO_MAXIMUM) {
-			double yPan = -this.getAxis(Axis.YAxis).mapToDevice(
-					this.getAxis(Axis.YAxis).getPan(), 0);
-			double yZoom = this.getAxis(Axis.YAxis).getZoom();
-			if (yZoom > this.getAxis(Axis.YAxis).getMaxZoom()) {
-				yZoom = this.getAxis(Axis.YAxis).getMaxZoom();
+		List<WTransform> yTransforms = new ArrayList<WTransform>();
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			if (this.yAxis(i).zoomMin_ != WAxis.AUTO_MINIMUM
+					|| this.yAxis(i).zoomMax_ != WAxis.AUTO_MAXIMUM) {
+				double yPan = -this.yAxis(i).mapToDevice(
+						this.yAxis(i).getPan(), 0);
+				double yZoom = this.yAxis(i).getZoom();
+				if (yZoom > this.yAxis(i).getMaxZoom()) {
+					yZoom = this.yAxis(i).getMaxZoom();
+				}
+				yTransforms
+						.add(new WTransform(1, 0, 0, yZoom, 0, yZoom * yPan));
+			} else {
+				yTransforms.add(new WTransform());
 			}
-			yTransform.assign(new WTransform(1, 0, 0, yZoom, 0, yZoom * yPan));
 		}
 		WRectF chartArea = this.hv(this.getInsideChartArea());
-		WRectF transformedArea = this
-				.zoomRangeTransform(xTransform, yTransform).map(chartArea);
-		if (transformedArea.getLeft() > chartArea.getLeft()) {
-			double diff = chartArea.getLeft() - transformedArea.getLeft();
-			if (this.getOrientation() == Orientation.Vertical) {
-				xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
-						.multiply(xTransform));
-			} else {
-				yTransform.assign(new WTransform(1, 0, 0, 1, 0, diff)
-						.multiply(yTransform));
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			WRectF transformedArea = this.zoomRangeTransform(xTransform,
+					yTransforms.get(i)).map(chartArea);
+			if (transformedArea.getLeft() > chartArea.getLeft()) {
+				double diff = chartArea.getLeft() - transformedArea.getLeft();
+				if (this.getOrientation() == Orientation.Vertical) {
+					xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
+							.multiply(xTransform));
+				} else {
+					yTransforms.set(i, new WTransform(1, 0, 0, 1, 0, diff)
+							.multiply(yTransforms.get(i)));
+				}
+				transformedArea = this.zoomRangeTransform(xTransform,
+						yTransforms.get(i)).map(chartArea);
 			}
-			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
-					.map(chartArea);
-		}
-		if (transformedArea.getRight() < chartArea.getRight()) {
-			double diff = chartArea.getRight() - transformedArea.getRight();
-			if (this.getOrientation() == Orientation.Vertical) {
-				xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
-						.multiply(xTransform));
-			} else {
-				yTransform.assign(new WTransform(1, 0, 0, 1, 0, diff)
-						.multiply(yTransform));
+			if (transformedArea.getRight() < chartArea.getRight()) {
+				double diff = chartArea.getRight() - transformedArea.getRight();
+				if (this.getOrientation() == Orientation.Vertical) {
+					xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
+							.multiply(xTransform));
+				} else {
+					yTransforms.set(i, new WTransform(1, 0, 0, 1, 0, diff)
+							.multiply(yTransforms.get(i)));
+				}
+				transformedArea = this.zoomRangeTransform(xTransform,
+						yTransforms.get(i)).map(chartArea);
 			}
-			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
-					.map(chartArea);
-		}
-		if (transformedArea.getTop() > chartArea.getTop()) {
-			double diff = chartArea.getTop() - transformedArea.getTop();
-			if (this.getOrientation() == Orientation.Vertical) {
-				yTransform.assign(new WTransform(1, 0, 0, 1, 0, -diff)
-						.multiply(yTransform));
-			} else {
-				xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
-						.multiply(xTransform));
+			if (transformedArea.getTop() > chartArea.getTop()) {
+				double diff = chartArea.getTop() - transformedArea.getTop();
+				if (this.getOrientation() == Orientation.Vertical) {
+					yTransforms.set(i, new WTransform(1, 0, 0, 1, 0, -diff)
+							.multiply(yTransforms.get(i)));
+				} else {
+					xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
+							.multiply(xTransform));
+				}
+				transformedArea = this.zoomRangeTransform(xTransform,
+						yTransforms.get(i)).map(chartArea);
 			}
-			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
-					.map(chartArea);
-		}
-		if (transformedArea.getBottom() < chartArea.getBottom()) {
-			double diff = chartArea.getBottom() - transformedArea.getBottom();
-			if (this.getOrientation() == Orientation.Vertical) {
-				yTransform.assign(new WTransform(1, 0, 0, 1, 0, -diff)
-						.multiply(yTransform));
-			} else {
-				xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
-						.multiply(xTransform));
+			if (transformedArea.getBottom() < chartArea.getBottom()) {
+				double diff = chartArea.getBottom()
+						- transformedArea.getBottom();
+				if (this.getOrientation() == Orientation.Vertical) {
+					yTransforms.set(i, new WTransform(1, 0, 0, 1, 0, -diff)
+							.multiply(yTransforms.get(i)));
+				} else {
+					xTransform.assign(new WTransform(1, 0, 0, 1, diff, 0)
+							.multiply(xTransform));
+				}
+				transformedArea = this.zoomRangeTransform(xTransform,
+						yTransforms.get(i)).map(chartArea);
 			}
-			transformedArea = this.zoomRangeTransform(xTransform, yTransform)
-					.map(chartArea);
 		}
-		this.xTransformHandle_.setValue(xTransform);
-		this.yTransformHandle_.setValue(yTransform);
+		this.xAxis_.transformHandle.setValue(xTransform);
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			this.yAxes_.get(i).transformHandle.setValue(yTransforms.get(i));
+		}
 		this.getAxis(Axis.XAxis).zoomRangeDirty_ = false;
-		this.getAxis(Axis.Y1Axis).zoomRangeDirty_ = false;
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			this.yAxis(i).zoomRangeDirty_ = false;
+		}
 	}
 
 	private void addAreaMask() {
@@ -4943,21 +5077,17 @@ public class WCartesianChart extends WAbstractChart {
 						this.getAxis(Axis.XAxis).getZoomMaximum());
 	}
 
-	private void yTransformChanged() {
-		this.getAxis(Axis.YAxis)
+	private void yTransformChanged(int yAxis) {
+		this.yAxis(yAxis)
 				.zoomRangeChanged()
-				.trigger(this.getAxis(Axis.YAxis).getZoomMinimum(),
-						this.getAxis(Axis.YAxis).getZoomMaximum());
+				.trigger(this.yAxis(yAxis).getZoomMinimum(),
+						this.yAxis(yAxis).getZoomMaximum());
 	}
 
 	private void jsSeriesSelected(double x, double y) {
 		if (!this.isSeriesSelectionEnabled()) {
 			return;
 		}
-		WTransform transform = this.zoomRangeTransform(
-				this.xTransformHandle_.getValue(),
-				this.yTransformHandle_.getValue());
-		WPointF p = transform.getInverted().map(new WPointF(x, y));
 		double smallestSqDistance = Double.POSITIVE_INFINITY;
 		WDataSeries closestSeries = null;
 		WPointF closestPointPx = new WPointF();
@@ -4967,6 +5097,11 @@ public class WCartesianChart extends WAbstractChart {
 			if (!series.isHidden()
 					&& (series.getType() == SeriesType.LineSeries || series
 							.getType() == SeriesType.CurveSeries)) {
+				WTransform transform = this.zoomRangeTransform(
+						this.xAxis_.transformHandle.getValue(), this.yAxes_
+								.get(series.getYAxis()).transformHandle
+								.getValue());
+				WPointF p = transform.getInverted().map(new WPointF(x, y));
 				WPainterPath path = this.pathForSeries(series);
 				WTransform t = this.curveTransform(series);
 				for (int j = 0; j < path.getSegments().size(); ++j) {
@@ -4991,6 +5126,12 @@ public class WCartesianChart extends WAbstractChart {
 			}
 		}
 		{
+			WTransform transform = this
+					.zoomRangeTransform(this.xAxis_.transformHandle.getValue(),
+							this.yAxes_
+									.get(closestSeries != null ? closestSeries
+											.getYAxis() : 0).transformHandle
+									.getValue());
 			WPointF closestDisplayPoint = transform.map(closestPointPx);
 			double dx = closestDisplayPoint.getX() - x;
 			double dy = closestDisplayPoint.getY() - y;
@@ -5013,15 +5154,25 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	private void loadTooltip(double x, double y) {
-		WPointF p = this
-				.zoomRangeTransform(this.xTransformHandle_.getValue(),
-						this.yTransformHandle_.getValue()).getInverted()
-				.map(new WPointF(x, y));
-		MarkerMatchIterator iterator = new MarkerMatchIterator(this, p.getX(),
-				p.getY(), MarkerMatchIterator.MATCH_RADIUS
-						/ this.xTransformHandle_.getValue().getM11(),
-				MarkerMatchIterator.MATCH_RADIUS
-						/ this.yTransformHandle_.getValue().getM22());
+		double px = this
+				.zoomRangeTransform(this.xAxis_.transformHandle.getValue(),
+						new WTransform()).getInverted()
+				.map(new WPointF(x, 0.0)).getX();
+		double rx = MarkerMatchIterator.MATCH_RADIUS
+				/ this.xAxis_.transformHandle.getValue().getM11();
+		List<Double> pys = new ArrayList<Double>();
+		List<Double> rys = new ArrayList<Double>();
+		for (int i = 0; i < this.getYAxisCount(); ++i) {
+			WPointF p = this
+					.zoomRangeTransform(new WTransform(),
+							this.yAxes_.get(i).transformHandle.getValue())
+					.getInverted().map(new WPointF(0.0, y));
+			pys.add(p.getY());
+			rys.add(MarkerMatchIterator.MATCH_RADIUS
+					/ this.yAxes_.get(i).transformHandle.getValue().getM22());
+		}
+		MarkerMatchIterator iterator = new MarkerMatchIterator(this, px, pys,
+				rx, rys);
 		this.iterateSeries(iterator, (WPainter) null);
 		if (iterator.getMatchedSeries() != null) {
 			final WDataSeries series = iterator.getMatchedSeries();
@@ -5055,6 +5206,12 @@ public class WCartesianChart extends WAbstractChart {
 				int j = 0;
 				int k = 3;
 				boolean c = false;
+				WPointF p = this
+						.zoomRangeTransform(
+								this.xAxis_.transformHandle.getValue(),
+								this.yAxes_.get(this.barTooltips_.get(btt).series
+										.getYAxis()).transformHandle.getValue())
+						.getInverted().map(new WPointF(x, y));
 				for (; j < 4; k = j++) {
 					if ((ys[j] <= p.getY() && p.getY() < ys[k] || ys[k] <= p
 							.getY() && p.getY() < ys[j])
@@ -5127,8 +5284,36 @@ public class WCartesianChart extends WAbstractChart {
 		return new WRectF(x1, y1, x2 - x1, y2 - y1);
 	}
 
-	private int calcYAxisSize(final WAxis axis) {
-		return 50;
+	private int calcYAxisSize(final WAxis axis, WPaintDevice device) {
+		if (!EnumUtils.mask(device.getFeatures(),
+				WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty()) {
+			if (this.getOrientation() == Orientation.Horizontal) {
+				WMeasurePaintDevice md = new WMeasurePaintDevice(device);
+				double h = TICK_LENGTH;
+				h += axis.calcMaxTickLabelSize(md, Orientation.Vertical);
+				if (!(axis.getTitle().length() == 0)) {
+					h += axis.calcTitleSize(md, Orientation.Vertical);
+				}
+				return (int) Math.ceil(h);
+			} else {
+				WMeasurePaintDevice md = new WMeasurePaintDevice(device);
+				double w = TICK_LENGTH;
+				w += axis.calcMaxTickLabelSize(md, Orientation.Horizontal);
+				if (!(axis.getTitle().length() == 0)
+						&& axis.getTitleOrientation() == Orientation.Vertical) {
+					w += axis.calcTitleSize(md, Orientation.Vertical) + 10;
+				}
+				return (int) Math.ceil(w);
+			}
+		} else {
+			if (this.getOrientation() == Orientation.Horizontal) {
+				return TICK_LENGTH + 20
+						+ ((axis.getTitle().length() == 0) ? 0 : 20);
+			} else {
+				return TICK_LENGTH + 30
+						+ ((axis.getTitle().length() == 0) ? 0 : 15);
+			}
+		}
 	}
 
 	private void defineJavaScript() {
@@ -5187,7 +5372,7 @@ public class WCartesianChart extends WAbstractChart {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"ChartCommon",
-				"function(v){function z(a,b,e,c){function d(f){return e?b[f]:b[l-1-f]}function j(f){for(;d(f)[2]===t||d(f)[2]===w;)f--;return f}var q=h;if(c)q=i;var l=b.length;c=Math.floor(l/2);c=j(c);var x=0,m=l,k=false;if(d(0)[q]>a)return e?-1:l;if(d(l-1)[q]<a)return e?l:-1;for(;!k;){var g=c+1;if(g<l&&(d(g)[2]===t||d(g)[2]===w))g+=2;if(d(c)[q]>a){m=c;c=Math.floor((m+x)/2);c=j(c)}else if(d(c)[q]===a)k=true;else if(g<l&&d(g)[q]>a)k=true;else if(g<l&&d(g)[q]=== a){c=g;k=true}else{x=c;c=Math.floor((m+x)/2);c=j(c)}}return e?c:l-1-c}function C(a,b){return b[0][a]<b[b.length-1][a]}var t=2,w=3,h=0,i=1,A=this;v=v.WT.gfxUtils;var D=v.rect_top,E=v.rect_bottom,B=v.rect_left,F=v.rect_right,G=v.transform_mult;this.findClosestPoint=function(a,b,e){var c=h;if(e)c=i;var d=C(c,b);e=z(a,b,d,e);if(e<0)e=0;if(e>=b.length)return[b[b.length-1][h],b[b.length-1][i]];if(e>=b.length)e=b.length-2;if(b[e][c]===a)return[b[e][h],b[e][i]];var j=d?e+1:e-1;if(d&&b[j][2]==t)j+=2;if(!d&& j<0)return[b[e][h],b[e][i]];if(!d&&j>0&&b[j][2]==w)j-=2;d=Math.abs(a-b[e][c]);a=Math.abs(b[j][c]-a);return d<a?[b[e][h],b[e][i]]:[b[j][h],b[j][i]]};this.minMaxY=function(a,b){b=b?h:i;for(var e=a[0][b],c=a[0][b],d=1;d<a.length;++d)if(a[d][2]!==t&&a[d][2]!==w&&a[d][2]!==5){if(a[d][b]>c)c=a[d][b];if(a[d][b]<e)e=a[d][b]}return[e,c]};this.projection=function(a,b){var e=Math.cos(a);a=Math.sin(a);var c=e*a,d=-b[0]*e-b[1]*a;return[e*e,c,c,a*a,e*d+b[0],a*d+b[1]]};this.distanceSquared=function(a,b){a=[b[h]- a[h],b[i]-a[i]];return a[h]*a[h]+a[i]*a[i]};this.distanceLessThanRadius=function(a,b,e){return e*e>=A.distanceSquared(a,b)};this.toZoomLevel=function(a){return Math.floor(Math.log(a)/Math.LN2+0.5)+1};this.isPointInRect=function(a,b){var e;if(a.x!==undefined){e=a.x;a=a.y}else{e=a[0];a=a[1]}return e>=B(b)&&e<=F(b)&&a>=D(b)&&a<=E(b)};this.toDisplayCoord=function(a,b,e,c,d){if(e){a=[(a[h]-d[0])/d[2],(a[i]-d[1])/d[3]];c=[c[0]+a[i]*c[2],c[1]+a[h]*c[3]]}else{a=[(a[h]-d[0])/d[2],1-(a[i]-d[1])/d[3]];c=[c[0]+ a[h]*c[2],c[1]+a[i]*c[3]]}return G(b,c)};this.findYRange=function(a,b,e,c,d,j,q){if(a.length!==0){var l=A.toDisplayCoord([b,0],[1,0,0,1,0,0],c,d,j),x=A.toDisplayCoord([e,0],[1,0,0,1,0,0],c,d,j),m=c?i:h,k=c?h:i,g=C(m,a),f=z(l[m],a,g,c),n=z(x[m],a,g,c),o,p,r=Infinity,s=-Infinity,y=f===n&&f===a.length||f===-1&&n===-1;if(!y){if(g)if(f<0)f=0;else{f++;if(a[f]&&a[f][2]===t)f+=2}else if(f>=a.length-1)f=a.length-2;if(!g&&n<0)n=0;for(o=Math.min(f,n);o<=Math.max(f,n)&&o<a.length;++o)if(a[o][2]!==t&&a[o][2]!== w){if(a[o][k]<r)r=a[o][k];if(a[o][k]>s)s=a[o][k]}if(g&&f>0||!g&&f<a.length-1){if(g){p=f-1;if(a[p]&&a[p][2]===w)p-=2}else{p=f+1;if(a[p]&&a[p][2]===t)p+=2}o=(l[m]-a[p][m])/(a[f][m]-a[p][m]);f=a[p][k]+o*(a[f][k]-a[p][k]);if(f<r)r=f;if(f>s)s=f}if(g&&n<a.length-1||!g&&n>0){if(g){g=n+1;if(a[g][2]===t)g+=2}else{g=n-1;if(a[g][2]===w)g-=2}o=(x[m]-a[n][m])/(a[g][m]-a[n][m]);f=a[n][k]+o*(a[g][k]-a[n][k]);if(f<r)r=f;if(f>s)s=f}}var u;a=j[2]/(e-b);b=c?2:3;if(!y){u=d[b]/(s-r);u=d[b]/(d[b]/u+20);if(u>q[k])u=q[k]}c= c?[l[i]-D(d),!y?(r+s)/2-d[2]/u/2-B(d):0]:[l[h]-B(d),!y?-((r+s)/2+d[3]/u/2-E(d)):0];return{xZoom:a,yZoom:u,panPoint:c}}}}");
+				"function(x){function E(a,b,c,d){function e(j){return c?b[j]:b[n-1-j]}function i(j){for(;e(j)[2]===v||e(j)[2]===y;)j--;return j}var k=l;if(d)k=m;var n=b.length;d=Math.floor(n/2);d=i(d);var q=0,s=n,f=false;if(e(0)[k]>a)return c?-1:n;if(e(n-1)[k]<a)return c?n:-1;for(;!f;){var h=d+1;if(h<n&&(e(h)[2]===v||e(h)[2]===y))h+=2;if(e(d)[k]>a){s=d;d=Math.floor((s+q)/2);d=i(d)}else if(e(d)[k]===a)f=true;else if(h<n&&e(h)[k]>a)f=true;else if(h<n&&e(h)[k]=== a){d=h;f=true}else{q=d;d=Math.floor((s+q)/2);d=i(d)}}return c?d:n-1-d}function G(a,b){return b[0][a]<b[b.length-1][a]}var v=2,y=3,l=0,m=1,F=this;x=x.WT.gfxUtils;var A=x.rect_top,B=x.rect_bottom,z=x.rect_left,C=x.rect_right,H=x.transform_mult;this.findClosestPoint=function(a,b,c){var d=l;if(c)d=m;var e=G(d,b);c=E(a,b,e,c);if(c<0)c=0;if(c>=b.length)return[b[b.length-1][l],b[b.length-1][m]];if(c>=b.length)c=b.length-2;if(b[c][d]===a)return[b[c][l],b[c][m]];var i=e?c+1:c-1;if(e&&b[i][2]==v)i+=2;if(!e&& i<0)return[b[c][l],b[c][m]];if(!e&&i>0&&b[i][2]==y)i-=2;e=Math.abs(a-b[c][d]);a=Math.abs(b[i][d]-a);return e<a?[b[c][l],b[c][m]]:[b[i][l],b[i][m]]};this.minMaxY=function(a,b){b=b?l:m;for(var c=a[0][b],d=a[0][b],e=1;e<a.length;++e)if(a[e][2]!==v&&a[e][2]!==y&&a[e][2]!==5){if(a[e][b]>d)d=a[e][b];if(a[e][b]<c)c=a[e][b]}return[c,d]};this.projection=function(a,b){var c=Math.cos(a);a=Math.sin(a);var d=c*a,e=-b[0]*c-b[1]*a;return[c*c,d,d,a*a,c*e+b[0],a*e+b[1]]};this.distanceSquared=function(a,b){a=[b[l]- a[l],b[m]-a[m]];return a[l]*a[l]+a[m]*a[m]};this.distanceLessThanRadius=function(a,b,c){return c*c>=F.distanceSquared(a,b)};this.toZoomLevel=function(a){return Math.floor(Math.log(a)/Math.LN2+0.5)+1};this.isPointInRect=function(a,b){var c;if(a.x!==undefined){c=a.x;a=a.y}else{c=a[0];a=a[1]}return c>=z(b)&&c<=C(b)&&a>=A(b)&&a<=B(b)};this.toDisplayCoord=function(a,b,c,d,e){if(c){a=[(a[l]-e[0])/e[2],(a[m]-e[1])/e[3]];d=[d[0]+a[m]*d[2],d[1]+a[l]*d[3]]}else{a=[(a[l]-e[0])/e[2],1-(a[m]-e[1])/e[3]];d=[d[0]+ a[l]*d[2],d[1]+a[m]*d[3]]}return H(b,d)};this.findYRange=function(a,b,c,d,e,i,k,n){if(a.length!==0){var q=F.toDisplayCoord([c,0],[1,0,0,1,0,0],e,i,k),s=F.toDisplayCoord([d,0],[1,0,0,1,0,0],e,i,k),f=e?m:l,h=e?l:m,j=G(f,a),g=E(q[f],a,j,e),o=E(s[f],a,j,e),p,r,t=Infinity,u=-Infinity,D=g===o&&g===a.length||g===-1&&o===-1;if(!D){if(j)if(g<0)g=0;else{g++;if(a[g]&&a[g][2]===v)g+=2}else if(g>=a.length-1)g=a.length-2;if(!j&&o<0)o=0;for(p=Math.min(g,o);p<=Math.max(g,o)&&p<a.length;++p)if(a[p][2]!==v&&a[p][2]!== y){if(a[p][h]<t)t=a[p][h];if(a[p][h]>u)u=a[p][h]}if(j&&g>0||!j&&g<a.length-1){if(j){r=g-1;if(a[r]&&a[r][2]===y)r-=2}else{r=g+1;if(a[r]&&a[r][2]===v)r+=2}p=(q[f]-a[r][f])/(a[g][f]-a[r][f]);g=a[r][h]+p*(a[g][h]-a[r][h]);if(g<t)t=g;if(g>u)u=g}if(j&&o<a.length-1||!j&&o>0){if(j){j=o+1;if(a[j][2]===v)j+=2}else{j=o-1;if(a[j][2]===y)j-=2}p=(s[f]-a[o][f])/(a[j][f]-a[o][f]);g=a[o][h]+p*(a[j][h]-a[o][h]);if(g<t)t=g;if(g>u)u=g}}var w;a=k[2]/(d-c);c=e?2:3;if(!D){w=i[c]/(u-t);w=i[c]/(i[c]/w+20);if(w>n.y[b])w=n.y[b]}b= e?[q[m]-A(i),!D?(t+u)/2-i[2]/w/2-z(i):0]:[q[l]-z(i),!D?-((t+u)/2+i[3]/w/2-B(i)):0];return{xZoom:a,yZoom:w,panPoint:b}}};this.matchAxis=function(a,b,c,d,e){function i(){return d.length}function k(h){return d[h].side}function n(h){return d[h].width}function q(h){return d[h].minOffset}function s(h){return d[h].maxOffset}if(e){if(a<z(c)||a>C(c))return-1}else if(b<A(c)||b>B(c))return-1;for(var f=0;f<i();++f)if(e)if((k(f)===\"min\"||k(f)===\"both\")&&b>=A(c)-q(f)-n(f)&&b<=A(c)-q(f))return f;else{if((k(f)=== \"max\"||k(f)===\"both\")&&b>=B(c)+s(f)&&b<=B(c)+s(f)+n(f))return f}else if((k(f)===\"min\"||k(f)===\"both\")&&a>=z(c)-q(f)-n(f)&&a<=z(c)-q(f))return f;else if((k(f)===\"max\"||k(f)===\"both\")&&a>=C(c)+s(f)&&a<=C(c)+s(f)+n(f))return f;return-1}}");
 	}
 
 	static WJavaScriptPreamble wtjs1() {
@@ -5195,7 +5380,7 @@ public class WCartesianChart extends WAbstractChart {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WCartesianChart",
-				"function(na,E,v,m){function J(a){return a===undefined}function p(){return m.modelArea}function Ea(){return m.followCurve}function oa(){return m.crosshair||Ea()!==-1}function y(){return m.isHorizontal}function e(a){if(a===g)return m.xTransform;if(a===f)return m.yTransform}function i(){return m.area}function l(){return m.insideArea}function Y(a){return J(a)?m.series:m.series[a]}function T(a){return Y(a).transform}function $a(a){return y()? z([0,1,1,0,0,0],z(T(a),[0,1,1,0,0,0])):T(a)}function Fa(a){return Y(a).curve}function ab(){return m.seriesSelection}function bb(){return m.sliders}function cb(){return m.hasToolTips}function db(){return m.coordinateOverlayPadding}function wa(){return m.curveManipulation}function G(){return m.maxZoom}function F(){return m.pens}function ia(){return m.selectedCurve}function pa(a){a.preventDefault&&a.preventDefault()}function U(a,b){E.addEventListener(a,b)}function N(a,b){E.removeEventListener(a,b)}function B(a){return a.length} function Pa(a){return a.pointerType===2||a.pointerType===3||a.pointerType===\"pen\"||a.pointerType===\"touch\"}function Ga(){if(n){if(n.tooltipTimeout){clearTimeout(n.tooltipTimeout);n.tooltipTimeout=null}if(!n.overTooltip)if(n.tooltipOuterDiv){document.body.removeChild(n.tooltipOuterDiv);n.tooltipEl=null;n.tooltipOuterDiv=null}}}function xa(){if(m.notifyTransform.x||m.notifyTransform.y){if(Ha){window.clearTimeout(Ha);Ha=null}Ha=setTimeout(function(){if(m.notifyTransform.x&&!eb(Qa,e(g))){na.emit(v.widget, \"xTransformChanged\");Z(Qa,e(g))}if(m.notifyTransform.y&&!eb(Ra,e(f))){na.emit(v.widget,\"yTransformChanged\");Z(Ra,e(f))}},ob)}}function aa(){var a,b;if(y()){a=o(i());b=t(i());return z([0,1,1,0,a,b],z(e(g),z(e(f),[0,1,1,0,-b,-a])))}else{a=o(i());b=u(i());return z([1,0,0,-1,a,b],z(e(g),z(e(f),[1,0,0,-1,-a,b])))}}function K(){return z(aa(),l())}function ba(a,b){if(J(b))b=false;a=b?a:z(ya(aa()),a);a=y()?[(a[f]-i()[1])/i()[3],(a[g]-i()[0])/i()[2]]:[(a[g]-i()[0])/i()[2],1-(a[f]-i()[1])/i()[3]];return[p()[0]+ a[g]*p()[2],p()[1]+a[f]*p()[3]]}function Ia(a,b){if(J(b))b=false;return ca.toDisplayCoord(a,b?[1,0,0,1,0,0]:aa(),y(),i(),p())}function za(){var a,b;if(y()){a=(ba([0,t(i())])[0]-p()[0])/p()[2];b=(ba([0,u(i())])[0]-p()[0])/p()[2]}else{a=(ba([o(i()),0])[0]-p()[0])/p()[2];b=(ba([q(i()),0])[0]-p()[0])/p()[2]}var c;for(c=0;c<B(bb());++c){var h=$(\"#\"+bb()[c]);if(h)(h=h.data(\"sobj\"))&&h.changeRange(a,b)}}function O(){Ga();if(cb()&&n.tooltipPosition)n.tooltipTimeout=setTimeout(function(){fb()},gb);da&&hb(function(){v.repaint(); oa()&&Sa()})}function Sa(){if(da){var a=D.getContext(\"2d\");a.clearRect(0,0,D.width,D.height);a.save();a.beginPath();a.moveTo(o(i()),t(i()));a.lineTo(q(i()),t(i()));a.lineTo(q(i()),u(i()));a.lineTo(o(i()),u(i()));a.closePath();a.clip();var b=z(ya(aa()),w),c=w[g],h=w[f];if(Ea()!==-1){b=pb(y()?b[f]:b[g],Fa(Ea()),y());h=z(aa(),z($a(Ea()),b));c=h[g];h=h[f];w[g]=c;w[f]=h}b=y()?[(b[f]-i()[1])/i()[3],(b[g]-i()[0])/i()[2]]:[(b[g]-i()[0])/i()[2],1-(b[f]-i()[1])/i()[3]];b=[p()[0]+b[g]*p()[2],p()[1]+b[f]*p()[3]]; a.fillStyle=a.strokeStyle=m.crosshairColor;a.font=\"16px sans-serif\";a.textAlign=\"right\";a.textBaseline=\"top\";var d=b[0].toFixed(2);b=b[1].toFixed(2);if(d===\"-0.00\")d=\"0.00\";if(b===\"-0.00\")b=\"0.00\";a.fillText(\"(\"+d+\",\"+b+\")\",q(i())-db()[0],t(i())+db()[1]);a.setLineDash&&a.setLineDash([1,2]);a.beginPath();a.moveTo(Math.floor(c)+0.5,Math.floor(t(i()))+0.5);a.lineTo(Math.floor(c)+0.5,Math.floor(u(i()))+0.5);a.moveTo(Math.floor(o(i()))+0.5,Math.floor(h)+0.5);a.lineTo(Math.floor(q(i()))+0.5,Math.floor(h)+ 0.5);a.stroke();a.restore()}}function qb(a){return t(a)<=t(l())+Ja&&u(a)>=u(l())-Ja&&o(a)<=o(l())+Ja&&q(a)>=q(l())-Ja}function V(a){var b=K();if(y())if(a===qa)a=ra;else if(a===ra)a=qa;if(J(a)||a===qa)if(e(g)[0]<1){e(g)[0]=1;b=K()}if(J(a)||a===ra)if(e(f)[3]<1){e(f)[3]=1;b=K()}if(J(a)||a===qa){if(o(b)>o(l())){b=o(l())-o(b);if(y())e(f)[5]=e(f)[5]+b;else e(g)[4]=e(g)[4]+b;b=K()}if(q(b)<q(l())){b=q(l())-q(b);if(y())e(f)[5]=e(f)[5]+b;else e(g)[4]=e(g)[4]+b;b=K()}}if(J(a)||a===ra){if(t(b)>t(l())){b=t(l())- t(b);if(y())e(g)[4]=e(g)[4]+b;else e(f)[5]=e(f)[5]-b;b=K()}if(u(b)<u(l())){b=u(l())-u(b);if(y())e(g)[4]=e(g)[4]+b;else e(f)[5]=e(f)[5]-b;K()}}xa()}function fb(){na.emit(v.widget,\"loadTooltip\",n.tooltipPosition[g],n.tooltipPosition[f])}function rb(){if(oa()&&(J(D)||v.canvas.width!==D.width||v.canvas.height!==D.height)){if(D){D.parentNode.removeChild(D);jQuery.removeData(E,\"oobj\");D=undefined}var a=document.createElement(\"canvas\");a.setAttribute(\"width\",v.canvas.width);a.setAttribute(\"height\",v.canvas.height); a.style.position=\"absolute\";a.style.display=\"block\";a.style.left=\"0\";a.style.top=\"0\";if(window.MSPointerEvent||window.PointerEvent){a.style.msTouchAction=\"none\";a.style.touchAction=\"none\"}v.canvas.parentNode.appendChild(a);D=a;jQuery.data(E,\"oobj\",D)}else if(!J(D)&&!oa()){D.parentNode.removeChild(D);jQuery.removeData(E,\"oobj\");D=undefined}w=[(o(i())+q(i()))/2,(t(i())+u(i()))/2]}function ib(){return D?D:v.canvas}function Ta(a,b){if(sa){var c=Date.now();if(J(b))b=c-ea;var h={x:0,y:0},d=K(),k=sb;if(b> 2*Aa){da=false;var r=Math.floor(b/Aa-1),s;for(s=0;s<r;++s){Ta(a,Aa);if(!sa){da=true;O();return}}b-=r*Aa;da=true}if(j.x===Infinity||j.x===-Infinity)j.x=j.x>0?fa:-fa;if(isFinite(j.x)){j.x/=1+jb*b;d[0]+=j.x*b;if(o(d)>o(l())){j.x+=-k*(o(d)-o(l()))*b;j.x*=0.7}else if(q(d)<q(l())){j.x+=-k*(q(d)-q(l()))*b;j.x*=0.7}if(Math.abs(j.x)<Ua)if(o(d)>o(l()))j.x=Ua;else if(q(d)<q(l()))j.x=-Ua;if(Math.abs(j.x)>fa)j.x=(j.x>0?1:-1)*fa;h.x=j.x*b}if(j.y===Infinity||j.y===-Infinity)j.y=j.y>0?fa:-fa;if(isFinite(j.y)){j.y/= 1+jb*b;d[1]+=j.y*b;if(t(d)>t(l())){j.y+=-k*(t(d)-t(l()))*b;j.y*=0.7}else if(u(d)<u(l())){j.y+=-k*(u(d)-u(l()))*b;j.y*=0.7}if(Math.abs(j.y)<0.001)if(t(d)>t(l()))j.y=0.001;else if(u(d)<u(l()))j.y=-0.001;if(Math.abs(j.y)>fa)j.y=(j.y>0?1:-1)*fa;h.y=j.y*b}d=K();P(h,ta);a=K();if(o(d)>o(l())&&o(a)<=o(l())){j.x=0;P({x:-h.x,y:0},ta);V(qa)}if(q(d)<q(l())&&q(a)>=q(l())){j.x=0;P({x:-h.x,y:0},ta);V(qa)}if(t(d)>t(l())&&t(a)<=t(l())){j.y=0;P({x:0,y:-h.y},ta);V(ra)}if(u(d)<u(l())&&u(a)>=u(l())){j.y=0;P({x:0,y:-h.y}, ta);V(ra)}if(Math.abs(j.x)<kb&&Math.abs(j.y)<kb&&qb(a)){V();sa=false;A=null;j.x=0;j.y=0;ea=null;x=[]}else{ea=c;da&&Ka(Ta)}}}function La(){var a,b,c=lb(e(g)[0])-1;if(c>=B(F().x))c=B(F().x)-1;for(a=0;a<B(F().x);++a)if(c===a)for(b=0;b<B(F().x[a]);++b)F().x[a][b].color[3]=m.penAlpha.x[b];else for(b=0;b<B(F().x[a]);++b)F().x[a][b].color[3]=0;c=lb(e(f)[3])-1;if(c>=B(F().y))c=B(F().y)-1;for(a=0;a<B(F().y);++a)if(c===a)for(b=0;b<B(F().y[a]);++b)F().y[a][b].color[3]=m.penAlpha.y[b];else for(b=0;b<B(F().y[a]);++b)F().y[a][b].color[3]= 0}function P(a,b){if(J(b))b=0;var c=ba(w);if(y())a={x:a.y,y:-a.x};if(b&ta){e(g)[4]=e(g)[4]+a.x;e(f)[5]=e(f)[5]-a.y;xa()}else if(b&mb){b=K();if(o(b)>o(l())){if(a.x>0)a.x/=1+(o(b)-o(l()))*Ma}else if(q(b)<q(l()))if(a.x<0)a.x/=1+(q(l())-q(b))*Ma;if(t(b)>t(l())){if(a.y>0)a.y/=1+(t(b)-t(l()))*Ma}else if(u(b)<u(l()))if(a.y<0)a.y/=1+(u(l())-u(b))*Ma;e(g)[4]=e(g)[4]+a.x;e(f)[5]=e(f)[5]-a.y;w[g]+=a.x;w[f]+=a.y;xa()}else{e(g)[4]=e(g)[4]+a.x;e(f)[5]=e(f)[5]-a.y;w[g]+=a.x;w[f]+=a.y;V()}a=Ia(c);w[g]=a[g];w[f]= a[f];O();za()}function Ba(a,b,c){var h=ba(w),d;d=y()?[a.y-t(i()),a.x-o(i())]:z(ya([1,0,0,-1,o(i()),u(i())]),[a.x,a.y]);a=d[0];d=d[1];var k=Math.pow(1.2,y()?c:b);b=Math.pow(1.2,y()?b:c);if(e(g)[0]*k>G()[g])k=G()[g]/e(g)[0];if(k<1||e(g)[0]!==G()[g])Na(e(g),z([k,0,0,1,a-k*a,0],e(g)));if(e(f)[3]*b>G()[f])b=G()[f]/e(f)[3];if(b<1||e(f)[3]!==G()[f])Na(e(f),z([1,0,0,b,0,d-b*d],e(f)));V();h=Ia(h);w[g]=h[g];w[f]=h[f];La();O();za()}jQuery.data(E,\"cobj\",this);var ga=this,C=na.WT;ga.config=m;var H=C.gfxUtils, z=H.transform_mult,ya=H.transform_inverted,Z=H.transform_assign,eb=H.transform_equal,tb=H.transform_apply,t=H.rect_top,u=H.rect_bottom,o=H.rect_left,q=H.rect_right,ca=C.chartCommon,ub=ca.minMaxY,pb=ca.findClosestPoint,vb=ca.projection,nb=ca.distanceLessThanRadius,lb=ca.toZoomLevel,ua=ca.isPointInRect,wb=ca.findYRange,Aa=17,Ka=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||function(a){window.setTimeout(a,Aa)}}(),Va=false,hb=function(a){if(!Va){Va= true;Ka(function(){a();Va=false})}};if(window.MSPointerEvent||window.PointerEvent){E.style.touchAction=\"none\";v.canvas.style.msTouchAction=\"none\";v.canvas.style.touchAction=\"none\"}var ta=1,mb=2,qa=1,ra=2,g=0,f=1,ob=250,gb=500,jb=0.003,sb=2.0E-4,Ma=0.07,Ja=3,Ua=0.001,fa=1.5,kb=0.02,ja=jQuery.data(E,\"eobj2\");if(!ja){ja={};ja.contextmenuListener=function(a){pa(a);N(\"contextmenu\",ja.contextmenuListener)}}jQuery.data(E,\"eobj2\",ja);var Q={},ka=false;if(window.MSPointerEvent||window.PointerEvent)(function(){function a(){ka= B(d)>0}function b(r){if(Pa(r)){pa(r);d.push(r);a();Q.start(E,{touches:d.slice(0)})}}function c(r){if(ka)if(Pa(r)){pa(r);var s;for(s=0;s<B(d);++s)if(d[s].pointerId===r.pointerId){d.splice(s,1);break}a();Q.end(E,{touches:d.slice(0),changedTouches:[]})}}function h(r){if(Pa(r)){pa(r);var s;for(s=0;s<B(d);++s)if(d[s].pointerId===r.pointerId){d[s]=r;break}a();Q.moved(E,{touches:d.slice(0)})}}var d=[],k=jQuery.data(E,\"eobj\");if(k)if(window.PointerEvent){N(\"pointerdown\",k.pointerDown);N(\"pointerup\",k.pointerUp); N(\"pointerout\",k.pointerUp);N(\"pointermove\",k.pointerMove)}else{N(\"MSPointerDown\",k.pointerDown);N(\"MSPointerUp\",k.pointerUp);N(\"MSPointerOut\",k.pointerUp);N(\"MSPointerMove\",k.pointerMove)}jQuery.data(E,\"eobj\",{pointerDown:b,pointerUp:c,pointerMove:h});if(window.PointerEvent){U(\"pointerdown\",b);U(\"pointerup\",c);U(\"pointerout\",c);U(\"pointermove\",h)}else{U(\"MSPointerDown\",b);U(\"MSPointerUp\",c);U(\"MSPointerOut\",c);U(\"MSPointerMove\",h)}})();var D=jQuery.data(E,\"oobj\"),w=null,da=true,A=null,x=[],W=false, ha=false,M=null,Wa=null,Xa=null,j={x:0,y:0},S=null,ea=null,n=jQuery.data(E,\"tobj\");if(!n){n={overTooltip:false};jQuery.data(E,\"tobj\",n)}var va=null,sa=false,Ha=null,Qa=[0,0,0,0,0,0];Z(Qa,e(g));var Ra=[0,0,0,0,0,0];Z(Ra,e(f));var Na=function(a,b){Z(a,b);xa()};v.combinedTransform=aa;this.updateTooltip=function(a){Ga();if(a)if(n.tooltipPosition){n.toolTipEl=document.createElement(\"div\");n.toolTipEl.className=m.ToolTipInnerStyle;n.toolTipEl.innerHTML=a;n.tooltipOuterDiv=document.createElement(\"div\"); n.tooltipOuterDiv.className=m.ToolTipOuterStyle;document.body.appendChild(n.tooltipOuterDiv);n.tooltipOuterDiv.appendChild(n.toolTipEl);var b=C.widgetPageCoordinates(v.canvas);a=n.tooltipPosition[g]+b.x;b=n.tooltipPosition[f]+b.y;C.fitToWindow(n.tooltipOuterDiv,a+10,b+10,a-10,b-10);$(n.toolTipEl).mouseenter(function(){n.overTooltip=true});$(n.toolTipEl).mouseleave(function(){n.overTooltip=false})}};this.mouseMove=function(a,b){setTimeout(function(){setTimeout(Ga,200);if(!ka){var c=C.widgetCoordinates(v.canvas, b);if(ua(c,i())){if(!n.tooltipEl&&cb()){n.tooltipPosition=[c.x,c.y];n.tooltipTimeout=setTimeout(function(){fb()},gb)}if(A===null&&oa()&&da){w=[c.x,c.y];hb(Sa)}}}},0)};this.mouseOut=function(){setTimeout(Ga,200)};this.mouseDown=function(a,b){if(!ka){a=C.widgetCoordinates(v.canvas,b);if(ua(a,i()))A=a}};this.mouseUp=function(){ka||(A=null)};this.mouseDrag=function(a,b){if(!ka)if(A!==null){a=C.widgetCoordinates(v.canvas,b);if(ua(a,i())){if(C.buttons===1)if(wa()&&Y(ia())){b=ia();var c;c=y()?a.x-A.x:a.y- A.y;Z(T(b),z([1,0,0,1,0,c/e(f)[3]],T(b)));O()}else m.pan&&P({x:a.x-A.x,y:a.y-A.y});A=a}}};this.clicked=function(a,b){if(!ka)if(A===null)if(ab()){a=C.widgetCoordinates(v.canvas,b);na.emit(v.widget,\"seriesSelected\",a.x,a.y)}};this.mouseWheel=function(a,b){a=(b.metaKey<<3)+(b.altKey<<2)+(b.ctrlKey<<1)+b.shiftKey;var c=m.wheelActions[a];if(!J(c)){var h=C.widgetCoordinates(v.canvas,b);if(ua(h,i())){var d=C.normalizeWheel(b);if(a===0&&wa()){a=ia();var k=-d.spinY;if(Y(a)){c=$a(a);c=tb(c,Fa(a));c=ub(c,y()); c=(c[0]+c[1])/2;C.cancelEvent(b);b=Math.pow(1.2,k);Z(T(a),z([1,0,0,b,0,c-b*c],T(a)));O();return}}if((c===4||c===5||c===6)&&m.pan){a=e(g)[4];k=e(f)[5];if(c===6)P({x:-d.pixelX,y:-d.pixelY});else if(c===5)P({x:0,y:-d.pixelX-d.pixelY});else c===4&&P({x:-d.pixelX-d.pixelY,y:0});if(a!==e(g)[4]||k!==e(f)[5])C.cancelEvent(b)}else if(m.zoom){C.cancelEvent(b);k=-d.spinY;if(k===0)k=-d.spinX;if(c===1)Ba(h,0,k);else if(c===0)Ba(h,k,0);else if(c===2)Ba(h,k,k);else if(c===3)d.pixelX!==0?Ba(h,k,0):Ba(h,0,k)}}}}; var xb=function(){ab()&&na.emit(v.widget,\"seriesSelected\",A.x,A.y)};Q.start=function(a,b,c){W=B(b.touches)===1;ha=B(b.touches)===2;if(W){sa=false;a=C.widgetCoordinates(v.canvas,b.touches[0]);if(!ua(a,i()))return;va=oa()&&nb(w,[a.x,a.y],30)?1:0;ea=Date.now();A=a;if(va!==1){c||(S=window.setTimeout(xb,200));U(\"contextmenu\",ja.contextmenuListener)}C.capture(null);C.capture(ib())}else if(ha&&(m.zoom||wa())){if(S){window.clearTimeout(S);S=null}sa=false;x=[C.widgetCoordinates(v.canvas,b.touches[0]),C.widgetCoordinates(v.canvas, b.touches[1])].map(function(h){return[h.x,h.y]});if(!x.every(function(h){return ua(h,i())})){ha=null;return}C.capture(null);C.capture(ib());M=Math.atan2(x[1][1]-x[0][1],x[1][0]-x[0][0]);Wa=[(x[0][0]+x[1][0])/2,(x[0][1]+x[1][1])/2];c=Math.abs(Math.sin(M));a=Math.abs(Math.cos(M));M=c<Math.sin(0.125*Math.PI)?0:a<Math.cos(0.375*Math.PI)?Math.PI/2:Math.tan(M)>0?Math.PI/4:-Math.PI/4;Xa=vb(M,Wa)}else return;pa(b)};Q.end=function(a,b){if(S){window.clearTimeout(S);S=null}window.setTimeout(function(){N(\"contextmenu\", ja.contextmenuListener)},0);var c=Array.prototype.slice.call(b.touches),h=B(c)===0;h||function(){var d;for(d=0;d<B(b.changedTouches);++d)(function(){for(var k=b.changedTouches[d].identifier,r=0;r<B(c);++r)if(c[r].identifier===k){c.splice(r,1);return}})()}();h=B(c)===0;W=B(c)===1;ha=B(c)===2;if(h){Oa=null;if(va===0&&(isFinite(j.x)||isFinite(j.y))&&m.rubberBand){ea=Date.now();sa=true;Ka(Ta)}else{va===1&&ga.mouseUp(null,null);c=[];ea=Xa=Wa=M=null}va=null}else if(W||ha)Q.start(a,b,true)};var Oa=null, la=null,Ya=null;Q.moved=function(a,b){if(W||ha)if(!(W&&A==null)){pa(b);la=C.widgetCoordinates(v.canvas,b.touches[0]);if(B(b.touches)>1)Ya=C.widgetCoordinates(v.canvas,b.touches[1]);if(W&&S&&!nb([la.x,la.y],[A.x,A.y],3)){window.clearTimeout(S);S=null}Oa||(Oa=setTimeout(function(){if(W&&wa()&&Y(ia())){var c=ia();if(Y(c)){var h=la,d;d=y()?(h.x-A.x)/e(f)[3]:(h.y-A.y)/e(f)[3];T(c)[5]+=d;A=h;O()}}else if(W){h=la;d=Date.now();c={x:h.x-A.x,y:h.y-A.y};var k=d-ea;ea=d;if(va===1){w[g]+=c.x;w[f]+=c.y;oa()&&da&& Ka(Sa)}else if(m.pan){j.x=c.x/k;j.y=c.y/k;P(c,m.rubberBand?mb:0)}A=h}else if(ha&&wa()&&Y(ia())){var r=y()?g:f;d=[la,Ya].map(function(I){return y()?[I.x,ma]:[Ca,I.y]});c=Math.abs(x[1][r]-x[0][r]);k=Math.abs(d[1][r]-d[0][r]);var s=c>0?k/c:1;if(k===c)s=1;var ma=z(ya(aa()),[0,(x[0][r]+x[1][r])/2])[1],Da=z(ya(aa()),[0,(d[0][r]+d[1][r])/2])[1];c=ia();if(Y(c)){Z(T(c),z([1,0,0,s,0,-s*ma+Da],T(c)));A=h;O();x=d}}else if(ha&&m.zoom){h=ba(w);var Ca=(x[0][0]+x[1][0])/2;ma=(x[0][1]+x[1][1])/2;d=[la,Ya].map(function(I){return M=== 0?[I.x,ma]:M===Math.PI/2?[Ca,I.y]:z(Xa,[I.x,I.y])});c=Math.abs(x[1][0]-x[0][0]);k=Math.abs(d[1][0]-d[0][0]);var X=c>0?k/c:1;if(k===c||M===Math.PI/2)X=1;var Za=(d[0][0]+d[1][0])/2;c=Math.abs(x[1][1]-x[0][1]);k=Math.abs(d[1][1]-d[0][1]);s=c>0?k/c:1;if(k===c||M===0)s=1;Da=(d[0][1]+d[1][1])/2;y()&&function(){var I=X;X=s;s=I;I=Za;Za=Da;Da=I;I=Ca;Ca=ma;ma=I}();if(e(g)[0]*X>G()[g])X=G()[g]/e(g)[0];if(e(f)[3]*s>G()[f])s=G()[f]/e(f)[3];if(X!==1&&(X<1||e(g)[0]!==G()[g]))Na(e(g),z([X,0,0,1,-X*Ca+Za,0],e(g))); if(s!==1&&(s<1||e(f)[3]!==G()[f]))Na(e(f),z([1,0,0,s,0,-s*ma+Da],e(f)));V();h=Ia(h);w[g]=h[g];w[f]=h[f];x=d;La();O();za()}Oa=null},1))}};this.setXRange=function(a,b,c,h){b=p()[0]+p()[2]*b;c=p()[0]+p()[2]*c;if(o(p())>q(p())){if(b>o(p()))b=o(p());if(c<q(p()))c=q(p())}else{if(b<o(p()))b=o(p());if(c>q(p()))c=q(p())}a=Fa(a);a=wb(a,b,c,y(),i(),p(),G());b=a.xZoom;c=a.yZoom;a=a.panPoint;var d=ba(w);e(g)[0]=b;if(c&&h)e(f)[3]=c;e(g)[4]=-a[g]*b;if(c&&h)e(f)[5]=-a[f]*c;xa();h=Ia(d);w[g]=h[g];w[f]=h[f];V();La(); O();za()};this.getSeries=function(a){return Fa(a)};this.rangeChangedCallbacks=[];this.updateConfig=function(a){for(var b in a)if(a.hasOwnProperty(b))m[b]=a[b];rb();La();O();za()};this.updateConfig({});if(window.TouchEvent&&!window.MSPointerEvent&&!window.PointerEvent){ga.touchStart=Q.start;ga.touchEnd=Q.end;ga.touchMoved=Q.moved}else{H=function(){};ga.touchStart=H;ga.touchEnd=H;ga.touchMoved=H}}");
+				"function(ta,I,x,k){function M(a){return a===undefined}function m(a){return k.modelAreas[a]}function S(){return k.followCurve}function ua(){return k.crosshair||S()!==-1}function A(){return k.isHorizontal}function n(){return k.xTransform}function h(a){return k.yTransforms[a]}function g(){return k.area}function l(){return k.insideArea}function Z(a){return M(a)?k.series:k.series[a]}function aa(a){return Z(a).transform}function ib(a){return A()? y([0,1,1,0,0,0],y(aa(a),[0,1,1,0,0,0])):aa(a)}function Oa(a){return Z(a).curve}function N(a){return Z(a).axis}function jb(){return k.seriesSelection}function kb(){return k.sliders}function lb(){return k.hasToolTips}function mb(){return k.coordinateOverlayPadding}function Ea(){return k.curveManipulation}function va(){return k.maxZoom.x}function T(a){return k.maxZoom.y[a]}function K(){return k.pens}function nb(){return k.penAlpha}function ba(){return k.selectedCurve}function wa(a){a.preventDefault&& a.preventDefault()}function ca(a,b){I.addEventListener(a,b)}function U(a,b){I.removeEventListener(a,b)}function B(a){return a.length}function J(){return B(k.yTransforms)}function yb(){if(k.notifyTransform.x)return true;for(var a=0;a<J();++a)if(k.notifyTransform.y[a])return true;return false}function O(){return k.crosshairAxis}function Za(a){return a.pointerType===2||a.pointerType===3||a.pointerType===\"pen\"||a.pointerType===\"touch\"}function Pa(){if(o){if(o.tooltipTimeout){clearTimeout(o.tooltipTimeout); o.tooltipTimeout=null}if(!o.overTooltip)if(o.tooltipOuterDiv){document.body.removeChild(o.tooltipOuterDiv);o.tooltipEl=null;o.tooltipOuterDiv=null}}}function Fa(){if(yb()){if(Qa){window.clearTimeout(Qa);Qa=null}Qa=setTimeout(function(){if(k.notifyTransform.x&&!ob($a,n())){ta.emit(x.widget,\"xTransformChanged\");ha($a,n())}for(var a=0;a<J();++a)if(k.notifyTransform.y[a]&&!ob(Ra[a],h(a))){ta.emit(x.widget,\"yTransformChanged\"+a);ha(Ra[a],h(a))}},zb)}}function ia(a){var b,c;if(A()){b=p(g());c=t(g());return y([0, 1,1,0,b,c],y(n(),y(h(a),[0,1,1,0,-c,-b])))}else{b=p(g());c=w(g());return y([1,0,0,-1,b,c],y(n(),y(h(a),[1,0,0,-1,-b,c])))}}function F(a){return y(ia(a),l())}function ja(a,b,c){if(M(c))c=false;a=c?a:y(Ga(ia(b)),a);a=A()?[(a[u]-g()[1])/g()[3],(a[v]-g()[0])/g()[2]]:[(a[v]-g()[0])/g()[2],1-(a[u]-g()[1])/g()[3]];return[m(b)[0]+a[v]*m(b)[2],m(b)[1]+a[u]*m(b)[3]]}function Sa(a,b,c){if(M(c))c=false;return da.toDisplayCoord(a,c?[1,0,0,1,0,0]:ia(b),A(),g(),m(b))}function Ha(){var a,b;if(A()){a=(ja([0,t(g())], 0)[0]-m(0)[0])/m(0)[2];b=(ja([0,w(g())],0)[0]-m(0)[0])/m(0)[2]}else{a=(ja([p(g()),0],0)[0]-m(0)[0])/m(0)[2];b=(ja([q(g()),0],0)[0]-m(0)[0])/m(0)[2]}var c;for(c=0;c<B(kb());++c){var e=$(\"#\"+kb()[c]);if(e)(e=e.data(\"sobj\"))&&e.changeRange(a,b)}}function V(){Pa();if(lb()&&o.tooltipPosition)o.tooltipTimeout=setTimeout(function(){pb()},qb);ka&&rb(function(){x.repaint();ua()&&ab()})}function ab(){if(ka){var a=H.getContext(\"2d\");a.clearRect(0,0,H.width,H.height);a.save();a.beginPath();a.moveTo(p(g()),t(g())); a.lineTo(q(g()),t(g()));a.lineTo(q(g()),w(g()));a.lineTo(p(g()),w(g()));a.closePath();a.clip();var b=y(Ga(ia(O())),z),c=z[v],e=z[u];if(S()!==-1){b=Ab(A()?b[u]:b[v],Oa(S()),A());e=y(ia(N(S())),y(ib(S()),b));c=e[v];e=e[u];z[v]=c;z[u]=e}b=A()?[(b[u]-g()[1])/g()[3],(b[v]-g()[0])/g()[2]]:[(b[v]-g()[0])/g()[2],1-(b[u]-g()[1])/g()[3]];b=S()!==-1?[m(N(S()))[0]+b[v]*m(N(S()))[2],m(N(S()))[1]+b[u]*m(N(S()))[3]]:[m(O())[0]+b[v]*m(O())[2],m(O())[1]+b[u]*m(O())[3]];a.fillStyle=a.strokeStyle=k.crosshairColor;a.font= \"16px sans-serif\";a.textAlign=\"right\";a.textBaseline=\"top\";var d=b[0].toFixed(2);b=b[1].toFixed(2);if(d===\"-0.00\")d=\"0.00\";if(b===\"-0.00\")b=\"0.00\";a.fillText(\"(\"+d+\",\"+b+\")\",q(g())-mb()[0],t(g())+mb()[1]);a.setLineDash&&a.setLineDash([1,2]);a.beginPath();a.moveTo(Math.floor(c)+0.5,Math.floor(t(g()))+0.5);a.lineTo(Math.floor(c)+0.5,Math.floor(w(g()))+0.5);a.moveTo(Math.floor(p(g()))+0.5,Math.floor(e)+0.5);a.lineTo(Math.floor(q(g()))+0.5,Math.floor(e)+0.5);a.stroke();a.restore()}}function Bb(a){return t(a)<= t(l())+Ta&&w(a)>=w(l())-Ta&&p(a)<=p(l())+Ta&&q(a)>=q(l())-Ta}function ea(a){for(var b=0;b<J();++b){var c=F(b);if(A())if(a===xa)a=ya;else if(a===ya)a=xa;if(M(a)||a===xa)if(n()[0]<1){n()[0]=1;c=F(b)}if(M(a)||a===ya)if(h(b)[3]<1){h(b)[3]=1;c=F(b)}if(M(a)||a===xa){if(p(c)>p(l())){c=p(l())-p(c);if(A())h(b)[5]=h(b)[5]+c;else n()[4]=n()[4]+c;c=F(b)}if(q(c)<q(l())){c=q(l())-q(c);if(A())h(b)[5]=h(b)[5]+c;else n()[4]=n()[4]+c;c=F(b)}}if(M(a)||a===ya){if(t(c)>t(l())){c=t(l())-t(c);if(A())n()[4]=n()[4]+c;else h(b)[5]= h(b)[5]-c;c=F(b)}if(w(c)<w(l())){c=w(l())-w(c);if(A())n()[4]=n()[4]+c;else h(b)[5]=h(b)[5]-c;F(b)}}}Fa()}function pb(){ta.emit(x.widget,\"loadTooltip\",o.tooltipPosition[v],o.tooltipPosition[u])}function Cb(){if(ua()&&(M(H)||x.canvas.width!==H.width||x.canvas.height!==H.height)){if(H){H.parentNode.removeChild(H);jQuery.removeData(I,\"oobj\");H=undefined}var a=document.createElement(\"canvas\");a.setAttribute(\"width\",x.canvas.width);a.setAttribute(\"height\",x.canvas.height);a.style.position=\"absolute\";a.style.display= \"block\";a.style.left=\"0\";a.style.top=\"0\";if(window.MSPointerEvent||window.PointerEvent){a.style.msTouchAction=Ia;a.style.touchAction=Ia}x.canvas.parentNode.appendChild(a);H=a;jQuery.data(I,\"oobj\",H)}else if(!M(H)&&!ua()){H.parentNode.removeChild(H);jQuery.removeData(I,\"oobj\");H=undefined}z=[(p(g())+q(g()))/2,(t(g())+w(g()))/2]}function sb(){return H?H:x.canvas}function bb(a,b){if(za){var c=Date.now();if(M(b))b=c-la;var e={x:0,y:0},d;if(r===-1){d=F(0);for(var f=1;f<J();++f)d=Ua(d,F(f))}else d=F(r); f=Db;if(b>2*Ja){ka=false;var j=Math.floor(b/Ja-1),C;for(C=0;C<j;++C){bb(a,Ja);if(!za){ka=true;V();return}}b-=j*Ja;ka=true}if(i.x===Infinity||i.x===-Infinity)i.x=i.x>0?ma:-ma;if(isFinite(i.x)){i.x/=1+tb*b;d[0]+=i.x*b;if(p(d)>p(l())){i.x+=-f*(p(d)-p(l()))*b;i.x*=0.7}else if(q(d)<q(l())){i.x+=-f*(q(d)-q(l()))*b;i.x*=0.7}if(Math.abs(i.x)<cb)if(p(d)>p(l()))i.x=cb;else if(q(d)<q(l()))i.x=-cb;if(Math.abs(i.x)>ma)i.x=(i.x>0?1:-1)*ma;e.x=i.x*b}if(i.y===Infinity||i.y===-Infinity)i.y=i.y>0?ma:-ma;if(isFinite(i.y)){i.y/= 1+tb*b;d[1]+=i.y*b;if(t(d)>t(l())){i.y+=-f*(t(d)-t(l()))*b;i.y*=0.7}else if(w(d)<w(l())){i.y+=-f*(w(d)-w(l()))*b;i.y*=0.7}if(Math.abs(i.y)<0.001)if(t(d)>t(l()))i.y=0.001;else if(w(d)<w(l()))i.y=-0.001;if(Math.abs(i.y)>ma)i.y=(i.y>0?1:-1)*ma;e.y=i.y*b}if(r===-1){d=F(0);for(f=1;f<J();++f)d=Ua(d,F(f))}else d=F(r);W(e,Aa,r);if(r===-1){a=F(0);for(f=1;f<J();++f)a=Ua(a,F(f))}else a=F(r);if(p(d)>p(l())&&p(a)<=p(l())){i.x=0;W({x:-e.x,y:0},Aa,r);ea(xa)}if(q(d)<q(l())&&q(a)>=q(l())){i.x=0;W({x:-e.x,y:0},Aa, r);ea(xa)}if(t(d)>t(l())&&t(a)<=t(l())){i.y=0;W({x:0,y:-e.y},Aa,r);ea(ya)}if(w(d)<w(l())&&w(a)>=w(l())){i.y=0;W({x:0,y:-e.y},Aa,r);ea(ya)}if(Math.abs(i.x)<ub&&Math.abs(i.y)<ub&&Bb(a)){ea();za=false;D=null;i.x=0;i.y=0;la=null;s=[]}else{la=c;ka&&Va(bb)}}}function Wa(){var a,b,c=vb(n()[0])-1;if(c>=B(K().x))c=B(K().x)-1;for(a=0;a<B(K().x);++a)if(c===a)for(b=0;b<B(K().x[a]);++b)K().x[a][b].color[3]=nb().x[b];else for(b=0;b<B(K().x[a]);++b)K().x[a][b].color[3]=0;for(c=0;c<B(K().y);++c){var e=vb(h(c)[3])- 1;if(e>=B(K().y[c]))e=B(K().y[c])-1;for(a=0;a<B(K().y[c]);++a)if(e===a)for(b=0;b<B(K().y[c][a]);++b)K().y[c][a][b].color[3]=nb().y[c][b];else for(b=0;b<B(K().y[c][a]);++b)K().y[c][a][b].color[3]=0}}function W(a,b,c){if(M(b))b=0;if(M(c))c=-1;var e=ja(z,O());if(A())a={x:a.y,y:-a.x};if(b&Aa){if(c===-1){n()[4]=n()[4]+a.x;for(b=0;b<J();++b)h(b)[5]=h(b)[5]-a.y}else h(c)[5]=h(c)[5]-a.y;Fa()}else if(b&wb){var d;if(c===-1){d=F(0);for(b=1;b<J();++b)d=Ua(d,F(b))}else d=F(c);if(p(d)>p(l())){if(a.x>0)a.x/=1+(p(d)- p(l()))*Xa}else if(q(d)<q(l()))if(a.x<0)a.x/=1+(q(l())-q(d))*Xa;if(t(d)>t(l())){if(a.y>0)a.y/=1+(t(d)-t(l()))*Xa}else if(w(d)<w(l()))if(a.y<0)a.y/=1+(w(l())-w(d))*Xa;if(c===-1){n()[4]=n()[4]+a.x;for(b=0;b<J();++b)h(b)[5]=h(b)[5]-a.y}else h(c)[5]=h(c)[5]-a.y;if(c===-1)z[v]+=a.x;z[u]+=a.y;Fa()}else{if(c===-1){n()[4]=n()[4]+a.x;for(b=0;b<J();++b)h(b)[5]=h(b)[5]-a.y}else h(c)[5]=h(c)[5]-a.y;if(c===-1)z[v]+=a.x;z[u]+=a.y;ea()}a=Sa(e,O());z[v]=a[v];z[u]=a[u];V();Ha()}function Ka(a,b,c,e){if(M(e))e=-1;var d= ja(z,O());a=A()?[a.y-t(g()),a.x-p(g())]:y(Ga([1,0,0,-1,p(g()),w(g())]),[a.x,a.y]);var f=a[0];a=a[1];var j=Math.pow(1.2,A()?c:b);b=Math.pow(1.2,A()?b:c);if(n()[0]*j>va())j=va()/n()[0];if(e===-1){if(j<1||n()[0]!==va())Ba(n(),y([j,0,0,1,f-j*f,0],n()));for(e=0;e<J();++e){c=b;if(h(e)[3]*b>T(e))c=T(e)/h(e)[3];if(c<1||h(e)[3]!==T(e))Ba(h(e),y([1,0,0,c,0,a-c*a],h(e)))}}else{if(h(e)[3]*b>T(e))b=T(e)/h(e)[3];if(b<1||h(e)[3]!=T(e))Ba(h(e),y([1,0,0,b,0,a-b*a],h(e)))}ea();d=Sa(d,O());z[v]=d[v];z[u]=d[u];Wa(); V();Ha()}jQuery.data(I,\"cobj\",this);var na=this,E=ta.WT;na.config=k;var G=E.gfxUtils,y=G.transform_mult,Ga=G.transform_inverted,ha=G.transform_assign,ob=G.transform_equal,Eb=G.transform_apply,t=G.rect_top,w=G.rect_bottom,p=G.rect_left,q=G.rect_right,Ua=G.rect_intersection,da=E.chartCommon,Fb=da.minMaxY,Ab=da.findClosestPoint,Gb=da.projection,xb=da.distanceLessThanRadius,vb=da.toZoomLevel,La=da.isPointInRect,Hb=da.findYRange,Ma=function(a,b){return da.matchAxis(a,b,g(),k.yAxes,A())},Ja=17,Va=function(){return window.requestAnimationFrame|| window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||function(a){window.setTimeout(a,Ja)}}(),db=false,rb=function(a){if(!db){db=true;Va(function(){a();db=false})}},Ia=\"none\",Aa=1,wb=2,xa=1,ya=2,v=0,u=1,zb=250,qb=500,tb=0.003,Db=2.0E-4,Xa=0.07,Ta=3,cb=0.001,ma=1.5,ub=0.02;if(window.MSPointerEvent||window.PointerEvent){I.style.touchAction=Ia;x.canvas.style.msTouchAction=Ia;x.canvas.style.touchAction=Ia}var qa=jQuery.data(I,\"eobj2\");if(!qa){qa={};qa.contextmenuListener=function(a){wa(a); U(\"contextmenu\",qa.contextmenuListener)}}jQuery.data(I,\"eobj2\",qa);var X={},ra=false;if(window.MSPointerEvent||window.PointerEvent)(function(){function a(){ra=B(d)>0}function b(j){if(Za(j)){wa(j);d.push(j);a();X.start(I,{touches:d.slice(0)})}}function c(j){if(ra)if(Za(j)){wa(j);var C;for(C=0;C<B(d);++C)if(d[C].pointerId===j.pointerId){d.splice(C,1);break}a();X.end(I,{touches:d.slice(0),changedTouches:[]})}}function e(j){if(Za(j)){wa(j);var C;for(C=0;C<B(d);++C)if(d[C].pointerId===j.pointerId){d[C]= j;break}a();X.moved(I,{touches:d.slice(0)})}}var d=[],f=jQuery.data(I,\"eobj\");if(f)if(window.PointerEvent){U(\"pointerdown\",f.pointerDown);U(\"pointerup\",f.pointerUp);U(\"pointerout\",f.pointerUp);U(\"pointermove\",f.pointerMove)}else{U(\"MSPointerDown\",f.pointerDown);U(\"MSPointerUp\",f.pointerUp);U(\"MSPointerOut\",f.pointerUp);U(\"MSPointerMove\",f.pointerMove)}jQuery.data(I,\"eobj\",{pointerDown:b,pointerUp:c,pointerMove:e});if(window.PointerEvent){ca(\"pointerdown\",b);ca(\"pointerup\",c);ca(\"pointerout\",c);ca(\"pointermove\", e)}else{ca(\"MSPointerDown\",b);ca(\"MSPointerUp\",c);ca(\"MSPointerOut\",c);ca(\"MSPointerMove\",e)}})();var H=jQuery.data(I,\"oobj\"),z=null,ka=true,D=null,r=-1,s=[],fa=false,oa=false,Q=null,eb=null,fb=null,i={x:0,y:0},Y=null,la=null,o=jQuery.data(I,\"tobj\");if(!o){o={overTooltip:false};jQuery.data(I,\"tobj\",o)}var Ca=null,za=false,Qa=null,$a=[0,0,0,0,0,0];ha($a,n());var Ra=[];for(G=0;G<J();++G){Ra.push([0,0,0,0,0,0]);ha(Ra[G],h(G))}var Ba=function(a,b){ha(a,b);Fa()};x.combinedTransform=ia;this.updateTooltip= function(a){Pa();if(a)if(o.tooltipPosition){o.toolTipEl=document.createElement(\"div\");o.toolTipEl.className=k.ToolTipInnerStyle;o.toolTipEl.innerHTML=a;o.tooltipOuterDiv=document.createElement(\"div\");o.tooltipOuterDiv.className=k.ToolTipOuterStyle;document.body.appendChild(o.tooltipOuterDiv);o.tooltipOuterDiv.appendChild(o.toolTipEl);var b=E.widgetPageCoordinates(x.canvas);a=o.tooltipPosition[v]+b.x;b=o.tooltipPosition[u]+b.y;E.fitToWindow(o.tooltipOuterDiv,a+10,b+10,a-10,b-10);$(o.toolTipEl).mouseenter(function(){o.overTooltip= true});$(o.toolTipEl).mouseleave(function(){o.overTooltip=false})}};this.mouseMove=function(a,b){setTimeout(function(){setTimeout(Pa,200);if(!ra){var c=E.widgetCoordinates(x.canvas,b);if(La(c,g())){if(!o.tooltipEl&&lb()){o.tooltipPosition=[c.x,c.y];o.tooltipTimeout=setTimeout(function(){pb()},qb)}if(D===null&&ua()&&ka){z=[c.x,c.y];rb(ab)}}}},0)};this.mouseOut=function(){setTimeout(Pa,200)};this.mouseDown=function(a,b){if(!ra){a=E.widgetCoordinates(x.canvas,b);b=Ma(a.x,a.y);var c=La(a,g());if(!(b=== -1&&!c)){D=a;r=b}}};this.mouseUp=function(){if(!ra){D=null;r=-1}};this.mouseDrag=function(a,b){if(!ra)if(D!==null){a=E.widgetCoordinates(x.canvas,b);if(E.buttons===1)if(r===-1&&Ea()&&Z(ba())){b=ba();var c;c=A()?a.x-D.x:a.y-D.y;ha(aa(b),y([1,0,0,1,0,c/h(N(seriesNb))[3]],aa(b)));V()}else k.pan&&W({x:a.x-D.x,y:a.y-D.y},0,r);D=a}};this.clicked=function(a,b){if(!ra)if(D===null)if(jb()){a=E.widgetCoordinates(x.canvas,b);ta.emit(x.widget,\"seriesSelected\",a.x,a.y)}};this.mouseWheel=function(a,b){var c=(b.metaKey<< 3)+(b.altKey<<2)+(b.ctrlKey<<1)+b.shiftKey;a=k.wheelActions[c];if(!M(a)){var e=E.widgetCoordinates(x.canvas,b),d=Ma(e.x,e.y),f=La(e,g());if(!(d===-1&&!f)){var j=E.normalizeWheel(b);if(f&&c===0&&Ea()){c=ba();f=-j.spinY;if(Z(c)){a=ib(c);a=Eb(a,Oa(c));a=Fb(a,A());a=(a[0]+a[1])/2;E.cancelEvent(b);b=Math.pow(1.2,f);ha(aa(c),y([1,0,0,b,0,a-b*a],aa(c)));V();return}}if((a===4||a===5||a===6)&&k.pan){c=n()[4];f=[];for(e=0;e<J();++e)f.push(h(e)[5]);if(a===6)W({x:-j.pixelX,y:-j.pixelY},0,d);else if(a===5)W({x:0, y:-j.pixelX-j.pixelY},0,d);else a===4&&W({x:-j.pixelX-j.pixelY,y:0},0,d);if(c!==n()[4])for(e=0;e<J();++e)f[e]!==h(e)[5]&&E.cancelEvent(b)}else if(k.zoom){E.cancelEvent(b);f=-j.spinY;if(f===0)f=-j.spinX;if(a===1)Ka(e,0,f,d);else if(a===0)Ka(e,f,0,d);else if(a===2)Ka(e,f,f,d);else if(a===3)j.pixelX!==0?Ka(e,f,0,d):Ka(e,0,f,d)}}}};var Ib=function(){jb()&&ta.emit(x.widget,\"seriesSelected\",D.x,D.y)};X.start=function(a,b,c){fa=B(b.touches)===1;oa=B(b.touches)===2;if(fa){za=false;var e=E.widgetCoordinates(x.canvas, b.touches[0]);a=Ma(e.x,e.y);var d=La(e,g());if(a===-1&&!d)return;Ca=a===-1&&ua()&&xb(z,[e.x,e.y],30)?1:0;la=Date.now();D=e;r=a;if(Ca!==1){if(!c&&d)Y=window.setTimeout(Ib,200);ca(\"contextmenu\",qa.contextmenuListener)}E.capture(null);E.capture(sb())}else if(oa&&(k.zoom||Ea())){if(Y){window.clearTimeout(Y);Y=null}za=false;s=[E.widgetCoordinates(x.canvas,b.touches[0]),E.widgetCoordinates(x.canvas,b.touches[1])].map(function(f){return[f.x,f.y]});a=-1;if(!s.every(function(f){return La(f,g())})){a=Ma(s[0][v], s[0][u]);if(a===-1||Ma(s[1][v],s[1][u])!==a){oa=null;return}r=a}E.capture(null);E.capture(sb());Q=Math.atan2(s[1][1]-s[0][1],s[1][0]-s[0][0]);eb=[(s[0][0]+s[1][0])/2,(s[0][1]+s[1][1])/2];c=Math.abs(Math.sin(Q));e=Math.abs(Math.cos(Q));Q=c<Math.sin(0.125*Math.PI)?0:e<Math.cos(0.375*Math.PI)?Math.PI/2:Math.tan(Q)>0?Math.PI/4:-Math.PI/4;fb=Gb(Q,eb);r=a}else return;wa(b)};X.end=function(a,b){if(Y){window.clearTimeout(Y);Y=null}window.setTimeout(function(){U(\"contextmenu\",qa.contextmenuListener)},0);var c= Array.prototype.slice.call(b.touches),e=B(c)===0;e||function(){var d;for(d=0;d<B(b.changedTouches);++d)(function(){for(var f=b.changedTouches[d].identifier,j=0;j<B(c);++j)if(c[j].identifier===f){c.splice(j,1);return}})()}();e=B(c)===0;fa=B(c)===1;oa=B(c)===2;if(e){Ya=null;if(Ca===0&&(isFinite(i.x)||isFinite(i.y))&&k.rubberBand){la=Date.now();za=true;Va(bb)}else{Ca===1&&na.mouseUp(null,null);c=[];la=fb=eb=Q=null}Ca=null}else if(fa||oa)X.start(a,b,true)};var Ya=null,sa=null,gb=null;X.moved=function(a, b){if(fa||oa)if(!(fa&&D==null)){wa(b);sa=E.widgetCoordinates(x.canvas,b.touches[0]);if(B(b.touches)>1)gb=E.widgetCoordinates(x.canvas,b.touches[1]);if(r===-1&&fa&&Y&&!xb([sa.x,sa.y],[D.x,D.y],3)){window.clearTimeout(Y);Y=null}Ya||(Ya=setTimeout(function(){if(r===-1&&fa&&Ea()&&Z(ba())){var c=ba();if(Z(c)){var e=sa,d;d=A()?(e.x-D.x)/h(N(ba()))[3]:(e.y-D.y)/h(N(ba()))[3];aa(c)[5]+=d;D=e;V()}}else if(fa){e=sa;d=Date.now();var f={x:e.x-D.x,y:e.y-D.y};c=d-la;la=d;if(Ca===1){z[v]+=f.x;z[u]+=f.y;ua()&&ka&& Va(ab)}else if(k.pan){i.x=f.x/c;i.y=f.y/c;W(f,k.rubberBand?wb:0,r)}D=e}else if(r===-1&&oa&&Ea()&&Z(ba())){f=A()?v:u;d=[sa,gb].map(function(P){return A()?[P.x,pa]:[Na,P.y]});c=Math.abs(s[1][f]-s[0][f]);var j=Math.abs(d[1][f]-d[0][f]),C=c>0?j/c:1;if(j===c)C=1;c=ba();if(Z(c)){var pa=y(Ga(ia(N(c))),[0,(s[0][f]+s[1][f])/2])[1],Da=y(Ga(ia(N(c))),[0,(d[0][f]+d[1][f])/2])[1];ha(aa(c),y([1,0,0,C,0,-C*pa+Da],aa(c)));D=e;V();s=d}}else if(oa&&k.zoom){e=ja(z,O());var Na=(s[0][0]+s[1][0])/2;pa=(s[0][1]+s[1][1])/ 2;d=[sa,gb].map(function(P){return Q===0?[P.x,pa]:Q===Math.PI/2?[Na,P.y]:y(fb,[P.x,P.y])});f=Math.abs(s[1][0]-s[0][0]);c=Math.abs(d[1][0]-d[0][0]);var ga=f>0?c/f:1;if(c===f||Q===Math.PI/2)ga=1;var hb=(d[0][0]+d[1][0])/2;c=Math.abs(s[1][1]-s[0][1]);j=Math.abs(d[1][1]-d[0][1]);C=c>0?j/c:1;if(j===c||Q===0)C=1;Da=(d[0][1]+d[1][1])/2;A()&&function(){var P=ga;ga=C;C=P;P=hb;hb=Da;Da=P;P=Na;Na=pa;pa=P}();if(n()[0]*ga>va())ga=va()/n()[0];f=[];for(c=0;c<J();++c)f.push(C);for(c=0;c<J();++c)if(h(c)[3]*f[c]>T(c))f[c]= T(c)/h(c)[3];if(r===-1){if(ga!==1&&(ga<1||n()[0]!==va()))Ba(n(),y([ga,0,0,1,-ga*Na+hb,0],n()));for(c=0;c<J();++c)if(f[c]!==1&&(f[c]<1||h(c)[3]!==T(c)))Ba(h(c),y([1,0,0,f[c],0,-f[c]*pa+Da],h(c)))}else if(f[r]!==1&&(f[r]<1||h(r)[3]!==T(r)))Ba(h(r),y([1,0,0,f[r],0,-f[r]*pa+Da],h(r)));ea();e=Sa(e,O());z[v]=e[v];z[u]=e[u];s=d;Wa();V();Ha()}Ya=null},1))}};this.setXRange=function(a,b,c,e){b=m(0)[0]+m(0)[2]*b;c=m(0)[0]+m(0)[2]*c;if(p(m(0))>q(m(0))){if(b>p(m(0)))b=p(m(0));if(c<q(m(0)))c=q(m(0))}else{if(b< p(m(0)))b=p(m(0));if(c>q(m(0)))c=q(m(0))}var d=Oa(a);d=Hb(d,N(a),b,c,A(),g(),m(N(a)),k.maxZoom);b=d.xZoom;c=d.yZoom;d=d.panPoint;var f=ja(z,O());n()[0]=b;if(c&&e)h(N(a))[3]=c;n()[4]=-d[v]*b;if(c&&e)h(N(a))[5]=-d[u]*c;Fa();a=Sa(f,O());z[v]=a[v];z[u]=a[u];ea();Wa();V();Ha()};this.getSeries=function(a){return Oa(a)};this.rangeChangedCallbacks=[];this.updateConfig=function(a){for(var b in a)if(a.hasOwnProperty(b))k[b]=a[b];Cb();Wa();V();Ha()};this.updateConfig({});if(window.TouchEvent&&!window.MSPointerEvent&& !window.PointerEvent){na.touchStart=X.start;na.touchEnd=X.end;na.touchMoved=X.moved}else{G=function(){};na.touchStart=G;na.touchEnd=G;na.touchMoved=G}}");
 	}
 
 	private static final int TICK_LENGTH = 5;

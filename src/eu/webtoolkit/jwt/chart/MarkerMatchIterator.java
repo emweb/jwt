@@ -25,14 +25,14 @@ class MarkerMatchIterator extends SeriesIterator {
 
 	public static final double MATCH_RADIUS = 5;
 
-	public MarkerMatchIterator(final WCartesianChart chart, double x, double y,
-			double rx, double ry) {
+	public MarkerMatchIterator(final WCartesianChart chart, double x,
+			List<Double> ys, double rx, List<Double> rys) {
 		super();
 		this.chart_ = chart;
 		this.matchX_ = x;
-		this.matchY_ = y;
 		this.rX_ = rx;
-		this.rY_ = ry;
+		this.matchYs_ = ys;
+		this.rYs_ = rys;
 		this.matchedSeries_ = null;
 		this.matchedXRow_ = -1;
 		this.matchedXColumn_ = -1;
@@ -61,11 +61,11 @@ class MarkerMatchIterator extends SeriesIterator {
 				scaleFactor = 1.0;
 			}
 			double scaledRx = scaleFactor * this.rX_;
-			double scaledRy = scaleFactor * this.rY_;
+			double scaledRy = scaleFactor * this.rYs_.get(series.getYAxis());
 			WPointF p = this.chart_.map(x, y, series.getAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
 			double dx = p.getX() - this.matchX_;
-			double dy = p.getY() - this.matchY_;
+			double dy = p.getY() - this.matchYs_.get(series.getYAxis());
 			double dx2 = dx * dx;
 			double dy2 = dy * dy;
 			double rx2 = scaledRx * scaledRx;
@@ -102,9 +102,9 @@ class MarkerMatchIterator extends SeriesIterator {
 
 	private final WCartesianChart chart_;
 	private double matchX_;
-	private double matchY_;
 	private double rX_;
-	private double rY_;
+	private List<Double> matchYs_;
+	private List<Double> rYs_;
 	private WDataSeries matchedSeries_;
 	private int matchedXRow_;
 	private int matchedXColumn_;

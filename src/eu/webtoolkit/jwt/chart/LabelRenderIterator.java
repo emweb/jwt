@@ -90,7 +90,7 @@ class LabelRenderIterator extends SeriesIterator {
 			final WCartesianChart chart = this.chart_;
 			WPen oldPen = chart.textPen_.clone();
 			chart.textPen_.setColor(series.getLabelColor());
-			WTransform t = this.chart_.getZoomRangeTransform();
+			WTransform t = this.chart_.zoomRangeTransform(series.getYAxis());
 			WTransform ct = new WTransform();
 			WJavaScriptHandle<WTransform> transformHandle = this.chart_.curveTransforms_
 					.get(series);

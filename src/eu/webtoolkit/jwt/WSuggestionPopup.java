@@ -316,6 +316,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.filterModel_ = new Signal1<String>(this);
 		this.activated_ = new Signal2<Integer, WFormWidget>(this);
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
+		this.currentInputText_ = "";
 		this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {
 		};
 		this.jactivated_ = new JSignal2<String, String>(
@@ -358,6 +359,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		this.filterModel_ = new Signal1<String>();
 		this.activated_ = new Signal2<Integer, WFormWidget>();
 		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
+		this.currentInputText_ = "";
 		this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {
 		};
 		this.jactivated_ = new JSignal2<String, String>(
@@ -781,6 +783,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	private Signal1<String> filterModel_;
 	private Signal2<Integer, WFormWidget> activated_;
 	private List<AbstractSignal.Connection> modelConnections_;
+	private String currentInputText_;
 	private JSignal1<String> filter_;
 	private JSignal2<String, String> jactivated_;
 	private List<WFormWidget> edits_;
@@ -800,7 +803,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		});
 		this.filter_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {
-				WSuggestionPopup.this.doFilter(e1);
+				WSuggestionPopup.this.scheduleFilter(e1);
 			}
 		});
 		this.jactivated_.addListener(this,
@@ -809,6 +812,11 @@ public class WSuggestionPopup extends WPopupWidget {
 						WSuggestionPopup.this.doActivate(e1, e2);
 					}
 				});
+	}
+
+	private void scheduleFilter(String input) {
+		this.currentInputText_ = input;
+		this.scheduleRender();
 	}
 
 	private void doFilter(String input) {
@@ -989,6 +997,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}
+		this.doFilter(this.currentInputText_);
 		super.render(flags);
 	}
 

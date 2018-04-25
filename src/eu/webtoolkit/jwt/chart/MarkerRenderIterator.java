@@ -171,7 +171,7 @@ class MarkerRenderIterator extends SeriesIterator {
 				0, this.currentScale_, 0, 0));
 		WTransform currentTransform = new WTransform(1.0 / this.currentScale_,
 				0, 0, 1.0 / this.currentScale_, 0, 0).multiply(this.chart_
-				.getZoomRangeTransform());
+				.zoomRangeTransform(series.getYAxis()));
 		this.painter_.setPen(new WPen(PenStyle.NoPen));
 		this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
 		this.painter_.setShadow(series.getShadow());

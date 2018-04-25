@@ -1,8 +1,14 @@
 package eu.webtoolkit.jwt;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,4 +116,22 @@ public class FileUtils {
 	public static String fileToString(String path) {
 		return resourceToString(path);
 	}
+
+    public static void appendFile(String srcPath, String targetPath) {
+    	try {
+    		FileInputStream fis = new FileInputStream(srcPath);
+    		FileOutputStream fos = new FileOutputStream(targetPath, true);
+    		
+    		int nbBytes = 0;
+    		byte[] buffer = new byte[1024];
+    		while ( (nbBytes = fis.read(buffer)) != -1 ) {
+    			fos.write(buffer, 0, nbBytes);
+    		}
+
+    		fis.close();
+    		fos.close();
+    	} catch (IOException e) {
+    		e.printStackTrace();
+    	}
+    }
 }

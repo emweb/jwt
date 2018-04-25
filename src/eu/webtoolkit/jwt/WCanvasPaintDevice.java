@@ -774,30 +774,48 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 					}
 				}
 			}
-			switch (this.getPainter().getPen().getStyle()) {
-			case SolidLine:
-				this.js_.append("ctx.setLineDash([]);");
-				break;
-			case DashLine:
-				this.js_.append("ctx.setLineDash([4,2]);");
-				break;
-			case DotLine:
-				this.js_.append("ctx.setLineDash([1,2]);");
-				break;
-			case DashDotLine:
-				this.js_.append("ctx.setLineDash([4,2,1,2]);");
-				break;
-			case DashDotDotLine:
-				this.js_.append("ctx.setLineDash([4,2,1,2,1,2]);");
-				break;
-			case NoPen:
-				break;
-			}
 			char[] buf = new char[30];
 			double lw = this
 					.getPainter()
 					.normalizedPenWidth(this.getPainter().getPen().getWidth(),
 							true).getValue();
+			switch (this.getPainter().getPen().getStyle()) {
+			case SolidLine:
+				this.js_.append("ctx.setLineDash([]);");
+				break;
+			case DashLine:
+				this.js_.append("ctx.setLineDash([");
+				this.js_.append(MathUtils.roundJs(lw * 4.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3));
+				this.js_.append("]);");
+				break;
+			case DotLine:
+				this.js_.append("ctx.setLineDash([");
+				this.js_.append(MathUtils.roundJs(lw * 1.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3));
+				this.js_.append("]);");
+				break;
+			case DashDotLine:
+				this.js_.append("ctx.setLineDash([");
+				this.js_.append(MathUtils.roundJs(lw * 4.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 1.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3));
+				this.js_.append("]);");
+				break;
+			case DashDotDotLine:
+				this.js_.append("ctx.setLineDash([");
+				this.js_.append(MathUtils.roundJs(lw * 4.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 1.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 1.0, 3)).append(',');
+				this.js_.append(MathUtils.roundJs(lw * 2.0, 3));
+				this.js_.append("]);");
+				break;
+			case NoPen:
+				break;
+			}
 			this.js_.append("ctx.lineWidth=").append(MathUtils.roundJs(lw, 3))
 					.append(';');
 			if (this.currentPen_.getCapStyle() != this.getPainter().getPen()
