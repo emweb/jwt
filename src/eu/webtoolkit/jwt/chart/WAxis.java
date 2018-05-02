@@ -2584,8 +2584,8 @@ public class WAxis {
 	}
 
 	private WAbstractChartImplementation chart_;
-	private Axis axis_;
-	private int yAxis_;
+	Axis axis_;
+	int yAxis_;
 	private boolean visible_;
 	private AxisValue location_;
 	private AxisScale scale_;
