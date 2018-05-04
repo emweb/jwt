@@ -1368,10 +1368,7 @@ public class WEnvironment {
 			for (int i = 0; i < ips.size(); ++i) {
 				result = ips.get(i);
 				result = result.trim();
-				if (result.length() != 0 && !result.startsWith("127.")
-						&& !result.startsWith("10.")
-						&& !result.startsWith("172.16.")
-						&& !result.startsWith("192.168.")) {
+				if (result.length() != 0 && !isPrivateIP(result)) {
 					break;
 				}
 			}
@@ -1412,5 +1409,20 @@ public class WEnvironment {
 
 	static String str(String s) {
 		return s != null ? s : "";
+	}
+
+	static boolean isPrivateIP(final String s) {
+		return s.startsWith("127.")
+				|| s.startsWith("10.")
+				|| s.startsWith("192.168.")
+				|| s.length() >= 7
+				&& s.startsWith("172.")
+				&& s.charAt(6) == '.'
+				&& (s.charAt(4) == '1' && s.charAt(5) >= '6'
+						&& s.charAt(5) <= '9' || s.charAt(4) == '2'
+						&& s.charAt(5) >= '0' && s.charAt(5) <= '9' || s
+						.charAt(4) == '3'
+						&& s.charAt(5) >= '0'
+						&& s.charAt(5) <= '1');
 	}
 }

@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -73,9 +74,15 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	
 	private void readXmlResource(String bundleName) {
 		WApplication app = WApplication.getInstance();
+		
+		Locale locale;
+		if (app == null)
+			locale = Locale.getDefault();
+		else
+			locale = app.getLocale();
 
 		InputStream stream = null;
-		for (String path : StringUtils.expandLocales(bundleName, app.getLocale().toString())) {
+		for (String path : StringUtils.expandLocales(bundleName, locale.toString())) {
 			try {
 				stream = FileUtils.getResourceAsStream(path + ".xml");
 			} catch (IOException e) {

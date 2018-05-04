@@ -2673,9 +2673,6 @@ public class WAxis {
 				}
 			}
 		}
-		if (axis == Axis.Y2Axis) {
-			this.visible_ = false;
-		}
 	}
 
 	void initYAxis(WAbstractChartImplementation chart, int yAxis) {
