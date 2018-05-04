@@ -3727,56 +3727,11 @@ public class WCartesianChart extends WAbstractChart {
 		boolean vertical = this.getOrientation() == Orientation.Vertical;
 		int w = vertical ? this.width_ : this.height_;
 		int h = vertical ? this.height_ : this.width_;
-		int margin;
+		final int legendPadding = 10;
+		int legendWidth = 0;
+		int legendHeight = 0;
 		if (this.isLegendEnabled()) {
 			painter.save();
-			WPaintDevice device = painter.getDevice();
-			WAxis caxis = null;
-			Orientation titleOrientation = Orientation.Horizontal;
-			if (this.getLegendSide() == Side.Right) {
-				if (this.yAxes_.get(1).axis.isVisible()) {
-					caxis = this.yAxes_.get(1).axis;
-				} else {
-					if (this.yAxes_.get(0).axis.isVisible()
-							&& (this.yAxes_.get(0).axis.getLocation() == AxisValue.BothSides || this.yAxes_
-									.get(0).axis.getLocation() == AxisValue.MaximumValue)) {
-						caxis = this.yAxes_.get(0).axis;
-					}
-				}
-				if (caxis != null
-						&& caxis.getTitleOrientation() == Orientation.Vertical) {
-					titleOrientation = Orientation.Vertical;
-				}
-			} else {
-				if (this.getLegendSide() == Side.Left) {
-					caxis = this.yAxes_.get(0).axis;
-					if (caxis.getTitleOrientation() == Orientation.Vertical) {
-						titleOrientation = Orientation.Vertical;
-					}
-				}
-			}
-			boolean fontMetrics = !EnumUtils.mask(device.getFeatures(),
-					WPaintDevice.FeatureFlag.HasFontMetrics).isEmpty();
-			if (titleOrientation == Orientation.Vertical && caxis != null) {
-				if (fontMetrics) {
-					margin = (int) (caxis.calcTitleSize(device,
-							Orientation.Vertical) + this.yAxes_.get(1).axis
-							.calcMaxTickLabelSize(device,
-									Orientation.Horizontal));
-				} else {
-					margin = 30;
-				}
-			} else {
-				margin = 20;
-			}
-			if (caxis != null && titleOrientation == Orientation.Horizontal) {
-				if (fontMetrics) {
-					margin += caxis.calcMaxTickLabelSize(device,
-							Orientation.Horizontal);
-				} else {
-					margin += 20;
-				}
-			}
 			int numSeriesWithLegend = 0;
 			for (int i = 0; i < this.getSeries().size(); ++i) {
 				if (this.getSeries().get(i).isLegendEnabled()) {
@@ -3814,49 +3769,49 @@ public class WCartesianChart extends WAbstractChart {
 			int numLegendRows = (numSeriesWithLegend - 1)
 					/ this.getLegendColumns() + 1;
 			double lineHeight = f.getSizeLength().toPixels() * 1.5;
-			int legendWidth = (int) this.getLegendColumnWidth().toPixels()
+			legendWidth = (int) this.getLegendColumnWidth().toPixels()
 					* Math.min(this.getLegendColumns(), numSeriesWithLegend);
-			int legendHeight = (int) (numLegendRows * lineHeight);
+			legendHeight = (int) (numLegendRows * lineHeight);
 			int x = 0;
 			int y = 0;
 			switch (this.getLegendSide()) {
 			case Left:
 				if (this.getLegendLocation() == LegendLocation.LegendInside) {
-					x = this.getPlotAreaPadding(Side.Left) + margin;
+					x = this.getPlotAreaPadding(Side.Left) + legendPadding;
 				} else {
-					x = this.getPlotAreaPadding(Side.Left) - margin
+					x = this.getPlotAreaPadding(Side.Left) - legendPadding
 							- legendWidth;
 				}
 				break;
 			case Right:
 				x = w - this.getPlotAreaPadding(Side.Right);
 				if (this.getLegendLocation() == LegendLocation.LegendInside) {
-					x -= margin + legendWidth;
+					x -= legendPadding + legendWidth;
 				} else {
-					x += margin;
+					x += legendPadding;
 				}
 				break;
 			case Top:
 				if (this.getLegendLocation() == LegendLocation.LegendInside) {
-					y = this.getPlotAreaPadding(Side.Top) + margin;
+					y = this.getPlotAreaPadding(Side.Top) + legendPadding;
 				} else {
-					y = this.getPlotAreaPadding(Side.Top) - margin
+					y = this.getPlotAreaPadding(Side.Top) - legendPadding
 							- legendHeight;
 				}
 				break;
 			case Bottom:
 				y = h - this.getPlotAreaPadding(Side.Bottom);
 				if (this.getLegendLocation() == LegendLocation.LegendInside) {
-					y -= margin + legendHeight;
+					y -= legendPadding + legendHeight;
 				} else {
-					y += margin;
+					y += legendPadding;
 				}
 			default:
 				break;
 			}
 			switch (this.getLegendAlignment()) {
 			case AlignTop:
-				y = this.getPlotAreaPadding(Side.Top) + margin;
+				y = this.getPlotAreaPadding(Side.Top) + legendPadding;
 				break;
 			case AlignMiddle: {
 				double middle = this.getPlotAreaPadding(Side.Top)
@@ -3866,11 +3821,11 @@ public class WCartesianChart extends WAbstractChart {
 			}
 				break;
 			case AlignBottom:
-				y = h - this.getPlotAreaPadding(Side.Bottom) - margin
+				y = h - this.getPlotAreaPadding(Side.Bottom) - legendPadding
 						- legendHeight;
 				break;
 			case AlignLeft:
-				x = this.getPlotAreaPadding(Side.Left) + margin;
+				x = this.getPlotAreaPadding(Side.Left) + legendPadding;
 				break;
 			case AlignCenter: {
 				double center = this.getPlotAreaPadding(Side.Left)
@@ -3880,52 +3835,118 @@ public class WCartesianChart extends WAbstractChart {
 			}
 				break;
 			case AlignRight:
-				x = w - this.getPlotAreaPadding(Side.Right) - margin
+				x = w - this.getPlotAreaPadding(Side.Right) - legendPadding
 						- legendWidth;
 				break;
 			default:
 				break;
 			}
+			int xOffset = 0;
+			int yOffset = 0;
 			if (this.getLegendLocation() == LegendLocation.LegendOutside) {
-				if (this.getLegendSide() == Side.Top && !vertical
-						&& this.getAxis(Axis.Y1Axis).isVisible()) {
-					y -= 16;
+				switch (this.getLegendSide()) {
+				case Top: {
+					if (this.getOrientation() == Orientation.Horizontal) {
+						for (int i = this.getYAxisCount() - 1; i >= 0; --i) {
+							if (this.yAxis(i).isVisible()
+									&& (this.yAxes_.get(i).location.initLoc == AxisValue.MinimumValue || this.yAxes_
+											.get(i).location.initLoc == AxisValue.BothSides)) {
+								yOffset = -(this.yAxes_.get(i).location.minOffset + this.yAxes_
+										.get(i).calculatedWidth);
+								break;
+							}
+						}
+					} else {
+						if (this.getAxis(Axis.XAxis).isVisible()
+								&& (this.xAxis_.location.initLoc == AxisValue.MaximumValue || this.xAxis_.location.initLoc == AxisValue.BothSides)) {
+							yOffset = -this.xAxis_.calculatedWidth;
+						}
+					}
+					yOffset -= 5;
 				}
-				if (this.getLegendSide() == Side.Right
-						&& vertical
-						&& (this.getAxis(Axis.Y2Axis).isVisible() || this
-								.getAxis(Axis.Y1Axis).isVisible()
-								&& (this.getAxis(Axis.Y1Axis).getLocation() == AxisValue.BothSides || this
-										.getAxis(Axis.Y1Axis).getLocation() == AxisValue.MaximumValue))) {
-					x += 40;
+					break;
+				case Bottom: {
+					if (this.getOrientation() == Orientation.Horizontal) {
+						for (int i = this.getYAxisCount() - 1; i >= 0; --i) {
+							if (this.yAxis(i).isVisible()
+									&& (this.yAxes_.get(i).location.initLoc == AxisValue.MaximumValue || this.yAxes_
+											.get(i).location.initLoc == AxisValue.BothSides)) {
+								yOffset = this.yAxes_.get(i).location.maxOffset
+										+ this.yAxes_.get(i).calculatedWidth;
+								break;
+							}
+						}
+					} else {
+						if (this.getAxis(Axis.XAxis).isVisible()
+								&& (this.xAxis_.location.initLoc == AxisValue.MinimumValue || this.xAxis_.location.initLoc == AxisValue.BothSides)) {
+							yOffset = this.xAxis_.calculatedWidth;
+						}
+					}
+					yOffset += 5;
 				}
-				if (this.getLegendSide() == Side.Right
-						&& !vertical
-						&& this.getAxis(Axis.XAxis).isVisible()
-						&& (this.getAxis(Axis.XAxis).getLocation() == AxisValue.MaximumValue || this
-								.getAxis(Axis.XAxis).getLocation() == AxisValue.BothSides)) {
-					x += 40;
+					break;
+				case Left: {
+					if (this.getOrientation() == Orientation.Horizontal) {
+						if (this.getAxis(Axis.XAxis).isVisible()
+								&& (this.xAxis_.location.initLoc == AxisValue.MinimumValue || this.xAxis_.location.initLoc == AxisValue.BothSides)) {
+							xOffset = -this.xAxis_.calculatedWidth;
+						}
+					} else {
+						for (int i = this.getYAxisCount() - 1; i >= 0; --i) {
+							if (this.yAxis(i).isVisible()
+									&& (this.yAxes_.get(i).location.initLoc == AxisValue.MinimumValue || this.yAxes_
+											.get(i).location.initLoc == AxisValue.BothSides)) {
+								xOffset = -(this.yAxes_.get(i).location.minOffset + this.yAxes_
+										.get(i).calculatedWidth);
+								break;
+							}
+						}
+					}
+					xOffset -= 5;
 				}
-				if (this.getLegendSide() == Side.Bottom
-						&& (vertical && this.getAxis(Axis.XAxis).isVisible() || !vertical
-								&& (this.getAxis(Axis.Y2Axis).isVisible() || this
-										.getAxis(Axis.Y1Axis).isVisible()
-										&& (this.getAxis(Axis.Y1Axis)
-												.getLocation() == AxisValue.BothSides || this
-												.getAxis(Axis.Y1Axis)
-												.getLocation() == AxisValue.MaximumValue)))) {
-					y += 16;
+					break;
+				case Right: {
+					if (this.getOrientation() == Orientation.Horizontal) {
+						if (this.getAxis(Axis.XAxis).isVisible()
+								&& (this.xAxis_.location.initLoc == AxisValue.MaximumValue || this.xAxis_.location.initLoc == AxisValue.BothSides)) {
+							xOffset = this.xAxis_.calculatedWidth;
+						}
+					} else {
+						for (int i = this.getYAxisCount() - 1; i >= 0; --i) {
+							if (this.yAxis(i).isVisible()
+									&& (this.yAxes_.get(i).location.initLoc == AxisValue.MaximumValue || this.yAxes_
+											.get(i).location.initLoc == AxisValue.BothSides)) {
+								xOffset = this.yAxes_.get(i).location.maxOffset
+										+ this.yAxes_.get(i).calculatedWidth;
+								break;
+							}
+						}
+					}
+					xOffset += 5;
 				}
-				if (this.getLegendSide() == Side.Left
-						&& (vertical && this.getAxis(Axis.Y1Axis).isVisible() || !vertical
-								&& this.getAxis(Axis.XAxis).isVisible())) {
-					x -= 40;
+					break;
+				}
+			} else {
+				switch (this.getLegendSide()) {
+				case Top:
+					yOffset = 5;
+					break;
+				case Bottom:
+					yOffset = -5;
+					break;
+				case Left:
+					xOffset = 5;
+					break;
+				case Right:
+					xOffset = -5;
+					break;
 				}
 			}
 			painter.setPen(this.getLegendBorder().clone());
 			painter.setBrush(this.getLegendBackground());
-			painter.drawRect(x - margin / 2, y - margin / 2, legendWidth
-					+ margin, legendHeight + margin);
+			painter.drawRect(x + xOffset - legendPadding / 2, y + yOffset
+					- legendPadding / 2, legendWidth + legendPadding,
+					legendHeight + legendPadding);
 			painter.setPen(new WPen());
 			painter.setFont(this.getLegendFont());
 			int item = 0;
@@ -3933,9 +3954,9 @@ public class WCartesianChart extends WAbstractChart {
 				if (this.getSeries().get(i).isLegendEnabled()) {
 					int col = item % this.getLegendColumns();
 					int row = item / this.getLegendColumns();
-					double itemX = x + col
+					double itemX = x + xOffset + col
 							* this.getLegendColumnWidth().toPixels();
-					double itemY = y + row * lineHeight;
+					double itemY = y + yOffset + row * lineHeight;
 					this.renderLegendItem(painter, new WPointF(itemX, itemY
 							+ lineHeight / 2), this.getSeries().get(i));
 					++item;
@@ -3952,13 +3973,13 @@ public class WCartesianChart extends WAbstractChart {
 			double titleHeight = this.getTitleFont().getSizeLength().toPixels();
 			final int TITLE_PADDING = 10;
 			final int TITLE_WIDTH = 1000;
-			int titleAxisOffset = 0;
+			int titleOffset = 0;
 			if (this.getOrientation() == Orientation.Horizontal) {
 				for (int i = this.getYAxisCount() - 1; i >= 0; --i) {
 					final WAxis yAx = this.yAxis(i);
 					if (this.yAxes_.get(i).location.initLoc == AxisValue.MinimumValue
 							|| this.yAxes_.get(i).location.initLoc == AxisValue.BothSides) {
-						titleAxisOffset = this.yAxes_.get(i).location.minOffset
+						titleOffset = this.yAxes_.get(i).location.minOffset
 								+ this.yAxes_.get(i).calculatedWidth;
 						break;
 					}
@@ -3966,12 +3987,16 @@ public class WCartesianChart extends WAbstractChart {
 			} else {
 				if (this.xAxis_.location.initLoc == AxisValue.MaximumValue
 						|| this.xAxis_.location.initLoc == AxisValue.BothSides) {
-					titleAxisOffset = this.xAxis_.calculatedWidth;
+					titleOffset = this.xAxis_.calculatedWidth;
 				}
+			}
+			if (this.getLegendSide() == Side.Top
+					&& this.getLegendLocation() == LegendLocation.LegendOutside) {
+				titleOffset += legendHeight + legendPadding + 5;
 			}
 			painter.drawText(x - TITLE_WIDTH / 2,
 					this.getPlotAreaPadding(Side.Top) - titleHeight
-							- TITLE_PADDING - titleAxisOffset, TITLE_WIDTH,
+							- TITLE_PADDING - titleOffset, TITLE_WIDTH,
 					titleHeight, EnumSet.of(AlignmentFlag.AlignCenter,
 							AlignmentFlag.AlignTop), this.getTitle());
 			painter.restore();
