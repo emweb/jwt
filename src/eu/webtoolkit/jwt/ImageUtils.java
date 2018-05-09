@@ -40,14 +40,14 @@ class ImageUtils {
 		}
 	}
 
-	private static final int mimeTypeCount = 10;
+	private static final int mimeTypeCount = 12;
 	private static String[] imageMimeTypes = { "image/png", "image/jpeg",
 			"image/gif", "image/gif", "image/bmp", "image/bmp", "image/bmp",
-			"image/bmp", "image/bmp", "image/bmp" };
+			"image/bmp", "image/bmp", "image/bmp", "image/svg", "image/svg" };
 	private static String[] imageHeaders = { "\211PNG\r\n\032\n",
 			"\377\330\377", "GIF87a", "GIF89a", "BA", "BM", "CI", "CP", "IC",
-			"PI" };
-	private static int[] imageHeaderSize = { 8, 3, 6, 6, 2, 2, 2, 2, 2, 2 };
+			"PI", "<?xml", "<svg" };
+	private static int[] imageHeaderSize = { 8, 3, 6, 6, 2, 2, 2, 2, 2, 2, 5, 4 };
 
 	static int toUnsigned(int c) {
 		int result = c;

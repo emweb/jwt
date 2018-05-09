@@ -49,6 +49,10 @@ public class AxisConfig {
 	private static final int AUTO_V_LABEL_PIXELS = 25;
 	private static final int AUTO_H_LABEL_PIXELS = 80;
 
+	static boolean isfin(double d) {
+		return -Double.POSITIVE_INFINITY < d && d < Double.POSITIVE_INFINITY;
+	}
+
 	static double round125(double v) {
 		double n = Math.pow(10, Math.floor(Math.log10(v)));
 		double msd = v / n;

@@ -43,5 +43,7 @@ interface WAbstractChartImplementation {
 	public WAbstractChartImplementation.RenderRange computeRenderRange(
 			Axis axis, int yAxis, AxisScale scale);
 
+	public boolean isOnDemandLoadingEnabled();
+
 	public void update();
 }

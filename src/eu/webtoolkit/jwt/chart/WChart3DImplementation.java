@@ -167,6 +167,10 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 		return computeRenderRange(axis, yAxis, AxisScale.LinearScale);
 	}
 
+	public boolean isOnDemandLoadingEnabled() {
+		return false;
+	}
+
 	public void update() {
 		this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext,
 				ChartUpdates.GLTextures));

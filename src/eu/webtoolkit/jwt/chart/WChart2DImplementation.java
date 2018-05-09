@@ -72,11 +72,16 @@ class WChart2DImplementation implements WAbstractChartImplementation {
 	public WAbstractChartImplementation.RenderRange computeRenderRange(
 			Axis axis, int yAxis, AxisScale scale) {
 		ExtremesIterator iterator = new ExtremesIterator(axis, yAxis, scale);
-		this.chart_.iterateSeries(iterator, (WPainter) null);
+		this.chart_.iterateSeries(iterator, (WPainter) null, false,
+				axis == Axis.XAxis);
 		WAbstractChartImplementation.RenderRange range = new WAbstractChartImplementation.RenderRange();
 		range.minimum = iterator.getMinimum();
 		range.maximum = iterator.getMaximum();
 		return range;
+	}
+
+	public boolean isOnDemandLoadingEnabled() {
+		return this.chart_.isOnDemandLoadingEnabled();
 	}
 
 	public void update() {

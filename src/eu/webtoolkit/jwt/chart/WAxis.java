@@ -113,7 +113,9 @@ public class WAxis {
 		this.textPen_ = new WPen(WColor.black);
 		this.titleOrientation_ = Orientation.Horizontal;
 		this.maxZoom_ = 4.0;
+		this.minZoom_ = 1.0;
 		this.minimumZoomRange_ = AUTO_MINIMUM;
+		this.maximumZoomRange_ = AUTO_MAXIMUM;
 		this.zoomMin_ = AUTO_MINIMUM;
 		this.zoomMax_ = AUTO_MAXIMUM;
 		this.zoomRangeDirty_ = true;
@@ -1001,11 +1003,6 @@ public class WAxis {
 	 * <p>
 	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
 	 * interactive mode.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis. </i>
-	 * </p>
 	 */
 	public void setZoomRange(double minimum, double maximum) {
 		if (maximum < minimum) {
@@ -1050,7 +1047,7 @@ public class WAxis {
 	 */
 	public double getZoomMinimum() {
 		double min = this.getDrawnMinimum();
-		if (this.zoomMin_ <= min) {
+		if (isfin(min) && this.zoomMin_ <= min) {
 			return min;
 		}
 		return this.zoomMin_;
@@ -1067,7 +1064,7 @@ public class WAxis {
 	 */
 	public double getZoomMaximum() {
 		double max = this.getDrawnMaximum();
-		if (this.zoomMax_ >= max) {
+		if (isfin(max) && this.zoomMax_ >= max) {
 			return max;
 		}
 		return this.zoomMax_;
@@ -1095,10 +1092,6 @@ public class WAxis {
 	 * interactive mode. The zoom level should be &gt;= 1 and smaller than
 	 * {@link WAxis#getMaxZoom() getMaxZoom()}
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis.</i>
-	 * </p>
 	 * 
 	 * @deprecated Use {@link WAxis#setZoomRange(double minimum, double maximum)
 	 *             setZoomRange()} instead.
@@ -1136,10 +1129,6 @@ public class WAxis {
 	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
 	 * interactive mode. The zoom level should be &gt;= 1 (1 = no zoom).
 	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis.</i>
-	 * </p>
 	 * 
 	 * @deprecated Use {@link WAxis#setMinimumZoomRange(double size)
 	 *             setMinimumZoomRange()} instead
@@ -1190,11 +1179,6 @@ public class WAxis {
 	 * This range is the smallest difference there can be between
 	 * {@link WAxis#getZoomMinimum() getZoomMinimum()} and
 	 * {@link WAxis#getZoomMaximum() getZoomMaximum()}.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis. </i>
-	 * </p>
 	 */
 	public void setMinimumZoomRange(double size) {
 		if (!ChartUtils.equals(this.minimumZoomRange_, size)) {
@@ -1214,12 +1198,101 @@ public class WAxis {
 	 * @see WAxis#setMinimumZoomRange(double size)
 	 */
 	public double getMinimumZoomRange() {
-		double min = this.getDrawnMinimum();
-		double max = this.getDrawnMaximum();
 		if (this.minimumZoomRange_ == AUTO_MINIMUM) {
+			double min = this.getDrawnMinimum();
+			double max = this.getDrawnMaximum();
 			return (max - min) / this.maxZoom_;
 		} else {
 			return this.minimumZoomRange_;
+		}
+	}
+
+	/**
+	 * Sets the maximum zoom range for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * This range is the largest difference there can be between
+	 * {@link WAxis#getZoomMinimum() getZoomMinimum()} and
+	 * {@link WAxis#getZoomMaximum() getZoomMaximum()}.
+	 * <p>
+	 * This is especially useful in combination with
+	 * {@link WCartesianChart#setOnDemandLoadingEnabled(boolean enabled) on
+	 * demand loading}, when showing the entire chart is undesirable because the
+	 * amount of data to be shown is too large.
+	 */
+	public void setMaximumZoomRange(double size) {
+		if (!ChartUtils.equals(this.maximumZoomRange_, size)) {
+			this.maximumZoomRange_ = size;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Get the maximum zoom range for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * 
+	 * @see WAxis#setMaximumZoomRange(double size)
+	 */
+	public double getMaximumZoomRange() {
+		if (this.maximumZoomRange_ == AUTO_MAXIMUM) {
+			double min = this.getDrawnMinimum();
+			double max = this.getDrawnMaximum();
+			return (max - min) / this.minZoom_;
+		} else {
+			return this.maximumZoomRange_;
+		}
+	}
+
+	/**
+	 * Sets the minimum zoom level for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode. The zoom level should be &gt;= 1 (1 = no zoom).
+	 * <p>
+	 * 
+	 * @deprecated Use {@link WAxis#setMaximumZoomRange(double size)
+	 *             setMaximumZoomRange()} instead
+	 */
+	public void setMinZoom(double minZoom) {
+		if (minZoom < 1) {
+			minZoom = 1;
+		}
+		if (this.maximumZoomRange_ != AUTO_MAXIMUM) {
+			this.setMaximumZoomRange((this.getMaximum() - this.getMinimum())
+					/ minZoom);
+		}
+		if (!ChartUtils.equals(this.minZoom_, minZoom)) {
+			this.minZoom_ = minZoom;
+			update();
+		}
+		;
+	}
+
+	/**
+	 * Get the minimum zoom level for this axis.
+	 * <p>
+	 * Only applies to a {@link eu.webtoolkit.jwt.chart.WCartesianChart} in
+	 * interactive mode.
+	 * <p>
+	 * 
+	 * @see WAxis#setMinZoom(double minZoom)
+	 * @deprecated Use {@link WAxis#getMaximumZoomRange() getMaximumZoomRange()}
+	 *             instead
+	 */
+	public double getMinZoom() {
+		double min = this.getDrawnMinimum();
+		double max = this.getDrawnMaximum();
+		double zoom = (max - min) / this.getMaximumZoomRange();
+		if (zoom < 1.0 || zoom != zoom) {
+			return 1.0;
+		} else {
+			return zoom;
 		}
 	}
 
@@ -1236,11 +1309,8 @@ public class WAxis {
 	 * interactive mode.
 	 * <p>
 	 * <p>
-	 * <i><b>Note: </b>This is only implemented for the X and first Y axis. It
-	 * has no effect on the second Y axis.
-	 * <p>
-	 * If the pan position has been changed on the client side, this may not
-	 * reflect the actual pan position.</i>
+	 * <i><b>Note: </b>If the pan position has been changed on the client side,
+	 * this may not reflect the actual pan position.</i>
 	 * </p>
 	 * 
 	 * @deprecated Use {@link WAxis#setZoomRange(double minimum, double maximum)
@@ -2231,6 +2301,14 @@ public class WAxis {
 	protected void getLabelTicks(final List<WAxis.TickLabel> ticks,
 			int segment, AxisConfig config) {
 		double divisor = Math.pow(2.0, config.zoomLevel - 1);
+		double zoomRange = 0;
+		double zoomStart = 0;
+		double zoomEnd = 0;
+		if (this.axis_ == Axis.XAxis) {
+			zoomRange = this.getZoomMaximum() - this.getZoomMinimum();
+			zoomStart = this.getZoomMinimum() - zoomRange;
+			zoomEnd = this.getZoomMaximum() + zoomRange;
+		}
 		final WAxis.Segment s = this.segments_.get(segment);
 		switch (this.scale_) {
 		case CategoryScale: {
@@ -2268,8 +2346,18 @@ public class WAxis {
 					firstTickIsLong = false;
 				}
 			}
-			for (int i = 0;; ++i) {
+			int i = 0;
+			if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+					&& this.chart_.isOnDemandLoadingEnabled()) {
+				i = Math.max((int) ((zoomStart - minimum) / interval), 0);
+			}
+			for (;; ++i) {
 				double v = minimum + interval * i;
+				if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+						&& this.chart_.isOnDemandLoadingEnabled()
+						&& v - interval > zoomEnd) {
+					break;
+				}
 				if (v - s.renderMaximum > EPSILON * interval) {
 					break;
 				}
@@ -2494,6 +2582,12 @@ public class WAxis {
 					next = dt.addSeconds(interval);
 					break;
 				}
+				if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+						&& this.chart_.isOnDemandLoadingEnabled()
+						&& this.getDateNumber(next) < zoomStart) {
+					dt = next;
+					continue;
+				}
 				WString text = new WString();
 				{
 					WDate transformedDt = dt;
@@ -2518,6 +2612,11 @@ public class WAxis {
 					}
 				}
 				dt = next;
+				if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+						&& this.chart_.isOnDemandLoadingEnabled()
+						&& dl > zoomEnd) {
+					break;
+				}
 			}
 			break;
 		}
@@ -2608,7 +2707,9 @@ public class WAxis {
 	private WPen textPen_;
 	private Orientation titleOrientation_;
 	private double maxZoom_;
+	private double minZoom_;
 	private double minimumZoomRange_;
+	private double maximumZoomRange_;
 	double zoomMin_;
 	double zoomMax_;
 	boolean zoomRangeDirty_;
@@ -3111,6 +3212,10 @@ public class WAxis {
 	private static double EPSILON = 1E-3;
 	private static final int AUTO_V_LABEL_PIXELS = 25;
 	private static final int AUTO_H_LABEL_PIXELS = 80;
+
+	static boolean isfin(double d) {
+		return -Double.POSITIVE_INFINITY < d && d < Double.POSITIVE_INFINITY;
+	}
 
 	static double round125(double v) {
 		double n = Math.pow(10, Math.floor(Math.log10(v)));
