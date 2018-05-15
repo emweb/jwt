@@ -117,14 +117,15 @@
 <div class="highlight"><pre><span class="kd">class</span> <span class="nc">SinModel</span> <span class="kd">extends</span> <span class="n">WAbstractChartModel</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">SinModel</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-    <span class="n">SinModel</span><span class="o">(</span><span class="kt">double</span> <span class="n">minimum</span><span class="o">,</span> <span class="kt">double</span> <span class="n">maximum</span><span class="o">,</span> <span class="n">WObject</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">SinModel</span><span class="o">(</span><span class="kt">double</span> <span class="n">minimum</span><span class="o">,</span> <span class="kt">double</span> <span class="n">maximum</span><span class="o">,</span> <span class="kt">int</span> <span class="n">rows</span><span class="o">,</span> <span class="n">WObject</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
         <span class="kd">super</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">minimum_</span> <span class="o">=</span> <span class="n">minimum</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">maximum_</span> <span class="o">=</span> <span class="n">maximum</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">rows_</span> <span class="o">=</span> <span class="n">rows</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="nf">SinModel</span><span class="o">(</span><span class="kt">double</span> <span class="n">minimum</span><span class="o">,</span> <span class="kt">double</span> <span class="n">maximum</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">(</span><span class="n">minimum</span><span class="o">,</span> <span class="n">maximum</span><span class="o">,</span> <span class="o">(</span><span class="n">WObject</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
+    <span class="kd">public</span> <span class="nf">SinModel</span><span class="o">(</span><span class="kt">double</span> <span class="n">minimum</span><span class="o">,</span> <span class="kt">double</span> <span class="n">maximum</span><span class="o">,</span> <span class="kt">int</span> <span class="n">rows</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">(</span><span class="n">minimum</span><span class="o">,</span> <span class="n">maximum</span><span class="o">,</span> <span class="n">rows</span><span class="o">,</span> <span class="o">(</span><span class="n">WObject</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="kt">double</span> <span class="nf">getData</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">column</span><span class="o">)</span> <span class="o">{</span>
@@ -142,7 +143,7 @@
     <span class="o">}</span>
 
     <span class="kt">int</span> <span class="nf">getRowCount</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="mi">100</span><span class="o">;</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">rows_</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="kt">double</span> <span class="nf">getMinimum</span><span class="o">()</span> <span class="o">{</span>
@@ -155,69 +156,32 @@
 
     <span class="kd">private</span> <span class="kt">double</span> <span class="n">minimum_</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kt">double</span> <span class="n">maximum_</span><span class="o">;</span>
-<span class="o">}</span>
-
-<span class="kd">class</span> <span class="nc">ChartState</span> <span class="kd">extends</span> <span class="n">WObject</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LoggerFactory</span>
-            <span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">ChartState</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-
-    <span class="n">ChartState</span><span class="o">(</span><span class="n">WObject</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
-        <span class="kd">super</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="nf">ChartState</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">((</span><span class="n">WObject</span><span class="o">)</span> <span class="kc">null</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="n">SinModel</span> <span class="n">model</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">rows_</span><span class="o">;</span>
 <span class="o">}</span>
 
 <span class="kt">void</span> <span class="nf">AxisSliderWidgetDifferentDataSeries</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="o">();</span>
-    <span class="kd">final</span> <span class="n">ChartState</span> <span class="n">state</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ChartState</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
-    <span class="n">state</span><span class="o">.</span><span class="na">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SinModel</span><span class="o">(-</span><span class="mf">3.14159265358979323846</span><span class="o">,</span>
-            <span class="mf">3.14159265358979323846</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WCartesianChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesianChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
+    <span class="n">WCartesianChart</span> <span class="n">chart</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WCartesianChart</span><span class="o">(</span><span class="n">container</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setBackground</span><span class="o">(</span><span class="k">new</span> <span class="n">WBrush</span><span class="o">(</span><span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">220</span><span class="o">,</span> <span class="mi">220</span><span class="o">,</span> <span class="mi">220</span><span class="o">)));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">ChartType</span><span class="o">.</span><span class="na">ScatterPlot</span><span class="o">);</span>
     <span class="n">WAbstractChartModel</span> <span class="n">roughModel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SinModel</span><span class="o">(-</span><span class="mf">3.14159265358979323846</span><span class="o">,</span>
-            <span class="mf">3.14159265358979323846</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
+            <span class="mf">3.14159265358979323846</span><span class="o">,</span> <span class="mi">100</span><span class="o">,</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">WDataSeries</span> <span class="n">roughSeries</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">LineSeries</span><span class="o">);</span>
     <span class="n">roughSeries</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">roughModel</span><span class="o">);</span>
     <span class="n">roughSeries</span><span class="o">.</span><span class="na">setXSeriesColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
     <span class="n">roughSeries</span><span class="o">.</span><span class="na">setHidden</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addSeries</span><span class="o">(</span><span class="n">roughSeries</span><span class="o">);</span>
-    <span class="kd">final</span> <span class="n">WDataSeries</span> <span class="n">series</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">LineSeries</span><span class="o">);</span>
-    <span class="n">series</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">model</span><span class="o">);</span>
+    <span class="n">WAbstractChartModel</span> <span class="n">detailedModel</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SinModel</span><span class="o">(</span>
+            <span class="o">-</span><span class="mf">3.14159265358979323846</span><span class="o">,</span> <span class="mf">3.14159265358979323846</span><span class="o">,</span> <span class="mi">10000</span><span class="o">,</span>
+            <span class="n">container</span><span class="o">);</span>
+    <span class="n">WDataSeries</span> <span class="n">series</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDataSeries</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">SeriesType</span><span class="o">.</span><span class="na">LineSeries</span><span class="o">);</span>
+    <span class="n">series</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">detailedModel</span><span class="o">);</span>
     <span class="n">series</span><span class="o">.</span><span class="na">setXSeriesColumn</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
     <span class="n">series</span><span class="o">.</span><span class="na">setShadow</span><span class="o">(</span><span class="k">new</span> <span class="n">WShadow</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="k">new</span> <span class="n">WColor</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">127</span><span class="o">),</span> <span class="mi">3</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">addSeries</span><span class="o">(</span><span class="n">series</span><span class="o">);</span>
-    <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">zoomRangeChanged</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">addListener</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">new</span> <span class="n">Signal</span><span class="o">.</span><span class="na">Listener</span><span class="o">()</span> <span class="o">{</span>
-                <span class="kd">public</span> <span class="kt">void</span> <span class="nf">trigger</span><span class="o">()</span> <span class="o">{</span>
-                    <span class="kt">double</span> <span class="n">minX</span> <span class="o">=</span> <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">)</span>
-                            <span class="o">.</span><span class="na">getZoomMinimum</span><span class="o">();</span>
-                    <span class="kt">double</span> <span class="n">maxX</span> <span class="o">=</span> <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">)</span>
-                            <span class="o">.</span><span class="na">getZoomMaximum</span><span class="o">();</span>
-                    <span class="kt">double</span> <span class="n">dX</span> <span class="o">=</span> <span class="n">maxX</span> <span class="o">-</span> <span class="n">minX</span><span class="o">;</span>
-                    <span class="n">minX</span> <span class="o">=</span> <span class="n">minX</span> <span class="o">-</span> <span class="n">dX</span> <span class="o">/</span> <span class="mf">2.0</span><span class="o">;</span>
-                    <span class="k">if</span> <span class="o">(</span><span class="n">minX</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">3.14159265358979323846</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">minX</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.14159265358979323846</span><span class="o">;</span>
-                    <span class="o">}</span>
-                    <span class="n">maxX</span> <span class="o">=</span> <span class="n">maxX</span> <span class="o">+</span> <span class="n">dX</span> <span class="o">/</span> <span class="mf">2.0</span><span class="o">;</span>
-                    <span class="k">if</span> <span class="o">(</span><span class="n">maxX</span> <span class="o">&gt;</span> <span class="mf">3.14159265358979323846</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="n">maxX</span> <span class="o">=</span> <span class="mf">3.14159265358979323846</span><span class="o">;</span>
-                    <span class="o">}</span>
-                    <span class="k">if</span> <span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">getMinimum</span><span class="o">()</span> <span class="o">!=</span> <span class="n">minX</span>
-                            <span class="o">||</span> <span class="n">state</span><span class="o">.</span><span class="na">model</span><span class="o">.</span><span class="na">getMaximum</span><span class="o">()</span> <span class="o">!=</span> <span class="n">maxX</span><span class="o">)</span> <span class="o">{</span>
-                        <span class="o">;</span>
-                        <span class="n">state</span><span class="o">.</span><span class="na">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SinModel</span><span class="o">(</span><span class="n">minX</span><span class="o">,</span> <span class="n">maxX</span><span class="o">);</span>
-                        <span class="n">series</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">state</span><span class="o">.</span><span class="na">model</span><span class="o">);</span>
-                    <span class="o">}</span>
-                <span class="o">}</span>
-            <span class="o">});</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setMaximumZoomRange</span><span class="o">(</span><span class="mf">3.14159265358979323846</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setMinimumZoomRange</span><span class="o">(</span>
-            <span class="mf">3.14159265358979323846</span> <span class="o">/</span> <span class="mf">8.0</span><span class="o">);</span>
+            <span class="mf">3.14159265358979323846</span> <span class="o">/</span> <span class="mf">16.0</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setMinimum</span><span class="o">(-</span><span class="mf">3.5</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">XAxis</span><span class="o">).</span><span class="na">setMaximum</span><span class="o">(</span><span class="mf">3.5</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">getAxis</span><span class="o">(</span><span class="n">Axis</span><span class="o">.</span><span class="na">YAxis</span><span class="o">).</span><span class="na">setMinimumZoomRange</span><span class="o">(</span><span class="mf">0.1</span><span class="o">);</span>
@@ -226,6 +190,7 @@
     <span class="n">chart</span><span class="o">.</span><span class="na">resize</span><span class="o">(</span><span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">800</span><span class="o">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="o">(</span><span class="mi">400</span><span class="o">));</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setPanEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setZoomEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="n">chart</span><span class="o">.</span><span class="na">setOnDemandLoadingEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
     <span class="n">chart</span><span class="o">.</span><span class="na">setMargin</span><span class="o">(</span><span class="n">WLength</span><span class="o">.</span><span class="na">Auto</span><span class="o">,</span> <span class="n">EnumSet</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">Side</span><span class="o">.</span><span class="na">Left</span><span class="o">,</span> <span class="n">Side</span><span class="o">.</span><span class="na">Right</span><span class="o">));</span>
     <span class="n">WAxisSliderWidget</span> <span class="n">sliderWidget</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WAxisSliderWidget</span><span class="o">(</span><span class="n">roughSeries</span><span class="o">,</span>
             <span class="n">container</span><span class="o">);</span>

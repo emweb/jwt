@@ -517,50 +517,27 @@ class GraphicsWidgets extends TopicWidget {
 
 	WWidget AxisSliderWidgetDifferentDataSeries() {
 		WContainerWidget container = new WContainerWidget();
-		final ChartState state = new ChartState(container);
-		state.model = new SinModel(-3.14159265358979323846,
-				3.14159265358979323846);
-		final WCartesianChart chart = new WCartesianChart(container);
+		WCartesianChart chart = new WCartesianChart(container);
 		chart.setBackground(new WBrush(new WColor(220, 220, 220)));
 		chart.setType(ChartType.ScatterPlot);
 		WAbstractChartModel roughModel = new SinModel(-3.14159265358979323846,
-				3.14159265358979323846, container);
+				3.14159265358979323846, 100, container);
 		WDataSeries roughSeries = new WDataSeries(1, SeriesType.LineSeries);
 		roughSeries.setModel(roughModel);
 		roughSeries.setXSeriesColumn(0);
 		roughSeries.setHidden(true);
 		chart.addSeries(roughSeries);
-		final WDataSeries series = new WDataSeries(1, SeriesType.LineSeries);
-		series.setModel(state.model);
+		WAbstractChartModel detailedModel = new SinModel(
+				-3.14159265358979323846, 3.14159265358979323846, 10000,
+				container);
+		WDataSeries series = new WDataSeries(1, SeriesType.LineSeries);
+		series.setModel(detailedModel);
 		series.setXSeriesColumn(0);
 		series.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
 		chart.addSeries(series);
-		chart.getAxis(Axis.XAxis).zoomRangeChanged()
-				.addListener(this, new Signal.Listener() {
-					public void trigger() {
-						double minX = chart.getAxis(Axis.XAxis)
-								.getZoomMinimum();
-						double maxX = chart.getAxis(Axis.XAxis)
-								.getZoomMaximum();
-						double dX = maxX - minX;
-						minX = minX - dX / 2.0;
-						if (minX < -3.14159265358979323846) {
-							minX = -3.14159265358979323846;
-						}
-						maxX = maxX + dX / 2.0;
-						if (maxX > 3.14159265358979323846) {
-							maxX = 3.14159265358979323846;
-						}
-						if (state.model.getMinimum() != minX
-								|| state.model.getMaximum() != maxX) {
-							;
-							state.model = new SinModel(minX, maxX);
-							series.setModel(state.model);
-						}
-					}
-				});
+		chart.getAxis(Axis.XAxis).setMaximumZoomRange(3.14159265358979323846);
 		chart.getAxis(Axis.XAxis).setMinimumZoomRange(
-				3.14159265358979323846 / 8.0);
+				3.14159265358979323846 / 16.0);
 		chart.getAxis(Axis.XAxis).setMinimum(-3.5);
 		chart.getAxis(Axis.XAxis).setMaximum(3.5);
 		chart.getAxis(Axis.YAxis).setMinimumZoomRange(0.1);
@@ -569,6 +546,7 @@ class GraphicsWidgets extends TopicWidget {
 		chart.resize(new WLength(800), new WLength(400));
 		chart.setPanEnabled(true);
 		chart.setZoomEnabled(true);
+		chart.setOnDemandLoadingEnabled(true);
 		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
 		WAxisSliderWidget sliderWidget = new WAxisSliderWidget(roughSeries,
 				container);

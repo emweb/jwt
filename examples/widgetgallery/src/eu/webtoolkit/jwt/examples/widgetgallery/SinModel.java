@@ -22,14 +22,15 @@ import org.slf4j.LoggerFactory;
 class SinModel extends WAbstractChartModel {
 	private static Logger logger = LoggerFactory.getLogger(SinModel.class);
 
-	public SinModel(double minimum, double maximum, WObject parent) {
+	public SinModel(double minimum, double maximum, int rows, WObject parent) {
 		super(parent);
 		this.minimum_ = minimum;
 		this.maximum_ = maximum;
+		this.rows_ = rows;
 	}
 
-	public SinModel(double minimum, double maximum) {
-		this(minimum, maximum, (WObject) null);
+	public SinModel(double minimum, double maximum, int rows) {
+		this(minimum, maximum, rows, (WObject) null);
 	}
 
 	public double getData(int row, int column) {
@@ -47,7 +48,7 @@ class SinModel extends WAbstractChartModel {
 	}
 
 	public int getRowCount() {
-		return 100;
+		return this.rows_;
 	}
 
 	public double getMinimum() {
@@ -60,4 +61,5 @@ class SinModel extends WAbstractChartModel {
 
 	private double minimum_;
 	private double maximum_;
+	private int rows_;
 }

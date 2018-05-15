@@ -190,7 +190,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		 * Shows popup when user clicks a drop down icon.
 		 * <p>
 		 * The lineedit is modified to show a drop down icon, and clicking the
-		 * icon shows the suggestions, very much like a WComboCox. line edit.
+		 * icon shows the suggestions, very much like a {@link WComboBox}.
 		 */
 		DropDownIcon;
 
