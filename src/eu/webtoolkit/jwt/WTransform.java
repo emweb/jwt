@@ -815,12 +815,12 @@ public class WTransform extends WJavaScriptExposableObject {
 		char[] buf = new char[30];
 		StringBuilder ss = new StringBuilder();
 		ss.append('[');
-		ss.append(MathUtils.roundJs(this.m_[0], 3)).append(',');
-		ss.append(MathUtils.roundJs(this.m_[2], 3)).append(',');
-		ss.append(MathUtils.roundJs(this.m_[1], 3)).append(',');
-		ss.append(MathUtils.roundJs(this.m_[3], 3)).append(',');
-		ss.append(MathUtils.roundJs(this.m_[4], 3)).append(',');
-		ss.append(MathUtils.roundJs(this.m_[5], 3)).append(']');
+		ss.append(MathUtils.roundJs(this.m_[0], 16)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[2], 16)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[1], 16)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[3], 16)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[4], 16)).append(',');
+		ss.append(MathUtils.roundJs(this.m_[5], 16)).append(']');
 		return ss.toString();
 	}
 

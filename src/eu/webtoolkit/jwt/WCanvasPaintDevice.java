@@ -592,20 +592,9 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 	}
 
 	private void renderTransform(final StringWriter s, final WTransform t) {
-		if (t.isJavaScriptBound()) {
-			s.append("ctx.setTransform.apply(ctx, ").append(t.getJsRef())
-					.append(");");
-		} else {
-			if (!(t.isIdentity() && this.lastTransformWasIdentity_)) {
-				char[] buf = new char[30];
-				s.append("ctx.setTransform(")
-						.append(MathUtils.roundJs(t.getM11(), 3)).append(",");
-				s.append(MathUtils.roundJs(t.getM12(), 3)).append(",");
-				s.append(MathUtils.roundJs(t.getM21(), 3)).append(",");
-				s.append(MathUtils.roundJs(t.getM22(), 3)).append(",");
-				s.append(MathUtils.roundJs(t.getM31(), 3)).append(",");
-				s.append(MathUtils.roundJs(t.getM32(), 3)).append(");");
-			}
+		if (!(t.isIdentity() && this.lastTransformWasIdentity_)) {
+			s.append("ctx.wtTransform=").append(t.getJsRef()).append(';');
+			s.append("ctx.setTransform.apply(ctx, ctx.wtTransform);");
 		}
 		this.lastTransformWasIdentity_ = t.isIdentity();
 	}

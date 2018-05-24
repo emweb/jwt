@@ -96,9 +96,9 @@ class LineSeriesRenderer extends SeriesRenderer {
 	}
 
 	public void paint() {
-		WJavaScriptHandle<WPainterPath> curveHandle = (this.chart_).curvePaths_
+		WJavaScriptHandle<WPainterPath> curveHandle = this.chart_.curvePaths_
 				.get(this.series_);
-		WJavaScriptHandle<WTransform> transformHandle = (this.chart_).curveTransforms_
+		WJavaScriptHandle<WTransform> transformHandle = this.chart_.curveTransforms_
 				.get(this.series_);
 		WTransform transform = this.chart_.zoomRangeTransform(this.series_
 				.getYAxis());

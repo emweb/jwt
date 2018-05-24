@@ -1163,10 +1163,14 @@ public class WAxis {
 		double min = this.getDrawnMinimum();
 		double max = this.getDrawnMaximum();
 		double zoom = (max - min) / this.getMinimumZoomRange();
-		if (zoom < 1.0 || zoom != zoom) {
-			return 1.0;
+		if (!isfin(zoom)) {
+			return this.maxZoom_;
 		} else {
-			return zoom;
+			if (zoom < 1.0) {
+				return 1.0;
+			} else {
+				return zoom;
+			}
 		}
 	}
 
@@ -1289,10 +1293,14 @@ public class WAxis {
 		double min = this.getDrawnMinimum();
 		double max = this.getDrawnMaximum();
 		double zoom = (max - min) / this.getMaximumZoomRange();
-		if (zoom < 1.0 || zoom != zoom) {
-			return 1.0;
+		if (!isfin(zoom)) {
+			return this.minZoom_;
 		} else {
-			return zoom;
+			if (zoom < 1.0) {
+				return 1.0;
+			} else {
+				return zoom;
+			}
 		}
 	}
 
@@ -2300,20 +2308,21 @@ public class WAxis {
 	 */
 	protected void getLabelTicks(final List<WAxis.TickLabel> ticks,
 			int segment, AxisConfig config) {
-		double divisor = Math.pow(2.0, config.zoomLevel - 1);
+		double zoomFactor = Math.pow(2.0, config.zoomLevel - 1);
+		if (zoomFactor > this.getMaxZoom()) {
+			zoomFactor = this.getMaxZoom();
+		}
 		double zoomRange = 0;
 		double zoomStart = 0;
 		double zoomEnd = 0;
-		if (this.axis_ == Axis.XAxis) {
-			zoomRange = this.getZoomMaximum() - this.getZoomMinimum();
-			zoomStart = this.getZoomMinimum() - zoomRange;
-			zoomEnd = this.getZoomMaximum() + zoomRange;
-		}
+		zoomRange = this.getZoomMaximum() - this.getZoomMinimum();
+		zoomStart = this.getZoomMinimum() - zoomRange;
+		zoomEnd = this.getZoomMaximum() + zoomRange;
 		final WAxis.Segment s = this.segments_.get(segment);
 		switch (this.scale_) {
 		case CategoryScale: {
 			int renderInterval = Math.max(1,
-					(int) (this.renderInterval_ / divisor));
+					(int) (this.renderInterval_ / zoomFactor));
 			if (renderInterval == 1) {
 				ticks.add(new WAxis.TickLabel(s.renderMinimum,
 						WAxis.TickLabel.TickLength.Long));
@@ -2334,7 +2343,7 @@ public class WAxis {
 			break;
 		}
 		case LinearScale: {
-			double interval = this.renderInterval_ / divisor;
+			double interval = this.renderInterval_ / zoomFactor;
 			double minimum = roundUp125(s.renderMinimum, interval);
 			boolean firstTickIsLong = true;
 			if (this.labelBasePoint_ >= minimum
@@ -2346,14 +2355,16 @@ public class WAxis {
 					firstTickIsLong = false;
 				}
 			}
-			int i = 0;
-			if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
-					&& this.chart_.isOnDemandLoadingEnabled()) {
-				i = Math.max((int) ((zoomStart - minimum) / interval), 0);
+			long i = 0;
+			if (config.zoomLevel > 1 && this.chart_.isOnDemandLoadingEnabled()) {
+				long newI = (long) ((zoomStart - minimum) / interval);
+				if (newI > 0) {
+					i = newI;
+				}
 			}
 			for (;; ++i) {
 				double v = minimum + interval * i;
-				if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+				if (config.zoomLevel > 1
 						&& this.chart_.isOnDemandLoadingEnabled()
 						&& v - interval > zoomEnd) {
 					break;
@@ -2430,7 +2441,7 @@ public class WAxis {
 				} else {
 					daysInterval = this.renderInterval_ / (60.0 * 60.0 * 24);
 				}
-				daysInterval /= divisor;
+				daysInterval /= zoomFactor;
 				if (daysInterval > 200) {
 					unit = WAxis.DateTimeUnit.Years;
 					interval = Math.max(1, (int) round125(daysInterval / 365));
@@ -2556,6 +2567,38 @@ public class WAxis {
 					|| unit.getValue() <= WAxis.DateTimeUnit.Days.getValue()
 					|| !!EnumUtils.mask(this.roundLimits_,
 							AxisValue.MinimumValue).isEmpty();
+			if (config.zoomLevel > 1 && this.chart_.isOnDemandLoadingEnabled()
+					&& this.scale_ == AxisScale.DateTimeScale) {
+				if (unit == WAxis.DateTimeUnit.Hours) {
+					long zs = (long) Math.floor(zoomStart);
+					long dl = zs - (zs - this.getDateNumber(dt))
+							% (interval * 60 * 60);
+					if (dl > zoomStart) {
+						dl -= interval * 60 * 60;
+					}
+					dt = new WDate(new Date((long) (long) dl));
+				} else {
+					if (unit == WAxis.DateTimeUnit.Minutes) {
+						long zs = (long) Math.floor(zoomStart);
+						long dl = zs - (zs - this.getDateNumber(dt))
+								% (interval * 60);
+						if (dl > zoomStart) {
+							dl -= interval * 60;
+						}
+						dt = new WDate(new Date((long) (long) dl));
+					} else {
+						if (unit == WAxis.DateTimeUnit.Seconds) {
+							long zs = (long) Math.floor(zoomStart);
+							long dl = zs - (zs - this.getDateNumber(dt))
+									% interval;
+							if (dl > zoomStart) {
+								dl -= interval;
+							}
+							dt = new WDate(new Date((long) (long) dl));
+						}
+					}
+				}
+			}
 			for (;;) {
 				long dl = this.getDateNumber(dt);
 				if (dl > s.renderMaximum) {
@@ -2582,7 +2625,7 @@ public class WAxis {
 					next = dt.addSeconds(interval);
 					break;
 				}
-				if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+				if (config.zoomLevel > 1
 						&& this.chart_.isOnDemandLoadingEnabled()
 						&& this.getDateNumber(next) < zoomStart) {
 					dt = next;
@@ -2612,7 +2655,7 @@ public class WAxis {
 					}
 				}
 				dt = next;
-				if (this.axis_ == Axis.XAxis && config.zoomLevel > 1
+				if (config.zoomLevel > 1
 						&& this.chart_.isOnDemandLoadingEnabled()
 						&& dl > zoomEnd) {
 					break;
