@@ -2519,19 +2519,17 @@ public class WCartesianChart extends WAbstractChart {
 										.XSeriesColumn() == -1 ? this
 										.XSeriesColumn() : this.series_.get(i)
 										.XSeriesColumn();
+								double zoomMin = this.getAxis(Axis.XAxis)
+										.getZoomMinimum();
+								double zoomMax = this.getAxis(Axis.XAxis)
+										.getZoomMaximum();
+								double zoomRange = zoomMax - zoomMin;
 								if (xColumn == -1) {
 									startRow = Math.max(0,
-											(int) this.getAxis(Axis.XAxis)
-													.getZoomMinimum() - 1);
-									endRow = Math.min(endRow, (int) this
-											.getAxis(Axis.XAxis)
-											.getZoomMaximum() + 1);
+											(int) (zoomMin - zoomRange));
+									endRow = Math.min(endRow, (int) Math
+											.ceil(zoomMax + zoomRange) + 1);
 								} else {
-									double zoomMin = this.getAxis(Axis.XAxis)
-											.getZoomMinimum();
-									double zoomMax = this.getAxis(Axis.XAxis)
-											.getZoomMaximum();
-									double zoomRange = zoomMax - zoomMin;
 									startRow = Math
 											.max(binarySearchRow(this.series_
 													.get(i).getModel(),
@@ -2540,7 +2538,7 @@ public class WCartesianChart extends WAbstractChart {
 													this.series_.get(i)
 															.getModel()
 															.getRowCount() - 1) - 1,
-													0);
+													startRow);
 									endRow = Math
 											.min(binarySearchRow(this.series_
 													.get(i).getModel(),
@@ -2549,9 +2547,7 @@ public class WCartesianChart extends WAbstractChart {
 													this.series_.get(i)
 															.getModel()
 															.getRowCount() - 1) + 1,
-													this.series_.get(i)
-															.getModel()
-															.getRowCount());
+													endRow);
 								}
 							}
 							for (int row = startRow; row < endRow; ++row) {
