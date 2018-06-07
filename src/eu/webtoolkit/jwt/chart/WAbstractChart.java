@@ -71,6 +71,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * directly for highest performance (avoiding the overhead of boost::any for
 	 * numeric data).
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Setting a new model on a
+	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart} causes the
+	 * {@link WCartesianChart#XSeriesColumn() WCartesianChart#XSeriesColumn()}
+	 * and all series to be cleared</i>
+	 * </p>
 	 * 
 	 * @see WAbstractChart#getModel()
 	 */
@@ -86,6 +92,12 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * <p>
 	 * The default model is a <code>null</code> model.
 	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>Setting a new model on a
+	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart} causes the
+	 * {@link WCartesianChart#XSeriesColumn() WCartesianChart#XSeriesColumn()}
+	 * and all series to be cleared</i>
+	 * </p>
 	 * 
 	 * @see WAbstractChart#getModel()
 	 */

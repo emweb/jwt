@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see WCartesianChart#addSeries(WDataSeries series)
  */
-public class WDataSeries {
+public class WDataSeries extends WObject {
 	private static Logger logger = LoggerFactory.getLogger(WDataSeries.class);
 
 	/**
@@ -115,6 +115,7 @@ public class WDataSeries {
 	 * @see WCartesianChart#addSeries(WDataSeries series)
 	 */
 	public WDataSeries(int modelColumn, SeriesType type, Axis axis) {
+		super();
 		this.chart_ = null;
 		this.model_ = null;
 		this.modelColumn_ = modelColumn;
@@ -143,6 +144,7 @@ public class WDataSeries {
 		this.scale_ = 1.0;
 		this.offsetDirty_ = true;
 		this.scaleDirty_ = true;
+		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 	}
 
 	/**
@@ -177,6 +179,7 @@ public class WDataSeries {
 	 * @see WCartesianChart#addSeries(WDataSeries series)
 	 */
 	public WDataSeries(int modelColumn, SeriesType type, int yAxis) {
+		super();
 		this.chart_ = null;
 		this.model_ = null;
 		this.modelColumn_ = modelColumn;
@@ -205,6 +208,7 @@ public class WDataSeries {
 		this.scale_ = 1.0;
 		this.offsetDirty_ = true;
 		this.scaleDirty_ = true;
+		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
 	}
 
 	/**
@@ -216,6 +220,7 @@ public class WDataSeries {
 	 * @deprecated
 	 */
 	public WDataSeries(final WDataSeries other) {
+		super();
 		this.chart_ = null;
 		this.model_ = other.model_;
 		this.modelColumn_ = other.modelColumn_;
@@ -243,6 +248,15 @@ public class WDataSeries {
 		this.scale_ = other.scale_;
 		this.offsetDirty_ = true;
 		this.scaleDirty_ = true;
+		this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
+		if (this.model_ != null) {
+			this.modelConnections_.add(this.model_.changed().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WDataSeries.this.modelReset();
+						}
+					}));
+		}
 	}
 
 	/**
@@ -1058,7 +1072,21 @@ public class WDataSeries {
 	 * @see WAbstractChart#setModel(WAbstractItemModel model)
 	 */
 	public void setModel(WAbstractChartModel model) {
+		if (this.model_ != null) {
+			for (int i = 0; i < this.modelConnections_.size(); ++i) {
+				this.modelConnections_.get(i).disconnect();
+			}
+			this.modelConnections_.clear();
+		}
 		this.model_ = model;
+		if (this.model_ != null) {
+			this.modelConnections_.add(this.model_.changed().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							WDataSeries.this.modelReset();
+						}
+					}));
+		}
 		if (this.chart_ != null) {
 			this.chart_.update();
 		}
@@ -1120,6 +1148,13 @@ public class WDataSeries {
 	double scale_;
 	boolean offsetDirty_;
 	boolean scaleDirty_;
+	private List<AbstractSignal.Connection> modelConnections_;
+
+	private void modelReset() {
+		if (this.chart_ != null) {
+			this.chart_.modelReset();
+		}
+	}
 
 	// private boolean (final T m, final T v) ;
 	void setChart(WCartesianChart chart) {

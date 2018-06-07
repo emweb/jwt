@@ -124,19 +124,7 @@ public class WTabWidget extends WCompositeWidget {
 	 */
 	public WMenuItem addTab(WWidget child, final CharSequence label,
 			WTabWidget.LoadPolicy loadPolicy) {
-		WMenuItem.LoadPolicy policy = WMenuItem.LoadPolicy.PreLoading;
-		switch (loadPolicy) {
-		case PreLoading:
-			policy = WMenuItem.LoadPolicy.PreLoading;
-			break;
-		case LazyLoading:
-			policy = WMenuItem.LoadPolicy.LazyLoading;
-			break;
-		}
-		WMenuItem result = new WMenuItem(label, child, policy);
-		this.contentsWidgets_.add(child);
-		this.menu_.addItem(result);
-		return result;
+		return this.insertTab(this.getCount(), child, label, loadPolicy);
 	}
 
 	/**
@@ -148,6 +136,40 @@ public class WTabWidget extends WCompositeWidget {
 	 */
 	public final WMenuItem addTab(WWidget child, final CharSequence label) {
 		return addTab(child, label, WTabWidget.LoadPolicy.LazyLoading);
+	}
+
+	/**
+	 * Inserts a new tab, with <i>child</i> as content, and the given label.
+	 * <p>
+	 * Returns the menu item that implements the tab item.
+	 */
+	public WMenuItem insertTab(int index, WWidget child,
+			final CharSequence label, WTabWidget.LoadPolicy loadPolicy) {
+		WMenuItem.LoadPolicy policy = WMenuItem.LoadPolicy.PreLoading;
+		switch (loadPolicy) {
+		case PreLoading:
+			policy = WMenuItem.LoadPolicy.PreLoading;
+			break;
+		case LazyLoading:
+			policy = WMenuItem.LoadPolicy.LazyLoading;
+			break;
+		}
+		WMenuItem result = new WMenuItem(label, child, policy);
+		this.contentsWidgets_.add(0 + index, child);
+		this.menu_.insertItem(index, result);
+		return result;
+	}
+
+	/**
+	 * Inserts a new tab, with <i>child</i> as content, and the given label.
+	 * <p>
+	 * Returns
+	 * {@link #insertTab(int index, WWidget child, CharSequence label, WTabWidget.LoadPolicy loadPolicy)
+	 * insertTab(index, child, label, WTabWidget.LoadPolicy.LazyLoading)}
+	 */
+	public final WMenuItem insertTab(int index, WWidget child,
+			final CharSequence label) {
+		return insertTab(index, child, label, WTabWidget.LoadPolicy.LazyLoading);
 	}
 
 	/**
@@ -185,6 +207,13 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
+	 * Returns the item at the given tab <i>index</i>.
+	 */
+	public WMenuItem itemAt(int index) {
+		return this.menu_.itemAt(index);
+	}
+
+	/**
 	 * Returns the index of the tab of the given content widget.
 	 * <p>
 	 * If the widget is not in this tab widget, then -1 is returned.
@@ -219,6 +248,13 @@ public class WTabWidget extends WCompositeWidget {
 	 */
 	public WWidget getCurrentWidget() {
 		return this.menu_.getCurrentItem().getContents();
+	}
+
+	/**
+	 * Returns the item of the activated tab.
+	 */
+	public WMenuItem getCurrentItem() {
+		return this.menu_.getCurrentItem();
 	}
 
 	/**

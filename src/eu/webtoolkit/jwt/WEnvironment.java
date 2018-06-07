@@ -508,6 +508,20 @@ public class WEnvironment {
 	}
 
 	/**
+	 * Returns the time zone name as reported by the client.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This requires JavaScript support and is only supported by
+	 * browsers that implement the JavaScript Internationalization API. No
+	 * version of Internet Explorer supports this, but modern browsers do. If
+	 * not supported, this will return the empty string. </i>
+	 * </p>
+	 */
+	public String getTimeZoneName() {
+		return this.timeZoneName_;
+	}
+
+	/**
 	 * Returns the server host name that is used by the client.
 	 * <p>
 	 * The hostname is the unresolved host name with optional port number, which
@@ -943,6 +957,7 @@ public class WEnvironment {
 	Map<String, String> cookies_;
 	Locale locale_;
 	int timeZoneOffset_;
+	protected String timeZoneName_;
 	String host_;
 	String userAgent_;
 	String urlScheme_;
@@ -970,6 +985,7 @@ public class WEnvironment {
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
 		this.timeZoneOffset_ = 0;
+		this.timeZoneName_ = "";
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";
@@ -1196,6 +1212,7 @@ public class WEnvironment {
 		this.cookies_ = new HashMap<String, String>();
 		this.locale_ = new Locale("");
 		this.timeZoneOffset_ = 0;
+		this.timeZoneName_ = "";
 		this.host_ = "";
 		this.userAgent_ = "";
 		this.urlScheme_ = "";
@@ -1313,6 +1330,8 @@ public class WEnvironment {
 			this.timeZoneOffset_ = tzE != null ? Integer.parseInt(tzE) : 0;
 		} catch (final NumberFormatException e) {
 		}
+		String tzSE = request.getParameter("tzS");
+		this.timeZoneName_ = tzSE != null ? tzSE : "";
 		String hashE = request.getParameter("_");
 		if (hashE != null) {
 			this.setInternalPath(hashE);
