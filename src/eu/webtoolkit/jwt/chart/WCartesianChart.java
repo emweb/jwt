@@ -5125,9 +5125,6 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	private void assignJSPathsForSeries(final WDataSeries series) {
-		if (!this.isInteractive()) {
-			return;
-		}
 		WJavaScriptHandle<WPainterPath> handle = null;
 		if (this.freePainterPaths_.size() > 0) {
 			handle = this.freePainterPaths_

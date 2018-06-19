@@ -28,6 +28,7 @@ class Block {
 		this.node_ = node;
 		this.parent_ = parent;
 		this.offsetChildren_ = new ArrayList<Block>();
+		this.offsetParent_ = null;
 		this.type_ = DomElementType.DomElement_UNKNOWN;
 		this.classes_ = new ArrayList<String>();
 		this.inline_ = false;
