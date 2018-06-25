@@ -30,9 +30,16 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 		return name;
 	}
 
+	private String senderId(WObject sender) {
+		if (sender == WApplication.getInstance())
+			return "app";
+		else
+			return sender.getId();
+	}
+
 	@Override
 	String encodeCmd() {
-		return getSender().getId() + "." + name;
+		return senderId(getSender()) + "." + name;
 	}
 
 	protected String createUserEventCall(String jsObject, String jsEvent, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
