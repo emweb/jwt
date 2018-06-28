@@ -237,6 +237,7 @@ class WebSession {
 				logger.error(new StringWriter()
 						.append("Exception in WApplication::notify(): ")
 						.append(e.toString()).toString());
+				e.printStackTrace();
 			}
 			return;
 		}
@@ -251,6 +252,7 @@ class WebSession {
 				logger.error(new StringWriter()
 						.append("Exception in WApplication::notify(): ")
 						.append(e.toString()).toString());
+				e.printStackTrace();
 			}
 			return;
 		}
@@ -421,7 +423,7 @@ class WebSession {
 										(WebResponse) null);
 							} catch (final RuntimeException e) {
 								logger.error(new StringWriter()
-										.append("Exception while streaming resource")
+										.append("Exception while streaming resource: ")
 										.append(e.toString()).toString());
 								throw e;
 							}

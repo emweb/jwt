@@ -66,8 +66,13 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("image/png");
-		if (image != null)
-			ImageIO.write(image, "png", response.getOutputStream());
+		if (image != null) {
+			try {
+				ImageIO.write(image, "png", response.getOutputStream());
+			} catch (IOException e) {
+				logger.error("IOException when writing image to output stream", e);
+			}
+		}
 	}
 
 	

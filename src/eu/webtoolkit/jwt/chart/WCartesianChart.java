@@ -5152,9 +5152,6 @@ public class WCartesianChart extends WAbstractChart {
 	}
 
 	private void assignJSTransformsForSeries(final WDataSeries series) {
-		if (!this.isInteractive()) {
-			return;
-		}
 		WJavaScriptHandle<WTransform> handle = null;
 		if (this.freeTransforms_.size() > 0) {
 			handle = this.freeTransforms_.get(this.freeTransforms_.size() - 1);
