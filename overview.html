@@ -21,9 +21,97 @@ for <a href="http://jwt.webtoolkit.eu/jwt">JWt</a>.
 <h1>Release notes</h1>
 
 This page lists important notes on migrating existing applications to
-newer version of Wt. It lists changes in the library that may break
-the way you build Wt, the way you configure Wt or the Wt API and
+newer version of JWt. It lists changes in the library that may break
+the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 3.3.11 (2018)</h2>
+<p>This release brings with it the usual bugfixes, but also some new features:</p>
+
+<h3>WCartesianChart improvements</h3>
+
+<h4>Multiple Y axis support</h4>
+
+<p>In previous versions of JWt, it was already possible to have two separate Y axes. This release
+allows for any amount of Y axes, and extends the interactive functionality to support multiple Y axes.</p>
+
+<p>The following methods have been added:</p>
+
+<dl>
+  <dt><a href="eu/webtoolkit/jwt/chart/WCartesianChart.html"><tt>WCartesianChart</tt></a></dt>
+  <dd>
+    <ul>
+      <li><tt>List&lt;WAxis&gt; getYAxes()</tt></li>
+      <li><tt>WAxis getYAxis(int i)</tt></li>
+      <li><tt>int getYAxisCount()</tt></li>
+      <li><tt>int addYAxis(WAxis waxis)</tt></li>
+      <li><tt>void removeYAxis(int yAxisId)</tt></li>
+      <li><tt>void clearYAxes()</tt></li>
+      <li><tt>WPointF mapFromDevice(WPointF point, int ordinateAxis)</tt></li>
+      <li><tt>WPointF mapToDevice(Object xValue, Object yValue, int yAxis, int xSegment, int ySegment)</tt></li>
+      <li><tt>void setCrosshairYAxis(int yAxis)</tt></li>
+      <li><tt>int getCrosshairYAxis()</tt></li>
+    </ul>
+    <b>Small breaking change</b>: note that the method <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#prepareAxes-eu.webtoolkit.jwt.WPaintDevice-"><tt>prepareAxes</tt></a> has been modified to take a <a href="eu/webtoolkit/jwt/WPaintDevice.html"><tt>WPaintDevice</tt></a> argument. If your code overrides this method, be sure to add this argument to your overridden version.
+  </dd>
+  <dt><a href="eu/webtoolkit/jwt/chart/WDataSeries.html"><tt>WDataSeries</tt></a></dt>
+  <dd>
+    <ul>
+      <li><tt>WDataSeries(int modelColumn, SeriesType seriesType, int yAxis)</tt></li>
+      <li><tt>void bindToYAxis(int yAxis)</tt></li>
+      <li><tt>int getYAxis()</tt></li>
+    </ul>
+  </dd>
+</dl>
+
+<p>It's also possible to pan and zoom individual axes by scrolling on or dragging the axis itself, or by touch dragging and pinching.</p>
+
+<h4>On-demand loading</h4>
+
+<p>We've added on-demand loading functionality to <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html"><tt>WCartesianChart</tt></a>. Enable on-demand loading when you have a lot of data and/or need the ability to zoom in very far. This will make it so that only the data for the visible X range is loaded, and will improve performance of data series with large amounts data. This becomes especially useful in combination with the ability to set a maximum zoom range, so that you can't zoom all the way out to see all data.</p>
+
+<p>The following methods have been added:</p>
+
+<dl>
+  <dt><a href="eu/webtoolkit/jwt/chart/WCartesianChart.html"><tt>WCartesianChart</tt></a></dt>
+  <dd>
+    <ul>
+      <li><tt>void setOnDemandLoadingEnabled(boolean enabled)</tt></li>
+      <li><tt>boolean isOnDemandLoadingEnabled()</tt></li>
+      <li><tt>void setLoadingBackground(WBrush brush)</tt></li>
+      <li><tt>WBrush loadingBackground()</tt></li>
+    </ul>
+  </dd>
+  <dt><a href="eu/webtoolkit/jwt/chart/WAxis.html"><tt>WAxis</tt></a></dt>
+  <dd>
+    <ul>
+      <li><tt>void setMaximumZoomRange(double size)</tt></li>
+      <li><tt>double getMaximumZoomRange()</tt></li>
+    </ul>
+  </dd>
+</dl>
+
+<p>Note that the data must be ordered on X axis value for this feature to work properly.</p>
+
+<h3><a href="eu/webtoolkit/jwt/WFileDropWidget.html">WFileDropWidget</a></h3>
+
+<p>Added the ability to set a
+<a href="eu/webtoolkit/jwt/WFileDropWidget.html#setJavaScriptFilter-java.lang.String-">JavaScript filter</a>, e.g. to
+compress uploads client side.
+
+<h3>Miscellaneous improvements</h3>
+
+<ul>
+  <li>SVG image support??? Java??? (Koen)</li>
+  <li>Transparency in PDFs??? Java??? (Koen)</li>
+  <li>
+    Added <a href="eu/webtoolkit/jwt/WEnvironment.html#getTimeZoneName--"><tt>WEnvironment#getTimeZoneName()</tt></a>
+  </li>
+  <li>
+    Added <tt>insertTab</tt>, <tt>getItemAt</tt> and <tt>getCurrentItem</tt> to
+    <a href="eu/webtoolkit/jwt/WTabWidget.html"><tt>WTabWidget</tt></a>
+  </li>
+</ul>
 
 <h2>Release 3.3.10 (April 12, 2018)</h2>
 <p>This release fixes some bugs and adds some functionality:</p>

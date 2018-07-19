@@ -209,7 +209,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Returns the item at the given tab <i>index</i>.
 	 */
-	public WMenuItem itemAt(int index) {
+	public WMenuItem getItemAt(int index) {
 		return this.menu_.itemAt(index);
 	}
 

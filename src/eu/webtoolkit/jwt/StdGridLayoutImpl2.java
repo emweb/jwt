@@ -107,7 +107,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 		}
 		StringBuilder js = new StringBuilder();
 		js.append(app.getJavaScriptClass())
-				.append(".layouts2.add(new Wt3_3_10.StdLayout2(")
+				.append(".layouts2.add(new Wt3_3_11.StdLayout2(")
 				.append(app.getJavaScriptClass()).append(",'")
 				.append(this.getId()).append("',");
 		if (this.getLayout().getParentLayout() != null) {
@@ -412,7 +412,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
 			this.addedItems_.clear();
 			for (int i = 0; i < this.removedItems_.size(); ++i) {
 				parent.callJavaScript(
-						"Wt3_3_10.remove('" + this.removedItems_.get(i) + "');",
+						"Wt3_3_11.remove('" + this.removedItems_.get(i) + "');",
 						true);
 			}
 			this.removedItems_.clear();

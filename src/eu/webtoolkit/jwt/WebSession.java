@@ -2124,7 +2124,7 @@ class WebSession {
 								this.changeInternalPath(hashE,
 										handler.getResponse());
 								this.app_
-										.doJavaScript("Wt3_3_10.scrollHistory();");
+										.doJavaScript("Wt3_3_11.scrollHistory();");
 							} else {
 								this.changeInternalPath("",
 										handler.getResponse());

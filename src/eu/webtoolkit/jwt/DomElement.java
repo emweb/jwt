@@ -404,7 +404,7 @@ public class DomElement {
 			js.append("var e=event||window.event,");
 			js.append("o=this;");
 			if (anchorClick) {
-				js.append("if(e.ctrlKey||e.metaKey||(Wt3_3_10.button(e) > 1))return true;else{");
+				js.append("if(e.ctrlKey||e.metaKey||(Wt3_3_11.button(e) > 1))return true;else{");
 			}
 			js.append(jsCode);
 			if (isExposed) {
@@ -526,7 +526,7 @@ public class DomElement {
 	public void callMethod(final String method) {
 		++this.numManipulations_;
 		if (this.var_.length() == 0) {
-			this.javaScript_.append("Wt3_3_10").append(".$('").append(this.id_)
+			this.javaScript_.append("Wt3_3_11").append(".$('").append(this.id_)
 					.append("').");
 		} else {
 			this.javaScript_.append(this.var_).append('.');
@@ -588,7 +588,7 @@ public class DomElement {
 	 * Removes the element.
 	 */
 	public void removeFromParent() {
-		this.callJavaScript("Wt3_3_10.remove('" + this.getId() + "');", true);
+		this.callJavaScript("Wt3_3_11.remove('" + this.getId() + "');", true);
 	}
 
 	/**
@@ -702,7 +702,7 @@ public class DomElement {
 				if (this.removeAllChildren_ >= 0) {
 					this.declare(out);
 					if (this.removeAllChildren_ == 0) {
-						out.append("Wt3_3_10").append(".setHtml(")
+						out.append("Wt3_3_11").append(".setHtml(")
 								.append(this.var_).append(", '');\n");
 					} else {
 						out.append("$(").append(this.var_)
@@ -737,22 +737,22 @@ public class DomElement {
 					String style = this.properties_
 							.get(Property.PropertyStyleDisplay);
 					if (style.equals("none")) {
-						out.append("Wt3_3_10.hide('").append(this.id_)
+						out.append("Wt3_3_11.hide('").append(this.id_)
 								.append("');\n");
 						return this.var_;
 					} else {
 						if (style.length() == 0) {
-							out.append("Wt3_3_10.show('").append(this.id_)
+							out.append("Wt3_3_11.show('").append(this.id_)
 									.append("');\n");
 							return this.var_;
 						} else {
 							if (style.equals("inline")) {
-								out.append("Wt3_3_10.inline('" + this.id_
+								out.append("Wt3_3_11.inline('" + this.id_
 										+ "');\n");
 								return this.var_;
 							} else {
 								if (style.equals("block")) {
-									out.append("Wt3_3_10.block('" + this.id_
+									out.append("Wt3_3_11.block('" + this.id_
 											+ "');\n");
 									return this.var_;
 								}
@@ -767,7 +767,7 @@ public class DomElement {
 				}
 			}
 			if (this.unwrapped_) {
-				out.append("Wt3_3_10.unwrap('").append(this.id_)
+				out.append("Wt3_3_11.unwrap('").append(this.id_)
 						.append("');\n");
 			}
 			this.processEvents(app);
@@ -781,7 +781,7 @@ public class DomElement {
 						.append(");\n");
 				this.replaced_.createElement(out, app, insertJs.toString());
 				if (this.unstubbed_) {
-					out.append("Wt3_3_10.unstub(").append(this.var_)
+					out.append("Wt3_3_11.unstub(").append(this.var_)
 							.append(',').append(varr).append(',')
 							.append(this.hideWithDisplay_ ? 1 : 0)
 							.append(");\n");
@@ -802,7 +802,7 @@ public class DomElement {
 			}
 			if (!this.childrenToSave_.isEmpty()) {
 				this.declare(out);
-				out.append("Wt3_3_10").append(".saveReparented(")
+				out.append("Wt3_3_11").append(".saveReparented(")
 						.append(this.var_).append(");");
 			}
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
@@ -828,7 +828,7 @@ public class DomElement {
 			}
 			this.renderInnerHtmlJS(out, app);
 			for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-				out.append("Wt3_3_10.replaceWith('")
+				out.append("Wt3_3_11.replaceWith('")
 						.append(this.childrenToSave_.get(i)).append("',c")
 						.append(this.var_).append((int) i).append(");");
 			}
@@ -1221,7 +1221,7 @@ public class DomElement {
 	public void declare(final EscapeOStream out) {
 		if (this.var_.length() == 0) {
 			out.append("var ").append(this.getCreateVar())
-					.append("=Wt3_3_10.$('").append(this.id_).append("');\n");
+					.append("=Wt3_3_11.$('").append(this.id_).append("');\n");
 		}
 	}
 
@@ -1504,7 +1504,7 @@ public class DomElement {
 		DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
 		if (keypress != null && keypress.jsCode.length() != 0) {
 			MapUtils.access(self.eventHandlers_, S_keypress,
-					DomElement.EventHandler.class).jsCode = "if (Wt3_3_10.isKeyPress(event)){"
+					DomElement.EventHandler.class).jsCode = "if (Wt3_3_11.isKeyPress(event)){"
 					+ MapUtils.access(self.eventHandlers_, S_keypress,
 							DomElement.EventHandler.class).jsCode + '}';
 		}
@@ -1520,7 +1520,7 @@ public class DomElement {
 			if (minw != null || maxw != null) {
 				if (w == null) {
 					StringBuilder expr = new StringBuilder();
-					expr.append("Wt3_3_10.IEwidth(this,");
+					expr.append("Wt3_3_11.IEwidth(this,");
 					if (minw != null) {
 						expr.append('\'').append(minw).append('\'');
 						self.properties_.remove(Property.PropertyStyleMinWidth);
@@ -1561,7 +1561,7 @@ public class DomElement {
 				if (this.willRenderInnerHtmlJS(app)) {
 					break;
 				}
-				out.append("Wt3_3_10.setHtml(").append(this.var_).append(',');
+				out.append("Wt3_3_11.setHtml(").append(this.var_).append(',');
 				if (!pushed) {
 					escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 					pushed = true;
@@ -1810,7 +1810,7 @@ public class DomElement {
 		} else {
 			StringBuilder insertJS = new StringBuilder();
 			if (pos != -1) {
-				insertJS.append("Wt3_3_10.insertAt(").append(parentVar)
+				insertJS.append("Wt3_3_11.insertAt(").append(parentVar)
 						.append(",").append(this.var_).append(",").append(pos)
 						.append(");");
 			} else {
@@ -1842,7 +1842,7 @@ public class DomElement {
 					|| !this.childrenToAdd_.isEmpty()
 					|| !this.childrenHtml_.isEmpty() || innerHTML.length() != 0) {
 				this.declare(out);
-				out.append("Wt3_3_10.setHtml(").append(this.var_).append(",'");
+				out.append("Wt3_3_11.setHtml(").append(this.var_).append(",'");
 				out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 				List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
 				EscapeOStream js = new EscapeOStream();

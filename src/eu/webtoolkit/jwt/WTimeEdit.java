@@ -322,7 +322,7 @@ public class WTimeEdit extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTimeEdit.js", wtjs1());
-		String jsObj = "new Wt3_3_10.WTimeEdit(" + app.getJavaScriptClass()
+		String jsObj = "new Wt3_3_11.WTimeEdit(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ jsStringLiteral(this.popup_.getId()) + ");";
 		this.setJavaScriptMember(" WTimeEdit", jsObj);

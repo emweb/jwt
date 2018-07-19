@@ -153,7 +153,7 @@ public class WAxis {
 	 * Returns 0 if this axis is not a Y axis.
 	 * <p>
 	 * 
-	 * @see WCartesianChart#yAxis(int i)
+	 * @see WCartesianChart#getYAxis(int i)
 	 */
 	public int getYAxisId() {
 		return this.yAxis_;
