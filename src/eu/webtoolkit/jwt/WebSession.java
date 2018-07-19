@@ -423,7 +423,7 @@ class WebSession {
 										(WebResponse) null);
 							} catch (final RuntimeException e) {
 								logger.error(new StringWriter()
-										.append("Exception while streaming resource: ")
+										.append("Exception while streaming resource")
 										.append(e.toString()).toString());
 								throw e;
 							}
@@ -1291,8 +1291,9 @@ class WebSession {
 					if (origin != null) {
 						logger.error(new StringWriter()
 								.append("WebSocket request refused: Origin '")
-								.append(origin).append("' not allowed")
-								.toString());
+								.append(origin)
+								.append("' not allowed (trusted origin is '")
+								.append(trustedOrigin).append("')").toString());
 					} else {
 						logger.error(new StringWriter().append(
 								"WebSocket request refused: missing Origin")

@@ -19,6 +19,10 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;
 import eu.webtoolkit.jwt.servlet.WebRequest.ResponseType;
+import eu.webtoolkit.jwt.utils.StreamUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WebResponse which wraps the HttpServletResponse to support testing.
@@ -32,6 +36,8 @@ import eu.webtoolkit.jwt.servlet.WebRequest.ResponseType;
  * @see WebResponse
  */
 public class WebResponse extends HttpServletResponseWrapper {
+	private static Logger logger = LoggerFactory.getLogger(WebResponse.class);
+
 	private OutputStreamWriter outWriter;
 	private HttpServletRequest request;
 	private int id;
@@ -70,12 +76,12 @@ public class WebResponse extends HttpServletResponseWrapper {
 	public WebResponse(final OutputStream out) {
 		super(WtServlet.getServletApi().getMockupHttpServletResponse());
 
-		this.outputStream = new ServletOutputStream() {
+		this.outputStream = new StreamUtils.ErrorSuppressingOutputStream(new ServletOutputStream() {
 			@Override
 			public void write(int arg0) throws IOException {
 				out.write(arg0);
 			}
-		};
+		}, logger);
 
 		try {
 			outWriter = new OutputStreamWriter(outputStream, "UTF-8");
@@ -101,11 +107,15 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * {@link #getWriter()} for text output.
 	 */
 	@Override
-	public ServletOutputStream getOutputStream() throws IOException {
-		if (outputStream == null)
-			return super.getOutputStream();
-		else
+	public ServletOutputStream getOutputStream() {
+		try {
+			if (outputStream == null)
+				outputStream = new StreamUtils.ErrorSuppressingOutputStream(super.getOutputStream(), logger);
 			return outputStream;
+		} catch (IOException e) {
+			logger.error("Failed to retrieve ServletOutputStream: {}", e.getMessage());
+			return new StreamUtils.ErrorSuppressingOutputStream();
+		}
 	}
 
 	/**
@@ -154,8 +164,9 @@ public class WebResponse extends HttpServletResponseWrapper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			if (request != null)
+			if (request != null) {
 				WtServlet.getServletApi().completeAsyncContext(request);
+			}
 		}
 	}
 

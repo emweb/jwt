@@ -633,18 +633,30 @@ public class WMenuItem extends WContainerWidget {
 	 * transmitted prior to first rendering.
 	 */
 	public void setContents(WWidget contents, WMenuItem.LoadPolicy policy) {
+		int menuIdx = -1;
+		WMenu menu = this.menu_;
+		if (menu != null) {
+			menuIdx = menu.indexOf(this);
+			menu.removeItem(this);
+		}
+		if (this.contentsContainer_ != null) {
+			if (this.contentsContainer_ != null)
+				this.contentsContainer_.remove();
+			this.contentsContainer_ = null;
+		}
 		if (this.contents_ != null)
 			this.contents_.remove();
 		this.contents_ = contents;
 		if (contents != null && policy != WMenuItem.LoadPolicy.PreLoading) {
 			this.contents_ = contents;
-			if (!(this.contentsContainer_ != null)) {
-				this.contentsContainer_ = new WContainerWidget();
-				this.contentsContainer_.setJavaScriptMember("wtResize",
-						StdWidgetItemImpl.getChildrenResizeJS());
-				this.contentsContainer_.resize(WLength.Auto, new WLength(100,
-						WLength.Unit.Percentage));
-			}
+			this.contentsContainer_ = new WContainerWidget();
+			this.contentsContainer_.setJavaScriptMember("wtResize",
+					StdWidgetItemImpl.getChildrenResizeJS());
+			this.contentsContainer_.resize(WLength.Auto, new WLength(100,
+					WLength.Unit.Percentage));
+		}
+		if (menu != null) {
+			menu.insertItem(menuIdx, this);
 		}
 	}
 

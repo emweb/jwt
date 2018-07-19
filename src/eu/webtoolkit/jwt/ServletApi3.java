@@ -78,7 +78,11 @@ class ServletApi3 extends ServletApi{
 	@Override
 	public void completeAsyncContext(HttpServletRequest request) {
 		if (request.isAsyncStarted()) {
-			request.getAsyncContext().complete();
+			try {
+				request.getAsyncContext().complete();
+			} catch (IllegalStateException e) {
+				logger.error("IllegalStateException occurred when completing async context: {}", e.getMessage());
+			}
 		}
 	}
 

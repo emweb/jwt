@@ -43,6 +43,10 @@ class WTimerWidget extends WInteractWidget {
 		return this.timer_.getRemainingInterval() == 0;
 	}
 
+	public boolean isJsRepeat() {
+		return this.jsRepeat_;
+	}
+
 	private WTimer timer_;
 	private boolean timerStarted_;
 	private boolean jsRepeat_;

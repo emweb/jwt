@@ -756,6 +756,7 @@ class WebRenderer implements SlotLearnerInterface {
 								+ String.valueOf(this.pageId_));
 		boot.setVar("BOOT_STYLE_URL", bootStyleUrl.toString());
 		this.setCaching(response, false);
+		response.addHeader("X-Frame-Options", "SAMEORIGIN");
 		String contentType = "text/html; charset=UTF-8";
 		this.setHeaders(response, contentType);
 		StringBuilder out = new StringBuilder();
