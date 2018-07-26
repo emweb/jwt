@@ -25,11 +25,7 @@ public class MandelbrotResource extends WResource {
     }
 
     protected void handleRequest(WebRequest request, WebResponse response) {
-        try {
-            img_.generate(x_, y_, w_, h_, response.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        img_.generate(x_, y_, w_, h_, response.getOutputStream());
     }
 
     private MandelbrotImage img_;
