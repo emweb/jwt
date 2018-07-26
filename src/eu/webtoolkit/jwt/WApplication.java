@@ -195,6 +195,7 @@ public class WApplication extends WObject {
 		this.showLoadingIndicator_ = new EventSignal("showload", this);
 		this.hideLoadingIndicator_ = new EventSignal("hideload", this);
 		this.unloaded_ = new JSignal(this, "Wt-unload");
+		this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
 		this.objectStore_ = new HashMap<String, Object>();
 		this.soundManager_ = null;
 		this.showLoadJS = new JSlot();
@@ -342,6 +343,11 @@ public class WApplication extends WObject {
 		this.unloaded_.addListener(this, new Signal.Listener() {
 			public void trigger() {
 				WApplication.this.doUnload();
+			}
+		});
+		this.idleTimeout_.addListener(this, new Signal.Listener() {
+			public void trigger() {
+				WApplication.this.doIdleTimeout();
 			}
 		});
 	}
@@ -2989,6 +2995,50 @@ public class WApplication extends WObject {
 	}
 
 	/**
+	 * Idle timeout handler.
+	 * <p>
+	 * If idle timeout is set in the configuration (
+	 * {@link Configuration#setIdleTimeout(int)}), this method is called when
+	 * the user seems idle for the number of seconds set as the idle timeout.
+	 * <p>
+	 * This feature can be useful in security sensitive applications to prevent
+	 * unauthorized users from taking over the session of a user that has moved
+	 * away from or left behind the device from which they are accessing the JWt
+	 * application.
+	 * <p>
+	 * The default implementation logs that a timeout has occurred, and calls
+	 * {@link WApplication#quit() quit()}.
+	 * <p>
+	 * This method can be overridden to specify different timeout behaviour,
+	 * e.g. to show a dialog that a user&apos;s session has expired, or that the
+	 * session is about to expire.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>The events currently counted as user activity are:
+	 * <ul>
+	 * <li>mousedown</li>
+	 * <li>mouseup</li>
+	 * <li>wheel</li>
+	 * <li>keydown</li>
+	 * <li>keyup</li>
+	 * <li>touchstart</li>
+	 * <li>touchend</li>
+	 * <li>pointerdown</li>
+	 * <li>pointerup</li>
+	 * </ul>
+	 * </i>
+	 * </p>
+	 */
+	protected void idleTimeout() {
+		final Configuration conf = this.getEnvironment().getServer()
+				.getConfiguration();
+		logger.info(new StringWriter().append("User idle for ")
+				.append(String.valueOf(conf.getIdleTimeout()))
+				.append(" seconds, quitting due to idle timeout").toString());
+		this.quit();
+	}
+
+	/**
 	 * handleJavaScriptError print javaScript errors to log file. You may want
 	 * to overwrite it to render error page for example.
 	 * <p>
@@ -3112,6 +3162,7 @@ public class WApplication extends WObject {
 	EventSignal showLoadingIndicator_;
 	EventSignal hideLoadingIndicator_;
 	private JSignal unloaded_;
+	private JSignal idleTimeout_;
 	private Map<String, Object> objectStore_;
 
 	WContainerWidget getTimerRoot() {
@@ -3293,6 +3344,14 @@ public class WApplication extends WObject {
 			this.unload();
 		} else {
 			this.session_.setState(WebSession.State.Loaded, 5);
+		}
+	}
+
+	private void doIdleTimeout() {
+		final Configuration conf = this.getEnvironment().getServer()
+				.getConfiguration();
+		if (conf.getIdleTimeout() != -1) {
+			this.idleTimeout();
 		}
 	}
 

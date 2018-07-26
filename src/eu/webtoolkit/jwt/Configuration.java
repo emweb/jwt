@@ -74,6 +74,7 @@ public class Configuration {
 	private boolean progressiveBootstrap = false;
 	
 	private int sessionTimeout = 600;
+	private int idleTimeout = -1;
 	private int indicatorTimeout = 500;
 	private int doubleClickTimeout = 200;
 	private int bootstrapTimeout = 10;
@@ -599,6 +600,32 @@ public class Configuration {
 	 */
 	public int getSessionTimeout() {
 		return sessionTimeout;
+	}
+
+	/**
+	 * Returns the idle timeout (in seconds).
+	 *
+	 * @return the idle timeout.
+	 */
+	public int getIdleTimeout() {
+		return idleTimeout;
+	}
+
+	/**
+	 * Sets the idle timeout.
+	 *
+	 * When the user does not interact with the application for the set number of seconds,
+	 * WApplication#idleTimeout() is called. By default, this method quits the application
+	 * immediately, but it can be overridden if different behaviour is desired.
+	 *
+	 * This feature can be used to prevent others from taking over a session
+	 * when the device that the Wt application is being used from is left behind,
+	 * and is most effective in combination with a fairly short session timeout.
+	 *
+	 * The default is -1 (disabled)
+	 */
+	public void setIdleTimeout(int timeout) {
+		this.idleTimeout = timeout;
 	}
 	
 	/**

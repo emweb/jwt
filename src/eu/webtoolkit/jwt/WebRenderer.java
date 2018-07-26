@@ -614,6 +614,10 @@ class WebRenderer implements SlotLearnerInterface {
 					WWebWidget.jsStringLiteral(String.valueOf(this.session_
 							.getController().getIdForWebSocket())));
 			script.setVar("KEEP_ALIVE", String.valueOf(conf.getKeepAlive()));
+			script.setVar(
+					"IDLE_TIMEOUT",
+					conf.getIdleTimeout() != -1 ? String.valueOf(conf
+							.getIdleTimeout()) : "null");
 			script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
 			script.setVar("SERVER_PUSH_TIMEOUT",
 					conf.getServerPushTimeout() * 1000);

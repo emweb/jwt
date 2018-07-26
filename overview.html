@@ -93,7 +93,15 @@ allows for any amount of Y axes, and extends the interactive functionality to su
 
 <p>Note that the data must be ordered on X axis value for this feature to work properly.</p>
 
-<h3><a href="eu/webtoolkit/jwt/WFileDropWidget.html">WFileDropWidget</a></h3>
+<h3>Idle timeout</h3>
+
+<p>Added an <a href="eu/webtoolkit/jwt/Configuration.html#setIdleTimeout-int-">idle timeout</a> option to the configuration. If set,
+<a href="eu/webtoolkit/jwt/WApplication.html#idleTimeout--"><tt>WApplication.idleTimeout()</a></tt> will be triggered after the configured number of seconds.</p>
+
+<p>This is intended to prevent unauthorized people from using an active session from a
+device that's been abandoned by the user.</p>
+
+<a href="eu/webtoolkit/jwt/WFileDropWidget.html"><h3>WFileDropWidget</h3></a>
 
 <p>Added the ability to set a
 <a href="eu/webtoolkit/jwt/WFileDropWidget.html#setJavaScriptFilter-java.lang.String-">JavaScript filter</a>, e.g. to
