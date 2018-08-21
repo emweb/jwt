@@ -99,8 +99,11 @@
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<exclude name="eu/webtoolkit/jwt/servlet/HttpUtils.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
 	<include name="eu/webtoolkit/jwt/render/*.java"/>
+	<exclude name="eu/webtoolkit/jwt/render/CssData.java"/>
+	<exclude name="eu/webtoolkit/jwt/render/CssData_p.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>

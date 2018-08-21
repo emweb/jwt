@@ -92,6 +92,10 @@ public abstract class WJavaScriptExposableObject {
 		}
 	}
 
+	public boolean closeTo(final WJavaScriptExposableObject other) {
+		return false;
+	}
+
 	protected boolean sameBindingAs(final WJavaScriptExposableObject rhs) {
 		if (!(this.clientBinding_ != null) && !(rhs.clientBinding_ != null)) {
 			return true;

@@ -811,6 +811,18 @@ public class WTransform extends WJavaScriptExposableObject {
 	 */
 	public static final WTransform Identity = new WTransform();
 
+	public boolean closeTo(final WTransform other) {
+		if (this.isJavaScriptBound() || other.isJavaScriptBound()) {
+			return false;
+		}
+		return Math.abs(this.m_[0] - other.m_[0]) <= EPS
+				&& Math.abs(this.m_[1] - other.m_[1]) <= EPS
+				&& Math.abs(this.m_[2] - other.m_[2]) <= EPS
+				&& Math.abs(this.m_[3] - other.m_[3]) <= EPS
+				&& Math.abs(this.m_[4] - other.m_[4]) <= EPS
+				&& Math.abs(this.m_[5] - other.m_[5]) <= EPS;
+	}
+
 	public String getJsValue() {
 		char[] buf = new char[30];
 		StringBuilder ss = new StringBuilder();
@@ -858,6 +870,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	private static final int M23 = 5;
 	private static final int DY = 5;
 	private double[] m_ = new double[6];
+	private static final double EPS = 1E-12;
 
 	static double norm(double x1, double x2) {
 		return Math.sqrt(x1 * x1 + x2 * x2);
