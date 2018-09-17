@@ -997,7 +997,9 @@ public class WSuggestionPopup extends WPopupWidget {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
 		}
-		this.doFilter(this.currentInputText_);
+		if (WApplication.getInstance().getEnvironment().hasAjax()) {
+			this.doFilter(this.currentInputText_);
+		}
 		super.render(flags);
 	}
 

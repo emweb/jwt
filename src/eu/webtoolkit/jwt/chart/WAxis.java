@@ -128,6 +128,7 @@ public class WAxis {
 		this.zoomRangeChanged_ = new Signal2<Double, Double>();
 		this.segments_ = new ArrayList<WAxis.Segment>();
 		this.renderInterval_ = 0.0;
+		this.fullRenderLength_ = 0.0;
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(12,
 				WLength.Unit.Point));
@@ -2971,7 +2972,7 @@ public class WAxis {
 		assert segment.renderMinimum < segment.renderMaximum;
 	}
 
-	private double getValue(final Object v) {
+	double getValue(final Object v) {
 		switch (this.scale_) {
 		case LinearScale:
 		case LogScale:
@@ -2981,7 +2982,11 @@ public class WAxis {
 				WDate d = ((WDate) v);
 				return (double) d.toJulianDay();
 			} else {
-				return Double.NaN;
+				if (v.getClass().equals(Double.class)) {
+					return ((Double) v);
+				} else {
+					return Double.NaN;
+				}
 			}
 		case DateTimeScale:
 			if (v.getClass().equals(WDate.class)) {
@@ -2990,7 +2995,11 @@ public class WAxis {
 				dt = d;
 				return (double) dt.getDate().getTime();
 			} else {
-				return Double.NaN;
+				if (v.getClass().equals(Double.class)) {
+					return ((Double) v);
+				} else {
+					return Double.NaN;
+				}
 			}
 		default:
 			return -1.0;

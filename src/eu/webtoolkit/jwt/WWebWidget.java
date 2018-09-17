@@ -2291,7 +2291,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 	}
 
-	private WWebWidget.LayoutImpl layoutImpl_;
+	WWebWidget.LayoutImpl layoutImpl_;
 
 	static class LookImpl {
 		private static Logger logger = LoggerFactory.getLogger(LookImpl.class);

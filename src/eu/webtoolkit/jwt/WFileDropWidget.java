@@ -104,6 +104,9 @@ public class WFileDropWidget extends WContainerWidget {
 
 		/**
 		 * This signal allows you to track the upload progress of the file.
+		 * <p>
+		 * The first argument is the number of bytes received so far, and the
+		 * second argument is the total number of bytes.
 		 */
 		public Signal2<Long, Long> dataReceived() {
 			return this.dataReceived_;
@@ -501,6 +504,8 @@ public class WFileDropWidget extends WContainerWidget {
 	 * The signal triggers when a file is too large for upload.
 	 * <p>
 	 * This signal is triggered when the widget attempts to upload the file.
+	 * <p>
+	 * The second argument is the size of the file in bytes.
 	 */
 	public Signal2<WFileDropWidget.File, Long> tooLarge() {
 		return this.tooLarge_;

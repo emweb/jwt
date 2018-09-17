@@ -937,8 +937,8 @@ public class WApplication extends WObject {
 	/**
 	 * Refreshes the application.
 	 * <p>
-	 * This lets the application to refresh its data, including strings from
-	 * message-resource bundles. This done by propagating
+	 * This lets the application refresh its data, including strings from
+	 * message resource bundles. This is done by propagating
 	 * {@link WWidget#refresh() WWidget#refresh()} through the widget hierarchy.
 	 * <p>
 	 * This method is also called when the user hits the refresh (or reload)

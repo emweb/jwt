@@ -298,8 +298,8 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted when the user tried to upload a too large file.
 	 * <p>
-	 * The parameter is the (approximate) size of the file the user tried to
-	 * upload.
+	 * The parameter is the (approximate) size of the file (in bytes) the user
+	 * tried to upload.
 	 * <p>
 	 * The maximum file size is determined by the maximum request size, which
 	 * may be configured in the configuration file (&lt;max-request-size&gt;).
@@ -401,6 +401,9 @@ public class WFileUpload extends WWebWidget {
 	 * <p>
 	 * When supported by the connector library, you can track the progress of
 	 * the file upload by listening to this signal.
+	 * <p>
+	 * The first argument is the number of bytes received so far, and the second
+	 * argument is the total number of bytes.
 	 */
 	public Signal2<Long, Long> dataReceived() {
 		return this.dataReceived_;

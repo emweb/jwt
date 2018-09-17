@@ -40,9 +40,9 @@ class WJavaScriptObjectStorage {
 		return new WJavaScriptHandle<T>(index, o);
 	}
 
-	public void updateJs(StringBuilder js) {
+	public void updateJs(StringBuilder js, boolean all) {
 		for (int i = 0; i < jsValues.size(); ++i) {
-			if (dirty.get(i)) {
+			if (dirty.get(i) || all) {
 				js.append(getJsRef()).append(".setJsValue(").append(i).append(",");
 				js.append(jsValues.get(i).getJsValue()).append(");");
 				dirty.set(i, false);

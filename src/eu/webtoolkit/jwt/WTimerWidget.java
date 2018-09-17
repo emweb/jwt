@@ -55,8 +55,12 @@ class WTimerWidget extends WInteractWidget {
 		if (this.timerStarted_
 				|| (!WApplication.getInstance().getEnvironment()
 						.hasJavaScript() || all) && this.timer_.isActive()) {
-			element.setTimeout(this.timer_.getRemainingInterval(),
-					this.jsRepeat_);
+			if (this.jsRepeat_) {
+				element.setTimeout(this.timer_.getRemainingInterval(),
+						this.timer_.getInterval());
+			} else {
+				element.setTimeout(this.timer_.getRemainingInterval(), false);
+			}
 			this.timerStarted_ = false;
 		}
 		super.updateDom(element, all);

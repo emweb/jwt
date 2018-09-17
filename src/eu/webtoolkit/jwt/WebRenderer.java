@@ -1435,7 +1435,6 @@ class WebRenderer implements SlotLearnerInterface {
 		final Configuration conf = this.session_.getController()
 				.getConfiguration();
 		StringBuilder out = new StringBuilder();
-		FileServe bootJs = new FileServe(WtServlet.Boot_js);
 		boot.setVar(
 				"BLANK_HTML",
 				this.session_.getBootstrapUrl(response,
@@ -1443,35 +1442,41 @@ class WebRenderer implements SlotLearnerInterface {
 						+ "&amp;request=resource&amp;resource=blank");
 		boot.setVar("SESSION_ID", this.session_.getSessionId());
 		boot.setVar("APP_CLASS", "Wt");
-		bootJs.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
-				.getBootstrapUrl(response,
-						WebSession.BootstrapOption.ClearInternalPath)));
-		bootJs.setVar("SESSION_ID", this.session_.getSessionId());
-		this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
-		this.ackErrs_ = 0;
-		bootJs.setVar("SCRIPT_ID", this.scriptId_);
-		bootJs.setVar("RANDOMSEED", MathUtils.randomInt());
-		bootJs.setVar("RELOAD_IS_NEWSESSION", conf.reloadIsNewSession());
-		bootJs.setVar(
-				"USE_COOKIES",
-				conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
-		bootJs.setVar("AJAX_CANONICAL_URL", this
-				.safeJsStringLiteral(this.session_.ajaxCanonicalUrl(response)));
-		bootJs.setVar("APP_CLASS", "Wt");
-		bootJs.setVar("PATH_INFO",
-				this.safeJsStringLiteral(this.session_.pagePathInfo_));
-		bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
-		bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
-		bootJs.setCondition("HYBRID", hybrid);
-		bootJs.setCondition("PROGRESS", hybrid
-				&& !this.session_.getEnv().hasAjax());
-		bootJs.setCondition("DEFER_SCRIPT", true);
-		bootJs.setCondition("WEBGL_DETECT", conf.isWebglDetect());
-		String internalPath = hybrid ? this.session_.getApp().getInternalPath()
-				: this.session_.getEnv().getInternalPath();
-		bootJs.setVar("INTERNAL_PATH", this.safeJsStringLiteral(internalPath));
 		boot.streamUntil(out, "BOOT_JS");
-		bootJs.stream(out);
+		if (!(hybrid && this.session_.getApp().hasQuit())) {
+			FileServe bootJs = new FileServe(WtServlet.Boot_js);
+			bootJs.setVar("SELF_URL", this.safeJsStringLiteral(this.session_
+					.getBootstrapUrl(response,
+							WebSession.BootstrapOption.ClearInternalPath)));
+			bootJs.setVar("SESSION_ID", this.session_.getSessionId());
+			this.expectedAckId_ = this.scriptId_ = MathUtils.randomInt();
+			this.ackErrs_ = 0;
+			bootJs.setVar("SCRIPT_ID", this.scriptId_);
+			bootJs.setVar("RANDOMSEED", MathUtils.randomInt());
+			bootJs.setVar("RELOAD_IS_NEWSESSION", conf.reloadIsNewSession());
+			bootJs.setVar(
+					"USE_COOKIES",
+					conf.getSessionTracking() == Configuration.SessionTracking.CookiesURL);
+			bootJs.setVar("AJAX_CANONICAL_URL", this
+					.safeJsStringLiteral(this.session_
+							.ajaxCanonicalUrl(response)));
+			bootJs.setVar("APP_CLASS", "Wt");
+			bootJs.setVar("PATH_INFO",
+					this.safeJsStringLiteral(this.session_.pagePathInfo_));
+			bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
+			bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
+			bootJs.setCondition("HYBRID", hybrid);
+			bootJs.setCondition("PROGRESS", hybrid
+					&& !this.session_.getEnv().hasAjax());
+			bootJs.setCondition("DEFER_SCRIPT", true);
+			bootJs.setCondition("WEBGL_DETECT", conf.isWebglDetect());
+			String internalPath = hybrid ? this.session_.getApp()
+					.getInternalPath() : this.session_.getEnv()
+					.getInternalPath();
+			bootJs.setVar("INTERNAL_PATH",
+					this.safeJsStringLiteral(internalPath));
+			bootJs.stream(out);
+		}
 		response.out().append(out.toString());
 	}
 

@@ -78,7 +78,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 			ss.append("new Wt3_3_11.WJavaScriptObjectStorage(")
 					.append(app.getJavaScriptClass()).append(",")
 					.append(this.widget_.getJsRef()).append(");");
-			this.widget_.jsObjects_.updateJs(ss);
+			this.widget_.jsObjects_.updateJs(ss, true);
 			el.callJavaScript(ss.toString());
 			if (this.widget_.areaImage_ != null) {
 				this.widget_.areaImage_.setTargetJS(this.widget_.getObjJsRef());
@@ -119,7 +119,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
 		String updateAreasJs = "";
 		if (hasJsObjects) {
 			StringBuilder ss = new StringBuilder();
-			this.widget_.jsObjects_.updateJs(ss);
+			this.widget_.jsObjects_.updateJs(ss, false);
 			el.callJavaScript(ss.toString());
 			if (this.widget_.areaImage_ != null) {
 				this.widget_.areaImage_.setTargetJS(this.widget_.getObjJsRef());

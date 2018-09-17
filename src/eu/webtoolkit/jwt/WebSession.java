@@ -82,6 +82,9 @@ class WebSession {
 		this.recursiveEventHandler_ = null;
 		this.env_ = env != null ? env : this.embeddedEnv_;
 		if (request != null) {
+			this.env_.updateUrlScheme(request);
+		}
+		if (request != null) {
 			this.applicationUrl_ = request.getScriptName();
 		} else {
 			this.applicationUrl_ = "/";

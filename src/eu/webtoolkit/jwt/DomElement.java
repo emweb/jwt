@@ -79,6 +79,7 @@ public class DomElement {
 		this.id_ = "";
 		this.numManipulations_ = 0;
 		this.timeOut_ = -1;
+		this.timeOutJSRepeat_ = -1;
 		this.javaScript_ = new EscapeOStream();
 		this.javaScriptEvenWhenDeleted_ = "";
 		this.var_ = "";
@@ -517,7 +518,17 @@ public class DomElement {
 	public void setTimeout(int msec, boolean jsRepeat) {
 		++this.numManipulations_;
 		this.timeOut_ = msec;
-		this.timeOutJSRepeat_ = jsRepeat;
+		this.timeOutJSRepeat_ = jsRepeat ? msec : -1;
+	}
+
+	/**
+	 * Configures the DOM element as a source for timed events, with given
+	 * initial delay and interval, always repeating.
+	 */
+	public void setTimeout(int delay, int interval) {
+		++this.numManipulations_;
+		this.timeOut_ = delay;
+		this.timeOutJSRepeat_ = interval;
 	}
 
 	/**
@@ -656,13 +667,13 @@ public class DomElement {
 
 		public int msec;
 		public String event;
-		public boolean repeat;
+		public int repeat;
 
 		public TimeoutEvent() {
 			this.event = "";
 		}
 
-		public TimeoutEvent(int m, final String e, boolean r) {
+		public TimeoutEvent(int m, final String e, int r) {
 			this.msec = m;
 			this.event = e;
 			this.repeat = r;
@@ -1905,7 +1916,7 @@ public class DomElement {
 	private String id_;
 	private int numManipulations_;
 	private int timeOut_;
-	private boolean timeOutJSRepeat_;
+	private int timeOutJSRepeat_;
 	private EscapeOStream javaScript_;
 	private String javaScriptEvenWhenDeleted_;
 	private String var_;
