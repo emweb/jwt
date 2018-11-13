@@ -82,11 +82,7 @@ public class WFileDropWidget extends WContainerWidget {
 		 * @see WFileDropWidget.File#isUploadFinished()
 		 */
 		public UploadedFile getUploadedFile() {
-			if (!this.uploadFinished_) {
-				throw new RuntimeException();
-			} else {
-				return this.uploadedFile_;
-			}
+			return this.uploadedFile_;
 		}
 
 		/**
@@ -252,6 +248,7 @@ public class WFileDropWidget extends WContainerWidget {
 		this.uploadFailed_ = new Signal1<WFileDropWidget.File>();
 		this.uploads_ = new ArrayList<WFileDropWidget.File>();
 		this.updateFlags_ = new BitSet();
+		this.updatesEnabled_ = false;
 		WApplication app = WApplication.getInstance();
 		if (!app.getEnvironment().hasAjax()) {
 			return;
@@ -763,6 +760,7 @@ public class WFileDropWidget extends WContainerWidget {
 			this.doJavaScript(this.getJsRef() + ".cancelUpload("
 					+ String.valueOf(id) + ");");
 		} else {
+			this.updatesEnabled_ = true;
 			WApplication.getInstance().enableUpdates(true);
 		}
 	}
@@ -785,7 +783,10 @@ public class WFileDropWidget extends WContainerWidget {
 				}
 			}
 			this.currentFileIdx_ = this.uploads_.size();
-			WApplication.getInstance().enableUpdates(false);
+			if (this.updatesEnabled_) {
+				WApplication.getInstance().enableUpdates(false);
+				this.updatesEnabled_ = false;
+			}
 		}
 	}
 
@@ -845,7 +846,10 @@ public class WFileDropWidget extends WContainerWidget {
 		}
 		this.currentFileIdx_++;
 		if (this.currentFileIdx_ == this.uploads_.size()) {
-			WApplication.getInstance().enableUpdates(false);
+			if (this.updatesEnabled_) {
+				WApplication.getInstance().enableUpdates(false);
+				this.updatesEnabled_ = false;
+			}
 		}
 	}
 
@@ -891,6 +895,7 @@ public class WFileDropWidget extends WContainerWidget {
 	private static final int BIT_DRAGOPTIONS_CHANGED = 3;
 	private static final int BIT_JSFILTER_CHANGED = 4;
 	private BitSet updateFlags_;
+	private boolean updatesEnabled_;
 
 	static WJavaScriptPreamble wtjs1() {
 		return new WJavaScriptPreamble(
