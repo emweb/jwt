@@ -25,6 +25,20 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.3.12 (2018)</h2>
+<p>JWt 3.3.12 is almost entirely a bugfix release. There's one significant change:</p>
+
+<h3>UpdatePasswordWidget</h3>
+<p>The <a href="eu/webtoolkit/jwt/auth/UpdatePasswordWidget.html">UpdatePasswordWidget</a>,
+part of the authentication subsystem of Wt, would remove itself when done.
+This was harmless when it was inside of a
+<a href="eu/webtoolkit/jwt/WDialog.html">WDialog</a>,
+but it's less practical when used elsewhere. We've changed the behavior of
+<tt>UpdatePasswordWidget</tt> to emit the
+<a href="eu/webtoolkit/jwt/auth/UpdatePasswordWidget.html#updated--">updated()</a> and
+<a href="eu/webtoolkit/jwt/auth/UpdatePasswordWidget.html#canceled--">canceled()</a>
+signals instead.</p>
+
 <h2>Release 3.3.11 (August 22, 2018)</h2>
 <p>This release brings with it the usual bugfixes, but also some new features:</p>
 
