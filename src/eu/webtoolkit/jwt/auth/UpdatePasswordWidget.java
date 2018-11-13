@@ -49,6 +49,8 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		this.user_ = user;
 		this.registrationModel_ = registrationModel;
 		this.authModel_ = authModel;
+		this.updated_ = new Signal();
+		this.canceled_ = new Signal();
 		this.registrationModel_.setValue(RegistrationModel.LoginNameField,
 				user.getIdentity(Identity.LoginName));
 		this.registrationModel_.setReadOnly(RegistrationModel.LoginNameField,
@@ -98,7 +100,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 		cancelButton.clicked().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
-						UpdatePasswordWidget.this.close();
+						UpdatePasswordWidget.this.cancel();
 					}
 				});
 		this.bindWidget("ok-button", okButton);
@@ -115,6 +117,20 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	public UpdatePasswordWidget(final User user,
 			RegistrationModel registrationModel, AuthModel authModel) {
 		this(user, registrationModel, authModel, (WContainerWidget) null);
+	}
+
+	/**
+	 * {@link Signal} emitted when the password was updated.
+	 */
+	public Signal updated() {
+		return this.updated_;
+	}
+
+	/**
+	 * {@link Signal} emitted when cancel clicked.
+	 */
+	public Signal canceled() {
+		return this.canceled_;
 	}
 
 	protected WWidget createFormWidget(String field) {
@@ -161,6 +177,8 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	private User user_;
 	private RegistrationModel registrationModel_;
 	private AuthModel authModel_;
+	private Signal updated_;
+	private Signal canceled_;
 
 	private void checkPassword() {
 		this.updateModelField(this.registrationModel_,
@@ -206,12 +224,11 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 			this.registrationModel_.getPasswordAuth().updatePassword(
 					this.user_, password);
 			this.registrationModel_.getLogin().login(this.user_);
-			this.close();
+			this.updated_.trigger();
 		}
 	}
 
-	private void close() {
-		if (this != null)
-			this.remove();
+	private void cancel() {
+		this.canceled_.trigger();
 	}
 }

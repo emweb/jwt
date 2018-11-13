@@ -103,9 +103,9 @@ class PaintedSlider extends WPaintedWidget {
 		boolean horizontal = o == Orientation.Horizontal;
 		char[] buf = new char[30];
 		StringBuilder mouseDownJS = new StringBuilder();
-		mouseDownJS.append("obj.setAttribute('down', Wt3_3_11")
+		mouseDownJS.append("obj.setAttribute('down', Wt3_3_12")
 				.append(".widgetCoordinates(obj, event).").append(u)
-				.append(");").append("Wt3_3_11.cancelEvent(event);");
+				.append(");").append("Wt3_3_12.cancelEvent(event);");
 		StringBuilder computeD = new StringBuilder();
 		computeD.append("var objh = ").append(this.handle_.getJsRef())
 				.append(",").append("objf = ").append(this.fill_.getJsRef())
@@ -122,7 +122,7 @@ class PaintedSlider extends WPaintedWidget {
 		computeD.append("var d = pos - down;");
 		StringBuilder mouseMovedJS = new StringBuilder();
 		mouseMovedJS.append("var down = obj.getAttribute('down');")
-				.append("var WT = Wt3_3_11;")
+				.append("var WT = Wt3_3_12;")
 				.append("if (down != null && down != '') {")
 				.append(computeD.toString());
 		mouseMovedJS.append("d = Math.max(0, Math.min(d, ")
@@ -157,7 +157,7 @@ class PaintedSlider extends WPaintedWidget {
 		mouseMovedJS.append("}").append("}");
 		StringBuilder mouseUpJS = new StringBuilder();
 		mouseUpJS.append("var down = obj.getAttribute('down');")
-				.append("var WT = Wt3_3_11;")
+				.append("var WT = Wt3_3_12;")
 				.append("if (down != null && down != '') {")
 				.append(computeD.toString()).append("d += ")
 				.append(this.slider_.getHandleWidth() / 2).append(";")
@@ -171,7 +171,7 @@ class PaintedSlider extends WPaintedWidget {
 		this.mouseUpJS_.setJavaScript("function(obj, event) {"
 				+ (enabled ? mouseUpJS.toString() : "") + "}");
 		this.handleClickedJS_.setJavaScript("function(obj, event) {"
-				+ "Wt3_3_11" + ".cancelEvent(event," + "Wt3_3_11"
+				+ "Wt3_3_12" + ".cancelEvent(event," + "Wt3_3_12"
 				+ ".CancelPropagate); }");
 		this.update();
 		this.updateSliderPosition();

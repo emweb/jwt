@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * This WValidator only checks that mandatory fields are not empty. This class
  * is reimplemented in {@link WDateValidator}, {@link WIntValidator},
  * {@link WDoubleValidator}, {@link WLengthValidator} and
- * {@link WRegExpValidator}. All these validators provibe both client-side and
+ * {@link WRegExpValidator}. All these validators provide both client-side and
  * server-side validation.
  * <p>
  * If these validators are not suitable, you can inherit from this class, and

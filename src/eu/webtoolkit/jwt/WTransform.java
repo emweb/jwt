@@ -300,7 +300,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = p;
 			}
 			result.assignBinding(o,
-					"Wt3_3_11.gfxUtils.transform_mult(" + this.getJsRef() + ','
+					"Wt3_3_12.gfxUtils.transform_mult(" + this.getJsRef() + ','
 							+ p.getJsRef() + ')');
 		}
 		return result;
@@ -358,7 +358,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = rect;
 			}
 			result.assignBinding(o,
-					"Wt3_3_11.gfxUtils.transform_mult(" + this.getJsRef() + ','
+					"Wt3_3_12.gfxUtils.transform_mult(" + this.getJsRef() + ','
 							+ rect.getJsRef() + ')');
 		}
 		return result;
@@ -387,7 +387,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = path;
 			}
 			result.assignBinding(o,
-					"Wt3_3_11.gfxUtils.transform_apply(" + this.getJsRef()
+					"Wt3_3_12.gfxUtils.transform_apply(" + this.getJsRef()
 							+ ',' + path.getJsRef() + ')');
 		}
 		final List<WPainterPath.Segment> sourceSegments = path.getSegments();
@@ -516,7 +516,7 @@ public class WTransform extends WJavaScriptExposableObject {
 						+ ";return [1,0,0,1,p[0],p[1]];})())");
 			} else {
 				this.assignBinding(o,
-						"Wt3_3_11.gfxUtils.transform_mult((function(){var p="
+						"Wt3_3_12.gfxUtils.transform_mult((function(){var p="
 								+ p.getJsRef()
 								+ ";return [1,0,0,1,p[0],p[1]];})(),("
 								+ refBefore + "))");
@@ -542,7 +542,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = Y;
 			}
 			this.assignBinding(o,
-					"Wt3_3_11.gfxUtils.transform_mult(" + this.getJsRef() + ','
+					"Wt3_3_12.gfxUtils.transform_mult(" + this.getJsRef() + ','
 							+ Y.getJsRef() + ')');
 		}
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
@@ -596,7 +596,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				this.getM32() * this.getM21() - this.getM31() * this.getM22(),
 				-(this.getM32() * this.getM11() - this.getM31() * this.getM12()));
 		if (this.isJavaScriptBound()) {
-			res.assignBinding(this, "Wt3_3_11.gfxUtils.transform_adjoint("
+			res.assignBinding(this, "Wt3_3_12.gfxUtils.transform_adjoint("
 					+ this.getJsRef() + ")");
 		}
 		return res;
@@ -617,7 +617,7 @@ public class WTransform extends WJavaScriptExposableObject {
 					/ det, adj.getM21() / det, adj.getM22() / det, adj.getM31()
 					/ det, adj.getM32() / det);
 			if (this.isJavaScriptBound()) {
-				res.assignBinding(this, "Wt3_3_11.gfxUtils.transform_inverted("
+				res.assignBinding(this, "Wt3_3_12.gfxUtils.transform_inverted("
 						+ this.getJsRef() + ")");
 			}
 			return res;

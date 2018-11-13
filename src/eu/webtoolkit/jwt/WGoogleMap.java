@@ -871,8 +871,8 @@ public class WGoogleMap extends WCompositeWidget {
 					.append(";}, 0)};")
 					.append("google.load(\"maps\", \"")
 					.append(this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2'
-							: '3')
-					.append("\", {other_params:\"sensor=false\", callback: ")
+							: '3').append("\", {other_params:\"key=")
+					.append(googlekey).append("\", callback: ")
 					.append(initFunction).append("});").append("}");
 			this.additions_.clear();
 			app.doJavaScript(strm.toString(), true);

@@ -272,7 +272,7 @@ public class WTreeTable extends WCompositeWidget {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
-		this.setJavaScriptMember(" WTreeTable", "new Wt3_3_11.WTreeTable("
+		this.setJavaScriptMember(" WTreeTable", "new Wt3_3_12.WTreeTable("
 				+ app.getJavaScriptClass() + "," + this.getJsRef() + ");");
 	}
 
