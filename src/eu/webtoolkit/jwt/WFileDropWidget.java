@@ -82,7 +82,12 @@ public class WFileDropWidget extends WContainerWidget {
 		 * @see WFileDropWidget.File#isUploadFinished()
 		 */
 		public UploadedFile getUploadedFile() {
-			return this.uploadedFile_;
+			if (!this.uploadFinished_) {
+				throw new WException(
+						"Can not access uploaded files before upload is done.");
+			} else {
+				return this.uploadedFile_;
+			}
 		}
 
 		/**
