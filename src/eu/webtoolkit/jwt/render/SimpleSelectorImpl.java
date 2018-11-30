@@ -26,6 +26,7 @@ class SimpleSelectorImpl implements SimpleSelector {
 	public SimpleSelectorImpl() {
 		super();
 		this.elementName_ = "";
+		this.elementType_ = DomElementType.DomElement_UNKNOWN;
 		this.classes_ = new ArrayList<String>();
 		this.hashid_ = "";
 	}

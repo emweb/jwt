@@ -51,6 +51,7 @@ public class WStackedWidget extends WContainerWidget {
 	public WStackedWidget(WContainerWidget parent) {
 		super(parent);
 		this.animation_ = new WAnimation();
+		this.autoReverseAnimation_ = false;
 		this.currentIndex_ = -1;
 		this.widgetsAdded_ = false;
 		this.javaScriptDefined_ = false;

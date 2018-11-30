@@ -62,7 +62,7 @@ class MarkerMatchIterator extends SeriesIterator {
 			}
 			double scaledRx = scaleFactor * this.rX_;
 			double scaledRy = scaleFactor * this.rYs_.get(series.getYAxis());
-			WPointF p = this.chart_.map(x, y, series.getAxis(),
+			WPointF p = this.chart_.map(x, y, series.getYAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
 			double dx = p.getX() - this.matchX_;
 			double dy = p.getY() - this.matchYs_.get(series.getYAxis());

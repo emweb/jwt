@@ -50,7 +50,9 @@ class MarkerRenderIterator extends SeriesIterator {
 	}
 
 	public void endSeries() {
-		this.finishPathFragment(this.series_);
+		if (this.series_ != null) {
+			this.finishPathFragment(this.series_);
+		}
 		this.series_ = null;
 		if (this.needRestore_) {
 			this.painter_.restore();
@@ -60,7 +62,7 @@ class MarkerRenderIterator extends SeriesIterator {
 	public void newValue(final WDataSeries series, double x, double y,
 			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
-			WPointF p = this.chart_.map(x, y, series.getAxis(),
+			WPointF p = this.chart_.map(x, y, series.getYAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
 			if (!this.marker_.isEmpty()) {
 				WPen pen = series.getMarkerPen().clone();
