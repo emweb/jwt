@@ -2406,6 +2406,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 */
 	protected void handleTouchSelect(final List<WModelIndex> indices,
 			final WTouchEvent event) {
+		if (indices.isEmpty()) {
+			return;
+		}
 		final WModelIndex index = indices.get(0);
 		this.touchRegistered_ = true;
 		this.delayedClearAndSelectIndex_ = null;
