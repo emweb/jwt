@@ -22,6 +22,20 @@ import org.slf4j.LoggerFactory;
 class ColorUtils {
 	private static Logger logger = LoggerFactory.getLogger(ColorUtils.class);
 
+	static boolean ishex(char c) {
+		return c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A'
+				&& c <= 'F';
+	}
+
+	static boolean tailIsHex(final String str) {
+		for (int i = 1; i < str.length(); ++i) {
+			if (!ishex(str.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	static int parseRgbArgument(final String argument) {
 		String arg = argument.trim();
 		try {
@@ -51,21 +65,35 @@ class ColorUtils {
 		int blue = 0;
 		int alpha = 255;
 		if (n.startsWith("#")) {
-			if (n.length() - 1 == 3) {
+			if (n.length() - 1 == 3 && tailIsHex(n)) {
 				red = replicateHex(n.substring(1, 1 + 1));
 				green = replicateHex(n.substring(2, 2 + 1));
 				blue = replicateHex(n.substring(3, 3 + 1));
 			} else {
-				if (n.length() - 1 == 6) {
-					red = Utils.hexToInt(n.substring(1, 1 + 2));
-					green = Utils.hexToInt(n.substring(3, 3 + 2));
-					blue = Utils.hexToInt(n.substring(5, 5 + 2));
+				if (n.length() - 1 == 4 && tailIsHex(n)) {
+					red = replicateHex(n.substring(1, 1 + 1));
+					green = replicateHex(n.substring(2, 2 + 1));
+					blue = replicateHex(n.substring(3, 3 + 1));
+					alpha = replicateHex(n.substring(4, 4 + 1));
 				} else {
-					logger.error(new StringWriter()
-							.append("could not parse rgb format: ").append(n)
-							.toString());
-					red = green = blue = -1;
-					return new WColor(red, green, blue, alpha);
+					if (n.length() - 1 == 6 && tailIsHex(n)) {
+						red = Utils.hexToInt(n.substring(1, 1 + 2));
+						green = Utils.hexToInt(n.substring(3, 3 + 2));
+						blue = Utils.hexToInt(n.substring(5, 5 + 2));
+					} else {
+						if (n.length() - 1 == 8 && tailIsHex(n)) {
+							red = Utils.hexToInt(n.substring(1, 1 + 2));
+							green = Utils.hexToInt(n.substring(3, 3 + 2));
+							blue = Utils.hexToInt(n.substring(5, 5 + 2));
+							alpha = Utils.hexToInt(n.substring(7, 7 + 2));
+						} else {
+							logger.error(new StringWriter()
+									.append("could not parse rgb format: ")
+									.append(n).toString());
+							red = green = blue = -1;
+							return new WColor(red, green, blue, alpha);
+						}
+					}
 				}
 			}
 		} else {
@@ -108,7 +136,13 @@ class ColorUtils {
 				blue = parseRgbArgument(arguments.get(2));
 				if (has_alpha) {
 					try {
-						alpha = Integer.parseInt(arguments.get(3).trim());
+						double alpha_d = Double.parseDouble(arguments.get(3)
+								.trim());
+						if (alpha_d < 0.0 || alpha_d > 1.0) {
+							throw new WException(
+									"parseCssColor: alpha value out of range 0.0 to 1.0");
+						}
+						alpha = (int) Math.floor(alpha_d * 255. + 0.5);
 					} catch (final NumberFormatException e) {
 						logger.error(new StringWriter()
 								.append("could not parse rgb format: ")
