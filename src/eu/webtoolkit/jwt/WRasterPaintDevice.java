@@ -16,6 +16,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
@@ -51,6 +52,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	private Graphics2D g2;
 	private Paint penPaint, brushPaint;
 
+	private volatile ByteArrayOutputStream output;
+
 	public WRasterPaintDevice(String format, WLength width, WLength height) {
 		this.width = width;
 		this.height = height;
@@ -66,12 +69,23 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType("image/png");
-		if (image != null)
-			ImageIO.write(image, "png", response.getOutputStream());
+		ByteArrayOutputStream out = output;
+		if (out != null)
+			out.writeTo(response.getOutputStream());
 	}
 
-	
+	@Override
 	public void done() {
+		if (image == null)
+			return;
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+		  ImageIO.write(image, "png", out);
+		  output = out;
+		} catch (IOException e) {
+			logger.error("Unexpected IOException when writing png to byte buffer", e);
+		}
 	}
 
 	

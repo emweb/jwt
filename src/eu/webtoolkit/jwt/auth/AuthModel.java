@@ -116,7 +116,7 @@ public class AuthModel extends FormBaseModel {
 		if (field == RememberMeField) {
 			return this.getBaseAuth().isAuthTokensEnabled();
 		} else {
-			return true;
+			return super.isVisible(field);
 		}
 	}
 

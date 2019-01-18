@@ -88,7 +88,7 @@ public class WMemoryResource extends WResource {
 	}
 
 	private String mimeType_;
-	private byte[] data_;
+	private volatile byte[] data_;
 
 	/**
 	 * Returns the data.
@@ -102,7 +102,8 @@ public class WMemoryResource extends WResource {
 	@Override
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType(mimeType_);
-		if (data_ != null)
-			response.getOutputStream().write(data_);
+		byte[] data = data_;
+		if (data != null)
+			response.getOutputStream().write(data);
 	}
 }
