@@ -3094,7 +3094,7 @@ public class WAxis {
 		return this.mapToDevice(this.getValue(value), segment);
 	}
 
-	private double mapToDevice(double value) {
+	double mapToDevice(double value) {
 		if (Double.isNaN(value)) {
 			return value;
 		}
