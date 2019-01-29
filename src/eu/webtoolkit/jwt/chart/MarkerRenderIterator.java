@@ -32,6 +32,7 @@ class MarkerRenderIterator extends SeriesIterator {
 		this.pathFragment_ = new WPainterPath();
 		this.currentPen_ = new WPen();
 		this.currentBrush_ = new WBrush();
+		this.currentMarkerType_ = MarkerType.NoMarker;
 		this.currentScale_ = 0;
 		this.series_ = null;
 	}
@@ -64,7 +65,16 @@ class MarkerRenderIterator extends SeriesIterator {
 		if (!Double.isNaN(x) && !Double.isNaN(y)) {
 			WPointF p = this.chart_.map(x, y, series.getYAxis(),
 					this.getCurrentXSegment(), this.getCurrentYSegment());
-			if (!this.marker_.isEmpty()) {
+			MarkerType pointMarker = series.getModel()
+					.markerType(yRow, yColumn);
+			if (!(pointMarker != null)) {
+				pointMarker = series.getModel().markerType(xRow, xColumn);
+			}
+			MarkerType markerType = series.getMarker();
+			if (pointMarker != null) {
+				markerType = pointMarker;
+			}
+			if (markerType != MarkerType.NoMarker) {
 				WPen pen = series.getMarkerPen().clone();
 				SeriesIterator.setPenColor(pen, series, xRow, xColumn, yRow,
 						yColumn, ItemDataRole.MarkerPenColorRole);
@@ -87,7 +97,8 @@ class MarkerRenderIterator extends SeriesIterator {
 				if (!(this.series_ != null)
 						|| !brush.equals(this.currentBrush_)
 						|| !pen.equals(this.currentPen_)
-						|| scale != this.currentScale_) {
+						|| scale != this.currentScale_
+						|| markerType != this.currentMarkerType_) {
 					if (this.series_ != null) {
 						this.finishPathFragment(this.series_);
 					}
@@ -95,6 +106,20 @@ class MarkerRenderIterator extends SeriesIterator {
 					this.currentBrush_ = brush;
 					this.currentPen_ = pen;
 					this.currentScale_ = scale;
+					if (markerType != this.currentMarkerType_) {
+						this.marker_.assign(new WPainterPath());
+						this.currentMarkerType_ = markerType;
+						if (pointMarker != null) {
+							this.chart_.drawMarker(series, markerType,
+									this.marker_);
+						} else {
+							this.chart_.drawMarker(series, this.marker_);
+						}
+						if (!this.needRestore_) {
+							this.painter_.save();
+							this.needRestore_ = true;
+						}
+					}
 				}
 				this.pathFragment_.moveTo(this.hv(p));
 			}
@@ -144,6 +169,7 @@ class MarkerRenderIterator extends SeriesIterator {
 	private WPainterPath pathFragment_;
 	private WPen currentPen_;
 	private WBrush currentBrush_;
+	private MarkerType currentMarkerType_;
 	private double currentScale_;
 	private WDataSeries series_;
 
@@ -177,10 +203,10 @@ class MarkerRenderIterator extends SeriesIterator {
 		this.painter_.setPen(new WPen(PenStyle.NoPen));
 		this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
 		this.painter_.setShadow(series.getShadow());
-		if (series.getMarker() != MarkerType.CrossMarker
-				&& series.getMarker() != MarkerType.XCrossMarker
-				&& series.getMarker() != MarkerType.AsteriskMarker
-				&& series.getMarker() != MarkerType.StarMarker) {
+		if (this.currentMarkerType_ != MarkerType.CrossMarker
+				&& this.currentMarkerType_ != MarkerType.XCrossMarker
+				&& this.currentMarkerType_ != MarkerType.AsteriskMarker
+				&& this.currentMarkerType_ != MarkerType.StarMarker) {
 			this.painter_.setBrush(this.currentBrush_);
 			if (!series.getShadow().isNone()) {
 				this.painter_.drawStencilAlongPath(this.marker_,

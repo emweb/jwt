@@ -154,6 +154,20 @@ public abstract class WAbstractChartModel extends WObject {
 	}
 
 	/**
+	 * Returns the marker type to use for a given row and column.
+	 * <p>
+	 * This is used as the shape of the marker used when drawing a PointSeries.
+	 * The default is null, indicating that the default marker, as determined by
+	 * {@link WDataSeries#getMarker() WDataSeries#getMarker()}, should be used.
+	 * <p>
+	 * 
+	 * @see WDataSeries#setMarker(MarkerType marker)
+	 */
+	public MarkerType markerType(int row, int column) {
+		return null;
+	}
+
+	/**
 	 * Returns the bar pen color to use for a given row and column.
 	 * <p>
 	 * This is used as the color of the outline of bars when drawing a

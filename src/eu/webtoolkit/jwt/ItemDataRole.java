@@ -84,6 +84,10 @@ public class ItemDataRole {
 	 */
 	public final static int MarkerScaleFactorRole = 20;
 	/**
+	 * Marker type (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 */
+	public final static int MarkerTypeRole = 21;
+	/**
 	 * Bar pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
 	 */
 	public final static int BarPenColorRole = 18;

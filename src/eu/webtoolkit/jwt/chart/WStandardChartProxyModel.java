@@ -235,6 +235,28 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	}
 
 	/**
+	 * Returns the marker type to use for a given row and column.
+	 * <p>
+	 * Returns the result of
+	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
+	 * WAbstractItemModel#getData()} for the given row and column with the
+	 * {@link MarkerTypeRole}, or null if no marker type is defined.
+	 * <p>
+	 * 
+	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
+	 */
+	public MarkerType markerType(int row, int column) {
+		Object result = this.sourceModel_.getData(row, column,
+				ItemDataRole.MarkerTypeRole);
+		if ((result == null)) {
+			return null;
+		} else {
+			MarkerType t = ((MarkerType) result);
+			return t;
+		}
+	}
+
+	/**
 	 * Returns the bar pen color to use for a given row and column.
 	 * <p>
 	 * Returns the result of

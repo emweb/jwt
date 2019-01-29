@@ -938,78 +938,7 @@ public class WCartesianChart extends WAbstractChart {
 	 * @see WCartesianChart#setLegendEnabled(boolean enabled)
 	 */
 	public void drawMarker(final WDataSeries series, final WPainterPath result) {
-		final double size = 6.0;
-		final double hsize = size / 2;
-		switch (series.getMarker()) {
-		case CircleMarker:
-			result.addEllipse(-hsize, -hsize, size, size);
-			break;
-		case SquareMarker:
-			result.addRect(new WRectF(-hsize, -hsize, size, size));
-			break;
-		case CrossMarker:
-			result.moveTo(-1.3 * hsize, 0);
-			result.lineTo(1.3 * hsize, 0);
-			result.moveTo(0, -1.3 * hsize);
-			result.lineTo(0, 1.3 * hsize);
-			break;
-		case XCrossMarker:
-			result.moveTo(-hsize, -hsize);
-			result.lineTo(hsize, hsize);
-			result.moveTo(-hsize, hsize);
-			result.lineTo(hsize, -hsize);
-			break;
-		case TriangleMarker:
-			result.moveTo(0, 0.6 * hsize);
-			result.lineTo(-hsize, 0.6 * hsize);
-			result.lineTo(0, -hsize);
-			result.lineTo(hsize, 0.6 * hsize);
-			result.closeSubPath();
-			break;
-		case StarMarker: {
-			double angle = 3.14159265358979323846 / 2.0;
-			for (int i = 0; i < 5; ++i) {
-				double x = Math.cos(angle) * hsize;
-				double y = -Math.sin(angle) * hsize;
-				result.moveTo(0, 0);
-				result.lineTo(x, y);
-				angle += 3.14159265358979323846 * 2.0 / 5.0;
-			}
-		}
-			break;
-		case InvertedTriangleMarker:
-			result.moveTo(0, -0.6 * hsize);
-			result.lineTo(-hsize, -0.6 * hsize);
-			result.lineTo(0, hsize);
-			result.lineTo(hsize, -0.6 * hsize);
-			result.closeSubPath();
-			break;
-		case DiamondMarker: {
-			double s = Math.sqrt(2.0) * hsize;
-			result.moveTo(0, s);
-			result.lineTo(s, 0);
-			result.lineTo(0, -s);
-			result.lineTo(-s, 0);
-			result.closeSubPath();
-		}
-			break;
-		case AsteriskMarker: {
-			double angle = 3.14159265358979323846 / 2.0;
-			for (int i = 0; i < 6; ++i) {
-				double x = Math.cos(angle) * hsize;
-				double y = -Math.sin(angle) * hsize;
-				result.moveTo(0, 0);
-				result.lineTo(x, y);
-				angle += 3.14159265358979323846 / 3.0;
-			}
-		}
-			break;
-		case CustomMarker:
-			result.assign(series.getCustomMarker());
-			break;
-		default:
-			;
-		}
+		this.drawMarker(series, series.getMarker(), result);
 	}
 
 	/**
@@ -5700,6 +5629,82 @@ public class WCartesianChart extends WAbstractChart {
 			this.jsDefined_ = true;
 		} else {
 			this.jsDefined_ = false;
+		}
+	}
+
+	void drawMarker(final WDataSeries series, MarkerType marker,
+			final WPainterPath result) {
+		final double size = 6.0;
+		final double hsize = size / 2;
+		switch (marker) {
+		case CircleMarker:
+			result.addEllipse(-hsize, -hsize, size, size);
+			break;
+		case SquareMarker:
+			result.addRect(new WRectF(-hsize, -hsize, size, size));
+			break;
+		case CrossMarker:
+			result.moveTo(-1.3 * hsize, 0);
+			result.lineTo(1.3 * hsize, 0);
+			result.moveTo(0, -1.3 * hsize);
+			result.lineTo(0, 1.3 * hsize);
+			break;
+		case XCrossMarker:
+			result.moveTo(-hsize, -hsize);
+			result.lineTo(hsize, hsize);
+			result.moveTo(-hsize, hsize);
+			result.lineTo(hsize, -hsize);
+			break;
+		case TriangleMarker:
+			result.moveTo(0, 0.6 * hsize);
+			result.lineTo(-hsize, 0.6 * hsize);
+			result.lineTo(0, -hsize);
+			result.lineTo(hsize, 0.6 * hsize);
+			result.closeSubPath();
+			break;
+		case StarMarker: {
+			double angle = 3.14159265358979323846 / 2.0;
+			for (int i = 0; i < 5; ++i) {
+				double x = Math.cos(angle) * hsize;
+				double y = -Math.sin(angle) * hsize;
+				result.moveTo(0, 0);
+				result.lineTo(x, y);
+				angle += 3.14159265358979323846 * 2.0 / 5.0;
+			}
+		}
+			break;
+		case InvertedTriangleMarker:
+			result.moveTo(0, -0.6 * hsize);
+			result.lineTo(-hsize, -0.6 * hsize);
+			result.lineTo(0, hsize);
+			result.lineTo(hsize, -0.6 * hsize);
+			result.closeSubPath();
+			break;
+		case DiamondMarker: {
+			double s = Math.sqrt(2.0) * hsize;
+			result.moveTo(0, s);
+			result.lineTo(s, 0);
+			result.lineTo(0, -s);
+			result.lineTo(-s, 0);
+			result.closeSubPath();
+		}
+			break;
+		case AsteriskMarker: {
+			double angle = 3.14159265358979323846 / 2.0;
+			for (int i = 0; i < 6; ++i) {
+				double x = Math.cos(angle) * hsize;
+				double y = -Math.sin(angle) * hsize;
+				result.moveTo(0, 0);
+				result.lineTo(x, y);
+				angle += 3.14159265358979323846 / 3.0;
+			}
+		}
+			break;
+		case CustomMarker:
+			result.assign(series.getCustomMarker());
+			break;
+		default:
+			;
 		}
 	}
 
