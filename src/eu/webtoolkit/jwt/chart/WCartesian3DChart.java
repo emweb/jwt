@@ -110,9 +110,9 @@ public class WCartesian3DChart extends WGLWidget {
 				0.0f, 0.0f, 1.0f);
 		this.isViewSet_ = false;
 		this.dataSeriesVector_ = new ArrayList<WAbstractDataSeries3D>();
-		this.XAxis_ = new WAxis();
-		this.YAxis_ = new WAxis();
-		this.ZAxis_ = new WAxis();
+		this.xAxis_ = new WAxis();
+		this.yAxis_ = new WAxis();
+		this.zAxis_ = new WAxis();
 		this.chartType_ = ChartType.ScatterPlot;
 		this.cubeLinesPen_ = new WPen();
 		this.gridLinesPen_ = new WPen();
@@ -265,14 +265,9 @@ public class WCartesian3DChart extends WGLWidget {
 		this.XZGridEnabled_[1] = false;
 		this.YZGridEnabled_[0] = false;
 		this.YZGridEnabled_[1] = false;
-		WPen pen = new WPen();
-		pen.setWidth(new WLength(1.0));
-		this.XAxis_.init(this.interface_, Axis.XAxis_3D);
-		this.XAxis_.setPen(pen);
-		this.YAxis_.init(this.interface_, Axis.YAxis_3D);
-		this.YAxis_.setPen(pen);
-		this.ZAxis_.init(this.interface_, Axis.ZAxis_3D);
-		this.ZAxis_.setPen(pen);
+		this.xAxis_.init(this.interface_, Axis.XAxis_3D);
+		this.yAxis_.init(this.interface_, Axis.YAxis_3D);
+		this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15,
 				WLength.Unit.Point));
@@ -303,9 +298,9 @@ public class WCartesian3DChart extends WGLWidget {
 				0.0f, 0.0f, 1.0f);
 		this.isViewSet_ = false;
 		this.dataSeriesVector_ = new ArrayList<WAbstractDataSeries3D>();
-		this.XAxis_ = new WAxis();
-		this.YAxis_ = new WAxis();
-		this.ZAxis_ = new WAxis();
+		this.xAxis_ = new WAxis();
+		this.yAxis_ = new WAxis();
+		this.zAxis_ = new WAxis();
 		this.chartType_ = type;
 		this.cubeLinesPen_ = new WPen();
 		this.gridLinesPen_ = new WPen();
@@ -458,9 +453,9 @@ public class WCartesian3DChart extends WGLWidget {
 		this.XZGridEnabled_[1] = false;
 		this.YZGridEnabled_[0] = false;
 		this.YZGridEnabled_[1] = false;
-		this.XAxis_.init(this.interface_, Axis.XAxis_3D);
-		this.YAxis_.init(this.interface_, Axis.YAxis_3D);
-		this.ZAxis_.init(this.interface_, Axis.ZAxis_3D);
+		this.xAxis_.init(this.interface_, Axis.XAxis_3D);
+		this.yAxis_.init(this.interface_, Axis.YAxis_3D);
+		this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
 		this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
 		this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15,
 				WLength.Unit.Point));
@@ -484,6 +479,9 @@ public class WCartesian3DChart extends WGLWidget {
 		for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
 			;
 		}
+		;
+		;
+		;
 		;
 		;
 		super.remove();
@@ -556,13 +554,42 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public WAxis axis(Axis axis) {
 		if (axis == Axis.XAxis_3D) {
-			return this.XAxis_;
+			return this.xAxis_;
 		} else {
 			if (axis == Axis.YAxis_3D) {
-				return this.YAxis_;
+				return this.yAxis_;
 			} else {
 				if (axis == Axis.ZAxis_3D) {
-					return this.ZAxis_;
+					return this.zAxis_;
+				} else {
+					throw new WException(
+							"WCartesian3DChart: don't know this type of axis");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Sets an axis.
+	 * <p>
+	 * 
+	 * @see WCartesian3DChart#axis(Axis axis)
+	 */
+	public void setAxis(WAxis waxis, Axis axis) {
+		if (axis == Axis.XAxis_3D) {
+			;
+			this.xAxis_ = waxis;
+			this.xAxis_.init(this.interface_, Axis.XAxis_3D);
+		} else {
+			if (axis == Axis.YAxis_3D) {
+				;
+				this.yAxis_ = waxis;
+				this.yAxis_.init(this.interface_, Axis.YAxis_3D);
+			} else {
+				if (axis == Axis.ZAxis_3D) {
+					;
+					this.zAxis_ = waxis;
+					this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
 				} else {
 					throw new WException(
 							"WCartesian3DChart: don't know this type of axis");
@@ -749,9 +776,9 @@ public class WCartesian3DChart extends WGLWidget {
 	 */
 	public void setType(ChartType type) {
 		this.chartType_ = type;
-		this.XAxis_.init(this.interface_, Axis.XAxis_3D);
-		this.YAxis_.init(this.interface_, Axis.YAxis_3D);
-		this.ZAxis_.init(this.interface_, Axis.ZAxis_3D);
+		this.xAxis_.init(this.interface_, Axis.XAxis_3D);
+		this.yAxis_.init(this.interface_, Axis.YAxis_3D);
+		this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
 	}
 
 	/**
@@ -1040,11 +1067,11 @@ public class WCartesian3DChart extends WGLWidget {
 		int axisOffset = (int) (this.axisRenderWidth_ / this.textureScaling_
 				/ 1.6 * 0.3);
 		int axisWidth = this.axisRenderWidth_ / this.textureScaling_;
-		this.XAxis_.prepareRender(Orientation.Horizontal, axisWidth - 2
+		this.xAxis_.prepareRender(Orientation.Horizontal, axisWidth - 2
 				* axisOffset);
-		this.YAxis_.prepareRender(Orientation.Horizontal, axisWidth - 2
+		this.yAxis_.prepareRender(Orientation.Horizontal, axisWidth - 2
 				* axisOffset);
-		this.ZAxis_.prepareRender(Orientation.Vertical, axisWidth - 2
+		this.zAxis_.prepareRender(Orientation.Vertical, axisWidth - 2
 				* axisOffset);
 	}
 
@@ -1118,16 +1145,16 @@ public class WCartesian3DChart extends WGLWidget {
 		double min = 0.0;
 		double max = 1.0;
 		if (axis == Axis.XAxis_3D) {
-			min = this.XAxis_.getMinimum();
-			max = this.XAxis_.getMaximum();
+			min = this.xAxis_.getMinimum();
+			max = this.xAxis_.getMaximum();
 		} else {
 			if (axis == Axis.YAxis_3D) {
-				min = this.YAxis_.getMinimum();
-				max = this.YAxis_.getMaximum();
+				min = this.yAxis_.getMinimum();
+				max = this.yAxis_.getMaximum();
 			} else {
 				if (axis == Axis.ZAxis_3D) {
-					min = this.ZAxis_.getMinimum();
-					max = this.ZAxis_.getMaximum();
+					min = this.zAxis_.getMinimum();
+					max = this.zAxis_.getMaximum();
 				} else {
 					throw new WException(
 							"WCartesian3DChart: don't know this type of axis");
@@ -2329,12 +2356,12 @@ public class WCartesian3DChart extends WGLWidget {
 			this.disable(WGLWidget.GLenum.CULL_FACE);
 			this.enable(WGLWidget.GLenum.DEPTH_TEST);
 			this.useProgram(this.clippingPlaneProgram_);
-			double minX = this.XAxis_.getMinimum();
-			double maxX = this.XAxis_.getMaximum();
-			double minY = this.YAxis_.getMinimum();
-			double maxY = this.YAxis_.getMaximum();
-			double minZ = this.ZAxis_.getMinimum();
-			double maxZ = this.ZAxis_.getMaximum();
+			double minX = this.xAxis_.getMinimum();
+			double maxX = this.xAxis_.getMaximum();
+			double minY = this.yAxis_.getMinimum();
+			double maxY = this.yAxis_.getMaximum();
+			double minZ = this.zAxis_.getMinimum();
+			double maxZ = this.zAxis_.getMaximum();
 			WCartesian3DChart.IntersectionPlane plane = this.intersectionPlanes_
 					.get(i);
 			if (plane.axis == Axis.XAxis_3D) {
@@ -2465,12 +2492,12 @@ public class WCartesian3DChart extends WGLWidget {
 					WGLWidget.GLenum.DEPTH_BUFFER_BIT));
 			this.disable(WGLWidget.GLenum.CULL_FACE);
 			this.enable(WGLWidget.GLenum.DEPTH_TEST);
-			double minX = this.XAxis_.getMinimum();
-			double maxX = this.XAxis_.getMaximum();
-			double minY = this.YAxis_.getMinimum();
-			double maxY = this.YAxis_.getMaximum();
-			double minZ = this.ZAxis_.getMinimum();
-			double maxZ = this.ZAxis_.getMaximum();
+			double minX = this.xAxis_.getMinimum();
+			double maxX = this.xAxis_.getMaximum();
+			double minY = this.yAxis_.getMinimum();
+			double maxY = this.yAxis_.getMaximum();
+			double minZ = this.zAxis_.getMinimum();
+			double maxZ = this.zAxis_.getMaximum();
 			this.useProgram(this.clippingPlaneProgram_);
 			int clippingAxis = i / 2;
 			this.uniform1i(this.clippingPlane_clippingAxis_, clippingAxis);
@@ -2604,12 +2631,12 @@ public class WCartesian3DChart extends WGLWidget {
 		double oldLabelAngleX = 0.0;
 		double oldLabelAngleY = 0.0;
 		if (labelAngleMirrored) {
-			this.XAxis_.setRenderMirror(true);
-			this.YAxis_.setRenderMirror(true);
-			oldLabelAngleX = this.XAxis_.getLabelAngle();
-			this.XAxis_.setLabelAngle(-oldLabelAngleX);
-			oldLabelAngleY = this.YAxis_.getLabelAngle();
-			this.YAxis_.setLabelAngle(-oldLabelAngleY);
+			this.xAxis_.setRenderMirror(true);
+			this.yAxis_.setRenderMirror(true);
+			oldLabelAngleX = this.xAxis_.getLabelAngle();
+			this.xAxis_.setLabelAngle(-oldLabelAngleX);
+			oldLabelAngleY = this.yAxis_.getLabelAngle();
+			this.yAxis_.setLabelAngle(-oldLabelAngleY);
 		}
 		WPainter painter = new WPainter(paintDevice);
 		painter.begin(paintDevice);
@@ -2637,31 +2664,31 @@ public class WCartesian3DChart extends WGLWidget {
 		labelPos = tickEnd;
 		labelHFlag = AlignmentFlag.AlignCenter;
 		labelVFlag = AlignmentFlag.AlignTop;
-		if (this.XAxis_.getLabelAngle() > ANGLE1) {
+		if (this.xAxis_.getLabelAngle() > ANGLE1) {
 			labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
 					: AlignmentFlag.AlignLeft;
-			if (this.XAxis_.getLabelAngle() > ANGLE2) {
+			if (this.xAxis_.getLabelAngle() > ANGLE2) {
 				labelVFlag = AlignmentFlag.AlignMiddle;
 			}
 		} else {
-			if (this.XAxis_.getLabelAngle() < -ANGLE1) {
+			if (this.xAxis_.getLabelAngle() < -ANGLE1) {
 				labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
 						: AlignmentFlag.AlignRight;
-				if (this.XAxis_.getLabelAngle() < -ANGLE2) {
+				if (this.xAxis_.getLabelAngle() < -ANGLE2) {
 					labelVFlag = AlignmentFlag.AlignMiddle;
 				}
 			}
 		}
-		this.XAxis_.render(painter,
+		this.xAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
-		double addOffset = this.XAxis_.getTitleOffset();
+		double addOffset = this.xAxis_.getTitleOffset();
 		WFont oldFont = painter.getFont();
-		painter.setFont(this.XAxis_.getTitleFont());
+		painter.setFont(this.xAxis_.getTitleFont());
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
-				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.XAxis_
+				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.xAxis_
 				.getTitle());
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
@@ -2672,13 +2699,13 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = 0.0;
 		tickEnd = TICKLENGTH;
 		labelPos = tickEnd;
-		this.XAxis_.render(painter,
+		this.xAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
-				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.XAxis_
+				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.xAxis_
 				.getTitle());
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
@@ -2691,28 +2718,28 @@ public class WCartesian3DChart extends WGLWidget {
 		labelPos = tickEnd - 4;
 		labelHFlag = AlignmentFlag.AlignCenter;
 		labelVFlag = AlignmentFlag.AlignBottom;
-		if (this.XAxis_.getLabelAngle() > ANGLE1) {
+		if (this.xAxis_.getLabelAngle() > ANGLE1) {
 			labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
 					: AlignmentFlag.AlignLeft;
-			if (this.XAxis_.getLabelAngle() > ANGLE2) {
+			if (this.xAxis_.getLabelAngle() > ANGLE2) {
 				labelVFlag = AlignmentFlag.AlignMiddle;
 			}
 		} else {
-			if (this.XAxis_.getLabelAngle() < -ANGLE1) {
+			if (this.xAxis_.getLabelAngle() < -ANGLE1) {
 				labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
 						: AlignmentFlag.AlignRight;
-				if (this.XAxis_.getLabelAngle() < -ANGLE2) {
+				if (this.xAxis_.getLabelAngle() < -ANGLE2) {
 					labelVFlag = AlignmentFlag.AlignMiddle;
 				}
 			}
 		}
-		this.XAxis_.render(painter,
+		this.xAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
-				AlignmentFlag.AlignBottom), this.XAxis_.getTitle());
+				AlignmentFlag.AlignBottom), this.xAxis_.getTitle());
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
 		painter.setClipPath(clippy);
@@ -2722,13 +2749,13 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = -TICKLENGTH;
 		tickEnd = 0.0;
 		labelPos = tickEnd - 4;
-		this.XAxis_.render(painter,
+		this.xAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
-				AlignmentFlag.AlignBottom), this.XAxis_.getTitle());
+				AlignmentFlag.AlignBottom), this.xAxis_.getTitle());
 		painter.setFont(oldFont);
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
@@ -2741,30 +2768,30 @@ public class WCartesian3DChart extends WGLWidget {
 		labelPos = tickEnd;
 		labelHFlag = AlignmentFlag.AlignCenter;
 		labelVFlag = AlignmentFlag.AlignTop;
-		if (this.YAxis_.getLabelAngle() > ANGLE1) {
+		if (this.yAxis_.getLabelAngle() > ANGLE1) {
 			labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
 					: AlignmentFlag.AlignLeft;
-			if (this.YAxis_.getLabelAngle() > ANGLE2) {
+			if (this.yAxis_.getLabelAngle() > ANGLE2) {
 				labelVFlag = AlignmentFlag.AlignMiddle;
 			}
 		} else {
-			if (this.YAxis_.getLabelAngle() < -ANGLE1) {
+			if (this.yAxis_.getLabelAngle() < -ANGLE1) {
 				labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
 						: AlignmentFlag.AlignRight;
-				if (this.YAxis_.getLabelAngle() < -ANGLE2) {
+				if (this.yAxis_.getLabelAngle() < -ANGLE2) {
 					labelVFlag = AlignmentFlag.AlignMiddle;
 				}
 			}
 		}
-		this.YAxis_.render(painter,
+		this.yAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
-		addOffset = this.YAxis_.getTitleOffset();
-		painter.setFont(this.YAxis_.getTitleFont());
+		addOffset = this.yAxis_.getTitleOffset();
+		painter.setFont(this.yAxis_.getTitleFont());
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
-				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.YAxis_
+				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.yAxis_
 				.getTitle());
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
@@ -2775,13 +2802,13 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = 0.0;
 		tickEnd = TICKLENGTH;
 		labelPos = tickEnd;
-		this.YAxis_.render(painter,
+		this.yAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, TITLEOFFSET + addOffset, axisWidth,
 				axisHeight - TITLEOFFSET - addOffset), EnumSet.of(
-				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.YAxis_
+				AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop), this.yAxis_
 				.getTitle());
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
@@ -2794,28 +2821,28 @@ public class WCartesian3DChart extends WGLWidget {
 		labelPos = tickEnd - 4;
 		labelHFlag = AlignmentFlag.AlignCenter;
 		labelVFlag = AlignmentFlag.AlignBottom;
-		if (this.YAxis_.getLabelAngle() > ANGLE1) {
+		if (this.yAxis_.getLabelAngle() > ANGLE1) {
 			labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight
 					: AlignmentFlag.AlignLeft;
-			if (this.YAxis_.getLabelAngle() > ANGLE2) {
+			if (this.yAxis_.getLabelAngle() > ANGLE2) {
 				labelVFlag = AlignmentFlag.AlignMiddle;
 			}
 		} else {
-			if (this.YAxis_.getLabelAngle() < -ANGLE1) {
+			if (this.yAxis_.getLabelAngle() < -ANGLE1) {
 				labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft
 						: AlignmentFlag.AlignRight;
-				if (this.YAxis_.getLabelAngle() < -ANGLE2) {
+				if (this.yAxis_.getLabelAngle() < -ANGLE2) {
 					labelVFlag = AlignmentFlag.AlignMiddle;
 				}
 			}
 		}
-		this.YAxis_.render(painter,
+		this.yAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
-				AlignmentFlag.AlignBottom), this.YAxis_.getTitle());
+				AlignmentFlag.AlignBottom), this.yAxis_.getTitle());
 		painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
 		painter.translate(0, this.axisRenderHeight_);
 		painter.setClipPath(clippy);
@@ -2825,19 +2852,19 @@ public class WCartesian3DChart extends WGLWidget {
 		tickStart = -TICKLENGTH;
 		tickEnd = 0.0;
 		labelPos = tickEnd - 4;
-		this.YAxis_.render(painter,
+		this.yAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
 		painter.drawText(new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET
 				- addOffset), EnumSet.of(AlignmentFlag.AlignCenter,
-				AlignmentFlag.AlignBottom), this.YAxis_.getTitle());
+				AlignmentFlag.AlignBottom), this.yAxis_.getTitle());
 		painter.setFont(oldFont);
 		if (labelAngleMirrored) {
-			this.XAxis_.setLabelAngle(oldLabelAngleX);
-			this.YAxis_.setLabelAngle(oldLabelAngleY);
-			this.XAxis_.setRenderMirror(false);
-			this.YAxis_.setRenderMirror(false);
+			this.xAxis_.setLabelAngle(oldLabelAngleX);
+			this.yAxis_.setLabelAngle(oldLabelAngleY);
+			this.xAxis_.setRenderMirror(false);
+			this.yAxis_.setRenderMirror(false);
 		}
 		painter.end();
 	}
@@ -2860,33 +2887,33 @@ public class WCartesian3DChart extends WGLWidget {
 		double labelPos = tickEnd - 4;
 		AlignmentFlag labelHFlag = AlignmentFlag.AlignRight;
 		AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
-		if (this.ZAxis_.getLabelAngle() > ANGLE1) {
+		if (this.zAxis_.getLabelAngle() > ANGLE1) {
 			labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom
 					: AlignmentFlag.AlignTop;
-			if (this.ZAxis_.getLabelAngle() > ANGLE2) {
+			if (this.zAxis_.getLabelAngle() > ANGLE2) {
 				labelHFlag = AlignmentFlag.AlignCenter;
 			}
 		} else {
-			if (this.ZAxis_.getLabelAngle() < -ANGLE1) {
+			if (this.zAxis_.getLabelAngle() < -ANGLE1) {
 				labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop
 						: AlignmentFlag.AlignBottom;
-				if (this.ZAxis_.getLabelAngle() < -ANGLE2) {
+				if (this.zAxis_.getLabelAngle() < -ANGLE2) {
 					labelHFlag = AlignmentFlag.AlignCenter;
 				}
 			}
 		}
-		this.ZAxis_.render(painter,
+		this.zAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
-		double addOffset = this.ZAxis_.getTitleOffset();
+		double addOffset = this.zAxis_.getTitleOffset();
 		painter.rotate(-90);
-		WFont oldFont = this.ZAxis_.getTitleFont();
-		painter.setFont(this.ZAxis_.getTitleFont());
+		WFont oldFont = this.zAxis_.getTitleFont();
+		painter.setFont(this.zAxis_.getTitleFont());
 		painter.drawText(new WRectF(-axisWidth, 0, axisWidth, axisHeight
 				- TITLEOFFSET - addOffset), EnumSet.of(
 				AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
-				this.ZAxis_.getTitle());
+				this.zAxis_.getTitle());
 		painter.rotate(90);
 		axisStart = new WPointF(axisHeight, axisWidth - axisOffset);
 		axisEnd = new WPointF(axisHeight, axisOffset);
@@ -2895,22 +2922,22 @@ public class WCartesian3DChart extends WGLWidget {
 		labelPos = tickEnd;
 		labelHFlag = AlignmentFlag.AlignLeft;
 		labelVFlag = AlignmentFlag.AlignMiddle;
-		if (this.ZAxis_.getLabelAngle() > ANGLE1) {
+		if (this.zAxis_.getLabelAngle() > ANGLE1) {
 			labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom
 					: AlignmentFlag.AlignTop;
-			if (this.ZAxis_.getLabelAngle() > ANGLE2) {
+			if (this.zAxis_.getLabelAngle() > ANGLE2) {
 				labelHFlag = AlignmentFlag.AlignCenter;
 			}
 		} else {
-			if (this.ZAxis_.getLabelAngle() < -ANGLE1) {
+			if (this.zAxis_.getLabelAngle() < -ANGLE1) {
 				labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop
 						: AlignmentFlag.AlignBottom;
-				if (this.ZAxis_.getLabelAngle() < -ANGLE2) {
+				if (this.zAxis_.getLabelAngle() < -ANGLE2) {
 					labelHFlag = AlignmentFlag.AlignCenter;
 				}
 			}
 		}
-		this.ZAxis_.render(painter,
+		this.zAxis_.render(painter,
 				EnumSet.of(AxisProperty.Line, AxisProperty.Labels), axisStart,
 				axisEnd, tickStart, tickEnd, labelPos,
 				EnumSet.of(labelHFlag, labelVFlag));
@@ -2918,7 +2945,7 @@ public class WCartesian3DChart extends WGLWidget {
 		painter.drawText(new WRectF(-axisWidth, axisHeight + TITLEOFFSET
 				+ addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
 				EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
-				this.ZAxis_.getTitle());
+				this.zAxis_.getTitle());
 		painter.setFont(oldFont);
 		painter.rotate(90);
 		painter.end();
@@ -2938,7 +2965,7 @@ public class WCartesian3DChart extends WGLWidget {
 		switch (plane) {
 		case XY_Plane:
 			if (this.XYGridEnabled_[0]) {
-				List<Double> pos = this.XAxis_
+				List<Double> pos = this.xAxis_
 						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
@@ -2950,7 +2977,7 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 			if (this.XYGridEnabled_[1]) {
-				List<Double> pos = this.YAxis_
+				List<Double> pos = this.yAxis_
 						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
@@ -2964,7 +2991,7 @@ public class WCartesian3DChart extends WGLWidget {
 			break;
 		case XZ_Plane:
 			if (this.XZGridEnabled_[0]) {
-				List<Double> pos = this.XAxis_
+				List<Double> pos = this.xAxis_
 						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
@@ -2976,7 +3003,7 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 			if (this.XZGridEnabled_[1]) {
-				List<Double> pos = this.ZAxis_
+				List<Double> pos = this.zAxis_
 						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
@@ -2990,7 +3017,7 @@ public class WCartesian3DChart extends WGLWidget {
 			break;
 		case YZ_Plane:
 			if (this.YZGridEnabled_[0]) {
-				List<Double> pos = this.YAxis_
+				List<Double> pos = this.yAxis_
 						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
@@ -3002,7 +3029,7 @@ public class WCartesian3DChart extends WGLWidget {
 				}
 			}
 			if (this.YZGridEnabled_[1]) {
-				List<Double> pos = this.ZAxis_
+				List<Double> pos = this.zAxis_
 						.gridLinePositions(new AxisConfig());
 				for (int i = 0; i < pos.size(); i++) {
 					if (pos.get(i) == 0 || pos.get(i) == this.gridRenderWidth_) {
@@ -3374,9 +3401,9 @@ public class WCartesian3DChart extends WGLWidget {
 	private javax.vecmath.Matrix4f worldTransform_;
 	private boolean isViewSet_;
 	private List<WAbstractDataSeries3D> dataSeriesVector_;
-	private WAxis XAxis_;
-	private WAxis YAxis_;
-	private WAxis ZAxis_;
+	private WAxis xAxis_;
+	private WAxis yAxis_;
+	private WAxis zAxis_;
 	private ChartType chartType_;
 	private boolean[] XYGridEnabled_ = new boolean[2];
 	private boolean[] XZGridEnabled_ = new boolean[2];
