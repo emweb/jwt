@@ -4637,6 +4637,9 @@ public class WCartesianChart extends WAbstractChart {
 			return;
 		}
 		boolean isYAxis = ax.getId() != Axis.XAxis;
+		if (!isYAxis && this.yAxes_.isEmpty()) {
+			return;
+		}
 		final WAxis other = isYAxis ? this.getAxis(Axis.XAxis) : this
 				.getAxis(Axis.Y1Axis);
 		final WAxis.Segment s0 = other.segments_.get(0);
