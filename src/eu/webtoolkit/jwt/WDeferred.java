@@ -3,11 +3,15 @@ package eu.webtoolkit.jwt;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WWidget;
 
 public class WDeferred <T extends WWidget>  extends WContainerWidget {
-
+	private static final Logger logger = LoggerFactory.getLogger(WDeferred.class);
+	
 	private Class<T> cl;
 	private Object[] parameterValues;
 
@@ -30,15 +34,15 @@ public class WDeferred <T extends WWidget>  extends WContainerWidget {
 					}
 				}
 			} catch (InstantiationException e) {
-				e.printStackTrace();
+				logger.error("InstantiationException {}", cl.getName(), e);
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				logger.error("IllegalAccessException {}", cl.getName(), e);
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				logger.error("IllegalArgumentException {}", cl.getName(), e);
 			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+				logger.error("InvocationTargetException {}", cl.getName(), e);
 			} catch (SecurityException e) {
-				e.printStackTrace();
+				logger.error("SecurityException {}", cl.getName(), e);
 			}	
 		}
 		

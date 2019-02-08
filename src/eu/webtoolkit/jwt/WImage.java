@@ -243,7 +243,8 @@ public class WImage extends WInteractWidget {
 	 * @see WImage#getAlternateText()
 	 */
 	public void setAlternateText(final CharSequence text) {
-		if (canOptimizeUpdates() && text.equals(this.altText_)) {
+		if (canOptimizeUpdates()
+				&& (text.toString().equals(this.altText_.toString()))) {
 			return;
 		}
 		this.altText_ = WString.toWString(text);

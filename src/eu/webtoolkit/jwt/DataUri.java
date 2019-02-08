@@ -53,7 +53,7 @@ class DataUri {
 						0 + this.mimeType.indexOf(";"));
 			}
 		} catch (IOException ie) {
-			ie.printStackTrace();
+			logger.info("Ignoring exception {}", ie.getMessage(), ie);
 		}
 	}
 }

@@ -191,7 +191,8 @@ public abstract class WFormWidget extends WInteractWidget {
 								result,
 								EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
 			}
-			if (!this.validationToolTip_.equals(result.getMessage())) {
+			if (!(this.validationToolTip_.toString().equals(result.getMessage()
+					.toString()))) {
 				this.validationToolTip_ = result.getMessage();
 				this.flags_.set(BIT_VALIDATION_CHANGED);
 				this.repaint();
@@ -394,7 +395,8 @@ public abstract class WFormWidget extends WInteractWidget {
 
 	protected void enableAjax() {
 		if (!(this.emptyText_.length() == 0)
-				&& this.getToolTip().equals(this.emptyText_)) {
+				&& (this.getToolTip().toString().equals(this.emptyText_
+						.toString()))) {
 			this.setToolTip("");
 			this.setEmptyText(this.emptyText_);
 		}

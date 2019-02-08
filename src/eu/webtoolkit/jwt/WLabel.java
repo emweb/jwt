@@ -169,7 +169,7 @@ public class WLabel extends WInteractWidget {
 	 * Sets the label text.
 	 */
 	public void setText(final CharSequence text) {
-		if (this.getText().equals(text)) {
+		if ((this.getText().toString().equals(text.toString()))) {
 			return;
 		}
 		if (!(this.text_ != null)) {

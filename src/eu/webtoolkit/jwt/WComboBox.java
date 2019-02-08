@@ -358,9 +358,10 @@ public class WComboBox extends WFormWidget {
 	public void setValueText(final String value) {
 		int size = this.getCount();
 		for (int i = 0; i < size; ++i) {
-			if (StringUtils.asString(
+			if ((StringUtils.asString(
 					this.model_.getIndex(i, this.modelColumn_).getData(
-							ItemDataRole.DisplayRole)).equals(value)) {
+							ItemDataRole.DisplayRole)).toString().equals(value
+					.toString()))) {
 				this.setCurrentIndex(i);
 				return;
 			}

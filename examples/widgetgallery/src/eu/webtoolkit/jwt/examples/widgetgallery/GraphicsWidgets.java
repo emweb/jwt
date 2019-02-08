@@ -722,10 +722,11 @@ class GraphicsWidgets extends TopicWidget {
 				+ "fish_consumption.csv", container, false);
 		for (int i = 0; i < model.getRowCount(); i++) {
 			for (int j = 0; j < model.getColumnCount(); j++) {
-				if (StringUtils.asString(model.getData(0, j)).equals(
-						new WString("codfish"))
-						&& StringUtils.asString(model.getData(i, 0)).equals(
-								new WString("Belgium"))) {
+				if ((StringUtils.asString(model.getData(0, j)).toString()
+						.equals(new WString("codfish").toString()))
+						&& (StringUtils.asString(model.getData(i, 0))
+								.toString().equals(new WString("Belgium")
+								.toString()))) {
 					model.setData(i, j, WColor.cyan,
 							ItemDataRole.MarkerBrushColorRole);
 				}

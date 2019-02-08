@@ -2993,7 +2993,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 			}
 			os.append("])");
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 		}
 	}
 
@@ -3028,7 +3028,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 			}
 			os.append("])");
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 		}
 	}
 

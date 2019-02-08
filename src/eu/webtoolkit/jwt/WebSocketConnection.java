@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 
 import javax.websocket.Session;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.webtoolkit.jwt.servlet.WebResponse;
 
 /**
@@ -19,6 +22,8 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
  * @author raf
  */
 class WebSocketConnection extends WebResponse {
+	private static final Logger logger = LoggerFactory.getLogger(WebSocketConnection.class);
+	
 	private Writer outWriter;
 	private Session socketSession;
 	private Map<String, List<String>> headers;
@@ -77,7 +82,7 @@ class WebSocketConnection extends WebResponse {
 				this.outWriter.close();
 				this.outWriter = null;
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("IOException in flush", e);
 			}
 		}
 	}
@@ -101,7 +106,7 @@ class WebSocketConnection extends WebResponse {
 			try {
 				this.outWriter = this.socketSession.getBasicRemote().getSendWriter();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("IOException retrieving out writer", e);
 			}
 		}
 		return this.outWriter;
@@ -126,7 +131,7 @@ class WebSocketConnection extends WebResponse {
 			try {
 				throw new Exception("setContentType(): text/javascript expected");
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("input error: type is {}, expected text/javascript", type, e);
 			}
 		}
 		super.setContentType(type);
@@ -138,7 +143,7 @@ class WebSocketConnection extends WebResponse {
 			try {
 				out().write("document.cookie=" + WWebWidget.jsStringLiteral(value) + ";");
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error("IOException adding header {} = {}", name, value);
 			}
 		}
 	}

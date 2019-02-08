@@ -213,7 +213,7 @@ public class WText extends WInteractWidget {
 	 */
 	public boolean setText(final CharSequence text) {
 		boolean unChanged = canOptimizeUpdates()
-				&& text.equals(this.text_.text);
+				&& (text.toString().equals(this.text_.text.toString()));
 		boolean ok = this.text_.setText(text);
 		if (canOptimizeUpdates() && unChanged) {
 			return true;

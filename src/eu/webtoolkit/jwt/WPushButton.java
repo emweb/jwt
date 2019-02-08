@@ -250,7 +250,8 @@ public class WPushButton extends WFormWidget {
 	 * @see WPushButton#setTextFormat(TextFormat textFormat)
 	 */
 	public boolean setText(final CharSequence text) {
-		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
+		if (canOptimizeUpdates()
+				&& (text.toString().equals(this.text_.text.toString()))) {
 			return true;
 		}
 		boolean ok = this.text_.setText(text);

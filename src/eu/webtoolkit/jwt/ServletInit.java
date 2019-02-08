@@ -49,11 +49,11 @@ public class ServletInit implements ServletContextListener {
 				
 				servletApi.init(context, contextIsInitializing);
 			} catch (InstantiationException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				logger.error("", e);
 			}
 		}
 	}

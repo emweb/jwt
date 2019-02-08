@@ -10,6 +10,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.webtoolkit.jwt.Signal.Listener;
 
 /**
@@ -20,6 +23,8 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * JavaScript implementations.
  */
 public abstract class AbstractEventSignal extends AbstractSignal {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractEventSignal.class);
+	
 	/**
 	 * An abstract base class for a listener with (learned) JavaScript behavior.
 	 * <p>
@@ -437,7 +442,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 						} catch (IOException e) {
 							// This is kind of impossible since we are writing
 							// to a god damn string
-							e.printStackTrace();
+							logger.info("Ignoring impossible exception", e);
 						}
 						ownerRepaint();
 					}
@@ -459,7 +464,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 						} catch (IOException e) {
 							// This is kind of impossible since we are writing
 							// to a god damn string
-							e.printStackTrace();
+							logger.info("Ignoring impossible exception", e);
 						}
 						changed = true;
 					}

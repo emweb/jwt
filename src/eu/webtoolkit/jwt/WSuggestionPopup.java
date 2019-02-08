@@ -969,7 +969,8 @@ public class WSuggestionPopup extends WPopupWidget {
 				WModelIndex index = this.model_.getIndex(
 						this.model_.getRowCount() - 1, this.modelColumn_);
 				Object styleclass = index.getData(ItemDataRole.StyleClassRole);
-				return StringUtils.asString(styleclass).equals("Wt-more-data");
+				return (StringUtils.asString(styleclass).toString()
+						.equals("Wt-more-data".toString()));
 			} else {
 				return false;
 			}

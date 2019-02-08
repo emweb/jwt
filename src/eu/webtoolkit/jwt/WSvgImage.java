@@ -382,7 +382,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 			this.streamResourceData(s);
 			return s.toString();
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 			return null;
 		}
 	}

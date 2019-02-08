@@ -93,8 +93,8 @@ class FontSupport {
 				.hasNext();) {
 			FontSupport.Matched i = i_it.next();
 			if (i.font.getGenericFamily() == font.getGenericFamily()
-					&& i.font.getSpecificFamilies().equals(
-							font.getSpecificFamilies())
+					&& (i.font.getSpecificFamilies().toString().equals(font
+							.getSpecificFamilies().toString()))
 					&& i.font.getWeight() == font.getWeight()
 					&& i.font.getStyle() == font.getStyle()) {
 				CollectionUtils.splice(this.cache_, this.cache_.iterator(),

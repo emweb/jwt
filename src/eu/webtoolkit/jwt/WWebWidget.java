@@ -547,7 +547,8 @@ public abstract class WWebWidget extends WWidget {
 
 	public void setToolTip(final CharSequence text, TextFormat textFormat) {
 		this.flags_.clear(BIT_TOOLTIP_DEFERRED);
-		if (canOptimizeUpdates() && text.equals(this.getStoredToolTip())) {
+		if (canOptimizeUpdates()
+				&& (text.toString().equals(this.getStoredToolTip().toString()))) {
 			return;
 		}
 		if (!(this.lookImpl_ != null)) {

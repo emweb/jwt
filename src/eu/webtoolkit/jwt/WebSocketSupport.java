@@ -70,7 +70,7 @@ public class WebSocketSupport {
 			webSession.webSocket_ = connection;
 			session.getBasicRemote().sendText("connect");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in onOpen");
 		}
 	}
 	

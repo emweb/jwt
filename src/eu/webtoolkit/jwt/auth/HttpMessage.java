@@ -9,9 +9,12 @@ import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.message.BasicHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class HttpMessage {
-
+	private static final Logger logger = LoggerFactory.getLogger(HttpMessage.class);
+	
 	HttpMessage() {
 		headers_ = new ArrayList<Header>();
 		status_ = -1;
@@ -35,9 +38,9 @@ class HttpMessage {
 				addBodyText(line);
 			}
 		} catch (IllegalStateException e) {
-			e.printStackTrace();
+			logger.info("HttpMessage(HttpResponse): illegal state", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("HttpMessage(HttpResponse): IOException", e);
 		}
 	}
 

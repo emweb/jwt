@@ -46,10 +46,11 @@ class PdfUtils {
 			bold = "Bold";
 			break;
 		}
-		if (font.getSpecificFamilies().equals("Symbol")) {
+		if ((font.getSpecificFamilies().toString().equals("Symbol".toString()))) {
 			base = "Symbol";
 		} else {
-			if (font.getSpecificFamilies().equals("ZapfDingbats")) {
+			if ((font.getSpecificFamilies().toString().equals("ZapfDingbats"
+					.toString()))) {
 				base = "ZapfDingbats";
 			}
 		}

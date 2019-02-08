@@ -45,11 +45,11 @@ class RefEncoder extends XHtmlFilter {
 			// 6 and 7 correct for respectively <span> and </span>
 			return new WString(filtered.substring(6, filtered.length() - 7));
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.error("ClassNotFoundException", e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			logger.error("InstantiationException", e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error("IllegalAccessException", e);
 		} catch (XMLException e) {
 			logger.error("Error reading XHTML string: " + e.getMessage());
 		}

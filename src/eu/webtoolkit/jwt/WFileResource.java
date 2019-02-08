@@ -10,6 +10,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.StreamUtils;
@@ -22,6 +25,8 @@ import eu.webtoolkit.jwt.utils.StreamUtils;
  * file contents has changed, but not the filename.
  */
 public class WFileResource extends WResource {
+	private static final Logger logger = LoggerFactory.getLogger(WFileResource.class);
+	
 	/**
 	 * Creates a new resource with given mime-type for a file.
 	 * 
@@ -108,7 +113,7 @@ public class WFileResource extends WResource {
 				StreamUtils.copy(fis, response.getOutputStream());
 				response.getOutputStream().flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("IOException, {}", fileName_, e);
 			} finally {
 				StreamUtils.closeQuietly(fis);
 			}

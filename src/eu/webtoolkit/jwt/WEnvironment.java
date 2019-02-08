@@ -1422,7 +1422,7 @@ public class WEnvironment {
 				}
 			}
 		} catch (UnsupportedEncodingException uee) {
-			uee.printStackTrace();
+			logger.info("Ignoring exception {}", uee.getMessage(), uee);
 		}
 	}
 

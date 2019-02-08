@@ -637,7 +637,7 @@ public class WTemplate extends WInteractWidget {
 			}
 		}
 		WString i = this.strings_.get(varName);
-		if (i == null || !i.equals(v)) {
+		if (i == null || !(i.toString().equals(v.toString()))) {
 			this.strings_.put(varName, v);
 			this.changed_ = true;
 			this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
@@ -1336,7 +1336,7 @@ public class WTemplate extends WInteractWidget {
 			}
 			super.updateDom(element, all);
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 		}
 	}
 

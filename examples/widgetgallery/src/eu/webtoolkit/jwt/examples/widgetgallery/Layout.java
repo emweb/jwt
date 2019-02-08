@@ -644,7 +644,8 @@ class Layout extends TopicWidget {
 		});
 		toggleB.clicked().addListener(this, new Signal.Listener() {
 			public void trigger() {
-				if (toggleB.getText().equals("Toggle condensed")) {
+				if ((toggleB.getText().toString().equals("Toggle condensed"
+						.toString()))) {
 					table.toggleStyleClass("table-condensed", true);
 					toggleB.setText("Toggle expanded");
 				} else {

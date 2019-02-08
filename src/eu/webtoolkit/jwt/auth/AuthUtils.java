@@ -9,8 +9,12 @@ import java.util.Random;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class AuthUtils {
+	private static final Logger logger = LoggerFactory.getLogger(AuthUtils.class);
+	
 	static void parseFormUrlEncoded(HttpMessage response, Map<String, String[]> parameters) {
 		try {
 			StringEntity entity = new StringEntity(response.getBody(), null);
@@ -22,7 +26,7 @@ class AuthUtils {
 				parameters.put(nvp.getName(), values);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("parseFormUrlEncoded: ignoring exception", e);
 		}
 	}
 

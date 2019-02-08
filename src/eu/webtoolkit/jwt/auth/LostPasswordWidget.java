@@ -95,7 +95,7 @@ public class LostPasswordWidget extends WTemplate {
 			});
 			box.show();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Ignoring exception {}", e.getMessage(), e);
 		}
 	}
 

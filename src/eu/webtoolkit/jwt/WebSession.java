@@ -228,7 +228,7 @@ class WebSession {
 				}
 			}
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 		}
 	}
 
@@ -240,7 +240,7 @@ class WebSession {
 				logger.error(new StringWriter()
 						.append("Exception in WApplication::notify(): ")
 						.append(e.toString()).toString());
-				e.printStackTrace();
+				logger.error("Exception: {}", e.getMessage(), e);
 			}
 			return;
 		}
@@ -255,7 +255,7 @@ class WebSession {
 				logger.error(new StringWriter()
 						.append("Exception in WApplication::notify(): ")
 						.append(e.toString()).toString());
-				e.printStackTrace();
+				logger.error("Exception: {}", e.getMessage(), e);
 			}
 			return;
 		}
@@ -642,7 +642,7 @@ class WebSession {
 			this.recursiveEventDone_.signal();
 			this.recursiveEventHandler_ = prevRecursiveEventHandler;
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 		}
 	}
 
@@ -1699,7 +1699,7 @@ class WebSession {
 				} catch (final WException e) {
 					logger.error(new StringWriter().append("fatal error: ")
 							.append(e.toString()).toString());
-					e.printStackTrace();
+					logger.error("Exception: {}", e.getMessage(), e);
 					this.kill();
 					if (handler.getResponse() != null) {
 						this.serveError(500, handler, e.toString());
@@ -1707,7 +1707,7 @@ class WebSession {
 				} catch (final RuntimeException e) {
 					logger.error(new StringWriter().append("fatal error: ")
 							.append(e.toString()).toString());
-					e.printStackTrace();
+					logger.error("Exception: {}", e.getMessage(), e);
 					this.kill();
 					if (handler.getResponse() != null) {
 						this.serveError(500, handler, e.toString());
@@ -1718,7 +1718,7 @@ class WebSession {
 				handler.flushResponse();
 			}
 		} catch (InterruptedException ie) {
-			ie.printStackTrace();
+			logger.info("Ignoring exception {}", ie.getMessage(), ie);
 		}
 	}
 
@@ -1902,7 +1902,7 @@ class WebSession {
 				this.updatesPendingEvent_.signal();
 			}
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 		}
 	}
 

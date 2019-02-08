@@ -121,7 +121,7 @@ public class WMeasurePaintDevice implements WPaintDevice {
 					textFlag == TextFlag.TextWordWrap ? true : false);
 			h += fm.getHeight();
 			w = Math.max(w, t.getWidth());
-			if (t.getText().equals(line)) {
+			if ((t.getText().toString().equals(line.toString()))) {
 				break;
 			} else {
 				line = new WString(line.toString().substring(

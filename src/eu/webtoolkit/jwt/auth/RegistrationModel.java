@@ -465,7 +465,7 @@ public class RegistrationModel extends FormBaseModel {
 				return user;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Ignoring exception {}", e.getMessage(), e);
 			return null;
 		}
 	}

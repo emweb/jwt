@@ -418,7 +418,7 @@ public class OAuthProcess extends WObject {
 				client.post(url, post);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Ignoring exception {}", e.getMessage(), e);
 		}
 	}
 

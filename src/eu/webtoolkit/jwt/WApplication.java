@@ -806,7 +806,7 @@ public class WApplication extends WObject {
 	 */
 	public void setTitle(final CharSequence title) {
 		if (this.session_.getRenderer().isPreLearning()
-				|| !this.title_.equals(title)) {
+				|| !(this.title_.toString().equals(title.toString()))) {
 			this.title_ = WString.toWString(title);
 			this.titleChanged_ = true;
 		}
@@ -2783,7 +2783,7 @@ public class WApplication extends WObject {
 	 * @see WApplication#unload()
 	 */
 	public void setConfirmCloseMessage(final CharSequence message) {
-		if (!message.equals(this.closeMessage_)) {
+		if (!(message.toString().equals(this.closeMessage_.toString()))) {
 			this.closeMessage_ = WString.toWString(message);
 			this.closeMessageChanged_ = true;
 		}

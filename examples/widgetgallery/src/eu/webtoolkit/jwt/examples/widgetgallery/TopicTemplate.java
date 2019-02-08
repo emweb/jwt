@@ -69,7 +69,7 @@ class TopicTemplate extends WTemplate {
 			this.resolveString(varName, args, ss);
 			return ss.toString();
 		} catch (IOException ie) {
-			ie.printStackTrace();
+			logger.info("Ignoring exception {}", ie.getMessage(), ie);
 			return null;
 		}
 	}

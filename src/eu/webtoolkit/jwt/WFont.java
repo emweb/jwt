@@ -241,7 +241,8 @@ public class WFont {
 	 */
 	public boolean equals(final WFont other) {
 		return this.genericFamily_ == other.genericFamily_
-				&& this.specificFamilies_.equals(other.specificFamilies_)
+				&& (this.specificFamilies_.toString()
+						.equals(other.specificFamilies_.toString()))
 				&& this.style_ == other.style_
 				&& this.variant_ == other.variant_
 				&& this.weight_ == other.weight_

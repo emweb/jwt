@@ -214,7 +214,7 @@ public abstract class WtServlet extends HttpServlet {
 						WebResponse webResponse = new WebResponse(response, webRequest);
 						staticResource.handle(webRequest, webResponse);
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.info("IOException handling {}", pathInfo);
 					}
 					return;
 				}
@@ -249,10 +249,10 @@ public abstract class WtServlet extends HttpServlet {
 				}
 			} catch (FileNotFoundException e) {
 				response.setStatus(404);
-				e.printStackTrace();
+				logger.info("File not found: {}", fileName, e);
 			} catch (IOException e) {
 				response.setStatus(500);
-				e.printStackTrace();
+				logger.info("IOException: {}", fileName, e);
 			}
 
 			return;
@@ -388,7 +388,7 @@ public abstract class WtServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("doHandleRequest exception: {}", request.getRequestURI(), e);
 		}
 	}
 	
@@ -547,9 +547,9 @@ public abstract class WtServlet extends HttpServlet {
 			d.update(url.getBytes("UTF-8"));
 			return StringUtils.encodeBase64(d.digest());
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 
 		return "";

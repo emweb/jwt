@@ -16,7 +16,12 @@ import java.util.Scanner;
 
 import javax.servlet.ServletContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileUtils {
+	private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
+	
 	public static List<Byte> fileHeader(String fileName, int size) {
 		List<Byte> header = new ArrayList<Byte>();
 		try {
@@ -26,7 +31,7 @@ public class FileUtils {
 			}
 			is.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("Exception while accessing file {}", fileName, e);
 		}
 		
 		return header;
@@ -105,7 +110,7 @@ public class FileUtils {
 				if (is != null)
 					is.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("resourceToString failed for {}", path, e);
 			}
 			
 			if (s != null)
@@ -131,7 +136,7 @@ public class FileUtils {
     		fis.close();
     		fos.close();
     	} catch (IOException e) {
-    		e.printStackTrace();
+    		logger.info("appendFile failed for {}", srcPath, e);
     	}
     }
 }

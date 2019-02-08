@@ -7,12 +7,18 @@ import java.security.NoSuchAlgorithmException;
 import java.security.InvalidKeyException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 public class Utils {
+	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+	
 	/** Computes an MD5 hash.
 	 *
 	 * This utility function computes an MD5 hash, and returns the hash value.
@@ -22,9 +28,9 @@ public class Utils {
 			MessageDigest d = MessageDigest.getInstance("MD5");
 			return d.digest(msg.getBytes("UTF-8"));
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 		return null;
 	}
@@ -34,9 +40,9 @@ public class Utils {
 			MessageDigest mDigest = MessageDigest.getInstance("SHA1");
 			return mDigest.digest(input.getBytes("UTF-8"));
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 	  	} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 	  	return null;
 	}
@@ -135,7 +141,7 @@ public class Utils {
 		try {
 			return base64Encode(s.getBytes("UTF-8"), crlf);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 		return null;
 	}
@@ -326,11 +332,11 @@ public class Utils {
 			mac.init(key_);
 			result = mac.doFinal(msg.getBytes("ASCII"));
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
+			logger.error("InvalidKeyException: {}", key, e);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 		}
         return result;
 	}

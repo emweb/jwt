@@ -61,7 +61,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 		try {
 			this.outWriter = new OutputStreamWriter(getOutputStream(), "UTF-8");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in webresponse", e);
 		}
 	}
 
@@ -86,7 +86,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 		try {
 			outWriter = new OutputStreamWriter(outputStream, "UTF-8");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in webresponse", e);
 		}
 	}
 	
@@ -160,9 +160,9 @@ public class WebResponse extends HttpServletResponseWrapper {
 			outWriter.flush();
 			getOutputStream().flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in flush", e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Exception in flush", e);
 		} finally {
 			if (request != null) {
 				WtServlet.getServletApi().completeAsyncContext(request);

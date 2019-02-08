@@ -12,6 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.pdfjet.Cap;
 import com.pdfjet.CodePage;
 import com.pdfjet.Embed;
@@ -30,6 +33,8 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 public class WPdfImage extends WResource implements WPaintDevice {
+	private static final Logger logger = LoggerFactory.getLogger(WPdfImage.class);
+	
 	private static Constructor<?> fontConstructor;	
 	
 	static {
@@ -67,7 +72,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			
 			trueTypeFonts = new FontSupport(this);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Exception", e);
 		}
 	}
 	
@@ -230,7 +235,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				else if ("image/bmp".equals(uri.mimeType))
 					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.BMP);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.info("Error converting data URI to image", e);
+				logger.trace("Data URI is {}", imgUrl, e);
 			}
 		} else {
 			String mimeType = ImageUtils.identifyMimeType(imgUrl);
@@ -242,7 +248,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				else if ("image/bmp".equals(mimeType))
 					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.BMP);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.info("Error creating image from {}", imgUrl, e);
 			}
 		}
 		
@@ -261,7 +267,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	        try {
 				image.drawOn(this.page);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.info("Exception while drawing image", e);
 			}
 		}
 	}
@@ -288,7 +294,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			WPointF p_t = _transform(x, y);
 			this.page.moveTo(p_t.getX(), p_t.getY());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException", e);
 		}
 	}
 	
@@ -297,7 +303,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			WPointF p_t = _transform(x, y);
 			this.page.lineTo(p_t.getX(), p_t.getY());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException", e);
 		}
 	}
 	
@@ -308,7 +314,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		try {
 			this.page.bezierCurveTo(p1, p2, p3);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException", e);
 		}
 	}
 	
@@ -413,7 +419,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				page.closePath();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Exception drawing path", e);
 		}
 	}
 
@@ -433,7 +439,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		try {
 			setBrushColor(penColor);
 		} catch (IOException e2) {
-			e2.printStackTrace();
+			logger.info("IOException", e2);
 		}
 		
 		processChangeFlags();
@@ -444,7 +450,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		try {
 			page.setTextDirection(360 - (int)Math.round(d.alpha *  180 / Math.PI));
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			logger.info("IOException", e1);
 		}
 		
 		double px = 0, py = 0;
@@ -491,14 +497,14 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			
 			this.font.setSize(originalSize);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException", e);
 		}
 		
 		WColor brushColor = painter.getBrush().getColor();
 		try {
 			setBrushColor(brushColor);
 		} catch (IOException e2) {
-			e2.printStackTrace();
+			logger.info("IOException", e2);
 		}
 	}
 
@@ -598,7 +604,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		try {
 			this.pdf.flush();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Exception flushing pdf", e);
 		}
 		
 		os.write(bos.toByteArray());
@@ -621,7 +627,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			page.setLineJoinStyle(stroke.join);
 			page.setPenWidth(stroke.width * 0.75); // pixel to point
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException", e);
 		}
 	}
 	
@@ -634,7 +640,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		try {
 			setBrushColor(c);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException", e);
 		}
 	}
 	
@@ -736,15 +742,15 @@ public class WPdfImage extends WResource implements WPaintDevice {
 					f.setSize(font.getSizeLength().toPixels());
 					return f;
 				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
+					logger.error("IllegalArgumentException while creating font {}", font.getCssText(), e);
 				} catch (InstantiationException e) {
-					e.printStackTrace();
+					logger.error("InstantiationException while creating font {}", font.getCssText(), e);
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					logger.error("IllegalAccessException while creating font {}", font.getCssText(), e);
 				} catch (InvocationTargetException e) {
-					e.printStackTrace();
+					logger.error("InvocationTargetException while creating font {}", font.getCssText(), e);
 				} catch (FileNotFoundException e) {
-					e.printStackTrace();
+					logger.info("FileNotFoundException while creating font {}", font.getCssText(), e);
 				}
 			} 
 		}
@@ -755,7 +761,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			f.setSize(font.getSizeLength().toPixels());
 			return f;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Error creating font {}", font.getCssText(), e);
 			return null;
 		}
 	}

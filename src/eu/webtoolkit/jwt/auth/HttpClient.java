@@ -48,10 +48,10 @@ class HttpClient {
 			
 			done.trigger(null, new HttpMessage(response));
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			logger.info("Exception in get({})", get.getURI().toString(), e);
 			done.trigger(e, null);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("Exception in get({})", get.getURI().toString(), e);
 			done.trigger(e, null);
 		}
 	}
@@ -66,10 +66,10 @@ class HttpClient {
 			HttpResponse answer = httpClient.execute(post);
 			done.trigger(null, new HttpMessage(answer));
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			logger.info("Exception in post({})", url, e);
 			done.trigger(e, null);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("Exception in post({})", url, e);
 			done.trigger(e, null);
 		}
 	}

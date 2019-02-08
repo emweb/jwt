@@ -8,8 +8,12 @@ import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CssParser {
+	private static final Logger logger = LoggerFactory.getLogger(CssParser.class);
+	
 	static SimpleSelectorImpl currentSimpleSelector = new SimpleSelectorImpl();
 	static SelectorImpl currentSelector = new SelectorImpl();
 	static List<SelectorImpl> currentSelectorList = new ArrayList<SelectorImpl>(); 
@@ -93,7 +97,8 @@ public class CssParser {
             lastError_ = lex.lastError_ + parser.lastError_;
             return !lex.hasError_ && !parser.hasError_ ? currentStylesheet : null;
         } catch (RecognitionException e)  {
-            e.printStackTrace();
+            logger.info("Exception parsing style sheet", e);
+            logger.trace("stylesheet was: {}", stylesheetContents);
             lastError_ = lex.lastError_ + parser.lastError_;
             return null;
         }

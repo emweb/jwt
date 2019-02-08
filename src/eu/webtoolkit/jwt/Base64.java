@@ -1,5 +1,8 @@
 package eu.webtoolkit.jwt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <p>Encodes and decodes to and from Base64 notation.</p>
  * <p>Homepage: <a href="http://iharder.net/base64">http://iharder.net/base64</a>.</p>
@@ -149,7 +152,7 @@ package eu.webtoolkit.jwt;
  */
 class Base64
 {
-    
+    private static final Logger logger = LoggerFactory.getLogger(Base64.class);
 /* ********  P U B L I C   F I E L D S  ******** */   
     
     
@@ -1286,7 +1289,8 @@ class Base64
 
                 }   // end try
                 catch( java.io.IOException e ) {
-                    e.printStackTrace();
+                	logger.info("Error decoding base64 string", e);
+                	logger.trace("String was {}", s);
                     // Just return originally-decoded bytes
                 }   // end catch
                 finally {

@@ -106,15 +106,15 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			parser.parse();
 			keyValues.putAll(xmlParser.getKeyValues());
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.error("ClassNotFoundException {}", bundleName, e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			logger.error("InstantiationException {}", bundleName, e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error("IllegalAccessException {}", bundleName, e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("IOException {}", bundleName, e);
 		} catch (XMLException e) {
-			e.printStackTrace();
+			logger.error("XMLException {}", bundleName, e);
 		}
 	}
 

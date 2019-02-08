@@ -101,7 +101,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	 * The label is rendered to the right of the button.
 	 */
 	public void setText(final CharSequence text) {
-		if (canOptimizeUpdates() && text.equals(this.text_.text)) {
+		if (canOptimizeUpdates()
+				&& (text.toString().equals(this.text_.text.toString()))) {
 			return;
 		}
 		if (this.isRendered() && this.flags_.get(BIT_NAKED)) {

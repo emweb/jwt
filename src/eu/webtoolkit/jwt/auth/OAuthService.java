@@ -422,7 +422,7 @@ public abstract class OAuthService {
 							.append("<h1>OAuth Authentication error</h1>")
 							.append("</body></html>");
 				} catch (IOException ioe) {
-					ioe.printStackTrace();
+					logger.info("Ignoring exception {}", ioe.getMessage(), ioe);
 				}
 			}
 

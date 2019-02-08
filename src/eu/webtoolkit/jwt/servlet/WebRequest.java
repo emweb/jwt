@@ -23,6 +23,8 @@ import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WResource;
@@ -41,6 +43,8 @@ import eu.webtoolkit.jwt.Utils;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
+	private static final Logger logger = LoggerFactory.getLogger(WebRequest.class);
+	
 	private HttpServletRequest httpRequest;
 	
 	/**
@@ -198,7 +202,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		try {
 			parse(progressListener);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IO Exception parsing request", e);
 		}
 	}
 
@@ -308,9 +312,9 @@ public class WebRequest extends HttpServletRequestWrapper {
 							fi.write(f);
 							fi.delete();
 						} catch (IOException e) {
-							e.printStackTrace();
+							logger.error("IOException creating temp file {}", f.getAbsolutePath(), e);
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error("Exception creating temp file {}", f.getAbsolutePath(), e);
 						}
 
 						List<UploadedFile> files = files_.get(fi.getFieldName());
@@ -334,7 +338,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 					}
 				}
 			} catch (FileUploadException e) {
-				e.printStackTrace();
+				logger.info("FileUploadException", e);
 			}
 		} else
 			parseParameters();
@@ -371,7 +375,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 					parameters_.put(fields[0], new String[] { fields[1] });
 			}
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("Error decoding url {}", buf, e);
 		}
 
 		String[] wtParamsAr = parameters_.get("Wt-params");
@@ -427,7 +431,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 			try {
 				parseParameters();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("IOException while parsing parameters to get {}", name);
 			}
 
 		if (parameters_.containsKey(name)) {
