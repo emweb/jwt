@@ -131,6 +131,7 @@ public class WTableView extends WAbstractItemView {
 		this.touchStartConnection_ = new AbstractSignal.Connection();
 		this.touchMoveConnection_ = new AbstractSignal.Connection();
 		this.touchEndConnection_ = new AbstractSignal.Connection();
+		this.preloadMarginRows_ = -1;
 		this.firstColumn_ = -1;
 		this.lastColumn_ = -1;
 		this.viewportLeft_ = 0;
@@ -567,6 +568,36 @@ public class WTableView extends WAbstractItemView {
 				EnumSet.of(Orientation.Horizontal, Orientation.Vertical));
 	}
 
+	/**
+	 * Sets the amount of rows to preload.
+	 * <p>
+	 * Configures the amount of rows before and after the currently visible
+	 * range that should be loaded. If N rows are shown, and C is the margin,
+	 * then N + 2C rows are loaded: N visible, C rows before, and C rows after.
+	 * <p>
+	 * Set to 0 if you don&apos;t want to load more rows than are currently
+	 * visible.
+	 * <p>
+	 * Set to -1 if you want to keep default behaviour. This means that if N
+	 * rows are visible, then 3N rows are loaded: N visible, N rows before, and
+	 * N rows after.
+	 */
+	public void setPreloadMarginRows(int rows) {
+		this.preloadMarginRows_ = rows;
+		this.computeRenderedArea();
+		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
+	}
+
+	/**
+	 * Get the preload margin.
+	 * <p>
+	 * 
+	 * @see WTableView#setPreloadMarginRows(int rows)
+	 */
+	public int getPreloadMarginRows() {
+		return this.preloadMarginRows_;
+	}
+
 	public void setHidden(boolean hidden, final WAnimation animation) {
 		boolean change = this.isHidden() != hidden;
 		super.setHidden(hidden, animation);
@@ -778,6 +809,7 @@ public class WTableView extends WAbstractItemView {
 	private AbstractSignal.Connection touchStartConnection_;
 	private AbstractSignal.Connection touchMoveConnection_;
 	private AbstractSignal.Connection touchEndConnection_;
+	private int preloadMarginRows_;
 	private int firstColumn_;
 	private int lastColumn_;
 	private int viewportLeft_;
@@ -1231,12 +1263,14 @@ public class WTableView extends WAbstractItemView {
 		this.updateColumnOffsets();
 		assert this.getLastRow() == lr && this.getFirstRow() == fr;
 		assert this.getLastColumn() == lc && this.getFirstColumn() == fc;
+		final int marginHeight = this.preloadMarginRows_ == -1 ? this.viewportHeight_ / 2
+				: (int) (this.preloadMarginRows_ * this.getRowHeight()
+						.toPixels()) / 2;
 		int scrollX1 = Math
 				.max(0, this.viewportLeft_ - this.viewportWidth_ / 2);
 		int scrollX2 = this.viewportLeft_ + this.viewportWidth_ / 2;
-		int scrollY1 = Math
-				.max(0, this.viewportTop_ - this.viewportHeight_ / 2);
-		int scrollY2 = this.viewportTop_ + this.viewportHeight_ / 2;
+		int scrollY1 = Math.max(0, this.viewportTop_ - marginHeight);
+		int scrollY2 = this.viewportTop_ + marginHeight;
 		StringBuilder s = new StringBuilder();
 		s.append("jQuery.data(").append(this.getJsRef())
 				.append(", 'obj').scrolled(").append(scrollX1).append(", ")
@@ -1649,18 +1683,22 @@ public class WTableView extends WAbstractItemView {
 				modelHeight = this.getModel().getRowCount(this.getRootIndex());
 			}
 			if (this.viewportHeight_ != -1) {
-				int top = Math.min(this.viewportTop_, (int) this.canvas_
+				final int top = Math.min(this.viewportTop_, (int) this.canvas_
 						.getHeight().toPixels());
-				int height = Math.min(this.viewportHeight_, (int) this.canvas_
-						.getHeight().toPixels());
-				int renderedRows = (int) (height
+				final int height = Math.min(this.viewportHeight_,
+						(int) this.canvas_.getHeight().toPixels());
+				final int renderedRows = (int) (height
 						/ this.getRowHeight().toPixels() + 0.5);
 				this.renderedFirstRow_ = (int) (top / this.getRowHeight()
 						.toPixels());
-				this.renderedLastRow_ = Math.min(this.renderedFirstRow_
-						+ renderedRows * 2 + borderRows, modelHeight - 1);
-				this.renderedFirstRow_ = Math.max(this.renderedFirstRow_
-						- renderedRows - borderRows, 0);
+				final int marginRows = this.preloadMarginRows_ == -1 ? renderedRows
+						+ borderRows
+						: this.preloadMarginRows_;
+				this.renderedLastRow_ = (int) Math.min(
+						(long) this.renderedFirstRow_ + renderedRows
+								+ marginRows, (long) (modelHeight - 1));
+				this.renderedFirstRow_ = (int) Math.max(
+						(long) this.renderedFirstRow_ - marginRows, (long) 0);
 			} else {
 				this.renderedFirstRow_ = 0;
 				this.renderedLastRow_ = modelHeight - 1;
