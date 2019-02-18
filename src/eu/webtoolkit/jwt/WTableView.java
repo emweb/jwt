@@ -1314,27 +1314,29 @@ public class WTableView extends WAbstractItemView {
 		this.updateColumnOffsets();
 		assert this.getLastRow() == lr && this.getFirstRow() == fr;
 		assert this.getLastColumn() == lc && this.getFirstColumn() == fc;
-		final int marginTop = (int) Math.floor((this.getPreloadMargin(Side.Top)
+		final double marginTop = (this.getPreloadMargin(Side.Top).isAuto() ? this.viewportHeight_
+				: this.getPreloadMargin(Side.Top).toPixels()) / 2;
+		final double marginBottom = (this.getPreloadMargin(Side.Bottom)
 				.isAuto() ? this.viewportHeight_ : this.getPreloadMargin(
-				Side.Top).toPixels()) / 2 + 0.5);
-		final int marginBottom = (int) Math.floor((this.getPreloadMargin(
-				Side.Bottom).isAuto() ? this.viewportHeight_ : this
-				.getPreloadMargin(Side.Bottom).toPixels()) / 2 + 0.5);
-		final int marginLeft = (int) Math.floor((this.getPreloadMargin(
-				Side.Left).isAuto() ? this.viewportWidth_ : this
-				.getPreloadMargin(Side.Left).toPixels()) / 2 + 0.5);
-		final int marginRight = (int) Math.floor((this.getPreloadMargin(
-				Side.Right).isAuto() ? this.viewportWidth_ : this
-				.getPreloadMargin(Side.Right).toPixels()) / 2 + 0.5);
-		int scrollX1 = Math.max(0, this.viewportLeft_ - marginLeft);
-		int scrollX2 = this.viewportLeft_ + marginRight;
-		int scrollY1 = Math.max(0, this.viewportTop_ - marginTop);
-		int scrollY2 = this.viewportTop_ + marginBottom;
+				Side.Bottom).toPixels()) / 2;
+		final double marginLeft = (this.getPreloadMargin(Side.Left).isAuto() ? this.viewportWidth_
+				: this.getPreloadMargin(Side.Left).toPixels()) / 2;
+		final double marginRight = (this.getPreloadMargin(Side.Right).isAuto() ? this.viewportWidth_
+				: this.getPreloadMargin(Side.Right).toPixels()) / 2;
+		final double scrollX1 = Math.round(Math.max(0.0, this.viewportLeft_
+				- marginLeft));
+		final double scrollX2 = Math.round(this.viewportLeft_ + marginRight);
+		final double scrollY1 = Math.round(Math.max(0.0, this.viewportTop_
+				- marginTop));
+		final double scrollY2 = Math.round(this.viewportTop_ + marginBottom);
 		StringBuilder s = new StringBuilder();
+		char[] buf = new char[30];
 		s.append("jQuery.data(").append(this.getJsRef())
-				.append(", 'obj').scrolled(").append(scrollX1).append(", ")
-				.append(scrollX2).append(", ").append(scrollY1).append(", ")
-				.append(scrollY2).append(");");
+				.append(", 'obj').scrolled(");
+		s.append(MathUtils.roundJs(scrollX1, 3)).append(", ");
+		s.append(MathUtils.roundJs(scrollX2, 3)).append(", ");
+		s.append(MathUtils.roundJs(scrollY1, 3)).append(", ");
+		s.append(MathUtils.roundJs(scrollY2, 3)).append(");");
 		this.doJavaScript(s.toString());
 	}
 
@@ -1745,25 +1747,23 @@ public class WTableView extends WAbstractItemView {
 						.getHeight().toPixels());
 				final int height = Math.min(this.viewportHeight_,
 						(int) this.canvas_.getHeight().toPixels());
-				final int renderedRows = (int) Math.ceil(height
+				final double renderedRows = height
+						/ this.getRowHeight().toPixels();
+				final double renderedRowsAbove = this
+						.getPreloadMargin(Side.Top).isAuto() ? renderedRows
+						+ borderRows : this.getPreloadMargin(Side.Top)
+						.toPixels() / this.getRowHeight().toPixels();
+				final double renderedRowsBelow = this.getPreloadMargin(
+						Side.Bottom).isAuto() ? renderedRows + borderRows
+						: this.getPreloadMargin(Side.Bottom).toPixels()
+								/ this.getRowHeight().toPixels();
+				this.renderedFirstRow_ = (int) Math.floor(top
 						/ this.getRowHeight().toPixels());
-				final int renderedRowsAbove = this.getPreloadMargin(Side.Top)
-						.isAuto() ? renderedRows + borderRows : (int) Math
-						.floor(this.getPreloadMargin(Side.Top).toPixels()
-								/ this.getRowHeight().toPixels() + 0.5);
-				final int renderedRowsBelow = this
-						.getPreloadMargin(Side.Bottom).isAuto() ? renderedRows
-						+ borderRows : (int) Math.floor(this.getPreloadMargin(
-						Side.Bottom).toPixels()
-						/ this.getRowHeight().toPixels() + 0.5);
-				this.renderedFirstRow_ = (int) (top / this.getRowHeight()
-						.toPixels());
-				this.renderedLastRow_ = (int) Math.min(
-						(long) this.renderedFirstRow_ + renderedRows
-								+ renderedRowsBelow, (long) (modelHeight - 1));
-				this.renderedFirstRow_ = (int) Math.max(
-						(long) this.renderedFirstRow_ - renderedRowsAbove,
-						(long) 0);
+				this.renderedLastRow_ = (int) Math.ceil(Math.min(
+						this.renderedFirstRow_ + renderedRows
+								+ renderedRowsBelow, modelHeight - 1.0));
+				this.renderedFirstRow_ = (int) Math.floor(Math.max(
+						this.renderedFirstRow_ - renderedRowsAbove, 0.0));
 			} else {
 				this.renderedFirstRow_ = 0;
 				this.renderedLastRow_ = modelHeight - 1;
@@ -1772,20 +1772,17 @@ public class WTableView extends WAbstractItemView {
 				--this.renderedFirstRow_;
 			}
 			final int borderColumnPixels = 200;
-			final int marginLeft = (int) Math.floor((this.getPreloadMargin(
-					Side.Left).isAuto() ? this.viewportWidth_
-					+ borderColumnPixels : this.getPreloadMargin(Side.Left)
-					.toPixels()) + 0.5);
-			final int marginRight = (int) Math.floor((this.getPreloadMargin(
-					Side.Right).isAuto() ? this.viewportWidth_
-					+ borderColumnPixels : this.getPreloadMargin(Side.Right)
-					.toPixels()) + 0.5);
-			int left = (int) Math.max((long) 0, (long) this.viewportLeft_
-					- marginLeft);
-			int right = (int) Math.min((long) Math.max((int) this.canvas_
-					.getWidth().toPixels(), this.viewportWidth_),
-					(long) this.viewportLeft_ + this.viewportWidth_
-							+ marginRight);
+			final double marginLeft = this.getPreloadMargin(Side.Left).isAuto() ? this.viewportWidth_
+					+ borderColumnPixels
+					: this.getPreloadMargin(Side.Left).toPixels();
+			final double marginRight = this.getPreloadMargin(Side.Right)
+					.isAuto() ? this.viewportWidth_ + borderColumnPixels : this
+					.getPreloadMargin(Side.Right).toPixels();
+			int left = (int) Math.floor(Math.max(0.0, this.viewportLeft_
+					- marginLeft));
+			int right = (int) Math.ceil(Math.min(Math.max(this.canvas_
+					.getWidth().toPixels(), this.viewportWidth_ * 1.0),
+					this.viewportLeft_ + this.viewportWidth_ + marginRight));
 			int total = 0;
 			this.renderedFirstColumn_ = this.getRowHeaderCount();
 			this.renderedLastColumn_ = this.getColumnCount() - 1;
