@@ -131,7 +131,6 @@ public class WTableView extends WAbstractItemView {
 		this.touchStartConnection_ = new AbstractSignal.Connection();
 		this.touchMoveConnection_ = new AbstractSignal.Connection();
 		this.touchEndConnection_ = new AbstractSignal.Connection();
-		this.preloadMarginRows_ = -1;
 		this.firstColumn_ = -1;
 		this.lastColumn_ = -1;
 		this.viewportLeft_ = 0;
@@ -141,6 +140,7 @@ public class WTableView extends WAbstractItemView {
 		this.scrollToRow_ = -1;
 		this.scrollToHint_ = WAbstractItemView.ScrollHint.EnsureVisible;
 		this.columnResizeConnected_ = false;
+		this.preloadMargin_[0] = this.preloadMargin_[1] = this.preloadMargin_[2] = this.preloadMargin_[3] = new WLength();
 		this.setSelectable(false);
 		this.setStyleClass("Wt-itemview Wt-tableview");
 		this.setup();
@@ -569,33 +569,84 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	/**
-	 * Sets the amount of rows to preload.
+	 * Sets preloading margin.
 	 * <p>
-	 * Configures the amount of rows before and after the currently visible
-	 * range that should be loaded. If N rows are shown, and C is the margin,
-	 * then N + 2C rows are loaded: N visible, C rows before, and C rows after.
+	 * By default the table view loads in an area equal to 3 times its height
+	 * and 3 times its width. This makes it so that the user can scroll a full
+	 * page in each direction without the delay caused when the table view
+	 * dynamically needs to load more data.
 	 * <p>
-	 * Set to 0 if you don&apos;t want to load more rows than are currently
-	 * visible.
+	 * {@link WTableView#setPreloadMargin(WLength margin, EnumSet side)
+	 * setPreloadMargin()} allows to customize this margin.
 	 * <p>
-	 * Set to -1 if you want to keep default behaviour. This means that if N
-	 * rows are visible, then 3N rows are loaded: N visible, N rows before, and
-	 * N rows after.
+	 * e.g. if the table view is H pixels high, and C is the preload margin in
+	 * pixels set on the top and bottom, then enough rows are loaded to fill the
+	 * area that is H + 2C pixels high. H pixels visible, C pixels above, and C
+	 * pixels below.
+	 * <p>
+	 * Set to 0 pixels if you don&apos;t want to load more rows or columns than
+	 * are currently visible.
+	 * <p>
+	 * Set to a default-constructed {@link WLength} (auto) if you want to keep
+	 * default behaviour.
 	 */
-	public void setPreloadMarginRows(int rows) {
-		this.preloadMarginRows_ = rows;
+	public void setPreloadMargin(final WLength margin, EnumSet<Side> side) {
+		if (!EnumUtils.mask(side, Side.Top).isEmpty()) {
+			this.preloadMargin_[0] = margin;
+		}
+		if (!EnumUtils.mask(side, Side.Right).isEmpty()) {
+			this.preloadMargin_[1] = margin;
+		}
+		if (!EnumUtils.mask(side, Side.Bottom).isEmpty()) {
+			this.preloadMargin_[2] = margin;
+		}
+		if (!EnumUtils.mask(side, Side.Left).isEmpty()) {
+			this.preloadMargin_[3] = margin;
+		}
 		this.computeRenderedArea();
 		this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
 	}
 
 	/**
-	 * Get the preload margin.
+	 * Sets preloading margin.
+	 * <p>
+	 * Calls {@link #setPreloadMargin(WLength margin, EnumSet side)
+	 * setPreloadMargin(margin, EnumSet.of(sid, side))}
+	 */
+	public final void setPreloadMargin(final WLength margin, Side sid,
+			Side... side) {
+		setPreloadMargin(margin, EnumSet.of(sid, side));
+	}
+
+	/**
+	 * Sets preloading margin.
+	 * <p>
+	 * Calls {@link #setPreloadMargin(WLength margin, EnumSet side)
+	 * setPreloadMargin(margin, Side.All)}
+	 */
+	public final void setPreloadMargin(final WLength margin) {
+		setPreloadMargin(margin, Side.All);
+	}
+
+	/**
+	 * Retrieves the preloading margin.
 	 * <p>
 	 * 
-	 * @see WTableView#setPreloadMarginRows(int rows)
+	 * @see WTableView#setPreloadMargin(WLength margin, EnumSet side)
 	 */
-	public int getPreloadMarginRows() {
-		return this.preloadMarginRows_;
+	public WLength getPreloadMargin(Side side) {
+		switch (side) {
+		case Top:
+			return this.preloadMargin_[0];
+		case Right:
+			return this.preloadMargin_[1];
+		case Bottom:
+			return this.preloadMargin_[2];
+		case Left:
+			return this.preloadMargin_[3];
+		default:
+			return new WLength();
+		}
 	}
 
 	public void setHidden(boolean hidden, final WAnimation animation) {
@@ -809,7 +860,7 @@ public class WTableView extends WAbstractItemView {
 	private AbstractSignal.Connection touchStartConnection_;
 	private AbstractSignal.Connection touchMoveConnection_;
 	private AbstractSignal.Connection touchEndConnection_;
-	private int preloadMarginRows_;
+	private WLength[] preloadMargin_ = new WLength[4];
 	private int firstColumn_;
 	private int lastColumn_;
 	private int viewportLeft_;
@@ -1263,14 +1314,22 @@ public class WTableView extends WAbstractItemView {
 		this.updateColumnOffsets();
 		assert this.getLastRow() == lr && this.getFirstRow() == fr;
 		assert this.getLastColumn() == lc && this.getFirstColumn() == fc;
-		final int marginHeight = this.preloadMarginRows_ == -1 ? this.viewportHeight_ / 2
-				: (int) (this.preloadMarginRows_ * this.getRowHeight()
-						.toPixels()) / 2;
-		int scrollX1 = Math
-				.max(0, this.viewportLeft_ - this.viewportWidth_ / 2);
-		int scrollX2 = this.viewportLeft_ + this.viewportWidth_ / 2;
-		int scrollY1 = Math.max(0, this.viewportTop_ - marginHeight);
-		int scrollY2 = this.viewportTop_ + marginHeight;
+		final int marginTop = (int) Math.floor((this.getPreloadMargin(Side.Top)
+				.isAuto() ? this.viewportHeight_ : this.getPreloadMargin(
+				Side.Top).toPixels()) / 2 + 0.5);
+		final int marginBottom = (int) Math.floor((this.getPreloadMargin(
+				Side.Bottom).isAuto() ? this.viewportHeight_ : this
+				.getPreloadMargin(Side.Bottom).toPixels()) / 2 + 0.5);
+		final int marginLeft = (int) Math.floor((this.getPreloadMargin(
+				Side.Left).isAuto() ? this.viewportWidth_ : this
+				.getPreloadMargin(Side.Left).toPixels()) / 2 + 0.5);
+		final int marginRight = (int) Math.floor((this.getPreloadMargin(
+				Side.Right).isAuto() ? this.viewportWidth_ : this
+				.getPreloadMargin(Side.Right).toPixels()) / 2 + 0.5);
+		int scrollX1 = Math.max(0, this.viewportLeft_ - marginLeft);
+		int scrollX2 = this.viewportLeft_ + marginRight;
+		int scrollY1 = Math.max(0, this.viewportTop_ - marginTop);
+		int scrollY2 = this.viewportTop_ + marginBottom;
 		StringBuilder s = new StringBuilder();
 		s.append("jQuery.data(").append(this.getJsRef())
 				.append(", 'obj').scrolled(").append(scrollX1).append(", ")
@@ -1677,7 +1736,6 @@ public class WTableView extends WAbstractItemView {
 	private void computeRenderedArea() {
 		if (this.isAjaxMode()) {
 			final int borderRows = 5;
-			final int borderColumnPixels = 200;
 			int modelHeight = 0;
 			if (this.getModel() != null) {
 				modelHeight = this.getModel().getRowCount(this.getRootIndex());
@@ -1687,18 +1745,25 @@ public class WTableView extends WAbstractItemView {
 						.getHeight().toPixels());
 				final int height = Math.min(this.viewportHeight_,
 						(int) this.canvas_.getHeight().toPixels());
-				final int renderedRows = (int) (height
+				final int renderedRows = (int) Math.ceil(height
+						/ this.getRowHeight().toPixels());
+				final int renderedRowsAbove = this.getPreloadMargin(Side.Top)
+						.isAuto() ? renderedRows + borderRows : (int) Math
+						.floor(this.getPreloadMargin(Side.Top).toPixels()
+								/ this.getRowHeight().toPixels() + 0.5);
+				final int renderedRowsBelow = this
+						.getPreloadMargin(Side.Bottom).isAuto() ? renderedRows
+						+ borderRows : (int) Math.floor(this.getPreloadMargin(
+						Side.Bottom).toPixels()
 						/ this.getRowHeight().toPixels() + 0.5);
 				this.renderedFirstRow_ = (int) (top / this.getRowHeight()
 						.toPixels());
-				final int marginRows = this.preloadMarginRows_ == -1 ? renderedRows
-						+ borderRows
-						: this.preloadMarginRows_;
 				this.renderedLastRow_ = (int) Math.min(
 						(long) this.renderedFirstRow_ + renderedRows
-								+ marginRows, (long) (modelHeight - 1));
+								+ renderedRowsBelow, (long) (modelHeight - 1));
 				this.renderedFirstRow_ = (int) Math.max(
-						(long) this.renderedFirstRow_ - marginRows, (long) 0);
+						(long) this.renderedFirstRow_ - renderedRowsAbove,
+						(long) 0);
 			} else {
 				this.renderedFirstRow_ = 0;
 				this.renderedLastRow_ = modelHeight - 1;
@@ -1706,11 +1771,21 @@ public class WTableView extends WAbstractItemView {
 			if (this.renderedFirstRow_ % 2 == 1) {
 				--this.renderedFirstRow_;
 			}
-			int left = Math.max(0, this.viewportLeft_ - this.viewportWidth_
-					- borderColumnPixels);
-			int right = Math.min(Math.max((int) this.canvas_.getWidth()
-					.toPixels(), this.viewportWidth_), this.viewportLeft_ + 2
-					* this.viewportWidth_ + borderColumnPixels);
+			final int borderColumnPixels = 200;
+			final int marginLeft = (int) Math.floor((this.getPreloadMargin(
+					Side.Left).isAuto() ? this.viewportWidth_
+					+ borderColumnPixels : this.getPreloadMargin(Side.Left)
+					.toPixels()) + 0.5);
+			final int marginRight = (int) Math.floor((this.getPreloadMargin(
+					Side.Right).isAuto() ? this.viewportWidth_
+					+ borderColumnPixels : this.getPreloadMargin(Side.Right)
+					.toPixels()) + 0.5);
+			int left = (int) Math.max((long) 0, (long) this.viewportLeft_
+					- marginLeft);
+			int right = (int) Math.min((long) Math.max((int) this.canvas_
+					.getWidth().toPixels(), this.viewportWidth_),
+					(long) this.viewportLeft_ + this.viewportWidth_
+							+ marginRight);
 			int total = 0;
 			this.renderedFirstColumn_ = this.getRowHeaderCount();
 			this.renderedLastColumn_ = this.getColumnCount() - 1;
