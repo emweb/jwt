@@ -2516,13 +2516,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	void bindObjJS(final JSlot slot, final String jsMethod) {
-		slot.setJavaScript("function(obj, event) {jQuery.data("
-				+ this.getJsRef() + ", 'obj')." + jsMethod + "(obj, event);}");
+		slot.setJavaScript("function(obj, event) {" + this.getJsRef()
+				+ ".wtObj." + jsMethod + "(obj, event);}");
 	}
 
 	void connectObjJS(final AbstractEventSignal s, final String jsMethod) {
-		s.addListener("function(obj, event) {jQuery.data(" + this.getJsRef()
-				+ ", 'obj')." + jsMethod + "(obj, event);}");
+		s.addListener("function(obj, event) {" + this.getJsRef() + ".wtObj."
+				+ jsMethod + "(obj, event);}");
 	}
 
 	protected boolean shiftEditorRows(final WModelIndex parent, int start,

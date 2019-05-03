@@ -311,7 +311,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 */
 	public void play() {
 		this.loadJavaScript();
-		this.doJavaScript("jQuery.data(" + this.getJsRef() + ", 'obj').play();");
+		this.doJavaScript(this.getJsRef() + ".wtObj.play();");
 	}
 
 	/**
@@ -321,8 +321,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 */
 	public void pause() {
 		this.loadJavaScript();
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').pause();");
+		this.doJavaScript(this.getJsRef() + ".wtObj.pause();");
 	}
 
 	/**
@@ -718,7 +717,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WAbstractMedia",
-				"function(d,b){function c(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a)return\"\"+a.volume+\";\"+a.currentTime+\";\"+(a.readyState>=1?a.duration:0)+\";\"+(a.paused?\"1\":\"0\")+\";\"+(a.ended?\" 1\":\"0\")+\";\"+a.readyState}return null}jQuery.data(b,\"obj\",this);this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a= $(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()};b.wtEncodeValue=c}");
+				"function(d,b){function c(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a)return\"\"+a.volume+\";\"+a.currentTime+\";\"+(a.readyState>=1?a.duration:0)+\";\"+(a.paused?\"1\":\"0\")+\";\"+(a.ended?\" 1\":\"0\")+\";\"+a.readyState}return null}b.wtObj=this;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a= $(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()};b.wtEncodeValue=c}");
 	}
 
 	static WAbstractMedia.ReadyState intToReadyState(int i) {

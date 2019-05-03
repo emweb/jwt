@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * 	layout.addWidget(new WText(&quot;Three&quot;));
  * 	layout.addWidget(new WText(&quot;Four&quot;));
  * 
- * 	w.setLayout(layout, AlignmentFlag.AlignTop, AlignmentFlag.AlignJustify);
+ * 	w.setLayout(layout);
  * }
  * </pre>
  * <p>

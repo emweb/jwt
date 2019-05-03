@@ -81,6 +81,7 @@ public class AuthService {
 		this.emailTokenValidity_ = 3 * 24 * 60;
 		this.redirectInternalPath_ = "";
 		this.authTokens_ = false;
+		this.authTokenUpdateEnabled_ = true;
 		this.authTokenValidity_ = 14 * 24 * 60;
 		this.authTokenCookieName_ = "";
 		this.authTokenCookieDomain_ = "";
@@ -233,6 +234,46 @@ public class AuthService {
 	}
 
 	/**
+	 * Set whether
+	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
+	 * processAuthToken()} updates the auth token.
+	 * <p>
+	 * If this option is enabled,
+	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
+	 * processAuthToken()} will replace the auth token with a new token. This is
+	 * a bit more secure, because an auth token can only be used once. This is
+	 * enabled by default.
+	 * <p>
+	 * However, this means that if a user concurrently opens multiple sessions
+	 * within the same browsers (e.g. multiple tabs being restored at the same
+	 * time) or refreshes before they receive the new cookie, the user will be
+	 * logged out, unless the {@link AbstractUserDatabase} implementation takes
+	 * this into account (e.g. keeps the old token valid for a little bit
+	 * longer)
+	 * <p>
+	 * The default {@link } UserDatabase does not handle concurrent token updates
+	 * well, so disable this option if you want to prevent that issue.
+	 * <p>
+	 * 
+	 * @see AuthService#processAuthToken(String token, AbstractUserDatabase
+	 *      users)
+	 * @see AuthService#isAuthTokenUpdateEnabled()
+	 */
+	public void setAuthTokenUpdateEnabled(boolean enabled) {
+		this.authTokenUpdateEnabled_ = enabled;
+	}
+
+	/**
+	 * Returns whether the auth token is updated.
+	 * <p>
+	 * 
+	 * @see AuthService#setAuthTokenUpdateEnabled(boolean enabled)
+	 */
+	public boolean isAuthTokenUpdateEnabled() {
+		return this.authTokenUpdateEnabled_;
+	}
+
+	/**
 	 * Returns the authentication token cookie name.
 	 * <p>
 	 * This is the default cookie name used for storing the authentication token
@@ -317,8 +358,13 @@ public class AuthService {
 	 * Processes an authentication token.
 	 * <p>
 	 * This verifies an authentication token, and considers whether it matches
-	 * with a token hash value stored in database. If it matches, the token is
-	 * removed and a new token is created for the identified user.
+	 * with a token hash value stored in database. If it matches and auth token
+	 * update is enabled, the token is updated with a new hash.
+	 * <p>
+	 * 
+	 * @see AuthService#setAuthTokenUpdateEnabled(boolean enabled)
+	 * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String
+	 *      newHash)
 	 */
 	public AuthTokenResult processAuthToken(final String token,
 			final AbstractUserDatabase users) {
@@ -326,19 +372,24 @@ public class AuthService {
 		String hash = this.getTokenHashFunction().compute(token, "");
 		User user = users.findWithAuthToken(hash);
 		if (user.isValid()) {
-			String newToken = MathUtils.randomId(this.tokenLength_);
-			String newHash = this.getTokenHashFunction().compute(newToken, "");
-			int validity = user.updateAuthToken(hash, newHash);
-			if (validity < 0) {
-				user.removeAuthToken(hash);
-				newToken = this.createAuthToken(user);
-				validity = this.authTokenValidity_ * 60;
+			if (this.authTokenUpdateEnabled_) {
+				String newToken = MathUtils.randomId(this.tokenLength_);
+				String newHash = this.getTokenHashFunction().compute(newToken,
+						"");
+				int validity = user.updateAuthToken(hash, newHash);
+				if (validity < 0) {
+					user.removeAuthToken(hash);
+					newToken = this.createAuthToken(user);
+					validity = this.authTokenValidity_ * 60;
+				}
+				if (t != null) {
+					t.commit();
+				}
+				return new AuthTokenResult(AuthTokenResult.Result.Valid, user,
+						newToken, validity);
+			} else {
+				return new AuthTokenResult(AuthTokenResult.Result.Valid, user);
 			}
-			if (t != null) {
-				t.commit();
-			}
-			return new AuthTokenResult(AuthTokenResult.Result.Valid, user,
-					newToken, validity);
 		} else {
 			if (t != null) {
 				t.commit();
@@ -718,6 +769,7 @@ public class AuthService {
 	private int emailTokenValidity_;
 	private String redirectInternalPath_;
 	private boolean authTokens_;
+	private boolean authTokenUpdateEnabled_;
 	private int authTokenValidity_;
 	private String authTokenCookieName_;
 	private String authTokenCookieDomain_;

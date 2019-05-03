@@ -2110,9 +2110,7 @@ public abstract class WWebWidget extends WWidget {
 		this.children_.remove(0 + i);
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(child.getWebWidget(), true);
-		if (this.otherImpl_ != null) {
-			this.otherImpl_.childrenChanged_.trigger();
-		}
+		this.emitChildrenChanged();
 	}
 
 	void setHideWithOffsets(boolean how) {
@@ -2161,9 +2159,7 @@ public abstract class WWebWidget extends WWidget {
 		}
 		WApplication.getInstance().getSession().getRenderer()
 				.updateFormObjects(this, false);
-		if (this.otherImpl_ != null) {
-			this.otherImpl_.childrenChanged_.trigger();
-		}
+		this.emitChildrenChanged();
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
@@ -2674,6 +2670,12 @@ public abstract class WWebWidget extends WWidget {
 		this.flags_.set(BIT_IS_SCROLL_VISIBLE, visible);
 		if (this.otherImpl_ != null) {
 			this.otherImpl_.scrollVisibilityChanged_.trigger(visible);
+		}
+	}
+
+	private void emitChildrenChanged() {
+		if (!this.flags_.get(BIT_BEING_DELETED) && this.otherImpl_ != null) {
+			this.otherImpl_.childrenChanged_.trigger();
 		}
 	}
 

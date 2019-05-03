@@ -594,7 +594,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (popup && WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.clicked()
 					.addListener(
-							"function(o,e) {  if (Wt3_3_12.WPopupWidget && $.data(o,'popup')) {Wt3_3_12.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_3_12.WPopupWidget.popupClicked = null; }}");
+							"function(o,e) {  if (Wt3_3_12.WPopupWidget && o.wtPopup) {Wt3_3_12.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_3_12.WPopupWidget.popupClicked = null; }}");
 			this.clicked().preventPropagation();
 		}
 		super.setPopup(popup);

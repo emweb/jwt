@@ -877,36 +877,24 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 		chart.addJavaScriptVector(this.jsMaxPt_);
 		this.minPtChanged_ = true;
 		this.maxPtChanged_ = true;
-		this.changeClippingMinX_
-				.setJavaScript("function(o,e,pos) {var obj = $('#"
-						+ this.chart_.getId() + "').data('obj');"
-						+ this.jsMinPt_.getJsRef() + "[0] = pos;"
-						+ chart.getRepaintSlot().execJs() + " }", 1);
-		this.changeClippingMaxX_
-				.setJavaScript("function(o,e,pos) {var obj = $('#"
-						+ this.chart_.getId() + "').data('obj');"
-						+ this.jsMaxPt_.getJsRef() + "[0] = pos;"
-						+ chart.getRepaintSlot().execJs() + " }", 1);
-		this.changeClippingMinY_
-				.setJavaScript("function(o,e,pos) {var obj = $('#"
-						+ this.chart_.getId() + "').data('obj');"
-						+ this.jsMinPt_.getJsRef() + "[1] = pos;"
-						+ chart.getRepaintSlot().execJs() + " }", 1);
-		this.changeClippingMaxY_
-				.setJavaScript("function(o,e,pos) {var obj = $('#"
-						+ this.chart_.getId() + "').data('obj');"
-						+ this.jsMaxPt_.getJsRef() + "[1] = pos;"
-						+ chart.getRepaintSlot().execJs() + " }", 1);
-		this.changeClippingMinZ_
-				.setJavaScript("function(o,e,pos) {var obj = $('#"
-						+ this.chart_.getId() + "').data('obj');"
-						+ this.jsMinPt_.getJsRef() + "[2] = pos;"
-						+ chart.getRepaintSlot().execJs() + " }", 1);
-		this.changeClippingMaxZ_
-				.setJavaScript("function(o,e,pos) {var obj = $('#"
-						+ this.chart_.getId() + "').data('obj');"
-						+ this.jsMaxPt_.getJsRef() + "[2] = pos;"
-						+ chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMinX_.setJavaScript("function(o,e,pos) {var obj = "
+				+ this.chart_.getJsRef() + ".wtObj;" + this.jsMinPt_.getJsRef()
+				+ "[0] = pos;" + chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMaxX_.setJavaScript("function(o,e,pos) {var obj = "
+				+ this.chart_.getJsRef() + ".wtObj;" + this.jsMaxPt_.getJsRef()
+				+ "[0] = pos;" + chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMinY_.setJavaScript("function(o,e,pos) {var obj = "
+				+ this.chart_.getJsRef() + ".wtObj;" + this.jsMinPt_.getJsRef()
+				+ "[1] = pos;" + chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMaxY_.setJavaScript("function(o,e,pos) {var obj = "
+				+ this.chart_.getJsRef() + ".wtObj;" + this.jsMaxPt_.getJsRef()
+				+ "[1] = pos;" + chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMinZ_.setJavaScript("function(o,e,pos) {var obj = "
+				+ this.chart_.getJsRef() + ".wtObj;" + this.jsMinPt_.getJsRef()
+				+ "[2] = pos;" + chart.getRepaintSlot().execJs() + " }", 1);
+		this.changeClippingMaxZ_.setJavaScript("function(o,e,pos) {var obj = "
+				+ this.chart_.getJsRef() + ".wtObj;" + this.jsMaxPt_.getJsRef()
+				+ "[2] = pos;" + chart.getRepaintSlot().execJs() + " }", 1);
 	}
 
 	public List<Object> getGlObjects() {

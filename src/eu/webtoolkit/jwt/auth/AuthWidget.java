@@ -310,8 +310,25 @@ public class AuthWidget extends WTemplateFormView {
 	 * showDialog()}.
 	 */
 	public void letUpdatePassword(final User user, boolean promptPassword) {
-		this.showDialog(tr("Wt.Auth.updatepassword"),
-				this.createUpdatePasswordView(user, promptPassword));
+		WWidget updatePasswordView = this.createUpdatePasswordView(user,
+				promptPassword);
+		UpdatePasswordWidget defaultUpdatePasswordWidget = ((updatePasswordView) instanceof UpdatePasswordWidget ? (UpdatePasswordWidget) (updatePasswordView)
+				: null);
+		this.showDialog(tr("Wt.Auth.updatepassword"), updatePasswordView);
+		if (defaultUpdatePasswordWidget != null) {
+			defaultUpdatePasswordWidget.updated().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							AuthWidget.this.closeDialog();
+						}
+					});
+			defaultUpdatePasswordWidget.canceled().addListener(this,
+					new Signal.Listener() {
+						public void trigger() {
+							AuthWidget.this.closeDialog();
+						}
+					});
+		}
 	}
 
 	/**

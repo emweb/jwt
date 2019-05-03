@@ -336,8 +336,8 @@ public class WTimeEdit extends WLineEdit {
 
 	private void connectJavaScript(final AbstractEventSignal s,
 			final String methodName) {
-		String jsFunction = "function(dobj, event) {var o = jQuery.data("
-				+ this.getJsRef() + ", 'dobj');if(o) o." + methodName
+		String jsFunction = "function(dobj, event) {var o = " + this.getJsRef()
+				+ ";if(o && o.wtDObj) o.wtDObj." + methodName
 				+ "(dobj, event);}";
 		s.addListener(jsFunction);
 	}
@@ -347,6 +347,6 @@ public class WTimeEdit extends WLineEdit {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTimeEdit",
-				"function(g,a,h){function f(){return a.readOnly}function i(){var b=$(\"#\"+h).get(0);return jQuery.data(b,\"popup\")}function j(){c.removeClass(\"active\")}function k(){var b=i();b.bindHide(j);b.show(a,e.Vertical)}jQuery.data(a,\"dobj\",this);var e=g.WT,c=$(a);this.mouseOut=function(){c.removeClass(\"hover\")};this.mouseMove=function(b,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)c.addClass(\"hover\");else c.hasClass(\"hover\")&&c.removeClass(\"hover\")}; this.mouseDown=function(b,d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&c.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(b,d){c.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
+				"function(g,a,h){function f(){return a.readOnly}function i(){return $(\"#\"+h).get(0).wtPopup}function j(){b.removeClass(\"active\")}function k(){var c=i();c.bindHide(j);c.show(a,e.Vertical)}a.wtDObj=this;var e=g.WT,b=$(a);this.mouseOut=function(){b.removeClass(\"hover\")};this.mouseMove=function(c,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)b.addClass(\"hover\");else b.hasClass(\"hover\")&&b.removeClass(\"hover\")};this.mouseDown=function(c, d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&b.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(c,d){b.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
 	}
 }

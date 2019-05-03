@@ -80,7 +80,7 @@ class WJavaScriptObjectStorage {
 	}
 
 	public String getJsRef() {
-		return "jQuery.data(" + widget.getJsRef() + ",'jsobj')";
+		return widget.getJsRef() + ".wtJSObj";
 	}
 
 	final List<WJavaScriptExposableObject> jsValues = new ArrayList<WJavaScriptExposableObject>();

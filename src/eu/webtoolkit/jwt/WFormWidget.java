@@ -293,9 +293,8 @@ public abstract class WFormWidget extends WInteractWidget {
 						this.focussed().addListener(this.removeEmptyText_);
 						this.blurred().addListener(this.removeEmptyText_);
 						this.keyWentDown().addListener(this.removeEmptyText_);
-						String jsFunction = "function(obj, event) {jQuery.data("
-								+ this.getJsRef()
-								+ ", 'obj').applyEmptyText();}";
+						String jsFunction = "function(obj, event) {"
+								+ this.getJsRef() + ".wtObj.applyEmptyText();}";
 						this.removeEmptyText_.setJavaScript(jsFunction);
 					}
 				} else {
@@ -388,8 +387,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		final WEnvironment env = app.getEnvironment();
 		if (env.agentIsIElt(10) && this.isRendered()
 				&& !(this.emptyText_.length() == 0)) {
-			this.doJavaScript("jQuery.data(" + this.getJsRef()
-					+ ", 'obj').applyEmptyText();");
+			this.doJavaScript(this.getJsRef() + ".wtObj.applyEmptyText();");
 		}
 	}
 
@@ -491,8 +489,7 @@ public abstract class WFormWidget extends WInteractWidget {
 		WApplication app = WApplication.getInstance();
 		final WEnvironment env = app.getEnvironment();
 		if (env.agentIsIElt(10) && this.isRendered()) {
-			this.doJavaScript("jQuery.data(" + this.getJsRef()
-					+ ", 'obj').setEmptyText("
+			this.doJavaScript(this.getJsRef() + ".wtObj.setEmptyText("
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");
 		}
@@ -583,6 +580,6 @@ public abstract class WFormWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WFormWidget",
-				"function(d,a,b){jQuery.data(a,\"obj\",this);var c=d.WT;this.applyEmptyText=function(){if(c.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!c.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(c.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=b}else $(a).removeClass(\"Wt-edit-emptyText\")};this.setEmptyText=function(e){b= e;if($(a).hasClass(\"Wt-edit-emptyText\"))a.value=b};this.applyEmptyText()}");
+				"function(d,a,b){a.wtObj=this;var c=d.WT;this.applyEmptyText=function(){if(c.hasFocus(a)){if($(a).hasClass(\"Wt-edit-emptyText\")){if(!c.isIE&&a.oldtype)a.type=a.oldtype;$(a).removeClass(\"Wt-edit-emptyText\");a.value=\"\"}}else if(a.value==\"\"){if(a.type==\"password\")if(c.isIE)return;else{a.oldtype=\"password\";a.type=\"text\"}$(a).addClass(\"Wt-edit-emptyText\");a.value=b}else $(a).removeClass(\"Wt-edit-emptyText\")};this.setEmptyText=function(e){b=e;if($(a).hasClass(\"Wt-edit-emptyText\"))a.value= b};this.applyEmptyText()}");
 	}
 }

@@ -253,12 +253,15 @@ public class WTreeTable extends WCompositeWidget {
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
-			this.setJavaScriptMember(WT_RESIZE_JS, "$('#" + this.getId()
-					+ "').data('obj').wtResize");
+			this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef()
+					+ ".wtObj.wtResize");
 			this.resize(this.getWidth(), this.getHeight());
-			WApplication.getInstance().addAutoJavaScript(
-					"{var obj = $('#" + this.getId()
-							+ "').data('obj');if (obj) obj.autoJavaScript();}");
+			WApplication
+					.getInstance()
+					.addAutoJavaScript(
+							"{var obj = "
+									+ this.getJsRef()
+									+ ";if (obj && obj.wtObj) obj.wtObj.autoJavaScript();}");
 		}
 		super.render(flags);
 	}
@@ -281,6 +284,6 @@ public class WTreeTable extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WTreeTable",
-				"function(g,a){jQuery.data(a,\"obj\",this);var h=this,i=g.WT,f=$(a).find(\".Wt-content\").get(0),j=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){d=c>=0;b.style.height=d?c+\"px\":\"\";var e=b.lastChild;c-=$(b.firstChild).outerHeight();if(d&&c>0){if(e.style.height!=c+\"px\")e.style.height=c+\"px\"}else e.style.height=\"\"};this.autoJavaScript=function(){if(a.parentNode){j.style.display=f.scrollHeight>f.offsetHeight?\"block\":\"none\";var b=i.pxself(a, \"height\");b&&h.wtResize(a,0,b,true)}}}");
+				"function(g,a){a.wtObj=this;var h=this,i=g.WT,f=$(a).find(\".Wt-content\").get(0),j=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){d=c>=0;b.style.height=d?c+\"px\":\"\";var e=b.lastChild;c-=$(b.firstChild).outerHeight();if(d&&c>0){if(e.style.height!=c+\"px\")e.style.height=c+\"px\"}else e.style.height=\"\"};this.autoJavaScript=function(){if(a.parentNode){j.style.display=f.scrollHeight>f.offsetHeight?\"block\":\"none\";var b=i.pxself(a,\"height\"); b&&h.wtResize(a,0,b,true)}}}");
 	}
 }

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.ItemDataRole;
 import eu.webtoolkit.jwt.ItemFlag;
 import eu.webtoolkit.jwt.Orientation;
@@ -20,6 +21,7 @@ import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal2;
 import eu.webtoolkit.jwt.SortOrder;
+import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
@@ -27,11 +29,14 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WGridLayout;
 import eu.webtoolkit.jwt.WItemDelegate;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPopupMenu;
 import eu.webtoolkit.jwt.WSortFilterProxyModel;
 import eu.webtoolkit.jwt.WStandardItem;
 import eu.webtoolkit.jwt.WStandardItemModel;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableView;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTreeView;
@@ -111,6 +116,16 @@ public class TreeViewDragDropApplication extends WApplication {
     private WTableView fileView_;
 
     /**
+     * The right click menu for the folder view
+     */
+    private WPopupMenu popup_;
+
+    /**
+     * The message box that pops up when a popup menu action is activated
+     */
+    private WMessageBox popupActionBox_;
+
+    /**
      * Setup the user interface.
      */
     private void createUI() {
@@ -163,7 +178,7 @@ public class TreeViewDragDropApplication extends WApplication {
      * Creates the folder WTreeView
      */
     private WTreeView folderView() {
-        WTreeView treeView = new FolderView();
+        final WTreeView treeView = new FolderView();
 
         /*
          * To support right-click, we need to disable the built-in browser
@@ -184,10 +199,80 @@ public class TreeViewDragDropApplication extends WApplication {
                 folderChanged();
             }
         });
+        treeView.mouseWentUp().addListener(this, new Signal2.Listener<WModelIndex, WMouseEvent>() {
+            @Override
+            public void trigger(WModelIndex item, WMouseEvent event) {
+                showPopup(item, event);
+            }
+        });
 
         folderView_ = treeView;
 
         return treeView;
+    }
+
+    /**
+     * Show a popup for a folder item.
+     */
+    private void showPopup(final WModelIndex item, final WMouseEvent event){
+        if (!folderView_.isSelected(item))
+            folderView_.select(item);
+
+        if (popup_ == null) {
+            popup_ = new WPopupMenu();
+            popup_.addItem("Create a New Folder");
+            popup_.addItem("Rename this Folder").setCheckable(true);
+            popup_.addItem("Delete this Folder");
+            popup_.addSeparator();
+            popup_.addItem("Folder Details");
+            popup_.addSeparator();
+            popup_.addItem("Application Inventory");
+            popup_.addItem("Hardware Inventory");
+            popup_.addSeparator();
+
+            WPopupMenu subMenu = new WPopupMenu();
+            subMenu.addItem("Sub Item 1");
+            subMenu.addItem("Sub Item 2");
+            popup_.addMenu("File Deployments", subMenu);
+
+            popup_.aboutToHide().addListener(this, new Signal.Listener() {
+                @Override
+                public void trigger() { popupAction(); }
+            });
+        }
+
+        if (popup_.isHidden())
+            popup_.popup(event);
+        else
+            popup_.hide();
+    }
+
+    /**
+     * Process the result of the popup menu
+     */
+    private void popupAction() {
+        if (popup_.getResult() != null) {
+            WString text = popup_.getResult().getText();
+            popup_.hide();
+
+            popupActionBox_ = new WMessageBox("Sorry.", "Action '" + text
+                    + "' is not implemented.", Icon.NoIcon, EnumSet.of(StandardButton.Ok));
+            popupActionBox_.buttonClicked().addListener(this, new Signal.Listener() {
+                @Override
+                public void trigger() { dialogDone(); }
+            });
+            popupActionBox_.show();
+        } else {
+            popup_.hide();
+        }
+    }
+
+    /**
+     * Process the result of the message box
+     */
+    private  void dialogDone() {
+        popupActionBox_.remove();
+        popupActionBox_ = null;
     }
 
     /**

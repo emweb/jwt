@@ -1333,7 +1333,7 @@ public class WMediaPlayer extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WMediaPlayer",
-				"function(f,b){function d(){var c=$(b).find(\".jp-jplayer\").data(\"jPlayer\"),a=c.status;return c.options.volume+\";\"+a.currentTime+\";\"+a.duration+\";\"+(a.paused?1:0)+\";\"+(a.ended?1:0)+\";\"+a.readyState+\";\"+(a.playbackRate?a.playbackRate:1)+\";\"+a.seekPercent}function e(c){var a=this;if(a=a.htmlElement.video||a.htmlElement.audio)a.playbackRate=c;return this}jQuery.data(b,\"obj\",this);b.wtEncodeValue=d;$(b).find(\".jp-jplayer\").data(\"jPlayer\").wtPlaybackRate= e}");
+				"function(f,b){function d(){var c=$(b).find(\".jp-jplayer\").data(\"jPlayer\"),a=c.status;return c.options.volume+\";\"+a.currentTime+\";\"+a.duration+\";\"+(a.paused?1:0)+\";\"+(a.ended?1:0)+\";\"+a.readyState+\";\"+(a.playbackRate?a.playbackRate:1)+\";\"+a.seekPercent}function e(c){var a=this;if(a=a.htmlElement.video||a.htmlElement.audio)a.playbackRate=c;return this}b.wtObj=this;b.wtEncodeValue=d;$(b).find(\".jp-jplayer\").data(\"jPlayer\").wtPlaybackRate=e}");
 	}
 
 	static WMediaPlayer.ReadyState intToReadyState(int i) {

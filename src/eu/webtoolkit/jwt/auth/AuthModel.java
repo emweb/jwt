@@ -231,8 +231,7 @@ public class AuthModel extends FormBaseModel {
 		if (this.getPasswordAuth() != null
 				&& this.getPasswordAuth().isAttemptThrottlingEnabled()) {
 			StringBuilder s = new StringBuilder();
-			s.append("jQuery.data(").append(button.getJsRef())
-					.append(", 'throttle').reset(")
+			s.append(button.getJsRef()).append(".wtThrottle.reset(")
 					.append(this.throttlingDelay_).append(");");
 			button.doJavaScript(s.toString());
 		}
@@ -326,12 +325,17 @@ public class AuthModel extends FormBaseModel {
 				AuthTokenResult result = this.getBaseAuth().processAuthToken(
 						token, this.getUsers());
 				switch (result.getResult()) {
-				case Valid:
-					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
-							result.getNewToken(), result.getNewTokenValidity(),
-							"", "",
-							app.getEnvironment().getUrlScheme().equals("https"));
+				case Valid: {
+					if (result.getNewToken().length() != 0) {
+						app.setCookie(this.getBaseAuth()
+								.getAuthTokenCookieName(),
+								result.getNewToken(), result
+										.getNewTokenValidity(), "", "", app
+										.getEnvironment().getUrlScheme()
+										.equals("https"));
+					}
 					return result.getUser();
+				}
 				case Invalid:
 					app.setCookie(this.getBaseAuth().getAuthTokenCookieName(),
 							"", 0, "", "", app.getEnvironment().getUrlScheme()
@@ -350,6 +354,6 @@ public class AuthModel extends FormBaseModel {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"AuthThrottle",
-				"function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}jQuery.data(a,\"throttle\",this);var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
+				"function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}a.wtThrottle=this;var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
 	}
 }

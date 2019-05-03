@@ -126,8 +126,9 @@ public class AuthTokenResult {
 	/**
 	 * Returns a new token for this user.
 	 * <p>
-	 * An authentication token can be used only once, and needs to be replaced
-	 * by a new token.
+	 * Returns the empty string if there is no new token. See
+	 * {@link AuthService#isAuthTokenUpdateEnabled()
+	 * AuthService#isAuthTokenUpdateEnabled()}.
 	 * <p>
 	 * The returned token is valid only if the
 	 * {@link AuthTokenResult#getResult() getResult()} == Valid.
@@ -144,6 +145,9 @@ public class AuthTokenResult {
 	 * Returns the validity of the new token.
 	 * <p>
 	 * This returns the token validity in seconds.
+	 * <p>
+	 * Returns -1 if there is no new token, or
+	 * {@link AuthTokenResult#getResult() getResult()} != Valid.
 	 * <p>
 	 * 
 	 * @see AuthTokenResult#getNewToken()

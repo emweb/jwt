@@ -640,7 +640,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * </p>
 	 */
 	protected String getObjJsRef() {
-		return "jQuery.data(" + this.getJsRef() + ",'obj')";
+		return this.getJsRef() + ".wtObj";
 	}
 
 	private void defineJavaScript() {
@@ -732,7 +732,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPaintedWidget",
-				"function(W,w){jQuery.data(w,\"obj\",this);var x=this;this.imagePreloaders=[];this.images=[];this.canvas=document.getElementById(\"c\"+w.id);this.repaint=function(){};this.widget=w;this.cancelPreloaders=function(){for(var y=0;y<x.imagePreloaders.length;++y)x.imagePreloaders[y].cancel();x.imagePreloaders=[]}}");
+				"function(W,w){w.wtObj=this;var x=this;this.imagePreloaders=[];this.images=[];this.canvas=document.getElementById(\"c\"+w.id);this.repaint=function(){};this.widget=w;this.cancelPreloaders=function(){for(var y=0;y<x.imagePreloaders.length;++y)x.imagePreloaders[y].cancel();x.imagePreloaders=[]}}");
 	}
 
 	static WJavaScriptPreamble wtjs11() {
@@ -748,6 +748,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WJavaScriptObjectStorage",
-				"function(k,g){function d(b){if(jQuery.isArray(b)){var c=[],a;for(a=0;a<b.length;++a)c.push(d(b[a]));return c}else if(jQuery.isPlainObject(b)){c={};for(a in b)if(b.hasOwnProperty(a))c[a]=d(b[a]);return c}else return b}function e(b,c){if(b===c)return true;if(jQuery.isArray(b)&&jQuery.isArray(c)){if(b.length!==c.length)return false;var a;for(a=0;a<b.length;++a)if(!e(b[a],c[a]))return false;return true}else if(jQuery.isPlainObject(b)&& jQuery.isPlainObject(c)){for(a in b)if(b.hasOwnProperty(a)){if(!c.hasOwnProperty(a))return false;if(!e(b[a],c[a]))return false}for(a in c)if(c.hasOwnProperty(a))if(!b.hasOwnProperty(a))return false;return true}else return false}function h(b){return jQuery.isArray(b)&&b.length>6}function j(){var b={},c,a;for(a=0;a<f.jsValues.length;++a){c=f.jsValues[a];if(!h(c)&&!e(c,i[a]))b[a]=c}return JSON.stringify(b)}jQuery.data(g,\"jsobj\",this);var f=this,i={};this.jsValues=[];this.setJsValue=function(b,c){h(c)|| (i[b]=d(c));f.jsValues[b]=c};g.wtEncodeValue=j}");
+				"function(k,g){function d(b){if(jQuery.isArray(b)){var c=[],a;for(a=0;a<b.length;++a)c.push(d(b[a]));return c}else if(jQuery.isPlainObject(b)){c={};for(a in b)if(b.hasOwnProperty(a))c[a]=d(b[a]);return c}else return b}function e(b,c){if(b===c)return true;if(jQuery.isArray(b)&&jQuery.isArray(c)){if(b.length!==c.length)return false;var a;for(a=0;a<b.length;++a)if(!e(b[a],c[a]))return false;return true}else if(jQuery.isPlainObject(b)&& jQuery.isPlainObject(c)){for(a in b)if(b.hasOwnProperty(a)){if(!c.hasOwnProperty(a))return false;if(!e(b[a],c[a]))return false}for(a in c)if(c.hasOwnProperty(a))if(!b.hasOwnProperty(a))return false;return true}else return false}function h(b){return jQuery.isArray(b)&&b.length>6}function j(){var b={},c,a;for(a=0;a<f.jsValues.length;++a){c=f.jsValues[a];if(!h(c)&&!e(c,i[a]))b[a]=c}return JSON.stringify(b)}g.wtJSObj=this;var f=this,i={};this.jsValues=[];this.setJsValue=function(b,c){h(c)||(i[b]=d(c)); f.jsValues[b]=c};g.wtEncodeValue=j}");
 	}
 }

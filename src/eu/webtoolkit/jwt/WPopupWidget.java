@@ -152,9 +152,9 @@ public class WPopupWidget extends WCompositeWidget {
 		this.autoHideDelay_ = autoHideDelay;
 		if (this.isRendered()) {
 			StringBuilder ss = new StringBuilder();
-			ss.append("jQuery.data(").append(this.getJsRef())
-					.append(", 'popup').setTransient(").append(this.transient_)
-					.append(',').append(this.autoHideDelay_).append(");");
+			ss.append(this.getJsRef()).append(".wtPopup.setTransient(")
+					.append(this.transient_).append(',')
+					.append(this.autoHideDelay_).append(");");
 			this.doJavaScript(ss.toString());
 		}
 	}
@@ -230,11 +230,11 @@ public class WPopupWidget extends WCompositeWidget {
 		}
 		if (!WWebWidget.canOptimizeUpdates() || this.isRendered()) {
 			if (hidden) {
-				this.doJavaScript("var o = jQuery.data(" + this.getJsRef()
-						+ ", 'popup');if (o) o.hidden();");
+				this.doJavaScript("var o = " + this.getJsRef()
+						+ ";if (o && o.wtPopup) o.wtPopup.hidden();");
 			} else {
-				this.doJavaScript("var o = jQuery.data(" + this.getJsRef()
-						+ ", 'popup');if (o) o.shown();");
+				this.doJavaScript("var o = " + this.getJsRef()
+						+ ";if (o && o.wtPopup) o.wtPopup.shown();");
 			}
 		}
 		if (!WWebWidget.canOptimizeUpdates() && hidden
@@ -321,6 +321,6 @@ public class WPopupWidget extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WPopupWidget",
-				"function(h,b,s,t,u){function o(){if(e.isIOS){$(document).bind(\"touchstart\",p);$(document).bind(\"touchend\",q)}else $(document).bind(\"click\",i)}function v(){if(e.isIOS){$(document).unbind(\"touchstart\",p);$(document).unbind(\"touchend\",q)}else $(document).unbind(\"click\",i)}function p(a){a=a.originalEvent.touches;f=a.length>1?null:{x:a[0].screenX,y:a[0].screenY}}function q(a){if(f){var c=a.originalEvent.changedTouches[0];Math.abs(f.x-c.screenX)< 20&&Math.abs(f.y-c.screenY)<20&&i(a)}}function w(){clearTimeout(j);if(k>0)j=setTimeout(function(){l.hide()},k)}function x(){clearTimeout(j)}function y(){return b.style.display==\"hidden\"}function i(a){function c(r,d){if(r==d)return true;for(d=d.parentNode;d;d=d.parentNode)if(r==d)return true;return false}a=e.target(a);if(a==document)if(e.WPopupWidget.popupClicked!==null)a=e.WPopupWidget.popupClicked;c(b,a)||l.hide()}jQuery.data(b,\"popup\",this);var l=this,e=h.WT,j=null,g=s,k=t,f=null,m=null,n=null; this.bindShow=function(a){m=a};this.bindHide=function(a){n=a};this.shown=function(){g&&setTimeout(function(){o()},0);m&&m()};this.show=function(a,c){if(b.style.display!=\"\"){b.style.display=\"\";a&&e.positionAtWidget(b.id,a.id,c);h.emit(b,\"shown\")}};this.hidden=function(){n&&n();g&&v()};this.hide=function(){if(b.style.display!=\"none\")b.style.display=\"none\";h.emit(b,\"hidden\");l.hidden()};this.setTransient=function(a,c){g=a;k=c;g&&!y()&&setTimeout(function(){o()},0)};$(b).mouseleave(w).mouseenter(x);u&& this.shown()}");
+				"function(h,b,s,t,u){function o(){if(e.isIOS){$(document).bind(\"touchstart\",p);$(document).bind(\"touchend\",q)}else $(document).bind(\"click\",i)}function v(){if(e.isIOS){$(document).unbind(\"touchstart\",p);$(document).unbind(\"touchend\",q)}else $(document).unbind(\"click\",i)}function p(a){a=a.originalEvent.touches;f=a.length>1?null:{x:a[0].screenX,y:a[0].screenY}}function q(a){if(f){var c=a.originalEvent.changedTouches[0];Math.abs(f.x-c.screenX)< 20&&Math.abs(f.y-c.screenY)<20&&i(a)}}function w(){clearTimeout(j);if(k>0)j=setTimeout(function(){l.hide()},k)}function x(){clearTimeout(j)}function y(){return b.style.display==\"hidden\"}function i(a){function c(r,d){if(r==d)return true;for(d=d.parentNode;d;d=d.parentNode)if(r==d)return true;return false}a=e.target(a);if(a==document)if(e.WPopupWidget.popupClicked!==null)a=e.WPopupWidget.popupClicked;c(b,a)||l.hide()}b.wtPopup=this;var l=this,e=h.WT,j=null,g=s,k=t,f=null,m=null,n=null;this.bindShow= function(a){m=a};this.bindHide=function(a){n=a};this.shown=function(){g&&setTimeout(function(){o()},0);m&&m()};this.show=function(a,c){if(b.style.display!=\"\"){b.style.display=\"\";a&&e.positionAtWidget(b.id,a.id,c);h.emit(b,\"shown\")}};this.hidden=function(){n&&n();g&&v()};this.hide=function(){if(b.style.display!=\"none\")b.style.display=\"none\";h.emit(b,\"hidden\");l.hidden()};this.setTransient=function(a,c){g=a;k=c;g&&!y()&&setTimeout(function(){o()},0)};$(b).mouseleave(w).mouseenter(x);u&&this.shown()}");
 	}
 }

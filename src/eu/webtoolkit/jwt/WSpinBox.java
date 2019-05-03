@@ -228,8 +228,8 @@ public class WSpinBox extends WAbstractSpinBox {
 			} else {
 				final WIntValidator v = new WIntValidator();
 				v.getJavaScriptValidate();
-				this.doJavaScript("jQuery.data(" + this.getJsRef() + ", 'obj')"
-						+ ".setWrapAroundEnabled("
+				this.doJavaScript(this.getJsRef()
+						+ ".wtObj.setWrapAroundEnabled("
 						+ (this.isWrapAroundEnabled() ? "true" : "false")
 						+ ");");
 			}

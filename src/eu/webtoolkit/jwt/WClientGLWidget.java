@@ -3033,9 +3033,8 @@ class WClientGLWidget extends WAbstractGLImplementation {
 	}
 
 	private String glObjJsRef(final String jsRef) {
-		return "(function(){var r = "
-				+ jsRef
-				+ ";var o = r ? jQuery.data(r,'obj') : null;return o ? o : {ctx: null};})()";
+		return "(function(){var r = " + jsRef
+				+ ";var o = r ? r.wtObj : null;return o ? o : {ctx: null};})()";
 	}
 
 	private void initializeGL(final String jsRef, final StringWriter ss) {

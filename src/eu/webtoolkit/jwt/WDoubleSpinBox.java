@@ -322,8 +322,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 
 	private void setup() {
 		this.setup_ = true;
-		this.doJavaScript("jQuery.data(" + this.getJsRef()
-				+ ", 'obj').setIsDoubleSpinBox(true);");
+		this.doJavaScript(this.getJsRef() + ".wtObj.setIsDoubleSpinBox(true);");
 	}
 
 	private void onChange() {
