@@ -215,6 +215,9 @@ public class TreeViewDragDropApplication extends WApplication {
      * Show a popup for a folder item.
      */
     private void showPopup(final WModelIndex item, final WMouseEvent event){
+        if (event.getButton() != WMouseEvent.Button.RightButton)
+            return;
+
         if (!folderView_.isSelected(item))
             folderView_.select(item);
 
