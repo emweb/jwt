@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
  * {@link WComboBox#activated() WComboBox#activated()} and
  * {@link WComboBox#sactivated() WComboBox#sactivated()} signals are not emited
  * in the {@link SelectionMode#ExtendedSelection} mode, use the
- * {@link WFormWidget#changed() WFormWidget#changed()} signal
- * {@link WFormWidget#changed() WFormWidget#changed()}.
+ * {@link WFormWidget#changed() WFormWidget#changed()} signal.
  * <p>
  * WSelectionBox is an MVC view class, using a simple string list model by
  * default. The model may be populated using
