@@ -1390,6 +1390,7 @@ public class DomElement {
 	 * Returns the tag name for a DOMElement type.
 	 */
 	public static String tagName(DomElementType type) {
+		assert type.getValue() < DomElementType.DomElement_UNKNOWN.getValue();
 		return elementNames_[type.getValue()];
 	}
 
@@ -1405,6 +1406,7 @@ public class DomElement {
 	 * Returns whether a paritcular element is by default inline.
 	 */
 	public static boolean isDefaultInline(DomElementType type) {
+		assert type.getValue() < DomElementType.DomElement_UNKNOWN.getValue();
 		return defaultInline_[type.getValue()];
 	}
 

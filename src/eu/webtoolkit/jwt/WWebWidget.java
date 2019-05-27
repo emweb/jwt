@@ -1262,7 +1262,10 @@ public abstract class WWebWidget extends WWidget {
 				&& this.flags_.get(BIT_HIDDEN_CHANGED) || all) {
 			if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)
 					|| !this.flags_.get(BIT_HIDDEN)) {
-				if (element.isDefaultInline() != this.flags_.get(BIT_INLINE)) {
+				final boolean defaultInline = element.getType() == DomElementType.DomElement_OTHER ? DomElement
+						.isDefaultInline(this.getDomElementType()) : element
+						.isDefaultInline();
+				if (defaultInline != this.flags_.get(BIT_INLINE)) {
 					if (this.flags_.get(BIT_INLINE)) {
 						if (element.getType() == DomElementType.DomElement_TABLE) {
 							element.setProperty(Property.PropertyStyleDisplay,
@@ -1295,8 +1298,7 @@ public abstract class WWebWidget extends WWidget {
 					}
 				} else {
 					if (!all && this.flags_.get(BIT_HIDDEN_CHANGED)) {
-						if (element.isDefaultInline() == this.flags_
-								.get(BIT_INLINE)) {
+						if (defaultInline == this.flags_.get(BIT_INLINE)) {
 							element.setProperty(Property.PropertyStyleDisplay,
 									"");
 						} else {
