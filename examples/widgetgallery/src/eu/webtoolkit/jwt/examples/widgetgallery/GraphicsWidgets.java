@@ -61,11 +61,18 @@ class GraphicsWidgets extends TopicWidget {
 						return GraphicsWidgets.this.pieChart();
 					}
 				}));
-		menu.addItem("Maps", DeferredWidget.deferCreate(new WidgetCreator() {
-			public WWidget create() {
-				return GraphicsWidgets.this.googleMap();
-			}
-		}));
+		menu.addItem("Leaflet maps",
+				DeferredWidget.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.leafletMap();
+					}
+				}));
+		menu.addItem("Google maps",
+				DeferredWidget.deferCreate(new WidgetCreator() {
+					public WWidget create() {
+						return GraphicsWidgets.this.googleMap();
+					}
+				}));
 		menu.addItem("3D painting",
 				DeferredWidget.deferCreate(new WidgetCreator() {
 					public WWidget create() {
@@ -129,6 +136,12 @@ class GraphicsWidgets extends TopicWidget {
 	private WWidget pieChart() {
 		WTemplate result = new TopicTemplate("graphics-PieChart");
 		result.bindWidget("PieChart", PieChart());
+		return result;
+	}
+
+	private WWidget leafletMap() {
+		WTemplate result = new TopicTemplate("graphics-LeafletMap");
+		result.bindWidget("LeafletMap", LeafletMap());
 		return result;
 	}
 
@@ -616,6 +629,11 @@ class GraphicsWidgets extends TopicWidget {
 		chart.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
 		chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
 		return container;
+	}
+
+	WWidget LeafletMap() {
+		LeafletMapExample map = new LeafletMapExample();
+		return map;
 	}
 
 	WWidget GoogleMap() {

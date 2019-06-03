@@ -18,6 +18,8 @@ public class WidgetGalleryServlet extends WtServlet {
 				setErrorReporting(ErrorReporting.NoErrors);
 				setUaCompatible("IE8=IE7");
 				setTinyMCEVersion(4);
+				getProperties().put("leafletJSURL", "https://unpkg.com/leaflet@1.5.1/dist/leaflet.js");
+				getProperties().put("leafletCSSURL", "https://unpkg.com/leaflet@1.5.1/dist/leaflet.css");
 			}
 
 			@Override

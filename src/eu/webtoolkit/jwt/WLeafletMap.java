@@ -167,7 +167,7 @@ public class WLeafletMap extends WCompositeWidget {
 		public WidgetMarker(final WLeafletMap.Coordinate pos, WWidget widget) {
 			super(pos);
 			this.container_ = new WContainerWidget();
-			this.container_.setJavaScriptMember("wtNoReparent", "true");
+			this.container_.setJavaScriptMember("wtReparentBarrier", "true");
 			this.container_.addWidget(widget);
 		}
 
@@ -294,9 +294,22 @@ public class WLeafletMap extends WCompositeWidget {
 				});
 		WApplication app = WApplication.getInstance();
 		if (app != null) {
-			app.require("https://unpkg.com/leaflet@1.5.1/dist/leaflet.js");
-			app.useStyleSheet(new WLink(
-					"https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"));
+			String leafletJSURL = "";
+			String leafletCSSURL = "";
+			leafletJSURL = WApplication.readConfigurationProperty(
+					"leafletJSURL", leafletJSURL);
+			leafletCSSURL = WApplication.readConfigurationProperty(
+					"leafletCSSURL", leafletCSSURL);
+			if (leafletJSURL.length() != 0 && leafletCSSURL.length() != 0) {
+				app.require(leafletJSURL);
+				app.useStyleSheet(new WLink(leafletCSSURL));
+			} else {
+				throw new WException(
+						"Trying to create a WLeafletMap, but the leafletJSURL and/or leafletCSSURL properties are not configured");
+			}
+		} else {
+			throw new WException(
+					"Trying to create a WLeafletMap without an active WApplication");
 		}
 	}
 
@@ -464,6 +477,19 @@ public class WLeafletMap extends WCompositeWidget {
 		return this.panChanged_;
 	}
 
+	/**
+	 * Returns a JavaScript expression to the Leaflet map object.
+	 * <p>
+	 * You may want to use this in conjunction with {@link JSlot} or
+	 * {@link WCompositeWidget#doJavaScript(String js)
+	 * WCompositeWidget#doJavaScript()} in custom JavaScript code, e.g. to
+	 * access features not built-in to WLeafletMap.
+	 */
+	public String getMapJsRef() {
+		return "((function(){var o=" + this.getJsRef()
+				+ ";if(o&&o.wtObj){return o.wtObj.map;}return null;})())";
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			this.defineJavaScript();
@@ -545,6 +571,13 @@ public class WLeafletMap extends WCompositeWidget {
 
 		public static final int BIT_ADDED = 0;
 		public static final int BIT_REMOVED = 1;
+
+		public MarkerEntry() {
+			this.marker = null;
+			this.id = -1;
+			this.flags = new BitSet();
+		}
+
 		public WLeafletMap.Marker marker;
 		public long id;
 		public BitSet flags;
@@ -565,6 +598,8 @@ public class WLeafletMap extends WCompositeWidget {
 				",");
 		ss.append(MathUtils.roundJs(this.zoomLevel_, 16)).append(");");
 		this.setJavaScriptMember(" WLeafletMap", ss.toString());
+		this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef()
+				+ ".wtObj.wtResize");
 	}
 
 	private void addTileLayerJS(final StringBuilder ss,
@@ -693,7 +728,7 @@ public class WLeafletMap extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WLeafletMap",
-				"function(i,e,j,k,l){e.wtObj=this;var c,f={},h=l,g=[j,k];this.addTileLayer=function(a,b){b=JSON.parse(b);L.tileLayer(a,b).addTo(c)};this.zoom=function(a){h=a;c.setZoom(a)};this.panTo=function(a,b){g=[a,b];c.panTo([a,b])};this.addPolyline=function(a,b){b=JSON.parse(b);L.polyline(a,b).addTo(c)};this.addCircle=function(a,b){b=JSON.parse(b);L.circle(a,b).addTo(c)};this.addMarker=function(a,b){b.addTo(c);f[a]=b};this.removeMarker=function(a){var b= f[a];if(b){c.removeLayer(b);delete f[a]}};this.moveMarker=function(a,b){(a=f[a])&&a.setLatLng(b)};e.wtEncodeValue=function(){var a=c.getCenter();a=[a.lat,a.lng];var b=c.getZoom();return JSON.stringify({position:a,zoom:b})};this.init=function(a,b){c=L.map(e,{center:a,zoom:b});c.on(\"zoomend\",function(){var d=c.getZoom();if(d!=h){i.emit(e,\"zoomLevelChanged\",d);h=d}});c.on(\"moveend\",function(){var d=c.getCenter();if(d.lat!=g[0]||d.lng!=g[1]){i.emit(e,\"panChanged\",d.lat,d.lng);g=[d.lat,d.lng]}})};this.init([j, k],l)}");
+				"function(i,e,j,k,l){e.wtObj=this;var c=this;this.map=null;var f={},h=l,g=[j,k];this.addTileLayer=function(a,b){b=JSON.parse(b);L.tileLayer(a,b).addTo(c.map)};this.zoom=function(a){h=a;c.map.setZoom(a)};this.panTo=function(a,b){g=[a,b];c.map.panTo([a,b])};this.addPolyline=function(a,b){b=JSON.parse(b);L.polyline(a,b).addTo(c.map)};this.addCircle=function(a,b){b=JSON.parse(b);L.circle(a,b).addTo(c.map)};this.addMarker=function(a,b){b.addTo(c.map); f[a]=b};this.removeMarker=function(a){var b=f[a];if(b){c.map.removeLayer(b);delete f[a]}};this.moveMarker=function(a,b){(a=f[a])&&a.setLatLng(b)};this.wtResize=function(){c.map.invalidateSize()};e.wtEncodeValue=function(){var a=c.map.getCenter();a=[a.lat,a.lng];var b=c.map.getZoom();return JSON.stringify({position:a,zoom:b})};this.init=function(a,b){c.map=L.map(e,{center:a,zoom:b});c.map.on(\"zoomend\",function(){var d=c.map.getZoom();if(d!=h){i.emit(e,\"zoomLevelChanged\",d);h=d}});c.map.on(\"moveend\", function(){var d=c.map.getCenter();if(d.lat!=g[0]||d.lng!=g[1]){i.emit(e,\"panChanged\",d.lat,d.lng);g=[d.lat,d.lng]}})};this.init([j,k],l)}");
 	}
 
 	static class Impl extends WWebWidget {
