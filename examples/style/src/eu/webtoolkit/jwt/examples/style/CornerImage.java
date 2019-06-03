@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMemoryResource;
 
 /**
@@ -162,7 +163,7 @@ public class CornerImage extends WImage {
 
         if (resource_ == null) {
             resource_ = new WMemoryResource("image/png");
-            this.setResource(resource_);
+            setImageLink(new WLink(resource_));
         } else {
         	resource_.setChanged();
         }

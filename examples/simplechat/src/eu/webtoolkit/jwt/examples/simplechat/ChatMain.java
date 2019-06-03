@@ -5,6 +5,8 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class ChatMain extends WtServlet {
+	private static final long serialVersionUID = 1L;
+	
 	private static SimpleChatServer chatServer = null;
 	
 	public ChatMain() {

@@ -48,8 +48,7 @@ public class PaintExample extends WContainerWidget {
         WContainerWidget emweb = new WContainerWidget(this);
         emweb.setMargin(new WLength(), EnumSet.of(Side.Left, Side.Right));
         WGridLayout layout = new WGridLayout();
-        emweb.setLayout(layout, EnumSet.of(AlignmentFlag.AlignCenter,
-                AlignmentFlag.AlignTop));
+        emweb.setLayout(layout);
         WSlider scaleSlider = new WSlider(Orientation.Horizontal);
         scaleSlider.setMinimum(0);
         scaleSlider.setMaximum(20);

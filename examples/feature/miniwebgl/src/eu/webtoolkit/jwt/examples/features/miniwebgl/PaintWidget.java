@@ -1,6 +1,7 @@
 package eu.webtoolkit.jwt.examples.features.miniwebgl;
 
 import java.nio.FloatBuffer;
+import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGLWidget;
@@ -59,7 +60,7 @@ public class PaintWidget extends WGLWidget {
 		clearColor(0, 0, 0, 1);
 		disable(GLenum.DEPTH_TEST);
 		disable(GLenum.CULL_FACE);
-		clear(GLenum.COLOR_BUFFER_BIT);
+		clear(EnumSet.of(GLenum.COLOR_BUFFER_BIT));
 
 		useProgram(shaderProgram_);
 

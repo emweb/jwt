@@ -17,6 +17,13 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
    End for Tomcat -->
+  <listener>
+    <listener-class>eu.webtoolkit.jwt.ServletInit</listener-class>
+  </listener>
+  
+  <session-config>
+    <tracking-mode>URL</tracking-mode>
+  </session-config>
 
   <servlet>
     <servlet-name>GoogleMap</servlet-name>

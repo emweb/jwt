@@ -11,9 +11,7 @@ import eu.webtoolkit.jwt.Signal1.Listener;
 import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.TextFormat;
 import eu.webtoolkit.jwt.WApplication;
-import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WHBoxLayout;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
@@ -221,7 +219,6 @@ public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 	private WText statusMsg_;
 
 	private WContainerWidget messages_;
-	private WContainerWidget messageEditArea_;
 	private WTextArea messageEdit_;
 	private WPushButton sendButton_;
 	private WContainerWidget userList_;

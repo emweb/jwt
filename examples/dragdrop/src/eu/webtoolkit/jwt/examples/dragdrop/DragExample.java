@@ -9,6 +9,7 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WText;
 
 /**
@@ -52,8 +53,8 @@ public class DragExample extends WContainerWidget {
      */
     private WImage createDragImage(String url, String smallurl,
             String mimeType, WContainerWidget p) {
-        WImage result = new WImage(url, p);
-        WImage dragImage = new WImage(smallurl, p);
+        WImage result = new WImage(new WLink(url), p);
+        WImage dragImage = new WImage(new WLink(smallurl), p);
 
         /*
          * Set the image to be draggable, showing the other image (dragImage) to

@@ -4,10 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -141,7 +138,6 @@ public class PaintWidget extends WGLWidget {
 		// larger than 65K, due to the limitations of WebGL.
 		objBuffer_ = createBuffer();
 		bindBuffer(GLenum.ARRAY_BUFFER, objBuffer_);
-		float[] fData = new float[data.size()];
 		java.nio.ByteBuffer buf = java.nio.ByteBuffer.allocate(data.size()*4);
 		for (int i = 0; i < data.size(); i++)
 			buf.putFloat(data.get(i).floatValue());
@@ -264,14 +260,8 @@ public class PaintWidget extends WGLWidget {
 							for (int i = 1; i < splitLine.size(); ++i) {
 								String[] faceLine = splitLine.get(i).split("/");
 								int v;
-								int t;
 								int n;
 								v = Integer.parseInt(faceLine[0]);
-								if (!faceLine[1].equals("")) {
-									t = Integer.parseInt(faceLine[1]);
-								} else {
-									t = -1;
-								}
 								if (!faceLine[2].equals("")) {
 									n = Integer.parseInt(faceLine[2]);
 								} else {

@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.7.25.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

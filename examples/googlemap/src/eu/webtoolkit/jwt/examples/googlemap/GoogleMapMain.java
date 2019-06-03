@@ -10,7 +10,9 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class GoogleMapMain extends WtServlet {
-    public GoogleMapMain() {
+	private static final long serialVersionUID = 1L;
+
+	public GoogleMapMain() {
         super();
     }
 

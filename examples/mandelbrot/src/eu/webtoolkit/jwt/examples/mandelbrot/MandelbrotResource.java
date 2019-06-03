@@ -5,8 +5,6 @@
  */
 package eu.webtoolkit.jwt.examples.mandelbrot;
 
-import java.io.IOException;
-
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;

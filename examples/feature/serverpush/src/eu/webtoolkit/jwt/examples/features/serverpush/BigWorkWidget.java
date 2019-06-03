@@ -6,7 +6,6 @@ import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WProgressBar;
 import eu.webtoolkit.jwt.WPushButton;
-import eu.webtoolkit.jwt.WText;
 
 /*
  * This is a minimal server push example, which is used to update the GUI

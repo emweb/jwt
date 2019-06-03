@@ -9,6 +9,8 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLink;
+import eu.webtoolkit.jwt.WLink.Type;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WObject;
 import eu.webtoolkit.jwt.WPanel;
@@ -156,7 +158,7 @@ public class TreeViewExample extends WContainerWidget {
 		result.add(item);
 		item = new WStandardItem(drink);
 		if (useInternalPath) {
-			item.setInternalPath("/drinks/" + drink);
+			item.setLink(new WLink(Type.InternalPath, "/drinks/" + drink));
 		}
 		result.add(item);
 		item = new WStandardItem();

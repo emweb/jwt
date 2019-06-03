@@ -60,7 +60,9 @@ public class FileSystemItemModel extends WItemModel<File> {
 		File f = getItem(index);
 		if (index.getColumn() == 0)
 			return f.getName();
-		else 
-			return f.getTotalSpace();
+		else if (!f.isDirectory())
+			return f.length();
+		else
+			return "";
 	}
 }

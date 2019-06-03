@@ -93,7 +93,7 @@ public class RoundedWidget extends WCompositeWidget {
                 top_.getDecorationStyle().setBackgroundImage("");
             else
                 top_.getDecorationStyle().setBackgroundImage(
-                        images_[1].getImageRef(),
+                		images_[1].getImageLink(),
                         WCssDecorationStyle.Repeat.NoRepeat, Side.Top,
                         Side.Right);
         }
@@ -104,7 +104,7 @@ public class RoundedWidget extends WCompositeWidget {
                 bottom_.getDecorationStyle().setBackgroundImage("");
             else
                 bottom_.getDecorationStyle().setBackgroundImage(
-                        images_[3].getImageRef(),
+                        images_[3].getImageLink(),
                         WCssDecorationStyle.Repeat.NoRepeat, Side.Top,
                         Side.Right);
         }
@@ -243,7 +243,7 @@ public class RoundedWidget extends WCompositeWidget {
         top_.setPositionScheme(PositionScheme.Relative);
         if (images_[1] != null)
             top_.getDecorationStyle().setBackgroundImage(
-                    images_[1].getImageRef(),
+                    images_[1].getImageLink(),
                     WCssDecorationStyle.Repeat.NoRepeat, Side.Top, Side.Right);
 
         if (images_[0] != null)
@@ -259,7 +259,7 @@ public class RoundedWidget extends WCompositeWidget {
         bottom_.resize(new WLength(), new WLength(radius_));
         if (images_[3] != null)
             bottom_.getDecorationStyle().setBackgroundImage(
-                    images_[3].getImageRef(),
+                    images_[3].getImageLink(),
                     WCssDecorationStyle.Repeat.NoRepeat, Side.Bottom,
                     Side.Right);
         if (images_[2] != null)
@@ -295,11 +295,11 @@ public class RoundedWidget extends WCompositeWidget {
 
         if (images_[1] != null)
             top_.getDecorationStyle().setBackgroundImage(
-                    images_[1].getImageRef(),
+                    images_[1].getImageLink(),
                     WCssDecorationStyle.Repeat.NoRepeat, Side.Top, Side.Right);
         if (images_[3] != null)
             bottom_.getDecorationStyle().setBackgroundImage(
-                    images_[3].getImageRef(),
+                    images_[3].getImageLink(),
                     WCssDecorationStyle.Repeat.NoRepeat, Side.Bottom,
                     Side.Right);
 

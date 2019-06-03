@@ -5,9 +5,10 @@ import javax.servlet.ServletException;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
-import eu.webtoolkit.jwt.examples.features.auth1.model.Session;
 
 public class Auth1 extends WtServlet {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		return new AuthApplication(env);

@@ -9,7 +9,6 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WPaintedWidget.Method;
 import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableView;
