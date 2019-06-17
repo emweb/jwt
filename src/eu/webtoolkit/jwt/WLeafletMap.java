@@ -266,6 +266,7 @@ public class WLeafletMap extends WCompositeWidget {
 	public WLeafletMap(WContainerWidget parent) {
 		super(parent);
 		this.impl_ = new WLeafletMap.Impl();
+		this.options_ = new com.google.gson.JsonObject();
 		this.flags_ = new BitSet();
 		this.zoomLevelChanged_ = new JSignal1<Integer>(this, "zoomLevelChanged") {
 		};
@@ -279,38 +280,7 @@ public class WLeafletMap extends WCompositeWidget {
 		this.overlays_ = new ArrayList<WLeafletMap.Overlay>();
 		this.renderedOverlaysSize_ = 0;
 		this.markers_ = new ArrayList<WLeafletMap.MarkerEntry>();
-		this.setImplementation(this.impl_);
-		this.zoomLevelChanged().addListener(this,
-				new Signal1.Listener<Integer>() {
-					public void trigger(Integer e1) {
-						WLeafletMap.this.handleZoomLevelChanged(e1);
-					}
-				});
-		this.panChanged().addListener(this,
-				new Signal2.Listener<Double, Double>() {
-					public void trigger(Double e1, Double e2) {
-						WLeafletMap.this.handlePanChanged(e1, e2);
-					}
-				});
-		WApplication app = WApplication.getInstance();
-		if (app != null) {
-			String leafletJSURL = "";
-			String leafletCSSURL = "";
-			leafletJSURL = WApplication.readConfigurationProperty(
-					"leafletJSURL", leafletJSURL);
-			leafletCSSURL = WApplication.readConfigurationProperty(
-					"leafletCSSURL", leafletCSSURL);
-			if (leafletJSURL.length() != 0 && leafletCSSURL.length() != 0) {
-				app.require(leafletJSURL);
-				app.useStyleSheet(new WLink(leafletCSSURL));
-			} else {
-				throw new WException(
-						"Trying to create a WLeafletMap, but the leafletJSURL and/or leafletCSSURL properties are not configured");
-			}
-		} else {
-			throw new WException(
-					"Trying to create a WLeafletMap without an active WApplication");
-		}
+		this.setup();
 	}
 
 	/**
@@ -321,6 +291,41 @@ public class WLeafletMap extends WCompositeWidget {
 	 */
 	public WLeafletMap() {
 		this((WContainerWidget) null);
+	}
+
+	/**
+	 * Create a new {@link WLeafletMap} with the given options.
+	 */
+	public WLeafletMap(final com.google.gson.JsonObject options,
+			WContainerWidget parent) {
+		super(parent);
+		this.impl_ = new WLeafletMap.Impl();
+		this.options_ = options;
+		this.flags_ = new BitSet();
+		this.zoomLevelChanged_ = new JSignal1<Integer>(this, "zoomLevelChanged") {
+		};
+		this.panChanged_ = new JSignal2<Double, Double>(this, "panChanged") {
+		};
+		this.position_ = new WLeafletMap.Coordinate();
+		this.zoomLevel_ = 13;
+		this.nextMarkerId_ = 0;
+		this.tileLayers_ = new ArrayList<WLeafletMap.TileLayer>();
+		this.renderedTileLayersSize_ = 0;
+		this.overlays_ = new ArrayList<WLeafletMap.Overlay>();
+		this.renderedOverlaysSize_ = 0;
+		this.markers_ = new ArrayList<WLeafletMap.MarkerEntry>();
+		this.setup();
+	}
+
+	/**
+	 * Create a new {@link WLeafletMap} with the given options.
+	 * <p>
+	 * Calls
+	 * {@link #WLeafletMap(com.google.gson.JsonObject options, WContainerWidget parent)
+	 * this(options, (WContainerWidget)null)}
+	 */
+	public WLeafletMap(final com.google.gson.JsonObject options) {
+		this(options, (WContainerWidget) null);
 	}
 
 	public void remove() {
@@ -546,6 +551,7 @@ public class WLeafletMap extends WCompositeWidget {
 	private static final int BIT_ZOOM_CHANGED = 0;
 	private static final int BIT_PAN_CHANGED = 1;
 	private WLeafletMap.Impl impl_;
+	private com.google.gson.JsonObject options_;
 	private BitSet flags_;
 	private JSignal1<Integer> zoomLevelChanged_;
 	private JSignal2<Double, Double> panChanged_;
@@ -585,18 +591,59 @@ public class WLeafletMap extends WCompositeWidget {
 
 	private List<WLeafletMap.MarkerEntry> markers_;
 
+	private void setup() {
+		this.setImplementation(this.impl_);
+		this.zoomLevelChanged().addListener(this,
+				new Signal1.Listener<Integer>() {
+					public void trigger(Integer e1) {
+						WLeafletMap.this.handleZoomLevelChanged(e1);
+					}
+				});
+		this.panChanged().addListener(this,
+				new Signal2.Listener<Double, Double>() {
+					public void trigger(Double e1, Double e2) {
+						WLeafletMap.this.handlePanChanged(e1, e2);
+					}
+				});
+		WApplication app = WApplication.getInstance();
+		if (app != null) {
+			String leafletJSURL = "";
+			String leafletCSSURL = "";
+			leafletJSURL = WApplication.readConfigurationProperty(
+					"leafletJSURL", leafletJSURL);
+			leafletCSSURL = WApplication.readConfigurationProperty(
+					"leafletCSSURL", leafletCSSURL);
+			if (leafletJSURL.length() != 0 && leafletCSSURL.length() != 0) {
+				app.require(leafletJSURL);
+				app.useStyleSheet(new WLink(leafletCSSURL));
+			} else {
+				throw new WException(
+						"Trying to create a WLeafletMap, but the leafletJSURL and/or leafletCSSURL properties are not configured");
+			}
+		} else {
+			throw new WException(
+					"Trying to create a WLeafletMap without an active WApplication");
+		}
+	}
+
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WLeafletMap.js", wtjs1());
+		String optionsStr = this.options_.toString();
 		StringBuilder ss = new StringBuilder();
-		ss.append("new Wt3_3_12.WLeafletMap(").append(app.getJavaScriptClass())
-				.append(",").append(this.getJsRef()).append(",");
+		EscapeOStream es = new EscapeOStream(ss);
+		es.append("new Wt3_3_12.WLeafletMap(").append(app.getJavaScriptClass())
+				.append(",").append(this.getJsRef()).append(",'");
+		es.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
+		es.append(optionsStr);
+		es.popEscape();
+		es.append("',");
 		char[] buf = new char[30];
-		ss.append(MathUtils.roundJs(this.position_.getLatitude(), 16)).append(
+		es.append(MathUtils.roundJs(this.position_.getLatitude(), 16)).append(
 				",");
-		ss.append(MathUtils.roundJs(this.position_.getLongitude(), 16)).append(
+		es.append(MathUtils.roundJs(this.position_.getLongitude(), 16)).append(
 				",");
-		ss.append(MathUtils.roundJs(this.zoomLevel_, 16)).append(");");
+		es.append(MathUtils.roundJs(this.zoomLevel_, 16)).append(");");
 		this.setJavaScriptMember(" WLeafletMap", ss.toString());
 		this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef()
 				+ ".wtObj.wtResize");
@@ -728,7 +775,7 @@ public class WLeafletMap extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WLeafletMap",
-				"function(i,e,j,k,l){e.wtObj=this;var c=this;this.map=null;var f={},h=l,g=[j,k];this.addTileLayer=function(a,b){b=JSON.parse(b);L.tileLayer(a,b).addTo(c.map)};this.zoom=function(a){h=a;c.map.setZoom(a)};this.panTo=function(a,b){g=[a,b];c.map.panTo([a,b])};this.addPolyline=function(a,b){b=JSON.parse(b);L.polyline(a,b).addTo(c.map)};this.addCircle=function(a,b){b=JSON.parse(b);L.circle(a,b).addTo(c.map)};this.addMarker=function(a,b){b.addTo(c.map); f[a]=b};this.removeMarker=function(a){var b=f[a];if(b){c.map.removeLayer(b);delete f[a]}};this.moveMarker=function(a,b){(a=f[a])&&a.setLatLng(b)};this.wtResize=function(){c.map.invalidateSize()};e.wtEncodeValue=function(){var a=c.map.getCenter();a=[a.lat,a.lng];var b=c.map.getZoom();return JSON.stringify({position:a,zoom:b})};this.init=function(a,b){c.map=L.map(e,{center:a,zoom:b});c.map.on(\"zoomend\",function(){var d=c.map.getZoom();if(d!=h){i.emit(e,\"zoomLevelChanged\",d);h=d}});c.map.on(\"moveend\", function(){var d=c.map.getCenter();if(d.lat!=g[0]||d.lng!=g[1]){i.emit(e,\"panChanged\",d.lat,d.lng);g=[d.lat,d.lng]}})};this.init([j,k],l)}");
+				"function(i,e,m,j,k,l){e.wtObj=this;var c=this;this.map=null;var f={},h=l,g=[j,k];this.addTileLayer=function(a,b){b=JSON.parse(b);L.tileLayer(a,b).addTo(c.map)};this.zoom=function(a){h=a;c.map.setZoom(a)};this.panTo=function(a,b){g=[a,b];c.map.panTo([a,b])};this.addPolyline=function(a,b){b=JSON.parse(b);L.polyline(a,b).addTo(c.map)};this.addCircle=function(a,b){b=JSON.parse(b);L.circle(a,b).addTo(c.map)};this.addMarker=function(a,b){b.addTo(c.map); f[a]=b};this.removeMarker=function(a){var b=f[a];if(b){c.map.removeLayer(b);delete f[a]}};this.moveMarker=function(a,b){(a=f[a])&&a.setLatLng(b)};this.wtResize=function(){c.map.invalidateSize()};e.wtEncodeValue=function(){var a=c.map.getCenter();a=[a.lat,a.lng];var b=c.map.getZoom();return JSON.stringify({position:a,zoom:b})};this.init=function(a,b,n){a=JSON.parse(a);a.center=b;a.zoom=n;c.map=L.map(e,a);c.map.on(\"zoomend\",function(){var d=c.map.getZoom();if(d!=h){i.emit(e,\"zoomLevelChanged\",d);h= d}});c.map.on(\"moveend\",function(){var d=c.map.getCenter();if(d.lat!=g[0]||d.lng!=g[1]){i.emit(e,\"panChanged\",d.lat,d.lng);g=[d.lat,d.lng]}})};this.init(m,[j,k],l)}");
 	}
 
 	static class Impl extends WWebWidget {

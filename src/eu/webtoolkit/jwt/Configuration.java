@@ -84,6 +84,7 @@ public class Configuration {
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
 	private boolean webSocketsEnabled = false;
+	private long asyncContextTimeout = 90000;
 
 	private Collection<String> allowedOrigins_ = Collections.<String>emptySet();
 
@@ -849,5 +850,19 @@ public class Configuration {
 	 */
 	public void setAllowedOrigins(Collection<String> origins) {
 		this.allowedOrigins_ = origins;
+	}
+
+	/**
+	 * Get async context timeout for WtServlet requests
+	 */
+	public long getAsyncContextTimeout() {
+		return asyncContextTimeout;
+	}
+
+	/**
+	 * Set async context timeout for WtServlet requests
+	 */
+	public void setAsyncContextTimeout(long asyncContextTimeout) {
+		this.asyncContextTimeout = asyncContextTimeout;
 	}
 }

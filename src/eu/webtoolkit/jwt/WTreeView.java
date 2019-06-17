@@ -153,6 +153,17 @@ public class WTreeView extends WAbstractItemView {
 				this.impl_, "itemTouchEvent") {
 		};
 		this.tieRowsScrollJS_ = new JSlot();
+		this.itemClickedJS_ = new JSlot();
+		this.rootClickedJS_ = new JSlot();
+		this.itemDoubleClickedJS_ = new JSlot();
+		this.rootDoubleClickedJS_ = new JSlot();
+		this.itemMouseDownJS_ = new JSlot();
+		this.rootMouseDownJS_ = new JSlot();
+		this.itemMouseUpJS_ = new JSlot();
+		this.rootMouseUpJS_ = new JSlot();
+		this.touchStartedJS_ = new JSlot();
+		this.touchMovedJS_ = new JSlot();
+		this.touchEndedJS_ = new JSlot();
 		this.setSelectable(false);
 		this.expandConfig_ = new ToggleButtonConfig(this, "Wt-ctrl rh ");
 		this.expandConfig_.addState("expand");
@@ -680,6 +691,16 @@ public class WTreeView extends WAbstractItemView {
 		throw new WException("Scrolled signal existes only with ajax.");
 	}
 
+	public void setId(final String id) {
+		super.setId(id);
+		this.setup();
+	}
+
+	public void setObjectName(final String objectName) {
+		super.setObjectName(objectName);
+		this.setup();
+	}
+
 	protected void render(EnumSet<RenderFlag> flags) {
 		WApplication app = WApplication.getInstance();
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
@@ -813,6 +834,17 @@ public class WTreeView extends WAbstractItemView {
 	private JSignal3<String, String, WTouchEvent> itemTouchEvent_;
 	ToggleButtonConfig expandConfig_;
 	private JSlot tieRowsScrollJS_;
+	private JSlot itemClickedJS_;
+	private JSlot rootClickedJS_;
+	private JSlot itemDoubleClickedJS_;
+	private JSlot rootDoubleClickedJS_;
+	private JSlot itemMouseDownJS_;
+	private JSlot rootMouseDownJS_;
+	private JSlot itemMouseUpJS_;
+	private JSlot rootMouseUpJS_;
+	private JSlot touchStartedJS_;
+	private JSlot touchMovedJS_;
+	private JSlot touchEndedJS_;
 
 	WAbstractItemView.ColumnInfo createColumnInfo(int column) {
 		WAbstractItemView.ColumnInfo ci = super.createColumnInfo(column);
@@ -886,7 +918,6 @@ public class WTreeView extends WAbstractItemView {
 	private void rerenderTree() {
 		WContainerWidget wrapRoot = ((this.contents_.getWidget(0)) instanceof WContainerWidget ? (WContainerWidget) (this.contents_
 				.getWidget(0)) : null);
-		boolean firstTime = this.rootNode_ == null;
 		wrapRoot.clear();
 		this.firstRenderedRow_ = this.getCalcOptimalFirstRenderedRow();
 		this.validRowCount_ = 0;
@@ -896,37 +927,30 @@ public class WTreeView extends WAbstractItemView {
 			if (!EnumUtils.mask(this.getEditTriggers(),
 					WAbstractItemView.EditTrigger.SingleClicked).isEmpty()
 					|| this.clicked().isConnected()) {
-				this.connectObjJS(this.rootNode_.clicked(), "click");
-				if (firstTime) {
-					this.connectObjJS(this.contentsContainer_.clicked(),
-							"rootClick");
-				}
+				this.rootNode_.clicked().addListener(this.itemClickedJS_);
+				this.contentsContainer_.clicked().addListener(
+						this.rootClickedJS_);
 			}
 			if (!EnumUtils.mask(this.getEditTriggers(),
 					WAbstractItemView.EditTrigger.DoubleClicked).isEmpty()
 					|| this.doubleClicked().isConnected()) {
-				this.connectObjJS(this.rootNode_.doubleClicked(), "dblClick");
-				if (firstTime) {
-					this.connectObjJS(this.contentsContainer_.doubleClicked(),
-							"rootDblClick");
-				}
+				this.rootNode_.doubleClicked().addListener(
+						this.itemDoubleClickedJS_);
+				this.contentsContainer_.doubleClicked().addListener(
+						this.rootDoubleClickedJS_);
 			}
-			this.connectObjJS(this.rootNode_.mouseWentDown(), "mouseDown");
-			if (firstTime) {
-				this.connectObjJS(this.contentsContainer_.mouseWentDown(),
-						"rootMouseDown");
-			}
+			this.rootNode_.mouseWentDown().addListener(this.itemMouseDownJS_);
+			this.contentsContainer_.mouseWentDown().addListener(
+					this.rootMouseDownJS_);
 			if (this.mouseWentUp().isConnected()) {
-				this.connectObjJS(this.rootNode_.mouseWentUp(), "mouseUp");
-				if (firstTime) {
-					this.connectObjJS(this.contentsContainer_.mouseWentUp(),
-							"rootMouseUp");
-				}
+				this.rootNode_.mouseWentUp().addListener(this.itemMouseUpJS_);
+				this.contentsContainer_.mouseWentUp().addListener(
+						this.rootMouseUpJS_);
 			}
 			final AbstractEventSignal a = this.rootNode_.touchStarted();
-			this.connectObjJS(this.rootNode_.touchStarted(), "touchStart");
-			this.connectObjJS(this.rootNode_.touchMoved(), "touchMove");
-			this.connectObjJS(this.rootNode_.touchEnded(), "touchEnd");
+			this.rootNode_.touchStarted().addListener(this.touchStartedJS_);
+			this.rootNode_.touchMoved().addListener(this.touchMovedJS_);
+			this.rootNode_.touchEnded().addListener(this.touchEndedJS_);
 		}
 		this.setRootNodeStyle();
 		wrapRoot.addWidget(this.rootNode_);
@@ -985,6 +1009,17 @@ public class WTreeView extends WAbstractItemView {
 			this.resize(this.getWidth(), this.getHeight());
 		}
 		this.setRowHeight(this.getRowHeight());
+		this.bindObjJS(this.itemClickedJS_, "click");
+		this.bindObjJS(this.rootClickedJS_, "rootClick");
+		this.bindObjJS(this.itemDoubleClickedJS_, "dblClick");
+		this.bindObjJS(this.rootDoubleClickedJS_, "rootDblClick");
+		this.bindObjJS(this.itemMouseDownJS_, "mouseDown");
+		this.bindObjJS(this.rootMouseDownJS_, "rootMouseDown");
+		this.bindObjJS(this.itemMouseUpJS_, "mouseUp");
+		this.bindObjJS(this.rootMouseUpJS_, "rootMouseUp");
+		this.bindObjJS(this.touchStartedJS_, "touchStart");
+		this.bindObjJS(this.touchMovedJS_, "touchMove");
+		this.bindObjJS(this.touchEndedJS_, "touchEnd");
 	}
 
 	void scheduleRerender(WAbstractItemView.RenderState what) {

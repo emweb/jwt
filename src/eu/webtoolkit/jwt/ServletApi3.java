@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -81,7 +83,7 @@ class ServletApi3 extends ServletApi{
 			try {
 				request.getAsyncContext().complete();
 			} catch (IllegalStateException e) {
-				logger.error("IllegalStateException occurred when completing async context: {}", e.getMessage());
+				logger.error("IllegalStateException occurred when completing async context: {}", e.getMessage(), e);
 			}
 		}
 	}
@@ -90,12 +92,31 @@ class ServletApi3 extends ServletApi{
 	public void doHandleRequest(final WtServlet servlet, final WebRequest request, final WebResponse response) {
 		if (request.isAsyncSupported()) {
 			request.startAsync();
-			
-			request.getAsyncContext().setTimeout(90000);
+			final long asyncContextTimeout = WtServlet.getInstance().getConfiguration().getAsyncContextTimeout();
+			request.getAsyncContext().setTimeout(asyncContextTimeout);
 			request.getAsyncContext().start(new Runnable() {
 				@Override
 				public void run() {
 					handleRequest(servlet, request, response);
+				}
+			});
+			request.getAsyncContext().addListener(new AsyncListener() {
+				@Override
+				public void onTimeout(AsyncEvent e) throws IOException {
+					logger.error("Timeout: waiting more then " + asyncContextTimeout, e.getThrowable());
+				}
+				
+				@Override
+				public void onStartAsync(AsyncEvent arg0) throws IOException {					
+				}
+				
+				@Override
+				public void onError(AsyncEvent e) throws IOException {
+					logger.error("Error during async request ", e.getThrowable());
+				}
+				
+				@Override
+				public void onComplete(AsyncEvent arg0) throws IOException {					
 				}
 			});
 		} else
