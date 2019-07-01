@@ -585,7 +585,6 @@ public class WFileDropWidget extends WContainerWidget {
 				WFileDropWidget.File file) {
 			super(fileDropWidget);
 			this.parent_ = fileDropWidget;
-			this.app_ = WApplication.getInstance();
 			this.currentFile_ = file;
 			this.setUploadProgress(true);
 		}
@@ -624,7 +623,6 @@ public class WFileDropWidget extends WContainerWidget {
 		}
 
 		private WFileDropWidget parent_;
-		private WApplication app_;
 		private WFileDropWidget.File currentFile_;
 	}
 

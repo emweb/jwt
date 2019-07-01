@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.webtoolkit.jwt.WebSession.Handler;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
@@ -145,6 +146,11 @@ public abstract class WResource extends WObject {
 			WebResponse response) throws IOException;
 
 	void handle(WebRequest request, WebResponse response) throws IOException {
+
+		Handler handler = WebSession.Handler.getInstance();
+		if (handler != null)
+			WebSession.Handler.getInstance().unlock();
+
 		if (dispositionType_ != DispositionType.NoDisposition
 				|| suggestedFileName_.length() != 0) {
 			String theDisposition;

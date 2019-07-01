@@ -204,6 +204,9 @@ public class WTemplate extends WInteractWidget {
 			return false;
 		}
 		WString tblock = WString.tr(args.get(1).toString());
+		for (int i = 2; i < args.size(); ++i) {
+			tblock.arg(args.get(i));
+		}
 		while (this.conditionValue(args.get(0).toString())) {
 			this.renderTemplateText(result, tblock);
 		}
@@ -382,6 +385,10 @@ public class WTemplate extends WInteractWidget {
 		 * The function will consider the first argument as the condition, and
 		 * the second argument as the key for a localized string that is a macro
 		 * block.
+		 * <p>
+		 * Just like the {@link WTemplate.Functions#block} function, you can
+		 * provide additional arguments, so the third argument will be what is
+		 * filled in into <code>{1}</code> in the macro block, etc.
 		 */
 		public static final WTemplate.Function while_f = new WTemplate.WhileFunction();
 		/**

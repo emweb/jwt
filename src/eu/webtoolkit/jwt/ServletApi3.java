@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
@@ -92,18 +94,40 @@ class ServletApi3 extends ServletApi{
 	public void doHandleRequest(final WtServlet servlet, final WebRequest request, final WebResponse response) {
 		if (request.isAsyncSupported()) {
 			request.startAsync();
-			final long asyncContextTimeout = WtServlet.getInstance().getConfiguration().getAsyncContextTimeout();
+			final long asyncContextTimeout = servlet.getConfiguration().getAsyncContextTimeout();
 			request.getAsyncContext().setTimeout(asyncContextTimeout);
-			request.getAsyncContext().start(new Runnable() {
-				@Override
-				public void run() {
-					handleRequest(servlet, request, response);
-				}
-			});
+
+			final AtomicBoolean handleRequestFinished = new AtomicBoolean(false);
+			class MutableWrapper<T> {T t = null;}
+			final MutableWrapper<Thread> threadWrapper = new MutableWrapper<Thread>();
+
 			request.getAsyncContext().addListener(new AsyncListener() {
 				@Override
 				public void onTimeout(AsyncEvent e) throws IOException {
-					logger.error("Timeout: waiting more then " + asyncContextTimeout, e.getThrowable());
+					if (handleRequestFinished.get())
+						return;
+					String newLine = "\n\t";
+
+					StringBuilder params = new StringBuilder("Parameters: " + newLine);
+					for (Map.Entry<String, String[]> param: request.getParameterMap().entrySet())
+						params.append(param.getKey()).append(": ")
+							  .append(Arrays.toString(param.getValue())).append(newLine);
+
+					int uploadedFilesCount = 0;
+					if (request.getUploadedFiles() != null)
+						uploadedFilesCount = request.getUploadedFiles().size();
+
+					StringBuilder msg = new StringBuilder();
+					msg.append("Timeout: waiting more then ").append(asyncContextTimeout).append(newLine)
+					.append("url: ").append(request.getRequestURL()).append(newLine)
+					.append("Uploaded files count: ").append(uploadedFilesCount).append(newLine)
+					.append(params);
+
+					if (threadWrapper.t != null)
+						msg.append("AsyncContext thread stack trace: ").append(newLine)
+						.append(Arrays.toString(threadWrapper.t.getStackTrace()).replaceAll(", ", newLine));
+
+					logger.error(msg.toString(), e.getThrowable());
 				}
 				
 				@Override
@@ -117,6 +141,14 @@ class ServletApi3 extends ServletApi{
 				
 				@Override
 				public void onComplete(AsyncEvent arg0) throws IOException {					
+				}
+			});
+			request.getAsyncContext().start(new Runnable() {
+				@Override
+				public void run() {
+					threadWrapper.t = Thread.currentThread();
+					handleRequest(servlet, request, response);
+					handleRequestFinished.set(true);
 				}
 			});
 		} else

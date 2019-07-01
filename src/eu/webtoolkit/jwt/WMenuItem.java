@@ -431,7 +431,7 @@ public class WMenuItem extends WContainerWidget {
 		if (this.subMenu_.isPopup() && this.getParentMenu() != null
 				&& this.getParentMenu().isPopup()) {
 			this.subMenu_.getWebWidget().setZIndex(
-					Math.max(this.getParentMenu().getZIndex() + 100,
+					Math.max(this.getParentMenu().getZIndex() + 1000,
 							this.subMenu_.getZIndex()));
 		}
 		WPopupMenu popup = ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_)
@@ -969,7 +969,7 @@ public class WMenuItem extends WContainerWidget {
 				&& this.subMenu_.isPopup()) {
 			this.subMenu_.getWebWidget()
 					.setZIndex(
-							Math.max(menu.getZIndex() + 100,
+							Math.max(menu.getZIndex() + 1000,
 									this.subMenu_.getZIndex()));
 		}
 	}
