@@ -2210,7 +2210,8 @@ public abstract class WWebWidget extends WWidget {
 	private static final int BIT_THEME_STYLE_DISABLED = 35;
 	private static String FOCUS_SIGNAL = "focus";
 	private static String BLUR_SIGNAL = "blur";
-	private static final int DEFAULT_BASE_Z_INDEX = 1000;
+	private static final int DEFAULT_BASE_Z_INDEX = 1100;
+	private static final int Z_INDEX_INCREMENT = 1100;
 	private String elementTagName_;
 
 	private void loadToolTip() {
@@ -2423,8 +2424,8 @@ public abstract class WWebWidget extends WWidget {
 					maxZ = Math.max(maxZ, wi.getZIndex());
 				}
 			}
-			this.layoutImpl_.zIndex_ = Math.max(this.getBaseZIndex(),
-					maxZ + 1000);
+			this.layoutImpl_.zIndex_ = Math.max(this.getBaseZIndex(), maxZ
+					+ Z_INDEX_INCREMENT);
 		}
 	}
 
