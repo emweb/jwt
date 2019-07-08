@@ -137,6 +137,9 @@ public class WLeafletMap extends WCompositeWidget {
 		protected abstract void createMarkerJS(final StringBuilder ss,
 				final StringBuilder postJS);
 
+		protected void unrender() {
+		}
+
 		private WLeafletMap.Coordinate pos_;
 		private WLeafletMap map_;
 		private boolean moved_;
@@ -166,8 +169,10 @@ public class WLeafletMap extends WCompositeWidget {
 		 */
 		public WidgetMarker(final WLeafletMap.Coordinate pos, WWidget widget) {
 			super(pos);
-			this.container_ = new WContainerWidget();
-			this.container_.setJavaScriptMember("wtReparentBarrier", "true");
+			this.container_ = null;
+			this.anchorX_ = -1;
+			this.anchorY_ = -1;
+			this.createContainer();
 			this.container_.addWidget(widget);
 		}
 
@@ -179,6 +184,25 @@ public class WLeafletMap extends WCompositeWidget {
 				return this.container_.getWidget(0);
 			}
 			return null;
+		}
+
+		/**
+		 * Set the anchor point of the marker.
+		 * <p>
+		 * This determines the &quot;tip&quot; of the marker (relative to its
+		 * top left corner). The marker will be aligned so that this point is at
+		 * the marker&apos;s geographical location.
+		 * <p>
+		 * If x is negative, the anchor point is in the horizontal center of the
+		 * widget. If y is negative, the anchor point is in the vertical center
+		 * of the widget.
+		 * <p>
+		 * By default the anchor point is in the middle (horizontal and vertical
+		 * center).
+		 */
+		public void setAnchorPoint(double x, double y) {
+			this.anchorX_ = x;
+			this.anchorY_ = y;
 		}
 
 		protected void setMap(WLeafletMap map) {
@@ -210,6 +234,15 @@ public class WLeafletMap extends WCompositeWidget {
 				es.append(
 						MathUtils.roundJs(this.getWidget().getHeight()
 								.toPixels(), 16)).append("],");
+				if (this.anchorX_ >= 0 || this.anchorY_ >= 0) {
+					double x = this.anchorX_ >= 0 ? this.anchorX_ : this
+							.getWidget().getWidth().toPixels() / 2.0;
+					double y = this.anchorY_ >= 0 ? this.anchorY_ : this
+							.getWidget().getHeight().toPixels() / 2.0;
+					es.append("iconAnchor:[");
+					es.append(MathUtils.roundJs(x, 16)).append(',');
+					es.append(MathUtils.roundJs(y, 16)).append("],");
+				}
 			}
 			es.append("html:'");
 			es.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -225,7 +258,31 @@ public class WLeafletMap extends WCompositeWidget {
 			;
 		}
 
+		protected void unrender() {
+			WWidget w = this.getWidget();
+			if (w != null) {
+				this.container_.removeWidget(w);
+			}
+			{
+				WContainerWidget c = this.container_;
+				this.container_ = null;
+				if (c != null)
+					c.remove();
+			}
+			this.createContainer();
+			if (w != null) {
+				this.container_.addWidget(w);
+			}
+		}
+
 		private WContainerWidget container_;
+		private double anchorX_;
+		private double anchorY_;
+
+		private void createContainer() {
+			this.container_ = new WContainerWidget();
+			this.container_.setJavaScriptMember("wtReparentBarrier", "true");
+		}
 		// private WidgetMarker(final WLeafletMap.WidgetMarker anon1) ;
 	}
 
@@ -295,6 +352,9 @@ public class WLeafletMap extends WCompositeWidget {
 
 	/**
 	 * Create a new {@link WLeafletMap} with the given options.
+	 * <p>
+	 * 
+	 * @see WLeafletMap#setOptions(com.google.gson.JsonObject options)
 	 */
 	public WLeafletMap(final com.google.gson.JsonObject options,
 			WContainerWidget parent) {
@@ -340,6 +400,35 @@ public class WLeafletMap extends WCompositeWidget {
 		}
 		this.markers_.clear();
 		super.remove();
+	}
+
+	/**
+	 * Change the options of the WLeafletMap.
+	 * <p>
+	 * <p>
+	 * <i><b>Note: </b>This fully rerenders the map, because it creates a new
+	 * Leaflet map, so any custom JavaScript modifying the map with e.g.
+	 * {@link WCompositeWidget#doJavaScript(String js)
+	 * WCompositeWidget#doJavaScript()} is undone, much like reloading the page
+	 * when <code>reload-is-new-session</code> is set to false.</i>
+	 * </p>
+	 * See <a
+	 * href="https://leafletjs.com/reference.html#map">https://leafletjs.com
+	 * /reference.html#map</a> for a list of options.
+	 */
+	public void setOptions(final com.google.gson.JsonObject options) {
+		this.options_ = options;
+		this.flags_.set(BIT_OPTIONS_CHANGED);
+		if (this.isRendered()) {
+			for (int i = 0; i < this.markers_.size(); ++i) {
+				if (!this.markers_.get(i).flags.get(MarkerEntry.BIT_ADDED)
+						&& !this.markers_.get(i).flags
+								.get(MarkerEntry.BIT_REMOVED)) {
+					this.markers_.get(i).marker.unrender();
+				}
+			}
+		}
+		this.scheduleRender();
 	}
 
 	/**
@@ -496,7 +585,8 @@ public class WLeafletMap extends WCompositeWidget {
 	}
 
 	protected void render(EnumSet<RenderFlag> flags) {
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+				|| this.flags_.get(BIT_OPTIONS_CHANGED)) {
 			this.defineJavaScript();
 			this.renderedTileLayersSize_ = 0;
 			this.renderedOverlaysSize_ = 0;
@@ -522,7 +612,9 @@ public class WLeafletMap extends WCompositeWidget {
 		this.renderedOverlaysSize_ = this.overlays_.size();
 		for (int i = 0; i < this.markers_.size();) {
 			if (this.markers_.get(i).flags.get(MarkerEntry.BIT_REMOVED)) {
-				this.removeMarkerJS(ss, this.markers_.get(i).id);
+				if (!this.flags_.get(BIT_OPTIONS_CHANGED)) {
+					this.removeMarkerJS(ss, this.markers_.get(i).id);
+				}
 				this.markers_.remove(0 + i);
 			} else {
 				++i;
@@ -530,6 +622,7 @@ public class WLeafletMap extends WCompositeWidget {
 		}
 		for (int i = 0; i < this.markers_.size(); ++i) {
 			if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+					|| this.flags_.get(BIT_OPTIONS_CHANGED)
 					|| this.markers_.get(i).flags.get(MarkerEntry.BIT_ADDED)) {
 				this.addMarkerJS(ss, this.markers_.get(i).id,
 						this.markers_.get(i).marker);
@@ -550,6 +643,7 @@ public class WLeafletMap extends WCompositeWidget {
 
 	private static final int BIT_ZOOM_CHANGED = 0;
 	private static final int BIT_PAN_CHANGED = 1;
+	private static final int BIT_OPTIONS_CHANGED = 2;
 	private WLeafletMap.Impl impl_;
 	private com.google.gson.JsonObject options_;
 	private BitSet flags_;
@@ -775,7 +869,7 @@ public class WLeafletMap extends WCompositeWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WLeafletMap",
-				"function(i,e,m,j,k,l){e.wtObj=this;var c=this;this.map=null;var f={},h=l,g=[j,k];this.addTileLayer=function(b,a){a=JSON.parse(a);L.tileLayer(b,a).addTo(c.map)};this.zoom=function(b){h=b;c.map.setZoom(b)};this.panTo=function(b,a){g=[b,a];c.map.panTo([b,a])};this.addPolyline=function(b,a){a=JSON.parse(a);L.polyline(b,a).addTo(c.map)};this.addCircle=function(b,a){a=JSON.parse(a);L.circle(b,a).addTo(c.map)};this.addMarker=function(b,a){a.addTo(c.map); f[b]=a};this.removeMarker=function(b){var a=f[b];if(a){c.map.removeLayer(a);delete f[b]}};this.moveMarker=function(b,a){(b=f[b])&&b.setLatLng(a)};this.wtResize=function(){c.map.invalidateSize()};e.wtEncodeValue=function(){var b=c.map.getCenter();b=[b.lat,b.lng];var a=c.map.getZoom();return JSON.stringify({position:b,zoom:a})};this.init=function(b,a,n){b=JSON.parse(b);b.center=a;b.zoom=n;c.map=L.map(e,b);a=parseInt(function(){for(var d=e.parentNode;d;){if(d.wtPopup)return d.style.zIndex;d=d.parentNode}return 0}(), 10);if(a>0){c.map.getPane(\"tilePane\").style.zIndex=a+200;c.map.getPane(\"overlayPane\").style.zIndex=a+400;c.map.getPane(\"shadowPane\").style.zIndex=a+500;c.map.getPane(\"markerPane\").style.zIndex=a+600;c.map.getPane(\"tooltipPane\").style.zIndex=a+650;c.map.getPane(\"popupPane\").style.zIndex=a+700}c.map.on(\"zoomend\",function(){var d=c.map.getZoom();if(d!=h){i.emit(e,\"zoomLevelChanged\",d);h=d}});c.map.on(\"moveend\",function(){var d=c.map.getCenter();if(d.lat!=g[0]||d.lng!=g[1]){i.emit(e,\"panChanged\",d.lat, d.lng);g=[d.lat,d.lng]}})};this.init(m,[j,k],l)}");
+				"function(i,e,m,j,k,l){e.wtObj&&e.wtObj.map.remove();e.wtObj=this;var c=this;this.map=null;var f={},h=l,g=[j,k];this.addTileLayer=function(b,a){a=JSON.parse(a);L.tileLayer(b,a).addTo(c.map)};this.zoom=function(b){h=b;c.map.setZoom(b)};this.panTo=function(b,a){g=[b,a];c.map.panTo([b,a])};this.addPolyline=function(b,a){a=JSON.parse(a);L.polyline(b,a).addTo(c.map)};this.addCircle=function(b,a){a=JSON.parse(a);L.circle(b,a).addTo(c.map)};this.addMarker= function(b,a){a.addTo(c.map);f[b]=a};this.removeMarker=function(b){var a=f[b];if(a){c.map.removeLayer(a);delete f[b]}};this.moveMarker=function(b,a){(b=f[b])&&b.setLatLng(a)};this.wtResize=function(){c.map.invalidateSize()};e.wtEncodeValue=function(){var b=c.map.getCenter();b=[b.lat,b.lng];var a=c.map.getZoom();return JSON.stringify({position:b,zoom:a})};this.init=function(b,a,n){b=JSON.parse(b);b.center=a;b.zoom=n;c.map=L.map(e,b);a=parseInt(function(){for(var d=e.parentNode;d;){if(d.wtPopup)return d.style.zIndex; d=d.parentNode}return 0}(),10);if(a>0){c.map.getPane(\"tilePane\").style.zIndex=a+200;c.map.getPane(\"overlayPane\").style.zIndex=a+400;c.map.getPane(\"shadowPane\").style.zIndex=a+500;c.map.getPane(\"markerPane\").style.zIndex=a+600;c.map.getPane(\"tooltipPane\").style.zIndex=a+650;c.map.getPane(\"popupPane\").style.zIndex=a+700}c.map.on(\"zoomend\",function(){var d=c.map.getZoom();if(d!=h){i.emit(e,\"zoomLevelChanged\",d);h=d}});c.map.on(\"moveend\",function(){var d=c.map.getCenter();if(d.lat!=g[0]||d.lng!=g[1]){i.emit(e, \"panChanged\",d.lat,d.lng);g=[d.lat,d.lng]}})};this.init(m,[j,k],l)}");
 	}
 
 	static class Impl extends WWebWidget {
