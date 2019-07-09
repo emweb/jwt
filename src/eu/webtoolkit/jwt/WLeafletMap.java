@@ -130,6 +130,10 @@ public class WLeafletMap extends WCompositeWidget {
 			this.moved_ = false;
 		}
 
+		protected WLeafletMap getMap() {
+			return this.map_;
+		}
+
 		protected void setMap(WLeafletMap map) {
 			this.map_ = map;
 		}
@@ -138,6 +142,13 @@ public class WLeafletMap extends WCompositeWidget {
 				final StringBuilder postJS);
 
 		protected void unrender() {
+		}
+
+		protected boolean needsUpdate() {
+			return false;
+		}
+
+		protected void update(final StringBuilder js) {
 		}
 
 		private WLeafletMap.Coordinate pos_;
@@ -162,16 +173,13 @@ public class WLeafletMap extends WCompositeWidget {
 		/**
 		 * Create a new {@link WidgetMarker} at the given position with the
 		 * given widget.
-		 * <p>
-		 * The widget should have a predetermined width and height to be
-		 * rendered correctly, with <code>pos</code> in the center of the
-		 * widget.
 		 */
 		public WidgetMarker(final WLeafletMap.Coordinate pos, WWidget widget) {
 			super(pos);
 			this.container_ = null;
 			this.anchorX_ = -1;
 			this.anchorY_ = -1;
+			this.anchorPointChanged_ = false;
 			this.createContainer();
 			this.container_.addWidget(widget);
 		}
@@ -203,6 +211,10 @@ public class WLeafletMap extends WCompositeWidget {
 		public void setAnchorPoint(double x, double y) {
 			this.anchorX_ = x;
 			this.anchorY_ = y;
+			if (this.getMap() != null && this.getMap().isRendered()) {
+				this.anchorPointChanged_ = true;
+				this.getMap().scheduleRender();
+			}
 		}
 
 		protected void setMap(WLeafletMap map) {
@@ -217,33 +229,14 @@ public class WLeafletMap extends WCompositeWidget {
 			DomElement element = this.container_.createSDomElement(WApplication
 					.getInstance());
 			List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
-			EscapeOStream js = new EscapeOStream(postJS);
-			js.append("var o=")
-					.append(this.container_.getJsRef())
-					.append(";if(o){o.addEventListener('pointerdown',function(e){e.stopPropagation();},false);}");
-			EscapeOStream es = new EscapeOStream(ss);
 			char[] buf = new char[30];
-			es.append("(function(){");
-			es.append("var wIcon=L.divIcon({className:'',");
-			if (!this.getWidget().getWidth().isAuto()
-					&& !this.getWidget().getHeight().isAuto()) {
-				es.append("iconSize:[");
-				es.append(
-						MathUtils.roundJs(this.getWidget().getWidth()
-								.toPixels(), 16)).append(',');
-				es.append(
-						MathUtils.roundJs(this.getWidget().getHeight()
-								.toPixels(), 16)).append("],");
-				if (this.anchorX_ >= 0 || this.anchorY_ >= 0) {
-					double x = this.anchorX_ >= 0 ? this.anchorX_ : this
-							.getWidget().getWidth().toPixels() / 2.0;
-					double y = this.anchorY_ >= 0 ? this.anchorY_ : this
-							.getWidget().getHeight().toPixels() / 2.0;
-					es.append("iconAnchor:[");
-					es.append(MathUtils.roundJs(x, 16)).append(',');
-					es.append(MathUtils.roundJs(y, 16)).append("],");
-				}
+			if (this.anchorX_ >= 0 || this.anchorY_ >= 0) {
+				this.updateAnchorJS(postJS);
 			}
+			EscapeOStream js = new EscapeOStream(postJS);
+			EscapeOStream es = new EscapeOStream(ss);
+			es.append("(function(){");
+			es.append("var wIcon=L.divIcon({className:'',iconSize:null,iconAnchor:null,");
 			es.append("html:'");
 			es.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 			element.asHTML(es, js, timeouts);
@@ -254,8 +247,7 @@ public class WLeafletMap extends WCompositeWidget {
 					.append(",");
 			es.append(MathUtils.roundJs(this.getPosition().getLongitude(), 16))
 					.append("],");
-			es.append("{icon:wIcon,keyboard:false});})()");
-			;
+			es.append("{interactive:false,icon:wIcon,keyboard:false});})()");
 		}
 
 		protected void unrender() {
@@ -275,13 +267,44 @@ public class WLeafletMap extends WCompositeWidget {
 			}
 		}
 
+		protected boolean needsUpdate() {
+			return this.anchorPointChanged_;
+		}
+
+		protected void update(final StringBuilder js) {
+			if (this.anchorPointChanged_) {
+				this.updateAnchorJS(js);
+				this.anchorPointChanged_ = false;
+			}
+		}
+
 		private WContainerWidget container_;
 		private double anchorX_;
 		private double anchorY_;
+		private boolean anchorPointChanged_;
 
 		private void createContainer() {
 			this.container_ = new WContainerWidget();
+			this.container_.addStyleClass("Wt-leaflet-widgetmarker-container");
 			this.container_.setJavaScriptMember("wtReparentBarrier", "true");
+		}
+
+		private void updateAnchorJS(final StringBuilder js) {
+			char[] buf = new char[30];
+			js.append("var o=").append(this.container_.getJsRef())
+					.append(";if(o){o.style.transform='translate(");
+			if (this.anchorX_ >= 0) {
+				js.append(MathUtils.roundJs(-this.anchorX_, 16)).append("px");
+			} else {
+				js.append("-50%");
+			}
+			js.append(',');
+			if (this.anchorY_ >= 0) {
+				js.append(MathUtils.roundJs(-this.anchorY_, 16)).append("px");
+			} else {
+				js.append("-50%");
+			}
+			js.append(")';}");
 		}
 		// private WidgetMarker(final WLeafletMap.WidgetMarker anon1) ;
 	}
@@ -632,6 +655,9 @@ public class WLeafletMap extends WCompositeWidget {
 					this.moveMarkerJS(ss, this.markers_.get(i).id,
 							this.markers_.get(i).marker.getPosition());
 				}
+				if (this.markers_.get(i).marker.needsUpdate()) {
+					this.markers_.get(i).marker.update(ss);
+				}
 			}
 			this.markers_.get(i).marker.moved_ = false;
 		}
@@ -644,6 +670,8 @@ public class WLeafletMap extends WCompositeWidget {
 	private static final int BIT_ZOOM_CHANGED = 0;
 	private static final int BIT_PAN_CHANGED = 1;
 	private static final int BIT_OPTIONS_CHANGED = 2;
+	private static final String WIDGETMARKER_CONTAINER_RULENAME = "WLeafletMap::WidgetMarker::container";
+	private static final String WIDGETMARKER_CONTAINER_CHILDREN_RULENAME = "WLeafletMap::WidgetMarker::container-children";
 	private WLeafletMap.Impl impl_;
 	private com.google.gson.JsonObject options_;
 	private BitSet flags_;
@@ -701,6 +729,19 @@ public class WLeafletMap extends WCompositeWidget {
 				});
 		WApplication app = WApplication.getInstance();
 		if (app != null) {
+			if (!app.getStyleSheet().isDefined(WIDGETMARKER_CONTAINER_RULENAME)) {
+				app.getStyleSheet().addRule(
+						".Wt-leaflet-widgetmarker-container",
+						"transform: translate(-50%, -50%);",
+						WIDGETMARKER_CONTAINER_RULENAME);
+			}
+			if (!app.getStyleSheet().isDefined(
+					WIDGETMARKER_CONTAINER_CHILDREN_RULENAME)) {
+				app.getStyleSheet().addRule(
+						".Wt-leaflet-widgetmarker-container > *",
+						"pointer-events: auto;",
+						WIDGETMARKER_CONTAINER_CHILDREN_RULENAME);
+			}
 			String leafletJSURL = "";
 			String leafletCSSURL = "";
 			leafletJSURL = WApplication.readConfigurationProperty(
