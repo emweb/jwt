@@ -63,6 +63,7 @@ class WebSession {
 		this.webSocket_ = null;
 		this.bootStyleResponse_ = null;
 		this.canWriteWebSocket_ = false;
+		this.webSocketConnected_ = false;
 		this.pollRequestsIgnored_ = 0;
 		this.progressiveBoot_ = false;
 		this.deferredRequest_ = null;
@@ -2000,8 +2001,7 @@ class WebSession {
 	}
 
 	enum SignalKind {
-		LearnedStateless(0), StubbedStateless(1), AutoLearnStateless(2), Dynamic(
-				3);
+		LearnedStateless(0), AutoLearnStateless(1), Dynamic(2);
 
 		private int value;
 
@@ -2018,19 +2018,13 @@ class WebSession {
 	}
 
 	private void processSignal(AbstractEventSignal s, final String se,
-			final WebRequest request, WebSession.SignalKind kind,
-			boolean checkWasStubbed) {
+			final WebRequest request, WebSession.SignalKind kind) {
 		if (!(s != null)) {
 			return;
 		}
 		switch (kind) {
 		case LearnedStateless:
-			s.processLearnedStateless(checkWasStubbed);
-			break;
-		case StubbedStateless:
-			if (checkWasStubbed) {
-				s.processStubbedStateless();
-			}
+			s.processLearnedStateless();
 			break;
 		case AutoLearnStateless:
 			s.processAutoLearnStateless(this.renderer_);
@@ -2117,10 +2111,6 @@ class WebSession {
 							this.renderer_.saveChanges();
 						}
 						handler.nextSignal = i + 1;
-						String evAckIdE = request.getParameter(se + "evAckId");
-						boolean checkWasStubbed = evAckIdE != null
-								&& Integer.parseInt(evAckIdE) <= this.renderer_
-										.getScriptId() + 1;
 						if (signalE.equals("hash")) {
 							String hashE = request.getParameter(se + "_");
 							if (hashE != null) {
@@ -2133,7 +2123,7 @@ class WebSession {
 										handler.getResponse());
 							}
 						} else {
-							for (int k = 0; k < 4; ++k) {
+							for (int k = 0; k < 3; ++k) {
 								WebSession.SignalKind kind = WebSession.SignalKind
 										.values()[k];
 								if (kind == WebSession.SignalKind.AutoLearnStateless
@@ -2153,8 +2143,7 @@ class WebSession {
 								} else {
 									s = this.decodeSignal(signalE, k == 0);
 								}
-								this.processSignal(s, se, request, kind,
-										checkWasStubbed);
+								this.processSignal(s, se, request, kind);
 								if (kind == WebSession.SignalKind.LearnedStateless
 										&& discardStateless) {
 									this.renderer_.discardChanges();

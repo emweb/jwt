@@ -30,9 +30,9 @@ class WebRenderer implements SlotLearnerInterface {
 		this.initialStyleRendered_ = false;
 		this.twoPhaseThreshold_ = 5000;
 		this.pageId_ = 0;
+		this.ackErrs_ = 0;
 		this.expectedAckId_ = 0;
 		this.scriptId_ = 0;
-		this.ackErrs_ = 0;
 		this.linkedCssCount_ = -1;
 		this.solution_ = "";
 		this.currentStatelessSlotIsActuallyStateless_ = true;
@@ -43,7 +43,6 @@ class WebRenderer implements SlotLearnerInterface {
 		this.updateLayout_ = false;
 		this.wsRequestsToHandle_ = new ArrayList<Integer>();
 		this.multiSessionCookieUpdateNeeded_ = false;
-		this.stubbedWidgets_ = new ArrayList<WWidget>();
 		this.collectedJS1_ = new StringBuilder();
 		this.collectedJS2_ = new StringBuilder();
 		this.invisibleJS_ = new StringBuilder();
@@ -113,6 +112,8 @@ class WebRenderer implements SlotLearnerInterface {
 	}
 
 	public void saveChanges() throws IOException {
+		this.collectedJS1_.append(this.invisibleJS_.toString());
+		this.invisibleJS_.setLength(0);
 		this.collectJS(this.collectedJS1_);
 	}
 
@@ -290,9 +291,7 @@ class WebRenderer implements SlotLearnerInterface {
 			this.ackErrs_ = 0;
 			return WebRenderer.AckState.CorrectAck;
 		} else {
-			if (updateId < this.expectedAckId_
-					&& this.expectedAckId_ - updateId < 5
-					|| this.expectedAckId_ - 5 < updateId) {
+			if (this.expectedAckId_ - updateId < 5) {
 				++this.ackErrs_;
 				return this.ackErrs_ < 3 ? WebRenderer.AckState.ReasonableAck
 						: WebRenderer.AckState.BadAck;
@@ -386,19 +385,6 @@ class WebRenderer implements SlotLearnerInterface {
 		this.currentStatelessSlotIsActuallyStateless_ = false;
 	}
 
-	public void markAsStubbed(WWidget widget) {
-		this.stubbedWidgets_.add(widget);
-	}
-
-	public boolean wasStubbed(WObject widget) {
-		for (int i = 0; i < this.stubbedWidgets_.size(); ++i) {
-			if (this.stubbedWidgets_.get(i) == widget) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	static class CookieValue {
 		private static Logger logger = LoggerFactory
 				.getLogger(CookieValue.class);
@@ -433,9 +419,9 @@ class WebRenderer implements SlotLearnerInterface {
 	private boolean initialStyleRendered_;
 	private int twoPhaseThreshold_;
 	private int pageId_;
+	private int ackErrs_;
 	private int expectedAckId_;
 	private int scriptId_;
-	private int ackErrs_;
 	private int linkedCssCount_;
 	private String solution_;
 	private boolean currentStatelessSlotIsActuallyStateless_;
@@ -446,7 +432,6 @@ class WebRenderer implements SlotLearnerInterface {
 	private boolean updateLayout_;
 	private List<Integer> wsRequestsToHandle_;
 	boolean multiSessionCookieUpdateNeeded_;
-	private List<WWidget> stubbedWidgets_;
 
 	private void setHeaders(final WebResponse response, final String mimeType) {
 		for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it = this.cookiesToSet_
@@ -698,7 +683,6 @@ class WebRenderer implements SlotLearnerInterface {
 				this.currentFormObjectsList_ = "";
 				this.collectJavaScript();
 				this.updateLoadIndicator(this.collectedJS1_, app, true);
-				this.clearStubbedWidgets();
 				logger.debug(new StringWriter().append("js: ")
 						.append(this.collectedJS1_.toString())
 						.append(this.collectedJS2_.toString()).toString());
@@ -1734,12 +1718,6 @@ class WebRenderer implements SlotLearnerInterface {
 			out.append(this.session_.getApp().getJavaScriptClass()).append(
 					"._p_.refreshCookie();");
 			this.multiSessionCookieUpdateNeeded_ = false;
-		}
-	}
-
-	private void clearStubbedWidgets() {
-		if (this.expectedAckId_ - this.scriptId_ > 1) {
-			this.stubbedWidgets_.clear();
 		}
 	}
 

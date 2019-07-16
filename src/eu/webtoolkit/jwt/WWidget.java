@@ -1641,8 +1641,6 @@ public abstract class WWidget extends WObject {
 			DomElement result = this.getWebWidget().createStubElement(app);
 			this.renderOk();
 			this.scheduleRerender(true);
-			WApplication.getInstance().getSession().getRenderer()
-					.markAsStubbed(this);
 			return result;
 		} else {
 			this.getWebWidget().setRendered(true);
