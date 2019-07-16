@@ -148,7 +148,7 @@ public abstract class WResource extends WObject {
 	void handle(WebRequest request, WebResponse response) throws IOException {
 
 		Handler handler = WebSession.Handler.getInstance();
-		if (handler != null)
+		if (!takesUpdateLock() && handler != null)
 			WebSession.Handler.getInstance().unlock();
 
 		if (dispositionType_ != DispositionType.NoDisposition
@@ -402,6 +402,34 @@ public abstract class WResource extends WObject {
 			else
 				c.removeUploadProgressUrl(getUrl());
 		}
+	}
+
+	private boolean takesUpdateLock_ = true;
+
+	/**
+	 * Set whether this resource takes the WApplication's update lock.
+	 * <p>
+	 * By default, WResource takes the WApplication's update lock,
+	 * so handleRequest() is performed in the WApplication's event loop.
+	 * <p>
+	 * If necessary this can be disabled by setting this option to false.
+	 * This will make it so that handleRequest() does not block the WApplication,
+	 * and multiple handleRequest() calls can be performed concurrently.
+	 * <p>
+	 * This option has no effect on static resources, since there is no WApplication
+	 * in that case.
+	 */
+	public void setTakesUpdateLock(boolean enabled) {
+		takesUpdateLock_ = enabled;
+	}
+
+	/**
+	 * Get whether this resource takes the WApplication's update lock
+	 *
+	 * @see setTakesUpdateLock(boolean enabled)
+	 */
+	public boolean takesUpdateLock() {
+		return takesUpdateLock_;
 	}
 
 	/**
