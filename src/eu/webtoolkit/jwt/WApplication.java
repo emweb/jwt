@@ -2548,9 +2548,9 @@ public class WApplication extends WObject {
 		if (this.loadingIndicator_ != null) {
 			this.loadingIndicatorWidget_ = indicator.getWidget();
 			this.domRoot_.addWidget(this.loadingIndicatorWidget_);
-			this.showLoadJS.setJavaScript("function(o,e) {Wt3_3_12.inline('"
+			this.showLoadJS.setJavaScript("function(o,e) {Wt3_4_0.inline('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
-			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_3_12.hide('"
+			this.hideLoadJS.setJavaScript("function(o,e) {Wt3_4_0.hide('"
 					+ this.loadingIndicatorWidget_.getId() + "');}");
 			this.loadingIndicatorWidget_.hide();
 		}
@@ -2968,7 +2968,7 @@ public class WApplication extends WObject {
 		if (this.domRoot2_ != null) {
 			this.domRoot2_.enableAjax();
 		}
-		this.doJavaScript("Wt3_3_12.ajaxInternalPaths("
+		this.doJavaScript("Wt3_4_0.ajaxInternalPaths("
 				+ WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this
 						.getBookmarkUrl("/"))) + ");");
 	}
@@ -3312,7 +3312,7 @@ public class WApplication extends WObject {
 			final WJavaScriptPreamble preamble = this.javaScriptPreamble_
 					.get(i);
 			String scope = preamble.scope == JavaScriptScope.ApplicationScope ? this
-					.getJavaScriptClass() : "Wt3_3_12";
+					.getJavaScriptClass() : "Wt3_4_0";
 			if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
 				out.append(scope).append('.').append(preamble.name)
 						.append(" = function() { return (")

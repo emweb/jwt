@@ -983,7 +983,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
 		this.setJavaScriptMember(
 				" WSuggestionPopup",
-				"new Wt3_3_12.WSuggestionPopup(" + app.getJavaScriptClass()
+				"new Wt3_4_0.WSuggestionPopup(" + app.getJavaScriptClass()
 						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
 						+ this.matcherJS_ + ","
 						+ String.valueOf(Math.max(0, this.filterLength_)) + ","
@@ -1020,7 +1020,7 @@ public class WSuggestionPopup extends WPopupWidget {
 
 	static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_3_12.WSuggestionPopupStdMatcher(")
+		s.append("new Wt3_4_0.WSuggestionPopupStdMatcher(")
 				.append(WWebWidget.jsStringLiteral(options.highlightBeginTag))
 				.append(", ")
 				.append(WWebWidget.jsStringLiteral(options.highlightEndTag))

@@ -582,7 +582,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_3_12.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_4_0.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -871,7 +871,7 @@ public class WTreeView extends WAbstractItemView {
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
 		this.setJavaScriptMember(
 				" WTreeView",
-				"new Wt3_3_12.WTreeView("
+				"new Wt3_4_0.WTreeView("
 						+ app.getJavaScriptClass()
 						+ ","
 						+ this.getJsRef()
