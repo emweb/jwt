@@ -25,6 +25,92 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.4.0 (July 2019)</h2>
+<p>
+  This is the first release to change the versioning scheme to be more aligned with semantic versioning.
+  From now on, the last number is reserved for patches (i.e. important bug fixes), not extra features, as long as
+  those bug fixes don't require major changes. Patches will be released up until the next minor version bump.
+</p>
+<p>
+  From now on, a 3.4-release branch will track any bug fixes, while the master branch will become the next JWt release (in this case 3.5.0)
+</p>
+<p>
+  We won't completely ban small API-breaking changes from the minor version, but we will as always avoid them as best as we can.
+</p>
+<p>
+  Apart from that, this release features one new widget (<a href="eu/webtoolkit/jwt/WLeafletMap.html">WLeafletMap</a>) and many little tweaks, features, and bug fixes.
+</p>
+<h3>Notable backwards-incompatible changes</h3>
+<ul>
+  <li><a href="eu/webtoolkit/jwt/WRasterPaintDevice.html">WRasterPaintDevice</a>: the rendering to
+      raster image is now done in <a href="eu/webtoolkit/jwt/WPaintDevice.html#done--">done()</a> instead of
+      <a href="eu/webtoolkit/jwt/WResource.html#handleRequest-eu.webtoolkit.jwt.servlet.WebRequest-eu.webtoolkit.jwt.servlet.WebResponse-">handleRequest()</a>.
+      You were always supposed to call <a href="eu/webtoolkit/jwt/WPainter.html#end--">WPainter#end()</a>
+      before e.g. using <a href="eu/webtoolkit/jwt/WResource.html#write-java.io.OutputStream-">write()</a>, but JWt used to be rather forgiving&mdash;it would just work.
+      If you are getting empty images after updating, this would likely be the reason.
+  </li>
+  <li>
+    The default z-index of <a href="eu/webtoolkit/jwt/WPopupWidget.html">WPopupWidget</a> was changed to 1100 instead of 100, since 1000
+    is the highest z-index used by Leaflet. This is generally considered an implementation detail, but if you have written any custom
+    CSS that sets the z-index, then you may have to update this CSS.
+  </li>
+</ul>
+<h3>New widgets</h3>
+<ul>
+  <li><b><a href="eu/webtoolkit/jwt/WLeafletMap.html">WLeafletMap</a></b>: this is a wrapper around the <a href="https://leafletjs.com/" target="_blank">Leaflet</a> JavaScript library.</li>
+</ul>
+<h3>New examples</h3>
+<ul>
+  <li>
+    Added a <a href="eu/webtoolkit/jwt/WLeafletMap.html">WLeafletMap</a> example to the <a href="http://jwt.emweb.be/jwt-gallery/gallery/graphics-charts/leaflet-maps" target="_blank">widget gallery</a>.
+  </li>
+</ul>
+<h3>Auth</h3>
+<ul>
+  <li>
+    Added <a href="eu/webtoolkit/jwt/auth/AuthService.html#setAuthTokenUpdateEnabled-boolean-">AuthService#setAuthTokenUpdateEnabled()</a>. Previously, when using the
+    remember me functionality the auth token (remember me cookie) would be changed. When accessing the application from two tabs at the same time, however, or when
+    refreshing quickly, this could cause the session to be logged out: the auth token has changed, but the client still uses the old one. This is still the default
+    behavior, but you can disable it by using <tt>setAuthTokenUpdateEnabled(false)</tt>.
+  </li>
+</ul>
+<h3>Miscellaneous features</h3>
+<ul>
+  <li>
+    <a href="eu/webtoolkit/jwt/chart/WCartesian3DChart.html">WCartesian3DChart</a>: added
+    <a href="eu/webtoolkit/jwt/chart/WCartesian3DChart.html#setAxis-eu.webtoolkit.jwt.chart.WAxis-eu.webtoolkit.jwt.chart.Axis-">setAxis()</a>,
+    allowing custom <tt>WAxis</tt> implementations e.g. axes with
+    <a href="eu/webtoolkit/jwt/chart/WAxis.html#getLabelTicks-java.util.List-int-eu.webtoolkit.jwt.chart.AxisConfig-">custom labels and ticks</a>.
+  </li>
+  <li>
+    Added <a href="eu/webtoolkit/jwt/ItemDataRole.html#MarkerTypeRole">MarkerTypeRole</a>, to change the <a href="eu/webtoolkit/jwt/chart/MarkerType.html">MarkerType</a> of
+    individual data points on a <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">2D chart</a>.
+  </li>
+  <li>
+    Wt's widget coordinate calculation code now uses <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect" target="_blank">getBoundingClientRect()</a>, which means that coordinate calculations are still accurate even when CSS transforms are used to position widgets. This was necessary for <a href="eu/webtoolkit/jwt/WLeafletMap.WidgetMarker.html">WidgetMarker</a> support.
+  </li>
+  <li>
+    <a href="eu/webtoolkit/jwt/WTemplate.html">WTemplate</a>'s <a href="eu/webtoolkit/jwt/WTemplate.Functions.html#while_f">while_f</a> function now takes extra arguments, similar to the <a href="eu/webtoolkit/jwt/WTemplate.Functions.html#block">block</a> function.
+  </li>
+  <li>
+    Added <a href="eu/webtoolkit/jwt/WResource.html#setTakesUpdateLock-boolean-">WResource::setTakesUpdateLock()</a>. By default, a (non-static) resource has the <a href="eu/webtoolkit/jwt/WApplication.html">WApplication</a>'s <a href="eu/webtoolkit/jwt/WApplication.UpdateLock.html">UpdateLock</a>, so multiple invocations of <a href="eu/webtoolkit/jwt/WResource.html#handleRequest-eu.webtoolkit.jwt.servlet.WebRequest-eu.webtoolkit.jwt.servlet.WebResponse-">handleRequest()</a> can't be performed concurrently, and it blocks any other event handling of the <a href="eu/webtoolkit/jwt/WApplication.html">WApplication</a>. Use <tt>setTakesUpdateLock(false)</tt> if you implement your own resources to improve concurrency, but this of course also means you have to be mindful of possible race conditions.
+  </li>
+  <li>
+    Made it possible to set a <a href="eu/webtoolkit/jwt/WTableView.html#setPreloadMargin-eu.webtoolkit.jwt.WLength-">preload margin</a> on <tt>WTableView</tt>. This
+    allows to customize how much of the table's contents should be loaded. Higher preload margin means fewer but larger updates of the table's contents
+    when scrolling.
+  </li>
+</ul>
+<h3>Miscellaneous bug fixes</h3>
+<ul>
+  <li>Fixed an issue where JavaScript could be sent to the browser in the wrong order when doing background updates of hidden widgets
+    (Wt <a href="https://redmine.webtoolkit.eu/issues/7023" target="_blank">issue #7023</a>)</li>
+  <li>Fixed a client side memory leak caused by misuse of jQuery's data feature (<a href="https://redmine.webtoolkit.eu/boards/2/topics/15941" target="_blank">reported on the forums</a>)</li>
+  <li><a href="eu/webtoolkit/jwt/WTableView.html">WTableView</a>: fixed row deletion behavior</li>
+  <li>Fixed out of bounds array access when using a widget with a custom HTML tag name (Wt <a href="https://redmine.webtoolkit.eu/issues/7059" target="_blank">issue #7059</a>). Widgets will now derive whether they are default inline based on the widget's default DOM element type.</li>
+  <li>Fixed an issue where mouse signals of a <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a> would fire multiple times (Wt <a href="https://redmine.webtoolkit.eu/issues/6260" target="_blank">issue #6260</a>)</li>
+</ul>
+
 <h2>Release 3.3.12 (December 14, 2018)</h2>
 <p>JWt 3.3.12 is almost entirely a bugfix release. There's one somewhat significant change:</p>
 
