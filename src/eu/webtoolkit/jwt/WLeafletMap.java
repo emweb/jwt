@@ -21,6 +21,30 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A widget that displays a leaflet map.
+ * <p>
+ * 
+ * This is a simple wrapper around the <a href="https://leafletjs.com/"
+ * target="_blank">Leaflet</a> JavaScript library.
+ * <p>
+ * Leaflet itself does not provide maps. It is a JavaScript library that enables
+ * you to use any &quot;tile server&quot;, like OpenStreetMap. If you just
+ * create a WLeafletMap (and give it a size), then you will be presented with an
+ * empty map. You can then add tile layers to the map using
+ * {@link WLeafletMap#addTileLayer(String urlTemplate, com.google.gson.JsonObject options)
+ * addTileLayer()}.
+ * <p>
+ * WLeafletMap is not exhaustive in its support for Leaflet features. It
+ * supports a subset out of the box. One of these features is markers, which
+ * come in two flavors: standard leaflet markers ({@link LeafletMarker}) and
+ * widget markers ({@link WidgetMarker}). Using a widget marker, you can place
+ * arbitrary widgets on the map.
+ * <p>
+ * If you need direct access to the leaflet map in your own custom JavaScript,
+ * you can use {@link WLeafletMap#getMapJsRef() getMapJsRef()}.
+ * <p>
+ * Leaflet itself is not bundled with JWt. Use the <code>leafletJSURL</code> and
+ * <code>leafletCSSURL</code> properties to configure where the JavaScript and
+ * CSS of Leaflet should be loaded from.
  */
 public class WLeafletMap extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WLeafletMap.class);
