@@ -44,13 +44,6 @@
     </delete>
   </target>
 
-  <condition property="jdk6">
-    <not>
-      <contains string="${java.version}" substring="1.5"
-		casesensitive="false" />
-    </not>
-  </condition>
-
   <target name="run">
     <java jar="lib/antlr-3.5.2-complete.jar" fork="true">
       <arg line="src/eu/webtoolkit/jwt/render/Css21.g"/>
@@ -64,8 +57,8 @@
        srcdir="${src.java.dir}"
        destdir="${build.dir}"
        debug="on"
-       source="1.6"
-       target="1.6">
+       source="1.7"
+       target="1.7">
       <src path="${src.java.dir}"/>        
       <src path="${test.java.dir}"/>        
       <classpath >
