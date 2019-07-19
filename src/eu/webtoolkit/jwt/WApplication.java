@@ -1830,7 +1830,7 @@ public class WApplication extends WObject {
 	 * 
 	 * @see WApplication#getUpdateLock()
 	 */
-	public static class UpdateLock {
+	public static class UpdateLock implements AutoCloseable {
 		private static Logger logger = LoggerFactory
 				.getLogger(UpdateLock.class);
 
@@ -1843,7 +1843,12 @@ public class WApplication extends WObject {
 			}
 		}
 
+		public void close() {
+			this.release();
+		}
+
 		private UpdateLock(WApplication app) {
+			super();
 			WebSession.Handler handler = WebSession.Handler.getInstance();
 			this.createdHandler_ = false;
 			if (handler != null && handler.isHaveLock()
