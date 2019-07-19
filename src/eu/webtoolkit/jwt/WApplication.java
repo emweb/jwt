@@ -1843,6 +1843,13 @@ public class WApplication extends WObject {
 			}
 		}
 
+		/**
+		 * Releases the lock.
+		 * <p>
+		 * Calls {@link WApplication.UpdateLock#release() release()}
+		 * <p>
+		 * Implemented in order to support the AutoCloseable interface.
+		 */
 		public void close() {
 			this.release();
 		}
