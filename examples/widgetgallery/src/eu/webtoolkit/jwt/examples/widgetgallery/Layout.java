@@ -519,7 +519,7 @@ class Layout extends TopicWidget {
 
 	WWidget Image() {
 		WContainerWidget container = new WContainerWidget();
-		WImage image = new WImage(new WLink("icons/wt_powered.jpg"), container);
+		WImage image = new WImage(new WLink("icons/wt.png"), container);
 		image.setAlternateText("Wt logo");
 		final WText out = new WText(container);
 		out.setMargin(new WLength(10), EnumSet.of(Side.Left));
