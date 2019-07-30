@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
@@ -48,7 +49,7 @@ public class WObject {
 	private WObject parent_;
 	private int id_;
 	private String objectName_;
-	private static int nextObjId_ = 0;
+	private static final AtomicInteger nextObjId_ = new AtomicInteger(0);
 
 	ArrayList<SignalImpl.ListenerSignalPair> listenerSignalsPairs;
 
@@ -60,7 +61,7 @@ public class WObject {
 	}
 
 	protected WObject(WObject parent) {
-		id_ = nextObjId_++;
+		id_ = nextObjId_.getAndIncrement();
 		parent_ = parent;
 		objectName_ = "";
 	}
@@ -178,6 +179,6 @@ public class WObject {
 	}
 	
 	static void seedId(int id) {
-	  nextObjId_ = id;
+	  nextObjId_.set(id);
 	}
 }
