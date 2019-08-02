@@ -14,44 +14,44 @@ import org.slf4j.LoggerFactory;
 public class CssParser {
 	private static final Logger logger = LoggerFactory.getLogger(CssParser.class);
 	
-	static SimpleSelectorImpl currentSimpleSelector = new SimpleSelectorImpl();
-	static SelectorImpl currentSelector = new SelectorImpl();
-	static List<SelectorImpl> currentSelectorList = new ArrayList<SelectorImpl>(); 
-	static RulesetImpl currentRuleset = new RulesetImpl();
-	public static StyleSheetImpl currentStylesheet = new StyleSheetImpl();
-	String lastError_ = null;
+	private SimpleSelectorImpl currentSimpleSelector = new SimpleSelectorImpl();
+	private SelectorImpl currentSelector = new SelectorImpl();
+	private List<SelectorImpl> currentSelectorList = new ArrayList<SelectorImpl>(); 
+	private RulesetImpl currentRuleset = new RulesetImpl();
+	private StyleSheetImpl currentStylesheet = new StyleSheetImpl();
+	private String lastError_ = null;
 	
-	static void setSimpleSelectorElementName(String s)
+	void setSimpleSelectorElementName(String s)
 	{
 		currentSimpleSelector.setElementName(s);
 	}
 	
-	static void setSimpleSelectorHash(String s)
+	void setSimpleSelectorHash(String s)
 	{
 		s = s.substring(1);
 		if(currentSimpleSelector.getHashId().isEmpty())
 			currentSimpleSelector.setHash(s);
 	}
 	
-	static void addSimpleSelectorClass(String s)
+	void addSimpleSelectorClass(String s)
 	{
 		s = s.substring(1);
 		currentSimpleSelector.getClasses().add(s);
 	}
 	
-	static void pushCurrentSimpleSelector()
+	void pushCurrentSimpleSelector()
 	{
 		currentSelector.addSimpleSelector(currentSimpleSelector);
 		currentSimpleSelector = new SimpleSelectorImpl();
 	}
 	
-	static void pushCurrentSelector()
+	void pushCurrentSelector()
 	{
 		currentSelectorList.add(currentSelector);
 		currentSelector = new SelectorImpl();
 	}
 	
-	static void setAndPushDeclarationBlock(String s)
+	void setAndPushDeclarationBlock(String s)
 	{
 		for (int i = 0; i < currentSelectorList.size(); ++i) {
 			RulesetImpl r = new RulesetImpl();
@@ -70,6 +70,7 @@ public class CssParser {
 			lex = new Css21LexerExt(new ANTLRFileStream(stylesheetContents.toString()));
 			CommonTokenStream tokens = new CommonTokenStream(lex);
 	        parser = new Css21ParserExt(tokens);
+		parser.setTarget(this);
 	        currentStylesheet = new StyleSheetImpl();
         
             parser.styleSheet();
@@ -90,6 +91,7 @@ public class CssParser {
 		Css21LexerExt lex = new Css21LexerExt(new ANTLRStringStream(stylesheetContents.toString()));
 		CommonTokenStream tokens = new CommonTokenStream(lex);
         Css21ParserExt parser = new Css21ParserExt(tokens);
+	parser.setTarget(this);
         currentStylesheet = new StyleSheetImpl();
  
         try {

@@ -21,6 +21,11 @@ grammar Css21;
 @header {package eu.webtoolkit.jwt.render;}
 @lexer::header {package eu.webtoolkit.jwt.render;}
 
+@members {
+    CssParser getTarget() { return target; }
+    void setTarget(CssParser target) { this.target = target; }
+    private CssParser target;
+}
 
 
 // -------------
@@ -63,10 +68,10 @@ property
     ;
     
 ruleSet
-    :  selector             {CssParser.pushCurrentSelector();}
-       (COMMA WS? selector      {CssParser.pushCurrentSelector();})*
+    :  selector             {getTarget().pushCurrentSelector();}
+       (COMMA WS? selector      {getTarget().pushCurrentSelector();})*
        WS? LBRACE
-         declarationBlock     {CssParser.setAndPushDeclarationBlock($declarationBlock.text);}
+         declarationBlock     {getTarget().setAndPushDeclarationBlock($declarationBlock.text);}
        RBRACE
        WS?
     ;
@@ -78,15 +83,15 @@ declarationBlock
     ;
     
 selector
-    : s1=simpleSelector              { CssParser.pushCurrentSimpleSelector(); }
-      (combinator s2=simpleSelector  { CssParser.pushCurrentSimpleSelector(); }
+    : s1=simpleSelector              { getTarget().pushCurrentSimpleSelector(); }
+      (combinator s2=simpleSelector  { getTarget().pushCurrentSimpleSelector(); }
       )*
     ;
 
 simpleSelector
     : 
 (
-  elementName             { CssParser.setSimpleSelectorElementName($elementName.text); }
+  elementName             { getTarget().setSimpleSelectorElementName($elementName.text); }
   ((esPred)=>elementSubsequent)*
 )
     |
@@ -100,8 +105,8 @@ esPred
     ;
     
 elementSubsequent
-    : h=HASH   { CssParser.setSimpleSelectorHash ($h       .getText());}
-    | cssClass { CssParser.addSimpleSelectorClass($cssClass.text);}
+    : h=HASH   { getTarget().setSimpleSelectorHash ($h       .getText());}
+    | cssClass { getTarget().addSimpleSelectorClass($cssClass.text);}
     ;
     
 cssClass
