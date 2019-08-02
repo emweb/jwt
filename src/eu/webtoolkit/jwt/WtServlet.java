@@ -177,6 +177,8 @@ public abstract class WtServlet extends HttpServlet {
 		super.init(config);
 		
 		String configFile = this.getInitParameter("jwt-config-file");
+		if (configFile == null)
+			this.getServletContext().getInitParameter("jwt-config-file");
 		if (configFile != null)
 			this.configuration = new Configuration(new File(configFile));
 		
