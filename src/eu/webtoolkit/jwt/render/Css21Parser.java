@@ -1,4 +1,4 @@
-// $ANTLR 3.5.2 src/eu/webtoolkit/jwt/render/Css21.g 2017-03-31 14:50:22
+// $ANTLR 3.5.2 src/eu/webtoolkit/jwt/render/Css21.g 2019-08-02 12:27:18
 package eu.webtoolkit.jwt.render;
 
 import org.antlr.runtime.*;
@@ -110,15 +110,20 @@ public class Css21Parser extends Parser {
 	@Override public String getGrammarFileName() { return "src/eu/webtoolkit/jwt/render/Css21.g"; }
 
 
+	    CssParser getTarget() { return target; }
+	    void setTarget(CssParser target) { this.target = target; }
+	    private CssParser target;
+
+
 
 	// $ANTLR start "styleSheet"
-	// src/eu/webtoolkit/jwt/render/Css21.g:33:1: styleSheet : ( bodyset )* EOF ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:38:1: styleSheet : ( bodyset )* EOF ;
 	public final void styleSheet() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:34:5: ( ( bodyset )* EOF )
-			// src/eu/webtoolkit/jwt/render/Css21.g:34:9: ( bodyset )* EOF
+			// src/eu/webtoolkit/jwt/render/Css21.g:39:5: ( ( bodyset )* EOF )
+			// src/eu/webtoolkit/jwt/render/Css21.g:39:9: ( bodyset )* EOF
 			{
-			// src/eu/webtoolkit/jwt/render/Css21.g:34:9: ( bodyset )*
+			// src/eu/webtoolkit/jwt/render/Css21.g:39:9: ( bodyset )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -129,9 +134,9 @@ public class Css21Parser extends Parser {
 
 				switch (alt1) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:34:9: bodyset
+					// src/eu/webtoolkit/jwt/render/Css21.g:39:9: bodyset
 					{
-					pushFollow(FOLLOW_bodyset_in_styleSheet59);
+					pushFollow(FOLLOW_bodyset_in_styleSheet64);
 					bodyset();
 					state._fsp--;
 					if (state.failed) return;
@@ -143,7 +148,7 @@ public class Css21Parser extends Parser {
 				}
 			}
 
-			match(input,EOF,FOLLOW_EOF_in_styleSheet67); if (state.failed) return;
+			match(input,EOF,FOLLOW_EOF_in_styleSheet72); if (state.failed) return;
 			}
 
 		}
@@ -160,13 +165,13 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "bodyset"
-	// src/eu/webtoolkit/jwt/render/Css21.g:38:1: bodyset : ruleSet ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:43:1: bodyset : ruleSet ;
 	public final void bodyset() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:39:5: ( ruleSet )
-			// src/eu/webtoolkit/jwt/render/Css21.g:39:7: ruleSet
+			// src/eu/webtoolkit/jwt/render/Css21.g:44:5: ( ruleSet )
+			// src/eu/webtoolkit/jwt/render/Css21.g:44:7: ruleSet
 			{
-			pushFollow(FOLLOW_ruleSet_in_bodyset88);
+			pushFollow(FOLLOW_ruleSet_in_bodyset93);
 			ruleSet();
 			state._fsp--;
 			if (state.failed) return;
@@ -186,10 +191,10 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "operator"
-	// src/eu/webtoolkit/jwt/render/Css21.g:42:1: operator : ( SOLIDUS | COMMA |);
+	// src/eu/webtoolkit/jwt/render/Css21.g:47:1: operator : ( SOLIDUS | COMMA |);
 	public final void operator() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:43:5: ( SOLIDUS | COMMA |)
+			// src/eu/webtoolkit/jwt/render/Css21.g:48:5: ( SOLIDUS | COMMA |)
 			int alt2=3;
 			switch ( input.LA(1) ) {
 			case SOLIDUS:
@@ -229,19 +234,19 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt2) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:43:7: SOLIDUS
+					// src/eu/webtoolkit/jwt/render/Css21.g:48:7: SOLIDUS
 					{
-					match(input,SOLIDUS,FOLLOW_SOLIDUS_in_operator109); if (state.failed) return;
+					match(input,SOLIDUS,FOLLOW_SOLIDUS_in_operator114); if (state.failed) return;
 					}
 					break;
 				case 2 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:44:7: COMMA
+					// src/eu/webtoolkit/jwt/render/Css21.g:49:7: COMMA
 					{
-					match(input,COMMA,FOLLOW_COMMA_in_operator117); if (state.failed) return;
+					match(input,COMMA,FOLLOW_COMMA_in_operator122); if (state.failed) return;
 					}
 					break;
 				case 3 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:46:5: 
+					// src/eu/webtoolkit/jwt/render/Css21.g:51:5: 
 					{
 					}
 					break;
@@ -261,10 +266,10 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "combinator"
-	// src/eu/webtoolkit/jwt/render/Css21.g:49:1: protected combinator : ( PLUS | GREATER | WS |);
+	// src/eu/webtoolkit/jwt/render/Css21.g:54:1: protected combinator : ( PLUS | GREATER | WS |);
 	public final void combinator() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:50:5: ( PLUS | GREATER | WS |)
+			// src/eu/webtoolkit/jwt/render/Css21.g:55:5: ( PLUS | GREATER | WS |)
 			int alt3=4;
 			switch ( input.LA(1) ) {
 			case PLUS:
@@ -298,25 +303,25 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt3) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:50:7: PLUS
+					// src/eu/webtoolkit/jwt/render/Css21.g:55:7: PLUS
 					{
-					match(input,PLUS,FOLLOW_PLUS_in_combinator142); if (state.failed) return;
+					match(input,PLUS,FOLLOW_PLUS_in_combinator147); if (state.failed) return;
 					}
 					break;
 				case 2 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:51:7: GREATER
+					// src/eu/webtoolkit/jwt/render/Css21.g:56:7: GREATER
 					{
-					match(input,GREATER,FOLLOW_GREATER_in_combinator150); if (state.failed) return;
+					match(input,GREATER,FOLLOW_GREATER_in_combinator155); if (state.failed) return;
 					}
 					break;
 				case 3 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:52:7: WS
+					// src/eu/webtoolkit/jwt/render/Css21.g:57:7: WS
 					{
-					match(input,WS,FOLLOW_WS_in_combinator158); if (state.failed) return;
+					match(input,WS,FOLLOW_WS_in_combinator163); if (state.failed) return;
 					}
 					break;
 				case 4 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:54:5: 
+					// src/eu/webtoolkit/jwt/render/Css21.g:59:5: 
 					{
 					}
 					break;
@@ -336,10 +341,10 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "unaryOperator"
-	// src/eu/webtoolkit/jwt/render/Css21.g:56:1: unaryOperator : ( MINUS | PLUS );
+	// src/eu/webtoolkit/jwt/render/Css21.g:61:1: unaryOperator : ( MINUS | PLUS );
 	public final void unaryOperator() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:57:5: ( MINUS | PLUS )
+			// src/eu/webtoolkit/jwt/render/Css21.g:62:5: ( MINUS | PLUS )
 			// src/eu/webtoolkit/jwt/render/Css21.g:
 			{
 			if ( input.LA(1)==MINUS||input.LA(1)==PLUS ) {
@@ -368,13 +373,13 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "property"
-	// src/eu/webtoolkit/jwt/render/Css21.g:61:1: property : IDENT ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:66:1: property : IDENT ;
 	public final void property() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:62:5: ( IDENT )
-			// src/eu/webtoolkit/jwt/render/Css21.g:62:7: IDENT
+			// src/eu/webtoolkit/jwt/render/Css21.g:67:5: ( IDENT )
+			// src/eu/webtoolkit/jwt/render/Css21.g:67:7: IDENT
 			{
-			match(input,IDENT,FOLLOW_IDENT_in_property216); if (state.failed) return;
+			match(input,IDENT,FOLLOW_IDENT_in_property221); if (state.failed) return;
 			}
 
 		}
@@ -391,20 +396,20 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "ruleSet"
-	// src/eu/webtoolkit/jwt/render/Css21.g:65:1: ruleSet : selector ( COMMA ( WS )? selector )* ( WS )? LBRACE declarationBlock RBRACE ( WS )? ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:70:1: ruleSet : selector ( COMMA ( WS )? selector )* ( WS )? LBRACE declarationBlock RBRACE ( WS )? ;
 	public final void ruleSet() throws RecognitionException {
 		ParserRuleReturnScope declarationBlock1 =null;
 
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:66:5: ( selector ( COMMA ( WS )? selector )* ( WS )? LBRACE declarationBlock RBRACE ( WS )? )
-			// src/eu/webtoolkit/jwt/render/Css21.g:66:8: selector ( COMMA ( WS )? selector )* ( WS )? LBRACE declarationBlock RBRACE ( WS )?
+			// src/eu/webtoolkit/jwt/render/Css21.g:71:5: ( selector ( COMMA ( WS )? selector )* ( WS )? LBRACE declarationBlock RBRACE ( WS )? )
+			// src/eu/webtoolkit/jwt/render/Css21.g:71:8: selector ( COMMA ( WS )? selector )* ( WS )? LBRACE declarationBlock RBRACE ( WS )?
 			{
-			pushFollow(FOLLOW_selector_in_ruleSet238);
+			pushFollow(FOLLOW_selector_in_ruleSet243);
 			selector();
 			state._fsp--;
 			if (state.failed) return;
-			if ( state.backtracking==0 ) {CssParser.pushCurrentSelector();}
-			// src/eu/webtoolkit/jwt/render/Css21.g:67:8: ( COMMA ( WS )? selector )*
+			if ( state.backtracking==0 ) {getTarget().pushCurrentSelector();}
+			// src/eu/webtoolkit/jwt/render/Css21.g:72:8: ( COMMA ( WS )? selector )*
 			loop5:
 			while (true) {
 				int alt5=2;
@@ -415,10 +420,10 @@ public class Css21Parser extends Parser {
 
 				switch (alt5) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:67:9: COMMA ( WS )? selector
+					// src/eu/webtoolkit/jwt/render/Css21.g:72:9: COMMA ( WS )? selector
 					{
-					match(input,COMMA,FOLLOW_COMMA_in_ruleSet262); if (state.failed) return;
-					// src/eu/webtoolkit/jwt/render/Css21.g:67:15: ( WS )?
+					match(input,COMMA,FOLLOW_COMMA_in_ruleSet267); if (state.failed) return;
+					// src/eu/webtoolkit/jwt/render/Css21.g:72:15: ( WS )?
 					int alt4=2;
 					int LA4_0 = input.LA(1);
 					if ( (LA4_0==WS) ) {
@@ -426,19 +431,19 @@ public class Css21Parser extends Parser {
 					}
 					switch (alt4) {
 						case 1 :
-							// src/eu/webtoolkit/jwt/render/Css21.g:67:15: WS
+							// src/eu/webtoolkit/jwt/render/Css21.g:72:15: WS
 							{
-							match(input,WS,FOLLOW_WS_in_ruleSet264); if (state.failed) return;
+							match(input,WS,FOLLOW_WS_in_ruleSet269); if (state.failed) return;
 							}
 							break;
 
 					}
 
-					pushFollow(FOLLOW_selector_in_ruleSet267);
+					pushFollow(FOLLOW_selector_in_ruleSet272);
 					selector();
 					state._fsp--;
 					if (state.failed) return;
-					if ( state.backtracking==0 ) {CssParser.pushCurrentSelector();}
+					if ( state.backtracking==0 ) {getTarget().pushCurrentSelector();}
 					}
 					break;
 
@@ -447,7 +452,7 @@ public class Css21Parser extends Parser {
 				}
 			}
 
-			// src/eu/webtoolkit/jwt/render/Css21.g:68:8: ( WS )?
+			// src/eu/webtoolkit/jwt/render/Css21.g:73:8: ( WS )?
 			int alt6=2;
 			int LA6_0 = input.LA(1);
 			if ( (LA6_0==WS) ) {
@@ -455,22 +460,22 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt6) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:68:8: WS
+					// src/eu/webtoolkit/jwt/render/Css21.g:73:8: WS
 					{
-					match(input,WS,FOLLOW_WS_in_ruleSet285); if (state.failed) return;
+					match(input,WS,FOLLOW_WS_in_ruleSet290); if (state.failed) return;
 					}
 					break;
 
 			}
 
-			match(input,LBRACE,FOLLOW_LBRACE_in_ruleSet288); if (state.failed) return;
-			pushFollow(FOLLOW_declarationBlock_in_ruleSet299);
+			match(input,LBRACE,FOLLOW_LBRACE_in_ruleSet293); if (state.failed) return;
+			pushFollow(FOLLOW_declarationBlock_in_ruleSet304);
 			declarationBlock1=declarationBlock();
 			state._fsp--;
 			if (state.failed) return;
-			if ( state.backtracking==0 ) {CssParser.setAndPushDeclarationBlock((declarationBlock1!=null?input.toString(declarationBlock1.start,declarationBlock1.stop):null));}
-			match(input,RBRACE,FOLLOW_RBRACE_in_ruleSet314); if (state.failed) return;
-			// src/eu/webtoolkit/jwt/render/Css21.g:71:8: ( WS )?
+			if ( state.backtracking==0 ) {getTarget().setAndPushDeclarationBlock((declarationBlock1!=null?input.toString(declarationBlock1.start,declarationBlock1.stop):null));}
+			match(input,RBRACE,FOLLOW_RBRACE_in_ruleSet319); if (state.failed) return;
+			// src/eu/webtoolkit/jwt/render/Css21.g:76:8: ( WS )?
 			int alt7=2;
 			int LA7_0 = input.LA(1);
 			if ( (LA7_0==WS) ) {
@@ -478,9 +483,9 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt7) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:71:8: WS
+					// src/eu/webtoolkit/jwt/render/Css21.g:76:8: WS
 					{
-					match(input,WS,FOLLOW_WS_in_ruleSet323); if (state.failed) return;
+					match(input,WS,FOLLOW_WS_in_ruleSet328); if (state.failed) return;
 					}
 					break;
 
@@ -505,16 +510,16 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "declarationBlock"
-	// src/eu/webtoolkit/jwt/render/Css21.g:74:1: declarationBlock : ( declaration )? ( SEMI declaration )* ( SEMI )? ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:79:1: declarationBlock : ( declaration )? ( SEMI declaration )* ( SEMI )? ;
 	public final Css21Parser.declarationBlock_return declarationBlock() throws RecognitionException {
 		Css21Parser.declarationBlock_return retval = new Css21Parser.declarationBlock_return();
 		retval.start = input.LT(1);
 
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:75:5: ( ( declaration )? ( SEMI declaration )* ( SEMI )? )
-			// src/eu/webtoolkit/jwt/render/Css21.g:75:7: ( declaration )? ( SEMI declaration )* ( SEMI )?
+			// src/eu/webtoolkit/jwt/render/Css21.g:80:5: ( ( declaration )? ( SEMI declaration )* ( SEMI )? )
+			// src/eu/webtoolkit/jwt/render/Css21.g:80:7: ( declaration )? ( SEMI declaration )* ( SEMI )?
 			{
-			// src/eu/webtoolkit/jwt/render/Css21.g:75:7: ( declaration )?
+			// src/eu/webtoolkit/jwt/render/Css21.g:80:7: ( declaration )?
 			int alt8=2;
 			int LA8_0 = input.LA(1);
 			if ( (LA8_0==IDENT) ) {
@@ -522,9 +527,9 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt8) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:75:7: declaration
+					// src/eu/webtoolkit/jwt/render/Css21.g:80:7: declaration
 					{
-					pushFollow(FOLLOW_declaration_in_declarationBlock341);
+					pushFollow(FOLLOW_declaration_in_declarationBlock346);
 					declaration();
 					state._fsp--;
 					if (state.failed) return retval;
@@ -533,7 +538,7 @@ public class Css21Parser extends Parser {
 
 			}
 
-			// src/eu/webtoolkit/jwt/render/Css21.g:76:7: ( SEMI declaration )*
+			// src/eu/webtoolkit/jwt/render/Css21.g:81:7: ( SEMI declaration )*
 			loop9:
 			while (true) {
 				int alt9=2;
@@ -548,10 +553,10 @@ public class Css21Parser extends Parser {
 
 				switch (alt9) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:76:8: SEMI declaration
+					// src/eu/webtoolkit/jwt/render/Css21.g:81:8: SEMI declaration
 					{
-					match(input,SEMI,FOLLOW_SEMI_in_declarationBlock351); if (state.failed) return retval;
-					pushFollow(FOLLOW_declaration_in_declarationBlock353);
+					match(input,SEMI,FOLLOW_SEMI_in_declarationBlock356); if (state.failed) return retval;
+					pushFollow(FOLLOW_declaration_in_declarationBlock358);
 					declaration();
 					state._fsp--;
 					if (state.failed) return retval;
@@ -563,7 +568,7 @@ public class Css21Parser extends Parser {
 				}
 			}
 
-			// src/eu/webtoolkit/jwt/render/Css21.g:77:7: ( SEMI )?
+			// src/eu/webtoolkit/jwt/render/Css21.g:82:7: ( SEMI )?
 			int alt10=2;
 			int LA10_0 = input.LA(1);
 			if ( (LA10_0==SEMI) ) {
@@ -571,9 +576,9 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt10) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:77:7: SEMI
+					// src/eu/webtoolkit/jwt/render/Css21.g:82:7: SEMI
 					{
-					match(input,SEMI,FOLLOW_SEMI_in_declarationBlock363); if (state.failed) return retval;
+					match(input,SEMI,FOLLOW_SEMI_in_declarationBlock368); if (state.failed) return retval;
 					}
 					break;
 
@@ -598,18 +603,18 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "selector"
-	// src/eu/webtoolkit/jwt/render/Css21.g:80:1: selector : s1= simpleSelector ( combinator s2= simpleSelector )* ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:85:1: selector : s1= simpleSelector ( combinator s2= simpleSelector )* ;
 	public final void selector() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:81:5: (s1= simpleSelector ( combinator s2= simpleSelector )* )
-			// src/eu/webtoolkit/jwt/render/Css21.g:81:7: s1= simpleSelector ( combinator s2= simpleSelector )*
+			// src/eu/webtoolkit/jwt/render/Css21.g:86:5: (s1= simpleSelector ( combinator s2= simpleSelector )* )
+			// src/eu/webtoolkit/jwt/render/Css21.g:86:7: s1= simpleSelector ( combinator s2= simpleSelector )*
 			{
-			pushFollow(FOLLOW_simpleSelector_in_selector387);
+			pushFollow(FOLLOW_simpleSelector_in_selector392);
 			simpleSelector();
 			state._fsp--;
 			if (state.failed) return;
-			if ( state.backtracking==0 ) { CssParser.pushCurrentSimpleSelector(); }
-			// src/eu/webtoolkit/jwt/render/Css21.g:82:7: ( combinator s2= simpleSelector )*
+			if ( state.backtracking==0 ) { getTarget().pushCurrentSimpleSelector(); }
+			// src/eu/webtoolkit/jwt/render/Css21.g:87:7: ( combinator s2= simpleSelector )*
 			loop11:
 			while (true) {
 				int alt11=2;
@@ -627,17 +632,17 @@ public class Css21Parser extends Parser {
 
 				switch (alt11) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:82:8: combinator s2= simpleSelector
+					// src/eu/webtoolkit/jwt/render/Css21.g:87:8: combinator s2= simpleSelector
 					{
-					pushFollow(FOLLOW_combinator_in_selector411);
+					pushFollow(FOLLOW_combinator_in_selector416);
 					combinator();
 					state._fsp--;
 					if (state.failed) return;
-					pushFollow(FOLLOW_simpleSelector_in_selector415);
+					pushFollow(FOLLOW_simpleSelector_in_selector420);
 					simpleSelector();
 					state._fsp--;
 					if (state.failed) return;
-					if ( state.backtracking==0 ) { CssParser.pushCurrentSimpleSelector(); }
+					if ( state.backtracking==0 ) { getTarget().pushCurrentSimpleSelector(); }
 					}
 					break;
 
@@ -662,12 +667,12 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "simpleSelector"
-	// src/eu/webtoolkit/jwt/render/Css21.g:86:1: simpleSelector : ( ( elementName ( ( esPred )=> elementSubsequent )* ) | ( ( esPred )=> (s5= elementSubsequent ) )+ );
+	// src/eu/webtoolkit/jwt/render/Css21.g:91:1: simpleSelector : ( ( elementName ( ( esPred )=> elementSubsequent )* ) | ( ( esPred )=> (s5= elementSubsequent ) )+ );
 	public final void simpleSelector() throws RecognitionException {
 		ParserRuleReturnScope elementName2 =null;
 
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:87:5: ( ( elementName ( ( esPred )=> elementSubsequent )* ) | ( ( esPred )=> (s5= elementSubsequent ) )+ )
+			// src/eu/webtoolkit/jwt/render/Css21.g:92:5: ( ( elementName ( ( esPred )=> elementSubsequent )* ) | ( ( esPred )=> (s5= elementSubsequent ) )+ )
 			int alt14=2;
 			int LA14_0 = input.LA(1);
 			if ( (LA14_0==IDENT||LA14_0==STAR) ) {
@@ -686,17 +691,17 @@ public class Css21Parser extends Parser {
 
 			switch (alt14) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:88:3: ( elementName ( ( esPred )=> elementSubsequent )* )
+					// src/eu/webtoolkit/jwt/render/Css21.g:93:3: ( elementName ( ( esPred )=> elementSubsequent )* )
 					{
-					// src/eu/webtoolkit/jwt/render/Css21.g:88:3: ( elementName ( ( esPred )=> elementSubsequent )* )
-					// src/eu/webtoolkit/jwt/render/Css21.g:89:3: elementName ( ( esPred )=> elementSubsequent )*
+					// src/eu/webtoolkit/jwt/render/Css21.g:93:3: ( elementName ( ( esPred )=> elementSubsequent )* )
+					// src/eu/webtoolkit/jwt/render/Css21.g:94:3: elementName ( ( esPred )=> elementSubsequent )*
 					{
-					pushFollow(FOLLOW_elementName_in_simpleSelector449);
+					pushFollow(FOLLOW_elementName_in_simpleSelector454);
 					elementName2=elementName();
 					state._fsp--;
 					if (state.failed) return;
-					if ( state.backtracking==0 ) { CssParser.setSimpleSelectorElementName((elementName2!=null?input.toString(elementName2.start,elementName2.stop):null)); }
-					// src/eu/webtoolkit/jwt/render/Css21.g:90:3: ( ( esPred )=> elementSubsequent )*
+					if ( state.backtracking==0 ) { getTarget().setSimpleSelectorElementName((elementName2!=null?input.toString(elementName2.start,elementName2.stop):null)); }
+					// src/eu/webtoolkit/jwt/render/Css21.g:95:3: ( ( esPred )=> elementSubsequent )*
 					loop12:
 					while (true) {
 						int alt12=2;
@@ -722,9 +727,9 @@ public class Css21Parser extends Parser {
 
 						switch (alt12) {
 						case 1 :
-							// src/eu/webtoolkit/jwt/render/Css21.g:90:4: ( esPred )=> elementSubsequent
+							// src/eu/webtoolkit/jwt/render/Css21.g:95:4: ( esPred )=> elementSubsequent
 							{
-							pushFollow(FOLLOW_elementSubsequent_in_simpleSelector472);
+							pushFollow(FOLLOW_elementSubsequent_in_simpleSelector477);
 							elementSubsequent();
 							state._fsp--;
 							if (state.failed) return;
@@ -741,9 +746,9 @@ public class Css21Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:93:3: ( ( esPred )=> (s5= elementSubsequent ) )+
+					// src/eu/webtoolkit/jwt/render/Css21.g:98:3: ( ( esPred )=> (s5= elementSubsequent ) )+
 					{
-					// src/eu/webtoolkit/jwt/render/Css21.g:93:3: ( ( esPred )=> (s5= elementSubsequent ) )+
+					// src/eu/webtoolkit/jwt/render/Css21.g:98:3: ( ( esPred )=> (s5= elementSubsequent ) )+
 					int cnt13=0;
 					loop13:
 					while (true) {
@@ -766,12 +771,12 @@ public class Css21Parser extends Parser {
 
 						switch (alt13) {
 						case 1 :
-							// src/eu/webtoolkit/jwt/render/Css21.g:94:3: ( esPred )=> (s5= elementSubsequent )
+							// src/eu/webtoolkit/jwt/render/Css21.g:99:3: ( esPred )=> (s5= elementSubsequent )
 							{
-							// src/eu/webtoolkit/jwt/render/Css21.g:94:13: (s5= elementSubsequent )
-							// src/eu/webtoolkit/jwt/render/Css21.g:94:14: s5= elementSubsequent
+							// src/eu/webtoolkit/jwt/render/Css21.g:99:13: (s5= elementSubsequent )
+							// src/eu/webtoolkit/jwt/render/Css21.g:99:14: s5= elementSubsequent
 							{
-							pushFollow(FOLLOW_elementSubsequent_in_simpleSelector495);
+							pushFollow(FOLLOW_elementSubsequent_in_simpleSelector500);
 							elementSubsequent();
 							state._fsp--;
 							if (state.failed) return;
@@ -807,10 +812,10 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "esPred"
-	// src/eu/webtoolkit/jwt/render/Css21.g:98:1: esPred : ( HASH | DOT );
+	// src/eu/webtoolkit/jwt/render/Css21.g:103:1: esPred : ( HASH | DOT );
 	public final void esPred() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:99:5: ( HASH | DOT )
+			// src/eu/webtoolkit/jwt/render/Css21.g:104:5: ( HASH | DOT )
 			// src/eu/webtoolkit/jwt/render/Css21.g:
 			{
 			if ( input.LA(1)==DOT||input.LA(1)==HASH ) {
@@ -839,13 +844,13 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "elementSubsequent"
-	// src/eu/webtoolkit/jwt/render/Css21.g:102:1: elementSubsequent : (h= HASH | cssClass );
+	// src/eu/webtoolkit/jwt/render/Css21.g:107:1: elementSubsequent : (h= HASH | cssClass );
 	public final void elementSubsequent() throws RecognitionException {
 		Token h=null;
 		ParserRuleReturnScope cssClass3 =null;
 
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:103:5: (h= HASH | cssClass )
+			// src/eu/webtoolkit/jwt/render/Css21.g:108:5: (h= HASH | cssClass )
 			int alt15=2;
 			int LA15_0 = input.LA(1);
 			if ( (LA15_0==HASH) ) {
@@ -864,20 +869,20 @@ public class Css21Parser extends Parser {
 
 			switch (alt15) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:103:7: h= HASH
+					// src/eu/webtoolkit/jwt/render/Css21.g:108:7: h= HASH
 					{
-					h=(Token)match(input,HASH,FOLLOW_HASH_in_elementSubsequent547); if (state.failed) return;
-					if ( state.backtracking==0 ) { CssParser.setSimpleSelectorHash (h       .getText());}
+					h=(Token)match(input,HASH,FOLLOW_HASH_in_elementSubsequent552); if (state.failed) return;
+					if ( state.backtracking==0 ) { getTarget().setSimpleSelectorHash (h       .getText());}
 					}
 					break;
 				case 2 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:104:7: cssClass
+					// src/eu/webtoolkit/jwt/render/Css21.g:109:7: cssClass
 					{
-					pushFollow(FOLLOW_cssClass_in_elementSubsequent559);
+					pushFollow(FOLLOW_cssClass_in_elementSubsequent564);
 					cssClass3=cssClass();
 					state._fsp--;
 					if (state.failed) return;
-					if ( state.backtracking==0 ) { CssParser.addSimpleSelectorClass((cssClass3!=null?input.toString(cssClass3.start,cssClass3.stop):null));}
+					if ( state.backtracking==0 ) { getTarget().addSimpleSelectorClass((cssClass3!=null?input.toString(cssClass3.start,cssClass3.stop):null));}
 					}
 					break;
 
@@ -899,17 +904,17 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "cssClass"
-	// src/eu/webtoolkit/jwt/render/Css21.g:107:1: cssClass : DOT IDENT ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:112:1: cssClass : DOT IDENT ;
 	public final Css21Parser.cssClass_return cssClass() throws RecognitionException {
 		Css21Parser.cssClass_return retval = new Css21Parser.cssClass_return();
 		retval.start = input.LT(1);
 
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:108:5: ( DOT IDENT )
-			// src/eu/webtoolkit/jwt/render/Css21.g:108:7: DOT IDENT
+			// src/eu/webtoolkit/jwt/render/Css21.g:113:5: ( DOT IDENT )
+			// src/eu/webtoolkit/jwt/render/Css21.g:113:7: DOT IDENT
 			{
-			match(input,DOT,FOLLOW_DOT_in_cssClass582); if (state.failed) return retval;
-			match(input,IDENT,FOLLOW_IDENT_in_cssClass584); if (state.failed) return retval;
+			match(input,DOT,FOLLOW_DOT_in_cssClass587); if (state.failed) return retval;
+			match(input,IDENT,FOLLOW_IDENT_in_cssClass589); if (state.failed) return retval;
 			}
 
 			retval.stop = input.LT(-1);
@@ -932,13 +937,13 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "elementName"
-	// src/eu/webtoolkit/jwt/render/Css21.g:111:1: elementName : ( IDENT | STAR );
+	// src/eu/webtoolkit/jwt/render/Css21.g:116:1: elementName : ( IDENT | STAR );
 	public final Css21Parser.elementName_return elementName() throws RecognitionException {
 		Css21Parser.elementName_return retval = new Css21Parser.elementName_return();
 		retval.start = input.LT(1);
 
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:112:5: ( IDENT | STAR )
+			// src/eu/webtoolkit/jwt/render/Css21.g:117:5: ( IDENT | STAR )
 			// src/eu/webtoolkit/jwt/render/Css21.g:
 			{
 			if ( input.LA(1)==IDENT||input.LA(1)==STAR ) {
@@ -970,18 +975,18 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "declaration"
-	// src/eu/webtoolkit/jwt/render/Css21.g:116:1: declaration : property COLON expr ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:121:1: declaration : property COLON expr ;
 	public final void declaration() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:117:5: ( property COLON expr )
-			// src/eu/webtoolkit/jwt/render/Css21.g:117:7: property COLON expr
+			// src/eu/webtoolkit/jwt/render/Css21.g:122:5: ( property COLON expr )
+			// src/eu/webtoolkit/jwt/render/Css21.g:122:7: property COLON expr
 			{
-			pushFollow(FOLLOW_property_in_declaration634);
+			pushFollow(FOLLOW_property_in_declaration639);
 			property();
 			state._fsp--;
 			if (state.failed) return;
-			match(input,COLON,FOLLOW_COLON_in_declaration636); if (state.failed) return;
-			pushFollow(FOLLOW_expr_in_declaration638);
+			match(input,COLON,FOLLOW_COLON_in_declaration641); if (state.failed) return;
+			pushFollow(FOLLOW_expr_in_declaration643);
 			expr();
 			state._fsp--;
 			if (state.failed) return;
@@ -1001,17 +1006,17 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "expr"
-	// src/eu/webtoolkit/jwt/render/Css21.g:120:1: expr : term ( operator term )* ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:125:1: expr : term ( operator term )* ;
 	public final void expr() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:121:5: ( term ( operator term )* )
-			// src/eu/webtoolkit/jwt/render/Css21.g:121:7: term ( operator term )*
+			// src/eu/webtoolkit/jwt/render/Css21.g:126:5: ( term ( operator term )* )
+			// src/eu/webtoolkit/jwt/render/Css21.g:126:7: term ( operator term )*
 			{
-			pushFollow(FOLLOW_term_in_expr663);
+			pushFollow(FOLLOW_term_in_expr668);
 			term();
 			state._fsp--;
 			if (state.failed) return;
-			// src/eu/webtoolkit/jwt/render/Css21.g:121:12: ( operator term )*
+			// src/eu/webtoolkit/jwt/render/Css21.g:126:12: ( operator term )*
 			loop16:
 			while (true) {
 				int alt16=2;
@@ -1022,13 +1027,13 @@ public class Css21Parser extends Parser {
 
 				switch (alt16) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:121:13: operator term
+					// src/eu/webtoolkit/jwt/render/Css21.g:126:13: operator term
 					{
-					pushFollow(FOLLOW_operator_in_expr666);
+					pushFollow(FOLLOW_operator_in_expr671);
 					operator();
 					state._fsp--;
 					if (state.failed) return;
-					pushFollow(FOLLOW_term_in_expr668);
+					pushFollow(FOLLOW_term_in_expr673);
 					term();
 					state._fsp--;
 					if (state.failed) return;
@@ -1056,10 +1061,10 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "term"
-	// src/eu/webtoolkit/jwt/render/Css21.g:124:1: term : ( ( unaryOperator )? ( WS )? ( NUMBER | PERCENTAGE | LENGTH | EMS | EXS | ANGLE | TIME | FREQ ) | STRING | IDENT | URI | hexColor );
+	// src/eu/webtoolkit/jwt/render/Css21.g:129:1: term : ( ( unaryOperator )? ( WS )? ( NUMBER | PERCENTAGE | LENGTH | EMS | EXS | ANGLE | TIME | FREQ ) | STRING | IDENT | URI | hexColor );
 	public final void term() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:125:5: ( ( unaryOperator )? ( WS )? ( NUMBER | PERCENTAGE | LENGTH | EMS | EXS | ANGLE | TIME | FREQ ) | STRING | IDENT | URI | hexColor )
+			// src/eu/webtoolkit/jwt/render/Css21.g:130:5: ( ( unaryOperator )? ( WS )? ( NUMBER | PERCENTAGE | LENGTH | EMS | EXS | ANGLE | TIME | FREQ ) | STRING | IDENT | URI | hexColor )
 			int alt19=5;
 			switch ( input.LA(1) ) {
 			case ANGLE:
@@ -1105,9 +1110,9 @@ public class Css21Parser extends Parser {
 			}
 			switch (alt19) {
 				case 1 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:125:7: ( unaryOperator )? ( WS )? ( NUMBER | PERCENTAGE | LENGTH | EMS | EXS | ANGLE | TIME | FREQ )
+					// src/eu/webtoolkit/jwt/render/Css21.g:130:7: ( unaryOperator )? ( WS )? ( NUMBER | PERCENTAGE | LENGTH | EMS | EXS | ANGLE | TIME | FREQ )
 					{
-					// src/eu/webtoolkit/jwt/render/Css21.g:125:7: ( unaryOperator )?
+					// src/eu/webtoolkit/jwt/render/Css21.g:130:7: ( unaryOperator )?
 					int alt17=2;
 					int LA17_0 = input.LA(1);
 					if ( (LA17_0==MINUS||LA17_0==PLUS) ) {
@@ -1115,9 +1120,9 @@ public class Css21Parser extends Parser {
 					}
 					switch (alt17) {
 						case 1 :
-							// src/eu/webtoolkit/jwt/render/Css21.g:125:7: unaryOperator
+							// src/eu/webtoolkit/jwt/render/Css21.g:130:7: unaryOperator
 							{
-							pushFollow(FOLLOW_unaryOperator_in_term691);
+							pushFollow(FOLLOW_unaryOperator_in_term696);
 							unaryOperator();
 							state._fsp--;
 							if (state.failed) return;
@@ -1126,7 +1131,7 @@ public class Css21Parser extends Parser {
 
 					}
 
-					// src/eu/webtoolkit/jwt/render/Css21.g:126:7: ( WS )?
+					// src/eu/webtoolkit/jwt/render/Css21.g:131:7: ( WS )?
 					int alt18=2;
 					int LA18_0 = input.LA(1);
 					if ( (LA18_0==WS) ) {
@@ -1134,9 +1139,9 @@ public class Css21Parser extends Parser {
 					}
 					switch (alt18) {
 						case 1 :
-							// src/eu/webtoolkit/jwt/render/Css21.g:126:7: WS
+							// src/eu/webtoolkit/jwt/render/Css21.g:131:7: WS
 							{
-							match(input,WS,FOLLOW_WS_in_term700); if (state.failed) return;
+							match(input,WS,FOLLOW_WS_in_term705); if (state.failed) return;
 							}
 							break;
 
@@ -1155,27 +1160,27 @@ public class Css21Parser extends Parser {
 					}
 					break;
 				case 2 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:137:7: STRING
+					// src/eu/webtoolkit/jwt/render/Css21.g:142:7: STRING
 					{
-					match(input,STRING,FOLLOW_STRING_in_term857); if (state.failed) return;
+					match(input,STRING,FOLLOW_STRING_in_term862); if (state.failed) return;
 					}
 					break;
 				case 3 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:138:7: IDENT
+					// src/eu/webtoolkit/jwt/render/Css21.g:143:7: IDENT
 					{
-					match(input,IDENT,FOLLOW_IDENT_in_term865); if (state.failed) return;
+					match(input,IDENT,FOLLOW_IDENT_in_term870); if (state.failed) return;
 					}
 					break;
 				case 4 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:139:7: URI
+					// src/eu/webtoolkit/jwt/render/Css21.g:144:7: URI
 					{
-					match(input,URI,FOLLOW_URI_in_term873); if (state.failed) return;
+					match(input,URI,FOLLOW_URI_in_term878); if (state.failed) return;
 					}
 					break;
 				case 5 :
-					// src/eu/webtoolkit/jwt/render/Css21.g:140:7: hexColor
+					// src/eu/webtoolkit/jwt/render/Css21.g:145:7: hexColor
 					{
-					pushFollow(FOLLOW_hexColor_in_term881);
+					pushFollow(FOLLOW_hexColor_in_term886);
 					hexColor();
 					state._fsp--;
 					if (state.failed) return;
@@ -1197,13 +1202,13 @@ public class Css21Parser extends Parser {
 
 
 	// $ANTLR start "hexColor"
-	// src/eu/webtoolkit/jwt/render/Css21.g:143:1: hexColor : HASH ;
+	// src/eu/webtoolkit/jwt/render/Css21.g:148:1: hexColor : HASH ;
 	public final void hexColor() throws RecognitionException {
 		try {
-			// src/eu/webtoolkit/jwt/render/Css21.g:144:5: ( HASH )
-			// src/eu/webtoolkit/jwt/render/Css21.g:144:7: HASH
+			// src/eu/webtoolkit/jwt/render/Css21.g:149:5: ( HASH )
+			// src/eu/webtoolkit/jwt/render/Css21.g:149:7: HASH
 			{
-			match(input,HASH,FOLLOW_HASH_in_hexColor902); if (state.failed) return;
+			match(input,HASH,FOLLOW_HASH_in_hexColor907); if (state.failed) return;
 			}
 
 		}
@@ -1219,10 +1224,10 @@ public class Css21Parser extends Parser {
 
 	// $ANTLR start synpred1_Css21
 	public final void synpred1_Css21_fragment() throws RecognitionException {
-		// src/eu/webtoolkit/jwt/render/Css21.g:90:4: ( esPred )
-		// src/eu/webtoolkit/jwt/render/Css21.g:90:5: esPred
+		// src/eu/webtoolkit/jwt/render/Css21.g:95:4: ( esPred )
+		// src/eu/webtoolkit/jwt/render/Css21.g:95:5: esPred
 		{
-		pushFollow(FOLLOW_esPred_in_synpred1_Css21469);
+		pushFollow(FOLLOW_esPred_in_synpred1_Css21474);
 		esPred();
 		state._fsp--;
 		if (state.failed) return;
@@ -1233,10 +1238,10 @@ public class Css21Parser extends Parser {
 
 	// $ANTLR start synpred2_Css21
 	public final void synpred2_Css21_fragment() throws RecognitionException {
-		// src/eu/webtoolkit/jwt/render/Css21.g:94:3: ( esPred )
-		// src/eu/webtoolkit/jwt/render/Css21.g:94:4: esPred
+		// src/eu/webtoolkit/jwt/render/Css21.g:99:3: ( esPred )
+		// src/eu/webtoolkit/jwt/render/Css21.g:99:4: esPred
 		{
-		pushFollow(FOLLOW_esPred_in_synpred2_Css21489);
+		pushFollow(FOLLOW_esPred_in_synpred2_Css21494);
 		esPred();
 		state._fsp--;
 		if (state.failed) return;
@@ -1278,52 +1283,52 @@ public class Css21Parser extends Parser {
 
 
 
-	public static final BitSet FOLLOW_bodyset_in_styleSheet59 = new BitSet(new long[]{0x1000000024010000L});
-	public static final BitSet FOLLOW_EOF_in_styleSheet67 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_ruleSet_in_bodyset88 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_SOLIDUS_in_operator109 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_COMMA_in_operator117 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_PLUS_in_combinator142 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_GREATER_in_combinator150 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_WS_in_combinator158 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_IDENT_in_property216 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_selector_in_ruleSet238 = new BitSet(new long[]{0x0000000800000800L,0x0000000000000020L});
-	public static final BitSet FOLLOW_COMMA_in_ruleSet262 = new BitSet(new long[]{0x1000000024010000L,0x0000000000000020L});
-	public static final BitSet FOLLOW_WS_in_ruleSet264 = new BitSet(new long[]{0x1000000024010000L});
-	public static final BitSet FOLLOW_selector_in_ruleSet267 = new BitSet(new long[]{0x0000000800000800L,0x0000000000000020L});
-	public static final BitSet FOLLOW_WS_in_ruleSet285 = new BitSet(new long[]{0x0000000800000000L});
-	public static final BitSet FOLLOW_LBRACE_in_ruleSet288 = new BitSet(new long[]{0x0440000020000000L});
-	public static final BitSet FOLLOW_declarationBlock_in_ruleSet299 = new BitSet(new long[]{0x0040000000000000L});
-	public static final BitSet FOLLOW_RBRACE_in_ruleSet314 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000020L});
-	public static final BitSet FOLLOW_WS_in_ruleSet323 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_declaration_in_declarationBlock341 = new BitSet(new long[]{0x0400000000000002L});
-	public static final BitSet FOLLOW_SEMI_in_declarationBlock351 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_declaration_in_declarationBlock353 = new BitSet(new long[]{0x0400000000000002L});
-	public static final BitSet FOLLOW_SEMI_in_declarationBlock363 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_simpleSelector_in_selector387 = new BitSet(new long[]{0x1008000025010002L,0x0000000000000020L});
-	public static final BitSet FOLLOW_combinator_in_selector411 = new BitSet(new long[]{0x1000000024010000L});
-	public static final BitSet FOLLOW_simpleSelector_in_selector415 = new BitSet(new long[]{0x1008000025010002L,0x0000000000000020L});
-	public static final BitSet FOLLOW_elementName_in_simpleSelector449 = new BitSet(new long[]{0x0000000004010002L});
-	public static final BitSet FOLLOW_elementSubsequent_in_simpleSelector472 = new BitSet(new long[]{0x0000000004010002L});
-	public static final BitSet FOLLOW_elementSubsequent_in_simpleSelector495 = new BitSet(new long[]{0x0000000004010002L});
-	public static final BitSet FOLLOW_HASH_in_elementSubsequent547 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_cssClass_in_elementSubsequent559 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_DOT_in_cssClass582 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_IDENT_in_cssClass584 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_property_in_declaration634 = new BitSet(new long[]{0x0000000000000400L});
-	public static final BitSet FOLLOW_COLON_in_declaration636 = new BitSet(new long[]{0xA00C412024540020L,0x0000000000000022L});
-	public static final BitSet FOLLOW_expr_in_declaration638 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_term_in_expr663 = new BitSet(new long[]{0xA80C412024540822L,0x0000000000000022L});
-	public static final BitSet FOLLOW_operator_in_expr666 = new BitSet(new long[]{0xA00C412024540020L,0x0000000000000022L});
+	public static final BitSet FOLLOW_bodyset_in_styleSheet64 = new BitSet(new long[]{0x1000000024010000L});
+	public static final BitSet FOLLOW_EOF_in_styleSheet72 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_ruleSet_in_bodyset93 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_SOLIDUS_in_operator114 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_COMMA_in_operator122 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_PLUS_in_combinator147 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_GREATER_in_combinator155 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_WS_in_combinator163 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_IDENT_in_property221 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_selector_in_ruleSet243 = new BitSet(new long[]{0x0000000800000800L,0x0000000000000020L});
+	public static final BitSet FOLLOW_COMMA_in_ruleSet267 = new BitSet(new long[]{0x1000000024010000L,0x0000000000000020L});
+	public static final BitSet FOLLOW_WS_in_ruleSet269 = new BitSet(new long[]{0x1000000024010000L});
+	public static final BitSet FOLLOW_selector_in_ruleSet272 = new BitSet(new long[]{0x0000000800000800L,0x0000000000000020L});
+	public static final BitSet FOLLOW_WS_in_ruleSet290 = new BitSet(new long[]{0x0000000800000000L});
+	public static final BitSet FOLLOW_LBRACE_in_ruleSet293 = new BitSet(new long[]{0x0440000020000000L});
+	public static final BitSet FOLLOW_declarationBlock_in_ruleSet304 = new BitSet(new long[]{0x0040000000000000L});
+	public static final BitSet FOLLOW_RBRACE_in_ruleSet319 = new BitSet(new long[]{0x0000000000000002L,0x0000000000000020L});
+	public static final BitSet FOLLOW_WS_in_ruleSet328 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_declaration_in_declarationBlock346 = new BitSet(new long[]{0x0400000000000002L});
+	public static final BitSet FOLLOW_SEMI_in_declarationBlock356 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_declaration_in_declarationBlock358 = new BitSet(new long[]{0x0400000000000002L});
+	public static final BitSet FOLLOW_SEMI_in_declarationBlock368 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_simpleSelector_in_selector392 = new BitSet(new long[]{0x1008000025010002L,0x0000000000000020L});
+	public static final BitSet FOLLOW_combinator_in_selector416 = new BitSet(new long[]{0x1000000024010000L});
+	public static final BitSet FOLLOW_simpleSelector_in_selector420 = new BitSet(new long[]{0x1008000025010002L,0x0000000000000020L});
+	public static final BitSet FOLLOW_elementName_in_simpleSelector454 = new BitSet(new long[]{0x0000000004010002L});
+	public static final BitSet FOLLOW_elementSubsequent_in_simpleSelector477 = new BitSet(new long[]{0x0000000004010002L});
+	public static final BitSet FOLLOW_elementSubsequent_in_simpleSelector500 = new BitSet(new long[]{0x0000000004010002L});
+	public static final BitSet FOLLOW_HASH_in_elementSubsequent552 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_cssClass_in_elementSubsequent564 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_DOT_in_cssClass587 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_IDENT_in_cssClass589 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_property_in_declaration639 = new BitSet(new long[]{0x0000000000000400L});
+	public static final BitSet FOLLOW_COLON_in_declaration641 = new BitSet(new long[]{0xA00C412024540020L,0x0000000000000022L});
+	public static final BitSet FOLLOW_expr_in_declaration643 = new BitSet(new long[]{0x0000000000000002L});
 	public static final BitSet FOLLOW_term_in_expr668 = new BitSet(new long[]{0xA80C412024540822L,0x0000000000000022L});
-	public static final BitSet FOLLOW_unaryOperator_in_term691 = new BitSet(new long[]{0x8004402000540020L,0x0000000000000020L});
-	public static final BitSet FOLLOW_WS_in_term700 = new BitSet(new long[]{0x8004402000540020L});
-	public static final BitSet FOLLOW_set_in_term711 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_STRING_in_term857 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_IDENT_in_term865 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_URI_in_term873 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_hexColor_in_term881 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_HASH_in_hexColor902 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_esPred_in_synpred1_Css21469 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_esPred_in_synpred2_Css21489 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_operator_in_expr671 = new BitSet(new long[]{0xA00C412024540020L,0x0000000000000022L});
+	public static final BitSet FOLLOW_term_in_expr673 = new BitSet(new long[]{0xA80C412024540822L,0x0000000000000022L});
+	public static final BitSet FOLLOW_unaryOperator_in_term696 = new BitSet(new long[]{0x8004402000540020L,0x0000000000000020L});
+	public static final BitSet FOLLOW_WS_in_term705 = new BitSet(new long[]{0x8004402000540020L});
+	public static final BitSet FOLLOW_set_in_term716 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_STRING_in_term862 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_IDENT_in_term870 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_URI_in_term878 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_hexColor_in_term886 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_HASH_in_hexColor907 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_esPred_in_synpred1_Css21474 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_esPred_in_synpred2_Css21494 = new BitSet(new long[]{0x0000000000000002L});
 }
