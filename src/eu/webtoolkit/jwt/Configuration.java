@@ -165,9 +165,9 @@ public class Configuration {
 						setInlineCss(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("favicon")) {
 						setFavicon(node.getTextContent().trim());
-					} else if (node.getNodeName().equalsIgnoreCase("lis")) {
+					} else if (node.getNodeName().equalsIgnoreCase("user-agents")) {
 						if (node.getAttributes().getNamedItem("type") == null) {
-							throw new RuntimeException(errorMessage + "li elements require  a type specification");
+							throw new RuntimeException(errorMessage + "user-agent elements require  a type specification");
 						} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("ajax")) {
 							String mode = node.getAttributes().getNamedItem("mode").getTextContent().trim();
 
@@ -203,7 +203,7 @@ public class Configuration {
 		Node n;
 		for (int i = 0; i < userAgents.getLength(); i++) {
 			n = userAgents.item(i);
-			if (n.getNodeName().equals("li")) {
+			if (n.getNodeName().equals("user-agent")) {
 				list.add(node.getTextContent().trim());
 			}
 		}
