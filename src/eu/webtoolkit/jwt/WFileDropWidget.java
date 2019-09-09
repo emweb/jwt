@@ -527,7 +527,7 @@ public class WFileDropWidget extends WContainerWidget {
 		if (this.isRendered()) {
 			String result = this.getJsRef() + ".destructor();";
 			if (!recursive) {
-				result += "Wt3_4_0.remove('" + this.getId() + "');";
+				result += "Wt3_4_1.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {
@@ -632,7 +632,7 @@ public class WFileDropWidget extends WContainerWidget {
 		String maxFileSize = String.valueOf(WApplication.getInstance()
 				.getMaximumRequestSize());
 		this.setJavaScriptMember(" WFileDropWidget",
-				"new Wt3_4_0.WFileDropWidget(" + app.getJavaScriptClass() + ","
+				"new Wt3_4_1.WFileDropWidget(" + app.getJavaScriptClass() + ","
 						+ this.getJsRef() + "," + maxFileSize + ");");
 		this.dropSignal_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {
