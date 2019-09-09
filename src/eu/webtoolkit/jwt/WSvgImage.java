@@ -114,7 +114,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 
 	public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
 		char[] buf = new char[30];
-		if (Math.abs(spanAngle - 360.0) < 0.01) {
+		if (Math.abs(spanAngle - 360.0) < 0.01 || spanAngle > 360.0) {
 			this.finishPath();
 			this.makeNewGroup();
 			this.shapes_.append("<ellipse ").append(" cx=\"")
@@ -844,10 +844,11 @@ public class WSvgImage extends WResource implements WVectorImage {
 				i += 2;
 				final double x1 = rx * Math.cos(theta1) + cx;
 				final double y1 = ry * Math.sin(theta1) + cy;
-				final double x2 = rx * Math.cos(theta1 + deltaTheta) + cx;
-				final double y2 = ry * Math.sin(theta1 + deltaTheta) + cy;
-				final int fa = Math.abs(deltaTheta) > 3.14159265358979323846 ? 1
-						: 0;
+				final double x2 = rx * Math.cos(theta1 + deltaTheta / 2.0) + cx;
+				final double y2 = ry * Math.sin(theta1 + deltaTheta / 2.0) + cy;
+				final double x3 = rx * Math.cos(theta1 + deltaTheta) + cx;
+				final double y3 = ry * Math.sin(theta1 + deltaTheta) + cy;
+				final int fa = 0;
 				final int fs = deltaTheta > 0 ? 1 : 0;
 				if (!fequal(current.getX(), x1) || !fequal(current.getY(), y1)) {
 					out.append('L').append(
@@ -866,6 +867,15 @@ public class WSvgImage extends WResource implements WVectorImage {
 				out.append(',')
 						.append(MathUtils.roundJs(
 								y2 + this.pathTranslation_.getY(), 3));
+				out.append('A').append(MathUtils.roundJs(rx, 3));
+				out.append(',').append(MathUtils.roundJs(ry, 3));
+				out.append(" 0 ").append(fa).append(",").append(fs);
+				out.append(' ')
+						.append(MathUtils.roundJs(
+								x3 + this.pathTranslation_.getX(), 3));
+				out.append(',')
+						.append(MathUtils.roundJs(
+								y3 + this.pathTranslation_.getY(), 3));
 			} else {
 				switch (s.getType()) {
 				case MoveTo:
@@ -917,11 +927,11 @@ public class WSvgImage extends WResource implements WVectorImage {
 	}
 
 	static double adjust360(double d) {
-		if (Math.abs(d - 360) < 0.01) {
-			return 359.5;
+		if (d > 360.0) {
+			return 360.0;
 		} else {
-			if (Math.abs(d + 360) < 0.01) {
-				return -359.5;
+			if (d < -360.0) {
+				return -360.0;
 			} else {
 				return d;
 			}

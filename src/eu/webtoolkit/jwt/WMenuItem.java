@@ -437,7 +437,6 @@ public class WMenuItem extends WContainerWidget {
 		WPopupMenu popup = ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_)
 				: null);
 		if (popup != null) {
-			popup.setJavaScriptMember("wtNoReparent", "true");
 			this.setSelectable(false);
 			popup.setButton(this.getAnchor());
 			this.updateInternalPath();

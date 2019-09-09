@@ -140,7 +140,18 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			return;
 		}
 		this.renderStateChanges(true);
-		WPointF ra = normalizedDegreesToRadians(startAngle, spanAngle);
+		final double rStartAngle = WTransform
+				.degreesToRadians(adjustPositive360(-startAngle));
+		double rEndAngle;
+		if (spanAngle >= 360.0 || spanAngle <= -360.0) {
+			rEndAngle = rStartAngle - 2.0 * 3.14159265358979323846
+					* (spanAngle > 0 ? 1.0 : -1.0);
+		} else {
+			rEndAngle = WTransform
+					.degreesToRadians(adjustPositive360(-startAngle
+							- adjust360(spanAngle)));
+		}
+		final boolean anticlockwise = spanAngle > 0;
 		double sx;
 		double sy;
 		double r;
@@ -150,14 +161,15 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			sy = Math.max(0.005, rect.getHeight() / rect.getWidth());
 			r = rect.getWidth() / 2;
 		} else {
-			sx = Math.max(0.005, rect.getWidth() / rect.getHeight());
-			sy = 1;
-			lw = this
-					.getPainter()
-					.normalizedPenWidth(this.getPainter().getPen().getWidth(),
-							true).getValue()
-					* 1 / Math.min(sx, sy);
-			r = rect.getHeight() / 2;
+			if (rect.getWidth() < rect.getHeight()) {
+				sx = Math.max(0.005, rect.getWidth() / rect.getHeight());
+				sy = 1;
+				r = rect.getHeight() / 2;
+			} else {
+				sx = 1;
+				sy = 1;
+				r = rect.getWidth() / 2;
+			}
 		}
 		final WPen pen = this.getPainter().getPen();
 		if (pen.getStyle() != PenStyle.NoPen) {
@@ -179,9 +191,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 		this.js_.append("ctx.lineWidth = ").append(MathUtils.roundJs(lw, 3))
 				.append(";").append("ctx.beginPath();");
 		this.js_.append("ctx.arc(0,0,").append(MathUtils.roundJs(r, 3));
-		this.js_.append(',').append(MathUtils.roundJs(ra.getX(), 3));
-		this.js_.append(",").append(MathUtils.roundJs(ra.getY(), 3))
-				.append(",true);");
+		this.js_.append(',').append(MathUtils.roundJs(rStartAngle, 6));
+		this.js_.append(',').append(MathUtils.roundJs(rEndAngle, 6))
+				.append(',');
+		this.js_.append(anticlockwise ? "true" : "false").append(");");
 		this.js_.append("ctx.restore();");
 		if (this.painter_.getBrush().getStyle() != BrushStyle.NoBrush) {
 			this.js_.append("ctx.fill();");
@@ -960,10 +973,23 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 						MathUtils.roundJs(Math.max(0.0, s.getX()), 3));
 				break;
 			case ArcAngleSweep: {
-				WPointF r = normalizedDegreesToRadians(s.getX(), s.getY());
-				out.append(',').append(MathUtils.roundJs(r.getX(), 3));
-				out.append(',').append(MathUtils.roundJs(r.getY(), 3));
-				out.append(',').append(s.getY() > 0 ? "true" : "false")
+				final double startAngle = s.getX();
+				final double spanAngle = s.getY();
+				final double rStartAngle = WTransform
+						.degreesToRadians(adjustPositive360(-startAngle));
+				double rEndAngle;
+				if (spanAngle >= 360.0 || spanAngle <= -360.0) {
+					rEndAngle = rStartAngle - 2.0 * 3.14159265358979323846
+							* (spanAngle > 0 ? 1.0 : -1.0);
+				} else {
+					rEndAngle = WTransform
+							.degreesToRadians(adjustPositive360(-startAngle
+									- adjust360(spanAngle)));
+				}
+				final boolean anticlockwise = spanAngle > 0;
+				out.append(',').append(MathUtils.roundJs(rStartAngle, 6));
+				out.append(',').append(MathUtils.roundJs(rEndAngle, 6));
+				out.append(',').append(anticlockwise ? "true" : "false")
 						.append(");");
 			}
 				break;
@@ -1001,21 +1027,25 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
 	private static final double EPSILON = 1E-5;
 
-	static WPointF normalizedDegreesToRadians(double angle, double sweep) {
-		angle = 360 - angle;
-		int i = (int) angle / 360;
-		angle -= i * 360;
-		double r1 = WTransform.degreesToRadians(angle);
-		if (Math.abs(sweep - 360) < 0.01) {
-			sweep = 359.9;
+	static double adjust360(double d) {
+		if (d > 360.0) {
+			return 360.0;
 		} else {
-			if (Math.abs(sweep + 360) < 0.01) {
-				sweep = -359.9;
+			if (d < -360.0) {
+				return -360.0;
+			} else {
+				return d;
 			}
 		}
-		double a2 = angle - sweep;
-		double r2 = WTransform.degreesToRadians(a2);
-		return new WPointF(r1, r2);
+	}
+
+	static double adjustPositive360(double d) {
+		final double result = (d % 360.0);
+		if (result < 0) {
+			return result + 360.0;
+		} else {
+			return result;
+		}
 	}
 
 	static boolean fequal(double d1, double d2) {

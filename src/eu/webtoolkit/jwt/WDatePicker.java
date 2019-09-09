@@ -334,16 +334,10 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Controls how the calendar popup is positioned.
 	 * <p>
-	 * When <code>global</code> is <code>true</code>, then the popup will
-	 * position itself globally. This avoids that the popup is affected by
-	 * enclosing parents with overflow settings that clip the popup. This makes
-	 * the popup however no longer follow the popup button when this button
-	 * moves.
-	 * <p>
-	 * The default is <code>false</code>.
+	 * 
+	 * @deprecated since 3.3.0, this does nothing
 	 */
-	public void setGlobalPopup(boolean global) {
-		this.popup_.toggleStyleClass("wt-no-reparent", global);
+	public void setGlobalPopup(boolean anon1) {
 	}
 
 	/**

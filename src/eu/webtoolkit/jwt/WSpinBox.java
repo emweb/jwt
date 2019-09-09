@@ -209,11 +209,15 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * A signal that indicates when the value has changed.
 	 * <p>
-	 * This signal is emitted when {@link WSpinBox#setValue(int value)
-	 * setValue()} is called.
+	 * This signal is emitted when {@link WFormWidget#changed()
+	 * WFormWidget#changed()} is emitted, but supplies the new value as an
+	 * argument. The {@link WFormWidget#changed() WFormWidget#changed()} signal
+	 * is emitted when the user changes the value of the spinbox by pressing the
+	 * up/down arrow, or entering a different value and pressing enter or moving
+	 * focus.
 	 * <p>
 	 * 
-	 * @see WSpinBox#setValue(int value)
+	 * @see WFormWidget#changed()
 	 */
 	public Signal1<Integer> valueChanged() {
 		return this.valueChanged_;
