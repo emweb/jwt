@@ -162,9 +162,9 @@ public class WTableView extends WAbstractItemView {
 	}
 
 	public WWidget itemWidget(final WModelIndex index) {
-		if (index.getColumn() < this.getRowHeaderCount()
-				|| this.isRowRendered(index.getRow())
-				&& this.isColumnRendered(index.getColumn())) {
+		if ((index.getColumn() < this.getRowHeaderCount() || this
+				.isColumnRendered(index.getColumn()))
+				&& this.isRowRendered(index.getRow())) {
 			int renderedRow = index.getRow() - this.getFirstRow();
 			int renderedCol;
 			if (index.getColumn() < this.getRowHeaderCount()) {
