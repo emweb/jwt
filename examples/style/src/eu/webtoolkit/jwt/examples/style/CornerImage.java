@@ -24,7 +24,7 @@ import eu.webtoolkit.jwt.WMemoryResource;
 /**
  * The CornerImage is an image to draw a rounded corner.
  * 
- * The CornerImage is a dynamically generated WImage, which draws an arc of 90°,
+ * The CornerImage is a dynamically generated WImage, which draws an arc of 90 degrees,
  * to represent one of the four corners of a widget.
  * 
  * The CornerImage is part of the JWt style example.
