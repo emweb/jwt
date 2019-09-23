@@ -1550,7 +1550,8 @@ public abstract class WWebWidget extends WWidget {
 							.get(BIT_TOOLTIP_DEFERRED))
 							&& app.getEnvironment().hasAjax()) {
 						app.loadJavaScript("js/ToolTip.js", wtjs10());
-						WString tooltipText = this.lookImpl_.toolTip_;
+						WString tooltipText = new WString(
+								this.lookImpl_.toolTip_.toString());
 						if (this.lookImpl_.toolTipTextFormat_ == TextFormat.PlainText) {
 							tooltipText = escapeText(this.lookImpl_.toolTip_);
 						} else {
