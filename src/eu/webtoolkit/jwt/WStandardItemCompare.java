@@ -39,7 +39,7 @@ class WStandardItemCompare implements Comparator<Integer> {
 			if (item2 != null) {
 				result = item1.compare(item2);
 			} else {
-				result = - -1;
+				result = 1;
 			}
 		} else {
 			if (item2 != null) {
