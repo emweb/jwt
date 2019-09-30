@@ -58,11 +58,13 @@ public class Teapot extends WtServlet {
 		}
 
 		private void updateShaders() {
-			  paintWidget_ = new PaintWidget(glContainer_);
-			  paintWidget_.resize(500, 500);
-			  paintWidget_.setShaders(vertexShaderText_.getText(),
-			    fragmentShaderText_.getText());
-			  /*paintWidget_.setAlternativeContent(new WImage("pics/nowebgl.png"));*/
+			if (paintWidget_ != null)
+				glContainer_.removeWidget(paintWidget_);
+			paintWidget_ = new PaintWidget(glContainer_);
+			paintWidget_.resize(500, 500);
+			paintWidget_.setShaders(vertexShaderText_.getText(),
+			fragmentShaderText_.getText());
+			/*paintWidget_.setAlternativeContent(new WImage("pics/nowebgl.png"));*/
 		}
 		
 		private void resetShaders() {
