@@ -6,6 +6,7 @@
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
   <property name="test.java.dir" value="test"/>
+  <property name="report.dir" value="report"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="archives.dir" value="archives"/>
@@ -35,6 +36,7 @@
   
   <!-- Clean up -->
   <target name="clean">
+    <delete dir="${report.dir}" />
     <delete dir="${build.dir}" />
     <delete dir="${dist.dir}" />
     <delete dir="${archives.dir}" />
@@ -103,6 +105,24 @@
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="test" depends="build">
+    <mkdir dir="${report.dir}"/>
+    <junit printsummary="yes" haltonfailure="no">
+      <classpath refid="project.classpath" />
+      <classpath location="${build.dir}" />
+      <classpath location="." />
+
+      <formatter type="plain" />
+      <formatter type="xml" />
+
+      <batchtest fork="yes" todir="${report.dir}">
+	<fileset dir="${test.java.dir}">
+	  <include name="**/*Test*.java" />
+	</fileset>
+      </batchtest>
+    </junit>
   </target>
   
   <target name="javadoc" depends="dist">
