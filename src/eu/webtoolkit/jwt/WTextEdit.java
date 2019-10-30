@@ -327,7 +327,7 @@ public class WTextEdit extends WTextArea {
 		if (this.isRendered()) {
 			String result = this.getJsRef() + ".ed.remove();";
 			if (!recursive) {
-				result += "Wt3_4_1.remove('" + this.getId() + "');";
+				result += "Wt3_4_2.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {
@@ -423,7 +423,7 @@ public class WTextEdit extends WTextArea {
 		initTinyMCE();
 		this.version_ = getTinyMCEVersion();
 		this.setJavaScriptMember(" WTextEdit",
-				"new Wt3_4_1.WTextEdit(" + app.getJavaScriptClass() + ","
+				"new Wt3_4_2.WTextEdit(" + app.getJavaScriptClass() + ","
 						+ this.getJsRef() + ");");
 		this.setJavaScriptMember(WT_RESIZE_JS, "function(e, w, h) { var obj = "
 				+ this.getJsRef() + ".wtObj; obj.wtResize(e, w, h); };");

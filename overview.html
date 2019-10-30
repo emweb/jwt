@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.4.1</title>
+<title>JWt 3.4.2</title>
 </head>
 <body>
 
@@ -24,6 +24,19 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 3.4.2 (October 30, 2019)</h2>
+<p>
+  This release fixes the following issues:
+</p>
+<ul>
+  <li>Encoding fixes for when javac doesn't default to UTF-8</li>
+  <li>Fixed spelling of "paid" in the JavaScript example</li>
+  <li>Added missing <tt>layout.css</tt> to widget gallery, so layout examples are styled properly</li>
+  <li>Made language changes properly refresh localized tooltips</li>
+  <li><tt>WebSession</tt>'s "not serving this" info message contains more context so it's less confusing</li>
+  <li><a href="https://redmine.webtoolkit.eu/issues/7292">Wt issue #7292</a>: <a href="eu/webtoolkit/jwt/auth/OAuthService.html">OAuthService</a> now correctly uses <tt>refresh_token</tt> instead of <tt>refreshToken</tt></li>
+</ul>
 
 <h2>Release 3.4.1 (September 9, 2019)</h2>
 <p>

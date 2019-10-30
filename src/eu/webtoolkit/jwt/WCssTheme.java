@@ -676,7 +676,7 @@ public class WCssTheme extends WTheme {
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_4_1.setValidationState(")
+			js.append("Wt3_4_2.setValidationState(")
 					.append(widget.getJsRef())
 					.append(",")
 					.append(validation.getState() == WValidator.State.Valid ? 1

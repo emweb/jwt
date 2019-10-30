@@ -150,7 +150,7 @@ public class WFlashObject extends WWebWidget {
 	 * installed.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_4_1.getElement('" + this.getId() + "_flash')";
+		return "Wt3_4_2.getElement('" + this.getId() + "_flash')";
 	}
 
 	/**

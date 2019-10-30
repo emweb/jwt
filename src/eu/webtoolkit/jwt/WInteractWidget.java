@@ -594,7 +594,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (popup && WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.clicked()
 					.addListener(
-							"function(o,e) {  if (Wt3_4_1.WPopupWidget && o.wtPopup) {Wt3_4_1.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_4_1.WPopupWidget.popupClicked = null; }}");
+							"function(o,e) {  if (Wt3_4_2.WPopupWidget && o.wtPopup) {Wt3_4_2.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_4_2.WPopupWidget.popupClicked = null; }}");
 			this.clicked().preventPropagation();
 		}
 		super.setPopup(popup);
@@ -690,7 +690,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				|| updateMouseMove;
 		String CheckDisabled = "if($(o).hasClass('"
 				+ app.getTheme().getDisabledClass()
-				+ "')){Wt3_4_1.cancelEvent(e);return;}";
+				+ "')){Wt3_4_2.cancelEvent(e);return;}";
 		if (updateMouseDown) {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
@@ -704,11 +704,11 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js.append("Wt3_4_1.capture(this);");
+				js.append("Wt3_4_2.capture(this);");
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js.append("Wt3_4_1.mouseDown(e);");
+				js.append("Wt3_4_2.mouseDown(e);");
 			}
 			if (mouseDown != null) {
 				js.append(mouseDown.getJavaScript());
@@ -724,7 +724,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			js.append(CheckDisabled);
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js.append("Wt3_4_1.mouseUp(e);");
+				js.append("Wt3_4_2.mouseUp(e);");
 			}
 			if (mouseUp != null) {
 				js.append(mouseUp.getJavaScript());
@@ -744,8 +744,8 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_4_1.buttons",
-						mouseDrag.getJavaScript() + "Wt3_4_1.drag(e);",
+				actions.add(new DomElement.EventAction("Wt3_4_2.buttons",
+						mouseDrag.getJavaScript() + "Wt3_4_2.drag(e);",
 						mouseDrag.encodeCmd(), mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
 			}
@@ -774,7 +774,7 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& touchStart.isConnected()
 					&& (touchEnd != null && touchEnd.isConnected() || touchMove != null
 							&& touchMove.isConnected())) {
-				js.append("Wt3_4_1.capture(this);");
+				js.append("Wt3_4_2.capture(this);");
 			}
 			if (touchStart != null) {
 				js.append(touchStart.getJavaScript());
@@ -815,13 +815,13 @@ public abstract class WInteractWidget extends WWebWidget {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
 			if (mouseDrag != null) {
-				js.append("if (Wt3_4_1.dragged()) return;");
+				js.append("if (Wt3_4_2.dragged()) return;");
 			}
 			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
 				if (mouseClick != null) {
 					if (mouseClick.isDefaultActionPrevented()
 							|| mouseClick.isPropagationPrevented()) {
-						js.append("Wt3_4_1.cancelEvent(e");
+						js.append("Wt3_4_2.cancelEvent(e");
 						if (mouseClick.isDefaultActionPrevented()
 								&& mouseClick.isPropagationPrevented()) {
 							js.append(");");
@@ -834,7 +834,7 @@ public abstract class WInteractWidget extends WWebWidget {
 						}
 					}
 				}
-				js.append("if(Wt3_4_1.isDblClick(o, e)) {").append(
+				js.append("if(Wt3_4_2.isDblClick(o, e)) {").append(
 						mouseDblClick.getJavaScript());
 				if (mouseDblClick.isExposedSignal()) {
 					js.append(app.getJavaScriptClass())
@@ -843,7 +843,7 @@ public abstract class WInteractWidget extends WWebWidget {
 							.append("',e,true);");
 				}
 				mouseDblClick.updateOk();
-				js.append("}else{if (Wt3_4_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
+				js.append("}else{if (Wt3_4_2.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {

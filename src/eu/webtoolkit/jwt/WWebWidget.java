@@ -1340,7 +1340,7 @@ public abstract class WWebWidget extends WWidget {
 						i.setAttribute("frameborder", "0");
 						app.addAutoJavaScript("{var w = "
 								+ this.getJsRef()
-								+ ";if (w && !Wt3_4_1.isHidden(w)) {var i = Wt3_4_1.getElement('"
+								+ ";if (w && !Wt3_4_2.isHidden(w)) {var i = Wt3_4_2.getElement('"
 								+ i.getId()
 								+ "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
 						element.addChild(i);
@@ -1564,7 +1564,7 @@ public abstract class WWebWidget extends WWidget {
 						}
 						String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true"
 								: "false";
-						element.callJavaScript("Wt3_4_1.toolTip("
+						element.callJavaScript("Wt3_4_2.toolTip("
 								+ app.getJavaScriptClass()
 								+ ","
 								+ jsStringLiteral(this.getId())
@@ -1634,7 +1634,7 @@ public abstract class WWebWidget extends WWidget {
 								.get(i);
 						if (js.charAt(0) == '_') {
 							element.callJavaScript(
-									"Wt3_4_1.remove('" + js.substring(1)
+									"Wt3_4_2.remove('" + js.substring(1)
 											+ "');", true);
 						} else {
 							element.callJavaScript(js, true);
@@ -1821,7 +1821,7 @@ public abstract class WWebWidget extends WWidget {
 				app.loadJavaScript(THIS_JS, wtjs2());
 				if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
 					StringBuilder ss = new StringBuilder();
-					ss.append("Wt3_4_1")
+					ss.append("Wt3_4_2")
 							.append(".animateDisplay(")
 							.append(app.getJavaScriptClass())
 							.append(",'")
@@ -1849,7 +1849,7 @@ public abstract class WWebWidget extends WWidget {
 					}
 				} else {
 					StringBuilder ss = new StringBuilder();
-					ss.append("Wt3_4_1")
+					ss.append("Wt3_4_2")
 							.append(".animateVisible('")
 							.append(this.getId())
 							.append("',")
@@ -1928,14 +1928,14 @@ public abstract class WWebWidget extends WWidget {
 					&& this.isScrollVisibilityEnabled()) {
 				app.loadJavaScript(SCROLL_JS, wtjs3());
 				StringBuilder ss = new StringBuilder();
-				ss.append("if (!Wt3_4_1.scrollVisibility) {Wt3_4_1.scrollVisibility = new ");
-				ss.append("Wt3_4_1.ScrollVisibility(").append(
+				ss.append("if (!Wt3_4_2.scrollVisibility) {Wt3_4_2.scrollVisibility = new ");
+				ss.append("Wt3_4_2.ScrollVisibility(").append(
 						app.getJavaScriptClass() + "); }");
 				element.callJavaScript(ss.toString());
 			}
 			if (this.isScrollVisibilityEnabled()) {
 				StringBuilder ss = new StringBuilder();
-				ss.append("Wt3_4_1.scrollVisibility.add({");
+				ss.append("Wt3_4_2.scrollVisibility.add({");
 				ss.append("el:").append(this.getJsRef()).append(',');
 				ss.append("margin:").append(this.getScrollVisibilityMargin())
 						.append(',');
@@ -1945,7 +1945,7 @@ public abstract class WWebWidget extends WWidget {
 				this.flags_.set(BIT_SCROLL_VISIBILITY_LOADED);
 			} else {
 				if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
-					element.callJavaScript("Wt3_4_1.scrollVisibility.remove("
+					element.callJavaScript("Wt3_4_2.scrollVisibility.remove("
 							+ jsStringLiteral(this.getId()) + ");");
 					this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 				}
@@ -1999,7 +1999,7 @@ public abstract class WWebWidget extends WWidget {
 	String renderRemoveJs(boolean recursive) {
 		String result = "";
 		if (this.isRendered() && this.isScrollVisibilityEnabled()) {
-			result += "Wt3_4_1.scrollVisibility.remove("
+			result += "Wt3_4_2.scrollVisibility.remove("
 					+ jsStringLiteral(this.getId()) + ");";
 			this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
 			this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
@@ -2014,7 +2014,7 @@ public abstract class WWebWidget extends WWidget {
 			if (result.length() == 0) {
 				result = "_" + this.getId();
 			} else {
-				result += "Wt3_4_1.remove('" + this.getId() + "');";
+				result += "Wt3_4_2.remove('" + this.getId() + "');";
 			}
 		}
 		return result;
