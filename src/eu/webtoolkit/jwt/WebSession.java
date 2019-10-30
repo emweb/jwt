@@ -1414,8 +1414,11 @@ class WebSession {
 									break;
 								} else {
 									if (!requestE.equals("page")) {
-										logger.info(new StringWriter().append(
-												"not serving this.").toString());
+										logger.info(new StringWriter()
+												.append("Not serving this: request of type '")
+												.append(requestE)
+												.append("' in a brand new session (probably coming from an old session)")
+												.toString());
 										handler.getResponse().setContentType(
 												"text/html");
 										handler.getResponse()
