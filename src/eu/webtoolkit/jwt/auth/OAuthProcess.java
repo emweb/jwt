@@ -494,7 +494,7 @@ public class OAuthProcess extends WObject {
 						expires = WDate.getCurrentServerDate().addSeconds(secs);
 					}
 					String refreshToken = JsonUtils.orIfNullString(
-							root.get("refreshToken"), "");
+							root.get("refresh_token"), "");
 					String idToken = JsonUtils.orIfNullString(
 							root.get("id_token"), "");
 					return new OAuthAccessToken(accessToken, expires,
