@@ -90,6 +90,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * The HTML5 media ReadyState flag indicates how much of the media is
 	 * loaded.
 	 * <p>
+	 * 
 	 * This is often used in conjunction with the &gt; operator, e.g.
 	 * {@link WAbstractMedia#getReadyState() getReadyState()} &gt;
 	 * HaveCurrentData
@@ -133,6 +134,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Consctructor for a media widget.
 	 * <p>
+	 * 
 	 * A freshly constructed media widget has no options set, no media sources,
 	 * and has preload mode set to PreloadAuto.
 	 */
@@ -223,6 +225,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Removes all source elements.
 	 * <p>
+	 * 
 	 * This method can be used to remove all media sources. Afterward, you may
 	 * add new media sources with calls to
 	 * {@link WAbstractMedia#addSource(WLink link, String type, String media)
@@ -242,6 +245,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Add a media source.
 	 * <p>
+	 * 
 	 * This method specifies a media source (which may be a URL or dynamic
 	 * resource). You may add as many media sources as you want. The browser
 	 * will select the appropriate media stream to display to the user.
@@ -279,6 +283,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Content to be shown when media cannot be played.
 	 * <p>
+	 * 
 	 * As not all browsers are HTML5 compliant, it is a good idea to provide
 	 * fallback options when the media cannot be displayed. If the media can be
 	 * played by the browser, the alternative content will be suppressed.
@@ -307,6 +312,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Invoke {@link WAbstractMedia#play() play()} on the media element.
 	 * <p>
+	 * 
 	 * JavaScript must be available for this function to work.
 	 */
 	public void play() {
@@ -317,6 +323,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Invoke {@link WAbstractMedia#pause() pause()} on the media element.
 	 * <p>
+	 * 
 	 * JavaScript must be available for this function to work.
 	 */
 	public void pause() {
@@ -341,9 +348,11 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Event signal emitted when playback has begun.
 	 * <p>
+	 * 
 	 * This event fires when play was invoked, or when the media element starts
 	 * playing because the Autoplay option was provided.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -356,6 +365,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Event signal emitted when the playback has paused.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -369,6 +380,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	 * Event signal emitted when the playback stopped because the end of the
 	 * media was reached.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -381,10 +394,12 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Event signal emitted when the current playback position has changed.
 	 * <p>
+	 * 
 	 * This event is fired when the playback position has changed, both when the
 	 * media is in a normal playing mode, but also when it has changed
 	 * discontinuously because of another reason.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -397,6 +412,8 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Event signal emitted when the playback volume has changed.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -409,8 +426,9 @@ public abstract class WAbstractMedia extends WInteractWidget {
 	/**
 	 * Returns the JavaScript reference to the media object, or null.
 	 * <p>
+	 * 
 	 * It is possible, for browser compatibility reasons, that
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the media element.
+	 * {@link WWidget#getJsRef()} is not the media element.
 	 * {@link WAbstractMedia#getJsMediaRef() getJsMediaRef()} is guaranteed to
 	 * be an expression that evaluates to the media object. This expression may
 	 * yield null, if the video object is not rendered at all (e.g. on older
@@ -420,7 +438,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		if (this.mediaId_.length() == 0) {
 			return "null";
 		} else {
-			return "Wt3_4_1.getElement('" + this.mediaId_ + "')";
+			return "Wt3_4_2.getElement('" + this.mediaId_ + "')";
 		}
 	}
 
@@ -431,7 +449,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			this.updateMediaDom(media, false);
 			if (this.sourcesChanged_) {
 				for (int i = 0; i < this.sourcesRendered_; ++i) {
-					media.callJavaScript("Wt3_4_1.remove('" + this.mediaId_
+					media.callJavaScript("Wt3_4_2.remove('" + this.mediaId_
 							+ "s" + String.valueOf(i) + "');", true);
 				}
 				this.sourcesRendered_ = 0;
@@ -528,7 +546,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		if (all && this.alternative_ != null) {
 			element.setAttribute(
 					"onerror",
-					"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_4_1.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+					"if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_4_2.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
 		}
 		if (all || this.flagsChanged_) {
 			if (!all
@@ -675,7 +693,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 		if (isLast && this.alternative_ != null) {
 			element.setAttribute(
 					"onerror",
-					"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_4_1.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+					"var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_4_2.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
 		} else {
 			element.setAttribute("onerror", "");
 		}
@@ -707,7 +725,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
 			this.setJavaScriptMember(" WAbstractMedia",
-					"new Wt3_4_1.WAbstractMedia(" + app.getJavaScriptClass()
+					"new Wt3_4_2.WAbstractMedia(" + app.getJavaScriptClass()
 							+ "," + this.getJsRef() + ");");
 		}
 	}

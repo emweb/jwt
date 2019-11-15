@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * the image is put to the left of the text.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -37,17 +36,20 @@ import org.slf4j.LoggerFactory;
  * 	WLabel label = new WLabel(&quot;Favourite Actress: &quot;, w);
  * 	WLineEdit edit = new WLineEdit(&quot;Renee Zellweger&quot;, w);
  * 	label.setBuddy(edit);
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;label&gt;</code> tag. When no
  * buddy is set, it is rendered using an HTML <code>&lt;span&gt;</code> or
  * <code>&lt;div&gt;</code> to avoid click event handling misbehavior on
  * Microsoft Internet Explorer.
  * <p>
- * WLabel is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WLabel is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate. A label&apos;s text may be styled via a nested
@@ -147,6 +149,7 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Sets the buddy of this label.
 	 * <p>
+	 * 
 	 * Sets the buddy FormWidget for which this label acts as a proxy.
 	 * <p>
 	 * 
@@ -196,6 +199,7 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Sets the text format.
 	 * <p>
+	 * 
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
@@ -267,6 +271,7 @@ public class WLabel extends WInteractWidget {
 	/**
 	 * Configures word wrapping.
 	 * <p>
+	 * 
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the

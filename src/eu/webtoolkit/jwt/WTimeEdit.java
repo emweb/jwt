@@ -24,7 +24,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * @see WTime
- * @see WTimeValidator Styling through CSS is not applicable.
+ * @see WTimeValidator
+ * 
+ *      Styling through CSS is not applicable.
  */
 public class WTimeEdit extends WLineEdit {
 	private static Logger logger = LoggerFactory.getLogger(WTimeEdit.class);
@@ -72,6 +74,7 @@ public class WTimeEdit extends WLineEdit {
 	/**
 	 * Sets the time.
 	 * <p>
+	 * 
 	 * Does nothing if the current time is <code>Null</code>.
 	 * <p>
 	 * 
@@ -87,8 +90,9 @@ public class WTimeEdit extends WLineEdit {
 	/**
 	 * Returns the time.
 	 * <p>
-	 * Returns an invalid time (for which {@link } returns <code>false</code>) if
-	 * the time could not be parsed using the current
+	 * 
+	 * Returns an invalid time (for which {@link WTime#isValid()} returns
+	 * <code>false</code>) if the time could not be parsed using the current
 	 * {@link WTimeEdit#getFormat() getFormat()}.
 	 * <p>
 	 * 
@@ -250,6 +254,7 @@ public class WTimeEdit extends WLineEdit {
 	/**
 	 * Enables or disables wraparound.
 	 * <p>
+	 * 
 	 * Wraparound is enabled by default
 	 */
 	public void setWrapAroundEnabled(boolean enabled) {
@@ -322,7 +327,7 @@ public class WTimeEdit extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTimeEdit.js", wtjs1());
-		String jsObj = "new Wt3_4_1.WTimeEdit(" + app.getJavaScriptClass()
+		String jsObj = "new Wt3_4_2.WTimeEdit(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ jsStringLiteral(this.popup_.getId()) + ");";
 		this.setJavaScriptMember(" WTimeEdit", jsObj);

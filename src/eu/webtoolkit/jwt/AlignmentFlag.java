@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that specifies a horizontal or a vertical alignment.
  * <p>
+ * 
  * The vertical alignment flags are AlignBaseline, AlignSub, AlignSuper,
  * AlignTop, AlignTextTop, AlignMiddle, AlignBottom and AlignTextBottom. The
  * horizontal alignment flags are AlignLeft, AlignRight, AlignCenter and

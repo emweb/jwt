@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * It is not a widget, but instead provides only a logical grouping. Radio
  * buttons are aware of the group in which they have been added, see
- * {@link WRadioButton#getGroup() WRadioButton#getGroup()}. When a button is
- * deleted, it is automatically removed its button group.
+ * {@link WRadioButton#getGroup()}. When a button is deleted, it is
+ * automatically removed its button group.
  * <p>
  * It allows you to associate id&apos;s with each button, which you may use to
  * identify a particular button. The special value of -1 is reserved to indicate
@@ -63,6 +63,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Adds a radio button to the group.
 	 * <p>
+	 * 
 	 * You can assign an id to the button. If <code>id</code> is -1, then a
 	 * unique id will be generated.
 	 * <p>
@@ -168,6 +169,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Returns the id of the checked button.
 	 * <p>
+	 * 
 	 * Returns the id of the currently checked button, or -1 if no button is
 	 * currently checked.
 	 */
@@ -179,6 +181,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Sets the currently checked radiobutton.
 	 * <p>
+	 * 
 	 * The button <code>button</code> of this group is checked. A value of
 	 * <code>null</code> will uncheck all radiobuttons.
 	 * <p>
@@ -203,6 +206,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Returns the checked radiobutton.
 	 * <p>
+	 * 
 	 * If there is no radiobutton currently checked this function returns
 	 * <code>null</code>.
 	 * <p>
@@ -218,6 +222,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Sets the currently checked radiobutton.
 	 * <p>
+	 * 
 	 * Sets the <code>idx&apos;th</code> radiobutton checked. A value of -1 will
 	 * uncheck all radiobuttons.
 	 * <p>
@@ -230,6 +235,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Returns the index of the checked radiobutton.
 	 * <p>
+	 * 
 	 * The index reflects the order in which the buttons have been added to the
 	 * button group. Use {@link WButtonGroup#getCheckedId() getCheckedId()} if
 	 * you want to know the id of the button that is currently checked. If there
@@ -250,6 +256,7 @@ public class WButtonGroup extends WObject {
 	/**
 	 * Signal emitted when a button was checked.
 	 * <p>
+	 * 
 	 * The argument passed is the new {@link WButtonGroup#getCheckedButton()
 	 * getCheckedButton()}.
 	 */

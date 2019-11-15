@@ -102,7 +102,7 @@ public interface WPaintDevice {
 		/**
 		 * Implements {@link WPaintDevice#getFontMetrics() getFontMetrics()} and
 		 * {@link WPaintDevice#measureText(CharSequence text, double maxWidth, boolean wordWrap)
-		 * measureText()}.
+		 * measureText()}
 		 */
 		HasFontMetrics;
 
@@ -122,6 +122,7 @@ public interface WPaintDevice {
 	/**
 	 * Returns the device width.
 	 * <p>
+	 * 
 	 * The device width, in pixels, establishes the width of the device
 	 * coordinate system.
 	 */
@@ -130,6 +131,7 @@ public interface WPaintDevice {
 	/**
 	 * Returns the device height.
 	 * <p>
+	 * 
 	 * The device height, in pixels, establishes the height of the device
 	 * coordinate system.
 	 */
@@ -138,6 +140,7 @@ public interface WPaintDevice {
 	/**
 	 * Indicates changes in painter state.
 	 * <p>
+	 * 
 	 * The <code>flags</code> argument is the logical OR of one or more change
 	 * flags.
 	 * <p>
@@ -158,6 +161,7 @@ public interface WPaintDevice {
 	/**
 	 * Draws an arc.
 	 * <p>
+	 * 
 	 * The arc describes the segment of an ellipse enclosed by the rect. The
 	 * segment starts at <code>startAngle</code>, and spans an angle given by
 	 * <code>spanAngle</code>. These angles have as unit degree, and are
@@ -171,6 +175,7 @@ public interface WPaintDevice {
 	/**
 	 * Draws an image.
 	 * <p>
+	 * 
 	 * Draws <i>sourceRect</i> from the image with URL <code>imageUri</code> and
 	 * original dimensions <i>imgWidth</i> and <code>imgHeight</code> to the
 	 * location, into the rectangle defined by <code>rect</code>.
@@ -183,6 +188,7 @@ public interface WPaintDevice {
 	/**
 	 * Draws a line.
 	 * <p>
+	 * 
 	 * The line must be stroked and transformed using the current painter
 	 * settings.
 	 */
@@ -191,6 +197,7 @@ public interface WPaintDevice {
 	/**
 	 * Draws a path.
 	 * <p>
+	 * 
 	 * The path must be stroked, filled, and transformed using the current
 	 * painter settings.
 	 */
@@ -199,6 +206,7 @@ public interface WPaintDevice {
 	/**
 	 * Draws text.
 	 * <p>
+	 * 
 	 * The text must be rendered, stroked and transformed using the current
 	 * painter settings.
 	 * <p>
@@ -212,6 +220,7 @@ public interface WPaintDevice {
 	/**
 	 * Measures rendered text size.
 	 * <p>
+	 * 
 	 * Returns the bounding rect of the given text when rendered using the
 	 * current font.
 	 * <p>
@@ -251,6 +260,7 @@ public interface WPaintDevice {
 	/**
 	 * Returns font metrics.
 	 * <p>
+	 * 
 	 * This returns font metrics for the current font.
 	 * <p>
 	 * Throws a std::logic_error if the underlying device does not provide font
@@ -261,6 +271,7 @@ public interface WPaintDevice {
 	/**
 	 * Initializes the device for painting.
 	 * <p>
+	 * 
 	 * This method is called when a {@link WPainter} starts painting.
 	 * <p>
 	 * 
@@ -272,6 +283,7 @@ public interface WPaintDevice {
 	/**
 	 * Finishes painting on the device.
 	 * <p>
+	 * 
 	 * This method is called when a {@link WPainter} stopped painting.
 	 * <p>
 	 * 

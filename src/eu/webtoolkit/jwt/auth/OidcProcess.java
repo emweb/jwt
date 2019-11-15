@@ -45,14 +45,15 @@ public class OidcProcess extends OAuthProcess {
 	/**
 	 * Starts an authorization and authentication process.
 	 * <p>
-	 * This is {@link OAuthProcess#startAuthorize()
-	 * OAuthProcess#startAuthorize()} followed by
+	 * 
+	 * This is {@link OAuthProcess#startAuthorize()} followed by
 	 * {@link OidcProcess#getIdentity(OAuthAccessToken token) getIdentity()}.
 	 * <p>
 	 * The authentication process ends with the
-	 * {@link OAuthProcess#authenticated() OAuthProcess#authenticated()} signal
-	 * which signals the obtained identity.
+	 * {@link OAuthProcess#authenticated()} signal which signals the obtained
+	 * identity.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>To be able to use a popup (instead of a page redirect),
 	 * you should connect this method directly to an, since popup windows are
@@ -67,13 +68,14 @@ public class OidcProcess extends OAuthProcess {
 	/**
 	 * Obtains an authenticated identity.
 	 * <p>
+	 * 
 	 * The authentication process will either use the ID token included with the
 	 * access token or, when this is not available, request the identity at the
 	 * user info endpoint using claims.
 	 * <p>
 	 * The authentication process ends with the
-	 * {@link OAuthProcess#authenticated() OAuthProcess#authenticated()} signal
-	 * which signals the obtained identity.
+	 * {@link OAuthProcess#authenticated()} signal which signals the obtained
+	 * identity.
 	 */
 	public void getIdentity(final OAuthAccessToken token) {
 		if (token.getIdToken().length() != 0) {

@@ -43,10 +43,10 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The {@link TextFormat#XHTMLText} format will automatically change to
  * {@link TextFormat#PlainText} if the text is not valid XML. Properly formatted
- * HTML, which is not valid XHTML (e.g. a <br>
- * tag without closing tag) will thus be shown literally, since the HTML markup
- * will be escaped. {@link } does this as a safety measure, since it cannot
- * reliably run the XSS filter without parsing the XML successfully.
+ * HTML, which is not valid XHTML (e.g. a <code>&lt;br&gt;</code> tag without
+ * closing tag) will thus be shown literally, since the HTML markup will be
+ * escaped. JWt does this as a safety measure, since it cannot reliably run the
+ * XSS filter without parsing the XML successfully.
  * <p>
  * The {@link TextFormat#PlainText} format will display the text literally
  * (escaping any HTML special characters).
@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * block, in which case the widget will also display as a block.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to an HTML <code>&lt;span&gt;</code> tag or an HTML
  * <code>&lt;div&gt;</code> depending on whether the widget is inline.
@@ -100,6 +101,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Creates a text widget with given text.
 	 * <p>
+	 * 
 	 * The textFormat is set to {@link TextFormat#XHTMLText}, unless the
 	 * <code>text</code> is literal (not created using
 	 * {@link WString#tr(String key) WString#tr()}) and it could not be parsed
@@ -136,6 +138,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Creates a text widget with given text and format.
 	 * <p>
+	 * 
 	 * If <i>textFormat</i> is {@link TextFormat#XHTMLText} and
 	 * <code>text</code> is not literal (not created using
 	 * {@link WString#tr(String key) WString#tr()}), then if the
@@ -183,6 +186,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Returns the text.
 	 * <p>
+	 * 
 	 * When a literal XHTMLFormatted text was set, this may differ from the text
 	 * that was set since malicious tags/attributes may have been stripped.
 	 * <p>
@@ -196,6 +200,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Sets the text.
 	 * <p>
+	 * 
 	 * When the current format is {@link TextFormat#XHTMLText}, and
 	 * <code>text</code> is literal (not created using
 	 * {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
@@ -226,6 +231,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Sets the text format.
 	 * <p>
+	 * 
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
@@ -257,6 +263,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Configures word wrapping.
 	 * <p>
+	 * 
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the
@@ -289,6 +296,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Specifies how text is aligned.
 	 * <p>
+	 * 
 	 * Only the horizontal alignment can be specified. Note that there is no way
 	 * to specify vertical alignment. You can put the text in a layout with
 	 * vertical alignment options though, or (misuse) the line-height CSS
@@ -339,6 +347,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Sets padding inside the widget.
 	 * <p>
+	 * 
 	 * Setting padding has the effect of adding distance between the widget
 	 * children and the border, for a {@link WText} padding is only supported on
 	 * the left and/or right.
@@ -419,6 +428,7 @@ public class WText extends WInteractWidget {
 	/**
 	 * Enables internal path encoding of anchors in the XHTML text.
 	 * <p>
+	 * 
 	 * Anchors to internal paths are represented differently depending on the
 	 * session implementation (plain HTML, Ajax or HTML5 history). By enabling
 	 * this option, anchors which reference an internal path (by referring a URL

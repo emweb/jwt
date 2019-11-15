@@ -24,22 +24,26 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * <h3>JavaScript exposability</h3>
+ * 
  * <p>
  * A WPointF is JavaScript exposable. If a WPointF
  * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
- * it can be accessed in your custom JavaScript code through {@link its
- * handle&apos;s jsRef()}. A point is represented in JavaScript as an array of
- * two elements, e.g. a point WPointF(10,20) will be represented in JavaScript
- * as:
+ * it can be accessed in your custom JavaScript code through
+ * {@link WJavaScriptHandle#getJsRef() its handle&apos;s jsRef()}. A point is
+ * represented in JavaScript as an array of two elements, e.g. a point
+ * WPointF(10,20) will be represented in JavaScript as:
  * 
  * <pre>
  * {@code
  *  [10, 20]
+ *  
  * }
  * </pre>
+ * 
  * <p>
+ * 
  * <p>
- * <i><b>Warning:</b>A WPointF that is JavaScript exposed should be modified
+ * <i><b>Warning: </b>A WPointF that is JavaScript exposed should be modified
  * only through its {@link WJavaScriptHandle handle}. Any attempt at modifying
  * it will cause an exception to be thrown.</i>
  * </p>
@@ -93,7 +97,7 @@ public class WPointF extends WJavaScriptExposableObject {
 	 * Sets the X coordinate.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the point
+	 * @exception {@link WException} if the point
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */
@@ -106,7 +110,7 @@ public class WPointF extends WJavaScriptExposableObject {
 	 * Sets the Y coordinate.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the point
+	 * @exception {@link WException} if the point
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */

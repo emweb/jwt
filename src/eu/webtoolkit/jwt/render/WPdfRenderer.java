@@ -50,6 +50,7 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Creates a new PDF renderer.
 	 * <p>
+	 * 
 	 * The PDF renderer will render on the given <code>pdf</code> (starting). If
 	 * the <code>page</code> is not <code>null</code>, then rendering will
 	 * happen on this first page (and its page sizes will be taken into
@@ -82,6 +83,7 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Sets the page margins.
 	 * <p>
+	 * 
 	 * This sets page margins, in <code>cm</code>, for one or more
 	 * <code>sides</code>.
 	 */
@@ -123,6 +125,7 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Sets the resolution.
 	 * <p>
+	 * 
 	 * The resolution used between CSS pixels and actual page dimensions. Note
 	 * that his does not have an effect on the <i>de facto</i> standard CSS
 	 * resolution of 96 DPI that is used to convert between physical
@@ -143,9 +146,12 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Adds a font collection.
 	 * <p>
+	 * 
 	 * If JWt has been configured to use <code>libpango</code>, then font
 	 * matching and character selection is done by libpango, and calls to this
-	 * method are ignored. See {@link } for more details.
+	 * method are ignored. See
+	 * {@link WPdfImage#addFontCollection(String directory, boolean recursive)
+	 * WPdfImage#addFontCollection()} for more details.
 	 * <p>
 	 * If JWt was not configured to use <code>libpango</code>, you will have to
 	 * add the directories where JWt should look for fonts. You will also have
@@ -158,9 +164,13 @@ public class WPdfRenderer extends WTextRenderer {
 	 * 	WPdfRenderer renderer = new WPdfRenderer(pdf, page);
 	 * 	// ...
 	 * 	renderer.render(&quot;&lt;p style=\&quot;font-family: 'DejaVuSans', Arial\&quot;&gt;\u00E9l\u00E8ve, fen\u00EAtre, \u00E2me&lt;/p&gt;&quot;);
+	 * 
 	 * }
 	 * </pre>
+	 * 
 	 * <p>
+	 * 
+	 * @see WPdfImage#addFontCollection(String directory, boolean recursive)
 	 */
 	public void addFontCollection(final String directory, boolean recursive) {
 		WPdfRenderer.FontCollection c = new WPdfRenderer.FontCollection();
@@ -189,6 +199,7 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Returns the current page.
 	 * <p>
+	 * 
 	 * This returns the page last created using
 	 * {@link WPdfRenderer#createPage(int page) createPage()}, or the page set
 	 * with {@link WPdfRenderer#setCurrentPage(com.pdfjet.Page page)
@@ -257,6 +268,7 @@ public class WPdfRenderer extends WTextRenderer {
 	/**
 	 * Creates a new page.
 	 * <p>
+	 * 
 	 * The default implementation creates a new page with the same dimensions as
 	 * the previous page.
 	 * <p>

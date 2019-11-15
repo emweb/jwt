@@ -23,10 +23,9 @@ import org.slf4j.LoggerFactory;
  * A class providing details for a keyboard event.
  * <p>
  * 
- * A key event is associated with the {@link WInteractWidget#keyWentDown()
- * WInteractWidget#keyWentDown()}, {@link WInteractWidget#keyWentUp()
- * WInteractWidget#keyWentUp()} and {@link WInteractWidget#keyPressed()
- * WInteractWidget#keyPressed()} signals.
+ * A key event is associated with the {@link WInteractWidget#keyWentDown()},
+ * {@link WInteractWidget#keyWentUp()} and {@link WInteractWidget#keyPressed()}
+ * signals.
  */
 public class WKeyEvent implements WAbstractEvent {
 	private static Logger logger = LoggerFactory.getLogger(WKeyEvent.class);
@@ -42,6 +41,7 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns the key code key that was pressed or released.
 	 * <p>
+	 * 
 	 * The key code corresponds to the actual key on the keyboard, rather than
 	 * the generated character.
 	 * <p>
@@ -62,8 +62,8 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns keyboard modifiers.
 	 * <p>
-	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
-	 * flags.
+	 * 
+	 * The result is a logical OR of {@link KeyboardModifier} flags.
 	 * <p>
 	 * All three types of key events provide this information.
 	 * <p>
@@ -78,18 +78,18 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * Returns the unicode character code.
 	 * <p>
-	 * This is only defined for a {@link WInteractWidget#keyPressed()
-	 * keyPressed} event, and returns the unicode character code point of a
-	 * character that is entered.
+	 * 
+	 * This is only defined for a {@link WInteractWidget#keyPressed()} event,
+	 * and returns the unicode character code point of a character that is
+	 * entered.
 	 * <p>
-	 * For the {@link WInteractWidget#keyWentDown() keyWentDown} and
-	 * {@link WInteractWidget#keyWentUp() keyWentUp} events, &apos;0&apos; is
-	 * returned.
+	 * For the {@link WInteractWidget#keyWentDown()} and
+	 * {@link WInteractWidget#keyWentUp()} events, &apos;0&apos; is returned.
 	 * <p>
 	 * The {@link WKeyEvent#getCharCode() getCharCode()} may be different from
-	 * {@link WKeyEvent#getKey() getKey()}. For example, a {@link Key#Key_M
-	 * Key_M} key may correspond to &apos;m&apos; or &apos;M&apos; character,
-	 * depending on whether the shift key is pressed simultaneously.
+	 * {@link WKeyEvent#getKey() getKey()}. For example, a {@link Key#Key_M} key
+	 * may correspond to &apos;m&apos; or &apos;M&apos; character, depending on
+	 * whether the shift key is pressed simultaneously.
 	 * <p>
 	 * 
 	 * @see WKeyEvent#getKey()
@@ -102,14 +102,13 @@ public class WKeyEvent implements WAbstractEvent {
 	/**
 	 * The (unicode) text that this key generated.
 	 * <p>
-	 * This is only defined for a {@link WInteractWidget#keyPressed()
-	 * keyPressed} event, and returns a string that holds exactly one unicode
-	 * character, which corresponds to {@link WKeyEvent#getCharCode()
-	 * getCharCode()}.
+	 * 
+	 * This is only defined for a {@link WInteractWidget#keyPressed()} event,
+	 * and returns a string that holds exactly one unicode character, which
+	 * corresponds to {@link WKeyEvent#getCharCode() getCharCode()}.
 	 * <p>
-	 * For the {@link WInteractWidget#keyWentDown() keyWentDown} and
-	 * {@link WInteractWidget#keyWentUp() keyWentUp} events, an empty string is
-	 * returned.
+	 * For the {@link WInteractWidget#keyWentDown()} and
+	 * {@link WInteractWidget#keyWentUp()} events, an empty string is returned.
 	 * <p>
 	 * 
 	 * @see WKeyEvent#getCharCode()

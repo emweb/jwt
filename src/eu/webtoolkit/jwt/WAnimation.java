@@ -41,15 +41,18 @@ public class WAnimation {
 	/**
 	 * An enumeration describing an animation effect.
 	 * <p>
+	 * 
 	 * An animation effect can be the combination of a motion and an optional
 	 * fade effect, e.g:
 	 * 
 	 * <pre>
 	 *   {@code
-	 *     SlideInFromRight
-	 *     SlideInFromTop | Fade
+	 *    SlideInFromRight
+	 *    SlideInFromTop | Fade
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * You can specify only one motion effect.
 	 * <p>
@@ -93,6 +96,7 @@ public class WAnimation {
 	/**
 	 * A timing function.
 	 * <p>
+	 * 
 	 * The timing function defines how the animation effects are animated during
 	 * the total duration of the animation.
 	 */
@@ -133,6 +137,7 @@ public class WAnimation {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an animation that actually represent <i>no</i> animation. (
 	 * {@link WAnimation#getEffects() getEffects()} == 0).
 	 */
@@ -145,6 +150,7 @@ public class WAnimation {
 	/**
 	 * Creates an animation.
 	 * <p>
+	 * 
 	 * An animation is created with given effects, timing and duration.
 	 */
 	public WAnimation(EnumSet<WAnimation.AnimationEffect> effects,
@@ -180,6 +186,7 @@ public class WAnimation {
 	/**
 	 * Creates an animation.
 	 * <p>
+	 * 
 	 * An animation is created with one effect, timing and duration.
 	 */
 	public WAnimation(WAnimation.AnimationEffect effect,
@@ -215,6 +222,7 @@ public class WAnimation {
 	/**
 	 * Creates an animation.
 	 * <p>
+	 * 
 	 * An animation is created with two effects (a motion and Fade).
 	 */
 	public WAnimation(WAnimation.AnimationEffect effect1,
@@ -252,6 +260,7 @@ public class WAnimation {
 	/**
 	 * Clone method.
 	 * <p>
+	 * 
 	 * Clones this animation object.
 	 */
 	public WAnimation clone() {
@@ -264,6 +273,7 @@ public class WAnimation {
 	/**
 	 * Sets the animation effects.
 	 * <p>
+	 * 
 	 * A motion effect ({@link WAnimation.AnimationEffect#SlideInFromLeft
 	 * SlideInFromLeft}, {@link WAnimation.AnimationEffect#SlideInFromRight
 	 * SlideInFromRight}, {@link WAnimation.AnimationEffect#SlideInFromBottom
@@ -303,6 +313,7 @@ public class WAnimation {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
+	 * 
 	 * Returns <code>true</code> if the transitions are exactly the same.
 	 */
 	public boolean equals(final WAnimation animation) {
@@ -313,6 +324,7 @@ public class WAnimation {
 	/**
 	 * Sets the duration.
 	 * <p>
+	 * 
 	 * The default animation duration is 250 ms.
 	 * <p>
 	 * 
@@ -335,7 +347,9 @@ public class WAnimation {
 	/**
 	 * Sets a timing function.
 	 * <p>
-	 * The default timinig function is {@link WAnimation.TimingFunction#Linear}.
+	 * 
+	 * The default timinig function is {@link WAnimation.TimingFunction#Linear
+	 * Linear}.
 	 */
 	public void setTimingFunction(WAnimation.TimingFunction tf) {
 		this.timing_ = tf;
@@ -354,6 +368,7 @@ public class WAnimation {
 	/**
 	 * Returns whether the animation is empty.
 	 * <p>
+	 * 
 	 * An animation is empty (meaning the transition is instant), if the
 	 * duration is 0, or if no effects are defined.
 	 */

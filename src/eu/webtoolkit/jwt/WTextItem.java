@@ -51,6 +51,7 @@ public class WTextItem {
 	/**
 	 * Returns the measured text.
 	 * <p>
+	 * 
 	 * If the item was measured with word breaking enabled, then the text may
 	 * contain trailing whitespace that is not included in the
 	 * {@link WTextItem#getWidth() getWidth()}.
@@ -62,6 +63,7 @@ public class WTextItem {
 	/**
 	 * Returns the measured width.
 	 * <p>
+	 * 
 	 * Returns the text width, in device local coordinates (pixels).
 	 */
 	public double getWidth() {
@@ -71,6 +73,7 @@ public class WTextItem {
 	/**
 	 * Returns the width for a next line-break boundary.
 	 * <p>
+	 * 
 	 * Returns the width until the next line-break boundary, or -1 if the
 	 * underlying word boundary analysis does not support this.
 	 */

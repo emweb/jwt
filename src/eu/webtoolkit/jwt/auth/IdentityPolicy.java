@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration for an identity policy.
  * <p>
+ * 
  * This enumeration lists possible choices for the user identity (login name).
  * <p>
  * When using password authentication, it is clear that the user has to provide
@@ -39,6 +40,7 @@ public enum IdentityPolicy {
 	/**
 	 * A unique login name chosen by the user.
 	 * <p>
+	 * 
 	 * Even if not really required for authentication, a user still chooses a
 	 * unique user name. If possible, a third party autheticator may suggest a
 	 * user name.
@@ -49,6 +51,7 @@ public enum IdentityPolicy {
 	/**
 	 * The email address serves as the identity.
 	 * <p>
+	 * 
 	 * This may be useful for sites which do not have any social character, but
 	 * instead render a service to individual users. When the site has a social
 	 * character, you will likely not want to display the email address of other
@@ -58,6 +61,7 @@ public enum IdentityPolicy {
 	/**
 	 * An identity is optional, and only asked if needed for authentication.
 	 * <p>
+	 * 
 	 * Unless the authentication procedure requires a user name, no particular
 	 * identity is asked for. In this case, the identity is a unique internal
 	 * identifier.

@@ -28,6 +28,7 @@ public class MetaHeader {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a meta header. The lang and user agents are optional, and should
 	 * be an empty string if not used.
 	 */

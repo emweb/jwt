@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enumeration for the role of a DOM element (for theme support).
+ * Enumeration for the role of a DOM element (for theme support)
  * <p>
  * 
  * @see WTheme#apply(WWidget widget, WWidget child, int widgetRole)

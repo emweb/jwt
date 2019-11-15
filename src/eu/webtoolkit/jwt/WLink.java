@@ -67,6 +67,7 @@ public class WLink {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * This constructs a null link.
 	 */
 	public WLink() {
@@ -91,11 +92,12 @@ public class WLink {
 	/**
 	 * Creates a link to a (static) URL or an internal path.
 	 * <p>
+	 * 
 	 * Using this constructor, you can create a link to a static URL (
-	 * <code>type</code> == {@link WLink.Type#Url}) or an internal path (
-	 * <code>type</code> == {@link WLink.Type#InternalPath}). For an internal
-	 * path, the <code>value</code> will be interpreted as a UTF8 encoded
-	 * string.
+	 * <code>type</code> == {@link WLink.Type#Url Url}) or an internal path (
+	 * <code>type</code> == {@link WLink.Type#InternalPath InternalPath}). For
+	 * an internal path, the <code>value</code> will be interpreted as a UTF8
+	 * encoded string.
 	 * <p>
 	 * 
 	 * @see WLink#setUrl(String url)
@@ -132,12 +134,13 @@ public class WLink {
 	/**
 	 * Returns the link type.
 	 * <p>
+	 * 
 	 * The type is implicitly set depending on the constructor or after calling
 	 * {@link WLink#setUrl(String url) setUrl()},
 	 * {@link WLink#setResource(WResource resource) setResource()} or
 	 * {@link WLink#setInternalPath(String internalPath) setInternalPath()}.
 	 * <p>
-	 * The default type for a null link is {@link WLink.Type#Url}.
+	 * The default type for a null link is {@link WLink.Type#Url Url}.
 	 */
 	public WLink.Type getType() {
 		return this.type_;
@@ -146,6 +149,7 @@ public class WLink {
 	/**
 	 * Returns whether the link is unspecified.
 	 * <p>
+	 * 
 	 * A null link is a link created using the default constructor and points to
 	 * nowhere.
 	 * <p>
@@ -159,7 +163,8 @@ public class WLink {
 	/**
 	 * Sets the link URL.
 	 * <p>
-	 * This sets the type to {@link WLink.Type#Url}.
+	 * 
+	 * This sets the type to {@link WLink.Type#Url Url}.
 	 */
 	public void setUrl(final String url) {
 		this.type_ = WLink.Type.Url;
@@ -169,6 +174,7 @@ public class WLink {
 	/**
 	 * Returns the link URL.
 	 * <p>
+	 * 
 	 * The return value is the URL set by {@link WLink#setUrl(String url)
 	 * setUrl()}, the resource URL of the resource set using
 	 * {@link WLink#setResource(WResource resource) setResource()}, or the
@@ -190,7 +196,8 @@ public class WLink {
 	/**
 	 * Sets the link resource.
 	 * <p>
-	 * This sets the type to {@link WLink.Type#Resource}.
+	 * 
+	 * This sets the type to {@link WLink.Type#Resource Resource}.
 	 */
 	public void setResource(WResource resource) {
 		this.type_ = WLink.Type.Resource;
@@ -200,6 +207,7 @@ public class WLink {
 	/**
 	 * Returns the link resource.
 	 * <p>
+	 * 
 	 * This returns the resource previously set using
 	 * {@link WLink#setResource(WResource resource) setResource()}, or
 	 * <code>null</code>.
@@ -218,6 +226,7 @@ public class WLink {
 	/**
 	 * Sets the link internal path.
 	 * <p>
+	 * 
 	 * This points the link to the given internal path.
 	 */
 	public void setInternalPath(final String internalPath) {
@@ -232,6 +241,7 @@ public class WLink {
 	/**
 	 * Returns the internal path.
 	 * <p>
+	 * 
 	 * This returns the internal path perviously set using
 	 * {@link WLink#setInternalPath(String internalPath) setInternalPath()}, or
 	 * an empty string otherwise.
@@ -250,6 +260,7 @@ public class WLink {
 	/**
 	 * Sets the location where the linked content should be displayed.
 	 * <p>
+	 * 
 	 * By default, the linked content is displayed in the application (
 	 * {@link AnchorTarget#TargetSelf}). When the destination is an HTML
 	 * document, the application is replaced with the new document. When the

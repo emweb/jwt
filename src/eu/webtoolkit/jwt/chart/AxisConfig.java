@@ -43,7 +43,7 @@ public class AxisConfig {
 	 * The zoom level. Different axis labels can be drawn depending on the zoom
 	 * level. These are requested by
 	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart} in powers of 2 (1, 2, 4,
-	 * 8,...).
+	 * 8,...)
 	 */
 	public int zoomLevel;
 	private static final int AUTO_V_LABEL_PIXELS = 25;

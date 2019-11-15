@@ -39,6 +39,7 @@ public class WRectArea extends WAbstractArea {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * The default constructor creates a rectangular area spans the whole
 	 * widget.
 	 */
@@ -53,6 +54,7 @@ public class WRectArea extends WAbstractArea {
 	/**
 	 * Creates a rectangular area with given geometry.
 	 * <p>
+	 * 
 	 * The arguments are in pixel units.
 	 */
 	public WRectArea(int x, int y, int width, int height) {
@@ -66,6 +68,7 @@ public class WRectArea extends WAbstractArea {
 	/**
 	 * Creates a rectangular area with given geometry.
 	 * <p>
+	 * 
 	 * The arguments are in pixel units.
 	 */
 	public WRectArea(double x, double y, double width, double height) {
@@ -79,6 +82,7 @@ public class WRectArea extends WAbstractArea {
 	/**
 	 * Creates a rectangular area with given geometry.
 	 * <p>
+	 * 
 	 * The <code>rect</code> argument is in pixel units.
 	 */
 	public WRectArea(final WRectF rect) {

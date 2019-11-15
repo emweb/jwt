@@ -39,6 +39,7 @@ public class WCircleArea extends WAbstractArea {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Specifies a circular area with center (0, 0) and radius 0.
 	 */
 	public WCircleArea() {
@@ -51,6 +52,7 @@ public class WCircleArea extends WAbstractArea {
 	/**
 	 * Creates a circular area with given geometry.
 	 * <p>
+	 * 
 	 * The arguments are in pixel units.
 	 */
 	public WCircleArea(int x, int y, int radius) {

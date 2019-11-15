@@ -39,6 +39,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Creates a new table row.
 	 * <p>
+	 * 
 	 * Table rows must be added to a table using
 	 * {@link WTable#insertRow(int row, WTableRow tableRow) WTable#insertRow()}
 	 * before you can access contents in it using
@@ -69,6 +70,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Access the row element at the given column.
 	 * <p>
+	 * 
 	 * Like {@link WTable#getElementAt(int row, int column)
 	 * WTable#getElementAt()}, if the column is beyond the current table
 	 * dimensions, then the table is expanded automatically.
@@ -82,6 +84,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Returns the row number of this row in the table.
 	 * <p>
+	 * 
 	 * Returns -1 if the row is not yet part of a table.
 	 * <p>
 	 * 
@@ -94,6 +97,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Sets the row height.
 	 * <p>
+	 * 
 	 * The default row height is {@link WLength#Auto}.
 	 * <p>
 	 * 
@@ -118,6 +122,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Sets the CSS style class for this row.
 	 * <p>
+	 * 
 	 * The style is inherited by all table cells in this row.
 	 * <p>
 	 * 
@@ -174,6 +179,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Sets whether the row must be hidden.
 	 * <p>
+	 * 
 	 * Hide or show the row.
 	 * <p>
 	 * The default value is <code>false</code> (row is not hidden).
@@ -225,6 +231,7 @@ public class WTableRow extends WObject {
 	/**
 	 * Sets the CSS Id.
 	 * <p>
+	 * 
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.
 	 * <p>

@@ -35,6 +35,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	/**
 	 * Configures whether a native HTML5 control should be used.
 	 * <p>
+	 * 
 	 * When <code>native</code>, the new &quot;number&quot; input element,
 	 * specified by HTML5 and when implemented by the browser, is used rather
 	 * than the built-in element. The native control is styled by the browser
@@ -50,6 +51,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	/**
 	 * Returns whether a native HTML5 control is used.
 	 * <p>
+	 * 
 	 * Taking into account the preference for a native control, configured using
 	 * {@link WAbstractSpinBox#setNativeControl(boolean nativeControl)
 	 * setNativeControl()}, this method returns whether a native control is
@@ -80,17 +82,21 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	/**
 	 * Sets a prefix.
 	 * <p>
+	 * 
 	 * Option to set a prefix string shown in front of the value, e.g.:
 	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
-	 *      spinBox.setPrefix("$ ");
+	 *    spinBox.setPrefix("$ ");
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * The default prefix is empty.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
@@ -117,17 +123,21 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 	/**
 	 * Sets a suffix.
 	 * <p>
+	 * 
 	 * Option to set a suffix string shown to the right of the value, e.g.:
 	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
-	 *      spinBox.setSuffix(" crates");
+	 *    spinBox.setSuffix(" crates");
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * The default suffix is empty.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
@@ -289,7 +299,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WSpinBox.js", wtjs1());
 		StringBuilder ss = new StringBuilder();
-		ss.append("new Wt3_4_1.WSpinBox(")
+		ss.append("new Wt3_4_2.WSpinBox(")
 				.append(app.getJavaScriptClass())
 				.append(",")
 				.append(this.getJsRef())

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that indicates a role for a data item.
  * <p>
+ * 
  * A single data item can have data associated with it corresponding to
  * different roles. Each role may be used by the corresponding view class in a
  * different way.
@@ -47,7 +48,6 @@ public class ItemDataRole {
 	 */
 	public final static int StyleClassRole = 3;
 	/**
-	 * <p>
 	 * Role that indicates the check state.
 	 * <p>
 	 * Data for this role should be a <code>bool</code>. When the
@@ -72,27 +72,27 @@ public class ItemDataRole {
 	 */
 	public final static int LevelRole = 8;
 	/**
-	 * Marker pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart})
 	 */
 	public final static int MarkerPenColorRole = 16;
 	/**
-	 * Marker brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart})
 	 */
 	public final static int MarkerBrushColorRole = 17;
 	/**
-	 * Marker size (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker size (for {@link eu.webtoolkit.jwt.chart.WCartesianChart})
 	 */
 	public final static int MarkerScaleFactorRole = 20;
 	/**
-	 * Marker type (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Marker type (for {@link eu.webtoolkit.jwt.chart.WCartesianChart})
 	 */
 	public final static int MarkerTypeRole = 21;
 	/**
-	 * Bar pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Bar pen color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart})
 	 */
 	public final static int BarPenColorRole = 18;
 	/**
-	 * Bar brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart}).
+	 * Bar brush color (for {@link eu.webtoolkit.jwt.chart.WCartesianChart})
 	 */
 	public final static int BarBrushColorRole = 19;
 	/**

@@ -38,6 +38,7 @@ public class Identity {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an invalid identity.
 	 */
 	public Identity() {
@@ -62,6 +63,7 @@ public class Identity {
 	/**
 	 * Returns whether the identity is valid.
 	 * <p>
+	 * 
 	 * An invalid identity is used to indicate for example that no identity
 	 * information could be obtained.
 	 */
@@ -72,6 +74,7 @@ public class Identity {
 	/**
 	 * Returns the provider name.
 	 * <p>
+	 * 
 	 * This is a unique id that names the source for this identity (e.g.
 	 * &quot;google-oauth&quot;, or &quot;LDAP&quot;, or &quot;user&quot; (for a
 	 * user-chosen identity).
@@ -83,6 +86,7 @@ public class Identity {
 	/**
 	 * Returns the id.
 	 * <p>
+	 * 
 	 * Returns a unique identifier for the user within the scope of this
 	 * provider.
 	 */
@@ -93,6 +97,7 @@ public class Identity {
 	/**
 	 * Returns the name.
 	 * <p>
+	 * 
 	 * Returns the user&apos;s name, or an empty string if not provided.
 	 */
 	public String getName() {
@@ -102,6 +107,7 @@ public class Identity {
 	/**
 	 * Returns an email address.
 	 * <p>
+	 * 
 	 * Returns the user&apos;s email address, or an empty string if not
 	 * provided.
 	 * <p>
@@ -115,6 +121,7 @@ public class Identity {
 	/**
 	 * Returns whether the email address has been verified.
 	 * <p>
+	 * 
 	 * The third party provider may be able to guarantee that the user indeed
 	 * also control&apos;s the given email address (e.g. because the third party
 	 * hosts that email account for the user).
@@ -129,12 +136,14 @@ public class Identity {
 	/**
 	 * An invalid identity constant.
 	 * <p>
+	 * 
 	 * This is an identity that is not {@link Identity#isValid() isValid()}.
 	 */
 	public static final Identity Invalid = new Identity();
 	/**
 	 * The login name identity.
 	 * <p>
+	 * 
 	 * This is a provider name for the (usually user-controlled) identity, used
 	 * for example for password-based authentication.
 	 */

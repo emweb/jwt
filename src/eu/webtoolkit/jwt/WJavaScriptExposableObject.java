@@ -49,9 +49,10 @@ public abstract class WJavaScriptExposableObject {
 	/**
 	 * Returns whether this object is JavaScript bound.
 	 * <p>
+	 * 
 	 * An object is JavaScript bound if it is associated with a
 	 * {@link WJavaScriptHandle}. It should not be modified directly on the
-	 * server side. {@link } should be used instead.
+	 * server side. {@link WJavaScriptHandle#setValue} should be used instead.
 	 */
 	public boolean isJavaScriptBound() {
 		return this.clientBinding_ != null;
@@ -60,6 +61,8 @@ public abstract class WJavaScriptExposableObject {
 	/**
 	 * Returns a JavaScript representation of the value of this object.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The value returned will reflect the current server side
 	 * value of the object. If this object is JavaScript bound, this value may
@@ -73,15 +76,17 @@ public abstract class WJavaScriptExposableObject {
 	/**
 	 * Returns a JavaScript reference to this object.
 	 * <p>
+	 * 
 	 * If this object is not JavaScript bound, it will return a JavaScript
 	 * representation of the value of the object, according to
 	 * {@link WJavaScriptExposableObject#getJsValue() getJsValue()}.
 	 * <p>
+	 * 
 	 * <p>
-	 * <i><b>Warning:</b>This reference is intended as read-only. Attempts to
+	 * <i><b>Warning: </b>This reference is intended as read-only. Attempts to
 	 * modify it may have unintended consequences. If you want a JavaScript
-	 * reference that is modifiable, use the {@link jsRef of the handle}
-	 * instead. </i>
+	 * reference that is modifiable, use the
+	 * {@link WJavaScriptHandle#getJsRef()} instead. </i>
 	 * </p>
 	 */
 	public String getJsRef() {

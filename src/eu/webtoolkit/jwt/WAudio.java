@@ -56,6 +56,7 @@ public class WAudio extends WAbstractMedia {
 	/**
 	 * Creates a audio widget.
 	 * <p>
+	 * 
 	 * A freshly constructed Audio widget has no media sources, no options, and
 	 * has preload mode set to PreloadAuto.
 	 */
@@ -76,12 +77,13 @@ public class WAudio extends WAbstractMedia {
 	/**
 	 * Returns the JavaScript reference to the audio object, or null.
 	 * <p>
+	 * 
 	 * It is possible, for browser compatibility reasons, that
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the HTML5 audio
-	 * element. {@link WAudio#getJsAudioRef() getJsAudioRef()} is guaranteed to
-	 * be an expression that evaluates to the media object. This expression may
-	 * yield null, if the video object is not rendered at all (e.g. on older
-	 * versions of Internet Explorer).
+	 * {@link WWidget#getJsRef()} is not the HTML5 audio element.
+	 * {@link WAudio#getJsAudioRef() getJsAudioRef()} is guaranteed to be an
+	 * expression that evaluates to the media object. This expression may yield
+	 * null, if the video object is not rendered at all (e.g. on older versions
+	 * of Internet Explorer).
 	 */
 	public String getJsAudioRef() {
 		return this.getJsMediaRef();

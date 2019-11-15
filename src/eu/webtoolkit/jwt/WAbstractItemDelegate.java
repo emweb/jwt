@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * 
  * Rendering of an item in a {@link WAbstractItemView} is delegated to an
  * implementation of this delegate class. The default implementation used by
- * Wt&apos;s item views is {@link WItemDelegate}. To provide specialized
+ * JWt&apos;s item views is {@link WItemDelegate}. To provide specialized
  * rendering support, you can reimplement this class (or specialize
  * {@link WItemDelegate}).
  * <p>
@@ -71,6 +71,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Creates or updates a widget that renders an item.
 	 * <p>
+	 * 
 	 * The item is specified by its model <code>index</code>, which also
 	 * indicates the model. If an existing widget already renders the item, but
 	 * needs to be updated, it is passed as the <code>widget</code> parameter.
@@ -107,6 +108,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Updates the model index of a widget.
 	 * <p>
+	 * 
 	 * This method is invoked by the view when due to row/column insertions or
 	 * removals, the index has shifted.
 	 * <p>
@@ -121,6 +123,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Returns the current edit state.
 	 * <p>
+	 * 
 	 * Because a View may support virtual scrolling in combination with editing,
 	 * it may happen that the view decides to delete the editor widget while the
 	 * user is editing. To allow to reconstruct the editor in its original
@@ -149,6 +152,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Sets the editor data from the editor state.
 	 * <p>
+	 * 
 	 * When the View scrolls back into view an item that was being edited, he
 	 * will use
 	 * {@link WAbstractItemDelegate#setEditState(WWidget widget, Object value)
@@ -165,6 +169,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Returns whether the edited value is valid.
 	 * <p>
+	 * 
 	 * The default implementation does nothing and returns Valid.
 	 * <p>
 	 * 
@@ -178,6 +183,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Saves the edited data to the model.
 	 * <p>
+	 * 
 	 * The View will use this method to save the edited value to the model. The
 	 * <code>editState</code> is first fetched from the editor using
 	 * {@link WAbstractItemDelegate#getEditState(WWidget widget) getEditState()}.
@@ -191,6 +197,7 @@ public abstract class WAbstractItemDelegate extends WObject {
 	/**
 	 * Signal which indicates that an editor needs to be closed.
 	 * <p>
+	 * 
 	 * The delegate should emit this signal when it decides for itself that it
 	 * should be closed (e.g. because the user confirmed the edited value or
 	 * cancelled the editing). The View will then rerender the item if needed.

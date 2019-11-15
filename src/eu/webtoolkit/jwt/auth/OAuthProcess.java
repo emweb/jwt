@@ -43,6 +43,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Returns the scope for which this process was created.
 	 * <p>
+	 * 
 	 * The scope represents how much protected information the web application
 	 * wants to access, and in what way.
 	 * <p>
@@ -67,12 +68,14 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Starts an authorization process.
 	 * <p>
+	 * 
 	 * This starts an authorization process to request an accesstoken to access
 	 * protected information within the process scope.
 	 * <p>
 	 * The authorization process ends with the {@link OAuthProcess#authorized()
 	 * authorized()} signal which signals the obtained token.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>To be able to use a popup (instead of a page redirect),
 	 * you should connect this method directly to an, since popup windows are
@@ -93,18 +96,19 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Starts an authorization and authentication process.
 	 * <p>
+	 * 
 	 * This is {@link OAuthProcess#startAuthorize() startAuthorize()} followed
 	 * by {@link OAuthProcess#getIdentity(OAuthAccessToken token) getIdentity()}.
 	 * <p>
 	 * This requires that the process is created with an authorization scope
 	 * that includes sufficient rights for authentication (at least
-	 * {@link OAuthService#getAuthenticationScope()
-	 * OAuthService#getAuthenticationScope()})
+	 * {@link OAuthService#getAuthenticationScope()})
 	 * <p>
 	 * The authentication process ends with the
 	 * {@link OAuthProcess#authenticated() authenticated()} signal which signals
 	 * the obtained identity.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>To be able to use a popup (instead of a page redirect),
 	 * you should connect this method directly to an, since popup windows are
@@ -121,6 +125,7 @@ public class OAuthProcess extends WObject {
 	 * Connects an implementation to start an authentication process to a
 	 * signal.
 	 * <p>
+	 * 
 	 * If JavaScript is available, this method connects a JavaScript function to
 	 * the <code>signal</code>, otherwise
 	 * {@link OAuthProcess#startAuthenticate() startAuthenticate()} is connected
@@ -130,7 +135,7 @@ public class OAuthProcess extends WObject {
 		if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
 			StringBuilder js = new StringBuilder();
 			js.append("function(object, event) {")
-					.append("Wt3_4_1.PopupWindow(Wt3_4_1").append(",")
+					.append("Wt3_4_2.PopupWindow(Wt3_4_2").append(",")
 					.append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
 					.append(", ").append(this.service_.getPopupWidth())
 					.append(", ").append(this.service_.getPopupHeight())
@@ -147,6 +152,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Obtains an authenticated identity.
 	 * <p>
+	 * 
 	 * The authentication process uses an access token to issue one or more
 	 * protected requests for obtaining identity information. This is not part
 	 * of the OAuth protocol, since OAuth does not standardize the use of the
@@ -163,6 +169,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Error information, in case authentication or identification failed.
 	 * <p>
+	 * 
 	 * The error message contains details when the
 	 * {@link OAuthProcess#authorized() authorized()} or
 	 * {@link OAuthProcess#authenticated() authenticated()} signals indicate
@@ -175,6 +182,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Returns the access token.
 	 * <p>
+	 * 
 	 * This returns the access token that was obtained in the last authorization
 	 * cycle.
 	 */
@@ -185,6 +193,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Authorization signal.
 	 * <p>
+	 * 
 	 * This signal indicates the end of an authorization process started with
 	 * {@link OAuthProcess#startAuthorize() startAuthorize()}. If the
 	 * authorization process was successful, then the parameter carries a valid
@@ -206,6 +215,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Authentication signal.
 	 * <p>
+	 * 
 	 * This signal indicates the end of an authentication process started with
 	 * {@link OAuthProcess#startAuthenticate() startAuthenticate()} or
 	 * {@link OAuthProcess#getIdentity(OAuthAccessToken token) getIdentity()}.
@@ -288,6 +298,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Parses the response for a token request.
 	 * <p>
+	 * 
 	 * Throws a {@link TokenError} when the response indicates an error, or when
 	 * the response could not be properly parsed.
 	 * <p>
@@ -339,6 +350,7 @@ public class OAuthProcess extends WObject {
 	/**
 	 * Sets the error.
 	 * <p>
+	 * 
 	 * This should be used in
 	 * {@link OAuthProcess#getIdentity(OAuthAccessToken token) getIdentity()}
 	 * implementations to set the error, before emitting
@@ -494,7 +506,7 @@ public class OAuthProcess extends WObject {
 						expires = WDate.getCurrentServerDate().addSeconds(secs);
 					}
 					String refreshToken = JsonUtils.orIfNullString(
-							root.get("refreshToken"), "");
+							root.get("refresh_token"), "");
 					String idToken = JsonUtils.orIfNullString(
 							root.get("id_token"), "");
 					return new OAuthAccessToken(accessToken, expires,

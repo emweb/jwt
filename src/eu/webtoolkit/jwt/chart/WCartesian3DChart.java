@@ -26,14 +26,12 @@ import org.slf4j.LoggerFactory;
  * The chart consists of a plotcube, which is always open on the front, and
  * adapts to the data which is shown on the chart. The plotcube has three axes
  * of type {@link WAxis}. Each of these can be manually configured as in the 2D
- * case. The chart can be either a DOCREF<a class="el" href=
- * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
- * >ScatterPlot</a> or a DOCREF<a class="el" href=
- * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
- * >CategoryChart</a>. This influences how the data is positioned in relation to
- * the x/y-axis. Gridlines can also be drawn on each of the plotcube-planes. The
- * chart has a mouse-handler which allows rotation of the chart around the
- * center of the plotcube. Zooming in and out is possible by scrolling.
+ * case. The chart can be either a {@link ChartType ScatterPlot} or a
+ * {@link ChartType CategoryChart}. This influences how the data is positioned
+ * in relation to the x/y-axis. Gridlines can also be drawn on each of the
+ * plotcube-planes. The chart has a mouse-handler which allows rotation of the
+ * chart around the center of the plotcube. Zooming in and out is possible by
+ * scrolling.
  * <p>
  * Data that can be shown on the chart derives from
  * {@link WAbstractDataSeries3D}. Multiple dataseries can be added to the chart
@@ -53,8 +51,7 @@ import org.slf4j.LoggerFactory;
  * title and legend, a colormap-legend is shown for every dataseries which has a
  * colormap enabled and indicates that it should be displayed on the chart.
  * <p>
- * <div align="center"> <img src="doc-files//Chart3DCombo.png"
- * alt="A scatterplot on the left, a category-chart on the right.">
+ * <div align="center"> <img src="doc-files/Chart3DCombo.png">
  * <p>
  * <strong>A scatterplot on the left, a category-chart on the right.</strong>
  * </p>
@@ -82,6 +79,7 @@ public class WCartesian3DChart extends WGLWidget {
 		/**
 		 * Constructor.
 		 * <p>
+		 * 
 		 * Create an intersection plane perpendicular to the given axis, at the
 		 * given position on that axis, and the color that the intersection
 		 * lines should have.
@@ -99,9 +97,10 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Constructs a cartesian 3D chart, with the type set to ScatterPlot, a
-	 * transparent background, a {@link WStandardPalette.Flavour#Muted} palette
-	 * and no gridlines.
+	 * transparent background, a {@link WStandardPalette.Flavour#Muted
+	 * Flavour#Muted} palette and no gridlines.
 	 */
 	public WCartesian3DChart(WContainerWidget parent) {
 		super(parent);
@@ -287,9 +286,10 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Construct a cartesian 3D chart with the specified type , a transparent
-	 * background, a {@link WStandardPalette.Flavour#Muted} palette and no
-	 * gridlines.
+	 * background, a {@link WStandardPalette.Flavour#Muted Flavour#Muted}
+	 * palette and no gridlines.
 	 */
 	public WCartesian3DChart(ChartType type, WContainerWidget parent) {
 		super(parent);
@@ -490,6 +490,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Add a dataseries to the chart.
 	 * <p>
+	 * 
 	 * Ownership of the dataseries is transferred to the chart.
 	 * <p>
 	 * If the chart is of type ScatterPlot only numerical dataseries should be
@@ -522,6 +523,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Removes a dataseries from a chart.
 	 * <p>
+	 * 
 	 * This removes the data from the chart and transfers ownership back. The
 	 * data can then be added to another chart.
 	 * <p>
@@ -601,6 +603,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Enable/disable gridlines.
 	 * <p>
+	 * 
 	 * Enables or disables gridlines in the given plane, along the given axis.
 	 * All gridlines are by default disabled.
 	 */
@@ -648,6 +651,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Set whether intersection lines are shown between surface charts.
 	 * <p>
+	 * 
 	 * This is disabled by default.
 	 */
 	public void setIntersectionLinesEnabled(boolean enabled) {
@@ -696,6 +700,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Set the invisible planes with which intersections are drawn.
 	 * <p>
+	 * 
 	 * This plane is perpendicular to the given axis, and the intersection is
 	 * shown in the given color.
 	 * <p>
@@ -721,6 +726,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the pen used for drawing the gridlines.
 	 * <p>
+	 * 
 	 * The default pen for drawing gridlines is a black pen of width 0.
 	 * <p>
 	 * 
@@ -744,6 +750,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the pen used to draw the edges of the plotcube.
 	 * <p>
+	 * 
 	 * The default pen for drawing cubelines is a black pen of width 0.
 	 * <p>
 	 * Note: Only width and color of the pen are used, all other styling is
@@ -758,6 +765,7 @@ public class WCartesian3DChart extends WGLWidget {
 	 * Returns a reference to the pen used for drawing the edges of the
 	 * plotcube.
 	 * <p>
+	 * 
 	 * The width and color of the pen are used when drawing the edges of the
 	 * plotcube
 	 * <p>
@@ -771,6 +779,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the type of this chart.
 	 * <p>
+	 * 
 	 * Sets the type of this chart to either ScatterPlot (for drawing numerical
 	 * data) or to CategoryChart (for drawing categorical data).
 	 */
@@ -794,6 +803,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the palette for this chart.
 	 * <p>
+	 * 
 	 * Ownership of the {@link WChartPalette} is transferred to the chart.
 	 * <p>
 	 * The given palette determines which color subsequent dataseries will have.
@@ -822,6 +832,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the background color for this chart.
 	 * <p>
+	 * 
 	 * This sets the GL-clearcolor. The default is transparant, which will cause
 	 * the background to have the color set in css.
 	 */
@@ -843,6 +854,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the title that is put on the chart.
 	 * <p>
+	 * 
 	 * The title is always put at the top of the chart and in the center.
 	 * <p>
 	 * 
@@ -867,6 +879,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Sets the font that is used to draw the title.
 	 * <p>
+	 * 
 	 * The default font is the default constructed {@link WFont}.
 	 * <p>
 	 * 
@@ -891,6 +904,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Enables the legend.
 	 * <p>
+	 * 
 	 * The location of the legend can be configured using
 	 * {@link WCartesian3DChart#setLegendLocation(Side side, AlignmentFlag alignment)
 	 * setLegendLocation()}. Only series for which the legend is enabled are
@@ -920,6 +934,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Configures the location of the legend.
 	 * <p>
+	 * 
 	 * The provided <code>side</code> can either be {@link Side#Left},
 	 * {@link Side#Right}, {@link Side#Top}, {@link Side#Bottom} and configures
 	 * the side of the chart at which the legend is displayed.
@@ -947,12 +962,12 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Configures the legend decoration.
 	 * <p>
+	 * 
 	 * This configures the font, border and background for the legend.
 	 * <p>
 	 * The default font is a 10pt sans serif font (the same as the default axis
-	 * label font), the default <code>border</code> is {@link PenStyle#NoPen
-	 * NoPen} and the default <code>background</code> is
-	 * {@link BrushStyle#NoBrush NoBrush}.
+	 * label font), the default <code>border</code> is {@link PenStyle#NoPen}
+	 * and the default <code>background</code> is {@link BrushStyle#NoBrush}.
 	 * <p>
 	 * 
 	 * @see WCartesian3DChart#setLegendEnabled(boolean enabled)
@@ -1041,6 +1056,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Configures the number of columns and columnwidth of the legend.
 	 * <p>
+	 * 
 	 * The default value is a single column, 100 pixels wide.
 	 */
 	public void setLegendColumns(int columns, final WLength columnWidth) {
@@ -1052,6 +1068,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Initializes the chart layout.
 	 * <p>
+	 * 
 	 * This method must be called before any methods relating to the layout of
 	 * the chart are called (eg. calling minimum() or maximum() on one of the
 	 * axes). The method is also automatically called when the chart is
@@ -1078,31 +1095,13 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Set the camera-matrix.
 	 * <p>
+	 * 
 	 * The viewpoint can be set with the camera-matrix. The chart is defined in
 	 * the world coordinate system as a cube with axes from 0 to 1 in all three
 	 * directions. Therefore the center of the cube is positioned at (0.5, 0.5,
 	 * 0.5). The camera can be most easily position with the lookAt method of
-	 * {@link WMatrix4x4}. A common use-case when manipulating the matrix is to
+	 * WMatrix4x4. A common use-case when manipulating the matrix is to
 	 * translate the center to the origin and then rotate.
-	 * <p>
-	 * For example:
-	 * 
-	 * <pre>
-	 *   {@code
-	 *    {.cpp}
-	 *      ...
-	 *    
-	 *      WMatrix4x4 camera;
-	 *      camera.lookAt(0.5, 0.5, z,     // camera position
-	 *                    0.5, 0.5, 0.5,   // center of the scene
-	 *                    0, 1, 0);        // up direction
-	 *      camera.translate(0.5, 0.5, 0.5);
-	 *    
-	 *      ... // some rotations
-	 *    
-	 *      camera.translate(-0.5, -0.5, -0.5);
-	 *   }
-	 * </pre>
 	 */
 	public void setCameraMatrix(final javax.vecmath.Matrix4f matrix) {
 		this.worldTransform_ = matrix;
@@ -1112,6 +1111,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Get the current camera-matrix.
 	 * <p>
+	 * 
 	 * The matrix represents the current view on the scene. It corresponds to a
 	 * coordinate system where the chart&apos;s axes run from 0 to 1 in all
 	 * three directions.
@@ -1126,6 +1126,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Get the current camera matrix as a JavaScriptMatrix4x4.
 	 * <p>
+	 * 
 	 * This JavaScriptMatrix4x4 can be used to implement a custom mouse handler
 	 * using {@link WGLWidget#setClientSideMouseHandler(String handlerCode)
 	 * WGLWidget#setClientSideMouseHandler()}.
@@ -1167,6 +1168,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Initialize the WebGL state when the widget is first shown.
 	 * <p>
+	 * 
 	 * Specialized for chart rendering.
 	 */
 	protected void initializeGL() {
@@ -1247,6 +1249,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Update the client-side painting function.
 	 * <p>
+	 * 
 	 * Specialized for chart rendering.
 	 */
 	protected void paintGL() {
@@ -1514,8 +1517,9 @@ public class WCartesian3DChart extends WGLWidget {
 
 	/**
 	 * Update state set in {@link WCartesian3DChart#initializeGL()
-	 * initializeGL()}.
+	 * initializeGL()}
 	 * <p>
+	 * 
 	 * Specialized for chart rendering.
 	 */
 	protected void updateGL() {
@@ -1585,6 +1589,7 @@ public class WCartesian3DChart extends WGLWidget {
 	/**
 	 * Act on resize events.
 	 * <p>
+	 * 
 	 * Specialized for chart rendering.
 	 */
 	protected void resizeGL(int width, int height) {

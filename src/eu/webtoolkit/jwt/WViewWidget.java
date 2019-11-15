@@ -57,11 +57,13 @@ import org.slf4j.LoggerFactory;
  * <li>
  * event handling implemented in pre-learned stateless slot implementations</li>
  * </ul>
+ * 
  * Thus, currently, event handling code related to the View cannot be
  * implemented at server-side (but we are thinking about a solution for this as
  * well...).
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate.
@@ -90,6 +92,7 @@ public abstract class WViewWidget extends WWebWidget {
 	/**
 	 * Updates the view.
 	 * <p>
+	 * 
 	 * Typically, the model will want to update the view when the model has
 	 * changed.
 	 * <p>
@@ -133,6 +136,7 @@ public abstract class WViewWidget extends WWebWidget {
 	/**
 	 * Creates a widget that renders the View.
 	 * <p>
+	 * 
 	 * This method must be reimplemented to return a widget that renders the
 	 * view. The returned widget will be deleted by WViewWidget.
 	 */

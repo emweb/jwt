@@ -30,6 +30,7 @@ public interface WLayoutItemImpl {
 	/**
 	 * Adds a layout <i>item</i>.
 	 * <p>
+	 * 
 	 * The <code>item</code> already has an implementation set.
 	 */
 	public void updateAddItem(WLayoutItem item);

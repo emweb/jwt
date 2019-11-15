@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * See {@link WBoxLayout} for available member methods and more information.
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>First consider if you can achieve your layout using CSS !</i>
  * </p>
@@ -40,6 +41,7 @@ public class WVBoxLayout extends WBoxLayout {
 	/**
 	 * Create a new vertical box layout.
 	 * <p>
+	 * 
 	 * Use <code>parent=0</code> to created a layout manager that can be nested
 	 * inside other layout managers.
 	 */

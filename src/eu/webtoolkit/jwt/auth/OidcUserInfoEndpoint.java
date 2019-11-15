@@ -125,6 +125,7 @@ public class OidcUserInfoEndpoint extends WResource {
 	/**
 	 * Maps the given scope token to the given set of claims.
 	 * <p>
+	 * 
 	 * The value of these claims will be retrieved from the
 	 * {@link AbstractUserDatabase} using the
 	 * {@link AbstractUserDatabase#idpJsonClaim(User user, String claim)
@@ -153,6 +154,7 @@ public class OidcUserInfoEndpoint extends WResource {
 	/**
 	 * Generates the JSON containing the claims for the given scope.
 	 * <p>
+	 * 
 	 * Can be overridden, but by default it uses the configured mapping set by
 	 * setScopeToken, and
 	 * {@link AbstractUserDatabase#idpJsonClaim(User user, String claim)

@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * application.
  * <p>
  * This is useful for automated test-cases:
- * <p>
  * 
  * <pre>
  * {@code
@@ -37,8 +36,10 @@ import org.slf4j.LoggerFactory;
  *    MyApplication app(environment);
  *    ...
  *  }
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * 
  * @see WEnvironment
@@ -51,6 +52,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Constructs a test environment that resembles FireFox 3.0 with default
 	 * settings.
 	 * <p>
@@ -82,6 +84,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Closes the test environment.
 	 * <p>
+	 * 
 	 * Destroys the test environment. This will allow the environment and the
 	 * application under test to be garbage collected.
 	 */
@@ -92,6 +95,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets parameters to the application.
 	 * <p>
+	 * 
 	 * The default value is an empty map.
 	 * <p>
 	 * 
@@ -104,6 +108,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets HTTP cookies.
 	 * <p>
+	 * 
 	 * The default value is an empty map.
 	 * <p>
 	 * 
@@ -116,6 +121,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets a HTTP header value.
 	 * <p>
+	 * 
 	 * The default value is no headers.
 	 * <p>
 	 * 
@@ -127,6 +133,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets whether cookies are supported.
 	 * <p>
+	 * 
 	 * The default value is <i>true</i>.
 	 * <p>
 	 * 
@@ -139,6 +146,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets whether AJAX is supported.
 	 * <p>
+	 * 
 	 * The default value is <i>true</i>.
 	 * <p>
 	 * 
@@ -151,6 +159,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the display&apos;s DPI scale.
 	 * <p>
+	 * 
 	 * The default value is 1.
 	 * <p>
 	 * 
@@ -163,6 +172,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the locale.
 	 * <p>
+	 * 
 	 * The default value is the English locale (&quot;en&quot;).
 	 * <p>
 	 * 
@@ -175,6 +185,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the host name.
 	 * <p>
+	 * 
 	 * The default value is &quot;localhost&quot;.
 	 * <p>
 	 * 
@@ -187,6 +198,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the URL scheme.
 	 * <p>
+	 * 
 	 * The default value is &quot;http&quot;.
 	 * <p>
 	 * 
@@ -199,6 +211,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the user agent.
 	 * <p>
+	 * 
 	 * The default value is no &quot;Mozilla/5.0 (X11; U; Linux x86_64; en-US;
 	 * rv:1.9.0.11) Gecko/2009060309 Ubuntu/9.04 (jaunty) Firefox/3.0.11&quot;.
 	 * <p>
@@ -212,6 +225,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the referer.
 	 * <p>
+	 * 
 	 * The default value is &quot;&quot;.
 	 * <p>
 	 * 
@@ -226,8 +240,8 @@ public class WTestEnvironment extends WEnvironment {
 	 * <p>
 	 * 
 	 * The default value is
-	 * "text/html,application/xhtml+xml,application/xml;q=0.9,*<span>/</span>*;q=0.8"
-	 * .
+	 * &quot;text/html,application/xhtml+xml,application/xml
+	 * ;q=0.9,*&lt;span&gt;/&lt;/span&gt;*;q=0.8&quot;.
 	 * <p>
 	 * 
 	 * @see WEnvironment#getAccept()
@@ -239,6 +253,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the server signature.
 	 * <p>
+	 * 
 	 * The default value is &quot;None (WTestEnvironment)&quot;.
 	 * <p>
 	 * 
@@ -251,6 +266,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the server software.
 	 * <p>
+	 * 
 	 * The default value is &quot;None (WTestEnvironment)&quot;.
 	 * <p>
 	 * 
@@ -263,6 +279,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the server admin.
 	 * <p>
+	 * 
 	 * The default value is &quot;your@onyourown.here&quot;.
 	 * <p>
 	 * 
@@ -275,6 +292,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the client address.
 	 * <p>
+	 * 
 	 * The default value is &quot;127.0.0.1&quot;.
 	 * <p>
 	 * 
@@ -287,6 +305,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the initial internal path.
 	 * <p>
+	 * 
 	 * The default value is &quot;&quot;.
 	 * <p>
 	 * 
@@ -299,6 +318,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Sets the content type (<b>deprecated</b>.
 	 * <p>
+	 * 
 	 * Since contentType is now always HTML5, this setting is ignored.
 	 */
 	public void setContentType(WEnvironment.ContentType contentType) {
@@ -307,6 +327,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Signal used to test a dialog/messagebox reentrant event loop.
 	 * <p>
+	 * 
 	 * This signal is emitted when a dialog or message box is being executed
 	 * using {@link WDialog#exec(WAnimation animation) WDialog#exec()} or
 	 * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, and allows you
@@ -323,6 +344,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Signal used to test a popup menu reentrant event loop.
 	 * <p>
+	 * 
 	 * This signal is emitted when a popup menu is being executed using
 	 * WPopupMenu::exec(), and allows you to interact with the popup menu (i.e.
 	 * to select an option).
@@ -337,6 +359,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Simulates the end of a request by the main event loop.
 	 * <p>
+	 * 
 	 * The environemnt (and application is) started from within the main event
 	 * loop. To simulate the delivery of events posted to the
 	 * application-under-test, by WServer::post(), you need to simulate the
@@ -363,6 +386,7 @@ public class WTestEnvironment extends WEnvironment {
 	/**
 	 * Simulates the presence of the session ID in the URL.
 	 * <p>
+	 * 
 	 * A session ID in the URL should cause a trampoline to be used for
 	 * references to external servers.
 	 * <p>

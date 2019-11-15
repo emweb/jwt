@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
  * {@link WDialog#finished() finished()} signal, which you then can listen for
  * to process the dialog result and delete the dialog. Unlike other widgets, a
  * dialog does not need to be added to a parent widget, but is hidden by
- * default. You must use the method {@link WWidget#show() WWidget#show()} or
- * {@link WDialog#setHidden(boolean hidden, WAnimation animation)
- * setHidden(false)} to show the dialog.
+ * default. You must use the method {@link WWidget#show()} or
+ * {@link WDialog#setHidden(boolean hidden, WAnimation animation) setHidden()}
+ * to show the dialog.
  * <p>
  * The synchronous use of a dialog involves a call to
  * {@link WDialog#exec(WAnimation animation) exec()} which will block (suspend
@@ -61,37 +61,41 @@ import org.slf4j.LoggerFactory;
  * threads in your threadpool (like on some intranets or extranets). Using
  * {@link WDialog#exec(WAnimation animation) exec()} is not supported from
  * outside the regular event loop (i.e. when taking a lock on a session using
- * {@link WApplication#getUpdateLock() WApplication#getUpdateLock()} or by
- * posting an event using WServer::post()). This functionality is only available
- * on Servlet 3.0 compatible servlet containers.
- * <p>
- * Use {@link WDialog#setModal(boolean modal) setModal(false)} to create a
- * non-modal dialog. A non-modal dialog does not block the underlying user
- * interface: the user must not first deal with the dialog before interacting
- * with the rest of the user interface.
+ * {@link WApplication#getUpdateLock()} or by posting an event using
+ * WServer::post()). This functionality is only available on Servlet 3.0
+ * compatible servlet containers. Use {@link WDialog#setModal(boolean modal)
+ * setModal()} to create a non-modal dialog. A non-modal dialog does not block
+ * the underlying user interface: the user must not first deal with the dialog
+ * before interacting with the rest of the user interface.
  * <p>
  * Contents for the dialog is defined by adding it to the
  * {@link WDialog#getContents() getContents()} widget.
  * <p>
  * This dialog looks like this (using the default css themes):
  * <p>
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * 
+ * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
- * <td><div align="center"> <img src="doc-files//WDialog-default-1.png"
- * alt="A simple custom dialog (default)">
+ * <td><div align="center"> <img src="doc-files/WDialog-default-1.png">
  * <p>
  * <strong>A simple custom dialog (default)</strong>
  * </p>
- * </div></td>
- * <td><div align="center"> <img src="doc-files//WDialog-polished-1.png"
- * alt="A simple custom dialog (polished)">
+ * </div>
+ * 
+ * </td>
+ * <td><div align="center"> <img src="doc-files/WDialog-polished-1.png">
  * <p>
  * <strong>A simple custom dialog (polished)</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>For the dialog (or rather, the silkscreen covering the user
  * interface below) to render properly in IE, the &quot;html body&quot; margin
@@ -106,11 +110,11 @@ public class WDialog extends WPopupWidget {
 	 */
 	public enum DialogCode {
 		/**
-		 * Dialog closed with {@link WDialog#reject() reject()}.
+		 * Dialog closed with {@link WDialog#reject() reject()}
 		 */
 		Rejected,
 		/**
-		 * Dialog closed with {@link WDialog#accept() accept()}.
+		 * Dialog closed with {@link WDialog#accept() accept()}
 		 */
 		Accepted;
 
@@ -125,6 +129,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Constructs a new dialog.
 	 * <p>
+	 * 
 	 * Unlike other widgets, the dialog does not require a parent container
 	 * since it is a top-level widget. You may however still provide a parent
 	 * object to let the dialog be deleted together with its parent.
@@ -158,6 +163,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Constructs a dialog with a given window title.
 	 * <p>
+	 * 
 	 * Unlike other widgets, the dialog does not require a parent container
 	 * since it is a top-level widget. You may however still provide a parent
 	 * object to let the dialog be deleted together with its parent.
@@ -201,6 +207,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Sets the dialog window title.
 	 * <p>
+	 * 
 	 * The window title is displayed in the title bar.
 	 * <p>
 	 * 
@@ -229,6 +236,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Enables or disables the title bar.
 	 * <p>
+	 * 
 	 * The titlebar is enabled by default.
 	 */
 	public void setTitleBarEnabled(boolean enable) {
@@ -248,6 +256,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Returns the dialog title bar container.
 	 * <p>
+	 * 
 	 * The title bar contains a single text that contains the caption. You may
 	 * customize the title bar by for example adding other content.
 	 */
@@ -258,6 +267,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Returns the dialog contents container.
 	 * <p>
+	 * 
 	 * Content to the dialog window may be added to this container widget.
 	 */
 	public WContainerWidget getContents() {
@@ -267,6 +277,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Returns the dialog footer container.
 	 * <p>
+	 * 
 	 * This is an optional section which is typically used for buttons.
 	 */
 	public WContainerWidget getFooter() {
@@ -286,6 +297,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Executes the dialog in a recursive event loop.
 	 * <p>
+	 * 
 	 * Executes the dialog synchronously. This blocks the current thread of
 	 * execution until one of {@link WDialog#done(WDialog.DialogCode result)
 	 * done()}, {@link WDialog#accept() accept()} or {@link WDialog#reject()
@@ -341,6 +353,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Stops the dialog.
 	 * <p>
+	 * 
 	 * Sets the dialog result, and emits the {@link WDialog#finished()
 	 * finished()} signal.
 	 * <p>
@@ -386,6 +399,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Lets pressing the escape key reject the dialog.
 	 * <p>
+	 * 
 	 * Before JWt 3.1.5, pressing escape automatically rejected the dialog.
 	 * Since 3.1.4 this behaviour is no longer the default since it may
 	 * interfere with other functionality in the dialog. Use this method to
@@ -433,6 +447,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Sets whether the dialog is modal.
 	 * <p>
+	 * 
 	 * A modal dialog will block the underlying user interface. A modal dialog
 	 * can be shown synchronously or asynchronously. A non-modal dialog can only
 	 * be shown asynchronously.
@@ -456,6 +471,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Adds a resize handle to the dialog.
 	 * <p>
+	 * 
 	 * The resize handle is shown in the bottom right corner of the dialog, and
 	 * allows the user to resize the dialog (but not smaller than the content
 	 * allows).
@@ -483,7 +499,7 @@ public class WDialog extends WPopupWidget {
 				Resizable.loadJavaScript(WApplication.getInstance());
 				this.setJavaScriptMember(
 						" Resizable",
-						"(new Wt3_4_1.Resizable(Wt3_4_1,"
+						"(new Wt3_4_2.Resizable(Wt3_4_2,"
 								+ this.getJsRef()
 								+ ")).onresize(function(w, h, done) {var obj = "
 								+ this.getJsRef()
@@ -505,6 +521,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Allows the dialog to be moved.
 	 * <p>
+	 * 
 	 * The dialog can be moved by grabbing the titlebar.
 	 * <p>
 	 * The default value is <code>true</code>.
@@ -527,6 +544,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Adds a close button to the titlebar.
 	 * <p>
+	 * 
 	 * The close button is shown in the title bar. Clicking the close button
 	 * will reject the dialog.
 	 */
@@ -564,6 +582,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Set focus on the first widget in the dialog.
 	 * <p>
+	 * 
 	 * Autofocus is enabled by default. If a widget inside of this dialog
 	 * already has focus, the focus will not be changed.
 	 */
@@ -688,6 +707,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Signal emitted when the dialog is being resized by the user.
 	 * <p>
+	 * 
 	 * The information passed are the new width and height.
 	 * <p>
 	 * 
@@ -700,6 +720,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Signal emitted when the dialog is being moved by the user.
 	 * <p>
+	 * 
 	 * The information passed are the new x and y position (relative to the
 	 * wietdow).
 	 */
@@ -710,6 +731,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Event signal emitted when a keyboard key is pushed down.
 	 * <p>
+	 * 
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
 	 */
@@ -720,6 +742,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Event signal emitted when a &quot;character&quot; was entered.
 	 * <p>
+	 * 
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
 	 */
@@ -730,6 +753,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Event signal emitted when a keyboard key is released.
 	 * <p>
+	 * 
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
 	 */
@@ -740,6 +764,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Event signal emitted when enter was pressed.
 	 * <p>
+	 * 
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
 	 */
@@ -750,6 +775,7 @@ public class WDialog extends WPopupWidget {
 	/**
 	 * Event signal emitted when escape was pressed.
 	 * <p>
+	 * 
 	 * The event will be triggered if nothing in the {@link WDialog} has focus
 	 * <p>
 	 */
@@ -795,7 +821,7 @@ public class WDialog extends WPopupWidget {
 					}
 				}
 			}
-			this.doJavaScript("new Wt3_4_1.WDialog("
+			this.doJavaScript("new Wt3_4_2.WDialog("
 					+ app.getJavaScriptClass()
 					+ ","
 					+ this.getJsRef()

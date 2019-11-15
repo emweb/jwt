@@ -69,6 +69,7 @@ public class WSplitButton extends WCompositeWidget {
 	/**
 	 * Returns the action button.
 	 * <p>
+	 * 
 	 * This is the button that represents the main action.
 	 */
 	public WPushButton getActionButton() {
@@ -79,6 +80,7 @@ public class WSplitButton extends WCompositeWidget {
 	/**
 	 * Returns the drop down button.
 	 * <p>
+	 * 
 	 * This represents the button that represents the drop-down action.
 	 */
 	public WPushButton getDropDownButton() {

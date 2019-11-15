@@ -54,6 +54,7 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Set vertical or horizontal orientation.
 	 * <p>
+	 * 
 	 * Use bootstrap btn-group-vertical style for vertical orientation.
 	 */
 	public void setOrientation(Orientation orientation) {
@@ -94,6 +95,7 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Adds a split button.
 	 * <p>
+	 * 
 	 * When adding a split button, the toolbar automatically becomes
 	 * non-compact, since otherwise the split button functionality cannot be
 	 * distinguished from other buttons.
@@ -123,6 +125,7 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Adds a widget.
 	 * <p>
+	 * 
 	 * The toolbar automatically becomes non-compact.
 	 */
 	public void addWidget(WWidget widget, AlignmentFlag alignmentFlag) {
@@ -167,6 +170,7 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Adds a separator.
 	 * <p>
+	 * 
 	 * The toolbar automatically becomes non-compact.
 	 * <p>
 	 * 
@@ -205,6 +209,7 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Returns a button.
 	 * <p>
+	 * 
 	 * The returned widget is a {@link WPushButton} or {@link WSplitButton}
 	 * added by
 	 * {@link WToolBar#addButton(WPushButton button, AlignmentFlag alignmentFlag)
@@ -240,6 +245,7 @@ public class WToolBar extends WCompositeWidget {
 	/**
 	 * Sets the toolbar to be rendered compact.
 	 * <p>
+	 * 
 	 * The default value is <code>true</code>, but <code>setCompact(true)</code>
 	 * is called automatically when calling addButton(WSplitButton *) or
 	 * {@link WToolBar#addSeparator() addSeparator()}.

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * The widget may react to click events, by changing state.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate. The image may be styled via the
@@ -40,6 +41,7 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Construct an icon pair from the two icons.
 	 * <p>
+	 * 
 	 * The constructor takes the URL of the two icons. When
 	 * <code>clickIsSwitch</code> is set <code>true</code>, clicking on the icon
 	 * will switch state.
@@ -99,6 +101,7 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Sets the state, which determines the visible icon.
 	 * <p>
+	 * 
 	 * The first icon has number 0, and the second icon has number 1.
 	 * <p>
 	 * The default state is 0.
@@ -163,11 +166,13 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Signal emitted when clicked while in state 0 (icon 1 is shown).
 	 * <p>
+	 * 
 	 * Equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    icon1().clicked()
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -178,11 +183,13 @@ public class WIconPair extends WCompositeWidget {
 	/**
 	 * Signal emitted when clicked while in state 1 (icon 2 is shown).
 	 * <p>
+	 * 
 	 * Equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    icon2().clicked()
+	 *    
 	 *   }
 	 * </pre>
 	 */

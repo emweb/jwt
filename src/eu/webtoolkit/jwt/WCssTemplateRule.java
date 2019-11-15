@@ -37,8 +37,10 @@ public class WCssTemplateRule extends WCssRule {
 	/**
 	 * Creates a CSS rule with a given selector.
 	 * <p>
+	 * 
 	 * The selector should be a valid CSS selector.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If you want to update the rule, then the selector should
 	 * be unique and not contain commas, since this is not supported by
@@ -69,6 +71,7 @@ public class WCssTemplateRule extends WCssRule {
 	/**
 	 * Returns the widget that is used as a template.
 	 * <p>
+	 * 
 	 * Various properties of the widget are reflected in the CSS style:
 	 * <ul>
 	 * <li>size and dimensions:
@@ -83,17 +86,18 @@ public class WCssTemplateRule extends WCssRule {
 	 * WWidget#setOffsets()}, {@link WWidget#setFloatSide(Side s)
 	 * WWidget#setFloatSide()}, {@link WWidget#setClearSides(EnumSet sides)
 	 * WWidget#setClearSides()}</li>
-	 * <li>visibility: {@link WWidget#hide() WWidget#hide()},
-	 * {@link WWidget#show() WWidget#show()} and
+	 * <li>visibility: {@link WWidget#hide()}, {@link WWidget#show()} and
 	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
 	 * WWidget#setHidden()}</li>
 	 * <li>margins: {@link WWidget#setMargin(WLength margin, EnumSet sides)
 	 * WWidget#setMargin()}</li>
 	 * <li>line height: {@link WWidget#setLineHeight(WLength height)
 	 * WWidget#setLineHeight()}</li>
-	 * <li>all decoration style properties: {@link WWidget#getDecorationStyle()
-	 * WWidget#getDecorationStyle()}</li>
+	 * <li>all decoration style properties: {@link WWidget#getDecorationStyle()}
+	 * </li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * When modifying one of these properties of the returned widget, the rule
 	 * will be updated accordingly.

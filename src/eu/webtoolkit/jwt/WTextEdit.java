@@ -36,15 +36,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * You can use this widget with TinyMCE version 3 or version 4.
  * <p>
- * The choice is global and set using
- * {@link Configuration#setTinyMCEVersion(int)}.
+ * The choice is global and set using Configuration#setTinyMCEVersion(int).
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  * <p>
- * <div align="center"> <img src="doc-files//WTextEdit-1.png"
- * alt="Default configuration of a WTextEdit">
+ * <div align="center"> <img src="doc-files/WTextEdit-1.png">
  * <p>
  * <strong>Default configuration of a WTextEdit</strong>
  * </p>
@@ -78,6 +77,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Creates a new text editor and initialize with given text.
 	 * <p>
+	 * 
 	 * The <code>text</code> should be valid XHTML.
 	 */
 	public WTextEdit(final String text, WContainerWidget parent) {
@@ -110,6 +110,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Returns the TinyMCE version.
 	 * <p>
+	 * 
 	 * This returns the configured version of TinyMCE (currently 3 or 4).
 	 */
 	public int getVersion() {
@@ -119,6 +120,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Sets the content.
 	 * <p>
+	 * 
 	 * The <code>text</code> should be valid XHTML.
 	 * <p>
 	 * The default value is &quot;&quot;.
@@ -131,6 +133,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Sets the stylesheet for displaying the content.
 	 * <p>
+	 * 
 	 * The content is rendered using the rules defined in this stylesheet. The
 	 * stylesheet is also used to derive additional styles that are available in
 	 * the text editor, for example in the &quot;styleselect&quot; button.
@@ -156,6 +159,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Loads additional TinyMCE plugins.
 	 * <p>
+	 * 
 	 * Wt loads by default only the plugin &apos;safari&apos; (which adds
 	 * support for the Safari web browser). Use this method to load additional
 	 * plugins. Multiple plugins may be specified as a comma separated list.
@@ -163,6 +167,7 @@ public class WTextEdit extends WTextArea {
 	 * The various plugins are described in the <a
 	 * href="http://www.tinymce.com/wiki.php/Plugins">TinyMCE documentation</a>.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Plugins can only be loaded before the initial display of
 	 * the widget. </i>
@@ -186,24 +191,26 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Configures a tool bar.
 	 * <p>
+	 * 
 	 * This configures the buttons for the <code>i&apos;th</code> tool bar (with
 	 * 0 &lt;= <code>i</code> &lt;= 3).
 	 * <p>
 	 * <h3>TinyMCE 3</h3>
+	 * 
 	 * <p>
 	 * The syntax and available buttons is documented in the <a href=
 	 * "http://www.tinymce.com/wiki.php/Configuration3x:theme_advanced_buttons_1_n"
 	 * >TinyMCE documentation</a>.
 	 * <p>
 	 * The default <i>config</i> for the first tool bar (<code>i</code> = 0) is:
-	 * &quot;fontselect, |, bold, italic, underline, |, fontsizeselect, |,
-	 * forecolor, backcolor, |, justifyleft, justifycenter, justifyright,
-	 * justifyfull, |, anchor, |, numlist, bullist&quot;.
+	 * "fontselect, |, bold, italic, underline, |, fontsizeselect, |, forecolor, backcolor, |, justifyleft, justifycenter, justifyright, justifyfull, |, anchor, |, numlist, bullist"
+	 * .
 	 * <p>
 	 * By default, the other three tool bars are disabled (<code>config</code> =
 	 * &quot;&quot;).
 	 * <p>
 	 * <h3>TinyMCE 4</h3>
+	 * 
 	 * <p>
 	 * The syntax and available buttons is documented in the <a
 	 * href="http://www.tinymce.com/wiki.php/Configuration:toolbar%3CN%3E"
@@ -215,6 +222,7 @@ public class WTextEdit extends WTextArea {
 	 * Some buttons are only available after loading extra plugins using
 	 * {@link WTextEdit#setExtraPlugins(String plugins) setExtraPlugins()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The tool bar configuration can only be set before the
 	 * initial display of the widget. </i>
@@ -251,6 +259,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Configure a TinyMCE setting.
 	 * <p>
+	 * 
 	 * A list of possible settings can be found at: <a
 	 * href="http://tinymce.moxiecode.com/wiki.php/Configuration"
 	 * >http://tinymce.moxiecode.com/wiki.php/Configuration</a>
@@ -269,6 +278,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Returns a TinyMCE configuration setting&apos;s value.
 	 * <p>
+	 * 
 	 * An empty boost::any is returned when no value could be found for the
 	 * provided argument.
 	 */
@@ -284,6 +294,7 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Sets the placeholder text.
 	 * <p>
+	 * 
 	 * This method is not supported on {@link WTextEdit} and will thrown an
 	 * exception instead.
 	 */
@@ -313,11 +324,11 @@ public class WTextEdit extends WTextArea {
 	/**
 	 * Signal emitted when rendered.
 	 * <p>
+	 * 
 	 * A text edit is instantiated asynchronously as it depends on additional
 	 * JavaScript libraries and initialization. This signal is emitted when the
 	 * component is initialized. The underlying TinyMCE editor component is
-	 * accessible as {@link WWidget#getJsRef() WWidget#getJsRef()} +
-	 * &quot;.ed&quot;.
+	 * accessible as {@link WWidget#getJsRef()} + &quot;.ed&quot;.
 	 */
 	public JSignal rendered() {
 		return this.onRender_;
@@ -327,7 +338,7 @@ public class WTextEdit extends WTextArea {
 		if (this.isRendered()) {
 			String result = this.getJsRef() + ".ed.remove();";
 			if (!recursive) {
-				result += "Wt3_4_1.remove('" + this.getId() + "');";
+				result += "Wt3_4_2.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {
@@ -423,7 +434,7 @@ public class WTextEdit extends WTextArea {
 		initTinyMCE();
 		this.version_ = getTinyMCEVersion();
 		this.setJavaScriptMember(" WTextEdit",
-				"new Wt3_4_1.WTextEdit(" + app.getJavaScriptClass() + ","
+				"new Wt3_4_2.WTextEdit(" + app.getJavaScriptClass() + ","
 						+ this.getJsRef() + ");");
 		this.setJavaScriptMember(WT_RESIZE_JS, "function(e, w, h) { var obj = "
 				+ this.getJsRef() + ".wtObj; obj.wtResize(e, w, h); };");

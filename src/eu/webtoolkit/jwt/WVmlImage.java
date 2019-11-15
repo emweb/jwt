@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * using the Vector Markup Language (VML) (to support graphics on Internet
  * Explorer browsers).
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>The current implementation has only limited support for
  * clipping: only rectangular areas aligned with the X/Y axes can be used as
@@ -39,6 +40,7 @@ public class WVmlImage implements WVectorImage {
 	/**
 	 * Create a VML paint device.
 	 * <p>
+	 * 
 	 * If <code>paintUpdate</code> is <code>true</code>, then only a VML
 	 * fragment will be rendered that can be used to update the DOM of an
 	 * existing VML image, instead of a full VML image.

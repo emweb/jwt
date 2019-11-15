@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
  * startup arguments.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -48,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * 		textEdit = new WTextEdit(); // provide an HTML text editor
  * 	else
  * 		textEdit = new WTextArea(); // fall-back to a plain old text area.
+ * 
  * }
  * </pre>
  */
@@ -249,12 +249,13 @@ public class WEnvironment {
 	 * Wt&apos;s JavaScript scope.
 	 */
 	public static String getJavaScriptWtScope() {
-		return "Wt3_4_1";
+		return "Wt3_4_2";
 	}
 
 	/**
 	 * Parameters passed to the application.
 	 * <p>
+	 * 
 	 * Arguments passed to the application, either in the URL for a http GET, or
 	 * in both the URL and data submitted in a http POST.
 	 * <p>
@@ -268,12 +269,13 @@ public class WEnvironment {
 	/**
 	 * Returns values for a query parameter.
 	 * <p>
+	 * 
 	 * Returns an empty list if the parameter was not defined.
 	 * <p>
 	 * One or more values may be associated with a single argument.
 	 * <p>
 	 * For example a JWt application <code>foo.wt</code> started as
-	 * <code><a href="http://.../foo.wt?hello=Hello&hello=World">http://.../foo.wt?hello=Hello&amp;hello=World</a></code>
+	 * <code><a href="http://.../foo.wt?hello=Hello&amp;hello=World">http://.../foo.wt?hello=Hello&amp;hello=World</a></code>
 	 * will result in both values <code>&quot;Hello&quot;</code> and
 	 * <code>&quot;World&quot;</code> to be associated with the argument
 	 * <code>&quot;hello&quot;</code>.
@@ -293,6 +295,7 @@ public class WEnvironment {
 	/**
 	 * Returns a single value for a query parameter.
 	 * <p>
+	 * 
 	 * Returns the first value for a parameter, or <code>null</code> if the
 	 * parameter is not found.
 	 * <p>
@@ -311,6 +314,7 @@ public class WEnvironment {
 	/**
 	 * Returns the cookies from the environment.
 	 * <p>
+	 * 
 	 * This returns all cookies that were present in initial request for the
 	 * application. Cookies set with
 	 * {@link WApplication#setCookie(String name, String value, int maxAge, String domain, String path, boolean secure)
@@ -332,6 +336,7 @@ public class WEnvironment {
 	/**
 	 * Returns a cookie value.
 	 * <p>
+	 * 
 	 * Throws a <code>RuntimeException(&quot;Missing cookie: ...&quot;)</code>
 	 * when the cookie is missing, or returns cookie value otherwise.
 	 * <p>
@@ -350,6 +355,7 @@ public class WEnvironment {
 	/**
 	 * Returns a cookie value.
 	 * <p>
+	 * 
 	 * Returns 0 if no value was set for the given cookie.
 	 * <p>
 	 * 
@@ -367,8 +373,10 @@ public class WEnvironment {
 	/**
 	 * Returns a header value.
 	 * <p>
+	 * 
 	 * Returns a header value, or an empty string if the header was present.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Currently, the header name is case sensitive, although
 	 * this should not be the case according to RFC2616 </i>
@@ -381,6 +389,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for cookies.
 	 * <p>
+	 * 
 	 * When the user disables cookies during the visit of the page, this value
 	 * is not updated.
 	 * <p>
@@ -395,6 +404,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for JavaScript.
 	 * <p>
+	 * 
 	 * This is the same as {@link WEnvironment#hasAjax() hasAjax()}: JWt only
 	 * considers using JavaScript when it has detected AJAX support.
 	 * <p>
@@ -408,14 +418,13 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has enabled support for AJAX.
 	 * <p>
+	 * 
 	 * Without support for JavaScript/AJAX, JWt will still be able to serve the
 	 * application, but with one considerable limitation: only the
-	 * {@link WTimer#timeout() WTimer#timeout()},
-	 * {@link WInteractWidget#clicked() WInteractWidget#clicked()},
-	 * {@link WApplication#internalPathChanged()
-	 * WApplication#internalPathChanged()}, and {@link WAbstractArea#clicked()
-	 * WAbstractArea#clicked()} signals (and any derived signals) will generate
-	 * events.
+	 * {@link WTimer#timeout()}, {@link WInteractWidget#clicked()},
+	 * {@link WApplication#internalPathChanged()}, and
+	 * {@link WAbstractArea#clicked()} signals (and any derived signals) will
+	 * generate events.
 	 * <p>
 	 * Every event will cause the complete page to be rerendered.
 	 * <p>
@@ -429,6 +438,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the browser has support for WebGL.
 	 * <p>
+	 * 
 	 * Support for WebGL is required for client-side rendering of
 	 * {@link WGLWidget}.
 	 */
@@ -439,6 +449,7 @@ public class WEnvironment {
 	/**
 	 * Returns the horizontal resolution of the client&apos;s screen.
 	 * <p>
+	 * 
 	 * Returns -1 if screen width is not known.
 	 * <p>
 	 * 
@@ -451,6 +462,7 @@ public class WEnvironment {
 	/**
 	 * Returns the vertical resolution of the client&apos;s screen.
 	 * <p>
+	 * 
 	 * Returns -1 if screen height is not known.
 	 * <p>
 	 * 
@@ -463,6 +475,7 @@ public class WEnvironment {
 	/**
 	 * Returns the browser-side DPI scaling factor.
 	 * <p>
+	 * 
 	 * Internet Explorer scales all graphics, fonts and other elements on
 	 * high-density screens to make them readable. This is controlled by the DPI
 	 * setting of the display. If all goes well, you do not have to worry about
@@ -480,6 +493,7 @@ public class WEnvironment {
 	/**
 	 * Returns the preferred language indicated in the request header.
 	 * <p>
+	 * 
 	 * The language is parsed from the HTTP <code>Accept-Language</code> field,
 	 * if present. If not, the locale is empty.
 	 * <p>
@@ -497,6 +511,7 @@ public class WEnvironment {
 	/**
 	 * Returns the time zone offset as reported by the client.
 	 * <p>
+	 * 
 	 * This returns the time offset that the client has relative to UTC. A
 	 * positive value thus means that the local time is ahead of UTC.
 	 * <p>
@@ -510,6 +525,8 @@ public class WEnvironment {
 	/**
 	 * Returns the time zone name as reported by the client.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This requires JavaScript support and is only supported by
 	 * browsers that implement the JavaScript Internationalization API. No
@@ -524,6 +541,7 @@ public class WEnvironment {
 	/**
 	 * Returns the server host name that is used by the client.
 	 * <p>
+	 * 
 	 * The hostname is the unresolved host name with optional port number, which
 	 * the browser used to connect to the application.
 	 * <p>
@@ -532,6 +550,8 @@ public class WEnvironment {
 	 * <li><code>www.mydomain.com</code></li>
 	 * <li><code>localhost:8080</code></li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * For HTTP 1.1 requests, this information is fetched from the HTTP
 	 * <code>Host</code> header. If JWt is configured behind a reverse proxy,
@@ -557,6 +577,7 @@ public class WEnvironment {
 	/**
 	 * Returns the user agent.
 	 * <p>
+	 * 
 	 * The user agent, as reported in the HTTP <code>User-Agent</code> field.
 	 * <p>
 	 * 
@@ -569,6 +590,7 @@ public class WEnvironment {
 	/**
 	 * Returns the referer.
 	 * <p>
+	 * 
 	 * The referer, as reported in the HTTP <code>Referer</code> field.
 	 */
 	public String getReferer() {
@@ -578,6 +600,7 @@ public class WEnvironment {
 	/**
 	 * Returns the accept header.
 	 * <p>
+	 * 
 	 * The accept header, as reported in the HTTP <code>Accept</code> field.
 	 */
 	public String getAccept() {
@@ -587,6 +610,7 @@ public class WEnvironment {
 	/**
 	 * Returns if the user agent is a (known) indexing spider bot.
 	 * <p>
+	 * 
 	 * Note: currently the list of know bots is quite small. This method is used
 	 * internally to render the web application for optimal indexing by bots:
 	 * <ul>
@@ -607,6 +631,7 @@ public class WEnvironment {
 	/**
 	 * Returns the web server signature.
 	 * <p>
+	 * 
 	 * The value of the CGI variable <code>SERVER_SIGNATURE</code>.
 	 * <p>
 	 * Example:
@@ -619,6 +644,7 @@ public class WEnvironment {
 	/**
 	 * Returns the web server software.
 	 * <p>
+	 * 
 	 * The value of the CGI variable <code>SERVER_SOFTWARE</code>.
 	 * <p>
 	 * Example: <code>&quot;Apache&quot;</code>
@@ -630,6 +656,7 @@ public class WEnvironment {
 	/**
 	 * Returns the email address of the server admin.
 	 * <p>
+	 * 
 	 * The value of the CGI variable <code>SERVER_ADMIN</code>.
 	 * <p>
 	 * Example: <code>&quot;root@localhost&quot;</code>
@@ -641,6 +668,7 @@ public class WEnvironment {
 	/**
 	 * Returns the IP address of the client.
 	 * <p>
+	 * 
 	 * The (most likely) IP address of the client that is connected to this
 	 * session.
 	 * <p>
@@ -656,6 +684,7 @@ public class WEnvironment {
 	/**
 	 * Returns the initial internal path.
 	 * <p>
+	 * 
 	 * This is the internal path with which the application was started.
 	 * <p>
 	 * For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>,
@@ -666,11 +695,13 @@ public class WEnvironment {
 	 *   {@code
 	 *    http://www.mydomain.com/stuff/app.wt/this/there
 	 *    http://www.mydomain.com/stuff/app.wt/this/there
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
-	 * @see WApplication#getBookmarkUrl()
+	 * @see WApplication#setInternalPath(String path, boolean emitChange)
 	 * @see WEnvironment#getDeploymentPath()
 	 */
 	public String getInternalPath() {
@@ -680,6 +711,7 @@ public class WEnvironment {
 	/**
 	 * Returns the deployment path.
 	 * <p>
+	 * 
 	 * This is the path at which the application is deployed.
 	 * <p>
 	 * 
@@ -696,10 +728,11 @@ public class WEnvironment {
 	/**
 	 * Returns the version of the JWt library.
 	 * <p>
+	 * 
 	 * Example: <code>&quot;1.99.2&quot;</code>
 	 */
 	public static String getLibraryVersion() {
-		return "3.4.1";
+		return "3.4.2";
 	}
 
 	// public void libraryVersion(final bad java simple ref int series, final
@@ -707,13 +740,13 @@ public class WEnvironment {
 	/**
 	 * Returns the JWt session id (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * Retrieves the session id for this session. This is an auto-generated
 	 * random alpha-numerical id, whose length is determined by settings in the
 	 * configuration file.
 	 * <p>
 	 * 
-	 * @deprecated Use {@link WApplication#getSessionId()
-	 *             WApplication#getSessionId()} instead
+	 * @deprecated Use {@link WApplication#getSessionId()} instead
 	 */
 	public String getSessionId() {
 		return this.session_.getSessionId();
@@ -722,6 +755,7 @@ public class WEnvironment {
 	/**
 	 * Returns a raw CGI environment variable.
 	 * <p>
+	 * 
 	 * Retrieves the value for the given CGI environment variable (like
 	 * <code>&quot;SSL_CLIENT_S_DN_CN&quot;</code>), if it is defined, otherwise
 	 * an empty string.
@@ -742,6 +776,7 @@ public class WEnvironment {
 	/**
 	 * The type of the content provided to the browser.
 	 * <p>
+	 * 
 	 * This is here for backwards compatibility, but the implementation now
 	 * alwasy returns HTML5.
 	 */
@@ -752,6 +787,7 @@ public class WEnvironment {
 	/**
 	 * Returns the user agent type.
 	 * <p>
+	 * 
 	 * This returns an interpretation of the {@link WEnvironment#getUserAgent()
 	 * getUserAgent()}. It should be used only for user-agent specific
 	 * work-arounds (as a last resort).
@@ -784,6 +820,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the user agent is an older version of IE.
 	 * <p>
+	 * 
 	 * Returns whether the agent is an IE version older than the given version.
 	 * <p>
 	 * 
@@ -801,6 +838,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the user agent is Internet Explorer Mobile.
 	 * <p>
+	 * 
 	 * Returns also <code>true</code> when the agent is Internet Explorer 5 or
 	 * older.
 	 * <p>
@@ -827,6 +865,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the user agent is WebKit-based.
 	 * <p>
+	 * 
 	 * Webkit-based browsers include Safari, Chrome, Arora and Konquerer
 	 * browsers.
 	 * <p>
@@ -843,6 +882,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the user agent is Mobile WebKit-based.
 	 * <p>
+	 * 
 	 * Mobile Webkit-based browsers include the Android Mobile WebKit and the
 	 * iPhone Mobile WebKit browsers.
 	 * <p>
@@ -885,6 +925,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether the user agent is Gecko-based.
 	 * <p>
+	 * 
 	 * Gecko-based browsers include Firefox.
 	 * <p>
 	 * 
@@ -900,6 +941,7 @@ public class WEnvironment {
 	/**
 	 * Returns the servlet.
 	 * <p>
+	 * 
 	 * This returns the servlet environment of this session.
 	 */
 	public WtServlet getServer() {
@@ -909,6 +951,7 @@ public class WEnvironment {
 	/**
 	 * Returns whether internal paths are implemented using URI fragments.
 	 * <p>
+	 * 
 	 * This may be the case for older non-HTML5 browsers which do not support
 	 * HTML5 History APIs.
 	 */

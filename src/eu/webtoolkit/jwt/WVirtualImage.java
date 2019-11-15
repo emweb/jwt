@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * dimension which is Infinite.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  */
@@ -61,6 +62,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Creates a viewport for a virtual image.
 	 * <p>
+	 * 
 	 * You must specify the size of the viewport, and the size of the virtual
 	 * image. The latter dimensions may be the special value Infinite,
 	 * indicating that in one or more dimensions, the image size is infinite (in
@@ -142,6 +144,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Regenerates and redraws the image pieces.
 	 * <p>
+	 * 
 	 * This method invalidates all current grid images, and recreates them.
 	 */
 	public void redrawAll() {
@@ -159,6 +162,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Enables mouse dragging to scroll around the image.
 	 * <p>
+	 * 
 	 * The cursor is changed to a &apos;move&apos; symbol to indicate the
 	 * interactivity.
 	 */
@@ -166,11 +170,11 @@ public class WVirtualImage extends WCompositeWidget {
 		this.impl_
 				.mouseWentDown()
 				.addListener(
-						"function(obj, event) {  var pc = Wt3_4_1.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+						"function(obj, event) {  var pc = Wt3_4_2.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
 		this.impl_
 				.mouseMoved()
 				.addListener(
-						"function(obj, event) {var WT= Wt3_4_1;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
+						"function(obj, event) {var WT= Wt3_4_2;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
 								+ this.contents_.getJsRef()
 								+ ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
 		this.impl_.mouseWentUp().addListener(
@@ -198,6 +202,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Scrolls the viewport of the image to a specific coordinate.
 	 * <p>
+	 * 
 	 * Scroll the viewport so that its top left coordinate becomes (x, y).
 	 * <p>
 	 * 
@@ -232,6 +237,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Resizes the virtual image.
 	 * <p>
+	 * 
 	 * This sets a new virtual size for the image. The viewport size sets the
 	 * visible portion of the image.
 	 * <p>
@@ -268,6 +274,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Returns the size of a single piece.
 	 * <p>
+	 * 
 	 * This is the size of a side of the square pieces that is used to render
 	 * the visible part of the image.
 	 */
@@ -318,6 +325,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Signal emitted whenever the viewport changes.
 	 * <p>
+	 * 
 	 * The viewport can be changed by the user dragging the image or through the
 	 * API methods {@link WVirtualImage#scrollTo(long newX, long newY)
 	 * scrollTo()} and {@link WVirtualImage#scroll(long dx, long dy) scroll()}.
@@ -329,6 +337,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Creates a grid image for the given rectangle.
 	 * <p>
+	 * 
 	 * Create the image which spans image coordinates with left upper corner (x,
 	 * y) and given width and height.
 	 * <p>
@@ -354,6 +363,7 @@ public class WVirtualImage extends WCompositeWidget {
 	/**
 	 * Render a grid image for the given rectangle.
 	 * <p>
+	 * 
 	 * Returns a resource that streams an image which renders the rectangle
 	 * which spans image coordinates with left upper corner (x, y) and given
 	 * width and height.

@@ -43,7 +43,7 @@ public class WBorder {
 		Thick,
 		/**
 		 * Explicit width. See also {@link WBorder#getExplicitWidth()
-		 * getExplicitWidth()}.
+		 * getExplicitWidth()}
 		 */
 		Explicit;
 
@@ -181,6 +181,7 @@ public class WBorder {
 	/**
 	 * Sets the border width.
 	 * <p>
+	 * 
 	 * If width == Explicit, then the width specified in
 	 * <code>explicitWidth</code> is used.
 	 */
@@ -309,6 +310,7 @@ public class WBorder {
 	/**
 	 * Clone method.
 	 * <p>
+	 * 
 	 * Clones this border.
 	 */
 	public WBorder clone() {

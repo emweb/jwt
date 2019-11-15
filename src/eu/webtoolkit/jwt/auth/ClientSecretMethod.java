@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration of the OAuth client authorization method.
  * <p>
+ * 
  * Specifies how the OAuth client authorizes itself with the auth provider. I.e.
  * how it passes the client ID and secret to the provider.
  * <p>
@@ -39,6 +40,7 @@ public enum ClientSecretMethod {
 	 * Pass the client ID and secret to the auth provider as URL parameters of a
 	 * GET request.
 	 * <p>
+	 * 
 	 * This is not part of the standard but this is what Facebook does.
 	 */
 	PlainUrlParameter,

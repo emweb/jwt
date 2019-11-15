@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An abstract proxy model for Wt&apos;s item models.
+ * An abstract proxy model for JWt&apos;s item models.
  * <p>
  * 
  * A proxy model does not store data, but presents data from a source model in
@@ -60,6 +60,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Maps a source model index to the proxy model.
 	 * <p>
+	 * 
 	 * This method returns a model index in the proxy model that corresponds to
 	 * the model index <code>sourceIndex</code> in the source model. This method
 	 * must only be implemented for source model indexes that are mapped and
@@ -75,6 +76,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Maps a proxy model index to the source model.
 	 * <p>
+	 * 
 	 * This method returns a model index in the source model that corresponds to
 	 * the proxy model index <code>proxyIndex</code>.
 	 * <p>
@@ -86,6 +88,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Sets the source model.
 	 * <p>
+	 * 
 	 * The source model provides the actual data for the proxy model.
 	 * <p>
 	 * Ownership of the source model is <i>not</i> transferred.
@@ -115,6 +118,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Returns the data at a specific model index.
 	 * <p>
+	 * 
 	 * The default proxy implementation translates the index to the source
 	 * model, and calls {@link WAbstractProxyModel#getSourceModel()
 	 * getSourceModel()}.
@@ -128,6 +132,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Returns the row or column header data.
 	 * <p>
+	 * 
 	 * The default proxy implementation constructs a dummy {@link WModelIndex}
 	 * with the row set to 0 and column set to <code>section</code> if the
 	 * orientation is {@link Orientation#Horizontal}, or with the row set to
@@ -155,6 +160,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Sets the data at the given model index.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .setData(mapToSource(index), value, role)
@@ -166,6 +172,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Sets the data at the given model index.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .setData(mapToSource(index), values)
@@ -178,6 +185,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Returns the flags for an item.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .flags(mapToSource(index))
@@ -189,6 +197,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Returns the flags for a header.
 	 * <p>
+	 * 
 	 * The default proxy implementation constructs a dummy {@link WModelIndex}
 	 * with the row set to 0 and column set to <code>section</code> if the
 	 * orientation is {@link Orientation#Horizontal}, or with the row set to
@@ -217,6 +226,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Inserts one or more columns.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .insertColumns(column, count, parent)
@@ -228,6 +238,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Removes columns.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .removeColumns(column, count, parent)
@@ -239,6 +250,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Returns a mime-type for dragging a set of indexes.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
 	 * {@link WAbstractProxyModel#getMimeType() getMimeType()}
@@ -250,6 +262,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Returns a list of mime-types that could be accepted for a drop event.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}.
 	 * {@link WAbstractProxyModel#getAcceptDropMimeTypes()
@@ -262,6 +275,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Handles a drop event.
 	 * <p>
+	 * 
 	 * The default proxy implementation maps the given row and parent to the row
 	 * and parent in the source model, and forwards the dropEvent call to the
 	 * source model.
@@ -283,6 +297,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	 * Converts a model index to a raw pointer that remains valid while the
 	 * model&apos;s layout is changed.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .toRawIndex(mapToSource(index))
@@ -294,6 +309,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Converts a raw pointer to a model index.
 	 * <p>
+	 * 
 	 * The default proxy implementation calls mapFromSource(
 	 * {@link WAbstractProxyModel#getSourceModel() getSourceModel()}
 	 * .fromRawIndex(rawIndex))
@@ -305,6 +321,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Create a source model index.
 	 * <p>
+	 * 
 	 * This is a utility function that allows you to create indexes in the
 	 * source model. In this way, you can reuse the internal pointers of the
 	 * source model in proxy model indexes, and convert a proxy model index back
@@ -340,6 +357,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 		/**
 		 * The source model index.
 		 * <p>
+		 * 
 		 * The source model index for this item.
 		 */
 		public WModelIndex sourceIndex_;
@@ -355,6 +373,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 	/**
 	 * Utility methods to shift items in an item map.
 	 * <p>
+	 * 
 	 * You can use this method to adjust an item map after the source model has
 	 * inserted or removed rows. When removing rows (count &lt; 0), items may
 	 * possibly be removed and deleted.

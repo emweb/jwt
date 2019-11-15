@@ -40,6 +40,7 @@ public abstract class HashFunction {
 	/**
 	 * Returns the name for this hash function.
 	 * <p>
+	 * 
 	 * This should return a (short) name that uniquely identifies this hash
 	 * function.
 	 */
@@ -48,6 +49,7 @@ public abstract class HashFunction {
 	/**
 	 * Computes the hash of a message + salt.
 	 * <p>
+	 * 
 	 * The message is usually an ASCII or UTF-8 string.
 	 * <p>
 	 * The <code>salt</code> and the computed hash are encoded in printable
@@ -58,6 +60,7 @@ public abstract class HashFunction {
 	/**
 	 * Verifies a message with the salted hash.
 	 * <p>
+	 * 
 	 * The base implementation will recompute the hash of the message with the
 	 * given salt, and compare it to the <code>hash</code>.
 	 * <p>

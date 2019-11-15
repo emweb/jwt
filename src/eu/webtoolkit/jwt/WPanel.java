@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
  * The panel provides a container with an optional title bar, and an optional
  * collapse icon.
  * <p>
- * <div align="center"> <img src="doc-files//WPanel-default-1.png"
- * alt="Two panels: one collapsed and one expanded (default theme)">
+ * <div align="center"> <img src="doc-files/WPanel-default-1.png">
  * <p>
  * <strong>Two panels: one collapsed and one expanded (default theme)</strong>
  * </p>
- * </div> <div align="center"> <img src="doc-files//WPanel-polished-1.png"
- * alt="Two panels: one collapsed and one expanded (polished theme)">
+ * </div>
+ * 
+ * <div align="center"> <img src="doc-files/WPanel-polished-1.png">
  * <p>
  * <strong>Two panels: one collapsed and one expanded (polished theme)</strong>
  * </p>
@@ -65,7 +65,7 @@ public class WPanel extends WCompositeWidget {
 		this.impl_.bindWidget("contents", centralArea);
 		this.setJavaScriptMember(
 				WT_RESIZE_JS,
-				"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_4_1.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_4_1.boxSizing(self)) {h -= Wt3_4_1.px(self, 'borderTopWidth') + Wt3_4_1.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
+				"function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_4_2.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_4_2.boxSizing(self)) {h -= Wt3_4_2.px(self, 'borderTopWidth') + Wt3_4_2.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
 		this.setJavaScriptMember(WT_GETPS_JS,
 				StdWidgetItemImpl.getSecondGetPSJS());
 	}
@@ -83,6 +83,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Sets a title.
 	 * <p>
+	 * 
 	 * The panel title is set in the title bar. This method also makes the title
 	 * bar visible by calling setTitleBar(true).
 	 * <p>
@@ -122,6 +123,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Shows or hides the title bar for the panel.
 	 * <p>
+	 * 
 	 * The title bar appears at the top of the panel.
 	 * <p>
 	 * The default value is <code>false:</code> the title bar is not shown
@@ -160,6 +162,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Returns the title bar widget.
 	 * <p>
+	 * 
 	 * The title bar widget contains the collapse/expand icon (if the panel
 	 * {@link WPanel#isCollapsible() isCollapsible()}), and the title text (if a
 	 * title was set using {@link WPanel#setTitle(CharSequence title)
@@ -181,6 +184,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Makes the panel collapsible.
 	 * <p>
+	 * 
 	 * When <code>on</code> is <code>true</code>, a collapse/expand icon is
 	 * added to the title bar. This also calls setTitleBar(true) to enable the
 	 * title bar.
@@ -258,6 +262,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Sets the panel expanded or collapsed.
 	 * <p>
+	 * 
 	 * When <code>on</code> is <code>true</code>, equivalent to
 	 * {@link WPanel#collapse() collapse()}, otherwise to
 	 * {@link WPanel#expand() expand()}.
@@ -290,6 +295,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Collapses the panel.
 	 * <p>
+	 * 
 	 * When {@link WPanel#isCollapsible() isCollapsible()} is true, the panel is
 	 * collapsed to minimize screen real-estate.
 	 * <p>
@@ -307,6 +313,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Collapses the panel.
 	 * <p>
+	 * 
 	 * When {@link WPanel#isCollapsible() isCollapsible()} is true, the panel is
 	 * expanded to its original state.
 	 * <p>
@@ -324,6 +331,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Sets an animation.
 	 * <p>
+	 * 
 	 * The animation is used when collapsing or expanding the panel.
 	 */
 	public void setAnimation(final WAnimation transition) {
@@ -336,6 +344,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Sets the central widget.
 	 * <p>
+	 * 
 	 * Sets the widget that is the contents of the panel. When a widget was
 	 * previously set, the old widget is deleted first.
 	 * <p>
@@ -364,6 +373,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Signal emitted when the panel is collapsed.
 	 * <p>
+	 * 
 	 * Signal emitted when the panel is collapsed. The signal is only emitted
 	 * when the panel is collapsed by the user using the collapse icon in the
 	 * tible bar, not when calling {@link WPanel#setCollapsed(boolean on)
@@ -379,6 +389,7 @@ public class WPanel extends WCompositeWidget {
 	/**
 	 * Signal emitted when the panel is expanded.
 	 * <p>
+	 * 
 	 * Signal emitted when the panel is expanded. The signal is only emitted
 	 * when the panel is expanded by the user using the expand icon in the title
 	 * bar, not when calling {@link WPanel#setCollapsed(boolean on)

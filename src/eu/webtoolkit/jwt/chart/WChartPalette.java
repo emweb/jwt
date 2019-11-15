@@ -39,6 +39,7 @@ public interface WChartPalette {
 	/**
 	 * Returns a brush from the palette.
 	 * <p>
+	 * 
 	 * Returns the brush for the style with given <i>index</i>.
 	 */
 	public WBrush getBrush(int index);
@@ -46,6 +47,7 @@ public interface WChartPalette {
 	/**
 	 * Returns a border pen from the palette.
 	 * <p>
+	 * 
 	 * Returns the pen for stroking borders around an area filled using the
 	 * brush at the same <i>index</i>.
 	 * <p>
@@ -58,6 +60,7 @@ public interface WChartPalette {
 	/**
 	 * Returns a stroke pen from the palette.
 	 * <p>
+	 * 
 	 * Returns the pen for stroking lines for the style with given <i>index</i>.
 	 * <p>
 	 * 
@@ -68,6 +71,7 @@ public interface WChartPalette {
 	/**
 	 * Returns a font color from the palette.
 	 * <p>
+	 * 
 	 * Returns a font color suitable for rendering text in the area filled with
 	 * the brush at the same <i>index</i>.
 	 * <p>

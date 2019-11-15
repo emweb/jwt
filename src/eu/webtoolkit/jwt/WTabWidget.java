@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  * contents below it.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -48,27 +47,33 @@ import org.slf4j.LoggerFactory;
  * 	});
  * 	examples.setInternalPathEnabled();
  * 	examples.setInternalBasePath(&quot;/examples&quot;);
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The tab widget is styled by the current CSS theme.
  * <p>
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * 
+ * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
- * <td><div align="center"> <img src="doc-files//WTabWidget-default-1.png"
- * alt="An example WTabWidget (default)">
+ * <td><div align="center"> <img src="doc-files/WTabWidget-default-1.png">
  * <p>
  * <strong>An example WTabWidget (default)</strong>
  * </p>
- * </div></td>
- * <td><div align="center"> <img src="doc-files//WTabWidget-polished-1.png"
- * alt="An example WTabWidget (polished)">
+ * </div>
+ * 
+ * </td>
+ * <td><div align="center"> <img src="doc-files/WTabWidget-polished-1.png">
  * <p>
  * <strong>An example WTabWidget (polished)</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * </tr>
  * </table>
  */
@@ -120,6 +125,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Adds a new tab, with <i>child</i> as content, and the given label.
 	 * <p>
+	 * 
 	 * Returns the menu item that implements the tab item.
 	 */
 	public WMenuItem addTab(WWidget child, final CharSequence label,
@@ -141,6 +147,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Inserts a new tab, with <i>child</i> as content, and the given label.
 	 * <p>
+	 * 
 	 * Returns the menu item that implements the tab item.
 	 */
 	public WMenuItem insertTab(int index, WWidget child,
@@ -175,6 +182,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Removes a tab item.
 	 * <p>
+	 * 
 	 * The widget itself is not deleted.
 	 * <p>
 	 * 
@@ -216,6 +224,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Returns the index of the tab of the given content widget.
 	 * <p>
+	 * 
 	 * If the widget is not in this tab widget, then -1 is returned.
 	 */
 	public int getIndexOf(WWidget widget) {
@@ -237,7 +246,7 @@ public class WTabWidget extends WCompositeWidget {
 	}
 
 	/**
-	 * Activates the tab showing the given <i>widget</i>.
+	 * Activates the tab showing the given <i>widget</i>
 	 */
 	public void setCurrentWidget(WWidget widget) {
 		this.setCurrentIndex(this.getIndexOf(widget));
@@ -260,6 +269,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Enables or disables a tab.
 	 * <p>
+	 * 
 	 * Enables or disables the tab at <code>index</code>. A disabled tab cannot
 	 * be activated.
 	 */
@@ -269,7 +279,6 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Returns whether a tab is enabled.
-	 * <p>
 	 */
 	public boolean isTabEnabled(int index) {
 		return !this.menu_.isItemDisabled(index);
@@ -278,6 +287,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Hides or shows a tab.
 	 * <p>
+	 * 
 	 * Hides or shows the tab at <code>index</code>.
 	 */
 	public void setTabHidden(int index, boolean hidden) {
@@ -293,8 +303,9 @@ public class WTabWidget extends WCompositeWidget {
 
 	/**
 	 * Make it possible to close a tab interactively or by
-	 * {@link WTabWidget#closeTab(int index) closeTab}.
+	 * {@link WTabWidget#closeTab(int index) closeTab()}.
 	 * <p>
+	 * 
 	 * A tab that has been closed is marked as hidden, but not removed from the
 	 * menu.
 	 * <p>
@@ -337,6 +348,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Sets the tooltip for a tab.
 	 * <p>
+	 * 
 	 * The tooltip is shown when the user hovers over the label.
 	 */
 	public void setTabToolTip(int index, final CharSequence tip) {
@@ -358,6 +370,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Enables internal paths for items.
 	 * <p>
+	 * 
 	 * The menu participates in the internal path by changing the internal path
 	 * when an item has been selected, and listening for path changes to react
 	 * to path selections. As a consequence this allows the user to bookmark the
@@ -365,12 +378,10 @@ public class WTabWidget extends WCompositeWidget {
 	 * navigate through history of visited menu items, and allows indexing of
 	 * pages.
 	 * <p>
-	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
-	 * which defaults to the internal path (
-	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
-	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
-	 * needed.
+	 * For each menu item, {@link WMenuItem#getPathComponent()} is appended to
+	 * the <code>basePath</code>, which defaults to the internal path (
+	 * {@link WApplication#getInternalPath()}). A &apos;/&apos; is appended to
+	 * the base path, to turn it into a folder, if needed.
 	 * <p>
 	 * By default, menu interaction does not change the application internal
 	 * path.
@@ -396,7 +407,7 @@ public class WTabWidget extends WCompositeWidget {
 	 * Returns whether internal paths are enabled.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled(String basePath)
+	 * @see WTabWidget#setInternalPathEnabled(String basePath)
 	 */
 	public boolean isInternalPathEnabled() {
 		return this.menu_.isInternalPathEnabled();
@@ -405,11 +416,12 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Sets the internal base path.
 	 * <p>
+	 * 
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled(String basePath)
-	 * @see WMenu#getInternalBasePath()
+	 * @see WTabWidget#setInternalPathEnabled(String basePath)
+	 * @see WTabWidget#getInternalBasePath()
 	 */
 	public void setInternalBasePath(final String path) {
 		this.menu_.setInternalBasePath(path);
@@ -418,21 +430,21 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Returns the internal base path.
 	 * <p>
+	 * 
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}) that
-	 * was recorded when {@link WMenu#setInternalPathEnabled(String basePath)
-	 * WMenu#setInternalPathEnabled()} was called, and together with each
-	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
-	 * determines the paths for each item.
+	 * {@link WApplication#getInternalPath()}) that was recorded when
+	 * {@link WTabWidget#setInternalPathEnabled(String basePath)
+	 * setInternalPathEnabled()} was called, and together with each
+	 * {@link WMenuItem#getPathComponent()} determines the paths for each item.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath()
-	 * WMenu#getInternalBasePath()} is <code>&quot;/examples/&quot;</code> and
+	 * For example, if {@link WTabWidget#getInternalBasePath()
+	 * getInternalBasePath()} is <code>&quot;/examples/&quot;</code> and
 	 * pathComponent() for a particular item is <code>&quot;charts/&quot;</code>
 	 * , then the internal path for that item will be
 	 * <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * 
-	 * @see WMenu#setInternalPathEnabled(String basePath)
+	 * @see WTabWidget#setInternalPathEnabled(String basePath)
 	 */
 	public String getInternalBasePath() {
 		return this.menu_.getInternalBasePath();
@@ -441,6 +453,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Signal emitted when the user activates a tab.
 	 * <p>
+	 * 
 	 * The index of the newly activated tab is passed as an argument.
 	 */
 	public Signal1<Integer> currentChanged() {
@@ -450,6 +463,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Closes a tab at <code>index</code>.
 	 * <p>
+	 * 
 	 * A tab that has been closed is marked as hidden, but not removed from the
 	 * menu.
 	 * <p>
@@ -465,6 +479,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Signal emitted when the user closes a tab.
 	 * <p>
+	 * 
 	 * The index of the closed tab is passed as an argument.
 	 * <p>
 	 * 
@@ -478,6 +493,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Returns the contents stack.
 	 * <p>
+	 * 
 	 * The tab widget is implemented as a {@link WMenu} + {@link WStackedWidget}
 	 * which displays the contents. This method returns a reference to this
 	 * contents stack.
@@ -489,6 +505,7 @@ public class WTabWidget extends WCompositeWidget {
 	/**
 	 * Sets how overflow of contained children must be handled.
 	 * <p>
+	 * 
 	 * This is an alternative (CSS-ish) way to configure scroll bars on a
 	 * container widget, compared to wrapping inside a {@link WScrollArea}.
 	 * <p>

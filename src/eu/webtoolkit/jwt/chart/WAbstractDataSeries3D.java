@@ -25,20 +25,18 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * <h3>General</h3>
+ * 
  * <p>
  * The model that is provided at construction or with
  * {@link WAbstractDataSeries3D#setModel(WAbstractItemModel model) setModel()}
  * contains the data of a dataseries. Implementations of this class format the
  * data for representation on the chart and perform all necessary drawing
  * operations. Note that if a dataseries holds numerical data it should be added
- * to a chart of type DOCREF<a class="el" href=
- * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
- * >ScatterPlot</a>, if it holds categorical data it should be added to a chart
- * of type DOCREF<a class="el" href=
- * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
- * >CategoryChart</a>.
+ * to a chart of type {@link ChartType ScatterPlot}, if it holds categorical
+ * data it should be added to a chart of type {@link ChartType CategoryChart}.
  * <p>
  * <h3>Color</h3>
+ * 
  * <p>
  * The color used to draw data on a chart can be specified in a number of ways.
  * The priority of this is as follows (1 being the highest):
@@ -51,6 +49,8 @@ import org.slf4j.LoggerFactory;
  * <li>
  * {@link WChartPalette} present in the chart</li>
  * </ol>
+ * 
+ * 
  * <p>
  * A chart-palette will specify one color for the entire dataseries. Each new
  * dataseries on a chart will receive another color.<br>
@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * create a colormap that is either smooth or consists of a number of bands.
  * <p>
  * <h3>Data-roles</h3>
+ * 
  * <p>
  * The roles on the model which are taken into account are:<br>
  * <ul>
@@ -69,11 +70,14 @@ import org.slf4j.LoggerFactory;
  * <code>MarkerScaleFactorRole:</code> this determines the size of a datapoint
  * and overrides the default</li>
  * </ul>
+ * 
+ * 
  * <p>
  * Some representations of the data ignore these roles. For example, when a
  * surface is drawn, the roles are ignored.
  * <p>
  * <h3>Implementing a new dataseries class</h3>
+ * 
  * <p>
  * When the existing implementations of WAbstractDataSeries3D don&apos;t meet
  * your needs, you might want to make your own. When doing this there are some
@@ -107,6 +111,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * This constructor takes a {@link WAbstractItemModel} as an argument. The
 	 * model contains the data of this dataseries. How the model should be
 	 * structured is dependent on the implementation. Therefore this information
@@ -134,6 +139,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets the title of this dataseries.
 	 * <p>
+	 * 
 	 * When a dataseries that did not have a title set, is added to a
 	 * {@link WCartesian3DChart} it automatically gets the default title
 	 * &apos;dataset i&apos;, with i the count of how many dataseries have been
@@ -149,7 +155,6 @@ public abstract class WAbstractDataSeries3D extends WObject {
 
 	/**
 	 * Returns the title of this dataseries.
-	 * <p>
 	 */
 	public WString getTitle() {
 		return this.name_;
@@ -158,6 +163,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets a model from which the dataseries gets its data.
 	 * <p>
+	 * 
 	 * Every dataseries needs a model from which it gets the data. How the data
 	 * is structured is determined by the type of dataseries. Therefore more
 	 * info on how to construct a proper model is provided in classes that
@@ -274,6 +280,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets the pointsize for drawing this dataseries.
 	 * <p>
+	 * 
 	 * The default pointsize is 2 pixels.
 	 * <p>
 	 * <i><b>Note: </b></i>Setting the point-size is currently not supported in
@@ -301,6 +308,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Set the point sprite used for drawing this dataseries.
 	 * <p>
+	 * 
 	 * This should be a local (server side) path to an image, such as a PNG or
 	 * GIF. Only the alpha channel of this image is used: the sprite only
 	 * decides if a pixel in the point appears or not. If the alpha value is
@@ -335,13 +343,14 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets the colormap for this dataseries.
 	 * <p>
+	 * 
 	 * Ownership of the {@link WAbstractColorMap} is transferred to this class.
 	 * <p>
 	 * By default there is no colormap set. When a colormap is set on a
-	 * dataseries, the color of {@link WCartesian3DChart#getPalette()
-	 * WCartesian3DChart#getPalette()} is no longer used for this series. The
-	 * colormap associates a color to the data based on the z-value of the data.
-	 * If the colormap is set to 0, the value of the palette will be used again.
+	 * dataseries, the color of {@link WCartesian3DChart#getPalette()} is no
+	 * longer used for this series. The colormap associates a color to the data
+	 * based on the z-value of the data. If the colormap is set to 0, the value
+	 * of the palette will be used again.
 	 * <p>
 	 * 
 	 * @see WAbstractDataSeries3D#setColorMapVisible(boolean enabled)
@@ -360,6 +369,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Returns the colormap used by this dataseries.
 	 * <p>
+	 * 
 	 * If this dataseries has no colormap set, 0 will be returned.
 	 * <p>
 	 * 
@@ -375,6 +385,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	 * Sets whether the colormap that is used should be shown alongside the
 	 * chart in the form of a legend.
 	 * <p>
+	 * 
 	 * The default value is false.
 	 * <p>
 	 * 
@@ -418,6 +429,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets whether the colormap is shown on the left or right.
 	 * <p>
+	 * 
 	 * The default side is Right.
 	 * <p>
 	 * Note: only Left and Right are valid values for this function.
@@ -451,6 +463,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets whether this dataseries is included in the chart-legend.
 	 * <p>
+	 * 
 	 * By default, dataseries are enabled in the legend.
 	 */
 	public void setLegendEnabled(boolean enabled) {
@@ -479,6 +492,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Sets if this dataseries is hidden.
 	 * <p>
+	 * 
 	 * By default dataseries are visible.
 	 */
 	public void setHidden(boolean enabled) {
@@ -609,6 +623,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Initialize GL resources.
 	 * <p>
+	 * 
 	 * This function is called by {@link WAbstractDataSeries3D#initializeGL()
 	 * initializeGL()} in the chart to which this dataseries was added.
 	 */
@@ -617,6 +632,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Update the client-side painting function.
 	 * <p>
+	 * 
 	 * This function is called by {@link WAbstractDataSeries3D#paintGL()
 	 * paintGL()} in the chart to which this dataseries was added.
 	 */
@@ -625,6 +641,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Update GL resources.
 	 * <p>
+	 * 
 	 * This function is called by {@link WAbstractDataSeries3D#updateGL()
 	 * updateGL()} in the chart to which this dataseries was added. Before this
 	 * function is called, {@link WAbstractDataSeries3D#deleteAllGLResources()
@@ -638,6 +655,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Act on resize events.
 	 * <p>
+	 * 
 	 * This function is called by {@link WAbstractDataSeries3D#resizeGL()
 	 * resizeGL()} in the chart to which this dataseries was added.
 	 */
@@ -646,6 +664,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 	/**
 	 * Delete GL resources.
 	 * <p>
+	 * 
 	 * This function is called by {@link WAbstractDataSeries3D#updateGL()
 	 * updateGL()} in the chart to which this dataseries was added.
 	 */

@@ -39,6 +39,7 @@ public class WPopupWidget extends WCompositeWidget {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * You need to pass in a widget that provides the main contents of the
 	 * widget (e.g. a {@link WTemplate} or {@link WContainerWidget}).
 	 * <p>
@@ -108,6 +109,7 @@ public class WPopupWidget extends WCompositeWidget {
 	/**
 	 * Sets an anchor widget.
 	 * <p>
+	 * 
 	 * A vertical popup will show below (or above) the widget, while a
 	 * horizontal popup will show right (or left) of the widget.
 	 */
@@ -133,7 +135,6 @@ public class WPopupWidget extends WCompositeWidget {
 
 	/**
 	 * Returns the orientation.
-	 * <p>
 	 */
 	public Orientation getOrientation() {
 		return this.orientation_;
@@ -142,6 +143,7 @@ public class WPopupWidget extends WCompositeWidget {
 	/**
 	 * Sets transient property.
 	 * <p>
+	 * 
 	 * A transient popup will automatically hide when the user clicks outside of
 	 * the popup. When <code>autoHideDelay</code> is not 0, then it will also
 	 * automatically hide when the user moves the mouse outside the widget for
@@ -192,6 +194,7 @@ public class WPopupWidget extends WCompositeWidget {
 	/**
 	 * Lets the popup delete itself when hidden.
 	 * <p>
+	 * 
 	 * When this is enabled, the popup will delete itself when hidden. You need
 	 * to take care that when overriding
 	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
@@ -247,10 +250,11 @@ public class WPopupWidget extends WCompositeWidget {
 	/**
 	 * Signal emitted when the popup is hidden.
 	 * <p>
+	 * 
 	 * This signal is emitted when the popup is being hidden because of a
 	 * client-side event (not when
 	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()} or {@link WWidget#hide() WWidget#hide()} is called).
+	 * setHidden()} or {@link WWidget#hide()} is called).
 	 */
 	public Signal hidden() {
 		return this.hidden_;
@@ -259,10 +263,11 @@ public class WPopupWidget extends WCompositeWidget {
 	/**
 	 * Signal emitted when the popup is shown.
 	 * <p>
+	 * 
 	 * This signal is emitted when the popup is being hidden because of a
 	 * client-side event (not when
 	 * {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()} or {@link WWidget#show() WWidget#show()} is called).
+	 * setHidden()} or {@link WWidget#show()} is called).
 	 */
 	public Signal shown() {
 		return this.shown_;
@@ -308,7 +313,7 @@ public class WPopupWidget extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WPopupWidget.js", wtjs1());
 		StringBuilder jsObj = new StringBuilder();
-		jsObj.append("new Wt3_4_1.WPopupWidget(")
+		jsObj.append("new Wt3_4_2.WPopupWidget(")
 				.append(app.getJavaScriptClass()).append(',')
 				.append(this.getJsRef()).append(',').append(this.transient_)
 				.append(',').append(this.autoHideDelay_).append(',')

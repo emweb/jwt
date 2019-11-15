@@ -37,6 +37,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a new authentication.
 	 */
 	public RegistrationWidget(AuthWidget authWidget) {
@@ -78,6 +79,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Returns the registration model.
 	 * <p>
+	 * 
 	 * This returns the model that is used by the widget to do the actual
 	 * registration.
 	 */
@@ -88,6 +90,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Updates the user-interface.
 	 * <p>
+	 * 
 	 * This updates the user-interface to reflect the current state of the
 	 * model.
 	 */
@@ -200,8 +203,9 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Validates the current information.
 	 * <p>
-	 * The default implementation simply calls {@link WFormModel#validate()
-	 * WFormModel#validate()} on the model.
+	 * 
+	 * The default implementation simply calls {@link WFormModel#validate()} on
+	 * the model.
 	 * <p>
 	 * You may want to reimplement this method if you&apos;ve added other
 	 * information to the registration form that need validation.
@@ -213,11 +217,11 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Performs the registration.
 	 * <p>
+	 * 
 	 * The default implementation checks if the information is valid with
 	 * {@link RegistrationWidget#validate() validate()}, and then calls
-	 * {@link RegistrationModel#doRegister() RegistrationModel#doRegister()}. If
-	 * registration was successful, it calls
-	 * {@link RegistrationWidget#registerUserDetails(User user)
+	 * {@link RegistrationModel#doRegister()}. If registration was successful,
+	 * it calls {@link RegistrationWidget#registerUserDetails(User user)
 	 * registerUserDetails()} and subsequently logs the user in.
 	 */
 	protected void doRegister() {
@@ -252,6 +256,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Closes the registration widget.
 	 * <p>
+	 * 
 	 * The default implementation simply deletes the widget.
 	 */
 	protected void close() {
@@ -262,6 +267,7 @@ public class RegistrationWidget extends WTemplateFormView {
 	/**
 	 * Registers more user information.
 	 * <p>
+	 * 
 	 * This method is called when a new user has been successfully registered.
 	 * <p>
 	 * You may want to reimplement this method if you&apos;ve added other

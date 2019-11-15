@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
  * <li>the salt used</li>
  * <li>the hashing function used</li>
  * </ul>
+ * 
+ * 
  * <p>
  * 
  * @see HashFunction#compute(String msg, String salt)
@@ -39,6 +41,7 @@ public class PasswordHash {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an empty password hash, i.e. with empty function, salt and value.
 	 */
 	public PasswordHash() {

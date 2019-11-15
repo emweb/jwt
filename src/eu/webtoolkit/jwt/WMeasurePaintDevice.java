@@ -47,6 +47,7 @@ public class WMeasurePaintDevice implements WPaintDevice {
 	/**
 	 * Returns the bounding rectangle of everything painted so far.
 	 * <p>
+	 * 
 	 * The bounding rect is returned in device coordinates (i.e. after all
 	 * transformations applied).
 	 */

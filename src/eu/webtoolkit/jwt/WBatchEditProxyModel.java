@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A proxy model for Wt&apos;s item models that provides batch editing.
+ * A proxy model for JWt&apos;s item models that provides batch editing.
  * <p>
  * 
  * This proxy model presents data from a source model, and caches any editing
@@ -46,6 +46,8 @@ import org.slf4j.LoggerFactory;
  * {@link WBatchEditProxyModel#removeColumns(int column, int count, WModelIndex parent)
  * removeColumns()})</li>
  * </ul>
+ * 
+ * 
  * <p>
  * The model supports both simple tabular models, as well as hierarchical
  * (tree-like / treetable-like) models, with children under items in the first
@@ -87,6 +89,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns whether changes have not yet been committed.
 	 * <p>
+	 * 
 	 * Returns whether have been made to the proxy model, which could be
 	 * committed using {@link WBatchEditProxyModel#commitAll() commitAll()} or
 	 * reverted using {@link WBatchEditProxyModel#revertAll() revertAll()}.
@@ -112,6 +115,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Commits changes.
 	 * <p>
+	 * 
 	 * This commits all changes to the source model.
 	 * <p>
 	 * 
@@ -158,6 +162,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Reverts changes.
 	 * <p>
+	 * 
 	 * This reverts all changes.
 	 * <p>
 	 * 
@@ -206,6 +211,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets default data for a newly inserted row.
 	 * <p>
+	 * 
 	 * You can use this method to initialize data for a newly inserted row.
 	 */
 	public void setNewRowData(int column, final Object data, int role) {
@@ -225,6 +231,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets the item flags for items in a newly inserted row.
 	 * <p>
+	 * 
 	 * By default, {@link WBatchEditProxyModel#getFlags(WModelIndex index)
 	 * getFlags()} will return ItemIsSelectable.
 	 */
@@ -246,6 +253,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Configures data used to indicate a modified item.
 	 * <p>
+	 * 
 	 * This sets <code>data</code> for item data role <code>role</code> to be
 	 * returned by
 	 * {@link WBatchEditProxyModel#getData(WModelIndex index, int role)
@@ -307,6 +315,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets the source model.
 	 * <p>
+	 * 
 	 * The source model provides the actual data for the proxy model.
 	 * <p>
 	 * Ownership of the source model is <i>not</i> transferred.
@@ -524,6 +533,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets item data.
 	 * <p>
+	 * 
 	 * The default implementation will copy {@link ItemDataRole#EditRole} data
 	 * to {@link ItemDataRole#DisplayRole}. You may want to specialize the model
 	 * to provide a more specialized editing behaviour.

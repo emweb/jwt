@@ -69,6 +69,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Destructor.
 	 * <p>
+	 * 
 	 * If a label was associated with the widget, its buddy is reset to
 	 * <code>null</code>.
 	 */
@@ -88,6 +89,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Returns the label associated with this widget.
 	 * <p>
+	 * 
 	 * Returns the label (if there is one) that acts as a proxy for this widget.
 	 * <p>
 	 * 
@@ -100,6 +102,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Sets the hidden state of this widget.
 	 * <p>
+	 * 
 	 * If the widget has a label, it is hidden and shown together with this
 	 * widget.
 	 */
@@ -113,6 +116,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
 	 * This returns the current value as a string.
 	 */
 	public abstract String getValueText();
@@ -120,6 +124,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Sets the value text.
 	 * <p>
+	 * 
 	 * This sets the current value from a string value.
 	 */
 	public abstract void setValueText(final String value);
@@ -127,6 +132,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Sets a validator for this field.
 	 * <p>
+	 * 
 	 * The validator is used to validate the current input.
 	 * <p>
 	 * If the validator has no parent yet, then ownership is transferred to the
@@ -207,6 +213,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Sets whether the widget is enabled.
 	 * <p>
+	 * 
 	 * A widget that is disabled cannot receive focus or user interaction.
 	 * <p>
 	 * This is the opposite of {@link WWebWidget#setDisabled(boolean disabled)
@@ -219,6 +226,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Sets the element read-only.
 	 * <p>
+	 * 
 	 * A read-only form element cannot be edited, but the contents can still be
 	 * selected.
 	 * <p>
@@ -269,6 +277,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Sets the placeholder text.
 	 * <p>
+	 * 
 	 * This sets the text that is shown when the field is empty.
 	 */
 	public void setPlaceholderText(final CharSequence placeholderText) {
@@ -320,6 +329,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Signal emitted when the value was changed.
 	 * <p>
+	 * 
 	 * For a keyboard input, the signal is only emitted when the focus is lost
 	 */
 	public EventSignal changed() {
@@ -336,6 +346,7 @@ public abstract class WFormWidget extends WInteractWidget {
 	/**
 	 * Signal emitted when the widget is being validated.
 	 * <p>
+	 * 
 	 * This signal may be useful to react to a changed validation state.
 	 * <p>
 	 * 
@@ -431,7 +442,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			if (!(this.validateJs_ != null)) {
 				this.validateJs_ = new JSlot();
 				this.validateJs_
-						.setJavaScript("function(o){Wt3_4_1.validate(o)}");
+						.setJavaScript("function(o){Wt3_4_2.validate(o)}");
 				this.keyWentUp().addListener(this.validateJs_);
 				this.changed().addListener(this.validateJs_);
 				if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
@@ -449,7 +460,7 @@ public abstract class WFormWidget extends WInteractWidget {
 				this.keyPressed().addListener(this.filterInput_);
 			}
 			StringUtils.replace(inputFilter, '/', "\\/");
-			this.filterInput_.setJavaScript("function(o,e){Wt3_4_1.filter(o,e,"
+			this.filterInput_.setJavaScript("function(o,e){Wt3_4_2.filter(o,e,"
 					+ jsStringLiteral(inputFilter) + ")}");
 		} else {
 			if (this.filterInput_ != null) {
@@ -468,7 +479,7 @@ public abstract class WFormWidget extends WInteractWidget {
 			}
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WFormWidget.js", wtjs1());
-			this.setJavaScriptMember(" WFormWidget", "new Wt3_4_1.WFormWidget("
+			this.setJavaScriptMember(" WFormWidget", "new Wt3_4_2.WFormWidget("
 					+ app.getJavaScriptClass() + "," + this.getJsRef() + ","
 					+ WString.toWString(this.emptyText_).getJsStringLiteral()
 					+ ");");

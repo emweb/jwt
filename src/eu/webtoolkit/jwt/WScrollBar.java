@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
  * 
  * A {@link WScrollArea} always has two scrollbars (even if they are not
  * visible, for example when the policy is
- * {@link WScrollArea.ScrollBarPolicy#ScrollBarAlwaysOff}). Using the
+ * {@link WScrollArea.ScrollBarPolicy#ScrollBarAlwaysOff
+ * ScrollBarPolicy#ScrollBarAlwaysOff}). Using the
  * {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie()} functions, it is
  * possible to tie two scrollbars together, so that they will scroll together.
  * <p>
@@ -45,6 +46,7 @@ public class WScrollBar extends WObject {
 	/**
 	 * Ties two scrollbars together.
 	 * <p>
+	 * 
 	 * The effect of this call is that these scrollbars will keep their
 	 * positions synchronised.
 	 */
@@ -60,6 +62,7 @@ public class WScrollBar extends WObject {
 	/**
 	 * Unties two scrollbars, that were previously tied together.
 	 * <p>
+	 * 
 	 * Undo a {@link WScrollBar#tie(WScrollBar one, WScrollBar two) tie()};
 	 */
 	public static void unTie(WScrollBar one, WScrollBar two) {
@@ -74,6 +77,7 @@ public class WScrollBar extends WObject {
 	/**
 	 * Sets the scrollbar value (in pixels).
 	 * <p>
+	 * 
 	 * This will move the scrollbar to the given value.
 	 */
 	public void setValue(int value) {
@@ -109,9 +113,9 @@ public class WScrollBar extends WObject {
 		if (this.tiesChanged_ || all) {
 			String jsCode = "";
 			for (int i = 0; i < this.ties_.size(); ++i) {
-				String tieElement = "Wt3_4_1.getElement('"
+				String tieElement = "Wt3_4_2.getElement('"
 						+ this.ties_.get(i).scrollArea_.getId() + "')";
-				String scrollElement = "Wt3_4_1.getElement('"
+				String scrollElement = "Wt3_4_2.getElement('"
 						+ this.scrollArea_.getId() + "')";
 				String side = this.orientation_ == Orientation.Horizontal ? "Left"
 						: "Top";

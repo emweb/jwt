@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
  * valueChanged()} signal is emitted.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -41,21 +40,27 @@ import org.slf4j.LoggerFactory;
  * 	new WText(&quot;Name: &quot;, w);
  * 	WInPlaceEdit edit = new WInPlaceEdit(&quot;Bob Smith&quot;, w);
  * 	edit.setStyleClass(&quot;inplace&quot;);
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * This code will produce an edit that looks like: <div align="center"> <img
- * src="doc-files//WInPlaceEdit-1.png" alt="WInPlaceEdit text mode">
+ * src="doc-files/WInPlaceEdit-1.png">
  * <p>
  * <strong>WInPlaceEdit text mode</strong>
  * </p>
- * </div> When the text is clicked, the edit will expand to become: <div
- * align="center"> <img src="doc-files//WInPlaceEdit-2.png"
- * alt="WInPlaceEdit edit mode">
+ * </div>
+ * 
+ * When the text is clicked, the edit will expand to become: <div
+ * align="center"> <img src="doc-files/WInPlaceEdit-2.png">
  * <p>
  * <strong>WInPlaceEdit edit mode</strong>
  * </p>
- * </div> <h3>CSS</h3>
+ * </div>
+ * 
+ * <h3>CSS</h3>
+ * 
  * <p>
  * A {@link WInPlaceEdit} widget renders as a <code>&lt;span&gt;</code>
  * containing a {@link WText}, a {@link WLineEdit} and optional buttons (
@@ -72,6 +77,7 @@ import org.slf4j.LoggerFactory;
  *  .inplace span:hover {
  *     background-color: gray;
  *  }
+ *  
  * }
  * </pre>
  */
@@ -124,6 +130,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Creates an in-place edit with the given text.
 	 * <p>
+	 * 
 	 * The first parameter configures whether buttons are available in edit
 	 * mode.
 	 * <p>
@@ -203,6 +210,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Sets the placeholder text.
 	 * <p>
+	 * 
 	 * This sets the text that is shown when the field is empty.
 	 */
 	public void setPlaceholderText(final CharSequence text) {
@@ -226,6 +234,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the line edit.
 	 * <p>
+	 * 
 	 * You may use this for example to set a validator on the line edit.
 	 */
 	public WLineEdit getLineEdit() {
@@ -235,6 +244,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the {@link WText} widget that renders the current string.
 	 * <p>
+	 * 
 	 * You may use this for example to set the text format of the displayed
 	 * string.
 	 */
@@ -245,6 +255,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the save button.
 	 * <p>
+	 * 
 	 * This method returns <code>null</code> if the buttons were disabled.
 	 * <p>
 	 * 
@@ -258,6 +269,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Returns the cancel button.
 	 * <p>
+	 * 
 	 * This method returns <code>null</code> if the buttons were disabled.
 	 * <p>
 	 * 
@@ -271,6 +283,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Signal emitted when the value has been changed.
 	 * <p>
+	 * 
 	 * The signal argument provides the new value.
 	 */
 	public Signal1<WString> valueChanged() {
@@ -280,6 +293,7 @@ public class WInPlaceEdit extends WCompositeWidget {
 	/**
 	 * Displays the Save and &apos;Cancel&apos; button during editing.
 	 * <p>
+	 * 
 	 * By default, the Save and Cancel buttons are shown. Call this function
 	 * with <code>enabled</code> = <code>false</code> to only show a line edit.
 	 * <p>

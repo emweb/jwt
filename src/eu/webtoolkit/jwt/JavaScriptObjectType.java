@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration for a JavaScript object type.
  * <p>
+ * 
  * This is an internal JWt type.
  */
 public enum JavaScriptObjectType {

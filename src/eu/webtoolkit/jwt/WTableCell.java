@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
  * 
  * A {@link WTable} provides a table of WTableCell container widgets. A
  * WTableCell may overspan more than one grid location in the table, by
- * specifying a {@link WTableCell#setRowSpan(int rowSpan) rowSpan} and
- * {@link WTableCell#setColumnSpan(int colSpan) columnSpan}. Table cells at
+ * specifying a {@link WTableCell#setRowSpan(int rowSpan) rowSpan } and
+ * {@link WTableCell#setColumnSpan(int colSpan) columnSpan }. Table cells at
  * overspanned positions are hidden. You cannot directly create a WTableCell,
  * instead, they are created automatically by a table.
  * <p>
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * WContainerWidget#setContentAlignment()}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;td&gt;</code> or
  * <code>&lt;th&gt;</code> tag, depending on whether the cell is a plain cell or
@@ -65,6 +66,7 @@ public class WTableCell extends WContainerWidget {
 	/**
 	 * Sets the row span.
 	 * <p>
+	 * 
 	 * The row span indicates how many table rows this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a row span of 1, only
 	 * occupying its own grid cell. A row span greater than 1 indicates that
@@ -95,6 +97,7 @@ public class WTableCell extends WContainerWidget {
 	/**
 	 * Sets the column span.
 	 * <p>
+	 * 
 	 * The column span indicates how many table columns this {@link WTableCell}
 	 * overspans. By default, a {@link WTableCell} has a column span of 1, only
 	 * occupying its own grid cell. A column span greater than 1 indicates that

@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
  * {@link WStringListModel}, use
  * {@link WComboBox#setModel(WAbstractItemModel model) setModel()}.
  * <p>
- * To react to selection events, connect to the {@link WFormWidget#changed()
- * WFormWidget#changed()}, {@link WComboBox#activated() activated()} or
- * {@link WComboBox#sactivated() sactivated()} signals.
+ * To react to selection events, connect to the {@link WFormWidget#changed()},
+ * {@link WComboBox#activated() activated()} or {@link WComboBox#sactivated()
+ * sactivated()} signals.
  * <p>
  * At all times, the current selection index is available through
  * {@link WComboBox#getCurrentIndex() getCurrentIndex()} and the current
@@ -48,9 +48,10 @@ import org.slf4j.LoggerFactory;
  * {@link WComboBox} does not have support for auto-completion, this behaviour
  * can be found in the {@link WSuggestionPopup}.
  * <p>
- * WComboBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WComboBox is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag and does
  * not provide styling. It can be styled using inline or external CSS as
@@ -93,8 +94,10 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Adds an option item.
 	 * <p>
+	 * 
 	 * Equivalent to {@link WComboBox#insertItem(int index, CharSequence text)
-	 * insertItem} ({@link WComboBox#getCount() getCount()}, <code>text</code>).
+	 * insertItem()} ({@link WComboBox#getCount() getCount()}, <code>text</code>
+	 * ).
 	 */
 	public void addItem(final CharSequence text) {
 		this.insertItem(this.getCount(), text);
@@ -110,6 +113,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Returns the currently selected item.
 	 * <p>
+	 * 
 	 * If no item is currently selected, the method returns -1.
 	 * <p>
 	 * By default, for a combo box, the first item is selected, and thus
@@ -123,6 +127,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Inserts an item at the specified position.
 	 * <p>
+	 * 
 	 * The item is inserted in the underlying model at position
 	 * <code>index</code>. This requires that the {@link WComboBox#getModel()
 	 * getModel()} is editable.
@@ -141,6 +146,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Removes the item at the specified position.
 	 * <p>
+	 * 
 	 * The item is removed from the underlying model. This requires that the
 	 * {@link WComboBox#getModel() getModel()} is editable.
 	 * <p>
@@ -156,8 +162,10 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Changes the current selection.
 	 * <p>
+	 * 
 	 * Specify a value of -1 for <code>index</code> to clear the selection.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Setting a value of -1 works only if JavaScript is
 	 * available. </i>
@@ -177,6 +185,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Changes the text for a specified option.
 	 * <p>
+	 * 
 	 * The text for the item at position <code>index</code> is changed. This
 	 * requires that the {@link WComboBox#getModel() getModel()} is editable.
 	 */
@@ -215,16 +224,14 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Sets the model to be used for the items.
 	 * <p>
+	 * 
 	 * The <code>model</code> may not be 0, and ownership of the model is not
 	 * transferred.
 	 * <p>
 	 * The default value is a {@link WStringListModel} that is owned by the
-	 * combo box. Items in the model can be grouped by setting the DOCREF<a
-	 * class="el" href=
-	 * "group__modelview.html#gg0ae864e12320f9f89172735e075ed0684b121c4303b1ab17f6347e950af65c21"
-	 * >LevelRole</a>. The contents is interpreted by DOCREF<a class="el"
-	 * href="group__modelview.html#gcab3e57a168c5e4e76a6884070106d48"
-	 * >Wt::asString</a>, and subsequent items of the same group are rendered as
+	 * combo box. Items in the model can be grouped by setting the
+	 * {@link ItemDataRole#LevelRole}. The contents is interpreted by
+	 * Wt::asString, and subsequent items of the same group are rendered as
 	 * children of a HTML <code> &lt;optgroup&gt; </code>element.
 	 * <p>
 	 * 
@@ -292,6 +299,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Sets the column in the model to be used for the items.
 	 * <p>
+	 * 
 	 * The column <code>index</code> in the model will be used to retrieve data.
 	 * <p>
 	 * The default value is 0.
@@ -330,6 +338,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Returns the selection mode.
 	 * <p>
+	 * 
 	 * Always returns SingleSelection for a combo box, but may return
 	 * ExtendedSelection for a selection box
 	 * <p>
@@ -343,6 +352,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
 	 * Returns {@link WComboBox#getCurrentText() getCurrentText()} as a String.
 	 */
 	public String getValueText() {
@@ -352,6 +362,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Sets the current value.
 	 * <p>
+	 * 
 	 * Sets the current index to the item corresponding to <code>value</code>.
 	 */
 	public void setValueText(final String value) {
@@ -376,6 +387,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Clears all items.
 	 * <p>
+	 * 
 	 * Removes all items from the underlying model. This requires that the
 	 * {@link WComboBox#getModel() getModel()} is editable.
 	 */
@@ -387,6 +399,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Signal emitted when the selection changed.
 	 * <p>
+	 * 
 	 * The newly selected item is passed as an argument.
 	 * <p>
 	 * 
@@ -400,6 +413,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Signal emitted when the selection changed.
 	 * <p>
+	 * 
 	 * The newly selected text is passed as an argument.
 	 * <p>
 	 * 
@@ -413,6 +427,7 @@ public class WComboBox extends WFormWidget {
 	/**
 	 * Enables the ability to have &apos;no currently selected&apos; item.
 	 * <p>
+	 * 
 	 * The setting may only be changed for a combo box (and not for a selection
 	 * box). When enabled, the {@link WComboBox#getCurrentIndex()
 	 * getCurrentIndex()} may be &apos;-1&apos; also when the combo box contains

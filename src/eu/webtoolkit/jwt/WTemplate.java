@@ -36,19 +36,20 @@ import org.slf4j.LoggerFactory;
  * &apos;-&apos;, &apos;.&apos; and alfanumeric characters.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {@code
  *  WString userName = ...;
- * 
+ *  
  *  WTemplate t = new WTemplate();
  *  t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
- * 
+ *  
  *  t.bindString("friend", userName, PlainText);
  *  t.bindWidget("age-input", ageEdit_ = new WLineEdit());
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * The ownership of the widgets bound to a {@link WTemplate} widget are
  * transfered to the {@link WTemplate} widdget, and they are deleted when the
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
  * holders, functions and conditional blocks.
  * <p>
  * <h3>A. Variable placeholders</h3>
+ * 
  * <p>
  * <code>${var}</code> defines a placeholder for the variable &quot;var&quot;,
  * and gets replaced with whatever is bound to that variable:
@@ -73,6 +75,8 @@ import org.slf4j.LoggerFactory;
  * resolveString()} and {@link WTemplate#resolveWidget(String varName)
  * resolveWidget()} methods.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * Optionally, additional arguments can be specified using the following syntax:
  * <p>
@@ -92,13 +96,16 @@ import org.slf4j.LoggerFactory;
  * resolveString()} and {@link WTemplate#resolveWidget(String varName)
  * resolveWidget()} methods.
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around
  * variables that are bound to widgets will result in bad behaviour since the
  * template parser is ignorant about these comments and the corresponding
  * widgets will believe that they are rendered but aren&apos;t actually.</i>
  * </p>
+ * 
  * <h3>B. Functions</h3>
+ * 
  * <p>
  * <code>${fun:arg}</code> defines a placeholder for applying a function
  * &quot;fun&quot; to an argument &quot;arg&quot;.
@@ -113,16 +120,18 @@ import org.slf4j.LoggerFactory;
  * addFunction()}. There are currently three functions that are generally
  * useful:
  * <ul>
- * <li>{@link WTemplate.Functions#tr Functions::tr} : resolves a localized
+ * <li>{@link WTemplate.Functions#tr Functions#tr} : resolves a localized
  * strings, this is convenient to create a language neutral template, which
  * contains translated strings</li>
- * <li>{@link WTemplate.Functions#id Functions::id} : resolves the id of a bound
+ * <li>{@link WTemplate.Functions#id Functions#id} : resolves the id of a bound
  * widget, this is convenient to bind &lt;label&gt; elements to a form widget
  * using its for attribute.</li>
- * <li>{@link WTemplate.Functions#block Functions::block} : recursively renders
+ * <li>{@link WTemplate.Functions#block Functions#block} : recursively renders
  * another string as macro block optional arguments substituted before
  * processing template substitution.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * For example, the following template uses the &quot;tr&quot; function to
  * translate the age-label using the &quot;age-label&quot; internationalized
@@ -136,17 +145,19 @@ import org.slf4j.LoggerFactory;
  * 	t.setTemplateText(&quot;&lt;div&gt; ${tr:age-label} ${age-input} &lt;/div&gt;&quot;);
  * 	t.addFunction(&quot;tr&quot;, WTemplate.Functions.tr);
  * 	t.bindWidget(&quot;age-input&quot;, ageEdit = new WLineEdit());
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * <h3>C. Conditional blocks</h3>
+ * 
  * <p>
  * <code>${&lt;cond&gt;}</code> starts a conditional block with a condition name
  * &quot;cond&quot;, and must be closed by a balanced
  * <code>${&lt;/cond&gt;}</code>.
  * <p>
  * For example:
- * <p>
  * 
  * <pre>
  * {
@@ -154,13 +165,16 @@ import org.slf4j.LoggerFactory;
  * 	WTemplate t = new WTemplate();
  * 	t.setTemplateText(&quot;&lt;div&gt; ${&lt;if-register&gt;} Register ... ${&lt;/if-register&gt;}&lt;/div&gt;&quot;);
  * 	t.setCondition(&quot;if-register&quot;, true);
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * Conditions are set using
  * {@link WTemplate#setCondition(String name, boolean value) setCondition()}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate.
@@ -313,12 +327,14 @@ public class WTemplate extends WInteractWidget {
 		/**
 		 * A function that resolves to a localized string.
 		 * <p>
+		 * 
 		 * For example, when bound to the function <code>&quot;tr&quot;</code>,
 		 * template that contains the placeholder
 		 * 
 		 * <pre>
 		 *     {@code
-		 *        ... ${tr:name} ...
+		 *      ... ${tr:name} ...
+		 *      
 		 *     }
 		 * </pre>
 		 * 
@@ -326,9 +342,11 @@ public class WTemplate extends WInteractWidget {
 		 * 
 		 * <pre>
 		 *     {@code
-		 *        WString::tr("name")
+		 *      WString::tr("name")
+		 *      
 		 *     }
 		 * </pre>
+		 * 
 		 * <p>
 		 * 
 		 * @see WTemplate#addFunction(String name, WTemplate.Function function)
@@ -337,6 +355,7 @@ public class WTemplate extends WInteractWidget {
 		/**
 		 * A function that renders a macro block.
 		 * <p>
+		 * 
 		 * The function will consider the first argument as the key for a
 		 * localized string that is a macro block, and additional arguments as
 		 * positional parameters in that block.
@@ -348,8 +367,10 @@ public class WTemplate extends WInteractWidget {
 		 *      ...
 		 *      ${block:form-field category}
 		 *      ...
+		 *      
 		 *     }
 		 * </pre>
+		 * 
 		 * <p>
 		 * would look-up the following message:
 		 * <p>
@@ -361,8 +382,10 @@ public class WTemplate extends WInteractWidget {
 		 *            ${{1}-info}
 		 *         </div>
 		 *      </message>
+		 *      
 		 *     }
 		 * </pre>
+		 * 
 		 * <p>
 		 * and render as:
 		 * <p>
@@ -374,6 +397,7 @@ public class WTemplate extends WInteractWidget {
 		 *        ${category-info}
 		 *      </div>
 		 *      ...
+		 *      
 		 *     }
 		 * </pre>
 		 */
@@ -382,35 +406,40 @@ public class WTemplate extends WInteractWidget {
 		 * A function that renders a macro block as long as the given condition
 		 * is true.
 		 * <p>
+		 * 
 		 * The function will consider the first argument as the condition, and
 		 * the second argument as the key for a localized string that is a macro
 		 * block.
 		 * <p>
-		 * Just like the {@link WTemplate.Functions#block} function, you can
-		 * provide additional arguments, so the third argument will be what is
-		 * filled in into <code>{1}</code> in the macro block, etc.
+		 * Just like the {@link WTemplate.Functions#block block} function, you
+		 * can provide additional arguments, so the third argument will be what
+		 * is filled in into <code>{1}</code> in the macro block, etc.
 		 */
 		public static final WTemplate.Function while_f = new WTemplate.WhileFunction();
 		/**
 		 * A function that resolves the id of a bound widget.
 		 * <p>
+		 * 
 		 * For example, when bound to the function <code>&quot;id&quot;</code>,
 		 * template text that contains a place-holder
 		 * 
 		 * <pre>
 		 *     {@code
-		 *        ... ${id:name} ...
+		 *      ... ${id:name} ...
+		 *      
 		 *     }
 		 * </pre>
+		 * 
 		 * <p>
 		 * will be resolved to the value of:
-		 * <p>
 		 * 
 		 * <pre>
 		 *     {@code
-		 *        t.resolveWidget("name").id()
+		 *      t.resolveWidget("name").id()
+		 *      
 		 *     }
 		 * </pre>
+		 * 
 		 * <p>
 		 * This is useful for binding labels to input elements.
 		 * <p>
@@ -428,24 +457,22 @@ public class WTemplate extends WInteractWidget {
 	 */
 	public enum WidgetIdMode {
 		/**
-		 * <p>
 		 * Do not set the widget ID.
 		 */
 		SetNoWidgetId,
 		/**
-		 * <p>
 		 * Use {@link WWidget#setObjectName(String name)
 		 * WWidget#setObjectName()} to prefix the ID with the varName. This is a
 		 * safe choice since JWt still guarantees that the IDs are unique.
 		 */
 		SetWidgetObjectName,
 		/**
-		 * <p>
 		 * Use {@link WWebWidget#setId(String id) WWebWidget#setId()} to set the
 		 * ID as the varName.
 		 * <p>
+		 * 
 		 * <p>
-		 * <i><b>Warning:</b>You must be careful that there are no two widgets
+		 * <i><b>Warning: </b>You must be careful that there are no two widgets
 		 * with the same ID in yor application. </i>
 		 * </p>
 		 */
@@ -495,6 +522,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Creates a template widget with given template.
 	 * <p>
+	 * 
 	 * The <code>templateText</code> must be proper XHTML, and this is checked
 	 * unless the XHTML is resolved from a message resource bundle. This
 	 * behavior is similar to a {@link WText} when configured with the
@@ -549,6 +577,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Sets the template text.
 	 * <p>
+	 * 
 	 * The <code>text</code> must be proper XHTML, and this is checked unless
 	 * the XHTML is resolved from a message resource bundle or TextFormat is
 	 * {@link TextFormat#XHTMLUnsafeText}. This behavior is similar to a
@@ -589,6 +618,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Sets how the varName should be reflected on bound widgets.
 	 * <p>
+	 * 
 	 * To easily identify a widget in the browser, it may be convenient to
 	 * reflect the varName to the widget&apos;s ID. This options allows you to
 	 * choose from two methods.
@@ -613,9 +643,11 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Binds a string value to a variable.
 	 * <p>
+	 * 
 	 * Each occurrence of the variable within the template will be substituted
 	 * by its value.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Depending on the <code>textFormat</code>, the
 	 * <code>value</code> is validated according as for a {@link WText}. The
@@ -677,6 +709,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Binds a widget to a variable.
 	 * <p>
+	 * 
 	 * The corresponding variable reference within the template will be replaced
 	 * with the widget (rendered as XHTML). Since a single widget may be
 	 * instantiated only once in a template, the variable <code>varName</code>
@@ -737,6 +770,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Unbinds a widget.
 	 * <p>
+	 * 
 	 * This removes a previously bound widget and unbinds the corresponding
 	 * variable, effectively undoing the effect of
 	 * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}.
@@ -757,6 +791,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Binds an empty string to a variable.
 	 * <p>
+	 * 
 	 * If a widget was bound to the variable, it is deleted first.
 	 * <p>
 	 * 
@@ -770,6 +805,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Binds a function.
 	 * <p>
+	 * 
 	 * {@link Functions} are useful to automatically resolve placeholders.
 	 * <p>
 	 * The syntax for a function &apos;fun&apos; applied to a single argument
@@ -778,7 +814,6 @@ public class WTemplate extends WInteractWidget {
 	 * <code>${fun:bla}</code>
 	 * <p>
 	 * There are three predefined functions, which can be bound using:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
@@ -786,6 +821,7 @@ public class WTemplate extends WInteractWidget {
 	 *    t.addFunction("id", WTemplate.Functions.id);
 	 *    t.addFunction("tr", WTemplate.Functions.tr);
 	 *    t.addFunction("block", WTemplate.Functions.block);
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -796,6 +832,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Sets a condition.
 	 * <p>
+	 * 
 	 * This enables or disables the inclusion of a conditional block.
 	 * <p>
 	 * The default value of all conditions is <code>false</code>.
@@ -832,6 +869,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Resolves the string value for a variable name.
 	 * <p>
+	 * 
 	 * This is the main method used to resolve variables in the template text,
 	 * during rendering.
 	 * <p>
@@ -850,8 +888,9 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The result stream expects a UTF-8 encoded string value.
 	 * <p>
+	 * 
 	 * <p>
-	 * <i><b>Warning:</b>When specializing this class, you need to make sure
+	 * <i><b>Warning: </b>When specializing this class, you need to make sure
 	 * that you append proper XHTML to the <code>result</code>, without unsafe
 	 * active contents. The
 	 * {@link WTemplate#format(Writer result, String s, TextFormat textFormat)
@@ -889,6 +928,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Handles a variable that could not be resolved.
 	 * <p>
+	 * 
 	 * This method is called from
 	 * {@link WTemplate#resolveString(String varName, List args, Writer result)
 	 * resolveString()} for variables that could not be resolved.
@@ -898,8 +938,9 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * The result stream expects a UTF-8 encoded string value.
 	 * <p>
+	 * 
 	 * <p>
-	 * <i><b>Warning:</b>When specializing this class, you need to make sure
+	 * <i><b>Warning: </b>When specializing this class, you need to make sure
 	 * that you append proper XHTML to the <code>result</code>, without unsafe
 	 * active contents. The
 	 * {@link WTemplate#format(Writer result, String s, TextFormat textFormat)
@@ -916,6 +957,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Resolves a widget for a variable name.
 	 * <p>
+	 * 
 	 * The default implementation returns a widget that was bound using
 	 * {@link WTemplate#bindWidget(String varName, WWidget widget) bindWidget()}.
 	 * <p>
@@ -927,7 +969,6 @@ public class WTemplate extends WInteractWidget {
 	 * <p>
 	 * This method is typically used for delayed binding of widgets. Usage
 	 * example:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
@@ -940,6 +981,7 @@ public class WTemplate extends WInteractWidget {
 	 *        return w;
 	 *      }
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -976,6 +1018,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Resolves a function call.
 	 * <p>
+	 * 
 	 * This resolves a function with name <code>name</code>, and one or more
 	 * arguments <code>args</code>, and writes the result into the stream
 	 * <code>result</code>. The method returns whether a function was matched
@@ -1005,6 +1048,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Erases all variable bindings.
 	 * <p>
+	 * 
 	 * Removes all strings and deletes all widgets that were previously bound
 	 * using
 	 * {@link WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
@@ -1037,6 +1081,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Enables internal path anchors in the XHTML template.
 	 * <p>
+	 * 
 	 * Anchors to internal paths are represented differently depending on the
 	 * session implementation (plain HTML, Ajax or HTML5 history). By enabling
 	 * this option, anchors which reference an internal path (by referring a URL
@@ -1069,6 +1114,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Configures when internal path encoding is done.
 	 * <p>
+	 * 
 	 * By default, the internal path encoding (if enabled) is done on the
 	 * template text before placeholders are being resolved. In some rare
 	 * situations, you may want to postpone the internal path encoding until
@@ -1102,6 +1148,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Renders the template into the given result stream.
 	 * <p>
+	 * 
 	 * The default implementation will call
 	 * {@link WTemplate#renderTemplateText(Writer result, CharSequence templateText)
 	 * renderTemplateText()} with the {@link WTemplate#getTemplateText()
@@ -1114,6 +1161,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Renders a template into the given result stream.
 	 * <p>
+	 * 
 	 * The default implementation will parse the template, and resolve variables
 	 * by calling
 	 * {@link WTemplate#resolveString(String varName, List args, Writer result)
@@ -1123,9 +1171,7 @@ public class WTemplate extends WInteractWidget {
 	 * needed to load content on-demand (e.g. database objects), or support a
 	 * custom template language.
 	 * <p>
-	 * Return: true if rendered successfully.
-	 * 
-	 * @see WTemplate#getErrorText()
+	 * Return: true if rendered successfully. @see WTemplate#getErrorText()
 	 */
 	public boolean renderTemplateText(final Writer result,
 			final CharSequence templateText) throws IOException {
@@ -1255,6 +1301,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Applies arguments to a resolved widget.
 	 * <p>
+	 * 
 	 * Currently only a <code>class</code> argument is handled, which adds one
 	 * or more style classes to the widget <code>w</code>, using
 	 * {@link WWidget#addStyleClass(String styleClass, boolean force)
@@ -1366,6 +1413,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Utility method to safely format an XHTML string.
 	 * <p>
+	 * 
 	 * The string is formatted according to the indicated
 	 * <code>textFormat</code>. It is recommended to use this method when
 	 * specializing
@@ -1391,6 +1439,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Utility method to safely format an XHTML string.
 	 * <p>
+	 * 
 	 * The string is formatted according to the indicated
 	 * <code>textFormat</code>. It is recommended to use this method when
 	 * specializing
@@ -1437,6 +1486,7 @@ public class WTemplate extends WInteractWidget {
 	/**
 	 * Notifies the template that it has changed and must be rerendered.
 	 * <p>
+	 * 
 	 * If you update a {@link WTemplate} with e.g bindWidget or setCondition, or
 	 * change the template text, the template will automatically be rerendered.
 	 * <p>
@@ -1581,7 +1631,7 @@ public class WTemplate extends WInteractWidget {
 	private void unrenderWidget(WWidget w, final DomElement el) {
 		String removeJs = w.getWebWidget().renderRemoveJs(false);
 		if (removeJs.charAt(0) == '_') {
-			el.callJavaScript("Wt3_4_1.remove('" + removeJs.substring(1)
+			el.callJavaScript("Wt3_4_2.remove('" + removeJs.substring(1)
 					+ "');", true);
 		} else {
 			el.callJavaScript(removeJs, true);

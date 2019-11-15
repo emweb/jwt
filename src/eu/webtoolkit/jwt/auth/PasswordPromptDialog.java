@@ -42,6 +42,7 @@ public class PasswordPromptDialog extends WDialog {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * From the passed <code>login</code> object, the dialog obtains the
 	 * {@link User} for which a valid password needs to be entered. The result,
 	 * if successful, is signalled using

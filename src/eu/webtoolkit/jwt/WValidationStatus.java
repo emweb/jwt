@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
  * <i>Since JWt 2.1.3, all standard validators provide client-side validation
  * and this is reflected in the form widget using the style class
  * &quot;Wt-invalid&quot; when the validator returns not
- * {@link WValidator.State#Valid}. Therefore, it is unlikely you will need this
- * class anymore.</i>
+ * {@link WValidator.State#Valid State#Valid}. Therefore, it is unlikely you
+ * will need this class anymore.</i>
  * <p>
  * Use a WValidationStatus widget to act to changes in validation of a
  * {@link WFormWidget}. The widget may show visual feed-back of the validation
@@ -54,6 +54,7 @@ public class WValidationStatus extends WCompositeWidget {
 	/**
 	 * Construct a {@link WValidationStatus} widget for another widget.
 	 * <p>
+	 * 
 	 * Constructs a validation status widget for the given field.
 	 * <p>
 	 * The validation stateWidgets (if not <code>null</code>) will be managed by
@@ -163,10 +164,13 @@ public class WValidationStatus extends WCompositeWidget {
 	/**
 	 * {@link Signal} emitted when the validation state changed.
 	 * <p>
+	 * 
 	 * The new state of the validation (valid or invalid) is given as argument.
 	 * This signal gets emitted when the state changes from
-	 * {@link WValidator.State#Valid} to {@link WValidator.State#Invalid}, or
-	 * from {@link WValidator.State#Invalid} to {@link WValidator.State#Valid}.
+	 * {@link WValidator.State#Valid State#Valid} to
+	 * {@link WValidator.State#Invalid State#Invalid}, or from
+	 * {@link WValidator.State#Invalid State#Invalid} to
+	 * {@link WValidator.State#Valid State#Valid}.
 	 */
 	public Signal1<Boolean> validated() {
 		return this.validated_;

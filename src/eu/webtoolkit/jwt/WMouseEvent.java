@@ -79,6 +79,7 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns the button.
 	 * <p>
+	 * 
 	 * If multiple buttons are currently pressed for a mouse moved or mouse
 	 * dragged event, then the one with the smallest numerical value is
 	 * returned.
@@ -99,8 +100,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns keyboard modifiers.
 	 * <p>
-	 * The result is a logical OR of {@link KeyboardModifier KeyboardModifier}
-	 * flags.
+	 * 
+	 * The result is a logical OR of {@link KeyboardModifier} flags.
 	 */
 	public EnumSet<KeyboardModifier> getModifiers() {
 		return this.jsEvent_.modifiers;
@@ -116,6 +117,7 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns the mouse position relative to the window.
 	 * <p>
+	 * 
 	 * This differs from documentX() only through scrolling through the
 	 * document.
 	 */
@@ -140,8 +142,8 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns the distance over which the mouse has been dragged.
 	 * <p>
-	 * This is only defined for a {@link WInteractWidget#mouseWentUp()
-	 * WInteractWidget#mouseWentUp()} event.
+	 * 
+	 * This is only defined for a {@link WInteractWidget#mouseWentUp()} event.
 	 */
 	public Coordinates getDragDelta() {
 		return new Coordinates(this.jsEvent_.dragDX, this.jsEvent_.dragDY);
@@ -150,10 +152,10 @@ public class WMouseEvent implements WAbstractEvent {
 	/**
 	 * Returns the scroll wheel delta.
 	 * <p>
+	 * 
 	 * This is 1 when wheel was scrolled up or -1 when wheel was scrolled down.
 	 * <p>
-	 * This is only defined for a {@link WInteractWidget#mouseWheel()
-	 * WInteractWidget#mouseWheel()} event.
+	 * This is only defined for a {@link WInteractWidget#mouseWheel()} event.
 	 */
 	public int getWheelDelta() {
 		return this.jsEvent_.wheelDelta;

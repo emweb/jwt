@@ -61,6 +61,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Creates or updates a widget that renders an item.
 	 * <p>
+	 * 
 	 * The following properties of an item are rendered:
 	 * <p>
 	 * <ul>
@@ -76,6 +77,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <li>a custom style class depending on the value of
 	 * {@link ItemDataRole#StyleClassRole}</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * When the flags indicates {@link ViewItemRenderFlag#RenderEditing}, then
 	 * {@link WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -253,6 +256,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Sets the text format string.
 	 * <p>
+	 * 
 	 * The DisplayRole data is converted to a string using
 	 * {@link StringUtils#asString(Object)}, passing the given format. If the
 	 * format is an empty string, this corresponds to {@link Object#toString()}.
@@ -276,20 +280,22 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Saves the edited data to the model.
 	 * <p>
+	 * 
 	 * The default implementation saves the current edit value to the model. You
 	 * will need to reimplement this method for a custom editor.
 	 * <p>
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    public void setModelData(Object editState, WAbstractItemModel model, WModelIndex index) {
 	 *      model.setData(index, editState, ItemDataRole.EditRole);
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -303,12 +309,12 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Returns the current edit state.
 	 * <p>
+	 * 
 	 * The default implementation returns the current text in the line edit. You
 	 * will need to reimplement this method for a custom editor.
 	 * <p>
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
@@ -317,8 +323,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 *      WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
 	 *      return lineEdit.getText();
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -337,12 +345,12 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Sets the editor data from the editor state.
 	 * <p>
+	 * 
 	 * The default implementation resets the text in the line edit. You will
 	 * need to reimplement this method if for a custom editor.
 	 * <p>
 	 * As an example of how to deal with a specialized editor, consider the
 	 * default implementation:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
@@ -351,8 +359,10 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 *      WLineEdit lineEdit = (WLineEdit) w.getWidget(0);
 	 *      lineEdit.setText((String) value);
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
@@ -368,6 +378,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	/**
 	 * Creates an editor for a data item.
 	 * <p>
+	 * 
 	 * The default implementation returns a {@link WLineEdit} which edits the
 	 * item&apos;s {@link ItemDataRole#EditRole} value.
 	 * <p>
@@ -391,7 +402,6 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 * <p>
 	 * As an example of how to provide a specialized editor, consider the
 	 * default implementation, which returns a {@link WLineEdit}:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
@@ -410,15 +420,16 @@ public class WItemDelegate extends WAbstractItemDelegate {
 	 *         WItemDelegate.this.closeEditor().trigger(result, false);
 	 *       }
 	 *     });
-	 *   
+	 *    
 	 *     if (flags.contains(ViewItemRenderFlag.RenderFocused))
 	 *       lineEdit.setFocus();
-	 *   
+	 *    
 	 *     result.setLayout(new WHBoxLayout());
 	 *     result.getLayout().setContentsMargins(1, 1, 1, 1);
 	 *     result.getLayout().addWidget(lineEdit);
 	 *     return result;
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
 	 */

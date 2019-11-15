@@ -45,6 +45,7 @@ public class UploadedFile {
 	/**
 	 * Return the spool file name.
 	 * <p>
+	 * 
 	 * This is the location on the local (server) filesystem where the uploaded
 	 * file is temporarily stored. Unless you call
 	 * {@link UploadedFile#stealSpoolFile() stealSpoolFile()}, this file is
@@ -57,6 +58,7 @@ public class UploadedFile {
 	/**
 	 * Returns the client file name.
 	 * <p>
+	 * 
 	 * This is the location that was indicated by the browser. Depending on the
 	 * browser this is an absolute path or only the file name.
 	 */
@@ -67,6 +69,7 @@ public class UploadedFile {
 	/**
 	 * Returns the file content type.
 	 * <p>
+	 * 
 	 * Returns the content mime-type that was sent along with the uploaded file.
 	 */
 	public String getContentType() {
@@ -76,8 +79,9 @@ public class UploadedFile {
 	/**
 	 * Steals the uploaded spool file.
 	 * <p>
+	 * 
 	 * By stealing the spooled file, it is no longer automatically deleted by
-	 * Wt.
+	 * JWt.
 	 */
 	public void stealSpoolFile() {
 		this.fileInfo_.isStolen = true;

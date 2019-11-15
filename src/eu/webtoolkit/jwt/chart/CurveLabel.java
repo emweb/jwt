@@ -30,8 +30,7 @@ import org.slf4j.LoggerFactory;
  * is transformed (zoom or pan) or the associated series is manipulated, the
  * curve label&apos;s position will change, but not its size.
  * <p>
- * <div align="center"> <img src="doc-files//CurveLabel.png"
- * alt="A curve label">
+ * <div align="center"> <img src="doc-files/CurveLabel.png">
  * <p>
  * <strong>A curve label</strong>
  * </p>
@@ -43,6 +42,7 @@ public class CurveLabel {
 	/**
 	 * Create a new curve label.
 	 * <p>
+	 * 
 	 * Create a new curve label for given series, at the given point with the
 	 * given text.
 	 */
@@ -65,6 +65,7 @@ public class CurveLabel {
 	/**
 	 * Create a new curve label.
 	 * <p>
+	 * 
 	 * Create a new curve label for given series, at the given x, y coordinates
 	 * and the given text.
 	 */
@@ -118,9 +119,11 @@ public class CurveLabel {
 	/**
 	 * Get the point in model coordinates this label is associated with.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
-	 * <i><b>Note: </b>This uses {@link }, which may not be the same conversion
-	 * that
+	 * <i><b>Note: </b>This uses asNumber(), which may not be the same
+	 * conversion that
 	 * {@link WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis axis, int xSegment, int ySegment)
 	 * WCartesianChart#mapToDevice()} uses, depending on the scale of the axis.
 	 * {@link CurveLabel#getX() getX()} and {@link CurveLabel#getY() getY()}
@@ -174,6 +177,7 @@ public class CurveLabel {
 	/**
 	 * Set the offset the text should be placed at.
 	 * <p>
+	 * 
 	 * The offset is defined in pixels, with x values going from left to right,
 	 * and y values from top to bottom.
 	 * <p>
@@ -198,6 +202,7 @@ public class CurveLabel {
 	/**
 	 * Set the width of the box in pixels.
 	 * <p>
+	 * 
 	 * If the width is 0 (the default), server side font metrics will be used to
 	 * determine the size of the box.
 	 */
@@ -218,10 +223,11 @@ public class CurveLabel {
 	/**
 	 * Set the pen to use for the connecting line.
 	 * <p>
+	 * 
 	 * This sets the pen to use for the line connecting the
-	 * {@link CurveLabel#getPoint() point} to the box with the
-	 * {@link CurveLabel#getLabel() label} at {@link CurveLabel#getOffset()
-	 * offset} pixels from the point.
+	 * {@link CurveLabel#getPoint() getPoint()} to the box with the
+	 * {@link CurveLabel#getLabel() getLabel()} at
+	 * {@link CurveLabel#getOffset() getOffset()} pixels from the point.
 	 */
 	public void setLinePen(final WPen pen) {
 		this.linePen_ = pen;
@@ -257,6 +263,7 @@ public class CurveLabel {
 	/**
 	 * Set the brush to use for the box around the text.
 	 * <p>
+	 * 
 	 * This sets the brush used to fill the box with the text defined in
 	 * {@link CurveLabel#getLabel() getLabel()}.
 	 */

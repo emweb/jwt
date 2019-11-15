@@ -37,20 +37,23 @@ import org.slf4j.LoggerFactory;
  * messages</li>
  * <li>&apos;if:<i>field</i>&apos;: condition for the visibility of the field</li>
  * </ul>
+ * 
+ * 
  * <p>
  * A typical template uses blocks of the following-format (in the example below
  * illustrated for a field &apos;UserName&apos;):
  * <p>
- * <div class="fragment">
  * 
- * <pre class="fragment">
- *    ${&lt;if:UserName&gt;}
- *      &lt;label for=&quot;${id:UserName}&quot;&gt;${UserName-label}&lt;/label&gt;
- *      ${UserName} ${UserName-info}
- *    ${&lt;/if:UserName&gt;}
+ * <pre>
+ * {@code
+ *  ${<if:UserName>}
+ *    <label for="${id:UserName}">${UserName-label}</label>
+ *    ${UserName} ${UserName-info}
+ *  ${</if:UserName>}
+ *  
+ * }
  * </pre>
  * 
- * </div>
  * <p>
  * The View may render fields of more than one model, and does not necessarily
  * need to render all information of each model. The latter can be achieved by
@@ -69,7 +72,6 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The view is passive: it will not perform any updates by itself of either the
  * View or Model. You will typically bind a method to the Ok button and do:
- * <p>
  * 
  * <pre>
  * {@code
@@ -82,6 +84,7 @@ import org.slf4j.LoggerFactory;
  *      updateView(this.model);
  *    }
  *  }
+ *  
  * }
  * </pre>
  */
@@ -92,14 +95,15 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * For convenience, this initializes the template with:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    addFunction("id", Functions.id);
 	 *    addFunction("tr", Functions.tr);
 	 *    addFunction("block", Functions.block);
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -122,14 +126,15 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * For convenience, this initializes the template with:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    addFunction("id", Functions.id);
 	 *    addFunction("tr", Functions.tr);
 	 *    addFunction("block", Functions.block);
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -153,11 +158,11 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Sets the form widget for a given field.
 	 * <p>
+	 * 
 	 * When the <code>widget</code> is a form widget, then the View class will
 	 * use {@link WFormWidget#setValueText(String value)
 	 * WFormWidget#setValueText()} to update it with model values, and
-	 * {@link WFormWidget#getValueText() WFormWidget#getValueText()} to update
-	 * the model with view data.
+	 * {@link WFormWidget#getValueText()} to update the model with view data.
 	 * <p>
 	 * You can override this default behaviour by either using the overloaded
 	 * {@link WTemplateFormView#setFormWidget(String field, WWidget formWidget)
@@ -193,6 +198,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Sets the form widget for a given field.
 	 * <p>
+	 * 
 	 * This overloaded functions allows functions to be provided to update the
 	 * view and model for this field.
 	 */
@@ -207,6 +213,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates the View.
 	 * <p>
+	 * 
 	 * This creates or updates all fields in the view.
 	 * <p>
 	 * 
@@ -224,6 +231,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Creates or updates a field in the View.
 	 * <p>
+	 * 
 	 * This will update or create and bind widgets in the template to represent
 	 * the field. To create the form widget that implements the editing, it
 	 * calls {@link WTemplateFormView#createFormWidget(String field)
@@ -295,6 +303,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates the value in the View.
 	 * <p>
+	 * 
 	 * The default implementation calls updateViewValue({@link WFormModel} ,
 	 * WFormField::Field, {@link WWidget} ). If this function returned
 	 * <code>false</code>, it sets {@link WFormModel#valueText(String field)
@@ -322,6 +331,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates the value in the View.
 	 * <p>
+	 * 
 	 * The default implementation considers only a specialized update function
 	 * that may have been configured in
 	 * {@link WTemplateFormView#setFormWidget(String field, WWidget formWidget)
@@ -342,6 +352,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates the Model.
 	 * <p>
+	 * 
 	 * This creates or updates all field values in the model.
 	 * <p>
 	 * 
@@ -359,6 +370,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates a field in the Model.
 	 * <p>
+	 * 
 	 * This calls
 	 * {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WFormWidget edit)
 	 * updateModelValue()} to update the model value.
@@ -377,12 +389,12 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates a value in the Model.
 	 * <p>
+	 * 
 	 * The default implementation calls
 	 * {@link WTemplateFormView#updateModelValue(WFormModel model, String field, WWidget edit)
 	 * updateModelValue()}. If this function returned <code>false</code>, it
 	 * calls {@link WFormModel#setValue(String field, Object value)
-	 * WFormModel#setValue()} with {@link WFormWidget#getValueText()
-	 * WFormWidget#getValueText()}.
+	 * WFormModel#setValue()} with {@link WFormWidget#getValueText()}.
 	 */
 	public void updateModelValue(WFormModel model, String field,
 			WFormWidget edit) {
@@ -401,6 +413,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Updates a value in the Model.
 	 * <p>
+	 * 
 	 * The default implementation considers only a specialized update function
 	 * that may have been configured in
 	 * {@link WTemplateFormView#setFormWidget(String field, WWidget formWidget)
@@ -421,6 +434,7 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Creates a form widget.
 	 * <p>
+	 * 
 	 * This method is called by
 	 * {@link WTemplateFormView#updateViewField(WFormModel model, String field)
 	 * updateViewField()} when it needs to create a form widget for a field, and
@@ -435,10 +449,12 @@ public class WTemplateFormView extends WTemplate {
 	/**
 	 * Indicates the validation result.
 	 * <p>
+	 * 
 	 * The default implementation calls
 	 * {@link WTheme#applyValidationStyle(WWidget widget, WValidator.Result validation, EnumSet flags)
 	 * WTheme#applyValidationStyle()}
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>We changed the signature to take an edit {@link WWidget}
 	 * instead of {@link WFormWidget} in JWt 3.3.1! </i>

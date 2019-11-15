@@ -28,11 +28,11 @@ public enum PenCapStyle {
 	 */
 	FlatCap,
 	/**
-	 * Square ends (prolongs line with half width).
+	 * Square ends (prolongs line with half width)
 	 */
 	SquareCap,
 	/**
-	 * Round ends (terminates with a half circle).
+	 * Round ends (terminates with a half circle)
 	 */
 	RoundCap;
 

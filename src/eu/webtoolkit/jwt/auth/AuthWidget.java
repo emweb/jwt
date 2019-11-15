@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
  * <li>authentication tokens, which are stored in browser cookies, to implement
  * remember-me functionality.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * The {@link AuthWidget#processEnvironment() processEnvironment()} method
  * initiates this process, and should typically be called only at application
@@ -68,6 +70,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a new authentication widget. This creates an {@link AuthModel}
 	 * using the given authentication service <code>baseAuth</code> and user
 	 * database <code>users</code>.
@@ -103,6 +106,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a new authentication widget.
 	 * <p>
 	 * The result of authentication changes is propagated to the rest of the
@@ -132,6 +136,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Sets a model.
 	 * <p>
+	 * 
 	 * This sets a model to be used for authentication.
 	 */
 	public void setModel(AuthModel model) {
@@ -142,6 +147,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Returns the model.
 	 * <p>
+	 * 
 	 * The model is used only for the login function.
 	 * <p>
 	 * 
@@ -154,6 +160,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Returns the login object.
 	 * <p>
+	 * 
 	 * This login object is used to keep track of the user currently
 	 * authenticated.
 	 */
@@ -164,6 +171,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Sets an internal path for authentication services.
 	 * <p>
+	 * 
 	 * Only the registration function is made available through an internal path
 	 * (so that one can redirect a user to the registration page). Other
 	 * internal paths involved in authentication are configured in the service
@@ -194,6 +202,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Configures registration capabilities.
 	 * <p>
+	 * 
 	 * Although the {@link AuthWidget} itself does not implement a registration
 	 * view, it may offer a button/link to do so, and calls
 	 * {@link AuthWidget#registerNewUser() registerNewUser()} when a user wishes
@@ -212,6 +221,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Starts a new registration process.
 	 * <p>
+	 * 
 	 * This calls <code>registerNewUser(0)</code>.
 	 */
 	public void registerNewUser() {
@@ -221,6 +231,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Starts a new registration process.
 	 * <p>
+	 * 
 	 * This starts a new registration process, and may be called in response to
 	 * a user action, an internal path change, or an {@link OAuthService} login
 	 * procedure which identified a new user. In the latter case, the
@@ -240,6 +251,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Processes the (initial) environment.
 	 * <p>
+	 * 
 	 * This method process environmental information that may be relevant to
 	 * authentication:
 	 * <p>
@@ -247,9 +259,6 @@ public class AuthWidget extends WTemplateFormView {
 	 * <li>email tokens, which are indicated through an internal path. The
 	 * widget uses dialogs (by default) to interact with the user to act on the
 	 * token.</li>
-	 * </ul>
-	 * <p>
-	 * <ul>
 	 * <li>authentication tokens, which are stored in browser cookies, to
 	 * implement remember-me functionality. When logging in using an
 	 * authentication token, the login is considered &quot;weak&quot; (since a
@@ -259,6 +268,8 @@ public class AuthWidget extends WTemplateFormView {
 	 * {@link AuthWidget#createPasswordPromptDialog(Login login)
 	 * createPasswordPromptDialog()} method may be useful for this.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * 
 	 * @see AuthWidget#letUpdatePassword(User user, boolean promptPassword)
@@ -301,6 +312,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Lets the user update his password.
 	 * <p>
+	 * 
 	 * This creates a view to let the user enter his new password.
 	 * <p>
 	 * The default implementation creates a new view using
@@ -334,6 +346,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Lets the user &quot;recover&quot; a lost password.
 	 * <p>
+	 * 
 	 * This creates a view to let the user enter his email address, used to send
 	 * an email containing instructions to enter a new password.
 	 * <p>
@@ -351,10 +364,11 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a lost password view.
 	 * <p>
+	 * 
 	 * When email verification has been enabled, the user may indicate that he
-	 * has lost his password -- then proof of controlling the same email address
-	 * that had associated with his account is sufficient to allow him to enter
-	 * a new password.
+	 * has lost his password &ndash; then proof of controlling the same email
+	 * address that had associated with his account is sufficient to allow him
+	 * to enter a new password.
 	 * <p>
 	 * This creates the widget used to let the user enter his email address. The
 	 * default implementation creates a new {@link LostPasswordWidget}.
@@ -370,6 +384,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a registration view.
 	 * <p>
+	 * 
 	 * This creates a registration view, optionally using information already
 	 * obtained from a third party identification service (such as an OAuth
 	 * provider).
@@ -394,6 +409,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a view to update a user&apos;s password.
 	 * <p>
+	 * 
 	 * If <code>promptPassword</code> is <code>true</code>, the user has to
 	 * enter his current password in addition to a new password.
 	 * <p>
@@ -412,9 +428,10 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a password prompt dialog.
 	 * <p>
+	 * 
 	 * This creates a dialog password. The user is taken from the
 	 * <code>login</code> object, which also signals an eventual success using
-	 * its {@link Login#changed() Login#changed()} signal.
+	 * its {@link Login#changed()} signal.
 	 * <p>
 	 * The default implementation instantiates a {@link PasswordPromptDialog}.
 	 */
@@ -436,6 +453,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Displays the error message.
 	 * <p>
+	 * 
 	 * This method display an dialog showing the error
 	 */
 	public void displayError(final CharSequence m) {
@@ -456,6 +474,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Displays the info message.
 	 * <p>
+	 * 
 	 * This method display an dialog showing the info
 	 */
 	public void displayInfo(final CharSequence m) {
@@ -476,6 +495,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates the user-interface.
 	 * <p>
+	 * 
 	 * This method is called just before an initial rendering, and creates the
 	 * initial view.
 	 * <p>
@@ -499,6 +519,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates the login view.
 	 * <p>
+	 * 
 	 * This creates a view that allows the user to login, and is shown when no
 	 * user is current logged in.
 	 * <p>
@@ -517,6 +538,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates the view shown when the user is logged in.
 	 * <p>
+	 * 
 	 * The default implementation renders the
 	 * <code>&quot;Wt.Auth.template.logged-in&quot;</code> template.
 	 */
@@ -536,6 +558,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a password login view.
 	 * <p>
+	 * 
 	 * This is used by the default implementation of
 	 * {@link AuthWidget#createLoginView() createLoginView()} to prompt for the
 	 * information needed for logging in using a username and password. The
@@ -552,13 +575,14 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a widget to login using OAuth.
 	 * <p>
+	 * 
 	 * The default implementation adds an icon for each OAuth service provider
 	 * available.
 	 * <p>
 	 * There&apos;s alot to say about making a usable login mechanism for OAuth
 	 * (and federated login services in general), see <a
-	 * href="https://sites.google.com/site/oauthgoog/UXFedLogin."
-	 * >https://sites.google.com/site/oauthgoog/UXFedLogin.</a>
+	 * href="https://sites.google.com/site/oauthgoog/UXFedLogin"
+	 * >https://sites.google.com/site/oauthgoog/UXFedLogin</a>.
 	 * <p>
 	 * 
 	 * @see AuthWidget#createLoginView()
@@ -593,6 +617,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Shows a dialog.
 	 * <p>
+	 * 
 	 * This shows a dialog. The default method creates a standard
 	 * {@link WDialog}, with the given <code>title</code> and
 	 * <code>contents</code> as central widget.
@@ -627,6 +652,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Returns the registration model.
 	 * <p>
+	 * 
 	 * Calls {@link AuthWidget#getCreateRegistrationModel()
 	 * getCreateRegistrationModel()} or resets a previously created one.
 	 * <p>
@@ -650,6 +676,7 @@ public class AuthWidget extends WTemplateFormView {
 	/**
 	 * Creates a registration model.
 	 * <p>
+	 * 
 	 * This method creates a registration model. The default implementation
 	 * creates a RegistrationModel() but you may want to reimplement this
 	 * function to return a specialized registration model (complementing a

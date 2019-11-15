@@ -71,8 +71,10 @@ import org.slf4j.LoggerFactory;
  *    root().addWidget(authWidget);
  *  } else
  *    new WText("The request was invalid.",root());
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * 
  * @see OAuthTokenEndpoint
@@ -102,6 +104,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	/**
 	 * Processes the environment and authorizes the user when already logged in.
 	 * <p>
+	 * 
 	 * The {@link OAuthAuthorizationEndpointProcess#authorized() authorized()}
 	 * signal should be connected before calling this function.
 	 */
@@ -184,6 +187,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	/**
 	 * This signal is emitted when the user has successfully logged in.
 	 * <p>
+	 * 
 	 * When the user has successfully logged in and the request is valid, this
 	 * signal will be emitted and the user can be redirected to the redirect URI
 	 * using authorizeScope.
@@ -197,6 +201,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	/**
 	 * Authorize the given scope and redirect the user.
 	 * <p>
+	 * 
 	 * If the user has successfully logged in this function will redirect the
 	 * user to the redirect URI with a valid &quot;code&quot; parameter which is
 	 * only valid for the given scope.
@@ -225,6 +230,7 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
 	 * Sets the amount of seconds after which generated authorization codes
 	 * expire.
 	 * <p>
+	 * 
 	 * This defaults to 600 seconds.
 	 */
 	public void setAuthCodeExpSecs(int seconds) {

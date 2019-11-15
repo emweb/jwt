@@ -54,6 +54,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the number of columns.
 	 * <p>
+	 * 
 	 * Translates the parent index to the source model, and returns the number
 	 * of columns of the source model.
 	 */
@@ -64,6 +65,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the number of rows.
 	 * <p>
+	 * 
 	 * Translates the parent index to the source model, and returns the number
 	 * of rows of the source model.
 	 */
@@ -74,6 +76,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the parent for a model index.
 	 * <p>
+	 * 
 	 * Translates the child index to the source model, and translates its parent
 	 * back to this proxy model.
 	 */
@@ -99,6 +102,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Maps a proxy model index to the source model.
 	 * <p>
+	 * 
 	 * Returns a model index with the same row and column as the source index.
 	 * The parent index is mapped recursively.
 	 */
@@ -113,6 +117,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Maps a source model index to the proxy model.
 	 * <p>
+	 * 
 	 * Returns a model index with the same row and column as the proxy index.
 	 * The parent index is mapped recursively.
 	 */
@@ -127,6 +132,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets the source model.
 	 * <p>
+	 * 
 	 * The source model provides the actual data for the proxy model.
 	 * <p>
 	 * Ownership of the source model is <i>not</i> transferred.
@@ -293,6 +299,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Inserts one or more columns.
 	 * <p>
+	 * 
 	 * Inserts <code>count</code> columns at column <code>column</code> in the
 	 * source model.
 	 * <p>
@@ -306,6 +313,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Inserts one or more rows.
 	 * <p>
+	 * 
 	 * Inserts <code>count</code> rows at row <code>row</code> in the source
 	 * model.
 	 * <p>
@@ -319,6 +327,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Removes columns.
 	 * <p>
+	 * 
 	 * Removes <code>count</code> columns at column <code>column</code> in the
 	 * source model.
 	 * <p>
@@ -332,6 +341,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Removes rows.
 	 * <p>
+	 * 
 	 * Removes <code>count</code> rows at row <code>row</code> in the source
 	 * model.
 	 * <p>
@@ -345,6 +355,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
 	/**
 	 * Set header data for a column or row.
 	 * <p>
+	 * 
 	 * Sets the header data for a column or row in the source model.
 	 * <p>
 	 * Forwards the result indicating success from the source model.

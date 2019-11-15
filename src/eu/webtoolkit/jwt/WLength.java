@@ -58,15 +58,15 @@ public class WLength {
 		 */
 		Millimeter,
 		/**
-		 * Point (1/72 Inch).
+		 * Point (1/72 Inch)
 		 */
 		Point,
 		/**
-		 * Pica (12 Point).
+		 * Pica (12 Point)
 		 */
 		Pica,
 		/**
-		 * Percentage (meaning context-sensitive).
+		 * Percentage (meaning context-sensitive)
 		 */
 		Percentage;
 
@@ -89,6 +89,7 @@ public class WLength {
 	/**
 	 * Creates an &apos;auto&apos; length.
 	 * <p>
+	 * 
 	 * Specifies an &apos;auto&apos; length.
 	 * <p>
 	 * 
@@ -103,6 +104,7 @@ public class WLength {
 	/**
 	 * Creates a length by parsing the argument as a css length string.
 	 * <p>
+	 * 
 	 * This supports all CSS length formats that have an API counterpart.
 	 */
 	public WLength(final String str) {
@@ -112,6 +114,7 @@ public class WLength {
 	/**
 	 * Creates a length with value and unit.
 	 * <p>
+	 * 
 	 * This constructor is also used for the implicit conversion of a double to
 	 * a {@link WLength}, assuming a pixel unit.
 	 */
@@ -185,6 +188,7 @@ public class WLength {
 	/**
 	 * Returns the (approximate) length in pixels.
 	 * <p>
+	 * 
 	 * When the length {@link WLength#isAuto() isAuto()}, 0 is returned,
 	 * otherwise the approximate length in pixels.
 	 */

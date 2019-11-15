@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A proxy model for Wt&apos;s item models that provides filtering and/or
+ * A proxy model for JWt&apos;s item models that provides filtering and/or
  * sorting.
  * <p>
  * 
@@ -61,7 +61,6 @@ import org.slf4j.LoggerFactory;
  * setDynamicSortFilter()}.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {@code
@@ -75,11 +74,12 @@ import org.slf4j.LoggerFactory;
  *  proxy.setFilterKeyColumn(0);
  *  proxy.setFilterRole(ItemDataRole.UserRole);
  *  proxy.setFilterRegExp(".*");
- * 		 
+ *           
  *  // configure a view to use the proxy model instead of the source model
  *  WTreeView view = new WTreeView(this);
  *  view.setModel(proxy);
  *  ...
+ *  
  * }
  * </pre>
  */
@@ -145,6 +145,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Sets the source model.
 	 * <p>
+	 * 
 	 * The source model provides the actual data for the proxy model.
 	 * <p>
 	 * Ownership of the source model is <i>not</i> transferred.
@@ -296,6 +297,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Specify the column on which the filtering is applied.
 	 * <p>
+	 * 
 	 * This configures the column on which the
 	 * {@link WSortFilterProxyModel#getFilterRegExp() getFilterRegExp()} is
 	 * applied.
@@ -323,6 +325,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Specify a regular expression for filtering.
 	 * <p>
+	 * 
 	 * This configures the regular expression used for filtering on
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn()}.
 	 * <p>
@@ -375,10 +378,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Specify the data role used for filtering.
 	 * <p>
+	 * 
 	 * This configures the data role used for filtering on
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn()}.
 	 * <p>
-	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
+	 * The default value is {@link ItemDataRole#DisplayRole}.
 	 * <p>
 	 * 
 	 * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
@@ -401,9 +405,10 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Specify the data role used used for sorting.
 	 * <p>
+	 * 
 	 * This configures the data role used for sorting.
 	 * <p>
-	 * The default value is {@link ItemDataRole#DisplayRole DisplayRole}.
+	 * The default value is {@link ItemDataRole#DisplayRole}.
 	 * <p>
 	 */
 	public void setSortRole(int role) {
@@ -423,6 +428,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the current sort column.
 	 * <p>
+	 * 
 	 * When {@link WSortFilterProxyModel#sort(int column, SortOrder order)
 	 * sort()} has not been called, the model is unsorted, and this method
 	 * returns -1.
@@ -447,9 +453,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Configure the proxy to dynamically track changes in the source model.
 	 * <p>
+	 * 
 	 * When <code>enable</code> is <code>true</code>, the proxy will re-filter
 	 * and re-sort the model when changes happen to the source model.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This may be ackward when editing through the proxy model,
 	 * since changing some data may rearrange the model and thus invalidate
@@ -474,6 +482,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Invalidates the current filter.
 	 * <p>
+	 * 
 	 * This refilters and resorts the model, and is useful only if you have
 	 * reimplemented
 	 * {@link WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent)
@@ -538,6 +547,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Inserts a number rows.
 	 * <p>
+	 * 
 	 * The rows are inserted in the source model, and if successful, also in the
 	 * proxy model regardless of whether they are matched by the current filter.
 	 * They are inserted at the indicated row, regardless of whether this is the
@@ -577,6 +587,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Removes a number rows.
 	 * <p>
+	 * 
 	 * The rows are removed from the source model.
 	 */
 	public boolean removeRows(int row, int count, final WModelIndex parent) {
@@ -600,6 +611,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns whether a source row is accepted by the filter.
 	 * <p>
+	 * 
 	 * The default implementation uses
 	 * {@link WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn()},
 	 * {@link WSortFilterProxyModel#getFilterRole() getFilterRole()} and
@@ -623,6 +635,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 	/**
 	 * Compares two indexes.
 	 * <p>
+	 * 
 	 * The default implementation uses
 	 * {@link WSortFilterProxyModel#getSortRole() getSortRole()} and an ordering
 	 * using the operator&lt; when the data is of the same type or compares

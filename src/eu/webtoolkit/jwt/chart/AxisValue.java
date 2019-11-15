@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that indicates a logical location for an axis.
  * <p>
+ * 
  * The location is dependent on the values of the other axis.
  * <p>
  * 

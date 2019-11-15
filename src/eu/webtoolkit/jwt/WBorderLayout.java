@@ -26,15 +26,15 @@ import org.slf4j.LoggerFactory;
  * The five regions are composed of:
  * 
  * <pre>
- *      ------------------------------------
- *      |              North               |
- *      ------------------------------------
- *      |      |                    |      |
- *      | West |       Center       | East |
- *      |      |                    |      |
- *      ------------------------------------
- *      |              South               |
- *      ------------------------------------
+ *   ------------------------------------
+ *   |              North               |
+ *   ------------------------------------
+ *   |      |                    |      |
+ *   | West |       Center       | East |
+ *   |      |                    |      |
+ *   ------------------------------------
+ *   |              South               |
+ *   ------------------------------------
  * </pre>
  * <p>
  * Each region may hold no more than one widget, and for all but the Center
@@ -51,19 +51,19 @@ public class WBorderLayout extends WLayout {
 	 */
 	public enum Position {
 		/**
-		 * North (top).
+		 * North (top)
 		 */
 		North,
 		/**
-		 * East (right).
+		 * East (right)
 		 */
 		East,
 		/**
-		 * South (bottom).
+		 * South (bottom)
 		 */
 		South,
 		/**
-		 * West (left).
+		 * West (left)
 		 */
 		West,
 		/**
@@ -134,6 +134,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Sets spacing between each item.
 	 * <p>
+	 * 
 	 * The default spacing is 6 pixels.
 	 */
 	public void setSpacing(int size) {
@@ -205,6 +206,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Adds a widget to the given position.
 	 * <p>
+	 * 
 	 * Only one widget per position is supported.
 	 * <p>
 	 * 
@@ -217,6 +219,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Adds a layout item to the given position.
 	 * <p>
+	 * 
 	 * Only one widget per position is supported.
 	 */
 	public void add(WLayoutItem item, WBorderLayout.Position position) {
@@ -232,6 +235,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Returns the widget at a position.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if no widget was set for that position.
 	 */
 	public WWidget widgetAt(WBorderLayout.Position position) {
@@ -247,6 +251,7 @@ public class WBorderLayout extends WLayout {
 	/**
 	 * Returns the item at a position.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if no item was set for that position.
 	 */
 	public WLayoutItem getItemAt(WBorderLayout.Position position) {

@@ -27,18 +27,18 @@ import org.slf4j.LoggerFactory;
  * by a {@link WResource}.
  * <p>
  * You may listen to events by attaching event listeners to signals such as
- * {@link WInteractWidget#clicked() WInteractWidget#clicked()}. Since mouse
- * events pass the coordinates through a {@link WMouseEvent} object, it is
- * possible to react to clicks in specific parts of the image. An alternative is
- * to define interactive areas on the image using
- * {@link WImage#addArea(WAbstractArea area) addArea()}, which in addition
- * allows to have customized tool tips for certain image areas (using
- * {@link WAbstractArea#setToolTip(CharSequence text)
+ * {@link WInteractWidget#clicked()}. Since mouse events pass the coordinates
+ * through a {@link WMouseEvent} object, it is possible to react to clicks in
+ * specific parts of the image. An alternative is to define interactive areas on
+ * the image using {@link WImage#addArea(WAbstractArea area) addArea()}, which
+ * in addition allows to have customized tool tips for certain image areas
+ * (using {@link WAbstractArea#setToolTip(CharSequence text)
  * WAbstractArea#setToolTip()}).
  * <p>
- * WImage is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WImage is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;img&gt;</code> tag and does not
  * provide styling. It can be styled using inline or external CSS as
@@ -77,6 +77,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Creates an image widget with a given image link.
 	 * <p>
+	 * 
 	 * The <code>imageLink</code> may link to a URL or resource.
 	 */
 	public WImage(final WLink link, WContainerWidget parent) {
@@ -103,6 +104,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Creates an image widget with a given image link and alternate text.
 	 * <p>
+	 * 
 	 * The <code>imageLink</code> may link to a URL or resource.
 	 */
 	public WImage(final WLink link, final CharSequence altText,
@@ -229,13 +231,14 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Sets an alternate text.
 	 * <p>
+	 * 
 	 * The alternate text should provide a fallback for browsers that do not
 	 * display an image. If no sensible fallback text can be provided, an empty
 	 * text is preferred over nonsense.
 	 * <p>
-	 * This should not be confused with {@link WWebWidget#getToolTip()
-	 * WWebWidget#getToolTip()} text, which provides additional information that
-	 * is displayed when the mouse hovers over the image.
+	 * This should not be confused with {@link WWebWidget#getToolTip()} text,
+	 * which provides additional information that is displayed when the mouse
+	 * hovers over the image.
 	 * <p>
 	 * The default alternate text is an empty text (&quot;&quot;).
 	 * <p>
@@ -265,6 +268,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Sets the image link.
 	 * <p>
+	 * 
 	 * The image may be specified as a URL or as a resource. A resource
 	 * specifies application-dependent content, which may be used to generate an
 	 * image on demand.
@@ -289,7 +293,6 @@ public class WImage extends WInteractWidget {
 
 	/**
 	 * Returns the image link.
-	 * <p>
 	 */
 	public WLink getImageLink() {
 		return this.imageLink_;
@@ -309,6 +312,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the image URL (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * When the image is specified as a resource, this returns the current
 	 * resource URL.
 	 * <p>
@@ -333,6 +337,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the image resource (<b>deprecated</b>.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if no image resource was set.
 	 * <p>
 	 * 
@@ -346,6 +351,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Adds an interactive area.
 	 * <p>
+	 * 
 	 * Adds the <code>area</code> which listens to events in a specific region
 	 * of the image. Areas are organized in an indexed list, to which the given
 	 * <code>area</code> is appended. When areas overlap, the area with the
@@ -354,7 +360,10 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * @see WImage#insertArea(int index, WAbstractArea area) <p>
+	 * @see WImage#insertArea(int index, WAbstractArea area)
+	 * 
+	 * 
+	 *      <p>
 	 *      <i><b>Note: </b>Currently it is not possible to add a first area
 	 *      after the image has been rendered. If you want to use interactive
 	 *      areas you need to add one immediately. </i>
@@ -367,6 +376,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Inserts an interactive area.
 	 * <p>
+	 * 
 	 * Inserts the <code>area</code> which listens to events in the coresponding
 	 * area of the image. Areas are organized in a list, and the <i>area</i> is
 	 * inserted at index <code>index</code>. When areas overlap, the area with
@@ -375,7 +385,10 @@ public class WImage extends WInteractWidget {
 	 * Ownership of the <code>area</code> is transferred to the image.
 	 * <p>
 	 * 
-	 * @see WImage#addArea(WAbstractArea area) <p>
+	 * @see WImage#addArea(WAbstractArea area)
+	 * 
+	 * 
+	 *      <p>
 	 *      <i><b>Note: </b>Currently it is not possible to add a first area
 	 *      after the image has been rendered. If you want to use interactive
 	 *      areas you need to add one immediately. </i>
@@ -393,6 +406,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Removes an interactive area.
 	 * <p>
+	 * 
 	 * Removes the <code>area</code> from this widget, and also returns the
 	 * ownership.
 	 * <p>
@@ -411,6 +425,7 @@ public class WImage extends WInteractWidget {
 	/**
 	 * Returns the interactive area at the given index.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if <code>index</code> was invalid.
 	 * <p>
 	 * 
@@ -535,7 +550,7 @@ public class WImage extends WInteractWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WImage.js", wtjs1());
 		StringBuilder ss = new StringBuilder();
-		ss.append("new Wt3_4_1.WImage(").append(app.getJavaScriptClass())
+		ss.append("new Wt3_4_2.WImage(").append(app.getJavaScriptClass())
 				.append(",").append(this.getJsRef()).append(",")
 				.append(this.targetJS_).append(");");
 		this.doJavaScript(ss.toString());

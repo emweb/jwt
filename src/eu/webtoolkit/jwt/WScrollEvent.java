@@ -61,6 +61,7 @@ public class WScrollEvent implements WAbstractEvent {
 	/**
 	 * Returns the current horizontal viewport width.
 	 * <p>
+	 * 
 	 * Returns the current viewport width.
 	 * <p>
 	 * 
@@ -74,6 +75,7 @@ public class WScrollEvent implements WAbstractEvent {
 	/**
 	 * Returns the current horizontal viewport height.
 	 * <p>
+	 * 
 	 * Returns the current viewport height.
 	 * <p>
 	 * 

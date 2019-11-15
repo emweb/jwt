@@ -74,6 +74,7 @@ public class WDropEvent {
 	/**
 	 * Returns the source of the drag&amp;drop operation.
 	 * <p>
+	 * 
 	 * The source is the widget that was set draggable using
 	 * {@link WInteractWidget#setDraggable(String mimeType, WWidget dragWidget, boolean isDragWidgetOnly, WObject sourceObject)
 	 * WInteractWidget#setDraggable()}.
@@ -92,6 +93,7 @@ public class WDropEvent {
 	/**
 	 * Returns the original mouse event.
 	 * <p>
+	 * 
 	 * If eventType() == MouseEvent, this returns the original mouse event,
 	 * otherwise this returns null.
 	 */
@@ -102,6 +104,7 @@ public class WDropEvent {
 	/**
 	 * Returns the original touch event.
 	 * <p>
+	 * 
 	 * If eventType() == TouchEvent, this returns the original touch event,
 	 * otherwise this returns null.
 	 */

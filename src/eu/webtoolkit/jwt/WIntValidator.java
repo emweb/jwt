@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * pre-defined range.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
@@ -43,6 +44,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Creates a new integer validator that accepts any integer.
 	 * <p>
+	 * 
 	 * The validator will accept numbers using the current locale&apos;s format.
 	 * <p>
 	 */
@@ -68,7 +70,6 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Creates a new integer validator that accepts integer input within the
 	 * given range.
-	 * <p>
 	 */
 	public WIntValidator(int bottom, int top, WObject parent) {
 		super(parent);
@@ -101,6 +102,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Sets the bottom of the valid integer range.
 	 * <p>
+	 * 
 	 * The default value is the minimum integer value.
 	 */
 	public void setBottom(int bottom) {
@@ -120,6 +122,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Sets the top of the valid integer range.
 	 * <p>
+	 * 
 	 * The default value is the maximum integer value.
 	 */
 	public void setTop(int top) {
@@ -140,6 +143,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents an integer within the valid range.
 	 */
@@ -174,6 +178,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Sets the message to display when the input is not a number.
 	 * <p>
+	 * 
 	 * The default value is &quot;Must be an integer number.&quot;
 	 */
 	public void setInvalidNotANumberText(final CharSequence text) {
@@ -198,6 +203,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Sets the message to display when the number is too small.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WIntValidator#getBottom() getBottom()} and
 	 * {@link WIntValidator#getTop() getTop()} are real bounds, the default
 	 * message is &quot;The number must be between {1} and {2}&quot; or
@@ -237,6 +243,7 @@ public class WIntValidator extends WValidator {
 	/**
 	 * Sets the message to display when the number is too large.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WIntValidator#getBottom() getBottom()} and
 	 * {@link WIntValidator#getTop() getTop()} are real bounds, the default
 	 * message is &quot;The number must be between {1} and {2}&quot; or
@@ -299,7 +306,7 @@ public class WIntValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_1.WIntValidator(").append(this.isMandatory())
+		js.append("new Wt3_4_2.WIntValidator(").append(this.isMandatory())
 				.append(',');
 		if (this.bottom_ != Integer.MIN_VALUE) {
 			js.append(this.bottom_);

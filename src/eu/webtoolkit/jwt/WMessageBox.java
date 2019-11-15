@@ -36,32 +36,38 @@ import org.slf4j.LoggerFactory;
  * the result and delete the message box.
  * <p>
  * The synchronous use of a messagebox involves the use of the static
- * {@link WWidget#show() WWidget#show()} method, which blocks the current thread
- * until the user has processed the messabebox. Since this uses the
+ * {@link WWidget#show()} method, which blocks the current thread until the user
+ * has processed the messabebox. Since this uses the
  * {@link WDialog#exec(WAnimation animation) WDialog#exec()}, it suffers from
  * the same scalability issues as well as limitations. See documentation of
  * {@link WDialog} for more details.
  * <p>
  * This will show a message box that looks like this:
  * <p>
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * 
+ * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
- * <td><div align="center"> <img src="doc-files//WMessageBox-default-1.png"
- * alt="Example of a WMessageBox (default)">
+ * <td><div align="center"> <img src="doc-files/WMessageBox-default-1.png">
  * <p>
  * <strong>Example of a WMessageBox (default)</strong>
  * </p>
- * </div></td>
- * <td><div align="center"> <img src="doc-files//WMessageBox-polished-1.png"
- * alt="Example of a WMessageBox (polished)">
+ * </div>
+ * 
+ * </td>
+ * <td><div align="center"> <img src="doc-files/WMessageBox-polished-1.png">
  * <p>
  * <strong>Example of a WMessageBox (polished)</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in the {@link WMessageBox} buttons can be translated by
  * overriding the default values for the following localization keys:
@@ -149,6 +155,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Returns the text widget.
 	 * <p>
+	 * 
 	 * This may be useful to customize the style or layout of the displayed
 	 * text.
 	 */
@@ -194,6 +201,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Adds a custom button.
 	 * <p>
+	 * 
 	 * When the button is clicked, the associated result will be returned.
 	 */
 	public void addButton(WPushButton button, StandardButton result) {
@@ -210,6 +218,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Adds a custom button with given text.
 	 * <p>
+	 * 
 	 * When the button is clicked, the associated result will be returned.
 	 */
 	public WPushButton addButton(final CharSequence text, StandardButton result) {
@@ -290,13 +299,6 @@ public class WMessageBox extends WDialog {
 
 	/**
 	 * Returns the buttons.
-	 * <p>
-	 * <p>
-	 * <i><b>Note: </b>{@link WMessageBox#getButtons() getButtons()} returning
-	 * {@link MessageBox} has been renamed to
-	 * {@link WMessageBox#getStandardButtons() getStandardButtons()} in JWt
-	 * 3.3.1 </i>
-	 * </p>
 	 */
 	public List<WPushButton> getButtons() {
 		List<WPushButton> result = new ArrayList<WPushButton>();
@@ -309,6 +311,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Returns the button widget for the given standard button.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if the button isn&apos;t in the message box.
 	 * <p>
 	 * This may be useful to customize the style or layout of the button.
@@ -325,6 +328,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Sets the button as the default button.
 	 * <p>
+	 * 
 	 * The default button is pressed when the user presses enter. Only one
 	 * button can be the default button.
 	 * <p>
@@ -344,6 +348,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Sets the button as the default button.
 	 * <p>
+	 * 
 	 * The default button is pressed when the user presses enter. Only one
 	 * button can be the default button.
 	 * <p>
@@ -369,6 +374,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Sets the escape button.
 	 * <p>
+	 * 
 	 * The escape button is pressed when the user presses escapes.
 	 * <p>
 	 * If no escape button is set, JWt will take a button that is associated
@@ -381,6 +387,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Sets the escape button.
 	 * <p>
+	 * 
 	 * The escape button is pressed when the user presses escapes.
 	 * <p>
 	 * If no escape button is set, JWt will take a button that is associated
@@ -406,6 +413,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Returns the result of this message box.
 	 * <p>
+	 * 
 	 * This value is only defined after the dialog is finished.
 	 */
 	public StandardButton getButtonResult() {
@@ -415,6 +423,7 @@ public class WMessageBox extends WDialog {
 	/**
 	 * Convenience method to show a message box, blocking the current thread.
 	 * <p>
+	 * 
 	 * Show a message box, blocking the current thread until the message box is
 	 * closed, and return the result. The use of this method is not recommended
 	 * since it uses {@link WDialog#exec(WAnimation animation) WDialog#exec()}.

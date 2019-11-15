@@ -29,31 +29,32 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The current selection may be set and read using
  * {@link WComboBox#setCurrentIndex(int index) WComboBox#setCurrentIndex()} and
- * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()}, for
- * {@link SelectionMode#SingleSelection SingleSelection} mode, or
+ * {@link WComboBox#getCurrentIndex()}, for
+ * {@link SelectionMode#SingleSelection} mode, or
  * {@link WSelectionBox#setSelectedIndexes(Set selection) setSelectedIndexes()}
  * and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes()} for
  * {@link SelectionMode#ExtendedSelection} mode. The
- * {@link WComboBox#activated() WComboBox#activated()} and
- * {@link WComboBox#sactivated() WComboBox#sactivated()} signals are not emited
- * in the {@link SelectionMode#ExtendedSelection} mode, use the
- * {@link WFormWidget#changed() WFormWidget#changed()} signal.
+ * {@link WComboBox#activated()} and {@link WComboBox#sactivated()} signals are
+ * not emited in the {@link SelectionMode#ExtendedSelection} mode, use the
+ * {@link WFormWidget#changed()} signal.
  * <p>
  * WSelectionBox is an MVC view class, using a simple string list model by
  * default. The model may be populated using
  * {@link WComboBox#addItem(CharSequence text) WComboBox#addItem()} or
  * {@link WComboBox#insertItem(int index, CharSequence text)
  * WComboBox#insertItem()} and the contents can be cleared through
- * {@link WComboBox#clear() WComboBox#clear()}. These methods manipulate the
- * underlying {@link WComboBox#getModel() WComboBox#getModel()}.
+ * {@link WComboBox#clear()}. These methods manipulate the underlying
+ * {@link WComboBox#getModel()}.
  * <p>
  * To use the selectionbox with a custom model instead of the default
  * {@link WStringListModel}, use
  * {@link WComboBox#setModel(WAbstractItemModel model) WComboBox#setModel()}.
  * <p>
- * WSelectionBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WSelectionBox is an {@link WWidget#setInline(boolean inlined) inline }
+ * widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;select&gt;</code> tag and does
  * not provide styling. It can be styled using inline or external CSS as
@@ -94,6 +95,7 @@ public class WSelectionBox extends WComboBox {
 	/**
 	 * Sets the number of items that are visible.
 	 * <p>
+	 * 
 	 * If more items are available, a scroll-bar is provided.
 	 */
 	public void setVerticalSize(int items) {
@@ -105,6 +107,7 @@ public class WSelectionBox extends WComboBox {
 	/**
 	 * Sets the selection mode.
 	 * <p>
+	 * 
 	 * The default selection mode is SingleSelection. You can change to
 	 * {@link SelectionMode#ExtendedSelection} to allow selection of multiple
 	 * items.
@@ -144,11 +147,11 @@ public class WSelectionBox extends WComboBox {
 	 * Returns the current selection (in {@link SelectionMode#ExtendedSelection}
 	 * mode).
 	 * <p>
+	 * 
 	 * Get the list of currently selected items. This method is only defined
 	 * when {@link WSelectionBox#getSelectionMode() getSelectionMode()} is
 	 * {@link SelectionMode#ExtendedSelection}. Otherwise, you should use
-	 * {@link WComboBox#getCurrentIndex() WComboBox#getCurrentIndex()} to get
-	 * item currently selected.
+	 * {@link WComboBox#getCurrentIndex()} to get item currently selected.
 	 * <p>
 	 * 
 	 * @see WComboBox#getCurrentIndex()
@@ -164,6 +167,7 @@ public class WSelectionBox extends WComboBox {
 	/**
 	 * Sets the selection (in {@link SelectionMode#ExtendedSelection} mode).
 	 * <p>
+	 * 
 	 * For an {@link SelectionMode#ExtendedSelection} mode, set the list of
 	 * currently selected items.
 	 * <p>
@@ -183,6 +187,7 @@ public class WSelectionBox extends WComboBox {
 	/**
 	 * Clears the current selection.
 	 * <p>
+	 * 
 	 * Clears the current selection.
 	 * <p>
 	 * 

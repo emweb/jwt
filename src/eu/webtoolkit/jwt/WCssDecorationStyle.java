@@ -24,9 +24,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * You can manipulate the decoration style of a single widget using
- * {@link WWidget#getDecorationStyle() WWidget#getDecorationStyle()} or you can
- * use a {@link WCssDecorationStyle} to add a rule to the inline style sheet
- * using
+ * {@link WWidget#getDecorationStyle()} or you can use a
+ * {@link WCssDecorationStyle} to add a rule to the inline style sheet using
  * {@link WCssStyleSheet#addRule(String selector, WCssDecorationStyle style, String ruleName)
  * WCssStyleSheet#addRule()}.
  */
@@ -166,6 +165,7 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets a custom cursor image Url.
 	 * <p>
+	 * 
 	 * The Url should point to a .cur file (this shoul be a real .cur file,
 	 * renaming an .ico is not enough for Internet Explorer).
 	 */
@@ -225,6 +225,7 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets a background image.
 	 * <p>
+	 * 
 	 * The <code>link</code> may be a URL or a resource.
 	 * <p>
 	 * The image may be placed in a particular location by specifying sides by
@@ -293,6 +294,7 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets a background image.
 	 * <p>
+	 * 
 	 * The image may be placed in a particular location by specifying sides by
 	 * OR&apos;ing {@link Side} values together, e.g. (Right | Top).
 	 */
@@ -385,6 +387,7 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets the border style.
 	 * <p>
+	 * 
 	 * The given <code>border</code> will be set for the specified
 	 * <code>sides</code>.
 	 * <p>
@@ -427,12 +430,16 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Returns the border style.
 	 * <p>
+	 * 
 	 * Returns the border style set using
 	 * {@link WCssDecorationStyle#setBorder(WBorder border, EnumSet sides)
 	 * setBorder()} for the given <code>side</code>.
 	 * <p>
 	 * 
-	 * @see WCssDecorationStyle#setBorder(WBorder border, EnumSet sides) <p>
+	 * @see WCssDecorationStyle#setBorder(WBorder border, EnumSet sides)
+	 * 
+	 * 
+	 *      <p>
 	 *      <i><b>Note: </b>Prior to version 3.1.9 it was not possible to pass a
 	 *      side and only one border could be configured. </i>
 	 *      </p>
@@ -486,6 +493,7 @@ public class WCssDecorationStyle extends WObject {
 	/**
 	 * Sets text decoration options.
 	 * <p>
+	 * 
 	 * You may logically or together any of the options of the TextDecoration
 	 * enumeration.
 	 * <p>

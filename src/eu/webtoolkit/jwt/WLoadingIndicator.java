@@ -39,13 +39,14 @@ public interface WLoadingIndicator {
 	/**
 	 * Returns the widget that visually represents the indicator.
 	 * <p>
+	 * 
 	 * You should reimplement this method to return a widget that will be shown
 	 * to indicate that a response is pending. The widget should be positioned
 	 * using CSS.
 	 * <p>
-	 * The widget will be shown and hidden using {@link WWidget#show()
-	 * WWidget#show()} and {@link WWidget#hide() WWidget#hide()}. If you want to
-	 * customize this behaviour, you should reimplement the
+	 * The widget will be shown and hidden using {@link WWidget#show()} and
+	 * {@link WWidget#hide()}. If you want to customize this behaviour, you
+	 * should reimplement the
 	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
 	 * WWidget#setHidden()} method. Note that show() and hide() are stateless
 	 * slots, and thus you need to make sure that your implementation comforms
@@ -53,9 +54,10 @@ public interface WLoadingIndicator {
 	 * server-side implementation will only be called during stateless slot
 	 * prelearning).
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The widget will not be added to the
-	 * {@link WApplication#getRoot() WApplication#getRoot()} container. </i>
+	 * {@link WApplication#getRoot()} container. </i>
 	 * </p>
 	 */
 	public WWidget getWidget();
@@ -63,6 +65,7 @@ public interface WLoadingIndicator {
 	/**
 	 * Sets the message that you want to be displayed.
 	 * <p>
+	 * 
 	 * If the indicator is capable of displaying a text message, then you should
 	 * reimplement this method to allow this message to be modified.
 	 */

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * See {@link WTableView} or {@link WTreeView} for a description.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
@@ -96,7 +97,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 		/**
 		 * Editors can only be closed using
 		 * {@link WAbstractItemView#closeEditor(WModelIndex index, boolean saveData)
-		 * closeEditor()}.
+		 * closeEditor()}
 		 */
 		LeaveEditorsOpen;
 
@@ -154,6 +155,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the model.
 	 * <p>
+	 * 
 	 * The View will display data of the given <code>model</code> and changes in
 	 * the model are reflected by the View.
 	 * <p>
@@ -210,6 +212,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the root index.
 	 * <p>
+	 * 
 	 * The root index is the model index that is considered the root node. This
 	 * node itself is not rendered, but its children are.
 	 * <p>
@@ -247,6 +250,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the default item delegate.
 	 * <p>
+	 * 
 	 * The previous delegate is not deleted. This item delegate is for all
 	 * columns for which no specific item delegate is set.
 	 * <p>
@@ -279,6 +283,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the delegate for a column.
 	 * <p>
+	 * 
 	 * A delegate previously set (if any) is not deleted.
 	 * <p>
 	 * 
@@ -298,6 +303,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the delegate that was set for a column.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if no delegate was set for the column.
 	 * <p>
 	 * 
@@ -323,6 +329,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the delegate for a column.
 	 * <p>
+	 * 
 	 * Returns either the delegate that was set for the column, or the default
 	 * delegate.
 	 */
@@ -334,6 +341,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the widget that renders an item.
 	 * <p>
+	 * 
 	 * This returns the widget that renders the given item. This may return 0 if
 	 * the item is currently not rendered.
 	 * <p>
@@ -345,6 +353,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the header item delegate.
 	 * <p>
+	 * 
 	 * This item delegate is used for rendering items in the header.
 	 * <p>
 	 * The previous delegate is not deleted. This item delegate is for all
@@ -370,6 +379,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the content alignment for a column.
 	 * <p>
+	 * 
 	 * The default value is {@link AlignmentFlag#AlignLeft}.
 	 * <p>
 	 * 
@@ -417,6 +427,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the header alignment for a column.
 	 * <p>
+	 * 
 	 * The default alignemnt is horizontally left, and vertically centered. (
 	 * {@link AlignmentFlag#AlignLeft} | {@link AlignmentFlag#AlignMiddle}).
 	 * <p>
@@ -506,6 +517,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Configures header text wrapping.
 	 * <p>
+	 * 
 	 * This setting only affects a multiline header, and the default value is
 	 * <code>true</code>. When set to <code>false</code>, the header itself will
 	 * not wrap (as with a vertically centered header), and thus extra widgets
@@ -529,6 +541,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets if alternating row colors are to be used.
 	 * <p>
+	 * 
 	 * Configure whether rows get alternating background colors, defined by the
 	 * current CSS theme.
 	 * <p>
@@ -541,6 +554,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns whether alternating row colors are used.
 	 * <p>
+	 * 
 	 * When enabled, rows are displayed in alternating row colors, according to
 	 * the current theme&apos;s definition.
 	 * <p>
@@ -554,6 +568,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sorts the data according to a column.
 	 * <p>
+	 * 
 	 * Sorts the data according to data in column <code>column</code> and sort
 	 * order <code>order</code>.
 	 * <p>
@@ -611,6 +626,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Enables or disables sorting for all columns.
 	 * <p>
+	 * 
 	 * Enable or disable sorting by the user on all columns.
 	 * <p>
 	 * Sorting is enabled by default.
@@ -629,6 +645,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Enables or disables sorting for a single column.
 	 * <p>
+	 * 
 	 * Enable or disable sorting by the user for a specific column.
 	 * <p>
 	 * Sorting is enabled by default.
@@ -664,6 +681,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Enables interactive column resizing.
 	 * <p>
+	 * 
 	 * Enable or disable column resize handles for interactive resizing of the
 	 * columns.
 	 * <p>
@@ -692,16 +710,17 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Changes the selection behaviour.
 	 * <p>
+	 * 
 	 * The selection behavior indicates whether whole rows or individual items
 	 * can be selected. It is a property of the
 	 * {@link WAbstractItemView#getSelectionModel() getSelectionModel()}.
 	 * <p>
 	 * By default, selection operates on rows (
-	 * {@link SelectionBehavior#SelectRows SelectRows}), in which case model
-	 * indexes will always be in the first column (column <code>null</code>).
+	 * {@link SelectionBehavior#SelectRows}), in which case model indexes will
+	 * always be in the first column (column <code>null</code>).
 	 * <p>
 	 * Alternatively, you can allow selection for individual items (
-	 * {@link SelectionBehavior#SelectItems SelectItems}).
+	 * {@link SelectionBehavior#SelectItems}).
 	 * <p>
 	 * 
 	 * @see WItemSelectionModel#setSelectionBehavior(SelectionBehavior behavior)
@@ -727,8 +746,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * By default selection is disabled ({@link SelectionMode#NoSelection
-	 * NoSelection}).
+	 * 
+	 * By default selection is disabled ({@link SelectionMode#NoSelection}).
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setSelectionBehavior(SelectionBehavior behavior)
@@ -753,6 +772,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the selection model.
 	 * <p>
+	 * 
 	 * The selection model keeps track of the currently selected items.
 	 */
 	public WItemSelectionModel getSelectionModel() {
@@ -762,10 +782,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the selected items.
 	 * <p>
+	 * 
 	 * Replaces the current selection with <code>indexes</code>.
 	 * <p>
-	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
-	 * SelectRows}), it is sufficient to pass the first element in a row (column
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows}),
+	 * it is sufficient to pass the first element in a row (column
 	 * <code>null</code> ) to select the entire row.
 	 * <p>
 	 * 
@@ -824,17 +845,19 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns wheter an item is selected.
 	 * <p>
-	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
-	 * SelectRows}), this method returns true for each element in a selected
-	 * row.
+	 * 
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows}),
+	 * this method returns true for each element in a selected row.
 	 * <p>
 	 * This is a convenience method for:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    selectionModel().isSelected(index)
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#getSelectedIndexes()
@@ -848,20 +871,23 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the set of selected items.
 	 * <p>
+	 * 
 	 * The model indexes are returned as a set, topologically ordered (in the
 	 * order they appear in the view).
 	 * <p>
-	 * When selection operates on rows ({@link SelectionBehavior#SelectRows
-	 * SelectRows}), this method only returns the model index of first
-	 * column&apos;s element of the selected rows.
+	 * When selection operates on rows ({@link SelectionBehavior#SelectRows}),
+	 * this method only returns the model index of first column&apos;s element
+	 * of the selected rows.
 	 * <p>
 	 * This is a convenience method for:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    selectionModel().selectedIndexes()
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setSelectedIndexes(SortedSet indexes)
@@ -873,14 +899,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Enables the selection to be dragged (drag &amp; drop).
 	 * <p>
+	 * 
 	 * To enable dragging of the selection, you first need to enable selection
 	 * using {@link WAbstractItemView#setSelectionMode(SelectionMode mode)
 	 * setSelectionMode()}.
 	 * <p>
 	 * Whether an individual item may be dragged is controlled by the
-	 * item&apos;s {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled} flag.
-	 * The selection can be dragged only if all items currently selected can be
-	 * dragged.
+	 * item&apos;s {@link ItemFlag#ItemIsDragEnabled} flag. The selection can be
+	 * dragged only if all items currently selected can be dragged.
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setDropsEnabled(boolean enable)
@@ -902,16 +928,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Enables drop operations (drag &amp; drop).
 	 * <p>
+	 * 
 	 * When drop is enabled, the tree view will indicate that something may be
 	 * dropped when the mime-type of the dragged object is compatible with one
 	 * of the model&apos;s accepted drop mime-types (see
-	 * {@link WAbstractItemModel#getAcceptDropMimeTypes()
-	 * WAbstractItemModel#getAcceptDropMimeTypes()}) or this widget&apos;s
-	 * accepted drop mime-types (see
+	 * {@link WAbstractItemModel#getAcceptDropMimeTypes()}) or this
+	 * widget&apos;s accepted drop mime-types (see
 	 * {@link WWidget#acceptDrops(String mimeType, String hoverStyleClass)
 	 * WWidget#acceptDrops()}), and the target item has drop enabled (which is
-	 * controlled by the item&apos;s {@link ItemFlag#ItemIsDropEnabled
-	 * ItemIsDropEnabled} flag).
+	 * controlled by the item&apos;s {@link ItemFlag#ItemIsDropEnabled} flag).
 	 * <p>
 	 * Drop events must be handled in
 	 * {@link WAbstractItemView#dropEvent(WDropEvent e, WModelIndex index)
@@ -931,14 +956,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the row height.
 	 * <p>
+	 * 
 	 * The view renders all rows with a same height. This method configures this
 	 * row height.
 	 * <p>
 	 * The default value is 20 pixels.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The height must be specified in
-	 * {@link WLength.Unit#Pixel} units.</i>
+	 * {@link WLength.Unit#Pixel Unit#Pixel} units.</i>
 	 * </p>
 	 * 
 	 * @see WAbstractItemView#setColumnWidth(int column, WLength width)
@@ -957,14 +984,19 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the column width.
 	 * <p>
+	 * 
 	 * The default column width is 150 pixels.
 	 * <p>
+	 * 
 	 * <p>
-	 * <i><b>Note: </b>The width must be specified in {@link WLength.Unit#Pixel}
-	 * units.
+	 * <i><b>Note: </b>The width must be specified in {@link WLength.Unit#Pixel
+	 * Unit#Pixel} units.</i>
+	 * </p>
+	 * 
+	 * 
 	 * <p>
-	 * The actual space occupied by each column is the column width augmented by
-	 * 7 pixels for internal padding and a border. </i>
+	 * <i><b>Note: </b>The actual space occupied by each column is the column
+	 * width augmented by 7 pixels for internal padding and a border. </i>
 	 * </p>
 	 */
 	public abstract void setColumnWidth(int column, final WLength width);
@@ -1022,8 +1054,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	}
 
 	/**
-	 * Sets the column border color (deprecated).
+	 * Sets the column border color (deprecated)
 	 * <p>
+	 * 
 	 * This method has no effect. The border color should be set using CSS.
 	 * <p>
 	 * 
@@ -1038,11 +1071,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the header height.
 	 * <p>
+	 * 
 	 * The default value is 20 pixels.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The height must be specified in
-	 * {@link WLength.Unit#Pixel} units. </i>
+	 * {@link WLength.Unit#Pixel Unit#Pixel} units. </i>
 	 * </p>
 	 */
 	public void setHeaderHeight(final WLength height) {
@@ -1064,6 +1099,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * Sets the header height, and vertical alignment (<b>deprecated</b>). By
 	 * default, the header text is a single line that is centered vertically.
 	 * <p>
+	 * 
 	 * Along with setting the header height, this also configures vertical
 	 * aligment and header label word wrapping. This has been deprecated in
 	 * favour of the more fine grained control using
@@ -1116,6 +1152,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the number of pages.
 	 * <p>
+	 * 
 	 * When Ajax/JavaScript is not available, the view will use a paging
 	 * navigation bar to allow scrolling through the data. This returns the
 	 * number of pages currently shown.
@@ -1129,6 +1166,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the page size.
 	 * <p>
+	 * 
 	 * When Ajax/JavaScript is not available, the view will use a paging
 	 * navigation bar to allow scrolling through the data. This returns the
 	 * number of items per page.
@@ -1142,6 +1180,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the current page.
 	 * <p>
+	 * 
 	 * When Ajax/JavaScript is not available, the view will use a paging
 	 * navigation bar to allow scrolling through the data. This returns the
 	 * current page (between 0 and {@link WAbstractItemView#getPageCount()
@@ -1156,6 +1195,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Sets the current page.
 	 * <p>
+	 * 
 	 * When Ajax/JavaScript is not available, the view will use a paging
 	 * navigation bar to allow scrolling through the data. This method can be
 	 * used to change the current page.
@@ -1169,10 +1209,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Scrolls the view to an item.
 	 * <p>
+	 * 
 	 * Scrolls the view to ensure that the item which represents the provided
 	 * <code>index</code> is visible. A <code>hint</code> may indicate how the
 	 * item should appear in the viewport (if possible).
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Currently only implemented to scroll to the correct row,
 	 * not taking into account the column. </i>
@@ -1195,6 +1237,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Configures what actions should trigger editing.
 	 * <p>
+	 * 
 	 * The default value is DoubleClicked.
 	 * <p>
 	 * 
@@ -1230,6 +1273,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Configures editing options.
 	 * <p>
+	 * 
 	 * The default value is SingleEditor;
 	 */
 	public void setEditOptions(EnumSet<WAbstractItemView.EditOption> editOptions) {
@@ -1260,6 +1304,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Opens an editor for the given index.
 	 * <p>
+	 * 
 	 * Unless multiple editors are enabled, any other open editor is closed
 	 * first.
 	 * <p>
@@ -1288,6 +1333,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Closes the editor for the given index.
 	 * <p>
+	 * 
 	 * If <code>saveData</code> is true, then the currently edited value is
 	 * saved first to the model.
 	 * <p>
@@ -1323,6 +1369,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Closes all open editors.
 	 * <p>
+	 * 
 	 * If <code>saveData</code> is true, then the currently edited values are
 	 * saved to the model before closing the editor.
 	 * <p>
@@ -1348,6 +1395,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Validates the editor for the given index.
 	 * <p>
+	 * 
 	 * Validation is done by invoking
 	 * {@link WAbstractItemDelegate#validate(WModelIndex index, Object editState)
 	 * WAbstractItemDelegate#validate()}.
@@ -1419,6 +1467,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when clicked.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * item that was clicked on.
 	 * <p>
@@ -1432,6 +1481,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when double clicked.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * item that was double clicked on.
 	 * <p>
@@ -1445,6 +1495,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a mouse button is pressed down.
 	 * <p>
+	 * 
 	 * This signal is emitted only when &apos;over&apos; an item (the model
 	 * index is passed as first argument is never invalid).
 	 * <p>
@@ -1458,6 +1509,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when the mouse button is released.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * item where the mouse went up.
 	 * <p>
@@ -1471,6 +1523,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a finger is placed on the screen.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * item that was touched.
 	 * <p>
@@ -1485,10 +1538,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when one or more fingers are placed on the screen.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * items that were touched. The indices in the model index vector match the
-	 * indices in the {@link WTouchEvent#getChangedTouches() changedTouches() of
-	 * the WTouchEvent}.
+	 * indices in the {@link WTouchEvent#getChangedTouches()}.
 	 */
 	public Signal2<List<WModelIndex>, WTouchEvent> touchStarted() {
 		return this.touchStarted_;
@@ -1497,10 +1550,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when one or more fingers are moved on the screen.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * items that were touched. The indices in the model index vector match the
-	 * indices in the {@link WTouchEvent#getChangedTouches() changedTouches() of
-	 * the WTouchEvent}.
+	 * indices in the {@link WTouchEvent#getChangedTouches()}.
 	 */
 	public Signal2<List<WModelIndex>, WTouchEvent> touchMoved() {
 		return this.touchMoved_;
@@ -1509,11 +1562,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when one or more fingers are removed from the screen.
 	 * <p>
+	 * 
 	 * When the event happened over an item, the first argument indicates the
 	 * items where the touch ended. The indices in the model index vector match
-	 * the indices in the {@link WTouchEvent#getChangedTouches()
-	 * changedTouches() of the WTouchEvent}.
+	 * the indices in the {@link WTouchEvent#getChangedTouches()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -1538,6 +1592,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when page information was updated.
 	 * <p>
+	 * 
 	 * When Ajax/JavaScript is not available, the view will use a paging
 	 * navigation bar to allow scrolling through the data. This signal is
 	 * emitted when page-related information changed (e.g. the current page was
@@ -1553,6 +1608,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the signal emitted when a column is resized by the user.
 	 * <p>
+	 * 
 	 * The arguments of the signal are: the column index and the new width of
 	 * the column.
 	 */
@@ -1563,6 +1619,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns whether the view is sortable.
 	 * <p>
+	 * 
 	 * When enabeld the view can be sorted by clicking on the header.
 	 */
 	public boolean isSortEnabled() {
@@ -1572,6 +1629,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Alow to sort.
 	 * <p>
+	 * 
 	 * When enabeld the view can be sorted by clicking on the header.
 	 */
 	public void setHeaderClickSortEnabled(boolean enabled) {
@@ -1581,6 +1639,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a header item is clicked.
 	 * <p>
+	 * 
 	 * The argument that is passed is the column number.
 	 * <p>
 	 * 
@@ -1593,6 +1652,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a header item is double clicked.
 	 * <p>
+	 * 
 	 * The argument that is passed is the column number.
 	 * <p>
 	 * 
@@ -1606,6 +1666,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a mouse button is pressed on a header item
 	 * <p>
+	 * 
 	 * The argument that is passed is the column number.
 	 * <p>
 	 */
@@ -1616,6 +1677,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when a mouse button is released on a header item
 	 * <p>
+	 * 
 	 * The argument that is passed is the column number.
 	 * <p>
 	 * 
@@ -1628,6 +1690,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Signal emitted when scrolling.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Works only if ajax is available. </i>
 	 * </p>
@@ -1637,6 +1701,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Configures the number of columns that are used as row headers.
 	 * <p>
+	 * 
 	 * An item view does not use the vertical header data from the model in any
 	 * way, but instead you can configure data in the first column(s) to be used
 	 * as a row headers.
@@ -1646,6 +1711,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * <p>
 	 * The default value is 0.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Currently, this property must be set before any other
 	 * settings of the view and only a value of 0 or 1 is supported. </i>
@@ -1667,8 +1733,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	/**
 	 * Configures whether horizontal scrolling includes the first column
-	 * (<b>deprecated</b>).
+	 * (<b>deprecated</b>)
 	 * <p>
+	 * 
 	 * To display a model with many columns, this option allows you to keep the
 	 * first column fixed while scrolling through the other columns of the
 	 * model.
@@ -1685,7 +1752,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 
 	/**
 	 * Returns whether horizontal scrolling includes the first column.
-	 * (<b>deprecated</b>).
+	 * (<b>deprecated</b>)
 	 * <p>
 	 * 
 	 * @see WAbstractItemView#setColumn1Fixed(boolean enable)
@@ -1710,6 +1777,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Event signal emitted when a keyboard key is pushed down.
 	 * <p>
+	 * 
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
 	 * (before the keyPressed signal). Unlike
 	 * {@link WAbstractItemView#keyPressed() keyPressed()} however it is also
@@ -1729,6 +1797,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Event signal emitted when a &quot;character&quot; was entered.
 	 * <p>
+	 * 
 	 * The keyPressed signal is emitted when a key is pressed, and a character
 	 * is entered. Unlike {@link WAbstractItemView#keyWentDown() keyWentDown()},
 	 * it is emitted only for key presses that result in a character being
@@ -1745,6 +1814,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Event signal emitted when a keyboard key is released.
 	 * <p>
+	 * 
 	 * This is the counter-part of the {@link WAbstractItemView#keyWentDown()
 	 * keyWentDown()} event. Every key-down has its corresponding key-up.
 	 * <p>
@@ -1863,6 +1933,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Handles a drop event (drag &amp; drop).
 	 * <p>
+	 * 
 	 * The <code>event</code> object contains details about the drop operation,
 	 * identifying the source (which provides the data) and the mime-type of the
 	 * data. The drop was received on the <code>target</code> item.
@@ -1871,8 +1942,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	 * The default implementation checks if the mime-type is accepted by the
 	 * model, and if so passes the drop event to the model. If the source is the
 	 * view&apos;s own selection model, then the drop event will be handled as a
-	 * {@link DropAction#MoveAction MoveAction}, otherwise the drop event will
-	 * be handled as a {@link DropAction#CopyAction CopyAction}.
+	 * {@link DropAction#MoveAction}, otherwise the drop event will be handled
+	 * as a {@link DropAction#CopyAction}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#dropEvent(WDropEvent e, DropAction action, int
@@ -1899,6 +1970,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Create an extra widget in the header.
 	 * <p>
+	 * 
 	 * You may reimplement this method to provide an extra widget to be placed
 	 * below the header label. The extra widget will be visible only if a
 	 * multi-line header is configured using
@@ -1922,6 +1994,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns the extra header widget.
 	 * <p>
+	 * 
 	 * Returns the widget previously created using
 	 * {@link WAbstractItemView#createExtraHeaderWidget(int column)
 	 * createExtraHeaderWidget()}
@@ -1936,6 +2009,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Returns a page navigation widget.
 	 * <p>
+	 * 
 	 * When Ajax/JavaScript is not available, the view will use a paging
 	 * navigation bar to allow scrolling through the data, created by this
 	 * method. The default implementation displays a simple navigation bar with
@@ -2320,6 +2394,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Handles a click event.
 	 * <p>
+	 * 
 	 * This processes the event for internal purposes (such as selection or
 	 * editing) and emits the {@link WAbstractItemView#clicked() clicked()}
 	 * signal.
@@ -2348,6 +2423,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Handles a double click event.
 	 * <p>
+	 * 
 	 * This processes the event for internal purposes (such as editing) and
 	 * emits the {@link WAbstractItemView#doubleClicked() doubleClicked()}
 	 * signal.
@@ -2368,6 +2444,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Handles a mouse down event.
 	 * <p>
+	 * 
 	 * This emits the {@link WAbstractItemView#mouseWentDown() mouseWentDown()}
 	 * signal.
 	 */
@@ -2394,6 +2471,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
 	/**
 	 * Handles a mouse up event.
 	 * <p>
+	 * 
 	 * This emits the {@link WAbstractItemView#mouseWentUp() mouseWentUp()}
 	 * signal.
 	 */

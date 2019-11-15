@@ -40,6 +40,7 @@ public class OAuthAccessToken {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an invalid access token.
 	 */
 	public OAuthAccessToken() {
@@ -74,6 +75,7 @@ public class OAuthAccessToken {
 	/**
 	 * Returns whether the token is valid.
 	 * <p>
+	 * 
 	 * An invalid access token is used to signal for example that the user
 	 * denied the authorization request.
 	 */
@@ -84,6 +86,7 @@ public class OAuthAccessToken {
 	/**
 	 * Returns the access token value.
 	 * <p>
+	 * 
 	 * This value can be used to access protected resources.
 	 */
 	public String getValue() {
@@ -93,6 +96,7 @@ public class OAuthAccessToken {
 	/**
 	 * Returns the token expires time (if available).
 	 * <p>
+	 * 
 	 * Returns null if not available.
 	 */
 	public WDate expires() {
@@ -102,6 +106,7 @@ public class OAuthAccessToken {
 	/**
 	 * Returns the refresh token (if available).
 	 * <p>
+	 * 
 	 * The refresh token is an optional token that can be used when the access
 	 * token has expired.
 	 * <p>
@@ -118,6 +123,7 @@ public class OAuthAccessToken {
 	/**
 	 * An invalid token constant.
 	 * <p>
+	 * 
 	 * This is a token that is not {@link OAuthAccessToken#isValid() isValid()}.
 	 */
 	public static final OAuthAccessToken Invalid = new OAuthAccessToken();

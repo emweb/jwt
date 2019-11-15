@@ -28,10 +28,13 @@ import org.slf4j.LoggerFactory;
  * you rather need input of a fractional number, use {@link WDoubleSpinBox}
  * instead.
  * <p>
- * WSpinBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WSpinBox is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * 
- * @see WDoubleSpinBox <p>
+ * @see WDoubleSpinBox
+ * 
+ * 
+ *      <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the
  *      input. Therefore you cannot set a validator yourself. </i>
  *      </p>
@@ -42,6 +45,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Creates a spin-box.
 	 * <p>
+	 * 
 	 * The range is (0 - 99) and the step size 1.
 	 * <p>
 	 * The initial value is 0.
@@ -71,6 +75,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the minimum value.
 	 * <p>
+	 * 
 	 * The default value is 0.
 	 */
 	public void setMinimum(int minimum) {
@@ -97,6 +102,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the maximum value.
 	 * <p>
+	 * 
 	 * The default value is 99.
 	 */
 	public void setMaximum(int maximum) {
@@ -135,6 +141,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the step value.
 	 * <p>
+	 * 
 	 * The default value is 1.
 	 */
 	public void setSingleStep(int step) {
@@ -153,6 +160,7 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the value.
 	 * <p>
+	 * 
 	 * <code>value</code> must be a value between {@link WSpinBox#getMinimum()
 	 * getMinimum()} and {@link WSpinBox#getMaximum() getMaximum()}.
 	 * <p>
@@ -169,12 +177,13 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Returns the value.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This value may not correctly reflect the
-	 * {@link WLineEdit#getValueText() WLineEdit#getValueText()} of the spin box
-	 * if {@link WLineEdit#getValueText() WLineEdit#getValueText()} is empty or
-	 * if the contents are not in a {@link WFormWidget#validate() valid state}.
-	 * </i>
+	 * {@link WLineEdit#getValueText()} of the spin box if
+	 * {@link WLineEdit#getValueText()} is empty or if the contents are not in a
+	 * {@link WFormWidget#validate() valid state}. </i>
 	 * </p>
 	 */
 	public int getValue() {
@@ -184,6 +193,8 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets if this spinbox wraps around to stay in the valid range.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Not supported by the native controls. </i>
 	 * </p>
@@ -209,12 +220,12 @@ public class WSpinBox extends WAbstractSpinBox {
 	/**
 	 * A signal that indicates when the value has changed.
 	 * <p>
-	 * This signal is emitted when {@link WFormWidget#changed()
-	 * WFormWidget#changed()} is emitted, but supplies the new value as an
-	 * argument. The {@link WFormWidget#changed() WFormWidget#changed()} signal
-	 * is emitted when the user changes the value of the spinbox by pressing the
-	 * up/down arrow, or entering a different value and pressing enter or moving
-	 * focus.
+	 * 
+	 * This signal is emitted when {@link WFormWidget#changed()} is emitted, but
+	 * supplies the new value as an argument. The {@link WFormWidget#changed()}
+	 * signal is emitted when the user changes the value of the spinbox by
+	 * pressing the up/down arrow, or entering a different value and pressing
+	 * enter or moving focus.
 	 * <p>
 	 * 
 	 * @see WFormWidget#changed()

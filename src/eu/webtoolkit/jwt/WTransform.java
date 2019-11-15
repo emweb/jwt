@@ -30,8 +30,10 @@ import org.slf4j.LoggerFactory;
  *  m11  m12   0
  *  m21  m22   0
  *  dx   dy    1
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * In this representation, {@link WTransform#getDx() getDx()} (=
  * {@link WTransform#getM31() getM31()}) and {@link WTransform#getDy() getDy()}
@@ -51,31 +53,36 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>
  * {@link WTransform#decomposeTranslateRotateScaleSkew(WTransform.TRSSDecomposition result)
- * decomposeTranslateRotateScaleSkew()} decomposes into a <i>T</i> &#x2218;
- * <i>R</i> &#x2218; <i>Sxx</i> &#x2218; <i>Sxy</i></li>
+ * decomposeTranslateRotateScaleSkew()} decomposes into a <i>T</i> &amp;#x2218;
+ * <i>R</i> &amp;#x2218; <i>Sxx</i> &amp;#x2218; <i>Sxy</i></li>
  * <li>
  * {@link WTransform#decomposeTranslateRotateScaleRotate(WTransform.TRSRDecomposition result)
- * decomposeTranslateRotateScaleRotate()} decomposes into a <i>T</i> &#x2218;
- * <i>R1</i> &#x2218; <i>Sxx</i> &#x2218; <i>R2</i></li>
+ * decomposeTranslateRotateScaleRotate()} decomposes into a <i>T</i>
+ * &amp;#x2218; <i>R1</i> &amp;#x2218; <i>Sxx</i> &amp;#x2218; <i>R2</i></li>
  * </ul>
+ * 
+ * 
  * <p>
  * with <i>T</i> a translation, <i>R</i> a rotation, <i>Sxx</i> a scale, and
  * <i>Sxy</i> a skew component.
  * <p>
  * <h3>JavaScript exposability</h3>
+ * 
  * <p>
  * A WTransform is JavaScript exposable. If a WTransform
  * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
- * it can be accessed in your custom JavaScript code through {@link its
- * handle&apos;s jsRef()}. A transform is represented as a JavaScript array,
- * e.g. a WTransform(m11, m12, m21, m22, dx, dy) will be represented in
- * JavaScript by:
+ * it can be accessed in your custom JavaScript code through
+ * {@link WJavaScriptHandle#getJsRef() its handle&apos;s jsRef()}. A transform
+ * is represented as a JavaScript array, e.g. a WTransform(m11, m12, m21, m22,
+ * dx, dy) will be represented in JavaScript by:
  * 
  * <pre>
  * {@code
  *  [m11, m12, m21, m22, dx, dy]
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * As an exception to the general rule that
  * {@link WJavaScriptExposableObject#isJavaScriptBound() JavaScript bound}
@@ -89,6 +96,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates the identity transformation matrix.
 	 */
 	public WTransform() {
@@ -99,6 +107,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Construct a custom matrix by specifying the parameters.
 	 * <p>
+	 * 
 	 * Creates a matrix from the specified parameters.
 	 */
 	public WTransform(double m11, double m12, double m21, double m22,
@@ -126,6 +135,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Assignment method.
 	 * <p>
+	 * 
 	 * Copies the transformation from the <code>rhs</code>.
 	 */
 	public WTransform assign(final WTransform rhs) {
@@ -143,6 +153,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Clone method.
 	 * <p>
+	 * 
 	 * Clones this {@link WTransform} object.
 	 */
 	public WTransform clone() {
@@ -154,6 +165,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
+	 * 
 	 * Returns <code>true</code> if the transforms are exactly the same.
 	 */
 	public boolean equals(final WTransform rhs) {
@@ -171,8 +183,10 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Identity check.
 	 * <p>
+	 * 
 	 * Returns true if the transform represents an identity transformation.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This is always false if the transform is
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() JavaScript bound}.
@@ -231,6 +245,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the horizontal translation factor.
 	 * <p>
+	 * 
 	 * Is equivalent to {@link WTransform#getDx() getDx()}
 	 */
 	public double getM31() {
@@ -240,6 +255,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the vertical translation factor.
 	 * <p>
+	 * 
 	 * Is equivalent to {@link WTransform#getDy() getDy()}
 	 */
 	public double getM32() {
@@ -256,6 +272,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the horizontal translation factor.
 	 * <p>
+	 * 
 	 * Is equivalent to {@link WTransform#getM31() getM31()}
 	 */
 	public double getDx() {
@@ -265,6 +282,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the vertical translation factor.
 	 * <p>
+	 * 
 	 * Is equivalent to {@link WTransform#getM32() getM32()}
 	 */
 	public double getDy() {
@@ -274,8 +292,10 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Applys the transformation to a point.
 	 * <p>
+	 * 
 	 * Returns the transformed point.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If this transform or the given point
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
@@ -300,7 +320,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = p;
 			}
 			result.assignBinding(o,
-					"Wt3_4_1.gfxUtils.transform_mult(" + this.getJsRef() + ','
+					"Wt3_4_2.gfxUtils.transform_mult(" + this.getJsRef() + ','
 							+ p.getJsRef() + ')');
 		}
 		return result;
@@ -309,6 +329,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Applys the transformation to a point.
 	 * <p>
+	 * 
 	 * Sets the point (<i>tx</i>, <code>ty</code>) to the transformation of the
 	 * point (<i>x</i>, <code>y</code>).
 	 * <p>
@@ -323,9 +344,11 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Applies the transformation to a rectangle.
 	 * <p>
+	 * 
 	 * Since the rectangle is aligned with X and Y axes, this may increase the
 	 * size of the rectangle even for a transformation that only rotates.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If this transform or the given rectangle
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
@@ -358,7 +381,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = rect;
 			}
 			result.assignBinding(o,
-					"Wt3_4_1.gfxUtils.transform_mult(" + this.getJsRef() + ','
+					"Wt3_4_2.gfxUtils.transform_mult(" + this.getJsRef() + ','
 							+ rect.getJsRef() + ')');
 		}
 		return result;
@@ -367,9 +390,11 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Applies the transformation to a painter path.
 	 * <p>
+	 * 
 	 * This will transform all individual points according to the
 	 * transformation. The radius of arcs will be unaffected.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If this transform or the given path
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
@@ -387,7 +412,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = path;
 			}
 			result.assignBinding(o,
-					"Wt3_4_1.gfxUtils.transform_apply(" + this.getJsRef() + ','
+					"Wt3_4_2.gfxUtils.transform_apply(" + this.getJsRef() + ','
 							+ path.getJsRef() + ')');
 		}
 		final List<WPainterPath.Segment> sourceSegments = path.getSegments();
@@ -414,7 +439,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	 * Resets the transformation to the identity.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the transform
+	 * @exception {@link WException} if the transform
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 * @see WTransform#isIdentity()
@@ -429,6 +454,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Rotates the transformation.
 	 * <p>
+	 * 
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <code>angle</code> degrees.
 	 * <p>
@@ -443,6 +469,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Rotates the transformation.
 	 * <p>
+	 * 
 	 * Applies a clock-wise rotation to the current transformation matrix, over
 	 * <code>angle</code> radians.
 	 * <p>
@@ -460,6 +487,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Scales the transformation.
 	 * <p>
+	 * 
 	 * Scales the current transformation.
 	 * <p>
 	 * 
@@ -472,6 +500,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Shears the transformation.
 	 * <p>
+	 * 
 	 * Shears the current transformation.
 	 * <p>
 	 * 
@@ -485,6 +514,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Translates the transformation.
 	 * <p>
+	 * 
 	 * Translates the current transformation.
 	 */
 	public WTransform translate(double dx, double dy) {
@@ -494,8 +524,10 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Translates the transformation.
 	 * <p>
+	 * 
 	 * Translates the current transformation.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If this transform or the given point
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() are JavaScript
@@ -516,7 +548,7 @@ public class WTransform extends WJavaScriptExposableObject {
 						+ ";return [1,0,0,1,p[0],p[1]];})())");
 			} else {
 				this.assignBinding(o,
-						"Wt3_4_1.gfxUtils.transform_mult((function(){var p="
+						"Wt3_4_2.gfxUtils.transform_mult((function(){var p="
 								+ p.getJsRef()
 								+ ";return [1,0,0,1,p[0],p[1]];})(),("
 								+ refBefore + "))");
@@ -542,7 +574,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				o = Y;
 			}
 			this.assignBinding(o,
-					"Wt3_4_1.gfxUtils.transform_mult(" + this.getJsRef() + ','
+					"Wt3_4_2.gfxUtils.transform_mult(" + this.getJsRef() + ','
 							+ Y.getJsRef() + ')');
 		}
 		double z11 = X.m_[M11] * Y.m_[M11] + X.m_[M12] * Y.m_[M21];
@@ -596,7 +628,7 @@ public class WTransform extends WJavaScriptExposableObject {
 				this.getM32() * this.getM21() - this.getM31() * this.getM22(),
 				-(this.getM32() * this.getM11() - this.getM31() * this.getM12()));
 		if (this.isJavaScriptBound()) {
-			res.assignBinding(this, "Wt3_4_1.gfxUtils.transform_adjoint("
+			res.assignBinding(this, "Wt3_4_2.gfxUtils.transform_adjoint("
 					+ this.getJsRef() + ")");
 		}
 		return res;
@@ -605,6 +637,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Returns the inverted transformation.
 	 * <p>
+	 * 
 	 * Returns <code>this</code> if the transformation could not be inverted (
 	 * {@link WTransform#getDeterminant() getDeterminant()} == 0), and logs an
 	 * error instead.
@@ -617,7 +650,7 @@ public class WTransform extends WJavaScriptExposableObject {
 					/ det, adj.getM21() / det, adj.getM22() / det, adj.getM31()
 					/ det, adj.getM32() / det);
 			if (this.isJavaScriptBound()) {
-				res.assignBinding(this, "Wt3_4_1.gfxUtils.transform_inverted("
+				res.assignBinding(this, "Wt3_4_2.gfxUtils.transform_inverted("
 						+ this.getJsRef() + ")");
 			}
 			return res;
@@ -648,7 +681,7 @@ public class WTransform extends WJavaScriptExposableObject {
 		 */
 		public double dy;
 		/**
-		 * Rotation angle (radians).
+		 * Rotation angle (radians)
 		 */
 		public double alpha;
 		/**
@@ -660,7 +693,7 @@ public class WTransform extends WJavaScriptExposableObject {
 		 */
 		public double sy;
 		/**
-		 * Shear (in Y direction).
+		 * Shear (in Y direction)
 		 */
 		public double sh;
 	}
@@ -668,6 +701,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Decomposes the transformation.
 	 * <p>
+	 * 
 	 * Decomposes the transformation into elementary operations: translation
 	 * (<i>dx</i>, <code>dy</code>), followed by rotation (<i>alpha</i>),
 	 * followed by scale (<i>sx</i>, <code>sy</code>) and vertical shearing
@@ -714,7 +748,7 @@ public class WTransform extends WJavaScriptExposableObject {
 		 */
 		public double dy;
 		/**
-		 * First rotation angle (radians).
+		 * First rotation angle (radians)
 		 */
 		public double alpha1;
 		/**
@@ -726,7 +760,7 @@ public class WTransform extends WJavaScriptExposableObject {
 		 */
 		public double sy;
 		/**
-		 * Second rotation angle (radians).
+		 * Second rotation angle (radians)
 		 */
 		public double alpha2;
 	}
@@ -734,6 +768,7 @@ public class WTransform extends WJavaScriptExposableObject {
 	/**
 	 * Decomposes the transformation.
 	 * <p>
+	 * 
 	 * Decomposes the transformation into elementary operations: translation
 	 * (<i>dx</i>, <code>dy</code>), followed by rotation (<i>alpha2</i>),
 	 * followed by scale (<i>sx</i>, <code>sy</code>) and again a rotation (

@@ -49,6 +49,8 @@ import org.slf4j.LoggerFactory;
  * <li>can be used in conjunction with other drawing instructions to the same
  * paint device.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * Some of the main limitations are:
  * <ul>
@@ -59,6 +61,8 @@ import org.slf4j.LoggerFactory;
  * colors (e.g. &apos;blue&apos;) are not allowed.</li>
  * <li>Bidi (Right-to-Left) text rendering is not supported</li>
  * </ul>
+ * 
+ * 
  * <p>
  * The renderer is not CSS compliant (simply because it is still lacking alot of
  * features), but the subset of CSS that is supported is a pragmatic choice. If
@@ -92,6 +96,7 @@ public abstract class WTextRenderer {
 		/**
 		 * Returns an attribute value.
 		 * <p>
+		 * 
 		 * This returns an empty string for an undefined attribute.
 		 */
 		public String attributeValue(final String attribute) {
@@ -138,6 +143,7 @@ public abstract class WTextRenderer {
 		/**
 		 * Returns the fragment number.
 		 * <p>
+		 * 
 		 * A single DOM node can result in multiple layout boxes: e.g. inline
 		 * contents can be split over multiple lines, resulting in a layout box
 		 * for each line, and block layout contents can be split over multiple
@@ -194,6 +200,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Renders an XHTML fragment.
 	 * <p>
+	 * 
 	 * The text is rendered, starting at position <code>y</code>, and flowing
 	 * down the page. New pages are created using
 	 * <code>{@link WTextRenderer#startPage(int page) startPage()}</code> to
@@ -303,14 +310,17 @@ public abstract class WTextRenderer {
 	/**
 	 * Sets the contents of a cascading style sheet (CSS).
 	 * <p>
+	 * 
 	 * This sets the text <code>contents</code> to be used as CSS. Any previous
 	 * CSS declarations are discarded. Returns true if parsing was successful,
 	 * false if otherwise. If parsing failed, the stylesheet text that was
 	 * already in use will not have been changed. Use getStyleSheetParseErrors
 	 * to access parse error information.
 	 * <p>
+	 * 
 	 * <p>
-	 * <i><b>Warning:</b>Only the following CSS selector features are supported:
+	 * <i><b>Warning: </b>Only the following CSS selector features are
+	 * supported:
 	 * <ul>
 	 * <li>tag selectors: e.g. span or *</li>
 	 * <li>class name selectors: .class</li>
@@ -321,11 +331,13 @@ public abstract class WTextRenderer {
 	 * <pre>
 	 *   {@code
 	 *    h1.a1#one.a2 h3#two.c {}
+	 *    
 	 *   }
 	 * </pre>
 	 * 
 	 * </li>
 	 * </ul>
+	 * 
 	 * </i>
 	 * </p>
 	 * 
@@ -356,13 +368,16 @@ public abstract class WTextRenderer {
 	/**
 	 * Appends an external cascading style sheet (CSS).
 	 * <p>
+	 * 
 	 * This is an overloaded member, provided for convenience. Equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    setStyleSheetText(styleSheetText() + <filename_contents>)
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
@@ -381,13 +396,16 @@ public abstract class WTextRenderer {
 	/**
 	 * Clears the used stylesheet.
 	 * <p>
+	 * 
 	 * This is an overloaded member, provided for convenience. Equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    setStyleSheetText("")
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WTextRenderer#setStyleSheetText(CharSequence styleSheetContents)
@@ -399,6 +417,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns the CSS in use.
 	 * <p>
+	 * 
 	 * This returns all the CSS declarations in use.
 	 * <p>
 	 * 
@@ -412,6 +431,7 @@ public abstract class WTextRenderer {
 	 * Returns all parse error information of the last call to
 	 * setStyleSheetText.
 	 * <p>
+	 * 
 	 * setStyleSheetText stores all parse errors inside. Use
 	 * getStyleSheetParseErrors to access information about them. Information is
 	 * newline(\ n) seperated.
@@ -426,6 +446,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns the page text width.
 	 * <p>
+	 * 
 	 * This returns the width of the page in which text needs to be rendered,
 	 * excluding horizontal margins, in pixels.
 	 * <p>
@@ -440,6 +461,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns the page text height.
 	 * <p>
+	 * 
 	 * This returns the height of the page in which text needs to be rendered,
 	 * excluding vertical margins, in pixels.
 	 * <p>
@@ -454,6 +476,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Sets the scaling factor used for font rendering.
 	 * <p>
+	 * 
 	 * A scaling can be set for text. The scaling factor has as effect that text
 	 * font sizes are modified by the scale. Also CSS length units that are
 	 * defined in terms of font units (&quot;em&quot; and &quot;ex&quot;) are
@@ -478,6 +501,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns the page width.
 	 * <p>
+	 * 
 	 * Returns the total page width (in pixel units), including horizontal
 	 * margins.
 	 */
@@ -486,6 +510,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns the page height.
 	 * <p>
+	 * 
 	 * Returns the total page height (in pixel units), including vertical
 	 * margins.
 	 */
@@ -494,6 +519,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns the margin.
 	 * <p>
+	 * 
 	 * Returns the margin at given side (in pixel units).
 	 */
 	public abstract double getMargin(Side side);
@@ -501,6 +527,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Returns a paint device to render a given page.
 	 * <p>
+	 * 
 	 * The {@link WTextRenderer#render(CharSequence text, double y) render()}
 	 * method calls this function once for each page it wants to render.
 	 */
@@ -519,6 +546,7 @@ public abstract class WTextRenderer {
 	/**
 	 * Paints an XHTML node.
 	 * <p>
+	 * 
 	 * The default implementation paints the node conforming to the XHTML
 	 * specification.
 	 * <p>

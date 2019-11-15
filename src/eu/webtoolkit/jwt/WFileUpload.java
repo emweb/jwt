@@ -31,14 +31,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * When JavaScript is available, the file will not be uploaded until
  * {@link WFileUpload#upload() upload()} is called. This will start an
- * asynchronous upload (and thus return immediately).
- * <p>
- * When no JavaScript is available, the file will be uploaded with the next
- * click event. Thus, {@link WFileUpload#upload() upload()} has no effect -- the
- * file will already be uploaded, and the corresponding signals will already be
- * emitted. To test if {@link WFileUpload#upload() upload()} will start an
- * upload, you may check using the {@link WFileUpload#canUpload() canUpload()}
- * call.
+ * asynchronous upload (and thus return immediately). When no JavaScript is
+ * available, the file will be uploaded with the next click event. Thus,
+ * {@link WFileUpload#upload() upload()} has no effect &ndash; the file will
+ * already be uploaded, and the corresponding signals will already be emitted.
+ * To test if {@link WFileUpload#upload() upload()} will start an upload, you
+ * may check using the {@link WFileUpload#canUpload() canUpload()} call.
  * <p>
  * Thus, to properly use the widget, one needs to follow these rules:
  * <ul>
@@ -56,6 +54,8 @@ import org.slf4j.LoggerFactory;
  * signal or a {@link WFileUpload#fileTooLarge() fileTooLarge()} signals gets
  * emitted.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * The WFileUpload widget must be hidden or deleted when a file is received. In
  * addition it is wise to prevent the user from uploading the file twice as in
@@ -65,9 +65,10 @@ import org.slf4j.LoggerFactory;
  * will be deleted together with the {@link WFileUpload} widget, unless
  * {@link WFileUpload#stealSpooledFile() stealSpooledFile()} is called.
  * <p>
- * WFileUpload is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WFileUpload is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The file upload itself corresponds to a
  * <code>&lt;input type=&quot;file&quot;&gt;</code> tag, but may be wrapped in a
@@ -117,6 +118,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Sets whether the file upload accepts multiple files.
 	 * <p>
+	 * 
 	 * In browsers which support the &quot;multiple&quot; attribute for the file
 	 * upload (to be part of HTML5) control, this will allow the user to select
 	 * multiple files at once.
@@ -158,6 +160,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Returns the spooled location of the uploaded file.
 	 * <p>
+	 * 
 	 * Returns the temporary filename in which the uploaded file was spooled.
 	 * The file is guaranteed to exist as long as the {@link WFileUpload} widget
 	 * is not deleted, or a new file is not uploaded.
@@ -180,6 +183,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Returns the client filename.
 	 * <p>
+	 * 
 	 * When multiple files were uploaded, this returns the information from the
 	 * first file.
 	 */
@@ -194,6 +198,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Returns the client content description.
 	 * <p>
+	 * 
 	 * When multiple files were uploaded, this returns the information from the
 	 * first file.
 	 */
@@ -208,6 +213,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Steals the spooled file.
 	 * <p>
+	 * 
 	 * By stealing the file, the spooled file will no longer be deleted together
 	 * with this widget, which means you need to take care of managing that.
 	 * <p>
@@ -229,8 +235,9 @@ public class WFileUpload extends WWebWidget {
 
 	/**
 	 * Checks if no filename was given and thus no file uploaded.
-	 * (<b>Deprecated</b>).
+	 * (<b>Deprecated</b>)
 	 * <p>
+	 * 
 	 * Return whether a non-empty filename was given.
 	 * <p>
 	 * 
@@ -252,6 +259,7 @@ public class WFileUpload extends WWebWidget {
 	 * Returns whether {@link WFileUpload#upload() upload()} will start a new
 	 * file upload.
 	 * <p>
+	 * 
 	 * A call to {@link WFileUpload#upload() upload()} will only start a new
 	 * file upload if there is no JavaScript support. Otherwise, the most recent
 	 * file will already be uploaded.
@@ -263,6 +271,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Use the click signal of another widget to open the file picker.
 	 * <p>
+	 * 
 	 * This hides the default {@link WFileUpload} widget and uses the
 	 * click-signal of the argument to open the file picker. The upload logic is
 	 * still handled by {@link WFileUpload} behind the scenes. This action
@@ -283,6 +292,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted when a new file was uploaded.
 	 * <p>
+	 * 
 	 * This signal is emitted when file upload has been completed. It is good
 	 * practice to hide or delete the {@link WFileUpload} widget when a file has
 	 * been uploaded succesfully.
@@ -298,6 +308,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted when the user tried to upload a too large file.
 	 * <p>
+	 * 
 	 * The parameter is the (approximate) size of the file (in bytes) the user
 	 * tried to upload.
 	 * <p>
@@ -315,6 +326,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted when the user selected a new file.
 	 * <p>
+	 * 
 	 * One could react on the user selecting a (new) file, by uploading the file
 	 * immediately.
 	 * <p>
@@ -329,6 +341,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Starts the file upload.
 	 * <p>
+	 * 
 	 * The {@link WFileUpload#uploaded() uploaded()} signal is emitted when a
 	 * file is uploaded, or the {@link WFileUpload#fileTooLarge()
 	 * fileTooLarge()} signal is emitted when the file size exceeded the maximum
@@ -357,6 +370,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Sets a progress bar to indicate upload progress.
 	 * <p>
+	 * 
 	 * When the file is being uploaded, upload progress is indicated using the
 	 * provided progress bar. Both the progress bar range and values are
 	 * configured when the upload starts.
@@ -399,6 +413,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Signal emitted while a file is being uploaded.
 	 * <p>
+	 * 
 	 * When supported by the connector library, you can track the progress of
 	 * the file upload by listening to this signal.
 	 * <p>
@@ -419,6 +434,7 @@ public class WFileUpload extends WWebWidget {
 	/**
 	 * Sets input accept attributes.
 	 * <p>
+	 * 
 	 * The accept attribute may be specified to provide user agents with a hint
 	 * of what file types will be accepted. Use html input accept attributes as
 	 * input.
@@ -426,8 +442,10 @@ public class WFileUpload extends WWebWidget {
 	 * 
 	 * <pre>
 	 *   {@code
-	 *    WFileUpload *fu = new WFileUpload(root());
-	 *    fu.setFilters("image/*");
+	 *       WFileUpload *fu = new WFileUpload(root());
+	 *       fu.setFilters("image/*");
+	 *  
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -506,7 +524,7 @@ public class WFileUpload extends WWebWidget {
 	}
 
 	private void onDataExceeded(long dataExceeded) {
-		this.doJavaScript("Wt3_4_1.$('if" + this.getId() + "').src='"
+		this.doJavaScript("Wt3_4_2.$('if" + this.getId() + "').src='"
 				+ this.fileUploadTarget_.getUrl() + "';");
 		if (this.flags_.get(BIT_UPLOADING)) {
 			this.flags_.clear(BIT_UPLOADING);
@@ -556,7 +574,7 @@ public class WFileUpload extends WWebWidget {
 			element.setAttribute("action", this.fileUploadTarget_.generateUrl());
 			String maxFileSize = String.valueOf(WApplication.getInstance()
 					.getMaximumRequestSize());
-			String command = "{var submit = true;var x = Wt3_4_1.$('in"
+			String command = "{var submit = true;var x = Wt3_4_2.$('in"
 					+ this.getId()
 					+ "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > "
 					+ maxFileSize + ") {submit = false;"
@@ -708,10 +726,10 @@ public class WFileUpload extends WWebWidget {
 	String renderRemoveJs(boolean recursive) {
 		boolean isIE = WApplication.getInstance().getEnvironment().agentIsIE();
 		if (this.isRendered() && isIE) {
-			String result = "Wt3_4_1.$('if" + this.getId()
+			String result = "Wt3_4_2.$('if" + this.getId()
 					+ "').innerHTML = \"\";";
 			if (!recursive) {
-				result += "Wt3_4_1.remove('" + this.getId() + "');";
+				result += "Wt3_4_2.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {

@@ -30,13 +30,15 @@ import org.slf4j.LoggerFactory;
  * The model exposes four fields:
  * <ul>
  * <li>LoginNameField: the login name (used as an identity for the
- * {@link Identity#LoginName} provider) -- this can be an email if the
+ * {@link Identity#LoginName} provider) &ndash; this can be an email if the
  * {@link AuthService} is configured to use email addresses as identity</li>
  * <li>ChoosePasswordField: the password</li>
  * <li>RepeatPasswordField: the password (repeated)</li>
  * <li>EmailField: if an email address is to be asked (and is not used as
  * identity).</li>
  * </ul>
+ * 
+ * 
  * <p>
  * The largest complexity is in the handling of third party identity providers,
  * which is initiated with a call to
@@ -69,7 +71,7 @@ public class RegistrationModel extends FormBaseModel {
 	 */
 	public static final String RepeatPasswordField = "repeat-password";
 	/**
-	 * Email field (if login name is not email).
+	 * Email field (if login name is not email)
 	 */
 	public static final String EmailField = "email";
 
@@ -126,6 +128,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a new registration model, using a basic authentication service
 	 * and user database.
 	 * <p>
@@ -169,6 +172,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Resets the model.
 	 * <p>
+	 * 
 	 * This resets the model to initial values, clearing any entered information
 	 * (login name, password, pre-identified identity).
 	 */
@@ -197,6 +201,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Configures a minimum length for a login name.
 	 * <p>
+	 * 
 	 * The default value is 4.
 	 */
 	public void setMinLoginNameLength(int chars) {
@@ -216,6 +221,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Configures whether an email address needs to be entered.
 	 * <p>
+	 * 
 	 * You may specify whether you want the user to enter an email address.
 	 * <p>
 	 * This has no effect when the IdentityPolicy is EmailAddressIdentity.
@@ -254,6 +260,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Register a user authenticated by an identity provider.
 	 * <p>
+	 * 
 	 * Using a 3rd party authentication service such as OAuth, a user may be
 	 * identified which is not yet registered with the web application.
 	 * <p>
@@ -314,6 +321,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Returns the existing user that needs to be confirmed.
 	 * <p>
+	 * 
 	 * When a user wishes to register with an identity that corresponds to an
 	 * existing user, he may be allowd to confirm that he is in fact this
 	 * existing user.
@@ -328,6 +336,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Returns the method to be used to confirm to be an existing user.
 	 * <p>
+	 * 
 	 * When the ConfirmExisting field is visible, this returns an appropriate
 	 * method to use to let the user confirm that he is indeed the identified
 	 * existing user.
@@ -356,6 +365,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Confirms that the user is indeed an existing user.
 	 * <p>
+	 * 
 	 * The new identity is added to this existing user (if applicable), and the
 	 * user is logged in.
 	 */
@@ -370,6 +380,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Validates the login name.
 	 * <p>
+	 * 
 	 * This verifies that the login name is adequate (see also
 	 * {@link RegistrationModel#setMinLoginNameLength(int chars)
 	 * setMinLoginNameLength()}).
@@ -397,6 +408,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Verifies that a user with that name does not yet exist.
 	 * <p>
+	 * 
 	 * If a user with that name already exists, it may in fact be the same user
 	 * that is trying to register again (perhaps using a different
 	 * identification method). If possible, we allow the user to confirm his
@@ -604,6 +616,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Returns whether an existing user needs to be confirmed.
 	 * <p>
+	 * 
 	 * This returns whether the user is being identified as an existing user and
 	 * he can confirm that he is in fact the same user.
 	 */
@@ -614,6 +627,7 @@ public class RegistrationModel extends FormBaseModel {
 	/**
 	 * Returns whether federated login options can be shown.
 	 * <p>
+	 * 
 	 * This returns whether fields for federated login (such as OAuth) should be
 	 * shown. These are typically buttons corresponding to identity providers.
 	 * <p>
@@ -634,11 +648,11 @@ public class RegistrationModel extends FormBaseModel {
 								+ info2.getJsRef()
 								+ ",o1="
 								+ password.getJsRef()
-								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_4_1.setHtml(i,"
+								+ ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_4_2.setHtml(i,"
 								+ WString
 										.toWString(WString.tr("Wt.Auth.valid"))
 										.getJsStringLiteral()
-								+ ");} else {$(o).removeClass('Wt-valid');Wt3_4_1.setHtml(i,"
+								+ ");} else {$(o).removeClass('Wt-valid');Wt3_4_2.setHtml(i,"
 								+ WString
 										.toWString(
 												WString.tr("Wt.Auth.repeat-password-info"))

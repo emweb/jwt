@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  * A navigation bar.
  * <p>
  * 
+ * 
  * <p>
  * <i><b>Note: </b>{@link WNavigationBar} is currently only styled in the
  * Bootstrap themes. </i>
@@ -58,6 +59,7 @@ public class WNavigationBar extends WTemplate {
 	/**
 	 * Sets a title.
 	 * <p>
+	 * 
 	 * The title may optionally link to a &apos;homepage&apos;.
 	 */
 	public void setTitle(final CharSequence title, final WLink link) {
@@ -84,6 +86,7 @@ public class WNavigationBar extends WTemplate {
 	/**
 	 * Sets whether the navigation bar will respond to screen size.
 	 * <p>
+	 * 
 	 * For screens that are less wide, the navigation bar can be rendered
 	 * different (more compact and allowing for vertical menu layouts).
 	 */
@@ -128,6 +131,7 @@ public class WNavigationBar extends WTemplate {
 	/**
 	 * Adds a menu to the navigation bar.
 	 * <p>
+	 * 
 	 * Typically, a navigation bar will contain at least one menu which
 	 * implements the top-level navigation options allowed by the navigation
 	 * bar.
@@ -154,6 +158,7 @@ public class WNavigationBar extends WTemplate {
 	/**
 	 * Adds a form field to the navigation bar.
 	 * <p>
+	 * 
 	 * In some cases, one may want to add a few form fields to the navigation
 	 * bar (e.g. for a compact login option).
 	 */
@@ -174,6 +179,7 @@ public class WNavigationBar extends WTemplate {
 	/**
 	 * Adds a search widget to the navigation bar.
 	 * <p>
+	 * 
 	 * This is not so different from
 	 * {@link WNavigationBar#addFormField(WWidget widget, AlignmentFlag alignment)
 	 * addFormField()}, except that the form field may be styled differently to
@@ -198,6 +204,7 @@ public class WNavigationBar extends WTemplate {
 	/**
 	 * Adds a widget to the navigation bar.
 	 * <p>
+	 * 
 	 * Any other widget may be added to the navigation bar, although they may
 	 * require special CSS style to blend well with the navigation bar style.
 	 */

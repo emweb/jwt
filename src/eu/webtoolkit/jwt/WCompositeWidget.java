@@ -40,6 +40,7 @@ public class WCompositeWidget extends WWidget {
 	/**
 	 * Creates a WCompositeWidget.
 	 * <p>
+	 * 
 	 * You need to set an implemetation using
 	 * {@link WCompositeWidget#setImplementation(WWidget widget)
 	 * setImplementation()} directly after construction.
@@ -485,9 +486,11 @@ public class WCompositeWidget extends WWidget {
 	/**
 	 * Set the implementation widget.
 	 * <p>
+	 * 
 	 * This sets the widget that implements this compositeWidget. Ownership of
 	 * the widget is completely transferred (including deletion).
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>You cannot change the implementation of a composite
 	 * widget after it has been rendered. </i>
@@ -516,6 +519,7 @@ public class WCompositeWidget extends WWidget {
 	/**
 	 * Get the implementation widget.
 	 * <p>
+	 * 
 	 * This returns the widget that implements this compositeWidget.
 	 */
 	protected WWidget getImplementation() {

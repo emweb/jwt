@@ -33,14 +33,16 @@ public enum LoginState {
 	/**
 	 * The identified user was refused to login.
 	 * <p>
-	 * This is caused by for example {@link User#getStatus() User#getStatus()}
-	 * returning {@link User.Status#Disabled}, or if email verification is
+	 * 
+	 * This is caused by for example {@link User#getStatus()} returning
+	 * {@link User.Status#Disabled Status#Disabled}, or if email verification is
 	 * required but the email hasn&apos;t been verified yet.
 	 */
 	DisabledLogin,
 	/**
 	 * A user is weakly authenticated.
 	 * <p>
+	 * 
 	 * The authentication method was weak, typically this means that a secondary
 	 * authentication system was used (e.g. an authentication cookie) instead of
 	 * a primary mechanism (like a password).

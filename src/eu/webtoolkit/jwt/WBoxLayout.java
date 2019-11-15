@@ -48,9 +48,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
- * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
- * automatically show scrollbars for widgets inserted in the layout to cope with
- * a size set by the layout manager that is smaller than the preferred size.
+ * WContainerWidget#setOverflow()} or use a {@link WScrollArea} to automatically
+ * show scrollbars for widgets inserted in the layout to cope with a size set by
+ * the layout manager that is smaller than the preferred size.
  * <p>
  * When the container of a layout manager does not have a defined size (by
  * having an explicit size, or by being inside a layout manager), or has has
@@ -81,15 +81,19 @@ import org.slf4j.LoggerFactory;
  * space is used. Each item is stretched using the stretch factor to fill the
  * remaining space.
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>When JavaScript support is not available, not all
  * functionality of the layout is available. In particular, vertical size
- * management is not available.
+ * management is not available.</i>
+ * </p>
+ * 
+ * 
  * <p>
- * When a layout is used on a first page with progressive bootstrap, then the
- * layout will progress only in a limited way to a full JavaScript-based layout.
- * You can thus not rely on it to behave properly for example when dynamically
- * adding or removing widgets. </i>
+ * <i><b>Note: </b>When a layout is used on a first page with progressive
+ * bootstrap, then the layout will progress only in a limited way to a full
+ * JavaScript-based layout. You can thus not rely on it to behave properly for
+ * example when dynamically adding or removing widgets. </i>
  * </p>
  */
 public class WBoxLayout extends WLayout {
@@ -127,6 +131,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Creates a new box layout.
 	 * <p>
+	 * 
 	 * This constructor is rarely used. Instead, use the convenient constructors
 	 * of the specialized {@link WHBoxLayout} or {@link WVBoxLayout} classes.
 	 * <p>
@@ -228,6 +233,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Sets spacing between each item.
 	 * <p>
+	 * 
 	 * The default spacing is 6 pixels.
 	 */
 	public void setSpacing(int size) {
@@ -248,6 +254,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds a widget to the layout.
 	 * <p>
+	 * 
 	 * Adds a widget to the layout, with given <code>stretch</code> factor. When
 	 * the stretch factor is 0, the widget will not be resized by the layout
 	 * manager (stretched to take excess space).
@@ -308,6 +315,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds a nested layout to the layout.
 	 * <p>
+	 * 
 	 * Adds a nested layout, with given <code>stretch</code> factor.
 	 * <p>
 	 * 
@@ -354,6 +362,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds extra spacing.
 	 * <p>
+	 * 
 	 * Adds extra spacing to the layout.
 	 * <p>
 	 * 
@@ -367,6 +376,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Adds a stretch element.
 	 * <p>
+	 * 
 	 * Adds a stretch element to the layout. This adds an empty space that
 	 * stretches as needed.
 	 * <p>
@@ -390,6 +400,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts a widget in the layout.
 	 * <p>
+	 * 
 	 * Inserts a widget in the layout at position <code>index</code>, with given
 	 * <code>stretch</code> factor. When the stretch factor is 0, the widget
 	 * will not be resized by the layout manager (stretched to take excess
@@ -456,6 +467,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts a nested layout in the layout.
 	 * <p>
+	 * 
 	 * Inserts a nested layout in the layout at position<code>index</code>, with
 	 * given <code>stretch</code> factor.
 	 * <p>
@@ -508,6 +520,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts extra spacing in the layout.
 	 * <p>
+	 * 
 	 * Inserts extra spacing in the layout at position <code>index</code>.
 	 * <p>
 	 * 
@@ -523,6 +536,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Inserts a stretch element in the layout.
 	 * <p>
+	 * 
 	 * Inserts a stretch element in the layout at position <code>index</code>.
 	 * This adds an empty space that stretches as needed.
 	 * <p>
@@ -549,6 +563,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Sets the stretch factor for a nested layout.
 	 * <p>
+	 * 
 	 * The <code>layout</code> must have previously been added to this layout
 	 * using
 	 * {@link WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
@@ -572,6 +587,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Sets the stretch factor for a widget.
 	 * <p>
+	 * 
 	 * The <code>widget</code> must have previously been added to this layout
 	 * using
 	 * {@link WBoxLayout#insertWidget(int index, WWidget widget, int stretch, EnumSet alignment)
@@ -595,6 +611,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Sets whether the use may drag a particular border.
 	 * <p>
+	 * 
 	 * This method sets whether the border that separates item <i>index</i> from
 	 * the next item may be resized by the user, depending on the value of
 	 * <i>enabled</i>.
@@ -646,6 +663,7 @@ public class WBoxLayout extends WLayout {
 	/**
 	 * Returns whether the user may drag a particular border.
 	 * <p>
+	 * 
 	 * This method returns whether the border that separates item <i>index</i>
 	 * from the next item may be resized by the user.
 	 * <p>

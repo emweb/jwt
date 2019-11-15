@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Alternatively, you can use one of the {@link WPopupMenu#popup(WPoint p)
  * popup()} methods to show the menu and listen to the
- * {@link WPopupMenu#triggered() triggered} signal where you read the
+ * {@link WPopupMenu#triggered() triggered()} signal where you read the
  * {@link WPopupMenu#getResult() getResult()}, or associate the menu with a
  * button using {@link WPushButton#setMenu(WPopupMenu popupMenu)
  * WPushButton#setMenu()}.
@@ -53,11 +53,12 @@ import org.slf4j.LoggerFactory;
  * perhaps by specialization or simply by binding custom data using
  * {@link WMenuItem#setData(Object data) WMenuItem#setData()}.</li>
  * <li>You can bind a separate method to each item&apos;s
- * {@link WMenuItem#triggered() WMenuItem#triggered()} signal.</li>
+ * {@link WMenuItem#triggered()} signal.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -84,16 +85,19 @@ import org.slf4j.LoggerFactory;
  * 	if (item != null) {
  * 		// ... do associated action.
  * 	}
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * A snapshot of the {@link WPopupMenu}: <div align="center"> <img
- * src="doc-files//WPopupMenu-default-1.png" alt="WPopupMenu example (default)">
+ * src="doc-files/WPopupMenu-default-1.png">
  * <p>
  * <strong>WPopupMenu example (default)</strong>
  * </p>
- * </div> <div align="center"> <img src="doc-files//WPopupMenu-polished-1.png"
- * alt="WPopupMenu example (polished)">
+ * </div>
+ * 
+ * <div align="center"> <img src="doc-files/WPopupMenu-polished-1.png">
  * <p>
  * <strong>WPopupMenu example (polished)</strong>
  * </p>
@@ -107,6 +111,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Creates a new popup menu.
 	 * <p>
+	 * 
 	 * The menu is hidden, by default, and must be shown using
 	 * {@link WPopupMenu#popup(WPoint p) popup()} or exec().
 	 */
@@ -158,6 +163,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Shows the the popup at a position.
 	 * <p>
+	 * 
 	 * Displays the popup at a point with document coordinates
 	 * <code>point</code>. The positions intelligent, and will chose one of the
 	 * four menu corners to correspond to this point so that the popup menu is
@@ -168,7 +174,7 @@ public class WPopupMenu extends WMenu {
 		this.popupImpl();
 		this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
 		this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
-		this.doJavaScript("Wt3_4_1.positionXY('" + this.getId() + "',"
+		this.doJavaScript("Wt3_4_2.positionXY('" + this.getId() + "',"
 				+ String.valueOf(p.getX()) + "," + String.valueOf(p.getY())
 				+ ");");
 	}
@@ -176,6 +182,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Shows the the popup at the location of a mouse event.
 	 * <p>
+	 * 
 	 * This is a convenience method for {@link WPopupMenu#popup(WPoint p)
 	 * popup()} that uses the event&apos;s document coordinates.
 	 * <p>
@@ -227,6 +234,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Executes the the popup at a position.
 	 * <p>
+	 * 
 	 * Displays the popup at a point with document coordinates <code>p</code>,
 	 * using {@link WPopupMenu#popup(WPoint p) popup()}, and the waits until a
 	 * menu item is selected, or the menu is cancelled.
@@ -249,6 +257,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Executes the the popup at the location of a mouse event.
 	 * <p>
+	 * 
 	 * This is a convenience method for {@link WPopupMenu#exec(WPoint p) exec()}
 	 * that uses the event&apos;s document coordinates.
 	 * <p>
@@ -287,6 +296,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Returns the last triggered menu item.
 	 * <p>
+	 * 
 	 * The result is <code>null</code> when the user cancelled the popup menu.
 	 */
 	public WMenuItem getResult() {
@@ -316,7 +326,8 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Signal emitted when the popup is hidden.
 	 * <p>
-	 * Unlike the {@link WMenu#itemSelected() WMenu#itemSelected()} signal,
+	 * 
+	 * Unlike the {@link WMenu#itemSelected()} signal,
 	 * {@link WPopupMenu#aboutToHide() aboutToHide()} is only emitted by the
 	 * toplevel popup menu (and not by submenus), and is also emitted when no
 	 * item was selected.
@@ -335,7 +346,8 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Signal emitted when an item is selected.
 	 * <p>
-	 * Unlike the {@link WMenu#itemSelected() WMenu#itemSelected()} signal,
+	 * 
+	 * Unlike the {@link WMenu#itemSelected()} signal,
 	 * {@link WPopupMenu#triggered() triggered()} is only emitted by the
 	 * toplevel popup menu (and not by submenus).
 	 * <p>
@@ -350,6 +362,7 @@ public class WPopupMenu extends WMenu {
 	/**
 	 * Configure auto-hide when the mouse leaves the menu.
 	 * <p>
+	 * 
 	 * If <code>enabled</code>, The popup menu will be hidden when the mouse
 	 * leaves the menu for longer than <code>autoHideDelay</code>
 	 * (milliseconds). The popup menu result will be 0, as if the user
@@ -462,7 +475,7 @@ public class WPopupMenu extends WMenu {
 		if (!this.cancel_.isConnected()) {
 			app.loadJavaScript("js/WPopupMenu.js", wtjs1());
 			StringBuilder s = new StringBuilder();
-			s.append("new Wt3_4_1.WPopupMenu(")
+			s.append("new Wt3_4_2.WPopupMenu(")
 					.append(app.getJavaScriptClass()).append(',')
 					.append(this.getJsRef()).append(',')
 					.append(this.autoHideDelay_).append(");");

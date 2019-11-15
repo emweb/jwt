@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
  * <li><code>facebook-oauth2-app-id</code>: The application ID</li>
  * <li><code>facebook-oauth2-app-secret</code>: The application secret.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * For example:
  * 
@@ -53,8 +55,10 @@ import org.slf4j.LoggerFactory;
  *      a3cf1630b1ae415c7260d849efdf444d
  *    </property>
  *  </properties>
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
@@ -78,6 +82,7 @@ public class FacebookService extends OAuthService {
 	/**
 	 * Checks whether a FacebookAuth service is properly configured.
 	 * <p>
+	 * 
 	 * This returns <code>true</code> if a value is found for the three
 	 * configuration properties.
 	 */

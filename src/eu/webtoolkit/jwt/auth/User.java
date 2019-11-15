@@ -88,6 +88,7 @@ public class User {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an invalid user.
 	 * <p>
 	 * 
@@ -101,6 +102,7 @@ public class User {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a user with id <code>id</code>, and whose information is stored
 	 * in the <code>database</code>.
 	 */
@@ -112,6 +114,7 @@ public class User {
 	/**
 	 * Returns the user database.
 	 * <p>
+	 * 
 	 * This returns the user database passed in the constructor, or 0 if the
 	 * user is invalid, and was constructed using the default constructor.
 	 */
@@ -122,6 +125,7 @@ public class User {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
+	 * 
 	 * Two users are equal if they have the same identity and the same database.
 	 */
 	public boolean equals(final User other) {
@@ -131,6 +135,7 @@ public class User {
 	/**
 	 * Returns whether the user is valid.
 	 * <p>
+	 * 
 	 * A invalid user is a sentinel value returned by methods that query the
 	 * database but could not identify a matching user.
 	 */
@@ -141,6 +146,7 @@ public class User {
 	/**
 	 * Returns the user id.
 	 * <p>
+	 * 
 	 * This returns the id that uniquely identifies the user, and acts as a
 	 * &quot;primary key&quot; to obtain other information for the user in the
 	 * database.
@@ -163,6 +169,7 @@ public class User {
 	/**
 	 * Adds an identity.
 	 * <p>
+	 * 
 	 * Depending on whether the database supports multiple identities per
 	 * provider, this may change (like
 	 * {@link User#setIdentity(String provider, String identity) setIdentity()}
@@ -180,6 +187,7 @@ public class User {
 	/**
 	 * Sets an identity.
 	 * <p>
+	 * 
 	 * Unlike {@link User#addIdentity(String provider, String identity)
 	 * addIdentity()} this overrides any other identity of the given provider,
 	 * in case the underlying database supports multiple identities per user.
@@ -368,6 +376,7 @@ public class User {
 	/**
 	 * Logs the result of an authentication attempt.
 	 * <p>
+	 * 
 	 * This changes the number of failed login attempts, and stores the current
 	 * date as the last login attempt time.
 	 * <p>

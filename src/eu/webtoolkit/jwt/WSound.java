@@ -57,6 +57,7 @@ public class WSound extends WObject {
 	/**
 	 * Constructs a sound object for an MP3 media source.
 	 * <p>
+	 * 
 	 * The <code>url</code> will be assumed to be an MP3 file.
 	 * <p>
 	 * 
@@ -107,6 +108,7 @@ public class WSound extends WObject {
 	/**
 	 * Adds a media source.
 	 * <p>
+	 * 
 	 * You may add multiple media sources (with different encodings) to allow
 	 * the file to be played in more browsers without needing Flash plugins.
 	 */
@@ -128,6 +130,7 @@ public class WSound extends WObject {
 	/**
 	 * Returns the media source.
 	 * <p>
+	 * 
 	 * This returns the link set for a specific encoding, or an empty link if no
 	 * URL was set for that encoding.
 	 */
@@ -143,6 +146,7 @@ public class WSound extends WObject {
 	/**
 	 * Sets the amount of times the sound has to be repeated.
 	 * <p>
+	 * 
 	 * A call to {@link WSound#play() play()} will play the sound
 	 * <code>number</code> of times. The default value is 1 (no repeats).
 	 */
@@ -153,6 +157,7 @@ public class WSound extends WObject {
 	/**
 	 * Returns the configured number of repeats.
 	 * <p>
+	 * 
 	 * <i>{@link WSound#setLoops(int number) setLoops()}</i>
 	 */
 	public int getLoops() {
@@ -162,6 +167,7 @@ public class WSound extends WObject {
 	/**
 	 * Start asynchronous playback of the sound.
 	 * <p>
+	 * 
 	 * This method returns immediately. It will cause the sound to be played for
 	 * the configured amount of {@link WSound#getLoops() getLoops()}.
 	 * <p>
@@ -179,6 +185,7 @@ public class WSound extends WObject {
 	/**
 	 * Stops playback of the sound.
 	 * <p>
+	 * 
 	 * This method returns immediately. It causes the current playback (if any)
 	 * of the sound to be stopped.
 	 */

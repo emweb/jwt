@@ -31,7 +31,7 @@ public enum CheckState {
 	 */
 	Unchecked,
 	/**
-	 * Partially checked (for a tri-state checkbox).
+	 * Partially checked (for a tri-state checkbox)
 	 */
 	PartiallyChecked,
 	/**

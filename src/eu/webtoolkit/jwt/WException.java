@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base class for exceptions thrown by Wt.
+ * Base class for exceptions thrown by JWt.
  */
 public class WException extends RuntimeException {
 	private static Logger logger = LoggerFactory.getLogger(WException.class);

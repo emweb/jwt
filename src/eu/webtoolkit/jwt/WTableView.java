@@ -75,27 +75,24 @@ import org.slf4j.LoggerFactory;
  * multiple items (using
  * {@link WAbstractItemView#setSelectionMode(SelectionMode mode)
  * WAbstractItemView#setSelectionMode()}), and listen for changes in the
- * selection using the {@link WAbstractItemView#selectionChanged()
- * WAbstractItemView#selectionChanged()} signal.
+ * selection using the {@link WAbstractItemView#selectionChanged()} signal.
  * <p>
  * You may enable drag &amp; drop support for this view, whith awareness of the
  * items in the model. When enabling dragging (see
  * {@link WAbstractItemView#setDragEnabled(boolean enable)
  * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
  * but only when all items in the selection indicate support for dragging
- * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
- * flag), and if the model indicates a mime-type (controlled by
- * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
- * Likewise, by enabling support for dropping (see
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled} flag), and if the model
+ * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()}
+ * ). Likewise, by enabling support for dropping (see
  * {@link WAbstractItemView#setDropsEnabled(boolean enable)
  * WAbstractItemView#setDropsEnabled()}), the view may receive a drop event on a
  * particular item, at least if the item indicates support for drops (controlled
- * by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled} flag).
+ * by the {@link ItemFlag#ItemIsDropEnabled} flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
- * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
- * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
- * signals.
+ * the {@link WAbstractItemView#clicked()} or
+ * {@link WAbstractItemView#doubleClicked()} signals.
  * <p>
  * If a {@link WTableView} is not constrained in height (either by a layout
  * manager or by {@link WWidget#setHeight(WLength height) WWidget#setHeight()}),
@@ -570,6 +567,7 @@ public class WTableView extends WAbstractItemView {
 	/**
 	 * Sets preloading margin.
 	 * <p>
+	 * 
 	 * By default the table view loads in an area equal to 3 times its height
 	 * and 3 times its width. This makes it so that the user can scroll a full
 	 * page in each direction without the delay caused when the table view
@@ -666,6 +664,7 @@ public class WTableView extends WAbstractItemView {
 	/**
 	 * Returns the model index corresponding to a widget.
 	 * <p>
+	 * 
 	 * This returns the model index for the item that is or contains the given
 	 * widget.
 	 */
@@ -795,6 +794,7 @@ public class WTableView extends WAbstractItemView {
 	/**
 	 * Called when rows or columns are inserted/removed.
 	 * <p>
+	 * 
 	 * Override this method when you want to adjust the table&apos;s size when
 	 * columns or rows are inserted or removed. The method is also called when
 	 * the model is reset. The default implementation does nothing.
@@ -2169,7 +2169,7 @@ public class WTableView extends WAbstractItemView {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTableView.js", wtjs1());
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_4_1.WTableView(").append(app.getJavaScriptClass())
+		s.append("new Wt3_4_2.WTableView(").append(app.getJavaScriptClass())
 				.append(',').append(this.getJsRef()).append(',')
 				.append(this.contentsContainer_.getJsRef()).append(',')
 				.append(this.viewportTop_).append(',')

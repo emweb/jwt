@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  * <li>RememberMeField: whether the login should be remembered with an
  * authentication cookie (if that is configured in the {@link AuthService}).</li>
  * </ul>
+ * 
+ * 
  * <p>
  * When the model validates correctly ({@link AuthModel#validate() validate()}
  * returns <code>true</code>), the entered credentials are correct. At that
@@ -71,6 +73,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a new authentication model, using a basic authentication service
 	 * and user database.
 	 */
@@ -192,6 +195,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Initializes client-side login throttling.
 	 * <p>
+	 * 
 	 * If login attempt throttling is enabled, then this may also be indicated
 	 * client-side using JavaScript by disabling the login button and showing a
 	 * count-down indicator. This method initializes this JavaScript utlity
@@ -207,7 +211,7 @@ public class AuthModel extends FormBaseModel {
 			app.loadJavaScript("js/AuthModel.js", wtjs1());
 			button.setJavaScriptMember(
 					" AuthThrottle",
-					"new Wt3_4_1.AuthThrottle(Wt3_4_1,"
+					"new Wt3_4_2.AuthThrottle(Wt3_4_2,"
 							+ button.getJsRef()
 							+ ","
 							+ WString.toWString(
@@ -219,6 +223,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Updates client-side login throttling.
 	 * <p>
+	 * 
 	 * This should be called after a call to attemptPasswordLogin(), if you want
 	 * to reflect throttling using a client-side count-down indicator in the
 	 * button.
@@ -240,6 +245,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Logs the user in.
 	 * <p>
+	 * 
 	 * Logs in the user after a successful call to {@link AuthModel#validate()
 	 * validate()}. To avoid mishaps, you should call this method immediately
 	 * after a call to {@link AuthModel#validate() validate()}.
@@ -268,6 +274,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Logs the user out.
 	 * <p>
+	 * 
 	 * This also removes the remember-me cookie for the user.
 	 */
 	public void logout(final Login login) {
@@ -283,6 +290,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Processes an email token.
 	 * <p>
+	 * 
 	 * This simply calls
 	 * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
 	 * AuthService#processEmailToken()}.
@@ -294,6 +302,7 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Creates a token and stores it in a cookie.
 	 * <p>
+	 * 
 	 * This enables automatic authentication in a next session.
 	 */
 	public void setRememberMeCookie(final User user) {
@@ -307,9 +316,10 @@ public class AuthModel extends FormBaseModel {
 	/**
 	 * Detects and processes an authentication token.
 	 * <p>
+	 * 
 	 * This returns a user that was identified with an authentication token
-	 * found in the application environment, or an invalid {@link User User}
-	 * object if this feature is not configured, or no valid cookie was found.
+	 * found in the application environment, or an invalid {@link User} object
+	 * if this feature is not configured, or no valid cookie was found.
 	 * <p>
 	 * 
 	 * @see AuthService#processAuthToken(String token, AbstractUserDatabase

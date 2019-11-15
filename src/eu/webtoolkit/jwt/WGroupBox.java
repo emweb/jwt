@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  * This is typically used in a form to group certain form elements together.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {@code
@@ -34,36 +33,40 @@ import org.slf4j.LoggerFactory;
  *  
  *  // use a group box as widget container for 3 radio buttons, with a title
  *  WGroupBox container = new WGroupBox("USA elections vote");
- *  		 
+ *                   
  *  // use a button group to logically group the 3 options
  *  WButtonGroup group = new WButtonGroup(this);
- * 		 
+ *           
  *  WRadioButton button;
  *  button = new WRadioButton("I voted Republican", container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.Republican.ordinal());
- * 
+ *  
  *  button = new WRadioButton("I voted Democrat", container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.Democrate.ordinal());
- * 
+ *  
  *  button = new WRadioButton("I didn't vote", container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.NoVote.ordinal());
- * 		 
+ *           
  *  group.setCheckedButton(group.button(Vote.NoVote.ordinal()));
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * Like {@link WContainerWidget}, WGroupBox is by default displayed as a
  * {@link WWidget#setInline(boolean inlined) block}.
  * <p>
- * <div align="center"> <img src="doc-files//WGroupBox-1.png"
- * alt="WGroupBox example">
+ * <div align="center"> <img src="doc-files/WGroupBox-1.png">
  * <p>
  * <strong>WGroupBox example</strong>
  * </p>
- * </div> <h3>CSS</h3>
+ * </div>
+ * 
+ * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;fieldset&gt;</code> tag, and the
  * title in a nested <code>&lt;legend&gt;</code> tag. This widget does not

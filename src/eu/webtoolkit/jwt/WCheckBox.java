@@ -25,9 +25,8 @@ import org.slf4j.LoggerFactory;
  * 
  * By default, a checkbox can have two states: {@link CheckState#Checked} or
  * {@link CheckState#Unchecked}, which can be inspected using
- * {@link WAbstractToggleButton#isChecked() WAbstractToggleButton#isChecked()},
- * and set using {@link WAbstractToggleButton#setChecked()
- * WAbstractToggleButton#setChecked()}.
+ * {@link WAbstractToggleButton#isChecked()}, and set using
+ * {@link WAbstractToggleButton#setChecked()}.
  * <p>
  * A checkbox may also provide a third state,
  * {@link CheckState#PartiallyChecked}, which is useful to indicate that it is
@@ -43,7 +42,6 @@ import org.slf4j.LoggerFactory;
  * A label is added as a sibling of the checkbox to the same parent.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -59,12 +57,15 @@ import org.slf4j.LoggerFactory;
  * 	w1.setChecked(false);
  * 	w2.setChecked(true);
  * 	w3.setChecked(true);
+ * 
  * }
  * </pre>
+ * 
  * <p>
- * WCheckBox is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WCheckBox is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget is rendered using an HTML
  * <code>&lt;input type=&quot;checkbox&quot;&gt;</code> tag. When a label is
@@ -82,6 +83,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	/**
 	 * Creates a checkbox without label.
 	 * <p>
+	 * 
 	 * A checkbox created by this constructor will not contain a placeholder for
 	 * a label, and therefore it is not possible to assign a label to it later
 	 * through {@link WAbstractToggleButton#setText(CharSequence text)
@@ -127,6 +129,8 @@ public class WCheckBox extends WAbstractToggleButton {
 	/**
 	 * Makes a tristate checkbox.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>You should enable tristate functionality right after
 	 * construction and this cannot be modified later. </i>
@@ -189,6 +193,7 @@ public class WCheckBox extends WAbstractToggleButton {
 	/**
 	 * Sets the check state.
 	 * <p>
+	 * 
 	 * Unless it is a tri-state checkbox, only {@link CheckState#Checked} and
 	 * {@link CheckState#Unchecked} are valid states.
 	 */

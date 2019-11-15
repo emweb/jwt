@@ -74,6 +74,7 @@ public class OAuthTokenEndpoint extends WResource {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * The issuer argument is used for the &quot;iss&quot; attribute in the ID
 	 * {@link Token} when the scope includes &quot;openid&quot;.
 	 */
@@ -255,6 +256,7 @@ public class OAuthTokenEndpoint extends WResource {
 	/**
 	 * Sets the amount of seconds after which generated access tokens expire.
 	 * <p>
+	 * 
 	 * Defaults to 3600 seconds.
 	 */
 	public void setAccessExpSecs(int seconds) {
@@ -264,6 +266,7 @@ public class OAuthTokenEndpoint extends WResource {
 	/**
 	 * Sets the amount of seconds after which generated id tokens expire.
 	 * <p>
+	 * 
 	 * Defaults to 3600 seconds.
 	 */
 	public void setIdExpSecs(int seconds) {

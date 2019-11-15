@@ -39,6 +39,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * If <code>authModel</code> is not <code>null</code>, the user also has to
 	 * authenticate first using his current password.
 	 */

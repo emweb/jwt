@@ -28,7 +28,7 @@ public enum LegendLocation {
 	 */
 	LegendInside,
 	/**
-	 * Outside the chart area (in the padding area).
+	 * Outside the chart area (in the padding area)
 	 */
 	LegendOutside;
 

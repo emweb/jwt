@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * <li>{@link AuthService#setRandomTokenLength(int length)
  * setRandomTokenLength()}</li>
  * </ul>
+ * 
  * </li>
  * <li>authentication tokens, used by e.g. remember-me functionality:
  * <ul>
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
  * processAuthToken()}</li>
  * </ul>
+ * 
  * </li>
  * <li>email tokens, for email verification and lost password functions:
  * <ul>
@@ -63,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * {@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
  * processEmailToken()}</li>
  * </ul>
+ * 
  * </li>
  * </ul>
  */
@@ -91,6 +94,7 @@ public class AuthService {
 	/**
 	 * Sets the token length.
 	 * <p>
+	 * 
 	 * Configures the length used for random tokens. Random tokens are generated
 	 * for authentication tokens, and email tokens.
 	 * <p>
@@ -114,6 +118,7 @@ public class AuthService {
 	/**
 	 * Configures the identity policy.
 	 * <p>
+	 * 
 	 * The identity policy has an impact on the login and registration
 	 * procedure.
 	 */
@@ -134,6 +139,7 @@ public class AuthService {
 	/**
 	 * Tries to match the identity to an existing user.
 	 * <p>
+	 * 
 	 * When authenticating using a 3rd party {@link Identity} Provider, the
 	 * identity is matched against the existing users, based on the id (with
 	 * {@link AbstractUserDatabase#findWithIdentity(String provider, String identity)
@@ -173,6 +179,7 @@ public class AuthService {
 	/**
 	 * Configures authentication token support.
 	 * <p>
+	 * 
 	 * This method allows you to configure whether authentication tokens are in
 	 * use. Authentication tokens are used for the user to bypass a more
 	 * elaborate authentication method, and are a secret shared with the
@@ -238,6 +245,7 @@ public class AuthService {
 	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
 	 * processAuthToken()} updates the auth token.
 	 * <p>
+	 * 
 	 * If this option is enabled,
 	 * {@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
 	 * processAuthToken()} will replace the auth token with a new token. This is
@@ -251,7 +259,7 @@ public class AuthService {
 	 * this into account (e.g. keeps the old token valid for a little bit
 	 * longer)
 	 * <p>
-	 * The default {@link } UserDatabase does not handle concurrent token updates
+	 * The default Dbo UserDatabase does not handle concurrent token updates
 	 * well, so disable this option if you want to prevent that issue.
 	 * <p>
 	 * 
@@ -276,6 +284,7 @@ public class AuthService {
 	/**
 	 * Returns the authentication token cookie name.
 	 * <p>
+	 * 
 	 * This is the default cookie name used for storing the authentication token
 	 * in the user&apos;s browser.
 	 * <p>
@@ -290,6 +299,7 @@ public class AuthService {
 	/**
 	 * Returns the authentication token cookie domain.
 	 * <p>
+	 * 
 	 * This is the domain used for the authentication cookie. By default this is
 	 * empty, which means that a cookie will be set for this application.
 	 * <p>
@@ -307,6 +317,7 @@ public class AuthService {
 	/**
 	 * Sets the token hash function.
 	 * <p>
+	 * 
 	 * Sets the hash function used to safely store authentication tokens in the
 	 * database. Ownership of the hash function is transferred.
 	 * <p>
@@ -330,6 +341,7 @@ public class AuthService {
 	/**
 	 * Creates and stores an authentication token for the user.
 	 * <p>
+	 * 
 	 * This creates and stores a new authentication token for the given user.
 	 * <p>
 	 * The returned value is the token that may be used to re-identify the user
@@ -357,6 +369,7 @@ public class AuthService {
 	/**
 	 * Processes an authentication token.
 	 * <p>
+	 * 
 	 * This verifies an authentication token, and considers whether it matches
 	 * with a token hash value stored in database. If it matches and auth token
 	 * update is enabled, the token is updated with a new hash.
@@ -401,6 +414,7 @@ public class AuthService {
 	/**
 	 * Configures the duration for an authenticaton to remain valid.
 	 * <p>
+	 * 
 	 * The default duration is two weeks (14 * 24 * 60 minutes).
 	 */
 	public void setAuthTokenValidity(int minutes) {
@@ -420,6 +434,7 @@ public class AuthService {
 	/**
 	 * Configures email verification.
 	 * <p>
+	 * 
 	 * Email verification is useful for a user to recover a lost password, or to
 	 * be able to confidently confirm other events with this user (such as order
 	 * processing).
@@ -444,6 +459,7 @@ public class AuthService {
 	/**
 	 * Configure email verificiation to be required for login.
 	 * <p>
+	 * 
 	 * When enabled, a user will not be able to login if the email-address was
 	 * not verified.
 	 */
@@ -455,7 +471,6 @@ public class AuthService {
 	}
 
 	/**
-	 * <p>
 	 * \ Returns whether email verification is required for login.
 	 * <p>
 	 * 
@@ -468,6 +483,7 @@ public class AuthService {
 	/**
 	 * Sets the internal path used to present tokens in emails.
 	 * <p>
+	 * 
 	 * The default path is &quot;/auth/mail/&quot;.
 	 */
 	public void setEmailRedirectInternalPath(final String internalPath) {
@@ -487,6 +503,7 @@ public class AuthService {
 	/**
 	 * Parses the emailtoken from an internal path.
 	 * <p>
+	 * 
 	 * This method parses an internal path and if it matches the email
 	 * redirection path, it returns the token contained.
 	 * <p>
@@ -506,6 +523,7 @@ public class AuthService {
 	/**
 	 * Verifies an email address.
 	 * <p>
+	 * 
 	 * This registers a new email token with the user.
 	 * <p>
 	 * Then it sends an email to the user&apos;s unverified email address with
@@ -530,6 +548,7 @@ public class AuthService {
 	/**
 	 * Implements lost password functionality.
 	 * <p>
+	 * 
 	 * If email address verification is enabled, then a user may recover his
 	 * password (or rather, chose a new password) using a procedure which
 	 * involves sending an email to a verified email address.
@@ -561,16 +580,20 @@ public class AuthService {
 	/**
 	 * Processes an email token.
 	 * <p>
+	 * 
 	 * This processes a token received through an email. If successful, the
 	 * token is removed from the database.
 	 * <p>
 	 * This may return two successful results:
 	 * <ul>
-	 * <li>{@link EmailTokenResult.Result#EmailConfirmed}: a token was presented
-	 * which proves that the user is tied to the email address.</li>
-	 * <li>{@link EmailTokenResult.Result#UpdatePassword}: a token was presented
-	 * which requires the user to enter a new password.</li>
+	 * <li>{@link EmailTokenResult.Result#EmailConfirmed Result#EmailConfirmed}:
+	 * a token was presented which proves that the user is tied to the email
+	 * address.</li>
+	 * <li>{@link EmailTokenResult.Result#UpdatePassword Result#UpdatePassword}:
+	 * a token was presented which requires the user to enter a new password.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * 
 	 * @see AuthService#verifyEmailAddress(User user, String address)
@@ -625,6 +648,7 @@ public class AuthService {
 	/**
 	 * Configures the duration for an email token to remain valid.
 	 * <p>
+	 * 
 	 * The default duration is three days (3 * 24 * 60 minutes). Three is a
 	 * divine number.
 	 */
@@ -645,6 +669,7 @@ public class AuthService {
 	/**
 	 * Sends an email.
 	 * <p>
+	 * 
 	 * Sends an email to the given address with subject and body.
 	 * <p>
 	 * The default implementation will consult configuration properties to add a
@@ -655,6 +680,8 @@ public class AuthService {
 	 * <li>&quot;auth-mail-sender-address&quot;: the sender email address, with
 	 * default value &quot;noreply-auth@www.webtoolkit.eu&quot;</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * Then it uses the JavaMail API to send the message, the SMTP settings are
 	 * configured using the smtp.host and smpt.port JWt configuration variables
@@ -681,6 +708,7 @@ public class AuthService {
 	/**
 	 * Sends a confirmation email to the user to verify his email address.
 	 * <p>
+	 * 
 	 * Sends a confirmation email to the given address.
 	 * <p>
 	 * The email content is provided by the following string keys:
@@ -718,6 +746,7 @@ public class AuthService {
 	/**
 	 * Sends an email to the user to enter a new password.
 	 * <p>
+	 * 
 	 * This sends a lost password email to the given <code>address</code>, with
 	 * a given <code>token</code>.
 	 * <p>

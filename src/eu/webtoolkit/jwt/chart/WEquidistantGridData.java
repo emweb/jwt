@@ -115,6 +115,7 @@ public class WEquidistantGridData extends WAbstractGridData {
 	/**
 	 * Returns the delta value of the X-axis.
 	 * <p>
+	 * 
 	 * The delta is the interval between subsequent values on the axis.
 	 * <p>
 	 * 
@@ -148,6 +149,7 @@ public class WEquidistantGridData extends WAbstractGridData {
 	/**
 	 * Returns the delta value of the Y-axis.
 	 * <p>
+	 * 
 	 * The delta is the interval between subsequent values on the axis.
 	 * <p>
 	 * 

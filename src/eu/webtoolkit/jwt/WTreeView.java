@@ -71,46 +71,43 @@ import org.slf4j.LoggerFactory;
  * multiple items (using
  * {@link WAbstractItemView#setSelectionMode(SelectionMode mode)
  * WAbstractItemView#setSelectionMode()}), and listen for changes in the
- * selection using the {@link WAbstractItemView#selectionChanged()
- * WAbstractItemView#selectionChanged()} signal.
+ * selection using the {@link WAbstractItemView#selectionChanged()} signal.
  * <p>
  * You may enable drag &amp; drop support for this view, whith awareness of the
  * items in the model. When enabling dragging (see
  * {@link WAbstractItemView#setDragEnabled(boolean enable)
  * WAbstractItemView#setDragEnabled()}), the current selection may be dragged,
  * but only when all items in the selection indicate support for dragging
- * (controlled by the {@link ItemFlag#ItemIsDragEnabled ItemIsDragEnabled}
- * flag), and if the model indicates a mime-type (controlled by
- * {@link WAbstractItemModel#getMimeType() WAbstractItemModel#getMimeType()}).
- * Likewise, by enabling support for dropping (see
+ * (controlled by the {@link ItemFlag#ItemIsDragEnabled} flag), and if the model
+ * indicates a mime-type (controlled by {@link WAbstractItemModel#getMimeType()}
+ * ). Likewise, by enabling support for dropping (see
  * {@link WAbstractItemView#setDropsEnabled(boolean enable)
  * WAbstractItemView#setDropsEnabled()}), the treeview may receive a drop event
  * on a particular item, at least if the item indicates support for drops
- * (controlled by the {@link ItemFlag#ItemIsDropEnabled ItemIsDropEnabled}
- * flag).
+ * (controlled by the {@link ItemFlag#ItemIsDropEnabled} flag).
  * <p>
  * You may also react to mouse click events on any item, by connecting to one of
- * the {@link WAbstractItemView#clicked() WAbstractItemView#clicked()} or
- * {@link WAbstractItemView#doubleClicked() WAbstractItemView#doubleClicked()}
- * signals.
+ * the {@link WAbstractItemView#clicked()} or
+ * {@link WAbstractItemView#doubleClicked()} signals.
  * <p>
  * <h3>Graceful degradation</h3>
+ * 
  * <p>
  * The view provides a virtual scrolling behavior which relies on Ajax
  * availability. When Ajax is not available, a page navigation bar is used
- * instead, see {@link WAbstractItemView#getCreatePageNavigationBar()
- * WAbstractItemView#getCreatePageNavigationBar()}. In that case, the widget
- * needs to be given an explicit height using
+ * instead, see {@link WAbstractItemView#getCreatePageNavigationBar()}. In that
+ * case, the widget needs to be given an explicit height using
  * {@link WTreeView#resize(WLength width, WLength height) resize()} which
  * determines the number of rows that are displayed at a time.
  * <p>
  * A snapshot of the {@link WTreeView}: <div align="center"> <img
- * src="doc-files//WTreeView-default-1.png" alt="WTreeView example (default)">
+ * src="doc-files/WTreeView-default-1.png">
  * <p>
  * <strong>WTreeView example (default)</strong>
  * </p>
- * </div> <div align="center"> <img src="doc-files//WTreeView-polished-1.png"
- * alt="WTreeView example (polished)">
+ * </div>
+ * 
+ * <div align="center"> <img src="doc-files/WTreeView-polished-1.png">
  * <p>
  * <strong>WTreeView example (polished)</strong>
  * </p>
@@ -267,7 +264,10 @@ public class WTreeView extends WAbstractItemView {
 	 * <p>
 	 * 
 	 * @see WTreeView#setExpanded(WModelIndex index, boolean expanded)
-	 * @see WTreeView#expand(WModelIndex index) <p>
+	 * @see WTreeView#expand(WModelIndex index)
+	 * 
+	 * 
+	 *      <p>
 	 *      <i><b>Note: </b>until 3.3.4, selection was removed from within nodes
 	 *      that were collapsed. This (inconsistent) behavior has been removed
 	 *      in 3.3.4. </i>
@@ -291,6 +291,7 @@ public class WTreeView extends WAbstractItemView {
 	/**
 	 * Expands all nodes to a depth.
 	 * <p>
+	 * 
 	 * Expands all nodes to the given <code>depth</code>. A depth of 1
 	 * corresponds to the top level nodes.
 	 * <p>
@@ -306,6 +307,7 @@ public class WTreeView extends WAbstractItemView {
 	/**
 	 * Sets whether toplevel items are decorated.
 	 * <p>
+	 * 
 	 * By default, top level nodes have expand/collapse and other lines to
 	 * display their linkage and offspring, like any node.
 	 * <p>
@@ -476,12 +478,14 @@ public class WTreeView extends WAbstractItemView {
 	/**
 	 * Sets the column width.
 	 * <p>
+	 * 
 	 * For a model with
 	 * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
-	 * columnCount()} == <code>N</code>, the initial width of columns 1..
-	 * <code>N</code> is set to 150 pixels, and column 0 will take all remaining
-	 * space.
+	 * WAbstractItemModel#getColumnCount()} == <code>N</code>, the initial width
+	 * of columns 1..<code>N</code> is set to 150 pixels, and column 0 will take
+	 * all remaining space.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The actual space occupied by each column is the column
 	 * width augmented by 7 pixels for internal padding and a border.</i>
@@ -582,7 +586,7 @@ public class WTreeView extends WAbstractItemView {
 			if (useStyleLeft) {
 				boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
 				this.tieRowsScrollJS_
-						.setJavaScript("function(obj, event) {Wt3_4_1.getCssRule('#"
+						.setJavaScript("function(obj, event) {Wt3_4_2.getCssRule('#"
 								+ this.getId()
 								+ " .Wt-tv-rowc').style.left= -obj.scrollLeft "
 								+ (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)"
@@ -871,7 +875,7 @@ public class WTreeView extends WAbstractItemView {
 		app.loadJavaScript("js/WTreeView.js", wtjs1());
 		this.setJavaScriptMember(
 				" WTreeView",
-				"new Wt3_4_1.WTreeView("
+				"new Wt3_4_2.WTreeView("
 						+ app.getJavaScriptClass()
 						+ ","
 						+ this.getJsRef()

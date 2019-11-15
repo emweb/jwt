@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An abstract model for use with Wt&apos;s charts.
+ * An abstract model for use with JWt&apos;s charts.
  * <p>
  * 
  * This abstract model is used by {@link WAbstractChart} as data model.
@@ -49,6 +49,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns data at a given row and column.
 	 * <p>
+	 * 
 	 * This value determines the position of a data point on the chart.
 	 */
 	public abstract double getData(int row, int column);
@@ -56,6 +57,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns display data at a given row and column.
 	 * <p>
+	 * 
 	 * This value should be a textual representation of the value returned by
 	 * {@link WAbstractChartModel#getData(int row, int column) getData()}. This
 	 * defaults to the string representation of the double returned by
@@ -68,6 +70,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the given column&apos;s header data.
 	 * <p>
+	 * 
 	 * This is used as the name in the legend for a data series.
 	 * <p>
 	 * Defaults to an empty string.
@@ -79,6 +82,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the tooltip text to use on a given row and column.
 	 * <p>
+	 * 
 	 * Defaults to an empty string, signifying that no tooltip should be shown.
 	 */
 	public WString getToolTip(int row, int column) {
@@ -88,6 +92,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the item flags for the given row and column.
 	 * <p>
+	 * 
 	 * Only the ItemIsXHTMLText and ItemHasDeferredTooltip flags are supported
 	 * for charts.
 	 * <p>
@@ -95,19 +100,27 @@ public abstract class WAbstractChartModel extends WObject {
 	 * XHTML or as plain text, and ItemHasDeferredTooltip makes it so that
 	 * tooltips are only loaded on demand.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>An XHTML text tooltip will be forced to be deferred.
-	 * Non-deferred XHTML tooltips are not supported.
+	 * Non-deferred XHTML tooltips are not supported.</i>
+	 * </p>
+	 * 
+	 * 
 	 * <p>
-	 * When not using deferred tooltips, the HTML &lt;area&gt; tag will be used.
-	 * If there are many tooltips and the chart is interactive this may cause
-	 * client-side performance issues. If deferred tooltips are used, this will
-	 * cause some load on the server, as it calculates server-side what marker
-	 * or bar the user is hovering over.
+	 * <i><b>Note: </b>When not using deferred tooltips, the HTML &lt;area&gt;
+	 * tag will be used. If there are many tooltips and the chart is interactive
+	 * this may cause client-side performance issues. If deferred tooltips are
+	 * used, this will cause some load on the server, as it calculates
+	 * server-side what marker or bar the user is hovering over.</i>
+	 * </p>
+	 * 
+	 * 
 	 * <p>
-	 * If the chart is interactive, and tooltips are not deferred, they will be
-	 * scaled according to the first Y axis, and thus multiple Y axes will not
-	 * be supported in combination with plain tooltips. </i>
+	 * <i><b>Note: </b>If the chart is interactive, and tooltips are not
+	 * deferred, they will be scaled according to the first Y axis, and thus
+	 * multiple Y axes will not be supported in combination with plain tooltips.
+	 * </i>
 	 * </p>
 	 */
 	public EnumSet<ItemFlag> flags(int row, int column) {
@@ -117,6 +130,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the link for a given row and column.
 	 * <p>
+	 * 
 	 * Defaults to an empty link, signifying that no link should be shown.
 	 */
 	public WLink link(int row, int column) {
@@ -126,10 +140,10 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the marker pen color to use for a given row and column.
 	 * <p>
+	 * 
 	 * This is used as the color of the outline of markers when drawing a
 	 * PointSeries. The default is null, indicating that the default color, as
-	 * determined by {@link WDataSeries#getMarkerPen()
-	 * WDataSeries#getMarkerPen()}, should be used.
+	 * determined by {@link WDataSeries#getMarkerPen()}, should be used.
 	 * <p>
 	 * 
 	 * @see WDataSeries#setMarkerPen(WPen pen)
@@ -141,10 +155,10 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the marker brush color to use for a given row and column.
 	 * <p>
+	 * 
 	 * This is used as the color of the brush used when drawing a PointSeries.
 	 * The default is null, indicating that the default color, as determined by
-	 * {@link WDataSeries#getMarkerBrush() WDataSeries#getMarkerBrush()}, should
-	 * be used.
+	 * {@link WDataSeries#getMarkerBrush()}, should be used.
 	 * <p>
 	 * 
 	 * @see WDataSeries#setMarkerBrush(WBrush brush)
@@ -156,9 +170,10 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the marker type to use for a given row and column.
 	 * <p>
+	 * 
 	 * This is used as the shape of the marker used when drawing a PointSeries.
 	 * The default is null, indicating that the default marker, as determined by
-	 * {@link WDataSeries#getMarker() WDataSeries#getMarker()}, should be used.
+	 * {@link WDataSeries#getMarker()}, should be used.
 	 * <p>
 	 * 
 	 * @see WDataSeries#setMarker(MarkerType marker)
@@ -170,10 +185,10 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the bar pen color to use for a given row and column.
 	 * <p>
+	 * 
 	 * This is used as the color of the outline of bars when drawing a
 	 * BarSeries. The default is null, indicating that the default color, as
-	 * determined by {@link WDataSeries#getPen() WDataSeries#getPen()}, should
-	 * be used.
+	 * determined by {@link WDataSeries#getPen()}, should be used.
 	 * <p>
 	 * 
 	 * @see WDataSeries#setPen(WPen pen)
@@ -185,9 +200,10 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the bar brush color to use for a given row and column.
 	 * <p>
+	 * 
 	 * This is used as the color of the brush used when drawing a BarSeries. The
 	 * default is null, indicating that the default color, as determined by
-	 * {@link WDataSeries#getBrush() WDataSeries#getBrush()}, should be used.
+	 * {@link WDataSeries#getBrush()}, should be used.
 	 * <p>
 	 * 
 	 * @see WDataSeries#setBrush(WBrush brush)
@@ -199,6 +215,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * Returns the marker scale factor to use for a given row and column.
 	 * <p>
+	 * 
 	 * This is used to scale the size of the marker when drawing a PointSeries.
 	 * The default is null, indicating that the default scale should be used.
 	 */
@@ -225,6 +242,7 @@ public abstract class WAbstractChartModel extends WObject {
 	/**
 	 * A signal that notifies of any change to the model.
 	 * <p>
+	 * 
 	 * Implementations should trigger this signal in order to update the chart.
 	 */
 	public Signal changed() {

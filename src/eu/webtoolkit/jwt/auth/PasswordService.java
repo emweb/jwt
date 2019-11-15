@@ -60,6 +60,7 @@ public class PasswordService implements AbstractPasswordService {
 		/**
 		 * Returns whether a password hash needs to be updated (recomputed).
 		 * <p>
+		 * 
 		 * A <code>hash</code> may need to be updated if it has been computed
 		 * with a cryptographic method that is being disfavoured.
 		 */
@@ -68,6 +69,7 @@ public class PasswordService implements AbstractPasswordService {
 		/**
 		 * Computes the password hash for a clear text password.
 		 * <p>
+		 * 
 		 * This must return a hash that can later be used to verify the
 		 * user&apos;s password, but which avoids compromising the user&apos;s
 		 * password in case of loss.
@@ -77,6 +79,7 @@ public class PasswordService implements AbstractPasswordService {
 		/**
 		 * Verifies a password against a hash.
 		 * <p>
+		 * 
 		 * This returns whether the given password matches with the user&apos;s
 		 * credentials stored in the hash.
 		 */
@@ -87,6 +90,7 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a new password authentication service, which depends on the
 	 * passed basic authentication service.
 	 */
@@ -98,9 +102,6 @@ public class PasswordService implements AbstractPasswordService {
 		this.attemptThrottling_ = false;
 	}
 
-	/**
-	 * Returns the basic authentication service.
-	 */
 	public AuthService getBaseAuth() {
 		return this.baseAuth_;
 	}
@@ -108,6 +109,7 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Sets a password verifier which computes authorization checks.
 	 * <p>
+	 * 
 	 * The password verifier has as task to verify an entered password against a
 	 * password hash stored in the database, and also to create or update a
 	 * user&apos;s password hash.
@@ -139,6 +141,7 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Sets a validator which computes password strength.
 	 * <p>
+	 * 
 	 * The default password strength validator is <code>null</code>.
 	 * <p>
 	 * The service takes ownership of the validator.
@@ -163,6 +166,7 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Configures password attempt throttling.
 	 * <p>
+	 * 
 	 * When password throttling is enabled, new password verification attempts
 	 * will be refused when the user has had too many unsuccessful
 	 * authentication attempts in a row.
@@ -188,13 +192,13 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Returns the delay for this user for a next authentication attempt.
 	 * <p>
+	 * 
 	 * If password attempt throttling is enabled, then this returns the number
 	 * of seconds this user must wait for a new authentication attempt,
 	 * presumably because of a number of failed attempts.
 	 * <p>
 	 * 
-	 * @see AbstractPasswordService#isAttemptThrottlingEnabled() <p>
-	 * @see AbstractPasswordService#isAttemptThrottlingEnabled()
+	 * @see PasswordService#isAttemptThrottlingEnabled()
 	 * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
 	 * @see PasswordService#getPasswordThrottle(int failedAttempts)
 	 */
@@ -221,13 +225,15 @@ public class PasswordService implements AbstractPasswordService {
 	/**
 	 * Verifies a password for a given user.
 	 * <p>
+	 * 
 	 * The supplied password is verified against the user&apos;s credentials
 	 * stored in the database. If password account throttling is enabled, it may
 	 * also refuse an authentication attempt.
 	 * <p>
 	 * 
-	 * <p>
-	 * 
+	 * @see PasswordService#setVerifier(PasswordService.AbstractVerifier
+	 *      verifier)
+	 * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
 	 * @see PasswordService#setVerifier(PasswordService.AbstractVerifier
 	 *      verifier)
 	 * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
@@ -258,11 +264,6 @@ public class PasswordService implements AbstractPasswordService {
 		}
 	}
 
-	/**
-	 * Sets a new password for the given user.
-	 * <p>
-	 * This stores a new password for the user in the database.
-	 */
 	public void updatePassword(final User user, final String password) {
 		PasswordHash pwd = this.verifier_.hashPassword(password);
 		user.setPassword(pwd);
@@ -272,6 +273,7 @@ public class PasswordService implements AbstractPasswordService {
 	 * Returns how much throttle should be given considering a number of failed
 	 * authentication attempts.
 	 * <p>
+	 * 
 	 * The returned value is in seconds.
 	 * <p>
 	 * The default implementation returns the following:

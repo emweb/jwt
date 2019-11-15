@@ -44,7 +44,7 @@ public enum KeyboardModifier {
 	 */
 	AltModifier,
 	/**
-	 * Meta key pressed (&quot;Windows&quot; or &quot;Command&quot; (Mac) key).
+	 * Meta key pressed (&quot;Windows&quot; or &quot;Command&quot; (Mac) key)
 	 */
 	MetaModifier;
 

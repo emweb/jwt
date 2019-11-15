@@ -79,12 +79,13 @@ public class WTreeTableNode extends WTreeNode {
 	/**
 	 * Sets a widget to be displayed in the given column for this node.
 	 * <p>
+	 * 
 	 * Columns are counted starting from 0 for the tree list itself, and 1 for
 	 * the first additional column.
 	 * <p>
 	 * The node label (in column 0) is not considered a column widget. To set a
 	 * custom widget in column 0, you can add a widget to the
-	 * {@link WTreeNode#getLabelArea() WTreeNode#getLabelArea()}.
+	 * {@link WTreeNode#getLabelArea()}.
 	 */
 	public void setColumnWidget(int column, WWidget widget) {
 		--column;
@@ -113,6 +114,7 @@ public class WTreeTableNode extends WTreeNode {
 	/**
 	 * Returns the widget set for a column.
 	 * <p>
+	 * 
 	 * Returns the widget set previously using
 	 * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
 	 * setColumnWidget()}, or <code>null</code> if no widget was previously set.
@@ -145,6 +147,7 @@ public class WTreeTableNode extends WTreeNode {
 	/**
 	 * Sets the table for this node.
 	 * <p>
+	 * 
 	 * This method is called when the node is inserted, directly, or indirectly
 	 * into a table.
 	 * <p>

@@ -40,6 +40,7 @@ public class IssuedToken {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an invalid token.
 	 * <p>
 	 * 
@@ -53,6 +54,7 @@ public class IssuedToken {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a user with id <code>id</code>, and whose information is stored
 	 * in the <code>database</code>.
 	 */
@@ -64,6 +66,7 @@ public class IssuedToken {
 	/**
 	 * Returns whether the token is valid.
 	 * <p>
+	 * 
 	 * A invalid token is a sentinel value returned by methods that query the
 	 * database but could not identify a matching user.
 	 */
@@ -74,6 +77,7 @@ public class IssuedToken {
 	/**
 	 * Returns the user id.
 	 * <p>
+	 * 
 	 * This returns the id that uniquely identifies the token, and acts as a
 	 * &quot;primary key&quot; to obtain other information for the token in the
 	 * database.

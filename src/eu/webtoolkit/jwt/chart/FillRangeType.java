@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that specifies how an area should be filled.
  * <p>
+ * 
  * Data series of type LineSeries or CurveSerie may be filled under or above the
  * line or curve. This enumeration specifies the other limit of this fill. Data
  * series of type BarSeries can use this setting to configure the bottom of the
@@ -37,7 +38,7 @@ public enum FillRangeType {
 	 */
 	NoFill,
 	/**
-	 * Fill from the curve to the chart bottom (min).
+	 * Fill from the curve to the chart bottom (min)
 	 */
 	MinimumValueFill,
 	/**

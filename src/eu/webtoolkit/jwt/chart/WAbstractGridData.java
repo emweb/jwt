@@ -25,17 +25,11 @@ import org.slf4j.LoggerFactory;
  * 
  * General information can be found at {@link WAbstractDataSeries3D}.
  * Information on how the model is structured is provided in the subclasses.
- * GridData can be represented in three ways. This is indicated by DOCREF<a
- * class="el"
- * href="group__charts.html#gcca4e123c9e4b212050bcfac488fceee">Series3DType</a>
- * and can be either PointSeries3D, SurfaceSeries3D or BarSeries3D. Note that
- * points and surfaces can only be added to charts of type DOCREF<a class="el"
- * href=
- * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
- * >ScatterPlot</a>, while bars can only be added to charts of type DOCREF<a
- * class="el" href=
- * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
- * >CategoryChart</a>.
+ * GridData can be represented in three ways. This is indicated by
+ * {@link Series3DType} and can be either PointSeries3D, SurfaceSeries3D or
+ * BarSeries3D. Note that points and surfaces can only be added to charts of
+ * type {@link ChartType ScatterPlot}, while bars can only be added to charts of
+ * type {@link ChartType CategoryChart}.
  * <p>
  * When the data is shown as a surface, a mesh can be added to the surface. This
  * draws lines over the surface at the positions of the x- and y-values. For
@@ -44,8 +38,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The three types of data-representation are illustrated below.
  * <p>
- * <div align="center"> <img src="doc-files//gridDataTypes.png"
- * alt="The three representation types of grid-based data">
+ * <div align="center"> <img src="doc-files/gridDataTypes.png">
  * <p>
  * <strong>The three representation types of grid-based data</strong>
  * </p>
@@ -191,22 +184,12 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Sets the type of representation that will be used for the data.
 	 * <p>
-	 * All representations in DOCREF<a class="el"
-	 * href="group__charts.html#gcca4e123c9e4b212050bcfac488fceee"
-	 * >Series3DType</a> are possible for the data. Note that DOCREF<a
-	 * class="el" href=
-	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceee8a491a3e05d49b93cb2b22c3fd06881c"
-	 * >PointSeries3D</a> and DOCREF<a class="el" href=
-	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
-	 * >SurfaceSeries3D</a> can only be used on a chart that is configured as a
-	 * DOCREF<a class="el" href=
-	 * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfea6ddab43d32242eb28831938a1e469a1f"
-	 * >ScatterPlot</a> and DOCREF<a class="el" href=
-	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceee3c5fa7e4aed74f126086c1877c4acbfa"
-	 * >BarSeries3D</a> can only be used on a chart that is configured to be a
-	 * DOCREF<a class="el" href=
-	 * "group__charts.html#gg8d63464f873580c77508e1c0c26cbfeaebfd9bd11d1126f2db7ff891c04c29f9"
-	 * >CategoryChart</a>.
+	 * 
+	 * All representations in {@link Series3DType} are possible for the data.
+	 * Note that PointSeries3D and SurfaceSeries3D can only be used on a chart
+	 * that is configured as a {@link ChartType ScatterPlot} and BarSeries3D can
+	 * only be used on a chart that is configured to be a {@link ChartType
+	 * CategoryChart}.
 	 * <p>
 	 * The default value is PointSeries3D.
 	 */
@@ -232,11 +215,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Enables or disables a mesh for when a surface is drawn.
 	 * <p>
+	 * 
 	 * The default value is false. This option only takes effect when the type
-	 * of this {@link WGridData} is DOCREF<a class="el" href=
-	 * "group__charts.html#ggcca4e123c9e4b212050bcfac488fceeed47a9568df4bd41a9ac06562ac31ecc2"
-	 * >SurfaceSeries3D</a>. The mesh is drawn at the position of the x-axis and
-	 * y-axis values.
+	 * of this {@link WGridData} is {@link Series3DType SurfaceSeries3D}. The
+	 * mesh is drawn at the position of the x-axis and y-axis values.
 	 */
 	public void setSurfaceMeshEnabled(boolean enabled) {
 		if (enabled != this.surfaceMeshEnabled_) {
@@ -272,6 +254,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Sets the bar-width.
 	 * <p>
+	 * 
 	 * This option only takes effect when the type of this {@link WGridData} is
 	 * BarSeries3D. The values provided should be between 0 and 1, where 1 lets
 	 * the bars each take up 1/(nb of x/y-values) of the axis.
@@ -311,6 +294,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Sets the {@link WPen} that is used for drawing the mesh.
 	 * <p>
+	 * 
 	 * Used when drawing the mesh on a surface or the lines around bars. The
 	 * default is a default constructed {@link WPen} (black and one pixel wide).
 	 * <p>
@@ -339,6 +323,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Find all points on the surface that are projected to the given pixel.
 	 * <p>
+	 * 
 	 * A ray is cast from the given pixel&apos;s x,y position (from the top left
 	 * of the chart, in screen coordinates) and every intersection with the
 	 * surface is returned, along with its distance from the look point. Note
@@ -495,6 +480,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Return the bar that is closest to the look point at the given pixel.
 	 * <p>
+	 * 
 	 * A ray is cast from the given pixel&apos;s x,y position (from the top left
 	 * of the chart, in screen coordinates), and the closest bar on this
 	 * {@link WAbstractGridData} is returned, along with its distance from the
@@ -636,6 +622,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Set isoline levels.
 	 * <p>
+	 * 
 	 * Isolines are drawn on the top or ground plane of the chart. Only applies
 	 * if the type is SurfaceSeries3D.
 	 * <p>
@@ -650,7 +637,6 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 
 	/**
 	 * Get all of the isoline levels.
-	 * <p>
 	 */
 	public List<Double> getIsoLevels() {
 		return this.isoLineHeights_;
@@ -659,6 +645,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Set the color map for the isolines.
 	 * <p>
+	 * 
 	 * When no color map is defined for the isolines, i.e.
 	 * {@link WAbstractGridData#getIsoColorMap() getIsoColorMap()} is set to
 	 * NULL, the color map of this {@link WAbstractGridData} will be used.
@@ -692,6 +679,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * Set the value below which the data series will be clipped on the given
 	 * axis.
 	 * <p>
+	 * 
 	 * This only affects data series whose type is SurfaceSeries3D.
 	 */
 	public void setClippingMin(Axis axis, float v) {
@@ -722,6 +710,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * {@link JSlot} to change the value below which the data series will be
 	 * clipped on the given axis.
 	 * <p>
+	 * 
 	 * The {@link JSlot} takes one extra argument: the value to clip below.
 	 * <p>
 	 * The jsRef() of this {@link JSlot} is only valid when this
@@ -752,6 +741,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * Set the value above which the data series will be clipped on the given
 	 * axis.
 	 * <p>
+	 * 
 	 * This only affects data series whose type is SurfaceSeries3D.
 	 */
 	public void setClippingMax(Axis axis, float v) {
@@ -782,6 +772,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	 * {@link JSlot} to change the value above which the data series will be
 	 * clipped on the given axis.
 	 * <p>
+	 * 
 	 * The {@link JSlot} takes one extra argument: the value to clip below.
 	 * <p>
 	 * The jsRef() of this {@link JSlot} is only valid when this
@@ -811,6 +802,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 	/**
 	 * Sets whether clipping lines should be drawn where a surface is clipped.
 	 * <p>
+	 * 
 	 * Clipping lines are disabled by default. Note that rendering will be
 	 * significantly slower when enabled.
 	 */

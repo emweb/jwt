@@ -28,6 +28,7 @@ public class WLineF {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Constructs a line from (<i>x1=0</i>,<i>y1=0</i>) to (<i>x2=0</i>,
 	 * <code>y2=0</code>).
 	 */
@@ -41,6 +42,7 @@ public class WLineF {
 	/**
 	 * Construct a line connecting two points.
 	 * <p>
+	 * 
 	 * Constructs a line from <i>p1</i> to <code>p2</code>.
 	 */
 	public WLineF(final WPointF p1, final WPointF p2) {
@@ -53,6 +55,7 @@ public class WLineF {
 	/**
 	 * Construct a line connecting two points.
 	 * <p>
+	 * 
 	 * Constructs a line from (<i>x1</i>,<i>y1</i>) to (<i>x2</i>,
 	 * <code>y2</code>).
 	 */

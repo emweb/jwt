@@ -43,6 +43,7 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Creates an empty polygon.
 	 * <p>
+	 * 
 	 * Defines an empty polygon.
 	 */
 	public WPolygonArea() {
@@ -54,6 +55,7 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Creates a polygon area with given vertices.
 	 * <p>
+	 * 
 	 * The polygon is defined with vertices corresponding to <code>points</code>
 	 * . The polygon is closed by connecting the last point with the first
 	 * point.
@@ -100,6 +102,7 @@ public class WPolygonArea extends WAbstractArea {
 	/**
 	 * Sets the polygon vertices.
 	 * <p>
+	 * 
 	 * The polygon is defined with vertices corresponding to <code>points</code>
 	 * . The polygon is closed by connecting the last point with the first
 	 * point.

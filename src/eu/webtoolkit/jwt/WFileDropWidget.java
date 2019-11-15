@@ -75,6 +75,7 @@ public class WFileDropWidget extends WContainerWidget {
 		/**
 		 * Returns the uploaded file as a {@link UploadedFile}.
 		 * <p>
+		 * 
 		 * This method will throw an expection if the upload is not yet
 		 * finished.
 		 * <p>
@@ -93,6 +94,7 @@ public class WFileDropWidget extends WContainerWidget {
 		/**
 		 * Returns true if the upload is finished.
 		 * <p>
+		 * 
 		 * When this method returns true, the uploaded file is available on the
 		 * server.
 		 * <p>
@@ -106,6 +108,7 @@ public class WFileDropWidget extends WContainerWidget {
 		/**
 		 * This signal allows you to track the upload progress of the file.
 		 * <p>
+		 * 
 		 * The first argument is the number of bytes received so far, and the
 		 * second argument is the total number of bytes.
 		 */
@@ -116,8 +119,9 @@ public class WFileDropWidget extends WContainerWidget {
 		/**
 		 * This signal is triggered when the upload is finished.
 		 * <p>
+		 * 
 		 * This is also signalled using the {@link WFileDropWidget}
-		 * {@link WFileDropWidget#uploaded() uploaded()} signal.
+		 * {@link WFileDropWidget#uploaded()} signal.
 		 */
 		public Signal uploaded() {
 			return this.uploaded_;
@@ -274,13 +278,13 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Returns the vector of uploads managed by this widget.
 	 * <p>
+	 * 
 	 * The files in this vector are handled sequentially by the widget. All
 	 * {@link File} objects in this vector have either finished or failed if
 	 * they are before the {@link WFileDropWidget#getCurrentIndex()
 	 * getCurrentIndex()}, depending on the return value of
-	 * {@link WFileDropWidget.File#isUploadFinished()
-	 * WFileDropWidget.File#isUploadFinished()}. The other files are still being
-	 * handled.
+	 * {@link WFileDropWidget.File#isUploadFinished() isUploadFinished()}. The
+	 * other files are still being handled.
 	 * <p>
 	 * 
 	 * @see WFileDropWidget#getCurrentIndex()
@@ -292,6 +296,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Return the index of the file that is currently being handled.
 	 * <p>
+	 * 
 	 * If nothing is to be done, this will return the size of the vector
 	 * returned by {@link WFileDropWidget#getUploads() getUploads()}.
 	 */
@@ -302,6 +307,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Cancels the upload of a file.
 	 * <p>
+	 * 
 	 * If you cancel a file that is still waiting to be uploaded, it will stay
 	 * in the {@link WFileDropWidget#getUploads() getUploads()} vector, but it
 	 * will be skipped.
@@ -316,6 +322,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Removes the file.
 	 * <p>
+	 * 
 	 * This can be used to free resources of files that were already uploaded. A
 	 * file can only be removed if its index in
 	 * {@link WFileDropWidget#getUploads() getUploads()} is before the current
@@ -349,8 +356,8 @@ public class WFileDropWidget extends WContainerWidget {
 	 * widget.
 	 * <p>
 	 * 
-	 * @deprecated Override the css rule
-	 *             &apos;.Wt-filedropzone.Wt-dropzone-hover&apos; instead.
+	 * @deprecated Override the css rule '.Wt-filedropzone.Wt-dropzone-hover'
+	 *             instead.
 	 */
 	public void setHoverStyleClass(final String className) {
 		if (className.equals(this.hoverStyleClass_)) {
@@ -364,6 +371,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Sets input accept attributes.
 	 * <p>
+	 * 
 	 * The accept attribute may be specified to provide user agents with a hint
 	 * of what file types will be accepted. Use html input accept attributes as
 	 * input. This only affects the popup that is shown when users click on the
@@ -381,6 +389,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Highlight widget if a file is dragged anywhere on the page.
 	 * <p>
+	 * 
 	 * As soon as a drag enters anywhere on the page the styleclass
 	 * &apos;Wt-dropzone-indication&apos; is added to this widget. This can be
 	 * useful to point the user to the correct place to drop the file. Once the
@@ -413,6 +422,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * Allow dropping the files anywhere on the page.
 	 * <p>
+	 * 
 	 * If enabled, a drop anywhere on the page will be forwarded to this widget.
 	 * <p>
 	 * 
@@ -487,6 +497,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * The signal triggers when the upload of a file is about to begin.
 	 * <p>
+	 * 
 	 * After this signal is triggered, the upload automatically starts. The
 	 * upload can still fail if the file is too large or if there is a network
 	 * error.
@@ -505,6 +516,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * The signal triggers when a file is too large for upload.
 	 * <p>
+	 * 
 	 * This signal is triggered when the widget attempts to upload the file.
 	 * <p>
 	 * The second argument is the size of the file in bytes.
@@ -516,6 +528,7 @@ public class WFileDropWidget extends WContainerWidget {
 	/**
 	 * The signal triggers when an upload failed.
 	 * <p>
+	 * 
 	 * This signal will trigger when the widget skips over one of the files in
 	 * the list for an unknown reason (e.g. happens when you drop a folder).
 	 */
@@ -527,7 +540,7 @@ public class WFileDropWidget extends WContainerWidget {
 		if (this.isRendered()) {
 			String result = this.getJsRef() + ".destructor();";
 			if (!recursive) {
-				result += "Wt3_4_1.remove('" + this.getId() + "');";
+				result += "Wt3_4_2.remove('" + this.getId() + "');";
 			}
 			return result;
 		} else {
@@ -632,7 +645,7 @@ public class WFileDropWidget extends WContainerWidget {
 		String maxFileSize = String.valueOf(WApplication.getInstance()
 				.getMaximumRequestSize());
 		this.setJavaScriptMember(" WFileDropWidget",
-				"new Wt3_4_1.WFileDropWidget(" + app.getJavaScriptClass() + ","
+				"new Wt3_4_2.WFileDropWidget(" + app.getJavaScriptClass() + ","
 						+ this.getJsRef() + "," + maxFileSize + ");");
 		this.dropSignal_.addListener(this, new Signal1.Listener<String>() {
 			public void trigger(String e1) {

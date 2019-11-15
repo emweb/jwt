@@ -20,8 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * 
  * OAuth 2.0 client implementing OpenID Connect, a.k.a. relying party.
  * <p>
  * This class represents a client. It is a value class that stores only the id
@@ -51,6 +49,7 @@ public class OAuthClient {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a client with id <code>id</code>, and whose information is stored
 	 * in the <code>database</code>.
 	 */
@@ -62,6 +61,7 @@ public class OAuthClient {
 	/**
 	 * Returns whether the user is valid.
 	 * <p>
+	 * 
 	 * A invalid user is a sentinel value returned by methods that query the
 	 * database but could not identify a matching user.
 	 */
@@ -72,6 +72,7 @@ public class OAuthClient {
 	/**
 	 * Returns the ID used to identify the client in the database.
 	 * <p>
+	 * 
 	 * This returns the id that uniquely identifies the user, and acts as a
 	 * &quot;primary key&quot; to obtain other information for the user in the
 	 * database.
@@ -84,6 +85,7 @@ public class OAuthClient {
 	 * Returns the ID used to identify the client with the OpenID Connect
 	 * provider and user.
 	 * <p>
+	 * 
 	 * This is the id that the client uses to identify itself with the identity
 	 * provider.
 	 * <p>
@@ -100,7 +102,6 @@ public class OAuthClient {
 
 	/**
 	 * Returns true if the given secret is correct for the given client.
-	 * <p>
 	 */
 	public boolean verifySecret(final String secret) {
 		if (this.db_ != null) {
@@ -139,7 +140,7 @@ public class OAuthClient {
 	}
 
 	/**
-	 * Returns the client authentication method (see OIDC Core chapter 9).
+	 * Returns the client authentication method (see OIDC Core chapter 9)
 	 * <p>
 	 * 
 	 * @see AbstractUserDatabase#idpClientAuthMethod(OAuthClient client)

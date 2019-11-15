@@ -45,20 +45,22 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Here is a snapshot, taken on 19/01/2010 (shown as today), and 14/01/2010
  * currently selected.
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
- * <td><div align="center"> <img src="doc-files//WCalendar-default-1.png"
- * alt="WCalendar with default look">
+ * <td><div align="center"> <img src="doc-files/WCalendar-default-1.png">
  * <p>
  * <strong>WCalendar with default look</strong>
  * </p>
- * </div></td>
- * <td><div align="center"> <img src="doc-files//WCalendar-polished-1.png"
- * alt="WCalendar with polished look">
+ * </div>
+ * 
+ * </td>
+ * <td><div align="center"> <img src="doc-files/WCalendar-polished-1.png">
  * <p>
  * <strong>WCalendar with polished look</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * </tr>
  * </table>
  */
@@ -70,11 +72,11 @@ public class WCalendar extends WCompositeWidget {
 	 */
 	public enum HorizontalHeaderFormat {
 		/**
-		 * First letter of a day (e.g. &apos;M&apos; for Monday).
+		 * First letter of a day (e.g. &apos;M&apos; for Monday)
 		 */
 		SingleLetterDayNames,
 		/**
-		 * First 3 letters of a day (e.g. &apos;Mon&apos; for Monday).
+		 * First 3 letters of a day (e.g. &apos;Mon&apos; for Monday)
 		 */
 		ShortDayNames,
 		/**
@@ -93,6 +95,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Creates a new calendar.
 	 * <p>
+	 * 
 	 * Constructs a new calendar with English day/month names. The calendar
 	 * shows the current day, and has an empty selection.
 	 */
@@ -122,8 +125,8 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
-	 * The default selection mode is {@link SelectionMode#SingleSelection
-	 * SingleSelection}.
+	 * 
+	 * The default selection mode is {@link SelectionMode#SingleSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {
 		if (this.selectionMode_ != mode) {
@@ -139,6 +142,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Browses to the same month in the previous year.
 	 * <p>
+	 * 
 	 * Displays the same month in the previous year. This does not affect the
 	 * selection.
 	 * <p>
@@ -154,6 +158,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Browses to the previous month.
 	 * <p>
+	 * 
 	 * Displays the previous month. This does not affect the selection.
 	 * <p>
 	 * This will emit the {@link WCalendar#currentPageChanged()
@@ -171,6 +176,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Browses to the same month in the next year.
 	 * <p>
+	 * 
 	 * Displays the same month in the next year. This does not change the
 	 * current selection.
 	 * <p>
@@ -186,6 +192,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Browses to the next month.
 	 * <p>
+	 * 
 	 * Displays the next month. This does not change the current selection.
 	 * <p>
 	 * This will emit the {@link WCalendar#currentPageChanged()
@@ -203,6 +210,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Browses to a date.
 	 * <p>
+	 * 
 	 * Displays the month which contains the given date. This does not change
 	 * the current selection.
 	 * <p>
@@ -228,6 +236,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Returns the current month displayed.
 	 * <p>
+	 * 
 	 * Returns the month (1-12) that is currently displayed.
 	 */
 	public int getCurrentMonth() {
@@ -237,6 +246,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Returns the current year displayed.
 	 * <p>
+	 * 
 	 * Returns the year that is currently displayed.
 	 */
 	public int getCurrentYear() {
@@ -246,6 +256,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Clears the current selection.
 	 * <p>
+	 * 
 	 * Clears the current selection. Will result in a
 	 * {@link WCalendar#getSelection() getSelection()} that is empty().
 	 */
@@ -257,6 +268,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Selects a date.
 	 * <p>
+	 * 
 	 * Select one date. Both in single or multiple selection mode, this results
 	 * in a {@link WCalendar#getSelection() getSelection()} that contains
 	 * exactly one date.
@@ -270,6 +282,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Selects multiple dates.
 	 * <p>
+	 * 
 	 * Select multiple dates. In multiple selection mode, this results in a
 	 * {@link WCalendar#getSelection() getSelection()} that contains exactly the
 	 * given dates. In single selection mode, at most one date is set.
@@ -292,8 +305,9 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the horizontal header format.
 	 * <p>
+	 * 
 	 * The default horizontal header format is
-	 * {@link WCalendar.HorizontalHeaderFormat#ShortDayNames}.
+	 * {@link WCalendar.HorizontalHeaderFormat#ShortDayNames ShortDayNames}.
 	 */
 	public void setHorizontalHeaderFormat(
 			WCalendar.HorizontalHeaderFormat format) {
@@ -334,6 +348,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the first day of the week.
 	 * <p>
+	 * 
 	 * Possible values are 1 to 7. The default value is 1 (&quot;Monday&quot;).
 	 */
 	public void setFirstDayOfWeek(int dayOfWeek) {
@@ -365,6 +380,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Returns the current selection.
 	 * <p>
+	 * 
 	 * Returns the set of dates currently selected. In single selection mode,
 	 * this set contains 0 or 1 dates.
 	 */
@@ -375,6 +391,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Signal emitted when the user changes the selection.
 	 * <p>
+	 * 
 	 * Emitted after the user has changed the current selection.
 	 */
 	public Signal selectionChanged() {
@@ -384,6 +401,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Signal emitted when the user double-clicks a date.
 	 * <p>
+	 * 
 	 * You may want to connect to this signal to treat a double click as the
 	 * selection of a date.
 	 */
@@ -394,6 +412,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Signal emitted when the user clicks a date.
 	 * <p>
+	 * 
 	 * You may want to connect to this signal if you want to provide a custom
 	 * selection handling.
 	 */
@@ -404,6 +423,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Signal emitted when the current month is changed.
 	 * <p>
+	 * 
 	 * The method is emitted both when the change is done through the user
 	 * interface or via the public API. The two parameters are respectively the
 	 * new year and month.
@@ -415,6 +435,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Configures single or multiple selection mode (<b> deprecated </b>).
 	 * <p>
+	 * 
 	 * In single selection mode, only one date may be selected: the
 	 * {@link WCalendar#getSelection() getSelection()} will be empty or contain
 	 * exactly one item.
@@ -432,6 +453,7 @@ public class WCalendar extends WCompositeWidget {
 	 * Signal emitted when the user has double clicked on a date
 	 * (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * This signal indicates that he user has selected a new date, which is only
 	 * available when in single selection mode.
 	 * <p>
@@ -445,14 +467,15 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Configures the calendar to use single click for activation.
 	 * <p>
+	 * 
 	 * By default, double click will trigger activate(). Use this method if you
 	 * want a single click to trigger activate() (and the now deprecated
 	 * {@link WCalendar#selected() selected()} method). This only applies to a
 	 * single-selection calendar.
 	 * <p>
-	 * If selectionMode() is set to {@link SelectionMode#SingleSelection
-	 * SingleSelection}, this will cause the selection to change on a single
-	 * click instead of a double click.
+	 * If selectionMode() is set to {@link SelectionMode#SingleSelection}, this
+	 * will cause the selection to change on a single click instead of a double
+	 * click.
 	 * <p>
 	 * Instead of enabling single click, you can also listen to the
 	 * {@link WCalendar#clicked() clicked()} signal to process a single click.
@@ -467,6 +490,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the length for the abbreviated day of week (<b> deprecated </b>).
 	 * <p>
+	 * 
 	 * The <code>chars</code> may be 1 or 3, which render &quot;Monday&quot; as
 	 * respectively &quot;M&quot; or &quot;Mon&quot;.
 	 * <p>
@@ -485,6 +509,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the bottom of the valid date range.
 	 * <p>
+	 * 
 	 * The default bottom is null.
 	 */
 	public void setBottom(final WDate bottom) {
@@ -505,6 +530,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Sets the top of the valid date range.
 	 * <p>
+	 * 
 	 * The default top is null.
 	 */
 	public void setTop(final WDate top) {
@@ -606,6 +632,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Creates or updates a widget that renders a cell.
 	 * <p>
+	 * 
 	 * The default implementation creates a {@link WText}
 	 * <p>
 	 * You may want to reimplement this method if you wish to customize how a
@@ -653,6 +680,7 @@ public class WCalendar extends WCompositeWidget {
 	/**
 	 * Returns whether a date is selected.
 	 * <p>
+	 * 
 	 * This is a convenience method that can be used when reimplementing
 	 * {@link WCalendar#renderCell(WWidget widget, WDate date) renderCell()}.
 	 */

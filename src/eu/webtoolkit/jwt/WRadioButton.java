@@ -27,18 +27,17 @@ import org.slf4j.LoggerFactory;
  * options that are mutually exclusive.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {@code
  *  enum Vote { Republican, Democrate, NoVote };
- * 
+ *  
  *  // use a group box as widget container for 3 radio buttons, with a title
  *  WGroupBox container = new WGroupBox("USA elections vote");
- * 		 
+ *           
  *  // use a button group to logically group the 3 options
  *  WButtonGroup group = new WButtonGroup(this);
- * 		 
+ *           
  *  WRadioButton button;
  *  button = new WRadioButton("I voted Republican", container);
  *  new WBreak(container);
@@ -46,18 +45,21 @@ import org.slf4j.LoggerFactory;
  *  button = new WRadioButton("I voted Democrat", container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.Democrate.ordinal());
- * 
+ *  
  *  button = new WRadioButton("I didn't vote", container);
  *  new WBreak(container);
  *  group.addButton(button, Vote.NoVote.ordinal());
- * 		 
- *  group.setCheckedButton(group.button(Vote.NoVote.ordinal()));	
+ *           
+ *  group.setCheckedButton(group.button(Vote.NoVote.ordinal()));    
+ *  
  * }
  * </pre>
+ * 
  * <p>
- * WRadioButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WRadioButton is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget corresponds to the HTML
  * <code>&lt;input type=&quot;radio&quot;&gt;</code> tag. When a label is
@@ -124,6 +126,7 @@ public class WRadioButton extends WAbstractToggleButton {
 	/**
 	 * Returns the button group.
 	 * <p>
+	 * 
 	 * Returns the button group to which this button belongs.
 	 * <p>
 	 * 

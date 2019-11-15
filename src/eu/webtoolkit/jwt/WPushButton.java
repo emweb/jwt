@@ -24,11 +24,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * To act on a button click, connect a slot to the
- * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal.
+ * {@link WInteractWidget#clicked()} signal.
  * <p>
- * WPushButton is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WPushButton is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;button&gt;</code> tag (with some
  * exceptions in the bootstrap theme).
@@ -62,6 +63,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Creates a push button with given label text.
 	 * <p>
+	 * 
 	 * The default text format is PlainText.
 	 */
 	public WPushButton(final CharSequence text, WContainerWidget parent) {
@@ -122,6 +124,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the default property.
 	 * <p>
+	 * 
 	 * This has only a functional meaning for a button in a dialog footer, as it
 	 * becomes associated with pressing &apos;enter&apos; in the dialog.
 	 * <p>
@@ -145,6 +148,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets whether the button is checkable.
 	 * <p>
+	 * 
 	 * A checkable button can be checked and unchecked, and clicking will toggle
 	 * between these two states.
 	 * <p>
@@ -178,6 +182,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the button state.
 	 * <p>
+	 * 
 	 * This is ignored for a button which is not checkable.
 	 * <p>
 	 * This method does not emit one of the {@link WPushButton#checked()
@@ -199,6 +204,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Checks the button.
 	 * <p>
+	 * 
 	 * Does not emit the {@link WPushButton#checked() checked()} signal.
 	 * <p>
 	 * 
@@ -211,6 +217,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Unchecks the button.
 	 * <p>
+	 * 
 	 * Does not emit the {@link WPushButton#unChecked() unChecked()} signal.
 	 * <p>
 	 * 
@@ -233,6 +240,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the button text.
 	 * <p>
+	 * 
 	 * The default text format is {@link TextFormat#PlainText}.
 	 * <p>
 	 * When the current text format is {@link TextFormat#XHTMLText}, and
@@ -273,6 +281,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the text format.
 	 * <p>
+	 * 
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
@@ -304,6 +313,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets an icon.
 	 * <p>
+	 * 
 	 * The icon is placed to the left of the text.
 	 */
 	public void setIcon(final WLink link) {
@@ -328,6 +338,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets a destination link.
 	 * <p>
+	 * 
 	 * This method can be used to make the button behave like a {@link WAnchor}
 	 * (or conversely, an anchor look like a button) and redirect to another URL
 	 * when clicked.
@@ -335,11 +346,11 @@ public class WPushButton extends WFormWidget {
 	 * The <code>link</code> may be to a URL, a resource, or an internal path.
 	 * <p>
 	 * By default, a button does not link to an URL and you should listen to the
-	 * {@link WInteractWidget#clicked() WInteractWidget#clicked()} signal to
-	 * react to a click event.
+	 * {@link WInteractWidget#clicked()} signal to react to a click event.
 	 * <p>
+	 * 
 	 * <p>
-	 * <i><b>Warning:</b>In Bootstrap theme, you should set a link before
+	 * <i><b>Warning: </b>In Bootstrap theme, you should set a link before
 	 * it&apos;s rendered since it commit&apos;s the button to be rendered as an
 	 * anchor. (see also <a
 	 * href="http://redmine.emweb.be/issues/1802">http://redmine
@@ -387,6 +398,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Returns the destination URL (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * When the button refers to a resource, the current resource URL is
 	 * returned. Otherwise, the URL is returned that was set using
 	 * {@link WPushButton#setRef(String url) setRef()}.
@@ -403,6 +415,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets a destination resource (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * This method can be used to make the button behave like a {@link WAnchor}
 	 * (or conversely, an anchor look like a button) and redirect to another
 	 * resource when clicked.
@@ -429,6 +442,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Returns the destination resource (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if no resource has been set.
 	 * <p>
 	 * 
@@ -442,6 +456,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
 	 * Returns an empty string, since a button has no value.
 	 */
 	public String getValueText() {
@@ -451,6 +466,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the current value.
 	 * <p>
+	 * 
 	 * Has no effect, since a button has not value.
 	 */
 	public void setValueText(final String value) {
@@ -459,6 +475,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Sets the link target.
 	 * <p>
+	 * 
 	 * This sets the target where the linked contents should be displayed. The
 	 * default target is TargetSelf.
 	 */
@@ -479,6 +496,7 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Links a popup menu to the button.
 	 * <p>
+	 * 
 	 * When the button is clicked, the linked popup menu is shown.
 	 */
 	public void setMenu(WPopupMenu popupMenu) {
@@ -509,11 +527,11 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Signal emitted when the button gets checked.
 	 * <p>
+	 * 
 	 * This signal is emitted when the user checks the button.
 	 * <p>
-	 * You can use the {@link WInteractWidget#clicked()
-	 * WInteractWidget#clicked()} signal to react to any change of the button
-	 * state.
+	 * You can use the {@link WInteractWidget#clicked()} signal to react to any
+	 * change of the button state.
 	 * <p>
 	 * 
 	 * @see WPushButton#setCheckable(boolean checkable)
@@ -525,11 +543,11 @@ public class WPushButton extends WFormWidget {
 	/**
 	 * Signal emitted when the button gets unchecked.
 	 * <p>
+	 * 
 	 * This signal is emitted when the user unchecks the button.
 	 * <p>
-	 * You can use the {@link WInteractWidget#clicked()
-	 * WInteractWidget#clicked()} signal to react to any change of the button
-	 * state.
+	 * You can use the {@link WInteractWidget#clicked()} signal to react to any
+	 * change of the button state.
 	 * <p>
 	 * 
 	 * @see WPushButton#setCheckable(boolean checkable)

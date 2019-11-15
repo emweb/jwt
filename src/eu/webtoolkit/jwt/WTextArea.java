@@ -23,19 +23,20 @@ import org.slf4j.LoggerFactory;
  * A widget that provides a multi-line edit.
  * <p>
  * 
- * To act upon text changes, connect a slot to the {@link WFormWidget#changed()
- * WFormWidget#changed()} signal. This signal is emitted when the user changed
- * the content, and subsequently removes the focus from the line edit.
+ * To act upon text changes, connect a slot to the {@link WFormWidget#changed()}
+ * signal. This signal is emitted when the user changed the content, and
+ * subsequently removes the focus from the line edit.
  * <p>
  * To act upon editing, connect a slot to the
- * {@link WInteractWidget#keyWentUp() WInteractWidget#keyWentUp()} signal.
+ * {@link WInteractWidget#keyWentUp()} signal.
  * <p>
  * At all times, the current content may be accessed with the
  * {@link WTextArea#getText() getText()} method.
  * <p>
- * WTextArea is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WTextArea is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to an HTML <code>&lt;textarea&gt;</code> tag can be
  * styled using inline or external CSS as appropriate. The emptyText style can
@@ -98,6 +99,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Sets the number of columns.
 	 * <p>
+	 * 
 	 * The default value is 20.
 	 */
 	public void setColumns(int columns) {
@@ -109,6 +111,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Sets the number of rows.
 	 * <p>
+	 * 
 	 * The default value is 5.
 	 */
 	public void setRows(int rows) {
@@ -147,6 +150,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Sets the content of the text area.
 	 * <p>
+	 * 
 	 * The default text is &quot;&quot;.
 	 */
 	public void setText(final String text) {
@@ -160,6 +164,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Returns the current selection start.
 	 * <p>
+	 * 
 	 * Returns -1 if there is no selected text.
 	 * <p>
 	 * 
@@ -183,6 +188,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Returns the currently selected text.
 	 * <p>
+	 * 
 	 * Returns an empty string if there is currently no selected text.
 	 * <p>
 	 * 
@@ -202,7 +208,6 @@ public class WTextArea extends WFormWidget {
 
 	/**
 	 * Returns whether there is selected text.
-	 * <p>
 	 */
 	public boolean hasSelectedText() {
 		return this.getSelectionStart() != -1;
@@ -211,6 +216,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Returns the current cursor position.
 	 * <p>
+	 * 
 	 * Returns -1 if the widget does not have the focus.
 	 */
 	public int getCursorPosition() {
@@ -225,6 +231,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
 	 * Returns {@link WTextArea#getText() getText()}.
 	 */
 	public String getValueText() {
@@ -234,6 +241,7 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Sets the current value.
 	 * <p>
+	 * 
 	 * Calls {@link WTextArea#setText(String text) setText()}.
 	 */
 	public void setValueText(final String value) {
@@ -243,12 +251,12 @@ public class WTextArea extends WFormWidget {
 	/**
 	 * Event signal emitted when the text in the input field changed.
 	 * <p>
+	 * 
 	 * This signal is emitted whenever the text contents has changed. Unlike the
-	 * {@link WFormWidget#changed() WFormWidget#changed()} signal, the signal is
-	 * fired on every change, not only when the focus is lost. Unlike the
-	 * {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()} signal,
-	 * this signal is fired also for other events that change the text, such as
-	 * paste actions.
+	 * {@link WFormWidget#changed()} signal, the signal is fired on every
+	 * change, not only when the focus is lost. Unlike the
+	 * {@link WInteractWidget#keyPressed()} signal, this signal is fired also
+	 * for other events that change the text, such as paste actions.
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()

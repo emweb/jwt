@@ -28,30 +28,37 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Usage example:
  * <p>
- * <div align="center"> <img src="doc-files//WOverlayLoadingIndicator.png"
- * alt="The overlay loading indicator">
+ * <div align="center"> <img src="doc-files/WOverlayLoadingIndicator.png">
  * <p>
  * <strong>The overlay loading indicator</strong>
  * </p>
  * </div>
+ * 
+ * 
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>For this loading indicator to render properly in IE, you need
  * to reset the &quot;body&quot; margin to 0. Using the inline stylesheet, this
  * could be done using:</i>
  * </p>
+ * 
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
  * <ul>
  * <li>Wt.WOverlayLoadingIndicator.Loading: Loading...</li>
  * </ul>
+ * 
+ * 
  * <p>
  * 
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
@@ -66,43 +73,52 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 	 * <p>
 	 * 
 	 * @param styleClass
-	 *            the style class for the central box }
+	 *            the style class for the central box
 	 * @param backgroundStyleClass
 	 *            the style class for the &quot;background&quot; part of the
-	 *            indicator }
+	 *            indicator
 	 * @param textStyleClass
-	 *            the style class for the text that is displayed}
+	 *            the style class for the text that is displayed
+	 * 
+	 * 
 	 *            <p>
 	 *            <i><b>Note: </b>if styleClass is not set, the central box gets
 	 *            the CSS style elements
 	 * 
 	 *            <pre>
 	 *   {@code
-	 *                background: white;
-	 *                border: 3px solid #333333;
-	 *                z-index: 10001; visibility: visible;
-	 *                position: absolute; left: 50%; top: 50%;
-	 *                margin-left: -50px; margin-top: -40px;
-	 *                width: 100px; height: 80px;
-	 *                font-family: arial,sans-serif;
-	 *                text-align: center
+	 *    background: white;
+	 *    border: 3px solid #333333;
+	 *    z-index: 10001; visibility: visible;
+	 *    position: absolute; left: 50%; top: 50%;
+	 *    margin-left: -50px; margin-top: -40px;
+	 *    width: 100px; height: 80px;
+	 *    font-family: arial,sans-serif;
+	 *    text-align: center
+	 *    
 	 *   }
 	 * </pre>
+	 * 
+	 *            </i>
+	 *            </p>
+	 * 
+	 * 
 	 *            <p>
-	 *            if backgroundStyleClass is not set, the background gets the
-	 *            CSS style elements
+	 *            <i><b>Note: </b>if backgroundStyleClass is not set, the
+	 *            background gets the CSS style elements
 	 * 
 	 *            <pre>
 	 *   {@code
-	 *                background: #DDDDDD;
-	 *                height: 100%; width: 100%;
-	 *                top: 0px; left: 0px;
-	 *                z-index: 10000;
-	 *                -moz-background-clip: -moz-initial;
-	 *                -moz-background-origin: -moz-initial;
-	 *                -moz-background-inline-policy: -moz-initial;
-	 *                opacity: 0.5; filter: alpha(opacity=50); -moz-opacity:0.5;
-	 *                position: absolute;
+	 *    background: #DDDDDD;
+	 *    height: 100%; width: 100%;
+	 *    top: 0px; left: 0px;
+	 *    z-index: 10000;
+	 *    -moz-background-clip: -moz-initial;
+	 *    -moz-background-origin: -moz-initial;
+	 *    -moz-background-inline-policy: -moz-initial;
+	 *    opacity: 0.5; filter: alpha(opacity=50); -moz-opacity:0.5;
+	 *    position: absolute;
+	 *    
 	 *   }
 	 * </pre>
 	 * 
@@ -192,6 +208,30 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements
 		this(styleClass, backgroundStyleClass, "");
 	}
 
+	/**
+	 * Returns the widget that visually represents the indicator.
+	 * <p>
+	 * 
+	 * You should reimplement this method to return a widget that will be shown
+	 * to indicate that a response is pending. The widget should be positioned
+	 * using CSS.
+	 * <p>
+	 * The widget will be shown and hidden using {@link WWidget#show()} and
+	 * {@link WWidget#hide()}. If you want to customize this behaviour, you
+	 * should reimplement the
+	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
+	 * WWidget#setHidden()} method. Note that {@link WWidget#show()} and
+	 * {@link WWidget#hide()} are stateless slots, and thus you need to make
+	 * sure that your implementation comforms to that contract, so that it may
+	 * be optimized to JavaScript (the server-side implementation will only be
+	 * called during stateless slot prelearning).
+	 * <p>
+	 * 
+	 * <p>
+	 * <i><b>Note: </b>The widget will not be added to the
+	 * {@link WApplication#getRoot()} container. </i>
+	 * </p>
+	 */
 	public WWidget getWidget() {
 		return this;
 	}

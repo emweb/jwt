@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
  * The figure below shows an upward spiral of points, with droplines enabled and
  * a pointsize of 5 pixels.
  * <p>
- * <div align="center"> <img src="doc-files//spiral.png"
- * alt="An example of WScatterData">
+ * <div align="center"> <img src="doc-files/spiral.png">
  * <p>
  * <strong>An example of WScatterData</strong>
  * </p>
@@ -109,6 +108,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	/**
 	 * Enables or disables droplines for all points.
 	 * <p>
+	 * 
 	 * Enabling droplines will cause a line to be drawn from every point to the
 	 * the ground-plane of the chart&apos;s plotcube. By default the droplines
 	 * are disabled.
@@ -149,6 +149,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	/**
 	 * Sets the pen that is used to draw droplines.
 	 * <p>
+	 * 
 	 * The default pen is a default constructed {@link WPen}.
 	 * <p>
 	 * Note: only the width and color of the pen are used.
@@ -178,6 +179,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	 * Sets the column-index from the model that is used for the x-coordinate of
 	 * all points.
 	 * <p>
+	 * 
 	 * The default X column index is 0.
 	 */
 	public void setXSeriesColumn(int columnNumber) {
@@ -199,6 +201,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	 * Sets the column-index from the model that is used for the y-coordinate of
 	 * all points.
 	 * <p>
+	 * 
 	 * The default X column index is 1.
 	 */
 	public void setYSeriesColumn(int columnNumber) {
@@ -220,6 +223,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	 * Sets the column-index from the model that is used for the z-coordinate of
 	 * all points.
 	 * <p>
+	 * 
 	 * The default Z column index is 2.
 	 * <p>
 	 * Note that this column is also used to check for a MarkerBrushColorRole
@@ -262,6 +266,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	/**
 	 * Pick points on this {@link WScatterData} using a single pixel.
 	 * <p>
+	 * 
 	 * x,y are the screen coordinates of the pixel from the top left of the
 	 * chart, and radius is the radius in pixels around that pixel. All points
 	 * around the ray projected through the pixel within the given radius will
@@ -318,6 +323,7 @@ public class WScatterData extends WAbstractDataSeries3D {
 	/**
 	 * Pick points on this {@link WScatterData} inside of a rectangle.
 	 * <p>
+	 * 
 	 * The screen coordinates (x1, y1) and (x2, y2) from the top left of the
 	 * chart define a rectangle within which the points should be selected.
 	 */

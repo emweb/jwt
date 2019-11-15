@@ -31,6 +31,7 @@ public class WShadow {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Constructs a disabled shadow effect (offsetX = offsetY = blur = 0)
 	 */
 	public WShadow() {
@@ -54,6 +55,7 @@ public class WShadow {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
+	 * 
 	 * Returns <code>true</code> if the shadows are exactly the same.
 	 */
 	public boolean equals(final WShadow other) {

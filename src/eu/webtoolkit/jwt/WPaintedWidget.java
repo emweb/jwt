@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
  * A painted widget is rendered from basic drawing primitives. Rendering is done
  * not on the server but on the browser, using different rendering methods:
  * <p>
+ * 
  * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
  * <td><b>Browser</b></td>
@@ -63,6 +64,8 @@ import org.slf4j.LoggerFactory;
  * <td>HtmlCanvas, PngImage</td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
  * <i>* HtmlCanvas occasionally suffers from rendering artefacts in Opera.</i>
  * <p>
@@ -90,15 +93,19 @@ import org.slf4j.LoggerFactory;
  * {@link WPaintedWidget#update(EnumSet flags) update()} method.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>A WPaintedWidget requires that it is given a size using
  * {@link WPaintedWidget#resize(WLength width, WLength height) resize()} or by a
  * layout manager.</i>
  * </p>
+ * 
  * <h3>Client side interaction and repainting</h3>
+ * 
  * <p>
  * If the widget is drawn as an HTML canvas element, i.e. the
  * {@link WPaintedWidget#getMethod() method} is HtmlCanvas, a WPaintedWidget can
@@ -191,6 +198,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Sets the preferred rendering method.
 	 * <p>
+	 * 
 	 * When <code>method</code> is supported by the browser, then it is chosen
 	 * for rendering.
 	 */
@@ -215,6 +223,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Lets the widget repaint itself.
 	 * <p>
+	 * 
 	 * Repainting is not immediate, but happens after when the event loop is
 	 * exited.
 	 * <p>
@@ -257,6 +266,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Adds an interactive area.
 	 * <p>
+	 * 
 	 * Adds the <code>area</code> which listens to events in a specific region
 	 * of the widget. Areas are organized in a list, to which the given
 	 * <code>area</code> is appended. When areas overlap, the area with the
@@ -264,6 +274,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * Ownership of the <code>area</code> is transferred to the widget.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When defining at least one area, no more events will
 	 * propagate to the widget itself. As a work-around, you can emulate this by
@@ -282,6 +293,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Inserts an interactive area.
 	 * <p>
+	 * 
 	 * Inserts the <code>area</code> which listens to events in the coresponding
 	 * area of the widget. Areas are organized in a list, and the <i>area</i> is
 	 * inserted at index <code>index</code>. When areas overlap, the area with
@@ -289,6 +301,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * <p>
 	 * Ownership of the <code>Area</code> is transferred to the widget.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When defining at least one area, no more events will
 	 * propagate to the widget itself. As a work-around, you can emulate this by
@@ -307,6 +320,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Removes an interactive area.
 	 * <p>
+	 * 
 	 * Removes the <code>area</code> from this widget, returning the ownership.
 	 * <p>
 	 * 
@@ -320,6 +334,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Returns the interactive area at the given index.
 	 * <p>
+	 * 
 	 * Returns <code>null</code> if <code>index</code> was invalid.
 	 * <p>
 	 * 
@@ -343,10 +358,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * A JavaScript slot that repaints the widget when triggered.
 	 * <p>
+	 * 
 	 * This is useful for client-side initiated repaints. You may want to use
 	 * this if you want to add interaction or animation to your
 	 * {@link WPaintedWidget}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This feature is currently only supported if the
 	 * {@link WPaintedWidget#getMethod() method} is HtmlCanvas. This will not
@@ -416,6 +433,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Returns the actual method used for rendering.
 	 * <p>
+	 * 
 	 * The default method considers browser capabilites and the preferred method
 	 * to make an actual choice for the implementation.
 	 * <p>
@@ -470,6 +488,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Paints the widget.
 	 * <p>
+	 * 
 	 * You should reimplement this method to paint the contents of the widget,
 	 * using the given paintDevice.
 	 */
@@ -478,6 +497,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	/**
 	 * Creates a paint device.
 	 * <p>
+	 * 
 	 * Although it&apos;s usually not necessary to call this function, you may
 	 * want to reimplement this function to customize or specialize the device
 	 * used for painting the widget.
@@ -621,6 +641,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 * Returns a JavaScript reference to the client side representation of the
 	 * {@link WPaintedWidget}.
 	 * <p>
+	 * 
 	 * The client side representation exposes the following interface:
 	 * 
 	 * <pre>
@@ -629,9 +650,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
 	 *      canvas: exposes the underlying HTML canvas element
 	 *      repaint: a function that, when called, will repaint the widget without a server roundtrip
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The {@link WPaintedWidget#getMethod() method} should be
 	 * HtmlCanvas and there has to be at least one {@link WJavaScriptHandle}

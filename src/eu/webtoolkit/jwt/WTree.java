@@ -33,28 +33,31 @@ import org.slf4j.LoggerFactory;
  * The tree is implemented as a hierarchy of {@link WTreeNode} widgets.
  * <p>
  * Selection is rendered by calling
- * {@link WTreeNode#renderSelected(boolean isSelected)
- * WTreeNode#renderSelected()}. Only tree nodes that are
- * {@link WTreeNode#setSelectable(boolean selectable) selectable} may
- * participate in the selection.
+ * {@link WTreeNode#renderSelected(boolean isSelected) renderSelected()}. Only
+ * tree nodes that are {@link WTreeNode#setSelectable(boolean selectable)
+ * selectable} may participate in the selection.
  * <p>
  * A screenshot of the tree:
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
- * <td><div align="center"> <img src="doc-files//WTree-default-1.png"
- * alt="An example WTree (default)">
+ * <td><div align="center"> <img src="doc-files/WTree-default-1.png">
  * <p>
  * <strong>An example WTree (default)</strong>
  * </p>
- * </div></td>
- * <td><div align="center"> <img src="doc-files//WTree-polished-1.png"
- * alt="An example WTree (polished)">
+ * </div>
+ * 
+ * </td>
+ * <td><div align="center"> <img src="doc-files/WTree-polished-1.png">
  * <p>
  * <strong>An example WTree (polished)</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
  * 
  * @see WTreeNode
@@ -89,6 +92,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets the tree root node.
 	 * <p>
+	 * 
 	 * The initial value is <code>null</code>.
 	 */
 	public void setTreeRoot(WTreeNode node) {
@@ -114,6 +118,7 @@ public class WTree extends WCompositeWidget {
 	/**
 	 * Sets the selection mode.
 	 * <p>
+	 * 
 	 * The default selection mode is {@link SelectionMode#NoSelection}.
 	 */
 	public void setSelectionMode(SelectionMode mode) {

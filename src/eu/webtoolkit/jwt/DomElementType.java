@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration for a DOM element type.
  * <p>
+ * 
  * For internal use only.
  */
 public enum DomElementType {

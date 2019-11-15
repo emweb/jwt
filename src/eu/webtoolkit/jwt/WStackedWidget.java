@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * WStackedWidget, like {@link WContainerWidget}, is by default not inline.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget is rendered using an HTML <code>&lt;div&gt;</code> tag and does
  * not provide styling. It can be styled using inline or external CSS as
@@ -117,6 +118,7 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Changes the current widget.
 	 * <p>
+	 * 
 	 * The widget with index <code>index</code> is made visible, while all other
 	 * widgets are hidden.
 	 * <p>
@@ -194,6 +196,7 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Changes the current widget.
 	 * <p>
+	 * 
 	 * The widget <code>widget</code>, which must have been added before, is
 	 * made visible, while all other widgets are hidden.
 	 * <p>
@@ -208,6 +211,7 @@ public class WStackedWidget extends WContainerWidget {
 	/**
 	 * Specifies an animation used during transitions.
 	 * <p>
+	 * 
 	 * The animation is used to hide the previously current widget and show the
 	 * next current widget using
 	 * {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()}.
@@ -218,23 +222,28 @@ public class WStackedWidget extends WContainerWidget {
 	 * When <code>autoReverse</code> is set to <code>true</code>, then the
 	 * reverse animation is chosen when the new index precedes the current
 	 * index. This only applies to
-	 * {@link WAnimation.AnimationEffect#SlideInFromLeft},
-	 * {@link WAnimation.AnimationEffect#SlideInFromRight},
-	 * WAnimation::SlideInFromUp or WAnimation::SlideInFromDown transition
-	 * effects.
+	 * {@link WAnimation.AnimationEffect#SlideInFromLeft
+	 * AnimationEffect#SlideInFromLeft},
+	 * {@link WAnimation.AnimationEffect#SlideInFromRight
+	 * AnimationEffect#SlideInFromRight}, WAnimation::SlideInFromUp or
+	 * WAnimation::SlideInFromDown transition effects.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If you intend to use a transition animation with a
 	 * {@link WStackedWidget} you should set it before it is first rendered.
 	 * Otherwise, transition animations caused by
 	 * {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()} may
 	 * not be correctly performed. If you do want to force this change you can
-	 * use {@link WApplication#processEvents() WApplication#processEvents()}
-	 * before calling {@link WStackedWidget#setCurrentIndex(int index)
-	 * setCurrentIndex()}.
+	 * use {@link WApplication#processEvents()} before calling
+	 * {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()}.</i>
+	 * </p>
+	 * 
+	 * 
 	 * <p>
-	 * It is also not supported to use a {@link WAnimation.AnimationEffect#Pop}
-	 * animation on a {@link WStackedWidget}.</i>
+	 * <i><b>Note: </b>It is also not supported to use a
+	 * {@link WAnimation.AnimationEffect#Pop AnimationEffect#Pop} animation on a
+	 * {@link WStackedWidget}.</i>
 	 * </p>
 	 * 
 	 * @see WStackedWidget#setCurrentIndex(int index)
@@ -317,7 +326,7 @@ public class WStackedWidget extends WContainerWidget {
 			WApplication app = WApplication.getInstance();
 			app.loadJavaScript("js/WStackedWidget.js", wtjs1());
 			this.setJavaScriptMember(" WStackedWidget",
-					"new Wt3_4_1.WStackedWidget(" + app.getJavaScriptClass()
+					"new Wt3_4_2.WStackedWidget(" + app.getJavaScriptClass()
 							+ "," + this.getJsRef() + ");");
 			this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef()
 					+ ".wtObj.wtResize");

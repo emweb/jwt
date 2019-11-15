@@ -54,6 +54,7 @@ public class Touch {
 	/**
 	 * Returns the touch position relative to the window.
 	 * <p>
+	 * 
 	 * This differs from {@link Touch#getDocument() getDocument()} only when
 	 * scrolling through the document.
 	 */

@@ -31,8 +31,9 @@ import org.slf4j.LoggerFactory;
  * value), and update the progress using
  * {@link WProgressBar#setValue(double value) setValue()}.
  * <p>
- * WProgressBar is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WProgressBar is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>With the advent of HTML5, this widget will be implemented
  * using the native HTML5 control when available. </i>
@@ -71,6 +72,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the minimum value.
 	 * <p>
+	 * 
 	 * The minimum value is the value that corresponds to 0%.
 	 * <p>
 	 * The default value is 0.
@@ -94,6 +96,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the maximum value.
 	 * <p>
+	 * 
 	 * The maximum value is the value that corresponds to 100%.
 	 * <p>
 	 * The default value is 100.
@@ -131,6 +134,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the current progress.
 	 * <p>
+	 * 
 	 * <code>value</code> must be a value between
 	 * {@link WProgressBar#getMinimum() getMinimum()} and
 	 * {@link WProgressBar#getMaximum() getMaximum()}.
@@ -155,6 +159,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Sets the progress format string.
 	 * <p>
+	 * 
 	 * The format is used by {@link WProgressBar#getText() getText()} to
 	 * indicate the progress value.
 	 * <p>
@@ -177,6 +182,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Returns the text displayed inside the progress bar.
 	 * <p>
+	 * 
 	 * This text must be an XHTML formatted text fragment. The default text
 	 * prints the current progress using {@link WProgressBar#getFormat()
 	 * getFormat()}. You may want to reimplement this method to display a
@@ -190,6 +196,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * A signal that indicates when the value has changed.
 	 * <p>
+	 * 
 	 * This signal is emitted when {@link WProgressBar#setValue(double value)
 	 * setValue()} is called.
 	 * <p>
@@ -203,8 +210,8 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * A signal that indicates when 100% is reached.
 	 * <p>
-	 * This signal is emitted when setValue({@link WProgressBar#getMaximum()
-	 * getMaximum()}) is called.
+	 * 
+	 * This signal is emitted when setValue(maximum()) is called.
 	 * <p>
 	 * 
 	 * @see WProgressBar#setValue(double value)
@@ -239,6 +246,7 @@ public class WProgressBar extends WInteractWidget {
 	/**
 	 * Update the progress bar itself.
 	 * <p>
+	 * 
 	 * Will be called whenever the value changes, and changes the width of the
 	 * progress bar accordingly.
 	 * <p>

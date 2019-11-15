@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
  * unchecked), and a text label.
  * <p>
  * To act on a change of the state, either connect a slot to the
- * {@link WFormWidget#changed() WFormWidget#changed()} signal, or connect a slot
- * to the {@link WAbstractToggleButton#checked() checked()} or
+ * {@link WFormWidget#changed()} signal, or connect a slot to the
+ * {@link WAbstractToggleButton#checked() checked()} or
  * {@link WAbstractToggleButton#unChecked() unChecked()} signals.
  * <p>
  * The current state (checked or unchecked) may be inspected using the
@@ -64,6 +64,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Creates an unchecked toggle button with given text label.
 	 * <p>
+	 * 
 	 * The text label is rendered to the right side of the button.
 	 */
 	protected WAbstractToggleButton(final CharSequence text,
@@ -98,6 +99,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Sets the label text.
 	 * <p>
+	 * 
 	 * The label is rendered to the right of the button.
 	 */
 	public void setText(final CharSequence text) {
@@ -129,6 +131,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Sets the text format.
 	 * <p>
+	 * 
 	 * The textFormat controls how the string should be interpreted: either as
 	 * plain text, which is displayed literally, or as XHTML-markup.
 	 * <p>
@@ -170,6 +173,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Sets the button state.
 	 * <p>
+	 * 
 	 * This method does not emit one of the
 	 * {@link WAbstractToggleButton#checked() checked()} or
 	 * {@link WAbstractToggleButton#unChecked() unChecked()} signals.
@@ -185,6 +189,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Checks the button.
 	 * <p>
+	 * 
 	 * Does not emit the {@link WAbstractToggleButton#checked() checked()}
 	 * signal.
 	 * <p>
@@ -199,6 +204,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Unchecks the button.
 	 * <p>
+	 * 
 	 * Does not emit the {@link WAbstractToggleButton#unChecked() unChecked()}
 	 * signal.
 	 * <p>
@@ -213,6 +219,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
 	 * Returns &quot;yes&quot; when checked, &quot;maybe&quot; when partially
 	 * checked, and &quot;no&quot; when unchecked.
 	 */
@@ -230,6 +237,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Sets the current value.
 	 * <p>
+	 * 
 	 * This interprets text values of &quot;yes&quot;, &quot;maybe&quot; or
 	 * &quot;no&quot;.
 	 */
@@ -250,10 +258,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Signal emitted when the button gets checked.
 	 * <p>
+	 * 
 	 * This signal is emitted when the user checks the button.
 	 * <p>
-	 * You can use the {@link WFormWidget#changed() WFormWidget#changed()}
-	 * signal to react to any change of the button state.
+	 * You can use the {@link WFormWidget#changed()} signal to react to any
+	 * change of the button state.
 	 */
 	public EventSignal checked() {
 		return this.voidEventSignal(CHECKED_SIGNAL, true);
@@ -262,10 +271,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Signal emitted when the button gets un-checked.
 	 * <p>
+	 * 
 	 * This signal is emitted when the user unchecks the button.
 	 * <p>
-	 * You can use the {@link WFormWidget#changed() WFormWidget#changed()}
-	 * signal to react to any change of the button state.
+	 * You can use the {@link WFormWidget#changed()} signal to react to any
+	 * change of the button state.
 	 */
 	public EventSignal unChecked() {
 		return this.voidEventSignal(UNCHECKED_SIGNAL, true);
@@ -282,6 +292,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 	/**
 	 * Configures word wrapping.
 	 * <p>
+	 * 
 	 * When <code>wordWrap</code> is <code>true</code>, the widget may break
 	 * lines, creating a multi-line text. When <code>wordWrap</code> is
 	 * <code>false</code>, the text will displayed on a single line, unless the

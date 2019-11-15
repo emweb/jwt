@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration for a DOM property.
  * <p>
+ * 
  * This is an internal API, subject to change.
  */
 public enum Property {

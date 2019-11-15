@@ -20,9 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * 
- * Abstract base class for themes in Wt.
+ * Abstract base class for themes in JWt.
  * <p>
  * 
  * @see WApplication#setTheme(WTheme theme)
@@ -49,6 +47,7 @@ public abstract class WTheme extends WObject {
 	/**
 	 * Returns a theme name.
 	 * <p>
+	 * 
 	 * Returns a unique name for the theme. This name is used by the default
 	 * implementation of {@link WTheme#getResourcesUrl() getResourcesUrl()} to
 	 * compute a location for the theme&apos;s resources.
@@ -58,7 +57,8 @@ public abstract class WTheme extends WObject {
 	/**
 	 * Returns the URL where theme-related resources are stored.
 	 * <p>
-	 * The default implementation considers a folder within Wt&apos;s resource
+	 * 
+	 * The default implementation considers a folder within JWt&apos;s resource
 	 * directory, based on the theme {@link WTheme#getName() getName()}.
 	 */
 	public String getResourcesUrl() {
@@ -69,6 +69,7 @@ public abstract class WTheme extends WObject {
 	/**
 	 * Serves the CSS for the theme.
 	 * <p>
+	 * 
 	 * This must serve CSS declarations for the theme.
 	 * <p>
 	 * The default implementation serves all the {@link WTheme#getStyleSheets()
@@ -84,6 +85,7 @@ public abstract class WTheme extends WObject {
 	/**
 	 * Returns a vector with stylesheets for the theme.
 	 * <p>
+	 * 
 	 * This should return a vector with stylesheets that implement the theme.
 	 * This list may be tailored to the current user agent, which is read from
 	 * the application environment.
@@ -93,6 +95,7 @@ public abstract class WTheme extends WObject {
 	/**
 	 * Applies the theme to a child of a composite widget.
 	 * <p>
+	 * 
 	 * The <code>widgetRole</code> indicates the role that <code>child</code>
 	 * has within the implementation of the <code>widget</code>.
 	 */
@@ -101,6 +104,7 @@ public abstract class WTheme extends WObject {
 	/**
 	 * Applies the theme to a DOM element that renders a widget.
 	 * <p>
+	 * 
 	 * The <code>element</code> is a rendered representation of the
 	 * <code>widget</code>, and may be further customized to reflect the theme.
 	 */
@@ -119,7 +123,6 @@ public abstract class WTheme extends WObject {
 
 	/**
 	 * Returns a generic CSS class name for the chosen role.
-	 * <p>
 	 */
 	public abstract String utilityCssClass(int utilityCssClassRole);
 

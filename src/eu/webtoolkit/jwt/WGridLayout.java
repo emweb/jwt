@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * You should use
  * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
- * WContainerWidget::setOverflow(OverflowAuto)} or use a {@link WScrollArea} to
- * automatically show scrollbars for widgets inserted in the layout to cope with
- * a size set by the layout manager that is smaller than the preferred size.
+ * WContainerWidget#setOverflow()} or use a {@link WScrollArea} to automatically
+ * show scrollbars for widgets inserted in the layout to cope with a size set by
+ * the layout manager that is smaller than the preferred size.
  * <p>
  * When the container of a layout manager has a maximum size set using
  * {@link WWidget#setMaximumSize(WLength width, WLength height)
@@ -87,7 +87,6 @@ import org.slf4j.LoggerFactory;
  * (their preferred size is ignored).
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -102,18 +101,24 @@ import org.slf4j.LoggerFactory;
  * 	layout.addWidget(new WText(&quot;Item 1 1&quot;), 1, 1);
  * 
  * 	w.setLayout(layout);
+ * 
  * }
  * </pre>
+ * 
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>When JavaScript support is not available, not all
  * functionality of the layout is available. In particular, vertical size
- * management is not available.
+ * management is not available.</i>
+ * </p>
+ * 
+ * 
  * <p>
- * When a layout is used on a first page with progressive bootstrap, then the
- * layout will progress only in a limited way to a full JavaScript-based layout.
- * You can thus not rely on it to behave properly for example when dynamically
- * adding or removing widgets. </i>
+ * <i><b>Note: </b>When a layout is used on a first page with progressive
+ * bootstrap, then the layout will progress only in a limited way to a full
+ * JavaScript-based layout. You can thus not rely on it to behave properly for
+ * example when dynamically adding or removing widgets. </i>
  * </p>
  */
 public class WGridLayout extends WLayout {
@@ -122,6 +127,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Create a new grid layout.
 	 * <p>
+	 * 
 	 * The grid will grow dynamically as items are added.
 	 * <p>
 	 * Use <code>parent</code> = <code>null</code> to create a layout manager
@@ -182,6 +188,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a layout item to the grid.
 	 * <p>
+	 * 
 	 * Adds the <i>item</i> at (<i>row</i>, <code>column</code>). If an item was
 	 * already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -277,6 +284,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a nested layout item to the grid.
 	 * <p>
+	 * 
 	 * Adds the <i>layout</i> at (<i>row</i>, <code>column</code>). If an item
 	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -324,6 +332,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a nested layout item to the grid.
 	 * <p>
+	 * 
 	 * Adds the <i>layout</i> at (<i>row</i>, <code>column</code>). If an item
 	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -380,6 +389,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a widget to the grid.
 	 * <p>
+	 * 
 	 * Adds the <i>widget</i> at (<i>row</i>, <code>column</code>). If an item
 	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -427,6 +437,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Adds a widget to the grid.
 	 * <p>
+	 * 
 	 * Adds the <i>widget</i> at (<i>row</i>, <code>column</code>). If an item
 	 * was already added to that location, it is replaced (but not deleted).
 	 * <p>
@@ -484,6 +495,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the horizontal spacing.
 	 * <p>
+	 * 
 	 * The default horizontal spacing is 9 pixels.
 	 * <p>
 	 * 
@@ -507,6 +519,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the vertical spacing.
 	 * <p>
+	 * 
 	 * The default vertical spacing is 9 pixels.
 	 * <p>
 	 * 
@@ -530,6 +543,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Returns the column count.
 	 * <p>
+	 * 
 	 * The grid dimensions change dynamically when adding contents to the grid.
 	 * <p>
 	 * 
@@ -542,6 +556,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Returns the row count.
 	 * <p>
+	 * 
 	 * The grid dimensions change dynamically when adding contents to the grid.
 	 * <p>
 	 * 
@@ -554,6 +569,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the column stretch.
 	 * <p>
+	 * 
 	 * Sets the <i>stretch</i> factor for column <code>column</code>.
 	 * <p>
 	 * 
@@ -578,6 +594,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets the row stretch.
 	 * <p>
+	 * 
 	 * Sets the <i>stretch</i> factor for row <code>row</code>.
 	 * <p>
 	 * 
@@ -602,6 +619,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets whether the user may drag a particular column border.
 	 * <p>
+	 * 
 	 * This method sets whether the border that separates column <i>column</i>
 	 * from the next column may be resized by the user, depending on the value
 	 * of <i>enabled</i>.
@@ -645,6 +663,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Returns whether the user may drag a particular column border.
 	 * <p>
+	 * 
 	 * This method returns whether the border that separates column
 	 * <i>column</i> from the next column may be resized by the user.
 	 * <p>
@@ -659,6 +678,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Sets whether the user may drag a particular row border.
 	 * <p>
+	 * 
 	 * This method sets whether the border that separates row <i>row</i> from
 	 * the next row may be resized by the user, depending on the value of
 	 * <i>enabled</i>.
@@ -702,6 +722,7 @@ public class WGridLayout extends WLayout {
 	/**
 	 * Returns whether the user may drag a particular row border.
 	 * <p>
+	 * 
 	 * This method returns whether the border that separates row <i>row</i> from
 	 * the next row may be resized by the user.
 	 * <p>

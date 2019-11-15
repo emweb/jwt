@@ -80,6 +80,7 @@ public class WTimeValidator extends WRegExpValidator {
 	/**
 	 * Creates a new {@link WTimeValidator}.
 	 * <p>
+	 * 
 	 * The validator will accept only times within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the time formate <code>format</code>
 	 */
@@ -109,9 +110,6 @@ public class WTimeValidator extends WRegExpValidator {
 
 	/**
 	 * Sets the validator format.
-	 * <p>
-	 * 
-	 * @see WTime#toString()
 	 */
 	public void setFormat(final String format) {
 		if (this.formats_.isEmpty() || !this.formats_.get(0).equals(format)) {
@@ -146,6 +144,7 @@ public class WTimeValidator extends WRegExpValidator {
 	/**
 	 * Sets the lower limit of the valid time range.
 	 * <p>
+	 * 
 	 * The default is a null time constructed using WTime()
 	 */
 	public void setBottom(final WTime bottom) {
@@ -166,6 +165,7 @@ public class WTimeValidator extends WRegExpValidator {
 	/**
 	 * Sets the upper limit of the valid time range.
 	 * <p>
+	 * 
 	 * The default is a null time constructed using WTime()
 	 */
 	public void setTop(final WTime top) {
@@ -272,6 +272,7 @@ public class WTimeValidator extends WRegExpValidator {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a time in the given format, and within the valid
 	 * range.
@@ -306,7 +307,7 @@ public class WTimeValidator extends WRegExpValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_1.WTimeValidator(").append(this.isMandatory())
+		js.append("new Wt3_4_2.WTimeValidator(").append(this.isMandatory())
 				.append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WTime.RegExpInfo r = WTime.formatToRegExp(this.formats_.get(i));

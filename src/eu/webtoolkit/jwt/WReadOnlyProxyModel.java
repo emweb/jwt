@@ -50,6 +50,7 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 	/**
 	 * Maps a source model index to the proxy model.
 	 * <p>
+	 * 
 	 * Returns the sourceIndex unmodified.
 	 */
 	public WModelIndex mapFromSource(final WModelIndex sourceIndex) {
@@ -59,6 +60,7 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 	/**
 	 * Maps a proxy model index to the source model.
 	 * <p>
+	 * 
 	 * Returns the proxyIndex unmodified.
 	 */
 	public WModelIndex mapToSource(final WModelIndex proxyIndex) {
@@ -68,6 +70,7 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the number of columns.
 	 * <p>
+	 * 
 	 * This returns the column count of the source model.
 	 */
 	public int getColumnCount(final WModelIndex parent) {
@@ -77,6 +80,7 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the number of rows.
 	 * <p>
+	 * 
 	 * This returns the row count of the source model.
 	 */
 	public int getRowCount(final WModelIndex parent) {
@@ -86,6 +90,7 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the parent for a model index.
 	 * <p>
+	 * 
 	 * Returns the parent of the given index in the source model.
 	 */
 	public WModelIndex getParent(final WModelIndex index) {
@@ -95,6 +100,7 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
 	/**
 	 * Returns the child index for the given row and column.
 	 * <p>
+	 * 
 	 * Returns the index in the source model.
 	 */
 	public WModelIndex getIndex(int row, int column, final WModelIndex parent) {

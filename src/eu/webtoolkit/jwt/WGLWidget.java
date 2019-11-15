@@ -129,6 +129,8 @@ import org.slf4j.LoggerFactory;
  * should also set the PAINT_GL flag of
  * {@link WGLWidget#repaintGL(EnumSet which) repaintGL()}.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * The GL functions are intended to be used exclusively from within the
  * invocation of the four callback functions mentioned above. In order to
@@ -140,16 +142,18 @@ import org.slf4j.LoggerFactory;
  * {@link WGLWidget} that was not given a size is undefined.
  * <p>
  * <h3>Binary buffer transfers</h3>
+ * 
  * <p>
- * In {@link WGLWidget#activeTexture(WGLWidget.GLenum texture) activeTexture()},
- * there is an additional boolean argument where you can indicate that you want
- * the data to be transferred to the client in binary form. A
- * {@link WMemoryResource} is created for each of these buffers. If you know all
- * previous resources are not required in the client anymore, you can free
- * memory with the method
- * {@link WGLWidget#activeTexture(WGLWidget.GLenum texture) activeTexture()}
- * (the memory is also managed, so this is not neccesary). If you want to manage
- * these resources entirely by yourself, the following method can be used.
+ * In
+ * {@link WGLWidget#bufferDatafv(WGLWidget.GLenum target, java.nio.ByteBuffer buffer, WGLWidget.GLenum usage, boolean binary)
+ * bufferDatafv()}, there is an additional boolean argument where you can
+ * indicate that you want the data to be transferred to the client in binary
+ * form. A {@link WMemoryResource} is created for each of these buffers. If you
+ * know all previous resources are not required in the client anymore, you can
+ * free memory with the method {@link WGLWidget#clearBinaryResources()
+ * clearBinaryResources()} (the memory is also managed, so this is not
+ * neccesary). If you want to manage these resources entirely by yourself, the
+ * following method can be used.
  * <p>
  * Using {@link WGLWidget#createAndLoadArrayBuffer(String url)
  * createAndLoadArrayBuffer()}, you can load an array buffer in binary format
@@ -163,6 +167,7 @@ import org.slf4j.LoggerFactory;
  * not possible when you want a fall-back in the form of server-side rendering.
  * <p>
  * <h3>Client side matrices and vectors.</h3>
+ * 
  * <p>
  * The {@link WGLWidget} provides the {@link JavaScriptMatrix4x4} class as a
  * mechanism to use client-side modifiable matrices in the render functions.
@@ -442,6 +447,7 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Create a temporarily invalid {@link JavaScriptVector}.
 		 * <p>
+		 * 
 		 * Should be added to a WGLWidget with
 		 * {@link WGLWidget#addJavaScriptVector(WGLWidget.JavaScriptVector vec)
 		 * WGLWidget#addJavaScriptVector()}, and initialized with
@@ -486,6 +492,7 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Returns the JavaScript reference to this {@link JavaScriptVector}.
 		 * <p>
+		 * 
 		 * In order to get a valid JavaScript reference, this vector should have
 		 * been added to a {@link WGLWidget}.
 		 */
@@ -500,6 +507,7 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Returns the current server-side value.
 		 * <p>
+		 * 
 		 * Client-side changes to the {@link JavaScriptVector} are automatically
 		 * synchronized.
 		 */
@@ -571,6 +579,7 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Creates a temporarily invalid {@link JavaScriptMatrix4x4}.
 		 * <p>
+		 * 
 		 * Should be added to a WGLWidget with
 		 * {@link WGLWidget#addJavaScriptMatrix4(WGLWidget.JavaScriptMatrix4x4 mat)
 		 * WGLWidget#addJavaScriptMatrix4()}, and initialized with
@@ -609,6 +618,7 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Returns the JavaScript reference to this {@link JavaScriptMatrix4x4}.
 		 * <p>
+		 * 
 		 * In order to get a valid JavaScript reference, this matrix should have
 		 * been added to a {@link WGLWidget}.
 		 */
@@ -623,6 +633,7 @@ public class WGLWidget extends WInteractWidget {
 		/**
 		 * Returns the current server-side value.
 		 * <p>
+		 * 
 		 * Client-side changes to the {@link JavaScriptMatrix4x4} are
 		 * automatically synchronized.
 		 */
@@ -663,8 +674,8 @@ public class WGLWidget extends WInteractWidget {
 						"JavaScriptMatrix4x4: matrix not initialized");
 			}
 			WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
-			copy.jsRef_ = "Wt3_4_1.glMatrix.mat4.inverse(" + this.jsRef_
-					+ ", Wt3_4_1.glMatrix.mat4.create())";
+			copy.jsRef_ = "Wt3_4_2.glMatrix.mat4.inverse(" + this.jsRef_
+					+ ", Wt3_4_2.glMatrix.mat4.create())";
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
 			return copy;
 		}
@@ -675,8 +686,8 @@ public class WGLWidget extends WInteractWidget {
 						"JavaScriptMatrix4x4: matrix not initialized");
 			}
 			WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
-			copy.jsRef_ = "Wt3_4_1.glMatrix.mat4.transpose(" + this.jsRef_
-					+ ", Wt3_4_1.glMatrix.mat4.create())";
+			copy.jsRef_ = "Wt3_4_2.glMatrix.mat4.transpose(" + this.jsRef_
+					+ ", Wt3_4_2.glMatrix.mat4.create())";
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
 			return copy;
 		}
@@ -689,11 +700,11 @@ public class WGLWidget extends WInteractWidget {
 			}
 			WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
 			StringWriter ss = new StringWriter();
-			ss.append("Wt3_4_1.glMatrix.mat4.multiply(").append(this.jsRef_)
+			ss.append("Wt3_4_2.glMatrix.mat4.multiply(").append(this.jsRef_)
 					.append(",");
 			javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
 			WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
-			ss.append(", Wt3_4_1.glMatrix.mat4.create())");
+			ss.append(", Wt3_4_2.glMatrix.mat4.create())");
 			copy.jsRef_ = ss.toString();
 			copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
 			copy.matrices_.add(m);
@@ -777,6 +788,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Construct a GL widget.
 	 * <p>
+	 * 
 	 * Before the first rendering, you must apply a size to the
 	 * {@link WGLWidget}.
 	 */
@@ -867,6 +879,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Sets the rendering option.
 	 * <p>
+	 * 
 	 * Use this method to configure whether client-side and/or server-side
 	 * rendering can be used, and whether anti-aliasing should be enabled. The
 	 * actual choice is also based on availability (respectively client-side or
@@ -875,6 +888,7 @@ public class WGLWidget extends WInteractWidget {
 	 * The default value is to try both ClientSide or ServerSide rendering, and
 	 * to enable anti-aliasing if available.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Options must be set before the widget is being rendered.
 	 * </i>
@@ -898,6 +912,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Initialize the GL state when the widget is first shown.
 	 * <p>
+	 * 
 	 * {@link WGLWidget#initializeGL() initializeGL()} is called when the widget
 	 * is first rendered, and when the webglcontextrestored signal is fired. You
 	 * can distinguish between the first initialization and context restoration
@@ -915,6 +930,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Act on resize events.
 	 * <p>
+	 * 
 	 * Usually, this method only contains functions to set the viewport and the
 	 * projection matrix (as this is aspect ration dependent).
 	 * <p>
@@ -929,6 +945,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Update the client-side painting function.
 	 * <p>
+	 * 
 	 * This method is invoked client-side when a repaint is required, i.e. when
 	 * the {@link WGLWidget#getRepaintSlot() getRepaintSlot()} (a
 	 * JavaScript-side {@link JSlot}) is triggered. Typical examples are: after
@@ -952,6 +969,8 @@ public class WGLWidget extends WInteractWidget {
 	 * {@link Shader} sources can be updated without requiring the paint
 	 * function to be renewed</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * Updating the {@link WGLWidget#paintGL() paintGL()} cache is usually not
 	 * too expensive; the VBOs, which are large in many cases, are already at
@@ -968,8 +987,9 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Update state set in {@link WGLWidget#initializeGL() initializeGL()}.
+	 * Update state set in {@link WGLWidget#initializeGL() initializeGL()}
 	 * <p>
+	 * 
 	 * Invoked when repaint is called with the UPDATE_GL call.
 	 * <p>
 	 * This is intended to be executed when you want to change programs,
@@ -1009,6 +1029,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Request invocation of resizeGL, paintGL and/or updateGL.
 	 * <p>
+	 * 
 	 * If invoked with PAINT_GL, the client-side cached paint function is
 	 * updated. If invoked with RESIZE_GL or UPDATE_GL, the code will be
 	 * executed once.
@@ -1042,6 +1063,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Returns whether a lost context is in the process of being restored.
 	 * <p>
+	 * 
 	 * You can check for this in {@link WGLWidget#initializeGL() initializeGL()}
 	 * , to handle the first initialization and restoration of context
 	 * differently.
@@ -1061,6 +1083,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * The enormous GLenum.
 	 * <p>
+	 * 
 	 * This enum contains all numeric constants defined by the WebGL standard,
 	 * see: <a href=
 	 * "http://www.khronos.org/registry/webgl/specs/latest/1.0/#WEBGLRENDERINGCONTEXT"
@@ -1085,6 +1108,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to activate an existing texture.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
 	 * >glActiveTexture() OpenGL ES manpage</a>
@@ -1094,22 +1118,24 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to attach a shader to a program.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glAttachShader.xml"
+	 * >glAttachShader() OpenGL ES manpage</a>
 	 */
 	public void attachShader(WGLWidget.Program program, WGLWidget.Shader shader) {
 		this.pImpl_.attachShader(program, shader);
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to bind an attribute to a given location.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBindAttribLocation.xml"
+	 * >glBindAttribLocation() OpenGL ES manpage</a>
 	 */
 	public void bindAttribLocation(WGLWidget.Program program, int index,
 			final String name) {
@@ -1117,22 +1143,24 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to bind a buffer to a target.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBindBuffer.xml"
+	 * >glBindBuffer() OpenGL ES manpage</a>
 	 */
 	public void bindBuffer(WGLWidget.GLenum target, WGLWidget.Buffer buffer) {
 		this.pImpl_.bindBuffer(target, buffer);
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to bind a frame buffer to a target.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBindFramebuffer.xml"
+	 * >glBindFramebuffer() OpenGL ES manpage</a>
 	 */
 	public void bindFramebuffer(WGLWidget.GLenum target,
 			WGLWidget.Framebuffer buffer) {
@@ -1140,11 +1168,12 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to bind a render buffer to a target.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBindRenderbuffer.xml"
+	 * >glBindRenderbuffer() OpenGL ES manpage</a>
 	 */
 	public void bindRenderbuffer(WGLWidget.GLenum target,
 			WGLWidget.Renderbuffer buffer) {
@@ -1152,44 +1181,48 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to bind a texture to a target.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBindTexture.xml"
+	 * >glBindTexture() OpenGL ES manpage</a>
 	 */
 	public void bindTexture(WGLWidget.GLenum target, WGLWidget.Texture texture) {
 		this.pImpl_.bindTexture(target, texture);
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to set the blending color.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBlendColor.xml"
+	 * >glBlendColor() OpenGL ES manpage</a>
 	 */
 	public void blendColor(double red, double green, double blue, double alpha) {
 		this.pImpl_.blendColor(red, green, blue, alpha);
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to set the blending equation.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBlendEquation.xml"
+	 * >glBlendEquation() OpenGL ES manpage</a>
 	 */
 	public void blendEquation(WGLWidget.GLenum mode) {
 		this.pImpl_.blendEquation(mode);
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function that sets separate blending functions for RGB and alpha.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBlendEquationSeparate.xml"
+	 * >glBlendEquationSeparate() OpenGL ES manpage</a>
 	 */
 	public void blendEquationSeparate(WGLWidget.GLenum modeRGB,
 			WGLWidget.GLenum modeAlpha) {
@@ -1197,22 +1230,24 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function to configure the blending function.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBlendFunc.xml"
+	 * >glBlendFunc() OpenGL ES manpage</a>
 	 */
 	public void blendFunc(WGLWidget.GLenum sfactor, WGLWidget.GLenum dfactor) {
 		this.pImpl_.blendFunc(sfactor, dfactor);
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function that configures the blending function.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBlendFuncSeparate.xml"
+	 * >glBlendFuncSeparate() OpenGL ES manpage</a>
 	 */
 	public void blendFuncSeparate(WGLWidget.GLenum srcRGB,
 			WGLWidget.GLenum dstRGB, WGLWidget.GLenum srcAlpha,
@@ -1221,11 +1256,15 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * glBufferData - create and initialize a buffer object&apos;s data store
+	 * <p>
+	 * 
+	 * Set the size of the currently bound WebGLBuffer object for the passed
+	 * target. The buffer is initialized to 0.
 	 * <p>
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBufferData.xml"
+	 * >glBufferData() OpenGL ES manpage</a>
 	 */
 	public void bufferData(WGLWidget.GLenum target, int size,
 			WGLWidget.GLenum usage) {
@@ -1233,11 +1272,26 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * glBufferData - create and initialize a buffer object&apos;s data store
+	 * from an {@link ArrayBuffer}
+	 * <p>
+	 * 
+	 * Set the size and contents of the currently bound WebGLBuffer object to be
+	 * a copy of the given {@link ArrayBuffer}.
 	 * <p>
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBufferData.xml"
+	 * >glBufferData() OpenGL ES manpage</a>
+	 * <p>
+	 * Note: an {@link ArrayBuffer} refers to a javascript object, which cannot
+	 * be used for server-side rendering. If a server-side fallback will be
+	 * used, then
+	 * {@link WGLWidget#bufferDatafv(WGLWidget.GLenum target, java.nio.ByteBuffer buffer, WGLWidget.GLenum usage, boolean binary)
+	 * bufferDatafv()} should be used with the additional boolean argument to
+	 * indicate binary transfer of the data in case of client-side rendering.
+	 * <p>
+	 * 
+	 * @see WGLWidget#createAndLoadArrayBuffer(String url)
 	 */
 	public void bufferData(WGLWidget.GLenum target, WGLWidget.ArrayBuffer res,
 			WGLWidget.GLenum usage) {
@@ -1245,11 +1299,24 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * glBufferData - create and initialize a buffer object&apos;s data store
+	 * from an {@link ArrayBuffer}
+	 * <p>
+	 * 
+	 * Set the size of the currently bound WebGLBuffer object to
+	 * arrayBufferSize, and copy the contents of the {@link ArrayBuffer} to the
+	 * buffer, starting at the given offset.
 	 * <p>
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBufferData.xml"
+	 * >glBufferData() OpenGL ES manpage</a>
+	 * <p>
+	 * Note: not functional for a server-side fall-back (see
+	 * {@link WGLWidget#bufferData(WGLWidget.GLenum target, WGLWidget.ArrayBuffer res, WGLWidget.GLenum usage)
+	 * bufferData()} for more info)
+	 * <p>
+	 * 
+	 * @see WGLWidget#createAndLoadArrayBuffer(String url)
 	 */
 	public void bufferData(WGLWidget.GLenum target, WGLWidget.ArrayBuffer res,
 			int bufferResourceOffset, int bufferResourceSize,
@@ -1259,11 +1326,23 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * Initialize a buffer object&apos;s data store from an {@link ArrayBuffer}.
+	 * <p>
+	 * 
+	 * Load the data of the currently bound WebGLBuffer object from the given
+	 * {@link ArrayBuffer}. The first byte of the resource data will be written
+	 * at the given offset of the currently bound buffer.
 	 * <p>
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBufferSubData.xml"
+	 * >glBufferSubData() OpenGL ES manpage</a>
+	 * <p>
+	 * Note: not functional for a server-side fall-back (see
+	 * {@link WGLWidget#bufferData(WGLWidget.GLenum target, WGLWidget.ArrayBuffer res, WGLWidget.GLenum usage)
+	 * bufferData()} for more info)
+	 * <p>
+	 * 
+	 * @see WGLWidget#createAndLoadArrayBuffer(String url)
 	 */
 	public void bufferSubData(WGLWidget.GLenum target, int offset,
 			WGLWidget.ArrayBuffer res) {
@@ -1271,11 +1350,23 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * Initialize a buffer object&apos;s data store from an {@link ArrayBuffer}.
+	 * <p>
+	 * 
+	 * Load the data of the currently bound WebGLBuffer object from the given
+	 * {@link ArrayBuffer}. The byte at position arrayBufferOffset will be
+	 * written to the currently bound buffer at position offset.
 	 * <p>
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glBufferSubData.xml"
+	 * >glBufferSubData() OpenGL ES manpage</a>
+	 * <p>
+	 * Note: not functional for a server-side fall-back (see
+	 * {@link WGLWidget#bufferData(WGLWidget.GLenum target, WGLWidget.ArrayBuffer res, WGLWidget.GLenum usage)
+	 * bufferData()} for more info)
+	 * <p>
+	 * 
+	 * @see WGLWidget#createAndLoadArrayBuffer(String url)
 	 */
 	public void bufferSubData(WGLWidget.GLenum target, int offset,
 			WGLWidget.ArrayBuffer res, int bufferResourceOffset,
@@ -1285,11 +1376,12 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function that loads float or double data in a VBO.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml"
+	 * >glBufferData() OpenGL ES manpage</a>
 	 */
 	public void bufferDatafv(WGLWidget.GLenum target,
 			final java.nio.ByteBuffer buffer, WGLWidget.GLenum usage,
@@ -1298,7 +1390,7 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function that loads float or double data in a VBO.
 	 * <p>
 	 * Calls
 	 * {@link #bufferDatafv(WGLWidget.GLenum target, java.nio.ByteBuffer buffer, WGLWidget.GLenum usage, boolean binary)
@@ -1309,13 +1401,6 @@ public class WGLWidget extends WInteractWidget {
 		bufferDatafv(target, buffer, usage, false);
 	}
 
-	/**
-	 * GL function to activate an existing texture.
-	 * <p>
-	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
-	 */
 	public void bufferDatafv(WGLWidget.GLenum target,
 			final java.nio.FloatBuffer buffer, WGLWidget.GLenum usage) {
 		this.pImpl_.bufferDatafv(target, buffer, usage);
@@ -1324,6 +1409,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * remove all binary buffer resources
 	 * <p>
+	 * 
 	 * Removes all WMemoryResources that were allocated when calling
 	 * bufferDatafv with binary=true. This is not required, since the resources
 	 * are also managed, but if you are sure they will not be used anymore in
@@ -1334,11 +1420,12 @@ public class WGLWidget extends WInteractWidget {
 	}
 
 	/**
-	 * GL function to activate an existing texture.
+	 * GL function that updates an existing VBO with new integer data.
 	 * <p>
+	 * 
 	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
+	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferData.xml"
+	 * >glBufferData() OpenGL ES manpage</a>
 	 */
 	public void bufferDataiv(WGLWidget.GLenum target,
 			final java.nio.IntBuffer buffer, WGLWidget.GLenum usage,
@@ -1349,6 +1436,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that updates an existing VBO with new float data.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferSubData.xml"
 	 * >glBufferSubData() OpenGL ES manpage</a>
@@ -1370,13 +1458,6 @@ public class WGLWidget extends WInteractWidget {
 		bufferSubDatafv(target, offset, buffer, false);
 	}
 
-	/**
-	 * GL function to activate an existing texture.
-	 * <p>
-	 * <a href=
-	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glActiveTexture.xml"
-	 * >glActiveTexture() OpenGL ES manpage</a>
-	 */
 	public void bufferSubDatafv(WGLWidget.GLenum target, int offset,
 			final java.nio.FloatBuffer buffer) {
 		this.pImpl_.bufferSubDatafv(target, offset, buffer);
@@ -1385,6 +1466,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that loads integer data in a VBO.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/glBufferSubData.xml"
 	 * >glBufferSubData() OpenGL ES manpage</a>
@@ -1397,6 +1479,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that clears the given buffers.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glClear.xml"
 	 * >glClear() OpenGL ES manpage</a>
@@ -1408,6 +1491,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that sets the clear color of the color buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glClearColor.xml"
 	 * >glClearColor() OpenGL ES manpage</a>
@@ -1420,6 +1504,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function that configures the depth to be set when the depth buffer is
 	 * cleared.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glClearDepthf.xml"
 	 * >glClearDepthf() OpenGL ES manpage</a>
@@ -1431,6 +1516,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glClearStencil.xml"
 	 * >glClearStencil() OpenGL ES manpage</a>
@@ -1442,6 +1528,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glColorMask.xml"
 	 * >glColorMask() OpenGL ES manpage</a>
@@ -1454,6 +1541,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to compile a shader.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glCompileShader.xml"
 	 * >glCompileShader() OpenGL ES manpage</a>
@@ -1465,6 +1553,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to copy a texture image.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glCopyTexImage2D.xml"
 	 * >glCopyTexImage2D() OpenGL ES manpage</a>
@@ -1479,6 +1568,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that copies a part of a texture image.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glCopyTexSubImage2D.xml"
 	 * >glCopyTexSubImage2D() OpenGL ES manpage</a>
@@ -1492,6 +1582,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates an empty VBO.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGenBuffers.xml"
 	 * >glGenBuffers() OpenGL ES manpage</a>
@@ -1502,21 +1593,23 @@ public class WGLWidget extends WInteractWidget {
 
 	/**
 	 * Function that creates an {@link ArrayBuffer} by loading data from a given
-	 * URL. (<b>deprecated</b>).
+	 * URL. (<b>deprecated</b>)
 	 * <p>
+	 * 
 	 * The {@link ArrayBuffer} is loaded before executing initGL. Use it to load
 	 * binary data for use in
-	 * {@link WGLWidget#activeTexture(WGLWidget.GLenum texture) activeTexture()}
-	 * or {@link WGLWidget#activeTexture(WGLWidget.GLenum texture)
-	 * activeTexture()}.
+	 * {@link WGLWidget#bufferData(WGLWidget.GLenum target, int size, WGLWidget.GLenum usage)
+	 * bufferData()} or
+	 * {@link WGLWidget#bufferSubData(WGLWidget.GLenum target, int offset, WGLWidget.ArrayBuffer res)
+	 * bufferSubData()}.
 	 * <p>
 	 * 
 	 * @deprecated An {@link ArrayBuffer} refers to a javascript object, which
 	 *             cannot be used for server-side rendering. The new way to
 	 *             accomplish a binary transfer of buffers is with the added
 	 *             boolean argument in
-	 *             {@link WGLWidget#activeTexture(WGLWidget.GLenum texture)
-	 *             activeTexture()}
+	 *             {@link WGLWidget#bufferSubDatafv(WGLWidget.GLenum target, int offset, java.nio.ByteBuffer buffer, boolean binary)
+	 *             bufferSubDatafv()}
 	 */
 	public WGLWidget.ArrayBuffer createAndLoadArrayBuffer(final String url) {
 		return this.pImpl_.createAndLoadArrayBuffer(url);
@@ -1525,6 +1618,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates a frame buffer object.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGenFramebuffers.xml"
 	 * >glGenFramebuffers() OpenGL ES manpage</a>
@@ -1536,6 +1630,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates an empty program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glCreateProgram.xml"
 	 * >glCreateProgram() OpenGL ES manpage</a>
@@ -1547,6 +1642,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates a render buffer object.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGenRenderbuffers.xml"
 	 * >glGenRenderbuffers() OpenGL ES manpage</a>
@@ -1558,6 +1654,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates an empty shader.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glCreateShader.xml"
 	 * >glCreateShader() OpenGL ES manpage</a>
@@ -1569,6 +1666,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates an empty texture.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGenTextures.xml"
 	 * >glGenTextures() OpenGL ES manpage</a>
@@ -1580,6 +1678,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that creates an image texture.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGenTextures.xml"
 	 * >glGenTextures() OpenGL ES manpage</a>
@@ -1591,11 +1690,12 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * returns an paintdevice that can be used to paint a GL texture
 	 * <p>
+	 * 
 	 * If the client has a webGL enabled browser this function returns a
 	 * {@link WCanvasPaintDevice}.
 	 * <p>
 	 * If server-side rendering is used as fallback then this function returns a
-	 * {@link WRasterPaintDevice}.
+	 * WRasterPaintDevice.
 	 */
 	public WPaintDevice createPaintDevice(final WLength width,
 			final WLength height) {
@@ -1605,6 +1705,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that configures the backface culling mode.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glCullFace.xml"
 	 * >glCullFace() OpenGL ES manpage</a>
@@ -1616,6 +1717,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a VBO.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteBuffers.xml"
 	 * >glDeleteBuffers() OpenGL ES manpage</a>
@@ -1627,6 +1729,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a frame buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteFramebuffers.xml"
 	 * >glDeleteFramebuffers() OpenGL ES manpage</a>
@@ -1638,6 +1741,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteProgram.xml"
 	 * >glDeleteProgram() OpenGL ES manpage</a>
@@ -1649,6 +1753,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a render buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteRenderbuffers.xml"
 	 * >glDeleteRenderbuffers() OpenGL ES manpage</a>
@@ -1660,6 +1765,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that depetes a shader.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteShader.xml"
 	 * >glDeleteShader() OpenGL ES manpage</a>
@@ -1671,6 +1777,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that deletes a texture.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDeleteTextures.xml"
 	 * >glDeleteTextures() OpenGL ES manpage</a>
@@ -1682,6 +1789,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the depth test function.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDepthFunc.xml"
 	 * >glDepthFunc() OpenGL ES manpage</a>
@@ -1693,6 +1801,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that enables or disables writing to the depth buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDepthMask.xml"
 	 * >glDepthMask() OpenGL ES manpage</a>
@@ -1705,6 +1814,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function that specifies to what range the normalized [-1,1] z values
 	 * should match.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDepthRangef.xml"
 	 * >glDepthRangef() OpenGL ES manpage</a>
@@ -1716,6 +1826,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that detaches a shader from a program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDetachShader.xml"
 	 * >glDetachShader() OpenGL ES manpage</a>
@@ -1727,6 +1838,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to disable features.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDisable.xml"
 	 * >glDisable() OpenGL ES manpage</a>
@@ -1738,6 +1850,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to disable the vertex attribute array.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDisableVertexAttribArray.xml"
 	 * >glDisableVertexAttribArray() OpenGL ES manpage</a>
@@ -1749,6 +1862,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to draw a VBO.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDrawArrays.xml"
 	 * >glDrawArrays() OpenGL ES manpage</a>
@@ -1760,6 +1874,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to draw indexed VBOs.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glDrawElements.xml"
 	 * >glDrawElements() OpenGL ES manpage</a>
@@ -1772,6 +1887,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to enable features.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glEnable.xml"
 	 * >glEnable() OpenGL ES manpage</a>
@@ -1783,6 +1899,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to enable the vertex attribute array.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glEnableVertexAttribArray.xml"
 	 * >glEnableVertexAttribArray() OpenGL ES manpage</a>
@@ -1794,6 +1911,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to wait until given commands are executed.
 	 * <p>
+	 * 
 	 * This call is transfered to JS, but the server will never wait on this
 	 * call.
 	 * <p>
@@ -1808,6 +1926,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to force execution of GL commands in finite time.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFlush.xml"
 	 * >glFlush() OpenGL ES manpage</a>
@@ -1820,6 +1939,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to attach the given renderbuffer to the currently bound frame
 	 * buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFramebufferRenderbuffer.xml"
 	 * >glFramebufferRenderbuffer() OpenGL ES manpage</a>
@@ -1834,6 +1954,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to render directly into a texture image.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFramebufferTexture2D.xml"
 	 * >glFramebufferTexture2D() OpenGL ES manpage</a>
@@ -1848,6 +1969,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that specifies which side of a triangle is the front side.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glFrontFace.xml"
 	 * >glFrontFace() OpenGL ES manpage</a>
@@ -1859,6 +1981,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function that generates a set of mipmaps for a texture object.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGenerateMipmap.xml"
 	 * >glGenerateMipmap() OpenGL ES manpage</a>
@@ -1871,6 +1994,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to retrieve an attribute&apos;s location in a {@link Program}
 	 * .
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGetAttribLocation.xml"
 	 * >glGetAttribLocation() OpenGL ES manpage</a>
@@ -1883,6 +2007,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to retrieve a Uniform&apos;s location in a {@link Program}.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glGetUniformLocation.xml"
 	 * >glGetUniformLocation() OpenGL ES manpage</a>
@@ -1895,6 +2020,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to give hints to the render pipeline.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glHint.xml"
 	 * >glHint() OpenGL ES manpage</a>
@@ -1906,6 +2032,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the line width.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glLineWidth.xml"
 	 * >glLineWidth() OpenGL ES manpage</a>
@@ -1917,6 +2044,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to link a program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glLinkProgram.xml"
 	 * >glLinkProgram() OpenGL ES manpage</a>
@@ -1928,6 +2056,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the pixel storage mode.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glPixelStorei.xml"
 	 * >glPixelStorei() OpenGL ES manpage</a>
@@ -1939,6 +2068,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to apply modifications to Z values.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glPolygonOffset.xml"
 	 * >glPolygonOffset() OpenGL ES manpage</a>
@@ -1951,6 +2081,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to allocate the appropriate amount of memory for a render
 	 * buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glRenderbufferStorage.xml"
 	 * >glSampleCoverage() OpenGL ES manpage</a>
@@ -1963,6 +2094,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set multisample parameters.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glSampleCoverage.xml"
 	 * >glSampleCoverage() OpenGL ES manpage</a>
@@ -1974,6 +2106,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to define the scissor box.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glScissor.xml"
 	 * >glScissor() OpenGL ES manpage</a>
@@ -1985,6 +2118,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set a shader&apos;s source code.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glShaderSource.xml"
 	 * >glShaderSource() OpenGL ES manpage</a>
@@ -1996,6 +2130,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set stencil test parameters.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilFunc.xml"
 	 * >glStencilFunc() OpenGL ES manpage</a>
@@ -2008,6 +2143,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set stencil test parameters for front and/or back
 	 * stencils.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilFuncSeparate.xml"
 	 * >glStencilFuncSeparate() OpenGL ES manpage</a>
@@ -2021,6 +2157,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to control which bits are to be written in the stencil
 	 * buffer.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilMask.xml"
 	 * >glStencilMask() OpenGL ES manpage</a>
@@ -2033,6 +2170,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to control which bits are written to the front and/or back
 	 * stencil buffers.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilMaskSeparate.xml"
 	 * >glStencilMaskSeparate() OpenGL ES manpage</a>
@@ -2044,6 +2182,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set stencil test actions.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilOp.xml"
 	 * >glStencilOp() OpenGL ES manpage</a>
@@ -2056,6 +2195,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set front and/or back stencil test actions separately.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glStencilOpSeparate.xml"
 	 * >glStencilOpSeparate() OpenGL ES manpage</a>
@@ -2069,6 +2209,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to reserve space for a 2D texture, without specifying its
 	 * contents.
 	 * <p>
+	 * 
 	 * This corresponds to calling the WebGL function void texImage2D(GLenum
 	 * target, GLint level, GLenum internalformat, GLsizei width, GLsizei
 	 * height, GLint border, GLenum format, GLenum type, ArrayBufferView pixels)
@@ -2089,6 +2230,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to load a 2D texture from a {@link WImage}.
 	 * <p>
+	 * 
 	 * Note: {@link WImage} must be loaded before this function is executed.
 	 * <p>
 	 * <a href=
@@ -2105,6 +2247,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to load a 2D texture from a {@link WVideo}.
 	 * <p>
+	 * 
 	 * Note: the video must be loaded prior to calling this function. The
 	 * current frame is used as texture image.
 	 * <p>
@@ -2122,6 +2265,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to load a 2D texture from a file.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glTexImage2D.xml"
 	 * >glTexImage2D() OpenGL ES manpage</a>
@@ -2136,6 +2280,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to load a 2D texture from a {@link WPaintDevice}.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glTexImage2D.xml"
 	 * >glTexImage2D() OpenGL ES manpage</a>
@@ -2153,8 +2298,8 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to load a 2D texture loaded with
 	 * {@link WGLWidget#createTextureAndLoad(String url) createTextureAndLoad()}
-	 * .
 	 * <p>
+	 * 
 	 * This function must only be used for textures created with
 	 * {@link WGLWidget#createTextureAndLoad(String url) createTextureAndLoad()}
 	 * <p>
@@ -2176,6 +2321,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set texture parameters.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glTexParameter.xml"
 	 * >glTexParameter() OpenGL ES manpage</a>
@@ -2189,6 +2335,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2201,6 +2348,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2214,6 +2362,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2227,6 +2376,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2239,6 +2389,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2251,6 +2402,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2264,6 +2416,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2277,6 +2430,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2290,6 +2444,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2302,6 +2457,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2314,6 +2470,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2327,6 +2484,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2340,6 +2498,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2353,6 +2512,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2366,6 +2526,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2378,6 +2539,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2391,6 +2553,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2404,6 +2567,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2417,6 +2581,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2430,6 +2595,7 @@ public class WGLWidget extends WInteractWidget {
 	 * GL function to set the value of a uniform variable of the current
 	 * program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2441,6 +2607,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * Attention: The OpenGL ES specification states that transpose MUST be
 	 * false.
 	 * <p>
@@ -2456,6 +2623,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * This function renders the matrix in the proper row/column order.
 	 * <p>
 	 * <a href=
@@ -2470,6 +2638,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * Attention: The OpenGL ES specification states that transpose MUST be
 	 * false.
 	 * <p>
@@ -2485,6 +2654,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * This function renders the matrix in the proper row/column order.
 	 * <p>
 	 * <a href=
@@ -2499,6 +2669,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * Attention: The OpenGL ES specification states that transpose MUST be
 	 * false.
 	 * <p>
@@ -2514,6 +2685,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * This function renders the matrix in the proper row/column order.
 	 * <p>
 	 * <a href=
@@ -2528,6 +2700,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of a uniform matrix of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUniform.xml"
 	 * >glUniform() OpenGL ES manpage</a>
@@ -2543,6 +2716,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the current active shader program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glUseProgram.xml"
 	 * >glUseProgram() OpenGL ES manpage</a>
@@ -2554,6 +2728,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to validate a program.
 	 * <p>
+	 * 
 	 * implementation note: there is currently not yet a method to read out the
 	 * validation result.
 	 * <p>
@@ -2568,6 +2743,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2579,6 +2755,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2591,6 +2768,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2603,6 +2781,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2615,6 +2794,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2627,6 +2807,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2639,6 +2820,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the value of an attribute of the current program.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glVertexAttrib.xml"
 	 * >glVertexAttrib() OpenGL ES manpage</a>
@@ -2652,6 +2834,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to bind a VBO to an attribute.
 	 * <p>
+	 * 
 	 * This function links the given attribute to the VBO currently bound to the
 	 * ARRAY_BUFFER target.
 	 * <p>
@@ -2681,6 +2864,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * GL function to set the viewport.
 	 * <p>
+	 * 
 	 * <a href=
 	 * "http://www.khronos.org/opengles/sdk/2.0/docs/man/xhtml/glViewport.xml"
 	 * >glViewport() OpenGL ES manpage</a>
@@ -2692,6 +2876,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Create a matrix that can be manipulated in client-side JavaScript.
 	 * <p>
+	 * 
 	 * This is a shorthand for creating a {@link JavaScriptMatrix4x4}, then
 	 * adding it to a {@link WGLWidget} with addJavaScriptMatrix4, and
 	 * initializing it with initJavaScriptMatrix4.
@@ -2710,13 +2895,14 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Register a matrix with this {@link WGLWidget}.
 	 * <p>
+	 * 
 	 * You can call this outside of
 	 * {@link WGLWidget#resizeGL(int width, int height) resizeGL()},
 	 * {@link WGLWidget#paintGL() paintGL()}, {@link WGLWidget#updateGL()
 	 * updateGL()} or {@link WGLWidget#initializeGL() initializeGL()} methods.
 	 * After a {@link JavaScriptMatrix4x4} is added to a {@link WGLWidget}, its
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} becomes valid, and can be
-	 * used in a {@link JSlot}, for example.
+	 * {@link WWidget#getJsRef()} becomes valid, and can be used in a
+	 * {@link JSlot}, for example.
 	 */
 	public void addJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 mat) {
 		if (mat.hasContext()) {
@@ -2734,6 +2920,7 @@ public class WGLWidget extends WInteractWidget {
 	 * Initialize the client-side JavaScript for the given
 	 * {@link JavaScriptMatrix4x4}.
 	 * <p>
+	 * 
 	 * If the given matrix is not associated with a widget yet, it will be added
 	 * to this widget.
 	 * <p>
@@ -2751,8 +2938,9 @@ public class WGLWidget extends WInteractWidget {
 
 	/**
 	 * Set the value of a client-side JavaScript matrix created by
-	 * createJavaScriptMatrix4x4().
+	 * createJavaScriptMatrix4x4()
 	 * <p>
+	 * 
 	 * This method should only be called in {@link WGLWidget#initializeGL()
 	 * initializeGL()}, {@link WGLWidget#updateGL() updateGL()} or
 	 * {@link WGLWidget#resizeGL(int width, int height) resizeGL()}.
@@ -2779,6 +2967,7 @@ public class WGLWidget extends WInteractWidget {
 	 * Create a vector of a certain length that can be manipulated in
 	 * client-side JavaScript.
 	 * <p>
+	 * 
 	 * This is a shorthand for creating a {@link JavaScriptVector}, then adding
 	 * it to a {@link WGLWidget} with addJavaScriptVector, and initializing it
 	 * with initJavaScriptVector.
@@ -2797,13 +2986,14 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Register a vector with this {@link WGLWidget}.
 	 * <p>
+	 * 
 	 * You can call this outside of
 	 * {@link WGLWidget#resizeGL(int width, int height) resizeGL()},
 	 * {@link WGLWidget#paintGL() paintGL()}, {@link WGLWidget#updateGL()
 	 * updateGL()} or {@link WGLWidget#initializeGL() initializeGL()} methods.
 	 * After a {@link JavaScriptVector} is added to a {@link WGLWidget}, its
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} becomes valid, and can be
-	 * used in a {@link JSlot}, for example.
+	 * {@link WWidget#getJsRef()} becomes valid, and can be used in a
+	 * {@link JSlot}, for example.
 	 */
 	public void addJavaScriptVector(final WGLWidget.JavaScriptVector vec) {
 		if (vec.hasContext()) {
@@ -2822,6 +3012,7 @@ public class WGLWidget extends WInteractWidget {
 	 * Initialize the client-side JavaScript for the given
 	 * {@link JavaScriptVector}.
 	 * <p>
+	 * 
 	 * If the given vector is not associated with a widget yet, it will be added
 	 * to this widget.
 	 * <p>
@@ -2840,8 +3031,9 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Set the value of a client-side JavaScript vector created by
 	 * {@link WGLWidget#createJavaScriptVector(int length)
-	 * createJavaScriptVector()}.
+	 * createJavaScriptVector()}
 	 * <p>
+	 * 
 	 * This method should only be called in {@link WGLWidget#initializeGL()
 	 * initializeGL()}, {@link WGLWidget#updateGL() updateGL()} or
 	 * {@link WGLWidget#resizeGL(int width, int height) resizeGL()}.
@@ -2863,6 +3055,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Set a custom mouse handler based on the given JavaScript code.
 	 * <p>
+	 * 
 	 * The handler code should be JavaScript code that produces an object when
 	 * evaluated.
 	 * <p>
@@ -2914,6 +3107,8 @@ public class WGLWidget extends WInteractWidget {
 	 * corresponding to this {@link WGLWidget}. <code>event</code> is the
 	 * <code>TouchEvent</code>.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * For example, if we wanted to scale some object when we scroll, we could
 	 * create a {@link JavaScriptMatrix4x4} called <code>transform_:</code>
@@ -2923,18 +3118,22 @@ public class WGLWidget extends WInteractWidget {
 	 * {
 	 * 	&#064;code
 	 * 	private JavaScriptMatrix4x4 transform_;
+	 * 
 	 * }
 	 * </pre>
+	 * 
 	 * <p>
 	 * We can add this in the constructor:
 	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
-	 *   transform_ = new JavaScriptMatrix4x4();
-	 *   addJavaScriptMatrix4(transform_);
+	 *    transform_ = new JavaScriptMatrix4x4();
+	 *    addJavaScriptMatrix4(transform_);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * Then, in {@link WGLWidget#initializeGL() initializeGL()}, we can
 	 * initialize it and set the value:
@@ -2942,10 +3141,12 @@ public class WGLWidget extends WInteractWidget {
 	 * 
 	 * <pre>
 	 *   {@code
-	 *   initJavaScriptMatrix4(transform_);
-	 *   setJavaScriptMatrix4(transform_, new WMatrix4x4()); // Set to identity matrix
+	 *    initJavaScriptMatrix4(transform_);
+	 *    setJavaScriptMatrix4(transform_, new WMatrix4x4()); // Set to identity matrix
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * Then, still in {@link WGLWidget#initializeGL() initializeGL()}, we can
 	 * set a mouse handler as such:
@@ -2953,37 +3154,39 @@ public class WGLWidget extends WInteractWidget {
 	 * 
 	 * <pre>
 	 *   {@code
-	 *   setClientSideMouseHandler("(function(){") +
-	 *     "var MouseHandler = function(transform) {" +
-	 *       "var target = null;" +
-	 *       "this.setTarget = function(newTarget) {" +
-	 *         "target = newTarget;" +
-	 *       "};" +
-	 *       "this.mouseWheel = function(o, event) {" +
-	 *         "var fix = jQuery.event.fix(event);" +
-	 *         "fix.preventDefault();" +
-	 *         "fix.stopPropagation();" +
-	 *         "var d = wheelDelta(event);" +
-	 *         "var s = Math.pow(1.2, d);" +
-	 *         "transform[0] *= s;" + // Scale X
-	 *         "transform[5] *= s;" + // Scale Y
-	 *         "transform[10] *= s;" + // Scale Z
-	 *         "target.paintGL();" + // Repaint
-	 *       "};" +
-	 *       "function wheelDelta(e) {" +
-	 *         "var delta = 0;" +
-	 *         "if (e.wheelDelta) {" +
-	 *   	"delta = e.wheelDelta > 0 ? 1 : -1;" +
-	 *         "} else if (e.detail) {" +
-	 *   	"delta = e.detail < 0 ? 1 : -1;" +
-	 *         "}" +
-	 *         "return delta;" +
-	 *       "}" +
-	 *     "};" +
-	 *     "return new MouseHandler(" + transform_.jsRef() + ");" +
-	 *   "})()");
+	 *    setClientSideMouseHandler("(function(){") +
+	 *      "var MouseHandler = function(transform) {" +
+	 *        "var target = null;" +
+	 *        "this.setTarget = function(newTarget) {" +
+	 *          "target = newTarget;" +
+	 *        "};" +
+	 *        "this.mouseWheel = function(o, event) {" +
+	 *          "var fix = jQuery.event.fix(event);" +
+	 *          "fix.preventDefault();" +
+	 *          "fix.stopPropagation();" +
+	 *          "var d = wheelDelta(event);" +
+	 *          "var s = Math.pow(1.2, d);" +
+	 *          "transform[0] *= s;" + // Scale X
+	 *          "transform[5] *= s;" + // Scale Y
+	 *          "transform[10] *= s;" + // Scale Z
+	 *          "target.paintGL();" + // Repaint
+	 *        "};" +
+	 *        "function wheelDelta(e) {" +
+	 *          "var delta = 0;" +
+	 *          "if (e.wheelDelta) {" +
+	 *            "delta = e.wheelDelta > 0 ? 1 : -1;" +
+	 *          "} else if (e.detail) {" +
+	 *            "delta = e.detail < 0 ? 1 : -1;" +
+	 *          "}" +
+	 *          "return delta;" +
+	 *        "}" +
+	 *      "};" +
+	 *      "return new MouseHandler(" + transform_.jsRef() + ");" +
+	 *    "})()");
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * All that&apos;s left to do then is to use this transform somewhere as a
 	 * uniform variable, see
@@ -2999,6 +3202,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Add a mouse handler to the widget that looks at a given point.
 	 * <p>
+	 * 
 	 * This will allow a user to change client-side matrix m with the mouse. M
 	 * is a model transformation matrix, representing the viewpoint of the
 	 * camera.
@@ -3034,6 +3238,7 @@ public class WGLWidget extends WInteractWidget {
 	 * Add a mouse handler to the widget that allows &apos;walking&apos; in the
 	 * scene.
 	 * <p>
+	 * 
 	 * This will allow a user to change client-side matrix m with the mouse. M
 	 * is a model transformation matrix, representing the viewpoint of the
 	 * camera.
@@ -3056,6 +3261,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Sets the content to be displayed when WebGL is not available.
 	 * <p>
+	 * 
 	 * If JWt cannot create a working WebGL context, this content will be shown
 	 * to the user. This may be a text explanation, or a pre-rendered image, or
 	 * a video, a flash movie, ...
@@ -3077,6 +3283,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * A JavaScript slot that repaints the widget when triggered.
 	 * <p>
+	 * 
 	 * This is useful for client-side initiated repaints. You may e.g. use this
 	 * if you write your own client-side mouse handler, or if you updated a
 	 * texture, or if you&apos;re playing a video texture.
@@ -3088,6 +3295,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * enable client-side error messages (read detailed doc!)
 	 * <p>
+	 * 
 	 * This option will add client-side code to check the result of every WebGL
 	 * call, and will popup an error dialog if a WebGL call returned an error.
 	 * The JavaScript then invokes the client-side debugger. This code is
@@ -3110,6 +3318,7 @@ public class WGLWidget extends WInteractWidget {
 	/**
 	 * Inject JavaScript into the current js-stream.
 	 * <p>
+	 * 
 	 * Careful: this method directly puts the given jsString into the JavaScript
 	 * stream, whatever state it current has. For example, if called in
 	 * initGL(), it will put the jsString into the client-side initGL() code.

@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * {@link WAbstractChart#setBackground(WBrush background) setBackground()}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  * <p>
@@ -60,6 +61,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Sets the model.
 	 * <p>
+	 * 
 	 * The model is used by the chart to get its data. Ownership of the model is
 	 * not transferred, and if a previous model was set it is not deleted.
 	 * <p>
@@ -71,11 +73,11 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	 * directly for highest performance (avoiding the overhead of boost::any for
 	 * numeric data).
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Setting a new model on a
 	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart} causes the
-	 * {@link WCartesianChart#XSeriesColumn() WCartesianChart#XSeriesColumn()}
-	 * and all series to be cleared</i>
+	 * {@link WCartesianChart#XSeriesColumn()} and all series to be cleared</i>
 	 * </p>
 	 * 
 	 * @see WAbstractChart#getModel()
@@ -87,16 +89,17 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Sets the model.
 	 * <p>
+	 * 
 	 * The model is used by the chart to get its data. Ownership of the model is
 	 * not transferred, and if a previous model was set it is not deleted.
 	 * <p>
 	 * The default model is a <code>null</code> model.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Setting a new model on a
 	 * {@link eu.webtoolkit.jwt.chart.WCartesianChart} causes the
-	 * {@link WCartesianChart#XSeriesColumn() WCartesianChart#XSeriesColumn()}
-	 * and all series to be cleared</i>
+	 * {@link WCartesianChart#XSeriesColumn()} and all series to be cleared</i>
 	 * </p>
 	 * 
 	 * @see WAbstractChart#getModel()
@@ -131,6 +134,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Returns the model.
 	 * <p>
+	 * 
 	 * If a model was set using
 	 * {@link WAbstractChart#setModel(WAbstractItemModel model) setModel()},
 	 * then this model will be returned by this call.
@@ -151,6 +155,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Sets a background for the chart.
 	 * <p>
+	 * 
 	 * Set the background color for the main plot area.
 	 * <p>
 	 * The default is a completely transparent background.
@@ -179,6 +184,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Set a palette for the chart.
 	 * <p>
+	 * 
 	 * A palette is used to provide the style information to render the chart
 	 * series. Ownership of the palette is transferred to the chart.
 	 * <p>
@@ -206,6 +212,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Set an internal margin for the main plot area.
 	 * <p>
+	 * 
 	 * This configures the area (in pixels) around the plot area that is
 	 * available for axes, labels, and titles.
 	 * <p>
@@ -257,6 +264,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Returns the internal margin for the main plot area.
 	 * <p>
+	 * 
 	 * This is either the paddings set through
 	 * {@link WAbstractChart#setPlotAreaPadding(int padding, EnumSet sides)
 	 * setPlotAreaPadding()} or computed using
@@ -286,6 +294,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Configures the chart layout to be automatic.
 	 * <p>
+	 * 
 	 * This configures the plot area so that the space around it is suited for
 	 * the text that is rendered (axis labels and text, the title, and legend).
 	 * <p>
@@ -321,6 +330,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Set a chart title.
 	 * <p>
+	 * 
 	 * The title is displayed on top of the chart, using the
 	 * {@link WAbstractChart#getTitleFont() getTitleFont()}.
 	 * <p>
@@ -350,6 +360,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Set the font for the chart title.
 	 * <p>
+	 * 
 	 * Changes the font for the chart title.
 	 * <p>
 	 * The default title font is a 15 point Sans Serif font.
@@ -391,9 +402,10 @@ public abstract class WAbstractChart extends WPaintedWidget {
 	/**
 	 * Paint the chart in a rectangle of the given painter.
 	 * <p>
+	 * 
 	 * Paints the chart inside the <i>painter</i>, in the area indicated by
 	 * <i>rectangle</i>. When <i>rectangle</i> is a null rectangle, the entire
-	 * painter {@link WPainter#getWindow() window} is used.
+	 * painter {@link WPainter#getWindow()} is used.
 	 */
 	public abstract void paint(final WPainter painter, final WRectF rectangle);
 

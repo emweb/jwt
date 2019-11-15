@@ -27,9 +27,8 @@ import org.slf4j.LoggerFactory;
  * This model delegates all functions to an underlying
  * {@link WAbstractItemModel}, using the appropriate roles.
  * <p>
- * This model also triggers the {@link WAbstractChartModel#changed()
- * WAbstractChartModel#changed()} signal whenever the underlying
- * {@link WAbstractItemModel} is changed.
+ * This model also triggers the {@link WAbstractChartModel#changed()} signal
+ * whenever the underlying {@link WAbstractItemModel} is changed.
  */
 public class WStandardChartProxyModel extends WAbstractChartModel {
 	private static Logger logger = LoggerFactory
@@ -106,10 +105,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns data at a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link DisplayRole} as a double.
+	 * {@link ItemDataRole DisplayRole} as a double.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -122,10 +122,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns display data at a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link DisplayRole} as a {@link WString}.
+	 * {@link ItemDataRole DisplayRole} as a {@link WString}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -138,10 +139,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the given column&apos;s header data.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getHeaderData(int section, Orientation orientation, int role)
 	 * WAbstractItemModel#getHeaderData()} for the given column with the
-	 * {@link DisplayRole} as a {@link WString}.
+	 * {@link ItemDataRole DisplayRole} as a {@link WString}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getHeaderData(int section, Orientation
@@ -155,10 +157,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the tooltip text to use on a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link ToolTipRole} as a {@link WString}.
+	 * {@link ItemDataRole ToolTipRole} as a {@link WString}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -171,6 +174,7 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the item flags for the given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of WAbstractItemModel::index(row, column).
 	 * {@link WStandardChartProxyModel#flags(int row, int column) flags()} for
 	 * the given row and column.
@@ -185,10 +189,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the link to use on a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link LinkRole} as a {@link WLink}.
+	 * {@link ItemDataRole LinkRole} as a {@link WLink}.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -207,10 +212,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the marker pen color to use for a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link MarkerPenColorRole}, or null if no color is defined.
+	 * {@link ItemDataRole MarkerPenColorRole}, or null if no color is defined.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -222,10 +228,12 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the marker brush color to use for a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link MarkerBrushColorRole}, or null if no color is defined.
+	 * {@link ItemDataRole MarkerBrushColorRole}, or null if no color is
+	 * defined.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -237,10 +245,12 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the marker type to use for a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link MarkerTypeRole}, or null if no marker type is defined.
+	 * {@link ItemDataRole MarkerTypeRole}, or null if no marker type is
+	 * defined.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -259,10 +269,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the bar pen color to use for a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link BarPenColorRole}, or null if no color is defined.
+	 * {@link ItemDataRole BarPenColorRole}, or null if no color is defined.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -274,10 +285,11 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the bar brush color to use for a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link BarBrushColorRole}, or null if no color is defined.
+	 * {@link ItemDataRole BarBrushColorRole}, or null if no color is defined.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)
@@ -289,10 +301,12 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
 	/**
 	 * Returns the marker scale factor to use for a given row and column.
 	 * <p>
+	 * 
 	 * Returns the result of
 	 * {@link WAbstractItemModel#getData(WModelIndex index, int role)
 	 * WAbstractItemModel#getData()} for the given row and column with the
-	 * {@link MarkerScaleFactorRole}, or null if no color is defined.
+	 * {@link ItemDataRole MarkerScaleFactorRole}, or null if no color is
+	 * defined.
 	 * <p>
 	 * 
 	 * @see WAbstractItemModel#getData(WModelIndex index, int role)

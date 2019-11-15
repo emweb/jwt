@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An abstract table model for use with Wt&apos;s view classes.
+ * An abstract table model for use with JWt&apos;s view classes.
  * <p>
  * 
  * An abstract table model specializes {@link WAbstractItemModel} for

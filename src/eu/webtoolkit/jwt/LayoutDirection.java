@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
  */
 public enum LayoutDirection {
 	/**
-	 * Left-to-Right (Western and other languages).
+	 * Left-to-Right (Western and other languages)
 	 */
 	LeftToRight,
 	/**
-	 * Right-to-Left (Many Middle Eastern and Arabic languages).
+	 * Right-to-Left (Many Middle Eastern and Arabic languages)
 	 */
 	RightToLeft;
 

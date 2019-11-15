@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  * some custom handling of item selection.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -53,16 +52,18 @@ import org.slf4j.LoggerFactory;
  * 	menu.addItem(&quot;Download&quot;, new WText(&quot;Not yet available&quot;));
  * 	menu.addItem(&quot;Demo&quot;, new DemoWidget());
  * 	menu.addItem(new WMenuItem(&quot;Demo2&quot;, new DemoWidget()));
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * After contruction, the first entry will be selected. At any time, it is
  * possible to select a particular item using
  * {@link WMenu#select(WMenuItem item) select()}.
  * <p>
  * Each item of WMenu may be closeable (see
- * {@link WMenuItem#setCloseable(boolean closeable) WMenuItem#setCloseable()}.
- * Like selection, at any time, it is possible to close a particular item using
+ * {@link WMenuItem#setCloseable(boolean closeable) setCloseable()}. Like
+ * selection, at any time, it is possible to close a particular item using
  * {@link WMenu#close(WMenuItem item) close()}. You can react to close of item
  * by using the {@link WMenu#itemClosed() itemClosed()} signal.
  * <p>
@@ -92,6 +93,7 @@ import org.slf4j.LoggerFactory;
  * {@link WMenuItem}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The menu is rendered as a &lt;ul&gt;. Unless you use the bootstrap theme, you
  * will want to customize the menu using inline or external styles to hide the
@@ -106,6 +108,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Creates a new menu (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * Construct a menu with given <code>orientation</code>. The menu is not
 	 * associated with a contents stack, and thus you will want to react to the
 	 * {@link WMenu#itemSelected() itemSelected()} signal to react to menu
@@ -113,8 +116,9 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @deprecated the <code>orientation</code> parameter is ignored, since
-	 *             menus are now always rendered using &lt;ul&gt; elements, and
-	 *             CSS will determine the orientation. Use
+	 *             menus are now always rendered using
+	 *             <ul>
+	 *             elements, and CSS will determine the orientation. Use
 	 *             {@link WMenu#WMenu(WContainerWidget parent) WMenu()} instead.
 	 */
 	public WMenu(Orientation orientation, WContainerWidget parent) {
@@ -142,6 +146,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Creates a new menu.
 	 * <p>
+	 * 
 	 * The menu is not associated with a contents stack, and thus you will want
 	 * to react to the {@link WMenu#itemSelected() itemSelected()} signal to
 	 * react to menu changes.
@@ -171,6 +176,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Creates a new menu (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * Construct a menu to manage the widgets in <code>contentsStack</code>, and
 	 * sets the menu <code>orientation</code>.
 	 * <p>
@@ -180,8 +186,9 @@ public class WMenu extends WCompositeWidget {
 	 * <p>
 	 * 
 	 * @deprecated the <code>orientation</code> parameter is ignored, since
-	 *             menus are now always rendered using &lt;ul&gt; elements, and
-	 *             CSS will determine the orientation. Use
+	 *             menus are now always rendered using
+	 *             <ul>
+	 *             elements, and CSS will determine the orientation. Use
 	 *             {@link WMenu#WMenu(WStackedWidget contentsStack, WContainerWidget parent)
 	 *             WMenu()} instead.
 	 */
@@ -212,6 +219,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Creates a new menu.
 	 * <p>
+	 * 
 	 * Construct a menu to manage the widgets in <code>contentsStack</code>.
 	 * <p>
 	 * Each menu item will manage a single widget in the
@@ -251,6 +259,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds an item.
 	 * <p>
+	 * 
 	 * Use this version of
 	 * {@link WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * addItem()} if you do not want to specify an icon for this menu item.
@@ -292,6 +301,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds an item.
 	 * <p>
+	 * 
 	 * Adds a menu item with given <code>contents</code>, which is added to the
 	 * menu&apos;s associated contents stack.
 	 * <p>
@@ -302,6 +312,8 @@ public class WMenu extends WCompositeWidget {
 	 * <li>or, you may have one or more items which which are not associated
 	 * with a contents widget in the contents stack.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
@@ -350,6 +362,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds a submenu, with given text.
 	 * <p>
+	 * 
 	 * Adds an item with text <code>text</code>, that leads to a submenu
 	 * <code>menu</code>.
 	 * <p>
@@ -361,6 +374,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds a submenu, with given icon and text.
 	 * <p>
+	 * 
 	 * Adds an item with given text and icon, that leads to a submenu
 	 * <code>menu</code>.
 	 * <p>
@@ -377,6 +391,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds an item.
 	 * <p>
+	 * 
 	 * Adds a menu item. Use this form to add specialized {@link WMenuItem}
 	 * implementations.
 	 * <p>
@@ -391,6 +406,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * inserts an item.
 	 * <p>
+	 * 
 	 * Use this version of
 	 * {@link WMenu#insertItem(int index, CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
 	 * insertItem()} if you do not want to specify an icon for this menu item.
@@ -435,6 +451,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * inserts an item.
 	 * <p>
+	 * 
 	 * inserts a menu item with given <code>contents</code>, which is inserted
 	 * to the menu&apos;s associated contents stack.
 	 * <p>
@@ -445,6 +462,8 @@ public class WMenu extends WCompositeWidget {
 	 * <li>or, you may have one or more items which which are not associated
 	 * with a contents widget in the contents stack.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * Returns the corresponding {@link WMenuItem}.
 	 * <p>
@@ -496,6 +515,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * inserts a submenu, with given text.
 	 * <p>
+	 * 
 	 * inserts an item with text <code>text</code>, that leads to a submenu
 	 * <code>menu</code>.
 	 * <p>
@@ -507,6 +527,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * inserts a submenu, with given icon and text.
 	 * <p>
+	 * 
 	 * inserts an item with given text and icon, that leads to a submenu
 	 * <code>menu</code>.
 	 * <p>
@@ -523,6 +544,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Inserts an item.
 	 * <p>
+	 * 
 	 * Inserts a menu item. Use this form to insert specialized
 	 * {@link WMenuItem} implementations.
 	 * <p>
@@ -555,6 +577,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Adds a separator to the menu.
 	 * <p>
+	 * 
 	 * Adds a separator the menu.
 	 */
 	public WMenuItem addSeparator() {
@@ -575,6 +598,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Removes an item.
 	 * <p>
+	 * 
 	 * Removes the given item. The item and its contents is not deleted.
 	 * <p>
 	 * 
@@ -600,6 +624,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Selects an item.
 	 * <p>
+	 * 
 	 * Select the menu item <code>item</code>.
 	 * <p>
 	 * When <code>item</code> is <code>null</code>, the current selection is
@@ -617,6 +642,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Selects an item.
 	 * <p>
+	 * 
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
 	 * <p>
@@ -633,6 +659,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Signal which indicates that a new item was selected.
 	 * <p>
+	 * 
 	 * This signal is emitted when an item was selected. It is emitted both when
 	 * the user activated an item, or when {@link WMenu#select(WMenuItem item)
 	 * select()} was invoked.
@@ -647,13 +674,14 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Signal which indicates that a new selected item is rendered.
 	 * <p>
-	 * This signal is similar to {@link WMenu#itemSelected() itemSelected}, but
-	 * is emitted from within a stateless slot. Therefore, any slot connected to
-	 * this signal will be optimized to client-side JavaScript, and must support
-	 * the contract of a stateless slot (i.e., be idempotent).
+	 * 
+	 * This signal is similar to {@link WMenu#itemSelected() itemSelected()},
+	 * but is emitted from within a stateless slot. Therefore, any slot
+	 * connected to this signal will be optimized to client-side JavaScript, and
+	 * must support the contract of a stateless slot (i.e., be idempotent).
 	 * <p>
 	 * If you are unsure what is the difference with the
-	 * {@link WMenu#itemSelected() itemSelected} signal, you&apos;ll probably
+	 * {@link WMenu#itemSelected() itemSelected()} signal, you&apos;ll probably
 	 * need the latter instead.
 	 * <p>
 	 * 
@@ -666,6 +694,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Closes an item.
 	 * <p>
+	 * 
 	 * Close the menu item <code>item</code>. Only
 	 * {@link WMenuItem#setCloseable(boolean closeable) closeable} items can be
 	 * closed.
@@ -684,6 +713,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Closes an item.
 	 * <p>
+	 * 
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
 	 * <p>
@@ -697,6 +727,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns the items.
 	 * <p>
+	 * 
 	 * Returns the list of menu items in this menu.
 	 * <p>
 	 * 
@@ -713,6 +744,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Signal which indicates that an item was closed.
 	 * <p>
+	 * 
 	 * This signal is emitted when an item was closed. It is emitted both when
 	 * the user closes an item, or when {@link WMenu#close(WMenuItem item)
 	 * close()} was invoked.
@@ -724,6 +756,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Hides an item.
 	 * <p>
+	 * 
 	 * Hides the menu item <code>item</code>. By default, all menu items are
 	 * visible.
 	 * <p>
@@ -741,6 +774,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Hides an item.
 	 * <p>
+	 * 
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
 	 * <p>
@@ -764,6 +798,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns whether the item widget of the given index is hidden.
 	 * <p>
+	 * 
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
 	 * <p>
@@ -777,6 +812,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Disables an item.
 	 * <p>
+	 * 
 	 * Disables the menu item <code>item</code>. Only an item that is enabled
 	 * can be selected. By default, all menu items are enabled.
 	 * <p>
@@ -791,6 +827,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Disables an item.
 	 * <p>
+	 * 
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
 	 * <p>
@@ -814,6 +851,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns whether the item widget of the given index is disabled.
 	 * <p>
+	 * 
 	 * Menu items in a menu with <code>N</code> items are numbered from 0 to
 	 * <code>N</code> - 1.
 	 * <p>
@@ -849,6 +887,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns the orientation (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * The orientation is set at time of construction.
 	 * <p>
 	 * 
@@ -859,8 +898,9 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Renders using an HTML list (<b>deprecated</b>).
+	 * Renders using an HTML list (<b>deprecated</b>)
 	 * <p>
+	 * 
 	 * This function no longer has an effect, as a menu is now always rendered
 	 * as a list.
 	 * <p>
@@ -885,6 +925,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Enables internal paths for items.
 	 * <p>
+	 * 
 	 * The menu participates in the internal path by changing the internal path
 	 * when an item has been selected, and listening for path changes to react
 	 * to path selections. As a consequence this allows the user to bookmark the
@@ -893,9 +934,8 @@ public class WMenu extends WCompositeWidget {
 	 * pages.
 	 * <p>
 	 * For each menu item, {@link WMenuItem#getPathComponent()
-	 * WMenuItem#getPathComponent()} is appended to the <code>basePath</code>,
-	 * which defaults to the internal path (
-	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}). A
+	 * getPathComponent()} is appended to the <code>basePath</code>, which
+	 * defaults to the internal path ({@link WApplication#getInternalPath()}). A
 	 * &apos;/&apos; is appended to the base path, to turn it into a folder, if
 	 * needed.
 	 * <p>
@@ -948,6 +988,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Sets the internal base path.
 	 * <p>
+	 * 
 	 * A &apos;/&apos; is appended to turn it into a folder, if needed.
 	 * <p>
 	 * 
@@ -961,12 +1002,13 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns the internal base path.
 	 * <p>
+	 * 
 	 * The default value is the application&apos;s internalPath (
-	 * {@link WApplication#getBookmarkUrl() WApplication#getBookmarkUrl()}) that
-	 * was recorded when {@link WMenu#setInternalPathEnabled(String basePath)
+	 * {@link WApplication#getInternalPath()}) that was recorded when
+	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * setInternalPathEnabled()} was called, and together with each
-	 * {@link WMenuItem#getPathComponent() WMenuItem#getPathComponent()}
-	 * determines the paths for each item.
+	 * {@link WMenuItem#getPathComponent() getPathComponent()} determines the
+	 * paths for each item.
 	 * <p>
 	 * For example, if {@link WMenu#getInternalBasePath() getInternalBasePath()}
 	 * is <code>&quot;/examples/&quot;</code> and pathComponent() for a
@@ -1016,8 +1058,9 @@ public class WMenu extends WCompositeWidget {
 	}
 
 	/**
-	 * Returns the parent item (for a submenu).
+	 * Returns the parent item (for a submenu)
 	 * <p>
+	 * 
 	 * This is the item with which this menu is associated as a submenu (if
 	 * any).
 	 */
@@ -1049,6 +1092,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Handling of internal path changes.
 	 * <p>
+	 * 
 	 * This methods makes the menu react to internal path changes (and also the
 	 * initial internal path).
 	 * <p>
@@ -1088,6 +1132,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Returns the index of the item to be selected after hides.
 	 * <p>
+	 * 
 	 * Returns the index of the item to be selected after the item with given
 	 * index will be hidden.
 	 * <p>
@@ -1132,6 +1177,7 @@ public class WMenu extends WCompositeWidget {
 	/**
 	 * Selects an item.
 	 * <p>
+	 * 
 	 * This is the internal function that implements the selection logic,
 	 * including optional internal path change (if <code>changePath</code> is
 	 * <code>true</code>). The latter may be <code>false</code> in case an

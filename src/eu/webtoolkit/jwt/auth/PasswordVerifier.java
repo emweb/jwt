@@ -48,6 +48,7 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	/**
 	 * Adds a hash function.
 	 * <p>
+	 * 
 	 * The first hash function added is the one that will be used for creating
 	 * new password hashes, i.e. the &quot;preferred&quot; hash function. The
 	 * other hash functions are used only for verifying existing hash passwords.
@@ -69,6 +70,7 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	/**
 	 * Returns the list of hash functions.
 	 * <p>
+	 * 
 	 * This returns a list with references to hashfunctions that have been added
 	 * with {@link PasswordVerifier#addHashFunction(HashFunction function)
 	 * addHashFunction()}.
@@ -85,6 +87,7 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	/**
 	 * Computes the password hash for a clear text password.
 	 * <p>
+	 * 
 	 * This creates new salt and applies the &quot;preferred&quot; hash function
 	 * to the salt and clear text password to compute the hash.
 	 * <p>
@@ -103,6 +106,7 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
 	/**
 	 * Verifies a password against a hash.
 	 * <p>
+	 * 
 	 * This verifies whether the password matches the hash.
 	 * <p>
 	 * 

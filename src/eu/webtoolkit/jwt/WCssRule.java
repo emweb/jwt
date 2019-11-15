@@ -49,6 +49,8 @@ public abstract class WCssRule extends WObject {
 	/**
 	 * Sets the selector.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The selector can only be changed as long as the rule
 	 * hasn&apos;t been rendered. </i>
@@ -84,6 +86,7 @@ public abstract class WCssRule extends WObject {
 	/**
 	 * Returns the declarations.
 	 * <p>
+	 * 
 	 * This is a semi-colon separated list of CSS declarations.
 	 */
 	public abstract String getDeclarations();

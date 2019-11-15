@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * JWt implementation of the Flash movie.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  */
@@ -86,6 +87,7 @@ public class WFlashObject extends WWebWidget {
 	/**
 	 * Destructor.
 	 * <p>
+	 * 
 	 * The Flash object is removed.
 	 */
 	public void remove() {
@@ -100,6 +102,7 @@ public class WFlashObject extends WWebWidget {
 	/**
 	 * Sets a Flash parameter.
 	 * <p>
+	 * 
 	 * The Flash parameters are items such as quality, scale, menu, ... They are
 	 * passed as PARAM objects to the Flash movie. See the adobe website for
 	 * more information about these parameters: <a
@@ -119,6 +122,7 @@ public class WFlashObject extends WWebWidget {
 	/**
 	 * Sets a Flash variable.
 	 * <p>
+	 * 
 	 * This method is a helper function to set variable values in the flashvars
 	 * parameter.
 	 * <p>
@@ -138,9 +142,10 @@ public class WFlashObject extends WWebWidget {
 	/**
 	 * A JavaScript expression that returns the DOM node of the Flash object.
 	 * <p>
-	 * The Flash object is not stored in {@link WWidget#getJsRef()
-	 * WWidget#getJsRef()}, but in {@link WFlashObject#getJsFlashRef()
-	 * getJsFlashRef()}. Use this method in conjuction with
+	 * 
+	 * The Flash object is not stored in {@link WWidget#getJsRef()}, but in
+	 * {@link WFlashObject#getJsFlashRef() getJsFlashRef()}. Use this method in
+	 * conjuction with
 	 * {@link WApplication#doJavaScript(String javascript, boolean afterLoaded)
 	 * WApplication#doJavaScript()} or {@link JSlot} in custom JavaScript code
 	 * to refer to the Flash content.
@@ -150,12 +155,13 @@ public class WFlashObject extends WWebWidget {
 	 * installed.
 	 */
 	public String getJsFlashRef() {
-		return "Wt3_4_1.getElement('" + this.getId() + "_flash')";
+		return "Wt3_4_2.getElement('" + this.getId() + "_flash')";
 	}
 
 	/**
 	 * Sets content to be displayed if Flash is not available.
 	 * <p>
+	 * 
 	 * Any widget can be a placeholder when Flash is not installed in the users
 	 * browser. By default, this will show a &apos;Download Flash&apos; button
 	 * and link to the Flash download site.

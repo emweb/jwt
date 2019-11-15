@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
  * <li>
  * No conditional expressions, i.e. the consturct (?ifthen|else).</li>
  * </ul>
+ * 
+ * 
  * <p>
  * See <a href=
  * "http://www.boost.org/doc/libs/release/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html"
@@ -50,7 +52,6 @@ import org.slf4j.LoggerFactory;
  * ECMAScript regular expression syntax.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -61,19 +62,25 @@ import org.slf4j.LoggerFactory;
  * 			&quot;[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}&quot;);
  * 	lineEdit.setValidator(validator);
  * 	lineEdit.setText(&quot;pieter@emweb.be&quot;);
+ * 
  * }
  * </pre>
+ * 
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>This validator does not fully support unicode: it matches on
  * the UTF8-encoded representation of the string.</i>
  * </p>
+ * 
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
  * <ul>
- * <li>{@link WValidator.State#Invalid}: Invalid input</li>
+ * <li>{@link WValidator.State#Invalid Wt.WRegExpValidator.Invalid}: Invalid
+ * input</li>
  * </ul>
  */
 public class WRegExpValidator extends WValidator {
@@ -102,6 +109,7 @@ public class WRegExpValidator extends WValidator {
 	 * Sets a new regular expression validator that accepts input that matches
 	 * the given regular expression.
 	 * <p>
+	 * 
 	 * This constructs a validator that matches the perl regular expression
 	 * <code>expr</code>.
 	 */
@@ -125,6 +133,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Sets the regular expression for valid input.
 	 * <p>
+	 * 
 	 * Sets the perl regular expression <code>expr</code>.
 	 */
 	public void setRegExp(final String pattern) {
@@ -139,6 +148,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Returns the regular expression for valid input.
 	 * <p>
+	 * 
 	 * Returns the perl regular expression.
 	 */
 	public String getRegExp() {
@@ -169,6 +179,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or matches the regular expression.
 	 */
@@ -188,6 +199,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Sets the text to be shown if no match can be found.
 	 * <p>
+	 * 
 	 * This calls
 	 * {@link WRegExpValidator#setInvalidNoMatchText(CharSequence text)
 	 * setInvalidNoMatchText()}
@@ -204,6 +216,7 @@ public class WRegExpValidator extends WValidator {
 	/**
 	 * Sets the message to display when the input does not match.
 	 * <p>
+	 * 
 	 * The default value is &quot;Invalid input&quot;.
 	 */
 	public void setInvalidNoMatchText(final CharSequence text) {
@@ -228,7 +241,7 @@ public class WRegExpValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_1.WRegExpValidator(").append(this.isMandatory())
+		js.append("new Wt3_4_2.WRegExpValidator(").append(this.isMandatory())
 				.append(',');
 		if (this.regexp_ != null) {
 			js.append(WWebWidget.jsStringLiteral(this.regexp_.pattern()))

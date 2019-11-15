@@ -33,6 +33,7 @@ public class SeriesIterator {
 	/**
 	 * Start handling a new segment.
 	 * <p>
+	 * 
 	 * Because of a &apos;break&apos; specified in an axis, axes may be divided
 	 * in one or two segments (in fact only the API limits this now to two). The
 	 * iterator will iterate all segments seperately, but each time with a
@@ -60,6 +61,7 @@ public class SeriesIterator {
 	/**
 	 * Start iterating a particular series.
 	 * <p>
+	 * 
 	 * Returns whether the series values should be iterated. The
 	 * <i>groupWidth</i> is the width (in pixels) of a single bar group. The
 	 * chart contains <i>numBarGroups</i>, and the current series is in the
@@ -79,6 +81,7 @@ public class SeriesIterator {
 	/**
 	 * Process a value.
 	 * <p>
+	 * 
 	 * Processes a value with model coordinates (<i>x</i>, <i>y</i>). The y
 	 * value may differ from the model&apos;s y value, because of stacked
 	 * series. The y value here corresponds to the location on the chart, after

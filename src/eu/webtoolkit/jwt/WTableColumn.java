@@ -39,6 +39,7 @@ public class WTableColumn extends WObject {
 	/**
 	 * Creates a new table column.
 	 * <p>
+	 * 
 	 * Table columns must be added to a table using
 	 * {@link WTable#insertColumn(int column, WTableColumn tableColumn)
 	 * WTable#insertColumn()} before you can access contents in it using
@@ -64,6 +65,7 @@ public class WTableColumn extends WObject {
 	/**
 	 * Access the column element at the given row.
 	 * <p>
+	 * 
 	 * Like {@link WTable#getElementAt(int row, int column)
 	 * WTable#getElementAt()}, if the row is beyond the current table
 	 * dimensions, then the table is expanded automatically.
@@ -77,6 +79,7 @@ public class WTableColumn extends WObject {
 	/**
 	 * Returns the column number of this column in the table.
 	 * <p>
+	 * 
 	 * Returns -1 if the column is not yet part of a table.
 	 * <p>
 	 * 
@@ -94,6 +97,7 @@ public class WTableColumn extends WObject {
 	/**
 	 * Sets the column width.
 	 * <p>
+	 * 
 	 * The default column width is {@link WLength#Auto}.
 	 * <p>
 	 * 
@@ -118,6 +122,7 @@ public class WTableColumn extends WObject {
 	/**
 	 * Sets the CSS style class for this column.
 	 * <p>
+	 * 
 	 * The style is inherited by all table cells in this column.
 	 * <p>
 	 * 
@@ -146,6 +151,7 @@ public class WTableColumn extends WObject {
 	/**
 	 * Sets the CSS Id.
 	 * <p>
+	 * 
 	 * Sets a custom Id. Note that the Id must be unique across the whole widget
 	 * tree, can only be set right after construction and cannot be changed.
 	 * <p>

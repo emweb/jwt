@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
  * setTreeRoot()} and bind additional information (text or other widgets) in
  * each node using
  * {@link WTreeTableNode#setColumnWidget(int column, WWidget widget)
- * WTreeTableNode#setColumnWidget()}. Thus, you cannot change the number of
- * columns once the tree root has been set.
+ * setColumnWidget()}. Thus, you cannot change the number of columns once the
+ * tree root has been set.
  * <p>
  * The table cannot be given a height using CSS style rules, instead you must
  * use layout managers, or use
@@ -50,13 +50,13 @@ import org.slf4j.LoggerFactory;
  * WCompositeWidget#resize()}.
  * <p>
  * A screenshot of the treetable: <div align="center"> <img
- * src="doc-files//WTreeTable-default-1.png"
- * alt="An example WTreeTable (default)">
+ * src="doc-files/WTreeTable-default-1.png">
  * <p>
  * <strong>An example WTreeTable (default)</strong>
  * </p>
- * </div> <div align="center"> <img src="doc-files//WTreeTable-polished-1.png"
- * alt="An example WTreeTable (polished)">
+ * </div>
+ * 
+ * <div align="center"> <img src="doc-files/WTreeTable-polished-1.png">
  * <p>
  * <strong>An example WTreeTable (polished)</strong>
  * </p>
@@ -71,6 +71,7 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Creates a new tree table.
 	 * <p>
+	 * 
 	 * The {@link WTreeTable#getTreeRoot() getTreeRoot()} is <code>null</code>.
 	 * The table should first be properly dimensioned using
 	 * {@link WTreeTable#addColumn(CharSequence header, WLength width)
@@ -119,6 +120,7 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Adds an extra column.
 	 * <p>
+	 * 
 	 * Add an extra column, specifying the column header and a column width. The
 	 * extra columns are numbered from 1 as column 0 contains the tree itself.
 	 * The header for column 0 (the tree itself) is specified in
@@ -142,6 +144,7 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Returns the number of columns in this table.
 	 * <p>
+	 * 
 	 * Returns the number of columns in the table, including in the count column
 	 * 0 (which contains the tree).
 	 * <p>
@@ -155,6 +158,7 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Sets the tree root.
 	 * <p>
+	 * 
 	 * Sets the data for the tree table, and specify the header for the first
 	 * column.
 	 * <p>
@@ -209,6 +213,7 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Returns the column width for the given column.
 	 * <p>
+	 * 
 	 * The width of the first column (with index 0), containing the tree, is
 	 * implied by the width set for the table minus the width of all other
 	 * columns.
@@ -244,6 +249,7 @@ public class WTreeTable extends WCompositeWidget {
 	/**
 	 * Returns the header widget.
 	 * <p>
+	 * 
 	 * This is the widget that contains the column headers.
 	 */
 	public WWidget getHeaderWidget() {
@@ -276,7 +282,7 @@ public class WTreeTable extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WTreeTable.js", wtjs1());
 		this.setJavaScriptMember(" WTreeTable",
-				"new Wt3_4_1.WTreeTable(" + app.getJavaScriptClass() + ","
+				"new Wt3_4_2.WTreeTable(" + app.getJavaScriptClass() + ","
 						+ this.getJsRef() + ");");
 	}
 

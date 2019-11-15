@@ -22,14 +22,17 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that indicates a standard button.
  * <p>
+ * 
  * Multiple buttons may be specified by logically or&apos;ing these values
  * together, e.g.
  * 
  * <pre>
  * {@code
  *  Ok | Cancel
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * 
  * @see WMessageBox

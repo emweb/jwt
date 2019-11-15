@@ -109,6 +109,7 @@ public interface AbstractPasswordService {
 		/**
 		 * Evaluates the strength of a password.
 		 * <p>
+		 * 
 		 * The result is an instance of {@link StrengthValidatorResult} which
 		 * contains information on the validity and the strength of the password
 		 * together with possible messages.
@@ -123,6 +124,7 @@ public interface AbstractPasswordService {
 		/**
 		 * Validates a password.
 		 * <p>
+		 * 
 		 * This uses
 		 * {@link AbstractPasswordService.AbstractStrengthValidator#evaluateStrength(String password, String loginName, String email)
 		 * evaluateStrength()}, isValid() and message() to return the result of
@@ -140,6 +142,7 @@ public interface AbstractPasswordService {
 		/**
 		 * Validates a password.
 		 * <p>
+		 * 
 		 * Calls validate(password, {@link WString#Empty}, &quot;&quot;);
 		 */
 		public WValidator.Result validate(final String password) {
@@ -165,6 +168,7 @@ public interface AbstractPasswordService {
 	/**
 	 * Returns the delay for this user for a next authentication attempt.
 	 * <p>
+	 * 
 	 * If password attempt throttling is enabled, then this returns the number
 	 * of seconds this user must wait for a new authentication attempt,
 	 * presumably because of a number of failed attempts.
@@ -177,6 +181,7 @@ public interface AbstractPasswordService {
 	/**
 	 * Verifies a password for a given user.
 	 * <p>
+	 * 
 	 * The supplied password is verified against the user&apos;s credentials
 	 * stored in the database. If password account throttling is enabled, it may
 	 * also refuse an authentication attempt.
@@ -187,6 +192,7 @@ public interface AbstractPasswordService {
 	/**
 	 * Sets a new password for the given user.
 	 * <p>
+	 * 
 	 * This stores a new password for the user in the database.
 	 */
 	public void updatePassword(final User user, final String password);

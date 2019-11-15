@@ -116,6 +116,7 @@ public class WGridData extends WAbstractGridData {
 	/**
 	 * Set which column in the model is used as x-axis.
 	 * <p>
+	 * 
 	 * The default column that is used has index 0.
 	 */
 	public void setXSeriesColumn(int modelColumn) {
@@ -136,6 +137,7 @@ public class WGridData extends WAbstractGridData {
 	/**
 	 * Set which row in the model is used as y-axis.
 	 * <p>
+	 * 
 	 * The default row that is used has index 0.
 	 */
 	public void setYSeriesRow(int modelRow) {

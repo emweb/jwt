@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * the container, without using a layout manager. In that case, CSS-based layout
  * is used, and the resulting display is determined by properties of the
  * children and the container. By default, a WContainerWidget is displayed as a
- * {@link WWidget#setInline(boolean inlined) block} and manages its children
+ * {@link WWidget#setInline(boolean inlined) block } and manages its children
  * within a rectangle. Inline child widgets are layed out in lines, wrapping
  * around as needed, while block child widgets are stacked vertically. The
  * container may add padding at the container edges using
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * other alternative rendering of the container.
  * <p>
  * When setting the WContainerWidget {@link WWidget#setInline(boolean inlined)
- * inline} the container only acts as a conceptual container, offering a common
+ * inline } the container only acts as a conceptual container, offering a common
  * style to its children. Inline children are still layed out inline within the
  * flow of the parent container of this container, as if they were inserted
  * directly into that parent container. Block children are then not allowed
@@ -61,7 +61,6 @@ import org.slf4j.LoggerFactory;
  * container directly.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -85,8 +84,10 @@ import org.slf4j.LoggerFactory;
  * 	layout.addWidget(new WImage(&quot;images/img.png&quot;));
  * 
  * 	container2.setLayout(layout); // set the layout to the container.
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * When using a layout manager, you need to carefully consider the alignment of
  * the layout manager with respect to the container: when the container&apos;s
@@ -97,6 +98,7 @@ import org.slf4j.LoggerFactory;
  * setLayout()}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Depending on its configuration and usage, the widget corresponds to the
  * following HTML tags:
@@ -112,6 +114,8 @@ import org.slf4j.LoggerFactory;
  * {@link WContainerWidget#isList() isList()}, the widget corresponds to a
  * <code>&lt;li&gt;</code>.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * This widget does not provide styling, and can be styled using inline or
  * external CSS as appropriate.
@@ -192,6 +196,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Sets a layout manager for the container.
 	 * <p>
+	 * 
 	 * Note that you can nest layout managers inside each other, to create a
 	 * complex layout hierarchy.
 	 * <p>
@@ -210,6 +215,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Sets a layout manager for the container (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * The <code>alignment</code> argument determines how the layout is aligned
 	 * inside the container. By default, the layout manager arranges children
 	 * over the entire width and height of the container, corresponding to a
@@ -225,6 +231,8 @@ public class WContainerWidget extends WInteractWidget {
 	 * vertical justification to the full height), or
 	 * {@link AlignmentFlag#AlignTop}.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * When using a horizontal alignment different from
 	 * {@link AlignmentFlag#AlignJustify}, and a vertical alignment different
@@ -237,6 +245,9 @@ public class WContainerWidget extends WInteractWidget {
 	 * The widget will take ownership of <code>layout</code>.
 	 * <p>
 	 * 
+	 * <p>
+	 * 
+	 * @see WContainerWidget#getLayout()
 	 * @deprecated using {@link WContainerWidget#setLayout(WLayout layout)
 	 *             setLayout()} instead, use spacers or a nested layout to
 	 *             control the overall alignment of the layout contents within
@@ -244,7 +255,6 @@ public class WContainerWidget extends WInteractWidget {
 	 *             {@link WWebWidget#setMaximumSize(WLength width, WLength height)
 	 *             WWebWidget#setMaximumSize()} (if needed) to let the layout
 	 *             contents determine the size of the container.
-	 * @see WContainerWidget#getLayout()
 	 */
 	public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
 		if (this.layout_ != null && layout != this.layout_) {
@@ -284,6 +294,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Returns the layout manager that was set for the container.
 	 * <p>
+	 * 
 	 * If no layout manager was previously set using setLayout({@link WLayout}
 	 * ), 0 is returned.
 	 * <p>
@@ -297,6 +308,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Adds a child widget to this container.
 	 * <p>
+	 * 
 	 * This is equivalent to passing this container as the parent when
 	 * constructing the child. The widget is appended to the list of children,
 	 * and thus also layed-out at the end.
@@ -327,6 +339,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Inserts a child widget in this container, before another widget.
 	 * <p>
+	 * 
 	 * The <i>widget</i> is inserted at the place of the <code>before</code>
 	 * widget, and subsequent widgets are shifted.
 	 * <p>
@@ -366,6 +379,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Inserts a child widget in this container at given index.
 	 * <p>
+	 * 
 	 * The <i>widget</i> is inserted at the given <code>index</code>, and
 	 * subsequent widgets are shifted.
 	 * <p>
@@ -383,6 +397,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Removes a child widget from this container.
 	 * <p>
+	 * 
 	 * This removes the widget from this container, but does not delete the
 	 * widget !
 	 */
@@ -394,6 +409,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Removes and deletes all child widgets.
 	 * <p>
+	 * 
 	 * This deletes all children that have been added to this container.
 	 * <p>
 	 * If a layout was set, also the layout manager is deleted.
@@ -416,7 +432,7 @@ public class WContainerWidget extends WInteractWidget {
 	}
 
 	/**
-	 * Returns the widget at <i>index</i>.
+	 * Returns the widget at <i>index</i>
 	 */
 	public WWidget getWidget(int index) {
 		return this.getChildren().get(index);
@@ -432,6 +448,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Specifies how child widgets must be aligned within the container.
 	 * <p>
+	 * 
 	 * For a {@link WContainerWidget}, only specifes the horizontal alignment of
 	 * child widgets. Note that there is no way to specify vertical alignment:
 	 * children are always pushed to the top of the container.
@@ -465,6 +482,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Sets padding inside the widget.
 	 * <p>
+	 * 
 	 * Setting padding has the effect of adding distance between the widget
 	 * children and the border.
 	 */
@@ -548,6 +566,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Sets how overflow of contained children must be handled.
 	 * <p>
+	 * 
 	 * This is an alternative (CSS-ish) way to configure scroll bars on a
 	 * container widget, compared to wrapping inside a {@link WScrollArea}.
 	 * <p>
@@ -603,6 +622,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Renders the container as an HTML list.
 	 * <p>
+	 * 
 	 * Setting <code>renderList</code> to <code>true</code> will cause the
 	 * container to be using an HTML <code>&lt;ul&gt;</code> or
 	 * <code>&lt;ol&gt;</code> type, depending on the value of
@@ -677,6 +697,7 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * Event signal emitted when scrolling in the widget.
 	 * <p>
+	 * 
 	 * This event is emitted when the user scrolls in the widget (for setting
 	 * the scroll bar policy, see
 	 * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
@@ -694,9 +715,11 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * return the number of pixels the container is scrolled horizontally
 	 * <p>
+	 * 
 	 * This value is only set if
 	 * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
 	 * setOverflow()} has been called
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value,
 	 *      EnumSet orientation)
@@ -709,9 +732,11 @@ public class WContainerWidget extends WInteractWidget {
 	/**
 	 * return the number of pixels the container is scrolled vertically
 	 * <p>
+	 * 
 	 * This value is only set if
 	 * {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
 	 * setOverflow()} has been called
+	 * <p>
 	 * 
 	 * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value,
 	 *      EnumSet orientation)

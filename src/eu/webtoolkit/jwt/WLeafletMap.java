@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * A widget that displays a leaflet map.
  * <p>
  * 
- * This is a simple wrapper around the <a href="https://leafletjs.com/"
- * target="_blank">Leaflet</a> JavaScript library.
+ * This is a simple wrapper around the <a
+ * href="https://leafletjs.com/">Leaflet</a> JavaScript library.
  * <p>
  * Leaflet itself does not provide maps. It is a JavaScript library that enables
  * you to use any &quot;tile server&quot;, like OpenStreetMap. If you just
@@ -50,7 +50,7 @@ public class WLeafletMap extends WCompositeWidget {
 	private static Logger logger = LoggerFactory.getLogger(WLeafletMap.class);
 
 	/**
-	 * A geographical coordinate (latitude/longitude).
+	 * A geographical coordinate (latitude/longitude)
 	 */
 	public static class Coordinate {
 		private static Logger logger = LoggerFactory
@@ -59,6 +59,7 @@ public class WLeafletMap extends WCompositeWidget {
 		/**
 		 * Default constructor.
 		 * <p>
+		 * 
 		 * Constructs a coordinate with latitude and longitude set to 0.
 		 */
 		public Coordinate() {
@@ -67,7 +68,7 @@ public class WLeafletMap extends WCompositeWidget {
 		}
 
 		/**
-		 * Create a coordinate (latitude, longitude).
+		 * Create a coordinate (latitude, longitude)
 		 */
 		public Coordinate(double latitude, double longitude) {
 			this.lat_ = latitude;
@@ -126,6 +127,7 @@ public class WLeafletMap extends WCompositeWidget {
 		/**
 		 * Move the marker.
 		 * <p>
+		 * 
 		 * If this marker belongs to a map, this will trigger an update of the
 		 * {@link WLeafletMap} to move the marker. If it doesn&apos;t belong to
 		 * a map, the position is merely updated.
@@ -221,6 +223,7 @@ public class WLeafletMap extends WCompositeWidget {
 		/**
 		 * Set the anchor point of the marker.
 		 * <p>
+		 * 
 		 * This determines the &quot;tip&quot; of the marker (relative to its
 		 * top left corner). The marker will be aligned so that this point is at
 		 * the marker&apos;s geographical location.
@@ -452,6 +455,8 @@ public class WLeafletMap extends WCompositeWidget {
 	/**
 	 * Change the options of the WLeafletMap.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This fully rerenders the map, because it creates a new
 	 * Leaflet map, so any custom JavaScript modifying the map with e.g.
@@ -459,6 +464,7 @@ public class WLeafletMap extends WCompositeWidget {
 	 * WCompositeWidget#doJavaScript()} is undone, much like reloading the page
 	 * when <code>reload-is-new-session</code> is set to false.</i>
 	 * </p>
+	 * 
 	 * See <a
 	 * href="https://leafletjs.com/reference.html#map">https://leafletjs.com
 	 * /reference.html#map</a> for a list of options.
@@ -481,6 +487,7 @@ public class WLeafletMap extends WCompositeWidget {
 	/**
 	 * Add a new tile layer.
 	 * <p>
+	 * 
 	 * See <a
 	 * href="https://leafletjs.com/reference.html#tilelayer">https://leafletjs
 	 * .com/reference.html#tilelayer</a>
@@ -542,6 +549,7 @@ public class WLeafletMap extends WCompositeWidget {
 	/**
 	 * Add a polyline.
 	 * <p>
+	 * 
 	 * This will draw a polyline on the map going through the given list of
 	 * coordinates, with the given pen.
 	 * <p>
@@ -559,6 +567,7 @@ public class WLeafletMap extends WCompositeWidget {
 	/**
 	 * Add a circle.
 	 * <p>
+	 * 
 	 * This will draw a circle on the map centered at <code>center</code>, with
 	 * the given <code>radius</code> (in meters), drawn with the given
 	 * <code>stroke</code> and <code>fill</code>.
@@ -621,6 +630,7 @@ public class WLeafletMap extends WCompositeWidget {
 	/**
 	 * Returns a JavaScript expression to the Leaflet map object.
 	 * <p>
+	 * 
 	 * You may want to use this in conjunction with {@link JSlot} or
 	 * {@link WCompositeWidget#doJavaScript(String js)
 	 * WCompositeWidget#doJavaScript()} in custom JavaScript code, e.g. to
@@ -791,7 +801,7 @@ public class WLeafletMap extends WCompositeWidget {
 		String optionsStr = this.options_.toString();
 		StringBuilder ss = new StringBuilder();
 		EscapeOStream es = new EscapeOStream(ss);
-		es.append("new Wt3_4_1.WLeafletMap(").append(app.getJavaScriptClass())
+		es.append("new Wt3_4_2.WLeafletMap(").append(app.getJavaScriptClass())
 				.append(",").append(this.getJsRef()).append(",'");
 		es.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
 		es.append(optionsStr);

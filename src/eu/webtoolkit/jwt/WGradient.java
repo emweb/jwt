@@ -79,6 +79,7 @@ public class WGradient {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates an empty linear gradient from (0,0) to (1,1) (without color
 	 * stops).
 	 * <p>
@@ -110,6 +111,7 @@ public class WGradient {
 	/**
 	 * Returns whether the gradient is empty.
 	 * <p>
+	 * 
 	 * A gradient is empty if no color stops are defined.
 	 */
 	public boolean isEmpty() {
@@ -119,6 +121,7 @@ public class WGradient {
 	/**
 	 * Configures a linear gradient.
 	 * <p>
+	 * 
 	 * The coordinates describe a line which provides an origin and orientation
 	 * of the gradient in user-space coordinates.
 	 */
@@ -130,6 +133,7 @@ public class WGradient {
 	/**
 	 * Configures a radial gradient.
 	 * <p>
+	 * 
 	 * A radial gradient is described by a center, a radial and a focus point.
 	 * All coordinates are user-space coordinates.
 	 */
@@ -144,6 +148,7 @@ public class WGradient {
 	/**
 	 * Adds a color stop.
 	 * <p>
+	 * 
 	 * For a linear gradient, the position is relative to the position on the
 	 * line (from 0 to 1 corresponding to p0 to p1).
 	 * <p>
@@ -157,6 +162,7 @@ public class WGradient {
 	/**
 	 * Adds a color stop.
 	 * <p>
+	 * 
 	 * Adds a color stop.
 	 */
 	public void addColorStop(final WGradient.ColorStop colorstop) {
@@ -192,6 +198,7 @@ public class WGradient {
 	/**
 	 * Returns the line positioning the linear gradient.
 	 * <p>
+	 * 
 	 * This returns the line set in
 	 * {@link WGradient#setLinearGradient(double x0, double y0, double x1, double y1)
 	 * setLinearGradient()}.
@@ -203,6 +210,7 @@ public class WGradient {
 	/**
 	 * Returns the center of a radial gradient.
 	 * <p>
+	 * 
 	 * This returns the center point set in
 	 * {@link WGradient#setRadialGradient(double cx, double cy, double r, double fx, double fy)
 	 * setRadialGradient()}.
@@ -214,6 +222,7 @@ public class WGradient {
 	/**
 	 * Returns the focal point of a radial gradient.
 	 * <p>
+	 * 
 	 * This returns the focal point set in
 	 * {@link WGradient#setRadialGradient(double cx, double cy, double r, double fx, double fy)
 	 * setRadialGradient()}.
@@ -225,6 +234,7 @@ public class WGradient {
 	/**
 	 * Returns the radius of a radial gradient.
 	 * <p>
+	 * 
 	 * This returns the radius set in
 	 * {@link WGradient#setRadialGradient(double cx, double cy, double r, double fx, double fy)
 	 * setRadialGradient()}.

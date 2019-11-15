@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * range.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys: Wt.WDoubleValidator.NotANumber:
@@ -41,6 +42,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Creates a new double validator that accepts any double.
 	 * <p>
+	 * 
 	 * The validator will accept numbers using the current locale&apos;s format.
 	 * <p>
 	 */
@@ -67,6 +69,7 @@ public class WDoubleValidator extends WValidator {
 	 * Creates a new double validator that accepts double within the given
 	 * range.
 	 * <p>
+	 * 
 	 * The validator will accept numbers using the current locale&apos;s format.
 	 * <p>
 	 */
@@ -101,6 +104,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Sets the bottom of the valid double range.
 	 * <p>
+	 * 
 	 * The default value is the minimum double value.
 	 */
 	public void setBottom(double bottom) {
@@ -120,6 +124,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Sets the top of the valid double range.
 	 * <p>
+	 * 
 	 * The default value is the maximum double value.
 	 */
 	public void setTop(double top) {
@@ -140,6 +145,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a double within the valid range.
 	 */
@@ -175,6 +181,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Sets the message to display when the input is not a number.
 	 * <p>
+	 * 
 	 * The default value is &quot;Must be a number.&quot;
 	 */
 	public void setInvalidNotANumberText(final CharSequence text) {
@@ -199,6 +206,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Sets the message to display when the number is too small.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom()} and
 	 * {@link WDoubleValidator#getTop() getTop()} are real bounds, the default
 	 * message is &quot;The number must be between {1} and {2}&quot; or
@@ -238,6 +246,7 @@ public class WDoubleValidator extends WValidator {
 	/**
 	 * Sets the message to display when the number is too large.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WDoubleValidator#getBottom() getBottom()} and
 	 * {@link WDoubleValidator#getTop() getTop()} are real bounds, the default
 	 * message is &quot;The number must be between {1} and {2}&quot; or
@@ -300,7 +309,7 @@ public class WDoubleValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_1.WDoubleValidator(").append(this.isMandatory())
+		js.append("new Wt3_4_2.WDoubleValidator(").append(this.isMandatory())
 				.append(',').append(this.ignoreTrailingSpaces_).append(',');
 		if (this.bottom_ != -Double.MAX_VALUE
 				&& this.bottom_ != -Double.POSITIVE_INFINITY) {

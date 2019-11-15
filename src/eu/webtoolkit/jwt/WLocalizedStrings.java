@@ -37,6 +37,7 @@ public abstract class WLocalizedStrings {
 	/**
 	 * Rereads the message resources.
 	 * <p>
+	 * 
 	 * Purge any cached key/values, if applicable.
 	 * <p>
 	 * The default implementation does nothing.
@@ -47,6 +48,7 @@ public abstract class WLocalizedStrings {
 	/**
 	 * Purges memory resources, if possible.
 	 * <p>
+	 * 
 	 * This is called afer event handling, and is an opportunity to conserve
 	 * memory inbetween events, by freeing memory used for cached key/value
 	 * bindings, if applicable.
@@ -59,6 +61,7 @@ public abstract class WLocalizedStrings {
 	/**
 	 * Resolves a key in the current locale.
 	 * <p>
+	 * 
 	 * This method is used by {@link WString} to obtain the UTF8 value
 	 * corresponding to a key in the current locale.
 	 * <p>

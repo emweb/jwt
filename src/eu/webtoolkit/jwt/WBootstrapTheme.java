@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * (by reimplementing {@link WBootstrapTheme#getStyleSheets() getStyleSheets()}
  * ).
  * <p>
- * Although this theme facilitates the use of Twitter Bootstrap with Wt, it is
+ * Although this theme facilitates the use of Twitter Bootstrap with JWt, it is
  * still important to understand how Bootstrap expects markup to be, especially
  * related to layout using its grid system, for which we refer to the official
  * bootstrap documentation, see <a
@@ -109,14 +109,11 @@ public class WBootstrapTheme extends WTheme {
 	}
 
 	/**
-	 * <p>
 	 * Enables responsive features.
 	 * <p>
 	 * Responsive features can be enabled only at application startup. For
-	 * bootstrap 3, you need to use the progressive bootstrap feature of JWt
-	 * (see see DOCREF<a class="el" href="overview.html#config_general">10.2
-	 * General application settings (wt_config.xml)</a>) as it requires setting
-	 * HTML meta flags.
+	 * bootstrap 3, you need to use the progressive bootstrap feature of JWt as
+	 * it requires setting HTML meta flags.
 	 * <p>
 	 * Responsive features are disabled by default.
 	 */
@@ -137,6 +134,7 @@ public class WBootstrapTheme extends WTheme {
 	/**
 	 * Sets the bootstrap version.
 	 * <p>
+	 * 
 	 * The default bootstrap version is 2 (but this may change in the future and
 	 * thus we recommend setting the version).
 	 * <p>
@@ -173,6 +171,7 @@ public class WBootstrapTheme extends WTheme {
 	/**
 	 * Enables form-control on all applicable form widgets.
 	 * <p>
+	 * 
 	 * This is relevant only for bootstrap 3.
 	 * <p>
 	 * By applying &quot;form-control&quot; on form widgets, they will become
@@ -635,7 +634,7 @@ public class WBootstrapTheme extends WTheme {
 		app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_4_1.setValidationState(")
+			js.append("Wt3_4_2.setValidationState(")
 					.append(widget.getJsRef())
 					.append(",")
 					.append(validation.getState() == WValidator.State.Valid ? 1

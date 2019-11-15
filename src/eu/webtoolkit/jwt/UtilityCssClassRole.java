@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Enumeration for the role of a css class (for theme support).
+ * Enumeration for the role of a css class (for theme support)
  * <p>
  * 
  * @see WTheme#utilityCssClass(int utilityCssClassRole)

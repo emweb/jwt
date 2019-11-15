@@ -55,6 +55,7 @@ public class WVideo extends WAbstractMedia {
 	/**
 	 * Creates a video widget.
 	 * <p>
+	 * 
 	 * The constructor sets the &apos;controls&apos; option, which causes the
 	 * browser to display a bar with play/pauze/volume/... controls.
 	 * <p>
@@ -83,6 +84,7 @@ public class WVideo extends WAbstractMedia {
 	/**
 	 * Set the poster image.
 	 * <p>
+	 * 
 	 * On browsers that support it, the poster image is displayed before the
 	 * video is playing. Some browsers display the first frame of the video
 	 * stream once the video stream is loaded; it is therefore a good idea to
@@ -97,8 +99,9 @@ public class WVideo extends WAbstractMedia {
 	/**
 	 * Returns the JavaScript reference to the video object, or null.
 	 * <p>
+	 * 
 	 * It is possible, for compatibility reasons, that
-	 * {@link WWidget#getJsRef() WWidget#getJsRef()} is not the video element.
+	 * {@link WWidget#getJsRef()} is not the video element.
 	 * {@link WVideo#getJsVideoRef() getJsVideoRef()} is guaranteed to be an
 	 * expression that evaluates to the video object. This expression may yield
 	 * null, if the video object is not rendered at all (e.g. on older versions

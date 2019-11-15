@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * 
  * This class provides font metrics for a given font. It is returned by an
- * implementation of {@link WPaintDevice#getFontMetrics()
- * WPaintDevice#getFontMetrics()}, and may differ between devices.
+ * implementation of {@link WPaintDevice#getFontMetrics()}, and may differ
+ * between devices.
  * <p>
  * All methods return pixel dimensions.
  * <p>
@@ -56,13 +56,16 @@ public class WFontMetrics {
 	/**
 	 * Returns the font size.
 	 * <p>
+	 * 
 	 * This is the same as:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    font().size().sizeLength()
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * e.g.~for a font with size set to 16px, this returns 16.
 	 */
@@ -73,6 +76,7 @@ public class WFontMetrics {
 	/**
 	 * Returns the font height.
 	 * <p>
+	 * 
 	 * The font height is the total height of a text line. It is usually a bit
 	 * bigger than the font size to have natural line spacing.
 	 */
@@ -83,6 +87,7 @@ public class WFontMetrics {
 	/**
 	 * Returns the font leading length.
 	 * <p>
+	 * 
 	 * This is vertical space provided on top of the ascent (empty space which
 	 * serves as natural line spacing).
 	 */
@@ -93,6 +98,7 @@ public class WFontMetrics {
 	/**
 	 * Returns the font ascent length.
 	 * <p>
+	 * 
 	 * This is vertical space which corresponds to the maximum height of a
 	 * character over the baseline (although many fonts violate this for some
 	 * glyphs).
@@ -104,6 +110,7 @@ public class WFontMetrics {
 	/**
 	 * Returns the font descent length.
 	 * <p>
+	 * 
 	 * This is vertical space which corresponds to the maximum height of a
 	 * character under the baseline (although many fonts violate this for some
 	 * glyphs).

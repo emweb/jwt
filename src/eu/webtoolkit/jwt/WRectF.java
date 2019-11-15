@@ -26,24 +26,28 @@ import org.slf4j.LoggerFactory;
  * The rectangle is defined by a top-left point and a width and height.
  * <p>
  * <h3>JavaScript exposability</h3>
+ * 
  * <p>
  * A WRectF is JavaScript exposable. If a WRectF
  * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
- * it can be accessed in your custom JavaScript code through {@link its
- * handle&apos;s jsRef()}. A rectangle is represented in JavaScript as an array
- * of four elements (x,y,width,height), e.g. a rectangle WRectF(10,20,30,40)
- * will be represented in JavaScript as:
+ * it can be accessed in your custom JavaScript code through
+ * {@link WJavaScriptHandle#getJsRef() its handle&apos;s jsRef()}. A rectangle
+ * is represented in JavaScript as an array of four elements (x,y,width,height),
+ * e.g. a rectangle WRectF(10,20,30,40) will be represented in JavaScript as:
  * 
  * <pre>
  * {@code
  *  [10, 20, 30, 40]
+ *  
  * }
  * </pre>
+ * 
  * <p>
+ * 
  * <p>
- * <i><b>Warning:</b>A WRectF that is JavaScript exposed should be modified only
- * through its {@link WJavaScriptHandle handle}. Any attempt at modifying it
- * will cause an exception to be thrown.</i>
+ * <i><b>Warning: </b>A WRectF that is JavaScript exposed should be modified
+ * only through its {@link WJavaScriptHandle handle}. Any attempt at modifying
+ * it will cause an exception to be thrown.</i>
  * </p>
  * 
  * @see WPaintedWidget#createJSRect()
@@ -54,6 +58,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Constructs an empty rectangle.
 	 * <p>
 	 * 
@@ -70,6 +75,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Creates a rectangle.
 	 * <p>
+	 * 
 	 * Constructs a rectangle with top left point (<code>x</code>,
 	 * <code>y</code>) and size <code>width</code> x <code>height</code>.
 	 */
@@ -92,6 +98,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Creates a rectangle.
 	 * <p>
+	 * 
 	 * Constructs a rectangle from the two points <code>topLeft</code> and
 	 * <code>bottomRight</code>.
 	 * <p>
@@ -126,11 +133,11 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Determines whether or not this rectangle is empty.
 	 * <p>
+	 * 
 	 * A rectangle is empty if its width and height are zero.
 	 * <p>
-	 * A rectangle that {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} is JavaScript bound is
-	 * never empty.
+	 * A rectangle that {@link WJavaScriptExposableObject#isJavaScriptBound()}
+	 * is JavaScript bound is never empty.
 	 */
 	public boolean isEmpty() {
 		if (this.isJavaScriptBound()) {
@@ -142,11 +149,12 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Sets the X-position of the left side.
 	 * <p>
+	 * 
 	 * The right side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the rectangle
+	 * @exception {@link WException} if the rectangle
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */
@@ -159,11 +167,12 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Sets the Y-position of the top side.
 	 * <p>
+	 * 
 	 * The bottom side of the rectangle does not move, and as a result, the
 	 * rectangle may be resized.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the rectangle
+	 * @exception {@link WException} if the rectangle
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */
@@ -176,11 +185,12 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Sets the width.
 	 * <p>
+	 * 
 	 * The right side of the rectangle may move, but this does not affect the
 	 * left side.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the rectangle
+	 * @exception {@link WException} if the rectangle
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */
@@ -191,11 +201,12 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Sets the Y-position of the top side.
 	 * <p>
+	 * 
 	 * The bottom side of the rectangle may move, but this does not affect the Y
 	 * position of the top side.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the rectangle
+	 * @exception {@link WException} if the rectangle
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */
@@ -206,6 +217,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Returns the X-position (left side offset).
 	 * <p>
+	 * 
 	 * This is equivalent to {@link WRectF#getLeft() getLeft()}.
 	 * <p>
 	 * 
@@ -219,6 +231,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Returns the Y-position (top side offset).
 	 * <p>
+	 * 
 	 * This is equivalent to {@link WRectF#getTop() getTop()}.
 	 * <p>
 	 * 
@@ -346,10 +359,11 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Tests if a rectangle contains a point.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()} </i>
 	 * </p>
 	 */
 	public boolean contains(final WPointF p) {
@@ -359,10 +373,11 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Tests if a rectangle contains a point.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This method is not supported if this rectangle
-	 * {@link WJavaScriptExposableObject#isJavaScriptBound()
-	 * WJavaScriptExposableObject#isJavaScriptBound()} </i>
+	 * {@link WJavaScriptExposableObject#isJavaScriptBound()} </i>
 	 * </p>
 	 */
 	public boolean contains(double x, double y) {
@@ -394,6 +409,8 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Makes the union of to rectangles.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This method is not supported if this rectangle
 	 * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript
@@ -421,6 +438,7 @@ public class WRectF extends WJavaScriptExposableObject {
 	/**
 	 * Returns a normalized rectangle.
 	 * <p>
+	 * 
 	 * A normalized rectangle has a positive width and height.
 	 * <p>
 	 * This method supports JavaScript bound rectangles.
@@ -446,7 +464,7 @@ public class WRectF extends WJavaScriptExposableObject {
 		}
 		WRectF result = new WRectF(x, y, w, h);
 		if (this.isJavaScriptBound()) {
-			result.assignBinding(this, "Wt3_4_1.gfxUtils.rect_normalized("
+			result.assignBinding(this, "Wt3_4_2.gfxUtils.rect_normalized("
 					+ this.getJsRef() + ')');
 		}
 		return result;

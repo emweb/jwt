@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * rather than scrollbars appear.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * This widget is rendered using a <code>&lt;div&gt;</code> with a CSS overflow
  * attribute. When in a layout manager it is positioned absolutely. It can be
@@ -48,7 +49,6 @@ public class WScrollArea extends WWebWidget {
 	private static Logger logger = LoggerFactory.getLogger(WScrollArea.class);
 
 	/**
-	 * <p>
 	 * brief Policy for showing a scrollbar.
 	 */
 	public enum ScrollBarPolicy {
@@ -108,6 +108,7 @@ public class WScrollArea extends WWebWidget {
 	/**
 	 * Sets the widget that is the content of the scroll area.
 	 * <p>
+	 * 
 	 * Setting a new widget will delete the previously set widget.
 	 */
 	public void setWidget(WWidget widget) {

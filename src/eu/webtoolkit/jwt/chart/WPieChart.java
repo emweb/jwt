@@ -44,15 +44,17 @@ import org.slf4j.LoggerFactory;
  * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  * <p>
- * <div align="center"> <img src="doc-files//ChartWPieChart-1.png"
- * alt="Example of a pie chart">
+ * <div align="center"> <img src="doc-files/ChartWPieChart-1.png">
  * <p>
  * <strong>Example of a pie chart</strong>
  * </p>
  * </div>
+ * 
+ * 
  * <p>
  * 
  * @see eu.webtoolkit.jwt.chart.WCartesianChart
@@ -91,9 +93,10 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the model column that holds the labels.
 	 * <p>
+	 * 
 	 * The labels are used only when
 	 * {@link WPieChart#setDisplayLabels(EnumSet options) setDisplayLabels()} is
-	 * called with the {@link LabelOption#TextLabel TextLabel} option.
+	 * called with the {@link LabelOption#TextLabel} option.
 	 * <p>
 	 * The default value is -1 (not defined).
 	 * <p>
@@ -122,6 +125,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the model column that holds the data.
 	 * <p>
+	 * 
 	 * The data column should contain data that can be converted to a number,
 	 * but should not necessarily be of a number type, see also
 	 * {@link StringUtils#asNumber(Object)}.
@@ -152,10 +156,10 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Customizes the brush used for a pie segment.
 	 * <p>
+	 * 
 	 * By default, the brush is taken from the
-	 * {@link WAbstractChart#getPalette() WAbstractChart#getPalette()}. You can
-	 * use this method to override the palette&apos;s brush for a particular
-	 * <i>modelRow</i>.
+	 * {@link WAbstractChart#getPalette()}. You can use this method to override
+	 * the palette&apos;s brush for a particular <i>modelRow</i>.
 	 * <p>
 	 * 
 	 * @see WAbstractChart#setPalette(WChartPalette palette)
@@ -183,6 +187,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the explosion factor for a pie segment.
 	 * <p>
+	 * 
 	 * Separates the segment corresponding to model row <i>modelRow</i> from the
 	 * rest of the pie. The <i>factor</i> is a positive number that represents
 	 * the distance from the center as a fraction of the pie radius. Thus, 0
@@ -209,6 +214,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Enables a 3D perspective effect on the pie.
 	 * <p>
+	 * 
 	 * A 3D perspective effect is added, which may be customized by specifying
 	 * the simulated <i>height</i> of the pie. The height is defined as a
 	 * fraction of the pie radius.
@@ -245,6 +251,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Enables a shadow effect.
 	 * <p>
+	 * 
 	 * A soft shadow effect is added.
 	 * <p>
 	 * The default value is false.
@@ -269,6 +276,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the angle of the first segment.
 	 * <p>
+	 * 
 	 * The default value is 45 degrees.
 	 */
 	public void setStartAngle(double startAngle) {
@@ -291,6 +299,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the percentage value to avoid rendering of label texts.
 	 * <p>
+	 * 
 	 * The default value is 0 percent.
 	 */
 	public void setAvoidLabelRendering(double avoidLabelRendering) {
@@ -313,14 +322,14 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Configures if and how labels should be displayed.
 	 * <p>
+	 * 
 	 * The <i>options</i> must be the logical OR of a placement option (
-	 * {@link LabelOption#Inside Inside} or {@link LabelOption#Outside Outside})
-	 * and {@link LabelOption#TextLabel TextLabel} and/or
-	 * {@link LabelOption#TextPercentage TextPercentage}. If both TextLabel and
-	 * TextPercentage are specified, then these are combined as
-	 * &quot;&lt;label&gt;: &lt;percentage&gt;&quot;.
+	 * {@link LabelOption#Inside} or {@link LabelOption#Outside}) and
+	 * {@link LabelOption#TextLabel} and/or {@link LabelOption#TextPercentage}.
+	 * If both TextLabel and TextPercentage are specified, then these are
+	 * combined as &quot;&lt;label&gt;: &lt;percentage&gt;&quot;.
 	 * <p>
-	 * The default value is {@link LabelOption#NoLabels NoLabels}.
+	 * The default value is {@link LabelOption#NoLabels}.
 	 */
 	public void setDisplayLabels(EnumSet<LabelOption> options) {
 		this.labelOptions_ = EnumSet.copyOf(options);
@@ -351,11 +360,11 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Sets the label format.
 	 * <p>
+	 * 
 	 * Sets a format string which is used to format label (percentage) values.
 	 * <p>
 	 * The format string must be a format string that is accepted by snprintf()
-	 * and which formats one double. If the format string is an empty string,
-	 * then {@link } is used.
+	 * and which formats one double.
 	 * <p>
 	 * The default value is &quot;%.3g%%&quot;.
 	 * <p>
@@ -380,6 +389,7 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Creates a widget which renders the a legend item.
 	 * <p>
+	 * 
 	 * Depending on the passed LabelOption flags, the legend item widget, will
 	 * contain a text (with or without the percentage) and/or a span with the
 	 * segment&apos;s color.
@@ -434,9 +444,11 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * Adds a data point area (used for displaying e.g. tooltips).
 	 * <p>
+	 * 
 	 * You may want to specialize this is if you wish to modify (or delete) the
 	 * area.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Currently, an area is only created if the ToolTipRole
 	 * data at the data point is not empty. </i>
@@ -454,44 +466,8 @@ public class WPieChart extends WAbstractChart {
 	 * drawLabel()}.
 	 * <p>
 	 * 
-	 * @return The new {@link WContainerWidget} that contains textWidget and can
-	 *         be placed on an other layer that has the same dimensions as the
-	 *         {@link WPieChart}.
 	 * @see WPieChart#drawLabel(WPainter painter, WRectF rect, EnumSet
-	 *      alignmentFlags, CharSequence text, int row) Usage example, PieChart
-	 *      with label links.
-	 * 
-	 *      <pre>
-	 *   {@code
-	 *    class PChart : public Wt::Chart::WPieChart {
-	 *    private:
-	 *      Wt::WContainerWidget *widgetsLayer_;
-	 *    public:
-	 *      PChart(Wt::WContainerWidget *widgetsLayer) :
-	 *        Wt::Chart::WPieChart(widgetsLayer),
-	 *        widgetsLayer_(widgetsLayer)
-	 *      {
-	 *        widgetsLayer_.resize(800, 300);
-	 *        resize(800, 300);
-	 *        widgetsLayer_.setPositionScheme(Wt::Relative);
-	 *      }
-	 *      virtual void drawLabel(Wt::WPainter* painter, const Wt::WRectF& rect,
-	 *                               Wt::WFlags<Wt::AlignmentFlag> alignmentFlags,
-	 *                               const Wt::WString& text, int row) const
-	 *      {
-	 *        if (model().link(row, dataColumn()) == 0){
-	 *          Wt::Chart::WPieChart::drawLabel(painter, rect, alignmentFlags,
-	 *                                        text, row);
-	 *      } else {
-	 *         Wt::WAnchor *a = new Wt::WAnchor(*model().link(row, dataColumn()),
-	 *                                           text);
-	 *          widgetsLayer_.addWidget(createLabelWidget(a, painter, rect,
-	 *                                                     alignmentFlags));
-	 *        }
-	 *      }
-	 *    };
-	 *   }
-	 * </pre>
+	 *      alignmentFlags, CharSequence text, int row)
 	 */
 	public WContainerWidget createLabelWidget(WWidget textWidget,
 			WPainter painter, final WRectF rect,
@@ -722,11 +698,10 @@ public class WPieChart extends WAbstractChart {
 	/**
 	 * drawLabel draw a label on the chart. Will be called by paint.
 	 * <p>
-	 * You may want to specialize this if you wish to replace the label by a
-	 * widget.
 	 * 
-	 * @see WPieChart#createLabelWidget(WWidget textWidget, WPainter painter,
-	 *      WRectF rect, EnumSet alignmentFlags)
+	 * You may want to specialize this if you wish to replace the label by a
+	 * widget. @see WPieChart#createLabelWidget(WWidget textWidget, WPainter
+	 * painter, WRectF rect, EnumSet alignmentFlags)
 	 */
 	protected void drawLabel(WPainter painter, final WRectF rect,
 			EnumSet<AlignmentFlag> alignmentFlags, final CharSequence text,

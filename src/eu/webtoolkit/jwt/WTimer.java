@@ -41,9 +41,8 @@ import org.slf4j.LoggerFactory;
  * the timer is one second (1000 milli-seconds), and it is probably wise to use
  * timers sparingly.
  * <p>
- * A {@link WTimer} is only usable inside of a JWt event loop.
- * <p>
- * If you want to create a timer outside the JWt event loop, take a look at
+ * A {@link WTimer} is only usable inside of a JWt event loop. If you want to
+ * create a timer outside the JWt event loop, take a look at
  * {@link java.util.Timer}.
  */
 public class WTimer extends WObject {
@@ -103,6 +102,7 @@ public class WTimer extends WObject {
 	/**
 	 * Configures this timer to fire only once.
 	 * <p>
+	 * 
 	 * A Timer is by default not single shot, and will fire continuously, until
 	 * it is stopped.
 	 */
@@ -113,6 +113,7 @@ public class WTimer extends WObject {
 	/**
 	 * Starts the timer.
 	 * <p>
+	 * 
 	 * The timer will be {@link WTimer#isActive() isActive()}, until either the
 	 * interval has elapsed, after which the timeout signal is activated, or
 	 * until {@link WTimer#stop() stop()} is called.
@@ -144,6 +145,7 @@ public class WTimer extends WObject {
 	/**
 	 * Stops the timer.
 	 * <p>
+	 * 
 	 * You may stop the timer during its {@link WTimer#timeout() timeout()}, or
 	 * cancel a running timer at any other time.
 	 * <p>
@@ -163,6 +165,7 @@ public class WTimer extends WObject {
 	/**
 	 * Signal emitted when the timer timeouts.
 	 * <p>
+	 * 
 	 * The WMouseEvent does not provide any meaningful information but is an
 	 * implementation artefact.
 	 */

@@ -27,12 +27,13 @@ import org.slf4j.LoggerFactory;
  * colors (these are recycled at index 8).
  * <p>
  * The three colored palettes are a variation on those defined at <a
- * href="http://www.modernlifeisrubbish.co.uk/article/web-2.0-colour-palette."
- * >http://www.modernlifeisrubbish.co.uk/article/web-2.0-colour-palette.</a>
+ * href="http://www.modernlifeisrubbish.co.uk/article/web-2.0-colour-palette"
+ * >http://www.modernlifeisrubbish.co.uk/article/web-2.0-colour-palette</a>.
  * <p>
  * The following table lists the background color, and font color of the
  * different palettes:
  * <p>
+ * 
  * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
  * <td><b>Neutral</b></td>
@@ -89,6 +90,8 @@ import org.slf4j.LoggerFactory;
  * <td>Gray #8</td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
  * The border pen is in all cases a gray pen of 0 width, while the stroke pen is
  * a line of width 2 in the background color.

@@ -28,11 +28,14 @@ import org.slf4j.LoggerFactory;
  * value. If you rather need input of an integer number number, use
  * {@link WSpinBox} instead.
  * <p>
- * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline}
+ * WDoubleSpinBox is an {@link WWidget#setInline(boolean inlined) inline }
  * widget.
  * <p>
  * 
- * @see WSpinBox <p>
+ * @see WSpinBox
+ * 
+ * 
+ *      <p>
  *      <i><b>Note: </b>A spinbox configures a validator for validating the
  *      input. Therefore you cannot set a validator yourself. </i>
  *      </p>
@@ -44,6 +47,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Creates a spin-box.
 	 * <p>
+	 * 
 	 * The range is (0.0 - 99.99), the step size 1.0, and the spin box has a
 	 * precision of 2 decimals.
 	 * <p>
@@ -75,6 +79,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the minimum value.
 	 * <p>
+	 * 
 	 * The default value is 0.0.
 	 */
 	public void setMinimum(double minimum) {
@@ -101,6 +106,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the maximum value.
 	 * <p>
+	 * 
 	 * The default value is 99.99.
 	 */
 	public void setMaximum(double maximum) {
@@ -139,6 +145,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the step value.
 	 * <p>
+	 * 
 	 * The default value is 1.0.
 	 */
 	public void setSingleStep(double step) {
@@ -160,6 +167,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the precision.
 	 * <p>
+	 * 
 	 * This sets the number of digits after the decimal point shown
 	 * <p>
 	 * The default precision is 2.
@@ -182,6 +190,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Sets the value.
 	 * <p>
+	 * 
 	 * <code>value</code> must be a value between
 	 * {@link WDoubleSpinBox#getMinimum() getMinimum()} and
 	 * {@link WDoubleSpinBox#getMaximum() getMaximum()}.
@@ -199,12 +208,13 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * Returns the value.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This value may not correctly reflect the
-	 * {@link WLineEdit#getValueText() WLineEdit#getValueText()} of the spin box
-	 * if {@link WLineEdit#getValueText() WLineEdit#getValueText()} is empty or
-	 * if the contents are not in a {@link WFormWidget#validate() valid state}.
-	 * </i>
+	 * {@link WLineEdit#getValueText()} of the spin box if
+	 * {@link WLineEdit#getValueText()} is empty or if the contents are not in a
+	 * {@link WFormWidget#validate() valid state}. </i>
 	 * </p>
 	 */
 	public double getValue() {
@@ -214,12 +224,12 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 	/**
 	 * A signal that indicates when the value has changed.
 	 * <p>
-	 * This signal is emitted when {@link WFormWidget#changed()
-	 * WFormWidget#changed()} is emitted, but supplies the new value as an
-	 * argument. The {@link WFormWidget#changed() WFormWidget#changed()} signal
-	 * is emitted when the user changes the value of the spinbox by pressing the
-	 * up/down arrow, or entering a different value and pressing enter or moving
-	 * focus.
+	 * 
+	 * This signal is emitted when {@link WFormWidget#changed()} is emitted, but
+	 * supplies the new value as an argument. The {@link WFormWidget#changed()}
+	 * signal is emitted when the user changes the value of the spinbox by
+	 * pressing the up/down arrow, or entering a different value and pressing
+	 * enter or moving focus.
 	 * <p>
 	 * 
 	 * @see WFormWidget#changed()

@@ -47,6 +47,7 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
 	/**
 	 * Adds a string resolver.
 	 * <p>
+	 * 
 	 * The order in which string resolvers are added is significant:
 	 * {@link WCombinedLocalizedStrings#resolveKey(String key) resolveKey()}
 	 * will consult each string resolver in the order they have been added,

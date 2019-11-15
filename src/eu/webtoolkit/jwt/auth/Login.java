@@ -44,6 +44,7 @@ public class Login extends WObject {
 	/**
 	 * Default constructor.
 	 * <p>
+	 * 
 	 * Creates a login object in the LoggedOut state.
 	 */
 	public Login() {
@@ -56,10 +57,10 @@ public class Login extends WObject {
 	/**
 	 * Logs a user in.
 	 * <p>
+	 * 
 	 * A user can be logged in using either a DisabledLogin, WeakLogin or
 	 * StrongLogin <code>state</code>. The login state is forced to
-	 * DisabledLogin if {@link User#getStatus() User#getStatus()} returns
-	 * Disabled.
+	 * DisabledLogin if {@link User#getStatus()} returns Disabled.
 	 * <p>
 	 * 
 	 * @see Login#logout()
@@ -100,6 +101,7 @@ public class Login extends WObject {
 	/**
 	 * Logs the current user out.
 	 * <p>
+	 * 
 	 * Sets the state to LoggedOut.
 	 */
 	public void logout() {
@@ -124,6 +126,7 @@ public class Login extends WObject {
 	/**
 	 * Returns whether a user has successfully logged in.
 	 * <p>
+	 * 
 	 * This returns <code>true</code> only if the state is WeakLogin or
 	 * StrongLogin.
 	 * <p>
@@ -137,8 +140,10 @@ public class Login extends WObject {
 	/**
 	 * Returns the user currently identified.
 	 * <p>
+	 * 
 	 * Returns the user currently identified.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This may also be a user whose account is currently
 	 * disabled. </i>
@@ -151,6 +156,7 @@ public class Login extends WObject {
 	/**
 	 * Signal that indicates login changes.
 	 * <p>
+	 * 
 	 * This signal is emitted as a result of
 	 * {@link Login#login(User user, LoginState state) login()} or
 	 * {@link Login#logout() logout()}. If no user was logged in, then a

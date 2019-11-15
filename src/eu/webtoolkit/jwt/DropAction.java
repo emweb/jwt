@@ -32,7 +32,7 @@ public enum DropAction {
 	 */
 	CopyAction,
 	/**
-	 * Move the selection (deleting originals).
+	 * Move the selection (deleting originals)
 	 */
 	MoveAction;
 

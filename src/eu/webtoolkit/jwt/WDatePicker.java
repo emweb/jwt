@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * setDate()}.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * Internationalization of {@link WDatePicker} is mostly handled through the
  * internationalization mechanism of {@link eu.webtoolkit.jwt.WDate}.
@@ -51,6 +52,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Create a new date picker.
 	 * <p>
+	 * 
 	 * This constructor creates a line edit with an icon that leads to a popup
 	 * calendar. A {@link WDateValidator} is configured for the line edit.
 	 */
@@ -76,6 +78,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Create a new date picker for a line edit.
 	 * <p>
+	 * 
 	 * This constructor creates an icon that leads to a popup calendar.
 	 * <p>
 	 * The <code>forEdit</code> argument is the lineEdit that works in
@@ -105,6 +108,7 @@ public class WDatePicker extends WCompositeWidget {
 	 * Create a new date picker for existing line edit and with custom display
 	 * widget.
 	 * <p>
+	 * 
 	 * The <code>displayWidget</code> is a button or image which much be clicked
 	 * to open the date picker. This widget will become owned by the picker.
 	 * <p>
@@ -139,13 +143,14 @@ public class WDatePicker extends WCompositeWidget {
 	 */
 	public void remove() {
 		WApplication.getInstance().doJavaScript(
-				"Wt3_4_1.remove('" + this.popup_.getId() + "');");
+				"Wt3_4_2.remove('" + this.popup_.getId() + "');");
 		super.remove();
 	}
 
 	/**
 	 * Sets the format used for parsing or writing the date in the line edit.
 	 * <p>
+	 * 
 	 * Sets the format used for representing the date in the line edit. If the
 	 * line edit has a {@link WDateValidator} configured for it, then also there
 	 * the format is updated.
@@ -180,6 +185,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The calendar widget.
 	 * <p>
+	 * 
 	 * Returns the calendar widget.
 	 */
 	public WCalendar getCalendar() {
@@ -189,6 +195,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The line edit.
 	 * <p>
+	 * 
 	 * Returns the line edit which works in conjunction with this date picker.
 	 */
 	public WLineEdit getLineEdit() {
@@ -198,6 +205,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The display widget.
 	 * <p>
+	 * 
 	 * Returns the icon which activates the popup.
 	 */
 	public WInteractWidget getDisplayWidget() {
@@ -207,6 +215,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The popup widget.
 	 * <p>
+	 * 
 	 * Returns the popup widget that contains the calendar.
 	 */
 	public WPopupWidget getPopupWidget() {
@@ -216,11 +225,13 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * The current date.
 	 * <p>
+	 * 
 	 * Reads the current date from the {@link WDatePicker#getLineEdit()
 	 * getLineEdit()}.
 	 * <p>
 	 * Returns <code>null</code> if the date could not be parsed using the
 	 * current {@link WDatePicker#getFormat() getFormat()}. <br>
+	 * 
 	 * <p>
 	 * 
 	 * @see WDatePicker#setDate(WDate date)
@@ -233,6 +244,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Sets the current date.
 	 * <p>
+	 * 
 	 * Does nothing if the current date is <code>Null</code>.
 	 * <p>
 	 * 
@@ -249,6 +261,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Sets whether the widget is enabled.
 	 * <p>
+	 * 
 	 * This is the oppositie of {@link WDatePicker#setDisabled(boolean disabled)
 	 * setDisabled()}.
 	 */
@@ -324,6 +337,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * Signal emitted when the value has changed.
 	 * <p>
+	 * 
 	 * This signal is emitted when a new date has been entered (either through
 	 * the line edit, or through the calendar popup).
 	 */
@@ -350,6 +364,7 @@ public class WDatePicker extends WCompositeWidget {
 	/**
 	 * A signal which indicates that the popup has been closed.
 	 * <p>
+	 * 
 	 * The signal is only fired when the popup has been closed by the user.
 	 */
 	public Signal popupClosed() {

@@ -20,14 +20,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>
- * 
  * CSS-based theme support. This implements the classic JWt themes, which were
  * available before theme support was customized with the addition of the
  * {@link WTheme} class.
  * <p>
  * The following table shows which style classes are applied by this theme.
  * <p>
+ * 
  * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
  * <td rowspan="12">{@link WAbstractItemView}</td>
@@ -381,6 +380,8 @@ import org.slf4j.LoggerFactory;
  * <td>an item that cannot be expanded</td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
  * <code>*</code> CSS selectors for these widgets are currently still hard-coded
  * in the widget itself.
@@ -394,6 +395,7 @@ public class WCssTheme extends WTheme {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates a classic JWt theme. JWt comes with two CSS themes:
 	 * &quot;polished&quot; and default. For the bootstrap theme, use
 	 * {@link WBootstrapTheme}.
@@ -420,6 +422,7 @@ public class WCssTheme extends WTheme {
 	/**
 	 * Returns the stylesheets.
 	 * <p>
+	 * 
 	 * Returns wt.css, plus on IE wt_ie.css, plus on IE6 wt_ie6.css. The style
 	 * sheets are located in the theme directory in the resources folder.
 	 */
@@ -635,6 +638,7 @@ public class WCssTheme extends WTheme {
 	/**
 	 * Returns a generic CSS class name for a disabled element.
 	 * <p>
+	 * 
 	 * The CSS class Wt-disabled is applied to disabled classes.
 	 */
 	public String getDisabledClass() {
@@ -644,6 +648,7 @@ public class WCssTheme extends WTheme {
 	/**
 	 * Returns a generic CSS class name for an active element.
 	 * <p>
+	 * 
 	 * The CSS class Wt-selected is applied to active classes.
 	 */
 	public String getActiveClass() {
@@ -662,6 +667,7 @@ public class WCssTheme extends WTheme {
 	/**
 	 * Returns whether the theme allows for an anchor to be styled as a button.
 	 * <p>
+	 * 
 	 * Returns false.
 	 */
 	public boolean isCanStyleAnchorAsButton() {
@@ -676,7 +682,7 @@ public class WCssTheme extends WTheme {
 		app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
 		if (app.getEnvironment().hasAjax()) {
 			StringBuilder js = new StringBuilder();
-			js.append("Wt3_4_1.setValidationState(")
+			js.append("Wt3_4_2.setValidationState(")
 					.append(widget.getJsRef())
 					.append(",")
 					.append(validation.getState() == WValidator.State.Valid ? 1

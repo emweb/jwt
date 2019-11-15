@@ -75,6 +75,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the provider name.
 	 * <p>
+	 * 
 	 * This is a short identifier.
 	 * <p>
 	 * 
@@ -88,6 +89,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the provider description.
 	 * <p>
+	 * 
 	 * This returns a description useful for e.g. tool tips on a login icon.
 	 * <p>
 	 * 
@@ -101,6 +103,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the desired width for the popup window.
 	 * <p>
+	 * 
 	 * Defaults to 670 pixels.
 	 * <p>
 	 * 
@@ -113,6 +116,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the desired height of the popup window.
 	 * <p>
+	 * 
 	 * Defaults to 400 pixels.
 	 * <p>
 	 * 
@@ -125,6 +129,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the scope needed for authentication.
 	 * <p>
+	 * 
 	 * This returns the scope that is needed (and sufficient) for obtaining
 	 * identity information, and thus to authenticate the user.
 	 * <p>
@@ -142,6 +147,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the redirection endpoint URL.
 	 * <p>
+	 * 
 	 * This is the local URL to which the browser is redirect from the service
 	 * provider, after the authorization process. You need to configure this URL
 	 * with the third party authentication service.
@@ -158,6 +164,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the authorization endpoint URL.
 	 * <p>
+	 * 
 	 * This is a remote URL which hosts the OpenID Connect authorization user
 	 * interface. This URL is loaded in the popup window at the start of an
 	 * authorization process.
@@ -172,6 +179,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the token endpoint URL.
 	 * <p>
+	 * 
 	 * This is a remote URL which hosts a web-service that generates access and
 	 * id tokens.
 	 * <p>
@@ -185,6 +193,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the user info endpoint URL.
 	 * <p>
+	 * 
 	 * This is a remote URL which hosts a web-service that provides the claims
 	 * that are associated with the requested scope.
 	 * <p>
@@ -198,6 +207,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the client ID.
 	 * <p>
+	 * 
 	 * This is the identification for this web application with the OpenID
 	 * Connect provider.
 	 * <p>
@@ -211,6 +221,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the client secret.
 	 * <p>
+	 * 
 	 * This is the secret credentials for this web application with the OpenID
 	 * Connect provider.
 	 * <p>
@@ -224,6 +235,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Returns the method to transfer the client secret.
 	 * <p>
+	 * 
 	 * The default implementation returns HttpAuthorizationBasic (the
 	 * recommended method).
 	 */
@@ -234,6 +246,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Creates a new authentication process.
 	 * <p>
+	 * 
 	 * This creates a new authentication process for the indicated scope. Valid
 	 * names for the scope are service provider dependent.
 	 * <p>
@@ -254,7 +267,6 @@ public class OidcService extends OAuthService {
 
 	/**
 	 * Sets the redirection endpoint URL.
-	 * <p>
 	 */
 	public void setRedirectEndpoint(final String url) {
 		this.redirectEndpoint_ = url;
@@ -264,6 +276,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the client ID.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 
@@ -277,6 +290,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the client secret.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 
@@ -290,6 +304,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the authorization endpoint URL.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 
@@ -303,6 +318,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the token endpoint URL.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 
@@ -316,6 +332,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the user info endpoint URL.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 
@@ -329,6 +346,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the scope needed for authentication.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 
@@ -353,6 +371,7 @@ public class OidcService extends OAuthService {
 	/**
 	 * Sets the provider description.
 	 * <p>
+	 * 
 	 * This setting is required.
 	 * <p>
 	 * 

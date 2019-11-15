@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A proxy model for Wt&apos;s item models that provides column aggregation.
+ * A proxy model for JWt&apos;s item models that provides column aggregation.
  * <p>
  * 
  * This proxy model does not store data itself, but presents data from a source
@@ -36,12 +36,13 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This example would render like this:
  * <p>
- * <div align="center"> <img src="doc-files//WAggregateProxyModel-1.png"
- * alt="A WTreeView using a WAggregateProxyModel">
+ * <div align="center"> <img src="doc-files/WAggregateProxyModel-1.png">
  * <p>
  * <strong>A WTreeView using a WAggregateProxyModel</strong>
  * </p>
  * </div>
+ * 
+ * 
  * <p>
  * <i><b>Note: </b>This model does not support dynamic changes to the column
  * definition of the source model (i.e. insertions or deletions of source model
@@ -55,6 +56,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Sets up the proxy without aggregation functionality.
 	 */
 	public WAggregateProxyModel(WObject parent) {
@@ -75,6 +77,7 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	/**
 	 * Adds a new column aggregation definition.
 	 * <p>
+	 * 
 	 * The <code>parentColumn</code> is the column index in the source model
 	 * that acts as an aggregate for columns <code>firstColumn</code> to
 	 * <code>lastColumn</code>. <code>parentColumn</code> must border the range
@@ -83,8 +86,10 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
 	 * <pre>
 	 *   {@code
 	 *    parentColumn == firstColumn - 1 || parentColumn == lastColumn + 1 
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * Note that column parameters reference column indexes in the source model.
 	 * <p>

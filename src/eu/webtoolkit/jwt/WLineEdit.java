@@ -23,15 +23,14 @@ import org.slf4j.LoggerFactory;
  * A widget that provides a single line edit.
  * <p>
  * 
- * To act upon text changes, connect a slot to the {@link WFormWidget#changed()
- * WFormWidget#changed()} signal. This signal is emitted when the user changed
- * the content, and subsequently removes the focus from the line edit.
+ * To act upon text changes, connect a slot to the {@link WFormWidget#changed()}
+ * signal. This signal is emitted when the user changed the content, and
+ * subsequently removes the focus from the line edit.
  * <p>
  * To act upon editing, connect a slot to the
- * {@link WInteractWidget#keyWentUp() WInteractWidget#keyWentUp()} signal
- * because the {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()}
- * signal is fired before the line edit has interpreted the keypress to change
- * its text.
+ * {@link WInteractWidget#keyWentUp()} signal because the
+ * {@link WInteractWidget#keyPressed()} signal is fired before the line edit has
+ * interpreted the keypress to change its text.
  * <p>
  * At all times, the current content may be accessed with the
  * {@link WLineEdit#getText() getText()} method.
@@ -48,9 +47,10 @@ import org.slf4j.LoggerFactory;
  * <code>&lt;input type=&quot;text&quot;&gt;</code> or
  * <code>&lt;input type=&quot;password&quot;&gt;</code> tag.
  * <p>
- * WLineEdit is an {@link WWidget#setInline(boolean inlined) inline} widget.
+ * WLineEdit is an {@link WWidget#setInline(boolean inlined) inline } widget.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The emptyText style can be configured via .Wt-edit-emptyText, other styling
  * can be done using inline or external CSS as appropriate.
@@ -177,6 +177,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Specifies the width of the line edit in number of characters.
 	 * <p>
+	 * 
 	 * This specifies the width of the line edit that is roughly equivalent with
 	 * <code>chars</code> characters. This does not limit the maximum length of
 	 * a string that may be entered, which may be set using
@@ -205,6 +206,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Sets the content of the line edit.
 	 * <p>
+	 * 
 	 * The default value is &quot;&quot;.
 	 * <p>
 	 * 
@@ -241,6 +243,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Returns the displayed text.
 	 * <p>
+	 * 
 	 * If {@link WLineEdit#getEchoMode() getEchoMode()} is set to Normal, and no
 	 * input mask is defined, this returns the same as
 	 * {@link WLineEdit#getText() getText()}.
@@ -270,6 +273,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Specifies the maximum length of text that can be entered.
 	 * <p>
+	 * 
 	 * A value &lt;= 0 indicates that there is no limit.
 	 * <p>
 	 * The default value is -1.
@@ -295,6 +299,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Sets the echo mode.
 	 * <p>
+	 * 
 	 * The default echo mode is Normal.
 	 */
 	public void setEchoMode(WLineEdit.EchoMode echoMode) {
@@ -318,6 +323,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Sets (built-in browser) autocomplete support.
 	 * <p>
+	 * 
 	 * Depending on the user agent, this may assist the user in filling in text
 	 * for common input fields (e.g. address information) based on some
 	 * heuristics.
@@ -345,6 +351,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Returns the current selection start.
 	 * <p>
+	 * 
 	 * Returns -1 if there is no selected text.
 	 * <p>
 	 * 
@@ -368,6 +375,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Returns the currently selected text.
 	 * <p>
+	 * 
 	 * Returns an empty string if there is currently no selected text.
 	 * <p>
 	 * 
@@ -387,7 +395,6 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Returns whether there is selected text.
-	 * <p>
 	 */
 	public boolean hasSelectedText() {
 		return this.getSelectionStart() != -1;
@@ -395,18 +402,18 @@ public class WLineEdit extends WFormWidget {
 
 	/**
 	 * Selects length characters starting from the start position.
-	 * <p>
 	 */
 	public void setSelection(int start, int length) {
 		String s = String.valueOf(start);
 		String e = String.valueOf(start + length);
-		this.doJavaScript("Wt3_4_1.setUnicodeSelectionRange(" + this.getJsRef()
+		this.doJavaScript("Wt3_4_2.setUnicodeSelectionRange(" + this.getJsRef()
 				+ "," + s + "," + e + ")");
 	}
 
 	/**
 	 * Returns the current cursor position.
 	 * <p>
+	 * 
 	 * Returns -1 if the widget does not have the focus.
 	 */
 	public int getCursorPosition() {
@@ -421,6 +428,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Returns the current value.
 	 * <p>
+	 * 
 	 * Returns {@link WLineEdit#getText() getText()}.
 	 */
 	public String getValueText() {
@@ -430,6 +438,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Sets the current value.
 	 * <p>
+	 * 
 	 * Calls {@link WLineEdit#setText(String text) setText()}.
 	 */
 	public void setValueText(final String value) {
@@ -449,6 +458,7 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Sets the input mask.
 	 * <p>
+	 * 
 	 * If no input mask is supplied, or the given input mask is empty, no input
 	 * mask is applied.
 	 * <p>
@@ -487,7 +497,7 @@ public class WLineEdit extends WFormWidget {
 	 * <td>Digit: 0-9 (required)</td>
 	 * </tr>
 	 * <tr>
-	 * <td>null</td>
+	 * <td>0</td>
 	 * <td>Digit: 0-9 (optional)</td>
 	 * </tr>
 	 * <tr>
@@ -519,6 +529,7 @@ public class WLineEdit extends WFormWidget {
 	 * <td>Binary digit: 0-1 (optional)</td>
 	 * </tr>
 	 * </table>
+	 * 
 	 * The distinction between required and optional characters won&apos;t be
 	 * apparent on the client side, but will affect the result of
 	 * {@link WLineEdit#validate() validate()}.
@@ -543,6 +554,7 @@ public class WLineEdit extends WFormWidget {
 	 * <td>The casing of the following characters remains the same</td>
 	 * </tr>
 	 * </table>
+	 * 
 	 * A backslash (&apos;\&apos;) can be used to escape any of the mask
 	 * characters or modifiers, so that they can be used verbatim in the input
 	 * mask.
@@ -593,6 +605,8 @@ public class WLineEdit extends WFormWidget {
 	 * formatted in uppercase.</td>
 	 * </tr>
 	 * </table>
+	 * 
+	 * 
 	 * <p>
 	 * Input masks are enforced by JavaScript on the client side. Without
 	 * JavaScript or using {@link WLineEdit#setText(String text) setText()},
@@ -674,12 +688,12 @@ public class WLineEdit extends WFormWidget {
 	/**
 	 * Event signal emitted when the text in the input field changed.
 	 * <p>
+	 * 
 	 * This signal is emitted whenever the text contents has changed. Unlike the
-	 * {@link WFormWidget#changed() WFormWidget#changed()} signal, the signal is
-	 * fired on every change, not only when the focus is lost. Unlike the
-	 * {@link WInteractWidget#keyPressed() WInteractWidget#keyPressed()} signal,
-	 * this signal is fired also for other events that change the text, such as
-	 * paste actions.
+	 * {@link WFormWidget#changed()} signal, the signal is fired on every
+	 * change, not only when the focus is lost. Unlike the
+	 * {@link WInteractWidget#keyPressed()} signal, this signal is fired also
+	 * for other events that change the text, such as paste actions.
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -859,7 +873,7 @@ public class WLineEdit extends WFormWidget {
 		app.loadJavaScript("js/WLineEdit.js", wtjs1());
 		String space = "";
 		space += this.spaceChar_;
-		String jsObj = "new Wt3_4_1.WLineEdit("
+		String jsObj = "new Wt3_4_2.WLineEdit("
 				+ app.getJavaScriptClass()
 				+ ","
 				+ this.getJsRef()

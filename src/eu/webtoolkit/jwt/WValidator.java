@@ -48,12 +48,16 @@ import org.slf4j.LoggerFactory;
  * {@link WValidator#getJavaScriptValidate() getJavaScriptValidate()}.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
  * <ul>
- * <li>{@link WValidator.State#Invalid}: This field cannot be empty</li>
+ * <li>{@link WValidator.State#Invalid Wt.WValidator.Invalid}: This field cannot
+ * be empty</li>
  * </ul>
+ * 
+ * 
  * <p>
  * 
  * @see WFormWidget
@@ -98,6 +102,7 @@ public class WValidator extends WObject {
 		/**
 		 * Default constructor.
 		 * <p>
+		 * 
 		 * Creates an invalid result.
 		 */
 		public Result() {
@@ -108,6 +113,7 @@ public class WValidator extends WObject {
 		/**
 		 * Constructor.
 		 * <p>
+		 * 
 		 * Creates a result with given <code>state</code> and
 		 * <code>message</code>.
 		 */
@@ -119,6 +125,7 @@ public class WValidator extends WObject {
 		/**
 		 * Constructor.
 		 * <p>
+		 * 
 		 * Creates a result with given <code>state</code> and initalizes the
 		 * message field to an empty {@link WString}.
 		 */
@@ -167,6 +174,7 @@ public class WValidator extends WObject {
 	/**
 	 * Creates a new validator.
 	 * <p>
+	 * 
 	 * Indicate whether input is mandatory.
 	 * <p>
 	 * 
@@ -192,6 +200,7 @@ public class WValidator extends WObject {
 	/**
 	 * Sets if input is mandatory.
 	 * <p>
+	 * 
 	 * When an input is not mandatory, then an empty field is always valid.
 	 */
 	public void setMandatory(boolean mandatory) {
@@ -211,6 +220,7 @@ public class WValidator extends WObject {
 	/**
 	 * Sets the message to display when a mandatory field is left blank.
 	 * <p>
+	 * 
 	 * The default value is &quot;This field cannot be empty&quot;.
 	 */
 	public void setInvalidBlankText(final CharSequence text) {
@@ -235,6 +245,8 @@ public class WValidator extends WObject {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The signature for this method changed in JWt 3.2.0. </i>
 	 * </p>
@@ -252,6 +264,7 @@ public class WValidator extends WObject {
 	/**
 	 * Returns the validator format.
 	 * <p>
+	 * 
 	 * The default implementation returns an empty string.
 	 */
 	public String getFormat() {
@@ -262,6 +275,7 @@ public class WValidator extends WObject {
 	/**
 	 * Creates a Javascript object that validates the input.
 	 * <p>
+	 * 
 	 * The JavaScript expression should evaluate to an object which contains a
 	 * <code>validate(text)</code> function, which returns an object that
 	 * contains the following two fields:
@@ -269,10 +283,13 @@ public class WValidator extends WObject {
 	 * <li>fields: a boolean <i>valid</i>,</li>
 	 * <li>a <code>message</code> that indicates the problem if not valid.</li>
 	 * </ul>
+	 * 
+	 * 
 	 * <p>
 	 * Returns an empty string if the validator does not provide a client-side
 	 * validation implementationq.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>The signature and contract changed changed in JWt
 	 * 3.1.9.</i>
@@ -293,6 +310,7 @@ public class WValidator extends WObject {
 	/**
 	 * Returns a regular expression that filters input.
 	 * <p>
+	 * 
 	 * The returned regular expression is used to filter keys presses. The
 	 * regular expression should accept valid single characters.
 	 * <p>

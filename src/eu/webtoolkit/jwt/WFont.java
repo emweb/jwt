@@ -67,7 +67,7 @@ public class WFont {
 	 */
 	public enum Style {
 		/**
-		 * Normal (default).
+		 * Normal (default)
 		 */
 		NormalStyle,
 		/**
@@ -92,7 +92,7 @@ public class WFont {
 	 */
 	public enum Variant {
 		/**
-		 * Normal (default).
+		 * Normal (default)
 		 */
 		NormalVariant,
 		/**
@@ -113,11 +113,11 @@ public class WFont {
 	 */
 	public enum Weight {
 		/**
-		 * Normal (default) (Value == 400).
+		 * Normal (default) (Value == 400)
 		 */
 		NormalWeight,
 		/**
-		 * Bold (Value == 700).
+		 * Bold (Value == 700)
 		 */
 		Bold,
 		/**
@@ -129,7 +129,7 @@ public class WFont {
 		 */
 		Lighter,
 		/**
-		 * Specify a value (100 - 900).
+		 * Specify a value (100 - 900)
 		 */
 		Value;
 
@@ -182,7 +182,7 @@ public class WFont {
 		 */
 		Larger,
 		/**
-		 * Explicit size, See also fontFixedSize().
+		 * Explicit size, See also fontFixedSize()
 		 */
 		FixedSize;
 
@@ -217,6 +217,7 @@ public class WFont {
 	/**
 	 * A font of a given family.
 	 * <p>
+	 * 
 	 * Creates a Medium font of the given family.
 	 */
 	public WFont(WFont.GenericFamily family) {
@@ -254,6 +255,7 @@ public class WFont {
 	/**
 	 * Sets the font family.
 	 * <p>
+	 * 
 	 * The font family is specified using a generic family name, in addition to
 	 * a comma-seperated list of specific font choices.
 	 * <p>
@@ -348,6 +350,7 @@ public class WFont {
 	/**
 	 * Sets the font weight.
 	 * <p>
+	 * 
 	 * When setting weight == Value, you may specify a value.
 	 * <p>
 	 * Valid values are between 100 and 900, and are rounded to multiples of
@@ -403,8 +406,9 @@ public class WFont {
 	}
 
 	/**
-	 * Sets the font size (<b>deprecated</b>).
+	 * Sets the font size (<b>deprecated</b>)
 	 * <p>
+	 * 
 	 * Use {@link WFont#setSize(WFont.Size size) setSize()} or
 	 * {@link WFont#setSize(WLength size) setSize()} instead.
 	 */
@@ -419,6 +423,7 @@ public class WFont {
 	/**
 	 * Sets the font size.
 	 * <p>
+	 * 
 	 * Sets the font size using a predefined CSS size.
 	 */
 	public void setSize(WFont.Size size) {
@@ -433,6 +438,7 @@ public class WFont {
 	/**
 	 * Sets the font size.
 	 * <p>
+	 * 
 	 * Sets the font size.
 	 */
 	public void setSize(final WLength size) {
@@ -504,6 +510,7 @@ public class WFont {
 	/**
 	 * Returns the font size as a numerical value.
 	 * <p>
+	 * 
 	 * Absolute size enumerations are converted to a length assuming a Medium
 	 * font size of 16 px.
 	 */

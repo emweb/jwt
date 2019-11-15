@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
  * acess ({@link WStandardItem#setData(Object d, int role) setData()} and
  * {@link WStandardItem#getData(int role) getData()}), or provide custom sorting
  * functionality by reimplementing
- * <p>
  * {@link WStandardItem#compare(WStandardItem other) compare()}.
  */
 public class WStandardItem {
@@ -145,7 +144,8 @@ public class WStandardItem {
 	/**
 	 * Sets the text.
 	 * <p>
-	 * The text is stored as {@link ItemDataRole#DisplayRole DisplayRole} data.
+	 * 
+	 * The text is stored as {@link ItemDataRole#DisplayRole} data.
 	 * <p>
 	 * The default text is empty (&quot;&quot;).
 	 * <p>
@@ -171,8 +171,8 @@ public class WStandardItem {
 	/**
 	 * Sets the icon url.
 	 * <p>
-	 * The icon is stored as {@link ItemDataRole#DecorationRole DecorationRole}
-	 * data.
+	 * 
+	 * The icon is stored as {@link ItemDataRole#DecorationRole} data.
 	 * <p>
 	 * The default icon url is empty (&quot;&quot;).
 	 * <p>
@@ -202,8 +202,8 @@ public class WStandardItem {
 	/**
 	 * Sets the CSS style class.
 	 * <p>
-	 * The style class is stored as {@link ItemDataRole#StyleClassRole
-	 * StyleClassRole} data.
+	 * 
+	 * The style class is stored as {@link ItemDataRole#StyleClassRole} data.
 	 * <p>
 	 * The default style class is empty (&quot;&quot;).
 	 * <p>
@@ -233,8 +233,8 @@ public class WStandardItem {
 	/**
 	 * Sets a tool tip.
 	 * <p>
-	 * The tool tip is stored as {@link ItemDataRole#ToolTipRole ToolTipRole}
-	 * data.
+	 * 
+	 * The tool tip is stored as {@link ItemDataRole#ToolTipRole} data.
 	 * <p>
 	 * The default tool tip is empty (&quot;&quot;).
 	 * <p>
@@ -264,7 +264,8 @@ public class WStandardItem {
 	/**
 	 * Sets a link.
 	 * <p>
-	 * The link is stored as {@link ItemDataRole#LinkRole LinkRole} data.
+	 * 
+	 * The link is stored as {@link ItemDataRole#LinkRole} data.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setData(Object d, int role)
@@ -291,8 +292,8 @@ public class WStandardItem {
 	/**
 	 * Sets a link to an internal path (<b>deprecated</b>).
 	 * <p>
-	 * The internal path is stored as {@link ItemDataRole#LinkRole LinkRole}
-	 * data..
+	 * 
+	 * The internal path is stored as {@link ItemDataRole#LinkRole} data..
 	 * <p>
 	 * 
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
@@ -321,7 +322,8 @@ public class WStandardItem {
 	/**
 	 * Sets a link to a URL (<b>deprecated</b>).
 	 * <p>
-	 * The URL is stored as {@link ItemDataRole#LinkRole LinkRole} data.
+	 * 
+	 * The URL is stored as {@link ItemDataRole#LinkRole} data.
 	 * <p>
 	 * 
 	 * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()}
@@ -350,8 +352,8 @@ public class WStandardItem {
 	/**
 	 * Checks or unchecks the item.
 	 * <p>
-	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
-	 * data.
+	 * 
+	 * The value is stored as {@link ItemDataRole#CheckStateRole} data.
 	 * <p>
 	 * By default, an item is not checked.
 	 * <p>
@@ -388,13 +390,13 @@ public class WStandardItem {
 	/**
 	 * Sets the check state.
 	 * <p>
+	 * 
 	 * Like {@link WStandardItem#setChecked(boolean checked) setChecked()}, this
 	 * sets the check state, but allows also setting the
 	 * {@link CheckState#PartiallyChecked} state when the item is tri-state
 	 * checkable.
 	 * <p>
-	 * The value is stored as {@link ItemDataRole#CheckStateRole CheckStateRole}
-	 * data.
+	 * The value is stored as {@link ItemDataRole#CheckStateRole} data.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setCheckable(boolean checkable)
@@ -440,8 +442,8 @@ public class WStandardItem {
 	/**
 	 * Sets the flags.
 	 * <p>
-	 * The default flag value is {@link ItemFlag#ItemIsSelectable
-	 * ItemIsSelectable}.
+	 * 
+	 * The default flag value is {@link ItemFlag#ItemIsSelectable}.
 	 * <p>
 	 * 
 	 * @see ItemFlag
@@ -477,8 +479,8 @@ public class WStandardItem {
 	/**
 	 * Makes the item checkable.
 	 * <p>
-	 * Adds {@link ItemFlag#ItemIsUserCheckable ItemIsUserCheckable} to the
-	 * item&apos;s flags.
+	 * 
+	 * Adds {@link ItemFlag#ItemIsUserCheckable} to the item&apos;s flags.
 	 * <p>
 	 * 
 	 * @see WStandardItem#setFlags(EnumSet flags)
@@ -512,6 +514,7 @@ public class WStandardItem {
 	/**
 	 * Makes the item tri-state checkable.
 	 * <p>
+	 * 
 	 * When <code>tristate</code> is <code>true</code>, the item is checkable
 	 * with three states: {@link CheckState#Unchecked},
 	 * {@link CheckState#Checked}, and {@link CheckState#PartiallyChecked}.
@@ -559,6 +562,7 @@ public class WStandardItem {
 	/**
 	 * Sets item data.
 	 * <p>
+	 * 
 	 * Sets item data for the given role.
 	 * <p>
 	 * 
@@ -589,6 +593,7 @@ public class WStandardItem {
 	/**
 	 * Returns item data.
 	 * <p>
+	 * 
 	 * Returns item data for the given role.
 	 * <p>
 	 * 
@@ -619,6 +624,7 @@ public class WStandardItem {
 	/**
 	 * Returns whether the item has any children.
 	 * <p>
+	 * 
 	 * This is a convenience method and checks whether
 	 * {@link WStandardItem#getRowCount() getRowCount()} and
 	 * {@link WStandardItem#getColumnCount() getColumnCount()} differ both from
@@ -635,12 +641,14 @@ public class WStandardItem {
 	/**
 	 * Sets the row count.
 	 * <p>
+	 * 
 	 * If <code>rows</code> is bigger than the current row count, empty rows are
 	 * appended.
 	 * <p>
 	 * If <code>rows</code> is smaller than the current row count, rows are
 	 * deleted at the end.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If <code>rows</code> &gt; 0, and
 	 * {@link WStandardItem#getColumnCount() getColumnCount()} == 0, columnCount
@@ -673,6 +681,7 @@ public class WStandardItem {
 	/**
 	 * Sets the column count.
 	 * <p>
+	 * 
 	 * If <code>columns</code> is bigger than the current column count, empty
 	 * columns are appended.
 	 * <p>
@@ -707,6 +716,7 @@ public class WStandardItem {
 	/**
 	 * Add a single column of items.
 	 * <p>
+	 * 
 	 * Appends a single column of <code>items</code>. If necessary, the row
 	 * count is increased.
 	 * <p>
@@ -715,8 +725,10 @@ public class WStandardItem {
 	 * <pre>
 	 *   {@code
 	 *    insertColumn(columnCount(), items);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertColumn(int column, List items)
@@ -729,6 +741,7 @@ public class WStandardItem {
 	/**
 	 * Inserts a single column of items.
 	 * <p>
+	 * 
 	 * Inserts a single column of <code>items</code> at column
 	 * <code>column</code>. If necessary, the row count is increased.
 	 * <p>
@@ -773,6 +786,7 @@ public class WStandardItem {
 	/**
 	 * Add a single row of items.
 	 * <p>
+	 * 
 	 * Appends a single row of <code>items</code>. If necessary, the column
 	 * count is increased.
 	 * <p>
@@ -781,8 +795,10 @@ public class WStandardItem {
 	 * <pre>
 	 *   {@code
 	 *    insertRow(rowCount(), items);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, List items)
@@ -795,6 +811,7 @@ public class WStandardItem {
 	/**
 	 * Inserts a single row of items.
 	 * <p>
+	 * 
 	 * Inserts a single row of <i>items</i> at row <code>row</code>. If
 	 * necessary, the column count is increased.
 	 * <p>
@@ -828,6 +845,7 @@ public class WStandardItem {
 	/**
 	 * Inserts a number of empty columns.
 	 * <p>
+	 * 
 	 * Inserts <i>count</i> empty columns at position <code>column</code>.
 	 * <p>
 	 * 
@@ -863,6 +881,7 @@ public class WStandardItem {
 	/**
 	 * Inserts a number of empty rows.
 	 * <p>
+	 * 
 	 * Inserts <i>count</i> empty rows at position <code>row</code>.
 	 * <p>
 	 * 
@@ -897,6 +916,7 @@ public class WStandardItem {
 	/**
 	 * Appends a row containing one item.
 	 * <p>
+	 * 
 	 * This is a convenience method for nodes with a single column (for example
 	 * for tree nodes). This adds a row with a single item, and is equivalent
 	 * to:
@@ -905,8 +925,10 @@ public class WStandardItem {
 	 * <pre>
 	 *   {@code
 	 *    insertRow(rowCount(), item);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WStandardItem#insertRow(int row, WStandardItem item)
@@ -918,6 +940,7 @@ public class WStandardItem {
 	/**
 	 * Inserts a row containing one item.
 	 * <p>
+	 * 
 	 * This is a convenience method for nodes with a single column (for example
 	 * for tree nodes). This inserts a row with a single item, and is equivalent
 	 * to:
@@ -929,11 +952,11 @@ public class WStandardItem {
 	 * 	List&lt;WStandardItem&gt; r;
 	 * 	r.add(item);
 	 * 	insertRow(row, r);
+	 * 
 	 * }
 	 * </pre>
-	 * <p>
 	 * 
-	 * @see WStandardItem#insertRow(int row, List items)
+	 * <p>
 	 */
 	public void insertRow(int row, WStandardItem item) {
 		List<WStandardItem> r = new ArrayList<WStandardItem>();
@@ -944,6 +967,7 @@ public class WStandardItem {
 	/**
 	 * Appends multiple rows containing one item.
 	 * <p>
+	 * 
 	 * This is a convenience method for nodes with a single column (for example
 	 * for tree nodes). This adds a number of rows, each containing a single
 	 * item, and is equivalent to:
@@ -952,11 +976,11 @@ public class WStandardItem {
 	 * <pre>
 	 *   {@code
 	 *    insertRows(rowCount(), items);
+	 *    
 	 *   }
 	 * </pre>
-	 * <p>
 	 * 
-	 * @see WStandardItem#insertRows(int row, List items)
+	 * <p>
 	 */
 	public void appendRows(final List<WStandardItem> items) {
 		this.insertRows(this.getRowCount(), items);
@@ -965,6 +989,7 @@ public class WStandardItem {
 	/**
 	 * Inserts multiple rows containing one item.
 	 * <p>
+	 * 
 	 * This is a convenience method for nodes with a single column (for example
 	 * for tree nodes). This inserts a number of rows at row <code>row</code>,
 	 * each containing a single item, and is equivalent to:
@@ -984,6 +1009,7 @@ public class WStandardItem {
 	/**
 	 * Sets a child item.
 	 * <p>
+	 * 
 	 * Sets a child item <i>item</i> at position (<code>row</code>,
 	 * <code>column</code>). If an item was previously set, it is deleted first.
 	 * <p>
@@ -1013,14 +1039,17 @@ public class WStandardItem {
 	/**
 	 * Sets a child item.
 	 * <p>
+	 * 
 	 * This is a convenience method for nodes with a single column (e.g. tree
 	 * nodes), and is equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    setChild(row, 0, item);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WStandardItem#setChild(int row, int column, WStandardItem item)
@@ -1032,6 +1061,7 @@ public class WStandardItem {
 	/**
 	 * Returns a child item.
 	 * <p>
+	 * 
 	 * Returns the child item at position (<i>row</i>, <code>column</code>).
 	 * This may be <code>null</code> if an item was not previously set, or if
 	 * the position is out of bounds.
@@ -1059,6 +1089,7 @@ public class WStandardItem {
 	/**
 	 * Takes a child out of the item.
 	 * <p>
+	 * 
 	 * Returns the child item at position (<i>row</i>, <code>column</code>), and
 	 * removes it (by setting <code>null</code> instead). Ownership of the item
 	 * is transferred to the caller.
@@ -1088,6 +1119,7 @@ public class WStandardItem {
 	/**
 	 * Takes a column of children out of the item.
 	 * <p>
+	 * 
 	 * Returns the column <code>column</code>, and removes the column from the
 	 * model (reducing the column count by one). Ownership of all items is
 	 * transferred to the caller.
@@ -1119,6 +1151,7 @@ public class WStandardItem {
 	/**
 	 * Takes a row of children out of the item.
 	 * <p>
+	 * 
 	 * Returns the row <code>row</code>, and removes the row from the model
 	 * (reducing the row count by one). Ownership of all items is transferred to
 	 * the caller.
@@ -1154,14 +1187,17 @@ public class WStandardItem {
 	/**
 	 * Removes a single column.
 	 * <p>
+	 * 
 	 * Removes the column <code>column</code> from the model (reducing the
 	 * column count by one). Is equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    removeColumns(column, 1);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeColumns(int column, int count)
@@ -1174,6 +1210,7 @@ public class WStandardItem {
 	/**
 	 * Removes a number of columns.
 	 * <p>
+	 * 
 	 * Removes <code>count</code> columns from the model (reducing the column
 	 * count by <code>count</code>).
 	 * <p>
@@ -1207,14 +1244,17 @@ public class WStandardItem {
 	/**
 	 * Removes a single row.
 	 * <p>
+	 * 
 	 * Removes the row <code>row</code> from the model (reducing the row count
 	 * by one). Is equivalent to:
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    removeRows(row, 1);
+	 *    
 	 *   }
 	 * </pre>
+	 * 
 	 * <p>
 	 * 
 	 * @see WStandardItem#removeRows(int row, int count)
@@ -1227,6 +1267,7 @@ public class WStandardItem {
 	/**
 	 * Removes a number of rows.
 	 * <p>
+	 * 
 	 * Removes <code>count</code> rows from the model (reducing the row count by
 	 * <code>count</code>).
 	 * <p>
@@ -1270,6 +1311,7 @@ public class WStandardItem {
 	/**
 	 * Returns the model.
 	 * <p>
+	 * 
 	 * This is the model that this item belongs to, or 0 if the item is not
 	 * associated with a model.
 	 */
@@ -1280,6 +1322,7 @@ public class WStandardItem {
 	/**
 	 * Returns the parent item.
 	 * <p>
+	 * 
 	 * Returns the parent item.
 	 * <p>
 	 * 
@@ -1292,6 +1335,7 @@ public class WStandardItem {
 	/**
 	 * Returns the row index.
 	 * <p>
+	 * 
 	 * Returns the row index of this item in the parent.
 	 * <p>
 	 * 
@@ -1304,6 +1348,7 @@ public class WStandardItem {
 	/**
 	 * Returns the column index.
 	 * <p>
+	 * 
 	 * Returns the column index of this item in the parent.
 	 * <p>
 	 * 
@@ -1329,16 +1374,15 @@ public class WStandardItem {
 	/**
 	 * Sorts the children according to a given column and sort order.
 	 * <p>
+	 * 
 	 * Children of this item, and all children items are sorted recursively.
 	 * Existing model indexes will be invalidated by the operation (will point
 	 * to other items).
 	 * <p>
-	 * The {@link WAbstractItemModel#layoutAboutToBeChanged()
-	 * WAbstractItemModel#layoutAboutToBeChanged()} and
-	 * {@link WAbstractItemModel#layoutChanged()
-	 * WAbstractItemModel#layoutChanged()} signals are emitted before and after
-	 * the operation so that you get a chance to invalidate or update model
-	 * indexes.
+	 * The {@link WAbstractItemModel#layoutAboutToBeChanged()} and
+	 * {@link WAbstractItemModel#layoutChanged()} signals are emitted before and
+	 * after the operation so that you get a chance to invalidate or update
+	 * model indexes.
 	 * <p>
 	 * 
 	 * @see WStandardItem#compare(WStandardItem other)
@@ -1357,6 +1401,7 @@ public class WStandardItem {
 	/**
 	 * Set the model for this {@link WStandardItem} and its children.
 	 * <p>
+	 * 
 	 * You may override this method if you want to change its behaviour.
 	 */
 	protected void setModel(WStandardItemModel model) {
@@ -1374,6 +1419,7 @@ public class WStandardItem {
 	/**
 	 * Compares the item with another item.
 	 * <p>
+	 * 
 	 * This is used during sorting (from
 	 * {@link WStandardItem#sortChildren(int column, SortOrder order)
 	 * sortChildren()}), and returns which of the two items is the lesser, based
@@ -1381,7 +1427,7 @@ public class WStandardItem {
 	 * <p>
 	 * The default implementation compares the data based on the value
 	 * corresponding to the {@link WStandardItemModel#getSortRole()
-	 * WStandardItemModel#getSortRole()}.
+	 * getSortRole()}.
 	 * <p>
 	 * 
 	 * @see WStandardItem#sortChildren(int column, SortOrder order)

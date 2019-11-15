@@ -58,6 +58,7 @@ public class AuthTokenResult {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates an authentication token result.
 	 */
 	public AuthTokenResult(AuthTokenResult.Result result, final User user,
@@ -112,6 +113,7 @@ public class AuthTokenResult {
 	/**
 	 * Returns the identified user.
 	 * <p>
+	 * 
 	 * The user is valid only if the the {@link AuthTokenResult#getResult()
 	 * getResult()} == Valid.
 	 */
@@ -126,9 +128,9 @@ public class AuthTokenResult {
 	/**
 	 * Returns a new token for this user.
 	 * <p>
+	 * 
 	 * Returns the empty string if there is no new token. See
-	 * {@link AuthService#isAuthTokenUpdateEnabled()
-	 * AuthService#isAuthTokenUpdateEnabled()}.
+	 * {@link AuthService#isAuthTokenUpdateEnabled()}.
 	 * <p>
 	 * The returned token is valid only if the
 	 * {@link AuthTokenResult#getResult() getResult()} == Valid.
@@ -144,6 +146,7 @@ public class AuthTokenResult {
 	/**
 	 * Returns the validity of the new token.
 	 * <p>
+	 * 
 	 * This returns the token validity in seconds.
 	 * <p>
 	 * Returns -1 if there is no new token, or

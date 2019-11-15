@@ -42,14 +42,12 @@ import org.slf4j.LoggerFactory;
  * The figure below illustrates the possible colormaps that can be constructed
  * from the list {&quot;0.0 - darkRed&quot;, &quot;1.0 - red&quot;, &quot;2.0 -
  * gray&quot;}. The discrete map (on the left) has the range [0, 3], the
- * continuous map (on the right) has the range [0, 2]. The utility-method
- * DOCREF<a class="el" href=
- * "classWt_1_1Chart_1_1WStandardColorMap.html#39cfdfa352116ee10e544ca8f684596a"
- * >discretise()</a> is also applied to the continuous colormap to obtain a
- * colormap with 5 bands in the same range.
+ * continuous map (on the right) has the range [0, 2]. The utility method
+ * {@link WStandardColorMap#discretise(int numberOfBands) discretise()} is also
+ * applied to the continuous colormap to obtain a colormap with 5 bands in the
+ * same range.
  * <p>
- * <div align="center"> <img src="doc-files//standardcolormaps.png"
- * alt="Different uses of WStandardColorMap">
+ * <div align="center"> <img src="doc-files/standardcolormaps.png">
  * <p>
  * <strong>Different uses of WStandardColorMap</strong>
  * </p>
@@ -70,8 +68,8 @@ public class WStandardColorMap extends WAbstractColorMap {
 		}
 
 		/**
-		 * Constructs a WStandardColorMapPair from a double and a {@link WColor}
-		 * .
+		 * Constructs a WStandardColorMap::Pair from a double and a
+		 * {@link WColor}.
 		 */
 		public Pair(double val, WColor col) {
 			this.value_ = val;
@@ -101,6 +99,7 @@ public class WStandardColorMap extends WAbstractColorMap {
 	/**
 	 * Construct a default colormap.
 	 * <p>
+	 * 
 	 * The default colormap is a transition from yellow to red. The color-scheme
 	 * was taken from <a href=
 	 * "http://www.personal.psu.edu/faculty/c/a/cab38/ColorBrewer/ColorBrewer.html"
@@ -132,6 +131,7 @@ public class WStandardColorMap extends WAbstractColorMap {
 	/**
 	 * Construct a custom colormap.
 	 * <p>
+	 * 
 	 * This constructor allows you to pass a list of value-to-color pairs that
 	 * define a colormap as described in the class description.
 	 */
@@ -156,6 +156,7 @@ public class WStandardColorMap extends WAbstractColorMap {
 	 * Utility method to discretise a continuous colormap in a number of equally
 	 * sized bands.
 	 * <p>
+	 * 
 	 * This method makes a new list of value-to-color pairs by discretising the
 	 * linear interpolation of the previous one into numberOfBands equally sized
 	 * colorbands. This method only has effect if the colormap is continuous.

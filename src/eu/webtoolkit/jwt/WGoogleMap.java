@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * not been set, it will use a key that is suitable for localhost.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  * <p>
@@ -99,7 +100,7 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	/**
-	 * A geographical coordinate (latitude/longitude).
+	 * A geographical coordinate (latitude/longitude)
 	 */
 	public static class Coordinate {
 		private static Logger logger = LoggerFactory
@@ -160,6 +161,7 @@ public class WGoogleMap extends WCompositeWidget {
 		/**
 		 * Calculates the distance between two points in km (approximate).
 		 * <p>
+		 * 
 		 * The calculation uses a sphere. Results can be out by 0.3%.
 		 */
 		public double distanceTo(final WGoogleMap.Coordinate rhs) {
@@ -269,6 +271,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Adds a polyline overlay to the map.
 	 * <p>
+	 * 
 	 * Specify a value between 0.0 and 1.0 for the opacity or set the alpha
 	 * value in the color.
 	 */
@@ -343,6 +346,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Adds a circle to the map.
 	 * <p>
+	 * 
 	 * The stroke and fill opacity can be configured respectively in the
 	 * strokeColor and fillColor. This feature is only supported by the Google
 	 * Maps API version 3.
@@ -484,6 +488,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Changes the center point of the map to the given point.
 	 * <p>
+	 * 
 	 * If the point is already visible in the current map view, change the
 	 * center in a smooth animation.
 	 */
@@ -560,6 +565,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Stores the current map position and zoom level.
 	 * <p>
+	 * 
 	 * You can later restore this position using
 	 * {@link WGoogleMap#returnToSavedPosition() returnToSavedPosition()}.
 	 */
@@ -597,6 +603,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Notifies the map of a change of the size of its container.
 	 * <p>
+	 * 
 	 * Call this method after the size of the container DOM object has changed,
 	 * so that the map can adjust itself to fit the new size.
 	 * <p>
@@ -656,11 +663,13 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Enables the GoogleBar, an integrated search control, on the map.
 	 * <p>
+	 * 
 	 * When enabled, this control takes the place of the default Powered By
 	 * Google logo.
 	 * <p>
 	 * This control is initially disabled.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This functionality is no longer available in the Google
 	 * Maps API v3. </i>
@@ -678,10 +687,12 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Disables the GoogleBar integrated search control.
 	 * <p>
+	 * 
 	 * When disabled, the default Powered by Google logo occupies the position
 	 * formerly containing this control. Note that this control is already
 	 * disabled by default.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This functionality is no longer available in the Google
 	 * Maps API v3. </i>
@@ -699,6 +710,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Enables zooming using a mouse&apos;s scroll wheel.
 	 * <p>
+	 * 
 	 * Scroll wheel zoom is disabled by default.
 	 */
 	public void enableScrollWheelZoom() {
@@ -713,6 +725,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Disables zooming using a mouse&apos;s scroll wheel.
 	 * <p>
+	 * 
 	 * Scroll wheel zoom is disabled by default.
 	 */
 	public void disableScrollWheelZoom() {
@@ -727,6 +740,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Sets the map type control.
 	 * <p>
+	 * 
 	 * The control allows selecting and switching between supported map types
 	 * via buttons.
 	 */
@@ -792,6 +806,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * The click event.
 	 * <p>
+	 * 
 	 * This event is fired when the user clicks on the map with the mouse.
 	 */
 	public JSignal1<WGoogleMap.Coordinate> clicked() {
@@ -801,6 +816,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * The double click event.
 	 * <p>
+	 * 
 	 * This event is fired when a double click is done on the map.
 	 */
 	public JSignal1<WGoogleMap.Coordinate> doubleClicked() {
@@ -883,6 +899,7 @@ public class WGoogleMap extends WCompositeWidget {
 	/**
 	 * Execute a piece of JavaScript that manipulates the map.
 	 * <p>
+	 * 
 	 * This is like {@link WCompositeWidget#doJavaScript(String js)
 	 * WCompositeWidget#doJavaScript()} but delays the javascript until the map
 	 * has been loaded.

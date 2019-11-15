@@ -90,6 +90,7 @@ public class WStringListModel extends WAbstractListModel {
 	/**
 	 * Sets a new string list.
 	 * <p>
+	 * 
 	 * Replaces the current string list with a new list.
 	 * <p>
 	 * 
@@ -158,8 +159,9 @@ public class WStringListModel extends WAbstractListModel {
 	/**
 	 * Sets model flags for an item.
 	 * <p>
-	 * The default item flags are {@link ItemFlag#ItemIsSelectable
-	 * ItemIsSelectable} | {@link ItemFlag#ItemIsEditable ItemIsEditable}.
+	 * 
+	 * The default item flags are {@link ItemFlag#ItemIsSelectable} |
+	 * {@link ItemFlag#ItemIsEditable}.
 	 */
 	public void setFlags(int row, EnumSet<ItemFlag> flags) {
 		if (this.flags_.isEmpty()) {
@@ -191,6 +193,7 @@ public class WStringListModel extends WAbstractListModel {
 	/**
 	 * Returns the flags for an item.
 	 * <p>
+	 * 
 	 * This method is reimplemented to return flags set in
 	 * {@link WStringListModel#setFlags(int row, EnumSet flags) setFlags()}.
 	 * <p>

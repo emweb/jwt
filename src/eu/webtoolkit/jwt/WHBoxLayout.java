@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
  * more information.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -44,9 +43,12 @@ import org.slf4j.LoggerFactory;
  * 	layout.addWidget(new WText(&quot;Four&quot;));
  * 
  * 	w.setLayout(layout);
+ * 
  * }
  * </pre>
+ * 
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>First consider if you can achieve your layout using CSS !</i>
  * </p>
@@ -59,6 +61,7 @@ public class WHBoxLayout extends WBoxLayout {
 	/**
 	 * Creates a new horizontal box layout.
 	 * <p>
+	 * 
 	 * Use <code>parent</code> = <code>null</code> to create a layout manager
 	 * that can be nested inside other layout managers, or to specify a specific
 	 * alignment when setting the layout to a {@link WContainerWidget}.

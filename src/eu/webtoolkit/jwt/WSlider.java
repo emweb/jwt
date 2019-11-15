@@ -31,12 +31,14 @@ import org.slf4j.LoggerFactory;
  * manager. The default size is 150 x 50 pixels for a horizontal slider, and 50
  * x 150 pixels for a vertical slider.
  * <p>
- * <div align="center"> <img src="doc-files//WSlider-1.png"
- * alt="Horizontal slider with ticks on both sides.">
+ * <div align="center"> <img src="doc-files/WSlider-1.png">
  * <p>
  * <strong>Horizontal slider with ticks on both sides.</strong>
  * </p>
- * </div> <h3>CSS</h3>
+ * </div>
+ * 
+ * <h3>CSS</h3>
+ * 
  * <p>
  * The non-native slider (HTML4, see
  * {@link WSlider#setNativeControl(boolean nativeControl) setNativeControl()})
@@ -66,14 +68,8 @@ public class WSlider extends WFormWidget {
 		}
 	}
 
-	/**
-	 * Do not render ticks.
-	 */
 	public static final EnumSet<WSlider.TickPosition> NoTicks = EnumSet
 			.noneOf(WSlider.TickPosition.class);
-	/**
-	 * Render ticks on both sides.
-	 */
 	public static final EnumSet<WSlider.TickPosition> TicksBothSides = EnumSet
 			.of(WSlider.TickPosition.TicksAbove,
 					WSlider.TickPosition.TicksBelow);
@@ -81,6 +77,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Creates a default horizontal slider.
 	 * <p>
+	 * 
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
 	 * of 0 (defaulting to three ticks over the whole range).
 	 * <p>
@@ -118,6 +115,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Creates a default slider of the given orientation.
 	 * <p>
+	 * 
 	 * The slider shows no ticks, has a range from 0 to 99, and has tickInterval
 	 * of 0 (defaulting to three ticks over the whole range).
 	 * <p>
@@ -166,12 +164,14 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Configures whether a native HTML5 control should be used.
 	 * <p>
+	 * 
 	 * When <code>native</code>, the new &quot;range&quot; input element,
 	 * specified by HTML5 and when implemented by the browser, is used rather
 	 * than the built-in element. A native control is styled by the browser
 	 * (usually in sync with the OS) rather than through the theme chosen.
 	 * Settings like tick interval and tick position are ignored.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Vertically oriented sliders are in theory supported by
 	 * the HTML5 input element, but in practice are usually not rendered
@@ -185,6 +185,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Returns whether a native HTML5 control is used.
 	 * <p>
+	 * 
 	 * Taking into account the preference for a native control, configured using
 	 * {@link WSlider#setNativeControl(boolean nativeControl)
 	 * setNativeControl()}, this method returns whether a native control is
@@ -235,6 +236,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the tick interval.
 	 * <p>
+	 * 
 	 * The tick interval specifies the interval for placing ticks along the
 	 * slider. The interval is specified in value units (not pixel units). A
 	 * value of 0 specifies an automatic tick interval, which defaults to 3
@@ -264,6 +266,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the tick position.
 	 * <p>
+	 * 
 	 * The tick position indicates if and where ticks are placed around the
 	 * slider groove.
 	 * <p>
@@ -303,6 +306,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the slider value.
 	 * <p>
+	 * 
 	 * The value is automatically trimmed to the valid range (
 	 * {@link WSlider#getMinimum() getMinimum()} to {@link WSlider#getMaximum()
 	 * getMaximum()}).
@@ -332,6 +336,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the maximum value.
 	 * <p>
+	 * 
 	 * The maximum value defines the upper limit of the valid range. The lower
 	 * limit and current value are automatically adjusted to remain valid.
 	 * <p>
@@ -360,6 +365,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the minimum value.
 	 * <p>
+	 * 
 	 * The minimum value defines the lower limit of the valid range. The upper
 	 * limit and current value are automatically adjusted to remain valid.
 	 * <p>
@@ -403,6 +409,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Signal emitted when the user has changed the value of the slider.
 	 * <p>
+	 * 
 	 * The new value is passed as the argument.
 	 * <p>
 	 * 
@@ -415,6 +422,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Signal emitted while the user drags the slider.
 	 * <p>
+	 * 
 	 * The current dragged position is passed as the argument. Note that the
 	 * slider value is not changed while dragging the slider, but only after the
 	 * slider has been released.
@@ -429,6 +437,7 @@ public class WSlider extends WFormWidget {
 	/**
 	 * Sets the slider handle width.
 	 * <p>
+	 * 
 	 * This sets the width for the handle, which is needed to accurately
 	 * position the handle.
 	 * <p>
@@ -483,8 +492,9 @@ public class WSlider extends WFormWidget {
 	}
 
 	/**
-	 * Paints a slider ticks (for a non-native widget).
+	 * Paints a slider ticks (for a non-native widget)
 	 * <p>
+	 * 
 	 * The default implementation draws ticks taking into account the the
 	 * tickPosition.
 	 * <p>
@@ -533,8 +543,9 @@ public class WSlider extends WFormWidget {
 	}
 
 	/**
-	 * Creates the handle (for a non-native widget).
+	 * Creates the handle (for a non-native widget)
 	 * <p>
+	 * 
 	 * The default implementation creates a container widget. You may want to
 	 * specialize this function if you want to have more control on the handle
 	 * appearance or if you want to associate with the handle a tooltip or other

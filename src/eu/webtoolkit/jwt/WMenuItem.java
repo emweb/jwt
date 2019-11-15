@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  * belongs.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * A menu item renders as a &gt;li&amp;;lt with additional markup/style classes
  * provided by the theme. Unless you use the bootstrap theme, you will need to
@@ -63,6 +64,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Creates a new item with given label.
 	 * <p>
+	 * 
 	 * The optional contents is a widget that will be shown in the {@link WMenu}
 	 * contents stack when the item is selected. For this widget, a load
 	 * <code>policy</code> specifies whether the contents widgets is transmitted
@@ -143,6 +145,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets the text for this item.
 	 * <p>
+	 * 
 	 * Unless a custom path component was defined, the
 	 * {@link WMenuItem#getPathComponent() getPathComponent()} is also updated
 	 * based on the new text.
@@ -200,6 +203,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets the item icon path.
 	 * <p>
+	 * 
 	 * The icon should have a width of 16 pixels.
 	 * <p>
 	 * 
@@ -237,6 +241,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets if the item is checkable.
 	 * <p>
+	 * 
 	 * When an item is checkable, a checkbox is displayed to the left of the
 	 * item text (instead of an icon).
 	 * <p>
@@ -274,26 +279,28 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets the path component for this item.
 	 * <p>
+	 * 
 	 * The path component is used by the menu item in the application internal
-	 * path (see {@link WApplication#getBookmarkUrl()
-	 * WApplication#getBookmarkUrl()}), when internal paths are enabled (see
+	 * path (see
+	 * {@link WApplication#setInternalPath(String path, boolean emitChange)
+	 * WApplication#setInternalPath()}), when internal paths are enabled (see
 	 * {@link WMenu#setInternalPathEnabled(String basePath)
 	 * WMenu#setInternalPathEnabled()}) for the menu.
 	 * <p>
 	 * You may specify an empty <code>path</code> to let a menu item be the
 	 * &quot;default&quot; menu option.
 	 * <p>
-	 * For example, if {@link WMenu#getInternalBasePath()
-	 * WMenu#getInternalBasePath()} is <code>&quot;/examples/&quot;</code> and
+	 * For example, if {@link WMenu#getInternalBasePath()} is
+	 * <code>&quot;/examples/&quot;</code> and
 	 * {@link WMenuItem#getPathComponent() getPathComponent()} for is
 	 * <code>&quot;charts/&quot;</code>, then the internal path for the item
 	 * will be <code>&quot;/examples/charts/&quot;</code>.
 	 * <p>
 	 * By default, the path is automatically derived from
-	 * {@link WMenuItem#getText() getText()}. If a {@link WString#isLiteral()
-	 * literal text} is used, the path is based on the text itself, otherwise on
-	 * the {@link WString#getKey() key}. It is converted to lower case, and
-	 * replacing white space and special characters with &apos;_&apos;.
+	 * {@link WMenuItem#getText() getText()}. If a {@link WString#isLiteral()}
+	 * is used, the path is based on the text itself, otherwise on the
+	 * {@link WString#getKey()}. It is converted to lower case, and replacing
+	 * white space and special characters with &apos;_&apos;.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setText(CharSequence text)
@@ -311,6 +318,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Returns the path component for this item.
 	 * <p>
+	 * 
 	 * You may want to reimplement this to customize the path component set by
 	 * the item in the application internal path.
 	 * <p>
@@ -324,6 +332,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Configures internal path support for the item.
 	 * <p>
+	 * 
 	 * This configures whether the item supports internal paths (in a menu which
 	 * supports internal paths).
 	 * <p>
@@ -350,7 +359,6 @@ public class WMenuItem extends WContainerWidget {
 
 	/**
 	 * Sets the associated link.
-	 * <p>
 	 */
 	public void setLink(final WLink link) {
 		WAnchor a = this.getAnchor();
@@ -406,12 +414,14 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets a sub menu.
 	 * <p>
+	 * 
 	 * Ownership of the <code>subMenu</code> is transferred to the item. In most
 	 * cases, the sub menu would use the same contents stack as the parent menu.
 	 * <p>
 	 * Note that adding a submenu makes this item not
 	 * {@link WMenuItem#isSelectable() selectable} by default.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>If the {@link WMenuItem#getParentMenu() parent menu} is a
 	 * {@link WPopupMenu}, the submenu should also be a {@link WPopupMenu}.</i>
@@ -448,7 +458,7 @@ public class WMenuItem extends WContainerWidget {
 	}
 
 	/**
-	 * Sets a sub menu (<b>deprecated</b>).
+	 * Sets a sub menu (<b>deprecated</b>)
 	 * <p>
 	 * 
 	 * @deprecated use {@link WMenuItem#setMenu(WMenu menu) setMenu()} instead
@@ -470,6 +480,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets the checked state.
 	 * <p>
+	 * 
 	 * This is only used when {@link WMenuItem#isCheckable() isCheckable()} ==
 	 * <code>true</code>.
 	 * <p>
@@ -488,6 +499,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Returns the checked state.
 	 * <p>
+	 * 
 	 * This is only used when {@link WMenuItem#isCheckable() isCheckable()} ==
 	 * <code>true</code>.
 	 * <p>
@@ -508,6 +520,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets whether the menu item can be selected.
 	 * <p>
+	 * 
 	 * Only a menu item that can be selected can be the result of a popup menu
 	 * selection.
 	 * <p>
@@ -533,6 +546,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets associated additional data with the item.
 	 * <p>
+	 * 
 	 * You can use this to associate model information with a menu item.
 	 */
 	public void setData(Object data) {
@@ -602,8 +616,9 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Closes this item.
 	 * <p>
-	 * Hides the item widget and emits {@link WMenu#itemClosed()
-	 * WMenu#itemClosed()} signal. Only closeable items can be closed.
+	 * 
+	 * Hides the item widget and emits {@link WMenu#itemClosed()} signal. Only
+	 * closeable items can be closed.
 	 * <p>
 	 * 
 	 * @see WMenuItem#setCloseable(boolean closeable)
@@ -625,6 +640,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Sets the contents widget for this item.
 	 * <p>
+	 * 
 	 * The contents is a widget that will be shown in the {@link WMenu} contents
 	 * stack when the item is selected. For this widget, the load
 	 * <code>policy</code> specifies whether the contents widgets is transmitted
@@ -703,6 +719,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Returns the widget that represents the item (<b>deprecated</b>).
 	 * <p>
+	 * 
 	 * This returns this.
 	 * <p>
 	 * 
@@ -716,6 +733,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Selects this item.
 	 * <p>
+	 * 
 	 * If the item was previously closed it will be shown.
 	 * <p>
 	 * 
@@ -730,6 +748,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Signal emitted when an item is activated.
 	 * <p>
+	 * 
 	 * Returns this item as argument.
 	 * <p>
 	 */
@@ -762,6 +781,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Returns the anchor of this menu item.
 	 * <p>
+	 * 
 	 * Can be used to add widgets to the menu.
 	 */
 	public WAnchor getAnchor() {
@@ -778,6 +798,7 @@ public class WMenuItem extends WContainerWidget {
 	/**
 	 * Renders the item as selected or unselected.
 	 * <p>
+	 * 
 	 * The default implementation sets the styleclass for
 	 * {@link WMenuItem#getItemWidget() getItemWidget()} to &apos;item&apos; for
 	 * an unselected not closeable, &apos;itemselected&apos; for selected not

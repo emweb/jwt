@@ -29,14 +29,15 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li><code>google-oauth2-redirect-endpoint</code>: the URL of the local
  * redirect endpoint, to which the google OAuth service redirects the user after
- * authentication. See also {@link OidcService#getRedirectEndpoint()
- * OidcService#getRedirectEndpoint()}</li>
+ * authentication. See also {@link OidcService#getRedirectEndpoint()}</li>
  * <li><code>google-oauth2-redirect-endpoint-path</code>: optionally, the
  * deployment path that corresponds to the redirect endpoint. See also
  * {@link GoogleService#getRedirectEndpointPath() getRedirectEndpointPath()}</li>
  * <li><code>google-oauth2-client-id</code>: The client ID</li>
  * <li><code>google-oauth2-client-secret</code>: The client secret.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * For example:
  * 
@@ -53,8 +54,10 @@ import org.slf4j.LoggerFactory;
  *      abcdefghijk-12312312312
  *    </property>
  *  </properties>
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * Like all <b>service classes</b>, this class holds only configuration state.
  * Thus, once configured, it can be safely shared between multiple sessions
@@ -89,6 +92,7 @@ public class GoogleService extends OidcService {
 	/**
 	 * Checks whether a GoogleAuth service is properly configured.
 	 * <p>
+	 * 
 	 * This returns <code>true</code> if a value is found for the three
 	 * configuration properties.
 	 */

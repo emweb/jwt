@@ -86,6 +86,7 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Sets the date.
 	 * <p>
+	 * 
 	 * Does nothing if the current date is <code>Null</code>.
 	 * <p>
 	 * 
@@ -102,10 +103,12 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Returns the date.
 	 * <p>
+	 * 
 	 * Reads the current date.
 	 * <p>
 	 * Returns <code>null</code> if the date could not be parsed using the
 	 * current {@link WDateEdit#getFormat() getFormat()}. <br>
+	 * 
 	 * <p>
 	 * 
 	 * @see WDateEdit#setDate(WDate date)
@@ -118,6 +121,7 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Returns the validator.
 	 * <p>
+	 * 
 	 * Most of the configuration of the date edit is stored in the validator.
 	 */
 	public WDateValidator getValidator() {
@@ -128,9 +132,10 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Sets the format used for representing the date.
 	 * <p>
+	 * 
 	 * This sets the format in the validator.
 	 * <p>
-	 * The default format is based on the current {@link WLocale}.
+	 * The default format is based on the current WLocale.
 	 * <p>
 	 * 
 	 * @see WDateValidator#setFormat(String format)
@@ -170,6 +175,7 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Sets the lower limit of the valid date range.
 	 * <p>
+	 * 
 	 * This sets the lower limit of the valid date range in the validator.
 	 * <p>
 	 * 
@@ -196,6 +202,7 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Sets the upper limit of the valid date range.
 	 * <p>
+	 * 
 	 * This sets the upper limit of the valid date range in the validator.
 	 * <p>
 	 * 
@@ -222,6 +229,7 @@ public class WDateEdit extends WLineEdit {
 	/**
 	 * Returns the calendar widget.
 	 * <p>
+	 * 
 	 * The calendar may be 0 (e.g. when using a native date entry widget).
 	 */
 	public WCalendar getCalendar() {
@@ -343,7 +351,7 @@ public class WDateEdit extends WLineEdit {
 	private void defineJavaScript() {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WDateEdit.js", wtjs1());
-		String jsObj = "new Wt3_4_1.WDateEdit(" + app.getJavaScriptClass()
+		String jsObj = "new Wt3_4_2.WDateEdit(" + app.getJavaScriptClass()
 				+ "," + this.getJsRef() + ","
 				+ jsStringLiteral(this.popup_.getId()) + ");";
 		this.setJavaScriptMember(" WDateEdit", jsObj);

@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
  * <li>the user indicates that he lost his email and wants to prove his identity
  * by acknowledging an email to a previously verified email account.</li>
  * </ul>
+ * 
+ * 
  * <p>
  * 
  * @see AuthService#processEmailToken(String token, AbstractUserDatabase users)
@@ -58,6 +60,7 @@ public class EmailTokenResult {
 		 * A token was presented which requires the user to enter a new
 		 * password.
 		 * <p>
+		 * 
 		 * The presented token was a token sent by the
 		 * {@link AuthService#lostPassword(String emailAddress, AbstractUserDatabase users)
 		 * AuthService#lostPassword()} function. When this is returned as result
@@ -70,6 +73,7 @@ public class EmailTokenResult {
 		/**
 		 * A The token was presented which verifies the email address.
 		 * <p>
+		 * 
 		 * The presented token was a token sent by the
 		 * {@link AuthService#verifyEmailAddress(User user, String address)
 		 * AuthService#verifyEmailAddress()} function. When this is returned as
@@ -89,6 +93,7 @@ public class EmailTokenResult {
 	/**
 	 * Constructor.
 	 * <p>
+	 * 
 	 * Creates an email token result.
 	 */
 	public EmailTokenResult(EmailTokenResult.Result result, final User user) {
@@ -116,6 +121,7 @@ public class EmailTokenResult {
 	/**
 	 * Returns the user, if any.
 	 * <p>
+	 * 
 	 * The identified user is only valid when the token result is UpdatePassword
 	 * or EmailConfirmed. In that case, you may login the user as strongly
 	 * authenticated since he presented a random token that was sent to his own

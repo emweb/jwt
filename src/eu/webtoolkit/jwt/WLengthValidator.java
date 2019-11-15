@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * {@link WLineEdit#setMaxLength(int chars) WLineEdit#setMaxLength()}.
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in this class can be translated by overriding the default
  * values for the following localization keys:
@@ -90,6 +91,7 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Sets the minimum length.
 	 * <p>
+	 * 
 	 * The default value is 0.
 	 */
 	public void setMinimumLength(int minLength) {
@@ -112,6 +114,7 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Sets the maximum length.
 	 * <p>
+	 * 
 	 * The default value is the maximum integer value.
 	 */
 	public void setMaximumLength(int maxLength) {
@@ -134,6 +137,7 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or has a length within the valid range.
 	 */
@@ -159,10 +163,11 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Sets the message to display when the input is too short.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WLengthValidator#getMaximumLength()
 	 * getMaximumLength()} is a real bound, the default message is &quot;The
 	 * input must have a length between {1} and {2} characters&quot; or &quot;
-	 * &quot;The input must be at least {1} characters&quot;.
+	 * &quot;The input must be at least {1} characters".
 	 */
 	public void setInvalidTooShortText(final CharSequence text) {
 		this.tooShortText_ = WString.toWString(text);
@@ -198,10 +203,11 @@ public class WLengthValidator extends WValidator {
 	/**
 	 * Sets the message to display when the input is too long.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WLengthValidator#getMinimumLength()
 	 * getMinimumLength()} is different from zero, the default message is
 	 * &quot;The input must have a length between {1} and {2} characters&quot;
-	 * or &quot; &quot;The input must be no more than {2} characters&quot;.
+	 * or &quot; &quot;The input must be no more than {2} characters".
 	 */
 	public void setInvalidTooLongText(final CharSequence text) {
 		this.tooLongText_ = WString.toWString(text);
@@ -237,7 +243,7 @@ public class WLengthValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_1.WLengthValidator(").append(this.isMandatory())
+		js.append("new Wt3_4_2.WLengthValidator(").append(this.isMandatory())
 				.append(',');
 		if (this.minLength_ != 0) {
 			js.append(this.minLength_);

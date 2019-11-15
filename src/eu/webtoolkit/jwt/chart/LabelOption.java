@@ -43,7 +43,7 @@ public enum LabelOption {
 	 */
 	TextLabel,
 	/**
-	 * Display the value (as percentage).
+	 * Display the value (as percentage)
 	 */
 	TextPercentage;
 

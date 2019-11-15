@@ -73,21 +73,23 @@ import org.slf4j.LoggerFactory;
  * {@code
  *  function (editElement) {
  *    // fetch the location of cursor and current text in the editElement.
- * 
+ *  
  *    // return a function that matches a given suggestion with the current value of the editElement.
  *    return function(suggestion) {
- * 
+ *  
  *      // 1) if suggestion is null, simply return the current text 'value'
  *      // 2) check suggestion if it matches
  *      // 3) add highlighting markup to suggestion if necessary
- * 
+ *  
  *      return { match : ...,      // does the suggestion match ? (boolean)
  *               suggestion : ...  // modified suggestion with highlighting
  *              };
  *    }
  *  }
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * The replacerJS function that edits the value has the following JavaScript
  * signature.
@@ -99,21 +101,22 @@ import org.slf4j.LoggerFactory;
  *    // editElement is the form element which must be edited.
  *    // suggestionText is the displayed text for the matched suggestion.
  *    // suggestionValue is the stored value for the matched suggestion.
- * 
+ *  
  *    // computed modifiedEditValue and modifiedPos ...
- * 
+ *  
  *    editElement.value = modifiedEditValue;
  *    editElement.selectionStart = edit.selectionEnd = modifiedPos;
  *  }
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * To style the suggestions, you should style the &lt;span&gt; element inside
  * this widget, and the &lt;span&gt;.&quot;sel&quot; element to style the
  * current selection.
  * <p>
  * Usage example:
- * <p>
  * 
  * <pre>
  * {
@@ -123,8 +126,8 @@ import org.slf4j.LoggerFactory;
  * 	contactOptions.highlightBeginTag = &quot;&lt;b&gt;&quot;;
  * 	contactOptions.highlightEndTag = &quot;&lt;/b&gt;&quot;;
  * 	contactOptions.listSeparator = ','; // for multiple addresses)
- * 	contactOptions.whitespace = &quot; \\n&quot;;
- * 	contactOptions.wordSeparators = &quot;-., \&quot;@\\n;&quot;; // within an address
+ * 	contactOptions.whitespace = &quot; \n&quot;;
+ * 	contactOptions.wordSeparators = &quot;-., \&quot;@\n;&quot;; // within an address
  * 	contactOptions.appendReplacedText = &quot;, &quot;; // prepare next email address
  * 
  * 	WSuggestionPopup popup = new WSuggestionPopup(contactOptions, this);
@@ -136,33 +139,40 @@ import org.slf4j.LoggerFactory;
  * 	for (int i = 0; i &lt; contacts.size(); ++i)
  * 		popup.addSuggestion(contacts.get(i).formatted(), contacts.get(i)
  * 				.formatted());
+ * 
  * }
  * </pre>
+ * 
  * <p>
  * A screenshot of this example:
- * <table border="0" align="center" cellspacing="3" cellpadding="3">
+ * <table border="1" cellspacing="3" cellpadding="3">
  * <tr>
- * <td><div align="center"> <img src="doc-files//WSuggestionPopup-default-1.png"
- * alt="An example WSuggestionPopup (default)">
+ * <td><div align="center"> <img src="doc-files/WSuggestionPopup-default-1.png">
  * <p>
  * <strong>An example WSuggestionPopup (default)</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * <td><div align="center"> <img
- * src="doc-files//WSuggestionPopup-polished-1.png"
- * alt="An example WSuggestionPopup (polished)">
+ * src="doc-files/WSuggestionPopup-polished-1.png">
  * <p>
  * <strong>An example WSuggestionPopup (polished)</strong>
  * </p>
- * </div></td>
+ * </div>
+ * 
+ * </td>
  * </tr>
  * </table>
+ * 
+ * 
  * <p>
  * When using the DropDownIcon trigger, an additional style class is provided
  * for the edit field: <code>Wt-suggest-dropdown</code>, which renders the icon
  * to the right inside the edit field. This class may be used to customize how
  * the drop down icon is rendered.
  * <p>
+ * 
  * <p>
  * <i><b>Note: </b>This widget requires JavaScript support. </i>
  * </p>
@@ -181,6 +191,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		/**
 		 * Shows popup when the user starts editing.
 		 * <p>
+		 * 
 		 * The popup is shown when the currently edited text has a length longer
 		 * than the {@link WSuggestionPopup#setFilterLength(int length) filter
 		 * length}.
@@ -189,6 +200,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		/**
 		 * Shows popup when user clicks a drop down icon.
 		 * <p>
+		 * 
 		 * The lineedit is modified to show a drop down icon, and clicking the
 		 * icon shows the suggestions, very much like a {@link WComboBox}.
 		 */
@@ -228,6 +240,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		/**
 		 * Open tag to highlight a match in a suggestion.
 		 * <p>
+		 * 
 		 * Must be an opening markup tag, such as &lt;b&gt;.
 		 * <p>
 		 * Used during matching.
@@ -236,6 +249,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		/**
 		 * Close tag to highlight a match in a suggestion.
 		 * <p>
+		 * 
 		 * Must be a closing markup tag, such as &lt;/b&gt;.
 		 * <p>
 		 * Used during matching.
@@ -245,6 +259,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		 * When editing a list of values, the separator used for different
 		 * items.
 		 * <p>
+		 * 
 		 * For example, &apos;,&apos; to separate different values on comma.
 		 * Specify 0 (&apos;\0&apos;) for no list separation.
 		 * <p>
@@ -255,7 +270,8 @@ public class WSuggestionPopup extends WPopupWidget {
 		 * When editing a value, the whitespace characters ignored before the
 		 * current value.
 		 * <p>
-		 * For example, &quot; \\n&quot; to ignore spaces and newlines.
+		 * 
+		 * For example, &quot; \n&quot; to ignore spaces and newlines.
 		 * <p>
 		 * Used during matching and replacing.
 		 */
@@ -263,6 +279,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		/**
 		 * Characters that start a word in a suggestion to match against.
 		 * <p>
+		 * 
 		 * For example, &quot; .@&quot; will also match with suggestion text
 		 * after a space, a dot (.) or an at-symbol (@). Alternatively you may
 		 * also specify this as a regular expression in
@@ -275,6 +292,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		 * When replacing the current edited value with suggestion value, append
 		 * the following string as well.
 		 * <p>
+		 * 
 		 * Used during replacing.
 		 */
 		public String appendReplacedText;
@@ -282,6 +300,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		 * Regular expression that starts a word in a suggestion to match
 		 * against.
 		 * <p>
+		 * 
 		 * When empty, the value of <code>wordSeparators</code> is used instead.
 		 * <p>
 		 * Used during replacing.
@@ -292,6 +311,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Creates a suggestion popup.
 	 * <p>
+	 * 
 	 * The popup using a standard matcher and replacer implementation that is
 	 * configured using the provided <code>options</code>.
 	 * <p>
@@ -340,6 +360,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Creates a suggestion popup with given matcherJS and replacerJS.
 	 * <p>
+	 * 
 	 * See supra for the expected signature of the matcher and replace
 	 * JavaScript functions.
 	 */
@@ -383,6 +404,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Lets this suggestion popup assist in editing an edit field.
 	 * <p>
+	 * 
 	 * A single suggestion popup may assist in several edits by repeated calls
 	 * of this method.
 	 * <p>
@@ -439,6 +461,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Removes the edit field from the list of assisted editors.
 	 * <p>
+	 * 
 	 * The editor will no longer be assisted by this popup widget.
 	 * <p>
 	 * 
@@ -454,6 +477,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Shows the suggestion popup at an edit field.
 	 * <p>
+	 * 
 	 * This is equivalent to the user triggering the suggestion popup to be
 	 * shown.
 	 */
@@ -465,6 +489,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Clears the list of suggestions.
 	 * <p>
+	 * 
 	 * This clears the underlying model.
 	 * <p>
 	 * 
@@ -478,6 +503,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Adds a new suggestion.
 	 * <p>
+	 * 
 	 * This adds an entry to the underlying model. The
 	 * <code>suggestionText</code> is set as {@link ItemDataRole#DisplayRole}
 	 * and the <code>suggestionValue</code> (which is inserted into the edit
@@ -515,6 +541,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Sets the model to be used for the suggestions.
 	 * <p>
+	 * 
 	 * The <code>model</code> may not be <code>null</code>, and ownership of the
 	 * model is not transferred.
 	 * <p>
@@ -583,6 +610,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Sets the column in the model to be used for the items.
 	 * <p>
+	 * 
 	 * The column <code>index</code> in the model will be used to retrieve data.
 	 * <p>
 	 * The default value is 0.
@@ -599,6 +627,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Sets a default selected value.
 	 * <p>
+	 * 
 	 * <code>row</code> is the model row that is selected by default (only if it
 	 * matches the current input).
 	 * <p>
@@ -616,7 +645,6 @@ public class WSuggestionPopup extends WPopupWidget {
 
 	/**
 	 * Returns the default value.
-	 * <p>
 	 */
 	public int getDefaultIndex() {
 		return this.defaultValue_;
@@ -625,6 +653,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Creates a standard matcher JavaScript function.
 	 * <p>
+	 * 
 	 * This returns a JavaScript function that provides a standard
 	 * implementation for the matching input, based on the given
 	 * <code>options</code>.
@@ -637,6 +666,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Creates a standard replacer JavaScript function.
 	 * <p>
+	 * 
 	 * This returns a JavaScript function that provides a standard
 	 * implementation for reacting to a match activation, editing the line edit
 	 * text.
@@ -649,6 +679,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Sets the minimum input length before showing the popup.
 	 * <p>
+	 * 
 	 * When the user has typed this much characters,
 	 * {@link WSuggestionPopup#filterModel() filterModel()} is emitted which
 	 * allows you to filter the model based on the initial input. The filtering
@@ -681,6 +712,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Signal that indicates that the model should be filtered.
 	 * <p>
+	 * 
 	 * The argument is the initial input. When
 	 * {@link WSuggestionPopup.PopupTrigger#Editing Editing} is used as edit
 	 * trigger, its length will always equal the
@@ -692,13 +724,13 @@ public class WSuggestionPopup extends WPopupWidget {
 	 * <p>
 	 * For example, if you are using a {@link WSortFilterProxyModel}, you could
 	 * react to this signal with:
-	 * <p>
 	 * 
 	 * <pre>
 	 *   {@code
 	 *    public filterSuggestions(String filter) {
 	 *      proxyModel.setFilterRegExp(filter + ".*");
 	 *    }
+	 *    
 	 *   }
 	 * </pre>
 	 */
@@ -709,6 +741,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Signal emitted when a suggestion was selected.
 	 * <p>
+	 * 
 	 * The selected item is passed as the first argument and the editor as the
 	 * second.
 	 */
@@ -740,6 +773,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Returns the last activated index.
 	 * <p>
+	 * 
 	 * Returns -1 if the popup hasn&apos;t been activated yet.
 	 * <p>
 	 * 
@@ -752,6 +786,7 @@ public class WSuggestionPopup extends WPopupWidget {
 	/**
 	 * Sets the role used for editing the line edit with a chosen item.
 	 * <p>
+	 * 
 	 * The default value is UserRole.
 	 */
 	public void setEditRole(int role) {
@@ -759,7 +794,6 @@ public class WSuggestionPopup extends WPopupWidget {
 	}
 
 	/**
-	 * <p>
 	 * Returns the role used for editing the line edit.
 	 * <p>
 	 * <i>{@link WSuggestionPopup#setEditRole(int role) setEditRole()}</i>
@@ -983,7 +1017,7 @@ public class WSuggestionPopup extends WPopupWidget {
 		String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
 		this.setJavaScriptMember(
 				" WSuggestionPopup",
-				"new Wt3_4_1.WSuggestionPopup(" + app.getJavaScriptClass()
+				"new Wt3_4_2.WSuggestionPopup(" + app.getJavaScriptClass()
 						+ "," + this.getJsRef() + "," + this.replacerJS_ + ","
 						+ this.matcherJS_ + ","
 						+ String.valueOf(Math.max(0, this.filterLength_)) + ","
@@ -1007,7 +1041,7 @@ public class WSuggestionPopup extends WPopupWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSuggestionPopup",
-				"function(s,g,y,G,q,t,z,u){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function e(){return g.style.display!=\"none\"}function i(a){g.style.display=\"block\";d.positionAtWidget(g.id,a.id,d.Vertical)}function l(a){a=d.target(a||window.event);if(!d.hasTag(a,\"UL\")){for(;a&&!d.hasTag(a,\"LI\");)a=a.parentNode;a&&p(a)}}function p(a){var b=a.firstChild.firstChild,h=d.getElement(f),k=b.innerHTML;b=b.getAttribute(\"sug\"); h.focus();y(h,k,b);s.emit(g,\"select\",a.id,h.id);m();f=null}function m(){g.style.display=\"none\";if(f!=null&&A!=null){d.getElement(f).onkeydown=A;A=null}}function B(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(d.hasTag(a,\"LI\"))if(a.style.display!=\"none\")return a;return null}function J(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop= a.offsetTop}$(\".Wt-domRoot\").add(g);g.wtObj=this;var r=this,d=s.WT,o=null,f=null,K=false,C=null,M=null,N=t,D=null,E=null,v=false;this.defaultValue=z;var A=null;this.showPopup=function(a){g.style.display=\"block\";E=o=null;A=a.onkeydown;a.onkeydown=function(b){r.editKeyDown(this,b||window.event)}};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=d.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a,b){m();f=a.id;v=true;r.refilter(b)};this.editClick=function(a,b){if(c(a))if(d.widgetCoordinates(a, b).x>a.offsetWidth-16)if(f!=a.id||!e())r.showAt(a,\"\");else{m();f=null}};this.editKeyDown=function(a,b){if(!c(a))return true;if(f!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){f=a.id;v=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){f=a.id;v=true}else{f=null;return true}var h=o?d.getElement(o):null;if(e()&&h)if(b.keyCode==13||b.keyCode==9){p(h);d.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()== \"KEYDOWN\"){K=true;d.cancelEvent(b,d.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&K==true){d.cancelEvent(b);return false}var k=h,F=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?g.clientHeight/h.offsetHeight:1;var n;for(n=0;k&&n<b;++n){var w=B(k,F);if(!w)break;k=w}if(k&&d.hasTag(k,\"LI\")){h.className=\"\";k.className=\"active\";o=k.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a,b){C=a;N=b;r.refilter(E)};this.refilter=function(a){if(f){var b=o?d.getElement(o): null,h=d.getElement(f),k=G(h),F=g.childNodes,n=u&&a!=null?a:k(null);E=u?a:h.value;if(q>0||t)if(n.length<q&&!v){m();return}else{a=N?n:n.substring(0,Math.max(C!==null?C.length:0,q));if(a!=C)if(a!=M){M=a;s.emit(g,\"filter\",a)}}var w=a=null;n=v&&n.length==0;var x,O;x=0;for(O=F.length;x<O;++x){var j=F[x];if(d.hasTag(j,\"LI\")){var H=j.firstChild;if(j.orig==null)j.orig=H.firstChild.innerHTML;var I=k(j.orig),P=n||I.match;if(I.suggestion!=H.firstChild.innerHTML)H.firstChild.innerHTML=I.suggestion;if(P){if(j.style.display!= \"\")j.style.display=\"\";if(a==null)a=j;if(x==this.defaultValue)w=j}else if(j.style.display!=\"none\")j.style.display=\"none\";if(j.className!=\"\")j.className=\"\"}}if(a==null)m();else{if(!e()){i(h);r.showPopup(h);b=null}if(!b||b.style.display==\"none\"){b=w||a;b.parentNode.scrollTop=0;o=b.id}b.className=\"active\";J(b)}}};this.editKeyUp=function(a,b){if(f!=null)if(c(a))if(!(!e()&&(b.keyCode==13||b.keyCode==9)))if(b.keyCode==27||b.keyCode==37||b.keyCode==39)m();else if(a.value!=E){f=a.id;r.refilter(a.value)}else(a= o?d.getElement(o):null)&&J(a)};g.onclick=l;g.onscroll=function(){if(D){clearTimeout(D);var a=d.getElement(f);a&&a.focus()}};this.delayHide=function(a){D=setTimeout(function(){D=null;if(g&&(a==null||f==a.id))m()},300)}}");
+				"function(s,g,y,G,q,t,z,u){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function d(){return g.style.display!=\"none\"}function j(a){g.style.display=\"block\";e.positionAtWidget(g.id,a.id,e.Vertical)}function h(a){a=e.target(a||window.event);if(!e.hasTag(a,\"UL\")){for(;a&&!e.hasTag(a,\"LI\");)a=a.parentNode;a&&p(a)}}function p(a){var b=a.firstChild.firstChild,i=e.getElement(f),l=b.innerHTML;b=b.getAttribute(\"sug\"); i.focus();y(i,l,b);s.emit(g,\"select\",a.id,i.id);m();f=null}function m(){g.style.display=\"none\";if(f!=null&&A!=null){e.getElement(f).onkeydown=A;A=null}}function B(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(e.hasTag(a,\"LI\"))if(a.style.display!=\"none\")return a;return null}function J(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop= a.offsetTop}$(\".Wt-domRoot\").add(g);g.wtObj=this;var r=this,e=s.WT,o=null,f=null,K=false,C=null,M=null,N=t,D=null,E=null,v=false;this.defaultValue=z;var A=null;this.showPopup=function(a){g.style.display=\"block\";E=o=null;A=a.onkeydown;a.onkeydown=function(b){r.editKeyDown(this,b||window.event)}};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=e.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a,b){m();f=a.id;v=true;r.refilter(b)};this.editClick=function(a,b){if(c(a))if(e.widgetCoordinates(a, b).x>a.offsetWidth-16)if(f!=a.id||!d())r.showAt(a,\"\");else{m();f=null}};this.editKeyDown=function(a,b){if(!c(a))return true;if(f!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){f=a.id;v=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){f=a.id;v=true}else{f=null;return true}var i=o?e.getElement(o):null;if(d()&&i)if(b.keyCode==13||b.keyCode==9){p(i);e.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()== \"KEYDOWN\"){K=true;e.cancelEvent(b,e.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&K==true){e.cancelEvent(b);return false}var l=i,F=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?g.clientHeight/i.offsetHeight:1;var n;for(n=0;l&&n<b;++n){var w=B(l,F);if(!w)break;l=w}if(l&&e.hasTag(l,\"LI\")){i.className=\"\";l.className=\"active\";o=l.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a,b){C=a;N=b;r.refilter(E)};this.refilter=function(a){if(f){var b=o?e.getElement(o): null,i=e.getElement(f),l=G(i),F=g.childNodes,n=u&&a!=null?a:l(null);E=u?a:i.value;if(q>0||t)if(n.length<q&&!v){m();return}else{a=N?n:n.substring(0,Math.max(C!==null?C.length:0,q));if(a!=C)if(a!=M){M=a;s.emit(g,\"filter\",a)}}var w=a=null;n=v&&n.length==0;var x,O;x=0;for(O=F.length;x<O;++x){var k=F[x];if(e.hasTag(k,\"LI\")){var H=k.firstChild;if(k.orig==null)k.orig=H.firstChild.innerHTML;var I=l(k.orig),P=n||I.match;if(I.suggestion!=H.firstChild.innerHTML)H.firstChild.innerHTML=I.suggestion;if(P){if(k.style.display!= \"\")k.style.display=\"\";if(a==null)a=k;if(x==this.defaultValue)w=k}else if(k.style.display!=\"none\")k.style.display=\"none\";if(k.className!=\"\")k.className=\"\"}}if(a==null)m();else{if(!d()){j(i);r.showPopup(i);b=null}if(!b||b.style.display==\"none\"){b=w||a;b.parentNode.scrollTop=0;o=b.id}b.className=\"active\";J(b)}}};this.editKeyUp=function(a,b){if(f!=null)if(c(a))if(!(!d()&&(b.keyCode==13||b.keyCode==9)))if(b.keyCode==27||b.keyCode==37||b.keyCode==39)m();else if(a.value!=E){f=a.id;r.refilter(a.value)}else(a= o?e.getElement(o):null)&&J(a)};g.onclick=h;g.onscroll=function(){if(D){clearTimeout(D);var a=e.getElement(f);a&&a.focus()}};this.delayHide=function(a){D=setTimeout(function(){D=null;if(g&&(a==null||f==a.id))m()},300)}}");
 	}
 
 	static WJavaScriptPreamble wtjs2() {
@@ -1015,12 +1049,12 @@ public class WSuggestionPopup extends WPopupWidget {
 				JavaScriptScope.WtClassScope,
 				JavaScriptObjectType.JavaScriptConstructor,
 				"WSuggestionPopupStdMatcher",
-				"function(s,g,y,G,q,t,z){function u(c){var e=c.value;c=c.selectionStart?c.selectionStart:e.length;for(var i=y?e.lastIndexOf(y,c-1)+1:0;i<c&&G.indexOf(e.charAt(i))!=-1;)++i;return{start:i,end:c}}this.match=function(c){var e=u(c),i=c.value.substring(e.start,e.end),l;l=t.length==0?q.length!=0?\"(^|(?:[\"+q+\"]))\":\"(^)\":\"(\"+t+\")\";l+=\"(\"+i.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";l=new RegExp(l,\"gi\");return function(p){if(!p)return i; var m=false;if(i.length){var B=p.replace(l,\"$1\"+s+\"$2\"+g);if(B!=p){m=true;p=B}}return{match:m,suggestion:p}}};this.replace=function(c,e,i){e=u(c);var l=c.value.substring(0,e.start)+i+z;if(e.end<c.value.length)l+=c.value.substring(e.end,c.value.length);c.value=l;if(c.selectionStart){c.selectionStart=e.start+i.length+z.length;c.selectionEnd=c.selectionStart}}}");
+				"function(s,g,y,G,q,t,z){function u(c){var d=c.value;c=c.selectionStart?c.selectionStart:d.length;for(var j=y?d.lastIndexOf(y,c-1)+1:0;j<c&&G.indexOf(d.charAt(j))!=-1;)++j;return{start:j,end:c}}this.match=function(c){var d=u(c),j=c.value.substring(d.start,d.end),h;if(t.length==0)if(q.length!=0){h=\"(^|(?:[\";for(c=0;c<q.length;++c){for(d=q.charCodeAt(c).toString(16);d.length<4;)d=\"0\"+d;h+=\"\\\\u\"+d}h+=\"]))\"}else h=\"(^)\";else h=\"(\"+ t+\")\";h+=\"(\"+j.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";h=new RegExp(h,\"gi\");return function(p){if(!p)return j;var m=false;if(j.length){var B=p.replace(h,\"$1\"+s+\"$2\"+g);if(B!=p){m=true;p=B}}return{match:m,suggestion:p}}};this.replace=function(c,d,j){d=u(c);var h=c.value.substring(0,d.start)+j+z;if(d.end<c.value.length)h+=c.value.substring(d.end,c.value.length);c.value=h;if(c.selectionStart){c.selectionStart=d.start+j.length+z.length;c.selectionEnd=c.selectionStart}}}");
 	}
 
 	static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
 		StringBuilder s = new StringBuilder();
-		s.append("new Wt3_4_1.WSuggestionPopupStdMatcher(")
+		s.append("new Wt3_4_2.WSuggestionPopupStdMatcher(")
 				.append(WWebWidget.jsStringLiteral(options.highlightBeginTag))
 				.append(", ")
 				.append(WWebWidget.jsStringLiteral(options.highlightEndTag))

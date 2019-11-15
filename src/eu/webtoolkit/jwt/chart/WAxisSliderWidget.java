@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * {@link eu.webtoolkit.jwt.chart.WCartesianChart}.
  * <p>
  * 
+ * 
  * <p>
  * <i><b>Note: </b>This widget currently only works with the HtmlCanvas
  * rendering method. </i>
@@ -36,6 +37,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Creates an axis slider widget.
 	 * <p>
+	 * 
 	 * Creates an axis slider widget that is not associated with a chart. Before
 	 * it is used, a chart should be assigned with setChart(), and a series
 	 * column chosen with setSeriesColumn().
@@ -68,6 +70,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Creates an axis slider widget.
 	 * <p>
+	 * 
 	 * Creates an axis slider widget associated with the given data series of
 	 * the given chart.
 	 */
@@ -143,6 +146,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Set the pen to draw the selected part of the data series with.
 	 * <p>
+	 * 
 	 * If not set, this defaults to {@link WAxisSliderWidget#getSeriesPen()
 	 * getSeriesPen()}.
 	 */
@@ -217,6 +221,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Sets an internal margin for the selection area.
 	 * <p>
+	 * 
 	 * This configures the area (in pixels) around the selection area that is
 	 * available for the axes and labels, and the handles.
 	 * <p>
@@ -267,6 +272,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Returns the internal margin for the selection area.
 	 * <p>
+	 * 
 	 * This is either the padding set through
 	 * {@link WAxisSliderWidget#setSelectionAreaPadding(int padding, EnumSet sides)
 	 * setSelectionAreaPadding()} or computed using
@@ -294,6 +300,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Configures the axis slider layout to be automatic.
 	 * <p>
+	 * 
 	 * This configures the selection area so that the space around it is suited
 	 * for the text that is rendered.
 	 */
@@ -324,6 +331,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	/**
 	 * Set whether to draw the X axis tick labels on the slider widget.
 	 * <p>
+	 * 
 	 * Labels are enabled by default.
 	 */
 	public void setLabelsEnabled(boolean enabled) {
@@ -356,6 +364,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 	 * Set whether the Y axis of the associated chart should be updated to fit
 	 * the series.
 	 * <p>
+	 * 
 	 * Y axis zoom is enabled by default.
 	 */
 	public void setYAxisZoomEnabled(boolean enabled) {
@@ -685,7 +694,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
 			WApplication app = WApplication.getInstance();
 			StringBuilder ss = new StringBuilder();
-			ss.append("new Wt3_4_1.WAxisSliderWidget(")
+			ss.append("new Wt3_4_2.WAxisSliderWidget(")
 					.append(app.getJavaScriptClass())
 					.append(",")
 					.append(this.getJsRef())

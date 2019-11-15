@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * WTable is displayed as a {@link WWidget#setInline(boolean inlined) block}.
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * The widget corresponds to the HTML <code>&lt;table&gt;</code> tag and does
  * not provide styling. It can be styled using inline or external CSS as
@@ -101,6 +102,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Accesses the table element at the given row and column.
 	 * <p>
+	 * 
 	 * If the row/column is beyond the current table dimensions, then the table
 	 * is expanded automatically.
 	 */
@@ -113,6 +115,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the row object for the given row.
 	 * <p>
+	 * 
 	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()}
 	 * , the table expands automatically when the row is beyond the current
 	 * table dimensions.
@@ -129,6 +132,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Returns the column object for the given column.
 	 * <p>
+	 * 
 	 * Like with {@link WTable#getElementAt(int row, int column) getElementAt()}
 	 * , the table expands automatically when the column is beyond the current
 	 * table dimensions.
@@ -145,6 +149,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Deletes a table cell and its contents.
 	 * <p>
+	 * 
 	 * The table cell at that position is recreated.
 	 * <p>
 	 * 
@@ -200,6 +205,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Deletes a row and all its contents.
 	 * <p>
+	 * 
 	 * Rows below the given row are shifted up.
 	 */
 	public void deleteRow(int row) {
@@ -272,6 +278,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Clears the entire table.
 	 * <p>
+	 * 
 	 * This method clears the entire table: all cells and their contents are
 	 * deleted.
 	 */
@@ -301,8 +308,10 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Sets the number of header rows or columns.
 	 * <p>
+	 * 
 	 * The default values are 0.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This must be set before the initial rendering and cannot
 	 * be changed later. </i>
@@ -353,6 +362,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Move a table row from its original position to a new position.
 	 * <p>
+	 * 
 	 * The table expands automatically when the <code>to</code> row is beyond
 	 * the current table dimensions.
 	 * <p>
@@ -385,6 +395,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Move a table column from its original position to a new position.
 	 * <p>
+	 * 
 	 * The table expands automatically when the <code>to</code> column is beyond
 	 * the current table dimensions.
 	 * <p>
@@ -466,6 +477,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Creates a table cell.
 	 * <p>
+	 * 
 	 * You may want to override this method if you want your table to contain
 	 * specialized cells.
 	 */
@@ -476,6 +488,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Creates a table row.
 	 * <p>
+	 * 
 	 * You may want to override this method if you want your table to contain
 	 * specialized rows.
 	 */
@@ -486,6 +499,7 @@ public class WTable extends WInteractWidget {
 	/**
 	 * Creates a table column.
 	 * <p>
+	 * 
 	 * You may want to override this method if you want your table to contain
 	 * specialized columns.
 	 */

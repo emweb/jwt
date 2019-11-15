@@ -97,6 +97,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Creates a new database transaction.
 	 * <p>
+	 * 
 	 * If the underlying database does not support transactions, you can return
 	 * <code>null</code>.
 	 * <p>
@@ -113,6 +114,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Finds a user with a given id.
 	 * <p>
+	 * 
 	 * The id uniquely identifies a user.
 	 * <p>
 	 * This should find the user with the given <code>id</code>, or return an
@@ -123,6 +125,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Finds a user with a given identity.
 	 * <p>
+	 * 
 	 * The <code>identity</code> uniquely identifies the user by the
 	 * <code>provider</code>.
 	 * <p>
@@ -135,6 +138,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Adds an identify for the user.
 	 * <p>
+	 * 
 	 * This adds an identity to the user.
 	 * <p>
 	 * You are free to support only one identity per user, e.g. if you only use
@@ -148,6 +152,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Changes an identity for a user.
 	 * <p>
+	 * 
 	 * The base implementation calls
 	 * {@link AbstractUserDatabase#removeIdentity(User user, String provider)
 	 * removeIdentity()} followed by
@@ -163,6 +168,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns a user identity.
 	 * <p>
+	 * 
 	 * Returns a user identity for the given provider, or an empty string if the
 	 * user has no identitfy set for this provider.
 	 * <p>
@@ -175,6 +181,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Removes a user identity.
 	 * <p>
+	 * 
 	 * This removes all identities of a <code>provider</code> from the
 	 * <code>user</code>.
 	 * <p>
@@ -187,6 +194,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Registers a new user.
 	 * <p>
+	 * 
 	 * This adds a new user.
 	 * <p>
 	 * This method is only used by view classes involved with registration (
@@ -202,6 +210,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Delete a user.
 	 * <p>
+	 * 
 	 * This deletes a user from the database.
 	 */
 	public void deleteUser(final User user) {
@@ -213,10 +222,12 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns the status for a user.
 	 * <p>
+	 * 
 	 * If there is support for suspending accounts, then this method may be
 	 * implemented to return whether a user account is disabled.
 	 * <p>
-	 * The default implementation always returns {@link User.Status#Normal}.
+	 * The default implementation always returns {@link User.Status#Normal
+	 * Status#Normal}.
 	 * <p>
 	 */
 	public User.Status getStatus(final User user) {
@@ -226,6 +237,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets the user status.
 	 * <p>
+	 * 
 	 * This sets the status for a user (if supported).
 	 */
 	public void setStatus(final User user, User.Status status) {
@@ -236,6 +248,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets a new user password.
 	 * <p>
+	 * 
 	 * This updates the password for a user.
 	 * <p>
 	 * This is used only by {@link PasswordService}.
@@ -248,6 +261,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns a user password.
 	 * <p>
+	 * 
 	 * This returns the stored password for a user, or a default constructed
 	 * password hash if the user does not yet have password credentials.
 	 * <p>
@@ -262,6 +276,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets a user&apos;s email address.
 	 * <p>
+	 * 
 	 * This is used only when email verification is enabled, or as a result of a
 	 * 3rd party {@link Identity} Provider based registration process, if the
 	 * provider also provides email address information with the identiy.
@@ -282,6 +297,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns a user&apos;s email address.
 	 * <p>
+	 * 
 	 * This may be an unverified or verified email address, depending on whether
 	 * email address verification is enabled in the model classes.
 	 * <p>
@@ -298,6 +314,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets a user&apos;s unverified email address.
 	 * <p>
+	 * 
 	 * This is only used when email verification is enabled. It holds the
 	 * currently unverified email address, while a mail is being sent for the
 	 * user to confirm this email address.
@@ -311,6 +328,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns a user&apos;s unverified email address.
 	 * <p>
+	 * 
 	 * This is an optional method, and currently not used by any of the included
 	 * models or views.
 	 */
@@ -324,6 +342,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Finds a user with a given email address.
 	 * <p>
+	 * 
 	 * This is used to verify that a email addresses are unique, and to
 	 * implement lost password functionality.
 	 */
@@ -337,6 +356,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets a new email token for a user.
 	 * <p>
+	 * 
 	 * This is only used when email verification is enabled or for lost password
 	 * functionality.
 	 */
@@ -350,6 +370,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns an email token.
 	 * <p>
+	 * 
 	 * This is only used when email verification is enabled and for lost
 	 * password functionality. It should return the email token previously set
 	 * with
@@ -366,6 +387,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns the role of the current email token.
 	 * <p>
+	 * 
 	 * This is only used when email verification is enabled or for lost password
 	 * functionality. It should return the role previously set with
 	 * setEailToken().
@@ -380,6 +402,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Finds a user with a given email token.
 	 * <p>
+	 * 
 	 * This is only used when email verification is enabled or for lost password
 	 * functionality.
 	 */
@@ -393,6 +416,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Adds an authentication token to a user.
 	 * <p>
+	 * 
 	 * Unless you want a user to only have remember-me support from a single
 	 * computer at a time, you should support multiple authentication tokens per
 	 * user.
@@ -406,6 +430,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Deletes an authentication token.
 	 * <p>
+	 * 
 	 * Deletes an authentication token previously added with
 	 * {@link AbstractUserDatabase#addAuthToken(User user, Token token)
 	 * addAuthToken()}
@@ -419,6 +444,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Finds a user with an authentication token.
 	 * <p>
+	 * 
 	 * Returns a user with an authentication token.
 	 * <p>
 	 * This should find the user associated with a particular token hash, or
@@ -434,6 +460,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Updates the authentication token with a new hash.
 	 * <p>
+	 * 
 	 * If successful, returns the validity of the updated token in seconds.
 	 * <p>
 	 * Returns 0 if the token could not be updated because it wasn&apos;t found
@@ -452,6 +479,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets the number of consecutive authentication failures.
 	 * <p>
+	 * 
 	 * This sets the number of consecutive authentication failures since the
 	 * last valid login.
 	 * <p>
@@ -467,6 +495,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns the number of consecutive authentication failures.
 	 * <p>
+	 * 
 	 * <i>
 	 * {@link AbstractUserDatabase#setFailedLoginAttempts(User user, int count)
 	 * setFailedLoginAttempts()}</i>
@@ -481,6 +510,7 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Sets the time of the last login attempt.
 	 * <p>
+	 * 
 	 * This sets the time at which the user attempted to login.
 	 */
 	public void setLastLoginAttempt(final User user, final WDate t) {
@@ -505,7 +535,8 @@ public abstract class AbstractUserDatabase {
 	/**
 	 * Returns the value of a claim for a user.
 	 * <p>
-	 * Should return a null {@link } value when the claim is unavailable.
+	 * 
+	 * Should return a null Json value when the claim is unavailable.
 	 */
 	public com.google.gson.JsonElement idpJsonClaim(final User user,
 			final String claim) {
@@ -680,7 +711,7 @@ public abstract class AbstractUserDatabase {
 	}
 
 	/**
-	 * Returns the client authentication method (see OIDC Core chapter 9).
+	 * Returns the client authentication method (see OIDC Core chapter 9)
 	 */
 	public ClientSecretMethod idpClientAuthMethod(final OAuthClient client) {
 		logger.error(new StringWriter().append(

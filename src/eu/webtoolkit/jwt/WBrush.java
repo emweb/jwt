@@ -27,26 +27,31 @@ import org.slf4j.LoggerFactory;
  * filled. A brush is defined either as a solid color or a gradient.
  * <p>
  * <h3>JavaScript exposability</h3>
+ * 
  * <p>
  * A WBrush is JavaScript exposable. If a WBrush
  * {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound},
- * it can be accessed in your custom JavaScript code through {@link its
- * handle&apos;s jsRef()}. At the moment, only the {@link WBrush#getColor()
- * getColor()} property is exposed, e.g. a brush with the color
- * WColor(10,20,30,255) will be represented in JavaScript as:
+ * it can be accessed in your custom JavaScript code through
+ * {@link WJavaScriptHandle#getJsRef() its handle&apos;s jsRef()}. At the
+ * moment, only the {@link WBrush#getColor() getColor()} property is exposed,
+ * e.g. a brush with the color WColor(10,20,30,255) will be represented in
+ * JavaScript as:
  * 
  * <pre>
  * {@code
  *  {
  *    color: [10,20,30,255]
  *  }
+ *  
  * }
  * </pre>
+ * 
  * <p>
+ * 
  * <p>
- * <i><b>Warning:</b>A WBrush that is JavaScript exposed should be modified only
- * through its {@link WJavaScriptHandle handle}. Any attempt at modifying it
- * will cause an exception to be thrown.</i>
+ * <i><b>Warning: </b>A WBrush that is JavaScript exposed should be modified
+ * only through its {@link WJavaScriptHandle handle}. Any attempt at modifying
+ * it will cause an exception to be thrown.</i>
  * </p>
  * 
  * @see WPainter#setBrush(WBrush b)
@@ -59,7 +64,8 @@ public class WBrush extends WJavaScriptExposableObject {
 	/**
 	 * Creates a brush.
 	 * <p>
-	 * Creates a brush with a {@link BrushStyle#NoBrush NoBrush} fill style.
+	 * 
+	 * Creates a brush with a {@link BrushStyle#NoBrush} fill style.
 	 */
 	public WBrush() {
 		super();
@@ -81,6 +87,7 @@ public class WBrush extends WJavaScriptExposableObject {
 	/**
 	 * Creates a solid brush of a given color.
 	 * <p>
+	 * 
 	 * Creates a solid brush with the indicated <code>color</code>.
 	 */
 	public WBrush(final WColor color) {
@@ -103,6 +110,7 @@ public class WBrush extends WJavaScriptExposableObject {
 	/**
 	 * Clone method.
 	 * <p>
+	 * 
 	 * Clones this brush.
 	 */
 	public WBrush clone() {
@@ -119,6 +127,7 @@ public class WBrush extends WJavaScriptExposableObject {
 	/**
 	 * Indicates whether some other object is "equal to" this one.
 	 * <p>
+	 * 
 	 * Returns <code>true</code> if the brushes are exactly the same.
 	 */
 	public boolean equals(final WBrush other) {
@@ -131,7 +140,7 @@ public class WBrush extends WJavaScriptExposableObject {
 	 * Sets the brush style.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the brush
+	 * @exception {@link WException} if the brush
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 * @see WBrush#getStyle()
@@ -154,11 +163,12 @@ public class WBrush extends WJavaScriptExposableObject {
 	/**
 	 * Sets the brush color.
 	 * <p>
+	 * 
 	 * If the current style is a gradient style, then it is reset to
-	 * {@link BrushStyle#SolidPattern SolidPattern}.
+	 * {@link BrushStyle#SolidPattern}.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the brush
+	 * @exception {@link WException} if the brush
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 * @see WBrush#getColor()
@@ -184,11 +194,11 @@ public class WBrush extends WJavaScriptExposableObject {
 	/**
 	 * Sets the brush gradient.
 	 * <p>
-	 * This also sets the style to {@link BrushStyle#GradientPattern
-	 * GradientPattern}.
+	 * 
+	 * This also sets the style to {@link BrushStyle#GradientPattern}.
 	 * <p>
 	 * 
-	 * @exception {@link WException}if the brush
+	 * @exception {@link WException} if the brush
 	 *            {@link WJavaScriptExposableObject#isJavaScriptBound() is
 	 *            JavaScript bound}
 	 */

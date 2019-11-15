@@ -32,6 +32,7 @@ public class WSvgImage extends WResource implements WVectorImage {
 	/**
 	 * Create an SVG paint device.
 	 * <p>
+	 * 
 	 * If <code>paintUpdate</code> is <code>true</code>, then only an SVG
 	 * fragment will be rendered that can be used to update the DOM of an
 	 * existing SVG image, instead of a full SVG image.

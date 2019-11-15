@@ -63,6 +63,7 @@ public class FormBaseModel extends WFormModel {
 	/**
 	 * Returns the authentication base service.
 	 * <p>
+	 * 
 	 * This returns the service passed through the constructor.
 	 */
 	public AuthService getBaseAuth() {
@@ -79,6 +80,7 @@ public class FormBaseModel extends WFormModel {
 	/**
 	 * Adds a password authentication service.
 	 * <p>
+	 * 
 	 * This enables password-based registration, including choosing a proper
 	 * password.
 	 * <p>
@@ -104,6 +106,7 @@ public class FormBaseModel extends WFormModel {
 	/**
 	 * Adds an OAuth authentication service provider.
 	 * <p>
+	 * 
 	 * This enables OAuth-based registration. More than one OAuth authentication
 	 * service can be configured: one for each supported third-party OAuth
 	 * identity provider.
@@ -148,10 +151,11 @@ public class FormBaseModel extends WFormModel {
 	/**
 	 * Logs the user in.
 	 * <p>
+	 * 
 	 * Logs in the user, after checking whether the user can actually be logged
 	 * in. A valid user may be refused to login if its account is disabled (see
-	 * {@link User#getStatus() User#getStatus()}) or if it&apos;s email address
-	 * is unconfirmed and email confirmation is required.
+	 * {@link User#getStatus()}) or if it&apos;s email address is unconfirmed
+	 * and email confirmation is required.
 	 * <p>
 	 * Returns whether the user could be logged in.
 	 */

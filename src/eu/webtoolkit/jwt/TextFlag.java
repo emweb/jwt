@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Enumeration that specifies the way text should be printed.
- * <p>
  */
 public enum TextFlag {
 	/**

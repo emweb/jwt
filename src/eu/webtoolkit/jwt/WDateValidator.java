@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * The format string used are the ones accepted by java.text.SimpleDateFormat
  * <p>
  * <h3>i18n</h3>
+ * 
  * <p>
  * The strings used in the {@link WDateValidator} can be translated by
  * overriding the default values for the following localization keys:
@@ -47,6 +48,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Creates a date validator.
 	 * <p>
+	 * 
 	 * The validator will accept dates using the current locale&apos;s format.
 	 * <p>
 	 */
@@ -73,6 +75,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Creates a date validator.
 	 * <p>
+	 * 
 	 * The validator will accept dates in the indicated range using the current
 	 * locale&apos;s format.
 	 * <p>
@@ -101,6 +104,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Creates a date validator.
 	 * <p>
+	 * 
 	 * The validator will accept dates in the date format <code>format</code>.
 	 */
 	public WDateValidator(final String format, WObject parent) {
@@ -127,6 +131,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Creates a date validator.
 	 * <p>
+	 * 
 	 * The validator will accept only dates within the indicated range
 	 * <i>bottom</i> to <i>top</i>, in the date format <code>format</code>.
 	 */
@@ -157,6 +162,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the bottom of the valid date range.
 	 * <p>
+	 * 
 	 * The default is a null date constructed using WDate().
 	 */
 	public void setBottom(final WDate bottom) {
@@ -177,6 +183,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the top of the valid date range.
 	 * <p>
+	 * 
 	 * The default is a null date constructed using WDate().
 	 */
 	public void setTop(final WDate top) {
@@ -195,7 +202,6 @@ public class WDateValidator extends WValidator {
 
 	/**
 	 * Sets the date format used to parse date strings.
-	 * <p>
 	 */
 	public void setFormat(final String format) {
 		if (this.formats_.isEmpty() || !this.formats_.get(0).equals(format)) {
@@ -233,6 +239,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Validates the given input.
 	 * <p>
+	 * 
 	 * The input is considered valid only when it is blank for a non-mandatory
 	 * field, or represents a date in the given format, and within the valid
 	 * range.
@@ -274,6 +281,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the message to display when the input is not a date.
 	 * <p>
+	 * 
 	 * The default message is &quot;The date must be of the format {1}&quot;,
 	 * with as first argument the format string.
 	 */
@@ -301,6 +309,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the message to display when the date is earlier than bottom.
 	 * <p>
+	 * 
 	 * The default message is &quot;The date must be between {1} and {2}&quot;
 	 * or &quot;The date must be after {1}&quot;.
 	 */
@@ -340,6 +349,7 @@ public class WDateValidator extends WValidator {
 	/**
 	 * Sets the message to display when the date is later than top.
 	 * <p>
+	 * 
 	 * Depending on whether {@link WDateValidator#getBottom() getBottom()} and
 	 * {@link WDateValidator#getTop() getTop()} are defined, the default message
 	 * is &quot;The date must be between {1} and {2}&quot; or &quot;The date
@@ -381,7 +391,7 @@ public class WDateValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_1.WDateValidator(").append(this.isMandatory())
+		js.append("new Wt3_4_2.WDateValidator(").append(this.isMandatory())
 				.append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));

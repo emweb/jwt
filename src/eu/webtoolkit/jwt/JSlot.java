@@ -49,21 +49,22 @@ import org.slf4j.LoggerFactory;
  *  function(sender, event) {
  *    // handle the event, and sender is a reference to the DOM element
  *    // which captured the event (and holds the signal). Therefore it
- *    // equivalent to the sender for a normal %Wt slot.
- * 
+ *    // equivalent to the sender for a normal JWt slot.
+ *  
  *    // You can prevent the default action using:
  *    var fixed = jQuery.event.fix(event);
  *    fixed.preventDefault();
  *    fixed.stopPropagation();
  *  }
+ *  
  * }
  * </pre>
+ * 
  * <p>
- * In the JavaScript code, you may use {@link WWidget#getJsRef()
- * WWidget#getJsRef()} to obtain the DOM element corresponding to any
- * {@link WWidget}, or {@link WObject#getId() WObject#getId()} to obtain the DOM
- * id. In addition you may trigger server-side events using the JavaScript
- * WtSignalEmit function (see {@link JSignal} documentation).
+ * In the JavaScript code, you may use {@link WWidget#getJsRef()} to obtain the
+ * DOM element corresponding to any {@link WWidget}, or {@link WObject#getId()}
+ * to obtain the DOM id. In addition you may trigger server-side events using
+ * the JavaScript WtSignalEmit function (see {@link JSignal} documentation).
  * <p>
  * A JSlot can take up to six extra arguments. This is so that a {@link JSignal}
  * can pass its arguments directly on to a JSlot, without communicating with the
@@ -72,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * That&apos;s how far we can help you. For the rest you are left to yourself,
  * buggy browsers and quirky JavaScript (<a
  * href="http://www.quirksmode.org/">http://www.quirksmode.org/</a> was a
- * reliable companion to me) -- good luck.
+ * reliable companion to me) &ndash; good luck.
  * <p>
  * Note that the slot object needs to live as long as you want the JavaScript to
  * be executed by connected signals: when the slot is destroyed, the connection
@@ -86,6 +87,7 @@ public class JSlot {
 	/**
 	 * Constructs a JavaScript-only slot within the parent scope.
 	 * <p>
+	 * 
 	 * The JavaScript code block will reside within the scope of the given
 	 * widget. By picking a long-lived parent, one may reuse a single block of
 	 * JavaScript code for multiple widgets.
@@ -114,6 +116,7 @@ public class JSlot {
 	/**
 	 * Constructs a JavaScript-only slot and sets the JavaScript code.
 	 * <p>
+	 * 
 	 * The slot will have no extra arguments.
 	 * <p>
 	 * 
@@ -190,6 +193,7 @@ public class JSlot {
 	/**
 	 * Set or modify the JavaScript code associated with the slot.
 	 * <p>
+	 * 
 	 * When the slot is triggered, the corresponding function defined by
 	 * <code>javaScript</code> is executed.
 	 * <p>
@@ -198,9 +202,10 @@ public class JSlot {
 	 * 
 	 * <pre>
 	 *   {@code
-	 *        function(obj, event) {
-	 *          // ...
-	 *        }
+	 *    function(obj, event) {
+	 *      // ...
+	 *    }
+	 *    
 	 *   }
 	 * </pre>
 	 * 
@@ -213,14 +218,15 @@ public class JSlot {
 	 * 
 	 * <pre>
 	 *   {@code
-	 *        function(obj, event, a1, a2, a3, a4, a5, a6) {
-	 *          // ...
-	 *        }
+	 *    function(obj, event, a1, a2, a3, a4, a5, a6) {
+	 *      // ...
+	 *    }
+	 *    
 	 *   }
 	 * </pre>
 	 * 
 	 * If this {@link JSlot} is connected to a {@link JSignal}, that
-	 * JSignal&apos;s arguments will be passed on to the {@link JSlot}.
+	 * {@link JSignal}&apos;s arguments will be passed on to the {@link JSlot}.
 	 * <p>
 	 * 
 	 * @see WWidget#getJsRef()
@@ -258,6 +264,7 @@ public class JSlot {
 	/**
 	 * Executes the JavaScript code.
 	 * <p>
+	 * 
 	 * This executes the JavaScript code in the same way as when triggered by a
 	 * {@link EventSignal}. This function returns immediately, and execution of
 	 * the JavaScript code is deferred until after the event handling.
@@ -373,6 +380,7 @@ public class JSlot {
 	/**
 	 * Returns a JavaScript statement that executes the slot.
 	 * <p>
+	 * 
 	 * This returns the JavaScript code to execute the slot.
 	 * <p>
 	 * The arguments are the <code>&quot;object, event&quot;</code> arguments of

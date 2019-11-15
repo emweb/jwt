@@ -23,7 +23,14 @@ import org.slf4j.LoggerFactory;
  * Enumeration that indicates a gradient style.
  */
 public enum GradientStyle {
-	LinearGradient, RadialGradient;
+	/**
+	 * Linear gradient.
+	 */
+	LinearGradient,
+	/**
+	 * Radial gradient.
+	 */
+	RadialGradient;
 
 	/**
 	 * Returns the numerical representation of this enum.

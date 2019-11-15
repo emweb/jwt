@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enumeration that indicates a relative location.
  * <p>
+ * 
  * Values of CenterX, CenterY, and CenterXY are only valid for
  * {@link WCssDecorationStyle#setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet sides)
  * WCssDecorationStyle#setBackgroundImage()}

@@ -51,20 +51,21 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This widget relies on a third-party JavaScript component <a
  * href="http://www.jplayer.org/">jPlayer</a>, which is distributed together
- * with Wt.
+ * with JWt.
  * <p>
  * The default user-interface can be themed using jPlayer themes. The theme is
  * global (it applies to all media player instances), and is configured by
  * loading a CSS stylesheet.
  * <p>
  * The following code creates a video using the default controls:
- * <p>
  * 
  * <pre>
  * {@code
  *  ...
+ *  
  * }
  * </pre>
+ * 
  * <p>
  * Alternatively, a custom widget may be set which implements the controls,
  * using {@link WMediaPlayer#setControlsWidget(WWidget controlsWidget)
@@ -99,11 +100,11 @@ public class WMediaPlayer extends WCompositeWidget {
 		 */
 		PosterImage,
 		/**
-		 * Audio: MP3 encoding (<b>essential audio</b> format).
+		 * Audio: MP3 encoding (<b>essential audio</b> format)
 		 */
 		MP3,
 		/**
-		 * Audio: MP4 encoding (<b>essential audio</b> format).
+		 * Audio: MP4 encoding (<b>essential audio</b> format)
 		 */
 		M4A,
 		/**
@@ -123,7 +124,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		 */
 		FLA,
 		/**
-		 * Video: MP4 encoding (<b>essential video</b> format).
+		 * Video: MP4 encoding (<b>essential video</b> format)
 		 */
 		M4V,
 		/**
@@ -178,7 +179,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	 */
 	public enum ButtonControlId {
 		/**
-		 * Play button which overlays the video (for Video only).
+		 * Play button which overlays the video (for Video only)
 		 */
 		VideoPlay,
 		/**
@@ -206,24 +207,20 @@ public class WMediaPlayer extends WCompositeWidget {
 		 */
 		VolumeMax,
 		/**
-		 * <p>
 		 * Toggle button for full screen, is hidden while full screen (for Video
 		 * only)
 		 */
 		FullScreen,
 		/**
-		 * <p>
 		 * Toggle button to restore the screen, is shown only in full screen
 		 * (for Video only)
 		 */
 		RestoreScreen,
 		/**
-		 * <p>
 		 * Toggle button to enable looping, is hidden while repeating is on
 		 */
 		RepeatOn,
 		/**
-		 * <p>
 		 * Toggle button to disable looping, is hidden while repeat is off
 		 */
 		RepeatOff;
@@ -280,7 +277,7 @@ public class WMediaPlayer extends WCompositeWidget {
 		Duration,
 		/**
 		 * Displays the title set in
-		 * {@link WMediaPlayer#setTitle(CharSequence title) setTitle()}.
+		 * {@link WMediaPlayer#setTitle(CharSequence title) setTitle()}
 		 */
 		Title;
 
@@ -337,6 +334,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Creates a new media player.
 	 * <p>
+	 * 
 	 * The player is instantiated with default controls.
 	 * <p>
 	 * 
@@ -412,6 +410,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Sets the video size.
 	 * <p>
+	 * 
 	 * This sets the size for the video. The actual size of the media player may
 	 * be slightly larger, if the controlWidget take additional space (i.e. is
 	 * not overlayed on top of the video).
@@ -461,6 +460,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Sets the user-interface controls widget.
 	 * <p>
+	 * 
 	 * This sets a widget that contains the controls (buttons, text widgets,
 	 * etc...) to allow the user to control the player.
 	 * <p>
@@ -533,6 +533,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Adds a source.
 	 * <p>
+	 * 
 	 * Adds a media source. The source may be specified as a URL or as a dynamic
 	 * resource.
 	 * <p>
@@ -550,6 +551,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Returns a source.
 	 * <p>
+	 * 
 	 * Returns the media source for the given <code>encoding</code>, which must
 	 * have previously been added using
 	 * {@link WMediaPlayer#addSource(WMediaPlayer.Encoding encoding, WLink link)
@@ -579,6 +581,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Binds a control button.
 	 * <p>
+	 * 
 	 * A control button is typically implemented as a {@link WAnchor} or a
 	 * {@link WPushButton} (although any {@link WInteractWidget} can work).
 	 * <p>
@@ -610,7 +613,8 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Binds a control progress bar.
 	 * <p>
-	 * The progress bar for the {@link WMediaPlayer.BarControlId#Time}
+	 * 
+	 * The progress bar for the {@link WMediaPlayer.BarControlId#Time Time}
 	 * indication should be contained in a {@link WContainerWidget} which bounds
 	 * the width of the progress bar, rather than setting a width on the
 	 * progress bar. This is because the progress bar may, in some cases, also
@@ -653,6 +657,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Sets a text place-holder widget.
 	 * <p>
+	 * 
 	 * This binds the widget that displays text such as current time and total
 	 * duration of the loaded media.
 	 * <p>
@@ -694,6 +699,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Start or resume playing.
 	 * <p>
+	 * 
 	 * The player starts or resumes playing at the current time.
 	 * <p>
 	 * 
@@ -721,9 +727,11 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Seeks to a time.
 	 * <p>
+	 * 
 	 * If possible, the player sets the current time to the indicated
 	 * <code>time</code> (expressed in seconds).
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>It may be the case that this only works after the player
 	 * has already loaded the media. </i>
@@ -741,11 +749,13 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Sets the playback rate.
 	 * <p>
+	 * 
 	 * This modifies the playback rate, expressed as a ratio of the normal
 	 * (natural) playback rate.
 	 * <p>
 	 * The default value is 1.0
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Not all browsers support this function. </i>
 	 * </p>
@@ -760,6 +770,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Sets the volume.
 	 * <p>
+	 * 
 	 * This modifies the volume, which must be a number between 0 and 1.0.
 	 * <p>
 	 * The default value is 0.8
@@ -802,6 +813,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Returns the current player state.
 	 * <p>
+	 * 
 	 * The state reflects in how far the media player has loaded the media, and
 	 * has determined its characteristics.
 	 */
@@ -812,6 +824,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Returns the duration.
 	 * <p>
+	 * 
 	 * The duration may be reported as 0 if the player has not yet loaded the
 	 * media to determine the duration. Otherwise the duration is the duration
 	 * of the loaded media, expressed in seconds.
@@ -827,6 +840,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Returns the current playback time.
 	 * <p>
+	 * 
 	 * Returns the current playback time, expressed in seconds.
 	 * <p>
 	 * 
@@ -849,6 +863,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Event that indicates a time update.
 	 * <p>
+	 * 
 	 * The event indicates that the {@link WMediaPlayer#getCurrentTime()
 	 * getCurrentTime()} has changed.
 	 */
@@ -860,6 +875,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Event that indicates that playback started.
 	 * <p>
+	 * 
 	 * The event is fired when playback has started (or is being continued).
 	 */
 	public JSignal playbackStarted() {
@@ -869,6 +885,7 @@ public class WMediaPlayer extends WCompositeWidget {
 	/**
 	 * Event that indicates that playback paused.
 	 * <p>
+	 * 
 	 * The event is fired when playback has been paused.
 	 */
 	public JSignal playbackPaused() {
@@ -1049,7 +1066,7 @@ public class WMediaPlayer extends WCompositeWidget {
 				first = false;
 			}
 			ss.append('}').append("});");
-			ss.append("new Wt3_4_1.WMediaPlayer(")
+			ss.append("new Wt3_4_2.WMediaPlayer(")
 					.append(app.getJavaScriptClass()).append(',')
 					.append(this.getJsRef()).append(");");
 			this.doJavaScript(ss.toString());

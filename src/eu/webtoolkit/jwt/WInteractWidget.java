@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * clicked()} event will propagate (but without event details information).
  * <p>
  * <h3>CSS</h3>
+ * 
  * <p>
  * Styling through CSS is not applicable.
  */
@@ -68,6 +69,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a keyboard key is pushed down.
 	 * <p>
+	 * 
 	 * The keyWentDown signal is the first signal emitted when a key is pressed
 	 * (before the keyPressed signal). Unlike
 	 * {@link WInteractWidget#keyPressed() keyPressed()} however it is also
@@ -80,7 +82,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * (directly or indirectly) a form widget that has focus.
 	 * <p>
 	 * To capture a key down event when no element has focus, see
-	 * {@link WApplication#globalKeyWentDown() WApplication#globalKeyWentDown()}
+	 * {@link WApplication#globalKeyWentDown()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -93,6 +95,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a &quot;character&quot; was entered.
 	 * <p>
+	 * 
 	 * The keyPressed signal is emitted when a key is pressed, and a character
 	 * is entered. Unlike {@link WInteractWidget#keyWentDown() keyWentDown()},
 	 * it is emitted only for key presses that result in a character being
@@ -103,7 +106,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * (directly or indirectly) a form widget that has focus.
 	 * <p>
 	 * To capture a key press when no element has focus, see
-	 * {@link WApplication#globalKeyPressed() WApplication#globalKeyPressed()}
+	 * {@link WApplication#globalKeyPressed()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyWentDown()
@@ -115,6 +118,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a keyboard key is released.
 	 * <p>
+	 * 
 	 * This is the counter-part of the {@link WInteractWidget#keyWentDown()
 	 * keyWentDown()} event. Every key-down has its corresponding key-up.
 	 * <p>
@@ -123,7 +127,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * (directly or indirectly) a form widget that has focus.
 	 * <p>
 	 * To capture a key up event when no element has focus, see
-	 * {@link WApplication#globalKeyWentUp() WApplication#globalKeyWentUp()}
+	 * {@link WApplication#globalKeyWentUp()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyWentDown()
@@ -135,6 +139,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when enter was pressed.
 	 * <p>
+	 * 
 	 * This signal is emitted when the Enter or Return key was pressed.
 	 * <p>
 	 * Form widgets (like {@link WLineEdit}) will receive key events when
@@ -142,8 +147,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * (directly or indirectly) a form widget that has focus.
 	 * <p>
 	 * To capture an enter press when no element has focus, see
-	 * {@link WApplication#globalEnterPressed()
-	 * WApplication#globalEnterPressed()}
+	 * {@link WApplication#globalEnterPressed()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -156,6 +160,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when escape was pressed.
 	 * <p>
+	 * 
 	 * This signal is emitted when the Escape key was pressed.
 	 * <p>
 	 * Form widgets (like {@link WLineEdit}) will receive key events when
@@ -163,8 +168,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * (directly or indirectly) a form widget that has focus.
 	 * <p>
 	 * To capture an escape press when no element has focus, see
-	 * {@link WApplication#globalEscapePressed()
-	 * WApplication#globalEscapePressed()}
+	 * {@link WApplication#globalEscapePressed()}
 	 * <p>
 	 * 
 	 * @see WInteractWidget#keyPressed()
@@ -177,13 +181,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was clicked on this widget.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getButton()}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * coordinates relative to the {@link WMouseEvent#getWidget()}, the window
+	 * {@link WMouseEvent#getWindow()}, or the {@link WMouseEvent#getDocument()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the event details contain
 	 * invalid information. </i>
@@ -196,13 +201,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was double clicked on this widget.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getButton()}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * coordinates relative to the {@link WMouseEvent#getWidget()}, the window
+	 * {@link WMouseEvent#getWindow()}, or the {@link WMouseEvent#getDocument()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -215,13 +221,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was pushed down on this widget.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getButton()}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * coordinates relative to the {@link WMouseEvent#getWidget()}, the window
+	 * {@link WMouseEvent#getWindow()}, or the {@link WMouseEvent#getDocument()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -234,18 +241,19 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a mouse key was released on this widget.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WMouseEvent#getButton() button}, optional
+	 * {@link WMouseEvent#getButton()}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * coordinates relative to the {@link WMouseEvent#getWidget()}, the window
+	 * {@link WMouseEvent#getWindow()}, or the {@link WMouseEvent#getDocument()}.
 	 * <p>
 	 * If you connect also the {@link WInteractWidget#mouseWentDown()
 	 * mouseWentDown()} signal, then a subsequent
 	 * {@link WInteractWidget#mouseWentUp() mouseWentUp()} will be received by
 	 * the same widget, even if mouse is no longer over the original widget.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -258,6 +266,8 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse went out of this widget.
 	 * <p>
+	 * 
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -270,10 +280,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse entered this widget.
 	 * <p>
+	 * 
 	 * The signal is emitted as soon as the mouse enters the widget, or after
 	 * some delay as configured by
 	 * {@link WInteractWidget#setMouseOverDelay(int delay) setMouseOverDelay()}
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -286,10 +298,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse moved over this widget.
 	 * <p>
+	 * 
 	 * The mouse event contains information on the button(s) currently pressed.
 	 * If multiple buttons are currently pressed, only the button with smallest
 	 * enum value is returned.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -302,10 +316,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse is dragged over this widget.
 	 * <p>
+	 * 
 	 * The mouse event contains information on the button(s) currently pressed.
 	 * If multiple buttons are currently pressed, only the button with smallest
 	 * enum value is returned.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -318,13 +334,14 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when the mouse scroll wheel was used.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
 	 * {@link WMouseEvent#getWheelDelta() wheel delta}, optional
 	 * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse
-	 * coordinates relative to the {@link WMouseEvent#getWidget() widget}, the
-	 * window {@link WMouseEvent#getWindow() window}, or the
-	 * {@link WMouseEvent#getDocument() document}.
+	 * coordinates relative to the {@link WMouseEvent#getWidget()}, the window
+	 * {@link WMouseEvent#getWindow()}, or the {@link WMouseEvent#getDocument()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -342,11 +359,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a finger is placed on the screen.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WTouchEvent#getTouches() touches},
-	 * {@link WTouchEvent#getTargetTouches() target touches} and
-	 * {@link WTouchEvent#getChangedTouches() changed touches}.
+	 * {@link WTouchEvent#getTouches()}, {@link WTouchEvent#getTargetTouches()
+	 * target touches} and {@link WTouchEvent#getChangedTouches() changed
+	 * touches}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -359,11 +378,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a finger is removed from the screen.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WTouchEvent#getTouches() touches},
-	 * {@link WTouchEvent#getTargetTouches() target touches} and
-	 * {@link WTouchEvent#getChangedTouches() changed touches}.
+	 * {@link WTouchEvent#getTouches()}, {@link WTouchEvent#getTargetTouches()
+	 * target touches} and {@link WTouchEvent#getChangedTouches() changed
+	 * touches}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -377,11 +398,13 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * Event signal emitted when a finger, which is already placed on the
 	 * screen, is moved across the screen.
 	 * <p>
+	 * 
 	 * The event details contains information such as the
-	 * {@link WTouchEvent#getTouches() touches},
-	 * {@link WTouchEvent#getTargetTouches() target touches} and
-	 * {@link WTouchEvent#getChangedTouches() changed touches}.
+	 * {@link WTouchEvent#getTouches()}, {@link WTouchEvent#getTargetTouches()
+	 * target touches} and {@link WTouchEvent#getChangedTouches() changed
+	 * touches}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -394,10 +417,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a gesture is started.
 	 * <p>
+	 * 
 	 * The event details contains information about the
-	 * {@link WGestureEvent#getScale() scale} and the
-	 * {@link WGestureEvent#getRotation() rotation}.
+	 * {@link WGestureEvent#getScale()} and the
+	 * {@link WGestureEvent#getRotation()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -410,10 +435,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a gesture is changed.
 	 * <p>
+	 * 
 	 * The event details contains information about the
-	 * {@link WGestureEvent#getScale() scale} and the
-	 * {@link WGestureEvent#getRotation() rotation}.
+	 * {@link WGestureEvent#getScale()} and the
+	 * {@link WGestureEvent#getRotation()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -426,10 +453,12 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Event signal emitted when a gesture is ended.
 	 * <p>
+	 * 
 	 * The event details contains information about the
-	 * {@link WGestureEvent#getScale() scale} and the
-	 * {@link WGestureEvent#getRotation() rotation}.
+	 * {@link WGestureEvent#getScale()} and the
+	 * {@link WGestureEvent#getRotation()}.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, the signal will never fire.
 	 * </i>
@@ -442,6 +471,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	/**
 	 * Configure dragging for drag and drop.
 	 * <p>
+	 * 
 	 * Enable drag&amp;drop for this widget. The mimeType is used to find a
 	 * suitable drop target, which must accept dropping of this mimetype.
 	 * <p>
@@ -456,6 +486,7 @@ public abstract class WInteractWidget extends WWebWidget {
 	 * When using a touch interface, the widget can also be dragged after a long
 	 * press.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>When JavaScript is disabled, drag&amp;drop does not
 	 * work.</i>
@@ -495,6 +526,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			this.dragTouchEndSlot_.setJavaScript("function(){"
 					+ app.getJavaScriptClass() + "._p_.touchEnded();" + "}");
 		}
+		this.voidEventSignal(DRAGSTART_SIGNAL, true).preventDefaultAction(true);
 		this.mouseWentDown().addListener(this.dragSlot_);
 		this.touchStarted().addListener(this.dragTouchSlot_);
 		this.touchStarted().preventDefaultAction(true);
@@ -558,11 +590,16 @@ public abstract class WInteractWidget extends WWebWidget {
 			;
 			this.dragTouchEndSlot_ = null;
 		}
+		EventSignal dragStart = this.voidEventSignal(DRAGSTART_SIGNAL, false);
+		if (dragStart != null) {
+			dragStart.preventDefaultAction(false);
+		}
 	}
 
 	/**
 	 * Sets a delay for the mouse over event.
 	 * <p>
+	 * 
 	 * This sets a delay (in milliseconds) before the mouse over event is
 	 * emitted.
 	 * <p>
@@ -594,7 +631,7 @@ public abstract class WInteractWidget extends WWebWidget {
 		if (popup && WApplication.getInstance().getEnvironment().hasAjax()) {
 			this.clicked()
 					.addListener(
-							"function(o,e) {  if (Wt3_4_1.WPopupWidget && o.wtPopup) {Wt3_4_1.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_4_1.WPopupWidget.popupClicked = null; }}");
+							"function(o,e) {  if (Wt3_4_2.WPopupWidget && o.wtPopup) {Wt3_4_2.WPopupWidget.popupClicked = o;$(document).trigger('click', e);Wt3_4_2.WPopupWidget.popupClicked = null; }}");
 			this.clicked().preventPropagation();
 		}
 		super.setPopup(popup);
@@ -690,7 +727,7 @@ public abstract class WInteractWidget extends WWebWidget {
 				|| updateMouseMove;
 		String CheckDisabled = "if($(o).hasClass('"
 				+ app.getTheme().getDisabledClass()
-				+ "')){Wt3_4_1.cancelEvent(e);return;}";
+				+ "')){Wt3_4_2.cancelEvent(e);return;}";
 		if (updateMouseDown) {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
@@ -704,11 +741,11 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& mouseDown.isConnected()
 					&& (mouseUp != null && mouseUp.isConnected() || mouseMove != null
 							&& mouseMove.isConnected())) {
-				js.append("Wt3_4_1.capture(this);");
+				js.append("Wt3_4_2.capture(this);");
 			}
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js.append("Wt3_4_1.mouseDown(e);");
+				js.append("Wt3_4_2.mouseDown(e);");
 			}
 			if (mouseDown != null) {
 				js.append(mouseDown.getJavaScript());
@@ -724,7 +761,7 @@ public abstract class WInteractWidget extends WWebWidget {
 			js.append(CheckDisabled);
 			if (mouseMove != null && mouseMove.isConnected()
 					|| mouseDrag != null && mouseDrag.isConnected()) {
-				js.append("Wt3_4_1.mouseUp(e);");
+				js.append("Wt3_4_2.mouseUp(e);");
 			}
 			if (mouseUp != null) {
 				js.append(mouseUp.getJavaScript());
@@ -744,8 +781,8 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseMove.updateOk();
 			}
 			if (mouseDrag != null) {
-				actions.add(new DomElement.EventAction("Wt3_4_1.buttons",
-						mouseDrag.getJavaScript() + "Wt3_4_1.drag(e);",
+				actions.add(new DomElement.EventAction("Wt3_4_2.buttons",
+						mouseDrag.getJavaScript() + "Wt3_4_2.drag(e);",
 						mouseDrag.encodeCmd(), mouseDrag.isExposedSignal()));
 				mouseDrag.updateOk();
 			}
@@ -774,7 +811,7 @@ public abstract class WInteractWidget extends WWebWidget {
 					&& touchStart.isConnected()
 					&& (touchEnd != null && touchEnd.isConnected() || touchMove != null
 							&& touchMove.isConnected())) {
-				js.append("Wt3_4_1.capture(this);");
+				js.append("Wt3_4_2.capture(this);");
 			}
 			if (touchStart != null) {
 				js.append(touchStart.getJavaScript());
@@ -815,13 +852,13 @@ public abstract class WInteractWidget extends WWebWidget {
 			StringBuilder js = new StringBuilder();
 			js.append(CheckDisabled);
 			if (mouseDrag != null) {
-				js.append("if (Wt3_4_1.dragged()) return;");
+				js.append("if (Wt3_4_2.dragged()) return;");
 			}
 			if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
 				if (mouseClick != null) {
 					if (mouseClick.isDefaultActionPrevented()
 							|| mouseClick.isPropagationPrevented()) {
-						js.append("Wt3_4_1.cancelEvent(e");
+						js.append("Wt3_4_2.cancelEvent(e");
 						if (mouseClick.isDefaultActionPrevented()
 								&& mouseClick.isPropagationPrevented()) {
 							js.append(");");
@@ -834,7 +871,7 @@ public abstract class WInteractWidget extends WWebWidget {
 						}
 					}
 				}
-				js.append("if(Wt3_4_1.isDblClick(o, e)) {").append(
+				js.append("if(Wt3_4_2.isDblClick(o, e)) {").append(
 						mouseDblClick.getJavaScript());
 				if (mouseDblClick.isExposedSignal()) {
 					js.append(app.getJavaScriptClass())
@@ -843,7 +880,7 @@ public abstract class WInteractWidget extends WWebWidget {
 							.append("',e,true);");
 				}
 				mouseDblClick.updateOk();
-				js.append("}else{if (Wt3_4_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
+				js.append("}else{if (Wt3_4_2.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
 				if (mouseClick != null) {
 					js.append(mouseClick.getJavaScript());
 					if (mouseClick.isExposedSignal()) {
@@ -920,6 +957,11 @@ public abstract class WInteractWidget extends WWebWidget {
 				mouseOut.updateOk();
 			}
 		}
+		EventSignal dragStart = this.voidEventSignal(DRAGSTART_SIGNAL, false);
+		if (dragStart != null && dragStart.needsUpdate(all)) {
+			element.setEventSignal("dragstart", dragStart);
+			dragStart.updateOk();
+		}
 		this.updateEventSignals(element, all);
 		super.updateDom(element, all);
 	}
@@ -982,5 +1024,6 @@ public abstract class WInteractWidget extends WWebWidget {
 	private static String GESTURE_START_SIGNAL = "gesturestart";
 	private static String GESTURE_CHANGE_SIGNAL = "gesturechange";
 	private static String GESTURE_END_SIGNAL = "gestureend";
+	private static String DRAGSTART_SIGNAL = "dragstart";
 	private int mouseOverDelay_;
 }

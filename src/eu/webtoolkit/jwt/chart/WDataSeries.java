@@ -33,13 +33,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Multiple series of different types may be combined on a single chart.
  * <p>
- * <div align="center"> <img src="doc-files//ChartWDataSeries-1.png"
- * alt="Different styles of data series">
+ * <div align="center"> <img src="doc-files/ChartWDataSeries-1.png">
  * <p>
  * <strong>Different styles of data series</strong>
  * </p>
- * </div> For a category chart, series may be stacked on top of each other. This
- * is controlled by {@link WDataSeries#setStacked(boolean stacked) setStacked()}
+ * </div>
+ * 
+ * For a category chart, series may be stacked on top of each other. This is
+ * controlled by {@link WDataSeries#setStacked(boolean stacked) setStacked()}
  * for a series, which if enabled, will stack that series on top of the
  * preceding data series. This works regardless of whether they are of the same
  * type, but obviously works visually best if these series are of the same type.
@@ -62,6 +63,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Enumeration that indicates an aspect of the look.
 	 * <p>
+	 * 
 	 * These flags are used to keep track of which aspects of the look that are
 	 * overridden from the values provided by the chart palette, using one of
 	 * the methods in this class.
@@ -106,6 +108,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Constructs a new data series.
 	 * <p>
+	 * 
 	 * Creates a new data series which plots the Y values from the model column
 	 * <i>modelColumn</i>, with the indicated <i>seriesType</i>. The Y values
 	 * are mapped to the indicated <i>axis</i>, which should correspond to one
@@ -170,6 +173,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Constructs a new data series.
 	 * <p>
+	 * 
 	 * Creates a new data series which plots the Y values from the model column
 	 * <i>modelColumn</i>, with the indicated <i>seriesType</i>. The Y values
 	 * are mapped to the indicated <i>yAxis</i>, which should correspond to one
@@ -214,6 +218,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Copy constructor.
 	 * <p>
+	 * 
 	 * This does not copy over the associated chart.
 	 * <p>
 	 * 
@@ -262,6 +267,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the bar width.
 	 * <p>
+	 * 
 	 * The bar width specifies the bar width (in axis dimensions). For category
 	 * plots, which may have several bars for different series next to each
 	 * other, you will want to specify the same bar width for each series.
@@ -293,6 +299,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the series type.
 	 * <p>
+	 * 
 	 * The series type specifies how the data is plotted, i.e. using mere point
 	 * markers, lines, curves, or bars.
 	 */
@@ -317,13 +324,13 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the model column.
 	 * <p>
+	 * 
 	 * This specifies the model column from which the Y data is retrieved that
 	 * is plotted by this series.
 	 * <p>
 	 * The data column should contain data that can be converted to a number
-	 * (but should not necessarily be of a number type).
-	 * <p>
-	 * See also {@link eu.webtoolkit.jwt.StringUtils#asNumber(Object)}.
+	 * (but should not necessarily be of a number type). See also
+	 * {@link eu.webtoolkit.jwt.StringUtils#asNumber(Object)}.
 	 */
 	public void setModelColumn(int modelColumn) {
 		if (!ChartUtils.equals(this.modelColumn_, modelColumn)) {
@@ -346,13 +353,13 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the X series column.
 	 * <p>
+	 * 
 	 * By default, the data series uses the X series column configured for the
 	 * chart. For a scatter plot, each series can have its own matching X data,
 	 * which is configured here. For other plots, this setting is ignored.
 	 * <p>
 	 * The default value is -1, which indicates that
-	 * {@link WCartesianChart#XSeriesColumn() WCartesianChart#XSeriesColumn()}
-	 * is to be used.
+	 * {@link WCartesianChart#XSeriesColumn()} is to be used.
 	 * <p>
 	 * 
 	 * @see WCartesianChart#setXSeriesColumn(int modelColumn)
@@ -374,6 +381,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets whether this series is stacked on top of the preceding series.
 	 * <p>
+	 * 
 	 * For category charts, data from different series may be rendered stacked
 	 * on top of each other. The rendered value is the sum of the value of this
 	 * series plus the rendered value of the preceding series. For line series,
@@ -403,6 +411,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Binds this series to a chart axis.
 	 * <p>
+	 * 
 	 * A data series can only be bound to a Y axis. Note that the second Y axis
 	 * will not be displayed by default.
 	 * <p>
@@ -422,6 +431,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Binds this series to a chart axis.
 	 * <p>
+	 * 
 	 * A data series can only be bound to a Y axis. Note that the second Y axis
 	 * will not be displayed by default.
 	 * <p>
@@ -461,6 +471,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets which aspects of the look are overriden.
 	 * <p>
+	 * 
 	 * Set which aspects of the look, that are by default based on the chart
 	 * palette, are overridden by custom settings.
 	 * <p>
@@ -498,6 +509,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Overrides the pen used for drawing lines for this series.
 	 * <p>
+	 * 
 	 * Overrides the pen that is used to draw this series. Calling this method
 	 * automatically adds CustomPen to the custom flags.
 	 * <p>
@@ -548,6 +560,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Overrides the brush used for filling areas for this series.
 	 * <p>
+	 * 
 	 * Overrides the brush that is used to draw this series which is otherwise
 	 * provided by the chart palette. For a bar plot, this is the brush used to
 	 * fill the bars. For a line chart, this is the brush used to fill the area
@@ -610,6 +623,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the fill range for line or curve series.
 	 * <p>
+	 * 
 	 * Line or curve series may be filled under or above the curve, using the
 	 * {@link WDataSeries#getBrush() getBrush()}. This setting specifies the
 	 * range that is filled. The default value for all but BarSeries is NoFill.
@@ -646,6 +660,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the data point marker.
 	 * <p>
+	 * 
 	 * Specifies a marker that is displayed at the (X,Y) coordinate for each
 	 * series data point.
 	 * <p>
@@ -668,6 +683,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the custom marker.
 	 * <p>
+	 * 
 	 * This will also changes the marker type to CustomMarker.
 	 * <p>
 	 * 
@@ -705,6 +721,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the marker size.
 	 * <p>
+	 * 
 	 * The default marker size is 6 pixels.
 	 */
 	public void setMarkerSize(double size) {
@@ -728,6 +745,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the marker pen.
 	 * <p>
+	 * 
 	 * Overrides the pen used for stroking the marker. By default the marker pen
 	 * is the same as {@link WDataSeries#getPen() getPen()}. Calling this method
 	 * automatically adds CustomMarkerPen to the custom flags.
@@ -763,6 +781,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the marker brush.
 	 * <p>
+	 * 
 	 * Overrides the brush used for filling the marker. By default the marker
 	 * brush is the same as {@link WDataSeries#getBrush() getBrush()}. Calling
 	 * this method automatically adds CustomMarkerBrush to the custom flags.
@@ -798,6 +817,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Enables the entry for this series in the legend.
 	 * <p>
+	 * 
 	 * When <i>enabled</i>, this series is added to the chart legend.
 	 * <p>
 	 * The default value is true.
@@ -830,6 +850,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Enables a label that is shown at the series data points.
 	 * <p>
+	 * 
 	 * You may enable labels for the XAxis, YAxis or both axes. The label that
 	 * is displayed is the corresponding value on that axis. If both labels are
 	 * enabled then they are combined in a single text using the format:
@@ -872,6 +893,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Sets the label color.
 	 * <p>
+	 * 
 	 * Specify the color used for the rendering labels at the data points.
 	 * <p>
 	 * 
@@ -909,6 +931,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Hide/unhide this series.
 	 * <p>
+	 * 
 	 * A hidden series will not be show in the chart and legend.
 	 */
 	public void setHidden(boolean hidden) {
@@ -928,6 +951,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Maps from device coordinates to model coordinates.
 	 * <p>
+	 * 
 	 * Maps a position in the chart back to model coordinates, for data in this
 	 * data series.
 	 * <p>
@@ -954,6 +978,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Maps from model values to device coordinates.
 	 * <p>
+	 * 
 	 * Maps model values to device coordinates, for data in this data series.
 	 * <p>
 	 * This uses WChart::mapToDevice() passing the {@link WDataSeries#getAxis()
@@ -991,13 +1016,14 @@ public class WDataSeries extends WObject {
 	/**
 	 * Set an offset to draw the data series at.
 	 * <p>
+	 * 
 	 * The Y position of the data series will be drawn at an offset, expressed
 	 * in model coordinates. The axis labels won&apos;t follow the same offset.
 	 * <p>
 	 * The offset can be manipulated client side using a mouse or touch drag if
-	 * {@link WCartesianChart#isCurveManipulationEnabled()
-	 * WCartesianChart#isCurveManipulationEnabled()} is enabled.
+	 * {@link WCartesianChart#isCurveManipulationEnabled()} is enabled.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This is only supported for axes with linear scale.</i>
 	 * </p>
@@ -1026,13 +1052,15 @@ public class WDataSeries extends WObject {
 	/**
 	 * Set the scale to draw the data series at.
 	 * <p>
+	 * 
 	 * The Y position of the data series will be scaled around the zero
 	 * position, and offset by {@link WDataSeries#getOffset() getOffset()}.
 	 * <p>
 	 * The scale can be manipulated client side using the scroll wheel or a
-	 * pinch motion if {@link WCartesianChart#isCurveManipulationEnabled()
-	 * WCartesianChart#isCurveManipulationEnabled()} is enabled.
+	 * pinch motion if {@link WCartesianChart#isCurveManipulationEnabled()} is
+	 * enabled.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>This is only supported for axes with linear scale.</i>
 	 * </p>
@@ -1061,9 +1089,11 @@ public class WDataSeries extends WObject {
 	/**
 	 * Set a model for this data series.
 	 * <p>
+	 * 
 	 * If no model is set for this data series, the model of the chart will be
 	 * used.
 	 * <p>
+	 * 
 	 * <p>
 	 * <i><b>Note: </b>Individual models per data series are only supported for
 	 * ScatterPlot type charts.</i>
@@ -1095,6 +1125,7 @@ public class WDataSeries extends WObject {
 	/**
 	 * Get the model for this data series.
 	 * <p>
+	 * 
 	 * This will return the model set for this data series, if it is set.
 	 * <p>
 	 * If no model is set for this data series, and the series is associated
