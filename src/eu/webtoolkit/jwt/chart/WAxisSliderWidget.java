@@ -694,7 +694,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
 		if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
 			WApplication app = WApplication.getInstance();
 			StringBuilder ss = new StringBuilder();
-			ss.append("new Wt3_4_2.WAxisSliderWidget(")
+			ss.append("new Wt3_5_0.WAxisSliderWidget(")
 					.append(app.getJavaScriptClass())
 					.append(",")
 					.append(this.getJsRef())

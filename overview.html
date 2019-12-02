@@ -25,6 +25,44 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.5.0 (December 2, 2019)</h2>
+<p>
+  JWt 3.5.0 comes with no major new features, just the following fixes and tweaks:
+</p>
+
+<h3>Notable backwards-incompatible changes</h3>
+<ul>
+    <li><a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a>: <a href="eu/webtoolkit/jwt/WSuggestionPopup.Options.html#wordSeparators">wordSeparators</a> no longer requires (extra) escaping, so a newline is indicated with the string literal "\n", not "\\n". Similarly, the <a href="eu/webtoolkit/jwt/WSuggestionPopup.Options.html#whitespace">whitespace</a> property was incorrectly documented as requiring (extra) escaping.</li>
+</ul>
+
+<h3>Documentation</h3>
+<p>
+  We've changed the way the documentation is generated from Wt's documentation from a modified older version of Doxygen to
+  basing it on Doxygen's XML output in preparation of JWt 4. This causes a lot of small documentation changes. Some issues
+  with documentation were fixed, e.g. missing documentation or the wrong documentation being placed with certain methods.
+</p>
+
+<h3>build.xml</h3>
+<p>
+  Added a test target that runs the tests (only one JWt 3 test for now).
+</p>
+
+<h3>Fixes</h3>
+<ul>
+  <li>
+    Limited prevention of default action of the <tt>dragstart</tt> event to only draggable widgets. This used to be global (set on <tt>document.body</tt>), but could conflict with other JavaScript libraries, especially when JWt is used in WidgetSet mode.
+  </li>
+  <li>
+    <a href="eu/webtoolkit/jwt/WPainter.html">WPainter</a> fixed arc drawing code to be consistent across different backends, and with Qt's QPainter. Its behavior used to be erratic when angles larger than 360 degrees or lower than 0 were used.
+  </li>
+  <li>
+    Fixed Wt issue <a href="https://redmine.webtoolkit.eu/issues/7139">#7139</a>: some widgets would fail to be correctly reparented.
+  </li>
+  <li>
+    Fixed Wt issue <a href="https://redmine.webtoolkit.eu/issues/7336">#7336</a>: (J)Wt was touching the history API every 10 ms when scrolling to store the scroll position, causing sluggishness, especially on mobile browsers with smooth scrolling. The scroll position is now saved after the user has stopped scrolling.
+  </li>
+</ul>
+
 <h2>Release 3.4.2 (October 30, 2019)</h2>
 <p>
   This release fixes the following issues:

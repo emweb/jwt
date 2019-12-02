@@ -391,7 +391,7 @@ public class WDateValidator extends WValidator {
 	public String getJavaScriptValidate() {
 		loadJavaScript(WApplication.getInstance());
 		StringBuilder js = new StringBuilder();
-		js.append("new Wt3_4_2.WDateValidator(").append(this.isMandatory())
+		js.append("new Wt3_5_0.WDateValidator(").append(this.isMandatory())
 				.append(",[");
 		for (int i = 0; i < this.formats_.size(); ++i) {
 			WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));

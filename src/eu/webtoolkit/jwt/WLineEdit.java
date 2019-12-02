@@ -406,7 +406,7 @@ public class WLineEdit extends WFormWidget {
 	public void setSelection(int start, int length) {
 		String s = String.valueOf(start);
 		String e = String.valueOf(start + length);
-		this.doJavaScript("Wt3_4_2.setUnicodeSelectionRange(" + this.getJsRef()
+		this.doJavaScript("Wt3_5_0.setUnicodeSelectionRange(" + this.getJsRef()
 				+ "," + s + "," + e + ")");
 	}
 
@@ -873,7 +873,7 @@ public class WLineEdit extends WFormWidget {
 		app.loadJavaScript("js/WLineEdit.js", wtjs1());
 		String space = "";
 		space += this.spaceChar_;
-		String jsObj = "new Wt3_4_2.WLineEdit("
+		String jsObj = "new Wt3_5_0.WLineEdit("
 				+ app.getJavaScriptClass()
 				+ ","
 				+ this.getJsRef()
