@@ -109,7 +109,7 @@ public class Css21ParserExtTest {
         
         // Test an actual file
         localAssert( parser.parseFile("") == null );
-        localAssert( parser.parseFile("bin/eu/webtoolkit/jwt/wt-resources/html4_default.css") );
+        localAssert( parser.parseFile("src/eu/webtoolkit/jwt/wt-resources/html4_default.css") );
         
         // Test this
         StyleSheet sheet = parser.parse(

@@ -89,7 +89,7 @@ class BarSeriesRenderer extends SeriesRenderer {
 				yColumn, ItemDataRole.BarPenColorRole);
 		this.painter_.strokePath(transform.map(bar).getCrisp(), pen);
 		WString toolTip = this.series_.getModel().getToolTip(yRow, yColumn);
-		if (!(toolTip.length() == 0)) {
+		if (!(toolTip.length() == 0) && nonZeroWidth) {
 			WTransform t = this.painter_.getWorldTransform();
 			WPointF tl = t.map(segmentPoint(bar, 0));
 			WPointF tr = t.map(segmentPoint(bar, 1));

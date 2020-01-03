@@ -698,6 +698,7 @@ public class WLeafletMap extends WCompositeWidget {
 		if (!(ss.length() == 0)) {
 			this.doJavaScript(ss.toString());
 		}
+		this.flags_.clear(BIT_OPTIONS_CHANGED);
 		super.render(flags);
 	}
 

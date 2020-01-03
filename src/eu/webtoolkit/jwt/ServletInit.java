@@ -39,7 +39,7 @@ public class ServletInit implements ServletContextListener {
 	private void initServletApi(ServletContext context, boolean contextIsInitializing) {
 		if (servletApi == null) {
 			try {
-				if (context.getMajorVersion() == 3) {
+				if (context.getMajorVersion() >= 3) {
 					logger.info("Using servlet API 3");
 					servletApi = (ServletApi)Class.forName("eu.webtoolkit.jwt.ServletApi3").newInstance();
 				} else {

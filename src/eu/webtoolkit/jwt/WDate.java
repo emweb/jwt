@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -508,7 +509,7 @@ public class WDate implements Comparable<WDate> {
 	 * Returns the default date format.
 	 */
 	public static String getDefaultFormat() {
-		return "ddd MMM d HH:mm:ss yyyy";
+		return "EEE MMM d HH:mm:ss yyyy";
 	}
 
 	/**
@@ -769,12 +770,12 @@ public class WDate implements Comparable<WDate> {
 	 * The <i>format</i> is a string interpreted by {@link SimpleDateFormat}.
 	 */
 	public String toString(String format) {
-		SimpleDateFormat formatter = new SimpleDateFormat(format);
-		return formatter.format(this.d);
+		return toString(format, true);
 	}
 	
 	public String toString(String format, boolean localized) {
-		return toString(format);
+		SimpleDateFormat formatter = localized ? new SimpleDateFormat(format) : new SimpleDateFormat(format, Locale.ENGLISH);
+		return formatter.format(this.d);
 	}
 
 	static WDate getPreviousWeekday(WDate d, Day gw) {
