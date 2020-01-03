@@ -21,6 +21,7 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gson/gson-2.0.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/http/httpclient-4.1.2.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/http/httpcore-4.1.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javamail/jakarta.activation-1.2.1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javamail/geronimo-javamail_1.4_mail-1.8.1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javamail/geronimo-javamail_1.4_provider-1.8.1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/servlet-api/servlet-api-3.0.jar"/>
