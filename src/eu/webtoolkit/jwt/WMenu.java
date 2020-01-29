@@ -1053,7 +1053,7 @@ public class WMenu extends WCompositeWidget {
 	 * 
 	 * @see WMenu#itemAt(int index)
 	 */
-	int indexOf(WMenuItem item) {
+	public int indexOf(WMenuItem item) {
 		return this.getUl().getIndexOf(item);
 	}
 
