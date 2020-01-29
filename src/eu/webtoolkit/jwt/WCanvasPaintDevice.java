@@ -214,20 +214,11 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 			imgUri = app.resolveRelativeUrl(imageUri);
 		}
 		int imageIndex = this.createImage(imgUri);
-		char[] buf = new char[30];
-		this.js_.append("ctx.drawImage(images[")
+		this.js_.append("Wt3_5_0.gfxUtils.drawImage(ctx,images[")
 				.append(String.valueOf(imageIndex)).append("],")
-				.append(MathUtils.roundJs(sourceRect.getX(), 3));
-		this.js_.append(',').append(MathUtils.roundJs(sourceRect.getY(), 3));
-		this.js_.append(',')
-				.append(MathUtils.roundJs(sourceRect.getWidth(), 3));
-		this.js_.append(',').append(
-				MathUtils.roundJs(sourceRect.getHeight(), 3));
-		this.js_.append(',').append(MathUtils.roundJs(rect.getX(), 3));
-		this.js_.append(',').append(MathUtils.roundJs(rect.getY(), 3));
-		this.js_.append(',').append(MathUtils.roundJs(rect.getWidth(), 3));
-		this.js_.append(',').append(MathUtils.roundJs(rect.getHeight(), 3))
-				.append(");");
+				.append(WWebWidget.jsStringLiteral(imgUri)).append(',')
+				.append(sourceRect.getJsRef()).append(',')
+				.append(rect.getJsRef()).append(");");
 	}
 
 	public void drawLine(double x1, double y1, double x2, double y2) {
