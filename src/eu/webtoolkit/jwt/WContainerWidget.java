@@ -1137,7 +1137,7 @@ public class WContainerWidget extends WInteractWidget {
 			this.setFormObject(true);
 			this.doJavaScript(this.getJsRef() + ".wtEncodeValue = function() {"
 					+ "return " + this.getJsRef() + ".scrollTop" + " + ';' + "
-					+ this.getJsRef() + ".scrollLeft;" + "}");
+					+ this.getJsRef() + ".scrollLeft;" + "};");
 			this.flags_.clear(BIT_OVERFLOW_CHANGED);
 			WApplication app = WApplication.getInstance();
 			if (app.getEnvironment().agentIsIE()
