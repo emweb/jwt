@@ -1804,7 +1804,7 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
   w.parentNode.removeChild(w);
   
   for (p = pp.parentNode; p != domRoot; p = p.parentNode) {
-    if (p.wtResize || p.wtReparentBarrier) {
+    if (p.wtReparentBarrier) {
       break;
     }
 
@@ -1818,8 +1818,10 @@ this.positionAtWidget = function(id, atId, orientation, delta) {
     // clientHeight !== scrollHeight when using the border-collapse CSS property.
     if (WT.css(p, 'display') != 'inline' &&
         p.clientHeight > 100 &&
-        ((p.scrollHeight > p.clientHeight && getComputedStyle(p).overflowY !== 'visible') ||
-         (p.scrollWidth > p.clientWidth && getComputedStyle(p).overflowX !== 'visible'))) {
+        (getComputedStyle(p).overflowY === 'scroll' ||
+         getComputedStyle(p).overflowX === 'scroll' ||
+         (p.scrollHeight > p.clientHeight && getComputedStyle(p).overflowY === 'auto') ||
+         (p.scrollWidth > p.clientWidth && getComputedStyle(p).overflowX === 'auto'))) {
       break;
     }
 
