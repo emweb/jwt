@@ -313,7 +313,7 @@ public class WPopupWidget extends WCompositeWidget {
 		WApplication app = WApplication.getInstance();
 		app.loadJavaScript("js/WPopupWidget.js", wtjs1());
 		StringBuilder jsObj = new StringBuilder();
-		jsObj.append("new Wt3_5_0.WPopupWidget(")
+		jsObj.append("new Wt3_5_1.WPopupWidget(")
 				.append(app.getJavaScriptClass()).append(',')
 				.append(this.getJsRef()).append(',').append(this.transient_)
 				.append(',').append(this.autoHideDelay_).append(',')
