@@ -269,13 +269,11 @@ public class WFont {
 	 * <p>
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#064;code
-	 * 	WFont mono;
-	 * 	mono.setFamily(WFont::Monospace, &quot;'Courier New'&quot;);
-	 * 	mono.setSize(18);
-	 * 
-	 * }
+	 *   {@code
+	 *    WFont mono;
+	 *    mono.setFamily(WFont::Monospace, "'Courier New'");
+	 *    mono.setSize(18);
+	 *   }
 	 * </pre>
 	 */
 	public void setFamily(WFont.GenericFamily genericFamily,
