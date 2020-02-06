@@ -174,8 +174,8 @@ public class WTime {
 	/**
 	 * Parses a string to a time using a specified format.
 	 * 
-	 * The format follows the same syntax as used by toString(const WString&
-	 * format). When the time could not be parsed or is not valid, an invalid
+	 * The format follows the same syntax as used by toString(String format).
+	 * When the time could not be parsed or is not valid, an invalid
 	 * time is returned (for which isValid() returns false).
 	 * 
 	 * @see #toString()

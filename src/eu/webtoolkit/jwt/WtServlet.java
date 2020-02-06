@@ -507,7 +507,7 @@ public abstract class WtServlet extends HttpServlet {
 	/**
 	 * Posts a task to be run within the scope of all currently active sessions.
 	 *
-	 * @see post()
+	 * @see post
 	 * @param function the task to be run
 	 */
 	public void postAll(Runnable function) {

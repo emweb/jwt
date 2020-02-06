@@ -21,10 +21,10 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * Java to obtain introspection in the types of the arguments, and provide suitable marshaling
  * of data from JavaScript to Java. The easiest way to instantiate an object of this class is:
  * 
- * <code>
- *   JSignal3<String, Integer, Double> pingSignal
- *     = new JSignal3<String, Integer, Double>(this, "pingSignal") { };
- * </code>
+ * <pre>
+ *   JSignal3&lt;String, Integer, Double&gt; pingSignal
+ *     = new JSignal3&lt;String, Integer, Double&gt;(this, "pingSignal") { };
+ * </pre>
  * 
  * For a usage example take a look the documentation of {@link JSignal2}.
  */

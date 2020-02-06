@@ -694,15 +694,6 @@ public abstract class WWidget extends WObject {
 	 * descendant widgets that are not hidden will be shown. A widget is only
 	 * visible if it and all its ancestors in the widget tree are visible, which
 	 * may be checked using {@link WWidget#isVisible() isVisible()}.
-	 * <p>
-	 * 
-	 * <p>
-	 * <i><b>Note: </b>{@link WWidget#hide() hide()} and {@link WWidget#show()
-	 * show()} are considered to be stateless slots by default. If you override
-	 * {@link WWidget#setHidden(boolean hidden, WAnimation animation)
-	 * setHidden()} and need to modify server state whenever it is called,
-	 * you&apos;ll need to call {@link WObject#isNotStateless()}. </i>
-	 * </p>
 	 */
 	public abstract void setHidden(boolean hidden, final WAnimation animation);
 
@@ -759,14 +750,6 @@ public abstract class WWidget extends WObject {
 	 * Typically, a disabled form widget will not allow changing the value, and
 	 * disabled widgets will not react to mouse click events.
 	 * <p>
-	 * 
-	 * <p>
-	 * <i><b>Note: </b>{@link WWidget#enable() enable()} and
-	 * {@link WWidget#disable() disable()} are considered to be stateless slots
-	 * by default. If you override {@link WWidget#setDisabled(boolean disabled)
-	 * setDisabled()} and need to modify server state whenever it is called,
-	 * you&apos;ll need to call {@link WObject#isNotStateless()}.</i>
-	 * </p>
 	 * 
 	 * @see WWidget#disable()
 	 * @see WWidget#enable()
