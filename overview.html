@@ -59,6 +59,18 @@ behaviour. It also indicates the main changes from version to verison.
     <a href="eu/webtoolkit/jwt/WSuggestionPopup.html#setDropDownIconUnfiltered(boolean)"><tt>setDropDownIconUnfiltered(true)</tt></a>
     was used, pressing the up/down arrows to move through the list would cause it to be filtered.
   </li>
+  <li>
+      <a href="https://redmine.webtoolkit.eu/issues/7382" target="_blank">Issue #7382</a>: JWt would use Servlet 2.5 API when the Servlet container was at version 4.
+  </li>
+  <li>
+      <a href="https://redmine.webtoolkit.eu/issues/7386" target="_blank">Issue #7386</a>: fixed default <a href="eu/webtoolkit/jwt/WDate.html">WDate</a> format. This issue would cause dates to be erroneously localized in <tt>Set-Cookie</tt>.
+  </li>
+  <li>
+      Added Jakarta Activation JAR to <tt>lib</tt> folder, since newer implementations of Java no longer include <tt>javax.activation</tt>.
+  </li>
+  <li>
+      Miscellaneous documentation fixes.
+  </li>
 </ul>
 
 <h2>Release 3.5.0 (December 3, 2019)</h2>
