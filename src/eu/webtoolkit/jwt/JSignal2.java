@@ -25,7 +25,7 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * Java to obtain introspection in the types of the arguments, and provide suitable marshaling
  * of data from JavaScript to Java. The easiest way to instantiate an object of this class is:
  * <pre>
- *   JSignal2<String, Integer> pingSignal = new JSignal2<String, Integer>(this, "pingSignal") { };
+ *   JSignal2&lt;String, Integer&gt; pingSignal = new JSignal2&lt;String, Integer&gt;(this, "pingSignal") { };
  * </pre>
  * <p>
  * Example code:
@@ -33,13 +33,13 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * class MyWidget extends WCompositeWidget
  * {
  *     public MyWidget() {
- *         doSome = new JSignal2<String, Integer>(this, "doSome") { };
+ *         doSome = new JSignal2&lt;String, Integer&gt;(this, "doSome") { };
  *          ...
  *     }
  *
- *     JSignal<String, Integer> doSome() { return doSome; }
+ *     JSignal&lt;String, Integer&gt; doSome() { return doSome; }
  *
- *     private JSignal2<String, Integer> doSome;
+ *     private JSignal2&lt;String, Integer&gt; doSome;
  * }
  * </pre>
  * <p>
@@ -70,7 +70,7 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * <p>
  * Consider a signal declaration:
  * <pre>
- *  JSignal2<String, Integer, WMouseEvent> doSome();
+ *  JSignal2&lt;String, Integer, WMouseEvent&gt; doSome();
  * </pre>
  * <p>
  * Then, the following would be a suitable JavaScript call:
