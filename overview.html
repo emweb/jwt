@@ -25,6 +25,54 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.5.1 (February 6, 2020)</h2>
+
+<p>
+  This release fixes the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7350" target="_blank">Issue #7350</a>: fixed <a href="eu/webtoolkit/jwt/WPaintedWidget.html">WPaintedWidget</a>'s <tt>wtResize</tt> JavaScript to assume its preferred size when called with a size of -1.
+  </li>
+  <li>
+    Fixed possible JavaScript errors caused by <a href="eu/webtoolkit/jwt/WContainerWidget.html">WContainerWidget</a>'s <tt>wtEncodeValue</tt> JavaScript not being terminated by a semicolon.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7407" target="_blank">Issue #7407</a>: fixed JavaScript memory leak related to deferred or HTML tooltips.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7361" target="_blank">Issue #7361</a>: a previous attempt at fixing horizontal scrolling stutter
+    in JWt 3.4.1 caused a regression in <a href="eu/webtoolkit/jwt/WTableView.html#scrollTo(int,int)">WTableView#scrollTo()</a>.
+  </li>
+  <li>
+    Fixed several issues with <a href="eu/webtoolkit/jwt/WLeafletMap.html">WLeafletMap</a> that were
+    <a href="https://redmine.emweb.be/boards/2/topics/16718" target="_blank">reported on the forum</a>.
+  </li>
+  <li>
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a>: when there were so many bars on
+    a bar chart that the width of a bar became 0, placing tooltips would cause a crash. Wt will now skip
+    tooltip placement when bars get too narrow.
+  </li>
+  <li>
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a>: when
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html#setDropDownIconUnfiltered(boolean)"><tt>setDropDownIconUnfiltered(true)</tt></a>
+    was used, pressing the up/down arrows to move through the list would cause it to be filtered.
+  </li>
+  <li>
+      <a href="https://redmine.webtoolkit.eu/issues/7382" target="_blank">Issue #7382</a>: JWt would use Servlet 2.5 API when the Servlet container was at version 4.
+  </li>
+  <li>
+      <a href="https://redmine.webtoolkit.eu/issues/7386" target="_blank">Issue #7386</a>: fixed default <a href="eu/webtoolkit/jwt/WDate.html">WDate</a> format. This issue would cause dates to be erroneously localized in <tt>Set-Cookie</tt>.
+  </li>
+  <li>
+      Added Jakarta Activation JAR to <tt>lib</tt> folder, since newer implementations of Java no longer include <tt>javax.activation</tt>.
+  </li>
+  <li>
+      Miscellaneous documentation fixes.
+  </li>
+</ul>
+
 <h2>Release 3.5.0 (December 3, 2019)</h2>
 <p>
   JWt 3.5.0 comes with no major new features, just the following fixes and tweaks:
