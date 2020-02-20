@@ -314,6 +314,10 @@ public class WLeafletMap extends WCompositeWidget {
 			this.container_ = new WContainerWidget();
 			this.container_.addStyleClass("Wt-leaflet-widgetmarker-container");
 			this.container_.setJavaScriptMember("wtReparentBarrier", "true");
+			WLeafletMap m = this.getMap();
+			if (m != null) {
+				this.container_.setParentWidget(m);
+			}
 		}
 
 		private void updateAnchorJS(final StringBuilder js) {

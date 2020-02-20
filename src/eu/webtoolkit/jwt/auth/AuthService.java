@@ -573,7 +573,7 @@ public class AuthService {
 			expires = expires.addSeconds(this.getEmailTokenValidity() * 60);
 			Token t = new Token(hash, expires);
 			user.setEmailToken(t, User.EmailTokenRole.LostPassword);
-			this.sendLostPasswordMail(emailAddress, user, random);
+			this.sendLostPasswordMail(user.getEmail(), user, random);
 		}
 	}
 

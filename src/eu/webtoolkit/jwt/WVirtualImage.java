@@ -473,22 +473,26 @@ public class WVirtualImage extends WCompositeWidget {
 									+ this.gridImageSize_;
 							brx = Math.min(brx, this.imageWidth_);
 							bry = Math.min(bry, this.imageHeight_);
-							WImage img = this.createImage(i
-									* this.gridImageSize_, j
-									* this.gridImageSize_, (int) (brx - i
-									* this.gridImageSize_), (int) (bry - j
-									* this.gridImageSize_));
-							img.setAttributeValue("onmousedown",
-									"return false;");
-							this.contents_.addWidget(img);
-							img.setPositionScheme(PositionScheme.Absolute);
-							img.setOffsets(new WLength((double) i
-									* this.gridImageSize_),
-									EnumSet.of(Side.Left));
-							img.setOffsets(new WLength((double) j
-									* this.gridImageSize_),
-									EnumSet.of(Side.Top));
-							this.grid_.put(key, img);
+							final int width = (int) (brx - i
+									* this.gridImageSize_);
+							final int height = (int) (bry - j
+									* this.gridImageSize_);
+							if (width > 0 && height > 0) {
+								WImage img = this.createImage(i
+										* this.gridImageSize_, j
+										* this.gridImageSize_, width, height);
+								img.setAttributeValue("onmousedown",
+										"return false;");
+								this.contents_.addWidget(img);
+								img.setPositionScheme(PositionScheme.Absolute);
+								img.setOffsets(new WLength((double) i
+										* this.gridImageSize_),
+										EnumSet.of(Side.Left));
+								img.setOffsets(new WLength((double) j
+										* this.gridImageSize_),
+										EnumSet.of(Side.Top));
+								this.grid_.put(key, img);
+							}
 						}
 					}
 				}
@@ -535,12 +539,10 @@ public class WVirtualImage extends WCompositeWidget {
 
 	private void internalScrollTo(long newX, long newY, boolean moveViewPort) {
 		if (this.imageWidth_ != Infinite) {
-			newX = Math.min(this.imageWidth_ - this.viewPortWidth_,
-					Math.max((long) 0, newX));
+			newX = clamp(newX, 0, this.imageWidth_ - this.viewPortWidth_);
 		}
 		if (this.imageHeight_ != Infinite) {
-			newY = Math.min(this.imageHeight_ - this.viewPortHeight_,
-					Math.max((long) 0, newY));
+			newY = clamp(newY, 0, this.imageHeight_ - this.viewPortHeight_);
 		}
 		if (moveViewPort) {
 			this.contents_.setOffsets(new WLength((double) -newX),
@@ -550,5 +552,9 @@ public class WVirtualImage extends WCompositeWidget {
 		}
 		this.generateGridItems(newX, newY);
 		this.viewPortChanged_.trigger(this.currentX_, this.currentY_);
+	}
+
+	static long clamp(long v, long min, long max) {
+		return Math.max(min, Math.min(v, max));
 	}
 }

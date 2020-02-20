@@ -190,9 +190,11 @@ public class WGoogleMap extends WCompositeWidget {
 				"dblclick") {
 		};
 		this.mouseMoved_ = null;
+		this.googlekey_ = "";
 		this.additions_ = new ArrayList<String>();
 		this.apiVersion_ = version;
 		this.setImplementation(new WContainerWidget());
+		this.init();
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -220,9 +222,11 @@ public class WGoogleMap extends WCompositeWidget {
 				"dblclick") {
 		};
 		this.mouseMoved_ = null;
+		this.googlekey_ = "";
 		this.additions_ = new ArrayList<String>();
 		this.apiVersion_ = WGoogleMap.ApiVersion.Version2;
 		this.setImplementation(new WContainerWidget());
+		this.init();
 		if (parent != null) {
 			parent.addWidget(this);
 		}
@@ -845,15 +849,11 @@ public class WGoogleMap extends WCompositeWidget {
 	private JSignal1<WGoogleMap.Coordinate> clicked_;
 	private JSignal1<WGoogleMap.Coordinate> doubleClicked_;
 	private JSignal1<WGoogleMap.Coordinate> mouseMoved_;
+	private String googlekey_;
 
 	protected void render(EnumSet<RenderFlag> flags) {
 		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
 			WApplication app = WApplication.getInstance();
-			String googlekey = localhost_key;
-			googlekey = WApplication.readConfigurationProperty(
-					"google_api_key", googlekey);
-			final String gmuri = "//www.google.com/jsapi?key=" + googlekey;
-			app.require(gmuri, "google");
 			String initFunction = app.getJavaScriptClass()
 					+ ".init_google_maps_" + this.getId();
 			StringBuilder strm = new StringBuilder();
@@ -888,7 +888,7 @@ public class WGoogleMap extends WCompositeWidget {
 					.append("google.load(\"maps\", \"")
 					.append(this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2'
 							: '3').append("\", {other_params:\"key=")
-					.append(googlekey).append("\", callback: ")
+					.append(this.googlekey_).append("\", callback: ")
 					.append(initFunction).append("});").append("}");
 			this.additions_.clear();
 			app.doJavaScript(strm.toString(), true);
@@ -913,6 +913,15 @@ public class WGoogleMap extends WCompositeWidget {
 	}
 
 	private List<String> additions_;
+
+	private void init() {
+		WApplication app = WApplication.getInstance();
+		this.googlekey_ = localhost_key;
+		this.googlekey_ = WApplication.readConfigurationProperty(
+				"google_api_key", this.googlekey_);
+		final String gmuri = "//www.google.com/jsapi?key=" + this.googlekey_;
+		app.require(gmuri, "google");
+	}
 
 	private void streamJSListener(final JSignal1<WGoogleMap.Coordinate> signal,
 			String signalName, final StringBuilder strm) {
