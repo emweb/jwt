@@ -5,30 +5,23 @@
  */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
-/**
- * Enumeration that specifies a property of the axes.
- */
+/** Enumeration that specifies a property of the axes. */
 public enum AxisProperty {
-	Labels, Line;
+  Labels,
+  Line;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }

@@ -5,29 +5,27 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class Spacer extends WWebWidget {
-	private static Logger logger = LoggerFactory.getLogger(Spacer.class);
+  private static Logger logger = LoggerFactory.getLogger(Spacer.class);
 
-	public Spacer() {
-		super();
-		this.setInline(false);
-	}
+  public Spacer() {
+    super();
+    this.setInline(false);
+  }
 
-	DomElementType getDomElementType() {
-		return DomElementType.DomElement_DIV;
-	}
+  DomElementType getDomElementType() {
+    return DomElementType.DomElement_DIV;
+  }
 }

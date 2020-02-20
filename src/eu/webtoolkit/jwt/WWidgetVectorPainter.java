@@ -5,83 +5,77 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class WWidgetVectorPainter extends WWidgetPainter {
-	private static Logger logger = LoggerFactory
-			.getLogger(WWidgetVectorPainter.class);
+  private static Logger logger = LoggerFactory.getLogger(WWidgetVectorPainter.class);
 
-	public WWidgetVectorPainter(WPaintedWidget widget,
-			WWidgetPainter.RenderType renderType) {
-		super(widget);
-		this.renderType_ = renderType;
-	}
+  public WWidgetVectorPainter(WPaintedWidget widget, WWidgetPainter.RenderType renderType) {
+    super(widget);
+    this.renderType_ = renderType;
+  }
 
-	public WVectorImage createPaintDevice(boolean paintUpdate) {
-		if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
-			return new WSvgImage(new WLength(this.widget_.renderWidth_),
-					new WLength(this.widget_.renderHeight_), (WObject) null,
-					paintUpdate);
-		} else {
-			return new WVmlImage(new WLength(this.widget_.renderWidth_),
-					new WLength(this.widget_.renderHeight_), paintUpdate);
-		}
-	}
+  public WVectorImage createPaintDevice(boolean paintUpdate) {
+    if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
+      return new WSvgImage(
+          new WLength(this.widget_.renderWidth_),
+          new WLength(this.widget_.renderHeight_),
+          (WObject) null,
+          paintUpdate);
+    } else {
+      return new WVmlImage(
+          new WLength(this.widget_.renderWidth_),
+          new WLength(this.widget_.renderHeight_),
+          paintUpdate);
+    }
+  }
 
-	public WPaintDevice getPaintDevice(boolean paintUpdate) {
-		return this.createPaintDevice(paintUpdate);
-	}
+  public WPaintDevice getPaintDevice(boolean paintUpdate) {
+    return this.createPaintDevice(paintUpdate);
+  }
 
-	public void createContents(DomElement canvas, WPaintDevice device) {
-		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
-				: null);
-		canvas.setProperty(Property.PropertyInnerHTML,
-				vectorDevice.getRendered());
-		;
-	}
+  public void createContents(DomElement canvas, WPaintDevice device) {
+    WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device) : null);
+    canvas.setProperty(Property.PropertyInnerHTML, vectorDevice.getRendered());
+    ;
+  }
 
-	public void updateContents(final List<DomElement> result,
-			WPaintDevice device) {
-		WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device)
-				: null);
-		if (!EnumUtils.mask(this.widget_.repaintFlags_, PaintFlag.PaintUpdate)
-				.isEmpty()) {
-			DomElement painter = DomElement.updateGiven("Wt3_5_1.getElement('p"
-					+ this.widget_.getId() + "').firstChild",
-					DomElementType.DomElement_DIV);
-			painter.setProperty(Property.PropertyAddedInnerHTML,
-					vectorDevice.getRendered());
-			WApplication app = WApplication.getInstance();
-			if (app.getEnvironment().agentIsOpera()) {
-				painter.callMethod("forceRedraw();");
-			}
-			result.add(painter);
-		} else {
-			DomElement canvas = DomElement.getForUpdate(
-					'p' + this.widget_.getId(), DomElementType.DomElement_DIV);
-			canvas.setProperty(Property.PropertyInnerHTML,
-					vectorDevice.getRendered());
-			result.add(canvas);
-		}
-		this.widget_.sizeChanged_ = false;
-		;
-	}
+  public void updateContents(final List<DomElement> result, WPaintDevice device) {
+    WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device) : null);
+    if (!EnumUtils.mask(this.widget_.repaintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+      DomElement painter =
+          DomElement.updateGiven(
+              "Wt3_5_1.getElement('p" + this.widget_.getId() + "').firstChild",
+              DomElementType.DomElement_DIV);
+      painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice.getRendered());
+      WApplication app = WApplication.getInstance();
+      if (app.getEnvironment().agentIsOpera()) {
+        painter.callMethod("forceRedraw();");
+      }
+      result.add(painter);
+    } else {
+      DomElement canvas =
+          DomElement.getForUpdate('p' + this.widget_.getId(), DomElementType.DomElement_DIV);
+      canvas.setProperty(Property.PropertyInnerHTML, vectorDevice.getRendered());
+      result.add(canvas);
+    }
+    this.widget_.sizeChanged_ = false;
+    ;
+  }
 
-	public WWidgetPainter.RenderType getRenderType() {
-		return this.renderType_;
-	}
+  public WWidgetPainter.RenderType getRenderType() {
+    return this.renderType_;
+  }
 
-	private WWidgetPainter.RenderType renderType_;
+  private WWidgetPainter.RenderType renderType_;
 }

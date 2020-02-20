@@ -5,41 +5,27 @@
  */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
-/**
- * Lists the different ways that a chart can be updated.
- */
+/** Lists the different ways that a chart can be updated. */
 public enum ChartUpdates {
-	/**
-	 * Camera matrix.
-	 */
-	CameraMatrix,
-	/**
-	 * GL context.
-	 */
-	GLContext,
-	/**
-	 * GL textures.
-	 */
-	GLTextures;
+  /** Camera matrix. */
+  CameraMatrix,
+  /** GL context. */
+  GLContext,
+  /** GL textures. */
+  GLTextures;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }

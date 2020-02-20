@@ -5,45 +5,42 @@
  */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 interface WAbstractChartImplementation {
-	static class RenderRange {
-		private static Logger logger = LoggerFactory
-				.getLogger(RenderRange.class);
+  static class RenderRange {
+    private static Logger logger = LoggerFactory.getLogger(RenderRange.class);
 
-		public double minimum;
-		public double maximum;
-	}
+    public double minimum;
+    public double maximum;
+  }
 
-	public ChartType getChartType();
+  public ChartType getChartType();
 
-	public Orientation getOrientation();
+  public Orientation getOrientation();
 
-	public int getAxisPadding();
+  public int getAxisPadding();
 
-	public int numberOfCategories(Axis axis);
+  public int numberOfCategories(Axis axis);
 
-	public int numberOfCategories();
+  public int numberOfCategories();
 
-	public WString categoryLabel(int u, Axis axis);
+  public WString categoryLabel(int u, Axis axis);
 
-	public WAbstractChartImplementation.RenderRange computeRenderRange(
-			Axis axis, int yAxis, AxisScale scale);
+  public WAbstractChartImplementation.RenderRange computeRenderRange(
+      Axis axis, int yAxis, AxisScale scale);
 
-	public boolean isOnDemandLoadingEnabled();
+  public boolean isOnDemandLoadingEnabled();
 
-	public void update();
+  public void update();
 }

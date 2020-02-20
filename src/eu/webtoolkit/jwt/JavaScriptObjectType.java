@@ -5,33 +5,29 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
 /**
  * Enumeration for a JavaScript object type.
- * <p>
- * 
- * This is an internal JWt type.
+ *
+ * <p>This is an internal JWt type.
  */
 public enum JavaScriptObjectType {
-	JavaScriptFunction, JavaScriptConstructor, JavaScriptObject, JavaScriptPrototype;
+  JavaScriptFunction,
+  JavaScriptConstructor,
+  JavaScriptObject,
+  JavaScriptPrototype;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }

@@ -5,22 +5,19 @@
  */
 package eu.webtoolkit.jwt.render;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import javax.servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
 import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.webtoolkit.jwt.utils.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.util.*;
+import java.util.regex.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 interface DeclarationBlock {
-	public Term value(final String property);
+  public Term value(final String property);
 
-	public String getDeclarationString();
+  public String getDeclarationString();
 }

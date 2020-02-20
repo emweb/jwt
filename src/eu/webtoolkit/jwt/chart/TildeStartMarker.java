@@ -5,29 +5,26 @@
  */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class TildeStartMarker extends WPainterPath {
-	private static Logger logger = LoggerFactory
-			.getLogger(TildeStartMarker.class);
+  private static Logger logger = LoggerFactory.getLogger(TildeStartMarker.class);
 
-	public TildeStartMarker(int segmentMargin) {
-		super();
-		this.moveTo(0, 0);
-		this.lineTo(0, segmentMargin - 25);
-		this.moveTo(-15, segmentMargin - 10);
-		this.lineTo(15, segmentMargin - 20);
-	}
+  public TildeStartMarker(int segmentMargin) {
+    super();
+    this.moveTo(0, 0);
+    this.lineTo(0, segmentMargin - 25);
+    this.moveTo(-15, segmentMargin - 10);
+    this.lineTo(15, segmentMargin - 20);
+  }
 }

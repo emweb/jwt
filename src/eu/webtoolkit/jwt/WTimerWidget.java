@@ -5,83 +5,81 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class WTimerWidget extends WInteractWidget {
-	private static Logger logger = LoggerFactory.getLogger(WTimerWidget.class);
+  private static Logger logger = LoggerFactory.getLogger(WTimerWidget.class);
 
-	public WTimerWidget(WTimer timer) {
-		super();
-		this.timer_ = timer;
-		this.timerStarted_ = false;
-	}
+  public WTimerWidget(WTimer timer) {
+    super();
+    this.timer_ = timer;
+    this.timerStarted_ = false;
+  }
 
-	public void remove() {
-		this.timer_.timerWidget_ = null;
-		super.remove();
-	}
+  public void remove() {
+    this.timer_.timerWidget_ = null;
+    super.remove();
+  }
 
-	public void timerStart(boolean jsRepeat) {
-		this.timerStarted_ = true;
-		this.jsRepeat_ = jsRepeat;
-		this.repaint();
-	}
+  public void timerStart(boolean jsRepeat) {
+    this.timerStarted_ = true;
+    this.jsRepeat_ = jsRepeat;
+    this.repaint();
+  }
 
-	public boolean isTimerExpired() {
-		return this.timer_.getRemainingInterval() == 0;
-	}
+  public boolean isTimerExpired() {
+    return this.timer_.getRemainingInterval() == 0;
+  }
 
-	public boolean isJsRepeat() {
-		return this.jsRepeat_;
-	}
+  public boolean isJsRepeat() {
+    return this.jsRepeat_;
+  }
 
-	private WTimer timer_;
-	private boolean timerStarted_;
-	private boolean jsRepeat_;
+  private WTimer timer_;
+  private boolean timerStarted_;
+  private boolean jsRepeat_;
 
-	void updateDom(final DomElement element, boolean all) {
-		if (this.timerStarted_
-				|| (!WApplication.getInstance().getEnvironment()
-						.hasJavaScript() || all) && this.timer_.isActive()) {
-			if (this.jsRepeat_) {
-				element.setTimeout(this.timer_.getRemainingInterval(),
-						this.timer_.getInterval());
-			} else {
-				element.setTimeout(this.timer_.getRemainingInterval(), false);
-			}
-			this.timerStarted_ = false;
-		}
-		super.updateDom(element, all);
-	}
+  void updateDom(final DomElement element, boolean all) {
+    if (this.timerStarted_
+        || (!WApplication.getInstance().getEnvironment().hasJavaScript() || all)
+            && this.timer_.isActive()) {
+      if (this.jsRepeat_) {
+        element.setTimeout(this.timer_.getRemainingInterval(), this.timer_.getInterval());
+      } else {
+        element.setTimeout(this.timer_.getRemainingInterval(), false);
+      }
+      this.timerStarted_ = false;
+    }
+    super.updateDom(element, all);
+  }
 
-	DomElementType getDomElementType() {
-		return DomElementType.DomElement_SPAN;
-	}
+  DomElementType getDomElementType() {
+    return DomElementType.DomElement_SPAN;
+  }
 
-	String renderRemoveJs(boolean recursive) {
-		return "{var obj="
-				+ this.getJsRef()
-				+ ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_5_1.remove('"
-				+ this.getId() + "');}";
-	}
+  String renderRemoveJs(boolean recursive) {
+    return "{var obj="
+        + this.getJsRef()
+        + ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_5_1.remove('"
+        + this.getId()
+        + "');}";
+  }
 
-	protected void enableAjax() {
-		if (this.timer_.isActive()) {
-			this.timerStarted_ = true;
-			this.repaint();
-		}
-		super.enableAjax();
-	}
+  protected void enableAjax() {
+    if (this.timer_.isActive()) {
+      this.timerStarted_ = true;
+      this.repaint();
+    }
+    super.enableAjax();
+  }
 }

@@ -5,40 +5,31 @@
  */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
 /**
  * Enumeration that indicates which way the axis ticks point.
+ *
  * <p>
- * 
+ *
  * @see WAxis#setTickDirection(TickDirection direction)
  */
 public enum TickDirection {
-	/**
-	 * Towards of the outside of the chart.
-	 */
-	Outwards,
-	/**
-	 * Pointing inwards to the chart.
-	 */
-	Inwards;
+  /** Towards of the outside of the chart. */
+  Outwards,
+  /** Pointing inwards to the chart. */
+  Inwards;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }

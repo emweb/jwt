@@ -5,84 +5,54 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
 /**
  * Enumeration that indicates a standard button.
+ *
+ * <p>Multiple buttons may be specified by logically or&apos;ing these values together, e.g.
+ *
+ * <pre>{@code
+ * Ok | Cancel
+ *
+ * }</pre>
+ *
  * <p>
- * 
- * Multiple buttons may be specified by logically or&apos;ing these values
- * together, e.g.
- * 
- * <pre>
- * {@code
- *  Ok | Cancel
- *  
- * }
- * </pre>
- * 
- * <p>
- * 
+ *
  * @see WMessageBox
  */
 public enum StandardButton {
-	/**
-	 * No button.
-	 */
-	NoButton,
-	/**
-	 * An OK button.
-	 */
-	Ok,
-	/**
-	 * A Cancel button.
-	 */
-	Cancel,
-	/**
-	 * A Yes button.
-	 */
-	Yes,
-	/**
-	 * A No button.
-	 */
-	No,
-	/**
-	 * An Abort button.
-	 */
-	Abort,
-	/**
-	 * A Retry button.
-	 */
-	Retry,
-	/**
-	 * An Ignore button.
-	 */
-	Ignore,
-	/**
-	 * A Yes-to-All button.
-	 */
-	YesAll,
-	/**
-	 * A No-to-All button.
-	 */
-	NoAll;
+  /** No button. */
+  NoButton,
+  /** An OK button. */
+  Ok,
+  /** A Cancel button. */
+  Cancel,
+  /** A Yes button. */
+  Yes,
+  /** A No button. */
+  No,
+  /** An Abort button. */
+  Abort,
+  /** A Retry button. */
+  Retry,
+  /** An Ignore button. */
+  Ignore,
+  /** A Yes-to-All button. */
+  YesAll,
+  /** A No-to-All button. */
+  NoAll;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }

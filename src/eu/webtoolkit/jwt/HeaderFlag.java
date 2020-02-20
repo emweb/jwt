@@ -5,70 +5,61 @@
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
 /**
  * Flags that indicate table header options.
+ *
  * <p>
- * 
+ *
  * @see WAbstractItemModel#getHeaderFlags(int section, Orientation orientation)
  */
 public enum HeaderFlag {
-	/**
-	 * Flag that indicates that the column can be expanded.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#expandColumn(int column)
-	 */
-	ColumnIsCollapsed,
-	/**
-	 * Flag that indicates that the column was expanded to the left.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#collapseColumn(int column)
-	 */
-	ColumnIsExpandedLeft,
-	/**
-	 * Flag that indicates that the column was expanded to the right.
-	 * <p>
-	 * 
-	 * @see WAbstractItemModel#collapseColumn(int column)
-	 */
-	ColumnIsExpandedRight,
-	/**
-	 * Flag that indicates that the header can be checked.
-	 */
-	HeaderIsUserCheckable,
-	/**
-	 * Flag that indicates that the item has three states.
-	 * <p>
-	 * 
-	 * When set, {@link ItemDataRole#CheckStateRole} data is of type
-	 * {@link CheckState}
-	 */
-	HeaderIsTristate,
-	/**
-	 * Flag that indicates that the item text (DisplayRole, ToolTipRole) is
-	 * HTML.
-	 */
-	HeaderIsXHTMLText;
+  /**
+   * Flag that indicates that the column can be expanded.
+   *
+   * <p>
+   *
+   * @see WAbstractItemModel#expandColumn(int column)
+   */
+  ColumnIsCollapsed,
+  /**
+   * Flag that indicates that the column was expanded to the left.
+   *
+   * <p>
+   *
+   * @see WAbstractItemModel#collapseColumn(int column)
+   */
+  ColumnIsExpandedLeft,
+  /**
+   * Flag that indicates that the column was expanded to the right.
+   *
+   * <p>
+   *
+   * @see WAbstractItemModel#collapseColumn(int column)
+   */
+  ColumnIsExpandedRight,
+  /** Flag that indicates that the header can be checked. */
+  HeaderIsUserCheckable,
+  /**
+   * Flag that indicates that the item has three states.
+   *
+   * <p>When set, {@link ItemDataRole#CheckStateRole} data is of type {@link CheckState}
+   */
+  HeaderIsTristate,
+  /** Flag that indicates that the item text (DisplayRole, ToolTipRole) is HTML. */
+  HeaderIsXHTMLText;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }
