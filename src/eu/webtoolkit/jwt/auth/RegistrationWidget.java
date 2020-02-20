@@ -212,29 +212,34 @@ public class RegistrationWidget extends WTemplateFormView {
    * the user in.
    */
   protected void doRegister() {
-    AbstractUserDatabase.Transaction t = this.model_.getUsers().startTransaction();
-    this.updateModel(this.model_);
-    if (this.validate()) {
-      User user = this.model_.doRegister();
-      if (user.isValid()) {
-        this.registerUserDetails(user);
-        if (!this.model_.getBaseAuth().isEmailVerificationRequired()
-            || user.getUnverifiedEmail().length() == 0) {
-          this.model_.loginUser(this.model_.getLogin(), user);
-        } else {
-          if (this.authWidget_ != null) {
-            this.authWidget_.displayInfo(WString.tr("Wt.Auth.confirm-email-first"));
+    try (AbstractUserDatabase.Transaction t = this.model_.getUsers().startTransaction(); ) {
+      this.updateModel(this.model_);
+      if (this.validate()) {
+        User user = this.model_.doRegister();
+        if (user.isValid()) {
+          this.registerUserDetails(user);
+          if (!this.model_.getBaseAuth().isEmailVerificationRequired()
+              || user.getUnverifiedEmail().length() == 0) {
+            this.model_.loginUser(this.model_.getLogin(), user);
+          } else {
+            if (this.authWidget_ != null) {
+              this.authWidget_.displayInfo(WString.tr("Wt.Auth.confirm-email-first"));
+            }
+            this.close();
           }
-          this.close();
+        } else {
+          this.update();
         }
       } else {
         this.update();
       }
-    } else {
-      this.update();
-    }
-    if (t != null) {
-      t.commit();
+      if (t != null) {
+        t.commit();
+      }
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
   /**

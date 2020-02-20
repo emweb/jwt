@@ -331,6 +331,7 @@ public class UserDatabase extends AbstractUserDatabase {
 
 	private class TransactionImpl implements Transaction {
 		private UserDatabase userDatabase;
+		private boolean done = false;
 		
 		public TransactionImpl(UserDatabase userDatabase) {
 			this.userDatabase = userDatabase;
@@ -342,6 +343,8 @@ public class UserDatabase extends AbstractUserDatabase {
 		}
 
 		public void commit() {
+			done = true;
+
 			--userDatabase.openTransactions;
 			
 			if (userDatabase.openTransactions == 0) 
@@ -349,6 +352,8 @@ public class UserDatabase extends AbstractUserDatabase {
 		}
 
 		public void rollback() {
+			done = true;
+
 			--userDatabase.openTransactions;
 			userDatabase.commitTransaction = false;
 			
@@ -366,6 +371,12 @@ public class UserDatabase extends AbstractUserDatabase {
 				entityManager_.getTransaction().commit();
 			else
 				entityManager_.getTransaction().rollback();
+		}
+
+		public void close() {
+			if (!done) {
+				rollback();
+			}
 		}
 	}
 }

@@ -766,15 +766,20 @@ public class AuthWidget extends WTemplateFormView {
               .append(", ")
               .append(identity.getEmail())
               .toString());
-      AbstractUserDatabase.Transaction t = this.model_.getUsers().startTransaction();
-      User user = this.model_.getBaseAuth().identifyUser(identity, this.model_.getUsers());
-      if (user.isValid()) {
-        this.model_.loginUser(this.login_, user);
-      } else {
-        this.registerNewUser(identity);
-      }
-      if (t != null) {
-        t.commit();
+      try (AbstractUserDatabase.Transaction t = this.model_.getUsers().startTransaction(); ) {
+        User user = this.model_.getBaseAuth().identifyUser(identity, this.model_.getUsers());
+        if (user.isValid()) {
+          this.model_.loginUser(this.login_, user);
+        } else {
+          this.registerNewUser(identity);
+        }
+        if (t != null) {
+          t.commit();
+        }
+      } catch (RuntimeException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new RuntimeException(e);
       }
     } else {
       logger.warn(

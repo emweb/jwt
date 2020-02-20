@@ -208,27 +208,32 @@ public class PasswordService implements AbstractPasswordService {
    * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
    */
   public PasswordResult verifyPassword(final User user, final String password) {
-    AbstractUserDatabase.Transaction t = user.getDatabase().startTransaction();
-    if (this.delayForNextAttempt(user) > 0) {
-      return PasswordResult.LoginThrottling;
-    }
-    boolean valid = this.verifier_.verify(password, user.getPassword());
-    if (this.attemptThrottling_) {
-      user.setAuthenticated(valid);
-    }
-    if (valid) {
-      if (this.verifier_.needsUpdate(user.getPassword())) {
-        user.setPassword(this.verifier_.hashPassword(password));
+    try (AbstractUserDatabase.Transaction t = user.getDatabase().startTransaction(); ) {
+      if (this.delayForNextAttempt(user) > 0) {
+        return PasswordResult.LoginThrottling;
       }
-      if (t != null) {
-        t.commit();
+      boolean valid = this.verifier_.verify(password, user.getPassword());
+      if (this.attemptThrottling_) {
+        user.setAuthenticated(valid);
       }
-      return PasswordResult.PasswordValid;
-    } else {
-      if (t != null) {
-        t.commit();
+      if (valid) {
+        if (this.verifier_.needsUpdate(user.getPassword())) {
+          user.setPassword(this.verifier_.hashPassword(password));
+        }
+        if (t != null) {
+          t.commit();
+        }
+        return PasswordResult.PasswordValid;
+      } else {
+        if (t != null) {
+          t.commit();
+        }
+        return PasswordResult.PasswordInvalid;
       }
-      return PasswordResult.PasswordInvalid;
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 

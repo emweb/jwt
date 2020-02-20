@@ -66,7 +66,7 @@ public abstract class AbstractUserDatabase {
    *
    * @see AbstractUserDatabase#startTransaction()
    */
-  public static interface Transaction {
+  public static interface Transaction extends AutoCloseable {
     /**
      * Commits the transaction.
      *

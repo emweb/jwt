@@ -128,31 +128,36 @@ public class AuthService {
    * with the same verified email address as the one indicated by the identity.
    */
   public User identifyUser(final Identity identity, final AbstractUserDatabase users) {
-    AbstractUserDatabase.Transaction t = users.startTransaction();
-    User user =
-        users.findWithIdentity(identity.getProvider(), new WString(identity.getId()).toString());
-    if (user.isValid()) {
+    try (AbstractUserDatabase.Transaction t = users.startTransaction(); ) {
+      User user =
+          users.findWithIdentity(identity.getProvider(), new WString(identity.getId()).toString());
+      if (user.isValid()) {
+        if (t != null) {
+          t.commit();
+        }
+        return user;
+      }
+      if (identity.getEmail().length() != 0) {
+        if (this.emailVerification_ && identity.isEmailVerified()) {
+          user = users.findWithEmail(identity.getEmail());
+          if (user.isValid()) {
+            user.addIdentity(identity.getProvider(), identity.getId());
+            if (t != null) {
+              t.commit();
+            }
+            return user;
+          }
+        }
+      }
       if (t != null) {
         t.commit();
       }
-      return user;
+      return new User();
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-    if (identity.getEmail().length() != 0) {
-      if (this.emailVerification_ && identity.isEmailVerified()) {
-        user = users.findWithEmail(identity.getEmail());
-        if (user.isValid()) {
-          user.addIdentity(identity.getProvider(), identity.getId());
-          if (t != null) {
-            t.commit();
-          }
-          return user;
-        }
-      }
-    }
-    if (t != null) {
-      t.commit();
-    }
-    return new User();
   }
   /**
    * Configures authentication token support.
@@ -308,16 +313,21 @@ public class AuthService {
     if (!user.isValid()) {
       throw new WException("Auth: createAuthToken(): user invalid");
     }
-    AbstractUserDatabase.Transaction t = user.getDatabase().startTransaction();
-    String random = MathUtils.randomId(this.tokenLength_);
-    String hash = this.getTokenHashFunction().compute(random, "");
-    Token token =
-        new Token(hash, WDate.getCurrentServerDate().addSeconds(this.authTokenValidity_ * 60));
-    user.addAuthToken(token);
-    if (t != null) {
-      t.commit();
+    try (AbstractUserDatabase.Transaction t = user.getDatabase().startTransaction(); ) {
+      String random = MathUtils.randomId(this.tokenLength_);
+      String hash = this.getTokenHashFunction().compute(random, "");
+      Token token =
+          new Token(hash, WDate.getCurrentServerDate().addSeconds(this.authTokenValidity_ * 60));
+      user.addAuthToken(token);
+      if (t != null) {
+        t.commit();
+      }
+      return random;
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-    return random;
   }
   /**
    * Processes an authentication token.
@@ -332,31 +342,36 @@ public class AuthService {
    * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash)
    */
   public AuthTokenResult processAuthToken(final String token, final AbstractUserDatabase users) {
-    AbstractUserDatabase.Transaction t = users.startTransaction();
-    String hash = this.getTokenHashFunction().compute(token, "");
-    User user = users.findWithAuthToken(hash);
-    if (user.isValid()) {
-      if (this.authTokenUpdateEnabled_) {
-        String newToken = MathUtils.randomId(this.tokenLength_);
-        String newHash = this.getTokenHashFunction().compute(newToken, "");
-        int validity = user.updateAuthToken(hash, newHash);
-        if (validity < 0) {
-          user.removeAuthToken(hash);
-          newToken = this.createAuthToken(user);
-          validity = this.authTokenValidity_ * 60;
+    try (AbstractUserDatabase.Transaction t = users.startTransaction(); ) {
+      String hash = this.getTokenHashFunction().compute(token, "");
+      User user = users.findWithAuthToken(hash);
+      if (user.isValid()) {
+        if (this.authTokenUpdateEnabled_) {
+          String newToken = MathUtils.randomId(this.tokenLength_);
+          String newHash = this.getTokenHashFunction().compute(newToken, "");
+          int validity = user.updateAuthToken(hash, newHash);
+          if (validity < 0) {
+            user.removeAuthToken(hash);
+            newToken = this.createAuthToken(user);
+            validity = this.authTokenValidity_ * 60;
+          }
+          if (t != null) {
+            t.commit();
+          }
+          return new AuthTokenResult(AuthTokenResult.Result.Valid, user, newToken, validity);
+        } else {
+          return new AuthTokenResult(AuthTokenResult.Result.Valid, user);
         }
+      } else {
         if (t != null) {
           t.commit();
         }
-        return new AuthTokenResult(AuthTokenResult.Result.Valid, user, newToken, validity);
-      } else {
-        return new AuthTokenResult(AuthTokenResult.Result.Valid, user);
+        return new AuthTokenResult(AuthTokenResult.Result.Invalid);
       }
-    } else {
-      if (t != null) {
-        t.commit();
-      }
-      return new AuthTokenResult(AuthTokenResult.Result.Invalid);
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
   /**
@@ -525,44 +540,49 @@ public class AuthService {
    * @see AuthService#lostPassword(String emailAddress, AbstractUserDatabase users)
    */
   public EmailTokenResult processEmailToken(final String token, final AbstractUserDatabase users) {
-    AbstractUserDatabase.Transaction tr = users.startTransaction();
-    String hash = this.getTokenHashFunction().compute(token, "");
-    User user = users.findWithEmailToken(hash);
-    if (user.isValid()) {
-      Token t = user.getEmailToken();
-      if (t.getExpirationTime().before(WDate.getCurrentServerDate())) {
-        user.clearEmailToken();
+    try (AbstractUserDatabase.Transaction tr = users.startTransaction(); ) {
+      String hash = this.getTokenHashFunction().compute(token, "");
+      User user = users.findWithEmailToken(hash);
+      if (user.isValid()) {
+        Token t = user.getEmailToken();
+        if (t.getExpirationTime().before(WDate.getCurrentServerDate())) {
+          user.clearEmailToken();
+          if (tr != null) {
+            tr.commit();
+          }
+          return new EmailTokenResult(EmailTokenResult.Result.Expired);
+        }
+        switch (user.getEmailTokenRole()) {
+          case LostPassword:
+            user.clearEmailToken();
+            if (tr != null) {
+              tr.commit();
+            }
+            return new EmailTokenResult(EmailTokenResult.Result.UpdatePassword, user);
+          case VerifyEmail:
+            user.clearEmailToken();
+            user.setEmail(user.getUnverifiedEmail());
+            user.setUnverifiedEmail("");
+            if (tr != null) {
+              tr.commit();
+            }
+            return new EmailTokenResult(EmailTokenResult.Result.EmailConfirmed, user);
+          default:
+            if (tr != null) {
+              tr.commit();
+            }
+            return new EmailTokenResult(EmailTokenResult.Result.Invalid);
+        }
+      } else {
         if (tr != null) {
           tr.commit();
         }
-        return new EmailTokenResult(EmailTokenResult.Result.Expired);
+        return new EmailTokenResult(EmailTokenResult.Result.Invalid);
       }
-      switch (user.getEmailTokenRole()) {
-        case LostPassword:
-          user.clearEmailToken();
-          if (tr != null) {
-            tr.commit();
-          }
-          return new EmailTokenResult(EmailTokenResult.Result.UpdatePassword, user);
-        case VerifyEmail:
-          user.clearEmailToken();
-          user.setEmail(user.getUnverifiedEmail());
-          user.setUnverifiedEmail("");
-          if (tr != null) {
-            tr.commit();
-          }
-          return new EmailTokenResult(EmailTokenResult.Result.EmailConfirmed, user);
-        default:
-          if (tr != null) {
-            tr.commit();
-          }
-          return new EmailTokenResult(EmailTokenResult.Result.Invalid);
-      }
-    } else {
-      if (tr != null) {
-        tr.commit();
-      }
-      return new EmailTokenResult(EmailTokenResult.Result.Invalid);
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
   /**

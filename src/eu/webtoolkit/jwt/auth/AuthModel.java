@@ -167,12 +167,17 @@ public class AuthModel extends FormBaseModel {
   }
 
   public boolean validate() {
-    AbstractUserDatabase.Transaction t = this.getUsers().startTransaction();
-    boolean result = super.validate();
-    if (t != null) {
-      t.commit();
+    try (AbstractUserDatabase.Transaction t = this.getUsers().startTransaction(); ) {
+      boolean result = super.validate();
+      if (t != null) {
+        t.commit();
+      }
+      return result;
+    } catch (RuntimeException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
-    return result;
   }
   /**
    * Initializes client-side login throttling.
