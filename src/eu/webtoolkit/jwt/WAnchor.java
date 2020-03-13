@@ -489,13 +489,7 @@ public class WAnchor extends WContainerWidget {
 		if (!(this.text_ != null)) {
 			this.text_ = new WText(text, this);
 		} else {
-			if (!(text.length() == 0)) {
-				this.text_.setText(text);
-			} else {
-				if (this.text_ != null)
-					this.text_.remove();
-				this.text_ = null;
-			}
+			this.text_.setText(text);
 		}
 	}
 

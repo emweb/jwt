@@ -38,7 +38,8 @@ class WTreeViewNode extends WContainerWidget {
 		this.nodeWidget_.bindEmpty("expand");
 		this.nodeWidget_.bindEmpty("no-expand");
 		this.nodeWidget_.bindEmpty("col0");
-		int selfHeight = 0;
+		final int selfHeight = (this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
+				.equals(this.view_.getRootIndex()))) ? 0 : 1;
 		boolean needLoad = this.view_.isExpanded(this.index_);
 		if (!(this.index_ == this.view_.getRootIndex() || (this.index_ != null && this.index_
 				.equals(this.view_.getRootIndex()))) && !needLoad) {
@@ -61,7 +62,6 @@ class WTreeViewNode extends WContainerWidget {
 			this.updateGraphics(isLast,
 					!this.view_.getModel().hasChildren(this.index_));
 			this.insertColumns(0, this.view_.getColumnCount());
-			selfHeight = 1;
 			if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows
 					&& this.view_.isSelected(this.index_)) {
 				this.renderSelected(true, 0);

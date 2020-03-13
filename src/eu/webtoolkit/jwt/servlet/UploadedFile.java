@@ -59,8 +59,13 @@ public class UploadedFile {
 	 * Returns the client file name.
 	 * <p>
 	 * 
-	 * This is the location that was indicated by the browser. Depending on the
-	 * browser this is an absolute path or only the file name.
+	 * This is the location that was indicated by the browser.
+	 * <p>
+	 * 
+	 * <p>
+	 * <i><b>Note: </b>Depending on the browser this is an absolute path or only
+	 * the file name. </i>
+	 * </p>
 	 */
 	public String getClientFileName() {
 		return this.fileInfo_.clientFileName;

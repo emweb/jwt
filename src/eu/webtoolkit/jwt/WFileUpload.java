@@ -186,6 +186,12 @@ public class WFileUpload extends WWebWidget {
 	 * 
 	 * When multiple files were uploaded, this returns the information from the
 	 * first file.
+	 * <p>
+	 * 
+	 * <p>
+	 * <i><b>Note: </b>Depending on the browser this is an absolute path or only
+	 * the file name. </i>
+	 * </p>
 	 */
 	public String getClientFileName() {
 		if (!this.isEmpty()) {
