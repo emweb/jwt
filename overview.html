@@ -25,6 +25,44 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+
+<h2>Release 3.5.2 (March 13, 2020)</h2>
+
+<p>
+  This release fixes the following issues:
+</p>
+
+<ul>
+  <li>
+      Security-related: in JWt Auth the lost password email would be sent to the email
+      address provided in the form, rather than the user's configured email address. While
+      we treat email addresses as case insensitive, it is possible that the mail server may not,
+      and that could potentially be used to steal an account. It is however quite rare for
+      email services to be case sensitive.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7439" target="_blank">Issue #7439</a>:
+    ensure that tooltips are always on top, even inside of a dialog.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7447" target="_blank">Issue #7447</a>:
+    fixed text format being reset when the text of a <a href="eu/webtoolkit/jwt/WAnchor.html">WAnchor</a> is cleared.
+  </li>
+  <li>
+    Fix for <a href="eu/webtoolkit/jwt/WLeafletMap.html">WLeafletMap</a> issue that was <a href="https://redmine.emweb.be/boards/2/topics/16718" target="_blank">reported on the forum</a>: signals would get unexposed when options were changed.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7457" target="_blank">Issue #7457</a>:
+    moved call to <a href="eu/webtoolkit/jwt/WApplication.html#require(java.lang.String)">WApplication::require()</a> to the constructor, since calling it in the render function may cause issues.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7468" target="_blank">Issue #7468</a>: fixed panning not working properly for a <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a> with plain tooltips.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/6774" target="_blank">Issue #6774</a>: misc. <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a> fixes.
+  </li>
+</ul>
+
 <h2>Release 3.5.1 (February 6, 2020)</h2>
 
 <p>
