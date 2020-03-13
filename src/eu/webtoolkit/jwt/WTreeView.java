@@ -634,16 +634,16 @@ public class WTreeView extends WAbstractItemView {
   }
 
   public void scrollTo(final WModelIndex index, WAbstractItemView.ScrollHint hint) {
-    int row = this.getIndexRow(index, this.getRootIndex(), 0, Integer.MAX_VALUE) + 1;
+    final int row = this.getIndexRow(index, this.getRootIndex(), 0, Integer.MAX_VALUE);
     WApplication app = WApplication.getInstance();
     if (app.getEnvironment().hasAjax()) {
       if (this.viewportHeight_ != 30) {
         if (hint == WAbstractItemView.ScrollHint.EnsureVisible) {
-          if (this.viewportTop_ + this.viewportHeight_ < row) {
-            hint = WAbstractItemView.ScrollHint.PositionAtTop;
+          if (this.viewportTop_ + this.viewportHeight_ <= row) {
+            hint = WAbstractItemView.ScrollHint.PositionAtBottom;
           } else {
             if (row < this.viewportTop_) {
-              hint = WAbstractItemView.ScrollHint.PositionAtBottom;
+              hint = WAbstractItemView.ScrollHint.PositionAtTop;
             }
           }
         }
@@ -1932,7 +1932,13 @@ public class WTreeView extends WAbstractItemView {
           return result;
         }
       }
-      return result + this.getIndexRow(parent, ancestor, lowerBound - result, upperBound - result);
+      if (!(parent == ancestor || (parent != null && parent.equals(ancestor)))) {
+        return result
+            + 1
+            + this.getIndexRow(parent, ancestor, lowerBound - result, upperBound - result);
+      } else {
+        return result;
+      }
     }
   }
 

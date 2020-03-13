@@ -342,8 +342,9 @@ class WebSession {
             }
           }
           String ca =
-              WEnvironment.getClientAddress(
-                  handler.getRequest(), this.controller_.getConfiguration());
+              handler
+                  .getRequest()
+                  .getClientAddress(this.controller_.getConfiguration().isBehindReverseProxy());
           if (!ca.equals(this.env_.getClientAddress())) {
             boolean isInvalid = this.sessionIdCookie_.length() == 0;
             if (!isInvalid) {

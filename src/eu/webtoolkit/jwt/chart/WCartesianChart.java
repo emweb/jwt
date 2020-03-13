@@ -2599,6 +2599,7 @@ public class WCartesianChart extends WAbstractChart {
               WCartesianChart.this.loadTooltip(e1, e2);
             }
           });
+      this.voidEventSignal("dragstart", true).preventDefaultAction(true);
     }
     this.wheelActions_.put(EnumSet.of(KeyboardModifier.NoModifier), InteractiveAction.PanMatching);
     this.wheelActions_.put(

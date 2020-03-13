@@ -2544,7 +2544,7 @@ public abstract class WWebWidget extends WWidget {
     return this;
   }
 
-  EventSignal voidEventSignal(String name, boolean create) {
+  protected EventSignal voidEventSignal(String name, boolean create) {
     AbstractEventSignal b = this.getEventSignal(name);
     if (b != null) {
       return (EventSignal) b;

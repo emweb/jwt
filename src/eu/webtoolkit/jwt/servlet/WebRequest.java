@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -462,5 +463,51 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public boolean isWebSocketMessage() {
 		return false;
+	}
+
+	public String getClientAddress(final boolean behindReverseProxy) {
+		String result = "";
+		if (behindReverseProxy) {
+			String clientIp = str(getHeaderValue("Client-IP"));
+			clientIp = clientIp.trim();
+			List<String> ips = new ArrayList<String>();
+			if (clientIp.length() != 0) {
+				ips = new ArrayList<String>(Arrays.asList(clientIp.split(",")));
+			}
+			String forwardedFor = str(getHeaderValue("X-Forwarded-For"));
+			forwardedFor = forwardedFor.trim();
+			List<String> forwardedIps = new ArrayList<String>();
+			if (forwardedFor.length() != 0) {
+				forwardedIps = new ArrayList<String>(Arrays.asList(forwardedFor.split(",")));
+			}
+			ips.addAll(forwardedIps);
+			for (int i = 0; i < ips.size(); ++i) {
+				result = ips.get(i);
+				result = result.trim();
+				if (result.length() != 0 && !isPrivateIP(result)) {
+					break;
+				}
+			}
+		}
+		if (result.length() == 0) {
+			result = str("");
+		}
+		return result;
+	}
+
+	static String str(String s) {
+		return s != null ? s : "";
+	}
+
+	static boolean isPrivateIP(final String s) {
+		return s.startsWith("127.")
+			|| s.startsWith("10.")
+			|| s.startsWith("192.168.")
+			|| s.length() >= 7
+				&& s.startsWith("172.")
+				&& s.charAt(6) == '.'
+				&& (s.charAt(4) == '1' && s.charAt(5) >= '6' && s.charAt(5) <= '9'
+					|| s.charAt(4) == '2' && s.charAt(5) >= '0' && s.charAt(5) <= '9'
+					|| s.charAt(4) == '3' && s.charAt(5) >= '0' && s.charAt(5) <= '1');
 	}
 }
