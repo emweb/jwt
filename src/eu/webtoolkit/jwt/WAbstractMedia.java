@@ -326,7 +326,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (this.mediaId_.length() == 0) {
       return "null";
     } else {
-      return "Wt3_5_1.getElement('" + this.mediaId_ + "')";
+      return "Wt3_5_2.getElement('" + this.mediaId_ + "')";
     }
   }
 
@@ -337,7 +337,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
       if (this.sourcesChanged_) {
         for (int i = 0; i < this.sourcesRendered_; ++i) {
           media.callJavaScript(
-              "Wt3_5_1.remove('" + this.mediaId_ + "s" + String.valueOf(i) + "');", true);
+              "Wt3_5_2.remove('" + this.mediaId_ + "s" + String.valueOf(i) + "');", true);
         }
         this.sourcesRendered_ = 0;
         for (int i = 0; i < this.sources_.size(); ++i) {
@@ -432,7 +432,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (all && this.alternative_ != null) {
       element.setAttribute(
           "onerror",
-          "if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_5_1.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+          "if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt3_5_2.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
     }
     if (all || this.flagsChanged_) {
       if (!all || !EnumUtils.mask(this.flags_, WAbstractMedia.Options.Controls).isEmpty()) {
@@ -568,7 +568,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (isLast && this.alternative_ != null) {
       element.setAttribute(
           "onerror",
-          "var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_5_1.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+          "var media = this.parentNode;if(media){while (media && media.children.length)if (Wt3_5_2.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
     } else {
       element.setAttribute("onerror", "");
     }
@@ -601,7 +601,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
       app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
       this.setJavaScriptMember(
           " WAbstractMedia",
-          "new Wt3_5_1.WAbstractMedia(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt3_5_2.WAbstractMedia(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     }
   }
 

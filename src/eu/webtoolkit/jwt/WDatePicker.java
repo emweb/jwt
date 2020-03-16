@@ -118,7 +118,7 @@ public class WDatePicker extends WCompositeWidget {
   }
   /** Destructor. */
   public void remove() {
-    WApplication.getInstance().doJavaScript("Wt3_5_1.remove('" + this.popup_.getId() + "');");
+    WApplication.getInstance().doJavaScript("Wt3_5_2.remove('" + this.popup_.getId() + "');");
     super.remove();
   }
   /**

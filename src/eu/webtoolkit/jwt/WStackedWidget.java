@@ -291,7 +291,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt3_5_1.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt3_5_2.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {
