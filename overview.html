@@ -25,6 +25,26 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.6.0 (March 2020)</h2>
+
+<p>JWt 3.6.0 looks like a pretty major change if you just look at the diff. This is however mostly formatting, since we changed the
+formatting of the source code from being based on Eclipse to <a href="https://github.com/google/google-java-format" target="_blank">google-java-format</a>.</p>
+
+<p>We've also made <a href="eu/webtoolkit/jwt/auth/AbstractUserDatabase.Transaction.html">AbstractUserDatabase.Transaction</a> <tt>AutoCloseable</tt>. If the transaction
+is not committed or rollbacked, it is automatically rolled back.</p>
+
+<p>Some small changes in behaviour that you may want to be aware of:</p>
+
+<ul>
+  <li>
+    <a href="eu/webtoolkit/jwt/WCanvasPaintDevice.html">WCanvasPaintDevice</a>: instead of stopping the drawing entirely when <tt>drawImage()</tt> fails (e.g. because of a missing image),
+    the image will be skipped but drawing will continue. An error will be logged to the console.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7404" target="_blank">Issue #7404</a>: reparenting of popup widgets should only stop at scroll bars.
+  </li>
+</ul>
+
 <h2>Release 3.5.2 (March 16, 2020)</h2>
 
 <p>
