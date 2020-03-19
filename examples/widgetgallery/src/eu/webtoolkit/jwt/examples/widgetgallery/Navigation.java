@@ -302,7 +302,7 @@ class Navigation extends TopicWidget {
                 messageBox
                     .buttonClicked()
                     .addListener(
-                        this,
+                        Navigation.this,
                         new Signal.Listener() {
                           public void trigger() {
                             if (messageBox != null) messageBox.remove();
@@ -420,7 +420,7 @@ class Navigation extends TopicWidget {
                 messageBox
                     .buttonClicked()
                     .addListener(
-                        this,
+                        Navigation.this,
                         new Signal.Listener() {
                           public void trigger() {
                             if (messageBox != null) messageBox.remove();

@@ -532,7 +532,7 @@ class Layout extends TopicWidget {
                 messageBox
                     .buttonClicked()
                     .addListener(
-                        this,
+                        Layout.this,
                         new Signal.Listener() {
                           public void trigger() {
                             if (messageBox.getButtonResult() == StandardButton.Yes) {
