@@ -2405,7 +2405,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 
   public void setJavaScriptMatrix4(
       final WGLWidget.JavaScriptMatrix4x4 jsm, final javax.vecmath.Matrix4f m) {
-    this.js_.append("Wt3_5_2.glMatrix.mat4.set(");
+    this.js_.append("Wt3_6_0.glMatrix.mat4.set(");
     javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
     WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
     this.js_.append(", ").append(jsm.getJsRef()).append(");");
@@ -2552,7 +2552,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
   public void render(final String jsRef, EnumSet<RenderFlag> flags) {
     if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
       StringWriter tmp = new StringWriter();
-      tmp.append("{\nvar o = new Wt3_5_2.WGLWidget(")
+      tmp.append("{\nvar o = new Wt3_6_0.WGLWidget(")
           .append(WApplication.getInstance().getJavaScriptClass())
           .append(",")
           .append(jsRef)

@@ -151,7 +151,7 @@ public class WPopupMenu extends WMenu {
     this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
     this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
     this.doJavaScript(
-        "Wt3_5_2.positionXY('"
+        "Wt3_6_0.positionXY('"
             + this.getId()
             + "',"
             + String.valueOf(p.getX())
@@ -439,7 +439,7 @@ public class WPopupMenu extends WMenu {
     if (!this.cancel_.isConnected()) {
       app.loadJavaScript("js/WPopupMenu.js", wtjs1());
       StringBuilder s = new StringBuilder();
-      s.append("new Wt3_5_2.WPopupMenu(")
+      s.append("new Wt3_6_0.WPopupMenu(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())

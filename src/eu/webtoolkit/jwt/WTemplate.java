@@ -1426,7 +1426,7 @@ public class WTemplate extends WInteractWidget {
   private void unrenderWidget(WWidget w, final DomElement el) {
     String removeJs = w.getWebWidget().renderRemoveJs(false);
     if (removeJs.charAt(0) == '_') {
-      el.callJavaScript("Wt3_5_2.remove('" + removeJs.substring(1) + "');", true);
+      el.callJavaScript("Wt3_6_0.remove('" + removeJs.substring(1) + "');", true);
     } else {
       el.callJavaScript(removeJs, true);
     }

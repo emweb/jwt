@@ -2177,9 +2177,9 @@ public class WApplication extends WObject {
       this.loadingIndicatorWidget_ = indicator.getWidget();
       this.domRoot_.addWidget(this.loadingIndicatorWidget_);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt3_5_2.inline('" + this.loadingIndicatorWidget_.getId() + "');}");
+          "function(o,e) {Wt3_6_0.inline('" + this.loadingIndicatorWidget_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt3_5_2.hide('" + this.loadingIndicatorWidget_.getId() + "');}");
+          "function(o,e) {Wt3_6_0.hide('" + this.loadingIndicatorWidget_.getId() + "');}");
       this.loadingIndicatorWidget_.hide();
     }
   }
@@ -2574,7 +2574,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt3_5_2.ajaxInternalPaths("
+        "Wt3_6_0.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2921,7 +2921,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt3_5_2";
+              : "Wt3_6_0";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')
