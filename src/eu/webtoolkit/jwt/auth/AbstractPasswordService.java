@@ -88,6 +88,11 @@ public interface AbstractPasswordService {
   public abstract static class AbstractStrengthValidator extends WValidator {
     private static Logger logger = LoggerFactory.getLogger(AbstractStrengthValidator.class);
 
+    /** Constructor. */
+    public AbstractStrengthValidator() {
+      super();
+      this.setMandatory(true);
+    }
     /**
      * Evaluates the strength of a password.
      *
@@ -108,11 +113,20 @@ public interface AbstractPasswordService {
      */
     public WValidator.Result validate(
         final String password, final String loginName, final String email) {
+      if (!this.isMandatory() && password.length() == 0) {
+        return new WValidator.Result(WValidator.State.Valid);
+      }
       AbstractPasswordService.StrengthValidatorResult result =
           this.evaluateStrength(password, loginName, email);
-      return new WValidator.Result(
-          result.isValid() ? WValidator.State.Valid : WValidator.State.Invalid,
-          result.getMessage());
+      if (result.isValid()) {
+        return new WValidator.Result(WValidator.State.Valid, result.getMessage());
+      } else {
+        if (this.isMandatory() && password.length() == 0) {
+          return new WValidator.Result(WValidator.State.InvalidEmpty, result.getMessage());
+        } else {
+          return new WValidator.Result(WValidator.State.Invalid, result.getMessage());
+        }
+      }
     }
     /**
      * Validates a password.

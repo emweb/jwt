@@ -102,6 +102,7 @@ public class WDataSeries extends WObject {
     this.XSeriesColumn_ = -1;
     this.stacked_ = false;
     this.type_ = type;
+    this.xAxis_ = 0;
     this.yAxis_ = axis == Axis.Y1Axis ? 0 : 1;
     this.customFlags_ = EnumSet.noneOf(WDataSeries.CustomFlag.class);
     this.pen_ = new WPen();
@@ -162,6 +163,7 @@ public class WDataSeries extends WObject {
     this.XSeriesColumn_ = -1;
     this.stacked_ = false;
     this.type_ = type;
+    this.xAxis_ = 0;
     this.yAxis_ = yAxis;
     this.customFlags_ = EnumSet.noneOf(WDataSeries.CustomFlag.class);
     this.pen_ = new WPen();
@@ -202,6 +204,7 @@ public class WDataSeries extends WObject {
     this.XSeriesColumn_ = other.XSeriesColumn_;
     this.stacked_ = other.stacked_;
     this.type_ = other.type_;
+    this.xAxis_ = other.xAxis_;
     this.yAxis_ = other.yAxis_;
     this.customFlags_ = other.customFlags_;
     this.pen_ = other.pen_;
@@ -391,10 +394,27 @@ public class WDataSeries extends WObject {
     ;
   }
   /**
-   * Binds this series to a chart axis.
+   * Binds this series to a chart&apos;s X axis.
    *
-   * <p>A data series can only be bound to a Y axis. Note that the second Y axis will not be
-   * displayed by default.
+   * <p>Note that the second Y axis will not be displayed by default.
+   *
+   * <p>The default value is the first X axis.
+   *
+   * <p>
+   *
+   * @see WAxis#setVisible(boolean visible)
+   */
+  public void bindToXAxis(int xAxis) {
+    if (!ChartUtils.equals(this.xAxis_, xAxis)) {
+      this.xAxis_ = xAxis;
+      update();
+    }
+    ;
+  }
+  /**
+   * Binds this series to a chart&apos;s Y axis.
+   *
+   * <p>Note that the second Y axis will not be displayed by default.
    *
    * <p>The default value is the first Y axis.
    *
@@ -410,7 +430,7 @@ public class WDataSeries extends WObject {
     ;
   }
   /**
-   * Returns the chart axis used for this series.
+   * Returns the Y axis used for this series.
    *
    * <p>
    *
@@ -418,6 +438,16 @@ public class WDataSeries extends WObject {
    */
   public Axis getAxis() {
     return this.yAxis_ == 1 ? Axis.Y2Axis : Axis.Y1Axis;
+  }
+  /**
+   * Returns the Y axis used for this series.
+   *
+   * <p>
+   *
+   * @see WDataSeries#bindToXAxis(int xAxis)
+   */
+  public int getXAxis() {
+    return this.xAxis_;
   }
   /**
    * Returns the Y axis used for this series.
@@ -887,7 +917,8 @@ public class WDataSeries extends WObject {
    */
   public WPointF mapFromDevice(final WPointF deviceCoordinates) {
     if (this.chart_ != null) {
-      return this.chart_.mapFromDevice(deviceCoordinates, this.yAxis_);
+      return this.chart_.mapFromDevice(
+          deviceCoordinates, this.chart_.getXAxis(this.xAxis_), this.chart_.getYAxis(this.yAxis_));
     } else {
       return new WPointF();
     }
@@ -911,7 +942,12 @@ public class WDataSeries extends WObject {
    */
   public WPointF mapToDevice(final Object xValue, final Object yValue, int segment) {
     if (this.chart_ != null) {
-      return this.chart_.mapToDevice(xValue, yValue, this.yAxis_, segment);
+      return this.chart_.mapToDevice(
+          xValue,
+          yValue,
+          this.chart_.getXAxis(this.xAxis_),
+          this.chart_.getYAxis(this.yAxis_),
+          segment);
     } else {
       return new WPointF();
     }
@@ -1063,6 +1099,7 @@ public class WDataSeries extends WObject {
   private int XSeriesColumn_;
   private boolean stacked_;
   private SeriesType type_;
+  private int xAxis_;
   private int yAxis_;
   private EnumSet<WDataSeries.CustomFlag> customFlags_;
   private WPen pen_;

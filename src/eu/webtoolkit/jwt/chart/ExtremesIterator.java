@@ -20,9 +20,10 @@ import org.slf4j.LoggerFactory;
 class ExtremesIterator extends SeriesIterator {
   private static Logger logger = LoggerFactory.getLogger(ExtremesIterator.class);
 
-  public ExtremesIterator(Axis axis, int yAxis, AxisScale scale) {
+  public ExtremesIterator(Axis axis, int xAxis, int yAxis, AxisScale scale) {
     super();
     this.axis_ = axis;
+    this.xAxis_ = xAxis;
     this.yAxis_ = yAxis;
     this.scale_ = scale;
     this.minimum_ = Double.MAX_VALUE;
@@ -31,7 +32,11 @@ class ExtremesIterator extends SeriesIterator {
 
   public boolean startSeries(
       final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
-    return this.axis_ == Axis.XAxis || series.getYAxis() == this.yAxis_;
+    if (this.axis_ == Axis.XAxis) {
+      return series.getXAxis() == this.xAxis_;
+    } else {
+      return series.getYAxis() == this.yAxis_;
+    }
   }
 
   public void newValue(
@@ -59,6 +64,7 @@ class ExtremesIterator extends SeriesIterator {
   }
 
   private Axis axis_;
+  private int xAxis_;
   private int yAxis_;
   private AxisScale scale_;
   private double minimum_;

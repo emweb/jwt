@@ -37,17 +37,14 @@ class BarSeriesRenderer extends SeriesRenderer {
   public void addValue(
       double x, double y, double stacky, int xRow, int xColumn, int yRow, int yColumn) {
     WPainterPath bar = new WPainterPath();
+    final WAxis xAxis = this.chart_.getXAxis(this.series_.getXAxis());
     final WAxis yAxis = this.chart_.getYAxis(this.series_.getYAxis());
     WPointF topMid =
         this.chart_.map(
-            x, y, yAxis.getYAxisId(), this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
+            x, y, xAxis, yAxis, this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
     WPointF bottomMid =
         this.chart_.map(
-            x,
-            stacky,
-            yAxis.getYAxisId(),
-            this.it_.getCurrentXSegment(),
-            this.it_.getCurrentYSegment());
+            x, stacky, xAxis, yAxis, this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
     FillRangeType fr = this.series_.getFillRange();
     switch (fr) {
       case MinimumValueFill:
@@ -57,7 +54,8 @@ class BarSeriesRenderer extends SeriesRenderer {
                     .map(
                         x,
                         stacky,
-                        yAxis.getYAxisId(),
+                        xAxis,
+                        yAxis,
                         this.it_.getCurrentXSegment(),
                         this.it_.getCurrentYSegment())
                     .getX(),
@@ -70,7 +68,8 @@ class BarSeriesRenderer extends SeriesRenderer {
                     .map(
                         x,
                         stacky,
-                        yAxis.getYAxisId(),
+                        xAxis,
+                        yAxis,
                         this.it_.getCurrentXSegment(),
                         this.it_.getCurrentYSegment())
                     .getX(),
@@ -96,7 +95,7 @@ class BarSeriesRenderer extends SeriesRenderer {
       bar.closeSubPath();
     }
     this.painter_.setShadow(this.series_.getShadow());
-    WTransform transform = this.chart_.zoomRangeTransform(this.series_.getYAxis());
+    WTransform transform = this.chart_.zoomRangeTransform(xAxis, yAxis);
     if (nonZeroWidth) {
       WBrush brush = this.series_.getBrush().clone();
       SeriesIterator.setBrushColor(

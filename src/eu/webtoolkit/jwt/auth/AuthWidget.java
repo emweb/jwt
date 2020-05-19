@@ -451,15 +451,6 @@ public class AuthWidget extends WTemplateFormView {
     if (this.created_) {
       return;
     }
-    this.login_
-        .changed()
-        .addListener(
-            this,
-            new Signal.Listener() {
-              public void trigger() {
-                AuthWidget.this.onLoginChange();
-              }
-            });
     this.onLoginChange();
     this.created_ = true;
   }
@@ -692,6 +683,15 @@ public class AuthWidget extends WTemplateFormView {
               }
             });
     app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
+    this.login_
+        .changed()
+        .addListener(
+            this,
+            new Signal.Listener() {
+              public void trigger() {
+                AuthWidget.this.onLoginChange();
+              }
+            });
   }
 
   private void logout() {
@@ -718,6 +718,9 @@ public class AuthWidget extends WTemplateFormView {
   }
 
   private void onLoginChange() {
+    if (!(this.isRendered() || this.created_)) {
+      return;
+    }
     this.clear();
     if (this.login_.isLoggedIn()) {
       this.createLoggedInView();

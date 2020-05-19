@@ -52,7 +52,7 @@ class LabelRenderIterator extends SeriesIterator {
     }
     WString text = new WString();
     if (series.isLabelsEnabled(Axis.XAxis)) {
-      text = this.chart_.getAxis(Axis.XAxis).getLabel(x);
+      text = this.chart_.getXAxis(series.getXAxis()).getLabel(x);
     }
     if (series.isLabelsEnabled(Axis.YAxis)) {
       if (!(text.length() == 0)) {
@@ -90,7 +90,9 @@ class LabelRenderIterator extends SeriesIterator {
       final WCartesianChart chart = this.chart_;
       WPen oldPen = chart.textPen_.clone();
       chart.textPen_.setColor(series.getLabelColor());
-      WTransform t = this.chart_.zoomRangeTransform(series.getYAxis());
+      WTransform t =
+          this.chart_.zoomRangeTransform(
+              this.chart_.getXAxis(series.getXAxis()), this.chart_.getYAxis(series.getYAxis()));
       WTransform ct = new WTransform();
       WJavaScriptHandle<WTransform> transformHandle = this.chart_.curveTransforms_.get(series);
       if (transformHandle != null) {

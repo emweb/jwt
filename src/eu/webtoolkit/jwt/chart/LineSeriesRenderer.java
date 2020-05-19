@@ -42,7 +42,8 @@ class LineSeriesRenderer extends SeriesRenderer {
         this.chart_.map(
             x,
             y,
-            this.series_.getYAxis(),
+            this.chart_.getXAxis(this.series_.getXAxis()),
+            this.chart_.getYAxis(this.series_.getYAxis()),
             this.it_.getCurrentXSegment(),
             this.it_.getCurrentYSegment());
     if (this.curveFragmentLength_ == 0) {
@@ -96,7 +97,10 @@ class LineSeriesRenderer extends SeriesRenderer {
   public void paint() {
     WJavaScriptHandle<WPainterPath> curveHandle = this.chart_.curvePaths_.get(this.series_);
     WJavaScriptHandle<WTransform> transformHandle = this.chart_.curveTransforms_.get(this.series_);
-    WTransform transform = this.chart_.zoomRangeTransform(this.series_.getYAxis());
+    WTransform transform =
+        this.chart_.zoomRangeTransform(
+            this.chart_.getXAxis(this.series_.getXAxis()),
+            this.chart_.getYAxis(this.series_.getYAxis()));
     if (this.curveLength_ > 1) {
       if (this.series_.getType() == SeriesType.CurveSeries) {
         WPointF c1 = new WPointF();
@@ -207,7 +211,8 @@ class LineSeriesRenderer extends SeriesRenderer {
                 .map(
                     x,
                     0,
-                    this.series_.getYAxis(),
+                    this.chart_.getXAxis(this.series_.getXAxis()),
+                    this.chart_.getYAxis(this.series_.getYAxis()),
                     this.it_.getCurrentXSegment(),
                     this.it_.getCurrentYSegment())
                 .getX(),
@@ -218,7 +223,8 @@ class LineSeriesRenderer extends SeriesRenderer {
                 .map(
                     x,
                     0,
-                    this.series_.getYAxis(),
+                    this.chart_.getXAxis(this.series_.getXAxis()),
+                    this.chart_.getYAxis(this.series_.getYAxis()),
                     this.it_.getCurrentXSegment(),
                     this.it_.getCurrentYSegment())
                 .getX(),
@@ -228,7 +234,8 @@ class LineSeriesRenderer extends SeriesRenderer {
             this.chart_.map(
                 x,
                 0,
-                this.series_.getYAxis(),
+                this.chart_.getXAxis(this.series_.getXAxis()),
+                this.chart_.getYAxis(this.series_.getYAxis()),
                 this.it_.getCurrentXSegment(),
                 this.it_.getCurrentYSegment()));
       default:

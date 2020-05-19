@@ -772,13 +772,14 @@ public class WGoogleMap extends WCompositeWidget {
       strm.append("setTimeout(function(){ delete ")
           .append(initFunction)
           .append(";}, 0)};")
-          .append("google.load(\"maps\", \"")
+          .append(app.getJavaScriptClass())
+          .append("._p_.loadGoogleMaps('")
           .append(this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2' : '3')
-          .append("\", {other_params:\"key=")
-          .append(this.googlekey_)
-          .append("\", callback: ")
+          .append("',")
+          .append(WWebWidget.jsStringLiteral(this.googlekey_))
+          .append(",")
           .append(initFunction)
-          .append("});")
+          .append(");")
           .append("}");
       this.additions_.clear();
       app.doJavaScript(strm.toString(), true);

@@ -68,7 +68,12 @@ class MarkerRenderIterator extends SeriesIterator {
     if (!Double.isNaN(x) && !Double.isNaN(y)) {
       WPointF p =
           this.chart_.map(
-              x, y, series.getYAxis(), this.getCurrentXSegment(), this.getCurrentYSegment());
+              x,
+              y,
+              this.chart_.getXAxis(series.getXAxis()),
+              this.chart_.getYAxis(series.getYAxis()),
+              this.getCurrentXSegment(),
+              this.getCurrentYSegment());
       MarkerType pointMarker = series.getModel().markerType(yRow, yColumn);
       if (!(pointMarker != null)) {
         pointMarker = series.getModel().markerType(xRow, xColumn);
@@ -195,9 +200,11 @@ class MarkerRenderIterator extends SeriesIterator {
     this.painter_.save();
     this.painter_.setWorldTransform(
         new WTransform(this.currentScale_, 0, 0, this.currentScale_, 0, 0));
+    final WAxis xAxis = this.chart_.getXAxis(series.getXAxis());
+    final WAxis yAxis = this.chart_.getYAxis(series.getYAxis());
     WTransform currentTransform =
         new WTransform(1.0 / this.currentScale_, 0, 0, 1.0 / this.currentScale_, 0, 0)
-            .multiply(this.chart_.zoomRangeTransform(series.getYAxis()));
+            .multiply(this.chart_.zoomRangeTransform(xAxis, yAxis));
     this.painter_.setPen(new WPen(PenStyle.NoPen));
     this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
     this.painter_.setShadow(series.getShadow());
