@@ -5592,7 +5592,9 @@ public class WCartesianChart extends WAbstractChart {
     for (int i = 0; i < this.getYAxisCount(); ++i) {
       this.yAxes_.get(i).transformHandle.setValue(yTransforms.get(i));
     }
-    this.getAxis(Axis.XAxis).zoomRangeDirty_ = false;
+    for (int i = 0; i < this.getXAxisCount(); ++i) {
+      this.getXAxis(i).zoomRangeDirty_ = false;
+    }
     for (int i = 0; i < this.getYAxisCount(); ++i) {
       this.getYAxis(i).zoomRangeDirty_ = false;
     }
