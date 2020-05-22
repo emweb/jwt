@@ -26,7 +26,7 @@ class AgeFormModel extends WFormModel {
   public AgeFormModel(WObject parent) {
     super(parent);
     this.addField(AgeField);
-    this.setValidator(AgeField, this.getCreateAgeValidator());
+    this.setValidator(AgeField, this.createAgeValidator());
     this.setValue(AgeField, "");
   }
 
@@ -34,7 +34,7 @@ class AgeFormModel extends WFormModel {
     this((WObject) null);
   }
 
-  private WValidator getCreateAgeValidator() {
+  private WValidator createAgeValidator() {
     WIntValidator v = new WIntValidator(0, 150);
     return v;
   }
