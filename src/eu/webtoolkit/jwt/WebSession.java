@@ -1335,6 +1335,7 @@ class WebSession {
         }
       }
       String requestE = request.getParameter("request");
+      boolean requestForResource = requestE != null && requestE.equals("resource");
       if (requestE != null && requestE.equals("ws") && !request.isWebSocketRequest()) {
         logger.error(new StringWriter().append("invalid WebSocket request, ignoring").toString());
         logger.info(
@@ -1363,11 +1364,25 @@ class WebSession {
         }
       }
       handler.getResponse().setResponseType(WebRequest.ResponseType.Page);
-      if (!(requestE != null && requestE.equals("resource")
+      if (!(requestForResource
           || isEqual(request.getRequestMethod(), "POST")
           || isEqual(request.getRequestMethod(), "GET"))) {
         handler.getResponse().setStatus(400);
         handler.flushResponse();
+        return;
+      }
+      if (this.env_.hasAjax()
+          && isEqual(request.getRequestMethod(), "GET")
+          && !requestForResource
+          && conf.reloadIsNewSession()
+          && wtdE != null
+          && wtdE.equals(this.sessionId_)) {
+        logger.warn(
+            new StringWriter()
+                .append("secure:")
+                .append("Unexpected GET request with wtd of existing Ajax session")
+                .toString());
+        this.serveError(403, handler, "Forbidden");
         return;
       }
       if ((!(wtdE != null) || !wtdE.equals(this.sessionId_))
@@ -1471,7 +1486,7 @@ class WebSession {
                       break;
                     }
                   case WidgetSet:
-                    if (requestE != null && requestE.equals("resource")) {
+                    if (requestForResource) {
                       String resourceE = request.getParameter("resource");
                       if (resourceE != null && resourceE.equals("blank")) {
                         handler.getResponse().setContentType("text/html");
@@ -1569,7 +1584,6 @@ class WebSession {
                     }
                   }
                 }
-                boolean requestForResource = requestE != null && requestE.equals("resource");
                 if (!(this.app_ != null)) {
                   String resourceE = request.getParameter("resource");
                   if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {

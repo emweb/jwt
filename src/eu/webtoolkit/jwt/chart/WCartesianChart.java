@@ -3732,6 +3732,7 @@ public class WCartesianChart extends WAbstractChart {
     }
     if (!minimumXaxes.isEmpty()
         && minimumXaxes.get(0).getLocation() == AxisValue.MinimumValue
+        && minimumXaxes.get(0).getScale() != AxisScale.CategoryScale
         && (this.getAxis(Axis.YAxis).isInverted()
             ? this.yAxes_
                     .get(0)
@@ -3746,6 +3747,7 @@ public class WCartesianChart extends WAbstractChart {
     }
     if (!maximumXaxes.isEmpty()
         && maximumXaxes.get(0).getLocation() == AxisValue.MaximumValue
+        && minimumXaxes.get(0).getScale() != AxisScale.CategoryScale
         && (this.getAxis(Axis.YAxis).isInverted()
             ? this.yAxes_.get(0).axis.segments_.get(0).renderMinimum == 0
             : this.yAxes_
@@ -5133,7 +5135,8 @@ public class WCartesianChart extends WAbstractChart {
       }
       if (axis.getLocation() == AxisValue.ZeroValue) {
         if (side == AxisValue.MinimumValue) {
-          if (otherAxes.get(0).axis.segments_.get(0).renderMinimum >= 0
+          if (axis.getScale() == AxisScale.CategoryScale
+              || otherAxes.get(0).axis.segments_.get(0).renderMinimum >= 0
               || !otherAxes.get(0).axis.isOnAxis(0.0)
                   && otherAxes
                           .get(0)
