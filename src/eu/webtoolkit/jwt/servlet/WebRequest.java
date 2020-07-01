@@ -490,7 +490,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 			}
 		}
 		if (result.length() == 0) {
-			result = str("");
+			result = getRemoteAddr();
 		}
 		return result;
 	}
