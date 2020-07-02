@@ -520,9 +520,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     tmp.append("}");
     tmp.append(updateAreasJs);
     tmp.append("};");
-    if (this.paintUpdate_) {
-      tmp.append(paintedWidgetJsRef).append(".repaint=function(){};");
-    } else {
+    if (!this.paintUpdate_) {
       tmp.append(paintedWidgetJsRef).append(".repaint=pF;");
       tmp.append("pF=function(){").append(paintedWidgetJsRef).append(".repaint();").append("};");
     }
