@@ -196,7 +196,7 @@ public class AuthModel extends FormBaseModel {
       app.loadJavaScript("js/AuthModel.js", wtjs1());
       button.setJavaScriptMember(
           " AuthThrottle",
-          "new Wt3_6_0.AuthThrottle(Wt3_6_0,"
+          "new Wt3_7_0.AuthThrottle(Wt3_7_0,"
               + button.getJsRef()
               + ","
               + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()

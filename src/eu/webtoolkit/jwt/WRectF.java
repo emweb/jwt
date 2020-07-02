@@ -419,7 +419,7 @@ public class WRectF extends WJavaScriptExposableObject {
     }
     WRectF result = new WRectF(x, y, w, h);
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt3_6_0.gfxUtils.rect_normalized(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt3_7_0.gfxUtils.rect_normalized(" + this.getJsRef() + ')');
     }
     return result;
   }
