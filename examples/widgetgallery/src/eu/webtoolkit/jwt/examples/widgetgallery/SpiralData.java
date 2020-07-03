@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,17 +22,13 @@ import org.slf4j.LoggerFactory;
 class SpiralData extends WStandardItemModel {
   private static Logger logger = LoggerFactory.getLogger(SpiralData.class);
 
-  public SpiralData(int nbPts, WObject parent) {
-    super(nbPts, 3, parent);
+  public SpiralData(int nbPts) {
+    super(nbPts, 3);
     this.nbPts_ = nbPts;
   }
 
-  public SpiralData(int nbPts) {
-    this(nbPts, (WObject) null);
-  }
-
-  public Object getData(final WModelIndex index, int role) {
-    if (role != ItemDataRole.DisplayRole) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
+    if (!role.equals(ItemDataRole.Display)) {
       return super.getData(index, role);
     }
     final double pi = 3.141592;

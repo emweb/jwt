@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -115,14 +116,8 @@ public class WFileDropWidget extends WContainerWidget {
       return this.isFiltered_;
     }
 
-    public File(
-        int id,
-        final String fileName,
-        final String type,
-        long size,
-        long chunkSize,
-        WObject parent) {
-      super(parent);
+    public File(int id, final String fileName, final String type, long size, long chunkSize) {
+      super();
       this.id_ = id;
       this.clientFileName_ = fileName;
       this.type_ = type;
@@ -200,8 +195,8 @@ public class WFileDropWidget extends WContainerWidget {
     private long chunkSize_;
   }
   /** Constructor. */
-  public WFileDropWidget(WContainerWidget parent) {
-    super(parent);
+  public WFileDropWidget(WContainerWidget parentContainer) {
+    super();
     this.uploadWorkerResource_ = null;
     this.resource_ = null;
     this.currentFileIdx_ = 0;
@@ -233,11 +228,13 @@ public class WFileDropWidget extends WContainerWidget {
       return;
     }
     this.setup();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WFileDropWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WFileDropWidget(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   public WFileDropWidget() {
     this((WContainerWidget) null);
@@ -340,7 +337,7 @@ public class WFileDropWidget extends WContainerWidget {
    * <p>As soon as a drag enters anywhere on the page the styleclass
    * &apos;Wt-dropzone-indication&apos; is added to this widget. This can be useful to point the
    * user to the correct place to drop the file. Once the user drags a file over the widget itself,
-   * the styleclass &apos;Wt-dropzone-hover&apos; is also added. This can be enabled for multiple
+   * the styleclass &apos;hover-style&apos; is also added. This can be enabled for multiple
    * dropwidgets if only one of them is visible at the same time.
    *
    * <p>
@@ -463,7 +460,7 @@ public class WFileDropWidget extends WContainerWidget {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".destructor();";
       if (!recursive) {
-        result += "Wt3_6_0.remove('" + this.getId() + "');";
+        result += "Wt4_4_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -519,56 +516,13 @@ public class WFileDropWidget extends WContainerWidget {
     super.updateDom(element, all);
   }
 
-  static class WFileDropUploadResource extends WResource {
-    private static Logger logger = LoggerFactory.getLogger(WFileDropUploadResource.class);
-
-    public WFileDropUploadResource(WFileDropWidget fileDropWidget, WFileDropWidget.File file) {
-      super(fileDropWidget);
-      this.parent_ = fileDropWidget;
-      this.currentFile_ = file;
-      this.setUploadProgress(true);
-    }
-
-    public void handleRequest(final WebRequest request, final WebResponse response) {
-      String fileId = request.getParameter("file-id");
-      if (fileId == null || fileId.length() == 0) {
-        response.setStatus(404);
-        return;
-      }
-      int id = Integer.parseInt(fileId);
-      boolean validId = this.parent_.incomingIdCheck(id);
-      if (!validId) {
-        response.setStatus(404);
-        return;
-      }
-      List<UploadedFile> files = new ArrayList<UploadedFile>();
-      CollectionUtils.findInMultimap(request.getUploadedFiles(), "data", files);
-      if (files.isEmpty()) {
-        response.setStatus(404);
-        return;
-      }
-      String filtFlag = request.getParameter("filtered");
-      this.currentFile_.setIsFiltered(filtFlag != null && filtFlag.equals("true"));
-      String lastFlag = request.getParameter("last");
-      boolean isLast = lastFlag == null || lastFlag != null && lastFlag.equals("true");
-      this.currentFile_.handleIncomingData(files.get(0), isLast);
-      if (isLast) {
-        this.parent_.proceedToNextFile();
-      }
-      response.setContentType("text/plain");
-    }
-
-    private WFileDropWidget parent_;
-    private WFileDropWidget.File currentFile_;
-  }
-
   private void setup() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WFileDropWidget.js", wtjs1());
     String maxFileSize = String.valueOf(WApplication.getInstance().getMaximumRequestSize());
     this.setJavaScriptMember(
         " WFileDropWidget",
-        "new Wt3_6_0.WFileDropWidget("
+        "new Wt4_4_0.WFileDropWidget("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -577,45 +531,33 @@ public class WFileDropWidget extends WContainerWidget {
             + ");");
     this.dropSignal_.addListener(
         this,
-        new Signal1.Listener<String>() {
-          public void trigger(String e1) {
-            WFileDropWidget.this.handleDrop(e1);
-          }
+        (String e1) -> {
+          WFileDropWidget.this.handleDrop(e1);
         });
     this.requestSend_.addListener(
         this,
-        new Signal1.Listener<Integer>() {
-          public void trigger(Integer e1) {
-            WFileDropWidget.this.handleSendRequest(e1);
-          }
+        (Integer e1) -> {
+          WFileDropWidget.this.handleSendRequest(e1);
         });
     this.fileTooLarge_.addListener(
         this,
-        new Signal1.Listener<Long>() {
-          public void trigger(Long e1) {
-            WFileDropWidget.this.handleTooLarge(e1);
-          }
+        (Long e1) -> {
+          WFileDropWidget.this.handleTooLarge(e1);
         });
     this.uploadFinished_.addListener(
         this,
-        new Signal1.Listener<Integer>() {
-          public void trigger(Integer e1) {
-            WFileDropWidget.this.emitUploaded(e1);
-          }
+        (Integer e1) -> {
+          WFileDropWidget.this.emitUploaded(e1);
         });
     this.doneSending_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WFileDropWidget.this.stopReceiving();
-          }
+        () -> {
+          WFileDropWidget.this.stopReceiving();
         });
     this.jsFilterNotSupported_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WFileDropWidget.this.disableJavaScriptFilter();
-          }
+        () -> {
+          WFileDropWidget.this.disableJavaScriptFilter();
         });
     this.addStyleClass("Wt-filedropzone");
   }
@@ -654,8 +596,7 @@ public class WFileDropWidget extends WContainerWidget {
           }
         }
       }
-      WFileDropWidget.File file =
-          new WFileDropWidget.File(id, name, type, size, this.chunkSize_, this);
+      WFileDropWidget.File file = new WFileDropWidget.File(id, name, type, size, this.chunkSize_);
       drops.add(file);
       this.uploads_.add(file);
     }
@@ -677,7 +618,7 @@ public class WFileDropWidget extends WContainerWidget {
       if (this.uploads_.get(i).getUploadId() == id) {
         fileFound = true;
         this.currentFileIdx_ = i;
-        ;
+
         this.resource_ =
             new WFileDropWidget.WFileDropUploadResource(
                 this, this.uploads_.get(this.currentFileIdx_));
@@ -685,19 +626,15 @@ public class WFileDropWidget extends WContainerWidget {
             .dataReceived()
             .addListener(
                 this,
-                new Signal2.Listener<Long, Long>() {
-                  public void trigger(Long e1, Long e2) {
-                    WFileDropWidget.this.onData(e1, e2);
-                  }
+                (Long e1, Long e2) -> {
+                  WFileDropWidget.this.onData(e1, e2);
                 });
         this.resource_
             .dataExceeded()
             .addListener(
                 this,
-                new Signal1.Listener<Long>() {
-                  public void trigger(Long e1) {
-                    WFileDropWidget.this.onDataExceeded(e1);
-                  }
+                (Long e1) -> {
+                  WFileDropWidget.this.onDataExceeded(e1);
                 });
         this.doJavaScript(
             this.getJsRef()
@@ -766,13 +703,14 @@ public class WFileDropWidget extends WContainerWidget {
   }
 
   private void createWorkerResource() {
-    if (this.uploadWorkerResource_ != null) {;
+    if (this.uploadWorkerResource_ != null) {
+
       this.uploadWorkerResource_ = null;
     }
     if (this.jsFilterFn_.length() == 0) {
       return;
     }
-    this.uploadWorkerResource_ = new WMemoryResource("text/javascript", this);
+    this.uploadWorkerResource_ = new WMemoryResource("text/javascript");
     StringWriter ss = new StringWriter();
     ss.append("importScripts(");
     for (int i = 0; i < this.jsFilterImports_.size(); i++) {
@@ -858,5 +796,52 @@ public class WFileDropWidget extends WContainerWidget {
         JavaScriptObjectType.JavaScriptConstructor,
         "WFileDropWidget",
         "function(k,b,t){b.wtLObj=this;var e=this,q=\"Wt-dropzone-hover\",d=[],r=false,l=true,o=false,p=false,h=undefined,s=0,m=0,j=document.createElement(\"input\");j.type=\"file\";j.setAttribute(\"multiple\",\"multiple\");$(j).hide();b.appendChild(j);var i=document.createElement(\"div\");$(i).addClass(\"Wt-dropcover\");document.body.appendChild(i);this.eventContainsFile=function(a){var c=a.dataTransfer.types!=null&&a.dataTransfer.types.length>0&&a.dataTransfer.types[0]=== \"Files\";return a.dataTransfer.items!=null&&a.dataTransfer.items.length>0&&a.dataTransfer.items[0].kind===\"file\"||c};this.validFileCheck=function(a,c,g){var f=new FileReader;f.onload=function(){c(true,g)};f.onerror=function(){c(false,g)};f.readAsText(a.slice(0,32))};b.setAcceptDrops=function(a){l=a};b.setDropIndication=function(a){o=a};b.setDropForward=function(a){p=a};b.ondragenter=function(a){if(l){if(e.eventContainsFile(a)){m===0&&e.setPageHoverStyle();m=2;e.setWidgetHoverStyle(true)}a.stopPropagation()}}; b.ondragleave=function(a){var c=a.clientX;a=a.clientY;var g=document.elementFromPoint(c,a);if(c===0&&a===0)g=null;if(g===i){e.setWidgetHoverStyle(false);m=1}else e.resetDragDrop()};b.ondragover=function(a){a.preventDefault()};bodyDragEnter=function(){if((o||p)&&$(b).is(\":visible\")){m=1;e.setPageHoverStyle()}};document.body.addEventListener(\"dragenter\",bodyDragEnter);i.ondragover=function(a){a.preventDefault();a.stopPropagation()};i.ondragleave=function(){!l||m!=1||e.resetDragDrop()};i.ondrop=function(a){a.preventDefault(); p?b.ondrop(a):e.resetDragDrop()};b.ondrop=function(a){a.preventDefault();if(l){e.resetDragDrop();window.FormData===undefined||a.dataTransfer.files===null||a.dataTransfer.files.length===0||e.addFiles(a.dataTransfer.files)}};this.addFiles=function(a){for(var c=[],g=0;g<a.length;g++){var f={};f.id=Math.floor(Math.random()*Math.pow(2,31));f.file=a[g];d.push(f);var n={};n.id=f.id;n.filename=f.file.name;n.type=f.file.type;n.size=f.file.size;c.push(n)}k.emit(b,\"dropsignal\",JSON.stringify(c))};b.addEventListener(\"click\", function(){if(l){$(j).val(\"\");j.click()}});b.markForSending=function(a){for(var c=0;c<a.length;c++)for(var g=a[c].id,f=0;f<d.length;f++)if(d[f].id===g){d[f].ready=true;break}r||d[0].ready&&e.requestSend()};this.requestSend=function(){if(d[0].skip)e.uploadFinished(null);else{r=true;k.emit(b,\"requestsend\",d[0].id)}};b.send=function(a,c){upload=d[0];if(upload.file.size>t){k.emit(b,\"filetoolarge\",upload.file.size);e.uploadFinished(null)}else e.validFileCheck(upload.file,h!=undefined&&c?e.workerSend:e.actualSend, a)};this.actualSend=function(a,c){if(a){a=new XMLHttpRequest;a.addEventListener(\"load\",e.uploadFinished);a.addEventListener(\"error\",e.uploadFinished);a.addEventListener(\"abort\",e.uploadFinished);a.addEventListener(\"timeout\",e.uploadFinished);a.open(\"POST\",c);d[0].request=a;c=new FormData;c.append(\"file-id\",d[0].id);c.append(\"data\",d[0].file);a.send(c)}else e.uploadFinished(null)};this.workerSend=function(a,c){if(a){h.upload=d[0];h.postMessage({cmd:\"send\",url:c,upload:d[0],chunksize:s})}else e.uploadFinished(null)}; this.uploadFinished=function(a){if(a!=null&&a.type===\"load\"&&a.currentTarget.status===200||a===true)k.emit(b,\"uploadfinished\",d[0].id);d.splice(0,1);if(d[0]&&d[0].ready)e.requestSend();else{r=false;k.emit(b,\"donesending\")}};b.cancelUpload=function(a){if(d[0]&&d[0].id===a){d[0].skip=true;if(d[0].request)d[0].request.abort();else h&&h.upload===d[0]&&h.postMessage({cmd:\"cancel\",upload:d[0]})}else for(var c=1;c<d.length;c++)if(d[c].id===a)d[c].skip=true};j.onchange=function(){if(l)window.FormData===undefined|| this.files===null||this.files.length===0||e.addFiles(this.files)};this.setPageHoverStyle=function(){if(o||p){$(i).addClass(\"Wt-dropzone-dragstyle\");$(b).addClass(\"Wt-dropzone-dragstyle\");o&&$(b).addClass(\"Wt-dropzone-indication\")}};this.setWidgetHoverStyle=function(a){a?$(b).addClass(q):$(b).removeClass(q)};this.resetDragDrop=function(){$(b).removeClass(\"Wt-dropzone-indication\");$(b).removeClass(\"Wt-dropzone-dragstyle\");$(i).removeClass(\"Wt-dropzone-dragstyle\");e.setWidgetHoverStyle(false);m=0};b.configureHoverClass= function(a){q=a};b.setFilters=function(a){j.setAttribute(\"accept\",a)};b.setUploadWorker=function(a){if(a&&window.Worker){h=new Worker(a);h.onmessage=function(c){if(c.data.workerfeatures){if(c.data.workerfeatures!==\"valid\"){b.setUploadWorker(null);k.emit(b,\"filternotsupported\")}}else e.uploadFinished(c.data)};h.postMessage({cmd:\"check\"})}else h=undefined};b.setChunkSize=function(a){s=a};b.destructor=function(){document.body.removeEventListener(\"dragenter\",bodyDragEnter);document.body.removeChild(i)}}");
+  }
+
+  static final class WFileDropUploadResource extends WResource {
+    private static Logger logger = LoggerFactory.getLogger(WFileDropUploadResource.class);
+
+    WFileDropUploadResource(WFileDropWidget fileDropWidget, WFileDropWidget.File file) {
+      super();
+      this.parent_ = fileDropWidget;
+      this.currentFile_ = file;
+      this.setUploadProgress(true);
+    }
+
+    void setCurrentFile(WFileDropWidget.File file) {
+      this.currentFile_ = file;
+    }
+
+    protected void handleRequest(final WebRequest request, final WebResponse response) {
+      String fileId = request.getParameter("file-id");
+      if (fileId == null || fileId.length() == 0) {
+        response.setStatus(404);
+        return;
+      }
+      int id = Integer.parseInt(fileId);
+      boolean validId = this.parent_.incomingIdCheck(id);
+      if (!validId) {
+        response.setStatus(404);
+        return;
+      }
+      List<UploadedFile> files = new ArrayList<UploadedFile>();
+      CollectionUtils.findInMultimap(request.getUploadedFiles(), "data", files);
+      if (files.isEmpty()) {
+        response.setStatus(404);
+        return;
+      }
+      String filtFlag = request.getParameter("filtered");
+      this.currentFile_.setIsFiltered(filtFlag != null && filtFlag.equals("true"));
+      String lastFlag = request.getParameter("last");
+      boolean isLast = lastFlag == null || lastFlag != null && lastFlag.equals("true");
+      this.currentFile_.handleIncomingData(files.get(0), isLast);
+      if (isLast) {
+        this.parent_.proceedToNextFile();
+      }
+      response.setContentType("text/plain");
+    }
+
+    private WFileDropWidget parent_;
+    private WFileDropWidget.File currentFile_;
   }
 }

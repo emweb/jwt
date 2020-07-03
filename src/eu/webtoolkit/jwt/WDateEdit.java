@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -32,55 +33,48 @@ public class WDateEdit extends WLineEdit {
   private static Logger logger = LoggerFactory.getLogger(WDateEdit.class);
 
   /** Creates a new date edit. */
-  public WDateEdit(WContainerWidget parent) {
-    super(parent);
+  public WDateEdit(WContainerWidget parentContainer) {
+    super();
     this.popup_ = null;
+    this.uCalendar_ = null;
     this.customFormat_ = false;
     this.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WDateEdit.this.setFromLineEdit();
-              }
+            () -> {
+              WDateEdit.this.setFromLineEdit();
             });
-    this.calendar_ = new WCalendar();
+    this.uCalendar_ = new WCalendar();
+    this.calendar_ = this.uCalendar_;
     this.calendar_.setSingleClickSelect(true);
     this.calendar_
         .activated()
         .addListener(
             this,
-            new Signal1.Listener<WDate>() {
-              public void trigger(WDate e1) {
-                WDateEdit.this.setFocus();
-              }
+            (WDate e1) -> {
+              WDateEdit.this.setFocusTrue();
             });
     this.calendar_
         .selectionChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WDateEdit.this.setFromCalendar();
-              }
+            () -> {
+              WDateEdit.this.setFromCalendar();
             });
     this.setValidator(
-        new WDateValidator(
-            LocaleUtils.getDateFormat(WApplication.getInstance().getLocale()), this));
+        new WDateValidator(LocaleUtils.getDateFormat(WApplication.getInstance().getLocale())));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new date edit.
    *
-   * <p>Calls {@link #WDateEdit(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WDateEdit(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WDateEdit() {
     this((WContainerWidget) null);
   }
 
   public void remove() {
-    if (!(this.popup_ != null)) {
-      if (this.calendar_ != null) this.calendar_.remove();
-    }
     super.remove();
   }
   /**
@@ -120,10 +114,8 @@ public class WDateEdit extends WLineEdit {
    *
    * <p>Most of the configuration of the date edit is stored in the validator.
    */
-  public WDateValidator getValidator() {
-    return ((super.getValidator()) instanceof WDateValidator
-        ? (WDateValidator) (super.getValidator())
-        : null);
+  public WDateValidator getDateValidator() {
+    return ((WDateValidator) super.getValidator());
   }
   /**
    * Sets the format used for representing the date.
@@ -137,7 +129,7 @@ public class WDateEdit extends WLineEdit {
    * @see WDateValidator#setFormat(String format)
    */
   public void setFormat(final String format) {
-    WDateValidator dv = this.getValidator();
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       WDate d = this.getDate();
       dv.setFormat(format);
@@ -158,7 +150,7 @@ public class WDateEdit extends WLineEdit {
    * @see WDateEdit#setFormat(String format)
    */
   public String getFormat() {
-    WDateValidator dv = this.getValidator();
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       return dv.getFormat();
     } else {
@@ -179,7 +171,7 @@ public class WDateEdit extends WLineEdit {
    * @see WDateValidator#setBottom(WDate bottom)
    */
   public void setBottom(final WDate bottom) {
-    WDateValidator dv = this.getValidator();
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setBottom(bottom);
     }
@@ -205,7 +197,7 @@ public class WDateEdit extends WLineEdit {
    * @see WDateValidator#setTop(WDate top)
    */
   public void setTop(final WDate top) {
-    WDateValidator dv = this.getValidator();
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setTop(top);
     }
@@ -244,8 +236,9 @@ public class WDateEdit extends WLineEdit {
       return;
     }
     String TEMPLATE = "${calendar}";
-    WTemplate t = new WTemplate(new WString(TEMPLATE));
-    this.popup_ = new WPopupWidget(t, this);
+    WTemplate t = new WTemplate(new WString(TEMPLATE), (WContainerWidget) null);
+    WTemplate temp = t;
+    this.popup_ = new WPopupWidget(t);
     if (this.isHidden()) {
       this.popup_.setHidden(true);
     }
@@ -255,36 +248,28 @@ public class WDateEdit extends WLineEdit {
         .activated()
         .addListener(
             this.popup_,
-            new Signal1.Listener<WDate>() {
-              public void trigger(WDate e1) {
-                WDateEdit.this.popup_.hide();
-              }
+            (WDate e1) -> {
+              WDateEdit.this.popup_.hide();
             });
-    t.bindWidget("calendar", this.calendar_);
-    WApplication.getInstance()
-        .getTheme()
-        .apply(this, this.popup_, WidgetThemeRole.DatePickerPopupRole);
+    temp.bindWidget("calendar", this.uCalendar_);
+    WApplication.getInstance().getTheme().apply(this, this.popup_, WidgetThemeRole.DatePickerPopup);
     this.escapePressed()
         .addListener(
             this.popup_,
-            new Signal.Listener() {
-              public void trigger() {
-                WDateEdit.this.popup_.hide();
-              }
+            () -> {
+              WDateEdit.this.popup_.hide();
             });
     this.escapePressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WDateEdit.this.setFocus();
-              }
+            () -> {
+              WDateEdit.this.setFocusTrue();
             });
   }
 
   public void refresh() {
     super.refresh();
-    WDateValidator dv = this.getValidator();
+    WDateValidator dv = this.getDateValidator();
     if (!this.customFormat_ && dv != null) {
       WDate d = this.getDate();
       dv.setFormat(LocaleUtils.getDateFormat(WApplication.getInstance().getLocale()));
@@ -298,9 +283,9 @@ public class WDateEdit extends WLineEdit {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       this.defineJavaScript();
-      WDateValidator dv = this.getValidator();
+      WDateValidator dv = this.getDateValidator();
       if (dv != null) {
         this.setTop(dv.getTop());
         this.setBottom(dv.getBottom());
@@ -340,6 +325,7 @@ public class WDateEdit extends WLineEdit {
   }
 
   private WPopupWidget popup_;
+  private WCalendar uCalendar_;
   private WCalendar calendar_;
   private boolean customFormat_;
 
@@ -347,7 +333,7 @@ public class WDateEdit extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WDateEdit.js", wtjs1());
     String jsObj =
-        "new Wt3_6_0.WDateEdit("
+        "new Wt4_4_0.WDateEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -371,6 +357,10 @@ public class WDateEdit extends WLineEdit {
             + methodName
             + "(dobj, event);}";
     s.addListener(jsFunction);
+  }
+
+  private void setFocusTrue() {
+    this.setFocus(true);
   }
 
   static WJavaScriptPreamble wtjs1() {

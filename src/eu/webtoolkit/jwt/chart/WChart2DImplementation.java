@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -46,7 +47,7 @@ class WChart2DImplementation implements WAbstractChartImplementation {
   }
 
   public final int numberOfCategories() {
-    return numberOfCategories(Axis.XAxis);
+    return numberOfCategories(Axis.X);
   }
 
   public WString categoryLabel(int u, Axis axis) {
@@ -62,13 +63,13 @@ class WChart2DImplementation implements WAbstractChartImplementation {
   }
 
   public final WString categoryLabel(int u) {
-    return categoryLabel(u, Axis.XAxis);
+    return categoryLabel(u, Axis.X);
   }
 
   public WAbstractChartImplementation.RenderRange computeRenderRange(
       Axis axis, int xAxis, int yAxis, AxisScale scale) {
     ExtremesIterator iterator = new ExtremesIterator(axis, xAxis, yAxis, scale);
-    this.chart_.iterateSeries(iterator, (WPainter) null, false, axis == Axis.XAxis);
+    this.chart_.iterateSeries(iterator, (WPainter) null, false, axis == Axis.X);
     WAbstractChartImplementation.RenderRange range = new WAbstractChartImplementation.RenderRange();
     range.minimum = iterator.getMinimum();
     range.maximum = iterator.getMaximum();

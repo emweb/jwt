@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,9 +26,9 @@ import javax.servlet.http.*;
  */
 public enum DropAction {
   /** Copy the selection. */
-  CopyAction,
+  Copy,
   /** Move the selection (deleting originals) */
-  MoveAction;
+  Move;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

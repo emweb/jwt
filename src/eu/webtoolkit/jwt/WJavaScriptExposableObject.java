@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -102,8 +103,8 @@ public abstract class WJavaScriptExposableObject {
   protected void assignBinding(final WJavaScriptExposableObject rhs) {
     assert rhs.clientBinding_ != null;
     if (rhs != this) {
-      if (this.clientBinding_ != null) {;
-      }
+      if (this.clientBinding_ != null) {}
+
       this.clientBinding_ = rhs.clientBinding_;
     }
   }
@@ -111,8 +112,8 @@ public abstract class WJavaScriptExposableObject {
   protected void assignBinding(final WJavaScriptExposableObject rhs, final String jsRef) {
     assert rhs.clientBinding_ != null;
     if (rhs != this) {
-      if (this.clientBinding_ != null) {;
-      }
+      if (this.clientBinding_ != null) {}
+
       this.clientBinding_ = new WJavaScriptExposableObject.JSInfo(rhs.clientBinding_);
     }
     this.clientBinding_.jsRef_ = jsRef;

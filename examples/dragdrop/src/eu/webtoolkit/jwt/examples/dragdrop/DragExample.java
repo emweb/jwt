@@ -31,7 +31,7 @@ public class DragExample extends WContainerWidget {
         }
 
         WContainerWidget pills = new WContainerWidget(this);
-        pills.setContentAlignment(AlignmentFlag.AlignCenter);
+        pills.setContentAlignment(AlignmentFlag.Center);
 
         createDragImage("icons/blue-pill.jpg", "icons/blue-pill-small.png",
                 "blue-pill", pills);

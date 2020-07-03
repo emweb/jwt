@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,7 +22,7 @@ import javax.servlet.http.*;
  * <p>Multiple buttons may be specified by logically or&apos;ing these values together, e.g.
  *
  * <pre>{@code
- * Ok | Cancel
+ * StandardButton::Ok | StandardButton::Cancel
  *
  * }</pre>
  *
@@ -31,7 +32,7 @@ import javax.servlet.http.*;
  */
 public enum StandardButton {
   /** No button. */
-  NoButton,
+  None,
   /** An OK button. */
   Ok,
   /** A Cancel button. */

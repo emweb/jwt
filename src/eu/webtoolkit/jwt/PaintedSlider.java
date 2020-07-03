@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class PaintedSlider extends WPaintedWidget {
+final class PaintedSlider extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(PaintedSlider.class);
 
   public PaintedSlider(WSlider slider) {
@@ -28,6 +29,8 @@ class PaintedSlider extends WPaintedWidget {
     this.mouseMovedJS_ = new JSlot();
     this.mouseUpJS_ = new JSlot();
     this.handleClickedJS_ = new JSlot();
+    this.handle_ = null;
+    this.fill_ = null;
     this.setStyleClass("Wt-slider-bg");
     this.slider_.addStyleClass(
         "Wt-slider-" + (this.slider_.getOrientation() == Orientation.Horizontal ? "h" : "v"));
@@ -35,13 +38,49 @@ class PaintedSlider extends WPaintedWidget {
       this.slider_.setPositionScheme(PositionScheme.Relative);
       this.slider_.setOffsets(new WLength(0), EnumSet.of(Side.Left, Side.Top));
     }
-    this.addChild(this.fill_ = new WContainerWidget());
-    this.addChild(this.handle_ = this.slider_.getCreateHandle());
+    WInteractWidget fill = new WContainerWidget();
+    {
+      WWidget oldWidget = this.fill_;
+      this.fill_ = fill;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.fill_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    WInteractWidget handle = this.slider_.getCreateHandle();
+    {
+      WWidget oldWidget = this.handle_;
+      this.handle_ = handle;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.handle_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     this.fill_.setPositionScheme(PositionScheme.Absolute);
     this.fill_.setStyleClass("fill");
     this.handle_.setPositionScheme(PositionScheme.Absolute);
     this.handle_.setStyleClass("handle");
     this.connectSlots();
+  }
+
+  public void remove() {
+    {
+      WWidget oldWidget = this.fill_;
+      this.fill_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.fill_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    {
+      WWidget oldWidget = this.handle_;
+      this.handle_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.handle_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    super.remove();
   }
 
   public void connectSlots() {
@@ -57,17 +96,13 @@ class PaintedSlider extends WPaintedWidget {
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  PaintedSlider.this.onSliderClick(e1);
-                }
+              (WMouseEvent e1) -> {
+                PaintedSlider.this.onSliderClick(e1);
               });
       this.sliderReleased_.addListener(
           this,
-          new Signal1.Listener<Integer>() {
-            public void trigger(Integer e1) {
-              PaintedSlider.this.onSliderReleased(e1);
-            }
+          (Integer e1) -> {
+            PaintedSlider.this.onSliderReleased(e1);
           });
     }
   }
@@ -99,11 +134,11 @@ class PaintedSlider extends WPaintedWidget {
     char[] buf = new char[30];
     StringBuilder mouseDownJS = new StringBuilder();
     mouseDownJS
-        .append("obj.setAttribute('down', Wt3_6_0")
+        .append("obj.setAttribute('down', Wt4_4_0")
         .append(".widgetCoordinates(obj, event).")
         .append(u)
         .append(");")
-        .append("Wt3_6_0.cancelEvent(event);");
+        .append("Wt4_4_0.cancelEvent(event);");
     StringBuilder computeD = new StringBuilder();
     computeD
         .append("var objh = ")
@@ -134,7 +169,7 @@ class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseMovedJS = new StringBuilder();
     mouseMovedJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt3_6_0;")
+        .append("var WT = Wt4_4_0;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString());
     mouseMovedJS
@@ -178,7 +213,7 @@ class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseUpJS = new StringBuilder();
     mouseUpJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt3_6_0;")
+        .append("var WT = Wt4_4_0;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString())
         .append("d += ")
@@ -196,9 +231,9 @@ class PaintedSlider extends WPaintedWidget {
         "function(obj, event) {" + (enabled ? mouseUpJS.toString() : "") + "}");
     this.handleClickedJS_.setJavaScript(
         "function(obj, event) {"
-            + "Wt3_6_0"
+            + "Wt4_4_0"
             + ".cancelEvent(event,"
-            + "Wt3_6_0"
+            + "Wt4_4_0"
             + ".CancelPropagate); }");
     this.update();
     this.updateSliderPosition();
@@ -221,15 +256,15 @@ class PaintedSlider extends WPaintedWidget {
   public void doUpdateDom(final DomElement element, boolean all) {
     if (all) {
       WApplication app = WApplication.getInstance();
-      DomElement west = DomElement.createNew(DomElementType.DomElement_DIV);
-      west.setProperty(Property.PropertyClass, "Wt-w");
+      DomElement west = DomElement.createNew(DomElementType.DIV);
+      west.setProperty(Property.Class, "Wt-w");
       element.addChild(west);
-      DomElement east = DomElement.createNew(DomElementType.DomElement_DIV);
-      east.setProperty(Property.PropertyClass, "Wt-e");
+      DomElement east = DomElement.createNew(DomElementType.DIV);
+      east.setProperty(Property.Class, "Wt-e");
       element.addChild(east);
       element.addChild(this.createSDomElement(app));
-      element.addChild(((WWebWidget) this.fill_).createSDomElement(app));
-      element.addChild(((WWebWidget) this.handle_).createSDomElement(app));
+      element.addChild(this.fill_.createSDomElement(app));
+      element.addChild(this.handle_.createSDomElement(app));
     }
   }
 

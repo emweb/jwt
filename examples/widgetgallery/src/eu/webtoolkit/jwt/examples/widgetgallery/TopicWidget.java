@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,8 +22,13 @@ import org.slf4j.LoggerFactory;
 class TopicWidget extends WContainerWidget {
   private static Logger logger = LoggerFactory.getLogger(TopicWidget.class);
 
-  public TopicWidget() {
+  public TopicWidget(WContainerWidget parentContainer) {
     super();
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public TopicWidget() {
+    this((WContainerWidget) null);
   }
 
   public void populateSubMenu(WMenu menu) {}
@@ -57,17 +63,13 @@ class TopicWidget extends WContainerWidget {
   }
 
   protected static WText addText(final CharSequence s, WContainerWidget parent) {
-    WText text = new WText(s, parent);
+    WText text = new WText(WString.toWString(s), (WContainerWidget) parent);
     boolean literal;
     literal = WString.toWString(s).isLiteral();
     if (!literal) {
       text.setInternalPathEncoding(true);
     }
     return text;
-  }
-
-  protected static final WText addText(final CharSequence s) {
-    return addText(s, (WContainerWidget) null);
   }
 
   private String docAnchor(final String classname) {

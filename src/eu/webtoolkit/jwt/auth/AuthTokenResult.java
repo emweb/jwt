@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -32,26 +33,14 @@ import org.slf4j.LoggerFactory;
 public class AuthTokenResult {
   private static Logger logger = LoggerFactory.getLogger(AuthTokenResult.class);
 
-  /** Enumeration that describes the result. */
-  public enum Result {
-    /** The presented auth token could be used to identify a user. */
-    Invalid,
-    /** The presented auth token was invalid. */
-    Valid;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Constructor.
    *
    * <p>Creates an authentication token result.
    */
   public AuthTokenResult(
-      AuthTokenResult.Result result, final User user, final String newToken, int newTokenValidity) {
-    this.result_ = result;
+      AuthTokenState state, final User user, final String newToken, int newTokenValidity) {
+    this.state_ = state;
     this.user_ = user;
     this.newToken_ = newToken;
     this.newTokenValidity_ = newTokenValidity;
@@ -59,38 +48,39 @@ public class AuthTokenResult {
   /**
    * Constructor.
    *
-   * <p>Calls {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int
-   * newTokenValidity) this(result, new User(), "", - 1)}
+   * <p>Calls {@link #AuthTokenResult(AuthTokenState state, User user, String newToken, int
+   * newTokenValidity) this(state, new User(), "", - 1)}
    */
-  public AuthTokenResult(AuthTokenResult.Result result) {
-    this(result, new User(), "", -1);
+  public AuthTokenResult(AuthTokenState state) {
+    this(state, new User(), "", -1);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int
-   * newTokenValidity) this(result, user, "", - 1)}
+   * <p>Calls {@link #AuthTokenResult(AuthTokenState state, User user, String newToken, int
+   * newTokenValidity) this(state, user, "", - 1)}
    */
-  public AuthTokenResult(AuthTokenResult.Result result, final User user) {
-    this(result, user, "", -1);
+  public AuthTokenResult(AuthTokenState state, final User user) {
+    this(state, user, "", -1);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #AuthTokenResult(AuthTokenResult.Result result, User user, String newToken, int
-   * newTokenValidity) this(result, user, newToken, - 1)}
+   * <p>Calls {@link #AuthTokenResult(AuthTokenState state, User user, String newToken, int
+   * newTokenValidity) this(state, user, newToken, - 1)}
    */
-  public AuthTokenResult(AuthTokenResult.Result result, final User user, final String newToken) {
-    this(result, user, newToken, -1);
+  public AuthTokenResult(AuthTokenState state, final User user, final String newToken) {
+    this(state, user, newToken, -1);
   }
   /** Returns the result. */
-  public AuthTokenResult.Result getResult() {
-    return this.result_;
+  public AuthTokenState getState() {
+    return this.state_;
   }
   /**
    * Returns the identified user.
    *
-   * <p>The user is valid only if the the {@link AuthTokenResult#getResult() getResult()} == Valid.
+   * <p>The user is valid only if the the {@link AuthTokenResult#getState() getState()} == {@link
+   * AuthTokenState#Valid}.
    */
   public User getUser() {
     if (this.user_.isValid()) {
@@ -105,8 +95,8 @@ public class AuthTokenResult {
    * <p>Returns the empty string if there is no new token. See {@link
    * AuthService#isAuthTokenUpdateEnabled()}.
    *
-   * <p>The returned token is valid only if the {@link AuthTokenResult#getResult() getResult()} ==
-   * Valid.
+   * <p>The returned token is valid only if the {@link AuthTokenResult#getState() getState()} ==
+   * {@link AuthTokenState#Valid}.
    */
   public String getNewToken() {
     if (this.user_.isValid()) {
@@ -120,8 +110,7 @@ public class AuthTokenResult {
    *
    * <p>This returns the token validity in seconds.
    *
-   * <p>Returns -1 if there is no new token, or {@link AuthTokenResult#getResult() getResult()} !=
-   * Valid.
+   * <p>Returns -1 if there is no new token, or result() != Valid.
    *
    * <p>
    *
@@ -135,7 +124,7 @@ public class AuthTokenResult {
     }
   }
 
-  private AuthTokenResult.Result result_;
+  private AuthTokenState state_;
   private User user_;
   private String newToken_;
   private int newTokenValidity_;

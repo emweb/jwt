@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,8 +22,13 @@ import org.slf4j.LoggerFactory;
 class Text extends WText {
   private static Logger logger = LoggerFactory.getLogger(Text.class);
 
-  public Text() {
+  public Text(WContainerWidget parentContainer) {
     super();
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public Text() {
+    this((WContainerWidget) null);
   }
 
   public WString getCalculateToolTip() {

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -19,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 class PdfUtils {
   private static Logger logger = LoggerFactory.getLogger(PdfUtils.class);
+
+  private PdfUtils() {}
 
   static String toBase14Font(final WFont font) {
     String base = null;
@@ -53,7 +56,7 @@ class PdfUtils {
     }
     if (italic != null) {
       switch (font.getStyle()) {
-        case NormalStyle:
+        case Normal:
           italic = null;
           break;
         default:

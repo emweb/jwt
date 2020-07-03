@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,10 @@ import org.slf4j.LoggerFactory;
 class PaintingImagesWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(PaintingImagesWidget.class);
 
-  public PaintingImagesWidget(WContainerWidget parent) {
-    super(parent);
+  public PaintingImagesWidget(WContainerWidget parentContainer) {
+    super();
     this.resize(new WLength(639), new WLength(1310));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public PaintingImagesWidget() {
@@ -61,7 +63,7 @@ class PaintingImagesWidget extends WPaintedWidget {
     path.lineTo(263, 264);
     path.lineTo(228, 330);
     path.lineTo(92, 330);
-    WPen pen = new WPen(WColor.red);
+    WPen pen = new WPen(new WColor(StandardColor.Red));
     pen.setWidth(new WLength(3));
     painter.strokePath(path, pen);
   }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -51,8 +52,8 @@ public class WItemSelectionModel extends WObject {
    * <p>The model indexes are returned as a set, topologically ordered (in the order they appear in
    * the view).
    *
-   * <p>When selection operates on rows ({@link SelectionBehavior#SelectRows}), this method only
-   * returns the model index of first column&apos;s element of the selected rows.
+   * <p>When selection operates on rows ({@link SelectionBehavior#Rows}), this method only returns
+   * the model index of first column&apos;s element of the selected rows.
    */
   public SortedSet<WModelIndex> getSelectedIndexes() {
     return this.selection_;
@@ -60,15 +61,15 @@ public class WItemSelectionModel extends WObject {
   /**
    * Returns wheter an item is selected.
    *
-   * <p>When selection operates on rows ({@link SelectionBehavior#SelectRows}), this method returns
-   * true for each element in a selected row.
+   * <p>When selection operates on rows ({@link SelectionBehavior#Rows}), this method returns true
+   * for each element in a selected row.
    *
    * <p>
    *
    * @see WItemSelectionModel#getSelectedIndexes()
    */
   public boolean isSelected(final WModelIndex index) {
-    if (this.selectionBehavior_ == SelectionBehavior.SelectRows) {
+    if (this.selectionBehavior_ == SelectionBehavior.Rows) {
       for (Iterator<WModelIndex> it_it = this.selection_.iterator(); it_it.hasNext(); ) {
         WModelIndex it = it_it.next();
         WModelIndex mi = it;
@@ -86,11 +87,11 @@ public class WItemSelectionModel extends WObject {
   /**
    * Sets the selection behaviour.
    *
-   * <p>By default, the selection contains rows ({@link SelectionBehavior#SelectRows}), in which
-   * case model indexes will always be have column 0, but represent the whole row.
+   * <p>By default, the selection contains rows ({@link SelectionBehavior#Rows}), in which case
+   * model indexes will always be have column 0, but represent the whole row.
    *
    * <p>Alternatively, you can allow selection for individual items ({@link
-   * SelectionBehavior#SelectItems}).
+   * SelectionBehavior#Items}).
    */
   public void setSelectionBehavior(SelectionBehavior behavior) {
     this.selectionBehavior_ = behavior;
@@ -111,9 +112,9 @@ public class WItemSelectionModel extends WObject {
    * <p>This should return the mime type for the current selection, or an emtpy string if the
    * selection cannot be dragged.
    *
-   * <p>The default implementation returns the mime type based on MimeTypeRole data if all selected
-   * items indicate the same mime type, or the model {@link WItemSelectionModel#getMimeType()
-   * getMimeType()} otherwise.
+   * <p>The default implementation returns the mime type based on {@link ItemDataRole#MimeType} data
+   * if all selected items indicate the same mime type, or the model {@link
+   * WItemSelectionModel#getMimeType() getMimeType()} otherwise.
    *
    * <p>If one or more items indicate that they cannot be dragged, then an empty string is returned.
    */
@@ -122,11 +123,11 @@ public class WItemSelectionModel extends WObject {
     for (Iterator<WModelIndex> i_it = this.selection_.iterator(); i_it.hasNext(); ) {
       WModelIndex i = i_it.next();
       WModelIndex mi = i;
-      if (!!EnumUtils.mask(mi.getFlags(), ItemFlag.ItemIsDragEnabled).isEmpty()) {
+      if (!!EnumUtils.mask(mi.getFlags(), ItemFlag.DragEnabled).isEmpty()) {
         return "";
       }
-      Object mimeTypeData = mi.getData(ItemDataRole.MimeTypeRole);
-      if (!(mimeTypeData == null)) {
+      Object mimeTypeData = mi.getData(ItemDataRole.MimeType);
+      if ((mimeTypeData != null)) {
         String currentMimeType = StringUtils.asString(mimeTypeData).toString();
         if (currentMimeType.length() != 0) {
           if (retval.length() == 0) {
@@ -150,15 +151,18 @@ public class WItemSelectionModel extends WObject {
   private WAbstractItemModel model_;
   private SelectionBehavior selectionBehavior_;
 
-  WItemSelectionModel(WAbstractItemModel model, WObject parent) {
-    super(parent);
+  WItemSelectionModel() {
+    super();
     this.selection_ = new TreeSet<WModelIndex>();
-    this.model_ = model;
-    this.selectionBehavior_ = SelectionBehavior.SelectRows;
+    this.model_ = null;
+    this.selectionBehavior_ = SelectionBehavior.Rows;
   }
 
-  WItemSelectionModel(WAbstractItemModel model) {
-    this(model, (WObject) null);
+  WItemSelectionModel(final WAbstractItemModel model) {
+    super();
+    this.selection_ = new TreeSet<WModelIndex>();
+    this.model_ = model;
+    this.selectionBehavior_ = SelectionBehavior.Rows;
   }
 
   void modelLayoutAboutToBeChanged() {

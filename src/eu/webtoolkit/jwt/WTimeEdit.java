@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,34 +31,31 @@ public class WTimeEdit extends WLineEdit {
   private static Logger logger = LoggerFactory.getLogger(WTimeEdit.class);
 
   /** Creates a new time edit. */
-  public WTimeEdit(WContainerWidget parent) {
-    super(parent);
+  public WTimeEdit(WContainerWidget parentContainer) {
+    super();
     this.popup_ = null;
-    this.setValidator(new WTimeValidator(this));
+    this.setValidator(new WTimeValidator());
     this.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimeEdit.this.setFromLineEdit();
-              }
+            () -> {
+              WTimeEdit.this.setFromLineEdit();
             });
-    this.timePicker_ = new WTimePicker(this);
+    this.timePicker_ = new WTimePicker(this, (WContainerWidget) null);
     this.timePicker_
         .selectionChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimeEdit.this.setFromTimePicker();
-              }
+            () -> {
+              WTimeEdit.this.setFromTimePicker();
             });
     this.timePicker_.setWrapAroundEnabled(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new time edit.
    *
-   * <p>Calls {@link #WTimeEdit(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTimeEdit(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTimeEdit() {
     this((WContainerWidget) null);
@@ -105,14 +103,12 @@ public class WTimeEdit extends WLineEdit {
    *
    * @see WTimeValidator
    */
-  public WTimeValidator getValidator() {
-    return ((super.getValidator()) instanceof WTimeValidator
-        ? (WTimeValidator) (super.getValidator())
-        : null);
+  public WTimeValidator getTimeValidator() {
+    return ((WTimeValidator) super.getValidator());
   }
   /** Sets the format of the Time. */
   public void setFormat(final String format) {
-    WTimeValidator tv = this.getValidator();
+    WTimeValidator tv = this.getTimeValidator();
     if (tv != null) {
       WTime t = this.getTime();
       tv.setFormat(format);
@@ -127,7 +123,7 @@ public class WTimeEdit extends WLineEdit {
   }
   /** Returns the format. */
   public String getFormat() {
-    WTimeValidator tv = this.getValidator();
+    WTimeValidator tv = this.getTimeValidator();
     if (tv != null) {
       return tv.getFormat();
     } else {
@@ -147,14 +143,14 @@ public class WTimeEdit extends WLineEdit {
   }
   /** Sets the lower limit of the valid time range. */
   public void setBottom(final WTime bottom) {
-    WTimeValidator tv = this.getValidator();
+    WTimeValidator tv = this.getTimeValidator();
     if (tv != null) {
       tv.setBottom(bottom);
     }
   }
   /** Returns the lower limit of the valid time range. */
   public WTime getBottom() {
-    WTimeValidator tv = this.getValidator();
+    WTimeValidator tv = this.getTimeValidator();
     if (tv != null) {
       return tv.getBottom();
     }
@@ -162,14 +158,14 @@ public class WTimeEdit extends WLineEdit {
   }
   /** Sets the upper limit of the valid time range. */
   public void setTop(final WTime top) {
-    WTimeValidator tv = this.getValidator();
+    WTimeValidator tv = this.getTimeValidator();
     if (tv != null) {
       tv.setTop(top);
     }
   }
   /** Returns the upper limit of the valid time range. */
   public WTime getTop() {
-    WTimeValidator tv = this.getValidator();
+    WTimeValidator tv = this.getTimeValidator();
     if (tv != null) {
       return tv.getTop();
     }
@@ -227,37 +223,31 @@ public class WTimeEdit extends WLineEdit {
       return;
     }
     String TEMPLATE = "${timePicker}";
-    WTemplate t = new WTemplate(new WString(TEMPLATE));
-    this.popup_ = new WPopupWidget(t, this);
+    WTemplate t = new WTemplate(new WString(TEMPLATE), (WContainerWidget) null);
+    t.bindWidget("timePicker", this.timePicker_);
+    this.popup_ = new WPopupWidget(t);
     if (this.isHidden()) {
       this.popup_.setHidden(true);
     }
     this.popup_.setAnchorWidget(this);
     this.popup_.setTransient(true);
-    t.bindWidget("timePicker", this.timePicker_);
-    WApplication.getInstance()
-        .getTheme()
-        .apply(this, this.popup_, WidgetThemeRole.TimePickerPopupRole);
+    WApplication.getInstance().getTheme().apply(this, this.popup_, WidgetThemeRole.TimePickerPopup);
     this.escapePressed()
         .addListener(
             this.popup_,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimeEdit.this.popup_.hide();
-              }
+            () -> {
+              WTimeEdit.this.popup_.hide();
             });
     this.escapePressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimeEdit.this.setFocus();
-              }
+            () -> {
+              WTimeEdit.this.setFocus();
             });
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       this.defineJavaScript();
     }
     super.render(flags);
@@ -266,6 +256,9 @@ public class WTimeEdit extends WLineEdit {
   protected void propagateSetEnabled(boolean enabled) {
     super.propagateSetEnabled(enabled);
   }
+
+  private WPopupWidget popup_;
+  private WTimePicker timePicker_;
 
   private void setFromTimePicker() {
     this.setTime(this.timePicker_.getTime());
@@ -280,14 +273,11 @@ public class WTimeEdit extends WLineEdit {
     }
   }
 
-  private WPopupWidget popup_;
-  private WTimePicker timePicker_;
-
   private void defineJavaScript() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WTimeEdit.js", wtjs1());
     String jsObj =
-        "new Wt3_6_0.WTimeEdit("
+        "new Wt4_4_0.WTimeEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

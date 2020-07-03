@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -282,12 +283,6 @@ public class WTestEnvironment extends WEnvironment {
     super.setInternalPath(internalPath);
   }
   /**
-   * Sets the content type (<b>deprecated</b>.
-   *
-   * <p>Since contentType is now always HTML5, this setting is ignored.
-   */
-  public void setContentType(WEnvironment.ContentType contentType) {}
-  /**
    * Signal used to test a dialog/messagebox reentrant event loop.
    *
    * <p>This signal is emitted when a dialog or message box is being executed using {@link
@@ -324,9 +319,8 @@ public class WTestEnvironment extends WEnvironment {
    *
    * @see WTestEnvironment#startRequest()
    */
-  public void endRequest() {
-    ;
-  }
+  public void endRequest() {}
+
   /**
    * Simulates the start of a new request by the main event loop.
    *

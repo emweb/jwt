@@ -15,7 +15,7 @@ public class EscapeOStream {
 	private static final Logger logger = LoggerFactory.getLogger(EscapeOStream.class);
 	
 	public enum RuleSet {
-		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote, PlainText, PlainTextNewLines
+		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote, Plain, PlainTextNewLines
 	};
 
 	public EscapeOStream() {

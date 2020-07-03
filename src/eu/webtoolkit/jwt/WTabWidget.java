@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -71,30 +72,19 @@ import org.slf4j.LoggerFactory;
 public class WTabWidget extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WTabWidget.class);
 
-  /** Enumeration to indicate when the contents should be loaded. */
-  public enum LoadPolicy {
-    /** Lazy loading: on first use. */
-    LazyLoading,
-    /** Pre-loading: before first use. */
-    PreLoading;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** Creates a new tab widget. */
-  public WTabWidget(WContainerWidget parent) {
-    super(parent);
-    this.currentChanged_ = new Signal1<Integer>(this);
+  public WTabWidget(WContainerWidget parentContainer) {
+    super();
+    this.currentChanged_ = new Signal1<Integer>();
     this.tabClosed_ = new Signal1<Integer>();
     this.contentsWidgets_ = new ArrayList<WWidget>();
     this.create();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new tab widget.
    *
-   * <p>Calls {@link #WTabWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTabWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTabWidget() {
     this((WContainerWidget) null);
@@ -104,18 +94,17 @@ public class WTabWidget extends WCompositeWidget {
    *
    * <p>Returns the menu item that implements the tab item.
    */
-  public WMenuItem addTab(
-      WWidget child, final CharSequence label, WTabWidget.LoadPolicy loadPolicy) {
+  public WMenuItem addTab(WWidget child, final CharSequence label, ContentLoading loadPolicy) {
     return this.insertTab(this.getCount(), child, label, loadPolicy);
   }
   /**
    * Adds a new tab, with <i>child</i> as content, and the given label.
    *
-   * <p>Returns {@link #addTab(WWidget child, CharSequence label, WTabWidget.LoadPolicy loadPolicy)
-   * addTab(child, label, WTabWidget.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #addTab(WWidget child, CharSequence label, ContentLoading loadPolicy)
+   * addTab(child, label, ContentLoading.Lazy)}
    */
   public final WMenuItem addTab(WWidget child, final CharSequence label) {
-    return addTab(child, label, WTabWidget.LoadPolicy.LazyLoading);
+    return addTab(child, label, ContentLoading.Lazy);
   }
   /**
    * Inserts a new tab, with <i>child</i> as content, and the given label.
@@ -123,48 +112,43 @@ public class WTabWidget extends WCompositeWidget {
    * <p>Returns the menu item that implements the tab item.
    */
   public WMenuItem insertTab(
-      int index, WWidget child, final CharSequence label, WTabWidget.LoadPolicy loadPolicy) {
-    WMenuItem.LoadPolicy policy = WMenuItem.LoadPolicy.PreLoading;
-    switch (loadPolicy) {
-      case PreLoading:
-        policy = WMenuItem.LoadPolicy.PreLoading;
-        break;
-      case LazyLoading:
-        policy = WMenuItem.LoadPolicy.LazyLoading;
-        break;
-    }
-    WMenuItem result = new WMenuItem(label, child, policy);
+      int index, WWidget child, final CharSequence label, ContentLoading loadPolicy) {
     this.contentsWidgets_.add(0 + index, child);
-    this.menu_.insertItem(index, result);
+    WMenuItem item = new WMenuItem(label, child, loadPolicy);
+    WMenuItem result = item;
+    this.menu_.insertItem(index, item);
     return result;
   }
   /**
    * Inserts a new tab, with <i>child</i> as content, and the given label.
    *
-   * <p>Returns {@link #insertTab(int index, WWidget child, CharSequence label,
-   * WTabWidget.LoadPolicy loadPolicy) insertTab(index, child, label,
-   * WTabWidget.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #insertTab(int index, WWidget child, CharSequence label, ContentLoading
+   * loadPolicy) insertTab(index, child, label, ContentLoading.Lazy)}
    */
   public final WMenuItem insertTab(int index, WWidget child, final CharSequence label) {
-    return insertTab(index, child, label, WTabWidget.LoadPolicy.LazyLoading);
+    return insertTab(index, child, label, ContentLoading.Lazy);
   }
   /**
    * Removes a tab item.
-   *
-   * <p>The widget itself is not deleted.
    *
    * <p>
    *
    * @see WMenu#removeItem(WMenuItem item)
    */
-  public void removeTab(WWidget child) {
+  public WWidget removeTab(WWidget child) {
     int tabIndex = this.getIndexOf(child);
     if (tabIndex != -1) {
       this.contentsWidgets_.remove(0 + tabIndex);
       WMenuItem item = this.menu_.itemAt(tabIndex);
-      this.menu_.removeItem(item);
-      item.getTakeContents();
-      if (item != null) item.remove();
+      WWidget result = item.getRemoveContents();
+      {
+        WMenuItem toRemove = this.menu_.removeItem(item);
+        if (toRemove != null) toRemove.remove();
+      }
+
+      return result;
+    } else {
+      return null;
     }
   }
   /** Returns the number of tabs. */
@@ -407,40 +391,27 @@ public class WTabWidget extends WCompositeWidget {
   public WStackedWidget getContentsStack() {
     return this.menu_.getContentsStack();
   }
-  /**
-   * Sets how overflow of contained children must be handled.
-   *
-   * <p>This is an alternative (CSS-ish) way to configure scroll bars on a container widget,
-   * compared to wrapping inside a {@link WScrollArea}.
-   *
-   * <p>Unlike {@link WScrollArea}, horizontal scrolling does not work reliably when the container
-   * widget is inserted in a layout manager: the layout manager will overflow rather than use
-   * scrollbars for this this widget. A solution then is to use {@link WScrollArea} instead.
-   *
-   * <p>
-   *
-   * @see WScrollArea
-   */
-  public void setOverflow(WContainerWidget.Overflow value, EnumSet<Orientation> orientation) {
+  /** Sets how overflow of contained children must be handled. */
+  public void setOverflow(Overflow value, EnumSet<Orientation> orientation) {
     this.layout_.setOverflow(value, orientation);
   }
   /**
    * Sets how overflow of contained children must be handled.
    *
-   * <p>Calls {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
-   * setOverflow(value, EnumSet.of(orientatio, orientation))}
+   * <p>Calls {@link #setOverflow(Overflow value, EnumSet orientation) setOverflow(value,
+   * EnumSet.of(orientatio, orientation))}
    */
   public final void setOverflow(
-      WContainerWidget.Overflow value, Orientation orientatio, Orientation... orientation) {
+      Overflow value, Orientation orientatio, Orientation... orientation) {
     setOverflow(value, EnumSet.of(orientatio, orientation));
   }
   /**
    * Sets how overflow of contained children must be handled.
    *
-   * <p>Calls {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
-   * setOverflow(value, EnumSet.of (Orientation.Horizontal, Orientation.Vertical))}
+   * <p>Calls {@link #setOverflow(Overflow value, EnumSet orientation) setOverflow(value, EnumSet.of
+   * (Orientation.Horizontal, Orientation.Vertical))}
    */
-  public final void setOverflow(WContainerWidget.Overflow value) {
+  public final void setOverflow(Overflow value) {
     setOverflow(value, EnumSet.of(Orientation.Horizontal, Orientation.Vertical));
   }
 
@@ -451,29 +422,27 @@ public class WTabWidget extends WCompositeWidget {
   private List<WWidget> contentsWidgets_;
 
   private void create() {
-    this.setImplementation(this.layout_ = new WContainerWidget());
-    this.menu_ = new WMenu(new WStackedWidget());
+    this.layout_ = new WContainerWidget();
+    this.setImplementation(this.layout_);
+    WStackedWidget stack = new WStackedWidget();
+    this.menu_ = new WMenu(stack, (WContainerWidget) null);
     this.layout_.addWidget(this.menu_);
-    this.layout_.addWidget(this.menu_.getContentsStack());
+    this.layout_.addWidget(stack);
     this.setJavaScriptMember(WT_RESIZE_JS, StdWidgetItemImpl.getSecondResizeJS());
     this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl.getSecondGetPSJS());
     this.menu_
         .itemSelected()
         .addListener(
             this,
-            new Signal1.Listener<WMenuItem>() {
-              public void trigger(WMenuItem e1) {
-                WTabWidget.this.onItemSelected(e1);
-              }
+            (WMenuItem e1) -> {
+              WTabWidget.this.onItemSelected(e1);
             });
     this.menu_
         .itemClosed()
         .addListener(
             this,
-            new Signal1.Listener<WMenuItem>() {
-              public void trigger(WMenuItem e1) {
-                WTabWidget.this.onItemClosed(e1);
-              }
+            (WMenuItem e1) -> {
+              WTabWidget.this.onItemClosed(e1);
             });
   }
 

@@ -81,8 +81,8 @@ features you use
     <!-- optional, for CSS stylesheet support in XHTML renderer -->
     <dependency>
       <groupId>org.antlr</groupId>
-      <artifactId>antlr-runtime</artifactId>
-      <version>3.2</version>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>4.7.2</version>
     </dependency>
 
     <!-- optional, for server-side WebGL fallback -->

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,7 +25,7 @@ import javax.servlet.http.*;
  */
 public enum LabelOption {
   /** Do not display labels (default). */
-  NoLabels,
+  None,
   /** Display labels inside each segment. */
   Inside,
   /** Display labels outside each segment. */

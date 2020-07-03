@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -182,13 +183,13 @@ public abstract class WTextRenderer {
    * WTextRenderer#startPage(int page) startPage()} so that the current page is page 0.
    */
   public double render(final CharSequence text, double y) {
-    String xhtml = text.toString();
+    String xhtml = WString.toWString(text).toXhtml();
     try {
       net.n3.nanoxml.XMLElement doc = RenderUtils.parseXHTML(xhtml);
       Block docBlock = new Block(doc, (Block) null);
       CombinedStyleSheet styles = new CombinedStyleSheet();
       if (this.styleSheet_ != null) {
-        styles.use(this.styleSheet_, true);
+        styles.use(this.styleSheet_);
       }
       StringBuilder ss = new StringBuilder();
       docBlock.collectStyles(ss);
@@ -216,7 +217,7 @@ public abstract class WTextRenderer {
       this.device_ = this.startPage(currentPs.page);
       this.painter_ = this.getPainter(this.device_);
       WFont defaultFont = new WFont();
-      defaultFont.setFamily(WFont.GenericFamily.SansSerif);
+      defaultFont.setFamily(FontFamily.SansSerif);
       this.painter_.setFont(defaultFont);
       double collapseMarginBottom = 0;
       double minX = 0;
@@ -300,7 +301,6 @@ public abstract class WTextRenderer {
   public boolean setStyleSheetText(final CharSequence styleSheetContents) {
     if ((styleSheetContents.length() == 0)) {
       this.styleSheetText_ = new WString();
-      ;
       this.styleSheet_ = null;
       this.error_ = "";
       return true;
@@ -313,7 +313,6 @@ public abstract class WTextRenderer {
       }
       this.error_ = "";
       this.styleSheetText_ = WString.toWString(styleSheetContents);
-      ;
       this.styleSheet_ = styleSheet;
       return true;
     }
@@ -338,7 +337,7 @@ public abstract class WTextRenderer {
       return false;
     }
     boolean b = this.setStyleSheetText(this.getStyleSheetText().append("\n").append(contents));
-    ;
+
     return b;
   }
   /**
@@ -374,7 +373,7 @@ public abstract class WTextRenderer {
    * Returns all parse error information of the last call to setStyleSheetText.
    *
    * <p>setStyleSheetText stores all parse errors inside. Use getStyleSheetParseErrors to access
-   * information about them. Information is newline(\ n) seperated.
+   * information about them. Information is newline(\ n) separated.
    *
    * <p>
    *
@@ -479,7 +478,7 @@ public abstract class WTextRenderer {
     this.device_ = null;
     this.fontScale_ = 1;
     this.styleSheetText_ = new WString();
-    this.styleSheet_ = null;
+    this.styleSheet_ = (StyleSheet) null;
     this.error_ = "";
   }
 

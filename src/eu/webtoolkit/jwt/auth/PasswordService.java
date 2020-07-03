@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -98,15 +99,12 @@ public class PasswordService implements AbstractPasswordService {
    *
    * <p>The default password verifier is <code>null</code>.
    *
-   * <p>The service takes ownership of the verifier.
-   *
    * <p>
    *
    * @see PasswordService#verifyPassword(User user, String password)
    * @see PasswordService#updatePassword(User user, String password)
    */
   public void setVerifier(PasswordService.AbstractVerifier verifier) {
-    ;
     this.verifier_ = verifier;
   }
   /**
@@ -123,11 +121,8 @@ public class PasswordService implements AbstractPasswordService {
    * Sets a validator which computes password strength.
    *
    * <p>The default password strength validator is <code>null</code>.
-   *
-   * <p>The service takes ownership of the validator.
    */
   public void setStrengthValidator(AbstractPasswordService.AbstractStrengthValidator validator) {
-    ;
     this.validator_ = validator;
   }
   /**

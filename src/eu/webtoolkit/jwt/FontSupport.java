@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -130,7 +131,7 @@ class FontSupport {
   public void drawText(
       final WFont font, final WRectF rect, EnumSet<AlignmentFlag> flags, final CharSequence text) {
     this.font_ = font;
-    this.device_.drawText(rect, flags, TextFlag.TextSingleLine, text, (WPointF) null);
+    this.device_.drawText(rect, flags, TextFlag.SingleLine, text, (WPointF) null);
     this.font_ = null;
   }
 
@@ -264,14 +265,14 @@ class FontSupport {
       StringUtils.replace(name, ' ', "");
       List<String> weightVariants = new ArrayList<String>();
       List<String> styleVariants = new ArrayList<String>();
-      if (font.getWeight() == WFont.Weight.Bold) {
+      if (font.getWeight() == FontWeight.Bold) {
         weightVariants.add("bold");
         weightVariants.add("bf");
       } else {
         weightVariants.add("");
       }
       switch (font.getStyle()) {
-        case NormalStyle:
+        case Normal:
           styleVariants.add("regular");
           styleVariants.add("");
           break;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -53,30 +54,27 @@ public class WVmlImage implements WVectorImage {
     this.currentRect_ = null;
   }
 
-  public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+  public EnumSet<PaintDeviceFeatureFlag> getFeatures() {
     if (ServerSideFontMetrics.isAvailable()) {
-      return EnumSet.of(WPaintDevice.FeatureFlag.HasFontMetrics);
+      return EnumSet.of(PaintDeviceFeatureFlag.FontMetrics);
     } else {
-      return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+      return EnumSet.noneOf(PaintDeviceFeatureFlag.class);
     }
   }
 
-  public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
+  public void setChanged(EnumSet<PainterChangeFlag> flags) {
     if (!EnumUtils.mask(
             flags,
-            EnumSet.of(
-                WPaintDevice.ChangeFlag.Pen,
-                WPaintDevice.ChangeFlag.Brush,
-                WPaintDevice.ChangeFlag.Shadow))
+            EnumSet.of(PainterChangeFlag.Pen, PainterChangeFlag.Brush, PainterChangeFlag.Shadow))
         .isEmpty()) {
       this.penBrushShadowChanged_ = true;
     }
-    if (!EnumUtils.mask(flags, WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
+    if (flags.contains(PainterChangeFlag.Clipping)) {
       this.clippingChanged_ = true;
     }
   }
 
-  public final void setChanged(WPaintDevice.ChangeFlag flag, WPaintDevice.ChangeFlag... flags) {
+  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
     setChanged(EnumSet.of(flag, flags));
   }
 
@@ -167,6 +165,10 @@ public class WVmlImage implements WVectorImage {
     this.getPainter().setBrush(oldBrush);
   }
 
+  public void drawRect(final WRectF rectangle) {
+    this.drawPath(rectangle.toPath());
+  }
+
   public void drawPath(final WPainterPath path) {
     if (path.isEmpty()) {
       return;
@@ -212,17 +214,17 @@ public class WVmlImage implements WVectorImage {
       this.activePaths_.add(new WVmlImage.ActivePath());
       thisPath = this.activePaths_.size() - 1;
     }
-    if (segments.size() > 0 && segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {
+    if (segments.size() > 0 && segments.get(0).getType() != SegmentType.MoveTo) {
       tmp.append("m0,0");
     }
     for (int i = 0; i < segments.size(); ++i) {
       final WPainterPath.Segment s = segments.get(i);
-      if (i == segments.size() - 1 && s.getType() == WPainterPath.Segment.Type.MoveTo) {
+      if (i == segments.size() - 1 && s.getType() == SegmentType.MoveTo) {
         break;
       }
       double x = s.getX();
       double y = s.getY();
-      if (s.getType() == WPainterPath.Segment.Type.ArcC) {
+      if (s.getType() == SegmentType.ArcC) {
         double cx = segments.get(i).getX();
         double cy = segments.get(i).getY();
         double rx = segments.get(i + 1).getX();
@@ -319,8 +321,8 @@ public class WVmlImage implements WVectorImage {
       TextFlag textFlag,
       final CharSequence text,
       WPointF clipPoint) {
-    if (textFlag == TextFlag.TextWordWrap) {
-      throw new WException("WVmlImage::drawText(): TextWordWrap is not supported");
+    if (textFlag == TextFlag.WordWrap) {
+      throw new WException("WVmlImage::drawText(): TextFlag::WordWrap is not supported");
     }
     if (clipPoint != null
         && this.getPainter() != null
@@ -333,19 +335,20 @@ public class WVmlImage implements WVectorImage {
       }
     }
     this.finishPaths();
-    EnumSet<AlignmentFlag> horizontalAlign =
-        EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask);
-    EnumSet<AlignmentFlag> verticalAlign = EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask);
+    AlignmentFlag horizontalAlign =
+        EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
+    AlignmentFlag verticalAlign =
+        EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask));
     double fontSize = this.getPainter().getFont().getSizeLength().toPixels();
     double y = rect.getCenter().getY();
-    switch (EnumUtils.enumFromSet(verticalAlign)) {
-      case AlignTop:
+    switch (verticalAlign) {
+      case Top:
         y = rect.getTop() + fontSize * 0.55;
         break;
-      case AlignMiddle:
+      case Middle:
         y = rect.getCenter().getY();
         break;
-      case AlignBottom:
+      case Bottom:
         y = rect.getBottom() - fontSize * 0.45;
         break;
       default:
@@ -374,14 +377,14 @@ public class WVmlImage implements WVectorImage {
     render.append(text.toString());
     render.popEscape();
     render.append("\" style=\"v-text-align:");
-    switch (EnumUtils.enumFromSet(horizontalAlign)) {
-      case AlignLeft:
+    switch (horizontalAlign) {
+      case Left:
         render.append("left");
         break;
-      case AlignCenter:
+      case Center:
         render.append("center");
         break;
-      case AlignRight:
+      case Right:
         render.append("right");
         break;
       default:
@@ -390,7 +393,6 @@ public class WVmlImage implements WVectorImage {
     WApplication app = WApplication.getInstance();
     WFont textFont = this.getPainter().getFont();
     textFont.setSize(
-        WFont.Size.FixedSize,
         WLength.multiply(textFont.getSizeLength(), app.getEnvironment().getDpiScale()));
     String cssFont = textFont.getCssText(false);
     int i = cssFont.indexOf(',');
@@ -399,8 +401,7 @@ public class WVmlImage implements WVectorImage {
       System.err.append(cssFont).append('\n');
     }
     render.append(";").append(cssFont).append("\"/></v:shape>");
-    if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows.getValue())
-            != 0)
+    if (!!EnumUtils.mask(this.getPainter().getRenderHints(), RenderHint.LowQualityShadows).isEmpty()
         && !this.currentShadow_.isNone()) {
       String result = render.toString();
       int pos = result.indexOf("style=\"") + 7;
@@ -511,8 +512,8 @@ public class WVmlImage implements WVectorImage {
 
   private void finishPaths() {
     for (int i = 0; i < this.activePaths_.size(); ++i) {
-      if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows.getValue())
-              != 0)
+      if (!!EnumUtils.mask(this.getPainter().getRenderHints(), RenderHint.LowQualityShadows)
+              .isEmpty()
           && !this.currentShadow_.isNone()) {
         final String path = this.activePaths_.get(i).path;
         int pos = path.indexOf("style=\"") + 7;
@@ -588,7 +589,7 @@ public class WVmlImage implements WVectorImage {
   }
 
   private String fillElement(final WBrush brush) {
-    if (brush.getStyle() != BrushStyle.NoBrush) {
+    if (brush.getStyle() != BrushStyle.None) {
       return "<v:fill " + colorAttributes(brush.getColor()) + "/>";
     } else {
       return "<v:fill on=\"false\" />";
@@ -596,31 +597,31 @@ public class WVmlImage implements WVectorImage {
   }
 
   private String strokeElement(final WPen pen) {
-    if (pen.getStyle() != PenStyle.NoPen) {
+    if (pen.getStyle() != PenStyle.None) {
       String result = "";
       result = "<v:stroke " + colorAttributes(pen.getColor());
       switch (pen.getCapStyle()) {
-        case FlatCap:
+        case Flat:
           result += " endcap=\"flat\"";
           break;
-        case SquareCap:
+        case Square:
           result += " endcap=\"square\"";
           break;
-        case RoundCap:
+        case Round:
           break;
       }
       switch (pen.getJoinStyle()) {
-        case MiterJoin:
+        case Miter:
           result += " joinstyle=\"miter\"";
           break;
-        case BevelJoin:
+        case Bevel:
           result += " joinstyle=\"bevel\"";
           break;
-        case RoundJoin:
+        case Round:
           break;
       }
       switch (pen.getStyle()) {
-        case NoPen:
+        case None:
           break;
         case SolidLine:
           break;
@@ -666,8 +667,8 @@ public class WVmlImage implements WVectorImage {
   }
 
   private String shadowElement(final WShadow shadow) {
-    if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.LowQualityShadows.getValue())
-        != 0)) {
+    if (!!EnumUtils.mask(this.getPainter().getRenderHints(), RenderHint.LowQualityShadows)
+        .isEmpty()) {
       return "";
     }
     char[] buf = new char[30];

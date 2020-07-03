@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.examples.treeviewdragdrop;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.DialogCode;
 import eu.webtoolkit.jwt.MatchOptions;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -58,7 +59,7 @@ public class FileEditDialog extends WDialog {
         // size
         sizeEdit_ = new WLineEdit(StringUtils.asString(
                 model_.getData(modelRow, 3)).getValue());
-        sizeEdit_.setValidator(new WIntValidator(0, Integer.MAX_VALUE, this));
+        sizeEdit_.setValidator(new WIntValidator(0, Integer.MAX_VALUE));
 
         // created
         createdPicker_ = new WDatePicker();
@@ -86,7 +87,7 @@ public class FileEditDialog extends WDialog {
         ++row;
 
         layout.addWidget(l = new WLabel("Type:"), row, 0);
-        layout.addWidget(typeEdit_, row, 1, AlignmentFlag.AlignTop);
+        layout.addWidget(typeEdit_, row, 1, AlignmentFlag.Top);
         l.setBuddy(typeEdit_);
         ++row;
 
@@ -149,18 +150,17 @@ public class FileEditDialog extends WDialog {
             break;
         }
 
-        layout.addWidget(buttons, row, 0, 0, 3, AlignmentFlag.AlignCenter);
+        layout.addWidget(buttons, row, 0, 0, 3, AlignmentFlag.Center);
         layout.setColumnStretch(1, 1);
 
-        getContents().setLayout(layout, AlignmentFlag.AlignTop,
-                AlignmentFlag.AlignJustify);
+        getContents().setLayout(layout);
 
         finished().addListener(this, new Signal1.Listener<DialogCode>() {
-            public void trigger(DialogCode dc) {
-                handleFinish(dc);
-            }
-
-        });
+			@Override
+			public void trigger(DialogCode dc) {
+				handleFinish(dc);
+			}
+		});
 
         show();
     }

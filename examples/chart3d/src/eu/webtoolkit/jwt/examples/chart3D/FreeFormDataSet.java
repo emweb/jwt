@@ -14,12 +14,12 @@ import java.util.List;
 import javax.vecmath.Matrix4f;
 
 import eu.webtoolkit.jwt.AbstractSignal.Connection;
+import eu.webtoolkit.jwt.GLClientSideRenderer;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WGLWidget.AttribLocation;
 import eu.webtoolkit.jwt.WGLWidget.Buffer;
-import eu.webtoolkit.jwt.WGLWidget.ClientSideRenderer;
 import eu.webtoolkit.jwt.WGLWidget.GLenum;
 import eu.webtoolkit.jwt.WGLWidget.Program;
 import eu.webtoolkit.jwt.WGLWidget.Shader;
@@ -155,11 +155,11 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 		double minimum = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < model_.getRowCount(); i++) {
 			int colNb = 0;
-			if (axis == Axis.XAxis_3D) {
+			if (axis == Axis.X3D) {
 				colNb = 0;
-			} else if (axis == Axis.YAxis_3D) {
+			} else if (axis == Axis.Y3D) {
 				colNb = 1;
-			} else if (axis == Axis.ZAxis_3D) {
+			} else if (axis == Axis.Z3D) {
 				colNb = 2;
 			}
 			double data = getAsDouble(model_.getData(i, colNb));
@@ -175,11 +175,11 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 		double maximum = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < model_.getRowCount(); i++) {
 			int colNb = 0;
-			if (axis == Axis.XAxis_3D) {
+			if (axis == Axis.X3D) {
 				colNb = 0;
-			} else if (axis == Axis.YAxis_3D) {
+			} else if (axis == Axis.Y3D) {
 				colNb = 1;
-			} else if (axis == Axis.ZAxis_3D) {
+			} else if (axis == Axis.Z3D) {
 				colNb = 2;
 			}
 			double data = getAsDouble(model_.getData(i, colNb));
@@ -372,12 +372,12 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 		ByteBuffer buf = ByteBuffer.allocate(4 * 3 * N);
 		buf.order(ByteOrder.nativeOrder());
 
-		double xMin = chart_.axis(Axis.XAxis_3D).getMinimum();
-		double xMax = chart_.axis(Axis.XAxis_3D).getMaximum();
-		double yMin = chart_.axis(Axis.YAxis_3D).getMinimum();
-		double yMax = chart_.axis(Axis.YAxis_3D).getMaximum();
-		double zMin = chart_.axis(Axis.ZAxis_3D).getMinimum();
-		double zMax = chart_.axis(Axis.ZAxis_3D).getMaximum();
+		double xMin = chart_.axis(Axis.X3D).getMinimum();
+		double xMax = chart_.axis(Axis.X3D).getMaximum();
+		double yMin = chart_.axis(Axis.Y3D).getMinimum();
+		double yMax = chart_.axis(Axis.Y3D).getMaximum();
+		double zMin = chart_.axis(Axis.Z3D).getMinimum();
+		double zMax = chart_.axis(Axis.Z3D).getMaximum();
 
 		for (int i = 0; i < N; i++) {
 			buf.putFloat((float) ((getAsDouble(model_.getData(i, 0)) - xMin) / (xMax - xMin)));
@@ -390,12 +390,12 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 	private ByteBuffer generateLineBuffer() {
 		int N = model_.getRowCount();
 
-		double xMin = chart_.axis(Axis.XAxis_3D).getMinimum();
-		double xMax = chart_.axis(Axis.XAxis_3D).getMaximum();
-		double yMin = chart_.axis(Axis.YAxis_3D).getMinimum();
-		double yMax = chart_.axis(Axis.YAxis_3D).getMaximum();
-		double zMin = chart_.axis(Axis.ZAxis_3D).getMinimum();
-		double zMax = chart_.axis(Axis.ZAxis_3D).getMaximum();
+		double xMin = chart_.axis(Axis.X3D).getMinimum();
+		double xMax = chart_.axis(Axis.X3D).getMaximum();
+		double yMin = chart_.axis(Axis.Y3D).getMinimum();
+		double yMax = chart_.axis(Axis.Y3D).getMaximum();
+		double zMin = chart_.axis(Axis.Z3D).getMinimum();
+		double zMax = chart_.axis(Axis.Z3D).getMaximum();
 
         ByteBuffer lineBuf = ByteBuffer.allocate(4 * 3 * 2 * N);
         lineBuf.order(ByteOrder.nativeOrder());
@@ -481,7 +481,7 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 		if (!lineColor.equals(this.lineColor)) {
 			this.lineColor = lineColor;
 			if (chart_ != null) {
-				chart_.repaintGL(ClientSideRenderer.PAINT_GL);
+				chart_.repaintGL(GLClientSideRenderer.PAINT_GL);
 			}
 		}
 	}
@@ -500,7 +500,7 @@ public class FreeFormDataSet extends WAbstractDataSeries3D {
 		if (!surfaceColor.equals(this.surfaceColor)) {
 			this.surfaceColor = surfaceColor;
 			if (chart_ != null) {
-				chart_.repaintGL(ClientSideRenderer.PAINT_GL);
+				chart_.repaintGL(GLClientSideRenderer.PAINT_GL);
 			}
 		}
 	}

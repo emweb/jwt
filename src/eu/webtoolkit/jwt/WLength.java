@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,32 +27,6 @@ import org.slf4j.LoggerFactory;
 public class WLength {
   private static Logger logger = LoggerFactory.getLogger(WLength.class);
 
-  /** The unit. */
-  public enum Unit {
-    /** The relative font size. */
-    FontEm,
-    /** The height of an &apos;x&apos; in the font. */
-    FontEx,
-    /** Pixel, relative to canvas resolution. */
-    Pixel,
-    /** Inch. */
-    Inch,
-    /** Centimeter. */
-    Centimeter,
-    /** Millimeter. */
-    Millimeter,
-    /** Point (1/72 Inch) */
-    Point,
-    /** Pica (12 Point) */
-    Pica,
-    /** Percentage (meaning context-sensitive) */
-    Percentage;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * An &apos;auto&apos; length.
    *
@@ -71,7 +46,7 @@ public class WLength {
    */
   public WLength() {
     this.auto_ = true;
-    this.unit_ = WLength.Unit.Pixel;
+    this.unit_ = LengthUnit.Pixel;
     this.value_ = -1;
   }
   /**
@@ -88,7 +63,7 @@ public class WLength {
    * <p>This constructor is also used for the implicit conversion of a double to a {@link WLength},
    * assuming a pixel unit.
    */
-  public WLength(double value, WLength.Unit unit) {
+  public WLength(double value, LengthUnit unit) {
     this.auto_ = false;
     this.value_ = value;
     this.setUnit(unit);
@@ -96,10 +71,10 @@ public class WLength {
   /**
    * Creates a length with value and unit.
    *
-   * <p>Calls {@link #WLength(double value, WLength.Unit unit) this(value, WLength.Unit.Pixel)}
+   * <p>Calls {@link #WLength(double value, LengthUnit unit) this(value, LengthUnit.Pixel)}
    */
   public WLength(double value) {
-    this(value, WLength.Unit.Pixel);
+    this(value, LengthUnit.Pixel);
   }
   /**
    * Returns whether the length is &apos;auto&apos;.
@@ -129,7 +104,7 @@ public class WLength {
    *
    * @see WLength#getValue()
    */
-  public WLength.Unit getUnit() {
+  public LengthUnit getUnit() {
     return this.unit_;
   }
   /** Returns the CSS text. */
@@ -137,7 +112,7 @@ public class WLength {
     if (this.auto_) {
       return "auto";
     } else {
-      return String.valueOf(this.value_) + unitText[this.unit_.getValue()];
+      return String.valueOf(this.value_) + unitText[(int) this.unit_.getValue()];
     }
   }
   /** Indicates whether some other object is "equal to" this one. */
@@ -149,21 +124,32 @@ public class WLength {
    *
    * <p>When the length {@link WLength#isAuto() isAuto()}, 0 is returned, otherwise the approximate
    * length in pixels.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>For percentages ({@link LengthUnit#Percentage}), and units relative to
+   * viewport size ({@link LengthUnit#ViewportWidth}, {@link LengthUnit#ViewportHeight}, {@link
+   * LengthUnit#ViewportMin}, {@link LengthUnit#ViewportMax}), a percentage of the font size is
+   * used. </i>
    */
   public double toPixels(double fontSize) {
     if (this.auto_) {
       return 0;
     } else {
-      if (this.unit_ == WLength.Unit.FontEm) {
+      if (this.unit_ == LengthUnit.FontEm) {
         return this.value_ * fontSize;
       } else {
-        if (this.unit_ == WLength.Unit.FontEx) {
+        if (this.unit_ == LengthUnit.FontEx) {
           return this.value_ * fontSize / 2.0;
         } else {
-          if (this.unit_ == WLength.Unit.Percentage) {
+          if (this.unit_ == LengthUnit.Percentage
+              || this.unit_ == LengthUnit.ViewportWidth
+              || this.unit_ == LengthUnit.ViewportHeight
+              || this.unit_ == LengthUnit.ViewportMin
+              || this.unit_ == LengthUnit.ViewportMax) {
             return this.value_ * fontSize / 100.0;
           } else {
-            return this.value_ * unitFactor[this.unit_.getValue() - 2];
+            return this.value_ * unitFactor[(int) this.unit_.getValue() - 2];
           }
         }
       }
@@ -179,16 +165,16 @@ public class WLength {
   }
 
   private boolean auto_;
-  private WLength.Unit unit_;
+  private LengthUnit unit_;
   private double value_;
 
-  private void setUnit(WLength.Unit unit) {
+  private void setUnit(LengthUnit unit) {
     this.unit_ = unit;
   }
 
   private void parseCssString(String s) {
     this.auto_ = false;
-    this.unit_ = WLength.Unit.Pixel;
+    this.unit_ = LengthUnit.Pixel;
     this.value_ = -1;
     if ("auto".equals(s)) {
       this.auto_ = true;
@@ -206,6 +192,7 @@ public class WLength {
       }
     }
     ;
+
     if (s == end) {
       logger.error(
           new StringWriter().append("cannot parse CSS length: '").append(s).append("'").toString());
@@ -215,41 +202,57 @@ public class WLength {
     String unit = end;
     unit = unit.trim();
     if (unit.equals("em")) {
-      this.unit_ = WLength.Unit.FontEm;
+      this.unit_ = LengthUnit.FontEm;
     } else {
       if (unit.equals("ex")) {
-        this.unit_ = WLength.Unit.FontEx;
+        this.unit_ = LengthUnit.FontEx;
       } else {
         if (unit.length() == 0 || unit.equals("px")) {
-          this.unit_ = WLength.Unit.Pixel;
+          this.unit_ = LengthUnit.Pixel;
         } else {
           if (unit.equals("in")) {
-            this.unit_ = WLength.Unit.Inch;
+            this.unit_ = LengthUnit.Inch;
           } else {
             if (unit.equals("cm")) {
-              this.unit_ = WLength.Unit.Centimeter;
+              this.unit_ = LengthUnit.Centimeter;
             } else {
               if (unit.equals("mm")) {
-                this.unit_ = WLength.Unit.Millimeter;
+                this.unit_ = LengthUnit.Millimeter;
               } else {
                 if (unit.equals("pt")) {
-                  this.unit_ = WLength.Unit.Point;
+                  this.unit_ = LengthUnit.Point;
                 } else {
                   if (unit.equals("pc")) {
-                    this.unit_ = WLength.Unit.Pica;
+                    this.unit_ = LengthUnit.Pica;
                   } else {
                     if (unit.equals("%")) {
-                      this.unit_ = WLength.Unit.Percentage;
+                      this.unit_ = LengthUnit.Percentage;
                     } else {
-                      logger.error(
-                          new StringWriter()
-                              .append("unrecognized unit in '")
-                              .append(s)
-                              .append("'")
-                              .toString());
-                      this.auto_ = true;
-                      this.value_ = -1;
-                      this.unit_ = WLength.Unit.Pixel;
+                      if (unit.equals("vw")) {
+                        this.unit_ = LengthUnit.ViewportWidth;
+                      } else {
+                        if (unit.equals("vh")) {
+                          this.unit_ = LengthUnit.ViewportHeight;
+                        } else {
+                          if (unit.equals("vmin")) {
+                            this.unit_ = LengthUnit.ViewportMin;
+                          } else {
+                            if (unit.equals("vmax")) {
+                              this.unit_ = LengthUnit.ViewportMax;
+                            } else {
+                              logger.error(
+                                  new StringWriter()
+                                      .append("unrecognized unit in '")
+                                      .append(s)
+                                      .append("'")
+                                      .toString());
+                              this.auto_ = true;
+                              this.value_ = -1;
+                              this.unit_ = LengthUnit.Pixel;
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -261,7 +264,9 @@ public class WLength {
     }
   }
 
-  private static String[] unitText = {"em", "ex", "px", "in", "cm", "mm", "pt", "pc", "%"};
+  private static String[] unitText = {
+    "em", "ex", "px", "in", "cm", "mm", "pt", "pc", "%", "vw", "vh", "vmin", "vmax"
+  };
   private static final double pxPerPt = 4.0 / 3.0;
   private static double[] unitFactor = {
     1, 72 * pxPerPt, 72 / 2.54 * pxPerPt, 72 / 25.4 * pxPerPt, pxPerPt, 12 * pxPerPt

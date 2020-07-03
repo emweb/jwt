@@ -10,7 +10,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
@@ -27,15 +29,82 @@ import net.n3.nanoxml.XMLParserFactory;
  * based on their {@link WString#getKey()}.
  * <p>
  * When a key cannot be found (not in the locale specific or default bundle), the translated string will be "??<i>key</i>??".
+ * <p>
+ * Unlike WXmlLocalizedStrings, this implementation does not handle plurals (WString#trn())
  * 
  * @see WApplication#setLocalizedStrings(WLocalizedStrings)
  */
 public class WStdLocalizedStrings extends WLocalizedStrings {
-	private List<String> bundleNames = new ArrayList<String>();
-	private List<ResourceBundle> bundles = new ArrayList<ResourceBundle>();
-	private List<ResourceBundle> defaultBundles = new ArrayList<ResourceBundle>();
+	private Map<String, Bundle> bundles = new HashMap<>();
 
 	private boolean containsXML = false;
+
+	class Bundle {
+		public Bundle(String bundleName) {
+			this.bundleName = bundleName;
+		}
+
+		public LocalizedString resolveKey(final Locale locale, final String key) {
+			if (!resources.containsKey(locale))
+				load(locale);
+
+			ResourceBundle res = resources.get(locale);
+			String result = null;
+			try {
+				result = res.getString(key);
+			} catch (java.util.MissingResourceException ignored) {
+			}
+
+			if (result == null) {
+				final Locale defaultLocale = new Locale("");
+				if (!resources.containsKey(defaultLocale))
+					load(defaultLocale);
+
+				if (resources.containsKey(defaultLocale)) {
+					try {
+						result = resources.get(defaultLocale).getString(key);
+					} catch (java.util.MissingResourceException ignored) {
+					}
+				}
+			}
+
+			if (result != null)
+				return new LocalizedString(result, WStdLocalizedStrings.this.containsXML ? TextFormat.XHTML : TextFormat.Plain);
+			else
+				return new LocalizedString();
+		}
+
+	
+		private void load(final Locale locale) {
+			ResourceBundle rb = null;
+			try {
+				rb = ResourceBundle.getBundle(bundleName, locale);
+			} catch(Exception e) {
+			}
+			
+			if (rb != null) {
+				resources.put(locale, rb);
+				return;
+			}
+			
+			File f;
+			for (String path : StringUtils.expandLocales(bundleName, locale.toString())) {
+				f = new File(path + ".properties");
+				try {
+					if (f.exists()) {
+						rb = new PropertyResourceBundle(new FileInputStream(f));
+						resources.put(locale, rb);
+						return;
+					}
+				} catch (FileNotFoundException e) {
+				} catch (IOException e) {
+				}
+			}
+		}
+
+		public String bundleName;
+		public Map<Locale, ResourceBundle> resources = new HashMap<>();
+	}
 
 	/**
 	 * Constructor.
@@ -51,76 +120,32 @@ public class WStdLocalizedStrings extends WLocalizedStrings {
 	 * @param bundleName
 	 */
 	public void use(String bundleName) {
-		bundleNames.add(bundleName);
-		bundles.add(loadResourceBundle(bundleName, WApplication.getInstance().getLocale()));
-		defaultBundles.add(loadResourceBundle(bundleName, new Locale("")));
+		if (!this.bundles.containsKey(bundleName))
+			bundles.put(bundleName, new Bundle(bundleName));
 	}
 
 	@Override
-	public void refresh() {
-		bundles.clear();
-		defaultBundles.clear();
-		
-		for (String bundleName : bundleNames) {
-			bundles.add(loadResourceBundle(bundleName, WApplication.getInstance().getLocale()));
-			defaultBundles.add(loadResourceBundle(bundleName, new Locale("")));
+	public LocalizedString resolveKey(final Locale locale, final String key) {
+		for (String bundleName : bundles.keySet()) {
+			LocalizedString result = bundles.get(bundleName).resolveKey(locale, key);
+			if (result.success) {
+				return checkForValidXml(result);
+			}
 		}
+		return new LocalizedString();
 	}
 	
-	private ResourceBundle loadResourceBundle(String bundleName, Locale l) {
-		ResourceBundle rb = null;
-		try {
-			rb = ResourceBundle.getBundle(bundleName, l);
-		} catch(Exception e) {
-		}
-		
-		if (rb != null)
-			return rb;
-		
-		File f;
-		for (String path : StringUtils.expandLocales(bundleName, WApplication.getInstance().getLocale().toString())) {
-			f = new File(path + ".properties");
-			try {
-				if (f.exists())
-					return new PropertyResourceBundle(new FileInputStream(f));
-			} catch (FileNotFoundException e) {
-			} catch (IOException e) {
-			}
-		}
-		
-		throw new RuntimeException("JWt exception: Could not find resource \"" + bundleName + "\" for locale " + l.toString());
-	}
-
-	@Override
-	public String resolveKey(String key) {
-		for (ResourceBundle bundle : bundles) {
-			try {
-				return checkForValidXml(bundle.getString(key));
-			} catch (java.util.MissingResourceException mre) {
-			}
-		}
-		
-		for (ResourceBundle defaultBundle : defaultBundles) {
-			try {
-				return checkForValidXml(defaultBundle.getString(key));
-			} catch (java.util.MissingResourceException mre) {
-			}
-		}
-		
-		return null;
-	}
-	
-	private String checkForValidXml(String s) {
+	private static LocalizedString checkForValidXml(LocalizedString s) {
 		/* FIXME, we should do this only once for every key ... */
-		if (containsXML) {
+		if (s.format != TextFormat.Plain) {
 			try {
 				IXMLParser parser = XMLParserFactory.createDefaultXMLParser();
-				IXMLReader reader = StdXMLReader.stringReader("<span>" + s + "</span>");
+				IXMLReader reader = StdXMLReader.stringReader("<span>" + s.value + "</span>");
 				parser.setReader(reader);
 				parser.parse();
 				return s;
 			} catch (Exception e) {
-				throw new RuntimeException("WStdLocalizedStrings: no valid xml: \"" + s + "\"");
+				throw new RuntimeException("WStdLocalizedStrings: no valid xml: \"" + s.value + "\"");
 			}
 		} else 
 			return s;

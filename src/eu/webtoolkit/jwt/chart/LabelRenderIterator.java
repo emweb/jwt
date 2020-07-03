@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,7 +29,7 @@ class LabelRenderIterator extends SeriesIterator {
 
   public boolean startSeries(
       final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
-    if (series.isLabelsEnabled(Axis.XAxis) || series.isLabelsEnabled(Axis.YAxis)) {
+    if (series.isLabelsEnabled(Axis.X) || series.isLabelsEnabled(Axis.Y)) {
       this.groupWidth_ = groupWidth;
       this.numGroups_ = numBarGroups;
       this.group_ = currentBarGroup;
@@ -51,10 +52,10 @@ class LabelRenderIterator extends SeriesIterator {
       return;
     }
     WString text = new WString();
-    if (series.isLabelsEnabled(Axis.XAxis)) {
+    if (series.isLabelsEnabled(Axis.X)) {
       text = this.chart_.getXAxis(series.getXAxis()).getLabel(x);
     }
-    if (series.isLabelsEnabled(Axis.YAxis)) {
+    if (series.isLabelsEnabled(Axis.Y)) {
       if (!(text.length() == 0)) {
         text.append(": ");
       }
@@ -65,7 +66,7 @@ class LabelRenderIterator extends SeriesIterator {
           this.chart_.map(
               x, y, series.getAxis(), this.getCurrentXSegment(), this.getCurrentYSegment());
       WPointF p = point;
-      if (series.getType() == SeriesType.BarSeries) {
+      if (series.getType() == SeriesType.Bar) {
         double g = this.numGroups_ + (this.numGroups_ - 1) * this.chart_.getBarMargin();
         double width = this.groupWidth_ / g;
         double left =
@@ -75,16 +76,17 @@ class LabelRenderIterator extends SeriesIterator {
         p = new WPointF(left + width / 2, p.getY());
       }
       EnumSet<AlignmentFlag> alignment = EnumSet.noneOf(AlignmentFlag.class);
-      if (series.getType() == SeriesType.BarSeries) {
+      if (series.getType() == SeriesType.Bar) {
         if (y < 0) {
           alignment =
-              EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom));
+              EnumSet.copyOf(EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom));
         } else {
-          alignment = EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop));
+          alignment =
+              EnumSet.copyOf(EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top));
         }
       } else {
         alignment =
-            EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom));
+            EnumSet.copyOf(EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom));
         p.setY(p.getY() - 3);
       }
       final WCartesianChart chart = this.chart_;
@@ -98,7 +100,7 @@ class LabelRenderIterator extends SeriesIterator {
       if (transformHandle != null) {
         ct.assign(this.chart_.curveTransform(series));
       }
-      if (series.getType() == SeriesType.BarSeries) {
+      if (series.getType() == SeriesType.Bar) {
         chart.renderLabel(
             this.painter_,
             text,

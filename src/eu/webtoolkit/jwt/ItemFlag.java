@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,27 +25,27 @@ import javax.servlet.http.*;
  */
 public enum ItemFlag {
   /** Item can be selected. */
-  ItemIsSelectable,
+  Selectable,
   /** Item can be edited. */
-  ItemIsEditable,
+  Editable,
   /** Item can be checked (checkbox is enabled) */
-  ItemIsUserCheckable,
+  UserCheckable,
   /** Item can be dragged. */
-  ItemIsDragEnabled,
+  DragEnabled,
   /** Item can be a drop target. */
-  ItemIsDropEnabled,
+  DropEnabled,
   /**
    * Item has tree states.
    *
-   * <p>When set, {@link ItemDataRole#CheckStateRole} data is of type {@link CheckState}
+   * <p>When set, {@link ItemDataRole#Checked} data is of type {@link CheckState}
    */
-  ItemIsTristate,
-  /** Item&apos;s text (DisplayRole, ToolTipRole) is HTML. */
-  ItemIsXHTMLText,
+  Tristate,
+  /** Item&apos;s text ({@link ItemDataRole#Display}, {@link ItemDataRole#ToolTip}) is HTML. */
+  XHTMLText,
   /** Item&apos;s value has been modified. */
-  ItemIsDirty,
+  Dirty,
   /** Item&apos;s tooltip is deferred. */
-  ItemHasDeferredTooltip;
+  DeferredToolTip;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,13 +22,18 @@ import org.slf4j.LoggerFactory;
 class TopicTemplate extends WTemplate {
   private static Logger logger = LoggerFactory.getLogger(TopicTemplate.class);
 
-  public TopicTemplate(String trKey) {
-    super(tr(trKey));
+  public TopicTemplate(String trKey, WContainerWidget parentContainer) {
+    super(tr(trKey), (WContainerWidget) null);
     this.setInternalPathEncoding(true);
     this.addFunction("tr", Functions.tr);
     this.setCondition("if:cpp", false);
     this.setCondition("if:java", true);
     this.bindString("doc-url", "//www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public TopicTemplate(String trKey) {
+    this(trKey, (WContainerWidget) null);
   }
 
   public void resolveString(final String varName, final List<WString> args, final Writer result)
@@ -44,7 +50,7 @@ class TopicTemplate extends WTemplate {
         result
             .append("<fieldset class=\"src\">")
             .append("<legend>source</legend>")
-            .append(tr("src-" + exampleName).toString())
+            .append(tr("src-" + exampleName).toXhtml())
             .append("</fieldset>");
       } else {
         super.resolveString(varName, args, result);

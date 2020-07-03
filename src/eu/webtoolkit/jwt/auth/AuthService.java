@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -63,7 +64,7 @@ public class AuthService {
 
   /** Constructor. */
   public AuthService() {
-    this.identityPolicy_ = IdentityPolicy.LoginNameIdentity;
+    this.identityPolicy_ = IdentityPolicy.LoginName;
     this.minimumLoginNameLength_ = 4;
     this.tokenHashFunction_ = new MD5HashFunction();
     this.tokenLength_ = 32;
@@ -288,7 +289,6 @@ public class AuthService {
    * <p>The default token hash function is an {@link MD5HashFunction}.
    */
   public void setTokenHashFunction(HashFunction function) {
-    ;
     this.tokenHashFunction_ = function;
   }
   /**
@@ -358,15 +358,15 @@ public class AuthService {
           if (t != null) {
             t.commit();
           }
-          return new AuthTokenResult(AuthTokenResult.Result.Valid, user, newToken, validity);
+          return new AuthTokenResult(AuthTokenState.Valid, user, newToken, validity);
         } else {
-          return new AuthTokenResult(AuthTokenResult.Result.Valid, user);
+          return new AuthTokenResult(AuthTokenState.Valid, user);
         }
       } else {
         if (t != null) {
           t.commit();
         }
-        return new AuthTokenResult(AuthTokenResult.Result.Invalid);
+        return new AuthTokenResult(AuthTokenState.Invalid);
       }
     } catch (RuntimeException e) {
       throw e;
@@ -488,7 +488,7 @@ public class AuthService {
     String hash = this.getTokenHashFunction().compute(random, "");
     Token t =
         new Token(hash, WDate.getCurrentServerDate().addSeconds(this.emailTokenValidity_ * 60));
-    user.setEmailToken(t, User.EmailTokenRole.VerifyEmail);
+    user.setEmailToken(t, EmailTokenRole.VerifyEmail);
     this.sendConfirmMail(address, user, random);
   }
   /**
@@ -515,26 +515,31 @@ public class AuthService {
       WDate expires = WDate.getCurrentServerDate();
       expires = expires.addSeconds(this.getEmailTokenValidity() * 60);
       Token t = new Token(hash, expires);
-      user.setEmailToken(t, User.EmailTokenRole.LostPassword);
+      user.setEmailToken(t, EmailTokenRole.LostPassword);
       this.sendLostPasswordMail(user.getEmail(), user, random);
     }
   }
   /**
    * Processes an email token.
    *
-   * <p>This processes a token received through an email. If successful, the token is removed from
-   * the database.
+   * <p>This processes a token received through an email. If it is an email verification token, the
+   * token is removed from the database.
    *
    * <p>This may return two successful results:
    *
    * <ul>
-   *   <li>{@link EmailTokenResult.Result#EmailConfirmed Result#EmailConfirmed}: a token was
-   *       presented which proves that the user is tied to the email address.
-   *   <li>{@link EmailTokenResult.Result#UpdatePassword Result#UpdatePassword}: a token was
-   *       presented which requires the user to enter a new password.
+   *   <li>{@link EmailTokenState#EmailConfirmed}: a token was presented which proves that the user
+   *       is tied to the email address.
+   *   <li>{@link EmailTokenState#UpdatePassword}: a token was presented which requires the user to
+   *       enter a new password.
    * </ul>
    *
    * <p>
+   *
+   * <p><i><b>Note: </b>Since JWt 4.3.0, the behavior of this function changed. The lost password
+   * token is no longer removed by {@link AuthService#processEmailToken(String token,
+   * AbstractUserDatabase users) processEmailToken()}. Instead, it is now removed in {@link
+   * User#setPassword(PasswordHash password) User#setPassword()}.</i>
    *
    * @see AuthService#verifyEmailAddress(User user, String address)
    * @see AuthService#lostPassword(String emailAddress, AbstractUserDatabase users)
@@ -550,15 +555,14 @@ public class AuthService {
           if (tr != null) {
             tr.commit();
           }
-          return new EmailTokenResult(EmailTokenResult.Result.Expired);
+          return new EmailTokenResult(EmailTokenState.Expired);
         }
         switch (user.getEmailTokenRole()) {
           case LostPassword:
-            user.clearEmailToken();
             if (tr != null) {
               tr.commit();
             }
-            return new EmailTokenResult(EmailTokenResult.Result.UpdatePassword, user);
+            return new EmailTokenResult(EmailTokenState.UpdatePassword, user);
           case VerifyEmail:
             user.clearEmailToken();
             user.setEmail(user.getUnverifiedEmail());
@@ -566,18 +570,18 @@ public class AuthService {
             if (tr != null) {
               tr.commit();
             }
-            return new EmailTokenResult(EmailTokenResult.Result.EmailConfirmed, user);
+            return new EmailTokenResult(EmailTokenState.EmailConfirmed, user);
           default:
             if (tr != null) {
               tr.commit();
             }
-            return new EmailTokenResult(EmailTokenResult.Result.Invalid);
+            return new EmailTokenResult(EmailTokenState.Invalid);
         }
       } else {
         if (tr != null) {
           tr.commit();
         }
-        return new EmailTokenResult(EmailTokenResult.Result.Invalid);
+        return new EmailTokenResult(EmailTokenState.Invalid);
       }
     } catch (RuntimeException e) {
       throw e;

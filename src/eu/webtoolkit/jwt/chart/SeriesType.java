@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,13 +26,13 @@ import javax.servlet.http.*;
  */
 public enum SeriesType {
   /** Series rendered solely as point markers. */
-  PointSeries,
+  Point,
   /** Series rendered as points connected by straight lines. */
-  LineSeries,
+  Line,
   /** Series rendered as points connected by curves. */
-  CurveSeries,
+  Curve,
   /** Series rendered as bars. */
-  BarSeries;
+  Bar;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

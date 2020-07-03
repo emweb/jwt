@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -72,7 +73,7 @@ public class WGradient {
    * @see WGradient#isEmpty()
    */
   public WGradient() {
-    this.style_ = GradientStyle.LinearGradient;
+    this.style_ = GradientStyle.Linear;
     this.colorstops_ = new ArrayList<WGradient.ColorStop>();
     this.gradientVector_ = new WLineF(0, 0, 1, 1);
     this.center_ = new WPointF(0, 0);
@@ -105,7 +106,7 @@ public class WGradient {
    * user-space coordinates.
    */
   public void setLinearGradient(double x0, double y0, double x1, double y1) {
-    this.style_ = GradientStyle.LinearGradient;
+    this.style_ = GradientStyle.Linear;
     this.gradientVector_ = new WLineF(x0, y0, x1, y1);
   }
   /**
@@ -115,7 +116,7 @@ public class WGradient {
    * user-space coordinates.
    */
   public void setRadialGradient(double cx, double cy, double r, double fx, double fy) {
-    this.style_ = GradientStyle.RadialGradient;
+    this.style_ = GradientStyle.Radial;
     this.center_ = new WPointF(cx, cy);
     this.focal_ = new WPointF(fx, fy);
     this.radius_ = r;
@@ -215,10 +216,10 @@ public class WGradient {
         return false;
       }
     }
-    if (this.style_ == GradientStyle.LinearGradient) {
+    if (this.style_ == GradientStyle.Linear) {
       return this.gradientVector_.equals(other.gradientVector_);
     } else {
-      if (this.style_ == GradientStyle.RadialGradient) {
+      if (this.style_ == GradientStyle.Radial) {
         return this.center_.equals(other.center_)
             && this.focal_.equals(other.focal_)
             && this.radius_ == other.radius_;

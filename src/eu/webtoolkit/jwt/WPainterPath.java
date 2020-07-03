@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -154,7 +155,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
    */
   public boolean isEmpty() {
     for (int i = 0; i < this.segments_.size(); ++i) {
-      if (this.segments_.get(i).getType() != WPainterPath.Segment.Type.MoveTo) {
+      if (this.segments_.get(i).getType() != SegmentType.MoveTo) {
         return false;
       }
     }
@@ -226,15 +227,14 @@ public class WPainterPath extends WJavaScriptExposableObject {
     this.checkModifiable();
     if (!this.openSubPathsEnabled_
         && !this.segments_.isEmpty()
-        && this.segments_.get(this.segments_.size() - 1).getType()
-            != WPainterPath.Segment.Type.MoveTo) {
+        && this.segments_.get(this.segments_.size() - 1).getType() != SegmentType.MoveTo) {
       WPointF startP = this.getSubPathStart();
       WPointF currentP = this.getCurrentPosition();
       if (!startP.equals(currentP)) {
         this.lineTo(startP.getX(), startP.getY());
       }
     }
-    this.segments_.add(new WPainterPath.Segment(x, y, WPainterPath.Segment.Type.MoveTo));
+    this.segments_.add(new WPainterPath.Segment(x, y, SegmentType.MoveTo));
   }
   /**
    * Draws a straight line.
@@ -265,7 +265,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
    */
   public void lineTo(double x, double y) {
     this.checkModifiable();
-    this.segments_.add(new WPainterPath.Segment(x, y, WPainterPath.Segment.Type.LineTo));
+    this.segments_.add(new WPainterPath.Segment(x, y, SegmentType.LineTo));
   }
   /**
    * Draws a cubic bezier curve.
@@ -298,10 +298,9 @@ public class WPainterPath extends WJavaScriptExposableObject {
   public void cubicTo(
       double c1x, double c1y, double c2x, double c2y, double endPointx, double endPointy) {
     this.checkModifiable();
-    this.segments_.add(new WPainterPath.Segment(c1x, c1y, WPainterPath.Segment.Type.CubicC1));
-    this.segments_.add(new WPainterPath.Segment(c2x, c2y, WPainterPath.Segment.Type.CubicC2));
-    this.segments_.add(
-        new WPainterPath.Segment(endPointx, endPointy, WPainterPath.Segment.Type.CubicEnd));
+    this.segments_.add(new WPainterPath.Segment(c1x, c1y, SegmentType.CubicC1));
+    this.segments_.add(new WPainterPath.Segment(c2x, c2y, SegmentType.CubicC2));
+    this.segments_.add(new WPainterPath.Segment(endPointx, endPointy, SegmentType.CubicEnd));
   }
   /**
    * Draws an arc.
@@ -387,9 +386,8 @@ public class WPainterPath extends WJavaScriptExposableObject {
    */
   public void quadTo(double cx, double cy, double endPointX, double endPointY) {
     this.checkModifiable();
-    this.segments_.add(new WPainterPath.Segment(cx, cy, WPainterPath.Segment.Type.QuadC));
-    this.segments_.add(
-        new WPainterPath.Segment(endPointX, endPointY, WPainterPath.Segment.Type.QuadEnd));
+    this.segments_.add(new WPainterPath.Segment(cx, cy, SegmentType.QuadC));
+    this.segments_.add(new WPainterPath.Segment(endPointX, endPointY, SegmentType.QuadEnd));
   }
   /**
    * Draws an ellipse.
@@ -542,43 +540,6 @@ public class WPainterPath extends WJavaScriptExposableObject {
   public static class Segment {
     private static Logger logger = LoggerFactory.getLogger(Segment.class);
 
-    /** The segment type */
-    public enum Type {
-      /** moveTo segment */
-      MoveTo(0),
-      /** lineTo segment */
-      LineTo(1),
-      /**
-       * first control point of cubic bezier curve, always followed by a CubicC2 and CubicEnd
-       * segment
-       */
-      CubicC1(2),
-      /** second control point of cubic bezier curve, always followed by a CubicEnd segment */
-      CubicC2(3),
-      /** end point of cubic bezier curve */
-      CubicEnd(4),
-      /** control point of quadratic bezier curve */
-      QuadC(5),
-      /** end point of quadratic bezier curve */
-      QuadEnd(6),
-      /** center of an arc, always followed by an ArcR and ArcAngleSweep segment */
-      ArcC(7),
-      /** radius of an arc, always followed by an ArcAngleSweep segment */
-      ArcR(8),
-      /** the sweep of an arc, x = startAngle, y = spanAngle */
-      ArcAngleSweep(9);
-
-      private int value;
-
-      Type(int value) {
-        this.value = value;
-      }
-
-      /** Returns the numerical representation of this enum. */
-      public int getValue() {
-        return value;
-      }
-    }
     /**
      * The x parameter
      *
@@ -598,7 +559,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
       return this.y_;
     }
     /** The type of the segment */
-    public WPainterPath.Segment.Type getType() {
+    public SegmentType getType() {
       return this.type_;
     }
 
@@ -606,7 +567,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
       return this.type_ == other.type_ && this.x_ == other.x_ && this.y_ == other.y_;
     }
 
-    Segment(double x, double y, WPainterPath.Segment.Type type) {
+    Segment(double x, double y, SegmentType type) {
       this.x_ = x;
       this.y_ = y;
       this.type_ = type;
@@ -614,7 +575,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 
     private double x_;
     private double y_;
-    private WPainterPath.Segment.Type type_;
+    private SegmentType type_;
     // private WPainterPath map(final WPainterPath path) ;
   }
 
@@ -658,8 +619,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
         result.setHeight(this.segments_.get(1).getY());
         return true;
       } else {
-        if (this.segments_.size() == 5
-            && this.segments_.get(0).getType() == WPainterPath.Segment.Type.MoveTo) {
+        if (this.segments_.size() == 5 && this.segments_.get(0).getType() == SegmentType.MoveTo) {
           result.setX(this.segments_.get(0).getX());
           result.setY(this.segments_.get(0).getY());
           result.setWidth(this.segments_.get(1).getX() - this.segments_.get(0).getX());
@@ -769,7 +729,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
   public WPainterPath getCrisp() {
     WPainterPath result = new WPainterPath();
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt3_6_0.gfxUtils.path_crisp(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt4_4_0.gfxUtils.path_crisp(" + this.getJsRef() + ')');
     }
     for (int i = 0; i < this.segments_.size(); ++i) {
       final WPainterPath.Segment segment = this.segments_.get(i);
@@ -823,7 +783,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
     for (int i = 0; i < this.segments_.size(); ++i) {
       double bx = ax;
       double by = ay;
-      if (this.segments_.get(i).getType() == WPainterPath.Segment.Type.ArcC) {
+      if (this.segments_.get(i).getType() == SegmentType.ArcC) {
         WPointF arcPos =
             getArcPosition(
                 this.segments_.get(i).getX(),
@@ -834,7 +794,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
         bx = arcPos.getX();
         by = arcPos.getY();
       } else {
-        if (this.segments_.get(i).getType() == WPainterPath.Segment.Type.ArcAngleSweep) {
+        if (this.segments_.get(i).getType() == SegmentType.ArcAngleSweep) {
           WPointF arcPos =
               getArcPosition(
                   this.segments_.get(i - 2).getX(),
@@ -845,13 +805,13 @@ public class WPainterPath extends WJavaScriptExposableObject {
           bx = arcPos.getX();
           by = arcPos.getY();
         } else {
-          if (this.segments_.get(i).getType() != WPainterPath.Segment.Type.ArcR) {
+          if (this.segments_.get(i).getType() != SegmentType.ArcR) {
             bx = this.segments_.get(i).getX();
             by = this.segments_.get(i).getY();
           }
         }
       }
-      if (this.segments_.get(i).getType() != WPainterPath.Segment.Type.MoveTo) {
+      if (this.segments_.get(i).getType() != SegmentType.MoveTo) {
         if (ay > py != by > py && px < (bx - ax) * (py - ay) / (by - ay) + ax) {
           res = !res;
         }
@@ -888,7 +848,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
 
   private WPointF getSubPathStart() {
     for (int i = this.segments_.size() - 1; i >= 0; --i) {
-      if (this.segments_.get(i).getType() == WPainterPath.Segment.Type.MoveTo) {
+      if (this.segments_.get(i).getType() == SegmentType.MoveTo) {
         return new WPointF(this.segments_.get(i).getX(), this.segments_.get(i).getY());
       }
     }
@@ -898,8 +858,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
   private WPointF getBeginPosition() {
     WPointF result = new WPointF(0, 0);
     for (int i = 0;
-        i < this.segments_.size()
-            && this.segments_.get(i).getType() == WPainterPath.Segment.Type.MoveTo;
+        i < this.segments_.size() && this.segments_.get(i).getType() == SegmentType.MoveTo;
         ++i) {
       result = new WPointF(this.segments_.get(i).getX(), this.segments_.get(i).getY());
     }
@@ -914,12 +873,10 @@ public class WPainterPath extends WJavaScriptExposableObject {
   void arcTo(
       double x, double y, double width, double height, double startAngle, double sweepLength) {
     this.checkModifiable();
+    this.segments_.add(new WPainterPath.Segment(x + width / 2, y + height / 2, SegmentType.ArcC));
+    this.segments_.add(new WPainterPath.Segment(width / 2, height / 2, SegmentType.ArcR));
     this.segments_.add(
-        new WPainterPath.Segment(x + width / 2, y + height / 2, WPainterPath.Segment.Type.ArcC));
-    this.segments_.add(
-        new WPainterPath.Segment(width / 2, height / 2, WPainterPath.Segment.Type.ArcR));
-    this.segments_.add(
-        new WPainterPath.Segment(startAngle, sweepLength, WPainterPath.Segment.Type.ArcAngleSweep));
+        new WPainterPath.Segment(startAngle, sweepLength, SegmentType.ArcAngleSweep));
   }
   // private WPainterPath map(final WPainterPath path) ;
   static double degreesToRadians(double r) {

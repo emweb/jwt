@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -43,13 +44,12 @@ public interface WLayoutItem {
   public WWidget getWidget();
   /** Returns the layout in which this item is contained. */
   public WLayout getParentLayout();
-  /**
-   * Returns the implementation for this layout item.
-   *
-   * <p>The implementation of a layout item depends on the kind of container for which the layout
-   * does layout management.
-   */
+
+  public WWidget getParentWidget();
+
   public WLayoutItemImpl getImpl();
+
+  public void iterateWidgets(final HandleWidgetMethod method);
   /** Internal method. */
   public void setParentWidget(WWidget parent);
   /** Internal method. */

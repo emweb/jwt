@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.JSlot;
+import eu.webtoolkit.jwt.Overflow;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.Signal1.Listener;
@@ -59,14 +60,14 @@ public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 		setLayout(vLayout);
 
 		WHBoxLayout hLayout = new WHBoxLayout();
-		vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
+		vLayout.addLayout(hLayout, 0, AlignmentFlag.Left, AlignmentFlag.Top);
 
-		hLayout.addWidget(new WLabel("User name:"), 0, AlignmentFlag.AlignMiddle);
-		hLayout.addWidget(userNameEdit_ = new WLineEdit(user_), 0, AlignmentFlag.AlignMiddle);
+		hLayout.addWidget(new WLabel("User name:"), 0, AlignmentFlag.Middle);
+		hLayout.addWidget(userNameEdit_ = new WLineEdit(user_), 0, AlignmentFlag.Middle);
 		userNameEdit_.setFocus();
 
 		WPushButton b = new WPushButton("Login");
-		hLayout.addWidget(b, 0, AlignmentFlag.AlignMiddle);
+		hLayout.addWidget(b, 0, AlignmentFlag.Middle);
 
 		b.clicked().addListener(this, new Listener<WMouseEvent>() {
 			public void trigger(WMouseEvent arg) {
@@ -81,7 +82,7 @@ public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 		});
 
 		vLayout.addWidget(statusMsg_ = new WText());
-		statusMsg_.setTextFormat(TextFormat.PlainText);
+		statusMsg_.setTextFormat(TextFormat.Plain);
 	}
 
 	/**
@@ -121,12 +122,12 @@ public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 			hLayout.addWidget(messages_ = new WContainerWidget(), 1);
 			messages_.setStyleClass("chat-msgs");
 			// Display scroll bars if contents overflows
-			messages_.setOverflow(Overflow.OverflowAuto);
+			messages_.setOverflow(Overflow.Auto);
 
 			// Add another widget to horizontal layout with stretch = 0
 			hLayout.addWidget(userList_ = new WContainerWidget());
 			userList_.setStyleClass("chat-users");
-			userList_.setOverflow(Overflow.OverflowAuto);
+			userList_.setOverflow(Overflow.Auto);
 
 			hLayout.setResizable(0, true);
 
@@ -150,7 +151,7 @@ public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 			hLayout.addWidget(b);
 
 			// Add nested layout to vertical layout with stretch = 0
-			vLayout.addLayout(hLayout, 0, AlignmentFlag.AlignLeft);
+			vLayout.addLayout(hLayout, 0, AlignmentFlag.Left);
 
 			setLayout(vLayout);
 
@@ -234,7 +235,7 @@ public class SimpleChatWidget extends WContainerWidget implements ChatClient {
 
 	private void logout() {
 		final WMessageBox box = new WMessageBox("Please Confirm", "Do you really want to logout?", 
-                Icon.NoIcon, EnumSet.of(StandardButton.Yes, StandardButton.No));
+                Icon.None, EnumSet.of(StandardButton.Yes, StandardButton.No));
 		box.show();
 		box.buttonClicked().addListener(this,
 				new Signal1.Listener<StandardButton>() {

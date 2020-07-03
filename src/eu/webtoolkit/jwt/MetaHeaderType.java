@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,11 +25,11 @@ import javax.servlet.http.*;
  */
 public enum MetaHeaderType {
   /** Of the form &lt;meta name=... content=... &gt;. */
-  MetaName,
+  Meta,
   /** Of the form &lt;meta property=... content=... &gt;. */
-  MetaProperty,
+  Property,
   /** Of the form &lt;meta http-equiv=... content=... &gt;. */
-  MetaHttpHeader;
+  HttpHeader;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

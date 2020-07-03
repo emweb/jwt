@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,16 +23,16 @@ class WLegend {
 
   public WLegend() {
     this.legendEnabled_ = false;
-    this.legendLocation_ = LegendLocation.LegendOutside;
+    this.legendLocation_ = LegendLocation.Outside;
     this.legendSide_ = Side.Right;
-    this.legendAlignment_ = AlignmentFlag.AlignMiddle;
+    this.legendAlignment_ = AlignmentFlag.Middle;
     this.legendColumns_ = 1;
     this.legendColumnWidth_ = new WLength(100);
     this.legendFont_ = new WFont();
-    this.legendBorder_ = new WPen(PenStyle.NoPen);
-    this.legendBackground_ = new WBrush(BrushStyle.NoBrush);
-    this.legendFont_.setFamily(WFont.GenericFamily.SansSerif, "Arial");
-    this.legendFont_.setSize(WFont.Size.FixedSize, new WLength(10, WLength.Unit.Point));
+    this.legendBorder_ = new WPen(PenStyle.None);
+    this.legendBackground_ = new WBrush(BrushStyle.None);
+    this.legendFont_.setFamily(FontFamily.SansSerif, "Arial");
+    this.legendFont_.setSize(new WLength(10, LengthUnit.Point));
   }
 
   public void setLegendEnabled(boolean enabled) {

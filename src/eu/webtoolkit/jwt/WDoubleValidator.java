@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -42,8 +43,8 @@ public class WDoubleValidator extends WValidator {
    *
    * <p>
    */
-  public WDoubleValidator(WObject parent) {
-    super(parent);
+  public WDoubleValidator() {
+    super();
     this.bottom_ = -Double.MAX_VALUE;
     this.top_ = Double.MAX_VALUE;
     this.ignoreTrailingSpaces_ = false;
@@ -52,37 +53,20 @@ public class WDoubleValidator extends WValidator {
     this.nanText_ = new WString();
   }
   /**
-   * Creates a new double validator that accepts any double.
-   *
-   * <p>Calls {@link #WDoubleValidator(WObject parent) this((WObject)null)}
-   */
-  public WDoubleValidator() {
-    this((WObject) null);
-  }
-  /**
    * Creates a new double validator that accepts double within the given range.
    *
    * <p>The validator will accept numbers using the current locale&apos;s format.
    *
    * <p>
    */
-  public WDoubleValidator(double bottom, double top, WObject parent) {
-    super(parent);
+  public WDoubleValidator(double bottom, double top) {
+    super();
     this.bottom_ = bottom;
     this.top_ = top;
     this.ignoreTrailingSpaces_ = false;
     this.tooSmallText_ = new WString();
     this.tooLargeText_ = new WString();
     this.nanText_ = new WString();
-  }
-  /**
-   * Creates a new double validator that accepts double within the given range.
-   *
-   * <p>Calls {@link #WDoubleValidator(double bottom, double top, WObject parent) this(bottom, top,
-   * (WObject)null)}
-   */
-  public WDoubleValidator(double bottom, double top) {
-    this(bottom, top, (WObject) null);
   }
   /** Returns the bottom of the valid double range. */
   public double getBottom() {
@@ -136,19 +120,18 @@ public class WDoubleValidator extends WValidator {
     try {
       double i = LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(), text);
       if (i < this.bottom_) {
-        return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooSmallText());
+        return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooSmallText());
       } else {
         if (i > this.top_) {
-          return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooLargeText());
+          return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooLargeText());
         } else {
-          return new WValidator.Result(WValidator.State.Valid);
+          return new WValidator.Result(ValidationState.Valid);
         }
       }
-    } catch (final NumberFormatException e) {
-      return new WValidator.Result(WValidator.State.Invalid, this.getInvalidNotANumberText());
+    } catch (final RuntimeException e) {
+      return new WValidator.Result(ValidationState.Invalid, this.getInvalidNotANumberText());
     }
   }
-  // public void createExtConfig(final Writer config) throws IOException;
   /**
    * Sets the message to display when the input is not a number.
    *
@@ -269,7 +252,7 @@ public class WDoubleValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt3_6_0.WDoubleValidator(")
+    js.append("new Wt4_4_0.WDoubleValidator(")
         .append(this.isMandatory())
         .append(',')
         .append(this.ignoreTrailingSpaces_)

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -42,9 +43,9 @@ public class UpdatePasswordWidget extends WTemplateFormView {
   public UpdatePasswordWidget(
       final User user,
       RegistrationModel registrationModel,
-      AuthModel authModel,
-      WContainerWidget parent) {
-    super(tr("Wt.Auth.template.update-password"), parent);
+      final AuthModel authModel,
+      WContainerWidget parentContainer) {
+    super(tr("Wt.Auth.template.update-password"), (WContainerWidget) null);
     this.user_ = user;
     this.registrationModel_ = registrationModel;
     this.authModel_ = authModel;
@@ -66,7 +67,9 @@ public class UpdatePasswordWidget extends WTemplateFormView {
     }
     this.registrationModel_.setVisible(RegistrationModel.EmailField, false);
     WPushButton okButton = new WPushButton(tr("Wt.WMessageBox.Ok"));
+    this.bindWidget("ok-button", okButton);
     WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
+    this.bindWidget("cancel-button", cancelButton);
     if (this.authModel_ != null) {
       this.authModel_.setValue(AuthModel.LoginNameField, user.getIdentity(Identity.LoginName));
       this.updateViewField(this.authModel_, AuthModel.PasswordField);
@@ -87,32 +90,27 @@ public class UpdatePasswordWidget extends WTemplateFormView {
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                UpdatePasswordWidget.this.doUpdate();
-              }
+            (WMouseEvent e1) -> {
+              UpdatePasswordWidget.this.doUpdate();
             });
     cancelButton
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                UpdatePasswordWidget.this.cancel();
-              }
+            (WMouseEvent e1) -> {
+              UpdatePasswordWidget.this.cancel();
             });
-    this.bindWidget("ok-button", okButton);
-    this.bindWidget("cancel-button", cancelButton);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
    * <p>Calls {@link #UpdatePasswordWidget(User user, RegistrationModel registrationModel, AuthModel
-   * authModel, WContainerWidget parent) this(user, registrationModel, authModel,
+   * authModel, WContainerWidget parentContainer) this(user, registrationModel, authModel,
    * (WContainerWidget)null)}
    */
   public UpdatePasswordWidget(
-      final User user, RegistrationModel registrationModel, AuthModel authModel) {
+      final User user, RegistrationModel registrationModel, final AuthModel authModel) {
     this(user, registrationModel, authModel, (WContainerWidget) null);
   }
   /** {@link Signal} emitted when the password was updated. */
@@ -131,40 +129,34 @@ public class UpdatePasswordWidget extends WTemplateFormView {
     } else {
       if (field == AuthModel.PasswordField) {
         WLineEdit p = new WLineEdit();
-        p.setEchoMode(WLineEdit.EchoMode.Password);
+        p.setEchoMode(EchoMode.Password);
         result = p;
       } else {
         if (field == RegistrationModel.ChoosePasswordField) {
           WLineEdit p = new WLineEdit();
-          p.setEchoMode(WLineEdit.EchoMode.Password);
+          p.setEchoMode(EchoMode.Password);
           p.keyWentUp()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      UpdatePasswordWidget.this.checkPassword();
-                    }
+                  (WKeyEvent e1) -> {
+                    UpdatePasswordWidget.this.checkPassword();
                   });
           p.changed()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      UpdatePasswordWidget.this.checkPassword();
-                    }
+                  () -> {
+                    UpdatePasswordWidget.this.checkPassword();
                   });
           result = p;
         } else {
           if (field == RegistrationModel.RepeatPasswordField) {
             WLineEdit p = new WLineEdit();
-            p.setEchoMode(WLineEdit.EchoMode.Password);
+            p.setEchoMode(EchoMode.Password);
             p.changed()
                 .addListener(
                     this,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        UpdatePasswordWidget.this.checkPassword2();
-                      }
+                    () -> {
+                      UpdatePasswordWidget.this.checkPassword2();
                     });
             result = p;
           }

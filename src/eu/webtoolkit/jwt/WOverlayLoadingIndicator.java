@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
  */
-public class WOverlayLoadingIndicator extends WContainerWidget implements WLoadingIndicator {
+public class WOverlayLoadingIndicator extends WLoadingIndicator {
   private static Logger logger = LoggerFactory.getLogger(WOverlayLoadingIndicator.class);
 
   /**
@@ -98,14 +99,21 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements WLoadi
   public WOverlayLoadingIndicator(
       final String styleClass, final String backgroundStyleClass, final String textStyleClass) {
     super();
+    WContainerWidget impl;
+    this.setImplementation(impl = new WContainerWidget());
     this.setInline(false);
     WApplication app = WApplication.getInstance();
-    this.cover_ = new WContainerWidget(this);
-    this.center_ = new WContainerWidget(this);
-    WImage img =
-        new WImage(WApplication.getRelativeResourcesUrl() + "ajax-loading.gif", this.center_);
+    impl.addWidget(this.cover_ = new WContainerWidget());
+    impl.addWidget(this.center_ = new WContainerWidget());
+    WImage img;
+    this.center_.addWidget(
+        img =
+            new WImage(
+                new WLink(WApplication.getRelativeResourcesUrl() + "ajax-loading.gif"),
+                (WContainerWidget) null));
     img.setMargin(new WLength(7), EnumSet.of(Side.Top, Side.Bottom));
-    this.text_ = new WText(tr("Wt.WOverlayLoadingIndicator.Loading"), this.center_);
+    this.center_.addWidget(
+        this.text_ = new WText(tr("Wt.WOverlayLoadingIndicator.Loading"), (WContainerWidget) null));
     this.text_.setInline(false);
     this.text_.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
     if (styleClass.length() != 0) {
@@ -117,11 +125,10 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements WLoadi
     if (backgroundStyleClass.length() != 0) {
       this.cover_.setStyleClass(backgroundStyleClass);
     }
-    if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+    if (app.getEnvironment().getAgent() == UserAgent.IE6) {
       app.getStyleSheet().addRule("body", "height: 100%; margin: 0;");
     }
-    String position =
-        app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute" : "fixed";
+    String position = app.getEnvironment().getAgent() == UserAgent.IE6 ? "absolute" : "fixed";
     if (backgroundStyleClass.length() == 0) {
       app.getStyleSheet()
           .addRule(
@@ -169,28 +176,6 @@ public class WOverlayLoadingIndicator extends WContainerWidget implements WLoadi
    */
   public WOverlayLoadingIndicator(final String styleClass, final String backgroundStyleClass) {
     this(styleClass, backgroundStyleClass, "");
-  }
-  /**
-   * Returns the widget that visually represents the indicator.
-   *
-   * <p>You should reimplement this method to return a widget that will be shown to indicate that a
-   * response is pending. The widget should be positioned using CSS.
-   *
-   * <p>The widget will be shown and hidden using {@link WWidget#show()} and {@link WWidget#hide()}.
-   * If you want to customize this behaviour, you should reimplement the {@link
-   * WWidget#setHidden(boolean hidden, WAnimation animation) WWidget#setHidden()} method. Note that
-   * {@link WWidget#show()} and {@link WWidget#hide()} are stateless slots, and thus you need to
-   * make sure that your implementation comforms to that contract, so that it may be optimized to
-   * JavaScript (the server-side implementation will only be called during stateless slot
-   * prelearning).
-   *
-   * <p>
-   *
-   * <p><i><b>Note: </b>The widget will not be added to the {@link WApplication#getRoot()}
-   * container. </i>
-   */
-  public WWidget getWidget() {
-    return this;
   }
 
   public void setMessage(final CharSequence text) {

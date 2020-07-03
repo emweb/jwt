@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,12 +22,12 @@ import org.slf4j.LoggerFactory;
 class NumericItem extends WStandardItem {
   private static Logger logger = LoggerFactory.getLogger(NumericItem.class);
 
-  public NumericItem clone() {
+  public WStandardItem clone() {
     return new NumericItem();
   }
 
-  public void setData(final Object data, int role) {
-    if (role == ItemDataRole.EditRole) {
+  public void setData(final Object data, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Edit)) {
       Object dt = new Object();
       double d = StringUtils.asNumber(data);
       if (d != d) {

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -66,11 +67,15 @@ public class PasswordVerifier implements PasswordService.AbstractVerifier {
    * PasswordVerifier#addHashFunction(HashFunction function) addHashFunction()}.
    */
   public List<HashFunction> getHashFunctions() {
-    return this.hashFunctions_;
+    List<HashFunction> result = new ArrayList<HashFunction>();
+    for (HashFunction hashFunction : this.hashFunctions_) {
+      result.add(hashFunction);
+    }
+    return result;
   }
 
   public boolean needsUpdate(final PasswordHash hash) {
-    return !hash.getFunction().equals(this.getHashFunctions().get(0).getName());
+    return !hash.getFunction().equals(this.hashFunctions_.get(0).getName());
   }
   /**
    * Computes the password hash for a clear text password.

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,7 +19,7 @@ import javax.servlet.http.*;
 /** Enumeration that indicates a pen style. */
 public enum PenStyle {
   /** Do not stroke. */
-  NoPen,
+  None,
   /** Stroke with a solid line. */
   SolidLine,
   /** Stroked with a dashed line. */

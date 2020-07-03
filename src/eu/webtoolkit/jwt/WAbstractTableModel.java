@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,23 +27,15 @@ import org.slf4j.LoggerFactory;
  * <p>It cannot be used directly but must be subclassed. Subclassed models must at least reimplement
  * {@link WAbstractItemModel#getColumnCount(WModelIndex parent)
  * WAbstractItemModel#getColumnCount()}, {@link WAbstractItemModel#getRowCount(WModelIndex parent)
- * WAbstractItemModel#getRowCount()} and {@link WAbstractItemModel#getData(WModelIndex index, int
- * role) WAbstractItemModel#getData()}.
+ * WAbstractItemModel#getRowCount()} and {@link WAbstractItemModel#getData(WModelIndex index,
+ * ItemDataRole role) WAbstractItemModel#getData()}.
  */
 public abstract class WAbstractTableModel extends WAbstractItemModel {
   private static Logger logger = LoggerFactory.getLogger(WAbstractTableModel.class);
 
   /** Creates a new abstract list model. */
-  public WAbstractTableModel(WObject parent) {
-    super(parent);
-  }
-  /**
-   * Creates a new abstract list model.
-   *
-   * <p>Calls {@link #WAbstractTableModel(WObject parent) this((WObject)null)}
-   */
   public WAbstractTableModel() {
-    this((WObject) null);
+    super();
   }
 
   public WModelIndex getParent(final WModelIndex index) {

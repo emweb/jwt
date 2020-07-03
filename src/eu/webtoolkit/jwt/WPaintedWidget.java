@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>If no JavaScript is available, the JavaScript-based HtmlCanvas will not be used, and InlineSVG
  * will be used instead. The method used may be changed by using {@link
- * WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method) setPreferredMethod()}.
+ * WPaintedWidget#setPreferredMethod(RenderMethod method) setPreferredMethod()}.
  *
  * <p>In some browsers, InlineSVG requires that the document is rendered as XHTML. This must be
  * enabled in the configuration file using the <code>&lt;send-xhtml-mime-type&gt;</code> option. By
@@ -82,24 +83,10 @@ import org.slf4j.LoggerFactory;
 public abstract class WPaintedWidget extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WPaintedWidget.class);
 
-  /** Enumeration that indicates a rendering method. */
-  public enum Method {
-    /** SVG (Most browsers) or VML (Internet Explorer &lt; 9) embedded in the page. */
-    InlineSvgVml,
-    /** The WHATWG HTML 5 canvas element. */
-    HtmlCanvas,
-    /** Using a PNG image resource. */
-    PngImage;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** Create a new painted widget. */
-  public WPaintedWidget(WContainerWidget parent) {
-    super(parent);
-    this.preferredMethod_ = WPaintedWidget.Method.HtmlCanvas;
+  public WPaintedWidget(WContainerWidget parentContainer) {
+    super();
+    this.preferredMethod_ = RenderMethod.HtmlCanvas;
     this.painter_ = null;
     this.needRepaint_ = false;
     this.sizeChanged_ = false;
@@ -115,23 +102,30 @@ public abstract class WPaintedWidget extends WInteractWidget {
     if (WApplication.getInstance() != null) {
       final WEnvironment env = WApplication.getInstance().getEnvironment();
       if (env.agentIsOpera() && env.getUserAgent().indexOf("Mac OS X") == -1) {
-        this.preferredMethod_ = WPaintedWidget.Method.InlineSvgVml;
+        this.preferredMethod_ = RenderMethod.InlineSvgVml;
       }
     }
     this.setInline(false);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Create a new painted widget.
    *
-   * <p>Calls {@link #WPaintedWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WPaintedWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WPaintedWidget() {
     this((WContainerWidget) null);
   }
   /** Destructor. */
   public void remove() {
-    ;
-    if (this.areaImage_ != null) this.areaImage_.remove();
+    {
+      WWidget oldWidget = this.areaImage_;
+      this.areaImage_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.areaImage_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     super.remove();
   }
   /**
@@ -139,20 +133,14 @@ public abstract class WPaintedWidget extends WInteractWidget {
    *
    * <p>When <code>method</code> is supported by the browser, then it is chosen for rendering.
    */
-  public void setPreferredMethod(WPaintedWidget.Method method) {
-    if (this.preferredMethod_ != method) {;
+  public void setPreferredMethod(RenderMethod method) {
+    if (this.preferredMethod_ != method) {
       this.painter_ = null;
       this.preferredMethod_ = method;
     }
   }
-  /**
-   * Returns the preferred rendering method.
-   *
-   * <p>
-   *
-   * @see WPaintedWidget#setPreferredMethod(WPaintedWidget.Method method)
-   */
-  public WPaintedWidget.Method getPreferredMethod() {
+  /** Returns the preferred rendering method. */
+  public RenderMethod getPreferredMethod() {
     return this.preferredMethod_;
   }
   /**
@@ -160,7 +148,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
    *
    * <p>Repainting is not immediate, but happens after when the event loop is exited.
    *
-   * <p>Unless a {@link PaintFlag#PaintUpdate} paint flag is set, the widget is first cleared.
+   * <p>Unless a {@link PaintFlag#Update} paint flag is set, the widget is first cleared.
    */
   public void update(EnumSet<PaintFlag> flags) {
     this.needRepaint_ = true;
@@ -198,16 +186,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * are organized in a list, to which the given <code>area</code> is appended. When areas overlap,
    * the area with the lowest index receives the event.
    *
-   * <p>Ownership of the <code>area</code> is transferred to the widget.
-   *
    * <p>
    *
    * <p><i><b>Note: </b>When defining at least one area, no more events will propagate to the widget
    * itself. As a work-around, you can emulate this by listening for events on a {@link WRectArea}
    * that corresponds to the whole widget, and which is added as the last area (catching all events
    * that were not caught by preceding areas).</i>
-   *
-   * @see WPaintedWidget#insertArea(int index, WAbstractArea area)
    */
   public void addArea(WAbstractArea area) {
     this.createAreaImage();
@@ -220,16 +204,12 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * widget. Areas are organized in a list, and the <i>area</i> is inserted at index <code>index
    * </code>. When areas overlap, the area with the lowest index receives the event.
    *
-   * <p>Ownership of the <code>Area</code> is transferred to the widget.
-   *
    * <p>
    *
    * <p><i><b>Note: </b>When defining at least one area, no more events will propagate to the widget
    * itself. As a work-around, you can emulate this by listening for events on a {@link WRectArea}
    * that corresponds to the whole widget, and which is added as the last area (catching all events
    * that were not caught by preceding areas).</i>
-   *
-   * @see WPaintedWidget#addArea(WAbstractArea area)
    */
   public void insertArea(int index, WAbstractArea area) {
     this.createAreaImage();
@@ -238,15 +218,13 @@ public abstract class WPaintedWidget extends WInteractWidget {
   /**
    * Removes an interactive area.
    *
-   * <p>Removes the <code>area</code> from this widget, returning the ownership.
+   * <p>Removes the <code>area</code> from this widget.
    *
    * <p>
-   *
-   * @see WPaintedWidget#addArea(WAbstractArea area)
    */
-  public void removeArea(WAbstractArea area) {
+  public WAbstractArea removeArea(WAbstractArea area) {
     this.createAreaImage();
-    this.areaImage_.removeArea(area);
+    return this.areaImage_.removeArea(area);
   }
   /**
    * Returns the interactive area at the given index.
@@ -254,8 +232,6 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * <p>Returns <code>null</code> if <code>index</code> was invalid.
    *
    * <p>
-   *
-   * @see WPaintedWidget#insertArea(int index, WAbstractArea area)
    */
   public WAbstractArea getArea(int index) {
     return this.areaImage_ != null ? this.areaImage_.getArea(index) : null;
@@ -343,38 +319,37 @@ public abstract class WPaintedWidget extends WInteractWidget {
    *
    * <p>You may want to reimplement this method to override this choice.
    */
-  protected WPaintedWidget.Method getMethod() {
+  protected RenderMethod getMethod() {
     final WEnvironment env = WApplication.getInstance().getEnvironment();
-    WPaintedWidget.Method method;
-    if (this.preferredMethod_ == WPaintedWidget.Method.PngImage) {
-      return WPaintedWidget.Method.PngImage;
+    RenderMethod method;
+    if (this.preferredMethod_ == RenderMethod.PngImage) {
+      return RenderMethod.PngImage;
     }
     if (env.agentIsIElt(9)) {
       method =
-          this.preferredMethod_ == WPaintedWidget.Method.InlineSvgVml
-              ? WPaintedWidget.Method.InlineSvgVml
-              : WPaintedWidget.Method.PngImage;
+          this.preferredMethod_ == RenderMethod.InlineSvgVml
+              ? RenderMethod.InlineSvgVml
+              : RenderMethod.PngImage;
     } else {
       if (!(env.agentIsChrome()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5.getValue()
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Chrome5.getValue()
           || env.agentIsGecko()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox4_0.getValue())) {
-        method =
-            env.hasJavaScript() ? WPaintedWidget.Method.HtmlCanvas : WPaintedWidget.Method.PngImage;
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Firefox4_0.getValue())) {
+        method = env.hasJavaScript() ? RenderMethod.HtmlCanvas : RenderMethod.PngImage;
       } else {
         if (!env.hasJavaScript()) {
-          method = WPaintedWidget.Method.InlineSvgVml;
+          method = RenderMethod.InlineSvgVml;
         } else {
           boolean oldFirefoxMac =
               (env.getUserAgent().indexOf("Firefox/1.5") != -1
                       || env.getUserAgent().indexOf("Firefox/2.0") != -1)
                   && env.getUserAgent().indexOf("Macintosh") != -1;
           if (oldFirefoxMac) {
-            method = WPaintedWidget.Method.HtmlCanvas;
+            method = RenderMethod.HtmlCanvas;
           } else {
             method =
-                this.preferredMethod_ == WPaintedWidget.Method.PngImage
-                    ? WPaintedWidget.Method.HtmlCanvas
+                this.preferredMethod_ == RenderMethod.PngImage
+                    ? RenderMethod.HtmlCanvas
                     : this.preferredMethod_;
           }
           boolean nokia810 =
@@ -382,11 +357,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
                   && env.getUserAgent().indexOf("Tablet browser") != -1
                   && env.getUserAgent().indexOf("Gecko") != -1;
           if (nokia810) {
-            method = WPaintedWidget.Method.HtmlCanvas;
+            method = RenderMethod.HtmlCanvas;
           } else {
             method =
-                this.preferredMethod_ == WPaintedWidget.Method.PngImage
-                    ? WPaintedWidget.Method.HtmlCanvas
+                this.preferredMethod_ == RenderMethod.PngImage
+                    ? RenderMethod.HtmlCanvas
                     : this.preferredMethod_;
           }
         }
@@ -418,9 +393,9 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
   DomElementType getDomElementType() {
     if (this.isInline() && WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
-      return DomElementType.DomElement_SPAN;
+      return DomElementType.SPAN;
     } else {
-      return DomElementType.DomElement_DIV;
+      return DomElementType.DIV;
     }
   }
 
@@ -444,21 +419,21 @@ public abstract class WPaintedWidget extends WInteractWidget {
     this.setId(result, app);
     DomElement wrap = result;
     if (this.getWidth().isAuto() && this.getHeight().isAuto()) {
-      result.setProperty(Property.PropertyStylePosition, "relative");
-      wrap = DomElement.createNew(DomElementType.DomElement_DIV);
-      wrap.setProperty(Property.PropertyStylePosition, "absolute");
-      wrap.setProperty(Property.PropertyStyleLeft, "0");
-      wrap.setProperty(Property.PropertyStyleRight, "0");
+      result.setProperty(Property.StylePosition, "relative");
+      wrap = DomElement.createNew(DomElementType.DIV);
+      wrap.setProperty(Property.StylePosition, "absolute");
+      wrap.setProperty(Property.StyleLeft, "0");
+      wrap.setProperty(Property.StyleRight, "0");
     }
-    DomElement canvas = DomElement.createNew(DomElementType.DomElement_DIV);
+    DomElement canvas = DomElement.createNew(DomElementType.DIV);
     if (!app.getEnvironment().agentIsSpiderBot()) {
       canvas.setId('p' + this.getId());
     }
     WPaintDevice device = this.painter_.getPaintDevice(false);
     if (this.painter_.getRenderType() == WWidgetPainter.RenderType.InlineVml && this.isInline()) {
-      result.setProperty(Property.PropertyStyle, "zoom: 1;");
-      canvas.setProperty(Property.PropertyStyleDisplay, "inline");
-      canvas.setProperty(Property.PropertyStyle, "zoom: 1;");
+      result.setProperty(Property.Style, "zoom: 1;");
+      canvas.setProperty(Property.StyleDisplay, "inline");
+      canvas.setProperty(Property.Style, "zoom: 1;");
     }
     if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
       this.paintEvent(device);
@@ -477,14 +452,14 @@ public abstract class WPaintedWidget extends WInteractWidget {
   }
 
   protected void getDomChanges(final List<DomElement> result, WApplication app) {
-    DomElement e = DomElement.getForUpdate(this, DomElementType.DomElement_DIV);
+    DomElement e = DomElement.getForUpdate(this, DomElementType.DIV);
     this.updateDom(e, false);
     result.add(e);
     boolean createdNew = this.isCreatePainter();
     if (this.needRepaint_) {
       WPaintDevice device =
           this.painter_.getPaintDevice(
-              !EnumUtils.mask(this.repaintFlags_, PaintFlag.PaintUpdate).isEmpty() && !createdNew);
+              this.repaintFlags_.contains(PaintFlag.Update) && !createdNew);
       if (this.renderWidth_ != 0 && this.renderHeight_ != 0) {
         this.paintEvent(device);
         if (device.getPainter() != null) {
@@ -492,8 +467,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
         }
       }
       if (createdNew) {
-        DomElement canvas =
-            DomElement.getForUpdate('p' + this.getId(), DomElementType.DomElement_DIV);
+        DomElement canvas = DomElement.getForUpdate('p' + this.getId(), DomElementType.DIV);
         canvas.removeAllChildren();
         this.painter_.createContents(canvas, device);
         result.add(canvas);
@@ -501,7 +475,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
         this.painter_.updateContents(result, device);
       }
       this.needRepaint_ = false;
-      this.repaintFlags_.clear();
+      this.repaintFlags_ = EnumSet.noneOf(PaintFlag.class);
     }
   }
 
@@ -523,7 +497,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty() || !this.jsDefined_) {
+    if (flags.contains(RenderFlag.Full) || !this.jsDefined_) {
       this.defineJavaScript();
     }
     super.render(flags);
@@ -564,7 +538,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
   private void defineJavaScript() {
     WApplication app = WApplication.getInstance();
-    if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
+    if (this.getMethod() == RenderMethod.HtmlCanvas) {
       app.loadJavaScript("js/WPaintedWidget.js", wtjs10());
       app.loadJavaScript("js/WPaintedWidget.js", wtjs11());
       if (this.jsObjects_.size() > 0) {
@@ -577,7 +551,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
     }
   }
 
-  private WPaintedWidget.Method preferredMethod_;
+  private RenderMethod preferredMethod_;
   private WWidgetPainter painter_;
   private boolean needRepaint_;
   boolean sizeChanged_;
@@ -608,15 +582,15 @@ public abstract class WPaintedWidget extends WInteractWidget {
       return false;
     }
     final WEnvironment env = WApplication.getInstance().getEnvironment();
-    WPaintedWidget.Method method = this.getMethod();
-    if (method == WPaintedWidget.Method.InlineSvgVml) {
+    RenderMethod method = this.getMethod();
+    if (method == RenderMethod.InlineSvgVml) {
       if (env.agentIsIElt(9)) {
         this.painter_ = new WWidgetVectorPainter(this, WWidgetPainter.RenderType.InlineVml);
       } else {
         this.painter_ = new WWidgetVectorPainter(this, WWidgetPainter.RenderType.InlineSvg);
       }
     } else {
-      if (method == WPaintedWidget.Method.PngImage) {
+      if (method == RenderMethod.PngImage) {
         this.painter_ = new WWidgetRasterPainter(this);
       } else {
         this.painter_ = new WWidgetCanvasPainter(this);
@@ -627,8 +601,10 @@ public abstract class WPaintedWidget extends WInteractWidget {
 
   private void createAreaImage() {
     if (!(this.areaImage_ != null)) {
-      this.areaImage_ = new WImage(WApplication.getInstance().getOnePixelGifUrl());
-      this.areaImage_.setParentWidget(this);
+      this.areaImage_ =
+          new WImage(
+              new WLink(WApplication.getInstance().getOnePixelGifUrl()), (WContainerWidget) null);
+      this.widgetAdded(this.areaImage_);
       if (this.getPositionScheme() == PositionScheme.Static) {
         this.setPositionScheme(PositionScheme.Relative);
       }

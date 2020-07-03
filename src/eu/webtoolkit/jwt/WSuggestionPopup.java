@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -36,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * <p>WSuggestionPopup is an MVC view class, using a simple {@link WStringListModel} by default. You
  * can set a custom model using {@link WSuggestionPopup#setModel(WAbstractItemModel model)
  * setModel()}. The model can provide different text for the suggestion text ({@link
- * ItemDataRole#DisplayRole}) and value ({@link WSuggestionPopup#getEditRole() getEditRole()}). The
+ * ItemDataRole#Display}) and value ({@link WSuggestionPopup#getEditRole() getEditRole()}). The
  * member methods {@link WSuggestionPopup#clearSuggestions() clearSuggestions()} and {@link
  * WSuggestionPopup#addSuggestion(CharSequence suggestionText, CharSequence suggestionValue)
  * addSuggestion()} manipulate this model.
@@ -154,34 +155,6 @@ public class WSuggestionPopup extends WPopupWidget {
   private static Logger logger = LoggerFactory.getLogger(WSuggestionPopup.class);
 
   /**
-   * Enumeration that defines a trigger for showing the popup.
-   *
-   * <p>
-   *
-   * @see WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
-   */
-  public enum PopupTrigger {
-    /**
-     * Shows popup when the user starts editing.
-     *
-     * <p>The popup is shown when the currently edited text has a length longer than the {@link
-     * WSuggestionPopup#setFilterLength(int length) filter length}.
-     */
-    Editing,
-    /**
-     * Shows popup when user clicks a drop down icon.
-     *
-     * <p>The lineedit is modified to show a drop down icon, and clicking the icon shows the
-     * suggestions, very much like a {@link WComboBox}.
-     */
-    DropDownIcon;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
    * A configuration object to generate a matcher and replacer JavaScript function.
    *
    * <p>
@@ -271,8 +244,9 @@ public class WSuggestionPopup extends WPopupWidget {
    * @see WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)
    * @see WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options options)
    */
-  public WSuggestionPopup(final WSuggestionPopup.Options options, WObject parent) {
-    super(new WContainerWidget(), parent);
+  public WSuggestionPopup(
+      final WSuggestionPopup.Options options, WContainerWidget parentContainer) {
+    super(new WContainerWidget());
     this.model_ = null;
     this.modelColumn_ = 0;
     this.filterLength_ = 0;
@@ -280,34 +254,36 @@ public class WSuggestionPopup extends WPopupWidget {
     this.defaultValue_ = -1;
     this.isDropDownIconUnfiltered_ = false;
     this.currentItem_ = -1;
-    this.editRole_ = ItemDataRole.UserRole;
+    this.editRole_ = ItemDataRole.User;
     this.matcherJS_ = generateMatcherJS(options);
     this.replacerJS_ = generateReplacerJS(options);
-    this.filterModel_ = new Signal1<String>(this);
-    this.activated_ = new Signal2<Integer, WFormWidget>(this);
+    this.filterModel_ = new Signal1<String>();
+    this.activated_ = new Signal2<Integer, WFormWidget>();
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
     this.currentInputText_ = "";
     this.filter_ = new JSignal1<String>(this.getImplementation(), "filter") {};
     this.jactivated_ = new JSignal2<String, String>(this.getImplementation(), "select") {};
     this.edits_ = new ArrayList<WFormWidget>();
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a suggestion popup.
    *
-   * <p>Calls {@link #WSuggestionPopup(WSuggestionPopup.Options options, WObject parent)
-   * this(options, (WObject)null)}
+   * <p>Calls {@link #WSuggestionPopup(WSuggestionPopup.Options options, WContainerWidget
+   * parentContainer) this(options, (WContainerWidget)null)}
    */
   public WSuggestionPopup(final WSuggestionPopup.Options options) {
-    this(options, (WObject) null);
+    this(options, (WContainerWidget) null);
   }
   /**
    * Creates a suggestion popup with given matcherJS and replacerJS.
    *
    * <p>See supra for the expected signature of the matcher and replace JavaScript functions.
    */
-  public WSuggestionPopup(final String matcherJS, final String replacerJS, WObject parent) {
-    super(new WContainerWidget(), parent);
+  public WSuggestionPopup(
+      final String matcherJS, final String replacerJS, WContainerWidget parentContainer) {
+    super(new WContainerWidget());
     this.model_ = null;
     this.modelColumn_ = 0;
     this.filterLength_ = 0;
@@ -315,7 +291,7 @@ public class WSuggestionPopup extends WPopupWidget {
     this.defaultValue_ = -1;
     this.isDropDownIconUnfiltered_ = false;
     this.currentItem_ = -1;
-    this.editRole_ = ItemDataRole.UserRole;
+    this.editRole_ = ItemDataRole.User;
     this.matcherJS_ = matcherJS;
     this.replacerJS_ = replacerJS;
     this.filterModel_ = new Signal1<String>();
@@ -326,15 +302,16 @@ public class WSuggestionPopup extends WPopupWidget {
     this.jactivated_ = new JSignal2<String, String>(this.getImplementation(), "select") {};
     this.edits_ = new ArrayList<WFormWidget>();
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a suggestion popup with given matcherJS and replacerJS.
    *
-   * <p>Calls {@link #WSuggestionPopup(String matcherJS, String replacerJS, WObject parent)
-   * this(matcherJS, replacerJS, (WObject)null)}
+   * <p>Calls {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget
+   * parentContainer) this(matcherJS, replacerJS, (WContainerWidget)null)}
    */
   public WSuggestionPopup(final String matcherJS, final String replacerJS) {
-    this(matcherJS, replacerJS, (WObject) null);
+    this(matcherJS, replacerJS, (WContainerWidget) null);
   }
   /**
    * Lets this suggestion popup assist in editing an edit field.
@@ -348,16 +325,16 @@ public class WSuggestionPopup extends WPopupWidget {
    *
    * @see WSuggestionPopup#removeEdit(WFormWidget edit)
    */
-  public void forEdit(WFormWidget edit, EnumSet<WSuggestionPopup.PopupTrigger> triggers) {
+  public void forEdit(WFormWidget edit, EnumSet<PopupTrigger> triggers) {
     final AbstractEventSignal b = edit.keyPressed();
     this.connectObjJS(b, "editKeyDown");
     this.connectObjJS(edit.keyWentDown(), "editKeyDown");
     this.connectObjJS(edit.keyWentUp(), "editKeyUp");
     this.connectObjJS(edit.blurred(), "delayHide");
-    if (!EnumUtils.mask(triggers, WSuggestionPopup.PopupTrigger.Editing).isEmpty()) {
+    if (triggers.contains(PopupTrigger.Editing)) {
       edit.addStyleClass("Wt-suggest-onedit");
     }
-    if (!EnumUtils.mask(triggers, WSuggestionPopup.PopupTrigger.DropDownIcon).isEmpty()) {
+    if (triggers.contains(PopupTrigger.DropDownIcon)) {
       edit.addStyleClass("Wt-suggest-dropdown");
       final AbstractEventSignal c = edit.clicked();
       this.connectObjJS(c, "editClick");
@@ -371,20 +348,17 @@ public class WSuggestionPopup extends WPopupWidget {
    * <p>Calls {@link #forEdit(WFormWidget edit, EnumSet triggers) forEdit(edit, EnumSet.of(trigger,
    * triggers))}
    */
-  public final void forEdit(
-      WFormWidget edit,
-      WSuggestionPopup.PopupTrigger trigger,
-      WSuggestionPopup.PopupTrigger... triggers) {
+  public final void forEdit(WFormWidget edit, PopupTrigger trigger, PopupTrigger... triggers) {
     forEdit(edit, EnumSet.of(trigger, triggers));
   }
   /**
    * Lets this suggestion popup assist in editing an edit field.
    *
    * <p>Calls {@link #forEdit(WFormWidget edit, EnumSet triggers) forEdit(edit,
-   * EnumSet.of(WSuggestionPopup.PopupTrigger.Editing))}
+   * EnumSet.of(PopupTrigger.Editing))}
    */
   public final void forEdit(WFormWidget edit) {
-    forEdit(edit, EnumSet.of(WSuggestionPopup.PopupTrigger.Editing));
+    forEdit(edit, EnumSet.of(PopupTrigger.Editing));
   }
   /**
    * Removes the edit field from the list of assisted editors.
@@ -425,7 +399,7 @@ public class WSuggestionPopup extends WPopupWidget {
    * Adds a new suggestion.
    *
    * <p>This adds an entry to the underlying model. The <code>suggestionText</code> is set as {@link
-   * ItemDataRole#DisplayRole} and the <code>suggestionValue</code> (which is inserted into the edit
+   * ItemDataRole#Display} and the <code>suggestionValue</code> (which is inserted into the edit
    * field on selection) is set as {@link WSuggestionPopup#getEditRole() getEditRole()}.
    *
    * <p>
@@ -436,7 +410,7 @@ public class WSuggestionPopup extends WPopupWidget {
   public void addSuggestion(final CharSequence suggestionText, final CharSequence suggestionValue) {
     int row = this.model_.getRowCount();
     if (this.model_.insertRow(row)) {
-      this.model_.setData(row, this.modelColumn_, suggestionText, ItemDataRole.DisplayRole);
+      this.model_.setData(row, this.modelColumn_, suggestionText, ItemDataRole.Display);
       if (!(suggestionValue.length() == 0)) {
         this.model_.setData(row, this.modelColumn_, suggestionValue, this.getEditRole());
       }
@@ -454,12 +428,11 @@ public class WSuggestionPopup extends WPopupWidget {
   /**
    * Sets the model to be used for the suggestions.
    *
-   * <p>The <code>model</code> may not be <code>null</code>, and ownership of the model is not
-   * transferred.
+   * <p>The <code>model</code> may not be <code>null</code>.
    *
    * <p>The default value is a {@link WStringListModel} that is owned by the suggestion popup.
    *
-   * <p>The {@link ItemDataRole#DisplayRole} is used for the suggestion text. The {@link
+   * <p>The {@link ItemDataRole#Display} is used for the suggestion text. The {@link
    * WSuggestionPopup#getEditRole() getEditRole()} is used for the suggestion value, unless empty,
    * in which case the suggestion text is used as value.
    *
@@ -467,7 +440,7 @@ public class WSuggestionPopup extends WPopupWidget {
    *
    * @see WSuggestionPopup#setModelColumn(int modelColumn)
    */
-  public void setModel(WAbstractItemModel model) {
+  public void setModel(final WAbstractItemModel model) {
     if (this.model_ != null) {
       for (int i = 0; i < this.modelConnections_.size(); ++i) {
         this.modelConnections_.get(i).disconnect();
@@ -480,50 +453,40 @@ public class WSuggestionPopup extends WPopupWidget {
             .rowsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSuggestionPopup.this.modelRowsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSuggestionPopup.this.modelRowsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.model_
             .rowsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSuggestionPopup.this.modelRowsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSuggestionPopup.this.modelRowsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.model_
             .dataChanged()
             .addListener(
                 this,
-                new Signal2.Listener<WModelIndex, WModelIndex>() {
-                  public void trigger(WModelIndex e1, WModelIndex e2) {
-                    WSuggestionPopup.this.modelDataChanged(e1, e2);
-                  }
+                (WModelIndex e1, WModelIndex e2) -> {
+                  WSuggestionPopup.this.modelDataChanged(e1, e2);
                 }));
     this.modelConnections_.add(
         this.model_
             .layoutChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WSuggestionPopup.this.modelLayoutChanged();
-                  }
+                () -> {
+                  WSuggestionPopup.this.modelLayoutChanged();
                 }));
     this.modelConnections_.add(
         this.model_
             .modelReset()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WSuggestionPopup.this.modelLayoutChanged();
-                  }
+                () -> {
+                  WSuggestionPopup.this.modelLayoutChanged();
                 }));
     this.setModelColumn(this.modelColumn_);
   }
@@ -597,8 +560,8 @@ public class WSuggestionPopup extends WPopupWidget {
    *
    * <p>When the user has typed this much characters, {@link WSuggestionPopup#filterModel()
    * filterModel()} is emitted which allows you to filter the model based on the initial input. The
-   * filtering is done as long as the model indicates that results are partial by setting a
-   * StyleClassRole of &quot;Wt-more-data&quot; on the last item.
+   * filtering is done as long as the model indicates that results are partial by setting a {@link
+   * ItemDataRole#StyleClass} of &quot;Wt-more-data&quot; on the last item.
    *
    * <p>The default value is 0.
    *
@@ -625,10 +588,9 @@ public class WSuggestionPopup extends WPopupWidget {
   /**
    * Signal that indicates that the model should be filtered.
    *
-   * <p>The argument is the initial input. When {@link WSuggestionPopup.PopupTrigger#Editing
-   * Editing} is used as edit trigger, its length will always equal the {@link
-   * WSuggestionPopup#getFilterLength() getFilterLength()}. When {@link
-   * WSuggestionPopup.PopupTrigger#DropDownIcon DropDownIcon} is used as edit trigger, the input
+   * <p>The argument is the initial input. When {@link PopupTrigger#Editing} is used as edit
+   * trigger, its length will always equal the {@link WSuggestionPopup#getFilterLength()
+   * getFilterLength()}. When {@link PopupTrigger#DropDownIcon} is used as edit trigger, the input
    * length may be less than {@link WSuggestionPopup#getFilterLength() getFilterLength()}, and the
    * the signal will be called repeatedly as the user provides more input.
    *
@@ -654,21 +616,12 @@ public class WSuggestionPopup extends WPopupWidget {
     return this.activated_;
   }
   /**
-   * Controls how the popup is positioned (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated this option is now ignored, since the popup is automatically positioned to behave
-   *     properly.
-   */
-  public void setGlobalPopup(boolean global) {}
-  /**
    * When drop down icon is clicked the popup content will be unfiltered.
    *
    * <p>
    *
    * @see WSuggestionPopup#forEdit(WFormWidget edit, EnumSet triggers)
-   * @see WSuggestionPopup.PopupTrigger
+   * @see PopupTrigger
    */
   public void setDropDownIconUnfiltered(boolean isUnfiltered) {
     this.isDropDownIconUnfiltered_ = isUnfiltered;
@@ -688,17 +641,17 @@ public class WSuggestionPopup extends WPopupWidget {
   /**
    * Sets the role used for editing the line edit with a chosen item.
    *
-   * <p>The default value is UserRole.
+   * <p>The default value is {@link ItemDataRole#User}.
    */
-  public void setEditRole(int role) {
+  public void setEditRole(ItemDataRole role) {
     this.editRole_ = role;
   }
   /**
    * Returns the role used for editing the line edit.
    *
-   * <p><i>{@link WSuggestionPopup#setEditRole(int role) setEditRole()}</i>
+   * <p><i>{@link WSuggestionPopup#setEditRole(ItemDataRole role) setEditRole()}</i>
    */
-  public int getEditRole() {
+  public ItemDataRole getEditRole() {
     return this.editRole_;
   }
 
@@ -710,7 +663,7 @@ public class WSuggestionPopup extends WPopupWidget {
   private int defaultValue_;
   private boolean isDropDownIconUnfiltered_;
   private int currentItem_;
-  private int editRole_;
+  private ItemDataRole editRole_;
   private String matcherJS_;
   private String replacerJS_;
   private Signal1<String> filterModel_;
@@ -729,29 +682,23 @@ public class WSuggestionPopup extends WPopupWidget {
     this.impl_.setList(true);
     this.impl_.setLoadLaterWhenInvisible(false);
     this.setAttributeValue("style", "z-index: 10000; display: none; overflow: auto");
-    this.setModel(new WStringListModel(this));
+    this.setModel(new WStringListModel());
     this.impl_
         .escapePressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WSuggestionPopup.this.hide();
-              }
+            () -> {
+              WSuggestionPopup.this.hide();
             });
     this.filter_.addListener(
         this,
-        new Signal1.Listener<String>() {
-          public void trigger(String e1) {
-            WSuggestionPopup.this.scheduleFilter(e1);
-          }
+        (String e1) -> {
+          WSuggestionPopup.this.scheduleFilter(e1);
         });
     this.jactivated_.addListener(
         this,
-        new Signal2.Listener<String, String>() {
-          public void trigger(String e1, String e2) {
-            WSuggestionPopup.this.doActivate(e1, e2);
-          }
+        (String e1, String e2) -> {
+          WSuggestionPopup.this.doActivate(e1, e2);
         });
   }
 
@@ -836,18 +783,18 @@ public class WSuggestionPopup extends WPopupWidget {
       WModelIndex index = this.model_.getIndex(i, this.modelColumn_);
       Object d = index.getData();
       TextFormat format =
-          !EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsXHTMLText).isEmpty()
-              ? TextFormat.XHTMLText
-              : TextFormat.PlainText;
-      WAnchor anchor = new WAnchor(line);
-      WText value = new WText(StringUtils.asString(d), format, anchor);
+          index.getFlags().contains(ItemFlag.XHTMLText) ? TextFormat.XHTML : TextFormat.Plain;
+      WAnchor anchor = new WAnchor();
+      line.addWidget(anchor);
+      WText value = new WText(StringUtils.asString(d), format);
+      anchor.addWidget(value);
       Object d2 = index.getData(this.editRole_);
-      if ((d2 == null)) {
+      if (!(d2 != null)) {
         d2 = d;
       }
       value.setAttributeValue("sug", StringUtils.asString(d2).toString());
-      Object styleclass = index.getData(ItemDataRole.StyleClassRole);
-      if (!(styleclass == null)) {
+      Object styleclass = index.getData(ItemDataRole.StyleClass);
+      if ((styleclass != null)) {
         value.setAttributeValue("class", StringUtils.asString(styleclass).toString());
       }
     }
@@ -859,7 +806,11 @@ public class WSuggestionPopup extends WPopupWidget {
     }
     for (int i = start; i <= end; ++i) {
       if (start < this.impl_.getCount()) {
-        if (this.impl_.getWidget(start) != null) this.impl_.getWidget(start).remove();
+        {
+          WWidget toRemove = this.impl_.removeWidget(this.impl_.getWidget(start));
+          if (toRemove != null) toRemove.remove();
+        }
+
       } else {
         break;
       }
@@ -884,12 +835,10 @@ public class WSuggestionPopup extends WPopupWidget {
       Object d = index.getData();
       value.setText(StringUtils.asString(d));
       TextFormat format =
-          !EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsXHTMLText).isEmpty()
-              ? TextFormat.XHTMLText
-              : TextFormat.PlainText;
+          index.getFlags().contains(ItemFlag.XHTMLText) ? TextFormat.XHTML : TextFormat.Plain;
       value.setTextFormat(format);
       Object d2 = this.model_.getData(i, this.modelColumn_, this.getEditRole());
-      if ((d2 == null)) {
+      if (!(d2 != null)) {
         d2 = d;
       }
       value.setAttributeValue("sug", StringUtils.asString(d2).toString());
@@ -907,7 +856,7 @@ public class WSuggestionPopup extends WPopupWidget {
     } else {
       if (this.model_.getRowCount() > 0) {
         WModelIndex index = this.model_.getIndex(this.model_.getRowCount() - 1, this.modelColumn_);
-        Object styleclass = index.getData(ItemDataRole.StyleClassRole);
+        Object styleclass = index.getData(ItemDataRole.StyleClass);
         return (StringUtils.asString(styleclass).toString().equals("Wt-more-data".toString()));
       } else {
         return false;
@@ -923,7 +872,7 @@ public class WSuggestionPopup extends WPopupWidget {
     String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
     this.setJavaScriptMember(
         " WSuggestionPopup",
-        "new Wt3_6_0.WSuggestionPopup("
+        "new Wt4_4_0.WSuggestionPopup("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -943,7 +892,7 @@ public class WSuggestionPopup extends WPopupWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       this.defineJavaScript();
     }
     if (WApplication.getInstance().getEnvironment().hasAjax()) {
@@ -970,7 +919,7 @@ public class WSuggestionPopup extends WPopupWidget {
 
   static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
     StringBuilder s = new StringBuilder();
-    s.append("new Wt3_6_0.WSuggestionPopupStdMatcher(")
+    s.append("new Wt4_4_0.WSuggestionPopupStdMatcher(")
         .append(WWebWidget.jsStringLiteral(options.highlightBeginTag))
         .append(", ")
         .append(WWebWidget.jsStringLiteral(options.highlightEndTag))

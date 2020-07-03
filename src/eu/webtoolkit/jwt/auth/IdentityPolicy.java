@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,7 +42,7 @@ public enum IdentityPolicy {
    *
    * <p>This may be useful for sites which have a social aspect.
    */
-  LoginNameIdentity,
+  LoginName,
   /**
    * The email address serves as the identity.
    *
@@ -49,7 +50,7 @@ public enum IdentityPolicy {
    * service to individual users. When the site has a social character, you will likely not want to
    * display the email address of other users, but instead a user-chosen login name.
    */
-  EmailAddressIdentity,
+  EmailAddress,
   /**
    * An identity is optional, and only asked if needed for authentication.
    *
@@ -59,7 +60,7 @@ public enum IdentityPolicy {
    * <p>This may be useful for sites which do not have any social character, but instead render a
    * service to individual users.
    */
-  OptionalIdentity;
+  Optional;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

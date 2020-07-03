@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,13 +23,35 @@ class MapWidget extends WContainerWidget {
 
   public MapWidget() {
     super();
+    this.areas_ = new ArrayList<WAbstractArea>();
+  }
+
+  public void insertArea(int index, WAbstractArea area) {
+    this.insertWidget(index, area.takeWidget());
+    this.areas_.add(0, area);
+  }
+
+  public WAbstractArea removeArea(WAbstractArea area) {
+    int index = this.getIndexOf(area.getWidget());
+    if (index != -1) {
+      area.returnWidget(WidgetUtils.remove(this, area.getWidget()));
+      return CollectionUtils.take(this.areas_, area);
+    } else {
+      return null;
+    }
+  }
+
+  public WAbstractArea area(int index) {
+    return this.areas_.get(index);
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
     super.render(flags);
     WImage parent_img = ((this.getParent()) instanceof WImage ? (WImage) (this.getParent()) : null);
-    if (parent_img.targetJS_.length() != 0) {
-      parent_img.doJavaScript(parent_img.getSetAreaCoordsJS());
+    if (parent_img != null) {
+      if (parent_img.targetJS_.length() != 0) {
+        parent_img.doJavaScript(parent_img.getSetAreaCoordsJS());
+      }
     }
   }
 
@@ -40,6 +63,8 @@ class MapWidget extends WContainerWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_MAP;
+    return DomElementType.MAP;
   }
+
+  private List<WAbstractArea> areas_;
 }

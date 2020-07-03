@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -23,57 +24,57 @@ class DefaultPagingBar extends WContainerWidget {
   public DefaultPagingBar(WAbstractItemView view) {
     super();
     this.view_ = view;
+    this.prevButton_ = null;
+    this.nextButton_ = null;
+    this.firstButton_ = null;
+    this.lastButton_ = null;
+    this.current_ = null;
     this.view_.addStyleClass("Wt-itemview-paged");
     this.setStyleClass("Wt-pagingbar");
-    this.firstButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.First"), this);
+    this.firstButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.First"));
+    this.addWidget(this.firstButton_);
     this.firstButton_
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                DefaultPagingBar.this.showFirstPage();
-              }
+            (WMouseEvent e1) -> {
+              DefaultPagingBar.this.showFirstPage();
             });
-    this.prevButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.Previous"), this);
+    this.prevButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.Previous"));
+    this.addWidget(this.prevButton_);
     this.prevButton_
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                DefaultPagingBar.this.showPreviousPage();
-              }
+            (WMouseEvent e1) -> {
+              DefaultPagingBar.this.showPreviousPage();
             });
-    this.current_ = new WText(this);
-    this.nextButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.Next"), this);
+    this.current_ = new WText();
+    this.addWidget(this.current_);
+    this.nextButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.Next"));
+    this.addWidget(this.nextButton_);
     this.nextButton_
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                DefaultPagingBar.this.showNextPage();
-              }
+            (WMouseEvent e1) -> {
+              DefaultPagingBar.this.showNextPage();
             });
-    this.lastButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.Last"), this);
+    this.lastButton_ = new WPushButton(tr("Wt.WAbstractItemView.PageBar.Last"));
+    this.addWidget(this.lastButton_);
     this.lastButton_
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                DefaultPagingBar.this.showLastPage();
-              }
+            (WMouseEvent e1) -> {
+              DefaultPagingBar.this.showLastPage();
             });
     this.view_
         .pageChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                DefaultPagingBar.this.update();
-              }
+            () -> {
+              DefaultPagingBar.this.update();
             });
     this.update();
   }

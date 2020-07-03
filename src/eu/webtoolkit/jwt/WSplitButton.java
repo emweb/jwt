@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -27,27 +28,29 @@ public class WSplitButton extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WSplitButton.class);
 
   /** Constructor. */
-  public WSplitButton(WContainerWidget parent) {
-    super(parent);
+  public WSplitButton(WContainerWidget parentContainer) {
+    super();
     this.init(WString.Empty);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WSplitButton(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WSplitButton(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WSplitButton() {
     this((WContainerWidget) null);
   }
   /** Constructor passing the label. */
-  public WSplitButton(final CharSequence label, WContainerWidget parent) {
-    super(parent);
+  public WSplitButton(final CharSequence label, WContainerWidget parentContainer) {
+    super();
     this.init(label);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor passing the label.
    *
-   * <p>Calls {@link #WSplitButton(CharSequence label, WContainerWidget parent) this(label,
+   * <p>Calls {@link #WSplitButton(CharSequence label, WContainerWidget parentContainer) this(label,
    * (WContainerWidget)null)}
    */
   public WSplitButton(final CharSequence label) {
@@ -87,7 +90,7 @@ public class WSplitButton extends WCompositeWidget {
   private void init(final CharSequence label) {
     this.setImplementation(this.impl_ = new WToolBar());
     this.impl_.setInline(true);
-    this.impl_.addButton(new WPushButton(label));
+    this.impl_.addButton(new WPushButton(label, (WContainerWidget) null));
     this.impl_.addButton(new WPushButton());
     this.getDropDownButton().setStyleClass("dropdown-toggle");
   }

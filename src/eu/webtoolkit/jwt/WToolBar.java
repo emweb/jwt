@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -27,17 +28,18 @@ public class WToolBar extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WToolBar.class);
 
   /** Constructor. */
-  public WToolBar(WContainerWidget parent) {
-    super(parent);
+  public WToolBar(WContainerWidget parentContainer) {
+    super();
     this.compact_ = true;
     this.lastGroup_ = null;
     this.setImplementation(this.impl_ = new WContainerWidget());
     this.setStyleClass("btn-group");
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WToolBar(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WToolBar(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WToolBar() {
     this((WContainerWidget) null);
@@ -57,12 +59,12 @@ public class WToolBar extends WCompositeWidget {
   /** Adds a button. */
   public void addButton(WPushButton button, AlignmentFlag alignmentFlag) {
     if (this.compact_) {
-      this.impl_.addWidget(button);
-      if (alignmentFlag == AlignmentFlag.AlignRight) {
+      if (alignmentFlag == AlignmentFlag.Right) {
         button.setAttributeValue("style", "float:right;");
       }
+      this.impl_.addWidget(button);
     } else {
-      if (alignmentFlag == AlignmentFlag.AlignRight) {
+      if (alignmentFlag == AlignmentFlag.Right) {
         this.getLastGroup().setAttributeValue("style", "float:right;");
       }
       this.getLastGroup().addWidget(button);
@@ -72,10 +74,10 @@ public class WToolBar extends WCompositeWidget {
    * Adds a button.
    *
    * <p>Calls {@link #addButton(WPushButton button, AlignmentFlag alignmentFlag) addButton(button,
-   * AlignmentFlag.AlignLeft)}
+   * AlignmentFlag.Left)}
    */
   public final void addButton(WPushButton button) {
-    addButton(button, AlignmentFlag.AlignLeft);
+    addButton(button, AlignmentFlag.Left);
   }
   /**
    * Adds a split button.
@@ -90,7 +92,7 @@ public class WToolBar extends WCompositeWidget {
   public void addButton(WSplitButton button, AlignmentFlag alignmentFlag) {
     this.setCompact(false);
     this.lastGroup_ = null;
-    if (alignmentFlag == AlignmentFlag.AlignRight) {
+    if (alignmentFlag == AlignmentFlag.Right) {
       button.setAttributeValue("style", "float:right;");
     }
     this.impl_.addWidget(button);
@@ -99,10 +101,10 @@ public class WToolBar extends WCompositeWidget {
    * Adds a split button.
    *
    * <p>Calls {@link #addButton(WSplitButton button, AlignmentFlag alignmentFlag) addButton(button,
-   * AlignmentFlag.AlignLeft)}
+   * AlignmentFlag.Left)}
    */
   public final void addButton(WSplitButton button) {
-    addButton(button, AlignmentFlag.AlignLeft);
+    addButton(button, AlignmentFlag.Left);
   }
   /**
    * Adds a widget.
@@ -112,7 +114,7 @@ public class WToolBar extends WCompositeWidget {
   public void addWidget(WWidget widget, AlignmentFlag alignmentFlag) {
     this.setCompact(false);
     this.lastGroup_ = null;
-    if (alignmentFlag == AlignmentFlag.AlignRight) {
+    if (alignmentFlag == AlignmentFlag.Right) {
       widget.setAttributeValue("style", "float:right;");
     }
     this.impl_.addWidget(widget);
@@ -121,28 +123,33 @@ public class WToolBar extends WCompositeWidget {
    * Adds a widget.
    *
    * <p>Calls {@link #addWidget(WWidget widget, AlignmentFlag alignmentFlag) addWidget(widget,
-   * AlignmentFlag.AlignLeft)}
+   * AlignmentFlag.Left)}
    */
   public final void addWidget(WWidget widget) {
-    addWidget(widget, AlignmentFlag.AlignLeft);
+    addWidget(widget, AlignmentFlag.Left);
   }
 
-  public void removeWidget(WWidget widget) {
+  public WWidget removeWidget(WWidget widget) {
     WWidget p = widget.getParent();
     if (p == this.impl_) {
-      this.impl_.removeWidget(widget);
+      return this.impl_.removeWidget(widget);
     } else {
       int i = this.impl_.getIndexOf(p);
       if (i >= 0) {
         WContainerWidget cw = ((p) instanceof WContainerWidget ? (WContainerWidget) (p) : null);
         if (cw != null) {
-          cw.removeWidget(widget);
+          WWidget result = cw.removeWidget(widget);
           if (cw.getCount() == 0) {
-            if (cw != null) cw.remove();
+            {
+              WWidget toRemove = WidgetUtils.remove(cw.getParent(), cw);
+              if (toRemove != null) toRemove.remove();
+            }
           }
+          return result;
         }
       }
     }
+    return null;
   }
   /**
    * Adds a separator.
@@ -234,12 +241,11 @@ public class WToolBar extends WCompositeWidget {
           WContainerWidget group = new WContainerWidget();
           group.setStyleClass("btn-group");
           while (this.impl_.getCount() > 0) {
-            WWidget w = this.impl_.getWidget(0);
-            this.impl_.removeWidget(w);
+            WWidget w = this.impl_.removeWidget(this.impl_.getWidget(0));
             group.addWidget(w);
           }
-          this.impl_.addWidget(group);
           this.lastGroup_ = group;
+          this.impl_.addWidget(group);
         }
       }
     }
@@ -261,7 +267,8 @@ public class WToolBar extends WCompositeWidget {
 
   private WContainerWidget getLastGroup() {
     if (!(this.lastGroup_ != null)) {
-      this.lastGroup_ = new WContainerWidget(this.impl_);
+      this.lastGroup_ = new WContainerWidget();
+      this.impl_.addWidget(this.lastGroup_);
       this.lastGroup_.addStyleClass("btn-group");
     }
     return this.lastGroup_;

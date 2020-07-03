@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -53,9 +54,9 @@ import org.slf4j.LoggerFactory;
 public class WComboBox extends WFormWidget {
   private static Logger logger = LoggerFactory.getLogger(WComboBox.class);
 
-  /** Creates an empty combo-box with optional <i>parent</i>. */
-  public WComboBox(WContainerWidget parent) {
-    super(parent);
+  /** Creates an empty combo-box.. */
+  public WComboBox(WContainerWidget parentContainer) {
+    super();
     this.model_ = null;
     this.modelColumn_ = 0;
     this.currentIndex_ = -1;
@@ -65,22 +66,26 @@ public class WComboBox extends WFormWidget {
     this.currentlyConnected_ = false;
     this.noSelectionEnabled_ = false;
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-    this.activated_ = new Signal1<Integer>(this);
-    this.sactivated_ = new Signal1<WString>(this);
+    this.activated_ = new Signal1<Integer>();
+    this.sactivated_ = new Signal1<WString>();
     this.setInline(true);
     this.setFormObject(true);
-    this.setModel(new WStringListModel(this));
+    this.setModel(new WStringListModel());
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Creates an empty combo-box with optional <i>parent</i>.
+   * Creates an empty combo-box..
    *
-   * <p>Calls {@link #WComboBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WComboBox(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WComboBox() {
     this((WContainerWidget) null);
   }
   /**
    * Adds an option item.
+   *
+   * <p>This adds an item to the underlying model. This requires that the {@link
+   * WComboBox#getModel() getModel()} is editable.
    *
    * <p>Equivalent to {@link WComboBox#insertItem(int index, CharSequence text) insertItem()}
    * ({@link WComboBox#getCount() getCount()}, <code>text</code>).
@@ -97,9 +102,9 @@ public class WComboBox extends WFormWidget {
    *
    * <p>If no item is currently selected, the method returns -1.
    *
-   * <p>By default, for a combo box, the first item is selected, and thus {@link
-   * WComboBox#getCurrentIndex() getCurrentIndex()} = 0, while for a selection box no item is
-   * selected.
+   * <p>
+   *
+   * @see WComboBox#setNoSelectionEnabled(boolean enabled)
    */
   public int getCurrentIndex() {
     return this.currentIndex_;
@@ -193,18 +198,17 @@ public class WComboBox extends WFormWidget {
   /**
    * Sets the model to be used for the items.
    *
-   * <p>The <code>model</code> may not be 0, and ownership of the model is not transferred.
+   * <p>The default model is a {@link WStringListModel}.
    *
-   * <p>The default value is a {@link WStringListModel} that is owned by the combo box. Items in the
-   * model can be grouped by setting the {@link ItemDataRole#LevelRole}. The contents is interpreted
-   * by Wt::asString, and subsequent items of the same group are rendered as children of a HTML
-   * <code> &lt;optgroup&gt; </code>element.
+   * <p>Items in the model can be grouped by setting the {@link ItemDataRole#Level}. The contents is
+   * interpreted by Wt::asString, and subsequent items of the same group are rendered as children of
+   * a HTML <code> &lt;optgroup&gt; </code>element.
    *
    * <p>
    *
    * @see WComboBox#setModelColumn(int index)
    */
-  public void setModel(WAbstractItemModel model) {
+  public void setModel(final WAbstractItemModel model) {
     if (this.model_ != null) {
       for (int i = 0; i < this.modelConnections_.size(); ++i) {
         this.modelConnections_.get(i).disconnect();
@@ -217,80 +221,64 @@ public class WComboBox extends WFormWidget {
             .columnsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WComboBox.this.itemsChanged();
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WComboBox.this.itemsChanged();
                 }));
     this.modelConnections_.add(
         this.model_
             .columnsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WComboBox.this.itemsChanged();
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WComboBox.this.itemsChanged();
                 }));
     this.modelConnections_.add(
         this.model_
             .rowsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WComboBox.this.rowsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WComboBox.this.rowsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.model_
             .rowsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WComboBox.this.rowsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WComboBox.this.rowsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.model_
             .dataChanged()
             .addListener(
                 this,
-                new Signal2.Listener<WModelIndex, WModelIndex>() {
-                  public void trigger(WModelIndex e1, WModelIndex e2) {
-                    WComboBox.this.itemsChanged();
-                  }
+                (WModelIndex e1, WModelIndex e2) -> {
+                  WComboBox.this.itemsChanged();
                 }));
     this.modelConnections_.add(
         this.model_
             .modelReset()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WComboBox.this.itemsChanged();
-                  }
+                () -> {
+                  WComboBox.this.itemsChanged();
                 }));
     this.modelConnections_.add(
         this.model_
             .layoutAboutToBeChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WComboBox.this.saveSelection();
-                  }
+                () -> {
+                  WComboBox.this.saveSelection();
                 }));
     this.modelConnections_.add(
         this.model_
             .layoutChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WComboBox.this.layoutChanged();
-                  }
+                () -> {
+                  WComboBox.this.layoutChanged();
                 }));
     this.refresh();
   }
@@ -322,7 +310,7 @@ public class WComboBox extends WFormWidget {
   public int findText(final CharSequence text, MatchOptions flags) {
     List<WModelIndex> list =
         this.model_.match(
-            this.model_.getIndex(0, this.modelColumn_), ItemDataRole.DisplayRole, text, 1, flags);
+            this.model_.getIndex(0, this.modelColumn_), ItemDataRole.Display, text, 1, flags);
     if (list.isEmpty()) {
       return -1;
     } else {
@@ -332,15 +320,15 @@ public class WComboBox extends WFormWidget {
   /**
    * Returns the selection mode.
    *
-   * <p>Always returns SingleSelection for a combo box, but may return ExtendedSelection for a
-   * selection box
+   * <p>Always returns {@link SelectionMode#Single} for a combo box, but may return {@link
+   * SelectionMode#Extended} for a selection box
    *
    * <p>
    *
    * @see WSelectionBox#setSelectionMode(SelectionMode mode)
    */
   public SelectionMode getSelectionMode() {
-    return SelectionMode.SingleSelection;
+    return SelectionMode.Single;
   }
   /**
    * Returns the current value.
@@ -359,7 +347,7 @@ public class WComboBox extends WFormWidget {
     int size = this.getCount();
     for (int i = 0; i < size; ++i) {
       if ((StringUtils.asString(
-              this.model_.getIndex(i, this.modelColumn_).getData(ItemDataRole.DisplayRole))
+              this.model_.getIndex(i, this.modelColumn_).getData(ItemDataRole.Display))
           .toString()
           .equals(value.toString()))) {
         this.setCurrentIndex(i);
@@ -451,13 +439,13 @@ public class WComboBox extends WFormWidget {
 
   private void layoutChanged() {
     this.itemsChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     this.restoreSelection();
   }
 
   private void itemsChanged() {
     this.itemsChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     this.makeCurrentIndexValid();
   }
 
@@ -467,9 +455,9 @@ public class WComboBox extends WFormWidget {
     if (this.currentIndex_ != -1) {
       myCurrentValue = this.getCurrentText();
     }
-    WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
+    WComboBox guard = this;
     this.activated_.trigger(this.currentIndex_);
-    if (!guard.isDeleted()) {
+    if (guard != null) {
       if (myCurrentIndex != -1) {
         this.sactivated_.trigger(myCurrentValue);
       }
@@ -478,7 +466,7 @@ public class WComboBox extends WFormWidget {
 
   private void rowsInserted(final WModelIndex index, int from, int to) {
     this.itemsChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     int count = to - from + 1;
     if (this.currentIndex_ == -1) {
       this.makeCurrentIndexValid();
@@ -491,7 +479,7 @@ public class WComboBox extends WFormWidget {
 
   private void rowsRemoved(final WModelIndex index, int from, int to) {
     this.itemsChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     if (this.currentIndex_ < from) {
       return;
     }
@@ -543,34 +531,34 @@ public class WComboBox extends WFormWidget {
       boolean groupDisabled = true;
       int size = this.getCount();
       for (int i = 0; i < size; ++i) {
-        DomElement item = DomElement.createNew(DomElementType.DomElement_OPTION);
-        item.setProperty(Property.PropertyValue, String.valueOf(i));
+        DomElement item = DomElement.createNew(DomElementType.OPTION);
+        item.setProperty(Property.Value, String.valueOf(i));
         item.setProperty(
-            Property.PropertyInnerHTML,
+            Property.InnerHTML,
             escapeText(StringUtils.asString(this.model_.getData(i, this.modelColumn_))).toString());
         if (!!EnumUtils.mask(
                 this.model_.getFlags(this.model_.getIndex(i, this.modelColumn_)),
-                ItemFlag.ItemIsSelectable)
+                ItemFlag.Selectable)
             .isEmpty()) {
-          item.setProperty(Property.PropertyDisabled, "true");
+          item.setProperty(Property.Disabled, "true");
         }
         if (this.isSelected(i)) {
-          item.setProperty(Property.PropertySelected, "true");
+          item.setProperty(Property.Selected, "true");
         }
         WString sc =
             StringUtils.asString(
-                this.model_.getData(i, this.modelColumn_, ItemDataRole.StyleClassRole));
+                this.model_.getData(i, this.modelColumn_, ItemDataRole.StyleClass));
         if (!(sc.length() == 0)) {
-          item.setProperty(Property.PropertyClass, sc.toString());
+          item.setProperty(Property.Class, sc.toString());
         }
         WString groupname =
-            StringUtils.asString(this.model_.getData(i, this.modelColumn_, ItemDataRole.LevelRole));
+            StringUtils.asString(this.model_.getData(i, this.modelColumn_, ItemDataRole.Level));
         boolean isSoloItem = false;
         if ((groupname.length() == 0)) {
           isSoloItem = true;
           if (currentGroup != null) {
             if (groupDisabled) {
-              currentGroup.setProperty(Property.PropertyDisabled, "true");
+              currentGroup.setProperty(Property.Disabled, "true");
             }
             element.addChild(currentGroup);
             currentGroup = null;
@@ -578,26 +566,25 @@ public class WComboBox extends WFormWidget {
         } else {
           isSoloItem = false;
           if (!(currentGroup != null)
-              || !currentGroup.getProperty(Property.PropertyLabel).equals(groupname.toString())) {
+              || !currentGroup.getProperty(Property.Label).equals(groupname.toString())) {
             if (currentGroup != null) {
               if (groupDisabled) {
-                currentGroup.setProperty(Property.PropertyDisabled, "true");
+                currentGroup.setProperty(Property.Disabled, "true");
               }
               element.addChild(currentGroup);
               currentGroup = null;
             }
-            currentGroup = DomElement.createNew(DomElementType.DomElement_OPTGROUP);
-            currentGroup.setProperty(Property.PropertyLabel, groupname.toString());
+            currentGroup = DomElement.createNew(DomElementType.OPTGROUP);
+            currentGroup.setProperty(Property.Label, groupname.toString());
             groupDisabled =
                 !!EnumUtils.mask(
                         this.model_.getFlags(this.model_.getIndex(i, this.modelColumn_)),
-                        ItemFlag.ItemIsSelectable)
+                        ItemFlag.Selectable)
                     .isEmpty();
           } else {
-            if (!EnumUtils.mask(
-                    this.model_.getFlags(this.model_.getIndex(i, this.modelColumn_)),
-                    ItemFlag.ItemIsSelectable)
-                .isEmpty()) {
+            if (this.model_
+                .getFlags(this.model_.getIndex(i, this.modelColumn_))
+                .contains(ItemFlag.Selectable)) {
               groupDisabled = false;
             }
           }
@@ -609,7 +596,7 @@ public class WComboBox extends WFormWidget {
         }
         if (i == size - 1 && currentGroup != null) {
           if (groupDisabled) {
-            currentGroup.setProperty(Property.PropertyDisabled, "true");
+            currentGroup.setProperty(Property.Disabled, "true");
           }
           element.addChild(currentGroup);
           currentGroup = null;
@@ -617,8 +604,8 @@ public class WComboBox extends WFormWidget {
       }
       this.itemsChanged_ = false;
     }
-    if (this.selectionChanged_ || all && this.getSelectionMode() == SelectionMode.SingleSelection) {
-      element.setProperty(Property.PropertySelectedIndex, String.valueOf(this.currentIndex_));
+    if (this.selectionChanged_ || all && this.getSelectionMode() == SelectionMode.Single) {
+      element.setProperty(Property.SelectedIndex, String.valueOf(this.currentIndex_));
       this.selectionChanged_ = false;
     }
     if (!this.currentlyConnected_
@@ -627,17 +614,15 @@ public class WComboBox extends WFormWidget {
       this.changed()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WComboBox.this.propagateChange();
-                }
+              () -> {
+                WComboBox.this.propagateChange();
               });
     }
     super.updateDom(element, all);
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_SELECT;
+    return DomElementType.SELECT;
   }
 
   void propagateRenderOk(boolean deep) {
@@ -655,7 +640,7 @@ public class WComboBox extends WFormWidget {
       if (value.length() != 0) {
         try {
           this.currentIndex_ = Integer.parseInt(value);
-        } catch (final NumberFormatException e) {
+        } catch (final RuntimeException e) {
           logger.error(
               new StringWriter()
                   .append("received illegal form value: '")

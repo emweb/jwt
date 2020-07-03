@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -145,7 +146,6 @@ public class WLeafletMap extends WCompositeWidget {
     private WLeafletMap.Coordinate pos_;
     private WLeafletMap map_;
     private boolean moved_;
-    // private  Marker(final WLeafletMap.Marker anon1) ;
   }
   /**
    * A marker rendered with a widget.
@@ -160,7 +160,7 @@ public class WLeafletMap extends WCompositeWidget {
     /** Create a new {@link WidgetMarker} at the given position with the given widget. */
     public WidgetMarker(final WLeafletMap.Coordinate pos, WWidget widget) {
       super(pos);
-      this.container_ = null;
+      this.container_ = (WContainerWidget) null;
       this.anchorX_ = -1;
       this.anchorY_ = -1;
       this.anchorPointChanged_ = false;
@@ -225,17 +225,14 @@ public class WLeafletMap extends WCompositeWidget {
 
     protected void unrender() {
       WWidget w = this.getWidget();
+      WWidget uW = null;
       if (w != null) {
-        this.container_.removeWidget(w);
+        uW = this.container_.removeWidget(w);
       }
-      {
-        WContainerWidget c = this.container_;
-        this.container_ = null;
-        if (c != null) c.remove();
-      }
+      this.container_ = null;
       this.createContainer();
-      if (w != null) {
-        this.container_.addWidget(w);
+      if (uW != null) {
+        this.container_.addWidget(uW);
       }
     }
 
@@ -283,7 +280,6 @@ public class WLeafletMap extends WCompositeWidget {
       }
       js.append(")';}");
     }
-    // private  WidgetMarker(final WLeafletMap.WidgetMarker anon1) ;
   }
   /**
    * A standard leaflet marker.
@@ -305,12 +301,11 @@ public class WLeafletMap extends WCompositeWidget {
       ss.append(MathUtils.roundJs(this.getPosition().getLatitude(), 16)).append(",");
       ss.append(MathUtils.roundJs(this.getPosition().getLongitude(), 16)).append("])");
     }
-    // private  LeafletMarker(final WLeafletMap.LeafletMarker anon1) ;
   }
   /** Create a new {@link WLeafletMap}. */
-  public WLeafletMap(WContainerWidget parent) {
-    super(parent);
-    this.impl_ = new WLeafletMap.Impl();
+  public WLeafletMap(WContainerWidget parentContainer) {
+    super();
+    this.impl_ = null;
     this.options_ = new com.google.gson.JsonObject();
     this.flags_ = new BitSet();
     this.zoomLevelChanged_ = new JSignal1<Integer>(this, "zoomLevelChanged") {};
@@ -324,11 +319,12 @@ public class WLeafletMap extends WCompositeWidget {
     this.renderedOverlaysSize_ = 0;
     this.markers_ = new ArrayList<WLeafletMap.MarkerEntry>();
     this.setup();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Create a new {@link WLeafletMap}.
    *
-   * <p>Calls {@link #WLeafletMap(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WLeafletMap(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WLeafletMap() {
     this((WContainerWidget) null);
@@ -340,9 +336,8 @@ public class WLeafletMap extends WCompositeWidget {
    *
    * @see WLeafletMap#setOptions(com.google.gson.JsonObject options)
    */
-  public WLeafletMap(final com.google.gson.JsonObject options, WContainerWidget parent) {
-    super(parent);
-    this.impl_ = new WLeafletMap.Impl();
+  public WLeafletMap(final com.google.gson.JsonObject options, WContainerWidget parentContainer) {
+    super();
     this.options_ = options;
     this.flags_ = new BitSet();
     this.zoomLevelChanged_ = new JSignal1<Integer>(this, "zoomLevelChanged") {};
@@ -356,26 +351,19 @@ public class WLeafletMap extends WCompositeWidget {
     this.renderedOverlaysSize_ = 0;
     this.markers_ = new ArrayList<WLeafletMap.MarkerEntry>();
     this.setup();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Create a new {@link WLeafletMap} with the given options.
    *
-   * <p>Calls {@link #WLeafletMap(com.google.gson.JsonObject options, WContainerWidget parent)
-   * this(options, (WContainerWidget)null)}
+   * <p>Calls {@link #WLeafletMap(com.google.gson.JsonObject options, WContainerWidget
+   * parentContainer) this(options, (WContainerWidget)null)}
    */
   public WLeafletMap(final com.google.gson.JsonObject options) {
     this(options, (WContainerWidget) null);
   }
 
   public void remove() {
-    for (int i = 0; i < this.overlays_.size(); ++i) {;
-    }
-    this.overlays_.clear();
-    for (int i = 0; i < this.markers_.size(); ++i) {
-      if (!this.markers_.get(i).flags.get(MarkerEntry.BIT_REMOVED)) {;
-      }
-    }
-    this.markers_.clear();
     super.remove();
   }
   /**
@@ -418,22 +406,18 @@ public class WLeafletMap extends WCompositeWidget {
   }
   /** Add the given marker. */
   public void addMarker(WLeafletMap.Marker marker) {
-    if (marker.map_ == this) {
-      return;
-    }
-    if (marker.map_ != null) {
-      marker.map_.removeMarker(marker);
-    }
     marker.setMap(this);
     for (int i = 0; i < this.markers_.size(); ++i) {
       if (this.markers_.get(i).marker == marker
           && this.markers_.get(i).flags.get(MarkerEntry.BIT_REMOVED)) {
+        this.markers_.get(i).uMarker = marker;
         this.markers_.get(i).flags.clear(MarkerEntry.BIT_REMOVED);
         return;
       }
     }
     WLeafletMap.MarkerEntry entry = new WLeafletMap.MarkerEntry();
-    entry.marker = marker;
+    entry.uMarker = marker;
+    entry.marker = entry.uMarker;
     entry.flags.set(MarkerEntry.BIT_ADDED);
     entry.id = this.nextMarkerId_;
     ++this.nextMarkerId_;
@@ -441,19 +425,21 @@ public class WLeafletMap extends WCompositeWidget {
     this.scheduleRender();
   }
   /** Remove the given marker. */
-  public void removeMarker(WLeafletMap.Marker marker) {
+  public WLeafletMap.Marker removeMarker(WLeafletMap.Marker marker) {
     for (int i = 0; i < this.markers_.size(); ++i) {
-      if (this.markers_.get(i).marker == marker) {
+      if (this.markers_.get(i).uMarker == marker && this.markers_.get(i).marker == marker) {
         marker.setMap((WLeafletMap) null);
+        WLeafletMap.Marker result = this.markers_.get(i).uMarker;
         if (this.markers_.get(i).flags.get(MarkerEntry.BIT_ADDED)) {
           this.markers_.remove(0 + i);
-          return;
+          return result;
         }
         this.markers_.get(i).flags.set(MarkerEntry.BIT_REMOVED);
         this.scheduleRender();
-        return;
+        return result;
       }
     }
+    return null;
   }
   /**
    * Add a polyline.
@@ -465,8 +451,7 @@ public class WLeafletMap extends WCompositeWidget {
    * href="https://leafletjs.com/reference.html#polyline">https://leafletjs.com/reference.html#polyline</a>
    */
   public void addPolyline(final List<WLeafletMap.Coordinate> points, final WPen pen) {
-    WLeafletMap.Polyline polyline = new WLeafletMap.Polyline(points, pen);
-    this.overlays_.add(polyline);
+    this.overlays_.add(new Polyline(points, pen));
     this.scheduleRender();
   }
   /**
@@ -477,8 +462,7 @@ public class WLeafletMap extends WCompositeWidget {
    */
   public void addCircle(
       final WLeafletMap.Coordinate center, double radius, final WPen stroke, final WBrush fill) {
-    WLeafletMap.Circle circle = new WLeafletMap.Circle(center, radius, stroke, fill);
-    this.overlays_.add(circle);
+    this.overlays_.add(new Circle(center, radius, stroke, fill));
     this.scheduleRender();
   }
   /** Set the current zoom level. */
@@ -523,8 +507,7 @@ public class WLeafletMap extends WCompositeWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
-        || this.flags_.get(BIT_OPTIONS_CHANGED)) {
+    if (flags.contains(RenderFlag.Full) || this.flags_.get(BIT_OPTIONS_CHANGED)) {
       this.defineJavaScript();
       this.renderedTileLayersSize_ = 0;
       this.renderedOverlaysSize_ = 0;
@@ -559,7 +542,7 @@ public class WLeafletMap extends WCompositeWidget {
       }
     }
     for (int i = 0; i < this.markers_.size(); ++i) {
-      if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+      if (flags.contains(RenderFlag.Full)
           || this.flags_.get(BIT_OPTIONS_CHANGED)
           || this.markers_.get(i).flags.get(MarkerEntry.BIT_ADDED)) {
         this.addMarkerJS(ss, this.markers_.get(i).id, this.markers_.get(i).marker);
@@ -616,11 +599,13 @@ public class WLeafletMap extends WCompositeWidget {
     public static final int BIT_REMOVED = 1;
 
     public MarkerEntry() {
+      this.uMarker = (WLeafletMap.Marker) null;
       this.marker = null;
       this.id = -1;
       this.flags = new BitSet();
     }
 
+    public WLeafletMap.Marker uMarker;
     public WLeafletMap.Marker marker;
     public long id;
     public BitSet flags;
@@ -629,22 +614,18 @@ public class WLeafletMap extends WCompositeWidget {
   private List<WLeafletMap.MarkerEntry> markers_;
 
   private void setup() {
-    this.setImplementation(this.impl_);
+    this.setImplementation(this.impl_ = new WLeafletMap.Impl());
     this.zoomLevelChanged()
         .addListener(
             this,
-            new Signal1.Listener<Integer>() {
-              public void trigger(Integer e1) {
-                WLeafletMap.this.handleZoomLevelChanged(e1);
-              }
+            (Integer e1) -> {
+              WLeafletMap.this.handleZoomLevelChanged(e1);
             });
     this.panChanged()
         .addListener(
             this,
-            new Signal2.Listener<Double, Double>() {
-              public void trigger(Double e1, Double e2) {
-                WLeafletMap.this.handlePanChanged(e1, e2);
-              }
+            (Double e1, Double e2) -> {
+              WLeafletMap.this.handlePanChanged(e1, e2);
             });
     WApplication app = WApplication.getInstance();
     if (app != null) {
@@ -684,7 +665,7 @@ public class WLeafletMap extends WCompositeWidget {
     String optionsStr = this.options_.toString();
     StringBuilder ss = new StringBuilder();
     EscapeOStream es = new EscapeOStream(ss);
-    es.append("new Wt3_6_0.WLeafletMap(")
+    es.append("new Wt4_4_0.WLeafletMap(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())
@@ -776,7 +757,7 @@ public class WLeafletMap extends WCompositeWidget {
 
   private static void addPathOptions(
       final com.google.gson.JsonObject options, final WPen stroke, final WBrush fill) {
-    if (stroke.getStyle() != PenStyle.NoPen) {
+    if (stroke.getStyle() != PenStyle.None) {
       options.add("stroke", (new com.google.gson.JsonPrimitive(true)));
       options.add(
           "color", (new com.google.gson.JsonPrimitive(stroke.getColor().getCssText(false))));
@@ -787,32 +768,32 @@ public class WLeafletMap extends WCompositeWidget {
       options.add("weight", (new com.google.gson.JsonPrimitive(weight)));
       String capStyle = "";
       switch (stroke.getCapStyle()) {
-        case FlatCap:
+        case Flat:
           capStyle = "butt";
           break;
-        case SquareCap:
+        case Square:
           capStyle = "square";
           break;
-        case RoundCap:
+        case Round:
           capStyle = "round";
       }
       options.add("lineCap", (new com.google.gson.JsonPrimitive(capStyle)));
       String joinStyle = "";
       switch (stroke.getJoinStyle()) {
-        case BevelJoin:
+        case Bevel:
           joinStyle = "bevel";
           break;
-        case MiterJoin:
+        case Miter:
           joinStyle = "miter";
           break;
-        case RoundJoin:
+        case Round:
           joinStyle = "round";
       }
       options.add("lineJoin", (new com.google.gson.JsonPrimitive(joinStyle)));
     } else {
       options.add("stroke", (new com.google.gson.JsonPrimitive(false)));
     }
-    if (fill.getStyle() != BrushStyle.NoBrush) {
+    if (fill.getStyle() != BrushStyle.None) {
       options.add("fill", (new com.google.gson.JsonPrimitive(true)));
       options.add(
           "fillColor", (new com.google.gson.JsonPrimitive(fill.getColor().getCssText(false))));
@@ -822,7 +803,7 @@ public class WLeafletMap extends WCompositeWidget {
       options.add("fill", (new com.google.gson.JsonPrimitive(false)));
     }
   }
-  // private  WLeafletMap(final WLeafletMap anon1) ;
+
   static WJavaScriptPreamble wtjs1() {
     return new WJavaScriptPreamble(
         JavaScriptScope.WtClassScope,
@@ -834,14 +815,18 @@ public class WLeafletMap extends WCompositeWidget {
   static class Impl extends WWebWidget {
     private static Logger logger = LoggerFactory.getLogger(Impl.class);
 
-    Impl() {
+    Impl(WContainerWidget parentContainer) {
       super();
       this.setInline(false);
-      this.setIgnoreChildRemoves(true);
+      if (parentContainer != null) parentContainer.addWidget(this);
+    }
+
+    public Impl() {
+      this((WContainerWidget) null);
     }
 
     DomElementType getDomElementType() {
-      return DomElementType.DomElement_DIV;
+      return DomElementType.DIV;
     }
   }
 
@@ -851,7 +836,6 @@ public class WLeafletMap extends WCompositeWidget {
     abstract void addJS(final StringBuilder ss, WLeafletMap map);
 
     Overlay() {}
-    // private  Overlay(final WLeafletMap.Overlay anon1) ;
   }
 
   static class Polyline extends WLeafletMap.Overlay {
@@ -867,11 +851,11 @@ public class WLeafletMap extends WCompositeWidget {
     }
 
     void addJS(final StringBuilder ss, WLeafletMap map) {
-      if (this.pen.getStyle() == PenStyle.NoPen) {
+      if (this.pen.getStyle() == PenStyle.None) {
         return;
       }
       com.google.gson.JsonObject options = new com.google.gson.JsonObject();
-      addPathOptions(options, this.pen, new WBrush(BrushStyle.NoBrush));
+      addPathOptions(options, this.pen, new WBrush(BrushStyle.None));
       String optionsStr = options.toString();
       EscapeOStream es = new EscapeOStream(ss);
       es.append("var o=").append(map.getJsRef()).append(";if(o && o.wtObj){o.wtObj.addPolyline(");
@@ -892,7 +876,6 @@ public class WLeafletMap extends WCompositeWidget {
       es.popEscape();
       es.append("');}");
     }
-    // private  Polyline(final WLeafletMap.Polyline anon1) ;
   }
 
   static class Circle extends WLeafletMap.Overlay {
@@ -930,6 +913,5 @@ public class WLeafletMap extends WCompositeWidget {
       es.popEscape();
       es.append("');}");
     }
-    // private  Circle(final WLeafletMap.Circle anon1) ;
   }
 }

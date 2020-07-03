@@ -26,7 +26,8 @@
 	<classpathentry kind="lib" path="lib/pdfjet/pdfjet-4.75.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-all-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-3.5.2-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-runtime-4.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api/javax.websocket-api-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

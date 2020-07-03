@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -35,18 +36,6 @@ import org.slf4j.LoggerFactory;
 public class WMenuItem extends WContainerWidget {
   private static Logger logger = LoggerFactory.getLogger(WMenuItem.class);
 
-  /** Enumeration that determines when contents should be loaded. */
-  public enum LoadPolicy {
-    /** Lazy loading: on first use. */
-    LazyLoading,
-    /** Pre-loading: before first use. */
-    PreLoading;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Creates a new item with given label.
    *
@@ -59,62 +48,58 @@ public class WMenuItem extends WContainerWidget {
    * WMenuItem#getPathComponent() getPathComponent()} will be derived from the <code>label</code>,
    * and can be customized using {@link WMenuItem#setPathComponent(String path) setPathComponent()}.
    */
-  public WMenuItem(final CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy) {
+  public WMenuItem(final CharSequence text, WWidget contents, ContentLoading policy) {
     super();
+    this.uContents_ = null;
+    this.oContents_ = null;
+    this.uContentsContainer_ = null;
+    this.oContentsContainer_ = null;
     this.separator_ = false;
-    this.triggered_ = new Signal1<WMenuItem>(this);
-    this.contentsDestroyedConnection_ = new AbstractSignal.Connection();
+    this.triggered_ = new Signal1<WMenuItem>();
     this.pathComponent_ = "";
     this.create("", text, contents, policy);
   }
   /**
    * Creates a new item with given label.
    *
-   * <p>Calls {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
-   * this(text, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Calls {@link #WMenuItem(CharSequence text, WWidget contents, ContentLoading policy)
+   * this(text, null, ContentLoading.Lazy)}
    */
   public WMenuItem(final CharSequence text) {
-    this(text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    this(text, null, ContentLoading.Lazy);
   }
   /**
    * Creates a new item with given label.
    *
-   * <p>Calls {@link #WMenuItem(CharSequence text, WWidget contents, WMenuItem.LoadPolicy policy)
-   * this(text, contents, WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Calls {@link #WMenuItem(CharSequence text, WWidget contents, ContentLoading policy)
+   * this(text, contents, ContentLoading.Lazy)}
    */
   public WMenuItem(final CharSequence text, WWidget contents) {
-    this(text, contents, WMenuItem.LoadPolicy.LazyLoading);
+    this(text, contents, ContentLoading.Lazy);
   }
 
   public WMenuItem(
-      final String iconPath,
-      final CharSequence text,
-      WWidget contents,
-      WMenuItem.LoadPolicy policy) {
+      final String iconPath, final CharSequence text, WWidget contents, ContentLoading policy) {
     super();
+    this.uContents_ = null;
+    this.oContents_ = null;
+    this.uContentsContainer_ = null;
+    this.oContentsContainer_ = null;
     this.separator_ = false;
-    this.triggered_ = new Signal1<WMenuItem>(this);
-    this.contentsDestroyedConnection_ = new AbstractSignal.Connection();
+    this.triggered_ = new Signal1<WMenuItem>();
     this.pathComponent_ = "";
     this.create(iconPath, text, contents, policy);
   }
 
   public WMenuItem(final String iconPath, final CharSequence text) {
-    this(iconPath, text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    this(iconPath, text, null, ContentLoading.Lazy);
   }
 
   public WMenuItem(final String iconPath, final CharSequence text, WWidget contents) {
-    this(iconPath, text, contents, WMenuItem.LoadPolicy.LazyLoading);
+    this(iconPath, text, contents, ContentLoading.Lazy);
   }
 
   public void remove() {
-    if (!this.isContentsLoaded()) {
-      if (this.contents_ != null) this.contents_.remove();
-    }
-    if (this.contentsContainer_ != null && this.contentsContainer_.getParent() == null) {
-      if (this.contentsContainer_ != null) this.contentsContainer_.remove();
-    }
-    if (this.subMenu_ != null) this.subMenu_.remove();
     super.remove();
   }
   /**
@@ -131,8 +116,9 @@ public class WMenuItem extends WContainerWidget {
    */
   public void setText(final CharSequence text) {
     if (!(this.text_ != null)) {
-      this.text_ = new WLabel(this.getAnchor());
-      this.text_.setTextFormat(TextFormat.PlainText);
+      this.text_ = new WLabel();
+      this.getAnchor().addWidget(this.text_);
+      this.text_.setTextFormat(TextFormat.Plain);
     }
     this.text_.setText(text);
     if (!this.customPathComponent_) {
@@ -190,7 +176,7 @@ public class WMenuItem extends WContainerWidget {
       this.icon_ = new WText(" ");
       a.insertWidget(0, this.icon_);
       WApplication app = WApplication.getInstance();
-      app.getTheme().apply(this, this.icon_, WidgetThemeRole.MenuItemIconRole);
+      app.getTheme().apply(this, this.icon_, WidgetThemeRole.MenuItemIcon);
     }
     this.icon_.getDecorationStyle().setBackgroundImage(new WLink(path));
   }
@@ -227,9 +213,14 @@ public class WMenuItem extends WContainerWidget {
         this.setText(this.getText());
         this.text_.setBuddy(this.checkBox_);
         WApplication app = WApplication.getInstance();
-        app.getTheme().apply(this, this.checkBox_, WidgetThemeRole.MenuItemCheckBoxRole);
+        app.getTheme().apply(this, this.checkBox_, WidgetThemeRole.MenuItemCheckBox);
       } else {
-        if (this.checkBox_ != null) this.checkBox_.remove();
+        {
+          WWidget toRemove = WidgetUtils.remove(this.getAnchor(), this.checkBox_);
+          if (toRemove != null) toRemove.remove();
+        }
+
+        this.checkBox_ = null;
       }
     }
   }
@@ -261,7 +252,7 @@ public class WMenuItem extends WContainerWidget {
    *
    * <p>By default, the path is automatically derived from {@link WMenuItem#getText() getText()}. If
    * a {@link WString#isLiteral()} is used, the path is based on the text itself, otherwise on the
-   * {@link WString#getKey()}. It is converted to lower case, and replacing white space and special
+   * {@link WString#getKey()}. It is converted to lower case, and replacing whitespace and special
    * characters with &apos;_&apos;.
    *
    * <p>
@@ -336,42 +327,13 @@ public class WMenuItem extends WContainerWidget {
     if (a != null) {
       return a.getLink();
     } else {
-      return new WLink("");
-    }
-  }
-  /**
-   * Sets the link target.
-   *
-   * <p>
-   *
-   * @see WMenuItem#setLink(WLink link)
-   */
-  public void setLinkTarget(AnchorTarget target) {
-    WAnchor a = this.getAnchor();
-    if (a != null) {
-      a.setTarget(target);
-    }
-  }
-  /**
-   * Returns the link target.
-   *
-   * <p>
-   *
-   * @see WMenuItem#setLinkTarget(AnchorTarget target)
-   */
-  public AnchorTarget getLinkTarget() {
-    WAnchor a = this.getAnchor();
-    if (a != null) {
-      return this.getAnchor().getTarget();
-    } else {
-      return AnchorTarget.TargetSelf;
+      return new WLink();
     }
   }
   /**
    * Sets a sub menu.
    *
-   * <p>Ownership of the <code>subMenu</code> is transferred to the item. In most cases, the sub
-   * menu would use the same contents stack as the parent menu.
+   * <p>In most cases, the sub menu would use the same contents stack as the parent menu.
    *
    * <p>Note that adding a submenu makes this item not {@link WMenuItem#isSelectable() selectable}
    * by default.
@@ -386,21 +348,17 @@ public class WMenuItem extends WContainerWidget {
   public void setMenu(WMenu menu) {
     this.subMenu_ = menu;
     this.subMenu_.parentItem_ = this;
-    WContainerWidget sparent =
-        ((this.subMenu_.getParent()) instanceof WContainerWidget
-            ? (WContainerWidget) (this.subMenu_.getParent())
-            : null);
-    if (sparent != null) {
-      sparent.removeWidget(this.subMenu_);
+    WPopupMenu popup =
+        ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_) : null);
+    if (popup != null) {
+      WApplication.getInstance().removeGlobalWidget(menu);
     }
-    this.addWidget(this.subMenu_);
+    this.addWidget(menu);
     if (this.subMenu_.isPopup() && this.getParentMenu() != null && this.getParentMenu().isPopup()) {
       this.subMenu_
           .getWebWidget()
           .setZIndex(Math.max(this.getParentMenu().getZIndex() + 1000, this.subMenu_.getZIndex()));
     }
-    WPopupMenu popup =
-        ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_) : null);
     if (popup != null) {
       this.setSelectable(false);
       popup.setButton(this.getAnchor());
@@ -409,16 +367,6 @@ public class WMenuItem extends WContainerWidget {
         popup.show();
       }
     }
-  }
-  /**
-   * Sets a sub menu (<b>deprecated</b>)
-   *
-   * <p>
-   *
-   * @deprecated use {@link WMenuItem#setMenu(WMenu menu) setMenu()} instead
-   */
-  public void setSubMenu(WMenu menu) {
-    this.setMenu(menu);
   }
   /**
    * Returns the submenu.
@@ -536,18 +484,19 @@ public class WMenuItem extends WContainerWidget {
         WText closeIcon = new WText("");
         this.insertWidget(0, closeIcon);
         WApplication app = WApplication.getInstance();
-        app.getTheme().apply(this, closeIcon, WidgetThemeRole.MenuItemCloseRole);
+        app.getTheme().apply(this, closeIcon, WidgetThemeRole.MenuItemClose);
         closeIcon
             .clicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent e1) {
-                    WMenuItem.this.close();
-                  }
+                (WMouseEvent e1) -> {
+                  WMenuItem.this.close();
                 });
       } else {
-        if (this.getWidget(0) != null) this.getWidget(0).remove();
+        {
+          WWidget toRemove = this.removeWidget(this.getWidget(0));
+          if (toRemove != null) toRemove.remove();
+        }
       }
     }
   }
@@ -589,82 +538,66 @@ public class WMenuItem extends WContainerWidget {
    * widgets is transmitted only when it the item is activated for the first time (LazyLoading) or
    * transmitted prior to first rendering.
    */
-  public void setContents(WWidget contents, WMenuItem.LoadPolicy policy) {
+  public void setContents(WWidget contents, ContentLoading policy) {
     int menuIdx = -1;
     WMenu menu = this.menu_;
+    WMenuItem self = null;
     if (menu != null) {
       menuIdx = menu.indexOf(this);
-      menu.removeItem(this);
+      self = menu.removeItem(this);
     }
-    if (this.contentsContainer_ != null) {
-      if (this.contentsContainer_ != null) this.contentsContainer_.remove();
-      this.contentsContainer_ = null;
-    }
-    if (this.contents_ != null) this.contents_.remove();
-    this.contents_ = contents;
-    if (contents != null && policy != WMenuItem.LoadPolicy.PreLoading) {
-      this.contents_ = contents;
-      this.contentsContainer_ = new WContainerWidget();
-      this.contentsContainer_.setJavaScriptMember(
-          "wtResize", StdWidgetItemImpl.getChildrenResizeJS());
-      this.contentsContainer_.resize(WLength.Auto, new WLength(100, WLength.Unit.Percentage));
+    this.uContents_ = contents;
+    this.oContents_ = this.uContents_;
+    this.loadPolicy_ = policy;
+    if (this.uContents_ != null && this.loadPolicy_ == ContentLoading.Lazy) {
+      if (!(this.oContentsContainer_ != null)) {
+        this.uContentsContainer_ = new WContainerWidget();
+        this.oContentsContainer_ = this.uContentsContainer_;
+        this.oContentsContainer_.setJavaScriptMember(
+            "wtResize", StdWidgetItemImpl.getChildrenResizeJS());
+        this.oContentsContainer_.resize(WLength.Auto, new WLength(100, LengthUnit.Percentage));
+      }
     }
     if (menu != null) {
-      menu.insertItem(menuIdx, this);
+      menu.insertItem(menuIdx, self);
     }
   }
   /**
    * Sets the contents widget for this item.
    *
-   * <p>Calls {@link #setContents(WWidget contents, WMenuItem.LoadPolicy policy)
-   * setContents(contents, WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Calls {@link #setContents(WWidget contents, ContentLoading policy) setContents(contents,
+   * ContentLoading.Lazy)}
    */
   public final void setContents(WWidget contents) {
-    setContents(contents, WMenuItem.LoadPolicy.LazyLoading);
+    setContents(contents, ContentLoading.Lazy);
   }
   /**
    * Returns the contents widget for this item.
    *
    * <p>
    *
-   * @see WMenuItem#setContents(WWidget contents, WMenuItem.LoadPolicy policy)
+   * @see WMenuItem#setContents(WWidget contents, ContentLoading policy)
    */
   public WWidget getContents() {
-    if (this.contentsContainer_ != null) {
-      return this.contentsContainer_;
-    } else {
-      return this.contents_;
-    }
+    return this.oContents_;
   }
-
-  WWidget getTakeContents() {
-    if (this.contents_ == null) {
-      return null;
-    }
-    WWidget result = this.contents_;
-    if (this.isContentsLoaded()) {
-      if (this.contentsContainer_ != null) {
-        this.contentsContainer_.removeWidget(this.contents_);
+  /** Removes the contents widget from this item. */
+  public WWidget getRemoveContents() {
+    WWidget contents = this.oContents_;
+    this.oContents_ = null;
+    WWidget c = this.getContentsInStack();
+    if (c != null) {
+      WWidget w = c.getParent().removeWidget(c);
+      if (this.oContentsContainer_ != null) {
+        return this.oContentsContainer_.removeWidget(contents);
+      } else {
+        return w;
       }
+    } else {
+      final WWidget result = this.uContents_;
+      this.uContents_ = null;
+      return result;
     }
-    if (this.contentsDestroyedConnection_.isConnected()) {
-      this.contentsDestroyedConnection_.disconnect();
-    }
-    this.contents_ = null;
-    return result;
-  }
-  /**
-   * Returns the widget that represents the item (<b>deprecated</b>).
-   *
-   * <p>This returns this.
-   *
-   * <p>
-   *
-   * @deprecated This is a pre-Wt 3.3.0 artifact which has lost its value since {@link WMenuItem} is
-   *     now a widget.
-   */
-  public WWidget getItemWidget() {
-    return this;
   }
   /**
    * Selects this item.
@@ -729,10 +662,10 @@ public class WMenuItem extends WContainerWidget {
   /**
    * Renders the item as selected or unselected.
    *
-   * <p>The default implementation sets the styleclass for {@link WMenuItem#getItemWidget()
-   * getItemWidget()} to &apos;item&apos; for an unselected not closeable, &apos;itemselected&apos;
-   * for selected not closeable, &apos;citem&apos; for an unselected closeable and
-   * &apos;citemselected&apos; for selected closeable item.
+   * <p>The default implementation sets the styleclass for itemWidget() to &apos;item&apos; for an
+   * unselected not closeable, &apos;itemselected&apos; for selected not closeable,
+   * &apos;citem&apos; for an unselected closeable and &apos;citemselected&apos; for selected
+   * closeable item.
    *
    * <p>Note that this method is called from within a stateless slot implementation, and thus should
    * be stateless as well.
@@ -763,8 +696,8 @@ public class WMenuItem extends WContainerWidget {
     if (this.menu_.isInternalPathEnabled()) {
       this.resetLearnedSlots();
     }
-    if (this.contents_ != null && !this.isContentsLoaded()) {
-      this.contents_.enableAjax();
+    if (this.uContents_ != null) {
+      this.uContents_.enableAjax();
     }
     super.enableAjax();
   }
@@ -794,23 +727,30 @@ public class WMenuItem extends WContainerWidget {
 
   WMenuItem(boolean separator, final CharSequence text) {
     super();
+    this.uContents_ = null;
+    this.oContents_ = null;
+    this.uContentsContainer_ = null;
+    this.oContentsContainer_ = null;
     this.separator_ = true;
-    this.triggered_ = new Signal1<WMenuItem>(this);
-    this.contentsDestroyedConnection_ = new AbstractSignal.Connection();
+    this.triggered_ = new Signal1<WMenuItem>();
     this.pathComponent_ = "";
-    this.create("", WString.Empty, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    this.create("", WString.Empty, (WWidget) null, ContentLoading.Lazy);
     this.separator_ = separator;
     this.selectable_ = false;
     this.internalPathEnabled_ = false;
     if (!(text.length() == 0)) {
-      this.text_ = new WLabel(this);
-      this.text_.setTextFormat(TextFormat.PlainText);
+      this.text_ = new WLabel();
+      this.addWidget(this.text_);
+      this.text_.setTextFormat(TextFormat.Plain);
       this.text_.setText(text);
     }
   }
 
-  private WContainerWidget contentsContainer_;
-  private WWidget contents_;
+  private ContentLoading loadPolicy_;
+  private WWidget uContents_;
+  private WWidget oContents_;
+  private WContainerWidget uContentsContainer_;
+  private WContainerWidget oContentsContainer_;
   private WMenu menu_;
   private WMenu subMenu_;
   private WText icon_;
@@ -822,20 +762,14 @@ public class WMenuItem extends WContainerWidget {
   private boolean signalsConnected_;
   private boolean customLink_;
   private Signal1<WMenuItem> triggered_;
-  private AbstractSignal.Connection contentsDestroyedConnection_;
   private String pathComponent_;
   private boolean customPathComponent_;
   private boolean internalPathEnabled_;
   private boolean closeable_;
 
   private void create(
-      final String iconPath,
-      final CharSequence text,
-      WWidget contents,
-      WMenuItem.LoadPolicy policy) {
+      final String iconPath, final CharSequence text, WWidget contents, ContentLoading policy) {
     this.customLink_ = false;
-    this.contentsContainer_ = null;
-    this.contents_ = null;
     this.menu_ = null;
     this.customPathComponent_ = false;
     this.internalPathEnabled_ = true;
@@ -846,18 +780,9 @@ public class WMenuItem extends WContainerWidget {
     this.checkBox_ = null;
     this.subMenu_ = null;
     this.data_ = null;
-    if (contents != null && contents.getParent() != null) {
-      WContainerWidget cw =
-          ((contents.getParent()) instanceof WContainerWidget
-              ? (WContainerWidget) (contents.getParent())
-              : null);
-      if (cw != null) {
-        cw.removeWidget(contents);
-      }
-    }
     this.setContents(contents, policy);
     if (!this.separator_) {
-      new WAnchor(this);
+      this.addWidget(new WAnchor());
       this.updateInternalPath();
     }
     this.signalsConnected_ = false;
@@ -868,17 +793,11 @@ public class WMenuItem extends WContainerWidget {
       this.setText(text);
     }
   }
-
-  void purgeContents() {
-    this.contentsContainer_ = null;
-    if (this.contents_ != null) this.contents_.remove();
-    this.contents_ = null;
-  }
-
+  //  void purgeContents() ;
   void updateInternalPath() {
     if (this.menu_ != null && this.menu_.isInternalPathEnabled() && this.isInternalPathEnabled()) {
       String internalPath = this.menu_.getInternalBasePath() + this.getPathComponent();
-      WLink link = new WLink(WLink.Type.InternalPath, internalPath);
+      WLink link = new WLink(LinkType.InternalPath, internalPath);
       WAnchor a = this.getAnchor();
       if (a != null) {
         a.setLink(link);
@@ -886,7 +805,7 @@ public class WMenuItem extends WContainerWidget {
     } else {
       WAnchor a = this.getAnchor();
       if (a != null && !this.customLink_) {
-        if (WApplication.getInstance().getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+        if (WApplication.getInstance().getEnvironment().getAgent() == UserAgent.IE6) {
           a.setLink(new WLink("#"));
         } else {
           a.setLink(new WLink());
@@ -896,17 +815,19 @@ public class WMenuItem extends WContainerWidget {
   }
 
   private boolean isContentsLoaded() {
-    return !(this.contentsContainer_ != null) || this.contentsContainer_.getCount() == 1;
+    return this.oContents_ != null && !(this.uContents_ != null);
   }
 
   void loadContents() {
-    if (!(this.contents_ != null)) {
+    if (!(this.uContents_ != null)) {
       return;
-    }
-    if (!this.isContentsLoaded()) {
-      this.contentsContainer_.addWidget(this.contents_);
-      this.signalsConnected_ = false;
-      this.connectSignals();
+    } else {
+      if (!this.isContentsLoaded()) {
+        this.oContentsContainer_.addWidget(this.uContents_);
+        this.uContents_ = null;
+        this.signalsConnected_ = false;
+        this.connectSignals();
+      }
     }
   }
 
@@ -941,7 +862,7 @@ public class WMenuItem extends WContainerWidget {
   private void connectSignals() {
     if (!this.signalsConnected_) {
       this.signalsConnected_ = true;
-      if (!(this.contents_ != null) || this.isContentsLoaded()) {
+      if (!(this.oContents_ != null) || this.isContentsLoaded()) {
         // this.implementStateless(WMenuItem.selectVisual,WMenuItem.undoSelectVisual);
       }
       WAnchor a = this.getAnchor();
@@ -954,19 +875,15 @@ public class WMenuItem extends WContainerWidget {
               .checked()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WMenuItem.this.setCheckBox();
-                    }
+                  () -> {
+                    WMenuItem.this.setCheckBox();
                   });
           this.checkBox_
               .unChecked()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WMenuItem.this.setUnCheckBox();
-                    }
+                  () -> {
+                    WMenuItem.this.setUnCheckBox();
                   });
           selectFromCheckbox = true;
         } else {
@@ -975,29 +892,23 @@ public class WMenuItem extends WContainerWidget {
         if (this.checkBox_ != null) {
           a.setLink(new WLink());
         }
-        if (this.contentsContainer_ != null && this.contentsContainer_.getCount() == 0) {
+        if (this.uContents_ != null) {
           as.addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WMenuItem.this.selectNotLoaded();
-                }
+              () -> {
+                WMenuItem.this.selectNotLoaded();
               });
         } else {
           as.addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WMenuItem.this.selectVisual();
-                }
+              () -> {
+                WMenuItem.this.selectVisual();
               });
           if (!selectFromCheckbox) {
             as.addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WMenuItem.this.select();
-                  }
+                () -> {
+                  WMenuItem.this.select();
                 });
           }
         }
@@ -1013,12 +924,7 @@ public class WMenuItem extends WContainerWidget {
       }
     }
   }
-
-  private void contentsDestroyed() {
-    this.contentsContainer_ = null;
-    this.contents_ = null;
-  }
-
+  // private void contentsDestroyed() ;
   private void setCheckBox() {
     this.setChecked(true);
     this.select();
@@ -1027,5 +933,44 @@ public class WMenuItem extends WContainerWidget {
   private void setUnCheckBox() {
     this.setChecked(false);
     this.select();
+  }
+
+  WWidget takeContentsForStack() {
+    if (!(this.uContents_ != null)) {
+      return null;
+    } else {
+      if (this.loadPolicy_ == ContentLoading.Lazy) {
+        WWidget result = this.uContentsContainer_;
+        this.uContentsContainer_ = null;
+        return result;
+      } else {
+        final WWidget result = this.uContents_;
+        this.uContents_ = null;
+        return result;
+      }
+    }
+  }
+
+  WWidget getContentsInStack() {
+    if (this.oContentsContainer_ != null && !(this.uContentsContainer_ != null)) {
+      return this.oContentsContainer_;
+    } else {
+      if (this.oContents_ != null && !(this.uContents_ != null)) {
+        return this.oContents_;
+      } else {
+        return null;
+      }
+    }
+  }
+
+  void returnContentsInStack(WWidget widget) {
+    if (this.oContentsContainer_ != null) {
+      if (!(this.uContents_ != null)) {
+        this.uContents_ = this.oContentsContainer_.removeWidget(this.oContents_);
+      }
+      this.oContentsContainer_ = (WContainerWidget) null;
+    } else {
+      this.uContents_ = widget;
+    }
   }
 }

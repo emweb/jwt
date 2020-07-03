@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -32,14 +33,6 @@ public abstract class WLocalizedStrings {
   private static Logger logger = LoggerFactory.getLogger(WLocalizedStrings.class);
 
   /**
-   * Rereads the message resources.
-   *
-   * <p>Purge any cached key/values, if applicable.
-   *
-   * <p>The default implementation does nothing.
-   */
-  public void refresh() {}
-  /**
    * Purges memory resources, if possible.
    *
    * <p>This is called afer event handling, and is an opportunity to conserve memory inbetween
@@ -49,17 +42,46 @@ public abstract class WLocalizedStrings {
    */
   public void hibernate() {}
   /**
-   * Resolves a key in the current locale.
+   * Resolves a key in the given locale.
    *
-   * <p>This method is used by {@link WString} to obtain the UTF8 value corresponding to a key in
-   * the current locale.
+   * <p>This method is used by {@link WString} to obtain the UTF-8 value corresponding to a key in
+   * the given locale.
    *
-   * <p>Returns the value if the key could be resolved. Returns <code>null</code> otherwise.
+   * <p>Returns a successful {@link LocalizedString} if the key could be resolved.
    *
    * <p>
    *
-   * @see WApplication#getLocale()
    * @see WString#tr(String key)
    */
-  public abstract String resolveKey(final String key);
+  public abstract LocalizedString resolveKey(final Locale locale, final String key);
+  /**
+   * Resolves the plural form of a key in the given locale.
+   *
+   * <p>This method is used by {@link WString} to obtain the UTF-8 value corresponding to a key in
+   * the current locale, taking into account the possibility of multiple plural forms, and chosing
+   * the right plural form based on the <code>amount</code> passed.
+   *
+   * <p>Throws a std::logic_error if the underlying implementation does not provide support for
+   * plural internationalized strings.
+   *
+   * <p>Returns a successful {@link LocalizedString} if the key could be resolved.
+   *
+   * <p>
+   */
+  public LocalizedString resolvePluralKey(final Locale locale, final String key, long amount) {
+    throw new WException("WLocalizedStrings::resolvePluralKey is not supported");
+  }
+  /**
+   * Utility method to evaluate a plural expression.
+   *
+   * <p>This evaluates C expressions such as used by ngettext for a particular value, which can be
+   * useful to implement plural key resolution.
+   *
+   * <p>
+   *
+   * @see WLocalizedStrings#resolvePluralKey(Locale locale, String key, long amount)
+   */
+  public static int evaluatePluralExpression(final String expression, long n) {
+    return PluralExpression.evalPluralCase(expression, n);
+  }
 }

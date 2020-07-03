@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -36,26 +37,24 @@ public class WTreeTableNode extends WTreeNode {
    *
    * <p>
    *
-   * @see WTreeNode#WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
+   * @see WTreeNode#WTreeNode(WTreeNode parentNode)
    */
   public WTreeTableNode(
       final CharSequence labelText, WIconPair labelIcon, WTreeTableNode parentNode) {
-    super(labelText, labelIcon);
+    super(labelText, labelIcon, (WTreeNode) null);
     this.table_ = null;
     this.row_ = null;
     this.columnWidgets_ = new ArrayList<WTreeTableNode.ColumnWidget>();
-    if (parentNode != null) {
-      parentNode.addChildNode(this);
-    }
+    if (parentNode != null) parentNode.addChildNode(this);
   }
   /**
    * Creates a new tree table node.
    *
    * <p>Calls {@link #WTreeTableNode(CharSequence labelText, WIconPair labelIcon, WTreeTableNode
-   * parentNode) this(labelText, (WIconPair)null, (WTreeTableNode)null)}
+   * parentNode) this(labelText, null, (WTreeTableNode)null)}
    */
   public WTreeTableNode(final CharSequence labelText) {
-    this(labelText, (WIconPair) null, (WTreeTableNode) null);
+    this(labelText, null, (WTreeTableNode) null);
   }
   /**
    * Creates a new tree table node.
@@ -79,8 +78,12 @@ public class WTreeTableNode extends WTreeNode {
     --column;
     this.createExtraColumns(column);
     if (column < (int) this.columnWidgets_.size()) {
-      if (this.columnWidgets_.get(column).widget != null)
-        this.columnWidgets_.get(column).widget.remove();
+      if (this.columnWidgets_.get(column).widget != null) {
+        {
+          WWidget toRemove = this.columnWidgets_.get(column).widget.removeFromParent();
+          if (toRemove != null) toRemove.remove();
+        }
+      }
       this.columnWidgets_.set(column, new WTreeTableNode.ColumnWidget(widget, true));
     } else {
       this.columnWidgets_.add(new WTreeTableNode.ColumnWidget(widget, true));
@@ -119,10 +122,10 @@ public class WTreeTableNode extends WTreeNode {
   }
 
   public void insertChildNode(int index, WTreeNode node) {
-    super.insertChildNode(index, node);
     if (this.table_ != null) {
       (((node) instanceof WTreeTableNode ? (WTreeTableNode) (node) : null)).setTable(this.table_);
     }
+    super.insertChildNode(index, node);
   }
   /**
    * Sets the table for this node.
@@ -174,15 +177,16 @@ public class WTreeTableNode extends WTreeNode {
   private void createExtraColumns(int numColumns) {
     if (!(this.row_ != null)) {
       this.row_ = new WContainerWidget();
-      this.row_.addStyleClass("cols-row");
       this.getImpl().bindWidget("cols-row", this.row_);
+      this.row_.addStyleClass("cols-row");
     }
     while ((int) this.columnWidgets_.size() < numColumns) {
-      WText w = new WText(new WString(" "), this.row_);
+      WText w = new WText(new WString(" "), (WContainerWidget) null);
       w.setInline(false);
       this.columnWidgets_.add(new WTreeTableNode.ColumnWidget(w, false));
       w.setFloatSide(Side.Left);
       w.resize(this.columnWidth(this.columnWidgets_.size()), new WLength(1));
+      this.row_.addWidget(w);
     }
   }
 

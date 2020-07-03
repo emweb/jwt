@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,27 +31,27 @@ import org.slf4j.LoggerFactory;
  * <p>When using a dialog asynchronously, there is no API call that waits for the dialog to be
  * closed. Then, the usage is similar to instantiating any other widget. The dialog may be closed by
  * calling {@link WDialog#accept() accept()}, {@link WDialog#reject() reject()} or {@link
- * WDialog#done(WDialog.DialogCode result) done()} (or connecting a signal to one of these methods).
- * This will hide the dialog and emit the {@link WDialog#finished() finished()} signal, which you
- * then can listen for to process the dialog result and delete the dialog. Unlike other widgets, a
- * dialog does not need to be added to a parent widget, but is hidden by default. You must use the
- * method {@link WWidget#show()} or {@link WDialog#setHidden(boolean hidden, WAnimation animation)
+ * WDialog#done(DialogCode result) done()} (or connecting a signal to one of these methods). This
+ * will hide the dialog and emit the {@link WDialog#finished() finished()} signal, which you then
+ * can listen for to process the dialog result and delete the dialog. Unlike other widgets, a dialog
+ * does not need to be added to a parent widget, but is hidden by default. You must use the method
+ * {@link WWidget#show()} or {@link WDialog#setHidden(boolean hidden, WAnimation animation)
  * setHidden()} to show the dialog.
  *
  * <p>The synchronous use of a dialog involves a call to {@link WDialog#exec(WAnimation animation)
  * exec()} which will block (suspend the thread) until the dialog window is closed, and return the
  * dialog result. Events within dialog are handled using a so-called recursive event loop.
  * Typically, an OK button will be connected to {@link WDialog#accept() accept()}, and in some cases
- * a Cancel button to {@link WDialog#reject() reject()}. This solution has the drawback that it is
- * not scalable to many concurrent sessions, since for every session with a recursive event loop, a
- * thread is locked until {@link WDialog#exec(WAnimation animation) exec()} returns. A thread that
- * is locked by a recursive event loop cannot be used to process requests from another sessions.
- * When all threads in the threadpool are locked in recursive event loops, the server will be
- * unresponsive to requests from any other session. In practical terms, this means you must not use
- * {@link WDialog#exec(WAnimation animation) exec()}, unless your application will never be used by
- * more concurrent users than the amount of threads in your threadpool (like on some intranets or
- * extranets). Using {@link WDialog#exec(WAnimation animation) exec()} is not supported from outside
- * the regular event loop (i.e. when taking a lock on a session using {@link
+ * a {@link StandardButton#Cancel} button to {@link WDialog#reject() reject()}. This solution has
+ * the drawback that it is not scalable to many concurrent sessions, since for every session with a
+ * recursive event loop, a thread is locked until {@link WDialog#exec(WAnimation animation) exec()}
+ * returns. A thread that is locked by a recursive event loop cannot be used to process requests
+ * from another sessions. When all threads in the threadpool are locked in recursive event loops,
+ * the server will be unresponsive to requests from any other session. In practical terms, this
+ * means you must not use {@link WDialog#exec(WAnimation animation) exec()}, unless your application
+ * will never be used by more concurrent users than the amount of threads in your threadpool (like
+ * on some intranets or extranets). Using {@link WDialog#exec(WAnimation animation) exec()} is not
+ * supported from outside the regular event loop (i.e. when taking a lock on a session using {@link
  * WApplication#getUpdateLock()} or by posting an event using WServer::post()). This functionality
  * is only available on Servlet 3.0 compatible servlet containers. Use {@link
  * WDialog#setModal(boolean modal) setModal()} to create a non-modal dialog. A non-modal dialog does
@@ -89,32 +90,19 @@ import org.slf4j.LoggerFactory;
 public class WDialog extends WPopupWidget {
   private static Logger logger = LoggerFactory.getLogger(WDialog.class);
 
-  /** The result of a modal dialog execution. */
-  public enum DialogCode {
-    /** Dialog closed with {@link WDialog#reject() reject()} */
-    Rejected,
-    /** Dialog closed with {@link WDialog#accept() accept()} */
-    Accepted;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Constructs a new dialog.
    *
    * <p>Unlike other widgets, the dialog does not require a parent container since it is a top-level
-   * widget. You may however still provide a parent object to let the dialog be deleted together
-   * with its parent.
+   * widget.
    */
-  public WDialog(WObject parent) {
-    super(new WTemplate(tr("Wt.WDialog.template")), parent);
+  public WDialog() {
+    super(new WTemplate(tr("Wt.WDialog.template"), (WContainerWidget) null));
     this.moved_ = new JSignal2<Integer, Integer>(this, "moved") {};
     this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {};
     this.zIndexChanged_ = new JSignal1<Integer>(this, "zIndexChanged") {};
     this.delayedJs_ = new ArrayList<String>();
-    this.finished_ = new Signal1<WDialog.DialogCode>(this);
+    this.finished_ = new Signal1<DialogCode>();
     this.escapeConnection1_ = new AbstractSignal.Connection();
     this.escapeConnection2_ = new AbstractSignal.Connection();
     this.enterConnection1_ = new AbstractSignal.Connection();
@@ -122,42 +110,24 @@ public class WDialog extends WPopupWidget {
     this.create();
   }
   /**
-   * Constructs a new dialog.
-   *
-   * <p>Calls {@link #WDialog(WObject parent) this((WObject)null)}
-   */
-  public WDialog() {
-    this((WObject) null);
-  }
-  /**
    * Constructs a dialog with a given window title.
    *
    * <p>Unlike other widgets, the dialog does not require a parent container since it is a top-level
-   * widget. You may however still provide a parent object to let the dialog be deleted together
-   * with its parent.
+   * widget.
    */
-  public WDialog(final CharSequence windowTitle, WObject parent) {
-    super(new WTemplate(tr("Wt.WDialog.template")), parent);
+  public WDialog(final CharSequence windowTitle) {
+    super(new WTemplate(tr("Wt.WDialog.template"), (WContainerWidget) null));
     this.moved_ = new JSignal2<Integer, Integer>(this, "moved") {};
     this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {};
     this.zIndexChanged_ = new JSignal1<Integer>(this, "zIndexChanged") {};
     this.delayedJs_ = new ArrayList<String>();
-    this.finished_ = new Signal1<WDialog.DialogCode>(this);
+    this.finished_ = new Signal1<DialogCode>();
     this.escapeConnection1_ = new AbstractSignal.Connection();
     this.escapeConnection2_ = new AbstractSignal.Connection();
     this.enterConnection1_ = new AbstractSignal.Connection();
     this.enterConnection2_ = new AbstractSignal.Connection();
     this.create();
     this.setWindowTitle(windowTitle);
-  }
-  /**
-   * Constructs a dialog with a given window title.
-   *
-   * <p>Calls {@link #WDialog(CharSequence windowTitle, WObject parent) this(windowTitle,
-   * (WObject)null)}
-   */
-  public WDialog(final CharSequence windowTitle) {
-    this(windowTitle, (WObject) null);
   }
   /** Deletes a dialog. */
   public void remove() {
@@ -233,12 +203,10 @@ public class WDialog extends WPopupWidget {
    */
   public WContainerWidget getFooter() {
     if (!(this.footer_ != null)) {
-      this.footer_ = new WContainerWidget();
-      WApplication.getInstance()
-          .getTheme()
-          .apply(this, this.footer_, WidgetThemeRole.DialogFooterRole);
+      WContainerWidget footer = this.footer_ = new WContainerWidget();
+      WApplication.getInstance().getTheme().apply(this, this.footer_, WidgetThemeRole.DialogFooter);
       WContainerWidget layoutContainer = (WContainerWidget) this.impl_.resolveWidget("layout");
-      layoutContainer.getLayout().addWidget(this.footer_);
+      layoutContainer.getLayout().addWidget(footer);
     }
     return this.footer_;
   }
@@ -246,8 +214,8 @@ public class WDialog extends WPopupWidget {
    * Executes the dialog in a recursive event loop.
    *
    * <p>Executes the dialog synchronously. This blocks the current thread of execution until one of
-   * {@link WDialog#done(WDialog.DialogCode result) done()}, {@link WDialog#accept() accept()} or
-   * {@link WDialog#reject() reject()} is called.
+   * {@link WDialog#done(DialogCode result) done()}, {@link WDialog#accept() accept()} or {@link
+   * WDialog#reject() reject()} is called.
    *
    * <p><i>Warning: using {@link WDialog#exec(WAnimation animation) exec()} does not scale to many
    * concurrent sessions, since the thread is locked until exec returns, so the entire server will
@@ -257,11 +225,11 @@ public class WDialog extends WPopupWidget {
    *
    * <p>
    *
-   * @see WDialog#done(WDialog.DialogCode result)
+   * @see WDialog#done(DialogCode result)
    * @see WDialog#accept()
    * @see WDialog#reject()
    */
-  public WDialog.DialogCode exec(final WAnimation animation) {
+  public DialogCode exec(final WAnimation animation) {
     if (this.recursiveEventLoop_) {
       throw new WException("WDialog::exec(): already being executed.");
     }
@@ -290,7 +258,7 @@ public class WDialog extends WPopupWidget {
    *
    * <p>Returns {@link #exec(WAnimation animation) exec(new WAnimation())}
    */
-  public final WDialog.DialogCode exec() {
+  public final DialogCode exec() {
     return exec(new WAnimation());
   }
   /**
@@ -303,7 +271,7 @@ public class WDialog extends WPopupWidget {
    * @see WDialog#finished()
    * @see WDialog#getResult()
    */
-  public void done(WDialog.DialogCode result) {
+  public void done(DialogCode result) {
     if (this.isHidden()) {
       return;
     }
@@ -320,22 +288,22 @@ public class WDialog extends WPopupWidget {
    *
    * <p>
    *
-   * @see WDialog#done(WDialog.DialogCode result)
+   * @see WDialog#done(DialogCode result)
    * @see WDialog#reject()
    */
   public void accept() {
-    this.done(WDialog.DialogCode.Accepted);
+    this.done(DialogCode.Accepted);
   }
   /**
    * Closes the dialog, with result is Rejected.
    *
    * <p>
    *
-   * @see WDialog#done(WDialog.DialogCode result)
+   * @see WDialog#done(DialogCode result)
    * @see WDialog#accept()
    */
   public void reject() {
-    this.done(WDialog.DialogCode.Rejected);
+    this.done(DialogCode.Rejected);
   }
   /**
    * Lets pressing the escape key reject the dialog.
@@ -364,11 +332,11 @@ public class WDialog extends WPopupWidget {
    *
    * <p>
    *
-   * @see WDialog#done(WDialog.DialogCode result)
+   * @see WDialog#done(DialogCode result)
    * @see WDialog#accept()
    * @see WDialog#reject()
    */
-  public Signal1<WDialog.DialogCode> finished() {
+  public Signal1<DialogCode> finished() {
     return this.finished_;
   }
   /**
@@ -376,9 +344,9 @@ public class WDialog extends WPopupWidget {
    *
    * <p>
    *
-   * @see WDialog#done(WDialog.DialogCode result)
+   * @see WDialog#done(DialogCode result)
    */
-  public WDialog.DialogCode getResult() {
+  public DialogCode getResult() {
     return this.result_;
   }
   /**
@@ -431,7 +399,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt3_6_0.Resizable(Wt3_6_0,"
+            "(new Wt4_4_0.Resizable(Wt4_4_0,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -479,23 +447,25 @@ public class WDialog extends WPopupWidget {
   public void setClosable(boolean closable) {
     if (closable) {
       if (!(this.closeIcon_ != null)) {
-        this.closeIcon_ = new WText();
-        this.titleBar_.insertWidget(0, this.closeIcon_);
+        WText closeIcon = this.closeIcon_ = new WText();
+        this.titleBar_.insertWidget(0, closeIcon);
         WApplication.getInstance()
             .getTheme()
-            .apply(this, this.closeIcon_, WidgetThemeRole.DialogCloseIconRole);
+            .apply(this, this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
         this.closeIcon_
             .clicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent e1) {
-                    WDialog.this.reject();
-                  }
+                (WMouseEvent e1) -> {
+                  WDialog.this.reject();
                 });
       }
     } else {
-      if (this.closeIcon_ != null) this.closeIcon_.remove();
+      {
+        WWidget toRemove = WidgetUtils.remove(this.titleBar_, this.closeIcon_);
+        if (toRemove != null) toRemove.remove();
+      }
+
       this.closeIcon_ = null;
     }
   }
@@ -527,20 +497,16 @@ public class WDialog extends WPopupWidget {
                   this.enterPressed()
                       .addListener(
                           this,
-                          new Signal.Listener() {
-                            public void trigger() {
-                              WDialog.this.onDefaultPressed();
-                            }
+                          () -> {
+                            WDialog.this.onDefaultPressed();
                           });
               this.enterConnection2_ =
                   this.impl_
                       .enterPressed()
                       .addListener(
                           this,
-                          new Signal.Listener() {
-                            public void trigger() {
-                              WDialog.this.onDefaultPressed();
-                            }
+                          () -> {
+                            WDialog.this.onDefaultPressed();
                           });
               break;
             }
@@ -552,10 +518,8 @@ public class WDialog extends WPopupWidget {
                 this.escapePressed()
                     .addListener(
                         this,
-                        new Signal.Listener() {
-                          public void trigger() {
-                            WDialog.this.onEscapePressed();
-                          }
+                        () -> {
+                          WDialog.this.onEscapePressed();
                         });
           } else {
             this.escapeConnection1_ =
@@ -563,10 +527,8 @@ public class WDialog extends WPopupWidget {
                     .globalEscapePressed()
                     .addListener(
                         this,
-                        new Signal.Listener() {
-                          public void trigger() {
-                            WDialog.this.onEscapePressed();
-                          }
+                        () -> {
+                          WDialog.this.onEscapePressed();
                         });
           }
           this.escapeConnection2_ =
@@ -574,10 +536,8 @@ public class WDialog extends WPopupWidget {
                   .escapePressed()
                   .addListener(
                       this,
-                      new Signal.Listener() {
-                        public void trigger() {
-                          WDialog.this.onEscapePressed();
-                        }
+                      () -> {
+                        WDialog.this.onEscapePressed();
                       });
         }
       } else {
@@ -633,8 +593,8 @@ public class WDialog extends WPopupWidget {
 
   public void setMaximumSize(final WLength width, final WLength height) {
     super.setMaximumSize(width, height);
-    WLength w = width.getUnit() != WLength.Unit.Percentage ? width : WLength.Auto;
-    WLength h = height.getUnit() != WLength.Unit.Percentage ? height : WLength.Auto;
+    WLength w = width.getUnit() != LengthUnit.Percentage ? width : WLength.Auto;
+    WLength h = height.getUnit() != LengthUnit.Percentage ? height : WLength.Auto;
     this.impl_.resolveWidget("layout").setMaximumSize(w, h);
   }
   /**
@@ -724,13 +684,13 @@ public class WDialog extends WPopupWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       WApplication app = WApplication.getInstance();
       boolean centerX = this.getOffset(Side.Left).isAuto() && this.getOffset(Side.Right).isAuto();
       boolean centerY = this.getOffset(Side.Top).isAuto() && this.getOffset(Side.Bottom).isAuto();
       if (app.getEnvironment().hasAjax()) {
         if (this.getWidth().isAuto()) {
-          if (this.getMaximumWidth().getUnit() == WLength.Unit.Percentage
+          if (this.getMaximumWidth().getUnit() == LengthUnit.Percentage
               || this.getMaximumWidth().toPixels() == 0) {
             this.impl_
                 .resolveWidget("layout")
@@ -739,7 +699,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt3_6_0.WDialog("
+          "new Wt4_4_0.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()
@@ -771,7 +731,7 @@ public class WDialog extends WPopupWidget {
         this.impl_.bindString(
             "center-script",
             "<script>" + Utils.htmlEncode(js) + "</script>",
-            TextFormat.XHTMLUnsafeText);
+            TextFormat.UnsafeXHTML);
       } else {
         this.impl_.bindEmpty("center-script");
       }
@@ -781,13 +741,11 @@ public class WDialog extends WPopupWidget {
           .mouseWentDown()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WDialog.this.bringToFront(e1);
-                }
+              (WMouseEvent e1) -> {
+                WDialog.this.bringToFront(e1);
               });
     }
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty() && this.autoFocus_) {
+    if (flags.contains(RenderFlag.Full) && this.autoFocus_) {
       if (!(this.impl_.findById(WApplication.getInstance().getFocus()) != null)) {
         this.impl_.isSetFirstFocus();
       }
@@ -813,8 +771,8 @@ public class WDialog extends WPopupWidget {
   private JSignal2<Integer, Integer> resized_;
   private JSignal1<Integer> zIndexChanged_;
   private List<String> delayedJs_;
-  private Signal1<WDialog.DialogCode> finished_;
-  private WDialog.DialogCode result_;
+  private Signal1<DialogCode> finished_;
+  private DialogCode result_;
   private boolean recursiveEventLoop_;
   private AbstractSignal.Connection escapeConnection1_;
   private AbstractSignal.Connection escapeConnection2_;
@@ -839,18 +797,16 @@ public class WDialog extends WPopupWidget {
       if (app.getEnvironment().agentIsIElt(9)) {
         app.getStyleSheet().addRule("body", "height: 100%;");
       }
-      String position =
-          app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6 ? "absolute" : "fixed";
+      String position = app.getEnvironment().getAgent() == UserAgent.IE6 ? "absolute" : "fixed";
       app.getStyleSheet()
           .addRule(
               "div.Wt-dialog",
               ""
-                  + (app.getEnvironment().hasAjax() ? "visibility: hidden;" : "")
                   + (!app.getEnvironment().hasAjax()
                       ? "left: 50%; top: 50%;margin-left: -100px; margin-top: -50px;"
                       : "left: 0px; top: 0px;"),
               CSS_RULES_NAME);
-      if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+      if (app.getEnvironment().getAgent() == UserAgent.IE6) {
         app.getStyleSheet()
             .addRule(
                 "div.Wt-dialogcover",
@@ -864,43 +820,44 @@ public class WDialog extends WPopupWidget {
       }
     }
     app.loadJavaScript("js/WDialog.js", wtjs1());
-    this.layoutContainer_ = new WContainerWidget();
-    this.layoutContainer_.setGlobalUnfocused(true);
+    WContainerWidget layoutContainer = new WContainerWidget();
+    this.layoutContainer_ = layoutContainer;
+    layoutContainer.setGlobalUnfocused(true);
     WApplication.getInstance()
         .getTheme()
-        .apply(this, this.layoutContainer_, WidgetThemeRole.DialogContent);
-    this.layoutContainer_.addStyleClass("dialog-layout");
-    WVBoxLayout layout = new WVBoxLayout(this.layoutContainer_);
+        .apply(this, layoutContainer, WidgetThemeRole.DialogContent);
+    layoutContainer.addStyleClass("dialog-layout");
+    WVBoxLayout layoutPtr = new WVBoxLayout();
+    WVBoxLayout layout = layoutPtr;
     layout.setContentsMargins(0, 0, 0, 0);
     layout.setSpacing(0);
-    this.impl_.bindWidget("layout", this.layoutContainer_);
+    layoutContainer.setLayout(layoutPtr);
+    this.impl_.bindWidget("layout", layoutContainer);
     this.titleBar_ = new WContainerWidget();
-    app.getTheme().apply(this, this.titleBar_, WidgetThemeRole.DialogTitleBarRole);
-    this.caption_ = new WText(this.titleBar_);
+    app.getTheme().apply(this, this.titleBar_, WidgetThemeRole.DialogTitleBar);
+    this.caption_ = new WText();
     this.caption_.setInline(false);
+    this.titleBar_.addWidget(this.caption_);
     this.contents_ = new WContainerWidget();
-    app.getTheme().apply(this, this.contents_, WidgetThemeRole.DialogBodyRole);
+    app.getTheme().apply(this, this.contents_, WidgetThemeRole.DialogBody);
     layout.addWidget(this.titleBar_);
     layout.addWidget(this.contents_, 1);
     if (app.getEnvironment().hasAjax()) {
-      this.setAttributeValue("style", "visibility: hidden");
-      this.impl_.setMargin(new WLength(0), Side.All);
+      this.impl_.setMargin(new WLength(0));
       if (!app.getEnvironment().agentIsIElt(9)) {
         this.setPositionScheme(PositionScheme.Fixed);
       }
     } else {
       this.setPositionScheme(
-          app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+          app.getEnvironment().getAgent() == UserAgent.IE6
               ? PositionScheme.Absolute
               : PositionScheme.Fixed);
     }
     this.setMovable(true);
     this.zIndexChanged_.addListener(
         this,
-        new Signal1.Listener<Integer>() {
-          public void trigger(Integer e1) {
-            WDialog.this.zIndexChanged(e1);
-          }
+        (Integer e1) -> {
+          WDialog.this.zIndexChanged(e1);
         });
   }
 
@@ -930,8 +887,7 @@ public class WDialog extends WPopupWidget {
   }
 
   private void bringToFront(final WMouseEvent e) {
-    if (e.getButton() == WMouseEvent.Button.LeftButton
-        && e.getModifiers().equals(KeyboardModifier.NoModifier)) {
+    if (e.getButton() == MouseButton.Left && e.getModifiers().equals(KeyboardModifier.None)) {
       this.raiseToFront();
     }
   }
@@ -955,7 +911,10 @@ public class WDialog extends WPopupWidget {
       if (w != null) {
         return ((w) instanceof DialogCover ? (DialogCover) (w) : null);
       } else {
-        return new DialogCover();
+        DialogCover d = new DialogCover();
+        DialogCover result = d;
+        app.addGlobalWidget(result);
+        return result;
       }
     } else {
       return null;
@@ -967,6 +926,6 @@ public class WDialog extends WPopupWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WDialog",
-        "function(i,a,g,D,m,n,w,x,E){function y(){if(w){var b=c.pxself(a,\"left\"),d=c.pxself(a,\"top\");if(b!=s||d!=t){s=b;t=d;i.emit(a,w,s,t)}}}function z(b,d){if(!A)if(b!=u||d!=v){u=b;v=d;x&&i.emit(a,x,u,v)}}function F(b){var d=b||window.event;b=c.pageCoordinates(d);d=c.windowCoordinates(d);var e=c.windowSize();if(d.x>0&&d.x<e.x&&d.y>0&&d.y<e.y){m=n=false;if(a.style.right===\"auto\"||a.style.right===\"\"){a.style.left=c.px(a,\"left\")+b.x-o+\"px\";a.style.right= \"\"}else{a.style.right=c.px(a,\"right\")+o-b.x+\"px\";a.style.left=\"auto\"}if(a.style.bottom===\"auto\"||a.style.bottom===\"\"){a.style.top=c.px(a,\"top\")+b.y-p+\"px\";a.style.bottom=\"\"}else{a.style.bottom=c.px(a,\"bottom\")+p-b.y+\"px\";a.style.top=\"auto\"}o=b.x;p=b.y}}function G(b,d,e){if(a.style.position==\"\")a.style.position=c.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";c.windowSize();k=c.parsePct(a.style.height,k);l=c.parsePct(a.style.width,l);a.style.height=Math.max(0,e)+\"px\";a.style.width=Math.max(0, d)+\"px\";z(d,e);j.centerDialog();b=l!=-1;var h=k!=-1;if(b&&h){q=B();r=C();j.onresize(q,r,true)}else if(b){q=B();j.onresize(q,e,true)}else if(h){r=C();j.onresize(d,r,true)}}function B(){return c.windowSize().x*l/100}function C(){return c.windowSize().y*k/100}function H(b,d,e){if(d>0)f.style.width=d+c.parsePx($(f).css(\"borderLeftWidth\"))+c.parsePx($(f).css(\"borderRightWidth\"))+\"px\";if(e>0)f.style.height=e+c.parsePx($(f).css(\"borderTopWidth\"))+c.parsePx($(f).css(\"borderBottomWidth\"))+\"px\";j.centerDialog(); a.wtResize&&a.wtResize(a,d,e)}function I(){i.layouts2.adjust()}a.wtObj=this;var j=this,f=$(a).find(\".dialog-layout\").get(0),c=i.WT,o,p,s=-1,t=-1,u=-1,v=-1,A=false,l=-1,k=-1,q=-1,r=-1;if(g&&D){g.onmousedown=function(b){b=b||window.event;c.capture(g);b=c.pageCoordinates(b);o=b.x;p=b.y;g.onmousemove=F};g.onmouseup=function(){g.onmousemove=null;y();c.capture(null)}}this.centerDialog=function(){var b=c.parsePct(c.css(a,\"max-width\"),0),d=c.parsePct(c.css(a,\"max-height\"),0);if(b!==0){var e=c.windowSize(), h=f.firstChild.wtLayout;h&&h.setMaxSize(e.x*b/100,e.y*d/100)}if(a.parentNode==null)a=g=null;else if(a.style.display!=\"none\"&&a.style.visibility!=\"hidden\"){e=c.windowSize();b=a.offsetWidth;d=a.offsetHeight;if(l!=-1)m=true;if(k!=-1)n=true;if(m){a.style.left=Math.round((e.x-b)/2+(c.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(n){a.style.top=Math.round((e.y-d)/2+(c.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!=\"\")a.style.visibility= \"visible\";y()}};this.bringToFront=function(){var b=0;$(\".Wt-dialog, .modal, .modal-dialog\").each(function(e,h){b=Math.max(b,$(h).css(\"z-index\"))});if(b>a.style.zIndex){var d=b+1;a.style.zIndex=d;i.emit(a,E,d)}};this.onresize=function(b,d,e){m=n=false;A=!e;H(a,b,d);f.firstChild.wtLayout.setMaxSize(0,0);i.layouts2.scheduleAdjust();e&&z(b,d)};f.wtResize=G;a.wtPosition=I;if(a.style.width!=\"\")f.style.width=c.parsePx(a.style.width)>0?a.style.width:a.offsetWidth+\"px\";if(a.style.height!=\"\")f.style.height= c.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";j.centerDialog()}");
+        "function(h,a,i,D,m,n,w,x,E){function y(){if(w){var b=c.pxself(a,\"left\"),d=c.pxself(a,\"top\");if(b!=s||d!=t){s=b;t=d;h.emit(a,w,s,t)}}}function z(b,d){if(!A)if(b!=u||d!=v){u=b;v=d;x&&h.emit(a,x,u,v)}}function F(b){var d=b||window.event;b=c.pageCoordinates(d);d=c.windowCoordinates(d);var e=c.windowSize();if(d.x>0&&d.x<e.x&&d.y>0&&d.y<e.y){m=n=false;if(a.style.right===\"auto\"||a.style.right===\"\"){a.style.left=c.px(a,\"left\")+b.x-o+\"px\";a.style.right= \"\"}else{a.style.right=c.px(a,\"right\")+o-b.x+\"px\";a.style.left=\"auto\"}if(a.style.bottom===\"auto\"||a.style.bottom===\"\"){a.style.top=c.px(a,\"top\")+b.y-p+\"px\";a.style.bottom=\"\"}else{a.style.bottom=c.px(a,\"bottom\")+p-b.y+\"px\";a.style.top=\"auto\"}o=b.x;p=b.y}}function G(b,d,e,f){if(a.style.position==\"\")a.style.position=c.isIE6?\"absolute\":\"fixed\";a.style.visibility=\"visible\";c.windowSize();k=c.parsePct(a.style.height,k);l=c.parsePct(a.style.width,l);if(f){a.style.height=Math.max(0,e)+\"px\";a.style.width=Math.max(0, d)+\"px\"}z(d,e);j.centerDialog();b=l!=-1;f=k!=-1;if(b&&f){q=B();r=C();j.onresize(q,r,true)}else if(b){q=B();j.onresize(q,e,true)}else if(f){r=C();j.onresize(d,r,true)}}function B(){return c.windowSize().x*l/100}function C(){return c.windowSize().y*k/100}function H(b,d,e,f){if(f){if(d>0)g.style.width=d+c.parsePx($(g).css(\"borderLeftWidth\"))+c.parsePx($(g).css(\"borderRightWidth\"))+\"px\";if(e>0)g.style.height=e+c.parsePx($(g).css(\"borderTopWidth\"))+c.parsePx($(g).css(\"borderBottomWidth\"))+\"px\"}j.centerDialog(); a.wtResize&&a.wtResize(a,d,e,true)}function I(){j.centerDialog();h.layouts2&&h.layouts2.adjust()}a.wtObj=this;var j=this,g=$(a).find(\".dialog-layout\").get(0),c=h.WT,o,p,s=-1,t=-1,u=-1,v=-1,A=false,l=-1,k=-1,q=-1,r=-1;if(i&&D){i.onmousedown=function(b){b=b||window.event;c.capture(i);b=c.pageCoordinates(b);o=b.x;p=b.y;i.onmousemove=F};i.onmouseup=function(){i.onmousemove=null;y();c.capture(null)}}this.centerDialog=function(){var b=c.parsePct(c.css(a,\"max-width\"),0),d=c.parsePct(c.css(a,\"max-height\"), 0);if(b!==0){var e=c.windowSize(),f=g.firstChild.wtLayout;f&&f.setMaxSize&&f.setMaxSize(e.x*b/100,e.y*d/100)}if(a.parentNode==null)a=i=null;else if(a.style.display!=\"none\"){e=c.windowSize();b=a.offsetWidth;d=a.offsetHeight;if(l!=-1)m=true;if(k!=-1)n=true;if(m){a.style.left=Math.round((e.x-b)/2+(c.isIE6?document.documentElement.scrollLeft:0))+\"px\";a.style.marginLeft=\"0px\"}if(n){a.style.top=Math.round((e.y-d)/2+(c.isIE6?document.documentElement.scrollTop:0))+\"px\";a.style.marginTop=\"0px\"}if(a.style.position!= \"\")a.style.visibility=\"visible\";y()}};this.bringToFront=function(){var b=0;$(\".Wt-dialog, .modal, .modal-dialog\").each(function(e,f){b=Math.max(b,$(f).css(\"z-index\"))});if(b>a.style.zIndex){var d=b+1;a.style.zIndex=d;h.emit(a,E,d)}};this.onresize=function(b,d,e){m=n=false;A=!e;H(a,b,d,true);var f=g.firstChild.wtLayout;f&&f.setMaxSize&&f.setMaxSize(0,0);h.layouts2&&h.layouts2.scheduleAdjust();e&&z(b,d)};g.wtResize=G;a.wtPosition=I;if(a.style.width!=\"\")g.style.width=c.parsePx(a.style.width)>0?a.style.width: a.offsetWidth+\"px\";if(a.style.height!=\"\")g.style.height=c.parsePx(a.style.height)>0?a.style.height:a.offsetHeight+\"px\";j.centerDialog()}");
   }
 }

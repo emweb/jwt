@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ExtremesIterator extends SeriesIterator {
+final class ExtremesIterator extends SeriesIterator {
   private static Logger logger = LoggerFactory.getLogger(ExtremesIterator.class);
 
   public ExtremesIterator(Axis axis, int xAxis, int yAxis, AxisScale scale) {
@@ -32,7 +33,7 @@ class ExtremesIterator extends SeriesIterator {
 
   public boolean startSeries(
       final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
-    if (this.axis_ == Axis.XAxis) {
+    if (this.axis_ == Axis.X) {
       return series.getXAxis() == this.xAxis_;
     } else {
       return series.getYAxis() == this.yAxis_;
@@ -48,8 +49,8 @@ class ExtremesIterator extends SeriesIterator {
       int xColumn,
       int yRow,
       int yColumn) {
-    double v = this.axis_ == Axis.XAxis ? x : y;
-    if (!Double.isNaN(v) && (this.scale_ != AxisScale.LogScale || v > 0.0)) {
+    double v = this.axis_ == Axis.X ? x : y;
+    if (!Double.isNaN(v) && (this.scale_ != AxisScale.Log || v > 0.0)) {
       this.maximum_ = Math.max(v, this.maximum_);
       this.minimum_ = Math.min(v, this.minimum_);
     }

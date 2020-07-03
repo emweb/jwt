@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,11 +30,11 @@ public enum LoginState {
   /**
    * The identified user was refused to login.
    *
-   * <p>This is caused by for example {@link User#getStatus()} returning {@link User.Status#Disabled
-   * Status#Disabled}, or if email verification is required but the email hasn&apos;t been verified
-   * yet.
+   * <p>This is caused by for example {@link User#getStatus()} returning {@link
+   * AccountStatus#Disabled Disabled}, or if email verification is required but the email
+   * hasn&apos;t been verified yet.
    */
-  DisabledLogin,
+  Disabled,
   /**
    * A user is weakly authenticated.
    *
@@ -42,11 +43,11 @@ public enum LoginState {
    * password).
    *
    * <p>You may want to allow certain operations, but request to authenticate fully before more
-   * senstive operations.
+   * sensitive operations.
    */
-  WeakLogin,
+  Weak,
   /** A user is strongly authenticated. */
-  StrongLogin;
+  Strong;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

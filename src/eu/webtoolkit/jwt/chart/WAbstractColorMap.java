@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,22 +38,13 @@ public abstract class WAbstractColorMap extends WObject {
    * colormap. The default value for tickSpacing is 2 and the default label format is 2 decimal
    * points.
    */
-  public WAbstractColorMap(double min, double max, WObject parent) {
-    super(parent);
+  public WAbstractColorMap(double min, double max) {
+    super();
     this.min_ = min;
     this.max_ = max;
     this.tickSpacing_ = 2;
     this.format_ = new WString("0.00");
     this.labelFont_ = new WFont();
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WAbstractColorMap(double min, double max, WObject parent) this(min, max,
-   * (WObject)null)}
-   */
-  public WAbstractColorMap(double min, double max) {
-    this(min, max, (WObject) null);
   }
   /** Converts a numerical value to a {@link WColor}. */
   public abstract WColor toColor(double value);

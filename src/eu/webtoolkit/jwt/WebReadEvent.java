@@ -10,15 +10,16 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 enum WebReadEvent {
-  ReadError,
-  ReadMessage,
-  ReadPing;
+  Error,
+  Message,
+  Ping;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

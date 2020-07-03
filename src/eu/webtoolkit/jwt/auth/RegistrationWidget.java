@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -35,23 +36,34 @@ public class RegistrationWidget extends WTemplateFormView {
    *
    * <p>Creates a new authentication.
    */
-  public RegistrationWidget(AuthWidget authWidget) {
-    super(tr("Wt.Auth.template.registration"));
+  public RegistrationWidget(AuthWidget authWidget, WContainerWidget parentContainer) {
+    super(tr("Wt.Auth.template.registration"), (WContainerWidget) null);
     this.authWidget_ = authWidget;
     this.model_ = null;
     this.created_ = false;
     this.confirmPasswordLogin_ = null;
-    this.setWidgetIdMode(WTemplate.WidgetIdMode.SetWidgetObjectName);
+    this.setWidgetIdMode(TemplateWidgetIdMode.SetObjectName);
     WApplication app = WApplication.getInstance();
     app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #RegistrationWidget(AuthWidget authWidget) this((AuthWidget)null)}
+   * <p>Calls {@link #RegistrationWidget(AuthWidget authWidget, WContainerWidget parentContainer)
+   * this((AuthWidget)null, (WContainerWidget)null)}
    */
   public RegistrationWidget() {
-    this((AuthWidget) null);
+    this((AuthWidget) null, (WContainerWidget) null);
+  }
+  /**
+   * Constructor.
+   *
+   * <p>Calls {@link #RegistrationWidget(AuthWidget authWidget, WContainerWidget parentContainer)
+   * this(authWidget, (WContainerWidget)null)}
+   */
+  public RegistrationWidget(AuthWidget authWidget) {
+    this(authWidget, (WContainerWidget) null);
   }
   /** Sets the registration model. */
   public void setModel(RegistrationModel model) {
@@ -61,13 +73,10 @@ public class RegistrationWidget extends WTemplateFormView {
           .changed()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  RegistrationWidget.this.close();
-                }
+              () -> {
+                RegistrationWidget.this.close();
               });
     }
-    ;
     this.model_ = model;
   }
   /**
@@ -103,9 +112,11 @@ public class RegistrationWidget extends WTemplateFormView {
     }
     WAnchor isYou = (WAnchor) this.resolveWidget("confirm-is-you");
     if (!(isYou != null)) {
-      isYou = new WAnchor("#", tr("Wt.Auth.confirm-is-you"));
-      isYou.hide();
-      this.bindWidget("confirm-is-you", isYou);
+      WAnchor newIsYou =
+          isYou =
+              new WAnchor(new WLink("#"), tr("Wt.Auth.confirm-is-you"), (WContainerWidget) null);
+      newIsYou.hide();
+      this.bindWidget("confirm-is-you", newIsYou);
     }
     if (this.model_.isConfirmUserButtonVisible()) {
       if (!isYou.clicked().isConnected()) {
@@ -113,10 +124,8 @@ public class RegistrationWidget extends WTemplateFormView {
             .clicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent e1) {
-                    RegistrationWidget.this.confirmIsYou();
-                  }
+                (WMouseEvent e1) -> {
+                  RegistrationWidget.this.confirmIsYou();
                 });
       }
       isYou.show();
@@ -132,34 +141,19 @@ public class RegistrationWidget extends WTemplateFormView {
           this.bindString("oauth-description", tr("Wt.Auth.oauth-registration"));
         }
         WContainerWidget icons = new WContainerWidget();
+        this.bindWidget("icons", icons);
         icons.addStyleClass("Wt-field");
         for (int i = 0; i < this.model_.getOAuth().size(); ++i) {
           OAuthService service = this.model_.getOAuth().get(i);
-          WImage w = new WImage("css/oauth-" + service.getName() + ".png", icons);
-          w.setToolTip(service.getDescription());
-          w.setStyleClass("Wt-auth-icon");
-          w.setVerticalAlignment(AlignmentFlag.AlignMiddle);
-          final OAuthProcess process = service.createProcess(service.getAuthenticationScope());
-          w.clicked()
-              .addListener(
-                  process,
-                  new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent e1) {
-                      process.startAuthenticate();
-                    }
-                  });
-          process
-              .authenticated()
+          OAuthWidget w = new OAuthWidget(service);
+          icons.addWidget(w);
+          w.authenticated()
               .addListener(
                   this,
-                  new Signal1.Listener<Identity>() {
-                    public void trigger(Identity event) {
-                      RegistrationWidget.this.oAuthDone(process, event);
-                    }
+                  (OAuthProcess e1, Identity e2) -> {
+                    RegistrationWidget.this.oAuthDone(e1, e2);
                   });
-          super.addChild(process);
         }
-        this.bindWidget("icons", icons);
       }
     } else {
       this.setCondition("if:oauth", false);
@@ -167,26 +161,22 @@ public class RegistrationWidget extends WTemplateFormView {
     }
     if (!this.created_) {
       WPushButton okButton = new WPushButton(tr("Wt.Auth.register"));
-      WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
       this.bindWidget("ok-button", okButton);
+      WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
       this.bindWidget("cancel-button", cancelButton);
       okButton
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  RegistrationWidget.this.doRegister();
-                }
+              (WMouseEvent e1) -> {
+                RegistrationWidget.this.doRegister();
               });
       cancelButton
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  RegistrationWidget.this.close();
-                }
+              (WMouseEvent e1) -> {
+                RegistrationWidget.this.close();
               });
       this.created_ = true;
     }
@@ -248,7 +238,10 @@ public class RegistrationWidget extends WTemplateFormView {
    * <p>The default implementation simply deletes the widget.
    */
   protected void close() {
-    if (this != null) this.remove();
+    {
+      WWidget toRemove = this.removeFromParent();
+      if (toRemove != null) toRemove.remove();
+    }
   }
   /**
    * Registers more user information.
@@ -276,10 +269,8 @@ public class RegistrationWidget extends WTemplateFormView {
           .changed()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  RegistrationWidget.this.checkLoginName();
-                }
+              () -> {
+                RegistrationWidget.this.checkLoginName();
               });
     } else {
       if (field == RegistrationModel.EmailField) {
@@ -287,35 +278,29 @@ public class RegistrationWidget extends WTemplateFormView {
       } else {
         if (field == RegistrationModel.ChoosePasswordField) {
           WLineEdit p = new WLineEdit();
-          p.setEchoMode(WLineEdit.EchoMode.Password);
+          p.setEchoMode(EchoMode.Password);
           p.keyWentUp()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      RegistrationWidget.this.checkPassword();
-                    }
+                  (WKeyEvent e1) -> {
+                    RegistrationWidget.this.checkPassword();
                   });
           p.changed()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      RegistrationWidget.this.checkPassword();
-                    }
+                  () -> {
+                    RegistrationWidget.this.checkPassword();
                   });
           result = p;
         } else {
           if (field == RegistrationModel.RepeatPasswordField) {
             WLineEdit p = new WLineEdit();
-            p.setEchoMode(WLineEdit.EchoMode.Password);
+            p.setEchoMode(EchoMode.Password);
             p.changed()
                 .addListener(
                     this,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        RegistrationWidget.this.checkPassword2();
-                      }
+                    () -> {
+                      RegistrationWidget.this.checkPassword2();
                     });
             result = p;
           }
@@ -358,17 +343,15 @@ public class RegistrationWidget extends WTemplateFormView {
     this.updateModel(this.model_);
     switch (this.model_.getConfirmIsExistingUser()) {
       case ConfirmWithPassword:
-        {;
+        {
           this.confirmPasswordLogin_ = new Login();
-          this.confirmPasswordLogin_.login(this.model_.getExistingUser(), LoginState.WeakLogin);
+          this.confirmPasswordLogin_.login(this.model_.getExistingUser(), LoginState.Weak);
           this.confirmPasswordLogin_
               .changed()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      RegistrationWidget.this.confirmedIsYou();
-                    }
+                  () -> {
+                    RegistrationWidget.this.confirmedIsYou();
                   });
           WDialog dialog = this.authWidget_.createPasswordPromptDialog(this.confirmPasswordLogin_);
           dialog.show();
@@ -386,9 +369,9 @@ public class RegistrationWidget extends WTemplateFormView {
   }
 
   private void confirmedIsYou() {
-    if (this.confirmPasswordLogin_.getState() == LoginState.StrongLogin) {
+    if (this.confirmPasswordLogin_.getState() == LoginState.Strong) {
       this.model_.existingUserConfirmed();
-    } else {;
+    } else {
       this.confirmPasswordLogin_ = null;
     }
   }

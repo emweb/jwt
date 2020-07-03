@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -81,24 +82,6 @@ import org.slf4j.LoggerFactory;
 public class WPainter {
   private static Logger logger = LoggerFactory.getLogger(WPainter.class);
 
-  /** Enumeration for render hints. */
-  public enum RenderHint {
-    /** Antialiasing. */
-    Antialiasing(1),
-    /** Use low-quality shadows (applies only to VML) */
-    LowQualityShadows(2);
-
-    private int value;
-
-    RenderHint(int value) {
-      this.value = value;
-    }
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return value;
-    }
-  }
   /**
    * Default constructor.
    *
@@ -191,23 +174,23 @@ public class WPainter {
    *
    * <p>Renderers may ignore particular hints for which they have no support.
    */
-  public void setRenderHint(WPainter.RenderHint hint, boolean on) {
-    int old = this.getS().renderHints_;
+  public void setRenderHint(RenderHint hint, boolean on) {
+    int old = EnumUtils.valueOf(this.getS().renderHints_);
     if (on) {
-      this.getS().renderHints_ |= hint.getValue();
+      this.getS().renderHints_.add(hint);
     } else {
-      this.getS().renderHints_ &= ~hint.getValue();
+      this.getS().renderHints_.remove(hint);
     }
-    if (this.device_ != null && old != this.getS().renderHints_) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Hints));
+    if (this.device_ != null && old != EnumUtils.valueOf(this.getS().renderHints_)) {
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Hints));
     }
   }
   /**
    * Sets a render hint.
    *
-   * <p>Calls {@link #setRenderHint(WPainter.RenderHint hint, boolean on) setRenderHint(hint, true)}
+   * <p>Calls {@link #setRenderHint(RenderHint hint, boolean on) setRenderHint(hint, true)}
    */
-  public final void setRenderHint(WPainter.RenderHint hint) {
+  public final void setRenderHint(RenderHint hint) {
     setRenderHint(hint, true);
   }
   /**
@@ -217,9 +200,9 @@ public class WPainter {
    *
    * <p>
    *
-   * @see WPainter#setRenderHint(WPainter.RenderHint hint, boolean on)
+   * @see WPainter#setRenderHint(RenderHint hint, boolean on)
    */
-  public int getRenderHints() {
+  public EnumSet<RenderHint> getRenderHints() {
     return this.getS().renderHints_;
   }
   /**
@@ -633,10 +616,10 @@ public class WPainter {
                 .isPointInPath(this.getWorldTransform().map(new WPointF(seg.getX(), seg.getY())))) {
           continue;
         }
-        if (seg.getType() == WPainterPath.Segment.Type.LineTo
-            || seg.getType() == WPainterPath.Segment.Type.MoveTo
-            || seg.getType() == WPainterPath.Segment.Type.CubicEnd
-            || seg.getType() == WPainterPath.Segment.Type.QuadEnd) {
+        if (seg.getType() == SegmentType.LineTo
+            || seg.getType() == SegmentType.MoveTo
+            || seg.getType() == SegmentType.CubicEnd
+            || seg.getType() == SegmentType.QuadEnd) {
           WPointF p = new WPointF(seg.getX(), seg.getY());
           this.drawPath(new WTransform().translate(p).map(stencil));
         }
@@ -698,8 +681,7 @@ public class WPainter {
    *
    * <p>Draws a single point using the current pen. This is implemented by drawing a very short
    * line, centered around the given <code>position</code>. To get the result of a single point, you
-   * should use a pen with a {@link PenCapStyle#SquareCap} or {@link PenCapStyle#RoundCap} pen cap
-   * style.
+   * should use a pen with a {@link PenCapStyle#Square} or {@link PenCapStyle#Round} pen cap style.
    *
    * <p>
    *
@@ -791,14 +773,7 @@ public class WPainter {
    * @see WPainter#drawRect(double x, double y, double width, double height)
    */
   public void drawRect(final WRectF rectangle) {
-    WCanvasPaintDevice cDevice =
-        ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_) : null);
-    if (cDevice != null && rectangle.isJavaScriptBound()) {
-      cDevice.drawRect(rectangle);
-    } else {
-      this.drawRect(
-          rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
-    }
+    this.device_.drawRect(rectangle);
   }
   /**
    * Draws a rectangle.
@@ -810,12 +785,7 @@ public class WPainter {
    * @see WPainter#drawRect(WRectF rectangle)
    */
   public void drawRect(double x, double y, double width, double height) {
-    WPainterPath path = new WPainterPath(new WPointF(x, y));
-    path.lineTo(x + width, y);
-    path.lineTo(x + width, y + height);
-    path.lineTo(x, y + height);
-    path.closeSubPath();
-    this.drawPath(path);
+    this.drawRect(new WRectF(x, y, width, height));
   }
   /**
    * Draws a number of rectangles.
@@ -854,9 +824,11 @@ public class WPainter {
    * using the current transformation, pen color ({@link WPainter#getPen() getPen()}) and font
    * settings ({@link WPainter#getFont() getFont()}).
    *
-   * <p>AlignmentFlags is the logical OR of a horizontal and vertical alignment. Horizontal
-   * alignment may be one of AlignLeft, AlignCenter, or AlignRight. Vertical alignment is one of
-   * AlignTop, AlignMiddle or AlignBottom.
+   * <p>AlignmentFlags is the logical OR of a horizontal and vertical alignment. {@link
+   * Orientation#Horizontal} alignment may be one of {@link AlignmentFlag#Left}, {@link
+   * AlignmentFlag#Center}, or {@link AlignmentFlag#Right}. {@link Orientation#Vertical} alignment
+   * is one of {@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle} or {@link
+   * AlignmentFlag#Bottom}.
    *
    * <p>TextFlag determines how the text is rendered in the rectangle. Text can be rendered on one
    * line or by wrapping the words within the rectangle.
@@ -877,9 +849,10 @@ public class WPainter {
    * renderers (WPaintedWidget::inlineSvgVml) for the most accurate font rendering. Native HTML5
    * text rendering is supported on Firefox3+, Chrome2+ and Safari4+.</i>
    *
-   * <p><i><b>Note: </b>TextWordWrap: using the TextWordWrap TextFlag is currently only supported by
-   * the SVG backend. The code generated by the SVG backend uses features currently only supported
-   * by Inkscape. Inkscape currently supports only Top vertical alignments. </i>
+   * <p><i><b>Note: </b>{@link TextFlag#WordWrap}: using the {@link TextFlag#WordWrap} TextFlag is
+   * currently only supported by the SVG backend. The code generated by the SVG backend uses
+   * features currently only supported by Inkscape. Inkscape currently supports only {@link
+   * Side#Top} vertical alignments. </i>
    */
   public void drawText(
       final WRectF rectangle,
@@ -887,31 +860,29 @@ public class WPainter {
       TextFlag textFlag,
       final CharSequence text,
       WPointF clipPoint) {
-    if (textFlag == TextFlag.TextSingleLine) {
+    if (textFlag == TextFlag.SingleLine) {
       if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
-        alignmentFlags.add(AlignmentFlag.AlignTop);
+        alignmentFlags.add(AlignmentFlag.Top);
       }
       if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask).isEmpty()) {
-        alignmentFlags.add(AlignmentFlag.AlignLeft);
+        alignmentFlags.add(AlignmentFlag.Left);
       }
       this.device_.drawText(
-          rectangle.getNormalized(), alignmentFlags, TextFlag.TextSingleLine, text, clipPoint);
+          rectangle.getNormalized(), alignmentFlags, TextFlag.SingleLine, text, clipPoint);
     } else {
       if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
-        alignmentFlags.add(AlignmentFlag.AlignTop);
+        alignmentFlags.add(AlignmentFlag.Top);
       }
       if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask).isEmpty()) {
-        alignmentFlags.add(AlignmentFlag.AlignLeft);
+        alignmentFlags.add(AlignmentFlag.Left);
       }
-      if (!EnumUtils.mask(this.device_.getFeatures(), WPaintDevice.FeatureFlag.CanWordWrap)
-          .isEmpty()) {
+      if (this.device_.getFeatures().contains(PaintDeviceFeatureFlag.WordWrap)) {
         this.device_.drawText(rectangle.getNormalized(), alignmentFlags, textFlag, text, clipPoint);
       } else {
-        if (!EnumUtils.mask(this.device_.getFeatures(), WPaintDevice.FeatureFlag.HasFontMetrics)
-            .isEmpty()) {
+        if (this.device_.getFeatures().contains(PaintDeviceFeatureFlag.FontMetrics)) {
         } else {
           throw new WException(
-              "WPainter::drawText(): device does not support TextWordWrap or FontMetrics");
+              "WPainter::drawText(): device does not support WordWrap or FontMetrics");
         }
       }
     }
@@ -941,10 +912,10 @@ public class WPainter {
       double lineHeight,
       boolean softClipping) {
     if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
-      alignmentFlags.add(AlignmentFlag.AlignTop);
+      alignmentFlags.add(AlignmentFlag.Top);
     }
     if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask).isEmpty()) {
-      alignmentFlags.add(AlignmentFlag.AlignLeft);
+      alignmentFlags.add(AlignmentFlag.Left);
     }
     WCanvasPaintDevice cDevice =
         ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_) : null);
@@ -960,10 +931,10 @@ public class WPainter {
         final WPainterPath.Segment seg = path.getSegments().get(i);
         final WPainterPath.Segment tseg = tpath.getSegments().get(i);
         List<WString> splitText = splitLabel(text.get(i));
-        if (seg.getType() == WPainterPath.Segment.Type.MoveTo
-            || seg.getType() == WPainterPath.Segment.Type.LineTo
-            || seg.getType() == WPainterPath.Segment.Type.QuadEnd
-            || seg.getType() == WPainterPath.Segment.Type.CubicEnd) {
+        if (seg.getType() == SegmentType.MoveTo
+            || seg.getType() == SegmentType.LineTo
+            || seg.getType() == SegmentType.QuadEnd
+            || seg.getType() == SegmentType.CubicEnd) {
           this.save();
           this.setClipping(false);
           this.translate(tseg.getX(), tseg.getY());
@@ -980,7 +951,7 @@ public class WPainter {
                 new WRectF(
                     rect.getLeft(), rect.getTop() + yOffset, rect.getWidth(), rect.getHeight()),
                 alignmentFlags,
-                TextFlag.TextSingleLine,
+                TextFlag.SingleLine,
                 splitText.get(j),
                 softClipping ? p : null);
           }
@@ -999,13 +970,13 @@ public class WPainter {
   public void drawText(
       final WRectF rectangle, EnumSet<AlignmentFlag> flags, final CharSequence text) {
     if (!!EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask).isEmpty()) {
-      flags.add(AlignmentFlag.AlignTop);
+      flags.add(AlignmentFlag.Top);
     }
     if (!!EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask).isEmpty()) {
-      flags.add(AlignmentFlag.AlignLeft);
+      flags.add(AlignmentFlag.Left);
     }
     this.device_.drawText(
-        rectangle.getNormalized(), flags, TextFlag.TextSingleLine, text, (WPointF) null);
+        rectangle.getNormalized(), flags, TextFlag.SingleLine, text, (WPointF) null);
   }
   /**
    * Draws text.
@@ -1063,7 +1034,7 @@ public class WPainter {
     WBrush oldBrush = this.getBrush().clone();
     WPen oldPen = this.getPen().clone();
     this.setBrush(b);
-    this.setPen(new WPen(PenStyle.NoPen));
+    this.setPen(new WPen(PenStyle.None));
     this.drawPath(path);
     this.setBrush(oldBrush);
     this.setPen(oldPen);
@@ -1082,7 +1053,7 @@ public class WPainter {
     WBrush oldBrush = this.getBrush().clone();
     WPen oldPen = this.getPen().clone();
     this.setBrush(b);
-    this.setPen(new WPen(PenStyle.NoPen));
+    this.setPen(new WPen(PenStyle.None));
     this.drawRect(rectangle);
     this.setBrush(oldBrush);
     this.setPen(oldPen);
@@ -1128,13 +1099,11 @@ public class WPainter {
    *
    * <p><i><b>Note: </b>With the VML backend (IE), the shadow is not applied to images, and the
    * shadow color is always black; only the opacity (alpha) channel is taken into account. </i>
-   *
-   * @see WPainter.RenderHint#LowQualityShadows
    */
   public void setShadow(final WShadow shadow) {
     if (!this.getShadow().equals(shadow)) {
       this.getS().currentShadow_ = shadow;
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Shadow));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Shadow));
     }
   }
   /**
@@ -1160,29 +1129,29 @@ public class WPainter {
   public void setBrush(final WBrush b) {
     if (!this.getBrush().equals(b)) {
       this.getS().currentBrush_ = b;
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Brush));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Brush));
     }
   }
   /**
    * Sets the font.
    *
    * <p>Changes the font for subsequent text rendering. Note that only font sizes that are defined
-   * as an explicit size (see {@link WFont.Size#FixedSize Size#FixedSize}) will render correctly in
-   * all devices (SVG, VML, and HtmlCanvas).
+   * as an explicit size (see {@link FontSize#FixedSize}) will render correctly in all devices (SVG,
+   * VML, and HtmlCanvas).
    *
    * <p>The list of fonts that will render correctly with VML (on IE&lt;9) are limited to the
    * following: <a
    * href="http://www.ampsoft.net/webdesign-l/WindowsMacFonts.html">http://www.ampsoft.net/webdesign-l/WindowsMacFonts.html</a>
    *
    * <p>Careful, for a font family that contains a space, you need to add quotes, to {@link
-   * WFont#setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
-   * WFont#setFamily()} e.g.
+   * WFont#setFamily(FontFamily genericFamily, CharSequence specificFamilies) WFont#setFamily()}
+   * e.g.
    *
    * <p>
    *
    * <pre>{@code
    * WFont mono;
-   * mono.setFamily(WFont::Monospace, "'Courier New'");
+   * mono.setFamily(FontFamily::Monospace, "'Courier New'");
    * mono.setSize(18);
    *
    * }</pre>
@@ -1196,7 +1165,7 @@ public class WPainter {
   public void setFont(final WFont f) {
     if (!this.getFont().equals(f)) {
       this.getS().currentFont_ = f;
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Font));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Font));
     }
   }
   /**
@@ -1212,7 +1181,7 @@ public class WPainter {
   public void setPen(final WPen p) {
     if (!this.getPen().equals(p)) {
       this.getS().currentPen_ = p;
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Pen));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Pen));
     }
   }
   /**
@@ -1272,7 +1241,7 @@ public class WPainter {
     if (this.getS().clipping_ != enable) {
       this.getS().clipping_ = enable;
       if (this.device_ != null) {
-        this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Clipping));
+        this.device_.setChanged(EnumSet.of(PainterChangeFlag.Clipping));
       }
     }
   }
@@ -1307,7 +1276,7 @@ public class WPainter {
     this.getS().clipPath_.assign(clipPath);
     this.getS().clipPathTransform_.assign(this.getCombinedTransform());
     if (this.getS().clipping_ && this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Clipping));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Clipping));
     }
   }
   /**
@@ -1331,7 +1300,7 @@ public class WPainter {
   public void resetTransform() {
     this.getS().worldTransform_.reset();
     if (this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Transform));
     }
   }
   /**
@@ -1349,7 +1318,7 @@ public class WPainter {
   public void rotate(double angle) {
     this.getS().worldTransform_.rotate(angle);
     if (this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Transform));
     }
   }
   /**
@@ -1367,7 +1336,7 @@ public class WPainter {
   public void scale(double sx, double sy) {
     this.getS().worldTransform_.scale(sx, sy);
     if (this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Transform));
     }
   }
   /**
@@ -1386,7 +1355,7 @@ public class WPainter {
   public void translate(final WPointF p) {
     this.getS().worldTransform_.translate(p);
     if (this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Transform));
     }
   }
   /**
@@ -1427,7 +1396,7 @@ public class WPainter {
       this.getS().worldTransform_.assign(matrix);
     }
     if (this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Transform));
     }
   }
   /**
@@ -1479,32 +1448,32 @@ public class WPainter {
    */
   public void restore() {
     if (this.stateStack_.size() > 1) {
-      EnumSet<WPaintDevice.ChangeFlag> flags = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
+      EnumSet<PainterChangeFlag> flags = EnumSet.noneOf(PainterChangeFlag.class);
       final WPainter.State last = this.stateStack_.get(this.stateStack_.size() - 1);
       final WPainter.State next = this.stateStack_.get(this.stateStack_.size() - 2);
       if (!last.worldTransform_.equals(next.worldTransform_)) {
-        flags.add(WPaintDevice.ChangeFlag.Transform);
+        flags.add(PainterChangeFlag.Transform);
       }
       if (!last.currentBrush_.equals(next.currentBrush_)) {
-        flags.add(WPaintDevice.ChangeFlag.Brush);
+        flags.add(PainterChangeFlag.Brush);
       }
       if (!last.currentFont_.equals(next.currentFont_)) {
-        flags.add(WPaintDevice.ChangeFlag.Font);
+        flags.add(PainterChangeFlag.Font);
       }
       if (!last.currentPen_.equals(next.currentPen_)) {
-        flags.add(WPaintDevice.ChangeFlag.Pen);
+        flags.add(PainterChangeFlag.Pen);
       }
       if (!last.currentShadow_.equals(next.currentShadow_)) {
-        flags.add(WPaintDevice.ChangeFlag.Shadow);
+        flags.add(PainterChangeFlag.Shadow);
       }
-      if (last.renderHints_ != next.renderHints_) {
-        flags.add(WPaintDevice.ChangeFlag.Hints);
+      if (!last.renderHints_.equals(next.renderHints_)) {
+        flags.add(PainterChangeFlag.Hints);
       }
       if (!last.clipPath_.equals(next.clipPath_)) {
-        flags.add(WPaintDevice.ChangeFlag.Clipping);
+        flags.add(PainterChangeFlag.Clipping);
       }
       if (last.clipping_ != next.clipping_) {
-        flags.add(WPaintDevice.ChangeFlag.Clipping);
+        flags.add(PainterChangeFlag.Clipping);
       }
       this.stateStack_.remove(0 + this.stateStack_.size() - 1);
       if (!flags.isEmpty() && this.device_ != null) {
@@ -1625,7 +1594,7 @@ public class WPainter {
       } else {
         w = 1.0;
       }
-      return new WLength(w, WLength.Unit.Pixel);
+      return new WLength(w, LengthUnit.Pixel);
     } else {
       if (w != 0 && !correctCosmetic) {
         final WTransform t = this.getCombinedTransform();
@@ -1634,7 +1603,7 @@ public class WPainter {
           t.decomposeTranslateRotateScaleRotate(d);
           w *= (Math.abs(d.sx) + Math.abs(d.sy)) / 2.0;
         }
-        return new WLength(w, WLength.Unit.Pixel);
+        return new WLength(w, LengthUnit.Pixel);
       } else {
         return penWidth;
       }
@@ -1654,7 +1623,7 @@ public class WPainter {
     public WFont currentFont_;
     public WPen currentPen_;
     public WShadow currentShadow_;
-    public int renderHints_;
+    public EnumSet<RenderHint> renderHints_;
     public WPainterPath clipPath_;
     public WTransform clipPathTransform_;
     public boolean clipping_;
@@ -1665,12 +1634,12 @@ public class WPainter {
       this.currentFont_ = new WFont();
       this.currentPen_ = new WPen();
       this.currentShadow_ = new WShadow();
-      this.renderHints_ = 0;
+      this.renderHints_ = EnumSet.noneOf(RenderHint.class);
       this.clipPath_ = new WPainterPath();
       this.clipPathTransform_ = new WTransform();
       this.clipping_ = false;
-      this.currentFont_.setFamily(WFont.GenericFamily.SansSerif);
-      this.currentFont_.setSize(WFont.Size.FixedSize, new WLength(10, WLength.Unit.Point));
+      this.currentFont_.setFamily(FontFamily.SansSerif);
+      this.currentFont_.setSize(new WLength(10, LengthUnit.Point));
     }
 
     public WPainter.State clone() {
@@ -1680,7 +1649,7 @@ public class WPainter {
       result.currentFont_ = this.currentFont_;
       result.currentPen_ = this.currentPen_;
       result.currentShadow_ = this.currentShadow_;
-      result.renderHints_ = this.renderHints_;
+      result.renderHints_.clear();
       result.clipPath_.assign(this.clipPath_);
       result.clipPathTransform_.assign(this.clipPathTransform_);
       result.clipping_ = this.clipping_;
@@ -1703,7 +1672,7 @@ public class WPainter {
         this.viewPort_.getY() - this.window_.getY() * scaleY);
     this.viewTransform_.scale(scaleX, scaleY);
     if (this.device_ != null) {
-      this.device_.setChanged(EnumSet.of(WPaintDevice.ChangeFlag.Transform));
+      this.device_.setChanged(EnumSet.of(PainterChangeFlag.Transform));
     }
   }
   // private void drawMultilineText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, final
@@ -1721,13 +1690,13 @@ public class WPainter {
 
   static double calcYOffset(
       int lineNb, int nbLines, double lineHeight, EnumSet<AlignmentFlag> verticalAlign) {
-    if (verticalAlign.equals(AlignmentFlag.AlignMiddle)) {
+    if (verticalAlign.equals(AlignmentFlag.Middle)) {
       return -((nbLines - 1) * lineHeight / 2.0) + lineNb * lineHeight;
     } else {
-      if (verticalAlign.equals(AlignmentFlag.AlignTop)) {
+      if (verticalAlign.equals(AlignmentFlag.Top)) {
         return lineNb * lineHeight;
       } else {
-        if (verticalAlign.equals(AlignmentFlag.AlignBottom)) {
+        if (verticalAlign.equals(AlignmentFlag.Bottom)) {
           return -(nbLines - 1 - lineNb) * lineHeight;
         } else {
           return 0;

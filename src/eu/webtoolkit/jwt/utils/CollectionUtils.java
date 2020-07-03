@@ -67,4 +67,19 @@ public class CollectionUtils {
 		} else
 			return false;
 	}
+
+	public static <V> V take(List<V> list, V v) {
+		int index = list.indexOf(v);
+		if (index == -1)
+			return null;
+		return list.remove(index);
+	}
+
+	public static <K,V> K keyForValue(Map<K,V> map, V value) {
+		for (Map.Entry<K,V> entry : map.entrySet())
+			if (entry.getValue().equals(value))
+				return entry.getKey();
+
+		return null;
+	}
 }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -68,24 +69,27 @@ public class WFileUpload extends WWebWidget {
   private static Logger logger = LoggerFactory.getLogger(WFileUpload.class);
 
   /** Creates a file upload widget. */
-  public WFileUpload(WContainerWidget parent) {
-    super(parent);
+  public WFileUpload(WContainerWidget parentContainer) {
+    super();
     this.flags_ = new BitSet();
     this.textSize_ = 20;
     this.uploadedFiles_ = new ArrayList<UploadedFile>();
     this.fileTooLarge_ = new JSignal1<Long>(this, "fileTooLarge") {};
-    this.dataReceived_ = new Signal2<Long, Long>(this);
-    this.displayWidget_ = null;
+    this.dataReceived_ = new Signal2<Long, Long>();
+    this.displayWidget_ = (WInteractWidget) null;
     this.displayWidgetRedirect_ = new JSlot(this);
+    this.fileUploadTarget_ = null;
+    this.containedProgressBar_ = null;
     this.progressBar_ = null;
     this.acceptAttributes_ = "";
     this.setInline(true);
     this.create();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a file upload widget.
    *
-   * <p>Calls {@link #WFileUpload(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WFileUpload(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WFileUpload() {
     this((WContainerWidget) null);
@@ -94,6 +98,14 @@ public class WFileUpload extends WWebWidget {
   public void remove() {
     if (this.flags_.get(BIT_UPLOADING)) {
       WApplication.getInstance().enableUpdates(false);
+    }
+    {
+      WWidget oldWidget = this.containedProgressBar_;
+      this.containedProgressBar_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.containedProgressBar_);
+        if (toRemove != null) toRemove.remove();
+      }
     }
     super.remove();
   }
@@ -196,18 +208,6 @@ public class WFileUpload extends WWebWidget {
   /** Returns whether one or more files have been uploaded. */
   public boolean isEmpty() {
     return this.uploadedFiles_.isEmpty();
-  }
-  /**
-   * Checks if no filename was given and thus no file uploaded. (<b>Deprecated</b>)
-   *
-   * <p>Return whether a non-empty filename was given.
-   *
-   * <p>
-   *
-   * @deprecated This method was renamed to {@link WFileUpload#isEmpty() isEmpty()}
-   */
-  public boolean isEmptyFileName() {
-    return this.isEmpty();
   }
   /** Returns the uploaded files. */
   public List<UploadedFile> getUploadedFiles() {
@@ -315,9 +315,7 @@ public class WFileUpload extends WWebWidget {
    * <p>When the file is being uploaded, upload progress is indicated using the provided progress
    * bar. Both the progress bar range and values are configured when the upload starts.
    *
-   * <p>If the provided progress bar already has a parent, then the file upload itself is hidden as
-   * soon as the upload starts. If the provided progress bar does not yet have a parent, then the
-   * bar becomes part of the file upload, and replaces the file prompt when the upload is started.
+   * <p>The file upload itself is hidden as soon as the upload starts.
    *
    * <p>The default progress bar is 0 (no upload progress is indicated).
    *
@@ -329,14 +327,17 @@ public class WFileUpload extends WWebWidget {
    * @see WFileUpload#dataReceived()
    */
   public void setProgressBar(WProgressBar bar) {
-    if (this.progressBar_ != null) this.progressBar_.remove();
-    this.progressBar_ = bar;
-    if (this.progressBar_ != null) {
-      if (!(this.progressBar_.getParent() != null)) {
-        this.progressBar_.setParentWidget(this);
-        this.progressBar_.hide();
+    if (this.containedProgressBar_ != bar) {
+      {
+        WWidget oldWidget = this.containedProgressBar_;
+        this.containedProgressBar_ = null;
+        {
+          WWidget toRemove = this.manageWidget(oldWidget, this.containedProgressBar_);
+          if (toRemove != null) toRemove.remove();
+        }
       }
     }
+    this.progressBar_ = bar;
   }
   /**
    * Returns the progress bar.
@@ -405,6 +406,7 @@ public class WFileUpload extends WWebWidget {
   private WInteractWidget displayWidget_;
   private JSlot displayWidgetRedirect_;
   private WResource fileUploadTarget_;
+  private WProgressBar containedProgressBar_;
   private WProgressBar progressBar_;
   private String acceptAttributes_;
 
@@ -417,19 +419,15 @@ public class WFileUpload extends WWebWidget {
           .dataReceived()
           .addListener(
               this,
-              new Signal2.Listener<Long, Long>() {
-                public void trigger(Long e1, Long e2) {
-                  WFileUpload.this.onData(e1, e2);
-                }
+              (Long e1, Long e2) -> {
+                WFileUpload.this.onData(e1, e2);
               });
       this.fileUploadTarget_
           .dataExceeded()
           .addListener(
               this,
-              new Signal1.Listener<Long>() {
-                public void trigger(Long e1) {
-                  WFileUpload.this.onDataExceeded(e1);
-                }
+              (Long e1) -> {
+                WFileUpload.this.onDataExceeded(e1);
               });
       this.setJavaScriptMember(
           WT_RESIZE_JS, "function(self, w, h) {if (w >= 0) $(self).find('input').width(w);}");
@@ -441,18 +439,14 @@ public class WFileUpload extends WWebWidget {
     this.uploaded()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WFileUpload.this.onUploaded();
-              }
+            () -> {
+              WFileUpload.this.onUploaded();
             });
     this.fileTooLarge()
         .addListener(
             this,
-            new Signal1.Listener<Long>() {
-              public void trigger(Long e1) {
-                WFileUpload.this.onUploaded();
-              }
+            (Long e1) -> {
+              WFileUpload.this.onUploaded();
             });
   }
 
@@ -468,7 +462,7 @@ public class WFileUpload extends WWebWidget {
 
   private void onDataExceeded(long dataExceeded) {
     this.doJavaScript(
-        "Wt3_6_0.$('if" + this.getId() + "').src='" + this.fileUploadTarget_.getUrl() + "';");
+        "Wt4_4_0.$('if" + this.getId() + "').src='" + this.fileUploadTarget_.getUrl() + "';");
     if (this.flags_.get(BIT_UPLOADING)) {
       this.flags_.clear(BIT_UPLOADING);
       this.handleFileTooLarge(dataExceeded);
@@ -513,13 +507,15 @@ public class WFileUpload extends WWebWidget {
   void updateDom(final DomElement element, boolean all) {
     boolean containsProgress = this.progressBar_ != null && this.progressBar_.getParent() == this;
     DomElement inputE = null;
-    if (element.getType() != DomElementType.DomElement_INPUT
+    if (element.getType() != DomElementType.INPUT
         && this.flags_.get(BIT_DO_UPLOAD)
         && containsProgress
         && !this.progressBar_.isRendered()) {
       element.addChild(this.progressBar_.createSDomElement(WApplication.getInstance()));
     }
-    if (this.fileUploadTarget_ != null && this.flags_.get(BIT_USE_DISPLAY_WIDGET)) {
+    if (this.fileUploadTarget_ != null
+        && this.flags_.get(BIT_USE_DISPLAY_WIDGET)
+        && this.displayWidget_ != null) {
       this.addStyleClass("Wt-fileupload-hidden");
       this.displayWidget_.clicked().addListener(this.displayWidgetRedirect_);
     }
@@ -527,7 +523,7 @@ public class WFileUpload extends WWebWidget {
       element.setAttribute("action", this.fileUploadTarget_.generateUrl());
       String maxFileSize = String.valueOf(WApplication.getInstance().getMaximumRequestSize());
       String command =
-          "{var submit = true;var x = Wt3_6_0.$('in"
+          "{var submit = true;var x = Wt4_4_0.$('in"
               + this.getId()
               + "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > "
               + maxFileSize
@@ -539,13 +535,13 @@ public class WFileUpload extends WWebWidget {
       element.callJavaScript(command);
       this.flags_.clear(BIT_DO_UPLOAD);
       if (containsProgress) {
-        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.DomElement_INPUT);
-        inputE.setProperty(Property.PropertyStyleDisplay, "none");
+        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.INPUT);
+        inputE.setProperty(Property.StyleDisplay, "none");
       }
     }
     if (this.flags_.get(BIT_ENABLED_CHANGED)) {
       if (!(inputE != null)) {
-        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.DomElement_INPUT);
+        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.INPUT);
       }
       if (this.isEnabled()) {
         inputE.callMethod("disabled=false");
@@ -555,7 +551,7 @@ public class WFileUpload extends WWebWidget {
     }
     if (this.flags_.get(BIT_ACCEPT_ATTRIBUTE_CHANGED) || this.flags_.get(BIT_ENABLED_CHANGED)) {
       if (!(inputE != null)) {
-        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.DomElement_INPUT);
+        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.INPUT);
       }
       inputE.setAttribute("accept", this.acceptAttributes_);
     }
@@ -565,7 +561,7 @@ public class WFileUpload extends WWebWidget {
     EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
     if (change != null && change.needsUpdate(all)) {
       if (!(inputE != null)) {
-        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.DomElement_INPUT);
+        inputE = DomElement.getForUpdate("in" + this.getId(), DomElementType.INPUT);
       }
       this.updateSignalConnection(inputE, change, "change", all);
     }
@@ -577,16 +573,16 @@ public class WFileUpload extends WWebWidget {
 
   protected DomElement createDomElement(WApplication app) {
     DomElement result = DomElement.createNew(this.getDomElementType());
-    if (result.getType() == DomElementType.DomElement_FORM) {
+    if (result.getType() == DomElementType.FORM) {
       result.setId(this.getId());
     } else {
       result.setName(this.getId());
     }
     EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
     if (this.fileUploadTarget_ != null) {
-      DomElement i = DomElement.createNew(DomElementType.DomElement_IFRAME);
-      i.setProperty(Property.PropertyClass, "Wt-resource");
-      i.setProperty(Property.PropertySrc, this.fileUploadTarget_.getUrl());
+      DomElement i = DomElement.createNew(DomElementType.IFRAME);
+      i.setProperty(Property.Class, "Wt-resource");
+      i.setProperty(Property.Src, this.fileUploadTarget_.getUrl());
       i.setName("if" + this.getId());
       if (app.getEnvironment().agentIsIE()) {
         i.setAttribute("APPLICATION", "yes");
@@ -595,12 +591,12 @@ public class WFileUpload extends WWebWidget {
       form.setAttribute("method", "post");
       form.setAttribute("action", this.fileUploadTarget_.getUrl());
       form.setAttribute("enctype", "multipart/form-data");
-      form.setProperty(Property.PropertyStyle, "margin:0;padding:0;display:inline");
-      form.setProperty(Property.PropertyTarget, "if" + this.getId());
-      DomElement d = DomElement.createNew(DomElementType.DomElement_SPAN);
+      form.setProperty(Property.Style, "margin:0;padding:0;display:inline");
+      form.setProperty(Property.Target, "if" + this.getId());
+      DomElement d = DomElement.createNew(DomElementType.SPAN);
       d.addChild(i);
       form.addChild(d);
-      DomElement input = DomElement.createNew(DomElementType.DomElement_INPUT);
+      DomElement input = DomElement.createNew(DomElementType.INPUT);
       input.setAttribute("type", "file");
       if (this.flags_.get(BIT_MULTIPLE)) {
         input.setAttribute("multiple", "multiple");
@@ -610,7 +606,7 @@ public class WFileUpload extends WWebWidget {
       input.setAttribute("accept", this.acceptAttributes_);
       input.setId("in" + this.getId());
       if (!this.isEnabled()) {
-        input.setProperty(Property.PropertyDisabled, "true");
+        input.setProperty(Property.Disabled, "true");
       }
       if (change != null) {
         this.updateSignalConnection(input, change, "change", true);
@@ -633,7 +629,7 @@ public class WFileUpload extends WWebWidget {
       }
       result.setAttribute("size", String.valueOf(this.textSize_));
       if (!this.isEnabled()) {
-        result.setProperty(Property.PropertyDisabled, "true");
+        result.setProperty(Property.Disabled, "true");
       }
       if (change != null) {
         this.updateSignalConnection(result, change, "change", true);
@@ -645,9 +641,7 @@ public class WFileUpload extends WWebWidget {
   }
 
   DomElementType getDomElementType() {
-    return this.fileUploadTarget_ != null
-        ? DomElementType.DomElement_FORM
-        : DomElementType.DomElement_INPUT;
+    return this.fileUploadTarget_ != null ? DomElementType.FORM : DomElementType.INPUT;
   }
 
   void propagateRenderOk(boolean deep) {
@@ -656,7 +650,7 @@ public class WFileUpload extends WWebWidget {
 
   protected void getDomChanges(final List<DomElement> result, WApplication app) {
     if (this.flags_.get(BIT_ENABLE_AJAX)) {
-      DomElement plainE = DomElement.getForUpdate(this, DomElementType.DomElement_INPUT);
+      DomElement plainE = DomElement.getForUpdate(this, DomElementType.INPUT);
       DomElement ajaxE = this.createDomElement(app);
       plainE.replaceWith(ajaxE);
       result.add(plainE);
@@ -674,9 +668,9 @@ public class WFileUpload extends WWebWidget {
   String renderRemoveJs(boolean recursive) {
     boolean isIE = WApplication.getInstance().getEnvironment().agentIsIE();
     if (this.isRendered() && isIE) {
-      String result = "Wt3_6_0.$('if" + this.getId() + "').innerHTML = \"\";";
+      String result = "Wt4_4_0.$('if" + this.getId() + "').innerHTML = \"\";";
       if (!recursive) {
-        result += "Wt3_6_0.remove('" + this.getId() + "');";
+        result += "Wt4_4_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {

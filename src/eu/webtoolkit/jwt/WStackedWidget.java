@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -44,20 +45,22 @@ public class WStackedWidget extends WContainerWidget {
   private static Logger logger = LoggerFactory.getLogger(WStackedWidget.class);
 
   /** Creates a new stack. */
-  public WStackedWidget(WContainerWidget parent) {
-    super(parent);
+  public WStackedWidget(WContainerWidget parentContainer) {
+    super();
     this.animation_ = new WAnimation();
     this.autoReverseAnimation_ = false;
     this.currentIndex_ = -1;
     this.widgetsAdded_ = false;
     this.javaScriptDefined_ = false;
     this.loadAnimateJS_ = false;
+    this.setOverflow(Overflow.Hidden);
     this.addStyleClass("Wt-stack");
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new stack.
    *
-   * <p>Calls {@link #WStackedWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WStackedWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WStackedWidget() {
     this((WContainerWidget) null);
@@ -69,6 +72,18 @@ public class WStackedWidget extends WContainerWidget {
       this.currentIndex_ = 0;
     }
     this.widgetsAdded_ = true;
+  }
+  // public Widget  addWidget(<Woow... some pseudoinstantiation type!> widget) ;
+  public WWidget removeWidget(WWidget widget) {
+    WWidget result = super.removeWidget(widget);
+    if (this.currentIndex_ >= this.getCount()) {
+      if (this.getCount() > 0) {
+        this.setCurrentIndex(this.getCount() - 1);
+      } else {
+        this.currentIndex_ = -1;
+      }
+    }
+    return result;
   }
   /**
    * Returns the index of the widget that is currently shown.
@@ -199,9 +214,9 @@ public class WStackedWidget extends WContainerWidget {
    *
    * <p>When <code>autoReverse</code> is set to <code>true</code>, then the reverse animation is
    * chosen when the new index precedes the current index. This only applies to {@link
-   * WAnimation.AnimationEffect#SlideInFromLeft AnimationEffect#SlideInFromLeft}, {@link
-   * WAnimation.AnimationEffect#SlideInFromRight AnimationEffect#SlideInFromRight},
-   * WAnimation::SlideInFromUp or WAnimation::SlideInFromDown transition effects.
+   * AnimationEffect#SlideInFromLeft}, {@link AnimationEffect#SlideInFromRight}, {@link
+   * AnimationEffect#SlideInFromTop} or {@link AnimationEffect#SlideInFromBottom} transition
+   * effects.
    *
    * <p>
    *
@@ -211,8 +226,8 @@ public class WStackedWidget extends WContainerWidget {
    * performed. If you do want to force this change you can use {@link WApplication#processEvents()}
    * before calling {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()}.</i>
    *
-   * <p><i><b>Note: </b>It is also not supported to use a {@link WAnimation.AnimationEffect#Pop
-   * AnimationEffect#Pop} animation on a {@link WStackedWidget}.</i>
+   * <p><i><b>Note: </b>It is also not supported to use a {@link AnimationEffect#Pop} animation on a
+   * {@link WStackedWidget}.</i>
    *
    * @see WStackedWidget#setCurrentIndex(int index)
    */
@@ -236,17 +251,6 @@ public class WStackedWidget extends WContainerWidget {
     setTransitionAnimation(animation, false);
   }
 
-  void removeChild(WWidget child) {
-    super.removeChild(child);
-    if (this.currentIndex_ >= this.getCount()) {
-      if (this.getCount() > 0) {
-        this.setCurrentIndex(this.getCount() - 1);
-      } else {
-        this.currentIndex_ = -1;
-      }
-    }
-  }
-
   protected DomElement createDomElement(WApplication app) {
     return super.createDomElement(app);
   }
@@ -256,7 +260,7 @@ public class WStackedWidget extends WContainerWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (this.widgetsAdded_ || !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (this.widgetsAdded_ || flags.contains(RenderFlag.Full)) {
       for (int i = 0; i < this.getCount(); ++i) {
         if (!canOptimizeUpdates() || this.getWidget(i).isHidden() != (this.currentIndex_ != i)) {
           this.getWidget(i).setHidden(this.currentIndex_ != i);
@@ -264,7 +268,7 @@ public class WStackedWidget extends WContainerWidget {
       }
       this.widgetsAdded_ = false;
     }
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       this.defineJavaScript();
       if (this.currentIndex_ >= 0 && this.isRendered() && this.javaScriptDefined_) {
         this.doJavaScript(
@@ -291,7 +295,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt3_6_0.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_4_0.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {
@@ -317,7 +321,7 @@ public class WStackedWidget extends WContainerWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WStackedWidget",
-        "function(D,h){function w(c){return c.nodeType==1&&!$(c).hasClass(\"wt-reparented\")}h.wtObj=this;var e=D.WT,B=[],x=[];this.wtResize=function(c,a,f,d){function p(k){var j=e.px(k,\"marginTop\");j+=e.px(k,\"marginBottom\");if(!e.boxSizing(k)){j+=e.px(k,\"borderTopWidth\");j+=e.px(k,\"borderBottomWidth\");j+=e.px(k,\"paddingTop\");j+=e.px(k,\"paddingBottom\")}return j}var q=f>=0;c.lh=q&&d;c.style.height=q?f+\"px\":\"\";if(e.boxSizing(c)){f-=e.px(c,\"marginTop\"); f-=e.px(c,\"marginBottom\");f-=e.px(c,\"borderTopWidth\");f-=e.px(c,\"borderBottomWidth\");f-=e.px(c,\"paddingTop\");f-=e.px(c,\"paddingBottom\");a-=e.px(c,\"marginLeft\");a-=e.px(c,\"marginRight\");a-=e.px(c,\"borderLeftWidth\");a-=e.px(c,\"borderRightWidth\");a-=e.px(c,\"paddingLeft\");a-=e.px(c,\"paddingRight\")}var m,C,g;m=0;for(C=c.childNodes.length;m<C;++m){g=c.childNodes[m];if(w(g))if(!e.isHidden(g)&&!$(g).hasClass(\"out\"))if(q){var r=f-p(g);if(r>0){if(g.offsetTop>0){var u=e.css(g,\"overflow\");if(u===\"visible\"||u=== \"\")g.style.overflow=\"auto\"}if(g.wtResize)g.wtResize(g,a,r,d);else{r=r+\"px\";if(g.style.height!=r){g.style.height=r;g.lh=d}}}}else if(g.wtResize)g.wtResize(g,a,-1,d);else{g.style.height=\"\";g.lh=false}}};this.wtGetPs=function(c,a,f,d){return d};this.adjustScroll=function(c){var a,f,d,p=h.scrollLeft,q=h.scrollTop;a=0;for(f=h.childNodes.length;a<f;++a){d=h.childNodes[a];if(w(d))if(d!=c){if(d.style.display!=\"none\"){x[a]=p;B[a]=q}}else if(typeof x[a]!==\"undefined\"){h.scrollLeft=x[a];h.scrollTop=B[a]}else{h.scrollLeft= 0;h.scrollTop=0}}};this.setCurrent=function(c){var a,f,d;this.adjustScroll(c);a=0;for(f=h.childNodes.length;a<f;++a){d=h.childNodes[a];if(w(d))if(d!=c){if(d.style.display!=\"none\")d.style.display=\"none\"}else{d.style.display=\"\";if(h.lh){h.lh=false;h.style.height=\"\"}}}}}");
+        "function(D,j){function v(b){return b.nodeType==1&&!$(b).hasClass(\"wt-reparented\")&&!$(b).hasClass(\"resize-sensor\")}j.wtObj=this;var e=D.WT,B=[],w=[],s=null,a=null;this.reApplySize=function(){a&&this.wtResize(j,s,a,false)};this.wtResize=function(b,d,g,f){function p(k){var h=e.px(k,\"marginTop\");h+=e.px(k,\"marginBottom\");if(!e.boxSizing(k)){h+=e.px(k,\"borderTopWidth\");h+=e.px(k,\"borderBottomWidth\");h+=e.px(k,\"paddingTop\");h+=e.px(k,\"paddingBottom\")}return h} s=d;a=g;var t=g>=0;if(f)if(t){b.style.height=g+\"px\";b.lh=true}else{b.style.height=\"\";b.lh=false}else b.lh=false;if(e.boxSizing(b)){g-=e.px(b,\"marginTop\");g-=e.px(b,\"marginBottom\");g-=e.px(b,\"borderTopWidth\");g-=e.px(b,\"borderBottomWidth\");g-=e.px(b,\"paddingTop\");g-=e.px(b,\"paddingBottom\");d-=e.px(b,\"marginLeft\");d-=e.px(b,\"marginRight\");d-=e.px(b,\"borderLeftWidth\");d-=e.px(b,\"borderRightWidth\");d-=e.px(b,\"paddingLeft\");d-=e.px(b,\"paddingRight\")}var C,i;f=0;for(C=b.childNodes.length;f<C;++f){i=b.childNodes[f]; if(v(i))if(!e.isHidden(i)&&!$(i).hasClass(\"out\"))if(t){var l=g-p(i);if(l>0){if(i.offsetTop>0){var x=e.css(i,\"overflow\");if(x===\"visible\"||x===\"\")i.style.overflow=\"auto\"}if(i.wtResize)i.wtResize(i,d,l,true);else{l=l+\"px\";if(i.style.height!=l){i.style.height=l;i.lh=true}}}}else if(i.wtResize)i.wtResize(i,d,-1,true);else{i.style.height=\"\";i.lh=false}}};this.wtGetPs=function(b,d,g,f){return f};this.adjustScroll=function(b){var d,g,f,p=j.scrollLeft,t=j.scrollTop;d=0;for(g=j.childNodes.length;d<g;++d){f= j.childNodes[d];if(v(f))if(f!=b){if(f.style.display!=\"none\"){w[d]=p;B[d]=t}}else if(typeof w[d]!==\"undefined\"){j.scrollLeft=w[d];j.scrollTop=B[d]}else{j.scrollLeft=0;j.scrollTop=0}}};this.setCurrent=function(b){var d,g,f;this.adjustScroll(b);d=0;for(g=j.childNodes.length;d<g;++d){f=j.childNodes[d];if(v(f))if(f!=b){if(f.style.display!=\"none\")f.style.display=\"none\"}else{f.style.display=f.style.flexFlow?\"flex\":\"\";if(j.lh){j.lh=false;j.style.height=\"\"}}}this.reApplySize()}}");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -325,6 +329,6 @@ public class WStackedWidget extends WContainerWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptPrototype,
         "WStackedWidget.prototype.animateChild",
-        "function(D,h,w,e,B,x){var c=function(a,f,d,p,q,m){function C(){var v,H=i.childNodes.length,E=-1,F=-1;for(v=0;v<H&&(E==-1||F==-1);++v){var G=i.childNodes[v];if(G==f)F=v;else if(G.style.display!==\"none\"&&!$(G).hasClass(\"out\"))E=v}return{from:E,to:F}}function g(){y.removeClass(l+\" in\");b.style.position=\"\";b.style.left=\"\";b.style.width=\"\";b.style.top=\"\";if(!d||typeof i.parentNode.wtLayout===\"undefined\")b.style.height=b.nativeHeight; b.nativeHeight=null;if(a.isGecko&&d&u)b.style.opacity=\"1\";b.style[a.styleAttribute(\"animation-duration\")]=\"\";b.style[a.styleAttribute(\"animation-timing-function\")]=\"\"}function r(){z.removeClass(l+\" out\");s.style.display=\"none\";s.style[a.styleAttribute(\"animation-duration\")]=\"\";s.style[a.styleAttribute(\"animation-timing-function\")]=\"\"}var u=256,k=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],j=a.vendorPrefix(a.styleAttribute(\"animation-duration\"))==\"Webkit\"?\"webkitAnimationEnd\":\"animationend\"; if(m.display!==\"none\"){var i=f.parentNode,A=i.wtAutoReverse,t=C();if(!(t.from==-1||t.to==-1||t.from==t.to)){var s=i.childNodes[t.from],b=i.childNodes[t.to],z=$(s),y=$(b),n=i.scrollHeight,o=i.scrollWidth;b.nativeHeight=b.style.height;if(z.hasClass(\"in\"))z.one(j,function(){c(a,f,d,p,1,m)});else if(y.hasClass(\"out\"))y.one(j,function(){c(a,f,d,p,1,m)});else{n-=a.px(i,\"paddingTop\");n-=a.px(i,\"paddingBottom\");n-=a.px(b,\"marginTop\");n-=a.px(b,\"marginBottom\");n-=a.px(b,\"borderTopWidth\");n-=a.px(b,\"borderBottomWidth\"); n-=a.px(b,\"paddingTop\");n-=a.px(b,\"paddingBottom\");o-=a.px(i,\"paddingLeft\");o-=a.px(i,\"paddingRight\");o-=a.px(b,\"marginLeft\");o-=a.px(b,\"marginRight\");o-=a.px(b,\"borderLeftWidth\");o-=a.px(b,\"borderRightWidth\");o-=a.px(b,\"paddingLeft\");o-=a.px(b,\"paddingRight\");b.style.left=s.style.left||a.px(i,\"paddingLeft\");b.style.top=s.style.top||a.px(i,\"paddingTop\");b.style.width=o+\"px\";b.style.height=n+\"px\";b.style.position=\"absolute\";if(a.isGecko&&d&u)b.style.opacity=\"0\";b.style.display=m.display;A=A&&t.to< t.from;var l=\"\";switch(d&255){case 1:A=!A;case 2:l=\"slide\";break;case 3:l=\"slideup\";break;case 4:l=\"slidedown\";break;case 5:l=\"pop\";break}if(d&u)l+=\" fade\";if(A)l+=\" reverse\";s.style[a.styleAttribute(\"animation-duration\")]=q+\"ms\";b.style[a.styleAttribute(\"animation-duration\")]=q+\"ms\";s.style[a.styleAttribute(\"animation-timing-function\")]=k[[0,1,3,2,4,5][p]];b.style[a.styleAttribute(\"animation-timing-function\")]=k[p];z.addClass(l+\" out\");z.one(j,r);y.addClass(l+\" in\");y.one(j,g)}}}};c(D,h,w,e,B,x)}");
+        "function(D,j,v,e,B,w){var s=function(a,b,d,g,f,p){function t(){var u,H=h.childNodes.length,E=-1,F=-1;for(u=0;u<H&&(E==-1||F==-1);++u){var G=h.childNodes[u];if(G==b)F=u;else if(G.style.display!==\"none\"&&!$(G).hasClass(\"out\"))E=u}return{from:E,to:F}}function C(){y.removeClass(m+\" in\");c.style.position=\"\";c.style.left=\"\";c.style.width=\"\";c.style.top=\"\";if(h.lh)c.lh=true;else if(!c.lh)c.style.height=\"\";if(a.isGecko&&d& l)c.style.opacity=\"1\";c.style[a.styleAttribute(\"animation-duration\")]=\"\";c.style[a.styleAttribute(\"animation-timing-function\")]=\"\"}function i(){z.removeClass(m+\" out\");q.style.display=\"none\";if(h.lh)if(c.lh){c.style.height=\"\";c.lh=false}q.style[a.styleAttribute(\"animation-duration\")]=\"\";q.style[a.styleAttribute(\"animation-timing-function\")]=\"\"}var l=256,x=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],k=a.vendorPrefix(a.styleAttribute(\"animation-duration\"))==\"Webkit\"?\"webkitAnimationEnd\":\"animationend\"; if(p.display!==\"none\"){var h=b.parentNode,A=h.wtAutoReverse,r=t();if(!(r.from==-1||r.to==-1||r.from==r.to)){var q=h.childNodes[r.from],c=h.childNodes[r.to],z=$(q),y=$(c),n=h.scrollHeight,o=h.scrollWidth;if(z.hasClass(\"in\"))z.one(k,function(){s(a,b,d,g,1,p)});else if(y.hasClass(\"out\"))y.one(k,function(){s(a,b,d,g,1,p)});else{n-=a.px(h,\"paddingTop\");n-=a.px(h,\"paddingBottom\");n-=a.px(c,\"marginTop\");n-=a.px(c,\"marginBottom\");n-=a.px(c,\"borderTopWidth\");n-=a.px(c,\"borderBottomWidth\");n-=a.px(c,\"paddingTop\"); n-=a.px(c,\"paddingBottom\");o-=a.px(h,\"paddingLeft\");o-=a.px(h,\"paddingRight\");o-=a.px(c,\"marginLeft\");o-=a.px(c,\"marginRight\");o-=a.px(c,\"borderLeftWidth\");o-=a.px(c,\"borderRightWidth\");o-=a.px(c,\"paddingLeft\");o-=a.px(c,\"paddingRight\");c.style.left=q.style.left||a.px(h,\"paddingLeft\");c.style.top=q.style.top||a.px(h,\"paddingTop\");c.style.width=o+\"px\";c.style.height=n+\"px\";c.style.position=\"absolute\";if(a.isGecko&&d&l)c.style.opacity=\"0\";c.style.display=p.display;A=A&&r.to<r.from;var m=\"\";switch(d& 255){case 1:A=!A;case 2:m=\"slide\";break;case 3:m=\"slideup\";break;case 4:m=\"slidedown\";break;case 5:m=\"pop\";break}if(d&l)m+=\" fade\";if(A)m+=\" reverse\";q.style[a.styleAttribute(\"animation-duration\")]=f+\"ms\";c.style[a.styleAttribute(\"animation-duration\")]=f+\"ms\";q.style[a.styleAttribute(\"animation-timing-function\")]=x[[0,1,3,2,4,5][g]];c.style[a.styleAttribute(\"animation-timing-function\")]=x[g];z.addClass(m+\" out\");z.one(k,i);y.addClass(m+\" in\");y.one(k,C)}}}};s(D,j,v,e,B,w)}");
   }
 }

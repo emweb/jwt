@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,27 +26,27 @@ import javax.servlet.http.*;
  */
 public enum MarkerType {
   /** Do not draw point markers. */
-  NoMarker,
+  None,
   /** Mark points using a square. */
-  SquareMarker,
+  Square,
   /** Mark points using a circle. */
-  CircleMarker,
+  Circle,
   /** Mark points using a cross (+). */
-  CrossMarker,
+  Cross,
   /** Mark points using a cross (x). */
-  XCrossMarker,
+  XCross,
   /** Mark points using a triangle. */
-  TriangleMarker,
+  Triangle,
   /** Mark points using a custom marker. */
-  CustomMarker,
+  Custom,
   /** Mark points using a star. */
-  StarMarker,
+  Star,
   /** Mark points using an inverted (upside-down) triangle. */
-  InvertedTriangleMarker,
+  InvertedTriangle,
   /** Mark points using an asterisk (*). */
-  AsteriskMarker,
+  Asterisk,
   /** Mark points using a diamond. */
-  DiamondMarker;
+  Diamond;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

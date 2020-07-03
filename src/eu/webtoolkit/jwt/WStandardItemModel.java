@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,15 +30,14 @@ import org.slf4j.LoggerFactory;
  * this root item.
  *
  * <p>If you want to use the model as a table, then you can use {@link
- * WStandardItemModel#WStandardItemModel(int rows, int columns, WObject parent)
- * WStandardItemModel()} to set the initial table size, and use the {@link
- * WStandardItemModel#getItem(int row, int column) getItem()} and {@link
- * WStandardItemModel#setItem(int row, int column, WStandardItem item) setItem()} methods to set
- * data. You can change the geometry by inserting rows ({@link WStandardItemModel#insertRow(int row,
- * List items) insertRow()}) or columns ({@link WStandardItemModel#insertColumn(int column, List
- * items) insertColumn()}) or removing rows ({@link WAbstractItemModel#removeRow(int row,
- * WModelIndex parent) WAbstractItemModel#removeRow()}) or columns ({@link
- * WAbstractItemModel#removeColumn(int column, WModelIndex parent)
+ * WStandardItemModel#WStandardItemModel(int rows, int columns) WStandardItemModel()} to set the
+ * initial table size, and use the {@link WStandardItemModel#getItem(int row, int column) getItem()}
+ * and {@link WStandardItemModel#setItem(int row, int column, WStandardItem item) setItem()} methods
+ * to set data. You can change the geometry by inserting rows ({@link
+ * WStandardItemModel#insertRow(int row, List items) insertRow()}) or columns ({@link
+ * WStandardItemModel#insertColumn(int column, List items) insertColumn()}) or removing rows ({@link
+ * WAbstractItemModel#removeRow(int row, WModelIndex parent) WAbstractItemModel#removeRow()}) or
+ * columns ({@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)
  * WAbstractItemModel#removeColumn()}).
  *
  * <p>If you want to use the model as a tree (or tree table), then you can use the default
@@ -56,23 +56,17 @@ public class WStandardItemModel extends WAbstractItemModel {
   private static Logger logger = LoggerFactory.getLogger(WStandardItemModel.class);
 
   /** Creates a new standard item model. */
-  public WStandardItemModel(WObject parent) {
-    super(parent);
-    this.sortRole_ = ItemDataRole.DisplayRole;
-    this.columnHeaderData_ = new ArrayList<Map<Integer, Object>>();
-    this.rowHeaderData_ = new ArrayList<Map<Integer, Object>>();
+  public WStandardItemModel() {
+    super();
+    this.sortRole_ = ItemDataRole.Display;
+    this.columnHeaderData_ = new ArrayList<Map<ItemDataRole, Object>>();
+    this.rowHeaderData_ = new ArrayList<Map<ItemDataRole, Object>>();
     this.columnHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
     this.rowHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
-    this.itemChanged_ = new Signal1<WStandardItem>(this);
+    this.invisibleRootItem_ = null;
+    this.itemPrototype_ = null;
+    this.itemChanged_ = new Signal1<WStandardItem>();
     this.init();
-  }
-  /**
-   * Creates a new standard item model.
-   *
-   * <p>Calls {@link #WStandardItemModel(WObject parent) this((WObject)null)}
-   */
-  public WStandardItemModel() {
-    this((WObject) null);
   }
   /**
    * Creates a new standard item model with an initial geometry.
@@ -80,26 +74,19 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Creates a standard item model with a geometry of <i>rows</i> x <code>columns</code>. All
    * items are set to <code>null</code>.
    */
-  public WStandardItemModel(int rows, int columns, WObject parent) {
-    super(parent);
-    this.sortRole_ = ItemDataRole.DisplayRole;
-    this.columnHeaderData_ = new ArrayList<Map<Integer, Object>>();
-    this.rowHeaderData_ = new ArrayList<Map<Integer, Object>>();
+  public WStandardItemModel(int rows, int columns) {
+    super();
+    this.sortRole_ = ItemDataRole.Display;
+    this.columnHeaderData_ = new ArrayList<Map<ItemDataRole, Object>>();
+    this.rowHeaderData_ = new ArrayList<Map<ItemDataRole, Object>>();
     this.columnHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
     this.rowHeaderFlags_ = new ArrayList<EnumSet<HeaderFlag>>();
-    this.itemChanged_ = new Signal1<WStandardItem>(this);
+    this.invisibleRootItem_ = null;
+    this.itemPrototype_ = null;
+    this.itemChanged_ = new Signal1<WStandardItem>();
     this.init();
     this.invisibleRootItem_.setColumnCount(columns);
     this.invisibleRootItem_.setRowCount(rows);
-  }
-  /**
-   * Creates a new standard item model with an initial geometry.
-   *
-   * <p>Calls {@link #WStandardItemModel(int rows, int columns, WObject parent) this(rows, columns,
-   * (WObject)null)}
-   */
-  public WStandardItemModel(int rows, int columns) {
-    this(rows, columns, (WObject) null);
   }
   /**
    * Erases all data in the model.
@@ -165,7 +152,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * insertColumn(columnCount(), items);
+   * insertColumn(columnCount(), std::move(items));
    *
    * }</pre>
    *
@@ -174,7 +161,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * @see WStandardItemModel#insertColumn(int column, List items)
    * @see WStandardItemModel#appendRow(List items)
    */
-  public void appendColumn(final List<WStandardItem> items) {
+  public void appendColumn(List<WStandardItem> items) {
     this.insertColumn(this.getColumnCount(), items);
   }
   /**
@@ -186,7 +173,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * invisibleRootItem().insertColumn(column, items);
+   * invisibleRootItem().insertColumn(column, std::move(items));
    *
    * }</pre>
    *
@@ -194,7 +181,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    *
    * @see WStandardItem#insertColumn(int column, List items)
    */
-  public void insertColumn(int column, final List<WStandardItem> items) {
+  public void insertColumn(int column, List<WStandardItem> items) {
     this.invisibleRootItem_.insertColumn(column, items);
   }
   /**
@@ -206,7 +193,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * insertRow(rowCount(), items);
+   * insertRow(rowCount(), std::move(items));
    *
    * }</pre>
    *
@@ -215,7 +202,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * @see WStandardItemModel#insertRow(int row, List items)
    * @see WStandardItemModel#appendColumn(List items)
    */
-  public void appendRow(final List<WStandardItem> items) {
+  public void appendRow(List<WStandardItem> items) {
     this.insertRow(this.getRowCount(), items);
   }
   /**
@@ -227,7 +214,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * invisibleRootItem().insertRow(row, items);
+   * invisibleRootItem().insertRow(row, std::move(items));
    *
    * }</pre>
    *
@@ -235,7 +222,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    *
    * @see WStandardItem#insertRow(int row, List items)
    */
-  public void insertRow(int row, final List<WStandardItem> items) {
+  public void insertRow(int row, List<WStandardItem> items) {
     this.invisibleRootItem_.insertRow(row, items);
   }
   /**
@@ -246,7 +233,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * insertRow(rowCount(), item);
+   * insertRow(rowCount(), std::move(item));
    *
    * }</pre>
    *
@@ -265,7 +252,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * invisibleRootItem().insertRow(row, item);
+   * invisibleRootItem().insertRow(row, std::move(item));
    *
    * }</pre>
    *
@@ -315,7 +302,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * invisibleRootItem().setChild(row, column, item);
+   * invisibleRootItem().setChild(row, column, std::move(item));
    *
    * }</pre>
    *
@@ -352,14 +339,12 @@ public class WStandardItemModel extends WAbstractItemModel {
    * @see WStandardItemModel#setItemPrototype(WStandardItem item)
    */
   public void setItemPrototype(WStandardItem item) {
-    ;
     this.itemPrototype_ = item;
   }
   /**
    * Takes a column out of the model.
    *
-   * <p>Removes a column from the model, and returns the items that it contained. Ownership of the
-   * items is transferred out of the model.
+   * <p>Removes a column from the model, and returns the items that it contained.
    *
    * <p>Equivalent to:
    *
@@ -379,8 +364,7 @@ public class WStandardItemModel extends WAbstractItemModel {
   /**
    * Takes a row out of the model.
    *
-   * <p>Removes a row from the model, and returns the items that it contained. Ownership of the
-   * items is transferred out of the model.
+   * <p>Removes a row from the model, and returns the items that it contained.
    *
    * <p>Equivalent to:
    *
@@ -400,8 +384,7 @@ public class WStandardItemModel extends WAbstractItemModel {
   /**
    * Takes an item out of the model.
    *
-   * <p>Removes an item from the model, and returns it. Ownership of the item is transferred out of
-   * the model.
+   * <p>Removes an item from the model, and returns it.
    *
    * <p>Equivalent to:
    *
@@ -471,25 +454,24 @@ public class WStandardItemModel extends WAbstractItemModel {
     return this.indexFromItem(parent);
   }
 
-  public Object getData(final WModelIndex index, int role) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
     WStandardItem item = this.getItemFromIndex(index, false);
     return item != null ? item.getData(role) : null;
   }
 
-  public Object getHeaderData(int section, Orientation orientation, int role) {
-    if (role == ItemDataRole.LevelRole) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Level)) {
       return 0;
     }
-    final List<Map<Integer, Object>> headerData =
+    final List<Map<ItemDataRole, Object>> headerData =
         orientation == Orientation.Horizontal ? this.columnHeaderData_ : this.rowHeaderData_;
     if (section >= (int) headerData.size()) {
       return null;
     }
-    final Map<Integer, Object> d = headerData.get(section);
+    final Map<ItemDataRole, Object> d = headerData.get(section);
     Object i = d.get(role);
     if (i != null) {
-      Object result = i;
-      return result;
+      return i;
     } else {
       return null;
     }
@@ -549,7 +531,7 @@ public class WStandardItemModel extends WAbstractItemModel {
     return parentItem != null;
   }
 
-  public boolean setData(final WModelIndex index, final Object value, int role) {
+  public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
     WStandardItem item = this.getItemFromIndex(index);
     if (item != null) {
       item.setData(value, role);
@@ -557,12 +539,13 @@ public class WStandardItemModel extends WAbstractItemModel {
     return item != null;
   }
 
-  public boolean setHeaderData(int section, Orientation orientation, final Object value, int role) {
-    final List<Map<Integer, Object>> header =
+  public boolean setHeaderData(
+      int section, Orientation orientation, final Object value, ItemDataRole role) {
+    final List<Map<ItemDataRole, Object>> header =
         orientation == Orientation.Horizontal ? this.columnHeaderData_ : this.rowHeaderData_;
-    final Map<Integer, Object> d = header.get(section);
-    if (role == ItemDataRole.EditRole) {
-      role = ItemDataRole.DisplayRole;
+    final Map<ItemDataRole, Object> d = header.get(section);
+    if (role.equals(ItemDataRole.Edit)) {
+      role = ItemDataRole.Display;
     }
     d.put(role, value);
     this.headerDataChanged().trigger(orientation, section, section);
@@ -585,8 +568,8 @@ public class WStandardItemModel extends WAbstractItemModel {
             : null);
     if (selectionModel != null
         && selectionModel.getModel() == this
-        && selectionModel.getSelectionBehavior() == SelectionBehavior.SelectRows
-        && action == DropAction.MoveAction) {
+        && selectionModel.getSelectionBehavior() == SelectionBehavior.Rows
+        && action == DropAction.Move) {
       SortedSet<WModelIndex> selection = selectionModel.getSelectedIndexes();
       int r = row;
       List<List<WStandardItem>> rows = new ArrayList<List<WStandardItem>>();
@@ -612,13 +595,13 @@ public class WStandardItemModel extends WAbstractItemModel {
   /**
    * Set the role used to sort the model.
    *
-   * <p>The default role is {@link ItemDataRole#DisplayRole}.
+   * <p>The default role is {@link ItemDataRole#Display}.
    *
    * <p>
    *
    * @see WStandardItemModel#sort(int column, SortOrder order)
    */
-  public void setSortRole(int role) {
+  public void setSortRole(ItemDataRole role) {
     this.sortRole_ = role;
   }
   /**
@@ -626,9 +609,9 @@ public class WStandardItemModel extends WAbstractItemModel {
    *
    * <p>
    *
-   * @see WStandardItemModel#setSortRole(int role)
+   * @see WStandardItemModel#setSortRole(ItemDataRole role)
    */
-  public int getSortRole() {
+  public ItemDataRole getSortRole() {
     return this.sortRole_;
   }
 
@@ -643,7 +626,7 @@ public class WStandardItemModel extends WAbstractItemModel {
    *
    * <p>
    *
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public Signal1<WStandardItem> itemChanged() {
     return this.itemChanged_;
@@ -689,9 +672,9 @@ public class WStandardItemModel extends WAbstractItemModel {
         last - first + 1);
   }
 
-  private int sortRole_;
-  private List<Map<Integer, Object>> columnHeaderData_;
-  private List<Map<Integer, Object>> rowHeaderData_;
+  private ItemDataRole sortRole_;
+  private List<Map<ItemDataRole, Object>> columnHeaderData_;
+  private List<Map<ItemDataRole, Object>> rowHeaderData_;
   private List<EnumSet<HeaderFlag>> columnHeaderFlags_;
   private List<EnumSet<HeaderFlag>> rowHeaderFlags_;
   private WStandardItem invisibleRootItem_;
@@ -714,8 +697,9 @@ public class WStandardItemModel extends WAbstractItemModel {
         WStandardItem parent = (WStandardItem) index.getInternalPointer();
         WStandardItem c = parent.getChild(index.getRow(), index.getColumn());
         if (lazyCreate && !(c != null)) {
-          c = this.getItemPrototype().clone();
-          parent.setChild(index.getRow(), index.getColumn(), c);
+          WStandardItem item = this.getItemPrototype().clone();
+          c = item;
+          parent.setChild(index.getRow(), index.getColumn(), item);
         }
         return c;
       }
@@ -723,7 +707,7 @@ public class WStandardItemModel extends WAbstractItemModel {
   }
 
   private void insertHeaderData(
-      final List<Map<Integer, Object>> headerData,
+      final List<Map<ItemDataRole, Object>> headerData,
       final List<EnumSet<HeaderFlag>> fl,
       WStandardItem item,
       int index,
@@ -732,7 +716,7 @@ public class WStandardItemModel extends WAbstractItemModel {
       {
         int insertPos = 0 + index;
         for (int ii = 0; ii < (count); ++ii)
-          headerData.add(insertPos + ii, new HashMap<Integer, Object>());
+          headerData.add(insertPos + ii, new HashMap<ItemDataRole, Object>());
       }
       ;
       {
@@ -745,7 +729,7 @@ public class WStandardItemModel extends WAbstractItemModel {
   }
 
   private void removeHeaderData(
-      final List<Map<Integer, Object>> headerData,
+      final List<Map<ItemDataRole, Object>> headerData,
       final List<EnumSet<HeaderFlag>> fl,
       WStandardItem item,
       int index,

@@ -13,7 +13,10 @@ import java.util.List;
 import javax.vecmath.Point3d;
 
 import eu.webtoolkit.jwt.AbstractSignal.Connection;
+import eu.webtoolkit.jwt.GLClientSideRenderer;
+import eu.webtoolkit.jwt.GLRenderOption;
 import eu.webtoolkit.jwt.JSignal3;
+import eu.webtoolkit.jwt.MouseButton;
 import eu.webtoolkit.jwt.PositionScheme;
 import eu.webtoolkit.jwt.KeyboardModifier;
 import eu.webtoolkit.jwt.Signal;
@@ -32,9 +35,6 @@ import eu.webtoolkit.jwt.WSlider;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WTemplate;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.WGLWidget.ClientSideRenderer;
-import eu.webtoolkit.jwt.WGLWidget.RenderOption;
-import eu.webtoolkit.jwt.WMouseEvent.Button;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.ChartType;
 import eu.webtoolkit.jwt.chart.Plane;
@@ -48,7 +48,6 @@ import eu.webtoolkit.jwt.chart.WScatterData;
 import eu.webtoolkit.jwt.chart.WStandardColorMap;
 import eu.webtoolkit.jwt.chart.WSurfaceSelection;
 import eu.webtoolkit.jwt.chart.WCartesian3DChart.IntersectionPlane;
-
 import eu.webtoolkit.jwt.examples.chart3D.MouseHandlerDemoChart;
 import eu.webtoolkit.jwt.examples.chart3D.datasets.PlaneData;
 import eu.webtoolkit.jwt.examples.chart3D.datasets.PointListData;
@@ -64,38 +63,38 @@ public class NumericalExample extends WTemplate {
 		chart_ = new MouseHandlerDemoChart();
 		// Disabling server side rendering for JWt website.
 		// Disabling anti-aliasing for better point sprites.
-		chart_.setRenderOptions(RenderOption.ClientSideRendering);
+		chart_.setRenderOptions(GLRenderOption.ClientSide);
 		bindWidget("chart", chart_);
-		chart_.setType(ChartType.ScatterPlot);
+		chart_.setType(ChartType.Scatter);
 
 		chart_.resize(600, 600);
-		chart_.setGridEnabled(Plane.XY_Plane, Axis.XAxis_3D, true);
-		chart_.setGridEnabled(Plane.XY_Plane, Axis.YAxis_3D, true);
-		chart_.setGridEnabled(Plane.XZ_Plane, Axis.XAxis_3D, true);
-		chart_.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
-		chart_.setGridEnabled(Plane.YZ_Plane, Axis.YAxis_3D, true);
-		chart_.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
+		chart_.setGridEnabled(Plane.XY, Axis.X3D, true);
+		chart_.setGridEnabled(Plane.XY, Axis.Y3D, true);
+		chart_.setGridEnabled(Plane.XZ, Axis.X3D, true);
+		chart_.setGridEnabled(Plane.XZ, Axis.Z3D, true);
+		chart_.setGridEnabled(Plane.YZ, Axis.Y3D, true);
+		chart_.setGridEnabled(Plane.YZ, Axis.Z3D, true);
 
-		chart_.axis(Axis.XAxis_3D).setTitle("X");
-		chart_.axis(Axis.YAxis_3D).setTitle("Y");
-		chart_.axis(Axis.ZAxis_3D).setTitle("Z");
-		chart_.axis(Axis.XAxis_3D).setMinimum(-6);
-		chart_.axis(Axis.XAxis_3D).setMaximum(6);
-		chart_.axis(Axis.YAxis_3D).setMinimum(-6);
-		chart_.axis(Axis.YAxis_3D).setMaximum(6);
-		chart_.axis(Axis.ZAxis_3D).setMinimum(-5);
-		chart_.axis(Axis.ZAxis_3D).setMaximum(5);
+		chart_.axis(Axis.X3D).setTitle("X");
+		chart_.axis(Axis.Y3D).setTitle("Y");
+		chart_.axis(Axis.Z3D).setTitle("Z");
+		chart_.axis(Axis.X3D).setMinimum(-6);
+		chart_.axis(Axis.X3D).setMaximum(6);
+		chart_.axis(Axis.Y3D).setMinimum(-6);
+		chart_.axis(Axis.Y3D).setMaximum(6);
+		chart_.axis(Axis.Z3D).setMinimum(-5);
+		chart_.axis(Axis.Z3D).setMaximum(5);
 
 		chart_.setIntersectionLinesColor(new WColor(255, 0, 255));
 
-		SombreroData model1 = new SombreroData(100, 100, -10, 10, -10, 10, this);
+		SombreroData model1 = new SombreroData(100, 100, -10, 10, -10, 10);
 		sombreroData_ = new WGridData(model1);
 		gridDataList_.add(sombreroData_);
-		sombreroData_.setType(Series3DType.SurfaceSeries3D);
+		sombreroData_.setType(Series3DType.Surface);
 		sombreroData_.setSurfaceMeshEnabled(true);
 		WStandardColorMap colorMap = new WStandardColorMap(
-				sombreroData_.minimum(Axis.ZAxis_3D),
-				sombreroData_.maximum(Axis.ZAxis_3D), true);
+				sombreroData_.minimum(Axis.Z3D),
+				sombreroData_.maximum(Axis.Z3D), true);
 		sombreroData_.setColorMap(colorMap);
 		sombreroData_.setPen(new WPen(new WColor(100,100,100)));
 
@@ -120,7 +119,7 @@ public class NumericalExample extends WTemplate {
 
 		chart_.addDataSeries(sombreroData_);
 
-		WStandardItemModel model3 = new SpiralData(100, this);
+		WStandardItemModel model3 = new SpiralData(100);
 		spiralData_ = new WScatterData(model3);
 		spiralData_.setPointSize(7);
 		spiralData_.setPointSprite("fat_cross.png");
@@ -132,7 +131,7 @@ public class NumericalExample extends WTemplate {
 				}), true));
 		chart_.addDataSeries(spiralData_);
 
-		WStandardItemModel model4 = new PlaneData(80, 80, this);
+		WStandardItemModel model4 = new PlaneData(80, 80);
 		WEquidistantGridData planeData = new WEquidistantGridData(model4, -10,
 				0.25f, -10, 0.25f);
 		planeData.setColorMap(new WStandardColorMap(-5.0, 5.0, Arrays.asList(
@@ -141,13 +140,12 @@ public class NumericalExample extends WTemplate {
 				}), false));
 		planeData.setPen(new WPen(new WColor(62-25, 75-25, 106-25)));
 		gridDataList_.add(planeData);
-		planeData.setType(Series3DType.SurfaceSeries3D);
+		planeData.setType(Series3DType.Surface);
 		planeData.setSurfaceMeshEnabled(true);
 		chart_.addDataSeries(planeData);
 		planeData.setClippingLinesColor(new WColor(255, 255, 0));
 
-		WStandardItemModel model2 = new PointListData(new ArrayList<Point3d>(),
-				this);
+		WStandardItemModel model2 = new PointListData(new ArrayList<Point3d>());
 		points_ = new WScatterData(model2);
 		points_.setColorMap(new WStandardColorMap(-5.0, 5.0, Arrays.asList(
 				new WStandardColorMap.Pair[] {
@@ -158,11 +156,11 @@ public class NumericalExample extends WTemplate {
 
 		List<WCartesian3DChart.IntersectionPlane> intersectionPlanes = new ArrayList<WCartesian3DChart.IntersectionPlane>();
 		intersectionPlanes.add(new WCartesian3DChart.IntersectionPlane(
-				Axis.ZAxis_3D, 2.5, new WColor(0, 255, 255)));
+				Axis.Z3D, 2.5, new WColor(0, 255, 255)));
 		intersectionPlanes.add(new WCartesian3DChart.IntersectionPlane(
-				Axis.XAxis_3D, 4.0, new WColor(123, 104, 238)));
+				Axis.Z3D, 4.0, new WColor(123, 104, 238)));
 		intersectionPlanes.add(new WCartesian3DChart.IntersectionPlane(
-				Axis.XAxis_3D, 4.5, new WColor(123, 104, 238)));
+				Axis.Z3D, 4.5, new WColor(123, 104, 238)));
 		chart_.setIntersectionPlanes(intersectionPlanes);
 
 		chart_.setAlternativeContent(new WText("Sorry, no charts for you."));
@@ -218,82 +216,82 @@ public class NumericalExample extends WTemplate {
 		for (final WAbstractGridData data : gridDataList_) {
 			xMinSlider_.sliderMoved().addListener(
 					"function (o,e,pos) { "
-							+ data.changeClippingMin(Axis.XAxis_3D).execJs("o",
+							+ data.changeClippingMin(Axis.X3D).execJs("o",
 									"e", "pos / 100.0 * 6") + " }");
 			xMinSlider_.valueChanged().addListener(this,
 					new Signal1.Listener<Integer>() {
 						@Override
 						public void trigger(Integer value) {
-							data.setClippingMin(Axis.XAxis_3D, value / 100.0F * 6);
+							data.setClippingMin(Axis.X3D, value / 100.0F * 6);
 						}
 					});
 			xMaxSlider_.sliderMoved().addListener(
 					"function (o,e,pos) { "
-							+ data.changeClippingMax(Axis.XAxis_3D).execJs("o",
+							+ data.changeClippingMax(Axis.X3D).execJs("o",
 									"e", "pos / 100.0 * 6") + " }");
 			xMaxSlider_.valueChanged().addListener(this,
 					new Signal1.Listener<Integer>() {
 						@Override
 						public void trigger(Integer value) {
-							data.setClippingMax(Axis.XAxis_3D, value / 100.0F * 6);
+							data.setClippingMax(Axis.X3D, value / 100.0F * 6);
 						}
 					});
 			yMinSlider_.sliderMoved().addListener(
 					"function (o,e,pos) { "
-							+ data.changeClippingMin(Axis.YAxis_3D).execJs("o",
+							+ data.changeClippingMin(Axis.Y3D).execJs("o",
 									"e", "pos / 100.0 * 6") + " }");
 			yMinSlider_.valueChanged().addListener(this,
 					new Signal1.Listener<Integer>() {
 						@Override
 						public void trigger(Integer value) {
-							data.setClippingMin(Axis.YAxis_3D, value / 100.0F * 6);
+							data.setClippingMin(Axis.Y3D, value / 100.0F * 6);
 						}
 					});
 			yMaxSlider_.sliderMoved().addListener(
 					"function (o,e,pos) { "
-							+ data.changeClippingMax(Axis.YAxis_3D).execJs("o",
+							+ data.changeClippingMax(Axis.Y3D).execJs("o",
 									"e", "pos / 100.0 * 6") + " }");
 			yMaxSlider_.valueChanged().addListener(this,
 					new Signal1.Listener<Integer>() {
 						@Override
 						public void trigger(Integer value) {
-							data.setClippingMax(Axis.YAxis_3D, value / 100.0F * 6);
+							data.setClippingMax(Axis.Y3D, value / 100.0F * 6);
 						}
 					});
 			zMinSlider_.sliderMoved().addListener(
 					"function (o,e,pos) { "
-							+ data.changeClippingMin(Axis.ZAxis_3D).execJs("o",
+							+ data.changeClippingMin(Axis.Z3D).execJs("o",
 									"e", "pos / 100.0 * 6") + " }");
 			zMinSlider_.valueChanged().addListener(this,
 					new Signal1.Listener<Integer>() {
 						@Override
 						public void trigger(Integer value) {
-							data.setClippingMin(Axis.ZAxis_3D, value / 100.0F * 6);
+							data.setClippingMin(Axis.Z3D, value / 100.0F * 6);
 						}
 					});
 			zMaxSlider_.sliderMoved().addListener(
 					"function (o,e,pos) { "
-							+ data.changeClippingMax(Axis.ZAxis_3D).execJs("o",
+							+ data.changeClippingMax(Axis.Z3D).execJs("o",
 									"e", "pos / 100.0 * 6") + " }");
 			zMaxSlider_.valueChanged().addListener(this,
 					new Signal1.Listener<Integer>() {
 						@Override
 						public void trigger(Integer value) {
-							data.setClippingMax(Axis.ZAxis_3D, value / 100.0F * 6);
+							data.setClippingMax(Axis.Z3D, value / 100.0F * 6);
 						}
 					});
 		}
 
-		final WButtonGroup mouseHandler = new WButtonGroup(this);
+		final WButtonGroup mouseHandler = new WButtonGroup();
 		final WContainerWidget buttonGroupContainer = new WContainerWidget();
 		bindWidget("mouse-handler", buttonGroupContainer);
 		WRadioButton cameraRadio = new WRadioButton("camera", buttonGroupContainer);
 		cameraRadio.setChecked(true);
-		cameraRadio.setToolTip(tr("camera-tooltip"), TextFormat.XHTMLUnsafeText);
+		cameraRadio.setToolTip(tr("camera-tooltip"), TextFormat.UnsafeXHTML);
 		WRadioButton selectSombreroRadio = new WRadioButton("select sombrero surface", buttonGroupContainer);
-		selectSombreroRadio.setToolTip(tr("select-sombrero-tooltip"), TextFormat.XHTMLUnsafeText);
+		selectSombreroRadio.setToolTip(tr("select-sombrero-tooltip"), TextFormat.UnsafeXHTML);
 		WRadioButton selectSpiralRadio = new WRadioButton("select spiral", buttonGroupContainer);
-		selectSpiralRadio.setToolTip(tr("select-spiral-tooltip"), TextFormat.XHTMLUnsafeText);
+		selectSpiralRadio.setToolTip(tr("select-spiral-tooltip"), TextFormat.UnsafeXHTML);
 		mouseHandler.addButton(cameraRadio, 0);
 		mouseHandler.addButton(selectSombreroRadio, 1);
 		mouseHandler.addButton(selectSpiralRadio, 2);
@@ -307,7 +305,7 @@ public class NumericalExample extends WTemplate {
 						chart_.clicked().disconnect(selectModeConnection_);
 					chart_.selectionMode = false;
 					chart_.selectionHandler = false;
-					chart_.repaintGL(ClientSideRenderer.UPDATE_GL);
+					chart_.repaintGL(GLClientSideRenderer.UPDATE_GL);
 					break;
 				case 1:
 					selectionMode(false);
@@ -396,7 +394,7 @@ public class NumericalExample extends WTemplate {
 
 	private class HandleSelect implements Signal1.Listener<WMouseEvent> {
 		public void trigger(WMouseEvent event) {
-			if (event.getButton() == Button.LeftButton) {
+			if (event.getButton() == MouseButton.Left) {
 				if (selectSpiralData_) {
 					selectSpiral(event);
 				} else {
@@ -407,7 +405,7 @@ public class NumericalExample extends WTemplate {
 
 		private void selectSurface(WMouseEvent event) {
 			if (!event.getModifiers().contains(
-					KeyboardModifier.ControlModifier)) {
+					KeyboardModifier.Control)) {
 				surfaceSelections_.clear();
 			}
 			long before = System.currentTimeMillis();
@@ -425,7 +423,7 @@ public class NumericalExample extends WTemplate {
 
 		private void selectSpiral(WMouseEvent event) {
 			if (!event.getModifiers().contains(
-					KeyboardModifier.ControlModifier)) {
+					KeyboardModifier.Control)) {
 				pointSelections_.clear();
 			}
 			long before = System.currentTimeMillis();
@@ -445,7 +443,7 @@ public class NumericalExample extends WTemplate {
 			Signal3.Listener<Integer, Integer, WMouseEvent> {
 		@Override
 		public void trigger(Integer x1, Integer y1, WMouseEvent e) {
-			if (!e.getModifiers().contains(KeyboardModifier.ControlModifier)) {
+			if (!e.getModifiers().contains(KeyboardModifier.Control)) {
 				pointSelections_.clear();
 			}
 			long before = System.currentTimeMillis();
@@ -466,7 +464,7 @@ public class NumericalExample extends WTemplate {
 		for (int i = 0; i < pointSelections.size(); i++) {
 			v.add(toModelData(pointSelections.get(i)));
 		}
-		WStandardItemModel model = new PointListData(v, this);
+		WStandardItemModel model = new PointListData(v);
 		chart_.removeDataSeries(points_);
 		points_ = new WScatterData(model);
 		points_.setColorMap(new WStandardColorMap(-5.0, 5.0, Arrays.asList(
@@ -482,7 +480,7 @@ public class NumericalExample extends WTemplate {
 		for (int i = 0; i < surfaceSelections.size(); i++) {
 			v.add(toModelData(surfaceSelections.get(i)));
 		}
-		WStandardItemModel model = new PointListData(v, this);
+		WStandardItemModel model = new PointListData(v);
 		chart_.removeDataSeries(points_);
 		points_ = new WScatterData(model);
 		points_.setColorMap(new WStandardColorMap(-5.0, 5.0, Arrays.asList(
@@ -516,7 +514,7 @@ public class NumericalExample extends WTemplate {
 		chart_.selectionMode = true;
 		selectSpiralData_ = selectSpiralData;
 		chart_.selectionHandler = selectSpiralData_;
-		chart_.repaintGL(ClientSideRenderer.UPDATE_GL);
+		chart_.repaintGL(GLClientSideRenderer.UPDATE_GL);
 	}
 
 	private JSignal3<Integer, Integer, WMouseEvent> rangeSelectionSignal_;

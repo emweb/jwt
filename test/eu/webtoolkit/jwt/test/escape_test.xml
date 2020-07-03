@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages>
+    <message id="escape_once">&amp;amp;</message>
+    <message id="escape_once_numeric">&#38;#38;</message>
+</messages>

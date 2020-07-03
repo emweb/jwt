@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,12 +26,11 @@ class WWidgetVectorPainter extends WWidgetPainter {
     this.renderType_ = renderType;
   }
 
-  public WVectorImage createPaintDevice(boolean paintUpdate) {
+  public WPaintDevice createPaintDevice(boolean paintUpdate) {
     if (this.renderType_ == WWidgetPainter.RenderType.InlineSvg) {
       return new WSvgImage(
           new WLength(this.widget_.renderWidth_),
           new WLength(this.widget_.renderHeight_),
-          (WObject) null,
           paintUpdate);
     } else {
       return new WVmlImage(
@@ -46,31 +46,27 @@ class WWidgetVectorPainter extends WWidgetPainter {
 
   public void createContents(DomElement canvas, WPaintDevice device) {
     WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device) : null);
-    canvas.setProperty(Property.PropertyInnerHTML, vectorDevice.getRendered());
-    ;
+    canvas.setProperty(Property.InnerHTML, vectorDevice.getRendered());
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
     WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device) : null);
-    if (!EnumUtils.mask(this.widget_.repaintFlags_, PaintFlag.PaintUpdate).isEmpty()) {
+    if (this.widget_.repaintFlags_.contains(PaintFlag.Update)) {
       DomElement painter =
           DomElement.updateGiven(
-              "Wt3_6_0.getElement('p" + this.widget_.getId() + "').firstChild",
-              DomElementType.DomElement_DIV);
-      painter.setProperty(Property.PropertyAddedInnerHTML, vectorDevice.getRendered());
+              "Wt4_4_0.getElement('p" + this.widget_.getId() + "').firstChild", DomElementType.DIV);
+      painter.setProperty(Property.AddedInnerHTML, vectorDevice.getRendered());
       WApplication app = WApplication.getInstance();
       if (app.getEnvironment().agentIsOpera()) {
         painter.callMethod("forceRedraw();");
       }
       result.add(painter);
     } else {
-      DomElement canvas =
-          DomElement.getForUpdate('p' + this.widget_.getId(), DomElementType.DomElement_DIV);
-      canvas.setProperty(Property.PropertyInnerHTML, vectorDevice.getRendered());
+      DomElement canvas = DomElement.getForUpdate('p' + this.widget_.getId(), DomElementType.DIV);
+      canvas.setProperty(Property.InnerHTML, vectorDevice.getRendered());
       result.add(canvas);
     }
     this.widget_.sizeChanged_ = false;
-    ;
   }
 
   public WWidgetPainter.RenderType getRenderType() {

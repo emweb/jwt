@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -65,9 +66,9 @@ public class WVirtualImage extends WCompositeWidget {
       long imageWidth,
       long imageHeight,
       int gridImageSize,
-      WContainerWidget parent) {
-    super(parent);
-    this.viewPortChanged_ = new Signal2<Long, Long>(this);
+      WContainerWidget parentContainer) {
+    super();
+    this.viewPortChanged_ = new Signal2<Long, Long>();
     this.grid_ = new HashMap<Long, WImage>();
     this.gridImageSize_ = gridImageSize;
     this.viewPortWidth_ = viewPortWidth;
@@ -79,21 +80,23 @@ public class WVirtualImage extends WCompositeWidget {
     this.setImplementation(this.impl_ = new WContainerWidget());
     this.impl_.resize(new WLength(this.viewPortWidth_), new WLength(this.viewPortHeight_));
     this.impl_.setPositionScheme(PositionScheme.Relative);
-    WScrollArea scrollArea = new WScrollArea(this.impl_);
+    WContainerWidget scrollArea = new WContainerWidget();
+    this.impl_.addWidget(scrollArea);
     scrollArea.resize(
-        new WLength(100, WLength.Unit.Percentage), new WLength(100, WLength.Unit.Percentage));
-    scrollArea.setScrollBarPolicy(WScrollArea.ScrollBarPolicy.ScrollBarAlwaysOff);
+        new WLength(100, LengthUnit.Percentage), new WLength(100, LengthUnit.Percentage));
     scrollArea.setPositionScheme(PositionScheme.Absolute);
+    scrollArea.setOverflow(Overflow.Hidden);
     this.contents_ = new WContainerWidget();
+    scrollArea.addWidget(this.contents_);
     this.contents_.setPositionScheme(PositionScheme.Absolute);
-    scrollArea.setWidget(this.contents_);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a viewport for a virtual image.
    *
    * <p>Calls {@link #WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long
-   * imageHeight, int gridImageSize, WContainerWidget parent) this(viewPortWidth, viewPortHeight,
-   * imageWidth, imageHeight, 256, (WContainerWidget)null)}
+   * imageHeight, int gridImageSize, WContainerWidget parentContainer) this(viewPortWidth,
+   * viewPortHeight, imageWidth, imageHeight, 256, (WContainerWidget)null)}
    */
   public WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long imageHeight) {
     this(viewPortWidth, viewPortHeight, imageWidth, imageHeight, 256, (WContainerWidget) null);
@@ -102,8 +105,8 @@ public class WVirtualImage extends WCompositeWidget {
    * Creates a viewport for a virtual image.
    *
    * <p>Calls {@link #WVirtualImage(int viewPortWidth, int viewPortHeight, long imageWidth, long
-   * imageHeight, int gridImageSize, WContainerWidget parent) this(viewPortWidth, viewPortHeight,
-   * imageWidth, imageHeight, gridImageSize, (WContainerWidget)null)}
+   * imageHeight, int gridImageSize, WContainerWidget parentContainer) this(viewPortWidth,
+   * viewPortHeight, imageWidth, imageHeight, gridImageSize, (WContainerWidget)null)}
    */
   public WVirtualImage(
       int viewPortWidth, int viewPortHeight, long imageWidth, long imageHeight, int gridImageSize) {
@@ -117,12 +120,6 @@ public class WVirtualImage extends WCompositeWidget {
   }
   /** Destructor. */
   public void remove() {
-    for (Iterator<Map.Entry<Long, WImage>> it_it = this.grid_.entrySet().iterator();
-        it_it.hasNext(); ) {
-      Map.Entry<Long, WImage> it = it_it.next();
-      ;
-      if (it.getValue() != null) it.getValue().remove();
-    }
     super.remove();
   }
   /**
@@ -131,12 +128,7 @@ public class WVirtualImage extends WCompositeWidget {
    * <p>This method invalidates all current grid images, and recreates them.
    */
   public void redrawAll() {
-    for (Iterator<Map.Entry<Long, WImage>> it_it = this.grid_.entrySet().iterator();
-        it_it.hasNext(); ) {
-      Map.Entry<Long, WImage> it = it_it.next();
-      ;
-      if (it.getValue() != null) it.getValue().remove();
-    }
+    this.contents_.clear();
     this.grid_.clear();
     this.generateGridItems(this.currentX_, this.currentY_);
   }
@@ -149,11 +141,11 @@ public class WVirtualImage extends WCompositeWidget {
     this.impl_
         .mouseWentDown()
         .addListener(
-            "function(obj, event) {  var pc = Wt3_6_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+            "function(obj, event) {  var pc = Wt4_4_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
     this.impl_
         .mouseMoved()
         .addListener(
-            "function(obj, event) {var WT= Wt3_6_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
+            "function(obj, event) {var WT= Wt4_4_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
                 + this.contents_.getJsRef()
                 + ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
     this.impl_
@@ -164,12 +156,10 @@ public class WVirtualImage extends WCompositeWidget {
         .mouseWentUp()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                WVirtualImage.this.mouseUp(e1);
-              }
+            (WMouseEvent e1) -> {
+              WVirtualImage.this.mouseUp(e1);
             });
-    this.impl_.getDecorationStyle().setCursor(Cursor.OpenHandCursor);
+    this.impl_.getDecorationStyle().setCursor(Cursor.OpenHand);
   }
   /**
    * Scrolls the viewport of the image over a distance.
@@ -330,7 +320,7 @@ public class WVirtualImage extends WCompositeWidget {
    */
   protected WImage createImage(long x, long y, int width, int height) {
     WResource r = this.render(x, y, width, height);
-    return new WImage(r, "");
+    return new WImage(new WLink(r), "", (WContainerWidget) null);
   }
   /**
    * Render a grid image for the given rectangle.
@@ -445,12 +435,12 @@ public class WVirtualImage extends WCompositeWidget {
                     this.createImage(
                         i * this.gridImageSize_, j * this.gridImageSize_, width, height);
                 img.setAttributeValue("onmousedown", "return false;");
-                this.contents_.addWidget(img);
                 img.setPositionScheme(PositionScheme.Absolute);
                 img.setOffsets(
                     new WLength((double) i * this.gridImageSize_), EnumSet.of(Side.Left));
                 img.setOffsets(new WLength((double) j * this.gridImageSize_), EnumSet.of(Side.Top));
                 this.grid_.put(key, img);
+                this.contents_.addWidget(img);
               }
             }
           }
@@ -475,8 +465,12 @@ public class WVirtualImage extends WCompositeWidget {
       Map.Entry<Long, WImage> it = it_it.next();
       WVirtualImage.Coordinate coordinate = new WVirtualImage.Coordinate();
       this.decodeKey(it.getKey(), coordinate);
-      if (coordinate.i < i1 || coordinate.i > i2 || coordinate.j < j1 || coordinate.j > j2) {;
-        if (it.getValue() != null) it.getValue().remove();
+      if (coordinate.i < i1 || coordinate.i > i2 || coordinate.j < j1 || coordinate.j > j2) {
+        {
+          WWidget toRemove = it.getValue().removeFromParent();
+          if (toRemove != null) toRemove.remove();
+        }
+
         it_it.remove();
       } else {
       }

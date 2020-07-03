@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,10 +18,14 @@ import javax.servlet.http.*;
 
 /** An enumeration describing a layout direction. */
 public enum LayoutDirection {
-  /** Left-to-Right (Western and other languages) */
+  /** Left-to-Right layout. */
   LeftToRight,
-  /** Right-to-Left (Many Middle Eastern and Arabic languages) */
-  RightToLeft;
+  /** Right-to-left layout. */
+  RightToLeft,
+  /** Top-to-bottom layout. */
+  TopToBottom,
+  /** Bottom-to-top layout. */
+  BottomToTop;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

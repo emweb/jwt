@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,8 +26,6 @@ class DialogCover extends WContainerWidget {
     this.dialogs_ = new ArrayList<WDialog>();
     this.topDialogId_ = "";
     this.setObjectName("dialog-cover");
-    WApplication app = WApplication.getInstance();
-    app.getDomRoot().addWidget(this);
     this.hide();
   }
 
@@ -97,9 +96,7 @@ class DialogCover extends WContainerWidget {
         if (!animation.isEmpty()) {
           this.animateShow(
               new WAnimation(
-                  WAnimation.AnimationEffect.Fade,
-                  WAnimation.TimingFunction.Linear,
-                  animation.getDuration() * 4));
+                  AnimationEffect.Fade, TimingFunction.Linear, animation.getDuration() * 4));
         } else {
           this.show();
         }
@@ -114,7 +111,7 @@ class DialogCover extends WContainerWidget {
       this.setZIndex(dialog.getZIndex() - 1);
       this.setStyleClass(this.userCoverClasses(dialog));
       WApplication app = WApplication.getInstance();
-      app.getTheme().apply(app.getDomRoot(), this, WidgetThemeRole.DialogCoverRole);
+      app.getTheme().apply(app.getDomRoot(), this, WidgetThemeRole.DialogCoverWidget);
     } else {
       WApplication.getInstance()
           .doJavaScript(
@@ -125,9 +122,7 @@ class DialogCover extends WContainerWidget {
         if (!animation.isEmpty()) {
           this.animateHide(
               new WAnimation(
-                  WAnimation.AnimationEffect.Fade,
-                  WAnimation.TimingFunction.Linear,
-                  animation.getDuration() * 4));
+                  AnimationEffect.Fade, TimingFunction.Linear, animation.getDuration() * 4));
         } else {
           this.hide();
         }

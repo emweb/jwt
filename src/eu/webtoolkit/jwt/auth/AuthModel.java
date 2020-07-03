@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -63,23 +64,14 @@ public class AuthModel extends FormBaseModel {
    *
    * <p>Creates a new authentication model, using a basic authentication service and user database.
    */
-  public AuthModel(final AuthService baseAuth, final AbstractUserDatabase users, WObject parent) {
-    super(baseAuth, users, parent);
+  public AuthModel(final AuthService baseAuth, final AbstractUserDatabase users) {
+    super(baseAuth, users);
     this.throttlingDelay_ = 0;
     this.reset();
   }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #AuthModel(AuthService baseAuth, AbstractUserDatabase users, WObject parent)
-   * this(baseAuth, users, (WObject)null)}
-   */
-  public AuthModel(final AuthService baseAuth, final AbstractUserDatabase users) {
-    this(baseAuth, users, (WObject) null);
-  }
 
   public void reset() {
-    if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+    if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddress) {
       this.addField(LoginNameField, WString.tr("Wt.Auth.email-info"));
     } else {
       this.addField(LoginNameField, WString.tr("Wt.Auth.user-name-info"));
@@ -88,12 +80,12 @@ public class AuthModel extends FormBaseModel {
     int days = this.getBaseAuth().getAuthTokenValidity() / 24 / 60;
     WString info = new WString();
     if (days % 7 != 0) {
-      info = WString.tr("Wt.Auth.remember-me-info.days").arg(days);
+      info = WString.trn("Wt.Auth.remember-me-info.days", days).arg(days);
     } else {
-      info = WString.tr("Wt.Auth.remember-me-info.weeks").arg(days / 7);
+      info = WString.trn("Wt.Auth.remember-me-info.weeks", days / 7).arg(days / 7);
     }
     this.addField(RememberMeField, info);
-    this.setValidation(RememberMeField, new WValidator.Result(WValidator.State.Valid, info));
+    this.setValidation(RememberMeField, new WValidator.Result(ValidationState.Valid, info));
   }
 
   public boolean isVisible(String field) {
@@ -117,7 +109,7 @@ public class AuthModel extends FormBaseModel {
         this.setValidation(
             LoginNameField,
             new WValidator.Result(
-                WValidator.State.Invalid, WString.tr("Wt.Auth.user-name-invalid")));
+                ValidationState.Invalid, WString.tr("Wt.Auth.user-name-invalid")));
         this.throttlingDelay_ = 0;
       }
       return user.isValid();
@@ -131,7 +123,7 @@ public class AuthModel extends FormBaseModel {
               this.setValidation(
                   PasswordField,
                   new WValidator.Result(
-                      WValidator.State.Invalid, WString.tr("Wt.Auth.password-invalid")));
+                      ValidationState.Invalid, WString.tr("Wt.Auth.password-invalid")));
               if (this.getPasswordAuth().isAttemptThrottlingEnabled()) {
                 this.throttlingDelay_ = this.getPasswordAuth().delayForNextAttempt(user);
               }
@@ -140,7 +132,7 @@ public class AuthModel extends FormBaseModel {
               this.setValidation(
                   PasswordField,
                   new WValidator.Result(
-                      WValidator.State.Invalid, WString.tr("Wt.Auth.password-info")));
+                      ValidationState.Invalid, WString.tr("Wt.Auth.password-info")));
               this.setValidated(PasswordField, false);
               this.throttlingDelay_ = this.getPasswordAuth().delayForNextAttempt(user);
               logger.warn(
@@ -196,7 +188,7 @@ public class AuthModel extends FormBaseModel {
       app.loadJavaScript("js/AuthModel.js", wtjs1());
       button.setJavaScriptMember(
           " AuthThrottle",
-          "new Wt3_6_0.AuthThrottle(Wt3_6_0,"
+          "new Wt4_4_0.AuthThrottle(Wt4_4_0,"
               + button.getJsRef()
               + ","
               + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()
@@ -233,12 +225,13 @@ public class AuthModel extends FormBaseModel {
    */
   public boolean login(final Login login) {
     if (this.isValid()) {
+      AuthModel self = this;
       User user =
           this.getUsers().findWithIdentity(Identity.LoginName, this.valueText(LoginNameField));
       Object v = this.getValue(RememberMeField);
       if (this.loginUser(login, user)) {
         this.reset();
-        if (!(v == null) && ((Boolean) v) == true) {
+        if ((v != null) && ((Boolean) v) == true) {
           this.setRememberMeCookie(user);
         }
         return true;
@@ -303,10 +296,10 @@ public class AuthModel extends FormBaseModel {
     WApplication app = WApplication.getInstance();
     final WEnvironment env = app.getEnvironment();
     if (this.getBaseAuth().isAuthTokensEnabled()) {
-      String token = env.getCookieValue(this.getBaseAuth().getAuthTokenCookieName());
+      String token = env.getCookie(this.getBaseAuth().getAuthTokenCookieName());
       if (token != null) {
         AuthTokenResult result = this.getBaseAuth().processAuthToken(token, this.getUsers());
-        switch (result.getResult()) {
+        switch (result.getState()) {
           case Valid:
             {
               if (result.getNewToken().length() != 0) {

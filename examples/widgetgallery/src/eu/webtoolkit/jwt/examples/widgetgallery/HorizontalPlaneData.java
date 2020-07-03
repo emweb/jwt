@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,20 +22,16 @@ import org.slf4j.LoggerFactory;
 class HorizontalPlaneData extends WStandardItemModel {
   private static Logger logger = LoggerFactory.getLogger(HorizontalPlaneData.class);
 
-  public HorizontalPlaneData(int nbXpts, int nbYpts, WObject parent) {
-    super(nbXpts + 1, nbYpts + 1, parent);
+  public HorizontalPlaneData(int nbXpts, int nbYpts) {
+    super(nbXpts + 1, nbYpts + 1);
     this.xStart_ = -10.0;
     this.xEnd_ = 10.0;
     this.yStart_ = -10.0;
     this.yEnd_ = 10.0;
   }
 
-  public HorizontalPlaneData(int nbXpts, int nbYpts) {
-    this(nbXpts, nbYpts, (WObject) null);
-  }
-
-  public Object getData(final WModelIndex index, int role) {
-    if (role != ItemDataRole.DisplayRole) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
+    if (!role.equals(ItemDataRole.Display)) {
       return super.getData(index, role);
     }
     return 0.0;

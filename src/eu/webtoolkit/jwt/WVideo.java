@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -55,18 +56,19 @@ public class WVideo extends WAbstractMedia {
    * <p>A freshly constructed video widget has no poster image, no media sources, has preload mode
    * set to PreloadAuto, and only the Controls flag is set.
    */
-  public WVideo(WContainerWidget parent) {
-    super(parent);
+  public WVideo(WContainerWidget parentContainer) {
+    super();
     this.posterUrl_ = "";
     this.sizeChanged_ = false;
     this.posterChanged_ = false;
     this.setInline(false);
-    this.setOptions(EnumSet.of(WAbstractMedia.Options.Controls));
+    this.setOptions(EnumSet.of(PlayerOption.Controls));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a video widget.
    *
-   * <p>Calls {@link #WVideo(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WVideo(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WVideo() {
     this((WContainerWidget) null);
@@ -101,11 +103,11 @@ public class WVideo extends WAbstractMedia {
   }
 
   DomElement createMediaDomElement() {
-    return DomElement.createNew(DomElementType.DomElement_VIDEO);
+    return DomElement.createNew(DomElementType.VIDEO);
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_VIDEO;
+    return DomElementType.VIDEO;
   }
 
   void updateMediaDom(final DomElement element, boolean all) {

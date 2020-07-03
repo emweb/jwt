@@ -52,16 +52,10 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	}
 	
 	public WPdfImage(WLength width, WLength height) {
-		this(width, height, null);
-	}
-	
-	public WPdfImage(WLength width, WLength height, WObject parent) {
-		super(parent);
-		
 		this.width = width;
 		this.height = height;
 		
-		this.changeFlags = EnumSet.allOf(ChangeFlag.class);
+		this.changeFlags = EnumSet.allOf(PainterChangeFlag.class);
 		
         try {
         	this.bos = new ByteArrayOutputStream();
@@ -76,21 +70,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		}
 	}
 	
-	public WPdfImage(PDF pdf, Page page, int x, int y, WLength width, WLength height) {
-		this(pdf, page, x, y, width, height, null);
-	}
-	
 	public WPdfImage(PDF pdf, Page page, int x, int y, double width, double height) {
-		this(pdf, page, x, y, new WLength(width), new WLength(height), null);
+		this(pdf, page, x, y, new WLength(width), new WLength(height));
 	}
 	
-	public WPdfImage(PDF pdf, Page page, int x, int y, double width, double height, WObject parent) {
-		this(pdf, page, x, y, new WLength(width), new WLength(height), parent);
-	}
-	
-	public WPdfImage(PDF pdf, Page page, int x, int y, WLength width, WLength height, WObject parent) {
-		super(parent);
-		
+	public WPdfImage(PDF pdf, Page page, int x, int y, WLength width, WLength height) {
 		this.pdf = pdf;
 		this.page = page;
 		this.x = x;
@@ -98,7 +82,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		this.width = width;
 		this.height = height;
 		
-		this.changeFlags = EnumSet.allOf(ChangeFlag.class);
+		this.changeFlags = EnumSet.allOf(PainterChangeFlag.class);
 		
 		trueTypeFonts = new FontSupport(this);
 		
@@ -119,8 +103,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	}
 
 	@Override
-	public EnumSet<FeatureFlag> getFeatures() {
-		return EnumSet.of(FeatureFlag.HasFontMetrics, FeatureFlag.CanWordWrap);
+	public EnumSet<PaintDeviceFeatureFlag> getFeatures() {
+		return EnumSet.of(PaintDeviceFeatureFlag.FontMetrics, PaintDeviceFeatureFlag.WordWrap);
 	}
 
 	@Override
@@ -134,12 +118,12 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	}
 
 	@Override
-	public void setChanged(EnumSet<ChangeFlag> flags) {
+	public void setChanged(EnumSet<PainterChangeFlag> flags) {
 		this.changeFlags.addAll(flags);
 	}
 
 	@Override
-	public void setChanged(ChangeFlag flag, ChangeFlag... flags) {
+	public void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
@@ -213,6 +197,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		WPainterPath pp = new WPainterPath();
 		pp.arcTo(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), startAngle, spanAngle);
 		drawPath(pp);
+	}
+
+	@Override
+	public void drawRect(WRectF rect) {
+		drawPath(rect.toPath());
 	}
 
 	@Override
@@ -322,7 +311,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		List<WPainterPath.Segment> segments = path.getSegments();
 
 		if (segments.size() > 0
-				&& segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo)
+				&& segments.get(0).getType() != SegmentType.MoveTo)
 			_moveTo(0, 0);
 
 		for (int i = 0; i < segments.size(); ++i) {
@@ -400,8 +389,8 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		processChangeFlags();
 		
 		try {
-			boolean hasPen = getPainter().getPen().getStyle() != PenStyle.NoPen;
-			boolean hasBrush = getPainter().getBrush().getStyle() != BrushStyle.NoBrush;
+			boolean hasPen = getPainter().getPen().getStyle() != PenStyle.None;
+			boolean hasBrush = getPainter().getBrush().getStyle() != BrushStyle.None;
 			
 			if (hasPen || hasBrush) {
 				if (hasBrush) {
@@ -425,7 +414,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 	@Override
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
-		if (textFlag == TextFlag.TextWordWrap)
+		if (textFlag == TextFlag.WordWrap)
 			throw new UnsupportedOperationException("drawText(): TextWordWrap not yet implemented");
 
 		if (clipPoint != null && this.getPainter() != null) {
@@ -461,25 +450,25 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		String s = text.toString();
 		
 		switch (horizontalAlign) {
-		case AlignLeft:
+		case Left:
 			px = rect.getLeft();
 			break;
-		case AlignRight:
+		case Right:
 			px = rect.getRight() - this.font.stringWidth(s);
 			break;
-		case AlignCenter:
+		case Center:
 			px = rect.getCenter().getX() - this.font.stringWidth(s) / 2;
 			break;
 		}
 		
 		switch (verticalAlign) {
-		case AlignBottom:
+		case Bottom:
 			py = rect.getBottom();
 			break;
-		case AlignTop:
+		case Top:
 			py = rect.getTop() + getFontMetrics().getHeight();
 			break;
-		case AlignMiddle:
+		case Middle:
 			py = rect.getCenter().getY() + getFontMetrics().getHeight()/2;
 		}
 		
@@ -660,20 +649,20 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	private Stroke createStroke(WPainter painter, WPen pen) {
 		int cap = 0;
 		switch (pen.getCapStyle()) {
-		case FlatCap:   cap = Cap.BUTT; break;
-		case RoundCap:  cap = Cap.ROUND; break;
-		case SquareCap: cap = Cap.PROJECTING_SQUARE; break;
+		case Flat:   cap = Cap.BUTT; break;
+		case Round:  cap = Cap.ROUND; break;
+		case Square: cap = Cap.PROJECTING_SQUARE; break;
 		}
 
 		int join = 0;
 		switch (pen.getJoinStyle()) {
-		case BevelJoin: join = Join.BEVEL; break;
-		case MiterJoin: join = Join.MITER; break;
-		case RoundJoin: join = Join.ROUND; break;
+		case Bevel: join = Join.BEVEL; break;
+		case Miter: join = Join.MITER; break;
+		case Round: join = Join.ROUND; break;
 		}
 
 		float width = 0;
-		if (pen.getStyle() != PenStyle.NoPen)
+		if (pen.getStyle() != PenStyle.None)
 			width = (float) painter.normalizedPenWidth(pen.getWidth(), false).toPixels();
 
 		String pattern = null;
@@ -700,11 +689,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	}
 	
 	private void processChangeFlags() {
-		boolean resetTransform = changeFlags.contains(ChangeFlag.Transform);
+		boolean resetTransform = changeFlags.contains(PainterChangeFlag.Transform);
 
 		//TODO clipping + transform
 		/*
-		  if (changeFlags.contains(ChangeFlag.Clipping)) {
+		  if (changeFlags.contains(PainterChangeFlag.Clipping)) {
 			setTransform(painter.getClipPathTransform());
 			if (painter.getClipPath().isEmpty())
 				g2.setClip(null);
@@ -719,10 +708,10 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				currentTransform = deviceTransform.multiply(currentTransform);
 		}
 		
-		if (changeFlags.contains(ChangeFlag.Pen))
+		if (changeFlags.contains(PainterChangeFlag.Pen))
 			stroke = createStroke(painter, painter.getPen());
 
-		if (resetTransform || changeFlags.contains(ChangeFlag.Font)) {
+		if (resetTransform || changeFlags.contains(PainterChangeFlag.Font)) {
 			TRSSDecomposition d = new TRSSDecomposition();
 			currentTransform.decomposeTranslateRotateScaleSkew(d);
 			
@@ -770,11 +759,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		this.deviceTransform = new WTransform();
 		this.deviceTransform.translate(this.x, this.y);
 		this.deviceTransform.multiplyAndAssign(transform);
-		changeFlags.add(ChangeFlag.Transform);
+		changeFlags.add(PainterChangeFlag.Transform);
 	}
 	
 	private WPainter painter;
-	private EnumSet<ChangeFlag> changeFlags;
+	private EnumSet<PainterChangeFlag> changeFlags;
 	
 	private WTransform deviceTransform;
 	

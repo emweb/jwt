@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.examples.composer;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import eu.webtoolkit.jwt.LengthUnit;
 import eu.webtoolkit.jwt.WAnimation;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
@@ -31,7 +32,7 @@ public class AddresseeEdit extends WTextArea {
 
         setRows(3);
         setColumns(55);
-        resize(new WLength(99, WLength.Unit.Percentage), new WLength());
+        resize(new WLength(99, LengthUnit.Percentage), new WLength());
 
         setInline(false); // for IE to position the suggestions well
 

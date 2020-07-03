@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The pie chart may be customized visually by enabling a 3D effect ({@link
  * WPieChart#setPerspectiveEnabled(boolean enabled, double height) setPerspectiveEnabled()}), or by
- * specifying the angle of the first segment. One or more segments may be exploded, which seperates
+ * specifying the angle of the first segment. One or more segments may be exploded, which separates
  * the segment from the rest of the pie chart, using {@link WPieChart#setExplode(int modelRow,
  * double factor) setExplode()}.
  *
@@ -56,8 +57,8 @@ public class WPieChart extends WAbstractChart {
   private static Logger logger = LoggerFactory.getLogger(WPieChart.class);
 
   /** Creates a new pie chart. */
-  public WPieChart(WContainerWidget parent) {
-    super(parent);
+  public WPieChart(WContainerWidget parentContainer) {
+    super();
     this.labelsColumn_ = -1;
     this.dataColumn_ = -1;
     this.height_ = 0.0;
@@ -67,13 +68,14 @@ public class WPieChart extends WAbstractChart {
     this.shadow_ = false;
     this.labelFormat_ = new WString("%.3g%%");
     this.pie_ = new ArrayList<WPieChart.PieData>();
-    this.setPalette(new WStandardPalette(WStandardPalette.Flavour.Neutral));
+    this.setPalette(new WStandardPalette(PaletteFlavour.Neutral));
     this.setPlotAreaPadding(5);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new pie chart.
    *
-   * <p>Calls {@link #WPieChart(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WPieChart(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WPieChart() {
     this((WContainerWidget) null);
@@ -88,7 +90,6 @@ public class WPieChart extends WAbstractChart {
    *
    * <p>
    *
-   * @see WAbstractChart#setModel(WAbstractItemModel model)
    * @see WPieChart#setDisplayLabels(EnumSet options)
    * @see WPieChart#setDataColumn(int modelColumn)
    */
@@ -118,7 +119,6 @@ public class WPieChart extends WAbstractChart {
    *
    * <p>
    *
-   * @see WAbstractChart#setModel(WAbstractItemModel model)
    * @see WPieChart#setLabelsColumn(int modelColumn)
    */
   public void setDataColumn(int modelColumn) {
@@ -144,8 +144,6 @@ public class WPieChart extends WAbstractChart {
    * this method to override the palette&apos;s brush for a particular <i>modelRow</i>.
    *
    * <p>
-   *
-   * @see WAbstractChart#setPalette(WChartPalette palette)
    */
   public void setBrush(int modelRow, final WBrush brush) {
     this.pie_.get(modelRow).customBrush = true;
@@ -293,10 +291,11 @@ public class WPieChart extends WAbstractChart {
    *
    * <p>The <i>options</i> must be the logical OR of a placement option ({@link LabelOption#Inside}
    * or {@link LabelOption#Outside}) and {@link LabelOption#TextLabel} and/or {@link
-   * LabelOption#TextPercentage}. If both TextLabel and TextPercentage are specified, then these are
-   * combined as &quot;&lt;label&gt;: &lt;percentage&gt;&quot;.
+   * LabelOption#TextPercentage}. If both {@link LabelOption#TextLabel} and {@link
+   * LabelOption#TextPercentage} are specified, then these are combined as &quot;&lt;label&gt;:
+   * &lt;percentage&gt;&quot;.
    *
-   * <p>The default value is {@link LabelOption#NoLabels}.
+   * <p>The default value is {@link LabelOption#None}.
    */
   public void setDisplayLabels(EnumSet<LabelOption> options) {
     this.labelOptions_ = EnumSet.copyOf(options);
@@ -360,7 +359,7 @@ public class WPieChart extends WAbstractChart {
     legendItem.setPadding(new WLength(4));
     WText colorText = new WText();
     legendItem.addWidget(colorText);
-    colorText.setPadding(new WLength(10), EnumSet.of(Side.Left, Side.Right));
+    colorText.setPadding(new WLength(10), EnumUtils.or(EnumSet.of(Side.Left), Side.Right));
     colorText.getDecorationStyle().setBackgroundColor(this.getBrush(index).getColor());
     if (WApplication.getInstance().getEnvironment().agentIsIE()) {
       colorText.setAttributeValue("style", "zoom: 1;");
@@ -378,7 +377,7 @@ public class WPieChart extends WAbstractChart {
     if (!Double.isNaN(value)) {
       WString label = this.labelText(index, value, total, options);
       if (!(label.length() == 0)) {
-        WText l = new WText(label);
+        WText l = new WText(label, (WContainerWidget) null);
         l.setPadding(new WLength(5), EnumSet.of(Side.Left));
         l.setToolTip(this.getModel().getToolTip(index, this.dataColumn_));
         legendItem.addWidget(l);
@@ -403,8 +402,8 @@ public class WPieChart extends WAbstractChart {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Currently, an area is only created if the ToolTipRole data at the data point
-   * is not empty. </i>
+   * <p><i><b>Note: </b>Currently, an area is only created if the {@link ItemDataRole#ToolTip} data
+   * at the data point is not empty. </i>
    */
   public void addDataPointArea(int row, int column, WAbstractArea area) {
     (this).addArea(area);
@@ -430,6 +429,7 @@ public class WPieChart extends WAbstractChart {
     AlignmentFlag horizontalAlign =
         EnumUtils.enumFromSet(EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask));
     WContainerWidget c = new WContainerWidget();
+    WWidget tw = textWidget;
     c.addWidget(textWidget);
     c.setPositionScheme(PositionScheme.Absolute);
     c.setAttributeValue("style", "display: flex;");
@@ -448,13 +448,13 @@ public class WPieChart extends WAbstractChart {
         .append("px; ")
         .append("display: flex;");
     switch (horizontalAlign) {
-      case AlignLeft:
+      case Left:
         containerStyle.append(" justify-content: flex-start;");
         break;
-      case AlignRight:
+      case Right:
         containerStyle.append(" justify-content: flex-end;");
         break;
-      case AlignCenter:
+      case Center:
         containerStyle.append(" justify-content: center;");
         break;
       default:
@@ -463,19 +463,19 @@ public class WPieChart extends WAbstractChart {
     c.setAttributeValue("style", containerStyle.toString());
     StringWriter innerStyle = new StringWriter();
     switch (verticalAlign) {
-      case AlignTop:
+      case Top:
         innerStyle.append("align-self: flex-start;");
         break;
-      case AlignBottom:
+      case Bottom:
         innerStyle.append("align-self: flex-end;");
         break;
-      case AlignMiddle:
+      case Middle:
         innerStyle.append(" align-self: center;");
         break;
       default:
         break;
     }
-    textWidget.setAttributeValue("style", innerStyle.toString());
+    tw.setAttributeValue("style", innerStyle.toString());
     return c;
   }
   /**
@@ -564,7 +564,7 @@ public class WPieChart extends WAbstractChart {
           double left;
           double top;
           double f;
-          if (!EnumUtils.mask(this.labelOptions_, LabelOption.Outside).isEmpty()) {
+          if (this.labelOptions_.contains(LabelOption.Outside)) {
             f = this.pie_.get(i).explode + 1.1;
           } else {
             f = this.pie_.get(i).explode + 0.7;
@@ -574,29 +574,33 @@ public class WPieChart extends WAbstractChart {
               cy + f * r * Math.sin(-midAngle / 180.0 * 3.14159265358979323846) * (h > 0 ? 0.5 : 1);
           EnumSet<AlignmentFlag> alignment = EnumSet.noneOf(AlignmentFlag.class);
           WColor c = painter.getPen().getColor();
-          if (!EnumUtils.mask(this.labelOptions_, LabelOption.Outside).isEmpty()) {
+          if (this.labelOptions_.contains(LabelOption.Outside)) {
             if (midAngle < 90) {
               left = px;
               top = py - height;
               alignment =
-                  EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignBottom));
+                  EnumSet.copyOf(
+                      EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Bottom));
             } else {
               if (midAngle < 180) {
                 left = px - width;
                 top = py - height;
                 alignment =
-                    EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignRight, AlignmentFlag.AlignBottom));
+                    EnumSet.copyOf(
+                        EnumUtils.or(EnumSet.of(AlignmentFlag.Right), AlignmentFlag.Bottom));
               } else {
                 if (midAngle < 270) {
                   left = px - width;
                   top = py + h / 2;
                   alignment =
-                      EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignRight, AlignmentFlag.AlignTop));
+                      EnumSet.copyOf(
+                          EnumUtils.or(EnumSet.of(AlignmentFlag.Right), AlignmentFlag.Top));
                 } else {
                   left = px;
                   top = py + h / 2;
                   alignment =
-                      EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
+                      EnumSet.copyOf(
+                          EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Top));
                 }
               }
             }
@@ -604,7 +608,8 @@ public class WPieChart extends WAbstractChart {
             left = px - width / 2;
             top = py - height / 2;
             alignment =
-                EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignMiddle));
+                EnumSet.copyOf(
+                    EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Middle));
             c = this.getPalette().getFontColor(i);
           }
           if (v / total * 100 >= this.avoidLabelRendering_) {
@@ -628,7 +633,7 @@ public class WPieChart extends WAbstractChart {
           cy - r,
           100,
           50,
-          EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+          EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),
           this.getTitle());
       painter.setFont(oldFont);
     }
@@ -636,11 +641,12 @@ public class WPieChart extends WAbstractChart {
   }
 
   protected void paintEvent(WPaintDevice paintDevice) {
-    while (!this.getAreas().isEmpty()) {
-      if (this.getAreas().get(0) != null) this.getAreas().get(0).remove();
+    final List<WAbstractArea> allAreas = this.getAreas();
+    for (WAbstractArea area : allAreas) {
+      this.removeArea(area);
     }
     WPainter painter = new WPainter(paintDevice);
-    painter.setRenderHint(WPainter.RenderHint.Antialiasing, true);
+    painter.setRenderHint(RenderHint.Antialiasing, true);
     this.paint(painter);
   }
   /**
@@ -717,7 +723,7 @@ public class WPieChart extends WAbstractChart {
       } else {
         if (this.shadow_) {
           this.setShadow(painter);
-          painter.setBrush(new WBrush(WColor.black));
+          painter.setBrush(new WBrush(StandardColor.Black));
           this.drawSlices(painter, cx, cy + h, r, total, true);
           painter.setShadow(new WShadow());
         }
@@ -989,12 +995,12 @@ public class WPieChart extends WAbstractChart {
 
   private WString labelText(int index, double v, double total, EnumSet<LabelOption> options) {
     WString text = new WString();
-    if (!EnumUtils.mask(options, LabelOption.TextLabel).isEmpty()) {
+    if (options.contains(LabelOption.TextLabel)) {
       if (this.labelsColumn_ != -1) {
         text.append(this.getModel().getDisplayData(index, this.labelsColumn_));
       }
     }
-    if (!EnumUtils.mask(options, LabelOption.TextPercentage).isEmpty()) {
+    if (options.contains(LabelOption.TextPercentage)) {
       String label = "";
       double u = v / total * 100;
       String format = this.getLabelFormat().toString();

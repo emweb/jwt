@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -126,14 +127,14 @@ import org.slf4j.LoggerFactory;
  * not neccesary). If you want to manage these resources entirely by yourself, the following method
  * can be used.
  *
- * <p>Using {@link WGLWidget#createAndLoadArrayBuffer(String url) createAndLoadArrayBuffer()}, you
- * can load an array buffer in binary format from an URL. This will cause the client to fetch the
- * given URL, and make the contents of the file available in an {@link ArrayBuffer}, which can then
- * be used by BufferData() to bind them to an OpenGL buffer. This is ideal to load VBO buffers in a
- * faster way, as it avoids converting floats to text strings on the server and then back to floats
- * on the client. You can combine this with the use of {@link WResource} (e.g. {@link
- * WMemoryResource}) to send an std::vector of vertices to the client. Note that using {@link
- * ArrayBuffer} is not possible when you want a fall-back in the form of server-side rendering.
+ * <p>Using createAndLoadArrayBuffer(), you can load an array buffer in binary format from an URL.
+ * This will cause the client to fetch the given URL, and make the contents of the file available in
+ * an {@link ArrayBuffer}, which can then be used by BufferData() to bind them to an OpenGL buffer.
+ * This is ideal to load VBO buffers in a faster way, as it avoids converting floats to text strings
+ * on the server and then back to floats on the client. You can combine this with the use of {@link
+ * WResource} (e.g. {@link WMemoryResource}) to send an std::vector of vertices to the client. Note
+ * that using {@link ArrayBuffer} is not possible when you want a fall-back in the form of
+ * server-side rendering.
  *
  * <p>
  *
@@ -563,7 +564,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt3_6_0.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt3_6_0.glMatrix.mat4.create())";
+          "Wt4_4_0.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_4_0.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
       return copy;
     }
@@ -574,7 +575,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt3_6_0.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt3_6_0.glMatrix.mat4.create())";
+          "Wt4_4_0.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_4_0.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
       return copy;
     }
@@ -585,10 +586,10 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       StringWriter ss = new StringWriter();
-      ss.append("Wt3_6_0.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
+      ss.append("Wt4_4_0.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
       javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
       WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
-      ss.append(", Wt3_6_0.glMatrix.mat4.create())");
+      ss.append(", Wt4_4_0.glMatrix.mat4.create())");
       copy.jsRef_ = ss.toString();
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
       copy.matrices_.add(m);
@@ -640,37 +641,15 @@ public class WGLWidget extends WInteractWidget {
     private boolean initialized_;
   }
   /**
-   * Enumeration for render options.
-   *
-   * <p>
-   *
-   * @see WGLWidget#setRenderOptions(EnumSet options)
-   */
-  public enum RenderOption {
-    /** Enables client-side rendering. */
-    ClientSideRendering,
-    /** Enables server-side rendering. */
-    ServerSideRendering,
-    /** Enables anti-aliasing. */
-    AntiAliasing;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
    * Construct a GL widget.
    *
    * <p>Before the first rendering, you must apply a size to the {@link WGLWidget}.
    */
-  public WGLWidget(WContainerWidget parent) {
-    super(parent);
+  public WGLWidget(WContainerWidget parentContainer) {
+    super();
     this.renderOptions_ =
         EnumSet.of(
-            WGLWidget.RenderOption.ClientSideRendering,
-            WGLWidget.RenderOption.ServerSideRendering,
-            WGLWidget.RenderOption.AntiAliasing);
+            GLRenderOption.ClientSide, GLRenderOption.ServerSide, GLRenderOption.AntiAliasing);
     this.pImpl_ = null;
     this.jsMatrixList_ = new ArrayList<WGLWidget.jsMatrixMap>();
     this.jsVectorList_ = new ArrayList<WGLWidget.jsVectorMap>();
@@ -705,24 +684,18 @@ public class WGLWidget extends WInteractWidget {
     this.setLayoutSizeAware(true);
     this.webglNotAvailable_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WGLWidget.this.webglNotAvailable();
-          }
+        () -> {
+          WGLWidget.this.webglNotAvailable();
         });
     this.repaintSignal_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WGLWidget.this.repaintGL(WGLWidget.ClientSideRenderer.PAINT_GL);
-          }
+        () -> {
+          WGLWidget.this.repaintGL(GLClientSideRenderer.PAINT_GL);
         });
     this.contextRestored_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WGLWidget.this.contextRestored();
-          }
+        () -> {
+          WGLWidget.this.contextRestored();
         });
     this.mouseWentDown().addListener(this.mouseWentDownSlot_);
     this.mouseWentUp().addListener(this.mouseWentUpSlot_);
@@ -732,20 +705,29 @@ public class WGLWidget extends WInteractWidget {
     this.touchStarted().addListener(this.touchStarted_);
     this.touchEnded().addListener(this.touchEnded_);
     this.touchMoved().addListener(this.touchMoved_);
-    this.setAlternativeContent(new WText("Your browser does not support WebGL"));
+    this.setAlternativeContent(
+        new WText("Your browser does not support WebGL", (WContainerWidget) null));
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Construct a GL widget.
    *
-   * <p>Calls {@link #WGLWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WGLWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WGLWidget() {
     this((WContainerWidget) null);
   }
   /** Destructor. */
   public void remove() {
-    ;
+    {
+      WWidget oldWidget = this.alternative_;
+      this.alternative_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.alternative_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     super.remove();
   }
   /**
@@ -762,7 +744,7 @@ public class WGLWidget extends WInteractWidget {
    *
    * <p><i><b>Note: </b>Options must be set before the widget is being rendered. </i>
    */
-  public void setRenderOptions(EnumSet<WGLWidget.RenderOption> options) {
+  public void setRenderOptions(EnumSet<GLRenderOption> options) {
     this.renderOptions_ = EnumSet.copyOf(options);
   }
   /**
@@ -771,8 +753,7 @@ public class WGLWidget extends WInteractWidget {
    * <p>Calls {@link #setRenderOptions(EnumSet options) setRenderOptions(EnumSet.of(option,
    * options))}
    */
-  public final void setRenderOptions(
-      WGLWidget.RenderOption option, WGLWidget.RenderOption... options) {
+  public final void setRenderOptions(GLRenderOption option, GLRenderOption... options) {
     setRenderOptions(EnumSet.of(option, options));
   }
   /**
@@ -843,20 +824,6 @@ public class WGLWidget extends WInteractWidget {
    * this method, the result will be rendered client-side exactly once.
    */
   protected void updateGL() {}
-  /** Specifies what GL function needs to be updated. */
-  public enum ClientSideRenderer {
-    /** refresh {@link WGLWidget#paintGL() paintGL()} */
-    PAINT_GL,
-    /** refresh {@link WGLWidget#resizeGL(int width, int height) resizeGL()} */
-    RESIZE_GL,
-    /** refresh {@link WGLWidget#updateGL() updateGL()} */
-    UPDATE_GL;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Request invocation of resizeGL, paintGL and/or updateGL.
    *
@@ -867,12 +834,12 @@ public class WGLWidget extends WInteractWidget {
    * WGLWidget#updateGL() updateGL()}, {@link WGLWidget#resizeGL(int width, int height) resizeGL()},
    * {@link WGLWidget#paintGL() paintGL()}.
    */
-  public void repaintGL(EnumSet<WGLWidget.ClientSideRenderer> which) {
+  public void repaintGL(EnumSet<GLClientSideRenderer> which) {
     if (!(this.pImpl_ != null)) {
       return;
     }
     this.pImpl_.repaintGL(which);
-    if (!which.equals(0)) {
+    if (!which.isEmpty()) {
       this.repaint();
     }
   }
@@ -881,8 +848,7 @@ public class WGLWidget extends WInteractWidget {
    *
    * <p>Calls {@link #repaintGL(EnumSet which) repaintGL(EnumSet.of(whic, which))}
    */
-  public final void repaintGL(
-      WGLWidget.ClientSideRenderer whic, WGLWidget.ClientSideRenderer... which) {
+  public final void repaintGL(GLClientSideRenderer whic, GLClientSideRenderer... which) {
     repaintGL(EnumSet.of(whic, which));
   }
   /**
@@ -1373,8 +1339,6 @@ public class WGLWidget extends WInteractWidget {
    * indicate binary transfer of the data in case of client-side rendering.
    *
    * <p>
-   *
-   * @see WGLWidget#createAndLoadArrayBuffer(String url)
    */
   public void bufferData(
       WGLWidget.GLenum target, WGLWidget.ArrayBuffer res, WGLWidget.GLenum usage) {
@@ -1396,8 +1360,6 @@ public class WGLWidget extends WInteractWidget {
    * usage) bufferData()} for more info)
    *
    * <p>
-   *
-   * @see WGLWidget#createAndLoadArrayBuffer(String url)
    */
   public void bufferData(
       WGLWidget.GLenum target,
@@ -1423,8 +1385,6 @@ public class WGLWidget extends WInteractWidget {
    * usage) bufferData()} for more info)
    *
    * <p>
-   *
-   * @see WGLWidget#createAndLoadArrayBuffer(String url)
    */
   public void bufferSubData(WGLWidget.GLenum target, int offset, WGLWidget.ArrayBuffer res) {
     this.pImpl_.bufferSubData(target, offset, res);
@@ -1445,8 +1405,6 @@ public class WGLWidget extends WInteractWidget {
    * usage) bufferData()} for more info)
    *
    * <p>
-   *
-   * @see WGLWidget#createAndLoadArrayBuffer(String url)
    */
   public void bufferSubData(
       WGLWidget.GLenum target,
@@ -1648,25 +1606,6 @@ public class WGLWidget extends WInteractWidget {
    */
   public WGLWidget.Buffer createBuffer() {
     return this.pImpl_.getCreateBuffer();
-  }
-  /**
-   * Function that creates an {@link ArrayBuffer} by loading data from a given URL.
-   * (<b>deprecated</b>)
-   *
-   * <p>The {@link ArrayBuffer} is loaded before executing initGL. Use it to load binary data for
-   * use in {@link WGLWidget#bufferData(WGLWidget.GLenum target, int size, WGLWidget.GLenum usage)
-   * bufferData()} or {@link WGLWidget#bufferSubData(WGLWidget.GLenum target, int offset,
-   * WGLWidget.ArrayBuffer res) bufferSubData()}.
-   *
-   * <p>
-   *
-   * @deprecated An {@link ArrayBuffer} refers to a javascript object, which cannot be used for
-   *     server-side rendering. The new way to accomplish a binary transfer of buffers is with the
-   *     added boolean argument in {@link WGLWidget#bufferSubDatafv(WGLWidget.GLenum target, int
-   *     offset, java.nio.ByteBuffer buffer, boolean binary) bufferSubDatafv()}
-   */
-  public WGLWidget.ArrayBuffer createAndLoadArrayBuffer(final String url) {
-    return this.pImpl_.createAndLoadArrayBuffer(url);
   }
   /**
    * GL function that creates a frame buffer object.
@@ -3014,12 +2953,13 @@ public class WGLWidget extends WInteractWidget {
    * <p>The default is a widget that explains to the user that he has no WebGL support.
    */
   public void setAlternativeContent(WWidget alternative) {
-    if (this.alternative_ != null) {
-      if (this.alternative_ != null) this.alternative_.remove();
-    }
-    this.alternative_ = alternative;
-    if (this.alternative_ != null) {
-      this.addChild(this.alternative_);
+    {
+      WWidget oldWidget = this.alternative_;
+      this.alternative_ = alternative;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.alternative_);
+        if (toRemove != null) toRemove.remove();
+      }
     }
   }
   /**
@@ -3070,23 +3010,21 @@ public class WGLWidget extends WInteractWidget {
   DomElementType getDomElementType() {
     if (((this.pImpl_) instanceof WClientGLWidget ? (WClientGLWidget) (this.pImpl_) : null)
         != null) {
-      return DomElementType.DomElement_CANVAS;
+      return DomElementType.CANVAS;
     } else {
-      return DomElementType.DomElement_IMG;
+      return DomElementType.IMG;
     }
   }
 
   protected DomElement createDomElement(WApplication app) {
     DomElement result = null;
     if (!(this.pImpl_ != null)) {
-      result = DomElement.createNew(DomElementType.DomElement_DIV);
+      result = DomElement.createNew(DomElementType.DIV);
       result.addChild(this.alternative_.createSDomElement(app));
       this.webGlNotAvailable_ = true;
     } else {
       result = DomElement.createNew(this.getDomElementType());
-      this.repaintGL(
-          EnumSet.of(
-              WGLWidget.ClientSideRenderer.PAINT_GL, WGLWidget.ClientSideRenderer.RESIZE_GL));
+      this.repaintGL(EnumSet.of(GLClientSideRenderer.PAINT_GL, GLClientSideRenderer.RESIZE_GL));
     }
     this.setId(result, app);
     this.updateDom(result, true);
@@ -3110,15 +3048,13 @@ public class WGLWidget extends WInteractWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       if (!(this.pImpl_ != null)) {
-        if (!EnumUtils.mask(this.renderOptions_, WGLWidget.RenderOption.ClientSideRendering)
-                .isEmpty()
+        if (this.renderOptions_.contains(GLRenderOption.ClientSide)
             && WApplication.getInstance().getEnvironment().hasWebGL()) {
           this.pImpl_ = new WClientGLWidget(this);
         } else {
-          if (!EnumUtils.mask(this.renderOptions_, WGLWidget.RenderOption.ServerSideRendering)
-              .isEmpty()) {
+          if (!EnumUtils.mask(this.renderOptions_, GLRenderOption.ServerSide).isEmpty()) {
             this.pImpl_ = new WServerGLWidget(this);
           } else {
             this.pImpl_ = null;
@@ -3146,7 +3082,7 @@ public class WGLWidget extends WInteractWidget {
 
   protected void layoutSizeChanged(int width, int height) {
     this.pImpl_.layoutSizeChanged(width, height);
-    this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.RESIZE_GL));
+    this.repaintGL(EnumSet.of(GLClientSideRenderer.RESIZE_GL));
   }
 
   protected void setFormData(final WObject.FormData formData) {
@@ -3213,13 +3149,13 @@ public class WGLWidget extends WInteractWidget {
     this.pImpl_.restoreContext(this.getJsRef());
     this.repaintGL(
         EnumSet.of(
-            WGLWidget.ClientSideRenderer.UPDATE_GL,
-            WGLWidget.ClientSideRenderer.RESIZE_GL,
-            WGLWidget.ClientSideRenderer.PAINT_GL));
+            GLClientSideRenderer.UPDATE_GL,
+            GLClientSideRenderer.RESIZE_GL,
+            GLClientSideRenderer.PAINT_GL));
     this.restoringContext_ = false;
   }
 
-  EnumSet<WGLWidget.RenderOption> renderOptions_;
+  EnumSet<GLRenderOption> renderOptions_;
   private WAbstractGLImplementation pImpl_;
 
   static class jsMatrixMap {
@@ -3276,20 +3212,12 @@ public class WGLWidget extends WInteractWidget {
 
   private void defineJavaScript() {
     WApplication app = WApplication.getInstance();
-    if (!EnumUtils.mask(this.renderOptions_, WGLWidget.RenderOption.ClientSideRendering).isEmpty()
+    if (this.renderOptions_.contains(GLRenderOption.ClientSide)
         && WApplication.getInstance().getEnvironment().hasWebGL()) {
       app.loadJavaScript("js/WPaintedWidget.js", wtjs11());
     }
     app.loadJavaScript("js/WtGlMatrix.js", wtjs2());
     app.loadJavaScript("js/WGLWidget.js", wtjs1());
-  }
-
-  static WJavaScriptPreamble wtjs1() {
-    return new WJavaScriptPreamble(
-        JavaScriptScope.WtClassScope,
-        JavaScriptObjectType.JavaScriptConstructor,
-        "WGLWidget",
-        "function(D,h){function F(){var a=h.wtObj,d=\"\";for(var l in a.jsValues)if(a.jsValues.hasOwnProperty(l)){d+=l+\":\";for(var o=0;o<a.jsValues[l].length;o++){d+=a.jsValues[l][o];d+=o!==a.jsValues[l].length-1?\",\":\";\"}}return d}h.wtObj=this;var w=this,g=D.WT,q=g.glMatrix.vec3,j=g.glMatrix.mat4;this.ctx=null;this.initializeGL=function(){};this.paintGL=function(){};this.resizeGL=function(){};this.updates=[];this.initialized=false;this.preloadingBuffers= this.preloadingTextures=0;this.jsValues={};this.discoverContext=function(a,d){if(h.getContext){try{this.ctx=h.getContext(\"webgl\",{antialias:d})}catch(l){}if(this.ctx===null)try{this.ctx=h.getContext(\"experimental-webgl\",{antialias:d})}catch(o){}if(this.ctx===null){h.parentNode.insertBefore(h.firstChild,h);h.style.display=\"none\";a()}}return this.ctx};if(h.addEventListener){h.addEventListener(\"webglcontextlost\",function(a){a.preventDefault();w.initialized=false},false);h.addEventListener(\"webglcontextrestored\", function(){D.emit(h,\"contextRestored\")},false)}var e=null;this.setMouseHandler=function(a){e=a;e.setTarget&&e.setTarget(this)};this.LookAtMouseHandler=function(a,d,l,o,x){function y(b){b=Math.pow(1.2,b);j.translate(f,i);j.scale(f,[b,b,b]);q.negate(i);j.translate(f,i);q.negate(i);w.paintGL()}function z(b){var c=f[5]/q.length([f[1],f[5],f[9]]),m=f[6]/q.length([f[2],f[6],f[10]]);c=Math.atan2(m,c);m=b.x-p.x;var v=b.y-p.y,A=q.create();A[0]=f[0];A[1]=f[4];A[2]=f[8];var r=j.create();j.identity(r);j.translate(r, i);v=v*s;if(Math.abs(c+v)>=Math.PI/2)v=(c>0?1:-1)*Math.PI/2-c;j.rotate(r,v,A);j.rotate(r,m*G,k);q.negate(i);j.translate(r,i);q.negate(i);j.multiply(f,r,f);w.paintGL();p=b}var f=a,i=d,k=l,s=o,G=x,C=null,t=null,u=null,p=null,E=this;this.mouseDown=function(b,c){g.capture(null);g.capture(h);p=g.pageCoordinates(c)};this.mouseUp=function(){if(p!==null)p=null};this.mouseDrag=function(b,c){if(p!==null){b=g.pageCoordinates(c);g.buttons===1&&z(b)}};this.mouseWheel=function(b,c){g.cancelEvent(c);b=g.wheelDelta(c); y(b)};this.touchStart=function(b,c){t=c.touches.length===1?true:false;u=c.touches.length===2?true:false;if(t){g.capture(null);g.capture(h);p=g.pageCoordinates(c.touches[0])}else if(u){b=g.pageCoordinates(c.touches[0]);var m=g.pageCoordinates(c.touches[1]);C=Math.sqrt((b.x-m.x)*(b.x-m.x)+(b.y-m.y)*(b.y-m.y))}else return;c.preventDefault()};this.touchEnd=function(b,c){var m=c.touches.length===0?true:false;t=c.touches.length===1?true:false;u=c.touches.length===2?true:false;m&&E.mouseUp(null,null);if(t|| u)E.touchStart(b,c)};this.touchMoved=function(b,c){if(t||u){c.preventDefault();if(t){if(p===null)return;b=g.pageCoordinates(c);z(b)}if(u){b=g.pageCoordinates(c.touches[0]);c=g.pageCoordinates(c.touches[1]);c=Math.sqrt((b.x-c.x)*(b.x-c.x)+(b.y-c.y)*(b.y-c.y));b=c/C;if(!(Math.abs(b-1)<0.05)){b=b>1?1:-1;C=c;y(b)}}}}};this.WalkMouseHandler=function(a,d,l){function o(i){var k=i.x-f.x;i=i.y-f.y;var s=j.create();j.identity(s);j.rotateY(s,k*z);k=q.create();k[0]=0;k[1]=0;k[2]=-y*i;j.translate(s,k);j.multiply(s, x,x);w.paintGL();f=g.pageCoordinates(event)}var x=a,y=d,z=l,f=null;this.mouseDown=function(i,k){g.capture(null);g.capture(h);f=g.pageCoordinates(k)};this.mouseUp=function(){if(f!==null)f=null};this.mouseDrag=function(i,k){if(f!==null){i=g.pageCoordinates(k);o(i)}}};this.mouseDrag=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseDrag)e.mouseDrag(a,d)};this.mouseMove=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseMove)e.mouseMove(a,d)};this.mouseDown=function(a,d){if((this.initialized|| !this.ctx)&&e&&e.mouseDown)e.mouseDown(a,d)};this.mouseUp=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseUp)e.mouseUp(a,d)};this.mouseWheel=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseWheel)e.mouseWheel(a,d)};this.touchStart=function(a,d){if((this.initialized||!this.ctx)&&e&&e.touchStart)e.touchStart(a,d)};this.touchEnd=function(a,d){if((this.initialized||!this.ctx)&&e&&e.touchEnd)e.touchEnd(a,d)};this.touchMoved=function(a,d){if((this.initialized||!this.ctx)&&e&&e.touchMoved)e.touchMoved(a, d)};this.handlePreload=function(){if(this.preloadingTextures===0&&this.preloadingBuffers===0){if(this.initialized){var a;for(a in this.updates)this.updates[a]();this.updates=[]}else this.initializeGL();this.resizeGL();this.paintGL()}};h.wtEncodeValue=F;var B=null,n=new Image;n.busy=false;n.onload=function(){h.src=n.src;if(B!=null)n.src=B;else n.busy=false;B=null};n.onerror=n.onload;this.loadImage=function(a){if(n.busy)B=a;else{n.src=a;n.busy=true}}}");
   }
 
   static WJavaScriptPreamble wtjs10() {
@@ -3306,6 +3234,14 @@ public class WGLWidget extends WInteractWidget {
         JavaScriptObjectType.JavaScriptObject,
         "gfxUtils",
         "function(){function W(){var i=this;this.path_crisp=function(a){return a.map(function(b){return[Math.floor(b[0])+0.5,Math.floor(b[1])+0.5,b[2]]})};this.transform_mult=function(a,b){if(b.length===2){var e=b[0],f=b[1];return[a[w]*e+a[y]*f+a[E],a[x]*e+a[A]*f+a[F]]}if(b.length===3){if(b[2]===J||b[2]===K)return b.slice(0);e=b[0];f=b[1];return[a[w]*e+a[y]*f+a[E],a[x]*e+a[A]*f+a[F],b[2]]}if(b.length===4){var h,d,c,p;d=i.transform_mult(a,[b[0],b[1]]);e=d[0]; h=d[0];f=d[1];d=d[1];for(c=0;c<3;++c){p=i.transform_mult(a,c==0?[i.rect_left(b),i.rect_bottom(b)]:c==1?[i.rect_right(b),i.rect_top(b)]:[i.rect_right(b),i.rect_bottom(b)]);e=Math.min(e,p[0]);h=Math.max(h,p[0]);f=Math.min(f,p[1]);d=Math.max(d,p[1])}return[e,f,h-e,d-f]}if(b.length===6)return[a[w]*b[w]+a[y]*b[x],a[x]*b[w]+a[A]*b[x],a[w]*b[y]+a[y]*b[A],a[x]*b[y]+a[A]*b[A],a[w]*b[E]+a[y]*b[F]+a[E],a[x]*b[E]+a[A]*b[F]+a[F]];return[]};this.transform_apply=function(a,b){var e=i.transform_mult;return b.map(function(f){return e(a, f)})};this.transform_det=function(a){return a[w]*a[A]-a[x]*a[y]};this.transform_adjoint=function(a){var b=a[w],e=a[y],f=a[x],h=a[A],d=a[E];a=a[F];return[h,-e,-f,b,a*f-d*h,-(a*b-d*e)]};this.transform_inverted=function(a){var b=i.transform_det(a);if(b!=0){a=i.transform_adjoint(a);return[a[w]/b,a[y]/b,a[x]/b,a[A]/b,a[E]/b,a[F]/b]}else{console.log(\"inverted(): oops, determinant == 0\");return a}};this.transform_assign=function(a,b){a[0]=b[0];a[1]=b[1];a[2]=b[2];a[3]=b[3];a[4]=b[4];a[5]=b[5]};this.transform_equal= function(a,b){return a[0]==b[0]&&a[1]==b[1]&&a[2]==b[2]&&a[3]==b[3]&&a[4]==b[4]&&a[5]==b[5]};this.css_text=function(a){return\"rgba(\"+a[0]+\",\"+a[1]+\",\"+a[2]+\",\"+a[3]+\")\"};this.arcPosition=function(a,b,e,f,h){h=-h/180*Math.PI;return[a+e*Math.cos(h),b+f*Math.sin(h)]};this.pnpoly=function(a,b){var e=false,f=0,h=0,d=a[0];a=a[1];var c,p,o;for(c=0;c<b.length;++c){p=f;o=h;if(b[c][2]===X){o=i.arcPosition(b[c][0],b[c][1],b[c+1][0],b[c+1][1],b[c+2][0]);p=o[0];o=o[1]}else if(b[c][2]===K){o=i.arcPosition(b[c- 2][0],b[c-2][1],b[c-1][0],b[c-1][1],b[c][0]+b[c][1]);p=o[0];o=o[1]}else if(b[c][2]!==J){p=b[c][0];o=b[c][1]}if(b[c][2]!==H)if(h>a!==o>a&&d<(p-f)*(a-h)/(o-h)+f)e=!e;f=p;h=o}return e};this.rect_intersection=function(a,b){a=i.rect_normalized(a);b=i.rect_normalized(b);var e=i.rect_top,f=i.rect_bottom,h=i.rect_left,d=i.rect_right;h=Math.max(h(a),h(b));d=Math.min(d(a),d(b));e=Math.max(e(a),e(b));a=Math.min(f(a),f(b));return[h,e,d-h,a-e]};this.drawRect=function(a,b,e,f){b=i.rect_normalized(b);var h=i.rect_top(b), d=i.rect_bottom(b),c=i.rect_left(b);b=i.rect_right(b);path=[[c,h,H],[b,h,G],[b,d,G],[c,d,G],[c,h,G]];i.drawPath(a,path,e,f,false)};this.drawPath=function(a,b,e,f,h){function d(m){return m[0]}function c(m){return m[1]}function p(m){return m[2]}var o=0,t=[],q=[],u=[];a.beginPath();b.length>0&&p(b[0])!==H&&a.moveTo(0,0);for(o=0;o<b.length;o++){var k=b[o];switch(p(k)){case H:Math.abs(d(k))<=1048576&&Math.abs(c(k))<=1048576&&a.moveTo(d(k),c(k));break;case G:(function(){var m=o===0?[0,0]:b[o-1];if(!e&& !h&&f&&(Math.abs(d(m))>1048576||Math.abs(c(m))>1048576||Math.abs(d(k))>1048576||Math.abs(c(k))>1048576)){(function(){function r(M,N,O){return(O-M)/N}function s(M,N,O){return M+O*N}var l=a.wtTransform?a.wtTransform:[1,0,0,1,0,0],B=i.transform_inverted(l),g=i.transform_mult(l,m),n=i.transform_mult(l,k),C=d(n)-d(g),D=c(n)-c(g);l=a.canvas.width+50;var z=a.canvas.height+50,j,v=null,I=j=null;j=null;if(d(g)<-50&&d(n)>-50){j=r(d(g),C,-50);v=[-50,s(c(g),D,j),j]}else if(d(g)>l&&d(n)<l){j=r(d(g),C,l);v=[l,s(c(g), D,j),j]}else if(d(g)>-50&&d(g)<l)v=[d(g),c(g),0];else return;if(c(g)<-50&&c(n)>-50){j=r(c(g),D,-50);j=[s(d(g),C,j),-50,j]}else if(c(g)>z&&c(n)<z){j=r(c(g),D,z);j=[s(d(g),C,j),z,j]}else if(c(g)>-50&&c(g)<z)j=[d(g),c(g),0];else return;v=v[2]>j[2]?[v[0],v[1]]:[j[0],j[1]];if(!(d(v)<-50||d(v)>l||c(v)<-50||c(v)>z)){if(d(g)<l&&d(n)>l){j=r(d(g),C,l);I=[l,s(c(g),D,j),j]}else if(d(g)>-50&&d(n)<-50){j=r(d(g),C,-50);I=[-50,s(c(g),D,j),j]}else if(d(n)>-50&&d(n)<l)I=[d(n),c(n),1];else return;if(c(g)<z&&c(n)>z){j= r(c(g),D,z);j=[s(d(g),C,j),z,j]}else if(c(g)>-50&&c(n)<-50){j=r(c(g),D,-50);j=[s(d(g),C,j),-50,j]}else if(d(n)>-50&&c(n)<z)j=[d(n),c(n),1];else return;g=I[2]<j[2]?[I[0],I[1]]:[j[0],j[1]];if(!(d(g)<-50||d(g)>l||c(g)<-50||c(g)>z)){v=i.transform_mult(B,v);g=i.transform_mult(B,g);a.moveTo(v[0],v[1]);a.lineTo(g[0],g[1])}}})();Math.abs(d(k))<=1048576&&Math.abs(c(k))<=1048576&&a.moveTo(d(k),c(k))}else a.lineTo(d(k),c(k))})();break;case aa:t.push(d(k),c(k));break;case ba:t.push(d(k),c(k));break;case P:t.push(d(k), c(k));a.bezierCurveTo.apply(a,t);t=[];break;case X:q.push(d(k),c(k));break;case J:q.push(d(k));break;case K:(function(){function m(n){return n>360?360:n<-360?-360:n}function r(n){n=n%360;return n<0?n+360:n}function s(n){return n*Math.PI/180}var l=d(k),B=c(k),g=s(r(-l));l=B>=360||B<=-360?g-2*Math.PI*(B>0?1:-1):s(r(-l-m(B)));q.push(g,l,B>0);a.arc.apply(a,q);q=[]})();break;case ca:u.push(d(k),c(k));break;case Q:u.push(d(k),c(k));a.quadraticCurveTo.apply(a,u);u=[];break}}e&&a.fill();f&&a.stroke();h&& a.clip()};this.drawStencilAlongPath=function(a,b,e,f,h,d){function c(u){return u[0]}function p(u){return u[1]}function o(u){return u[2]}var t=0;for(t=0;t<e.length;t++){var q=e[t];if(!(d&&a.wtClipPath&&!i.pnpoly(q,i.transform_apply(a.wtClipPathTransform,a.wtClipPath))))if(o(q)==H||o(q)==G||o(q)==Q||o(q)==P){q=i.transform_apply([1,0,0,1,c(q),p(q)],b);i.drawPath(a,q,f,h,false)}}};this.drawText=function(a,b,e,f,h){if(!(h&&a.wtClipPath&&!i.pnpoly(h,i.transform_apply(a.wtClipPathTransform,a.wtClipPath)))){var d= e&S;var c=h=null;switch(e&da){case Y:a.textAlign=\"left\";h=i.rect_left(b);break;case Z:a.textAlign=\"right\";h=i.rect_right(b);break;case $:a.textAlign=\"center\";h=i.rect_center(b).x;break}switch(d){case T:a.textBaseline=\"top\";c=i.rect_top(b);break;case U:a.textBaseline=\"bottom\";c=i.rect_bottom(b);break;case V:a.textBaseline=\"middle\";c=i.rect_center(b).y;break}if(!(h==null||c==null)){b=a.fillStyle;a.fillStyle=a.strokeStyle;a.fillText(f,h,c);a.fillStyle=b}}};this.calcYOffset=function(a,b,e,f){return f=== V?-((b-1)*e/2)+a*e:f===T?a*e:f===U?-(b-1-a)*e:0};this.drawTextOnPath=function(a,b,e,f,h,d,c,p,o){function t(g){return g[0]}function q(g){return g[1]}function u(g){return g[2]}var k=0,m=0;f=i.transform_apply(f,h);for(k=0;k<h.length;k++){if(k>=b.length)break;m=h[k];var r=f[k],s=b[k].split(\"\\n\");if(u(m)==H||u(m)==G||u(m)==Q||u(m)==P)if(d==0)for(m=0;m<s.length;m++){var l=i.calcYOffset(m,s.length,c,p&S);i.drawText(a,[e[0]+t(r),e[1]+q(r)+l,e[2],e[3]],p,s[m],o?[t(r),q(r)]:null)}else{l=d*Math.PI/180;m=Math.cos(-l); l=-Math.sin(-l);var B=-l;a.save();a.transform(m,B,l,m,t(r),q(r));for(m=0;m<s.length;m++){l=i.calcYOffset(m,s.length,c,p&S);i.drawText(a,[e[0],e[1]+l,e[2],e[3]],p,s[m],o?[t(r),q(r)]:null)}a.restore()}}};this.setClipPath=function(a,b,e,f){if(f){a.setTransform.apply(a,e);i.drawPath(a,b,false,false,true);a.setTransform(1,0,0,1,0,0)}a.wtClipPath=b;a.wtClipPathTransform=e};this.removeClipPath=function(a){delete a.wtClipPath;delete a.wtClipPathTransform};this.rect_top=function(a){return a[1]};this.rect_bottom= function(a){return a[1]+a[3]};this.rect_right=function(a){return a[0]+a[2]};this.rect_left=function(a){return a[0]};this.rect_topleft=function(a){return[a[0],a[1]]};this.rect_topright=function(a){return[a[0]+a[2],a[1]]};this.rect_bottomleft=function(a){return[a[0],a[1]+a[3]]};this.rect_bottomright=function(a){return[a[0]+a[2],a[1]+a[3]]};this.rect_center=function(a){return{x:(2*a[0]+a[2])/2,y:(2*a[1]+a[3])/2}};this.rect_normalized=function(a){var b,e,f;if(a[2]>0){b=a[0];f=a[2]}else{b=a[0]+a[2];f= -a[2]}if(a[3]>0){e=a[1];a=a[3]}else{e=a[1]+a[3];a=-a[3]}return[b,e,f,a]};this.drawImage=function(a,b,e,f,h){try{a.drawImage(b,f[0],f[1],f[2],f[3],h[0],h[1],h[2],h[3])}catch(d){a=\"Error while drawing image: '\"+e+\"': \"+d.name;if(d.message)a+=\": \"+d.message;console.error(a)}}}var w=0,x=1,y=2,A=3,E=4,F=5,H=0,G=1,aa=2,ba=3,P=4,ca=5,Q=6,X=7,J=8,K=9,Y=1,Z=2,$=4,T=128,V=512,U=1024,S=112|T|256|V|U|2048,da=Y|Z|$|8;return new W}()");
+  }
+
+  static WJavaScriptPreamble wtjs1() {
+    return new WJavaScriptPreamble(
+        JavaScriptScope.WtClassScope,
+        JavaScriptObjectType.JavaScriptConstructor,
+        "WGLWidget",
+        "function(D,h){function F(){var a=h.wtObj,d=\"\";for(var l in a.jsValues)if(a.jsValues.hasOwnProperty(l)){d+=l+\":\";for(var o=0;o<a.jsValues[l].length;o++){d+=a.jsValues[l][o];d+=o!==a.jsValues[l].length-1?\",\":\";\"}}return d}h.wtObj=this;var w=this,g=D.WT,q=g.glMatrix.vec3,j=g.glMatrix.mat4;this.ctx=null;this.initializeGL=function(){};this.paintGL=function(){};this.resizeGL=function(){};this.updates=[];this.initialized=false;this.preloadingBuffers= this.preloadingTextures=0;this.jsValues={};this.discoverContext=function(a,d){if(h.getContext){try{this.ctx=h.getContext(\"webgl\",{antialias:d})}catch(l){}if(this.ctx===null)try{this.ctx=h.getContext(\"experimental-webgl\",{antialias:d})}catch(o){}if(this.ctx===null){h.parentNode.insertBefore(h.firstChild,h);h.style.display=\"none\";a()}}return this.ctx};if(h.addEventListener){h.addEventListener(\"webglcontextlost\",function(a){a.preventDefault();w.initialized=false},false);h.addEventListener(\"webglcontextrestored\", function(){D.emit(h,\"contextRestored\")},false)}var e=null;this.setMouseHandler=function(a){e=a;e.setTarget&&e.setTarget(this)};this.LookAtMouseHandler=function(a,d,l,o,x){function y(b){b=Math.pow(1.2,b);j.translate(f,i);j.scale(f,[b,b,b]);q.negate(i);j.translate(f,i);q.negate(i);w.paintGL()}function z(b){var c=f[5]/q.length([f[1],f[5],f[9]]),m=f[6]/q.length([f[2],f[6],f[10]]);c=Math.atan2(m,c);m=b.x-p.x;var v=b.y-p.y,A=q.create();A[0]=f[0];A[1]=f[4];A[2]=f[8];var r=j.create();j.identity(r);j.translate(r, i);v=v*s;if(Math.abs(c+v)>=Math.PI/2)v=(c>0?1:-1)*Math.PI/2-c;j.rotate(r,v,A);j.rotate(r,m*G,k);q.negate(i);j.translate(r,i);q.negate(i);j.multiply(f,r,f);w.paintGL();p=b}var f=a,i=d,k=l,s=o,G=x,C=null,t=null,u=null,p=null,E=this;this.mouseDown=function(b,c){g.capture(null);g.capture(h);p=g.pageCoordinates(c)};this.mouseUp=function(){if(p!==null)p=null};this.mouseDrag=function(b,c){if(p!==null){b=g.pageCoordinates(c);g.buttons===1&&z(b)}};this.mouseWheel=function(b,c){g.cancelEvent(c);b=g.wheelDelta(c); y(b)};this.touchStart=function(b,c){t=c.touches.length===1?true:false;u=c.touches.length===2?true:false;if(t){g.capture(null);g.capture(h);p=g.pageCoordinates(c.touches[0])}else if(u){b=g.pageCoordinates(c.touches[0]);var m=g.pageCoordinates(c.touches[1]);C=Math.sqrt((b.x-m.x)*(b.x-m.x)+(b.y-m.y)*(b.y-m.y))}else return;c.preventDefault()};this.touchEnd=function(b,c){var m=c.touches.length===0?true:false;t=c.touches.length===1?true:false;u=c.touches.length===2?true:false;m&&E.mouseUp(null,null);if(t|| u)E.touchStart(b,c)};this.touchMoved=function(b,c){if(t||u){c.preventDefault();if(t){if(p===null)return;b=g.pageCoordinates(c);z(b)}if(u){b=g.pageCoordinates(c.touches[0]);c=g.pageCoordinates(c.touches[1]);c=Math.sqrt((b.x-c.x)*(b.x-c.x)+(b.y-c.y)*(b.y-c.y));b=c/C;if(!(Math.abs(b-1)<0.05)){b=b>1?1:-1;C=c;y(b)}}}}};this.WalkMouseHandler=function(a,d,l){function o(i){var k=i.x-f.x;i=i.y-f.y;var s=j.create();j.identity(s);j.rotateY(s,k*z);k=q.create();k[0]=0;k[1]=0;k[2]=-y*i;j.translate(s,k);j.multiply(s, x,x);w.paintGL();f=g.pageCoordinates(event)}var x=a,y=d,z=l,f=null;this.mouseDown=function(i,k){g.capture(null);g.capture(h);f=g.pageCoordinates(k)};this.mouseUp=function(){if(f!==null)f=null};this.mouseDrag=function(i,k){if(f!==null){i=g.pageCoordinates(k);o(i)}}};this.mouseDrag=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseDrag)e.mouseDrag(a,d)};this.mouseMove=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseMove)e.mouseMove(a,d)};this.mouseDown=function(a,d){if((this.initialized|| !this.ctx)&&e&&e.mouseDown)e.mouseDown(a,d)};this.mouseUp=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseUp)e.mouseUp(a,d)};this.mouseWheel=function(a,d){if((this.initialized||!this.ctx)&&e&&e.mouseWheel)e.mouseWheel(a,d)};this.touchStart=function(a,d){if((this.initialized||!this.ctx)&&e&&e.touchStart)e.touchStart(a,d)};this.touchEnd=function(a,d){if((this.initialized||!this.ctx)&&e&&e.touchEnd)e.touchEnd(a,d)};this.touchMoved=function(a,d){if((this.initialized||!this.ctx)&&e&&e.touchMoved)e.touchMoved(a, d)};this.handlePreload=function(){if(this.preloadingTextures===0&&this.preloadingBuffers===0){if(this.initialized){var a;for(a in this.updates)this.updates[a]();this.updates=[]}else this.initializeGL();this.resizeGL();this.paintGL()}};h.wtEncodeValue=F;var B=null,n=new Image;n.busy=false;n.onload=function(){h.src=n.src;if(B!=null)n.src=B;else n.busy=false;B=null};n.onerror=n.onload;this.loadImage=function(a){if(n.busy)B=a;else{n.src=a;n.busy=true}}}");
   }
 
   static WJavaScriptPreamble wtjs2() {

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,10 @@ import org.slf4j.LoggerFactory;
 class ClippingWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(ClippingWidget.class);
 
-  public ClippingWidget(WContainerWidget parent) {
-    super(parent);
+  public ClippingWidget(WContainerWidget parentContainer) {
+    super();
     this.resize(new WLength(310), new WLength(150));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public ClippingWidget() {
@@ -34,10 +36,10 @@ class ClippingWidget extends WPaintedWidget {
     WPainter painter = new WPainter(paintDevice);
     for (int i = 0; i < 2; i++) {
       painter.translate(i * 160, 0);
-      painter.fillRect(0, 0, 150, 150, new WBrush(WColor.black));
+      painter.fillRect(0, 0, 150, 150, new WBrush(new WColor(StandardColor.Black)));
       WPainterPath path = new WPainterPath();
       path.addEllipse(15, 15, 120, 120);
-      painter.fillPath(path, new WBrush(WColor.blue));
+      painter.fillPath(path, new WBrush(new WColor(StandardColor.Blue)));
       painter.setClipPath(path);
       painter.setClipping(i != 0);
       this.drawStars(painter);
@@ -49,7 +51,7 @@ class ClippingWidget extends WPaintedWidget {
     WPainterPath circlePath = new WPainterPath();
     circlePath.addEllipse(0, 0, radius, radius);
     circlePath.closeSubPath();
-    painter.fillPath(circlePath, new WBrush(WColor.white));
+    painter.fillPath(circlePath, new WBrush(new WColor(StandardColor.White)));
     painter.restore();
   }
 

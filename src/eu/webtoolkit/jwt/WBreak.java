@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,20 +35,21 @@ public class WBreak extends WWebWidget {
   private static Logger logger = LoggerFactory.getLogger(WBreak.class);
 
   /** Construct a line break. */
-  public WBreak(WContainerWidget parent) {
-    super(parent);
+  public WBreak(WContainerWidget parentContainer) {
+    super();
     this.setInline(false);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Construct a line break.
    *
-   * <p>Calls {@link #WBreak(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WBreak(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WBreak() {
     this((WContainerWidget) null);
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_BR;
+    return DomElementType.BR;
   }
 }

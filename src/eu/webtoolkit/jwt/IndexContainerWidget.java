@@ -17,6 +17,6 @@ public class IndexContainerWidget extends WContainerWidget {
 
 	public WString getToolTip(){
 		return StringUtils.asString(
-			  index.getData(ItemDataRole.ToolTipRole));
+			  index.getData(ItemDataRole.ToolTip));
 	}
 }

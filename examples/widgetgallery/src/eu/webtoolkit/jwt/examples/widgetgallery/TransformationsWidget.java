@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,10 @@ import org.slf4j.LoggerFactory;
 class TransformationsWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(TransformationsWidget.class);
 
-  public TransformationsWidget(WContainerWidget parent) {
-    super(parent);
+  public TransformationsWidget(WContainerWidget parentContainer) {
+    super();
     this.resize(new WLength(300), new WLength(500));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public TransformationsWidget() {
@@ -32,16 +34,16 @@ class TransformationsWidget extends WPaintedWidget {
 
   protected void paintEvent(WPaintDevice paintDevice) {
     WPainter painter = new WPainter(paintDevice);
-    painter.setPen(new WPen(WColor.red));
-    painter.setBrush(new WBrush(WColor.black));
+    painter.setPen(new WPen(new WColor(StandardColor.Red)));
+    painter.setBrush(new WBrush(new WColor(StandardColor.Black)));
     painter.save();
-    painter.setPen(new WPen(WColor.white));
+    painter.setPen(new WPen(new WColor(StandardColor.White)));
     painter.drawRect(0, 0, 100, 100);
     painter.save();
-    painter.setBrush(new WBrush(WColor.yellow));
+    painter.setBrush(new WBrush(new WColor(StandardColor.Yellow)));
     painter.drawRect(10, 10, 80, 80);
     painter.save();
-    painter.setBrush(new WBrush(WColor.red));
+    painter.setBrush(new WBrush(new WColor(StandardColor.Red)));
     painter.drawRect(20, 20, 60, 60);
     painter.restore();
     painter.drawRect(30, 30, 40, 40);

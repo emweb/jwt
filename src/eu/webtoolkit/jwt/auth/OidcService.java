@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -227,9 +228,11 @@ public class OidcService extends OAuthService {
    *
    * <p>
    *
+   * <p><i><b>Note: </b>The returned process will be an instance of {@link OidcService}</i>
+   *
    * @see OidcService#getAuthenticationScope()
    */
-  public OidcProcess createProcess(final String scope) {
+  public OAuthProcess createProcess(final String scope) {
     if (this.configured_) {
       return new OidcProcess(this, scope);
     } else {

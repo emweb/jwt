@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -56,48 +57,14 @@ import org.slf4j.LoggerFactory;
 public class WLineEdit extends WFormWidget {
   private static Logger logger = LoggerFactory.getLogger(WLineEdit.class);
 
-  /**
-   * Enumeration that describes how the contents is displayed.
-   *
-   * <p>
-   *
-   * @see WLineEdit#setEchoMode(WLineEdit.EchoMode echoMode)
-   */
-  public enum EchoMode {
-    /** Characters are shown. */
-    Normal,
-    /** Hide the contents as for a password. */
-    Password;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
-   * Enumeration that describes options for input masks.
-   *
-   * <p>
-   *
-   * @see WLineEdit#setInputMask(String mask, EnumSet flags)
-   */
-  public enum InputMaskFlag {
-    /** Keep the input mask when blurred. */
-    KeepMaskWhileBlurred;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** Creates a line edit with empty content and optional parent. */
-  public WLineEdit(WContainerWidget parent) {
-    super(parent);
+  /** Creates a line edit with empty content. */
+  public WLineEdit(WContainerWidget parentContainer) {
+    super();
     this.content_ = "";
     this.displayContent_ = "";
     this.textSize_ = 10;
     this.maxLength_ = -1;
-    this.echoMode_ = WLineEdit.EchoMode.Normal;
+    this.echoMode_ = EchoMode.Normal;
     this.autoComplete_ = true;
     this.flags_ = new BitSet();
     this.maskChanged_ = false;
@@ -105,28 +72,29 @@ public class WLineEdit extends WFormWidget {
     this.inputMask_ = "";
     this.raw_ = "";
     this.spaceChar_ = ' ';
-    this.inputMaskFlags_ = EnumSet.noneOf(WLineEdit.InputMaskFlag.class);
+    this.inputMaskFlags_ = EnumSet.noneOf(InputMaskFlag.class);
     this.case_ = "";
     this.javaScriptDefined_ = false;
     this.setInline(true);
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Creates a line edit with empty content and optional parent.
+   * Creates a line edit with empty content.
    *
-   * <p>Calls {@link #WLineEdit(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WLineEdit(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WLineEdit() {
     this((WContainerWidget) null);
   }
-  /** Creates a line edit with given content and optional parent. */
-  public WLineEdit(final String text, WContainerWidget parent) {
-    super(parent);
+  /** Creates a line edit with given content. */
+  public WLineEdit(final String text, WContainerWidget parentContainer) {
+    super();
     this.content_ = "";
     this.displayContent_ = "";
     this.textSize_ = 10;
     this.maxLength_ = -1;
-    this.echoMode_ = WLineEdit.EchoMode.Normal;
+    this.echoMode_ = EchoMode.Normal;
     this.autoComplete_ = true;
     this.flags_ = new BitSet();
     this.maskChanged_ = false;
@@ -134,17 +102,18 @@ public class WLineEdit extends WFormWidget {
     this.inputMask_ = "";
     this.raw_ = "";
     this.spaceChar_ = ' ';
-    this.inputMaskFlags_ = EnumSet.noneOf(WLineEdit.InputMaskFlag.class);
+    this.inputMaskFlags_ = EnumSet.noneOf(InputMaskFlag.class);
     this.case_ = "";
     this.javaScriptDefined_ = false;
     this.setInline(true);
     this.setFormObject(true);
     this.setText(text);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Creates a line edit with given content and optional parent.
+   * Creates a line edit with given content.
    *
-   * <p>Calls {@link #WLineEdit(String text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WLineEdit(String text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WLineEdit(final String text) {
@@ -163,7 +132,7 @@ public class WLineEdit extends WFormWidget {
     if (this.textSize_ != chars) {
       this.textSize_ = chars;
       this.flags_.set(BIT_TEXT_SIZE_CHANGED);
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
@@ -232,7 +201,7 @@ public class WLineEdit extends WFormWidget {
    * @see WLineEdit#setText(String text)
    */
   public String getDisplayText() {
-    if (this.echoMode_ == WLineEdit.EchoMode.Normal) {
+    if (this.echoMode_ == EchoMode.Normal) {
       return this.displayContent_;
     } else {
       String text = this.displayContent_;
@@ -272,7 +241,7 @@ public class WLineEdit extends WFormWidget {
    *
    * <p>The default echo mode is Normal.
    */
-  public void setEchoMode(WLineEdit.EchoMode echoMode) {
+  public void setEchoMode(EchoMode echoMode) {
     if (this.echoMode_ != echoMode) {
       this.echoMode_ = echoMode;
       this.flags_.set(BIT_ECHO_MODE_CHANGED);
@@ -284,9 +253,9 @@ public class WLineEdit extends WFormWidget {
    *
    * <p>
    *
-   * @see WLineEdit#setEchoMode(WLineEdit.EchoMode echoMode)
+   * @see WLineEdit#setEchoMode(EchoMode echoMode)
    */
-  public WLineEdit.EchoMode getEchoMode() {
+  public EchoMode getEchoMode() {
     return this.echoMode_;
   }
   /**
@@ -367,7 +336,7 @@ public class WLineEdit extends WFormWidget {
     String s = String.valueOf(start);
     String e = String.valueOf(start + length);
     this.doJavaScript(
-        "Wt3_6_0.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
+        "Wt4_4_0.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
   }
   /**
    * Returns the current cursor position.
@@ -468,7 +437,7 @@ public class WLineEdit extends WFormWidget {
    * entered. This does not result in an error: any non-compliant characters will be removed from
    * the input and this action will be logged.
    */
-  public void setInputMask(final String mask, EnumSet<WLineEdit.InputMaskFlag> flags) {
+  public void setInputMask(final String mask, EnumSet<InputMaskFlag> flags) {
     this.inputMaskFlags_ = EnumSet.copyOf(flags);
     if (!this.inputMask_.equals(mask)) {
       this.inputMask_ = mask;
@@ -511,32 +480,31 @@ public class WLineEdit extends WFormWidget {
    * <p>Calls {@link #setInputMask(String mask, EnumSet flags) setInputMask(mask, EnumSet.of(flag,
    * flags))}
    */
-  public final void setInputMask(
-      final String mask, WLineEdit.InputMaskFlag flag, WLineEdit.InputMaskFlag... flags) {
+  public final void setInputMask(final String mask, InputMaskFlag flag, InputMaskFlag... flags) {
     setInputMask(mask, EnumSet.of(flag, flags));
   }
   /**
    * Sets the input mask.
    *
    * <p>Calls {@link #setInputMask(String mask, EnumSet flags) setInputMask("",
-   * EnumSet.noneOf(WLineEdit.InputMaskFlag.class))}
+   * EnumSet.noneOf(InputMaskFlag.class))}
    */
   public final void setInputMask() {
-    setInputMask("", EnumSet.noneOf(WLineEdit.InputMaskFlag.class));
+    setInputMask("", EnumSet.noneOf(InputMaskFlag.class));
   }
   /**
    * Sets the input mask.
    *
    * <p>Calls {@link #setInputMask(String mask, EnumSet flags) setInputMask(mask,
-   * EnumSet.noneOf(WLineEdit.InputMaskFlag.class))}
+   * EnumSet.noneOf(InputMaskFlag.class))}
    */
   public final void setInputMask(final String mask) {
-    setInputMask(mask, EnumSet.noneOf(WLineEdit.InputMaskFlag.class));
+    setInputMask(mask, EnumSet.noneOf(InputMaskFlag.class));
   }
 
-  public WValidator.State validate() {
+  public ValidationState validate() {
     if (this.inputMask_.length() != 0 && !this.isValidateInputMask()) {
-      return WValidator.State.Invalid;
+      return ValidationState.Invalid;
     } else {
       return super.validate();
     }
@@ -563,7 +531,7 @@ public class WLineEdit extends WFormWidget {
   private String displayContent_;
   private int textSize_;
   private int maxLength_;
-  private WLineEdit.EchoMode echoMode_;
+  private EchoMode echoMode_;
   private boolean autoComplete_;
   private static final int BIT_CONTENT_CHANGED = 0;
   private static final int BIT_TEXT_SIZE_CHANGED = 1;
@@ -577,7 +545,7 @@ public class WLineEdit extends WFormWidget {
   private String inputMask_;
   private String raw_;
   private char spaceChar_;
-  private EnumSet<WLineEdit.InputMaskFlag> inputMaskFlags_;
+  private EnumSet<InputMaskFlag> inputMaskFlags_;
   private String case_;
   private boolean javaScriptDefined_;
 
@@ -661,6 +629,7 @@ public class WLineEdit extends WFormWidget {
       this.inputMask_ = this.inputMask_.substring(0, 0 + this.inputMask_.length() - 2);
     }
     ;;;
+
     char mode = '!';
     for (int i = 0; i < this.inputMask_.length(); ++i) {
       char currentChar = this.inputMask_.charAt(i);
@@ -728,7 +697,7 @@ public class WLineEdit extends WFormWidget {
     String space = "";
     space += this.spaceChar_;
     String jsObj =
-        "new Wt3_6_0.WLineEdit("
+        "new Wt4_4_0.WLineEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -743,10 +712,7 @@ public class WLineEdit extends WFormWidget {
             + ","
             + WWebWidget.jsStringLiteral(space)
             + ","
-            + (!EnumUtils.mask(this.inputMaskFlags_, WLineEdit.InputMaskFlag.KeepMaskWhileBlurred)
-                    .isEmpty()
-                ? "0x1"
-                : "0x0")
+            + (this.inputMaskFlags_.contains(InputMaskFlag.KeepMaskWhileBlurred) ? "0x1" : "0x0")
             + ");";
     this.setJavaScriptMember(" WLineEdit", jsObj);
     final AbstractEventSignal b = this.mouseMoved();
@@ -825,18 +791,16 @@ public class WLineEdit extends WFormWidget {
     if (all || this.flags_.get(BIT_CONTENT_CHANGED)) {
       String t = this.content_;
       if (this.mask_.length() != 0
-          && !EnumUtils.mask(this.inputMaskFlags_, WLineEdit.InputMaskFlag.KeepMaskWhileBlurred)
-              .isEmpty()) {
+          && this.inputMaskFlags_.contains(InputMaskFlag.KeepMaskWhileBlurred)) {
         t = this.displayContent_;
       }
       if (!all || t.length() != 0) {
-        element.setProperty(Property.PropertyValue, t);
+        element.setProperty(Property.Value, t);
       }
       this.flags_.clear(BIT_CONTENT_CHANGED);
     }
     if (all || this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
-      element.setAttribute(
-          "type", this.echoMode_ == WLineEdit.EchoMode.Normal ? "text" : "password");
+      element.setAttribute("type", this.echoMode_ == EchoMode.Normal ? "text" : "password");
       this.flags_.clear(BIT_ECHO_MODE_CHANGED);
     }
     if (all || this.flags_.get(BIT_AUTOCOMPLETE_CHANGED)) {
@@ -859,7 +823,7 @@ public class WLineEdit extends WFormWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_INPUT;
+    return DomElementType.INPUT;
   }
 
   void propagateRenderOk(boolean deep) {
@@ -895,7 +859,7 @@ public class WLineEdit extends WFormWidget {
     if (env.agentIsIE() || env.agentIsOpera()) {
       return 1;
     } else {
-      if (env.getAgent() == WEnvironment.UserAgent.Arora) {
+      if (env.getAgent() == UserAgent.Arora) {
         return 0;
       } else {
         if (env.getUserAgent().indexOf("Mac OS X") != -1) {
@@ -916,7 +880,7 @@ public class WLineEdit extends WFormWidget {
     if (env.getUserAgent().indexOf("Mac OS X") != -1 && env.agentIsGecko()) {
       return 3;
     } else {
-      if (env.getAgent() == WEnvironment.UserAgent.Arora) {
+      if (env.getAgent() == UserAgent.Arora) {
         return 0;
       } else {
         return 2;

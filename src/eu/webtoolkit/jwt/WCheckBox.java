@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -78,31 +79,35 @@ public class WCheckBox extends WAbstractToggleButton {
    * therefore it is not possible to assign a label to it later through {@link
    * WAbstractToggleButton#setText(CharSequence text) WAbstractToggleButton#setText()}.
    */
-  public WCheckBox(WContainerWidget parent) {
-    super(parent);
+  public WCheckBox(WContainerWidget parentContainer) {
+    super();
     this.triState_ = false;
     this.partialStateSelectable_ = false;
+    this.jslot_ = null;
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a checkbox without label.
    *
-   * <p>Calls {@link #WCheckBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WCheckBox(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WCheckBox() {
     this((WContainerWidget) null);
   }
   /** Creates a checkbox with given label. */
-  public WCheckBox(final CharSequence text, WContainerWidget parent) {
-    super(text, parent);
+  public WCheckBox(final CharSequence text, WContainerWidget parentContainer) {
+    super(text, (WContainerWidget) null);
     this.triState_ = false;
     this.partialStateSelectable_ = false;
+    this.jslot_ = null;
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a checkbox with given label.
    *
-   * <p>Calls {@link #WCheckBox(CharSequence text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WCheckBox(CharSequence text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WCheckBox(final CharSequence text) {
@@ -196,6 +201,7 @@ public class WCheckBox extends WAbstractToggleButton {
   }
 
   protected void updateJSlot() {
+    this.jslot_ = (JSlot) null;
     JSlot slot = null;
     String partialOn = "";
     String partialOff = "";
@@ -229,6 +235,7 @@ public class WCheckBox extends WAbstractToggleButton {
     }
     if (slot != null) {
       this.changed().addListener(slot);
+      this.jslot_ = slot;
     }
   }
 
@@ -254,4 +261,5 @@ public class WCheckBox extends WAbstractToggleButton {
 
   private boolean triState_;
   private boolean partialStateSelectable_;
+  private JSlot jslot_;
 }

@@ -29,7 +29,7 @@ public class FormExample extends WContainerWidget {
     public FormExample(WContainerWidget parent) {
         super(parent);
         WContainerWidget langLayout = new WContainerWidget(this);
-        langLayout.setContentAlignment(AlignmentFlag.AlignRight);
+        langLayout.setContentAlignment(AlignmentFlag.Right);
         new WText(tr("language"), langLayout);
 
         final String lang[] = { "en", "nl" };

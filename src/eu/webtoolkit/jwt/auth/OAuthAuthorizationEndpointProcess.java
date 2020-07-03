@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -53,17 +54,17 @@ import org.slf4j.LoggerFactory;
  * <p>Example:
  *
  * <pre>{@code
- * process = new OAuthAuthorizationEndpointProcess(
+ * process = std::make_unique<OAuthAuthorizationEndpointProcess>(
  * login,
  * database);
  * process.authorized().connect(
- * process,
+ * process.get(),
  * &OAuthAuthorizationEndpointProcess::authorizeScope);
  * process.processEnvironment();
  * if (process.validRequest()) {
- * root().addWidget(authWidget);
+ * root().addWidget(std::move(authWidget));
  * } else
- * new WText("The request was invalid.",root());
+ * root().addWidget(std::make_unique<Wt::WText>(Wt::utf8("The request was invalid."));
  *
  * }</pre>
  *
@@ -149,10 +150,8 @@ public class OAuthAuthorizationEndpointProcess extends WObject {
         .changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                OAuthAuthorizationEndpointProcess.this.authEvent();
-              }
+            () -> {
+              OAuthAuthorizationEndpointProcess.this.authEvent();
             });
     String prompt = WApplication.getInstance().getEnvironment().getParameter("prompt");
     if (this.login_.isLoggedIn()) {

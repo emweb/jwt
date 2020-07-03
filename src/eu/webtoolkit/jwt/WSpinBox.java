@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -42,21 +43,22 @@ public class WSpinBox extends WAbstractSpinBox {
    *
    * <p>The initial value is 0.
    */
-  public WSpinBox(WContainerWidget parent) {
-    super(parent);
+  public WSpinBox(WContainerWidget parentContainer) {
+    super();
     this.value_ = -1;
     this.min_ = 0;
     this.max_ = 99;
     this.step_ = 1;
     this.wrapAroundEnabled_ = false;
-    this.valueChanged_ = new Signal1<Integer>(this);
+    this.valueChanged_ = new Signal1<Integer>();
     this.setValidator(this.createValidator());
     this.setValue(0);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a spin-box.
    *
-   * <p>Calls {@link #WSpinBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WSpinBox(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WSpinBox() {
     this((WContainerWidget) null);
@@ -214,7 +216,7 @@ public class WSpinBox extends WAbstractSpinBox {
         element.setAttribute("max", String.valueOf(this.max_));
         element.setAttribute("step", String.valueOf(this.step_));
       } else {
-        final WIntValidator v = new WIntValidator();
+        WIntValidator v = new WIntValidator();
         v.getJavaScriptValidate();
         this.doJavaScript(
             this.getJsRef()
@@ -232,10 +234,8 @@ public class WSpinBox extends WAbstractSpinBox {
       this.changed()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WSpinBox.this.onChange();
-                }
+              () -> {
+                WSpinBox.this.onChange();
               });
     }
     super.signalConnectionsChanged();
@@ -257,7 +257,7 @@ public class WSpinBox extends WAbstractSpinBox {
     try {
       this.value_ = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(), text);
       return true;
-    } catch (final NumberFormatException e) {
+    } catch (final RuntimeException e) {
       return false;
     }
   }
@@ -282,7 +282,7 @@ public class WSpinBox extends WAbstractSpinBox {
   }
 
   protected WValidator.Result getValidateRange() {
-    final WIntValidator validator = new WIntValidator();
+    WIntValidator validator = new WIntValidator();
     validator.setRange(this.min_, this.max_);
     String badRangeText = WString.tr("Wt.WIntValidator.BadRange").toString();
     StringUtils.replace(badRangeText, "{1}", "{1}" + this.getSuffix().toString());

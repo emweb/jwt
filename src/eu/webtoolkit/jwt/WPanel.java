@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,34 +35,36 @@ public class WPanel extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WPanel.class);
 
   /** Creates a panel. */
-  public WPanel(WContainerWidget parent) {
-    super(parent);
+  public WPanel(WContainerWidget parentContainer) {
+    super();
     this.collapseIcon_ = null;
     this.title_ = null;
     this.centralWidget_ = null;
     this.animation_ = new WAnimation();
-    this.collapsed_ = new Signal(this);
-    this.expanded_ = new Signal(this);
-    this.collapsedSS_ = new Signal1<Boolean>(this);
-    this.expandedSS_ = new Signal1<Boolean>(this);
+    this.collapsed_ = new Signal();
+    this.expanded_ = new Signal();
+    this.collapsedSS_ = new Signal1<Boolean>();
+    this.expandedSS_ = new Signal1<Boolean>();
     String TEMPLATE = "${titlebar}${contents}";
-    this.setImplementation(this.impl_ = new WTemplate(new WString(TEMPLATE)));
+    this.impl_ = new WTemplate(new WString(TEMPLATE), (WContainerWidget) null);
+    this.setImplementation(this.impl_);
     // this.implementStateless(WPanel.doExpand,WPanel.undoExpand);
     // this.implementStateless(WPanel.doCollapse,WPanel.undoCollapse);
     WApplication app = WApplication.getInstance();
     WContainerWidget centralArea = new WContainerWidget();
-    app.getTheme().apply(this, centralArea, WidgetThemeRole.PanelBodyRole);
-    this.impl_.bindWidget("titlebar", (WWidget) null);
+    app.getTheme().apply(this, centralArea, WidgetThemeRole.PanelBody);
+    this.impl_.bindEmpty("titlebar");
     this.impl_.bindWidget("contents", centralArea);
     this.setJavaScriptMember(
         WT_RESIZE_JS,
-        "function(self, w, h, l) {var defined = h >= 0;if (defined) {var mh = Wt3_6_0.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt3_6_0.boxSizing(self)) {h -= Wt3_6_0.px(self, 'borderTopWidth') + Wt3_6_0.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (defined && h > 0) {c.lh = l;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = l;});} else {c.lh = false;c.style.height = '';$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
+        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_4_0.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_4_0.boxSizing(self)) {h -= Wt4_4_0.px(self, 'borderTopWidth') + Wt4_4_0.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = true;});} else {c.style.height = '';c.lh = false;$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
     this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl.getSecondGetPSJS());
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a panel.
    *
-   * <p>Calls {@link #WPanel(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WPanel(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WPanel() {
     this((WContainerWidget) null);
@@ -83,9 +86,9 @@ public class WPanel extends WCompositeWidget {
     this.setTitleBar(true);
     if (!(this.title_ != null)) {
       this.title_ = new WText();
+      this.getTitleBarWidget().addWidget(this.title_);
       WApplication app = WApplication.getInstance();
-      app.getTheme().apply(this, this.title_, WidgetThemeRole.PanelTitleRole);
-      this.getTitleBarWidget().insertWidget(this.getTitleBarWidget().getCount(), this.title_);
+      app.getTheme().apply(this, this.title_, WidgetThemeRole.PanelTitle);
     }
     this.title_.setText(title);
   }
@@ -121,10 +124,10 @@ public class WPanel extends WCompositeWidget {
       WContainerWidget titleBar = new WContainerWidget();
       this.impl_.bindWidget("titlebar", titleBar);
       WApplication app = WApplication.getInstance();
-      app.getTheme().apply(this, titleBar, WidgetThemeRole.PanelTitleBarRole);
+      app.getTheme().apply(this, titleBar, WidgetThemeRole.PanelTitleBar);
     } else {
       if (!enable && this.isTitleBar()) {
-        this.impl_.bindWidget("titlebar", (WWidget) null);
+        this.impl_.bindEmpty("titlebar");
         this.title_ = null;
         this.collapseIcon_ = null;
       }
@@ -178,47 +181,40 @@ public class WPanel extends WCompositeWidget {
     if (on && !(this.collapseIcon_ != null)) {
       String resources = WApplication.getRelativeResourcesUrl();
       this.setTitleBar(true);
-      this.collapseIcon_ = new WIconPair(resources + "collapse.gif", resources + "expand.gif");
+      WIconPair icon =
+          this.collapseIcon_ = new WIconPair(resources + "collapse.gif", resources + "expand.gif");
       this.collapseIcon_.setFloatSide(Side.Left);
       WApplication app = WApplication.getInstance();
-      app.getTheme().apply(this, this.collapseIcon_, WidgetThemeRole.PanelCollapseButtonRole);
-      this.getTitleBarWidget().insertWidget(0, this.collapseIcon_);
+      app.getTheme().apply(this, this.collapseIcon_, WidgetThemeRole.PanelCollapseButton);
+      this.getTitleBarWidget().insertWidget(0, icon);
       this.collapseIcon_
           .icon1Clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPanel.this.doCollapse();
-                }
+              (WMouseEvent e1) -> {
+                WPanel.this.doCollapse();
               });
       this.collapseIcon_
           .icon1Clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPanel.this.onCollapse();
-                }
+              (WMouseEvent e1) -> {
+                WPanel.this.onCollapse();
               });
       this.collapseIcon_.icon1Clicked().preventPropagation();
       this.collapseIcon_
           .icon2Clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPanel.this.doExpand();
-                }
+              (WMouseEvent e1) -> {
+                WPanel.this.doExpand();
               });
       this.collapseIcon_
           .icon2Clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPanel.this.onExpand();
-                }
+              (WMouseEvent e1) -> {
+                WPanel.this.onExpand();
               });
       this.collapseIcon_.icon2Clicked().preventPropagation();
       this.collapseIcon_.setState(this.isCollapsed() ? 1 : 0);
@@ -226,14 +222,16 @@ public class WPanel extends WCompositeWidget {
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPanel.this.toggleCollapse();
-                }
+              (WMouseEvent e1) -> {
+                WPanel.this.toggleCollapse();
               });
     } else {
       if (!on && this.collapseIcon_ != null) {
-        if (this.collapseIcon_ != null) this.collapseIcon_.remove();
+        {
+          WWidget toRemove = WidgetUtils.remove(this.getTitleBarWidget(), this.collapseIcon_);
+          if (toRemove != null) toRemove.remove();
+        }
+
         this.collapseIcon_ = null;
       }
     }
@@ -327,19 +325,26 @@ public class WPanel extends WCompositeWidget {
   /**
    * Sets the central widget.
    *
-   * <p>Sets the widget that is the contents of the panel. When a widget was previously set, the old
-   * widget is deleted first.
+   * <p>Sets the widget that is the contents of the panel.
    *
    * <p>The default value is <code>null</code> (no widget set).
    */
   public void setCentralWidget(WWidget w) {
-    if (this.centralWidget_ != null) this.centralWidget_.remove();
-    this.centralWidget_ = w;
+    if (this.centralWidget_ != null) {
+      {
+        WWidget toRemove = this.getCentralArea().removeWidget(this.centralWidget_);
+        if (toRemove != null) toRemove.remove();
+      }
+
+      this.centralWidget_ = null;
+    }
     if (w != null) {
+      this.centralWidget_ = w;
+      this.centralWidget_.setInline(false);
       this.getCentralArea().addWidget(w);
-      w.setInline(false);
     }
   }
+  // public Widget  setCentralWidget(<Woow... some pseudoinstantiation type!> widget) ;
   /**
    * Returns the central widget.
    *

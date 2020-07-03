@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class SeriesRenderIterator extends SeriesIterator {
+final class SeriesRenderIterator extends SeriesIterator {
   private static Logger logger = LoggerFactory.getLogger(SeriesRenderIterator.class);
 
   public SeriesRenderIterator(final WCartesianChart chart, final WPainter painter) {
@@ -52,11 +53,11 @@ class SeriesRenderIterator extends SeriesIterator {
       final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
     this.seriesRenderer_ = null;
     switch (series.getType()) {
-      case LineSeries:
-      case CurveSeries:
+      case Line:
+      case Curve:
         this.seriesRenderer_ = new LineSeriesRenderer(this.chart_, this.painter_, series, this);
         break;
-      case BarSeries:
+      case Bar:
         this.seriesRenderer_ =
             new BarSeriesRenderer(
                 this.chart_,
@@ -79,7 +80,7 @@ class SeriesRenderIterator extends SeriesIterator {
   public void endSeries() {
     this.seriesRenderer_.paint();
     this.painter_.restore();
-    ;
+
     this.series_ = null;
   }
 

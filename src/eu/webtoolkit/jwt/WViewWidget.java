@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -63,17 +64,30 @@ public abstract class WViewWidget extends WWebWidget {
   private static Logger logger = LoggerFactory.getLogger(WViewWidget.class);
 
   /** Creates a new view widget. */
-  public WViewWidget(WContainerWidget parent) {
-    super(parent);
+  public WViewWidget(WContainerWidget parentContainer) {
+    super();
     this.contents_ = null;
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new view widget.
    *
-   * <p>Calls {@link #WViewWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WViewWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WViewWidget() {
     this((WContainerWidget) null);
+  }
+
+  public void remove() {
+    {
+      WWidget oldWidget = this.contents_;
+      this.contents_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.contents_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    super.remove();
   }
   /**
    * Updates the view.
@@ -96,12 +110,11 @@ public abstract class WViewWidget extends WWebWidget {
   }
 
   public void render(EnumSet<RenderFlag> flags) {
-    if (this.needContentsUpdate_ || !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-      if (this.contents_ != null) this.contents_.remove();
+    if (this.needContentsUpdate_ || flags.contains(RenderFlag.Full)) {
       WApplication.getInstance().setExposeSignals(false);
       this.contents_ = this.getRenderView();
+      this.widgetAdded(this.contents_);
       WApplication.getInstance().setExposeSignals(true);
-      this.addChild(this.contents_);
       this.contents_.render(flags);
       this.setInline(this.contents_.isInline());
       this.needContentsUpdate_ = false;
@@ -127,7 +140,7 @@ public abstract class WViewWidget extends WWebWidget {
     if (!app.getSession().getRenderer().isPreLearning()) {
       if (all && !(this.contents_ != null)) {
         this.needContentsUpdate_ = true;
-        this.render(EnumSet.of(RenderFlag.RenderFull));
+        this.render(EnumSet.of(RenderFlag.Full));
       }
       if (this.contents_ != null) {
         boolean savedVisibleOnly = app.getSession().getRenderer().isVisibleOnly();
@@ -150,14 +163,14 @@ public abstract class WViewWidget extends WWebWidget {
   }
 
   DomElementType getDomElementType() {
-    return this.isInline() ? DomElementType.DomElement_SPAN : DomElementType.DomElement_DIV;
+    return this.isInline() ? DomElementType.SPAN : DomElementType.DIV;
   }
 
   void doneRerender() {
-    this.setIgnoreChildRemoves(true);
-    if (this.contents_ != null) this.contents_.remove();
-    this.contents_ = null;
-    this.setIgnoreChildRemoves(false);
+    if (this.contents_ != null) {
+      this.widgetRemoved(this.contents_, false);
+      this.contents_ = null;
+    }
   }
 
   private WWidget contents_;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -43,7 +44,7 @@ public class WTableColumn extends WObject {
   public WTableColumn() {
     super();
     this.width_ = null;
-    this.id_ = null;
+    this.id_ = "";
     this.styleClass_ = "";
   }
   /**
@@ -166,12 +167,16 @@ public class WTableColumn extends WObject {
   private String id_;
   private String styleClass_;
 
+  void setTable(WTable table) {
+    this.table_ = table;
+  }
+
   void updateDom(final DomElement element, boolean all) {
     if (this.width_ != null) {
-      element.setProperty(Property.PropertyStyleWidth, this.width_.getCssText());
+      element.setProperty(Property.StyleWidth, this.width_.getCssText());
     }
     if (!all || this.styleClass_.length() != 0) {
-      element.setProperty(Property.PropertyClass, this.styleClass_);
+      element.setProperty(Property.Class, this.styleClass_);
     }
   }
 }

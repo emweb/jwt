@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -67,7 +68,7 @@ class WLegend3D extends WLegend {
           0,
           100,
           lineHeight,
-          EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
+          EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Middle),
           series.getTitle());
       if (count == this.legendColumns_) {
         painter.translate(

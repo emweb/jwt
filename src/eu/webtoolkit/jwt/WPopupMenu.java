@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -96,17 +97,18 @@ public class WPopupMenu extends WMenu {
    * <p>The menu is hidden, by default, and must be shown using {@link WPopupMenu#popup(WPoint p)
    * popup()} or exec().
    */
-  public WPopupMenu(WStackedWidget contentsStack) {
-    super(contentsStack);
+  public WPopupMenu(WStackedWidget contentsStack, WContainerWidget parentContainer) {
+    super(contentsStack, (WContainerWidget) null);
     this.topLevel_ = null;
     this.result_ = null;
     this.location_ = null;
     this.button_ = null;
-    this.aboutToHide_ = new Signal(this);
-    this.triggered_ = new Signal1<WMenuItem>(this);
+    this.aboutToHide_ = new Signal();
+    this.triggered_ = new Signal1<WMenuItem>();
     this.cancel_ = new JSignal(this, "cancel");
     this.recursiveEventLoop_ = false;
     this.willPopup_ = false;
+    this.hideOnSelect_ = true;
     this.autoHideDelay_ = -1;
     String CSS_RULES_NAME = "Wt::WPopupMenu";
     WApplication app = WApplication.getInstance();
@@ -118,14 +120,25 @@ public class WPopupMenu extends WMenu {
     this.getWebWidget().setBaseZIndex(110000);
     this.setPopup(true);
     this.hide();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new popup menu.
    *
-   * <p>Calls {@link #WPopupMenu(WStackedWidget contentsStack) this((WStackedWidget)null)}
+   * <p>Calls {@link #WPopupMenu(WStackedWidget contentsStack, WContainerWidget parentContainer)
+   * this((WStackedWidget)null, (WContainerWidget)null)}
    */
   public WPopupMenu() {
-    this((WStackedWidget) null);
+    this((WStackedWidget) null, (WContainerWidget) null);
+  }
+  /**
+   * Creates a new popup menu.
+   *
+   * <p>Calls {@link #WPopupMenu(WStackedWidget contentsStack, WContainerWidget parentContainer)
+   * this(contentsStack, (WContainerWidget)null)}
+   */
+  public WPopupMenu(WStackedWidget contentsStack) {
+    this(contentsStack, (WContainerWidget) null);
   }
 
   public void remove() {
@@ -135,6 +148,7 @@ public class WPopupMenu extends WMenu {
         b.setMenu((WPopupMenu) null);
       }
     }
+    WApplication.getInstance().removeGlobalWidget(this);
     super.remove();
   }
   /**
@@ -151,7 +165,7 @@ public class WPopupMenu extends WMenu {
     this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
     this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
     this.doJavaScript(
-        "Wt3_6_0.positionXY('"
+        "Wt4_4_0.positionXY('"
             + this.getId()
             + "',"
             + String.valueOf(p.getX())
@@ -181,10 +195,8 @@ public class WPopupMenu extends WMenu {
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPopupMenu.this.popupAtButton();
-                }
+              (WMouseEvent e1) -> {
+                WPopupMenu.this.popupAtButton();
               });
       this.button_.addStyleClass("dropdown-toggle");
     }
@@ -352,6 +364,36 @@ public class WPopupMenu extends WMenu {
   public final void setAutoHide(boolean enabled) {
     setAutoHide(enabled, 0);
   }
+  /**
+   * Set whether this popup menu should hide when an item is selected.
+   *
+   * <p>Defaults to true.
+   *
+   * <p>
+   *
+   * @see WPopupMenu#isHideOnSelect()
+   */
+  public void setHideOnSelect(boolean enabled) {
+    this.hideOnSelect_ = enabled;
+  }
+  /**
+   * Set whether this popup menu should hide when an item is selected.
+   *
+   * <p>Calls {@link #setHideOnSelect(boolean enabled) setHideOnSelect(true)}
+   */
+  public final void setHideOnSelect() {
+    setHideOnSelect(true);
+  }
+  /**
+   * Returns whether this popup menu should hide when an item is selected.
+   *
+   * <p>
+   *
+   * @see WPopupMenu#setHideOnSelect(boolean enabled)
+   */
+  public boolean isHideOnSelect() {
+    return this.hideOnSelect_;
+  }
 
   protected void renderSelected(WMenuItem item, boolean selected) {}
 
@@ -380,6 +422,7 @@ public class WPopupMenu extends WMenu {
   private JSignal cancel_;
   private boolean recursiveEventLoop_;
   private boolean willPopup_;
+  private boolean hideOnSelect_;
   private int autoHideDelay_;
 
   private void exec() {
@@ -418,12 +461,18 @@ public class WPopupMenu extends WMenu {
     }
     this.location_ = null;
     this.result_ = result;
-    this.hide();
+    boolean shouldHide =
+        !(result != null) || ((WPopupMenu) result.getParentMenu()).isHideOnSelect();
+    if (shouldHide) {
+      this.hide();
+    }
     this.recursiveEventLoop_ = false;
     if (this.result_ != null) {
       this.triggered_.trigger(this.result_);
     }
-    this.aboutToHide_.trigger();
+    if (shouldHide) {
+      this.aboutToHide_.trigger();
+    }
   }
 
   private void popupImpl() {
@@ -439,7 +488,7 @@ public class WPopupMenu extends WMenu {
     if (!this.cancel_.isConnected()) {
       app.loadJavaScript("js/WPopupMenu.js", wtjs1());
       StringBuilder s = new StringBuilder();
-      s.append("new Wt3_6_0.WPopupMenu(")
+      s.append("new Wt4_4_0.WPopupMenu(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())
@@ -449,10 +498,8 @@ public class WPopupMenu extends WMenu {
       this.setJavaScriptMember(" WPopupMenu", s.toString());
       this.cancel_.addListener(
           this,
-          new Signal.Listener() {
-            public void trigger() {
-              WPopupMenu.this.cancel();
-            }
+          () -> {
+            WPopupMenu.this.cancel();
           });
       this.connectSignals(this);
     }
@@ -497,10 +544,8 @@ public class WPopupMenu extends WMenu {
     this.itemSelected()
         .addListener(
             topLevel,
-            new Signal1.Listener<WMenuItem>() {
-              public void trigger(WMenuItem e1) {
-                topLevel.done(e1);
-              }
+            (WMenuItem e1) -> {
+              topLevel.done(e1);
             });
     for (int i = 0; i < this.getCount(); ++i) {
       WMenuItem item = this.itemAt(i);

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -47,115 +48,9 @@ import org.slf4j.LoggerFactory;
 public class WEnvironment {
   private static Logger logger = LoggerFactory.getLogger(WEnvironment.class);
 
-  /**
-   * An enumeration type for specific user agent.
-   *
-   * <p>
-   *
-   * @see WEnvironment#getAgent()
-   */
-  public enum UserAgent {
-    /** Unknown user agent. */
-    Unknown(0),
-    /** Internet Explorer Mobile, or Internet Explorer 5 or older. */
-    IEMobile(1000),
-    /** Internet Explorer 6. */
-    IE6(1001),
-    /** Internet Explorer 7. */
-    IE7(1002),
-    /** Internet Explorer 8. */
-    IE8(1003),
-    /** Internet Explorer 9. */
-    IE9(1004),
-    /** Internet Explorer 10. */
-    IE10(1005),
-    /** Internet Explorer 11. */
-    IE11(1006),
-    /** Edge. */
-    Edge(1100),
-    /** Opera. */
-    Opera(3000),
-    /** Opera 10 or later. */
-    Opera10(3010),
-    /** WebKit. */
-    WebKit(4000),
-    /** Safari 2 or older. */
-    Safari(4100),
-    /** Safari 3. */
-    Safari3(4103),
-    /** Safari 4 or later. */
-    Safari4(4104),
-    /** Chrome 0. */
-    Chrome0(4200),
-    /** Chrome 1. */
-    Chrome1(4201),
-    /** Chrome 2. */
-    Chrome2(4202),
-    /** Chrome 3. */
-    Chrome3(4203),
-    /** Chrome 4. */
-    Chrome4(4204),
-    /** Chrome 5 or later. */
-    Chrome5(4205),
-    /** Arora. */
-    Arora(4300),
-    /** Mobile WebKit. */
-    MobileWebKit(4400),
-    /** Mobile WebKit iPhone/iPad. */
-    MobileWebKitiPhone(4450),
-    /** Mobile WebKit Android. */
-    MobileWebKitAndroid(4500),
-    /** Konqueror. */
-    Konqueror(5000),
-    /** Gecko. */
-    Gecko(6000),
-    /** Firefox 2 or older. */
-    Firefox(6100),
-    /** Firefox 3.0. */
-    Firefox3_0(6101),
-    /** Firefox 3.1. */
-    Firefox3_1(6102),
-    /** Firefox 3.1b. */
-    Firefox3_1b(6103),
-    /** Firefox 3.5. */
-    Firefox3_5(6104),
-    /** Firefox 3.6. */
-    Firefox3_6(6105),
-    /** Firefox 4.0. */
-    Firefox4_0(6106),
-    /** Firefox 5.0 or later. */
-    Firefox5_0(6107),
-    /** Bot user agent. */
-    BotAgent(10000);
-
-    private int value;
-
-    UserAgent(int value) {
-      this.value = value;
-    }
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return value;
-    }
-  }
-  /** Enumeration for HTML content type. */
-  public enum ContentType {
-    /** XHTML1.x. */
-    XHTML1,
-    /** HTML4. */
-    HTML4,
-    /** HTML5. */
-    HTML5;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** Wt&apos;s JavaScript scope. */
   public static String getJavaScriptWtScope() {
-    return "Wt3_6_0";
+    return "Wt4_4_0";
   }
   /**
    * Parameters passed to the application.
@@ -225,28 +120,9 @@ public class WEnvironment {
    *
    * @see WEnvironment#supportsCookies()
    * @see WEnvironment#getCookie(String cookieName)
-   * @see WEnvironment#getCookieValue(String cookieName)
    */
   public Map<String, String> getCookies() {
     return this.cookies_;
-  }
-  /**
-   * Returns a cookie value.
-   *
-   * <p>Throws a <code>RuntimeException(&quot;Missing cookie: ...&quot;)</code> when the cookie is
-   * missing, or returns cookie value otherwise.
-   *
-   * <p>
-   *
-   * @see WEnvironment#getCookieValue(String cookieName)
-   */
-  public String getCookie(final String cookieName) {
-    String i = this.cookies_.get(cookieName);
-    if (i == null) {
-      throw new RuntimeException("Missing cookie: " + cookieName);
-    } else {
-      return i;
-    }
   }
   /**
    * Returns a cookie value.
@@ -257,7 +133,7 @@ public class WEnvironment {
    *
    * @see WEnvironment#getCookie(String cookieName)
    */
-  public String getCookieValue(final String cookieName) {
+  public String getCookie(final String cookieName) {
     String i = this.cookies_.get(cookieName);
     if (i == null) {
       return null;
@@ -269,11 +145,6 @@ public class WEnvironment {
    * Returns a header value.
    *
    * <p>Returns a header value, or an empty string if the header was present.
-   *
-   * <p>
-   *
-   * <p><i><b>Note: </b>Currently, the header name is case sensitive, although this should not be
-   * the case according to RFC2616 </i>
    */
   public String getHeaderValue(final String name) {
     return this.session_.getCgiHeader(name);
@@ -395,7 +266,7 @@ public class WEnvironment {
    *
    * <p>
    */
-  public int getTimeZoneOffset() {
+  public Duration getTimeZoneOffset() {
     return this.timeZoneOffset_;
   }
   /**
@@ -487,7 +358,7 @@ public class WEnvironment {
    * </ul>
    */
   public boolean agentIsSpiderBot() {
-    return this.agent_ == WEnvironment.UserAgent.BotAgent;
+    return this.agent_ == UserAgent.BotAgent;
   }
   /**
    * Returns the web server signature.
@@ -576,23 +447,10 @@ public class WEnvironment {
    * <p>Example: <code>&quot;1.99.2&quot;</code>
    */
   public static String getLibraryVersion() {
-    return "3.6.0";
+    return "4.4.0";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int
   // major, final bad java simple ref int minor) ;
-  /**
-   * Returns the JWt session id (<b>deprecated</b>).
-   *
-   * <p>Retrieves the session id for this session. This is an auto-generated random alpha-numerical
-   * id, whose length is determined by settings in the configuration file.
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WApplication#getSessionId()} instead
-   */
-  public String getSessionId() {
-    return this.session_.getSessionId();
-  }
   /**
    * Returns a raw CGI environment variable.
    *
@@ -617,8 +475,8 @@ public class WEnvironment {
    *
    * <p>This is here for backwards compatibility, but the implementation now alwasy returns HTML5.
    */
-  public WEnvironment.ContentType getContentType() {
-    return WEnvironment.ContentType.HTML5;
+  public HtmlContentType getContentType() {
+    return HtmlContentType.HTML5;
   }
   /**
    * Returns the user agent type.
@@ -635,7 +493,7 @@ public class WEnvironment {
    * @see WEnvironment#agentIsSafari()
    * @see WEnvironment#agentIsWebKit()
    */
-  public WEnvironment.UserAgent getAgent() {
+  public UserAgent getAgent() {
     return this.agent_;
   }
   /**
@@ -646,8 +504,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsIE() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.IEMobile.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.Opera.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.IEMobile.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.Opera.getValue();
   }
   /**
    * Returns whether the user agent is an older version of IE.
@@ -660,7 +518,7 @@ public class WEnvironment {
    */
   public boolean agentIsIElt(int version) {
     if (this.agentIsIE()) {
-      return this.agent_.getValue() < WEnvironment.UserAgent.IEMobile.getValue() + (version - 5);
+      return (int) this.agent_.getValue() < (int) UserAgent.IEMobile.getValue() + (version - 5);
     } else {
       return false;
     }
@@ -675,7 +533,7 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsIEMobile() {
-    return this.agent_ == WEnvironment.UserAgent.IEMobile;
+    return this.agent_ == UserAgent.IEMobile;
   }
   /**
    * Returns whether the user agent is Opera.
@@ -685,8 +543,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsOpera() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.Opera.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.Safari.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.Opera.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.Safari.getValue();
   }
   /**
    * Returns whether the user agent is WebKit-based.
@@ -698,8 +556,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsWebKit() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.WebKit.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.Konqueror.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.WebKit.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.Konqueror.getValue();
   }
   /**
    * Returns whether the user agent is Mobile WebKit-based.
@@ -712,8 +570,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsMobileWebKit() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.MobileWebKit.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.Konqueror.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.MobileWebKit.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.Konqueror.getValue();
   }
   /**
    * Returns whether the user agent is Safari.
@@ -723,8 +581,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsSafari() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.Safari.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.Chrome0.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.Safari.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.Chrome0.getValue();
   }
   /**
    * Returns whether the user agent is Chrome.
@@ -734,8 +592,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsChrome() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.Chrome0.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.Konqueror.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.Chrome0.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.Konqueror.getValue();
   }
   /**
    * Returns whether the user agent is Gecko-based.
@@ -747,8 +605,8 @@ public class WEnvironment {
    * @see WEnvironment#getAgent()
    */
   public boolean agentIsGecko() {
-    return this.agent_.getValue() >= WEnvironment.UserAgent.Gecko.getValue()
-        && this.agent_.getValue() < WEnvironment.UserAgent.BotAgent.getValue();
+    return (int) this.agent_.getValue() >= (int) UserAgent.Gecko.getValue()
+        && (int) this.agent_.getValue() < (int) UserAgent.BotAgent.getValue();
   }
   /**
    * Returns the servlet.
@@ -769,8 +627,8 @@ public class WEnvironment {
   /** Returns whether this agent supports CSS3 animations. */
   public boolean supportsCss3Animations() {
     return this.agentIsGecko()
-            && this.agent_.getValue() >= WEnvironment.UserAgent.Firefox5_0.getValue()
-        || this.agentIsIE() && this.agent_.getValue() >= WEnvironment.UserAgent.IE10.getValue()
+            && (int) this.agent_.getValue() >= (int) UserAgent.Firefox5_0.getValue()
+        || this.agentIsIE() && (int) this.agent_.getValue() >= (int) UserAgent.IE10.getValue()
         || this.agentIsWebKit();
   }
 
@@ -790,7 +648,7 @@ public class WEnvironment {
   boolean doesAjax_;
   boolean doesCookies_;
   boolean internalPathUsingFragments_;
-  WEnvironment.UserAgent agent_;
+  UserAgent agent_;
   int screenWidth_;
   int screenHeight_;
   double dpiScale_;
@@ -799,7 +657,7 @@ public class WEnvironment {
   Map<String, String[]> parameters_;
   Map<String, String> cookies_;
   Locale locale_;
-  int timeZoneOffset_;
+  Duration timeZoneOffset_;
   protected String timeZoneName_;
   String host_;
   String userAgent_;
@@ -827,7 +685,7 @@ public class WEnvironment {
     this.parameters_ = new HashMap<String, String[]>();
     this.cookies_ = new HashMap<String, String>();
     this.locale_ = new Locale("");
-    this.timeZoneOffset_ = 0;
+    this.timeZoneOffset_ = Duration.ofMinutes(0);
     this.timeZoneName_ = "";
     this.host_ = "";
     this.userAgent_ = "";
@@ -846,21 +704,21 @@ public class WEnvironment {
   void setUserAgent(final String userAgent) {
     this.userAgent_ = userAgent;
     final Configuration conf = this.session_.getController().getConfiguration();
-    this.agent_ = WEnvironment.UserAgent.Unknown;
+    this.agent_ = UserAgent.Unknown;
     if (this.userAgent_.indexOf("Trident/4.0") != -1) {
-      this.agent_ = WEnvironment.UserAgent.IE8;
+      this.agent_ = UserAgent.IE8;
       return;
     }
     if (this.userAgent_.indexOf("Trident/5.0") != -1) {
-      this.agent_ = WEnvironment.UserAgent.IE9;
+      this.agent_ = UserAgent.IE9;
       return;
     } else {
       if (this.userAgent_.indexOf("Trident/6.0") != -1) {
-        this.agent_ = WEnvironment.UserAgent.IE10;
+        this.agent_ = UserAgent.IE10;
         return;
       } else {
         if (this.userAgent_.indexOf("Trident/") != -1) {
-          this.agent_ = WEnvironment.UserAgent.IE11;
+          this.agent_ = UserAgent.IE11;
           return;
         } else {
           if (this.userAgent_.indexOf("MSIE 2.") != -1
@@ -868,22 +726,22 @@ public class WEnvironment {
               || this.userAgent_.indexOf("MSIE 4.") != -1
               || this.userAgent_.indexOf("MSIE 5.") != -1
               || this.userAgent_.indexOf("IEMobile") != -1) {
-            this.agent_ = WEnvironment.UserAgent.IEMobile;
+            this.agent_ = UserAgent.IEMobile;
           } else {
             if (this.userAgent_.indexOf("MSIE 6.") != -1) {
-              this.agent_ = WEnvironment.UserAgent.IE6;
+              this.agent_ = UserAgent.IE6;
             } else {
               if (this.userAgent_.indexOf("MSIE 7.") != -1) {
-                this.agent_ = WEnvironment.UserAgent.IE7;
+                this.agent_ = UserAgent.IE7;
               } else {
                 if (this.userAgent_.indexOf("MSIE 8.") != -1) {
-                  this.agent_ = WEnvironment.UserAgent.IE8;
+                  this.agent_ = UserAgent.IE8;
                 } else {
                   if (this.userAgent_.indexOf("MSIE 9.") != -1) {
-                    this.agent_ = WEnvironment.UserAgent.IE9;
+                    this.agent_ = UserAgent.IE9;
                   } else {
                     if (this.userAgent_.indexOf("MSIE") != -1) {
-                      this.agent_ = WEnvironment.UserAgent.IE10;
+                      this.agent_ = UserAgent.IE10;
                     }
                   }
                 }
@@ -894,7 +752,7 @@ public class WEnvironment {
       }
     }
     if (this.userAgent_.indexOf("Opera") != -1) {
-      this.agent_ = WEnvironment.UserAgent.Opera;
+      this.agent_ = UserAgent.Opera;
       int t = this.userAgent_.indexOf("Version/");
       if (t != -1) {
         String vs = this.userAgent_.substring(t + 8);
@@ -905,32 +763,32 @@ public class WEnvironment {
         try {
           double v = Double.parseDouble(vs);
           if (v >= 10) {
-            this.agent_ = WEnvironment.UserAgent.Opera10;
+            this.agent_ = UserAgent.Opera10;
           }
-        } catch (final NumberFormatException e) {
+        } catch (final RuntimeException e) {
         }
       }
     }
     if (this.userAgent_.indexOf("Chrome") != -1) {
       if (this.userAgent_.indexOf("Android") != -1) {
-        this.agent_ = WEnvironment.UserAgent.MobileWebKitAndroid;
+        this.agent_ = UserAgent.MobileWebKitAndroid;
       } else {
         if (this.userAgent_.indexOf("Chrome/0.") != -1) {
-          this.agent_ = WEnvironment.UserAgent.Chrome0;
+          this.agent_ = UserAgent.Chrome0;
         } else {
           if (this.userAgent_.indexOf("Chrome/1.") != -1) {
-            this.agent_ = WEnvironment.UserAgent.Chrome1;
+            this.agent_ = UserAgent.Chrome1;
           } else {
             if (this.userAgent_.indexOf("Chrome/2.") != -1) {
-              this.agent_ = WEnvironment.UserAgent.Chrome2;
+              this.agent_ = UserAgent.Chrome2;
             } else {
               if (this.userAgent_.indexOf("Chrome/3.") != -1) {
-                this.agent_ = WEnvironment.UserAgent.Chrome3;
+                this.agent_ = UserAgent.Chrome3;
               } else {
                 if (this.userAgent_.indexOf("Chrome/4.") != -1) {
-                  this.agent_ = WEnvironment.UserAgent.Chrome4;
+                  this.agent_ = UserAgent.Chrome4;
                 } else {
-                  this.agent_ = WEnvironment.UserAgent.Chrome5;
+                  this.agent_ = UserAgent.Chrome5;
                 }
               }
             }
@@ -940,25 +798,25 @@ public class WEnvironment {
     } else {
       if (this.userAgent_.indexOf("Safari") != -1) {
         if (this.userAgent_.indexOf("iPhone") != -1 || this.userAgent_.indexOf("iPad") != -1) {
-          this.agent_ = WEnvironment.UserAgent.MobileWebKitiPhone;
+          this.agent_ = UserAgent.MobileWebKitiPhone;
         } else {
           if (this.userAgent_.indexOf("Android") != -1) {
-            this.agent_ = WEnvironment.UserAgent.MobileWebKitAndroid;
+            this.agent_ = UserAgent.MobileWebKitAndroid;
           } else {
             if (this.userAgent_.indexOf("Mobile") != -1) {
-              this.agent_ = WEnvironment.UserAgent.MobileWebKit;
+              this.agent_ = UserAgent.MobileWebKit;
             } else {
               if (this.userAgent_.indexOf("Version") == -1) {
                 if (this.userAgent_.indexOf("Arora") != -1) {
-                  this.agent_ = WEnvironment.UserAgent.Arora;
+                  this.agent_ = UserAgent.Arora;
                 } else {
-                  this.agent_ = WEnvironment.UserAgent.Safari;
+                  this.agent_ = UserAgent.Safari;
                 }
               } else {
                 if (this.userAgent_.indexOf("Version/3") != -1) {
-                  this.agent_ = WEnvironment.UserAgent.Safari3;
+                  this.agent_ = UserAgent.Safari3;
                 } else {
-                  this.agent_ = WEnvironment.UserAgent.Safari4;
+                  this.agent_ = UserAgent.Safari4;
                 }
               }
             }
@@ -967,16 +825,16 @@ public class WEnvironment {
       } else {
         if (this.userAgent_.indexOf("WebKit") != -1) {
           if (this.userAgent_.indexOf("iPhone") != -1) {
-            this.agent_ = WEnvironment.UserAgent.MobileWebKitiPhone;
+            this.agent_ = UserAgent.MobileWebKitiPhone;
           } else {
-            this.agent_ = WEnvironment.UserAgent.WebKit;
+            this.agent_ = UserAgent.WebKit;
           }
         } else {
           if (this.userAgent_.indexOf("Konqueror") != -1) {
-            this.agent_ = WEnvironment.UserAgent.Konqueror;
+            this.agent_ = UserAgent.Konqueror;
           } else {
             if (this.userAgent_.indexOf("Gecko") != -1) {
-              this.agent_ = WEnvironment.UserAgent.Gecko;
+              this.agent_ = UserAgent.Gecko;
             }
           }
         }
@@ -984,33 +842,33 @@ public class WEnvironment {
     }
     if (this.userAgent_.indexOf("Firefox") != -1) {
       if (this.userAgent_.indexOf("Firefox/0.") != -1) {
-        this.agent_ = WEnvironment.UserAgent.Firefox;
+        this.agent_ = UserAgent.Firefox;
       } else {
         if (this.userAgent_.indexOf("Firefox/1.") != -1) {
-          this.agent_ = WEnvironment.UserAgent.Firefox;
+          this.agent_ = UserAgent.Firefox;
         } else {
           if (this.userAgent_.indexOf("Firefox/2.") != -1) {
-            this.agent_ = WEnvironment.UserAgent.Firefox;
+            this.agent_ = UserAgent.Firefox;
           } else {
             if (this.userAgent_.indexOf("Firefox/3.0") != -1) {
-              this.agent_ = WEnvironment.UserAgent.Firefox3_0;
+              this.agent_ = UserAgent.Firefox3_0;
             } else {
               if (this.userAgent_.indexOf("Firefox/3.1") != -1) {
-                this.agent_ = WEnvironment.UserAgent.Firefox3_1;
+                this.agent_ = UserAgent.Firefox3_1;
               } else {
                 if (this.userAgent_.indexOf("Firefox/3.1b") != -1) {
-                  this.agent_ = WEnvironment.UserAgent.Firefox3_1b;
+                  this.agent_ = UserAgent.Firefox3_1b;
                 } else {
                   if (this.userAgent_.indexOf("Firefox/3.5") != -1) {
-                    this.agent_ = WEnvironment.UserAgent.Firefox3_5;
+                    this.agent_ = UserAgent.Firefox3_5;
                   } else {
                     if (this.userAgent_.indexOf("Firefox/3.6") != -1) {
-                      this.agent_ = WEnvironment.UserAgent.Firefox3_6;
+                      this.agent_ = UserAgent.Firefox3_6;
                     } else {
                       if (this.userAgent_.indexOf("Firefox/4.") != -1) {
-                        this.agent_ = WEnvironment.UserAgent.Firefox4_0;
+                        this.agent_ = UserAgent.Firefox4_0;
                       } else {
-                        this.agent_ = WEnvironment.UserAgent.Firefox5_0;
+                        this.agent_ = UserAgent.Firefox5_0;
                       }
                     }
                   }
@@ -1022,10 +880,10 @@ public class WEnvironment {
       }
     }
     if (this.userAgent_.indexOf("Edge/") != -1) {
-      this.agent_ = WEnvironment.UserAgent.Edge;
+      this.agent_ = UserAgent.Edge;
     }
     if (conf.agentIsBot(this.userAgent_)) {
-      this.agent_ = WEnvironment.UserAgent.BotAgent;
+      this.agent_ = UserAgent.BotAgent;
     }
   }
 
@@ -1050,7 +908,7 @@ public class WEnvironment {
     this.parameters_ = new HashMap<String, String[]>();
     this.cookies_ = new HashMap<String, String>();
     this.locale_ = new Locale("");
-    this.timeZoneOffset_ = 0;
+    this.timeZoneOffset_ = Duration.ofMinutes(0);
     this.timeZoneName_ = "";
     this.host_ = "";
     this.userAgent_ = "";
@@ -1152,15 +1010,15 @@ public class WEnvironment {
     String scaleE = request.getParameter("scale");
     try {
       this.dpiScale_ = scaleE != null ? Double.parseDouble(scaleE) : 1;
-    } catch (final NumberFormatException e) {
+    } catch (final RuntimeException e) {
       this.dpiScale_ = 1;
     }
     String webGLE = request.getParameter("webGL");
     this.webGLsupported_ = webGLE != null ? webGLE.equals("true") : false;
     String tzE = request.getParameter("tz");
     try {
-      this.timeZoneOffset_ = tzE != null ? Integer.parseInt(tzE) : 0;
-    } catch (final NumberFormatException e) {
+      this.timeZoneOffset_ = Duration.ofMinutes(tzE != null ? Integer.parseInt(tzE) : 0);
+    } catch (final RuntimeException e) {
     }
     String tzSE = request.getParameter("tzS");
     this.timeZoneName_ = tzSE != null ? tzSE : "";
@@ -1180,14 +1038,14 @@ public class WEnvironment {
     if (scrWE != null) {
       try {
         this.screenWidth_ = Integer.parseInt(scrWE);
-      } catch (final NumberFormatException e) {
+      } catch (final RuntimeException e) {
       }
     }
     String scrHE = request.getParameter("scrH");
     if (scrHE != null) {
       try {
         this.screenHeight_ = Integer.parseInt(scrHE);
-      } catch (final NumberFormatException e) {
+      } catch (final RuntimeException e) {
       }
     }
   }

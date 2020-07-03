@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -420,20 +421,19 @@ abstract class WAbstractGLImplementation extends WObject {
     this.sizeChanged_ = true;
   }
 
-  public void repaintGL(EnumSet<WGLWidget.ClientSideRenderer> which) {
-    if (!EnumUtils.mask(which, WGLWidget.ClientSideRenderer.PAINT_GL).isEmpty()) {
+  public void repaintGL(EnumSet<GLClientSideRenderer> which) {
+    if (which.contains(GLClientSideRenderer.PAINT_GL)) {
       this.updatePaintGL_ = true;
     }
-    if (!EnumUtils.mask(which, WGLWidget.ClientSideRenderer.RESIZE_GL).isEmpty()) {
+    if (which.contains(GLClientSideRenderer.RESIZE_GL)) {
       this.updateResizeGL_ = true;
     }
-    if (!EnumUtils.mask(which, WGLWidget.ClientSideRenderer.UPDATE_GL).isEmpty()) {
+    if (which.contains(GLClientSideRenderer.UPDATE_GL)) {
       this.updateGL_ = true;
     }
   }
 
-  public final void repaintGL(
-      WGLWidget.ClientSideRenderer whic, WGLWidget.ClientSideRenderer... which) {
+  public final void repaintGL(GLClientSideRenderer whic, GLClientSideRenderer... which) {
     repaintGL(EnumSet.of(whic, which));
   }
 
@@ -473,10 +473,8 @@ abstract class WAbstractGLImplementation extends WObject {
     this.webglNotAvailable_ = new JSignal(this, "webglNotAvailable");
     this.webglNotAvailable_.addListener(
         this.glInterface_,
-        new Signal.Listener() {
-          public void trigger() {
-            WAbstractGLImplementation.this.glInterface_.webglNotAvailable();
-          }
+        () -> {
+          WAbstractGLImplementation.this.glInterface_.webglNotAvailable();
         });
   }
 

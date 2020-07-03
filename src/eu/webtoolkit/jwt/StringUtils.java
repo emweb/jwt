@@ -195,7 +195,7 @@ public class StringUtils {
 
 	static boolean matchValue(Object query, Object value,
 			MatchOptions options) {
-		if (options.getType() == MatchOptions.MatchType.MatchExactly) {
+		if (options.getType() == MatchOptions.MatchType.Exactly) {
 			return (query.getClass().equals(value.getClass()))
 					&& asString(query).equals(asString(value));
 		} else {
@@ -203,24 +203,24 @@ public class StringUtils {
 			String value_str = asString(value).getValue();
 
 			switch (options.getType()) {
-			case MatchStringExactly:
+			case Exactly:
 				if (options.getFlags().contains(
-						MatchOptions.MatchFlag.MatchCaseSensitive))
+						MatchOptions.MatchFlag.CaseSensitive))
 					return value_str.equals(query_str);
 				else
 					return value_str.equalsIgnoreCase(query_str);
 
-			case MatchStartsWith:
+			case StartsWith:
 				if (options.getFlags().contains(
-						MatchOptions.MatchFlag.MatchCaseSensitive))
+						MatchOptions.MatchFlag.CaseSensitive))
 					return value_str.startsWith(query_str);
 				else
 					return value_str.toLowerCase().startsWith(
 							query_str.toLowerCase());
 
-			case MatchEndsWith:
+			case EndsWith:
 				if (options.getFlags().contains(
-						MatchOptions.MatchFlag.MatchCaseSensitive))
+						MatchOptions.MatchFlag.CaseSensitive))
 					return value_str.endsWith(query_str);
 				else
 					return value_str.toLowerCase().endsWith(
@@ -369,26 +369,26 @@ public class StringUtils {
 		if (v.getClass().equals(WString.class)) {
 			WString s = (WString) v;
 			boolean plainText = false;
-			if (textFormat == TextFormat.XHTMLText) {
+			if (textFormat == TextFormat.XHTML) {
 				if (s.isLiteral()) {
 					plainText = !WWebWidget.removeScript(s);
 				}
 			} else {
 				plainText = true;
 			}
-			if (plainText && textFormat != TextFormat.XHTMLUnsafeText) {
+			if (plainText && textFormat != TextFormat.UnsafeXHTML) {
 				s = WWebWidget.escapeText(s);
 			}
 			return WString.toWString(s).getJsStringLiteral();
 		} else if (v.getClass().equals(String.class)) {
 			WString s = new WString((String) v);
 			boolean plainText;
-			if (textFormat == TextFormat.XHTMLText) {
+			if (textFormat == TextFormat.XHTML) {
 				plainText = !WWebWidget.removeScript(s);
 			} else {
 				plainText = true;
 			}
-			if (plainText && textFormat != TextFormat.XHTMLUnsafeText) {
+			if (plainText && textFormat != TextFormat.UnsafeXHTML) {
 				s = WWebWidget.escapeText(s);
 			}
 			return WString.toWString(s).getJsStringLiteral();

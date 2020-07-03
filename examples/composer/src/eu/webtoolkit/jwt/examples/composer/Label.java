@@ -22,7 +22,7 @@ public class Label extends WText {
         super(tr(msg), parent);
 
         setStyleClass("label");
-        parent.setContentAlignment(EnumSet.of(AlignmentFlag.AlignRight));
+        parent.setContentAlignment(EnumSet.of(AlignmentFlag.Right));
 
     }
 }

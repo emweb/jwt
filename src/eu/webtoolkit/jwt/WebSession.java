@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.*;
@@ -83,7 +84,6 @@ class WebSession {
     this.app_ = null;
     this.debug_ = this.controller_.getConfiguration().debug();
     this.handlers_ = new ArrayList<WebSession.Handler>();
-    this.emitStack_ = new ArrayList<WObject>();
     this.recursiveEventHandler_ = null;
     this.env_ = env != null ? env : this.embeddedEnv_;
     if (request != null) {
@@ -161,7 +161,7 @@ class WebSession {
   }
 
   public String getDocType() {
-    final boolean xhtml = this.env_.getContentType() == WEnvironment.ContentType.XHTML1;
+    final boolean xhtml = this.env_.getContentType() == HtmlContentType.XHTML1;
     if (xhtml) {
       return "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
     } else {
@@ -474,11 +474,11 @@ class WebSession {
               WebRenderer.AckState ackState = WebRenderer.AckState.CorrectAck;
               if (invalidAckId && ackIdE != null) {
                 try {
-                  ackState = this.renderer_.ackUpdate(Integer.parseInt(ackIdE));
+                  ackState = this.renderer_.ackUpdate((int) Integer.parseInt(ackIdE));
                   if (ackState != WebRenderer.AckState.BadAck) {
                     invalidAckId = false;
                   }
-                } catch (final NumberFormatException e) {
+                } catch (final RuntimeException e) {
                 }
               }
               if (invalidAckId) {
@@ -639,13 +639,13 @@ class WebSession {
       }
       if (this.state_ == WebSession.State.Dead) {
         this.recursiveEventHandler_ = null;
-        ;
+
         this.newRecursiveEvent_ = null;
         throw new WException("doRecursiveEventLoop(): session was killed");
       }
       this.setLoaded();
       this.app_.notify(new WEvent(this.newRecursiveEvent_));
-      ;
+
       this.newRecursiveEvent_ = null;
       this.recursiveEventDone_.signal();
       this.recursiveEventHandler_ = prevRecursiveEventHandler;
@@ -692,23 +692,9 @@ class WebSession {
     this.recursiveEvent_.signal();
     return true;
   }
-
-  public void pushEmitStack(WObject o) {
-    this.emitStack_.add(o);
-  }
-
-  public void popEmitStack() {
-    this.emitStack_.remove(this.emitStack_.size() - 1);
-  }
-
-  public WObject getEmitStackTop() {
-    if (!this.emitStack_.isEmpty()) {
-      return this.emitStack_.get(this.emitStack_.size() - 1);
-    } else {
-      return null;
-    }
-  }
-
+  // public void pushEmitStack(WObject  obj) ;
+  // public void popEmitStack() ;
+  // public WObject  getEmitStackTop() ;
   public boolean isDead() {
     return this.state_ == WebSession.State.Dead;
   }
@@ -1032,23 +1018,23 @@ class WebSession {
 
   public EventType getEventType(final WEvent event) {
     if (event.impl_.handler == null) {
-      return EventType.OtherEvent;
+      return EventType.Other;
     }
     final WebSession.Handler handler = event.impl_.handler;
     final WebRequest request = handler.getRequest();
     if (event.impl_.renderOnly || !(handler.getRequest() != null)) {
-      return EventType.OtherEvent;
+      return EventType.Other;
     }
     String requestE = request.getParameter("request");
     String pageIdE = handler.getRequest().getParameter("pageId");
     if (pageIdE != null && !pageIdE.equals(String.valueOf(this.renderer_.getPageId()))) {
-      return EventType.OtherEvent;
+      return EventType.Other;
     }
     switch (this.state_) {
       case ExpectLoad:
       case Loaded:
         if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
-          return EventType.OtherEvent;
+          return EventType.Other;
         } else {
           WResource resource = null;
           if (!(requestE != null) && request.getPathInfo().length() != 0) {
@@ -1058,7 +1044,7 @@ class WebSession {
           String signalE = this.getSignal(request, "");
           if (resource != null
               || requestE != null && requestE.equals("resource") && resourceE != null) {
-            return EventType.ResourceEvent;
+            return EventType.Resource;
           } else {
             if (signalE != null) {
               if (signalE.equals("none")
@@ -1066,7 +1052,7 @@ class WebSession {
                   || signalE.equals("hash")
                   || signalE.equals("poll")
                   || signalE.equals("keepAlive")) {
-                return EventType.OtherEvent;
+                return EventType.Other;
               } else {
                 List<Integer> signalOrder = this.getSignalProcessingOrder(event);
                 int timerSignals = 0;
@@ -1078,35 +1064,35 @@ class WebSession {
                     break;
                   } else {
                     if (signalE.equals("user")) {
-                      return EventType.UserEvent;
+                      return EventType.User;
                     } else {
                       AbstractEventSignal esb = this.decodeSignal(s, false);
                       if (!(esb != null)) {
                         continue;
                       }
                       WTimerWidget t =
-                          ((esb.getSender()) instanceof WTimerWidget
-                              ? (WTimerWidget) (esb.getSender())
+                          ((esb.getOwner()) instanceof WTimerWidget
+                              ? (WTimerWidget) (esb.getOwner())
                               : null);
                       if (t != null) {
                         ++timerSignals;
                       } else {
-                        return EventType.UserEvent;
+                        return EventType.User;
                       }
                     }
                   }
                 }
                 if (timerSignals != 0) {
-                  return EventType.TimerEvent;
+                  return EventType.Timer;
                 }
               }
             } else {
-              return EventType.OtherEvent;
+              return EventType.Other;
             }
           }
         }
       default:
-        return EventType.OtherEvent;
+        return EventType.Other;
     }
   }
 
@@ -1147,7 +1133,7 @@ class WebSession {
       this.init();
     }
 
-    public Handler(WebSession session, final WebRequest request, final WebResponse response) {
+    public Handler(final WebSession session, final WebRequest request, final WebResponse response) {
       this.nextSignal = -1;
       this.signalOrder = new ArrayList<Integer>();
       this.prevHandler_ = null;
@@ -1159,7 +1145,7 @@ class WebSession {
       this.init();
     }
 
-    public Handler(WebSession session, WebSession.Handler.LockOption lockOption) {
+    public Handler(final WebSession session, WebSession.Handler.LockOption lockOption) {
       this.nextSignal = -1;
       this.signalOrder = new ArrayList<Integer>();
       this.prevHandler_ = null;
@@ -1240,7 +1226,7 @@ class WebSession {
     public int nextSignal;
     public List<Integer> signalOrder;
 
-    static void attachThreadToSession(WebSession session) {
+    static void attachThreadToSession(final WebSession session) {
       attachThreadToHandler((WebSession.Handler) null);
       if (!(session != null)) {
         return;
@@ -1447,7 +1433,7 @@ class WebSession {
                         }
                       }
                       {
-                        String internalPath = this.env_.getCookieValue("WtInternalPath");
+                        String internalPath = this.env_.getCookie("WtInternalPath");
                         if (internalPath != null) {
                           this.env_.setInternalPath(internalPath);
                         }
@@ -1570,7 +1556,7 @@ class WebSession {
                           final int MAX_TRIES = 1000;
                           while (!(this.app_ != null) && i < MAX_TRIES) {
                             this.mutex_.unlock();
-                            Thread.sleep(5);
+                            ThreadUtils.sleep(Duration.ofMillis(5));
                             this.mutex_.lock();
                             ++i;
                           }
@@ -1699,6 +1685,9 @@ class WebSession {
     return this.mutex_;
   }
 
+  public static ThreadLocal<WebSession.Handler> threadHandler_ =
+      new ThreadLocal<WebSession.Handler>();
+
   public void setExpectLoad() {
     if (this.controller_.getConfiguration().ajaxPuzzle()) {
       this.setState(
@@ -1786,8 +1775,6 @@ class WebSession {
 
   private ReentrantLock mutex_;
   private ReentrantLock eventQueueMutex_;
-  private static ThreadLocal<WebSession.Handler> threadHandler_ =
-      new ThreadLocal<WebSession.Handler>();
   private LinkedList<ApplicationEvent> eventQueue_;
   private EntryPointType type_;
   private String favicon_;
@@ -1830,7 +1817,6 @@ class WebSession {
   private WApplication app_;
   private boolean debug_;
   private List<WebSession.Handler> handlers_;
-  private List<WObject> emitStack_;
   private WebSession.Handler recursiveEventHandler_;
 
   void pushUpdates() {
@@ -1875,7 +1861,7 @@ class WebSession {
   private AbstractEventSignal decodeSignal(final String signalId, boolean checkExposed) {
     AbstractEventSignal result = this.app_.decodeExposedSignal(signalId);
     if (result != null && checkExposed) {
-      WWidget w = ((result.getSender()) instanceof WWidget ? (WWidget) (result.getSender()) : null);
+      WWidget w = ((result.getOwner()) instanceof WWidget ? (WWidget) (result.getOwner()) : null);
       if (w != null && !this.app_.isExposed(w)) {
         result = null;
       }
@@ -1920,7 +1906,7 @@ class WebSession {
           throw e;
         }
       }
-      if (this.app_ != null && this.app_.isQuited()) {
+      if (this.app_ != null && this.app_.hasQuit()) {
         this.kill();
       }
       if (handler.getResponse() != null) {
@@ -1954,7 +1940,7 @@ class WebSession {
           && !(handler.getRequest().getParameter("skeleton") != null)) {
         this.mutex_.unlock();
         try {
-          Thread.sleep(1);
+          ThreadUtils.sleep(Duration.ofMillis(1));
         } catch (final InterruptedException e) {
         }
         this.mutex_.lock();
@@ -2082,7 +2068,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt3_6_0.scrollHistory();");
+                this.app_.doJavaScript("Wt4_4_0.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }
@@ -2133,7 +2119,7 @@ class WebSession {
         if (selEnd != null) {
           selectionEnd = Integer.parseInt(selEnd);
         }
-      } catch (final NumberFormatException ee) {
+      } catch (final RuntimeException ee) {
         logger.error(
             new StringWriter().append("Could not lexical cast selection range").toString());
       }
@@ -2271,7 +2257,7 @@ class WebSession {
       if (!event.isEmpty()) {
         if (!this.isDead()) {
           this.externalNotify(new WEvent.Impl(handler, event.function));
-          if (this.getApp() != null && this.getApp().isQuited()) {
+          if (this.getApp() != null && this.getApp().hasQuit()) {
             this.kill();
           }
           if (this.isDead()) {

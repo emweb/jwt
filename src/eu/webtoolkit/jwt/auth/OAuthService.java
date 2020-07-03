@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -80,7 +81,7 @@ public abstract class OAuthService {
    */
   public OAuthService(final AuthService auth) {
     this.baseAuth_ = auth;
-    this.impl_ = new OAuthService.Impl();
+    this.impl_ = new Impl();
   }
   /** Returns the basic authentication service. */
   public AuthService getBaseAuth() {
@@ -251,7 +252,7 @@ public abstract class OAuthService {
    * <p>While the current OAuth 2.0 draft mandates the use of POST, some implementations (like
    * Facebook) use URL-encoding and a GET request.
    *
-   * <p>The default implementation returns Http::Post (corresponding to the current draft).
+   * <p>The default implementation returns Http::Method::Post (corresponding to the current draft).
    */
   public Method getTokenRequestMethod() {
     return Method.Post;
@@ -328,7 +329,7 @@ public abstract class OAuthService {
     private static Logger logger = LoggerFactory.getLogger(Impl.class);
 
     Impl() {
-      this.redirectResource_ = null;
+      this.redirectResource_ = (OAuthService.Impl.RedirectEndpoint) null;
       this.secret_ = "";
       try {
         this.secret_ = configurationProperty("oauth2-secret");
@@ -337,7 +338,7 @@ public abstract class OAuthService {
       }
     }
 
-    static class RedirectEndpoint extends WResource {
+    static final class RedirectEndpoint extends WResource {
       private static Logger logger = LoggerFactory.getLogger(RedirectEndpoint.class);
 
       RedirectEndpoint(final OAuthService service) {

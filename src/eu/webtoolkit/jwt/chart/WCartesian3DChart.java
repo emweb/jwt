@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,15 +23,15 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The chart consists of a plotcube, which is always open on the front, and adapts to the data
  * which is shown on the chart. The plotcube has three axes of type {@link WAxis}. Each of these can
- * be manually configured as in the 2D case. The chart can be either a {@link ChartType ScatterPlot}
- * or a {@link ChartType CategoryChart}. This influences how the data is positioned in relation to
- * the x/y-axis. Gridlines can also be drawn on each of the plotcube-planes. The chart has a
+ * be manually configured as in the 2D case. The chart can be either a {@link ChartType#Scatter} or
+ * a {@link ChartType#Category}. This influences how the data is positioned in relation to the
+ * x/y-axis. Gridlines can also be drawn on each of the plotcube-planes. The chart has a
  * mouse-handler which allows rotation of the chart around the center of the plotcube. Zooming in
  * and out is possible by scrolling.
  *
  * <p>Data that can be shown on the chart derives from {@link WAbstractDataSeries3D}. Multiple
  * dataseries can be added to the chart using {@link
- * WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries) addDataSeries()}. The color of
+ * WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries_) addDataSeries()}. The color of
  * the dataseries is by default determined by the colors of the {@link WChartPalette}. This way a
  * separate color is assigned to each new dataseries. All rendering logic of the data is contained
  * in the dataseries-classes and further styling is often possible there. For example, a {@link
@@ -81,11 +82,11 @@ public class WCartesian3DChart extends WGLWidget {
   /**
    * Constructor.
    *
-   * <p>Constructs a cartesian 3D chart, with the type set to ScatterPlot, a transparent background,
-   * a {@link WStandardPalette.Flavour#Muted Flavour#Muted} palette and no gridlines.
+   * <p>Constructs a cartesian 3D chart, with the type set to {@link ChartType#Scatter}, a
+   * transparent background, a {@link PaletteFlavour#Muted} palette and no gridlines.
    */
-  public WCartesian3DChart(WContainerWidget parent) {
-    super(parent);
+  public WCartesian3DChart(WContainerWidget parentContainer) {
+    super();
     this.worldTransform_ =
         new javax.vecmath.Matrix4f(
             1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
@@ -95,11 +96,11 @@ public class WCartesian3DChart extends WGLWidget {
     this.xAxis_ = new WAxis();
     this.yAxis_ = new WAxis();
     this.zAxis_ = new WAxis();
-    this.chartType_ = ChartType.ScatterPlot;
+    this.chartType_ = ChartType.Scatter;
     this.cubeLinesPen_ = new WPen();
     this.gridLinesPen_ = new WPen();
-    this.background_ = WColor.transparent;
-    this.chartPalette_ = new WStandardPalette(WStandardPalette.Flavour.Muted);
+    this.background_ = new WColor(StandardColor.White);
+    this.chartPalette_ = new WStandardPalette(PaletteFlavour.Muted);
     this.title_ = new WString();
     this.titleFont_ = new WFont();
     this.legend_ = new WLegend3D();
@@ -247,17 +248,19 @@ public class WCartesian3DChart extends WGLWidget {
     this.XZGridEnabled_[1] = false;
     this.YZGridEnabled_[0] = false;
     this.YZGridEnabled_[1] = false;
-    this.xAxis_.init(this.interface_, Axis.XAxis_3D);
-    this.yAxis_.init(this.interface_, Axis.YAxis_3D);
-    this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
-    this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
-    this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15, WLength.Unit.Point));
+    this.xAxis_.init(this.interface_, Axis.X3D);
+    this.yAxis_.init(this.interface_, Axis.Y3D);
+    this.zAxis_.init(this.interface_, Axis.Z3D);
+    this.titleFont_.setFamily(FontFamily.SansSerif);
+    this.titleFont_.setSize(new WLength(15, LengthUnit.Point));
     this.addJavaScriptMatrix4(this.jsMatrix_);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WCartesian3DChart(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WCartesian3DChart(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   public WCartesian3DChart() {
     this((WContainerWidget) null);
@@ -266,10 +269,10 @@ public class WCartesian3DChart extends WGLWidget {
    * Constructor.
    *
    * <p>Construct a cartesian 3D chart with the specified type , a transparent background, a {@link
-   * WStandardPalette.Flavour#Muted Flavour#Muted} palette and no gridlines.
+   * PaletteFlavour#Muted} palette and no gridlines.
    */
-  public WCartesian3DChart(ChartType type, WContainerWidget parent) {
-    super(parent);
+  public WCartesian3DChart(ChartType type, WContainerWidget parentContainer) {
+    super();
     this.worldTransform_ =
         new javax.vecmath.Matrix4f(
             1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
@@ -282,8 +285,8 @@ public class WCartesian3DChart extends WGLWidget {
     this.chartType_ = type;
     this.cubeLinesPen_ = new WPen();
     this.gridLinesPen_ = new WPen();
-    this.background_ = WColor.white;
-    this.chartPalette_ = new WStandardPalette(WStandardPalette.Flavour.Muted);
+    this.background_ = new WColor(StandardColor.White);
+    this.chartPalette_ = new WStandardPalette(PaletteFlavour.Muted);
     this.title_ = new WString();
     this.titleFont_ = new WFont();
     this.legend_ = new WLegend3D();
@@ -431,17 +434,18 @@ public class WCartesian3DChart extends WGLWidget {
     this.XZGridEnabled_[1] = false;
     this.YZGridEnabled_[0] = false;
     this.YZGridEnabled_[1] = false;
-    this.xAxis_.init(this.interface_, Axis.XAxis_3D);
-    this.yAxis_.init(this.interface_, Axis.YAxis_3D);
-    this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
-    this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
-    this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15, WLength.Unit.Point));
+    this.xAxis_.init(this.interface_, Axis.X3D);
+    this.yAxis_.init(this.interface_, Axis.Y3D);
+    this.zAxis_.init(this.interface_, Axis.Z3D);
+    this.titleFont_.setFamily(FontFamily.SansSerif);
+    this.titleFont_.setSize(new WLength(15, LengthUnit.Point));
     this.addJavaScriptMatrix4(this.jsMatrix_);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WCartesian3DChart(ChartType type, WContainerWidget parent) this(type,
+   * <p>Calls {@link #WCartesian3DChart(ChartType type, WContainerWidget parentContainer) this(type,
    * (WContainerWidget)null)}
    */
   public WCartesian3DChart(ChartType type) {
@@ -449,81 +453,73 @@ public class WCartesian3DChart extends WGLWidget {
   }
   /** Destructor. */
   public void remove() {
-    for (int i = 0; i < this.dataSeriesVector_.size(); i++) {;
-    }
-    ;;;;;
     super.remove();
   }
   /**
    * Add a dataseries to the chart.
    *
-   * <p>Ownership of the dataseries is transferred to the chart.
-   *
-   * <p>If the chart is of type ScatterPlot only numerical dataseries should be added and if it is
-   * of type CategoryChart only categorical dataseries should be added. If multiple categorical
-   * datasets are added, the axis-labels of the first dataseries will be used on the chart.
-   *
-   * <p>Note that a dataseries can only be added once.
+   * <p>If the chart is of type {@link ChartType#Scatter} only numerical dataseries should be added
+   * and if it is of type {@link ChartType#Category} only categorical dataseries should be added. If
+   * multiple categorical datasets are added, the axis-labels of the first dataseries will be used
+   * on the chart.
    *
    * <p>
    *
    * @see WCartesian3DChart#removeDataSeries(WAbstractDataSeries3D dataseries)
    */
-  public void addDataSeries(WAbstractDataSeries3D dataseries) {
-    if (dataseries == null) {
-      return;
-    }
-    for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
-      if (this.dataSeriesVector_.get(i) == dataseries) {
-        return;
-      }
-    }
-    this.dataSeriesVector_.add(dataseries);
+  public void addDataSeries(WAbstractDataSeries3D dataseries_) {
+    WAbstractDataSeries3D dataseries = dataseries_;
+    this.dataSeriesVector_.add(dataseries_);
     dataseries.setChart(this);
     if ((dataseries.getTitle().length() == 0)) {
       dataseries.setDefaultTitle(++this.seriesCounter_);
     }
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Removes a dataseries from a chart.
    *
-   * <p>This removes the data from the chart and transfers ownership back. The data can then be
-   * added to another chart.
-   *
    * <p>
    *
-   * @see WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries)
+   * @see WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries_)
    */
-  public void removeDataSeries(WAbstractDataSeries3D dataseries) {
-    this.dataSeriesVector_.remove(dataseries);
+  public WAbstractDataSeries3D removeDataSeries(WAbstractDataSeries3D dataseries) {
+    WAbstractDataSeries3D result = CollectionUtils.take(this.dataSeriesVector_, dataseries);
     List<Object> glObjects = dataseries.getGlObjects();
     ;
+
     for (int i = 0; i < glObjects.size(); ++i) {
       this.objectsToDelete.add(glObjects.get(i));
     }
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
+    return result;
   }
   /**
    * Returns all dataseries that were added to this chart.
    *
    * <p>
    *
-   * @see WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries)
+   * @see WCartesian3DChart#addDataSeries(WAbstractDataSeries3D dataseries_)
    * @see WCartesian3DChart#removeDataSeries(WAbstractDataSeries3D dataseries)
    */
   public List<WAbstractDataSeries3D> getDataSeries() {
-    return this.dataSeriesVector_;
+    List<WAbstractDataSeries3D> result = new ArrayList<WAbstractDataSeries3D>();
+    ;
+
+    for (WAbstractDataSeries3D d : this.dataSeriesVector_) {
+      result.add(d);
+    }
+    return result;
   }
   /** Returns the specified axis belonging to the chart. */
   public WAxis axis(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       return this.xAxis_;
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         return this.yAxis_;
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           return this.zAxis_;
         } else {
           throw new WException("WCartesian3DChart: don't know this type of axis");
@@ -539,17 +535,17 @@ public class WCartesian3DChart extends WGLWidget {
    * @see WCartesian3DChart#axis(Axis axis)
    */
   public void setAxis(WAxis waxis, Axis axis) {
-    if (axis == Axis.XAxis_3D) {;
+    if (axis == Axis.X3D) {
       this.xAxis_ = waxis;
-      this.xAxis_.init(this.interface_, Axis.XAxis_3D);
+      this.xAxis_.init(this.interface_, Axis.X3D);
     } else {
-      if (axis == Axis.YAxis_3D) {;
+      if (axis == Axis.Y3D) {
         this.yAxis_ = waxis;
-        this.yAxis_.init(this.interface_, Axis.YAxis_3D);
+        this.yAxis_.init(this.interface_, Axis.Y3D);
       } else {
-        if (axis == Axis.ZAxis_3D) {;
+        if (axis == Axis.Z3D) {
           this.zAxis_ = waxis;
-          this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
+          this.zAxis_.init(this.interface_, Axis.Z3D);
         } else {
           throw new WException("WCartesian3DChart: don't know this type of axis");
         }
@@ -564,32 +560,32 @@ public class WCartesian3DChart extends WGLWidget {
    */
   public void setGridEnabled(Plane plane, Axis axis, boolean enabled) {
     switch (plane) {
-      case XY_Plane:
-        if (axis == Axis.XAxis_3D) {
+      case XY:
+        if (axis == Axis.X3D) {
           this.XYGridEnabled_[0] = enabled;
         }
-        if (axis == Axis.YAxis_3D) {
+        if (axis == Axis.Y3D) {
           this.XYGridEnabled_[1] = enabled;
         }
         break;
-      case XZ_Plane:
-        if (axis == Axis.XAxis_3D) {
+      case XZ:
+        if (axis == Axis.X3D) {
           this.XZGridEnabled_[0] = enabled;
         }
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           this.XZGridEnabled_[1] = enabled;
         }
         break;
-      case YZ_Plane:
-        if (axis == Axis.YAxis_3D) {
+      case YZ:
+        if (axis == Axis.Y3D) {
           this.YZGridEnabled_[0] = enabled;
         }
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           this.YZGridEnabled_[1] = enabled;
         }
         break;
     }
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Enable/disable gridlines.
@@ -608,7 +604,7 @@ public class WCartesian3DChart extends WGLWidget {
    */
   public void setIntersectionLinesEnabled(boolean enabled) {
     this.intersectionLinesEnabled_ = enabled;
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Set whether intersection lines are shown between surface charts.
@@ -632,7 +628,7 @@ public class WCartesian3DChart extends WGLWidget {
   /** Sets the color of the intersection lines between surface charts. */
   public void setIntersectionLinesColor(WColor color) {
     this.intersectionLinesColor_ = color;
-    this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
+    this.repaintGL(EnumSet.of(GLClientSideRenderer.PAINT_GL));
   }
   /**
    * Gets the color of the intersection lines between surface charts.
@@ -655,7 +651,7 @@ public class WCartesian3DChart extends WGLWidget {
   public void setIntersectionPlanes(
       final List<WCartesian3DChart.IntersectionPlane> intersectionPlanes) {
     Utils.copyList(intersectionPlanes, this.intersectionPlanes_);
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Get the invisible planes with which intersections are drawn.
@@ -670,7 +666,7 @@ public class WCartesian3DChart extends WGLWidget {
   /**
    * Sets the pen used for drawing the gridlines.
    *
-   * <p>The default pen for drawing gridlines is a black pen of width 0.
+   * <p>The default pen for drawing gridlines is a {@link StandardColor#Black} pen of width 0.
    *
    * <p>
    *
@@ -678,7 +674,7 @@ public class WCartesian3DChart extends WGLWidget {
    */
   public void setGridLinesPen(final WPen pen) {
     this.gridLinesPen_ = pen;
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Returns the pen used for drawing the gridlines.
@@ -693,7 +689,7 @@ public class WCartesian3DChart extends WGLWidget {
   /**
    * Sets the pen used to draw the edges of the plotcube.
    *
-   * <p>The default pen for drawing cubelines is a black pen of width 0.
+   * <p>The default pen for drawing cubelines is a {@link StandardColor#Black} pen of width 0.
    *
    * <p>Note: Only width and color of the pen are used, all other styling is ignored.
    */
@@ -716,14 +712,14 @@ public class WCartesian3DChart extends WGLWidget {
   /**
    * Sets the type of this chart.
    *
-   * <p>Sets the type of this chart to either ScatterPlot (for drawing numerical data) or to
-   * CategoryChart (for drawing categorical data).
+   * <p>Sets the type of this chart to either {@link ChartType#Scatter} (for drawing numerical data)
+   * or to {@link ChartType#Category} (for drawing categorical data).
    */
   public void setType(ChartType type) {
     this.chartType_ = type;
-    this.xAxis_.init(this.interface_, Axis.XAxis_3D);
-    this.yAxis_.init(this.interface_, Axis.YAxis_3D);
-    this.zAxis_.init(this.interface_, Axis.ZAxis_3D);
+    this.xAxis_.init(this.interface_, Axis.X3D);
+    this.yAxis_.init(this.interface_, Axis.Y3D);
+    this.zAxis_.init(this.interface_, Axis.Z3D);
   }
   /**
    * Returns the type of this chart.
@@ -743,13 +739,9 @@ public class WCartesian3DChart extends WGLWidget {
    * <p>The given palette determines which color subsequent dataseries will have. If a dataseries
    * has a colormap set, then the palette is not used for this data.
    */
-  public void setPalette(WChartPalette palette) {
-    if (palette == this.chartPalette_ || palette == null) {
-      return;
-    }
-    ;
+  public void setPalette(final WChartPalette palette) {
     this.chartPalette_ = palette;
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Returns the palette used for this chart.
@@ -769,7 +761,7 @@ public class WCartesian3DChart extends WGLWidget {
    */
   public void setBackground(final WColor background) {
     this.background_ = background;
-    this.updateChart(EnumSet.of(ChartUpdates.GLContext));
+    this.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
   }
   /**
    * Returns the background color used for this chart.
@@ -864,19 +856,20 @@ public class WCartesian3DChart extends WGLWidget {
    * displayed.
    *
    * <p>The <code>alignment</code> specifies how the legend is aligned. This can be a horizontal
-   * alignment flag ({@link AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}), when the <code>side</code> is Bottom or Top, or a vertical
-   * alignment flag ({@link AlignmentFlag#AlignTop}, {@link AlignmentFlag#AlignMiddle}, or {@link
-   * AlignmentFlag#AlignBottom}) when the <code>side</code> is Left or Right.
+   * alignment flag ({@link AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link
+   * AlignmentFlag#Right}), when the <code>side</code> is {@link Side#Bottom} or {@link Side#Top},
+   * or a vertical alignment flag ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or
+   * {@link AlignmentFlag#Bottom}) when the <code>side</code> is {@link Side#Left} or {@link
+   * Side#Right}.
    *
-   * <p>The default location is {@link Side#Right} and {@link AlignmentFlag#AlignMiddle}.
+   * <p>The default location is {@link Side#Right} and {@link AlignmentFlag#Middle}.
    *
    * <p>
    *
    * @see WCartesian3DChart#setLegendEnabled(boolean enabled)
    */
   public void setLegendLocation(Side side, AlignmentFlag alignment) {
-    this.legend_.setLegendLocation(LegendLocation.LegendOutside, side, alignment);
+    this.legend_.setLegendLocation(LegendLocation.Outside, side, alignment);
     this.updateChart(EnumSet.of(ChartUpdates.GLTextures));
   }
   /**
@@ -885,8 +878,8 @@ public class WCartesian3DChart extends WGLWidget {
    * <p>This configures the font, border and background for the legend.
    *
    * <p>The default font is a 10pt sans serif font (the same as the default axis label font), the
-   * default <code>border</code> is {@link PenStyle#NoPen} and the default <code>background</code>
-   * is {@link BrushStyle#NoBrush}.
+   * default <code>border</code> is {@link PenStyle#None} and the default <code>background</code> is
+   * {@link BrushStyle#None}.
    *
    * <p>
    *
@@ -1043,15 +1036,15 @@ public class WCartesian3DChart extends WGLWidget {
   public double toPlotCubeCoords(double value, Axis axis) {
     double min = 0.0;
     double max = 1.0;
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       min = this.xAxis_.getMinimum();
       max = this.xAxis_.getMaximum();
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         min = this.yAxis_.getMinimum();
         max = this.yAxis_.getMaximum();
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           min = this.zAxis_.getMinimum();
           max = this.zAxis_.getMaximum();
         } else {
@@ -1315,7 +1308,7 @@ public class WCartesian3DChart extends WGLWidget {
               ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
               : null);
       if (gridData != null
-          && gridData.getType() == Series3DType.SurfaceSeries3D
+          && gridData.getType() == Series3DType.Surface
           && gridData.isClippingLinesEnabled()) {
         gridData.paintGL();
         this.renderClippingLines(gridData);
@@ -1339,7 +1332,7 @@ public class WCartesian3DChart extends WGLWidget {
               ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
               : null);
       if (gridData != null
-          && gridData.getType() == Series3DType.SurfaceSeries3D
+          && gridData.getType() == Series3DType.Surface
           && !gridData.isClippingLinesEnabled()) {
         gridData.paintGL();
       }
@@ -1350,7 +1343,7 @@ public class WCartesian3DChart extends WGLWidget {
             ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
                 : null);
-        if (!(gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D)) {
+        if (!(gridData != null && gridData.getType() == Series3DType.Surface)) {
           this.dataSeriesVector_.get(i).paintGL();
         }
       }
@@ -1383,7 +1376,7 @@ public class WCartesian3DChart extends WGLWidget {
             ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
                 : null);
-        if (!(gridData != null) || gridData.getType() != Series3DType.SurfaceSeries3D) {
+        if (!(gridData != null) || gridData.getType() != Series3DType.Surface) {
           this.dataSeriesVector_.get(i).paintGL();
         }
       }
@@ -1410,7 +1403,7 @@ public class WCartesian3DChart extends WGLWidget {
    * <p>Specialized for chart rendering.
    */
   protected void updateGL() {
-    if (!EnumUtils.mask(this.updates_, ChartUpdates.GLContext).isEmpty()) {
+    if (this.updates_.contains(ChartUpdates.GLContext)) {
       this.deleteAllGLResources();
       for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
         this.dataSeriesVector_.get(i).deleteAllGLResources();
@@ -1442,14 +1435,14 @@ public class WCartesian3DChart extends WGLWidget {
       for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
         this.dataSeriesVector_.get(i).updateGL();
       }
-      this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.RESIZE_GL));
-      this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
+      this.repaintGL(EnumSet.of(GLClientSideRenderer.RESIZE_GL));
+      this.repaintGL(EnumSet.of(GLClientSideRenderer.PAINT_GL));
     }
-    if (!EnumUtils.mask(this.updates_, ChartUpdates.CameraMatrix).isEmpty()) {
+    if (this.updates_.contains(ChartUpdates.CameraMatrix)) {
       this.setJavaScriptMatrix4(this.jsMatrix_, this.worldTransform_);
-      this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
+      this.repaintGL(EnumSet.of(GLClientSideRenderer.PAINT_GL));
     }
-    if (!EnumUtils.mask(this.updates_, ChartUpdates.GLTextures).isEmpty()) {
+    if (this.updates_.contains(ChartUpdates.GLTextures)) {
       this.deleteGLTextures();
       this.loadCubeTextures();
       this.currentTopOffset_ = 0;
@@ -1469,9 +1462,9 @@ public class WCartesian3DChart extends WGLWidget {
           this.initColorMaps();
         }
       }
-      this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.PAINT_GL));
+      this.repaintGL(EnumSet.of(GLClientSideRenderer.PAINT_GL));
     }
-    this.updates_.clear();
+    this.updates_ = EnumSet.noneOf(ChartUpdates.class);
   }
   /**
    * Act on resize events.
@@ -1515,7 +1508,7 @@ public class WCartesian3DChart extends WGLWidget {
   /** Update the chart. */
   public void updateChart(EnumSet<ChartUpdates> flags) {
     this.updates_.addAll(flags);
-    this.repaintGL(EnumSet.of(WGLWidget.ClientSideRenderer.UPDATE_GL));
+    this.repaintGL(EnumSet.of(GLClientSideRenderer.UPDATE_GL));
   }
   /**
    * Update the chart.
@@ -2139,7 +2132,7 @@ public class WCartesian3DChart extends WGLWidget {
           ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
               ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
               : null);
-      if (gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D) {
+      if (gridData != null && gridData.getType() == Series3DType.Surface) {
         gridData.paintGLIndex(i);
       }
     }
@@ -2150,7 +2143,7 @@ public class WCartesian3DChart extends WGLWidget {
           ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
               ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
               : null);
-      if (gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D) {
+      if (gridData != null && gridData.getType() == Series3DType.Surface) {
         gridData.paintGLPositions();
       }
     }
@@ -2201,7 +2194,7 @@ public class WCartesian3DChart extends WGLWidget {
             ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
                 : null);
-        if (gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D) {
+        if (gridData != null && gridData.getType() == Series3DType.Surface) {
           gridData.paintGLIndex(1);
         }
       }
@@ -2215,10 +2208,10 @@ public class WCartesian3DChart extends WGLWidget {
       double minZ = this.zAxis_.getMinimum();
       double maxZ = this.zAxis_.getMaximum();
       WCartesian3DChart.IntersectionPlane plane = this.intersectionPlanes_.get(i);
-      if (plane.axis == Axis.XAxis_3D) {
+      if (plane.axis == Axis.X3D) {
         this.uniform1i(this.clippingPlane_clippingAxis_, 0);
       } else {
-        if (plane.axis == Axis.YAxis_3D) {
+        if (plane.axis == Axis.Y3D) {
           this.uniform1i(this.clippingPlane_clippingAxis_, 1);
         } else {
           this.uniform1i(this.clippingPlane_clippingAxis_, 2);
@@ -2251,7 +2244,7 @@ public class WCartesian3DChart extends WGLWidget {
             ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
                 : null);
-        if (gridData != null && gridData.getType() == Series3DType.SurfaceSeries3D) {
+        if (gridData != null && gridData.getType() == Series3DType.Surface) {
           gridData.paintGLPositions();
         }
       }
@@ -2361,7 +2354,7 @@ public class WCartesian3DChart extends WGLWidget {
                   ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
                   : null);
           if (gridData != null
-              && gridData.getType() == Series3DType.SurfaceSeries3D
+              && gridData.getType() == Series3DType.Surface
               && gridData.isClippingLinesEnabled()) {
             gridData.paintGLIndex(0xffffff);
           }
@@ -2390,7 +2383,7 @@ public class WCartesian3DChart extends WGLWidget {
                   ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
                   : null);
           if (gridData != null
-              && gridData.getType() == Series3DType.SurfaceSeries3D
+              && gridData.getType() == Series3DType.Surface
               && gridData.isClippingLinesEnabled()) {
             gridData.paintGLPositions();
           }
@@ -2470,18 +2463,18 @@ public class WCartesian3DChart extends WGLWidget {
     tickStart = 0.0;
     tickEnd = TICKLENGTH;
     labelPos = tickEnd;
-    labelHFlag = AlignmentFlag.AlignCenter;
-    labelVFlag = AlignmentFlag.AlignTop;
+    labelHFlag = AlignmentFlag.Center;
+    labelVFlag = AlignmentFlag.Top;
     if (this.xAxis_.getLabelAngle() > ANGLE1) {
-      labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight : AlignmentFlag.AlignLeft;
+      labelHFlag = labelPos > 0 ? AlignmentFlag.Right : AlignmentFlag.Left;
       if (this.xAxis_.getLabelAngle() > ANGLE2) {
-        labelVFlag = AlignmentFlag.AlignMiddle;
+        labelVFlag = AlignmentFlag.Middle;
       }
     } else {
       if (this.xAxis_.getLabelAngle() < -ANGLE1) {
-        labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft : AlignmentFlag.AlignRight;
+        labelHFlag = labelPos > 0 ? AlignmentFlag.Left : AlignmentFlag.Right;
         if (this.xAxis_.getLabelAngle() < -ANGLE2) {
-          labelVFlag = AlignmentFlag.AlignMiddle;
+          labelVFlag = AlignmentFlag.Middle;
         }
       }
     }
@@ -2493,13 +2486,13 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     double addOffset = this.xAxis_.getTitleOffset();
     WFont oldFont = painter.getFont();
     painter.setFont(this.xAxis_.getTitleFont());
     painter.drawText(
         new WRectF(0, TITLEOFFSET + addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),
         this.xAxis_.getTitle());
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
     painter.translate(0, this.axisRenderHeight_);
@@ -2518,10 +2511,10 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.drawText(
         new WRectF(0, TITLEOFFSET + addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),
         this.xAxis_.getTitle());
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
     painter.translate(0, this.axisRenderHeight_);
@@ -2532,18 +2525,18 @@ public class WCartesian3DChart extends WGLWidget {
     tickStart = -TICKLENGTH;
     tickEnd = 0.0;
     labelPos = tickEnd - 4;
-    labelHFlag = AlignmentFlag.AlignCenter;
-    labelVFlag = AlignmentFlag.AlignBottom;
+    labelHFlag = AlignmentFlag.Center;
+    labelVFlag = AlignmentFlag.Bottom;
     if (this.xAxis_.getLabelAngle() > ANGLE1) {
-      labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight : AlignmentFlag.AlignLeft;
+      labelHFlag = labelPos > 0 ? AlignmentFlag.Right : AlignmentFlag.Left;
       if (this.xAxis_.getLabelAngle() > ANGLE2) {
-        labelVFlag = AlignmentFlag.AlignMiddle;
+        labelVFlag = AlignmentFlag.Middle;
       }
     } else {
       if (this.xAxis_.getLabelAngle() < -ANGLE1) {
-        labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft : AlignmentFlag.AlignRight;
+        labelHFlag = labelPos > 0 ? AlignmentFlag.Left : AlignmentFlag.Right;
         if (this.xAxis_.getLabelAngle() < -ANGLE2) {
-          labelVFlag = AlignmentFlag.AlignMiddle;
+          labelVFlag = AlignmentFlag.Middle;
         }
       }
     }
@@ -2555,10 +2548,10 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.drawText(
         new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom),
         this.xAxis_.getTitle());
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
     painter.translate(0, this.axisRenderHeight_);
@@ -2577,10 +2570,10 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.drawText(
         new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom),
         this.xAxis_.getTitle());
     painter.setFont(oldFont);
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
@@ -2592,18 +2585,18 @@ public class WCartesian3DChart extends WGLWidget {
     tickStart = 0.0;
     tickEnd = TICKLENGTH;
     labelPos = tickEnd;
-    labelHFlag = AlignmentFlag.AlignCenter;
-    labelVFlag = AlignmentFlag.AlignTop;
+    labelHFlag = AlignmentFlag.Center;
+    labelVFlag = AlignmentFlag.Top;
     if (this.yAxis_.getLabelAngle() > ANGLE1) {
-      labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight : AlignmentFlag.AlignLeft;
+      labelHFlag = labelPos > 0 ? AlignmentFlag.Right : AlignmentFlag.Left;
       if (this.yAxis_.getLabelAngle() > ANGLE2) {
-        labelVFlag = AlignmentFlag.AlignMiddle;
+        labelVFlag = AlignmentFlag.Middle;
       }
     } else {
       if (this.yAxis_.getLabelAngle() < -ANGLE1) {
-        labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft : AlignmentFlag.AlignRight;
+        labelHFlag = labelPos > 0 ? AlignmentFlag.Left : AlignmentFlag.Right;
         if (this.yAxis_.getLabelAngle() < -ANGLE2) {
-          labelVFlag = AlignmentFlag.AlignMiddle;
+          labelVFlag = AlignmentFlag.Middle;
         }
       }
     }
@@ -2615,12 +2608,12 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     addOffset = this.yAxis_.getTitleOffset();
     painter.setFont(this.yAxis_.getTitleFont());
     painter.drawText(
         new WRectF(0, TITLEOFFSET + addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),
         this.yAxis_.getTitle());
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
     painter.translate(0, this.axisRenderHeight_);
@@ -2639,10 +2632,10 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.drawText(
         new WRectF(0, TITLEOFFSET + addOffset, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),
         this.yAxis_.getTitle());
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
     painter.translate(0, this.axisRenderHeight_);
@@ -2653,18 +2646,18 @@ public class WCartesian3DChart extends WGLWidget {
     tickStart = -TICKLENGTH;
     tickEnd = 0.0;
     labelPos = tickEnd - 4;
-    labelHFlag = AlignmentFlag.AlignCenter;
-    labelVFlag = AlignmentFlag.AlignBottom;
+    labelHFlag = AlignmentFlag.Center;
+    labelVFlag = AlignmentFlag.Bottom;
     if (this.yAxis_.getLabelAngle() > ANGLE1) {
-      labelHFlag = labelPos > 0 ? AlignmentFlag.AlignRight : AlignmentFlag.AlignLeft;
+      labelHFlag = labelPos > 0 ? AlignmentFlag.Right : AlignmentFlag.Left;
       if (this.yAxis_.getLabelAngle() > ANGLE2) {
-        labelVFlag = AlignmentFlag.AlignMiddle;
+        labelVFlag = AlignmentFlag.Middle;
       }
     } else {
       if (this.yAxis_.getLabelAngle() < -ANGLE1) {
-        labelHFlag = labelPos > 0 ? AlignmentFlag.AlignLeft : AlignmentFlag.AlignRight;
+        labelHFlag = labelPos > 0 ? AlignmentFlag.Left : AlignmentFlag.Right;
         if (this.yAxis_.getLabelAngle() < -ANGLE2) {
-          labelVFlag = AlignmentFlag.AlignMiddle;
+          labelVFlag = AlignmentFlag.Middle;
         }
       }
     }
@@ -2676,10 +2669,10 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.drawText(
         new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom),
         this.yAxis_.getTitle());
     painter.scale(1.0 / this.textureScaling_, 1.0 / this.textureScaling_);
     painter.translate(0, this.axisRenderHeight_);
@@ -2698,10 +2691,10 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.drawText(
         new WRectF(0, 0, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom),
         this.yAxis_.getTitle());
     painter.setFont(oldFont);
     if (labelAngleMirrored) {
@@ -2728,18 +2721,18 @@ public class WCartesian3DChart extends WGLWidget {
     double tickStart = -TICKLENGTH;
     double tickEnd = 0.0;
     double labelPos = tickEnd - 4;
-    AlignmentFlag labelHFlag = AlignmentFlag.AlignRight;
-    AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
+    AlignmentFlag labelHFlag = AlignmentFlag.Right;
+    AlignmentFlag labelVFlag = AlignmentFlag.Middle;
     if (this.zAxis_.getLabelAngle() > ANGLE1) {
-      labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom : AlignmentFlag.AlignTop;
+      labelVFlag = labelPos < 0 ? AlignmentFlag.Bottom : AlignmentFlag.Top;
       if (this.zAxis_.getLabelAngle() > ANGLE2) {
-        labelHFlag = AlignmentFlag.AlignCenter;
+        labelHFlag = AlignmentFlag.Center;
       }
     } else {
       if (this.zAxis_.getLabelAngle() < -ANGLE1) {
-        labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop : AlignmentFlag.AlignBottom;
+        labelVFlag = labelPos < 0 ? AlignmentFlag.Top : AlignmentFlag.Bottom;
         if (this.zAxis_.getLabelAngle() < -ANGLE2) {
-          labelHFlag = AlignmentFlag.AlignCenter;
+          labelHFlag = AlignmentFlag.Center;
         }
       }
     }
@@ -2751,14 +2744,14 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     double addOffset = this.zAxis_.getTitleOffset();
     painter.rotate(-90);
     WFont oldFont = this.zAxis_.getTitleFont();
     painter.setFont(this.zAxis_.getTitleFont());
     painter.drawText(
         new WRectF(-axisWidth, 0, axisWidth, axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignBottom),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Bottom),
         this.zAxis_.getTitle());
     painter.rotate(90);
     axisStart = new WPointF(axisHeight, axisWidth - axisOffset);
@@ -2766,18 +2759,18 @@ public class WCartesian3DChart extends WGLWidget {
     tickStart = 0.0;
     tickEnd = TICKLENGTH;
     labelPos = tickEnd;
-    labelHFlag = AlignmentFlag.AlignLeft;
-    labelVFlag = AlignmentFlag.AlignMiddle;
+    labelHFlag = AlignmentFlag.Left;
+    labelVFlag = AlignmentFlag.Middle;
     if (this.zAxis_.getLabelAngle() > ANGLE1) {
-      labelVFlag = labelPos < 0 ? AlignmentFlag.AlignBottom : AlignmentFlag.AlignTop;
+      labelVFlag = labelPos < 0 ? AlignmentFlag.Bottom : AlignmentFlag.Top;
       if (this.zAxis_.getLabelAngle() > ANGLE2) {
-        labelHFlag = AlignmentFlag.AlignCenter;
+        labelHFlag = AlignmentFlag.Center;
       }
     } else {
       if (this.zAxis_.getLabelAngle() < -ANGLE1) {
-        labelVFlag = labelPos < 0 ? AlignmentFlag.AlignTop : AlignmentFlag.AlignBottom;
+        labelVFlag = labelPos < 0 ? AlignmentFlag.Top : AlignmentFlag.Bottom;
         if (this.zAxis_.getLabelAngle() < -ANGLE2) {
-          labelHFlag = AlignmentFlag.AlignCenter;
+          labelHFlag = AlignmentFlag.Center;
         }
       }
     }
@@ -2789,7 +2782,7 @@ public class WCartesian3DChart extends WGLWidget {
         tickStart,
         tickEnd,
         labelPos,
-        EnumSet.of(labelHFlag, labelVFlag));
+        EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
     painter.rotate(-90);
     painter.drawText(
         new WRectF(
@@ -2797,7 +2790,7 @@ public class WCartesian3DChart extends WGLWidget {
             axisHeight + TITLEOFFSET + addOffset,
             axisWidth,
             axisHeight - TITLEOFFSET - addOffset),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),
         this.zAxis_.getTitle());
     painter.setFont(oldFont);
     painter.rotate(90);
@@ -2816,7 +2809,7 @@ public class WCartesian3DChart extends WGLWidget {
     }
     painter.setPen(this.gridLinesPen_);
     switch (plane) {
-      case XY_Plane:
+      case XY:
         if (this.XYGridEnabled_[0]) {
           List<Double> pos = this.xAxis_.gridLinePositions(new AxisConfig());
           for (int i = 0; i < pos.size(); i++) {
@@ -2848,7 +2841,7 @@ public class WCartesian3DChart extends WGLWidget {
           }
         }
         break;
-      case XZ_Plane:
+      case XZ:
         if (this.XZGridEnabled_[0]) {
           List<Double> pos = this.xAxis_.gridLinePositions(new AxisConfig());
           for (int i = 0; i < pos.size(); i++) {
@@ -2880,7 +2873,7 @@ public class WCartesian3DChart extends WGLWidget {
           }
         }
         break;
-      case YZ_Plane:
+      case YZ:
         if (this.YZGridEnabled_[0]) {
           List<Double> pos = this.yAxis_.gridLinePositions(new AxisConfig());
           for (int i = 0; i < pos.size(); i++) {
@@ -3006,7 +2999,7 @@ public class WCartesian3DChart extends WGLWidget {
         WGLWidget.GLenum.CLAMP_TO_EDGE);
     this.generateMipmap(WGLWidget.GLenum.TEXTURE_2D);
     WPaintDevice pd1 = this.createPaintDevice(new WLength(512), new WLength(512));
-    this.paintGridLines(pd1, Plane.XY_Plane);
+    this.paintGridLines(pd1, Plane.XY);
     this.cubeTextureXY_ = this.createTexture();
     this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.cubeTextureXY_);
     this.pixelStorei(WGLWidget.GLenum.UNPACK_FLIP_Y_WEBGL, 1);
@@ -3025,7 +3018,7 @@ public class WCartesian3DChart extends WGLWidget {
         WGLWidget.GLenum.LINEAR_MIPMAP_LINEAR);
     this.generateMipmap(WGLWidget.GLenum.TEXTURE_2D);
     WPaintDevice pd2 = this.createPaintDevice(new WLength(512), new WLength(512));
-    this.paintGridLines(pd2, Plane.XZ_Plane);
+    this.paintGridLines(pd2, Plane.XZ);
     this.cubeTextureXZ_ = this.createTexture();
     this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.cubeTextureXZ_);
     this.pixelStorei(WGLWidget.GLenum.UNPACK_FLIP_Y_WEBGL, 1);
@@ -3044,7 +3037,7 @@ public class WCartesian3DChart extends WGLWidget {
         WGLWidget.GLenum.LINEAR_MIPMAP_LINEAR);
     this.generateMipmap(WGLWidget.GLenum.TEXTURE_2D);
     WPaintDevice pd3 = this.createPaintDevice(new WLength(512), new WLength(512));
-    this.paintGridLines(pd3, Plane.YZ_Plane);
+    this.paintGridLines(pd3, Plane.YZ);
     this.cubeTextureYZ_ = this.createTexture();
     this.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.cubeTextureYZ_);
     this.pixelStorei(WGLWidget.GLenum.UNPACK_FLIP_Y_WEBGL, 1);
@@ -3092,7 +3085,7 @@ public class WCartesian3DChart extends WGLWidget {
     painter.setFont(this.titleFont_);
     painter.drawText(
         new WRectF(0, 0, this.getWidth().getValue(), pixelHeight),
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignMiddle),
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Middle),
         this.title_);
     painter.end();
     this.titleTexture_ = this.createTexture();
@@ -3105,8 +3098,6 @@ public class WCartesian3DChart extends WGLWidget {
         WGLWidget.GLenum.RGBA,
         WGLWidget.GLenum.UNSIGNED_BYTE,
         titlePaintDev);
-    ;
-    titlePaintDev = null;
     this.texParameteri(
         WGLWidget.GLenum.TEXTURE_2D, WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.LINEAR);
     this.texParameteri(
@@ -3175,8 +3166,6 @@ public class WCartesian3DChart extends WGLWidget {
         WGLWidget.GLenum.RGBA,
         WGLWidget.GLenum.UNSIGNED_BYTE,
         colorMapPaintDev);
-    ;
-    colorMapPaintDev = null;
     this.texParameteri(
         WGLWidget.GLenum.TEXTURE_2D, WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.LINEAR);
     this.texParameteri(
@@ -3237,38 +3226,38 @@ public class WCartesian3DChart extends WGLWidget {
     if (this.legend_.getLegendSide() == Side.Left || this.legend_.getLegendSide() == Side.Right) {
       painter.translate(0, this.currentTopOffset_);
       switch (this.legend_.getLegendAlignment()) {
-        case AlignTop:
+        case Top:
           painter.translate(0, MARGIN);
           this.currentTopOffset_ += MARGIN;
           break;
-        case AlignMiddle:
+        case Middle:
           painter.translate(0, (space - legendHeight) / 2);
           break;
-        case AlignBottom:
+        case Bottom:
           painter.translate(0, space - legendHeight - MARGIN);
           this.currentBottomOffset_ += MARGIN;
           break;
         default:
-          throw new WException("WCartesian3DChart: legend-side does not match legend-alignment");
+          break;
       }
     }
     if (this.legend_.getLegendSide() == Side.Top || this.legend_.getLegendSide() == Side.Bottom) {
       painter.translate(this.currentLeftOffset_, 0);
       space = (int) this.getWidth().getValue() - this.currentLeftOffset_ - this.currentRightOffset_;
       switch (this.legend_.getLegendAlignment()) {
-        case AlignLeft:
+        case Left:
           painter.translate(MARGIN, 0);
           this.currentLeftOffset_ += MARGIN;
           break;
-        case AlignCenter:
+        case Center:
           painter.translate((space - legendWidth) / 2, 0);
           break;
-        case AlignRight:
+        case Right:
           painter.translate(space - legendWidth - MARGIN, 0);
           this.currentRightOffset_ += MARGIN;
           break;
         default:
-          throw new WException("WCartesian3DChart: legend-side does not match legend-alignment");
+          break;
       }
     }
     this.legend_.renderLegend(painter, this.dataSeriesVector_);
@@ -3283,8 +3272,6 @@ public class WCartesian3DChart extends WGLWidget {
         WGLWidget.GLenum.RGBA,
         WGLWidget.GLenum.UNSIGNED_BYTE,
         legendPaintDev);
-    ;
-    legendPaintDev = null;
     this.texParameteri(
         WGLWidget.GLenum.TEXTURE_2D, WGLWidget.GLenum.TEXTURE_MAG_FILTER, WGLWidget.GLenum.LINEAR);
     this.texParameteri(

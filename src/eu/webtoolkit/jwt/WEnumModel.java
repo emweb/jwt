@@ -12,8 +12,8 @@ import eu.webtoolkit.jwt.WModelIndex;
  * 
  * The model has one column, and as many rows as the enum has values.
  * 
- * As {@link ItemDataRole#DisplayRole}, the {@link Enum#toString()} function is returned while
- * as {@link ItemDataRole#UserRole}, the actual Enum value is returned.
+ * As {@link ItemDataRole#Display}, the {@link Enum#toString()} function is returned while
+ * as {@link ItemDataRole#User}, the actual Enum value is returned.
  */
 public class WEnumModel<E extends Enum<E>> extends WAbstractTableModel {
 	private Class<E> enumType;
@@ -36,10 +36,10 @@ public class WEnumModel<E extends Enum<E>> extends WAbstractTableModel {
 	}
 
 	@Override
-	public Object getData(WModelIndex index, int role) {
-		if (role == ItemDataRole.DisplayRole) {
+	public Object getData(WModelIndex index, ItemDataRole role) {
+		if (role == ItemDataRole.Display) {
 			return enumType.getEnumConstants()[index.getRow()].toString();
-		} else if (role == ItemDataRole.UserRole)
+		} else if (role == ItemDataRole.User)
 			return getObject(index.getRow());
 		else
 			return null;

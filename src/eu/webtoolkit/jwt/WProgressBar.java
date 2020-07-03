@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,8 +39,8 @@ public class WProgressBar extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WProgressBar.class);
 
   /** Creates a progress bar. */
-  public WProgressBar(WContainerWidget parent) {
-    super(parent);
+  public WProgressBar(WContainerWidget parentContainer) {
+    super();
     this.min_ = 0;
     this.max_ = 100;
     this.value_ = 0;
@@ -50,11 +51,12 @@ public class WProgressBar extends WInteractWidget {
     this.progressCompleted_ = new Signal();
     this.format_ = new WString("%.0f %%");
     this.setInline(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a progress bar.
    *
-   * <p>Calls {@link #WProgressBar(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WProgressBar(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WProgressBar() {
     this((WContainerWidget) null);
@@ -226,7 +228,7 @@ public class WProgressBar extends WInteractWidget {
    * updateBar()} if you still want the width to change.
    */
   protected void updateBar(final DomElement bar) {
-    bar.setProperty(Property.PropertyStyleWidth, String.valueOf(this.getPercentage()) + "%");
+    bar.setProperty(Property.StyleWidth, String.valueOf(this.getPercentage()) + "%");
   }
 
   void updateDom(final DomElement element, boolean all) {
@@ -234,25 +236,25 @@ public class WProgressBar extends WInteractWidget {
     DomElement label = null;
     if (all) {
       WApplication app = WApplication.getInstance();
-      bar = DomElement.createNew(DomElementType.DomElement_DIV);
+      bar = DomElement.createNew(DomElementType.DIV);
       bar.setId("bar" + this.getId());
-      bar.setProperty(Property.PropertyClass, this.valueStyleClass_);
-      app.getTheme().apply(this, bar, ElementThemeRole.ProgressBarBarRole);
-      label = DomElement.createNew(DomElementType.DomElement_DIV);
+      bar.setProperty(Property.Class, this.valueStyleClass_);
+      app.getTheme().apply(this, bar, ElementThemeRole.ProgressBarBar);
+      label = DomElement.createNew(DomElementType.DIV);
       label.setId("lbl" + this.getId());
-      app.getTheme().apply(this, label, ElementThemeRole.ProgressBarLabelRole);
+      app.getTheme().apply(this, label, ElementThemeRole.ProgressBarLabel);
     }
     if (this.changed_ || all) {
       if (!(bar != null)) {
-        bar = DomElement.getForUpdate("bar" + this.getId(), DomElementType.DomElement_DIV);
+        bar = DomElement.getForUpdate("bar" + this.getId(), DomElementType.DIV);
       }
       if (!(label != null)) {
-        label = DomElement.getForUpdate("lbl" + this.getId(), DomElementType.DomElement_DIV);
+        label = DomElement.getForUpdate("lbl" + this.getId(), DomElementType.DIV);
       }
       this.updateBar(bar);
       WString s = this.getText();
       removeScript(s);
-      label.setProperty(Property.PropertyInnerHTML, s.toString());
+      label.setProperty(Property.InnerHTML, s.toString());
       this.changed_ = false;
     }
     if (bar != null) {
@@ -265,7 +267,7 @@ public class WProgressBar extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_DIV;
+    return DomElementType.DIV;
   }
 
   void propagateRenderOk(boolean deep) {

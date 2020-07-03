@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -56,19 +57,19 @@ public class WBrush extends WJavaScriptExposableObject {
   /**
    * Creates a brush.
    *
-   * <p>Creates a brush with a {@link BrushStyle#NoBrush} fill style.
+   * <p>Creates a brush with a {@link BrushStyle#None} fill style.
    */
   public WBrush() {
     super();
-    this.style_ = BrushStyle.NoBrush;
-    this.color_ = WColor.black;
+    this.style_ = BrushStyle.None;
+    this.color_ = new WColor(StandardColor.Black);
     this.gradient_ = new WGradient();
   }
   /** Creates a brush with the given style. */
   public WBrush(BrushStyle style) {
     super();
     this.style_ = style;
-    this.color_ = WColor.black;
+    this.color_ = new WColor(StandardColor.Black);
     this.gradient_ = new WGradient();
   }
   /**
@@ -78,14 +79,25 @@ public class WBrush extends WJavaScriptExposableObject {
    */
   public WBrush(final WColor color) {
     super();
-    this.style_ = BrushStyle.SolidPattern;
+    this.style_ = BrushStyle.Solid;
     this.color_ = color;
+    this.gradient_ = new WGradient();
+  }
+  /**
+   * Creates a solid brush with a standard color.
+   *
+   * <p>Creates a solid brush with the indicated <code>color</code>.
+   */
+  public WBrush(StandardColor color) {
+    super();
+    this.style_ = BrushStyle.Solid;
+    this.color_ = new WColor(color);
     this.gradient_ = new WGradient();
   }
   /** Creates a gradient brush. */
   public WBrush(final WGradient gradient) {
     super();
-    this.style_ = BrushStyle.GradientPattern;
+    this.style_ = BrushStyle.Gradient;
     this.color_ = new WColor();
     this.gradient_ = gradient;
   }
@@ -141,8 +153,7 @@ public class WBrush extends WJavaScriptExposableObject {
   /**
    * Sets the brush color.
    *
-   * <p>If the current style is a gradient style, then it is reset to {@link
-   * BrushStyle#SolidPattern}.
+   * <p>If the current style is a gradient style, then it is reset to {@link BrushStyle#Solid}.
    *
    * <p>
    *
@@ -153,8 +164,8 @@ public class WBrush extends WJavaScriptExposableObject {
   public void setColor(final WColor color) {
     this.checkModifiable();
     this.color_ = color;
-    if (this.style_ == BrushStyle.GradientPattern) {
-      this.style_ = BrushStyle.SolidPattern;
+    if (this.style_ == BrushStyle.Gradient) {
+      this.style_ = BrushStyle.Solid;
     }
   }
   /**
@@ -170,7 +181,7 @@ public class WBrush extends WJavaScriptExposableObject {
   /**
    * Sets the brush gradient.
    *
-   * <p>This also sets the style to {@link BrushStyle#GradientPattern}.
+   * <p>This also sets the style to {@link BrushStyle#Gradient}.
    *
    * <p>
    *
@@ -181,7 +192,7 @@ public class WBrush extends WJavaScriptExposableObject {
     this.checkModifiable();
     if (!this.gradient_.isEmpty()) {
       this.gradient_ = gradient;
-      this.style_ = BrushStyle.GradientPattern;
+      this.style_ = BrushStyle.Gradient;
     }
   }
   /** Returns the brush gradient. */

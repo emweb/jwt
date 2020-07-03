@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,61 +38,8 @@ import javax.servlet.http.*;
  * @see WPainter
  */
 public interface WPaintDevice {
-  /**
-   * Enumeration to communicate painter state changes.
-   *
-   * <p>
-   *
-   * @see WPaintDevice#setChanged(EnumSet flags)
-   */
-  public enum ChangeFlag {
-    /** Properties of the pen have changed. */
-    Pen,
-    /** Properties of the brush have changed. */
-    Brush,
-    /** Properties of the font have changed. */
-    Font,
-    /** Some render hints have changed. */
-    Hints,
-    /** The transformation has changed. */
-    Transform,
-    /** The clipping has changed. */
-    Clipping,
-    /** Properties of the shadow have changed. */
-    Shadow;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
-   * Enumeration to indicate paint device features.
-   *
-   * <p>
-   *
-   * @see WPaintDevice#getFeatures()
-   */
-  public enum FeatureFlag {
-    /**
-     * Implements {@link WPaintDevice#drawText(WRectF rect, EnumSet alignmentFlags, TextFlag
-     * textFlag, CharSequence text, WPointF clipPoint) drawText()} with {@link
-     * TextFlag#TextWordWrap}.
-     */
-    CanWordWrap,
-    /**
-     * Implements {@link WPaintDevice#getFontMetrics() getFontMetrics()} and {@link
-     * WPaintDevice#measureText(CharSequence text, double maxWidth, boolean wordWrap) measureText()}
-     */
-    HasFontMetrics;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** Returns device features. */
-  public EnumSet<WPaintDevice.FeatureFlag> getFeatures();
+  public EnumSet<PaintDeviceFeatureFlag> getFeatures();
   /**
    * Returns the device width.
    *
@@ -110,16 +58,14 @@ public interface WPaintDevice {
    * <p>The <code>flags</code> argument is the logical OR of one or more change flags.
    *
    * <p>
-   *
-   * @see WPaintDevice.ChangeFlag
    */
-  public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags);
+  public void setChanged(EnumSet<PainterChangeFlag> flags);
   /**
    * Indicates changes in painter state.
    *
    * <p>Calls {@link #setChanged(EnumSet flags) setChanged(EnumSet.of(flag, flags))}
    */
-  public void setChanged(WPaintDevice.ChangeFlag flag, WPaintDevice.ChangeFlag... flags);
+  public void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags);
   /**
    * Draws an arc.
    *
@@ -157,6 +103,12 @@ public interface WPaintDevice {
    * <p>The path must be stroked, filled, and transformed using the current painter settings.
    */
   public void drawPath(final WPainterPath path);
+  /**
+   * Draws a rectangle.
+   *
+   * <p>The rect must be stroked, filled, and transformed using the current painter settings.
+   */
+  public void drawRect(final WRectF rectangle);
   /**
    * Draws text.
    *

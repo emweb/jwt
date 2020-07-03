@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.auth.AbstractUserDatabase;
+import eu.webtoolkit.jwt.auth.AccountStatus;
 import eu.webtoolkit.jwt.auth.AuthService;
+import eu.webtoolkit.jwt.auth.EmailTokenRole;
 import eu.webtoolkit.jwt.auth.IdentityPolicy;
 import eu.webtoolkit.jwt.auth.PasswordHash;
 import eu.webtoolkit.jwt.auth.Token;
@@ -80,7 +82,7 @@ public class UserDatabase extends AbstractUserDatabase {
 			"	from AuthInfo a_info, AuthIdentity a_id " +
 			"	where a_id.provider = :provider" +
 			"		and a_id.authInfo.id = a_info.id";
-		if (authService_ != null && authService_.getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+		if (authService_ != null && authService_.getIdentityPolicy() == IdentityPolicy.EmailAddress) {
 			q += " and LOWER(a_id.identity) = LOWER(:identity)";
 		} else {
 			q += " and a_id.identity = :identity";
@@ -135,7 +137,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	}
 
 	@Override
-	public User.Status getStatus(User user) {
+	public AccountStatus getStatus(User user) {
 		AuthInfo ai = findAuthInfo(user.getId());
 		return ai.getStatus();
 	}
@@ -215,7 +217,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	}
 
 	@Override
-	public void setEmailToken(User user, Token token, User.EmailTokenRole role) {
+	public void setEmailToken(User user, Token token, EmailTokenRole role) {
 		Transaction t = startTransaction();
 		AuthInfo ai = findAuthInfo(user.getId());
 		WDate expirationTime = token.getExpirationTime();
@@ -231,7 +233,7 @@ public class UserDatabase extends AbstractUserDatabase {
 	}
 
 	@Override
-	public User.EmailTokenRole getEmailTokenRole(User user) {
+	public EmailTokenRole getEmailTokenRole(User user) {
 		AuthInfo ai = findAuthInfo(user.getId());
 		return ai.getEmailTokenRole();
 	}

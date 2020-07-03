@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,8 +35,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
    * <p>Creates an axis slider widget that is not associated with a chart. Before it is used, a
    * chart should be assigned with setChart(), and a series column chosen with setSeriesColumn().
    */
-  public WAxisSliderWidget(WContainerWidget parent) {
-    super(parent);
+  public WAxisSliderWidget(WContainerWidget parentContainer) {
+    super();
     this.series_ = null;
     this.seriesPen_ = new WPen();
     this.selectedSeriesPen_ = this.seriesPen_;
@@ -47,11 +48,13 @@ public class WAxisSliderWidget extends WPaintedWidget {
     this.yAxisZoomEnabled_ = true;
     this.transform_ = null;
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an axis slider widget.
    *
-   * <p>Calls {@link #WAxisSliderWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WAxisSliderWidget(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   public WAxisSliderWidget() {
     this((WContainerWidget) null);
@@ -61,8 +64,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
    *
    * <p>Creates an axis slider widget associated with the given data series of the given chart.
    */
-  public WAxisSliderWidget(WDataSeries series, WContainerWidget parent) {
-    super(parent);
+  public WAxisSliderWidget(WDataSeries series, WContainerWidget parentContainer) {
+    super();
     this.series_ = series;
     this.seriesPen_ = new WPen();
     this.selectedSeriesPen_ = this.seriesPen_;
@@ -74,12 +77,13 @@ public class WAxisSliderWidget extends WPaintedWidget {
     this.yAxisZoomEnabled_ = true;
     this.transform_ = null;
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an axis slider widget.
    *
-   * <p>Calls {@link #WAxisSliderWidget(WDataSeries series, WContainerWidget parent) this(series,
-   * (WContainerWidget)null)}
+   * <p>Calls {@link #WAxisSliderWidget(WDataSeries series, WContainerWidget parentContainer)
+   * this(series, (WContainerWidget)null)}
    */
   public WAxisSliderWidget(WDataSeries series) {
     this(series, (WContainerWidget) null);
@@ -89,8 +93,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
     if (this.getChart() != null) {
       this.getChart().removeAxisSliderWidget(this);
     }
-    if (this.selectedSeriesPen_ != this.seriesPen_) {;
-    }
+    if (this.selectedSeriesPen_ != this.seriesPen_) {}
+
     super.remove();
   }
 
@@ -123,8 +127,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
    * <p>If not set, this defaults to {@link WAxisSliderWidget#getSeriesPen() getSeriesPen()}.
    */
   public void setSelectedSeriesPen(final WPen pen) {
-    if (this.selectedSeriesPen_ != this.seriesPen_) {;
-    }
+    if (this.selectedSeriesPen_ != this.seriesPen_) {}
+
     this.selectedSeriesPen_ = pen.clone();
     this.update();
   }
@@ -179,16 +183,16 @@ public class WAxisSliderWidget extends WPaintedWidget {
    * @see WAxisSliderWidget#setAutoLayoutEnabled(boolean enabled)
    */
   public void setSelectionAreaPadding(int padding, EnumSet<Side> sides) {
-    if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
+    if (sides.contains(Side.Top)) {
       this.padding_[0] = padding;
     }
-    if (!EnumUtils.mask(sides, Side.Right).isEmpty()) {
+    if (sides.contains(Side.Right)) {
       this.padding_[1] = padding;
     }
-    if (!EnumUtils.mask(sides, Side.Bottom).isEmpty()) {
+    if (sides.contains(Side.Bottom)) {
       this.padding_[2] = padding;
     }
-    if (!EnumUtils.mask(sides, Side.Left).isEmpty()) {
+    if (sides.contains(Side.Left)) {
       this.padding_[3] = padding;
     }
   }
@@ -205,10 +209,10 @@ public class WAxisSliderWidget extends WPaintedWidget {
    * Sets an internal margin for the selection area.
    *
    * <p>Calls {@link #setSelectionAreaPadding(int padding, EnumSet sides)
-   * setSelectionAreaPadding(padding, Side.All)}
+   * setSelectionAreaPadding(padding, Side.AllSides)}
    */
   public final void setSelectionAreaPadding(int padding) {
-    setSelectionAreaPadding(padding, Side.All);
+    setSelectionAreaPadding(padding, Side.AllSides);
   }
   /**
    * Returns the internal margin for the selection area.
@@ -265,7 +269,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
   /**
    * Set whether to draw the X axis tick labels on the slider widget.
    *
-   * <p>Labels are enabled by default.
+   * <p>AxisProperty::Labels are enabled by default.
    */
   public void setLabelsEnabled(boolean enabled) {
     if (enabled != this.labelsEnabled_) {
@@ -342,9 +346,8 @@ public class WAxisSliderWidget extends WPaintedWidget {
     if (!this.getChart().cObjCreated_ || this.getChart().needsRerender()) {
       return;
     }
-    if (this.series_.getType() != SeriesType.LineSeries
-        && this.series_.getType() != SeriesType.CurveSeries) {
-      if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
+    if (this.series_.getType() != SeriesType.Line && this.series_.getType() != SeriesType.Curve) {
+      if (this.getMethod() == RenderMethod.HtmlCanvas) {
         StringBuilder ss = new StringBuilder();
         ss.append("\ndelete ").append(this.getJsRef()).append(".wtSObj;");
         ss.append("\nif (")
@@ -372,8 +375,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
     double h = horizontal ? this.getHeight().getValue() : this.getWidth().getValue();
     boolean autoPadding = this.autoPadding_;
     if (autoPadding
-        && EnumUtils.mask(paintDevice.getFeatures(), WPaintDevice.FeatureFlag.HasFontMetrics)
-            .equals(0)
+        && !!EnumUtils.mask(paintDevice.getFeatures(), PaintDeviceFeatureFlag.FontMetrics).isEmpty()
         && this.labelsEnabled_) {
       logger.error(
           new StringWriter()
@@ -393,10 +395,11 @@ public class WAxisSliderWidget extends WPaintedWidget {
               (int)
                   Math.max(
                       xAxis.calcMaxTickLabelSize(paintDevice, Orientation.Horizontal) / 2, 10.0),
-              EnumSet.of(Side.Left, Side.Right));
+              EnumUtils.or(EnumSet.of(Side.Left), Side.Right));
         } else {
           this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
-          this.setSelectionAreaPadding(5, EnumSet.of(Side.Left, Side.Right, Side.Bottom));
+          this.setSelectionAreaPadding(
+              5, EnumUtils.or(EnumUtils.or(EnumSet.of(Side.Left), Side.Right), Side.Bottom));
         }
       } else {
         if (this.labelsEnabled_) {
@@ -404,13 +407,14 @@ public class WAxisSliderWidget extends WPaintedWidget {
           this.setSelectionAreaPadding(
               (int)
                   Math.max(xAxis.calcMaxTickLabelSize(paintDevice, Orientation.Vertical) / 2, 10.0),
-              EnumSet.of(Side.Top, Side.Bottom));
+              EnumUtils.or(EnumSet.of(Side.Top), Side.Bottom));
           this.setSelectionAreaPadding(
               (int) (xAxis.calcMaxTickLabelSize(paintDevice, Orientation.Horizontal) + 10),
               EnumSet.of(Side.Left));
         } else {
           this.setSelectionAreaPadding(0, EnumSet.of(Side.Right));
-          this.setSelectionAreaPadding(5, EnumSet.of(Side.Top, Side.Bottom, Side.Left));
+          this.setSelectionAreaPadding(
+              5, EnumUtils.or(EnumUtils.or(EnumSet.of(Side.Top), Side.Bottom), Side.Left));
         }
       }
     }
@@ -463,44 +467,44 @@ public class WAxisSliderWidget extends WPaintedWidget {
     double tickStart = 0.0;
     double tickEnd = 0.0;
     double labelPos = 0.0;
-    AlignmentFlag labelHFlag = AlignmentFlag.AlignCenter;
-    AlignmentFlag labelVFlag = AlignmentFlag.AlignMiddle;
+    AlignmentFlag labelHFlag = AlignmentFlag.Center;
+    AlignmentFlag labelVFlag = AlignmentFlag.Middle;
     if (horizontal) {
       tickStart = 0;
       tickEnd = TICK_LENGTH;
       labelPos = TICK_LENGTH;
-      labelVFlag = AlignmentFlag.AlignTop;
+      labelVFlag = AlignmentFlag.Top;
     } else {
       tickStart = -TICK_LENGTH;
       tickEnd = 0;
       labelPos = -TICK_LENGTH;
-      labelHFlag = AlignmentFlag.AlignRight;
+      labelHFlag = AlignmentFlag.Right;
     }
     if (horizontal) {
       if (xAxis.getLabelAngle() > ANGLE1) {
-        labelHFlag = AlignmentFlag.AlignRight;
+        labelHFlag = AlignmentFlag.Right;
         if (xAxis.getLabelAngle() > ANGLE2) {
-          labelVFlag = AlignmentFlag.AlignMiddle;
+          labelVFlag = AlignmentFlag.Middle;
         }
       } else {
         if (xAxis.getLabelAngle() < -ANGLE1) {
-          labelHFlag = AlignmentFlag.AlignLeft;
+          labelHFlag = AlignmentFlag.Left;
           if (xAxis.getLabelAngle() < -ANGLE2) {
-            labelVFlag = AlignmentFlag.AlignMiddle;
+            labelVFlag = AlignmentFlag.Middle;
           }
         }
       }
     } else {
       if (xAxis.getLabelAngle() > ANGLE1) {
-        labelVFlag = AlignmentFlag.AlignBottom;
+        labelVFlag = AlignmentFlag.Bottom;
         if (xAxis.getLabelAngle() > ANGLE2) {
-          labelHFlag = AlignmentFlag.AlignCenter;
+          labelHFlag = AlignmentFlag.Center;
         }
       } else {
         if (xAxis.getLabelAngle() < -ANGLE1) {
-          labelVFlag = AlignmentFlag.AlignTop;
+          labelVFlag = AlignmentFlag.Top;
           if (xAxis.getLabelAngle() < -ANGLE2) {
-            labelHFlag = AlignmentFlag.AlignCenter;
+            labelHFlag = AlignmentFlag.Center;
           }
         }
       }
@@ -518,7 +522,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
           tickStart,
           tickEnd,
           labelPos,
-          EnumSet.of(labelHFlag, labelVFlag));
+          EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
       WPainterPath line = new WPainterPath();
       line.moveTo(drawArea.getLeft() + 0.5, h - (bottom - 0.5));
       line.lineTo(drawArea.getRight(), h - (bottom - 0.5));
@@ -532,7 +536,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
           tickStart,
           tickEnd,
           labelPos,
-          EnumSet.of(labelHFlag, labelVFlag));
+          EnumUtils.or(EnumSet.of(labelHFlag), labelVFlag));
       WPainterPath line = new WPainterPath();
       line.moveTo(this.getSelectionAreaPadding(Side.Left) - 0.5, drawArea.getLeft() + 0.5);
       line.lineTo(this.getSelectionAreaPadding(Side.Left) - 0.5, drawArea.getRight());
@@ -628,10 +632,10 @@ public class WAxisSliderWidget extends WPaintedWidget {
       painter.drawPath(curve);
       painter.setClipping(false);
     }
-    if (this.getMethod() == WPaintedWidget.Method.HtmlCanvas) {
+    if (this.getMethod() == RenderMethod.HtmlCanvas) {
       WApplication app = WApplication.getInstance();
       StringBuilder ss = new StringBuilder();
-      ss.append("new Wt3_6_0.WAxisSliderWidget(")
+      ss.append("new Wt4_4_0.WAxisSliderWidget(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.getJsRef())
@@ -682,7 +686,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
         .addListener(
             "function(o, e){var o=" + this.getSObjJsRef() + ";if(o){o.touchMoved(o, e);}}");
     this.setSelectionAreaPadding(0, EnumSet.of(Side.Top));
-    this.setSelectionAreaPadding(20, EnumSet.of(Side.Left, Side.Right));
+    this.setSelectionAreaPadding(20, EnumUtils.or(EnumSet.of(Side.Left), Side.Right));
     this.setSelectionAreaPadding(30, EnumSet.of(Side.Bottom));
     if (this.getChart() != null) {
       this.getChart().addAxisSliderWidget(this);

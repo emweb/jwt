@@ -8,12 +8,7 @@ package eu.webtoolkit.jwt.examples.chart3D.datasets;
 import eu.webtoolkit.jwt.*;
 
 abstract class EquidistantGrid extends WAbstractTableModel {
-	public EquidistantGrid(WObject parent) {
-		super(parent);
-	}
-
 	public EquidistantGrid() {
-		this((WObject) null);
 	}
 
 	public abstract double getXMin();
@@ -32,8 +27,8 @@ abstract class EquidistantGrid extends WAbstractTableModel {
 
 	public abstract int getColumnCount(final WModelIndex parent);
 
-	public abstract Object getData(final WModelIndex index, int role);
+	public abstract Object getData(final WModelIndex index, ItemDataRole role);
 
 	public abstract Object getHeaderData(int section, Orientation orientation,
-			int role);
+			ItemDataRole role);
 }

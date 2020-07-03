@@ -320,7 +320,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		}
 	}
 
-	private final void ownerRepaint() {
+	final void ownerRepaint() {
 		flags_ |= BIT_NEED_UPDATE;
 
 		if (getSender() instanceof WWebWidget)
@@ -328,6 +328,10 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 
 	WObject getSender() {
+		return sender_;
+	}
+
+	WObject getOwner() {
 		return sender_;
 	}
 

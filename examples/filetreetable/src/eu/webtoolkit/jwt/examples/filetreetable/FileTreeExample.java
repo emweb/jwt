@@ -10,12 +10,12 @@ import java.io.File;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
+import eu.webtoolkit.jwt.ChildCountPolicy;
 import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WtServlet;
-import eu.webtoolkit.jwt.WTreeNode.ChildCountPolicy;
 
 public class FileTreeExample extends WtServlet {
     private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class FileTreeExample extends WtServlet {
         FileTreeTable treeTable = new FileTreeTable(startDir);
 
         treeTable.resize(500, 300);
-        treeTable.getTree().setSelectionMode(SelectionMode.ExtendedSelection);
+        treeTable.getTree().setSelectionMode(SelectionMode.Extended);
         treeTable.getTreeRoot().setNodeVisible(false);
         treeTable.getTreeRoot().setChildCountPolicy(ChildCountPolicy.Enabled);
 

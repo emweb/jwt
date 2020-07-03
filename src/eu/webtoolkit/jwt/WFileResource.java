@@ -32,22 +32,8 @@ public class WFileResource extends WResource {
 	 * 
 	 * @param mimeType the mime type of the file.
 	 * @param fileName the file name.
-	 * @param parent the resources' parent
-	 */
-	public WFileResource(String mimeType, String fileName, WObject parent) {
-		super(parent);
-		this.mimeType_ = mimeType;
-		this.fileName_ = fileName;
-	}
-	
-	/**
-	 * Creates a new resource with given mime-type for a file.
-	 * 
-	 * @param mimeType the mime type of the file.
-	 * @param fileName the file name.
 	 */
 	public WFileResource(String mimeType, String fileName) {
-		super(null);
 		this.mimeType_ = mimeType;
 		this.fileName_ = fileName;
 	}

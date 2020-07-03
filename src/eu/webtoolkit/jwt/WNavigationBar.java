@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,19 +29,20 @@ public class WNavigationBar extends WTemplate {
   private static Logger logger = LoggerFactory.getLogger(WNavigationBar.class);
 
   /** Constructor. */
-  public WNavigationBar(WContainerWidget parent) {
-    super(tr("Wt.WNavigationBar.template"), parent);
+  public WNavigationBar(WContainerWidget parentContainer) {
+    super(tr("Wt.WNavigationBar.template"), (WContainerWidget) null);
     this.bindEmpty("collapse-button");
     this.bindEmpty("expand-button");
     this.bindEmpty("title-link");
     this.bindWidget("contents", new NavContainer());
     // this.implementStateless(WNavigationBar.collapseContents,WNavigationBar.undoExpandContents);
     // this.implementStateless(WNavigationBar.expandContents,WNavigationBar.undoExpandContents);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WNavigationBar(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WNavigationBar(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WNavigationBar() {
     this((WContainerWidget) null);
@@ -53,8 +55,9 @@ public class WNavigationBar extends WTemplate {
   public void setTitle(final CharSequence title, final WLink link) {
     WAnchor titleLink = (WAnchor) this.resolveWidget("title-link");
     if (!(titleLink != null)) {
-      this.bindWidget("title-link", titleLink = new WAnchor());
-      WApplication.getInstance().getTheme().apply(this, titleLink, WidgetThemeRole.NavBrandRole);
+      titleLink = new WAnchor();
+      this.bindWidget("title-link", titleLink);
+      WApplication.getInstance().getTheme().apply(this, titleLink, WidgetThemeRole.NavBrand);
     }
     titleLink.setText(title);
     titleLink.setLink(link);
@@ -79,29 +82,29 @@ public class WNavigationBar extends WTemplate {
       WInteractWidget collapseButton = (WInteractWidget) this.resolveWidget("collapse-button");
       WInteractWidget expandButton = (WInteractWidget) this.resolveWidget("expand-button");
       if (!(collapseButton != null)) {
-        this.bindWidget("collapse-button", collapseButton = this.getCreateCollapseButton());
+        WInteractWidget b = this.getCreateCollapseButton();
+        collapseButton = b;
+        this.bindWidget("collapse-button", b);
         collapseButton
             .clicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent e1) {
-                    WNavigationBar.this.collapseContents();
-                  }
+                (WMouseEvent e1) -> {
+                  WNavigationBar.this.collapseContents();
                 });
         collapseButton.hide();
-        this.bindWidget("expand-button", expandButton = this.getCreateExpandButton());
+        b = this.getCreateExpandButton();
+        expandButton = b;
+        this.bindWidget("expand-button", b);
         expandButton
             .clicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent e1) {
-                    WNavigationBar.this.expandContents();
-                  }
+                (WMouseEvent e1) -> {
+                  WNavigationBar.this.expandContents();
                 });
       }
-      WApplication.getInstance().getTheme().apply(this, contents, WidgetThemeRole.NavCollapseRole);
+      WApplication.getInstance().getTheme().apply(this, contents, WidgetThemeRole.NavCollapse);
       contents.hide();
       if (contents.isBootstrap2Responsive()) {
         contents.setJavaScriptMember(
@@ -120,18 +123,20 @@ public class WNavigationBar extends WTemplate {
    *
    * <p>The menu may be aligned to the left or to the right of the navigation bar.
    */
-  public void addMenu(WMenu menu, AlignmentFlag alignment) {
-    this.addWidget((WWidget) menu, alignment);
-    WApplication.getInstance().getTheme().apply(this, menu, WidgetThemeRole.NavbarMenuRole);
+  public WMenu addMenu(WMenu menu, AlignmentFlag alignment) {
+    WMenu m = menu;
+    this.addWidget(menu, alignment);
+    WApplication.getInstance().getTheme().apply(this, m, WidgetThemeRole.NavbarMenu);
+    return m;
   }
   /**
    * Adds a menu to the navigation bar.
    *
-   * <p>Calls {@link #addMenu(WMenu menu, AlignmentFlag alignment) addMenu(menu,
-   * AlignmentFlag.AlignLeft)}
+   * <p>Returns {@link #addMenu(WMenu menu, AlignmentFlag alignment) addMenu(menu,
+   * AlignmentFlag.Left)}
    */
-  public final void addMenu(WMenu menu) {
-    addMenu(menu, AlignmentFlag.AlignLeft);
+  public final WMenu addMenu(WMenu menu) {
+    return addMenu(menu, AlignmentFlag.Left);
   }
   /**
    * Adds a form field to the navigation bar.
@@ -146,10 +151,10 @@ public class WNavigationBar extends WTemplate {
    * Adds a form field to the navigation bar.
    *
    * <p>Calls {@link #addFormField(WWidget widget, AlignmentFlag alignment) addFormField(widget,
-   * AlignmentFlag.AlignLeft)}
+   * AlignmentFlag.Left)}
    */
   public final void addFormField(WWidget widget) {
-    addFormField(widget, AlignmentFlag.AlignLeft);
+    addFormField(widget, AlignmentFlag.Left);
   }
   /**
    * Adds a search widget to the navigation bar.
@@ -159,17 +164,17 @@ public class WNavigationBar extends WTemplate {
    * to indicate a search function.
    */
   public void addSearch(WLineEdit field, AlignmentFlag alignment) {
-    WApplication.getInstance().getTheme().apply(this, field, WidgetThemeRole.NavbarSearchRole);
+    WApplication.getInstance().getTheme().apply(this, field, WidgetThemeRole.NavbarSearch);
     this.addWrapped(field, alignment, "navbar-form");
   }
   /**
    * Adds a search widget to the navigation bar.
    *
    * <p>Calls {@link #addSearch(WLineEdit field, AlignmentFlag alignment) addSearch(field,
-   * AlignmentFlag.AlignLeft)}
+   * AlignmentFlag.Left)}
    */
   public final void addSearch(WLineEdit field) {
-    addSearch(field, AlignmentFlag.AlignLeft);
+    addSearch(field, AlignmentFlag.Left);
   }
   /**
    * Adds a widget to the navigation bar.
@@ -191,19 +196,20 @@ public class WNavigationBar extends WTemplate {
    * Adds a widget to the navigation bar.
    *
    * <p>Calls {@link #addWidget(WWidget widget, AlignmentFlag alignment) addWidget(widget,
-   * AlignmentFlag.AlignLeft)}
+   * AlignmentFlag.Left)}
    */
   public final void addWidget(WWidget widget) {
-    addWidget(widget, AlignmentFlag.AlignLeft);
+    addWidget(widget, AlignmentFlag.Left);
   }
-
+  // public Widget  addWidget(<Woow... some pseudoinstantiation type!> widget) ;
   protected WInteractWidget getCreateCollapseButton() {
     return this.getCreateExpandButton();
   }
 
   protected WInteractWidget getCreateExpandButton() {
-    WPushButton result = new WPushButton(tr("Wt.WNavigationBar.expand-button"));
-    result.setTextFormat(TextFormat.XHTMLText);
+    WPushButton result =
+        new WPushButton(tr("Wt.WNavigationBar.expand-button"), (WContainerWidget) null);
+    result.setTextFormat(TextFormat.XHTML);
     WApplication.getInstance().getTheme().apply(this, result, WidgetThemeRole.NavbarBtn);
     return result;
   }
@@ -217,9 +223,7 @@ public class WNavigationBar extends WTemplate {
     if (!this.isAnimatedResponsive()) {
       contents.show();
     } else {
-      contents.animateShow(
-          new WAnimation(
-              WAnimation.AnimationEffect.SlideInFromTop, WAnimation.TimingFunction.Ease));
+      contents.animateShow(new WAnimation(AnimationEffect.SlideInFromTop, TimingFunction.Ease));
     }
   }
 
@@ -232,9 +236,7 @@ public class WNavigationBar extends WTemplate {
     if (!this.isAnimatedResponsive()) {
       contents.hide();
     } else {
-      contents.animateHide(
-          new WAnimation(
-              WAnimation.AnimationEffect.SlideInFromTop, WAnimation.TimingFunction.Ease));
+      contents.animateHide(new WAnimation(AnimationEffect.SlideInFromTop, TimingFunction.Ease));
     }
   }
 
@@ -253,7 +255,8 @@ public class WNavigationBar extends WTemplate {
 
   private void addWrapped(WWidget widget, AlignmentFlag alignment, String wrapClass) {
     WContainerWidget contents = (WContainerWidget) this.resolveWidget("contents");
-    WContainerWidget wrap = new WContainerWidget(contents);
+    WContainerWidget wrap = new WContainerWidget();
+    contents.addWidget(wrap);
     wrap.setStyleClass(wrapClass);
     this.align(wrap, alignment);
     wrap.addWidget(widget);
@@ -261,7 +264,8 @@ public class WNavigationBar extends WTemplate {
 
   private void addWrapped(WWidget widget, WWidget parent, int role, AlignmentFlag alignment) {
     WContainerWidget contents = (WContainerWidget) this.resolveWidget("contents");
-    WContainerWidget wrap = new WContainerWidget(contents);
+    WContainerWidget wrap = new WContainerWidget();
+    contents.addWidget(wrap);
     WApplication.getInstance().getTheme().apply(widget, parent, role);
     this.align(wrap, alignment);
     wrap.addWidget(widget);
@@ -269,15 +273,11 @@ public class WNavigationBar extends WTemplate {
 
   private void align(WWidget widget, AlignmentFlag alignment) {
     switch (alignment) {
-      case AlignLeft:
-        WApplication.getInstance()
-            .getTheme()
-            .apply(this, widget, WidgetThemeRole.NavbarAlignLeftRole);
+      case Left:
+        WApplication.getInstance().getTheme().apply(this, widget, WidgetThemeRole.NavbarAlignLeft);
         break;
-      case AlignRight:
-        WApplication.getInstance()
-            .getTheme()
-            .apply(this, widget, WidgetThemeRole.NavbarAlignRightRole);
+      case Right:
+        WApplication.getInstance().getTheme().apply(this, widget, WidgetThemeRole.NavbarAlignRight);
         break;
       default:
         logger.error(

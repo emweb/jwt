@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,15 +26,15 @@ import javax.servlet.http.*;
  */
 public enum KeyboardModifier {
   /** No modifiers. */
-  NoModifier,
+  None,
   /** Shift key pressed. */
-  ShiftModifier,
+  Shift,
   /** Control key pressed. */
-  ControlModifier,
+  Control,
   /** Alt key pressed. */
-  AltModifier,
+  Alt,
   /** Meta key pressed (&quot;Windows&quot; or &quot;Command&quot; (Mac) key) */
-  MetaModifier;
+  Meta;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

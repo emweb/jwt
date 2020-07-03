@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,10 +35,11 @@ import org.slf4j.LoggerFactory;
  * paintLegend()}.
  *
  * <p>The figure below illustrates the possible colormaps that can be constructed from the list
- * {&quot;0.0 - darkRed&quot;, &quot;1.0 - red&quot;, &quot;2.0 - gray&quot;}. The discrete map (on
- * the left) has the range [0, 3], the continuous map (on the right) has the range [0, 2]. The
- * utility method {@link WStandardColorMap#discretise(int numberOfBands) discretise()} is also
- * applied to the continuous colormap to obtain a colormap with 5 bands in the same range.
+ * {&quot;0.0 - StandardColor::DarkRed&quot;, &quot;1.0 - StandardColor::Red&quot;, &quot;2.0 -
+ * StandardColor::Gray&quot;}. The discrete map (on the left) has the range [0, 3], the continuous
+ * map (on the right) has the range [0, 2]. The utility method {@link
+ * WStandardColorMap#discretise(int numberOfBands) discretise()} is also applied to the continuous
+ * colormap to obtain a colormap with 5 bands in the same range.
  *
  * <p><div align="center"> <img src="doc-files/standardcolormaps.png">
  *
@@ -188,7 +190,7 @@ public class WStandardColorMap extends WAbstractColorMap {
 
   public void createStrip(WPainter painter, final WRectF area) {
     painter.save();
-    painter.setRenderHint(WPainter.RenderHint.Antialiasing, false);
+    painter.setRenderHint(RenderHint.Antialiasing, false);
     int width;
     int height;
     if ((area == null)) {
@@ -215,7 +217,7 @@ public class WStandardColorMap extends WAbstractColorMap {
   public void paintLegend(WPainter painter, final WRectF area) {
     painter.save();
     WPainterPath clipPath = new WPainterPath();
-    painter.setRenderHint(WPainter.RenderHint.Antialiasing, false);
+    painter.setRenderHint(RenderHint.Antialiasing, false);
     painter.setFont(this.labelFont_);
     int height;
     if ((area == null)) {
@@ -254,7 +256,7 @@ public class WStandardColorMap extends WAbstractColorMap {
             -textHeight / 2,
             40,
             textHeight,
-            EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
+            EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Middle),
             StringUtils.asString(value, this.format_.toString()));
         value -= valDiff;
         if (rest > 0) {
@@ -272,7 +274,7 @@ public class WStandardColorMap extends WAbstractColorMap {
           -textHeight / 2,
           100,
           textHeight,
-          EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
+          EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Middle),
           StringUtils.asString(this.max_, this.format_.toString()));
       int nbTicks = this.colors_.size();
       int prevDiff = 0;
@@ -287,7 +289,7 @@ public class WStandardColorMap extends WAbstractColorMap {
             -textHeight / 2,
             40,
             textHeight,
-            EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignMiddle),
+            EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Middle),
             StringUtils.asString(this.colors_.get(i).getValue(), this.format_.toString()));
         prevDiff = roundedDiff;
       }

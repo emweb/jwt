@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,11 +30,11 @@ class ComboDelegate extends WItemDelegate {
   public void setModelData(
       final Object editState, WAbstractItemModel model, final WModelIndex index) {
     int stringIdx = (int) StringUtils.asNumber(editState);
-    model.setData(index, stringIdx, ItemDataRole.UserRole);
-    model.setData(index, this.items_.getData(stringIdx, 0), ItemDataRole.DisplayRole);
+    model.setData(index, stringIdx, ItemDataRole.User);
+    model.setData(index, this.items_.getData(stringIdx, 0), ItemDataRole.Display);
   }
 
-  public Object getEditState(WWidget editor) {
+  public Object getEditState(WWidget editor, final WModelIndex index) {
     WComboBox combo =
         (((((editor) instanceof WContainerWidget ? (WContainerWidget) (editor) : null))
                     .getWidget(0))
@@ -45,7 +46,7 @@ class ComboDelegate extends WItemDelegate {
     return combo.getCurrentIndex();
   }
 
-  public void setEditState(WWidget editor, final Object value) {
+  public void setEditState(WWidget editor, final WModelIndex index, final Object value) {
     WComboBox combo =
         (((((editor) instanceof WContainerWidget ? (WContainerWidget) (editor) : null))
                     .getWidget(0))
@@ -58,36 +59,30 @@ class ComboDelegate extends WItemDelegate {
   }
 
   protected WWidget createEditor(final WModelIndex index, EnumSet<ViewItemRenderFlag> flags) {
-    final WContainerWidget container = new WContainerWidget();
-    WComboBox combo = new WComboBox(container);
+    WContainerWidget container = new WContainerWidget();
+    WComboBox combo = new WComboBox((WContainerWidget) container);
     combo.setModel(this.items_);
-    combo.setCurrentIndex((int) StringUtils.asNumber(index.getData(ItemDataRole.UserRole)));
+    combo.setCurrentIndex((int) StringUtils.asNumber(index.getData(ItemDataRole.User)));
     combo
         .changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                ComboDelegate.this.doCloseEditor(container, true);
-              }
+            () -> {
+              ComboDelegate.this.doCloseEditor(container, true);
             });
     combo
         .enterPressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                ComboDelegate.this.doCloseEditor(container, true);
-              }
+            () -> {
+              ComboDelegate.this.doCloseEditor(container, true);
             });
     combo
         .escapePressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                ComboDelegate.this.doCloseEditor(container, false);
-              }
+            () -> {
+              ComboDelegate.this.doCloseEditor(container, false);
             });
     return container;
   }

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,14 @@ import org.slf4j.LoggerFactory;
 class Layout extends TopicWidget {
   private static Logger logger = LoggerFactory.getLogger(Layout.class);
 
-  public Layout() {
+  public Layout(WContainerWidget parentContainer) {
     super();
     addText(tr("layout-intro"), this);
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public Layout() {
+    this((WContainerWidget) null);
   }
 
   public void populateSubMenu(WMenu menu) {
@@ -31,84 +37,68 @@ class Layout extends TopicWidget {
     menu.addItem(
         "HTML Templates",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.templates();
-              }
+            () -> {
+              return Layout.this.templates();
             }));
     menu.addItem(
         "Text",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.text();
-              }
+            () -> {
+              return Layout.this.text();
             }));
     menu.addItem(
         "Grouping widgets",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.grouping();
-              }
+            () -> {
+              return Layout.this.grouping();
             }));
     menu.addItem(
         "Layout managers",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.layoutManagers();
-              }
+            () -> {
+              return Layout.this.layoutManagers();
             }));
     menu.addItem(
         "Dialogs",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.dialogs();
-              }
+            () -> {
+              return Layout.this.dialogs();
             }));
     menu.addItem(
         "Images",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.images();
-              }
+            () -> {
+              return Layout.this.images();
             }));
     menu.addItem(
         "CSS",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.css();
-              }
+            () -> {
+              return Layout.this.css();
             }));
     menu.addItem(
         "Themes",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return Layout.this.themes();
-              }
+            () -> {
+              return Layout.this.themes();
             }));
   }
 
   private WWidget containers() {
-    WTemplate result = new TopicTemplate("layout-Containers");
+    TopicTemplate result = new TopicTemplate("layout-Containers");
     result.bindWidget("Container", Container());
     return result;
   }
 
   private WWidget templates() {
-    WTemplate result = new TopicTemplate("layout-Template");
+    TopicTemplate result = new TopicTemplate("layout-Template");
     result.bindWidget("Template", Template());
-    result.bindString("template-text", reindent(tr("WTemplate-example")), TextFormat.PlainText);
+    result.bindString("template-text", reindent(tr("WTemplate-example")), TextFormat.Plain);
     return result;
   }
 
   private WWidget text() {
-    WTemplate result = new TopicTemplate("layout-Text");
+    TopicTemplate result = new TopicTemplate("layout-Text");
     result.bindWidget("TextPlain", TextPlain());
     result.bindWidget("TextXHTML", TextXHTML());
     result.bindWidget("TextXSS", TextXSS());
@@ -119,7 +109,7 @@ class Layout extends TopicWidget {
   }
 
   private WWidget grouping() {
-    WTemplate result = new TopicTemplate("layout-Grouping");
+    TopicTemplate result = new TopicTemplate("layout-Grouping");
     result.bindWidget("GroupBox", GroupBox());
     result.bindWidget("PanelNoTitle", PanelNoTitle());
     result.bindWidget("Panel", Panel());
@@ -128,7 +118,7 @@ class Layout extends TopicWidget {
   }
 
   private WWidget layoutManagers() {
-    WTemplate result = new TopicTemplate("layout-Managers");
+    TopicTemplate result = new TopicTemplate("layout-Managers");
     result.bindWidget("HBoxLayout", HBoxLayout());
     result.bindWidget("HBoxLayoutStretch", HBoxLayoutStretch());
     result.bindWidget("VBoxLayout", VBoxLayout());
@@ -140,7 +130,7 @@ class Layout extends TopicWidget {
   }
 
   private WWidget dialogs() {
-    WTemplate result = new TopicTemplate("layout-Dialogs");
+    TopicTemplate result = new TopicTemplate("layout-Dialogs");
     result.bindWidget("Dialog", Dialog());
     result.bindWidget("MessageBox", MessageBox());
     result.bindWidget("MessageBoxSync", MessageBoxSync());
@@ -148,31 +138,31 @@ class Layout extends TopicWidget {
   }
 
   private WWidget images() {
-    WTemplate result = new TopicTemplate("layout-Images");
+    TopicTemplate result = new TopicTemplate("layout-Images");
     result.bindWidget("Image", Image());
     result.bindWidget("ImageArea", ImageArea());
     return result;
   }
 
   private WWidget css() {
-    WTemplate result = new TopicTemplate("layout-CSS");
+    TopicTemplate result = new TopicTemplate("layout-CSS");
     result.bindWidget("CSS", CSS());
-    result.bindString("CSS-example-style", reindent(tr("CSS-example-style")), TextFormat.PlainText);
+    result.bindString("CSS-example-style", reindent(tr("CSS-example-style")), TextFormat.Plain);
     return result;
   }
 
   private WWidget themes() {
-    WTemplate result = new TopicTemplate("layout-Themes");
-    result.bindString("Theme", reindent(tr("theme")), TextFormat.PlainText);
+    TopicTemplate result = new TopicTemplate("layout-Themes");
+    result.bindString("Theme", reindent(tr("theme")), TextFormat.Plain);
     return result;
   }
   // private WWidget  loadingIndicator() ;
   // private void loadingIndicatorSelected(CharSequence indicator) ;
   WWidget Container() {
     WContainerWidget container = new WContainerWidget();
-    container.addWidget(new WText("A first widget"));
+    new WText("A first widget", (WContainerWidget) container);
     for (int i = 0; i < 3; ++i) {
-      new WText(new WString("<p>Text {1}</p>").arg(i), container);
+      new WText(new WString("<p>Text {1}</p>").arg(i), (WContainerWidget) container);
     }
     return container;
   }
@@ -189,7 +179,7 @@ class Layout extends TopicWidget {
     WText text =
         new WText(
             "This is an example of plain text. Any contained special XHTML characters, such as \"<\" and \">\", are automatically escaped.",
-            TextFormat.PlainText);
+            TextFormat.Plain);
     return text;
   }
 
@@ -209,57 +199,52 @@ class Layout extends TopicWidget {
 
   WWidget TextEvents() {
     WContainerWidget container = new WContainerWidget();
-    WText text1 = new WText("This text reacts to <tt>clicked()</tt>", container);
+    WText text1 = new WText("This text reacts to <tt>clicked()</tt>", (WContainerWidget) container);
     text1.setStyleClass("reactive");
-    WText text2 = new WText("This text reacts to <tt>doubleClicked()</tt>", container);
+    WText text2 =
+        new WText("This text reacts to <tt>doubleClicked()</tt>", (WContainerWidget) container);
     text2.setStyleClass("reactive");
-    WText text3 = new WText("This text reacts to <tt>mouseWentOver()</tt>", container);
+    WText text3 =
+        new WText("This text reacts to <tt>mouseWentOver()</tt>", (WContainerWidget) container);
     text3.setStyleClass("reactive");
-    WText text4 = new WText("This text reacts to <tt>mouseWentOut()</tt>", container);
+    WText text4 =
+        new WText("This text reacts to <tt>mouseWentOut()</tt>", (WContainerWidget) container);
     text4.setStyleClass("reactive");
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     text1
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("<p>Text was clicked.</p>");
-              }
+            () -> {
+              out.setText("<p>Text was clicked.</p>");
             });
     text2
         .doubleClicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("<p>Text was double clicked.</p>");
-              }
+            () -> {
+              out.setText("<p>Text was double clicked.</p>");
             });
     text3
         .mouseWentOver()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("<p>Mouse went over text.</p>");
-              }
+            () -> {
+              out.setText("<p>Mouse went over text.</p>");
             });
     text4
         .mouseWentOut()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("<p>Mouse went out text.</p>");
-              }
+            () -> {
+              out.setText("<p>Mouse went out text.</p>");
             });
     return container;
   }
 
   WWidget TextToolTip() {
-    WText text = new WText("Some text", TextFormat.PlainText);
-    text.setToolTip("ToolTip", TextFormat.XHTMLText);
+    WText text = new WText("Some text", TextFormat.Plain);
+    text.setToolTip("ToolTip", TextFormat.XHTML);
     return text;
   }
 
@@ -273,8 +258,8 @@ class Layout extends TopicWidget {
   WWidget GroupBox() {
     WGroupBox groupBox = new WGroupBox("A group box");
     groupBox.addStyleClass("centered-example");
-    groupBox.addWidget(new WText("<p>Some contents.</p>"));
-    groupBox.addWidget(new WText("<p>More contents.</p>"));
+    new WText("<p>Some contents.</p>", (WContainerWidget) groupBox);
+    new WText("<p>More contents.</p>", (WContainerWidget) groupBox);
     return groupBox;
   }
 
@@ -299,8 +284,7 @@ class Layout extends TopicWidget {
     panel.addStyleClass("centered-example");
     panel.setCollapsible(true);
     WAnimation animation =
-        new WAnimation(
-            WAnimation.AnimationEffect.SlideInFromTop, WAnimation.TimingFunction.EaseOut, 100);
+        new WAnimation(AnimationEffect.SlideInFromTop, TimingFunction.EaseOut, 100);
     panel.setAnimation(animation);
     panel.setCentralWidget(new WText("This panel can be collapsed."));
     return panel;
@@ -393,13 +377,13 @@ class Layout extends TopicWidget {
     for (int row = 0; row < 3; ++row) {
       for (int column = 0; column < 4; ++column) {
         WString cell = new WString("Item ({1}, {2})").arg(row).arg(column);
-        WText t = new WText(cell);
+        WText text = new WText(cell);
         if (row == 1 || column == 1 || column == 2) {
-          t.setStyleClass("blue-box");
+          text.setStyleClass("blue-box");
         } else {
-          t.setStyleClass("green-box");
+          text.setStyleClass("green-box");
         }
-        grid.addWidget(t, row, column);
+        grid.addWidget(text, row, column);
       }
     }
     grid.setRowStretch(1, 1);
@@ -417,159 +401,145 @@ class Layout extends TopicWidget {
     String cell = "{1} item";
     WText item = new WText(new WString(cell).arg("North"));
     item.setStyleClass("green-box");
-    layout.addWidget(item, WBorderLayout.Position.North);
+    layout.addWidget(item, LayoutPosition.North);
     item = new WText(new WString(cell).arg("West"));
     item.setStyleClass("green-box");
-    layout.addWidget(item, WBorderLayout.Position.West);
+    layout.addWidget(item, LayoutPosition.West);
     item = new WText(new WString(cell).arg("East"));
     item.setStyleClass("green-box");
-    layout.addWidget(item, WBorderLayout.Position.East);
+    layout.addWidget(item, LayoutPosition.East);
     item = new WText(new WString(cell).arg("South"));
     item.setStyleClass("green-box");
-    layout.addWidget(item, WBorderLayout.Position.South);
+    layout.addWidget(item, LayoutPosition.South);
     item = new WText(new WString(cell).arg("Center"));
     item.setStyleClass("green-box");
-    layout.addWidget(item, WBorderLayout.Position.Center);
+    layout.addWidget(item, LayoutPosition.Center);
     return container;
   }
 
-  final void showDialog(final WText out) {
+  final void showDialog(WObject owner, final WText out) {
     final WDialog dialog = new WDialog("Go to cell");
-    WLabel label = new WLabel("Cell location (A1..Z999)", dialog.getContents());
-    final WLineEdit edit = new WLineEdit(dialog.getContents());
+    WLabel label = new WLabel("Cell location (A1..Z999)", (WContainerWidget) dialog.getContents());
+    final WLineEdit edit = new WLineEdit((WContainerWidget) dialog.getContents());
     label.setBuddy(edit);
     dialog.getContents().addStyleClass("form-group");
     WRegExpValidator validator = new WRegExpValidator("[A-Za-z][1-9][0-9]{0,2}");
     validator.setMandatory(true);
     edit.setValidator(validator);
-    final WPushButton ok = new WPushButton("OK", dialog.getFooter());
+    final WPushButton ok = new WPushButton("OK", (WContainerWidget) dialog.getFooter());
     ok.setDefault(true);
     if (WApplication.getInstance().getEnvironment().hasAjax()) {
       ok.disable();
     }
-    WPushButton cancel = new WPushButton("Cancel", dialog.getFooter());
+    WPushButton cancel = new WPushButton("Cancel", (WContainerWidget) dialog.getFooter());
     dialog.rejectWhenEscapePressed();
     edit.keyWentUp()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                ok.setDisabled(edit.validate() != WValidator.State.Valid);
-              }
+            () -> {
+              ok.setDisabled(edit.validate() != ValidationState.Valid);
             });
     ok.clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (edit.validate() != null) {
-                  dialog.accept();
-                }
+            () -> {
+              if (edit.validate() == ValidationState.Valid) {
+                dialog.accept();
               }
             });
     cancel
         .clicked()
         .addListener(
             dialog,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                dialog.reject();
-              }
+            (WMouseEvent e1) -> {
+              dialog.reject();
             });
     dialog
         .finished()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (dialog.getResult() == WDialog.DialogCode.Accepted) {
-                  out.setText("New location: " + edit.getText());
-                } else {
-                  out.setText("No location selected.");
-                }
-                if (dialog != null) dialog.remove();
+            () -> {
+              if (dialog.getResult() == DialogCode.Accepted) {
+                out.setText("New location: " + edit.getText());
+              } else {
+                out.setText("No location selected.");
               }
+              if (dialog != null) dialog.remove();
             });
     dialog.show();
   }
 
   WWidget Dialog() {
     WContainerWidget container = new WContainerWidget();
-    WPushButton button = new WPushButton("Jump", container);
-    final WText out = new WText(container);
+    WPushButton button = new WPushButton("Jump", (WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
     out.setStyleClass("help-block");
+    final WContainerWidget c = container;
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                showDialog(out);
-              }
+            () -> {
+              showDialog(c, out);
             });
     return container;
   }
 
   WWidget MessageBox() {
     WContainerWidget container = new WContainerWidget();
-    WPushButton button = new WPushButton("Status", container);
-    final WText out = new WText(container);
+    WPushButton button = new WPushButton("Status", (WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
     out.setMargin(new WLength(10), EnumSet.of(Side.Left));
+    WContainerWidget c = container;
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("The status button is clicked.");
-                final WMessageBox messageBox =
-                    new WMessageBox(
-                        "Status",
-                        "<p>Ready to launch the rocket...</p><p>Launch the rocket immediately?</p>",
-                        Icon.Information,
-                        EnumSet.of(StandardButton.Yes, StandardButton.No));
-                messageBox.setModal(false);
-                messageBox
-                    .buttonClicked()
-                    .addListener(
-                        Layout.this,
-                        new Signal.Listener() {
-                          public void trigger() {
-                            if (messageBox.getButtonResult() == StandardButton.Yes) {
-                              out.setText("The rocket is launched!");
-                            } else {
-                              out.setText("The rocket is ready for launch...");
-                            }
-                            if (messageBox != null) messageBox.remove();
-                          }
-                        });
-                messageBox.show();
-              }
+            () -> {
+              out.setText("The status button is clicked.");
+              final WMessageBox messageBox =
+                  new WMessageBox(
+                      "Status",
+                      "<p>Ready to launch the rocket...</p><p>Launch the rocket immediately?</p>",
+                      Icon.Information,
+                      EnumUtils.or(EnumSet.of(StandardButton.Yes), StandardButton.No));
+              messageBox.setModal(false);
+              messageBox
+                  .buttonClicked()
+                  .addListener(
+                      this,
+                      () -> {
+                        if (messageBox.getButtonResult() == StandardButton.Yes) {
+                          out.setText("The rocket is launched!");
+                        } else {
+                          out.setText("The rocket is ready for launch...");
+                        }
+                        if (messageBox != null) messageBox.remove();
+                      });
+              messageBox.show();
             });
     return container;
   }
 
   WWidget MessageBoxSync() {
     WContainerWidget container = new WContainerWidget();
-    WPushButton button = new WPushButton("Start", container);
-    final WText out = new WText(container);
+    WPushButton button = new WPushButton("Start", (WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
     out.setMargin(new WLength(10), EnumSet.of(Side.Left));
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                StandardButton answer =
-                    WMessageBox.show(
-                        "Launch phase",
-                        "<p>Launch the rocket?</p>",
-                        EnumSet.of(StandardButton.Ok, StandardButton.Cancel));
-                if (answer == StandardButton.Ok) {
-                  out.setText("The rocket is launched!");
-                } else {
-                  out.setText("Waiting on your decision...");
-                }
+            () -> {
+              StandardButton answer =
+                  WMessageBox.show(
+                      "Launch phase",
+                      "<p>Launch the rocket?</p>",
+                      EnumSet.of(StandardButton.Ok, StandardButton.Cancel));
+              if (answer == StandardButton.Ok) {
+                out.setText("The rocket is launched!");
+              } else {
+                out.setText("Waiting on your decision...");
               }
             });
     return container;
@@ -577,42 +547,43 @@ class Layout extends TopicWidget {
 
   WWidget Image() {
     WContainerWidget container = new WContainerWidget();
-    WImage image = new WImage(new WLink("icons/wt.png"), container);
+    WImage image = new WImage(new WLink("icons/wt.png"), (WContainerWidget) container);
     image.setAlternateText("Wt logo");
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     out.setMargin(new WLength(10), EnumSet.of(Side.Left));
     image
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e) {
-                out.setText(
-                    "You clicked the Wt logo at ("
-                        + String.valueOf(e.getWidget().x)
-                        + ","
-                        + String.valueOf(e.getWidget().y)
-                        + ").");
-              }
+            (WMouseEvent e) -> {
+              out.setText(
+                  "You clicked the Wt logo at ("
+                      + String.valueOf(e.getWidget().x)
+                      + ","
+                      + String.valueOf(e.getWidget().y)
+                      + ").");
             });
     return container;
   }
 
   WWidget ImageArea() {
     WContainerWidget container = new WContainerWidget();
-    WImage image = new WImage(new WLink("pics/sintel_trailer.jpg"), container);
+    WImage image = new WImage(new WLink("pics/sintel_trailer.jpg"), (WContainerWidget) container);
     image.setAlternateText("Sintel trailer");
-    new WBreak(container);
-    final WText out = new WText(container);
-    WCircleArea circle = new WCircleArea(427, 149, 58);
+    new WBreak((WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
+    WCircleArea circlePtr = new WCircleArea(427, 149, 58);
+    WCircleArea circle = circlePtr;
     circle.setToolTip("tree");
-    circle.setCursor(Cursor.CrossCursor);
-    image.addArea(circle);
-    WRectArea rect = new WRectArea(294, 226, 265, 41);
+    circle.setCursor(Cursor.Cross);
+    image.addArea(circlePtr);
+    WRectArea rectPtr = new WRectArea(294, 226, 265, 41);
+    WRectArea rect = rectPtr;
     rect.setToolTip("title");
-    rect.setCursor(Cursor.CrossCursor);
-    image.addArea(rect);
-    WPolygonArea polygon = new WPolygonArea();
+    rect.setCursor(Cursor.Cross);
+    image.addArea(rectPtr);
+    WPolygonArea polygonPtr = new WPolygonArea();
+    WPolygonArea polygon = polygonPtr;
     List<WPoint> points = new ArrayList<WPoint>();
     points.add(new WPoint(92, 330));
     points.add(new WPoint(66, 261));
@@ -626,47 +597,39 @@ class Layout extends TopicWidget {
     points.add(new WPoint(92, 330));
     polygon.setPoints(points);
     polygon.setToolTip("person");
-    polygon.setCursor(Cursor.CrossCursor);
-    image.addArea(polygon);
+    polygon.setCursor(Cursor.Cross);
+    image.addArea(polygonPtr);
     circle
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("You clicked the tree.");
-              }
+            () -> {
+              out.setText("You clicked the tree.");
             });
     rect.clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("You clicked the title.");
-              }
+            () -> {
+              out.setText("You clicked the title.");
             });
     polygon
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("You clicked the person.");
-              }
+            () -> {
+              out.setText("You clicked the person.");
             });
     image
         .mouseMoved()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e) {
-                out.setText(
-                    "You're pointing the background at ("
-                        + String.valueOf(e.getWidget().x)
-                        + ","
-                        + String.valueOf(e.getWidget().y)
-                        + ").");
-              }
+            (WMouseEvent e) -> {
+              out.setText(
+                  "You're pointing the background at ("
+                      + String.valueOf(e.getWidget().x)
+                      + ","
+                      + String.valueOf(e.getWidget().y)
+                      + ").");
             });
     return container;
   }
@@ -675,63 +638,57 @@ class Layout extends TopicWidget {
     WApplication.getInstance().useStyleSheet(new WLink("style/CSSexample.css"));
     WContainerWidget container = new WContainerWidget();
     container.setStyleClass("CSS-example");
-    WPushButton allB = new WPushButton("Set all classes", container);
-    final WPushButton removeB = new WPushButton("Remove info class", container);
+    WPushButton allB = new WPushButton("Set all classes", (WContainerWidget) container);
+    final WPushButton removeB = new WPushButton("Remove info class", (WContainerWidget) container);
     removeB.setMargin(new WLength(10), EnumSet.of(Side.Left, Side.Right));
     removeB.disable();
-    final WPushButton toggleB = new WPushButton("Toggle condensed", container);
+    final WPushButton toggleB = new WPushButton("Toggle condensed", (WContainerWidget) container);
     toggleB.disable();
-    WText text = new WText(container);
+    WText text = new WText((WContainerWidget) container);
     text.setText("<p>These are the most import API classes and methods for working with CSS:</p>");
-    final WTable table = new WTable(container);
+    final WTable table = new WTable((WContainerWidget) container);
     table.setHeaderCount(1);
-    table.getElementAt(0, 0).addWidget(new WText("Method"));
-    table.getElementAt(0, 1).addWidget(new WText("Description"));
-    table.getElementAt(1, 0).addWidget(new WText("WApplication::useStyleSheet()"));
-    table.getElementAt(1, 1).addWidget(new WText("Adds an external style sheet"));
-    table.getElementAt(2, 0).addWidget(new WText("WWidget::setStyleClass()"));
-    table.getElementAt(2, 1).addWidget(new WText("Sets (one or more) CSS style classes"));
-    table.getElementAt(3, 0).addWidget(new WText("WWidget::removeStyleClass()"));
-    table.getElementAt(3, 1).addWidget(new WText("Removes a CSS style class"));
-    table.getElementAt(4, 0).addWidget(new WText("WWidget::toggleStyleClass()"));
-    table.getElementAt(4, 1).addWidget(new WText("Toggles a CSS style class"));
+    new WText("Method", (WContainerWidget) table.getElementAt(0, 0));
+    new WText("Description", (WContainerWidget) table.getElementAt(0, 1));
+    new WText("WApplication::useStyleSheet()", (WContainerWidget) table.getElementAt(1, 0));
+    new WText("Adds an external style sheet", (WContainerWidget) table.getElementAt(1, 1));
+    new WText("WWidget::setStyleClass()", (WContainerWidget) table.getElementAt(2, 0));
+    new WText("Sets (one or more) CSS style classes", (WContainerWidget) table.getElementAt(2, 1));
+    new WText("WWidget::removeStyleClass()", (WContainerWidget) table.getElementAt(3, 0));
+    new WText("Removes a CSS style class", (WContainerWidget) table.getElementAt(3, 1));
+    new WText("WWidget::toggleStyleClass()", (WContainerWidget) table.getElementAt(4, 0));
+    new WText("Toggles a CSS style class", (WContainerWidget) table.getElementAt(4, 1));
     allB.clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                table.setStyleClass("table table-bordered");
-                table.getRowAt(1).setStyleClass("info");
-                for (int i = 1; i < table.getRowCount(); i++) {
-                  table.getElementAt(i, 0).setStyleClass("code");
-                }
-                removeB.enable();
-                toggleB.enable();
+            () -> {
+              table.setStyleClass("table table-bordered");
+              table.getRowAt(1).setStyleClass("info");
+              for (int i = 1; i < table.getRowCount(); i++) {
+                table.getElementAt(i, 0).setStyleClass("code");
               }
+              removeB.enable();
+              toggleB.enable();
             });
     removeB
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                table.getRowAt(1).removeStyleClass("info");
-                removeB.disable();
-              }
+            () -> {
+              table.getRowAt(1).removeStyleClass("info");
+              removeB.disable();
             });
     toggleB
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if ((toggleB.getText().toString().equals("Toggle condensed".toString()))) {
-                  table.toggleStyleClass("table-condensed", true);
-                  toggleB.setText("Toggle expanded");
-                } else {
-                  table.toggleStyleClass("table-condensed", false);
-                  toggleB.setText("Toggle condensed");
-                }
+            () -> {
+              if ((toggleB.getText().toString().equals("Toggle condensed".toString()))) {
+                table.toggleStyleClass("table-condensed", true);
+                toggleB.setText("Toggle expanded");
+              } else {
+                table.toggleStyleClass("table-condensed", false);
+                toggleB.setText("Toggle condensed");
               }
             });
     return container;

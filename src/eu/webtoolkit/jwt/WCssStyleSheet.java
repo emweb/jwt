@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,39 +30,11 @@ public class WCssStyleSheet {
 
   /** Creates a new (internal) style sheet. */
   public WCssStyleSheet() {
-    this.link_ = new WLink();
-    this.media_ = "";
     this.rules_ = new ArrayList<WCssRule>();
     this.rulesAdded_ = new ArrayList<WCssRule>();
     this.rulesModified_ = new HashSet<WCssRule>();
     this.rulesRemoved_ = new ArrayList<String>();
     this.defined_ = new HashSet<String>();
-  }
-  /** Creates a new (external) style sheet reference. */
-  public WCssStyleSheet(final WLink link, final String media) {
-    this.link_ = link;
-    this.media_ = media;
-    this.rules_ = new ArrayList<WCssRule>();
-    this.rulesAdded_ = new ArrayList<WCssRule>();
-    this.rulesModified_ = new HashSet<WCssRule>();
-    this.rulesRemoved_ = new ArrayList<String>();
-    this.defined_ = new HashSet<String>();
-  }
-  /**
-   * Creates a new (external) style sheet reference.
-   *
-   * <p>Calls {@link #WCssStyleSheet(WLink link, String media) this(link, "all")}
-   */
-  public WCssStyleSheet(final WLink link) {
-    this(link, "all");
-  }
-
-  public WLink getLink() {
-    return this.link_;
-  }
-
-  public String getMedia() {
-    return this.media_;
   }
   /**
    * Adds a CSS rule.
@@ -78,8 +51,9 @@ public class WCssStyleSheet {
    */
   public WCssTextRule addRule(
       final String selector, final String declarations, final String ruleName) {
-    WCssTextRule result = new WCssTextRule(selector, declarations);
-    this.addRule(result, ruleName);
+    WCssTextRule r = new WCssTextRule(selector, declarations);
+    WCssTextRule result = r;
+    this.addRule(r, ruleName);
     return result;
   }
   /**
@@ -106,9 +80,10 @@ public class WCssStyleSheet {
    */
   public WCssTemplateRule addRule(
       final String selector, final WCssDecorationStyle style, final String ruleName) {
-    WCssTemplateRule result = new WCssTemplateRule(selector);
-    result.getTemplateWidget().setDecorationStyle(style);
-    this.addRule(result, ruleName);
+    WCssTemplateRule r = new WCssTemplateRule(selector);
+    r.getTemplateWidget().setDecorationStyle(style);
+    WCssTemplateRule result = r;
+    this.addRule(r, ruleName);
     return result;
   }
   /**
@@ -131,13 +106,13 @@ public class WCssStyleSheet {
    * @see WCssStyleSheet#isDefined(String ruleName)
    */
   public WCssRule addRule(WCssRule rule, final String ruleName) {
-    this.rules_.add(rule);
-    this.rulesAdded_.add(rule);
     rule.sheet_ = this;
+    this.rulesAdded_.add(rule);
+    this.rules_.add(rule);
     if (ruleName.length() != 0) {
       this.defined_.add(ruleName);
     }
-    return rule;
+    return this.rules_.get(this.rules_.size() - 1);
   }
   /**
    * Adds a CSS rule.
@@ -147,6 +122,7 @@ public class WCssStyleSheet {
   public final WCssRule addRule(WCssRule rule) {
     return addRule(rule, "");
   }
+  // public Rule  addRule(<Woow... some pseudoinstantiation type!> rule) ;
   /**
    * Returns if a rule was already defined in this style sheet.
    *
@@ -161,13 +137,15 @@ public class WCssStyleSheet {
     return i != false;
   }
   /** Removes a rule. */
-  public void removeRule(WCssRule rule) {
-    if (this.rules_.remove(rule)) {
+  public WCssRule removeRule(WCssRule rule) {
+    WCssRule r = CollectionUtils.take(this.rules_, rule);
+    if (r != null) {
       if (!this.rulesAdded_.remove(rule)) {
         this.rulesRemoved_.add(rule.getSelector());
       }
       this.rulesModified_.remove(rule);
     }
+    return r;
   }
 
   void ruleModified(WCssRule rule) {
@@ -177,57 +155,66 @@ public class WCssStyleSheet {
   }
 
   public void cssText(final StringBuilder out, boolean all) {
-    if (this.link_.isNull()) {
-      final List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
+    if (all) {
+      final List<WCssRule> toProcess = this.rules_;
       for (int i = 0; i < toProcess.size(); ++i) {
         WCssRule rule = toProcess.get(i);
         out.append(rule.getSelector()).append(" { ").append(rule.getDeclarations()).append(" }\n");
       }
-      this.rulesAdded_.clear();
-      if (all) {
-        this.rulesModified_.clear();
-      }
     } else {
-      WApplication app = WApplication.getInstance();
-      out.append("@import url(\"").append(this.link_.resolveUrl(app)).append("\")");
-      if (this.media_.length() != 0 && !this.media_.equals("all")) {
-        out.append(" ").append(this.media_);
+      final List<WCssRule> toProcess = this.rulesAdded_;
+      for (int i = 0; i < toProcess.size(); ++i) {
+        final WCssRule rule = toProcess.get(i);
+        out.append(rule.getSelector()).append(" { ").append(rule.getDeclarations()).append(" }\n");
       }
-      out.append(";\n");
+    }
+    this.rulesAdded_.clear();
+    if (all) {
+      this.rulesModified_.clear();
     }
   }
 
   public void javaScriptUpdate(WApplication app, final StringBuilder js, boolean all) {
     if (!all) {
       for (int i = 0; i < this.rulesRemoved_.size(); ++i) {
-        js.append("Wt3_6_0.removeCssRule(");
+        js.append("Wt4_4_0.removeCssRule(");
         DomElement.jsStringLiteral(js, this.rulesRemoved_.get(i), '\'');
         js.append(");");
       }
       this.rulesRemoved_.clear();
       for (Iterator<WCssRule> i_it = this.rulesModified_.iterator(); i_it.hasNext(); ) {
         WCssRule i = i_it.next();
-        js.append("{ var d= Wt3_6_0.getCssRule(");
+        js.append("{ var d= Wt4_4_0.getCssRule(");
         DomElement.jsStringLiteral(js, i.getSelector(), '\'');
         js.append(");if(d){");
-        DomElement d = DomElement.updateGiven("d", DomElementType.DomElement_SPAN);
+        DomElement d = DomElement.updateGiven("d", DomElementType.SPAN);
         if (i.updateDomElement(d, false)) {
           EscapeOStream sout = new EscapeOStream(js);
           d.asJavaScript(sout, DomElement.Priority.Update);
         }
-        ;
+
         js.append("}}");
       }
       this.rulesModified_.clear();
     }
     if (!app.getEnvironment().agentIsIElt(9)
-        && app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror) {
-      final List<WCssRule> toProcess = all ? this.rules_ : this.rulesAdded_;
-      for (int i = 0; i < toProcess.size(); ++i) {
-        WCssRule rule = toProcess.get(i);
-        js.append("Wt3_6_0.addCss('").append(rule.getSelector()).append("',");
-        DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
-        js.append(");\n");
+        && app.getEnvironment().getAgent() != UserAgent.Konqueror) {
+      if (all) {
+        final List<WCssRule> toProcess = this.rules_;
+        for (int i = 0; i < toProcess.size(); ++i) {
+          WCssRule rule = toProcess.get(i);
+          js.append("Wt4_4_0.addCss('").append(rule.getSelector()).append("',");
+          DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
+          js.append(");\n");
+        }
+      } else {
+        final List<WCssRule> toProcess = this.rulesAdded_;
+        for (int i = 0; i < toProcess.size(); ++i) {
+          final WCssRule rule = toProcess.get(i);
+          js.append("Wt4_4_0.addCss('").append(rule.getSelector()).append("',");
+          DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
+          js.append(");\n");
+        }
       }
       this.rulesAdded_.clear();
       if (all) {
@@ -237,22 +224,13 @@ public class WCssStyleSheet {
       StringBuilder css = new StringBuilder();
       this.cssText(css, all);
       if (!(css.length() == 0)) {
-        js.append("Wt3_6_0.addCssText(");
+        js.append("Wt4_4_0.addCssText(");
         DomElement.jsStringLiteral(js, css.toString(), '\'');
         js.append(");\n");
       }
     }
   }
 
-  void clear() {
-    while (!this.rules_.isEmpty()) {
-      if (this.rules_.get(this.rules_.size() - 1) != null)
-        this.rules_.get(this.rules_.size() - 1).remove();
-    }
-  }
-
-  private WLink link_;
-  private String media_;
   private List<WCssRule> rules_;
   private List<WCssRule> rulesAdded_;
   private Set<WCssRule> rulesModified_;

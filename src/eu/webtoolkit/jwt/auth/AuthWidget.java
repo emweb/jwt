@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -77,18 +78,22 @@ public class AuthWidget extends WTemplateFormView {
       final AuthService baseAuth,
       final AbstractUserDatabase users,
       final Login login,
-      WContainerWidget parent) {
-    super(WString.Empty, parent);
-    this.model_ = new AuthModel(baseAuth, users, this);
+      WContainerWidget parentContainer) {
+    super(WString.Empty, (WContainerWidget) null);
+    this.model_ = new AuthModel(baseAuth, users);
+    this.registrationModel_ = null;
     this.login_ = login;
     this.basePath_ = "";
+    this.dialog_ = null;
+    this.messageBox_ = null;
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
    * <p>Calls {@link #AuthWidget(AuthService baseAuth, AbstractUserDatabase users, Login login,
-   * WContainerWidget parent) this(baseAuth, users, login, (WContainerWidget)null)}
+   * WContainerWidget parentContainer) this(baseAuth, users, login, (WContainerWidget)null)}
    */
   public AuthWidget(
       final AuthService baseAuth, final AbstractUserDatabase users, final Login login) {
@@ -105,21 +110,31 @@ public class AuthWidget extends WTemplateFormView {
    * <p>You need to call {@link AuthWidget#setModel(AuthModel model) setModel()} to configure a
    * model for this view.
    */
-  public AuthWidget(final Login login, WContainerWidget parent) {
-    super(WString.Empty, parent);
+  public AuthWidget(final Login login, WContainerWidget parentContainer) {
+    super(WString.Empty, (WContainerWidget) null);
     this.model_ = null;
+    this.registrationModel_ = null;
     this.login_ = login;
     this.basePath_ = "";
+    this.dialog_ = null;
+    this.messageBox_ = null;
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #AuthWidget(Login login, WContainerWidget parent) this(login,
+   * <p>Calls {@link #AuthWidget(Login login, WContainerWidget parentContainer) this(login,
    * (WContainerWidget)null)}
    */
   public AuthWidget(final Login login) {
     this(login, (WContainerWidget) null);
+  }
+
+  public void remove() {
+    this.dialog_ = null;
+    this.messageBox_ = null;
+    super.remove();
   }
   /**
    * Sets a model.
@@ -127,7 +142,6 @@ public class AuthWidget extends WTemplateFormView {
    * <p>This sets a model to be used for authentication.
    */
   public void setModel(AuthModel model) {
-    ;
     this.model_ = model;
   }
   /**
@@ -246,7 +260,7 @@ public class AuthWidget extends WTemplateFormView {
     String emailToken = this.model_.getBaseAuth().parseEmailToken(env.getInternalPath());
     if (emailToken.length() != 0) {
       EmailTokenResult result = this.model_.processEmailToken(emailToken);
-      switch (result.getResult()) {
+      switch (result.getState()) {
         case Invalid:
           this.displayError(tr("Wt.Auth.error-invalid-token"));
           break;
@@ -267,7 +281,7 @@ public class AuthWidget extends WTemplateFormView {
       return;
     }
     User user = this.model_.processAuthToken();
-    this.model_.loginUser(this.login_, user, LoginState.WeakLogin);
+    this.model_.loginUser(this.login_, user, LoginState.Weak);
   }
   /**
    * Lets the user update his password.
@@ -291,19 +305,15 @@ public class AuthWidget extends WTemplateFormView {
           .updated()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  AuthWidget.this.closeDialog();
-                }
+              () -> {
+                AuthWidget.this.closeDialog();
               });
       defaultUpdatePasswordWidget
           .canceled()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  AuthWidget.this.closeDialog();
-                }
+              () -> {
+                AuthWidget.this.closeDialog();
               });
     }
   }
@@ -335,7 +345,8 @@ public class AuthWidget extends WTemplateFormView {
    * @see AuthWidget#handleLostPassword()
    */
   public WWidget getCreateLostPasswordView() {
-    return new LostPasswordWidget(this.model_.getUsers(), this.model_.getBaseAuth());
+    return new LostPasswordWidget(
+        this.model_.getUsers(), this.model_.getBaseAuth(), (WContainerWidget) null);
   }
   /**
    * Creates a registration view.
@@ -351,11 +362,11 @@ public class AuthWidget extends WTemplateFormView {
    * @see AuthWidget#registerNewUser()
    */
   public WWidget createRegistrationView(final Identity id) {
-    RegistrationModel model = this.getRegistrationModel();
+    RegistrationModel model = this.getCreateRegistrationModel();
     if (id.isValid()) {
       model.registerIdentified(id);
     }
-    RegistrationWidget w = new RegistrationWidget(this);
+    RegistrationWidget w = new RegistrationWidget(this, (WContainerWidget) null);
     w.setModel(model);
     return w;
   }
@@ -374,7 +385,10 @@ public class AuthWidget extends WTemplateFormView {
    */
   public WWidget createUpdatePasswordView(final User user, boolean promptPassword) {
     return new UpdatePasswordWidget(
-        user, this.getRegistrationModel(), promptPassword ? this.model_ : null);
+        user,
+        this.getCreateRegistrationModel(),
+        promptPassword ? this.model_ : null,
+        (WContainerWidget) null);
   }
   /**
    * Creates a password prompt dialog.
@@ -385,7 +399,7 @@ public class AuthWidget extends WTemplateFormView {
    * <p>The default implementation instantiates a {@link PasswordPromptDialog}.
    */
   public WDialog createPasswordPromptDialog(final Login login) {
-    return new PasswordPromptDialog(login, this.model_);
+    return new PasswordPromptDialog(login, this.model_, (WContainerWidget) null);
   }
 
   void attemptPasswordLogin() {
@@ -404,19 +418,16 @@ public class AuthWidget extends WTemplateFormView {
    * <p>This method display an dialog showing the error
    */
   public void displayError(final CharSequence m) {
-    if (this.messageBox_ != null) this.messageBox_.remove();
-    WMessageBox box =
-        new WMessageBox(tr("Wt.Auth.error"), m, Icon.NoIcon, EnumSet.of(StandardButton.Ok));
-    box.buttonClicked()
+    this.messageBox_ =
+        new WMessageBox(tr("Wt.Auth.error"), m, Icon.None, EnumSet.of(StandardButton.Ok));
+    this.messageBox_
+        .buttonClicked()
         .addListener(
             this,
-            new Signal1.Listener<StandardButton>() {
-              public void trigger(StandardButton e1) {
-                AuthWidget.this.closeDialog();
-              }
+            (StandardButton e1) -> {
+              AuthWidget.this.closeDialog();
             });
-    box.show();
-    this.messageBox_ = box;
+    this.messageBox_.show();
   }
   /**
    * Displays the info message.
@@ -424,19 +435,16 @@ public class AuthWidget extends WTemplateFormView {
    * <p>This method display an dialog showing the info
    */
   public void displayInfo(final CharSequence m) {
-    if (this.messageBox_ != null) this.messageBox_.remove();
-    WMessageBox box =
-        new WMessageBox(tr("Wt.Auth.notice"), m, Icon.NoIcon, EnumSet.of(StandardButton.Ok));
-    box.buttonClicked()
+    this.messageBox_ =
+        new WMessageBox(tr("Wt.Auth.notice"), m, Icon.None, EnumSet.of(StandardButton.Ok));
+    this.messageBox_
+        .buttonClicked()
         .addListener(
             this,
-            new Signal1.Listener<StandardButton>() {
-              public void trigger(StandardButton e1) {
-                AuthWidget.this.closeDialog();
-              }
+            (StandardButton e1) -> {
+              AuthWidget.this.closeDialog();
             });
-    box.show();
-    this.messageBox_ = box;
+    this.messageBox_.show();
   }
   /**
    * Creates the user-interface.
@@ -480,16 +488,14 @@ public class AuthWidget extends WTemplateFormView {
     this.setTemplateText(tr("Wt.Auth.template.logged-in"));
     this.bindString("user-name", this.login_.getUser().getIdentity(Identity.LoginName));
     WPushButton logout = new WPushButton(tr("Wt.Auth.logout"));
+    this.bindWidget("logout", logout);
     logout
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                AuthWidget.this.logout();
-              }
+            (WMouseEvent e1) -> {
+              AuthWidget.this.logout();
             });
-    this.bindWidget("logout", logout);
   }
   /**
    * Creates a password login view.
@@ -523,27 +529,19 @@ public class AuthWidget extends WTemplateFormView {
     if (!this.model_.getOAuth().isEmpty()) {
       this.setCondition("if:oauth", true);
       WContainerWidget icons = new WContainerWidget();
+      this.bindWidget("icons", icons);
       icons.setInline(this.isInline());
       for (int i = 0; i < this.model_.getOAuth().size(); ++i) {
-        OAuthService auth = this.model_.getOAuth().get(i);
-        WImage w = new WImage("css/oauth-" + auth.getName() + ".png", icons);
-        w.setToolTip(auth.getDescription());
-        w.setStyleClass("Wt-auth-icon");
-        w.setVerticalAlignment(AlignmentFlag.AlignMiddle);
-        final OAuthProcess process = auth.createProcess(auth.getAuthenticationScope());
-        process.connectStartAuthenticate(w.clicked());
-        process
-            .authenticated()
+        OAuthService service = this.model_.getOAuth().get(i);
+        OAuthWidget w = new OAuthWidget(service);
+        icons.addWidget(w);
+        w.authenticated()
             .addListener(
                 this,
-                new Signal1.Listener<Identity>() {
-                  public void trigger(Identity event) {
-                    AuthWidget.this.oAuthDone(process, event);
-                  }
+                (OAuthProcess e1, Identity e2) -> {
+                  AuthWidget.this.oAuthDone(e1, e2);
                 });
-        super.addChild(process);
       }
-      this.bindWidget("icons", icons);
     }
   }
   /**
@@ -555,8 +553,6 @@ public class AuthWidget extends WTemplateFormView {
    * <p>When the central widget is deleted, it deletes the dialog.
    */
   protected WDialog showDialog(final CharSequence title, WWidget contents) {
-    if (this.dialog_ != null) this.dialog_.remove();
-    this.dialog_ = null;
     if (contents != null) {
       this.dialog_ = new WDialog(title);
       this.dialog_.getContents().addWidget(contents);
@@ -565,10 +561,8 @@ public class AuthWidget extends WTemplateFormView {
           .childrenChanged()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  AuthWidget.this.closeDialog();
-                }
+              () -> {
+                AuthWidget.this.closeDialog();
               });
       this.dialog_.getFooter().hide();
       if (!WApplication.getInstance().getEnvironment().hasAjax()) {
@@ -578,28 +572,6 @@ public class AuthWidget extends WTemplateFormView {
       this.dialog_.show();
     }
     return this.dialog_;
-  }
-  /**
-   * Returns the registration model.
-   *
-   * <p>Calls {@link AuthWidget#getCreateRegistrationModel() getCreateRegistrationModel()} or resets
-   * a previously created one.
-   *
-   * <p>
-   *
-   * @see AuthWidget#registerNewUser()
-   */
-  protected RegistrationModel getRegistrationModel() {
-    if (!(this.registrationModel_ != null)) {
-      this.registrationModel_ = this.getCreateRegistrationModel();
-      if (this.model_.getPasswordAuth() != null) {
-        this.registrationModel_.addPasswordAuth(this.model_.getPasswordAuth());
-      }
-      this.registrationModel_.addOAuth(this.model_.getOAuth());
-    } else {
-      this.registrationModel_.reset();
-    }
-    return this.registrationModel_;
   }
   /**
    * Creates a registration model.
@@ -614,7 +586,7 @@ public class AuthWidget extends WTemplateFormView {
    */
   protected RegistrationModel getCreateRegistrationModel() {
     RegistrationModel result =
-        new RegistrationModel(this.model_.getBaseAuth(), this.model_.getUsers(), this.login_, this);
+        new RegistrationModel(this.model_.getBaseAuth(), this.model_.getUsers(), this.login_);
     if (this.model_.getPasswordAuth() != null) {
       result.addPasswordAuth(this.model_.getPasswordAuth());
     }
@@ -633,12 +605,10 @@ public class AuthWidget extends WTemplateFormView {
         p.enterPressed()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    AuthWidget.this.attemptPasswordLogin();
-                  }
+                () -> {
+                  AuthWidget.this.attemptPasswordLogin();
                 });
-        p.setEchoMode(WLineEdit.EchoMode.Password);
+        p.setEchoMode(EchoMode.Password);
         result = p;
       } else {
         if (field == AuthModel.RememberMeField) {
@@ -664,33 +634,26 @@ public class AuthWidget extends WTemplateFormView {
   private boolean registrationEnabled_;
   private boolean created_;
   private WDialog dialog_;
-  private WDialog messageBox_;
+  private WMessageBox messageBox_;
 
   private void init() {
-    this.setWidgetIdMode(WTemplate.WidgetIdMode.SetWidgetObjectName);
-    this.registrationModel_ = null;
+    this.setWidgetIdMode(TemplateWidgetIdMode.SetObjectName);
     this.registrationEnabled_ = false;
     this.created_ = false;
-    this.dialog_ = null;
-    this.messageBox_ = null;
     WApplication app = WApplication.getInstance();
     app.internalPathChanged()
         .addListener(
             this,
-            new Signal1.Listener<String>() {
-              public void trigger(String e1) {
-                AuthWidget.this.onPathChange(e1);
-              }
+            (String e1) -> {
+              AuthWidget.this.onPathChange(e1);
             });
     app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
     this.login_
         .changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                AuthWidget.this.onLoginChange();
-              }
+            () -> {
+              AuthWidget.this.onLoginChange();
             });
   }
 
@@ -700,10 +663,8 @@ public class AuthWidget extends WTemplateFormView {
   // private void loginThrottle(int delay) ;
   private void closeDialog() {
     if (this.dialog_ != null) {
-      if (this.dialog_ != null) this.dialog_.remove();
       this.dialog_ = null;
     } else {
-      if (this.messageBox_ != null) this.messageBox_.remove();
       this.messageBox_ = null;
     }
     if (this.basePath_.length() != 0) {
@@ -725,7 +686,7 @@ public class AuthWidget extends WTemplateFormView {
     if (this.login_.isLoggedIn()) {
       this.createLoggedInView();
     } else {
-      if (this.login_.getState() != LoginState.DisabledLogin) {
+      if (this.login_.getState() != LoginState.Disabled) {
         if (this.model_.getBaseAuth().isAuthTokensEnabled()) {
           WApplication.getInstance()
               .removeCookie(this.model_.getBaseAuth().getAuthTokenCookieName());
@@ -803,50 +764,44 @@ public class AuthWidget extends WTemplateFormView {
       WInteractWidget login = (WInteractWidget) this.resolveWidget("login");
       if (!(login != null)) {
         login = new WPushButton(tr("Wt.Auth.login"));
+        this.bindWidget("login", login);
         login
             .clicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent e1) {
-                    AuthWidget.this.attemptPasswordLogin();
-                  }
+                (WMouseEvent e1) -> {
+                  AuthWidget.this.attemptPasswordLogin();
                 });
-        this.bindWidget("login", login);
         this.model_.configureThrottling(login);
         if (this.model_.getBaseAuth().isEmailVerificationEnabled()) {
           WText text = new WText(tr("Wt.Auth.lost-password"));
+          this.bindWidget("lost-password", text);
           text.clicked()
               .addListener(
                   this,
-                  new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent e1) {
-                      AuthWidget.this.handleLostPassword();
-                    }
+                  (WMouseEvent e1) -> {
+                    AuthWidget.this.handleLostPassword();
                   });
-          this.bindWidget("lost-password", text);
         } else {
           this.bindEmpty("lost-password");
         }
         if (this.registrationEnabled_) {
-          WInteractWidget w;
           if (this.basePath_.length() != 0) {
-            w =
+            this.bindWidget(
+                "register",
                 new WAnchor(
-                    new WLink(WLink.Type.InternalPath, this.basePath_ + "register"),
-                    tr("Wt.Auth.register"));
+                    new WLink(LinkType.InternalPath, this.basePath_ + "register"),
+                    tr("Wt.Auth.register")));
           } else {
-            w = new WText(tr("Wt.Auth.register"));
-            w.clicked()
+            WText t = new WText(tr("Wt.Auth.register"));
+            this.bindWidget("register", t);
+            t.clicked()
                 .addListener(
                     this,
-                    new Signal1.Listener<WMouseEvent>() {
-                      public void trigger(WMouseEvent e1) {
-                        AuthWidget.this.registerNewUser();
-                      }
+                    (WMouseEvent e1) -> {
+                      AuthWidget.this.registerNewUser();
                     });
           }
-          this.bindWidget("register", w);
         } else {
           this.bindEmpty("register");
         }

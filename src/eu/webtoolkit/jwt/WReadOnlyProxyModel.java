@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,16 +29,8 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
   private static Logger logger = LoggerFactory.getLogger(WReadOnlyProxyModel.class);
 
   /** Constructor. */
-  public WReadOnlyProxyModel(WObject parent) {
-    super(parent);
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WReadOnlyProxyModel(WObject parent) this((WObject)null)}
-   */
   public WReadOnlyProxyModel() {
-    this((WObject) null);
+    super();
   }
   /**
    * Maps a source model index to the proxy model.
@@ -88,15 +81,17 @@ public class WReadOnlyProxyModel extends WAbstractProxyModel {
     return this.getSourceModel().getIndex(row, column, parent);
   }
   /** Always returns <code>false</code> and has no effect. */
-  public boolean setData(final WModelIndex index, final Object value, int role) {
+  public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
     return false;
   }
   /** Always returns <code>false</code> and has no effect. */
-  public boolean setItemData(final WModelIndex index, final SortedMap<Integer, Object> values) {
+  public boolean setItemData(
+      final WModelIndex index, final SortedMap<ItemDataRole, Object> values) {
     return false;
   }
   /** Always returns <code>false</code> and has no effect. */
-  public boolean setHeaderData(int section, Orientation orientation, final Object value, int role) {
+  public boolean setHeaderData(
+      int section, Orientation orientation, final Object value, ItemDataRole role) {
     return false;
   }
   /** Always returns <code>false</code> and has no effect. */

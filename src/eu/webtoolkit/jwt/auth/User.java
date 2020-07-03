@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,36 +38,6 @@ import org.slf4j.LoggerFactory;
 public class User {
   private static Logger logger = LoggerFactory.getLogger(User.class);
 
-  /**
-   * Enumeration for a user&apos;s account status.
-   *
-   * <p>
-   *
-   * @see User#getStatus()
-   */
-  public enum Status {
-    /** Successfully identified but not allowed to log in. */
-    Disabled,
-    /** Normal status. */
-    Normal;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** Enumeration for an email token stored for the user. */
-  public enum EmailTokenRole {
-    /** {@link Token} is used to verify his email address. */
-    VerifyEmail,
-    /** {@link Token} is used to allow the user to enter a new password. */
-    LostPassword;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Default constructor.
    *
@@ -172,13 +143,17 @@ public class User {
   /**
    * Sets a password.
    *
+   * <p>This also clears the email token.
+   *
    * <p>
    *
    * @see AbstractUserDatabase#setPassword(User user, PasswordHash password)
+   * @see User#clearEmailToken()
    */
   public void setPassword(final PasswordHash password) {
     this.checkValid();
     this.db_.setPassword(this, password);
+    this.clearEmailToken();
   }
   /**
    * Returns the password.
@@ -241,7 +216,7 @@ public class User {
    *
    * @see AbstractUserDatabase#getStatus(User user)
    */
-  public User.Status getStatus() {
+  public AccountStatus getStatus() {
     this.checkValid();
     return this.db_.getStatus(this);
   }
@@ -250,9 +225,9 @@ public class User {
    *
    * <p>
    *
-   * @see AbstractUserDatabase#setStatus(User user, User.Status status)
+   * @see AbstractUserDatabase#setStatus(User user, AccountStatus status)
    */
-  public void setStatus(User.Status status) {
+  public void setStatus(AccountStatus status) {
     this.checkValid();
     this.db_.setStatus(this, status);
   }
@@ -273,7 +248,7 @@ public class User {
    *
    * @see AbstractUserDatabase#getEmailTokenRole(User user)
    */
-  public User.EmailTokenRole getEmailTokenRole() {
+  public EmailTokenRole getEmailTokenRole() {
     return this.db_.getEmailTokenRole(this);
   }
   /**
@@ -281,9 +256,9 @@ public class User {
    *
    * <p>
    *
-   * @see AbstractUserDatabase#setEmailToken(User user, Token token, User.EmailTokenRole role)
+   * @see AbstractUserDatabase#setEmailToken(User user, Token token, EmailTokenRole role)
    */
-  public void setEmailToken(final Token token, User.EmailTokenRole role) {
+  public void setEmailToken(final Token token, EmailTokenRole role) {
     this.checkValid();
     this.db_.setEmailToken(this, token, role);
   }
@@ -292,11 +267,11 @@ public class User {
    *
    * <p>
    *
-   * @see User#setEmailToken(Token token, User.EmailTokenRole role)
+   * @see User#setEmailToken(Token token, EmailTokenRole role)
    */
   public void clearEmailToken() {
     this.checkValid();
-    this.db_.setEmailToken(this, new Token(), User.EmailTokenRole.LostPassword);
+    this.db_.setEmailToken(this, new Token(), EmailTokenRole.LostPassword);
   }
   /**
    * Adds an authentication token.

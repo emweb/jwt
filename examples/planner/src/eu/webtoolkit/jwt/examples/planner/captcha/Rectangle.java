@@ -26,7 +26,7 @@ public class Rectangle extends Shape {
 	@Override
 	public void paint(WPainter painter) {
 		WBrush b = new WBrush();
-		b.setStyle(BrushStyle.SolidPattern);
+		b.setStyle(BrushStyle.Solid);
 		b.setColor(getColor());
 
 		WPainterPath pp = new WPainterPath();

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -49,8 +50,8 @@ public class WDateValidator extends WValidator {
    *
    * <p>
    */
-  public WDateValidator(WObject parent) {
-    super(parent);
+  public WDateValidator() {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = null;
     this.top_ = null;
@@ -58,14 +59,6 @@ public class WDateValidator extends WValidator {
     this.tooLateText_ = new WString();
     this.notADateText_ = new WString();
     this.setFormat(LocaleUtils.getDateFormat(LocaleUtils.getCurrentLocale()));
-  }
-  /**
-   * Creates a date validator.
-   *
-   * <p>Calls {@link #WDateValidator(WObject parent) this((WObject)null)}
-   */
-  public WDateValidator() {
-    this((WObject) null);
   }
   /**
    * Creates a date validator.
@@ -75,8 +68,8 @@ public class WDateValidator extends WValidator {
    *
    * <p>
    */
-  public WDateValidator(final WDate bottom, final WDate top, WObject parent) {
-    super(parent);
+  public WDateValidator(final WDate bottom, final WDate top) {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = bottom;
     this.top_ = top;
@@ -88,19 +81,10 @@ public class WDateValidator extends WValidator {
   /**
    * Creates a date validator.
    *
-   * <p>Calls {@link #WDateValidator(WDate bottom, WDate top, WObject parent) this(bottom, top,
-   * (WObject)null)}
-   */
-  public WDateValidator(final WDate bottom, final WDate top) {
-    this(bottom, top, (WObject) null);
-  }
-  /**
-   * Creates a date validator.
-   *
    * <p>The validator will accept dates in the date format <code>format</code>.
    */
-  public WDateValidator(final String format, WObject parent) {
-    super(parent);
+  public WDateValidator(final String format) {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = null;
     this.top_ = null;
@@ -112,19 +96,11 @@ public class WDateValidator extends WValidator {
   /**
    * Creates a date validator.
    *
-   * <p>Calls {@link #WDateValidator(String format, WObject parent) this(format, (WObject)null)}
-   */
-  public WDateValidator(final String format) {
-    this(format, (WObject) null);
-  }
-  /**
-   * Creates a date validator.
-   *
    * <p>The validator will accept only dates within the indicated range <i>bottom</i> to <i>top</i>,
    * in the date format <code>format</code>.
    */
-  public WDateValidator(final String format, final WDate bottom, final WDate top, WObject parent) {
-    super(parent);
+  public WDateValidator(final String format, final WDate bottom, final WDate top) {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = bottom;
     this.top_ = top;
@@ -132,15 +108,6 @@ public class WDateValidator extends WValidator {
     this.tooLateText_ = new WString();
     this.notADateText_ = new WString();
     this.setFormat(format);
-  }
-  /**
-   * Creates a date validator.
-   *
-   * <p>Calls {@link #WDateValidator(String format, WDate bottom, WDate top, WObject parent)
-   * this(format, bottom, top, (WObject)null)}
-   */
-  public WDateValidator(final String format, final WDate bottom, final WDate top) {
-    this(format, bottom, top, (WObject) null);
   }
   /**
    * Sets the bottom of the valid date range.
@@ -215,23 +182,22 @@ public class WDateValidator extends WValidator {
         if ((d != null)) {
           if (!(this.bottom_ == null)) {
             if (d.before(this.bottom_)) {
-              return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooEarlyText());
+              return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooEarlyText());
             }
           }
           if (!(this.top_ == null)) {
             if (d.after(this.top_)) {
-              return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooLateText());
+              return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooLateText());
             }
           }
-          return new WValidator.Result(WValidator.State.Valid);
+          return new WValidator.Result(ValidationState.Valid);
         }
       } catch (final RuntimeException e) {
         logger.warn(new StringWriter().append("validate(): ").append(e.toString()).toString());
       }
     }
-    return new WValidator.Result(WValidator.State.Invalid, this.getInvalidNotADateText());
+    return new WValidator.Result(ValidationState.Invalid, this.getInvalidNotADateText());
   }
-  // public void createExtConfig(final Writer config) throws IOException;
   /**
    * Sets the message to display when the input is not a date.
    *
@@ -338,7 +304,7 @@ public class WDateValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt3_6_0.WDateValidator(").append(this.isMandatory()).append(",[");
+    js.append("new Wt4_4_0.WDateValidator(").append(this.isMandatory()).append(",[");
     for (int i = 0; i < this.formats_.size(); ++i) {
       WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));
       if (i != 0) {

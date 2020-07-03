@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -71,8 +72,8 @@ import org.slf4j.LoggerFactory;
  *       symbol) require()}.
  *   <li>the top-level widget in {@link WApplication#getRoot() getRoot()}, representing the entire
  *       browser window, or multiple top-level widgets using {@link WApplication#bindWidget(WWidget
- *       widget, String domId) bindWidget()} when deployed in WidgetSet mode to manage a number of
- *       widgets within a 3rd party page.
+ *       widget, String domId) bindWidget()} when deployed in {@link EntryPointType#WidgetSet} mode
+ *       to manage a number of widgets within a 3rd party page.
  *   <li>definition of cookies using {@link WApplication#setCookie(String name, String value, int
  *       maxAge, String domain, String path, boolean secure) setCookie()} to persist information
  *       across sessions, which may be read using {@link WEnvironment#getCookie(String cookieName)
@@ -91,24 +92,6 @@ public class WApplication extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WApplication.class);
 
   /**
-   * Enumeration that indicates the method for dynamic (AJAX-alike) updates ((<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
-   */
-  public enum AjaxMethod {
-    /** Using the XMLHttpRequest object (real AJAX) */
-    XMLHttpRequest,
-    /** Using dynamic script tags (for cross-domain AJAX) */
-    DynamicScriptTag;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
    * Creates a new application instance.
    *
    * <p>The <code>environment</code> provides information on the initial request, user agent, and
@@ -123,12 +106,16 @@ public class WApplication extends WObject {
     this.titleChanged_ = false;
     this.closeMessageChanged_ = false;
     this.localeChanged_ = false;
+    this.domRoot_ = null;
+    this.widgetRoot_ = null;
+    this.timerRoot_ = null;
+    this.domRoot2_ = null;
     this.styleSheet_ = new WCssStyleSheet();
     this.localizedStrings_ = null;
     this.locale_ = new Locale("");
     this.renderedInternalPath_ = "";
     this.newInternalPath_ = "";
-    this.internalPathChanged_ = new Signal1<String>(this);
+    this.internalPathChanged_ = new Signal1<String>();
     this.internalPathInvalid_ = new Signal1<String>();
     this.serverPush_ = 0;
     this.serverPushChanged_ = true;
@@ -139,7 +126,6 @@ public class WApplication extends WObject {
     this.internalPathsEnabled_ = false;
     this.exposedOnly_ = null;
     this.loadingIndicator_ = null;
-    this.connected_ = true;
     this.htmlClass_ = "";
     this.bodyClass_ = "";
     this.bodyHtmlClassChanged_ = true;
@@ -150,9 +136,9 @@ public class WApplication extends WObject {
     this.layoutDirection_ = LayoutDirection.LeftToRight;
     this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
     this.scriptLibrariesAdded_ = 0;
-    this.theme_ = null;
-    this.styleSheets_ = new ArrayList<WCssStyleSheet>();
-    this.styleSheetsToRemove_ = new ArrayList<WCssStyleSheet>();
+    this.theme_ = (WTheme) null;
+    this.styleSheets_ = new ArrayList<WLinkedCssStyleSheet>();
+    this.styleSheetsToRemove_ = new ArrayList<WLinkedCssStyleSheet>();
     this.styleSheetsAdded_ = 0;
     this.metaHeaders_ = new ArrayList<MetaHeader>();
     this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
@@ -174,7 +160,6 @@ public class WApplication extends WObject {
     this.hideLoadingIndicator_ = new EventSignal("hideload", this);
     this.unloaded_ = new JSignal(this, "Wt-unload");
     this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
-    this.objectStore_ = new HashMap<String, Object>();
     this.soundManager_ = null;
     this.showLoadJS = new JSlot();
     this.hideLoadJS = new JSlot();
@@ -184,23 +169,23 @@ public class WApplication extends WObject {
     this.internalPathIsChanged_ = false;
     this.internalPathDefaultValid_ = true;
     this.internalPathValid_ = true;
-    this.theme_ = new WCssTheme("default", this);
-    this.setLocalizedStrings((WLocalizedStrings) null);
+    this.theme_ = new WCssTheme("default");
+    this.setLocalizedStrings(null);
     if (!this.getEnvironment().hasJavaScript() && this.getEnvironment().agentIsIE()) {
-      if (this.getEnvironment().getAgent().getValue() < WEnvironment.UserAgent.IE9.getValue()) {
+      if ((int) this.getEnvironment().getAgent().getValue() < (int) UserAgent.IE9.getValue()) {
         final Configuration conf = this.getEnvironment().getServer().getConfiguration();
         boolean selectIE7 = conf.getUaCompatible().indexOf("IE8=IE7") != -1;
         if (selectIE7) {
-          this.addMetaHeader(MetaHeaderType.MetaHttpHeader, "X-UA-Compatible", "IE=7");
+          this.addMetaHeader(MetaHeaderType.HttpHeader, "X-UA-Compatible", "IE=7");
         }
       } else {
-        if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE9) {
-          this.addMetaHeader(MetaHeaderType.MetaHttpHeader, "X-UA-Compatible", "IE=9");
+        if (this.getEnvironment().getAgent() == UserAgent.IE9) {
+          this.addMetaHeader(MetaHeaderType.HttpHeader, "X-UA-Compatible", "IE=9");
         } else {
-          if (this.getEnvironment().getAgent() == WEnvironment.UserAgent.IE10) {
-            this.addMetaHeader(MetaHeaderType.MetaHttpHeader, "X-UA-Compatible", "IE=10");
+          if (this.getEnvironment().getAgent() == UserAgent.IE10) {
+            this.addMetaHeader(MetaHeaderType.HttpHeader, "X-UA-Compatible", "IE=10");
           } else {
-            this.addMetaHeader(MetaHeaderType.MetaHttpHeader, "X-UA-Compatible", "IE=11");
+            this.addMetaHeader(MetaHeaderType.HttpHeader, "X-UA-Compatible", "IE=11");
           }
         }
       }
@@ -209,21 +194,19 @@ public class WApplication extends WObject {
     this.domRoot_.setGlobalUnfocused(true);
     this.domRoot_.setStyleClass("Wt-domRoot");
     if (this.session_.getType() == EntryPointType.Application) {
-      this.domRoot_.resize(WLength.Auto, new WLength(100, WLength.Unit.Percentage));
+      this.domRoot_.resize(WLength.Auto, new WLength(100, LengthUnit.Percentage));
     }
-    this.timerRoot_ = new WContainerWidget(this.domRoot_);
+    this.timerRoot_ = new WContainerWidget();
+    this.domRoot_.addWidget(this.timerRoot_);
     this.timerRoot_.setId("Wt-timers");
     this.timerRoot_.resize(WLength.Auto, new WLength(0));
     this.timerRoot_.setPositionScheme(PositionScheme.Absolute);
     if (this.session_.getType() == EntryPointType.Application) {
-      this.ajaxMethod_ = WApplication.AjaxMethod.XMLHttpRequest;
-      this.domRoot2_ = null;
-      this.widgetRoot_ = new WContainerWidget(this.domRoot_);
-      this.widgetRoot_.resize(WLength.Auto, new WLength(100, WLength.Unit.Percentage));
+      this.widgetRoot_ = new WContainerWidget();
+      this.domRoot_.addWidget(this.widgetRoot_);
+      this.widgetRoot_.resize(WLength.Auto, new WLength(100, LengthUnit.Percentage));
     } else {
-      this.ajaxMethod_ = WApplication.AjaxMethod.DynamicScriptTag;
       this.domRoot2_ = new WContainerWidget();
-      this.widgetRoot_ = null;
     }
     this.styleSheet_.addRule("table", "border-collapse: collapse; border: 0px;border-spacing: 0px");
     this.styleSheet_.addRule("div, td, img", "margin: 0px; padding: 0px; border: 0px");
@@ -295,17 +278,13 @@ public class WApplication extends WObject {
     this.setLoadingIndicator(new WDefaultLoadingIndicator());
     this.unloaded_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WApplication.this.doUnload();
-          }
+        () -> {
+          WApplication.this.doUnload();
         });
     this.idleTimeout_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WApplication.this.doIdleTimeout();
-          }
+        () -> {
+          WApplication.this.doIdleTimeout();
         });
   }
   /**
@@ -357,7 +336,7 @@ public class WApplication extends WObject {
    *
    * <p>
    *
-   * @see WWidget#setObjectName(String name)
+   * @see WObject#setObjectName(String name)
    * @see WWidget#find(String name)
    */
   public WWidget findWidget(final String name) {
@@ -401,7 +380,7 @@ public class WApplication extends WObject {
    * }</pre>
    */
   public void useStyleSheet(final WLink link, final String media) {
-    this.useStyleSheet(new WCssStyleSheet(link, media));
+    this.useStyleSheet(new WLinkedCssStyleSheet(link, media));
   }
   /**
    * Adds an external style sheet.
@@ -417,12 +396,12 @@ public class WApplication extends WObject {
    * <p>This is an overloaded method for convenience, equivalent to:
    *
    * <pre>{@code
-   * useStyleSheet(Wt::WCssStyleSheet(link, media), condition)
+   * useStyleSheet(Wt::WLinkedCssStyleSheet(link, media), condition)
    *
    * }</pre>
    */
   public void useStyleSheet(final WLink link, final String condition, final String media) {
-    this.useStyleSheet(new WCssStyleSheet(link, media), condition);
+    this.useStyleSheet(new WLinkedCssStyleSheet(link, media), condition);
   }
   /**
    * Adds an external stylesheet.
@@ -453,10 +432,7 @@ public class WApplication extends WObject {
    * @see WApplication#removeStyleSheet(WLink link)
    * @see WWidget#setStyleClass(String styleClass)
    */
-  public void useStyleSheet(final WCssStyleSheet styleSheet, final String condition) {
-    if (styleSheet.getLink().isNull()) {
-      throw new WException("WApplication::useStyleSheet stylesheet must have valid link!");
-    }
+  public void useStyleSheet(final WLinkedCssStyleSheet styleSheet, final String condition) {
     boolean display = true;
     if (condition.length() != 0) {
       display = false;
@@ -475,8 +451,14 @@ public class WApplication extends WObject {
           case IE8:
             thisVersion = 8;
             break;
-          default:
+          case IE9:
             thisVersion = 9;
+            break;
+          case IE10:
+            thisVersion = 10;
+            break;
+          default:
+            thisVersion = 11;
             break;
         }
         final int lte = 0;
@@ -565,10 +547,10 @@ public class WApplication extends WObject {
   /**
    * Adds an external stylesheet.
    *
-   * <p>Calls {@link #useStyleSheet(WCssStyleSheet styleSheet, String condition)
+   * <p>Calls {@link #useStyleSheet(WLinkedCssStyleSheet styleSheet, String condition)
    * useStyleSheet(styleSheet, "")}
    */
-  public final void useStyleSheet(final WCssStyleSheet styleSheet) {
+  public final void useStyleSheet(final WLinkedCssStyleSheet styleSheet) {
     useStyleSheet(styleSheet, "");
   }
   /**
@@ -582,7 +564,7 @@ public class WApplication extends WObject {
   public void removeStyleSheet(final WLink link) {
     for (int i = (int) this.styleSheets_.size() - 1; i > -1; --i) {
       if (this.styleSheets_.get(i).getLink().equals(link)) {
-        final WCssStyleSheet sheet = this.styleSheets_.get(i);
+        final WLinkedCssStyleSheet sheet = this.styleSheets_.get(i);
         this.styleSheetsToRemove_.add(sheet);
         if (i > (int) this.styleSheets_.size() + this.styleSheetsAdded_ - 1) {
           this.styleSheetsAdded_--;
@@ -601,7 +583,7 @@ public class WApplication extends WObject {
    *
    * <p>The default theme is &quot;default&quot; CSS theme.
    */
-  public void setTheme(WTheme theme) {
+  public void setTheme(final WTheme theme) {
     this.theme_ = theme;
   }
   /** Returns the theme. */
@@ -621,12 +603,12 @@ public class WApplication extends WObject {
    * a stub CSS theme that does not load any stylesheets.
    */
   public void setCssTheme(final String theme) {
-    this.setTheme(new WCssTheme(theme, this));
+    this.setTheme(new WCssTheme(theme));
   }
   /**
    * Sets the layout direction.
    *
-   * <p>The default direction is LeftToRight.
+   * <p>The default direction is {@link LayoutDirection#LeftToRight}.
    *
    * <p>This sets the language text direction, which by itself sets the default text alignment and
    * reverse the column orders of &lt;table&gt; elements.
@@ -634,14 +616,17 @@ public class WApplication extends WObject {
    * <p>In addition, JWt will take this setting into account in {@link WTextEdit}, {@link
    * WTableView} and {@link WTreeView} (so that columns are reverted), and swap the behaviour of
    * {@link WWidget#setFloatSide(Side s) WWidget#setFloatSide()} and {@link
-   * WWidget#setOffsets(WLength offset, EnumSet sides) WWidget#setOffsets()} for RightToLeft
-   * languages. Note that CSS settings themselves are not affected by this setting, and thus for
-   * example <code>&quot;float: right&quot;</code> will move a box to the right, irrespective of the
-   * layout direction.
+   * WWidget#setOffsets(WLength offset, EnumSet sides) WWidget#setOffsets()} for {@link
+   * LayoutDirection#RightToLeft} languages. Note that CSS settings themselves are not affected by
+   * this setting, and thus for example <code>&quot;float: right&quot;</code> will move a box to the
+   * right, irrespective of the layout direction.
    *
    * <p>The library sets <code>&quot;Wt-ltr&quot;</code> or <code>&quot;Wt-rtl&quot;</code> as style
    * classes for the document body. You may use this if to override certain style rules for a
    * Right-to-Left document.
+   *
+   * <p>The only valid values are {@link LayoutDirection#LeftToRight} or {@link
+   * LayoutDirection#RightToLeft}.
    *
    * <p>For example:
    *
@@ -799,7 +784,7 @@ public class WApplication extends WObject {
    * @see WApplication#getLocalizedStrings()
    * @see WString#tr(String key)
    */
-  public void setLocalizedStrings(WLocalizedStrings translator) {
+  public void setLocalizedStrings(final WLocalizedStrings translator) {
     if (!(this.localizedStrings_ != null)) {
       this.localizedStrings_ = new WCombinedLocalizedStrings();
       WXmlLocalizedStrings defaultMessages = new WXmlLocalizedStrings();
@@ -807,9 +792,7 @@ public class WApplication extends WObject {
       this.localizedStrings_.add(defaultMessages);
     }
     if (this.localizedStrings_.getItems().size() > 1) {
-      WLocalizedStrings previous = this.localizedStrings_.getItems().get(0);
-      this.localizedStrings_.remove(previous);
-      ;
+      this.localizedStrings_.remove(this.localizedStrings_.getItems().get(0));
     }
     if (translator != null) {
       this.localizedStrings_.insert(0, translator);
@@ -866,9 +849,6 @@ public class WApplication extends WObject {
    * @see WWidget#refresh()
    */
   public void refresh() {
-    if (this.localizedStrings_ != null) {
-      this.localizedStrings_.refresh();
-    }
     if (this.domRoot2_ != null) {
       this.domRoot2_.refresh();
     } else {
@@ -882,7 +862,7 @@ public class WApplication extends WObject {
     }
   }
   /**
-   * Binds a top-level widget for a WidgetSet deployment.
+   * Binds a top-level widget for a {@link EntryPointType#WidgetSet} deployment.
    *
    * <p>This method binds a <code>widget</code> to an existing element with DOM id <code>domId
    * </code> on the page. The element type should correspond with the widget type (e.g. it should be
@@ -1057,11 +1037,11 @@ public class WApplication extends WObject {
    *
    * <p>You can use {@link WApplication#getBookmarkUrl() getBookmarkUrl()} as the destination for a
    * {@link WAnchor}, and listen to a click event is attached to a slot that switches to the
-   * internal path <code>internalPath</code> (see {@link WAnchor#setRefInternalPath(String path)
-   * WAnchor#setRefInternalPath()}). In this way, an anchor can be used to switch between internal
-   * paths within an application regardless of the situation (browser with or without Ajax support,
-   * or a web spider bot), but still generates suitable URLs across sessions, which can be used for
-   * bookmarking, opening in a new window/tab, or indexing.
+   * internal path <code>internalPath</code> (see WAnchor::setRefInternalPath()). In this way, an
+   * anchor can be used to switch between internal paths within an application regardless of the
+   * situation (browser with or without Ajax support, or a web spider bot), but still generates
+   * suitable URLs across sessions, which can be used for bookmarking, opening in a new window/tab,
+   * or indexing.
    *
    * <p>To obtain a URL that refers to the current session of the application, use {@link
    * WApplication#url(String internalPath) url()} instead.
@@ -1508,7 +1488,7 @@ public class WApplication extends WObject {
    * the event loop.
    *
    * <p>You need to take this lock only when you want to manipulate widgets outside of the event
-   * loop. Inside the event loop, this lock is already held by the library itself.
+   * loop. LabelOption::Inside the event loop, this lock is already held by the library itself.
    *
    * <p>
    *
@@ -1583,7 +1563,7 @@ public class WApplication extends WObject {
     if (attach) {
       WebSession.Handler.attachThreadToSession(this.session_);
     } else {
-      WebSession.Handler.attachThreadToSession((WebSession) null);
+      WebSession.Handler.attachThreadToSession(null);
     }
   }
   /**
@@ -1663,7 +1643,8 @@ public class WApplication extends WObject {
    * <p>Loads a JavaScript library located at the URL <code>url</code>. JWt keeps track of libraries
    * (with the same URL) that already have been loaded, and will load a library only once. In
    * addition, you may provide a <code>symbol</code> which if already defined will also indicate
-   * that the library was already loaded (possibly outside of JWt when in WidgetSet mode).
+   * that the library was already loaded (possibly outside of JWt when in {@link
+   * EntryPointType#WidgetSet} mode).
    *
    * <p>This method returns <code>true</code> only when the library is loaded for the first time.
    *
@@ -1731,8 +1712,9 @@ public class WApplication extends WObject {
    * Sets the name of the application JavaScript class.
    *
    * <p>This should be called right after construction of the application, and changing the
-   * JavaScript class is only supported for WidgetSet mode applications. The <code>className</code>
-   * should be a valid JavaScript identifier, and should also be unique in a single page.
+   * JavaScript class is only supported for {@link EntryPointType#WidgetSet} mode applications. The
+   * <code>className</code> should be a valid JavaScript identifier, and should also be unique in a
+   * single page.
    */
   public void setJavaScriptClass(final String javaScriptClass) {
     if (this.session_.getType() != EntryPointType.Application) {
@@ -1797,33 +1779,8 @@ public class WApplication extends WObject {
       return value;
     }
   }
-  /**
-   * Sets the Ajax communication method (<b>deprecated</b>).
-   *
-   * <p>This method has no effect.
-   *
-   * <p>Since JWt 3.1.8, a communication method that works is detected at run time. For widget set
-   * mode, cross-domain Ajax is chosen if available.
-   *
-   * <p>
-   *
-   * @deprecated this setting is no longer needed.
-   */
-  public void setAjaxMethod(WApplication.AjaxMethod method) {
-    this.ajaxMethod_ = method;
-  }
-  /**
-   * Returns the Ajax communication method (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @see WApplication#setAjaxMethod(WApplication.AjaxMethod method)
-   */
-  public WApplication.AjaxMethod getAjaxMethod() {
-    return this.ajaxMethod_;
-  }
 
-  WContainerWidget getDomRoot() {
+  public WWebWidget getDomRoot() {
     return this.domRoot_;
   }
 
@@ -2032,7 +1989,7 @@ public class WApplication extends WObject {
    *     lang)
    */
   public void addMetaHeader(final String name, final CharSequence content, final String lang) {
-    this.addMetaHeader(MetaHeaderType.MetaName, name, content, lang);
+    this.addMetaHeader(MetaHeaderType.Meta, name, content, lang);
   }
   /**
    * Adds a &quot;name&quot; HTML meta header.
@@ -2163,24 +2120,26 @@ public class WApplication extends WObject {
    * JavaScript is being evaluated.
    *
    * <p>The default loading indicator is a {@link WDefaultLoadingIndicator}.
-   *
-   * <p>When setting a new loading indicator, the previous one is deleted.
    */
   public void setLoadingIndicator(WLoadingIndicator indicator) {
     if (!(this.loadingIndicator_ != null)) {
       this.showLoadingIndicator_.addListener(this.showLoadJS);
       this.hideLoadingIndicator_.addListener(this.hideLoadJS);
     }
-    ;
+    if (this.loadingIndicator_ != null) {
+      {
+        WWidget toRemove = this.loadingIndicator_.removeFromParent();
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     this.loadingIndicator_ = indicator;
     if (this.loadingIndicator_ != null) {
-      this.loadingIndicatorWidget_ = indicator.getWidget();
-      this.domRoot_.addWidget(this.loadingIndicatorWidget_);
+      this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt3_6_0.inline('" + this.loadingIndicatorWidget_.getId() + "');}");
+          "function(o,e) {Wt4_4_0.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt3_6_0.hide('" + this.loadingIndicatorWidget_.getId() + "');}");
-      this.loadingIndicatorWidget_.hide();
+          "function(o,e) {Wt4_4_0.hide('" + this.loadingIndicator_.getId() + "');}");
+      this.loadingIndicator_.hide();
     }
   }
   /**
@@ -2197,7 +2156,7 @@ public class WApplication extends WObject {
   String getOnePixelGifUrl() {
     if (this.getEnvironment().agentIsIElt(7)) {
       if (!(this.onePixelGifR_ != null)) {
-        WMemoryResource w = new WMemoryResource("image/gif", this);
+        WMemoryResource w = new WMemoryResource("image/gif");
         w.setData(gifData);
         this.onePixelGifR_ = w;
       }
@@ -2244,17 +2203,6 @@ public class WApplication extends WObject {
     this.quittedMessage_ = WString.toWString(restartMessage);
   }
   /**
-   * Returns whether the application has quit. (<b>deprecated</b>)
-   *
-   * <p>
-   *
-   * @see WApplication#quit()
-   * @deprecated {@link WApplication#hasQuit() hasQuit()} is proper English
-   */
-  public boolean isQuited() {
-    return this.quitted_;
-  }
-  /**
    * Returns whether the application has quit.
    *
    * <p>
@@ -2283,10 +2231,6 @@ public class WApplication extends WObject {
    */
   public Signal1<Long> requestTooLarge() {
     return this.requestTooLarge_;
-  }
-
-  boolean isConnected() {
-    return this.connected_;
   }
   /**
    * Event signal emitted when a keyboard key is pushed down.
@@ -2476,7 +2420,11 @@ public class WApplication extends WObject {
     this.domRoot_.addWidget(w);
   }
 
-  public void removeGlobalWidget(WWidget anon1) {}
+  public void removeGlobalWidget(WWidget w) {
+    if (this.domRoot_ != null) {
+      WWidget removed = this.domRoot_.removeWidget(w);
+    }
+  }
   /**
    * Notifies an event to the application.
    *
@@ -2574,7 +2522,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt3_6_0.ajaxInternalPaths("
+        "Wt4_4_0.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2707,10 +2655,10 @@ public class WApplication extends WObject {
   boolean titleChanged_;
   boolean closeMessageChanged_;
   boolean localeChanged_;
-  private WContainerWidget widgetRoot_;
   WContainerWidget domRoot_;
-  WContainerWidget domRoot2_;
+  private WContainerWidget widgetRoot_;
   private WContainerWidget timerRoot_;
+  WContainerWidget domRoot2_;
   private WCssStyleSheet styleSheet_;
   WCombinedLocalizedStrings localizedStrings_;
   private Locale locale_;
@@ -2724,15 +2672,12 @@ public class WApplication extends WObject {
   private int serverPush_;
   boolean serverPushChanged_;
   private String javaScriptClass_;
-  private WApplication.AjaxMethod ajaxMethod_;
   private boolean quitted_;
   WString quittedMessage_;
   private WResource onePixelGifR_;
   boolean internalPathsEnabled_;
   private WWidget exposedOnly_;
-  private WLoadingIndicator loadingIndicator_;
-  WWidget loadingIndicatorWidget_;
-  private boolean connected_;
+  WLoadingIndicator loadingIndicator_;
   String htmlClass_;
   String bodyClass_;
   boolean bodyHtmlClassChanged_;
@@ -2744,8 +2689,8 @@ public class WApplication extends WObject {
   List<WApplication.ScriptLibrary> scriptLibraries_;
   int scriptLibrariesAdded_;
   private WTheme theme_;
-  List<WCssStyleSheet> styleSheets_;
-  List<WCssStyleSheet> styleSheetsToRemove_;
+  List<WLinkedCssStyleSheet> styleSheets_;
+  List<WLinkedCssStyleSheet> styleSheetsToRemove_;
   int styleSheetsAdded_;
   List<MetaHeader> metaHeaders_;
   List<WApplication.MetaLink> metaLinks_;
@@ -2767,7 +2712,6 @@ public class WApplication extends WObject {
   EventSignal hideLoadingIndicator_;
   private JSignal unloaded_;
   private JSignal idleTimeout_;
-  private Map<String, Object> objectStore_;
 
   WContainerWidget getTimerRoot() {
     return this.timerRoot_;
@@ -2921,7 +2865,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt3_6_0";
+              : "Wt4_4_0";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')
@@ -2979,9 +2923,14 @@ public class WApplication extends WObject {
     return this.selectionEnd_;
   }
 
+  private WLocalizedStrings getLocalizedStringsPack() {
+    return this.localizedStrings_;
+  }
+
   SoundManager getSoundManager() {
     if (!(this.soundManager_ != null)) {
-      this.soundManager_ = new SoundManager(this.getDomRoot());
+      this.soundManager_ = new SoundManager();
+      this.domRoot_.addWidget(this.soundManager_);
     }
     return this.soundManager_;
   }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -48,19 +49,20 @@ public class WImage extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WImage.class);
 
   /** Creates an empty image widget. */
-  public WImage(WContainerWidget parent) {
-    super(parent);
+  public WImage(WContainerWidget parentContainer) {
+    super();
     this.altText_ = new WString();
     this.imageLink_ = new WLink();
     this.map_ = null;
     this.flags_ = new BitSet();
     this.targetJS_ = "";
     this.setLoadLaterWhenInvisible(false);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an empty image widget.
    *
-   * <p>Calls {@link #WImage(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WImage(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WImage() {
     this((WContainerWidget) null);
@@ -70,8 +72,8 @@ public class WImage extends WInteractWidget {
    *
    * <p>The <code>imageLink</code> may link to a URL or resource.
    */
-  public WImage(final WLink link, WContainerWidget parent) {
-    super(parent);
+  public WImage(final WLink link, WContainerWidget parentContainer) {
+    super();
     this.altText_ = new WString();
     this.imageLink_ = new WLink();
     this.map_ = null;
@@ -79,11 +81,12 @@ public class WImage extends WInteractWidget {
     this.targetJS_ = "";
     this.setLoadLaterWhenInvisible(false);
     this.setImageLink(link);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an image widget with a given image link.
    *
-   * <p>Calls {@link #WImage(WLink link, WContainerWidget parent) this(link,
+   * <p>Calls {@link #WImage(WLink link, WContainerWidget parentContainer) this(link,
    * (WContainerWidget)null)}
    */
   public WImage(final WLink link) {
@@ -94,8 +97,8 @@ public class WImage extends WInteractWidget {
    *
    * <p>The <code>imageLink</code> may link to a URL or resource.
    */
-  public WImage(final WLink link, final CharSequence altText, WContainerWidget parent) {
-    super(parent);
+  public WImage(final WLink link, final CharSequence altText, WContainerWidget parentContainer) {
+    super();
     this.altText_ = WString.toWString(altText);
     this.imageLink_ = new WLink();
     this.map_ = null;
@@ -103,97 +106,27 @@ public class WImage extends WInteractWidget {
     this.targetJS_ = "";
     this.setLoadLaterWhenInvisible(false);
     this.setImageLink(link);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an image widget with a given image link and alternate text.
    *
-   * <p>Calls {@link #WImage(WLink link, CharSequence altText, WContainerWidget parent) this(link,
-   * altText, (WContainerWidget)null)}
+   * <p>Calls {@link #WImage(WLink link, CharSequence altText, WContainerWidget parentContainer)
+   * this(link, altText, (WContainerWidget)null)}
    */
   public WImage(final WLink link, final CharSequence altText) {
     this(link, altText, (WContainerWidget) null);
   }
-  /**
-   * Creates an image widget with given image URL (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#WImage(WLink link, WContainerWidget parent) WImage()} instead.
-   */
-  public WImage(final String imageRef, WContainerWidget parent) {
-    super(parent);
-    this.altText_ = new WString();
-    this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
-    this.map_ = null;
-    this.flags_ = new BitSet();
-    this.targetJS_ = "";
-    this.setLoadLaterWhenInvisible(false);
-  }
-  /**
-   * Creates an image widget with given image URL (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #WImage(String imageRef, WContainerWidget parent) this(imageRef,
-   * (WContainerWidget)null)}
-   */
-  public WImage(final String imageRef) {
-    this(imageRef, (WContainerWidget) null);
-  }
-  /**
-   * Creates an image widget with given image URL and alternate text (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#WImage(WLink link, CharSequence altText, WContainerWidget parent)
-   *     WImage()} instead.
-   */
-  public WImage(final String imageRef, final CharSequence altText, WContainerWidget parent) {
-    super(parent);
-    this.altText_ = WString.toWString(altText);
-    this.imageLink_ = new WLink(WLink.Type.Url, imageRef);
-    this.map_ = null;
-    this.flags_ = new BitSet();
-    this.targetJS_ = "";
-    this.setLoadLaterWhenInvisible(false);
-  }
-  /**
-   * Creates an image widget with given image URL and alternate text (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #WImage(String imageRef, CharSequence altText, WContainerWidget parent)
-   * this(imageRef, altText, (WContainerWidget)null)}
-   */
-  public WImage(final String imageRef, final CharSequence altText) {
-    this(imageRef, altText, (WContainerWidget) null);
-  }
-  /**
-   * Creates an image widget with given image resource and alternate text (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#WImage(WLink link, CharSequence altText, WContainerWidget parent)
-   *     WImage()} instead.
-   */
-  public WImage(WResource resource, final CharSequence altText, WContainerWidget parent) {
-    super(parent);
-    this.altText_ = WString.toWString(altText);
-    this.imageLink_ = new WLink();
-    this.map_ = null;
-    this.flags_ = new BitSet();
-    this.targetJS_ = "";
-    this.setLoadLaterWhenInvisible(false);
-    this.setImageLink(new WLink(resource));
-  }
-  /**
-   * Creates an image widget with given image resource and alternate text (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #WImage(WResource resource, CharSequence altText, WContainerWidget parent)
-   * this(resource, altText, (WContainerWidget)null)}
-   */
-  public WImage(WResource resource, final CharSequence altText) {
-    this(resource, altText, (WContainerWidget) null);
-  }
 
   public void remove() {
-    if (this.map_ != null) this.map_.remove();
+    {
+      WWidget oldWidget = this.map_;
+      this.map_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.map_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     super.remove();
   }
   /**
@@ -236,73 +169,27 @@ public class WImage extends WInteractWidget {
    * application-dependent content, which may be used to generate an image on demand.
    */
   public void setImageLink(final WLink link) {
-    if (link.getType() != WLink.Type.Resource
+    if (link.getType() != LinkType.Resource
         && canOptimizeUpdates()
         && link.equals(this.imageLink_)) {
       return;
     }
     this.imageLink_ = link;
-    if (link.getType() == WLink.Type.Resource) {
+    if (link.getType() == LinkType.Resource) {
       link.getResource()
           .dataChanged()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WImage.this.resourceChanged();
-                }
+              () -> {
+                WImage.this.resourceChanged();
               });
     }
     this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /** Returns the image link. */
   public WLink getImageLink() {
     return this.imageLink_;
-  }
-  /**
-   * Sets the image URL (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()} instead.
-   */
-  public void setImageRef(final String ref) {
-    this.setImageLink(new WLink(ref));
-  }
-  /**
-   * Returns the image URL (<b>deprecated</b>).
-   *
-   * <p>When the image is specified as a resource, this returns the current resource URL.
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#getImageLink() getImageLink()} instead.
-   */
-  public String getImageRef() {
-    return this.imageLink_.getUrl();
-  }
-  /**
-   * Sets the image resource (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()} instead.
-   */
-  public void setResource(WResource resource) {
-    this.setImageLink(new WLink(resource));
-  }
-  /**
-   * Returns the image resource (<b>deprecated</b>.
-   *
-   * <p>Returns <code>null</code> if no image resource was set.
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WImage#setImageLink(WLink link) setImageLink()} instead.
-   */
-  public WResource getResource() {
-    return this.imageLink_.getResource();
   }
   /**
    * Adds an interactive area.
@@ -315,13 +202,13 @@ public class WImage extends WInteractWidget {
    *
    * <p>
    *
-   * @see WImage#insertArea(int index, WAbstractArea area)
-   *     <p><i><b>Note: </b>Currently it is not possible to add a first area after the image has
-   *     been rendered. If you want to use interactive areas you need to add one immediately. </i>
+   * <p><i><b>Note: </b>Currently it is not possible to add a first area after the image has been
+   * rendered. If you want to use interactive areas you need to add one immediately. </i>
    */
   public void addArea(WAbstractArea area) {
     this.insertArea(this.map_ != null ? this.map_.getCount() : 0, area);
   }
+  // public Area  addArea(<Woow... some pseudoinstantiation type!> area) ;
   /**
    * Inserts an interactive area.
    *
@@ -339,27 +226,37 @@ public class WImage extends WInteractWidget {
    */
   public void insertArea(int index, WAbstractArea area) {
     if (!(this.map_ != null)) {
-      this.addChild(this.map_ = new MapWidget());
+      MapWidget map = new MapWidget();
+      {
+        WWidget oldWidget = this.map_;
+        this.map_ = map;
+        {
+          WWidget toRemove = this.manageWidget(oldWidget, this.map_);
+          if (toRemove != null) toRemove.remove();
+        }
+      }
       this.flags_.set(BIT_MAP_CREATED);
       this.repaint();
     }
-    this.map_.insertWidget(index, area.getImpl());
+    this.map_.insertArea(index, area);
   }
+  // public Area  insertArea(int index, <Woow... some pseudoinstantiation type!> area) ;
   /**
    * Removes an interactive area.
    *
-   * <p>Removes the <code>area</code> from this widget, and also returns the ownership.
+   * <p>Removes the <code>area</code> from this widget.
    *
    * <p>
-   *
-   * @see WImage#addArea(WAbstractArea area)
    */
-  public void removeArea(WAbstractArea area) {
-    if (!(this.map_ != null)) {
-      logger.error(new StringWriter().append("removeArea(): no such area").toString());
-      return;
+  public WAbstractArea removeArea(WAbstractArea area) {
+    WAbstractArea result = null;
+    if (this.map_ != null) {
+      result = this.map_.removeArea(area);
     }
-    this.map_.removeWidget(area.getImpl());
+    if (!(result != null)) {
+      logger.error(new StringWriter().append("removeArea(): area was not found").toString());
+    }
+    return result;
   }
   /**
    * Returns the interactive area at the given index.
@@ -367,12 +264,10 @@ public class WImage extends WInteractWidget {
    * <p>Returns <code>null</code> if <code>index</code> was invalid.
    *
    * <p>
-   *
-   * @see WImage#insertArea(int index, WAbstractArea area)
    */
   public WAbstractArea getArea(int index) {
     if (this.map_ != null && index < this.map_.getCount()) {
-      return WAbstractArea.areaForImpl(this.map_.getWidget(index));
+      return this.map_.area(index);
     } else {
       return null;
     }
@@ -388,7 +283,7 @@ public class WImage extends WInteractWidget {
     List<WAbstractArea> result = new ArrayList<WAbstractArea>();
     if (this.map_ != null) {
       for (int i = 0; i < this.map_.getCount(); ++i) {
-        result.add(WAbstractArea.areaForImpl(this.map_.getWidget(i)));
+        result.add(this.map_.area(i));
       }
     }
     return result;
@@ -435,12 +330,12 @@ public class WImage extends WInteractWidget {
 
   private void resourceChanged() {
     this.flags_.set(BIT_IMAGE_LINK_CHANGED);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
 
   protected void getDomChanges(final List<DomElement> result, WApplication app) {
     if (this.map_ != null) {
-      DomElement e = DomElement.getForUpdate("i" + this.getId(), DomElementType.DomElement_IMG);
+      DomElement e = DomElement.getForUpdate("i" + this.getId(), DomElementType.IMG);
       this.updateDom(e, false);
       result.add(e);
     } else {
@@ -450,10 +345,10 @@ public class WImage extends WInteractWidget {
 
   void updateDom(final DomElement element, boolean all) {
     DomElement img = element;
-    if (all && element.getType() == DomElementType.DomElement_SPAN) {
+    if (all && element.getType() == DomElementType.SPAN) {
       DomElement map = this.map_.createSDomElement(WApplication.getInstance());
       element.addChild(map);
-      img = DomElement.createNew(DomElementType.DomElement_IMG);
+      img = DomElement.createNew(DomElementType.IMG);
       img.setId("i" + this.getId());
     }
     if (this.flags_.get(BIT_IMAGE_LINK_CHANGED) || all) {
@@ -465,7 +360,7 @@ public class WImage extends WInteractWidget {
       } else {
         url = app.getOnePixelGifUrl();
       }
-      img.setProperty(Property.PropertySrc, url);
+      img.setProperty(Property.Src, url);
       this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
     }
     if (this.flags_.get(BIT_ALT_TEXT_CHANGED) || all) {
@@ -486,7 +381,7 @@ public class WImage extends WInteractWidget {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WImage.js", wtjs1());
     StringBuilder ss = new StringBuilder();
-    ss.append("new Wt3_6_0.WImage(")
+    ss.append("new Wt4_4_0.WImage(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())
@@ -497,7 +392,7 @@ public class WImage extends WInteractWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       if (this.targetJS_.length() != 0) {
         this.defineJavaScript();
       }
@@ -506,7 +401,7 @@ public class WImage extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    return this.map_ != null ? DomElementType.DomElement_SPAN : DomElementType.DomElement_IMG;
+    return this.map_ != null ? DomElementType.SPAN : DomElementType.IMG;
   }
 
   void propagateRenderOk(boolean deep) {

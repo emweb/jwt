@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,7 +35,8 @@ class WTreeViewNode extends WContainerWidget {
     this.childrenHeight_ = childrenHeight;
     this.parentNode_ = parent;
     this.childrenLoaded_ = false;
-    this.nodeWidget_ = new WTemplate(tr("Wt.WTreeViewNode.template"), this);
+    this.nodeWidget_ = new WTemplate(tr("Wt.WTreeViewNode.template"));
+    this.addWidget(this.nodeWidget_);
     this.nodeWidget_.setStyleClass("Wt-item");
     this.nodeWidget_.bindEmpty("cols-row");
     this.nodeWidget_.bindEmpty("expand");
@@ -66,7 +68,7 @@ class WTreeViewNode extends WContainerWidget {
         || (this.index_ != null && this.index_.equals(this.view_.getRootIndex())))) {
       this.updateGraphics(isLast, !this.view_.getModel().hasChildren(this.index_));
       this.insertColumns(0, this.view_.getColumnCount());
-      if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows
+      if (this.view_.getSelectionBehavior() == SelectionBehavior.Rows
           && this.view_.isSelected(this.index_)) {
         this.renderSelected(true, 0);
       }
@@ -94,29 +96,32 @@ class WTreeViewNode extends WContainerWidget {
       WModelIndex child = i < thisNodeCount ? this.childIndex(i) : null;
       WWidget w = this.getCellWidget(i);
       EnumSet<ViewItemRenderFlag> renderFlags = EnumSet.noneOf(ViewItemRenderFlag.class);
-      if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectItems
+      if (this.view_.getSelectionBehavior() == SelectionBehavior.Items
           && this.view_.isSelected(child)) {
-        renderFlags.add(ViewItemRenderFlag.RenderSelected);
+        renderFlags.add(ViewItemRenderFlag.Selected);
       }
       if (this.view_.isEditing(child)) {
-        renderFlags.add(ViewItemRenderFlag.RenderEditing);
+        renderFlags.add(ViewItemRenderFlag.Editing);
         if (this.view_.hasEditFocus(child)) {
-          renderFlags.add(ViewItemRenderFlag.RenderFocused);
+          renderFlags.add(ViewItemRenderFlag.Focused);
         }
       }
       if (!this.view_.isValid(child)) {
-        renderFlags.add(ViewItemRenderFlag.RenderInvalid);
+        renderFlags.add(ViewItemRenderFlag.Invalid);
       }
-      w = this.view_.getItemDelegate(i).update(w, child, renderFlags);
-      if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
+      WWidget wAfter = this.view_.getItemDelegate(i).update(w, child, renderFlags);
+      if (wAfter != null) {
+        w = wAfter;
+      }
+      if (renderFlags.contains(ViewItemRenderFlag.Editing)) {
         this.view_.setEditorWidget(child, w);
       }
-      if (!(w.getParent() != null)) {
-        this.setCellWidget(i, w);
-        if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
+      if (wAfter != null) {
+        this.setCellWidget(i, wAfter);
+        if (renderFlags.contains(ViewItemRenderFlag.Editing)) {
           Object state = this.view_.getEditState(child);
-          if (!(state == null)) {
-            this.view_.getItemDelegate(i).setEditState(w, state);
+          if ((state != null)) {
+            this.view_.getItemDelegate(i).setEditState(w, child, state);
           }
         }
       } else {
@@ -151,26 +156,21 @@ class WTreeViewNode extends WContainerWidget {
             .signal(0)
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WTreeViewNode.this.doExpand();
-                  }
+                () -> {
+                  WTreeViewNode.this.doExpand();
                 });
         expandButton
             .signal(1)
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WTreeViewNode.this.doCollapse();
-                  }
+                () -> {
+                  WTreeViewNode.this.doCollapse();
                 });
         expandButton.setState(this.isExpanded() ? 1 : 0);
       }
     } else {
       WText noExpandIcon = (WText) this.nodeWidget_.resolveWidget("no-expand");
       if (!(noExpandIcon != null)) {
-        this.nodeWidget_.bindEmpty("expand");
         noExpandIcon = new WText();
         this.nodeWidget_.bindWidget("no-expand", noExpandIcon);
         noExpandIcon.setInline(false);
@@ -189,18 +189,23 @@ class WTreeViewNode extends WContainerWidget {
     WContainerWidget row = (WContainerWidget) this.nodeWidget_.resolveWidget("cols-row");
     if (this.view_.getColumnCount() > 1) {
       if (!(row != null)) {
-        row = new WContainerWidget();
+        WContainerWidget newRow = new WContainerWidget();
         if (this.view_.getRowHeaderCount() != 0) {
-          row.setStyleClass("Wt-tv-rowc rh");
+          newRow.setStyleClass("Wt-tv-rowc rh");
           WContainerWidget rowWrap = new WContainerWidget();
-          rowWrap.addWidget(row);
-          row = rowWrap;
+          rowWrap.addWidget(newRow);
+          newRow = rowWrap;
         }
-        row.setStyleClass("Wt-tv-row rh");
-        this.nodeWidget_.bindWidget("cols-row", row);
+        newRow.setStyleClass("Wt-tv-row rh");
+        this.nodeWidget_.bindWidget("cols-row", newRow);
       }
     } else {
-      if (row != null) row.remove();
+      if (row != null) {
+        {
+          WWidget toRemove = row.removeFromParent();
+          if (toRemove != null) toRemove.remove();
+        }
+      }
     }
     this.update(0, this.view_.getColumnCount() - 1);
   }
@@ -299,7 +304,11 @@ class WTreeViewNode extends WContainerWidget {
 
   public void setTopSpacerHeight(int rows) {
     if (rows == 0) {
-      if (this.topSpacer() != null) this.topSpacer().remove();
+      {
+        WWidget toRemove = WidgetUtils.remove(this.getChildContainer(), this.topSpacer());
+        if (toRemove != null) toRemove.remove();
+      }
+
     } else {
       this.topSpacer(true).setRows(rows);
     }
@@ -316,7 +325,13 @@ class WTreeViewNode extends WContainerWidget {
 
   public void setBottomSpacerHeight(int rows) {
     if (!(rows != 0)) {
-      if (this.bottomSpacer() != null) this.bottomSpacer().remove();
+      RowSpacer bottom = this.bottomSpacer();
+      if (bottom != null) {
+        {
+          WWidget toRemove = bottom.removeFromParent();
+          if (toRemove != null) toRemove.remove();
+        }
+      }
     } else {
       this.bottomSpacer(true).setRows(rows);
     }
@@ -377,7 +392,8 @@ class WTreeViewNode extends WContainerWidget {
 
   public WContainerWidget getChildContainer() {
     if (!(this.childContainer_ != null)) {
-      this.childContainer_ = new WContainerWidget(this);
+      this.childContainer_ = new WContainerWidget();
+      this.addWidget(this.childContainer_);
       this.childContainer_.setList(true);
       if ((this.index_ == this.view_.getRootIndex()
           || (this.index_ != null && this.index_.equals(this.view_.getRootIndex())))) {
@@ -455,7 +471,12 @@ class WTreeViewNode extends WContainerWidget {
       RowSpacer bottom = this.bottomSpacer();
       if (top != null && bottom != null && top != bottom) {
         top.setRows(top.getRows() + bottom.getRows());
-        if (bottom != null) bottom.remove();
+        if (bottom != null) {
+          {
+            WWidget toRemove = bottom.removeFromParent();
+            if (toRemove != null) toRemove.remove();
+          }
+        }
       }
     }
   }
@@ -536,7 +557,7 @@ class WTreeViewNode extends WContainerWidget {
 
   public void renderSelected(boolean selected, int column) {
     String cl = WApplication.getInstance().getTheme().getActiveClass();
-    if (this.view_.getSelectionBehavior() == SelectionBehavior.SelectRows) {
+    if (this.view_.getSelectionBehavior() == SelectionBehavior.Rows) {
       this.nodeWidget_.toggleStyleClass(cl, selected);
     } else {
       WWidget w = this.getCellWidget(column);
@@ -625,6 +646,18 @@ class WTreeViewNode extends WContainerWidget {
     if (current != null) {
       current.setStyleClass(WString.Empty.toString());
     }
+    if (!WApplication.getInstance().getEnvironment().hasAjax()) {
+      WInteractWidget wi = ((newW) instanceof WInteractWidget ? (WInteractWidget) (newW) : null);
+      final WModelIndex ci = this.childIndex(column);
+      if (wi != null) {
+        wi.clicked()
+            .addListener(
+                this.view_,
+                (WMouseEvent event) -> {
+                  WTreeViewNode.this.view_.handleClick(ci, event);
+                });
+      }
+    }
     if (column == 0) {
       newW.setInline(false);
       this.nodeWidget_.bindWidget("col0", newW);
@@ -636,14 +669,13 @@ class WTreeViewNode extends WContainerWidget {
                 ? (WContainerWidget) (row.getWidget(0))
                 : null);
       }
-      if (current != null) current.remove();
-      row.insertWidget(column - 1, newW);
-    }
-    if (!WApplication.getInstance().getEnvironment().hasAjax()) {
-      WInteractWidget wi = ((newW) instanceof WInteractWidget ? (WInteractWidget) (newW) : null);
-      if (wi != null) {
-        this.view_.clickedMapper_.mapConnect1(wi.clicked(), this.childIndex(column));
+      if (current != null) {
+        {
+          WWidget toRemove = current.removeFromParent();
+          if (toRemove != null) toRemove.remove();
+        }
       }
+      row.insertWidget(column - 1, newW);
     }
   }
 

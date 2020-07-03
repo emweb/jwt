@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -47,30 +48,16 @@ import org.slf4j.LoggerFactory;
  * following localization keys:
  *
  * <ul>
- *   <li>{@link WValidator.State#Invalid Wt.WValidator.Invalid}: This field cannot be empty
+ *   <li>Wt.WValidator.Invalid: This field cannot be empty
  * </ul>
  *
  * <p>
  *
  * @see WFormWidget
  */
-public class WValidator extends WObject {
+public class WValidator {
   private static Logger logger = LoggerFactory.getLogger(WValidator.class);
 
-  /** The state in which validated input can exist. */
-  public enum State {
-    /** The input is invalid. */
-    Invalid,
-    /** The input is invalid (empty and mandatory). */
-    InvalidEmpty,
-    /** The input is valid. */
-    Valid;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * A class that holds a validation result.
    *
@@ -85,7 +72,7 @@ public class WValidator extends WObject {
      * <p>Creates an invalid result.
      */
     public Result() {
-      this.state_ = WValidator.State.Invalid;
+      this.state_ = ValidationState.Invalid;
       this.message_ = new WString();
     }
     /**
@@ -93,7 +80,7 @@ public class WValidator extends WObject {
      *
      * <p>Creates a result with given <code>state</code> and <code>message</code>.
      */
-    public Result(WValidator.State state, final CharSequence message) {
+    public Result(ValidationState state, final CharSequence message) {
       this.state_ = state;
       this.message_ = WString.toWString(message);
     }
@@ -103,12 +90,12 @@ public class WValidator extends WObject {
      * <p>Creates a result with given <code>state</code> and initalizes the message field to an
      * empty {@link WString}.
      */
-    public Result(WValidator.State state) {
+    public Result(ValidationState state) {
       this.state_ = state;
       this.message_ = WString.Empty;
     }
     /** Returns the validation state. */
-    public WValidator.State getState() {
+    public ValidationState getState() {
       return this.state_;
     }
     /** Returns the validation message. */
@@ -116,23 +103,8 @@ public class WValidator extends WObject {
       return this.message_;
     }
 
-    private WValidator.State state_;
+    private ValidationState state_;
     private WString message_;
-  }
-  /** Creates a new validator. */
-  public WValidator(WObject parent) {
-    super(parent);
-    this.mandatory_ = false;
-    this.mandatoryText_ = new WString();
-    this.formWidgets_ = new ArrayList<WFormWidget>();
-  }
-  /**
-   * Creates a new validator.
-   *
-   * <p>Calls {@link #WValidator(WObject parent) this((WObject)null)}
-   */
-  public WValidator() {
-    this((WObject) null);
   }
   /**
    * Creates a new validator.
@@ -143,8 +115,7 @@ public class WValidator extends WObject {
    *
    * @see WValidator#setMandatory(boolean mandatory)
    */
-  public WValidator(boolean mandatory, WObject parent) {
-    super(parent);
+  public WValidator(boolean mandatory) {
     this.mandatory_ = mandatory;
     this.mandatoryText_ = new WString();
     this.formWidgets_ = new ArrayList<WFormWidget>();
@@ -152,10 +123,10 @@ public class WValidator extends WObject {
   /**
    * Creates a new validator.
    *
-   * <p>Calls {@link #WValidator(boolean mandatory, WObject parent) this(mandatory, (WObject)null)}
+   * <p>Calls {@link #WValidator(boolean mandatory) this(false)}
    */
-  public WValidator(boolean mandatory) {
-    this(mandatory, (WObject) null);
+  public WValidator() {
+    this(false);
   }
   /**
    * Sets if input is mandatory.
@@ -205,10 +176,10 @@ public class WValidator extends WObject {
   public WValidator.Result validate(final String input) {
     if (this.isMandatory()) {
       if (input.length() == 0) {
-        return new WValidator.Result(WValidator.State.InvalidEmpty, this.getInvalidBlankText());
+        return new WValidator.Result(ValidationState.InvalidEmpty, this.getInvalidBlankText());
       }
     }
-    return new WValidator.Result(WValidator.State.Valid);
+    return new WValidator.Result(ValidationState.Valid);
   }
   /**
    * Returns the validator format.
@@ -218,7 +189,6 @@ public class WValidator extends WObject {
   public String getFormat() {
     return "";
   }
-  // public void createExtConfig(final Writer config) throws IOException;
   /**
    * Creates a Javascript object that validates the input.
    *

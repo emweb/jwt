@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,17 +27,9 @@ public abstract class WAbstractChartModel extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WAbstractChartModel.class);
 
   /** Creates a new chart model. */
-  public WAbstractChartModel(WObject parent) {
-    super(parent);
-    this.changed_ = new Signal();
-  }
-  /**
-   * Creates a new chart model.
-   *
-   * <p>Calls {@link #WAbstractChartModel(WObject parent) this((WObject)null)}
-   */
   public WAbstractChartModel() {
-    this((WObject) null);
+    super();
+    this.changed_ = new Signal();
   }
   /**
    * Returns data at a given row and column.
@@ -109,8 +102,8 @@ public abstract class WAbstractChartModel extends WObject {
   /**
    * Returns the marker pen color to use for a given row and column.
    *
-   * <p>This is used as the color of the outline of markers when drawing a PointSeries. The default
-   * is null, indicating that the default color, as determined by {@link
+   * <p>This is used as the color of the outline of markers when drawing a {@link SeriesType#Point}.
+   * The default is null, indicating that the default color, as determined by {@link
    * WDataSeries#getMarkerPen()}, should be used.
    *
    * <p>
@@ -123,9 +116,9 @@ public abstract class WAbstractChartModel extends WObject {
   /**
    * Returns the marker brush color to use for a given row and column.
    *
-   * <p>This is used as the color of the brush used when drawing a PointSeries. The default is null,
-   * indicating that the default color, as determined by {@link WDataSeries#getMarkerBrush()},
-   * should be used.
+   * <p>This is used as the color of the brush used when drawing a {@link SeriesType#Point}. The
+   * default is null, indicating that the default color, as determined by {@link
+   * WDataSeries#getMarkerBrush()}, should be used.
    *
    * <p>
    *
@@ -151,9 +144,9 @@ public abstract class WAbstractChartModel extends WObject {
   /**
    * Returns the bar pen color to use for a given row and column.
    *
-   * <p>This is used as the color of the outline of bars when drawing a BarSeries. The default is
-   * null, indicating that the default color, as determined by {@link WDataSeries#getPen()}, should
-   * be used.
+   * <p>This is used as the color of the outline of bars when drawing a {@link SeriesType#Bar}. The
+   * default is null, indicating that the default color, as determined by {@link
+   * WDataSeries#getPen()}, should be used.
    *
    * <p>
    *
@@ -165,9 +158,9 @@ public abstract class WAbstractChartModel extends WObject {
   /**
    * Returns the bar brush color to use for a given row and column.
    *
-   * <p>This is used as the color of the brush used when drawing a BarSeries. The default is null,
-   * indicating that the default color, as determined by {@link WDataSeries#getBrush()}, should be
-   * used.
+   * <p>This is used as the color of the brush used when drawing a {@link SeriesType#Bar}. The
+   * default is null, indicating that the default color, as determined by {@link
+   * WDataSeries#getBrush()}, should be used.
    *
    * <p>
    *
@@ -179,8 +172,8 @@ public abstract class WAbstractChartModel extends WObject {
   /**
    * Returns the marker scale factor to use for a given row and column.
    *
-   * <p>This is used to scale the size of the marker when drawing a PointSeries. The default is
-   * null, indicating that the default scale should be used.
+   * <p>This is used to scale the size of the marker when drawing a {@link SeriesType#Point}. The
+   * default is null, indicating that the default scale should be used.
    */
   public Double getMarkerScaleFactor(int row, int column) {
     return null;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -27,7 +28,7 @@ class WTimerWidget extends WInteractWidget {
   }
 
   public void remove() {
-    this.timer_.timerWidget_ = null;
+    this.timer_.timerWidget_ = (WTimerWidget) null;
     super.remove();
   }
 
@@ -54,7 +55,8 @@ class WTimerWidget extends WInteractWidget {
         || (!WApplication.getInstance().getEnvironment().hasJavaScript() || all)
             && this.timer_.isActive()) {
       if (this.jsRepeat_) {
-        element.setTimeout(this.timer_.getRemainingInterval(), this.timer_.getInterval());
+        element.setTimeout(
+            this.timer_.getRemainingInterval(), (int) this.timer_.getInterval().toMillis());
       } else {
         element.setTimeout(this.timer_.getRemainingInterval(), false);
       }
@@ -64,13 +66,13 @@ class WTimerWidget extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_SPAN;
+    return DomElementType.SPAN;
   }
 
   String renderRemoveJs(boolean recursive) {
     return "{var obj="
         + this.getJsRef()
-        + ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt3_6_0.remove('"
+        + ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt4_4_0.remove('"
         + this.getId()
         + "');}";
   }

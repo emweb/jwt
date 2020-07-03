@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -42,9 +43,10 @@ public class WTableRow extends WObject {
    */
   public WTableRow() {
     super();
-    this.cells_ = new ArrayList<WTableRow.TableData>();
-    this.height_ = null;
-    this.id_ = null;
+    this.table_ = null;
+    this.cells_ = new ArrayList<WTableCell>();
+    this.height_ = new WLength();
+    this.id_ = "";
     this.styleClass_ = "";
     this.hidden_ = false;
     this.hiddenChanged_ = false;
@@ -70,7 +72,12 @@ public class WTableRow extends WObject {
    * <p>The row must be inserted within a table first.
    */
   public WTableCell elementAt(int column) {
-    return this.table_.getElementAt(this.getRowNum(), column);
+    if (this.table_ != null) {
+      return this.table_.getElementAt(this.getRowNum(), column);
+    } else {
+      this.expand(column + 1);
+      return this.cells_.get(column);
+    }
   }
   /**
    * Returns the row number of this row in the table.
@@ -82,7 +89,14 @@ public class WTableRow extends WObject {
    * @see WTable#getRowAt(int row)
    */
   public int getRowNum() {
-    return this.table_.rows_.indexOf(this);
+    if (this.table_ != null) {
+      for (int i = 0; i < this.table_.rows_.size(); ++i) {
+        if (this.table_.rows_.get(i) == this) {
+          return i;
+        }
+      }
+    }
+    return -1;
   }
   /**
    * Sets the row height.
@@ -96,7 +110,9 @@ public class WTableRow extends WObject {
    */
   public void setHeight(final WLength height) {
     this.height_ = height;
-    this.table_.repaintRow(this);
+    if (this.table_ != null) {
+      this.table_.repaintRow(this);
+    }
   }
   /**
    * Returns the row height.
@@ -106,7 +122,7 @@ public class WTableRow extends WObject {
    * @see WTableRow#setHeight(WLength height)
    */
   public WLength getHeight() {
-    return this.height_ != null ? this.height_ : WLength.Auto;
+    return this.height_;
   }
   /**
    * Sets the CSS style class for this row.
@@ -123,7 +139,9 @@ public class WTableRow extends WObject {
       return;
     }
     this.styleClass_ = style;
-    this.table_.repaintRow(this);
+    if (this.table_ != null) {
+      this.table_.repaintRow(this);
+    }
   }
   /**
    * Returns the CSS style class for this row.
@@ -143,7 +161,9 @@ public class WTableRow extends WObject {
     StringUtils.split(classes, currentClass, " ", true);
     if (classes.contains(style) == false) {
       this.styleClass_ = StringUtils.addWord(this.styleClass_, style);
-      this.table_.repaintRow(this);
+      if (this.table_ != null) {
+        this.table_.repaintRow(this);
+      }
     }
   }
 
@@ -153,7 +173,9 @@ public class WTableRow extends WObject {
     StringUtils.split(classes, currentClass, " ", true);
     if (classes.contains(style) != false) {
       this.styleClass_ = StringUtils.eraseWord(this.styleClass_, style);
-      this.table_.repaintRow(this);
+      if (this.table_ != null) {
+        this.table_.repaintRow(this);
+      }
     }
   }
 
@@ -183,7 +205,9 @@ public class WTableRow extends WObject {
     this.wasHidden_ = this.hidden_;
     this.hidden_ = how;
     this.hiddenChanged_ = true;
-    this.table_.repaintRow(this);
+    if (this.table_ != null) {
+      this.table_.repaintRow(this);
+    }
   }
   /**
    * Returns whether the rows is hidden.
@@ -226,14 +250,11 @@ public class WTableRow extends WObject {
    * @see WObject#getId()
    */
   public void setId(final String id) {
-    if (!(this.id_ != null)) {
-      this.id_ = "";
-    }
     this.id_ = id;
   }
 
   public String getId() {
-    if (this.id_ != null) {
+    if (this.id_.length() != 0) {
       return this.id_;
     } else {
       return super.getId();
@@ -241,35 +262,28 @@ public class WTableRow extends WObject {
   }
 
   WTableCell createCell(int column) {
-    return this.table_.createCell(this.getRowNum(), column);
+    if (this.table_ != null) {
+      return this.table_.createCell(this.getRowNum(), column);
+    } else {
+      return new WTableCell();
+    }
   }
 
   void expand(int numCells) {
     int cursize = this.cells_.size();
     for (int col = cursize; col < numCells; ++col) {
-      this.cells_.add(new WTableRow.TableData());
-      WTableCell cell = this.createCell(col);
+      this.cells_.add(this.createCell(col));
+      WTableCell cell = this.cells_.get(this.cells_.size() - 1);
+      if (this.table_ != null) {
+        this.table_.widgetAdded(cell);
+      }
       cell.row_ = this;
       cell.column_ = col;
-      cell.setParentWidget(this.table_);
-      this.cells_.get(this.cells_.size() - 1).cell = cell;
-    }
-  }
-
-  static class TableData {
-    private static Logger logger = LoggerFactory.getLogger(TableData.class);
-
-    public WTableCell cell;
-    public boolean overSpanned;
-
-    public TableData() {
-      this.cell = null;
-      this.overSpanned = false;
     }
   }
 
   WTable table_;
-  List<WTableRow.TableData> cells_;
+  List<WTableCell> cells_;
   private WLength height_;
   private String id_;
   private String styleClass_;
@@ -278,36 +292,45 @@ public class WTableRow extends WObject {
   private boolean wasHidden_;
 
   void updateDom(final DomElement element, boolean all) {
-    if (this.height_ != null) {
-      element.setProperty(Property.PropertyStyleHeight, this.height_.getCssText());
+    if (!this.height_.isAuto()) {
+      element.setProperty(Property.StyleHeight, this.height_.getCssText());
     }
     if (!all || this.styleClass_.length() != 0) {
-      element.setProperty(Property.PropertyClass, this.styleClass_);
+      element.setProperty(Property.Class, this.styleClass_);
     }
     if (all && this.hidden_ || !all && this.hiddenChanged_) {
-      element.setProperty(Property.PropertyStyleDisplay, this.hidden_ ? "none" : "");
+      element.setProperty(Property.StyleDisplay, this.hidden_ ? "none" : "");
       this.hiddenChanged_ = false;
     }
   }
 
+  void setTable(WTable table) {
+    this.table_ = table;
+  }
+
   void insertColumn(int column) {
-    this.cells_.add(0 + column, new WTableRow.TableData());
-    WTableCell cell = this.createCell(column);
+    this.cells_.add(0 + column, this.createCell(column));
+    WTableCell cell = this.cells_.get(column);
+    if (this.table_ != null) {
+      this.table_.widgetAdded(cell);
+    }
     cell.row_ = this;
     cell.column_ = column;
-    cell.setParentWidget(this.table_);
-    this.cells_.get(column).cell = cell;
     for (int i = column; i < this.cells_.size(); ++i) {
-      this.cells_.get(i).cell.column_ = i;
+      this.cells_.get(i).column_ = i;
     }
   }
 
-  void deleteColumn(int column) {
-    if (this.cells_.get(column).cell != null) this.cells_.get(column).cell.remove();
+  WTableCell removeColumn(int column) {
+    final WTableCell result = this.cells_.get(column);
     this.cells_.remove(0 + column);
     for (int i = column; i < this.cells_.size(); ++i) {
-      this.cells_.get(i).cell.column_ = i;
+      this.cells_.get(i).column_ = i;
     }
+    if (this.table_ != null) {
+      this.table_.widgetRemoved(result, false);
+    }
+    return result;
   }
 
   private void undoHide() {

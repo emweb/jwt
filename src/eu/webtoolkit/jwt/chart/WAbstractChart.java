@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -47,21 +48,18 @@ public abstract class WAbstractChart extends WPaintedWidget {
 
   /** Destructor. */
   public void remove() {
-    ;
     super.remove();
   }
   /**
    * Sets the model.
    *
-   * <p>The model is used by the chart to get its data. Ownership of the model is not transferred,
-   * and if a previous model was set it is not deleted.
+   * <p>The model is used by the chart to get its data.
    *
-   * <p>The default model is a <code>null</code> model.
+   * <p>The default model is <code>null</code>.
    *
    * <p>This creates an internal proxy model that presents the {@link WAbstractItemModel} as a
    * {@link WAbstractChartModel}. Use {@link WAbstractChart#setModel(WAbstractChartModel model)
-   * setModel()} directly for highest performance (avoiding the overhead of boost::any for numeric
-   * data).
+   * setModel()} directly for highest performance (avoiding the overhead of any for numeric data).
    *
    * <p>
    *
@@ -70,16 +68,15 @@ public abstract class WAbstractChart extends WPaintedWidget {
    *
    * @see WAbstractChart#getModel()
    */
-  public void setModel(WAbstractItemModel model) {
+  public void setModel(final WAbstractItemModel model) {
     this.setModel(new WStandardChartProxyModel(model));
   }
   /**
    * Sets the model.
    *
-   * <p>The model is used by the chart to get its data. Ownership of the model is not transferred,
-   * and if a previous model was set it is not deleted.
+   * <p>The model is used by the chart to get its data.
    *
-   * <p>The default model is a <code>null</code> model.
+   * <p>The default model is a <code>null</code>.
    *
    * <p>
    *
@@ -88,7 +85,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
    *
    * @see WAbstractChart#getModel()
    */
-  public void setModel(WAbstractChartModel model) {
+  public void setModel(final WAbstractChartModel model) {
     if (this.model_ != null) {
       for (int i = 0; i < this.modelConnections_.size(); ++i) {
         this.modelConnections_.get(i).disconnect();
@@ -101,10 +98,8 @@ public abstract class WAbstractChart extends WPaintedWidget {
             .changed()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WAbstractChart.this.modelReset();
-                  }
+                () -> {
+                  WAbstractChart.this.modelReset();
                 }));
     this.modelChanged();
   }
@@ -170,8 +165,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
   /**
    * Set a palette for the chart.
    *
-   * <p>A palette is used to provide the style information to render the chart series. Ownership of
-   * the palette is transferred to the chart.
+   * <p>A palette is used to provide the style information to render the chart series.
    *
    * <p>The default palette is dependent on the chart type.
    *
@@ -179,18 +173,11 @@ public abstract class WAbstractChart extends WPaintedWidget {
    *
    * @see WAbstractChart#getPalette()
    */
-  public void setPalette(WChartPalette palette) {
-    ;
+  public void setPalette(final WChartPalette palette) {
     this.palette_ = palette;
     this.update();
   }
-  /**
-   * Returns the palette for the chart.
-   *
-   * <p>
-   *
-   * @see WAbstractChart#setPalette(WChartPalette palette)
-   */
+  /** Returns the palette for the chart. */
   public WChartPalette getPalette() {
     return this.palette_;
   }
@@ -210,16 +197,16 @@ public abstract class WAbstractChart extends WPaintedWidget {
    * @see WAbstractChart#setAutoLayoutEnabled(boolean enabled)
    */
   public void setPlotAreaPadding(int padding, EnumSet<Side> sides) {
-    if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
+    if (sides.contains(Side.Top)) {
       this.padding_[0] = padding;
     }
-    if (!EnumUtils.mask(sides, Side.Right).isEmpty()) {
+    if (sides.contains(Side.Right)) {
       this.padding_[1] = padding;
     }
-    if (!EnumUtils.mask(sides, Side.Bottom).isEmpty()) {
+    if (sides.contains(Side.Bottom)) {
       this.padding_[2] = padding;
     }
-    if (!EnumUtils.mask(sides, Side.Left).isEmpty()) {
+    if (sides.contains(Side.Left)) {
       this.padding_[3] = padding;
     }
   }
@@ -236,10 +223,10 @@ public abstract class WAbstractChart extends WPaintedWidget {
    * Set an internal margin for the main plot area.
    *
    * <p>Calls {@link #setPlotAreaPadding(int padding, EnumSet sides) setPlotAreaPadding(padding,
-   * Side.All)}
+   * Side.AllSides)}
    */
   public final void setPlotAreaPadding(int padding) {
-    setPlotAreaPadding(padding, Side.All);
+    setPlotAreaPadding(padding, Side.AllSides);
   }
   /**
    * Returns the internal margin for the main plot area.
@@ -384,25 +371,30 @@ public abstract class WAbstractChart extends WPaintedWidget {
     paint(painter, null);
   }
 
-  WAbstractChart(WContainerWidget parent) {
-    super(parent);
+  protected WAbstractChart(WContainerWidget parentContainer) {
+    super();
     this.model_ = null;
-    this.background_ = new WBrush(WColor.white);
     this.palette_ = null;
+    this.background_ = new WBrush(StandardColor.White);
     this.autoPadding_ = false;
     this.title_ = new WString();
     this.titleFont_ = new WFont();
     this.axisTitleFont_ = new WFont();
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-    this.titleFont_.setFamily(WFont.GenericFamily.SansSerif);
-    this.titleFont_.setSize(WFont.Size.FixedSize, new WLength(15, WLength.Unit.Point));
-    this.setPlotAreaPadding(5, EnumSet.of(Side.Left, Side.Right));
-    this.setPlotAreaPadding(5, EnumSet.of(Side.Top, Side.Bottom));
+    this.titleFont_.setFamily(FontFamily.SansSerif);
+    this.titleFont_.setSize(new WLength(15, LengthUnit.Point));
+    this.setPlotAreaPadding(5, EnumUtils.or(EnumSet.of(Side.Left), Side.Right));
+    this.setPlotAreaPadding(5, EnumUtils.or(EnumSet.of(Side.Top), Side.Bottom));
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  protected WAbstractChart() {
+    this((WContainerWidget) null);
   }
 
   private WAbstractChartModel model_;
-  private WBrush background_;
   private WChartPalette palette_;
+  private WBrush background_;
   private boolean autoPadding_;
   private int[] padding_ = new int[4];
   private WString title_;

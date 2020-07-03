@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -44,7 +45,7 @@ class WStandardItemCompare implements Comparator<Integer> {
         result = 0;
       }
     }
-    if (this.order == SortOrder.DescendingOrder) {
+    if (this.order == SortOrder.Descending) {
       result = -result;
     }
     return result;

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,8 +30,10 @@ class UserFormModel extends WFormModel {
   public static final String ChildrenField = "children";
   public static final String RemarksField = "remarks";
 
-  public UserFormModel(WObject parent) {
-    super(parent);
+  public UserFormModel() {
+    super();
+    this.countryModel_ = null;
+    this.cityModel_ = null;
     this.initializeModels();
     this.addField(FirstNameField);
     this.addField(LastNameField);
@@ -47,10 +50,6 @@ class UserFormModel extends WFormModel {
     this.setValidator(ChildrenField, this.getCreateChildrenValidator());
     this.setValue(BirthField, null);
     this.setValue(CountryField, "");
-  }
-
-  public UserFormModel() {
-    this((WObject) null);
   }
 
   public WAbstractItemModel getCountryModel() {
@@ -102,7 +101,7 @@ class UserFormModel extends WFormModel {
   }
 
   public String countryCode(int row) {
-    return ((String) this.countryModel_.getData(row, 0, ItemDataRole.UserRole));
+    return StringUtils.asString(this.countryModel_.getData(row, 0, ItemDataRole.User)).toString();
   }
 
   private static final Map<String, List<String>> cities = getCityMap();
@@ -115,18 +114,18 @@ class UserFormModel extends WFormModel {
   private void initializeModels() {
     int countryModelRows = countries.size() + 1;
     final int countryModelColumns = 1;
-    this.countryModel_ = new WStandardItemModel(countryModelRows, countryModelColumns, this);
+    this.countryModel_ = new WStandardItemModel(countryModelRows, countryModelColumns);
     int row = 0;
-    this.countryModel_.setData(row, 0, " ", ItemDataRole.DisplayRole);
-    this.countryModel_.setData(row, 0, "", ItemDataRole.UserRole);
+    this.countryModel_.setData(row, 0, " ", ItemDataRole.Display);
+    this.countryModel_.setData(row, 0, "", ItemDataRole.User);
     row = 1;
     for (Iterator<Map.Entry<String, String>> i_it = countries.entrySet().iterator();
         i_it.hasNext(); ) {
       Map.Entry<String, String> i = i_it.next();
-      this.countryModel_.setData(row, 0, i.getValue(), ItemDataRole.DisplayRole);
-      this.countryModel_.setData(row++, 0, i.getKey(), ItemDataRole.UserRole);
+      this.countryModel_.setData(row, 0, i.getValue(), ItemDataRole.Display);
+      this.countryModel_.setData(row++, 0, i.getKey(), ItemDataRole.User);
     }
-    this.cityModel_ = new WStandardItemModel(this);
+    this.cityModel_ = new WStandardItemModel();
     this.updateCityModel("");
   }
 

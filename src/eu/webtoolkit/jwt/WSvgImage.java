@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -32,13 +33,13 @@ public class WSvgImage extends WResource implements WVectorImage {
    * <p>If <code>paintUpdate</code> is <code>true</code>, then only an SVG fragment will be rendered
    * that can be used to update the DOM of an existing SVG image, instead of a full SVG image.
    */
-  public WSvgImage(final WLength width, final WLength height, WObject parent, boolean paintUpdate) {
-    super(parent);
+  public WSvgImage(final WLength width, final WLength height, boolean paintUpdate) {
+    super();
     this.width_ = width;
     this.height_ = height;
     this.painter_ = null;
     this.paintUpdate_ = paintUpdate;
-    this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
+    this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
     this.newGroup_ = true;
     this.newClipPath_ = false;
     this.busyWithPath_ = false;
@@ -63,42 +64,32 @@ public class WSvgImage extends WResource implements WVectorImage {
   /**
    * Create an SVG paint device.
    *
-   * <p>Calls {@link #WSvgImage(WLength width, WLength height, WObject parent, boolean paintUpdate)
-   * this(width, height, (WObject)null, false)}
+   * <p>Calls {@link #WSvgImage(WLength width, WLength height, boolean paintUpdate) this(width,
+   * height, false)}
    */
   public WSvgImage(final WLength width, final WLength height) {
-    this(width, height, (WObject) null, false);
-  }
-  /**
-   * Create an SVG paint device.
-   *
-   * <p>Calls {@link #WSvgImage(WLength width, WLength height, WObject parent, boolean paintUpdate)
-   * this(width, height, parent, false)}
-   */
-  public WSvgImage(final WLength width, final WLength height, WObject parent) {
-    this(width, height, parent, false);
+    this(width, height, false);
   }
 
-  public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+  public EnumSet<PaintDeviceFeatureFlag> getFeatures() {
     if (ServerSideFontMetrics.isAvailable()) {
-      return EnumSet.of(
-          WPaintDevice.FeatureFlag.HasFontMetrics, WPaintDevice.FeatureFlag.CanWordWrap);
+      return EnumSet.of(PaintDeviceFeatureFlag.FontMetrics, PaintDeviceFeatureFlag.WordWrap);
     } else {
-      return EnumSet.of(WPaintDevice.FeatureFlag.CanWordWrap);
+      return EnumSet.of(PaintDeviceFeatureFlag.WordWrap);
     }
   }
 
-  public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
+  public void setChanged(EnumSet<PainterChangeFlag> flags) {
     if (!flags.isEmpty()) {
       this.newGroup_ = true;
     }
-    if (!EnumUtils.mask(flags, WPaintDevice.ChangeFlag.Clipping).isEmpty()) {
+    if (flags.contains(PainterChangeFlag.Clipping)) {
       this.newClipPath_ = true;
     }
     this.changeFlags_.addAll(flags);
   }
 
-  public final void setChanged(WPaintDevice.ChangeFlag flag, WPaintDevice.ChangeFlag... flags) {
+  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
     setChanged(EnumSet.of(flag, flags));
   }
 
@@ -188,6 +179,10 @@ public class WSvgImage extends WResource implements WVectorImage {
     this.drawPath(path);
   }
 
+  public void drawRect(final WRectF rectangle) {
+    this.drawPath(rectangle.toPath());
+  }
+
   public void drawPath(final WPainterPath path) {
     if (path.isEmpty()) {
       return;
@@ -228,7 +223,7 @@ public class WSvgImage extends WResource implements WVectorImage {
     StringBuilder style = new StringBuilder();
     style.append("style=\"stroke:none;");
     if (!this.getPainter().getPen().getColor().equals(this.getPainter().getBrush().getColor())
-        || this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush) {
+        || this.getPainter().getBrush().getStyle() == BrushStyle.None) {
       final WColor color = this.getPainter().getPen().getColor();
       style
           .append("fill:" + color.getCssText())
@@ -242,19 +237,19 @@ public class WSvgImage extends WResource implements WVectorImage {
         EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
     AlignmentFlag verticalAlign =
         EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask));
-    if (textFlag == TextFlag.TextWordWrap) {
+    if (textFlag == TextFlag.WordWrap) {
       String hAlign = "";
       switch (horizontalAlign) {
-        case AlignLeft:
+        case Left:
           hAlign = "start";
           break;
-        case AlignRight:
+        case Right:
           hAlign = "end";
           break;
-        case AlignCenter:
+        case Center:
           hAlign = "center";
           break;
-        case AlignJustify:
+        case Justify:
           hAlign = "justify";
         default:
           break;
@@ -291,13 +286,13 @@ public class WSvgImage extends WResource implements WVectorImage {
     } else {
       this.shapes_.append("<text ").append(style.toString());
       switch (horizontalAlign) {
-        case AlignLeft:
+        case Left:
           this.shapes_.append(" x=").append(quote(rect.getLeft()));
           break;
-        case AlignRight:
+        case Right:
           this.shapes_.append(" x=").append(quote(rect.getRight())).append(" text-anchor=\"end\"");
           break;
-        case AlignCenter:
+        case Center:
           this.shapes_
               .append(" x=")
               .append(quote(rect.getCenter().getX()))
@@ -309,13 +304,13 @@ public class WSvgImage extends WResource implements WVectorImage {
       double fontSize = this.getPainter().getFont().getSizeLength(16).toPixels();
       double y = rect.getCenter().getY();
       switch (verticalAlign) {
-        case AlignTop:
+        case Top:
           y = rect.getTop() + fontSize * 0.75;
           break;
-        case AlignMiddle:
+        case Middle:
           y = rect.getCenter().getY() + fontSize * 0.25;
           break;
-        case AlignBottom:
+        case Bottom:
           y = rect.getBottom() - fontSize * 0.25;
           break;
         default:
@@ -407,7 +402,7 @@ public class WSvgImage extends WResource implements WVectorImage {
   private WLength height_;
   private WPainter painter_;
   private boolean paintUpdate_;
-  private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
+  private EnumSet<PainterChangeFlag> changeFlags_;
   private boolean newGroup_;
   private boolean newClipPath_;
   private boolean busyWithPath_;
@@ -440,17 +435,17 @@ public class WSvgImage extends WResource implements WVectorImage {
       return;
     }
     boolean brushChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Brush).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Brush)
             && !this.currentBrush_.equals(this.getPainter().getBrush());
     boolean penChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Hints).isEmpty()
-            || !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Pen).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Hints)
+            || this.changeFlags_.contains(PainterChangeFlag.Pen)
                 && !this.currentPen_.equals(this.getPainter().getPen());
     boolean fontChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Font).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Font)
             && !this.currentFont_.equals(this.getPainter().getFont());
     boolean shadowChanged = false;
-    if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Shadow).isEmpty()) {
+    if (this.changeFlags_.contains(PainterChangeFlag.Shadow)) {
       if (this.currentShadowId_ == -1) {
         shadowChanged = !this.getPainter().getShadow().isNone();
       } else {
@@ -482,13 +477,13 @@ public class WSvgImage extends WResource implements WVectorImage {
             double dy = fdy - gdy;
             this.pathTranslation_.setX(dx);
             this.pathTranslation_.setY(dy);
-            this.changeFlags_.clear();
+            this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
             return;
           }
         } else {
           if (!fontChanged && this.currentTransform_.equals(f)) {
             this.newGroup_ = false;
-            this.changeFlags_.clear();
+            this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
             return;
           }
         }
@@ -580,17 +575,17 @@ public class WSvgImage extends WResource implements WVectorImage {
           .append(")\"");
     }
     this.shapes_.append('>');
-    this.changeFlags_.clear();
+    this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
   }
 
   private String getFillStyle() {
     char[] buf = new char[30];
     String result = "";
     switch (this.getPainter().getBrush().getStyle()) {
-      case NoBrush:
+      case None:
         result += "fill:none;";
         break;
-      case SolidPattern:
+      case Solid:
         {
           final WColor color = this.getPainter().getBrush().getColor();
           result += "fill:" + color.getCssText() + ";";
@@ -601,7 +596,7 @@ public class WSvgImage extends WResource implements WVectorImage {
           }
           break;
         }
-      case GradientPattern:
+      case Gradient:
         if (!this.currentBrush_.getGradient().isEmpty()) {
           result += "fill:";
           result += "url(#gradient";
@@ -616,11 +611,10 @@ public class WSvgImage extends WResource implements WVectorImage {
     StringBuilder result = new StringBuilder();
     String buf;
     final WPen pen = this.getPainter().getPen();
-    if (!((this.getPainter().getRenderHints() & WPainter.RenderHint.Antialiasing.getValue())
-        != 0)) {
+    if (!!EnumUtils.mask(this.getPainter().getRenderHints(), RenderHint.Antialiasing).isEmpty()) {
       result.append("shape-rendering:optimizeSpeed;");
     }
-    if (pen.getStyle() != PenStyle.NoPen) {
+    if (pen.getStyle() != PenStyle.None) {
       final WColor color = pen.getColor();
       if (!pen.getGradient().isEmpty()) {
         result
@@ -641,25 +635,25 @@ public class WSvgImage extends WResource implements WVectorImage {
         result.append("stroke-width:").append(w.getCssText()).append(";");
       }
       switch (pen.getCapStyle()) {
-        case FlatCap:
+        case Flat:
           break;
-        case SquareCap:
+        case Square:
           result.append("stroke-linecap:square;");
           break;
-        case RoundCap:
+        case Round:
           result.append("stroke-linecap:round;");
       }
       switch (pen.getJoinStyle()) {
-        case MiterJoin:
+        case Miter:
           break;
-        case BevelJoin:
+        case Bevel:
           result.append("stroke-linejoin:bevel;");
           break;
-        case RoundJoin:
+        case Round:
           result.append("stroke-linejoin:round;");
       }
       switch (pen.getStyle()) {
-        case NoPen:
+        case None:
           break;
         case SolidLine:
           break;
@@ -721,7 +715,7 @@ public class WSvgImage extends WResource implements WVectorImage {
   private void defineGradient(final WGradient gradient, int id) {
     char[] buf = new char[30];
     this.shapes_.append("<defs>");
-    boolean linear = gradient.getStyle() == GradientStyle.LinearGradient;
+    boolean linear = gradient.getStyle() == GradientStyle.Linear;
     if (linear) {
       this.shapes_.append("<linearGradient gradientUnits=\"userSpaceOnUse\" ");
       this.shapes_
@@ -803,12 +797,12 @@ public class WSvgImage extends WResource implements WVectorImage {
       this.pathTranslation_.setY(0);
     }
     final List<WPainterPath.Segment> segments = path.getSegments();
-    if (!segments.isEmpty() && segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {
+    if (!segments.isEmpty() && segments.get(0).getType() != SegmentType.MoveTo) {
       out.append("M0,0");
     }
     for (int i = 0; i < segments.size(); ++i) {
       final WPainterPath.Segment s = segments.get(i);
-      if (s.getType() == WPainterPath.Segment.Type.ArcC) {
+      if (s.getType() == SegmentType.ArcC) {
         WPointF current = path.getPositionAtSegment(i);
         final double cx = segments.get(i).getX();
         final double cy = segments.get(i).getY();

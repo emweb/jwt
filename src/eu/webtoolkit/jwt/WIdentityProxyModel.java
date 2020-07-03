@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,24 +23,16 @@ import org.slf4j.LoggerFactory;
  *
  * <p>A {@link WIdentityProxyModel} simply forwards the structure of the source model, without any
  * transformation. {@link WIdentityProxyModel} can be used as a base class for implementing proxy
- * models that reimplement {@link WAbstractProxyModel#getData(WModelIndex index, int role)
+ * models that reimplement {@link WAbstractProxyModel#getData(WModelIndex index, ItemDataRole role)
  * WAbstractProxyModel#getData()}, but retain all other characteristics of the source model.
  */
 public class WIdentityProxyModel extends WAbstractProxyModel {
   private static Logger logger = LoggerFactory.getLogger(WIdentityProxyModel.class);
 
   /** Constructor. */
-  public WIdentityProxyModel(WObject parent) {
-    super(parent);
-    this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WIdentityProxyModel(WObject parent) this((WObject)null)}
-   */
   public WIdentityProxyModel() {
-    this((WObject) null);
+    super();
+    this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
   }
   /**
    * Returns the number of columns.
@@ -114,7 +107,7 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
    *
    * <p>All signals of the source model are forwarded to the proxy model.
    */
-  public void setSourceModel(WAbstractItemModel newSourceModel) {
+  public void setSourceModel(final WAbstractItemModel newSourceModel) {
     if (this.getSourceModel() != null) {
       for (int i = 0; i < this.modelConnections_.size(); ++i) {
         this.modelConnections_.get(i).disconnect();
@@ -128,130 +121,104 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
               .rowsAboutToBeInserted()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .rowsInserted()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceRowsInserted(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceRowsInserted(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .rowsAboutToBeRemoved()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .rowsRemoved()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceRowsRemoved(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceRowsRemoved(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .columnsAboutToBeInserted()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .columnsInserted()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceColumnsInserted(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceColumnsInserted(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .columnsAboutToBeRemoved()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .columnsRemoved()
               .addListener(
                   this,
-                  new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                    public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
-                    }
+                  (WModelIndex e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .modelReset()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WIdentityProxyModel.this.sourceModelReset();
-                    }
+                  () -> {
+                    WIdentityProxyModel.this.sourceModelReset();
                   }));
       this.modelConnections_.add(
           newSourceModel
               .dataChanged()
               .addListener(
                   this,
-                  new Signal2.Listener<WModelIndex, WModelIndex>() {
-                    public void trigger(WModelIndex e1, WModelIndex e2) {
-                      WIdentityProxyModel.this.sourceDataChanged(e1, e2);
-                    }
+                  (WModelIndex e1, WModelIndex e2) -> {
+                    WIdentityProxyModel.this.sourceDataChanged(e1, e2);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .headerDataChanged()
               .addListener(
                   this,
-                  new Signal3.Listener<Orientation, Integer, Integer>() {
-                    public void trigger(Orientation e1, Integer e2, Integer e3) {
-                      WIdentityProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
-                    }
+                  (Orientation e1, Integer e2, Integer e3) -> {
+                    WIdentityProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
                   }));
       this.modelConnections_.add(
           newSourceModel
               .layoutAboutToBeChanged()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WIdentityProxyModel.this.sourceLayoutAboutToBeChanged();
-                    }
+                  () -> {
+                    WIdentityProxyModel.this.sourceLayoutAboutToBeChanged();
                   }));
       this.modelConnections_.add(
           newSourceModel
               .layoutChanged()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WIdentityProxyModel.this.sourceLayoutChanged();
-                    }
+                  () -> {
+                    WIdentityProxyModel.this.sourceLayoutChanged();
                   }));
     }
   }
@@ -302,7 +269,8 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
    *
    * <p>Forwards the result indicating success from the source model.
    */
-  public boolean setHeaderData(int section, Orientation orientation, final Object value, int role) {
+  public boolean setHeaderData(
+      int section, Orientation orientation, final Object value, ItemDataRole role) {
     return this.getSourceModel().setHeaderData(section, orientation, value, role);
   }
 

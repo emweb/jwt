@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,11 +29,11 @@ import org.slf4j.LoggerFactory;
  *
  * <p>You can populate the model by passing a list of strings to its consructor, or by using the
  * {@link WStringListModel#setStringList(List strings) setStringList()} method. You can set or
- * retrieve data using the {@link WStringListModel#setData(WModelIndex index, Object value, int
- * role) setData()} and {@link WStringListModel#getData(WModelIndex index, int role) getData()}
- * methods, and add or remove data using the {@link WStringListModel#insertRows(int row, int count,
- * WModelIndex parent) insertRows()} and {@link WStringListModel#removeRows(int row, int count,
- * WModelIndex parent) removeRows()} methods.
+ * retrieve data using the {@link WStringListModel#setData(WModelIndex index, Object value,
+ * ItemDataRole role) setData()} and {@link WStringListModel#getData(WModelIndex index, ItemDataRole
+ * role) getData()} methods, and add or remove data using the {@link WStringListModel#insertRows(int
+ * row, int count, WModelIndex parent) insertRows()} and {@link WStringListModel#removeRows(int row,
+ * int count, WModelIndex parent) removeRows()} methods.
  *
  * <p>
  *
@@ -43,34 +44,18 @@ public class WStringListModel extends WAbstractListModel {
   private static Logger logger = LoggerFactory.getLogger(WStringListModel.class);
 
   /** Creates a new empty string list model. */
-  public WStringListModel(WObject parent) {
-    super(parent);
+  public WStringListModel() {
+    super();
     this.displayData_ = new ArrayList<WString>();
     this.otherData_ = null;
     this.flags_ = new ArrayList<EnumSet<ItemFlag>>();
   }
-  /**
-   * Creates a new empty string list model.
-   *
-   * <p>Calls {@link #WStringListModel(WObject parent) this((WObject)null)}
-   */
-  public WStringListModel() {
-    this((WObject) null);
-  }
   /** Creates a new string list model. */
-  public WStringListModel(final List<WString> strings, WObject parent) {
-    super(parent);
+  public WStringListModel(final List<WString> strings) {
+    super();
     this.displayData_ = strings;
     this.otherData_ = null;
     this.flags_ = new ArrayList<EnumSet<ItemFlag>>();
-  }
-  /**
-   * Creates a new string list model.
-   *
-   * <p>Calls {@link #WStringListModel(List strings, WObject parent) this(strings, (WObject)null)}
-   */
-  public WStringListModel(final List<WString> strings) {
-    this(strings, (WObject) null);
   }
   /**
    * Sets a new string list.
@@ -94,7 +79,7 @@ public class WStringListModel extends WAbstractListModel {
     }
     Utils.copyList(strings, this.displayData_);
     this.flags_.clear();
-    ;
+
     this.otherData_ = null;
     if (newSize > currentSize) {
       this.endInsertRows();
@@ -142,16 +127,14 @@ public class WStringListModel extends WAbstractListModel {
   /**
    * Sets model flags for an item.
    *
-   * <p>The default item flags are {@link ItemFlag#ItemIsSelectable} | {@link
-   * ItemFlag#ItemIsEditable}.
+   * <p>The default item flags are {@link ItemFlag#Selectable} | {@link ItemFlag#Editable}.
    */
   public void setFlags(int row, EnumSet<ItemFlag> flags) {
     if (this.flags_.isEmpty()) {
       {
         int insertPos = 0;
         for (int ii = 0; ii < (this.getRowCount()); ++ii)
-          this.flags_.add(
-              insertPos + ii, EnumSet.of(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable));
+          this.flags_.add(insertPos + ii, EnumSet.of(ItemFlag.Selectable, ItemFlag.Editable));
       }
       ;
     }
@@ -178,23 +161,23 @@ public class WStringListModel extends WAbstractListModel {
    */
   public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
     if (this.flags_.isEmpty()) {
-      return EnumSet.of(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable);
+      return EnumSet.of(ItemFlag.Selectable, ItemFlag.Editable);
     } else {
       return this.flags_.get(index.getRow());
     }
   }
 
-  public boolean setData(final WModelIndex index, final Object value, int role) {
-    if (role == ItemDataRole.EditRole) {
-      role = ItemDataRole.DisplayRole;
+  public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Edit)) {
+      role = ItemDataRole.Display;
     }
-    if (role == ItemDataRole.DisplayRole) {
+    if (role.equals(ItemDataRole.Display)) {
       this.displayData_.set(index.getRow(), StringUtils.asString(value));
     } else {
       if (!(this.otherData_ != null)) {
-        this.otherData_ = new ArrayList<SortedMap<Integer, Object>>();
+        this.otherData_ = new ArrayList<SortedMap<ItemDataRole, Object>>();
         for (int i = 0; i < this.displayData_.size(); ++i) {
-          this.otherData_.add(new TreeMap<Integer, Object>());
+          this.otherData_.add(new TreeMap<ItemDataRole, Object>());
         }
       }
       this.otherData_.get(index.getRow()).put(role, value);
@@ -203,8 +186,8 @@ public class WStringListModel extends WAbstractListModel {
     return true;
   }
 
-  public Object getData(final WModelIndex index, int role) {
-    if (role == ItemDataRole.DisplayRole) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Display)) {
       return this.displayData_.get(index.getRow());
     } else {
       if (this.otherData_ != null) {
@@ -231,8 +214,7 @@ public class WStringListModel extends WAbstractListModel {
         {
           int insertPos = 0 + row;
           for (int ii = 0; ii < (count); ++ii)
-            this.flags_.add(
-                insertPos + ii, EnumSet.of(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable));
+            this.flags_.add(insertPos + ii, EnumSet.of(ItemFlag.Selectable, ItemFlag.Editable));
         }
         ;
       }
@@ -240,7 +222,7 @@ public class WStringListModel extends WAbstractListModel {
         {
           int insertPos = 0 + row;
           for (int ii = 0; ii < (count); ++ii)
-            this.otherData_.add(insertPos + ii, new TreeMap<Integer, Object>());
+            this.otherData_.add(insertPos + ii, new TreeMap<ItemDataRole, Object>());
         }
         ;
       }
@@ -274,7 +256,7 @@ public class WStringListModel extends WAbstractListModel {
   public void sort(int column, SortOrder order) {
     this.layoutAboutToBeChanged().trigger();
     if (!(this.otherData_ != null) && this.flags_.isEmpty()) {
-      if (order == SortOrder.AscendingOrder) {
+      if (order == SortOrder.Ascending) {
         Collections.sort(this.displayData_);
       } else {
         Collections.sort(this.displayData_, new ReverseOrder<WString>());
@@ -291,9 +273,9 @@ public class WStringListModel extends WAbstractListModel {
       if (!this.flags_.isEmpty()) {
         CollectionUtils.resize(flags, this.getRowCount());
       }
-      List<SortedMap<Integer, Object>> otherData = null;
+      List<SortedMap<ItemDataRole, Object>> otherData = null;
       if (this.otherData_ != null) {
-        otherData = new ArrayList<SortedMap<Integer, Object>>();
+        otherData = new ArrayList<SortedMap<ItemDataRole, Object>>();
         CollectionUtils.resize(otherData, this.getRowCount());
       }
       for (int i = 0; i < permutation.size(); ++i) {
@@ -306,7 +288,7 @@ public class WStringListModel extends WAbstractListModel {
         }
       }
       Utils.copyList(displayData, this.displayData_);
-      ;
+
       this.otherData_ = otherData;
       Utils.copyList(flags, this.flags_);
     }
@@ -314,6 +296,6 @@ public class WStringListModel extends WAbstractListModel {
   }
 
   private List<WString> displayData_;
-  private List<SortedMap<Integer, Object>> otherData_;
+  private List<SortedMap<ItemDataRole, Object>> otherData_;
   private List<EnumSet<ItemFlag>> flags_;
 }

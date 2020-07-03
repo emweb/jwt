@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -150,7 +151,7 @@ class Line {
     for (int i = 0; i < this.blocks_.size(); ++i) {
       Block b = this.blocks_.get(this.blocks_.size() - 1 - i);
       if (!b.isFloat()) {
-        if (b.getType() != DomElementType.DomElement_LI && b.isText()) {
+        if (b.getType() != DomElementType.LI && b.isText()) {
           boolean done = false;
           for (int j = 0; j < b.inlineLayout.size(); ++j) {
             final InlineBox ib = b.inlineLayout.get(b.inlineLayout.size() - 1 - j);
@@ -186,7 +187,7 @@ class Line {
         for (int j = 0; j < b.inlineLayout.size(); ++j) {
           final InlineBox ib = b.inlineLayout.get(j);
           if (ib.y == this.y_ && ib.page == this.page_) {
-            String va = b.cssProperty(Property.PropertyStyleVerticalAlign);
+            String va = b.cssProperty(Property.StyleVerticalAlign);
             if (va.equals("top")) {
               ib.y = this.y_;
             } else {
@@ -218,15 +219,15 @@ class Line {
     }
     double spaceFactor = 1.0;
     switch (textAlign) {
-      case AlignLeft:
+      case Left:
         break;
-      case AlignRight:
+      case Right:
         rangeX.start = rangeX.end - content - whitespace;
         break;
-      case AlignCenter:
+      case Center:
         rangeX.start += (rangeX.end - rangeX.start - content - whitespace) / 2;
         break;
-      case AlignJustify:
+      case Justify:
         if (!this.lineBreak_) {
           double remaining = rangeX.end - rangeX.start - content;
           if (whitespace > 0) {

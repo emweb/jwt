@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -42,7 +43,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
       return 10;
     }
     WAbstractGridData first;
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       first =
           ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData
               ? (WAbstractGridData) (this.chart_.getDataSeries().get(0))
@@ -54,7 +55,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
         return first.getNbXPoints();
       }
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         first =
             ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (this.chart_.getDataSeries().get(0))
@@ -72,7 +73,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
   }
 
   public final int numberOfCategories() {
-    return numberOfCategories(Axis.XAxis);
+    return numberOfCategories(Axis.X);
   }
 
   public WString categoryLabel(int u, Axis axis) {
@@ -106,7 +107,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
     double stackedBarsHeight = 0.0;
     WAbstractGridData griddata;
     switch (this.chart_.getType()) {
-      case ScatterPlot:
+      case Scatter:
         for (int i = 0; i < series.size(); i++) {
           double seriesMin = series.get(i).minimum(axis);
           double seriesMax = series.get(i).maximum(axis);
@@ -120,13 +121,13 @@ class WChart3DImplementation implements WAbstractChartImplementation {
         range.minimum = min;
         range.maximum = max;
         return range;
-      case CategoryChart:
+      case Category:
         for (int k = 0; k < series.size(); k++) {
           griddata =
               ((series.get(k)) instanceof WAbstractGridData
                   ? (WAbstractGridData) (series.get(k))
                   : null);
-          if (griddata == null || griddata.getType() != Series3DType.BarSeries3D) {
+          if (griddata == null || griddata.getType() != Series3DType.Bar) {
             throw new WException("WChart3DImplementation: not all data is categorical");
           }
         }
@@ -172,7 +173,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
 
   public final WAbstractChartImplementation.RenderRange computeRenderRange(
       Axis axis, int xAxis, int yAxis) {
-    return computeRenderRange(axis, xAxis, yAxis, AxisScale.LinearScale);
+    return computeRenderRange(axis, xAxis, yAxis, AxisScale.Linear);
   }
 
   public boolean isOnDemandLoadingEnabled() {

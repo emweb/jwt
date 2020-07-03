@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -46,8 +47,8 @@ public class WIntValidator extends WValidator {
    *
    * <p>
    */
-  public WIntValidator(WObject parent) {
-    super(parent);
+  public WIntValidator() {
+    super();
     this.bottom_ = Integer.MIN_VALUE;
     this.top_ = Integer.MAX_VALUE;
     this.ignoreTrailingSpaces_ = false;
@@ -55,32 +56,15 @@ public class WIntValidator extends WValidator {
     this.tooLargeText_ = new WString();
     this.nanText_ = new WString();
   }
-  /**
-   * Creates a new integer validator that accepts any integer.
-   *
-   * <p>Calls {@link #WIntValidator(WObject parent) this((WObject)null)}
-   */
-  public WIntValidator() {
-    this((WObject) null);
-  }
   /** Creates a new integer validator that accepts integer input within the given range. */
-  public WIntValidator(int bottom, int top, WObject parent) {
-    super(parent);
+  public WIntValidator(int bottom, int top) {
+    super();
     this.bottom_ = bottom;
     this.top_ = top;
     this.ignoreTrailingSpaces_ = false;
     this.tooSmallText_ = new WString();
     this.tooLargeText_ = new WString();
     this.nanText_ = new WString();
-  }
-  /**
-   * Creates a new integer validator that accepts integer input within the given range.
-   *
-   * <p>Calls {@link #WIntValidator(int bottom, int top, WObject parent) this(bottom, top,
-   * (WObject)null)}
-   */
-  public WIntValidator(int bottom, int top) {
-    this(bottom, top, (WObject) null);
   }
   /** Returns the bottom of the valid integer range. */
   public int getBottom() {
@@ -134,19 +118,18 @@ public class WIntValidator extends WValidator {
     try {
       int i = LocaleUtils.toInt(LocaleUtils.getCurrentLocale(), text);
       if (i < this.bottom_) {
-        return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooSmallText());
+        return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooSmallText());
       } else {
         if (i > this.top_) {
-          return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooLargeText());
+          return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooLargeText());
         } else {
-          return new WValidator.Result(WValidator.State.Valid);
+          return new WValidator.Result(ValidationState.Valid);
         }
       }
-    } catch (final NumberFormatException e) {
-      return new WValidator.Result(WValidator.State.Invalid, this.getInvalidNotANumberText());
+    } catch (final RuntimeException e) {
+      return new WValidator.Result(ValidationState.Invalid, this.getInvalidNotANumberText());
     }
   }
-  // public void createExtConfig(final Writer config) throws IOException;
   /**
    * Sets the message to display when the input is not a number.
    *
@@ -267,7 +250,7 @@ public class WIntValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt3_6_0.WIntValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_4_0.WIntValidator(").append(this.isMandatory()).append(',');
     if (this.bottom_ != Integer.MIN_VALUE) {
       js.append(this.bottom_);
     } else {

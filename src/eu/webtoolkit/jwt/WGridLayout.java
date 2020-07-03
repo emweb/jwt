@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,13 +23,13 @@ import org.slf4j.LoggerFactory;
  *
  * <p>This layout manager arranges widgets in a grid.
  *
- * <p>Each grid cell (row, column) may contain one widget or nested layout. Horizontal and vertical
- * space are divided so that each non-stretchable column/row is given its preferred size (if
- * possible) and the remaining space is divided according to stretch factors among the columns/rows.
- * If not all columns/rows can be given their preferred size (there is not enough room), then
- * columns/rows are given a smaller size (down to a minimum size based on widget minimum sizes). If
- * necessary, the container (or parent layout) of this layout is resized to meet minimum size
- * requirements.
+ * <p>Each grid cell (row, column) may contain one widget or nested layout. {@link
+ * Orientation#Horizontal} and vertical space are divided so that each non-stretchable column/row is
+ * given its preferred size (if possible) and the remaining space is divided according to stretch
+ * factors among the columns/rows. If not all columns/rows can be given their preferred size (there
+ * is not enough room), then columns/rows are given a smaller size (down to a minimum size based on
+ * widget minimum sizes). If necessary, the container (or parent layout) of this layout is resized
+ * to meet minimum size requirements.
  *
  * <p>The preferred width/height of a column/row is based on the natural size of the widgets, where
  * they present their contents without overflowing. {@link WWidget#resize(WLength width, WLength
@@ -41,10 +42,9 @@ import org.slf4j.LoggerFactory;
  * WWidget#setMinimumSize()} or using CSS <code>min-width</code> and <code>min-height</code>
  * properties.
  *
- * <p>You should use {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet
- * orientation) WContainerWidget#setOverflow()} or use a {@link WScrollArea} to automatically show
- * scrollbars for widgets inserted in the layout to cope with a size set by the layout manager that
- * is smaller than the preferred size.
+ * <p>You should use {@link WContainerWidget#setOverflow(Overflow value, EnumSet orientation)
+ * WContainerWidget#setOverflow()} to automatically show scrollbars for widgets inserted in the
+ * layout to cope with a size set by the layout manager that is smaller than the preferred size.
  *
  * <p>When the container of a layout manager has a maximum size set using {@link
  * WWidget#setMaximumSize(WLength width, WLength height) WWidget#setMaximumSize()}, then the size of
@@ -110,34 +110,25 @@ public class WGridLayout extends WLayout {
    * inside other layout managers or if you use {@link WContainerWidget#setLayout(WLayout layout)
    * WContainerWidget#setLayout()} to add specify the container later.
    */
-  public WGridLayout(WWidget parent) {
+  public WGridLayout() {
     super();
     this.grid_ = new Grid();
-    if (parent != null) {
-      this.setLayoutInParent(parent);
-    }
-  }
-  /**
-   * Create a new grid layout.
-   *
-   * <p>Calls {@link #WGridLayout(WWidget parent) this((WWidget)null)}
-   */
-  public WGridLayout() {
-    this((WWidget) null);
   }
 
   public void addItem(WLayoutItem item) {
     this.addItem(item, 0, this.getColumnCount());
   }
 
-  public void removeItem(WLayoutItem item) {
+  public WLayoutItem removeItem(WLayoutItem item) {
     int index = this.indexOf(item);
+    WLayoutItem result = null;
     if (index != -1) {
       int row = index / this.getColumnCount();
       int col = index % this.getColumnCount();
-      this.grid_.items_.get(row).get(col).item_ = null;
-      this.updateRemoveItem(item);
+      result = this.grid_.items_.get(row).get(col).item_;
+      this.itemRemoved(item);
     }
+    return result;
   }
 
   public WLayoutItem getItemAt(int index) {
@@ -149,20 +140,11 @@ public class WGridLayout extends WLayout {
   public int getCount() {
     return this.grid_.rows_.size() * this.grid_.columns_.size();
   }
-
-  public void clear() {
-    int c = this.getCount();
-    for (int i = 0; i < c; ++i) {
-      WLayoutItem item = this.getItemAt(i);
-      this.clearLayoutItem(item);
-    }
-    this.grid_.clear();
-  }
   /**
    * Adds a layout item to the grid.
    *
    * <p>Adds the <i>item</i> at (<i>row</i>, <code>column</code>). If an item was already added to
-   * that location, it is replaced (but not deleted).
+   * that location, it is replaced.
    *
    * <p>An item may span several more rows or columns, which is controlled by <i>rowSpan</i> and
    * <code>columnSpan</code>.
@@ -170,9 +152,9 @@ public class WGridLayout extends WLayout {
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
    * default value 0 indicates that the item is stretched to fill the entire grid cell. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or {@link
+   * AlignmentFlag#Bottom}).
    *
    * <p>
    *
@@ -191,15 +173,14 @@ public class WGridLayout extends WLayout {
     this.expand(row, column, rowSpan, columnSpan);
     final Grid.Item gridItem = this.grid_.items_.get(row).get(column);
     if (gridItem.item_ != null) {
-      WLayoutItem oldItem = gridItem.item_;
-      gridItem.item_ = null;
-      this.updateRemoveItem(oldItem);
+      final WLayoutItem oldItem = gridItem.item_;
+      this.itemRemoved(oldItem);
     }
     gridItem.item_ = item;
     gridItem.rowSpan_ = rowSpan;
     gridItem.colSpan_ = columnSpan;
     gridItem.alignment_ = EnumSet.copyOf(alignment);
-    this.updateAddItem(item);
+    this.itemAdded(gridItem.item_);
   }
   /**
    * Adds a layout item to the grid.
@@ -255,14 +236,11 @@ public class WGridLayout extends WLayout {
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
    * default value 0 indicates that the item is stretched to fill the entire grid cell. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or {@link
+   * AlignmentFlag#Bottom}).
    *
    * <p>
-   *
-   * @see WGridLayout#addLayout(WLayout layout, int row, int column, int rowSpan, int columnSpan,
-   *     EnumSet alignment)
    */
   public void addLayout(WLayout layout, int row, int column, EnumSet<AlignmentFlag> alignment) {
     this.addItem(layout, row, column, 1, 1, alignment);
@@ -298,13 +276,11 @@ public class WGridLayout extends WLayout {
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
    * default value 0 indicates that the item is stretched to fill the entire grid cell. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or {@link
+   * AlignmentFlag#Bottom}).
    *
    * <p>
-   *
-   * @see WGridLayout#addLayout(WLayout layout, int row, int column, EnumSet alignment)
    */
   public void addLayout(
       WLayout layout,
@@ -351,14 +327,11 @@ public class WGridLayout extends WLayout {
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
    * default value 0 indicates that the item is stretched to fill the entire grid cell. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or {@link
+   * AlignmentFlag#Bottom}).
    *
    * <p>
-   *
-   * @see WGridLayout#addWidget(WWidget widget, int row, int column, int rowSpan, int columnSpan,
-   *     EnumSet alignment)
    */
   public void addWidget(WWidget widget, int row, int column, EnumSet<AlignmentFlag> alignment) {
     this.addItem(new WWidgetItem(widget), row, column, 1, 1, alignment);
@@ -394,13 +367,11 @@ public class WGridLayout extends WLayout {
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
    * default value 0 indicates that the item is stretched to fill the entire grid cell. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or {@link
+   * AlignmentFlag#Bottom}).
    *
    * <p>
-   *
-   * @see WGridLayout#addWidget(WWidget widget, int row, int column, EnumSet alignment)
    */
   public void addWidget(
       WWidget widget,
@@ -655,8 +626,15 @@ public class WGridLayout extends WLayout {
     return this.grid_.rows_.get(row).resizable_;
   }
 
-  Grid getGrid() {
-    return this.grid_;
+  public void iterateWidgets(final HandleWidgetMethod method) {
+    for (int r = 0; r < this.grid_.rows_.size(); ++r) {
+      for (int c = 0; c < this.grid_.columns_.size(); ++c) {
+        WLayoutItem item = this.grid_.items_.get(r).get(c).item_;
+        if (item != null) {
+          item.iterateWidgets(method);
+        }
+      }
+    }
   }
 
   private Grid grid_;
@@ -668,12 +646,9 @@ public class WGridLayout extends WLayout {
     int extraColumns = newColumnCount - this.getColumnCount();
     if (extraColumns > 0) {
       for (int a_row = 0; a_row < this.getRowCount(); ++a_row) {
-        {
-          int insertPos = this.grid_.items_.get(a_row).size();
-          for (int ii = 0; ii < (extraColumns); ++ii)
-            this.grid_.items_.get(a_row).add(insertPos + ii, new Grid.Item());
+        for (int i = 0; i < extraColumns; ++i) {
+          this.grid_.items_.get(a_row).add(new Grid.Item());
         }
-        ;
       }
       {
         int insertPos = this.grid_.columns_.size();
@@ -704,6 +679,13 @@ public class WGridLayout extends WLayout {
           this.grid_.rows_.add(insertPos + ii, new Grid.Section());
       }
       ;
+    }
+  }
+
+  public void setParentWidget(WWidget parent) {
+    super.setParentWidget(parent);
+    if (parent != null) {
+      this.setImpl(new StdGridLayoutImpl2(this, this.grid_));
     }
   }
 }

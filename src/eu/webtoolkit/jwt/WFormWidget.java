@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -36,9 +37,9 @@ import org.slf4j.LoggerFactory;
 public abstract class WFormWidget extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WFormWidget.class);
 
-  /** Creates a WFormWidget with an optional parent. */
-  public WFormWidget(WContainerWidget parent) {
-    super(parent);
+  /** Creates a WFormWidget. */
+  public WFormWidget(WContainerWidget parentContainer) {
+    super();
     this.label_ = null;
     this.validator_ = null;
     this.validateJs_ = null;
@@ -48,20 +49,17 @@ public abstract class WFormWidget extends WInteractWidget {
     this.flags_ = new BitSet();
     this.validated_ = new Signal1<WValidator.Result>();
     this.validationToolTip_ = new WString();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Creates a WFormWidget with an optional parent.
+   * Creates a WFormWidget.
    *
-   * <p>Calls {@link #WFormWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WFormWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WFormWidget() {
     this((WContainerWidget) null);
   }
-  /**
-   * Destructor.
-   *
-   * <p>If a label was associated with the widget, its buddy is reset to <code>null</code>.
-   */
+  /** Destructor. */
   public void remove() {
     if (this.label_ != null) {
       this.label_.setBuddy((WFormWidget) null);
@@ -69,7 +67,6 @@ public abstract class WFormWidget extends WInteractWidget {
     if (this.validator_ != null) {
       this.validator_.removeFormWidget(this);
     }
-    ;;;
     super.remove();
   }
   /**
@@ -112,16 +109,13 @@ public abstract class WFormWidget extends WInteractWidget {
    *
    * <p>The validator is used to validate the current input.
    *
-   * <p>If the validator has no parent yet, then ownership is transferred to the form field, and
-   * thus the validator will be deleted together with the form field.
-   *
    * <p>The default value is <code>null</code>.
    *
    * <p>
    *
    * @see WFormWidget#validate()
    */
-  public void setValidator(WValidator validator) {
+  public void setValidator(final WValidator validator) {
     boolean firstValidator = !(this.validator_ != null);
     if (this.validator_ != null) {
       this.validator_.removeFormWidget(this);
@@ -138,11 +132,9 @@ public abstract class WFormWidget extends WInteractWidget {
         WApplication.getInstance()
             .getTheme()
             .applyValidationStyle(
-                this, new WValidator.Result(), ValidationStyleFlag.ValidationNoStyle);
+                this, new WValidator.Result(), EnumSet.noneOf(ValidationStyleFlag.class));
       }
-      ;
       this.validateJs_ = null;
-      ;
       this.filterInput_ = null;
     }
   }
@@ -157,14 +149,13 @@ public abstract class WFormWidget extends WInteractWidget {
    *
    * @see WFormWidget#validated()
    */
-  public WValidator.State validate() {
+  public ValidationState validate() {
     if (this.getValidator() != null) {
       WValidator.Result result = this.getValidator().validate(this.getValueText());
       if (this.isRendered()) {
         WApplication.getInstance()
             .getTheme()
-            .applyValidationStyle(
-                this, result, EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+            .applyValidationStyle(this, result, EnumSet.of(ValidationStyleFlag.InvalidStyle));
       }
       if (!(this.validationToolTip_.toString().equals(result.getMessage().toString()))) {
         this.validationToolTip_ = result.getMessage();
@@ -174,7 +165,7 @@ public abstract class WFormWidget extends WInteractWidget {
       this.validated_.trigger(result);
       return result.getState();
     } else {
-      return WValidator.State.Valid;
+      return ValidationState.Valid;
     }
   }
   /**
@@ -215,27 +206,6 @@ public abstract class WFormWidget extends WInteractWidget {
     return this.flags_.get(BIT_READONLY);
   }
   /**
-   * Sets the placeholder text (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated use {@link WFormWidget#setPlaceholderText(CharSequence placeholderText)
-   *     setPlaceholderText()} instead
-   */
-  public void setEmptyText(final CharSequence emptyText) {
-    this.setPlaceholderText(emptyText);
-  }
-  /**
-   * Returns the placeholder text (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated use {@link WFormWidget#getPlaceholderText() getPlaceholderText()} instead.
-   */
-  public WString getEmptyText() {
-    return this.getPlaceholderText();
-  }
-  /**
    * Sets the placeholder text.
    *
    * <p>This sets the text that is shown when the field is empty.
@@ -245,8 +215,8 @@ public abstract class WFormWidget extends WInteractWidget {
     WApplication app = WApplication.getInstance();
     final WEnvironment env = app.getEnvironment();
     if (!env.agentIsIElt(10)
-        && (this.getDomElementType() == DomElementType.DomElement_INPUT
-            || this.getDomElementType() == DomElementType.DomElement_TEXTAREA)) {
+        && (this.getDomElementType() == DomElementType.INPUT
+            || this.getDomElementType() == DomElementType.TEXTAREA)) {
       this.flags_.set(BIT_PLACEHOLDER_CHANGED);
       this.repaint();
     } else {
@@ -266,7 +236,7 @@ public abstract class WFormWidget extends WInteractWidget {
                 "function(obj, event) {" + this.getJsRef() + ".wtObj.applyEmptyText();}";
             this.removeEmptyText_.setJavaScript(jsFunction);
           }
-        } else {;
+        } else {
           this.removeEmptyText_ = null;
         }
       } else {
@@ -292,10 +262,6 @@ public abstract class WFormWidget extends WInteractWidget {
   public EventSignal changed() {
     return this.voidEventSignal(CHANGE_SIGNAL, true);
   }
-  /** Signal emitted when ?? */
-  public EventSignal selected() {
-    return this.voidEventSignal(SELECT_SIGNAL, true);
-  }
   /**
    * Signal emitted when the widget is being validated.
    *
@@ -318,7 +284,7 @@ public abstract class WFormWidget extends WInteractWidget {
 
   public void setToolTip(final CharSequence text, TextFormat textFormat) {
     super.setToolTip(text, textFormat);
-    if (this.validator_ != null && textFormat == TextFormat.PlainText) {
+    if (this.validator_ != null && textFormat == TextFormat.Plain) {
       this.setJavaScriptMember("defaultTT", WString.toWString(text).getJsStringLiteral());
       this.validate();
     }
@@ -357,12 +323,11 @@ public abstract class WFormWidget extends WInteractWidget {
     if (!(this.emptyText_.length() == 0)
         && (this.getToolTip().toString().equals(this.emptyText_.toString()))) {
       this.setToolTip("");
-      this.setEmptyText(this.emptyText_);
+      this.setPlaceholderText(this.emptyText_);
     }
     super.enableAjax();
   }
 
-  private static String SELECT_SIGNAL = "select";
   private static final int BIT_ENABLED_CHANGED = 0;
   private static final int BIT_READONLY = 1;
   private static final int BIT_READONLY_CHANGED = 2;
@@ -391,14 +356,14 @@ public abstract class WFormWidget extends WInteractWidget {
       this.setJavaScriptMember("wtValidate", validateJS);
       if (!(this.validateJs_ != null)) {
         this.validateJs_ = new JSlot();
-        this.validateJs_.setJavaScript("function(o){Wt3_6_0.validate(o)}");
+        this.validateJs_.setJavaScript("function(o){Wt4_4_0.validate(o)}");
         this.keyWentUp().addListener(this.validateJs_);
         this.changed().addListener(this.validateJs_);
-        if (this.getDomElementType() != DomElementType.DomElement_SELECT) {
+        if (this.getDomElementType() != DomElementType.SELECT) {
           this.clicked().addListener(this.validateJs_);
         }
       }
-    } else {;
+    } else {
       this.validateJs_ = null;
     }
     String inputFilter = this.validator_.getInputFilter();
@@ -409,12 +374,12 @@ public abstract class WFormWidget extends WInteractWidget {
       }
       StringUtils.replace(inputFilter, '/', "\\/");
       this.filterInput_.setJavaScript(
-          "function(o,e){Wt3_6_0.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
+          "function(o,e){Wt4_4_0.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
     } else {
       if (this.filterInput_ != null) {
         this.keyPressed().removeListener(this.filterInput_);
-        this.filterInput_ = null;
       }
+      this.filterInput_ = null;
     }
     this.validate();
   }
@@ -429,7 +394,7 @@ public abstract class WFormWidget extends WInteractWidget {
       app.loadJavaScript("js/WFormWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WFormWidget",
-          "new Wt3_6_0.WFormWidget("
+          "new Wt4_4_0.WFormWidget("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()
@@ -467,20 +432,20 @@ public abstract class WFormWidget extends WInteractWidget {
     }
     if (this.flags_.get(BIT_ENABLED_CHANGED) || all) {
       if (!all || !this.isEnabled()) {
-        element.setProperty(Property.PropertyDisabled, this.isEnabled() ? "false" : "true");
+        element.setProperty(Property.Disabled, this.isEnabled() ? "false" : "true");
       }
       if (!all && this.isEnabled() && env.agentIsIE()) {}
       this.flags_.clear(BIT_ENABLED_CHANGED);
     }
     if (this.flags_.get(BIT_READONLY_CHANGED) || all) {
       if (!all || this.isReadOnly()) {
-        element.setProperty(Property.PropertyReadOnly, this.isReadOnly() ? "true" : "false");
+        element.setProperty(Property.ReadOnly, this.isReadOnly() ? "true" : "false");
       }
       this.flags_.clear(BIT_READONLY_CHANGED);
     }
     if (this.flags_.get(BIT_PLACEHOLDER_CHANGED) || all) {
       if (!all || !(this.emptyText_.length() == 0)) {
-        element.setProperty(Property.PropertyPlaceholder, this.emptyText_.toString());
+        element.setProperty(Property.Placeholder, this.emptyText_.toString());
       }
       this.flags_.clear(BIT_PLACEHOLDER_CHANGED);
     }
@@ -501,7 +466,7 @@ public abstract class WFormWidget extends WInteractWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       if (this.flags_.get(BIT_JS_OBJECT)) {
         this.defineJavaScript(true);
       }
@@ -509,8 +474,7 @@ public abstract class WFormWidget extends WInteractWidget {
         WValidator.Result result = this.getValidator().validate(this.getValueText());
         WApplication.getInstance()
             .getTheme()
-            .applyValidationStyle(
-                this, result, EnumSet.of(ValidationStyleFlag.ValidationInvalidStyle));
+            .applyValidationStyle(this, result, EnumSet.of(ValidationStyleFlag.InvalidStyle));
       }
     }
     super.render(flags);

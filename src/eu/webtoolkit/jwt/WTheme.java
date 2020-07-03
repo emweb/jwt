@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,16 +29,8 @@ public abstract class WTheme extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WTheme.class);
 
   /** Constructor. */
-  public WTheme(WObject parent) {
-    super(parent);
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WTheme(WObject parent) this((WObject)null)}
-   */
   public WTheme() {
-    this((WObject) null);
+    super();
   }
   /**
    * Returns a theme name.
@@ -64,9 +57,9 @@ public abstract class WTheme extends WObject {
    * <p>The default implementation serves all the {@link WTheme#getStyleSheets() getStyleSheets()}.
    */
   public void serveCss(final StringBuilder out) {
-    List<WCssStyleSheet> sheets = this.getStyleSheets();
+    List<WLinkedCssStyleSheet> sheets = this.getStyleSheets();
     for (int i = 0; i < sheets.size(); ++i) {
-      sheets.get(i).cssText(out, true);
+      sheets.get(i).cssText(out);
     }
   }
   /**
@@ -75,7 +68,7 @@ public abstract class WTheme extends WObject {
    * <p>This should return a vector with stylesheets that implement the theme. This list may be
    * tailored to the current user agent, which is read from the application environment.
    */
-  public abstract List<WCssStyleSheet> getStyleSheets();
+  public abstract List<WLinkedCssStyleSheet> getStyleSheets();
   /**
    * Applies the theme to a child of a composite widget.
    *

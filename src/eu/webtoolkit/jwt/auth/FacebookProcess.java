@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,29 +19,30 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FacebookProcess extends OAuthProcess {
+final class FacebookProcess extends OAuthProcess {
   private static Logger logger = LoggerFactory.getLogger(FacebookProcess.class);
 
   public FacebookProcess(final FacebookService auth, final String scope) {
     super(auth, scope);
+    this.httpClient_ = null;
   }
 
   public void getIdentity(final OAuthAccessToken token) {
-    HttpClient client = new HttpClient(this);
-    client.setTimeout(15);
-    client.setMaximumResponseSize(10 * 1024);
-    client
+    this.httpClient_ = new HttpClient();
+    this.httpClient_.setTimeout(Duration.ofSeconds(15));
+    this.httpClient_.setMaximumResponseSize(10 * 1024);
+    this.httpClient_
         .done()
         .addListener(
             this,
-            new Signal2.Listener<Exception, HttpMessage>() {
-              public void trigger(Exception event1, HttpMessage event2) {
-                FacebookProcess.this.handleMe(event1, event2);
-              }
+            (Exception event1, HttpMessage event2) -> {
+              FacebookProcess.this.handleMe(event1, event2);
             });
-    client.get(
+    this.httpClient_.get(
         "https://graph.facebook.com/me?fields=name,id,email&access_token=" + token.getValue());
   }
+
+  private HttpClient httpClient_;
 
   private void handleMe(Exception err, final HttpMessage response) {
     if (err == null && response.getStatus() == 200) {

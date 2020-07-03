@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,108 +22,16 @@ import org.slf4j.LoggerFactory;
 public class WFont {
   private static Logger logger = LoggerFactory.getLogger(WFont.class);
 
-  /** The generic font family. */
-  public enum GenericFamily {
-    /** Browser-dependent default. */
-    Default,
-    /** for example: Times */
-    Serif,
-    /** for example: Helvetica */
-    SansSerif,
-    /** for example: Zapf-Chancery */
-    Cursive,
-    /** for example: Western */
-    Fantasy,
-    /** for example: Courier */
-    Monospace;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** The font style. */
-  public enum Style {
-    /** Normal (default) */
-    NormalStyle,
-    /** Italic. */
-    Italic,
-    /** Oblique. */
-    Oblique;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** The font variant. */
-  public enum Variant {
-    /** Normal (default) */
-    NormalVariant,
-    /** Small Capitals. */
-    SmallCaps;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** The font weight. */
-  public enum Weight {
-    /** Normal (default) (Value == 400) */
-    NormalWeight,
-    /** Bold (Value == 700) */
-    Bold,
-    /** Bolder than the parent widget. */
-    Bolder,
-    /** Lighter than the parent widget. */
-    Lighter,
-    /** Specify a value (100 - 900) */
-    Value;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** The font size. */
-  public enum Size {
-    /** Extra Extra small. */
-    XXSmall,
-    /** Extra small. */
-    XSmall,
-    /** Small. */
-    Small,
-    /** Medium, default. */
-    Medium,
-    /** Large. */
-    Large,
-    /** Extra large. */
-    XLarge,
-    /** Extra Extra large. */
-    XXLarge,
-    /** Relatively smaller than the parent widget. */
-    Smaller,
-    /** Relatively larger than the parent widget. */
-    Larger,
-    /** Explicit size, See also fontFixedSize() */
-    FixedSize;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** A default font (dependent on the user agent). */
   public WFont() {
     this.widget_ = null;
-    this.genericFamily_ = WFont.GenericFamily.Default;
+    this.genericFamily_ = FontFamily.Default;
     this.specificFamilies_ = new WString();
-    this.style_ = WFont.Style.NormalStyle;
-    this.variant_ = WFont.Variant.NormalVariant;
-    this.weight_ = WFont.Weight.NormalWeight;
+    this.style_ = FontStyle.Normal;
+    this.variant_ = FontVariant.Normal;
+    this.weight_ = FontWeight.Normal;
     this.weightValue_ = 400;
-    this.size_ = WFont.Size.Medium;
+    this.size_ = FontSize.Medium;
     this.sizeLength_ = new WLength();
     this.familyChanged_ = false;
     this.styleChanged_ = false;
@@ -135,15 +44,15 @@ public class WFont {
    *
    * <p>Creates a Medium font of the given family.
    */
-  public WFont(WFont.GenericFamily family) {
+  public WFont(FontFamily family) {
     this.widget_ = null;
     this.genericFamily_ = family;
     this.specificFamilies_ = new WString();
-    this.style_ = WFont.Style.NormalStyle;
-    this.variant_ = WFont.Variant.NormalVariant;
-    this.weight_ = WFont.Weight.NormalWeight;
+    this.style_ = FontStyle.Normal;
+    this.variant_ = FontVariant.Normal;
+    this.weight_ = FontWeight.Normal;
     this.weightValue_ = 400;
-    this.size_ = WFont.Size.Medium;
+    this.size_ = FontSize.Medium;
     this.sizeLength_ = new WLength();
     this.familyChanged_ = false;
     this.styleChanged_ = false;
@@ -165,44 +74,43 @@ public class WFont {
   /**
    * Sets the font family.
    *
-   * <p>The font family is specified using a generic family name, in addition to a comma-seperated
+   * <p>The font family is specified using a generic family name, in addition to a comma-separated
    * list of specific font choices.
    *
    * <p>The first specific font that can be matched will be used, otherwise a generic font will be
    * used.
    *
    * <p>Careful, for a font family name that contains a space, you need to add quotes, to {@link
-   * WFont#setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies) setFamily()},
-   * e.g.
+   * WFont#setFamily(FontFamily genericFamily, CharSequence specificFamilies) setFamily()}, e.g.
    *
    * <p>
    *
    * <pre>{@code
    * WFont mono;
-   * mono.setFamily(WFont::Monospace, "'Courier New'");
+   * mono.setFamily(FontFamily::Monospace, "'Courier New'");
    * mono.setSize(18);
    *
    * }</pre>
    */
-  public void setFamily(WFont.GenericFamily genericFamily, final CharSequence specificFamilies) {
+  public void setFamily(FontFamily genericFamily, final CharSequence specificFamilies) {
     this.genericFamily_ = genericFamily;
     this.specificFamilies_ = WString.toWString(specificFamilies);
     this.familyChanged_ = true;
     if (this.widget_ != null) {
-      this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.widget_.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
    * Sets the font family.
    *
-   * <p>Calls {@link #setFamily(WFont.GenericFamily genericFamily, CharSequence specificFamilies)
+   * <p>Calls {@link #setFamily(FontFamily genericFamily, CharSequence specificFamilies)
    * setFamily(genericFamily, new WString())}
    */
-  public final void setFamily(WFont.GenericFamily genericFamily) {
+  public final void setFamily(FontFamily genericFamily) {
     setFamily(genericFamily, new WString());
   }
   /** Returns the font generic family. */
-  public WFont.GenericFamily getGenericFamily() {
+  public FontFamily getGenericFamily() {
     return this.genericFamily_;
   }
   /** Returns the font specific family names. */
@@ -210,27 +118,27 @@ public class WFont {
     return this.specificFamilies_;
   }
   /** Sets the font style. */
-  public void setStyle(WFont.Style style) {
+  public void setStyle(FontStyle style) {
     this.style_ = style;
     this.styleChanged_ = true;
     if (this.widget_ != null) {
-      this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.widget_.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /** Returns the font style. */
-  public WFont.Style getStyle() {
+  public FontStyle getStyle() {
     return this.style_;
   }
   /** Sets the font variant. */
-  public void setVariant(WFont.Variant variant) {
+  public void setVariant(FontVariant variant) {
     this.variant_ = variant;
     this.variantChanged_ = true;
     if (this.widget_ != null) {
-      this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.widget_.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /** Returns the font variant. */
-  public WFont.Variant getVariant() {
+  public FontVariant getVariant() {
     return this.variant_;
   }
   /**
@@ -240,34 +148,34 @@ public class WFont {
    *
    * <p>Valid values are between 100 and 900, and are rounded to multiples of 100.
    */
-  public void setWeight(WFont.Weight weight, int value) {
+  public void setWeight(FontWeight weight, int value) {
     this.weight_ = weight;
     this.weightValue_ = value;
     this.weightChanged_ = true;
     if (this.widget_ != null) {
-      this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.widget_.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
    * Sets the font weight.
    *
-   * <p>Calls {@link #setWeight(WFont.Weight weight, int value) setWeight(weight, 400)}
+   * <p>Calls {@link #setWeight(FontWeight weight, int value) setWeight(weight, 400)}
    */
-  public final void setWeight(WFont.Weight weight) {
+  public final void setWeight(FontWeight weight) {
     setWeight(weight, 400);
   }
   /** Returns the font weight. */
-  public WFont.Weight getWeight() {
-    if (this.weight_ != WFont.Weight.Value) {
+  public FontWeight getWeight() {
+    if (this.weight_ != FontWeight.Value) {
       return this.weight_;
     } else {
-      return this.weightValue_ >= 700 ? WFont.Weight.Bold : WFont.Weight.NormalWeight;
+      return this.weightValue_ >= 700 ? FontWeight.Bold : FontWeight.Normal;
     }
   }
   /** Returns the font weight value. */
   public int getWeightValue() {
     switch (this.weight_) {
-      case NormalWeight:
+      case Normal:
       case Lighter:
         return 400;
       case Bold:
@@ -280,29 +188,16 @@ public class WFont {
     return -1;
   }
   /**
-   * Sets the font size (<b>deprecated</b>)
-   *
-   * <p>Use {@link WFont#setSize(WFont.Size size) setSize()} or {@link WFont#setSize(WLength size)
-   * setSize()} instead.
-   */
-  public void setSize(WFont.Size size, final WLength length) {
-    if (size == WFont.Size.FixedSize) {
-      this.setSize(length);
-    } else {
-      this.setSize(size);
-    }
-  }
-  /**
    * Sets the font size.
    *
    * <p>Sets the font size using a predefined CSS size.
    */
-  public void setSize(WFont.Size size) {
+  public void setSize(FontSize size) {
     this.size_ = size;
     this.sizeLength_ = WLength.Auto;
     this.sizeChanged_ = true;
     if (this.widget_ != null) {
-      this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.widget_.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
@@ -311,40 +206,40 @@ public class WFont {
    * <p>Sets the font size.
    */
   public void setSize(final WLength size) {
-    this.size_ = WFont.Size.FixedSize;
+    this.size_ = FontSize.FixedSize;
     this.sizeLength_ = size;
     this.sizeChanged_ = true;
     if (this.widget_ != null) {
-      this.widget_.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.widget_.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /** Returns the font size. */
-  public WFont.Size getSize(double mediumSize) {
-    if (this.size_ != WFont.Size.FixedSize) {
+  public FontSize getSize(double mediumSize) {
+    if (this.size_ != FontSize.FixedSize) {
       return this.size_;
     } else {
       double pixels = this.sizeLength_.toPixels();
       if (pixels == mediumSize) {
-        return WFont.Size.Medium;
+        return FontSize.Medium;
       } else {
         if (pixels > mediumSize) {
           if (pixels < 1.2 * 1.19 * mediumSize) {
-            return WFont.Size.Large;
+            return FontSize.Large;
           } else {
             if (pixels < 1.2 * 1.2 * 1.19 * mediumSize) {
-              return WFont.Size.XLarge;
+              return FontSize.XLarge;
             } else {
-              return WFont.Size.XXLarge;
+              return FontSize.XXLarge;
             }
           }
         } else {
           if (pixels > mediumSize / 1.2 / 1.19) {
-            return WFont.Size.Small;
+            return FontSize.Small;
           } else {
             if (pixels > mediumSize / 1.2 / 1.2 / 1.19) {
-              return WFont.Size.XSmall;
+              return FontSize.XSmall;
             } else {
-              return WFont.Size.XXSmall;
+              return FontSize.XXSmall;
             }
           }
         }
@@ -356,24 +251,14 @@ public class WFont {
    *
    * <p>Returns {@link #getSize(double mediumSize) getSize(16)}
    */
-  public final WFont.Size getSize() {
+  public final FontSize getSize() {
     return getSize(16);
-  }
-  /**
-   * Returns the font size as a numerical value (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated This method has been renamed to {@link WFont#getSizeLength(double mediumSize)
-   *     getSizeLength()}
-   */
-  public WLength getFixedSize() {
-    return this.getSizeLength();
   }
   /**
    * Returns the font size as a numerical value.
    *
-   * <p>Absolute size enumerations are converted to a length assuming a Medium font size of 16 px.
+   * <p>{@link PositionScheme#Absolute} size enumerations are converted to a length assuming a
+   * Medium font size of 16 px.
    */
   public WLength getSizeLength(double mediumSize) {
     switch (this.size_) {
@@ -394,9 +279,9 @@ public class WFont {
       case XXLarge:
         return new WLength(mediumSize * 1.2 * 1.2 * 1.2);
       case Smaller:
-        return new WLength(1 / 1.2, WLength.Unit.FontEm);
+        return new WLength(1 / 1.2, LengthUnit.FontEm);
       case Larger:
-        return new WLength(1.2, WLength.Unit.FontEm);
+        return new WLength(1.2, LengthUnit.FontEm);
     }
     assert false;
     return new WLength();
@@ -467,48 +352,48 @@ public class WFont {
     if (this.familyChanged_ || fontall || all) {
       String family = this.cssFamily(fontall);
       if (family.length() != 0) {
-        element.setProperty(Property.PropertyStyleFontFamily, family);
+        element.setProperty(Property.StyleFontFamily, family);
       }
       this.familyChanged_ = false;
     }
     if (this.styleChanged_ || fontall || all) {
       String style = this.cssStyle(fontall);
       if (style.length() != 0) {
-        element.setProperty(Property.PropertyStyleFontStyle, style);
+        element.setProperty(Property.StyleFontStyle, style);
       }
       this.styleChanged_ = false;
     }
     if (this.variantChanged_ || fontall || all) {
       String variant = this.cssVariant(fontall);
       if (variant.length() != 0) {
-        element.setProperty(Property.PropertyStyleFontVariant, variant);
+        element.setProperty(Property.StyleFontVariant, variant);
       }
       this.variantChanged_ = false;
     }
     if (this.weightChanged_ || fontall || all) {
       String weight = this.cssWeight(fontall);
       if (weight.length() != 0) {
-        element.setProperty(Property.PropertyStyleFontWeight, weight);
+        element.setProperty(Property.StyleFontWeight, weight);
       }
       this.weightChanged_ = false;
     }
     if (this.sizeChanged_ || fontall || all) {
       String size = this.cssSize(fontall);
       if (size.length() != 0) {
-        element.setProperty(Property.PropertyStyleFontSize, size);
+        element.setProperty(Property.StyleFontSize, size);
       }
       this.sizeChanged_ = false;
     }
   }
 
   private WWebWidget widget_;
-  private WFont.GenericFamily genericFamily_;
+  private FontFamily genericFamily_;
   private WString specificFamilies_;
-  private WFont.Style style_;
-  private WFont.Variant variant_;
-  private WFont.Weight weight_;
+  private FontStyle style_;
+  private FontVariant variant_;
+  private FontWeight weight_;
   private int weightValue_;
-  private WFont.Size size_;
+  private FontSize size_;
   private WLength sizeLength_;
   private boolean familyChanged_;
   private boolean styleChanged_;
@@ -518,7 +403,7 @@ public class WFont {
 
   private String cssStyle(boolean all) {
     switch (this.style_) {
-      case NormalStyle:
+      case Normal:
         if (this.styleChanged_ || all) {
           return "normal";
         }
@@ -533,7 +418,7 @@ public class WFont {
 
   private String cssVariant(boolean all) {
     switch (this.variant_) {
-      case NormalVariant:
+      case Normal:
         if (this.variantChanged_ || all) {
           return "normal";
         }
@@ -546,7 +431,7 @@ public class WFont {
 
   private String cssWeight(boolean all) {
     switch (this.weight_) {
-      case NormalWeight:
+      case Normal:
         if (this.weightChanged_ || all) {
           return "normal";
         }
@@ -568,7 +453,7 @@ public class WFont {
 
   private String cssFamily(boolean all) {
     String family = this.specificFamilies_.toString();
-    if (family.length() != 0 && this.genericFamily_ != WFont.GenericFamily.Default) {
+    if (family.length() != 0 && this.genericFamily_ != FontFamily.Default) {
       family += ',';
     }
     switch (this.genericFamily_) {

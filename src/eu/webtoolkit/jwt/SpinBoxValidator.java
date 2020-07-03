@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,7 +31,7 @@ class SpinBoxValidator extends WValidator {
     if (valid) {
       return this.spinBox_.getValidateRange();
     } else {
-      return new WValidator.Result(WValidator.State.Invalid);
+      return new WValidator.Result(ValidationState.Invalid);
     }
   }
 

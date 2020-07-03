@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,147 +31,122 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
   private static Logger logger = LoggerFactory.getLogger(WStandardChartProxyModel.class);
 
   /** Creates a new {@link WStandardChartProxyModel} that wraps the given source model. */
-  public WStandardChartProxyModel(WAbstractItemModel sourceModel, WObject parent) {
-    super(parent);
+  public WStandardChartProxyModel(final WAbstractItemModel sourceModel) {
+    super();
     this.sourceModel_ = sourceModel;
     sourceModel
         .columnsInserted()
         .addListener(
             this,
-            new Signal3.Listener<WModelIndex, Integer, Integer>() {
-              public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            (WModelIndex e1, Integer e2, Integer e3) -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .columnsRemoved()
         .addListener(
             this,
-            new Signal3.Listener<WModelIndex, Integer, Integer>() {
-              public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            (WModelIndex e1, Integer e2, Integer e3) -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .rowsInserted()
         .addListener(
             this,
-            new Signal3.Listener<WModelIndex, Integer, Integer>() {
-              public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            (WModelIndex e1, Integer e2, Integer e3) -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .rowsRemoved()
         .addListener(
             this,
-            new Signal3.Listener<WModelIndex, Integer, Integer>() {
-              public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            (WModelIndex e1, Integer e2, Integer e3) -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .dataChanged()
         .addListener(
             this,
-            new Signal2.Listener<WModelIndex, WModelIndex>() {
-              public void trigger(WModelIndex e1, WModelIndex e2) {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            (WModelIndex e1, WModelIndex e2) -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .headerDataChanged()
         .addListener(
             this,
-            new Signal3.Listener<Orientation, Integer, Integer>() {
-              public void trigger(Orientation e1, Integer e2, Integer e3) {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            (Orientation e1, Integer e2, Integer e3) -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .layoutChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            () -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
     sourceModel
         .modelReset()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WStandardChartProxyModel.this.sourceModelModified();
-              }
+            () -> {
+              WStandardChartProxyModel.this.sourceModelModified();
             });
-  }
-  /**
-   * Creates a new {@link WStandardChartProxyModel} that wraps the given source model.
-   *
-   * <p>Calls {@link #WStandardChartProxyModel(WAbstractItemModel sourceModel, WObject parent)
-   * this(sourceModel, (WObject)null)}
-   */
-  public WStandardChartProxyModel(WAbstractItemModel sourceModel) {
-    this(sourceModel, (WObject) null);
   }
   /**
    * Returns data at a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * DisplayRole} as a double.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::Display} as a double.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public double getData(int row, int column) {
-    return StringUtils.asNumber(this.sourceModel_.getData(row, column, ItemDataRole.DisplayRole));
+    return StringUtils.asNumber(this.sourceModel_.getData(row, column, ItemDataRole.Display));
   }
   /**
    * Returns display data at a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * DisplayRole} as a {@link WString}.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::Display} as a {@link WString}.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WString getDisplayData(int row, int column) {
-    return StringUtils.asString(this.sourceModel_.getData(row, column, ItemDataRole.DisplayRole));
+    return StringUtils.asString(this.sourceModel_.getData(row, column, ItemDataRole.Display));
   }
   /**
    * Returns the given column&apos;s header data.
    *
    * <p>Returns the result of {@link WAbstractItemModel#getHeaderData(int section, Orientation
-   * orientation, int role) WAbstractItemModel#getHeaderData()} for the given column with the {@link
-   * ItemDataRole DisplayRole} as a {@link WString}.
+   * orientation, ItemDataRole role) WAbstractItemModel#getHeaderData()} for the given column with
+   * the {@link ItemDataRole ItemDataRole::Display} as a {@link WString}.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getHeaderData(int section, Orientation orientation, int role)
+   * @see WAbstractItemModel#getHeaderData(int section, Orientation orientation, ItemDataRole role)
    */
   public WString getHeaderData(int column) {
     return StringUtils.asString(
-        this.sourceModel_.getHeaderData(column, Orientation.Horizontal, ItemDataRole.DisplayRole));
+        this.sourceModel_.getHeaderData(column, Orientation.Horizontal, ItemDataRole.Display));
   }
   /**
    * Returns the tooltip text to use on a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * ToolTipRole} as a {@link WString}.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::ToolTip} as a {@link WString}.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WString getToolTip(int row, int column) {
-    return StringUtils.asString(this.sourceModel_.getData(row, column, ItemDataRole.ToolTipRole));
+    return StringUtils.asString(this.sourceModel_.getData(row, column, ItemDataRole.ToolTip));
   }
   /**
    * Returns the item flags for the given row and column.
@@ -188,17 +164,17 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
   /**
    * Returns the link to use on a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
    * LinkRole} as a {@link WLink}.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WLink link(int row, int column) {
-    Object result = this.sourceModel_.getData(row, column, ItemDataRole.LinkRole);
-    if ((result == null)) {
+    Object result = this.sourceModel_.getData(row, column, ItemDataRole.Link);
+    if (!(result != null)) {
       return null;
     } else {
       WLink c = ((WLink) result);
@@ -208,45 +184,45 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
   /**
    * Returns the marker pen color to use for a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * MarkerPenColorRole}, or null if no color is defined.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::MarkerPenColor}, or null if no color is defined.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WColor getMarkerPenColor(int row, int column) {
-    return this.color(row, column, ItemDataRole.MarkerPenColorRole);
+    return this.color(row, column, ItemDataRole.MarkerPenColor);
   }
   /**
    * Returns the marker brush color to use for a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * MarkerBrushColorRole}, or null if no color is defined.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::MarkerBrushColor}, or null if no color is defined.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WColor getMarkerBrushColor(int row, int column) {
-    return this.color(row, column, ItemDataRole.MarkerBrushColorRole);
+    return this.color(row, column, ItemDataRole.MarkerBrushColor);
   }
   /**
    * Returns the marker type to use for a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
    * MarkerTypeRole}, or null if no marker type is defined.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public MarkerType markerType(int row, int column) {
-    Object result = this.sourceModel_.getData(row, column, ItemDataRole.MarkerTypeRole);
-    if ((result == null)) {
+    Object result = this.sourceModel_.getData(row, column, ItemDataRole.MarkerType);
+    if (!(result != null)) {
       return null;
     } else {
       MarkerType t = ((MarkerType) result);
@@ -256,49 +232,49 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
   /**
    * Returns the bar pen color to use for a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * BarPenColorRole}, or null if no color is defined.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::BarPenColor}, or null if no color is defined.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WColor getBarPenColor(int row, int column) {
-    return this.color(row, column, ItemDataRole.BarPenColorRole);
+    return this.color(row, column, ItemDataRole.BarPenColor);
   }
   /**
    * Returns the bar brush color to use for a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * BarBrushColorRole}, or null if no color is defined.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::BarBrushColor}, or null if no color is defined.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public WColor getBarBrushColor(int row, int column) {
-    return this.color(row, column, ItemDataRole.BarBrushColorRole);
+    return this.color(row, column, ItemDataRole.BarBrushColor);
   }
   /**
    * Returns the marker scale factor to use for a given row and column.
    *
-   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, int role)
-   * WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
-   * MarkerScaleFactorRole}, or null if no color is defined.
+   * <p>Returns the result of {@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole
+   * role) WAbstractItemModel#getData()} for the given row and column with the {@link ItemDataRole
+   * ItemDataRole::MarkerScaleFactor}, or null if no color is defined.
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
   public Double getMarkerScaleFactor(int row, int column) {
-    Object result = this.sourceModel_.getData(row, column, ItemDataRole.MarkerScaleFactorRole);
-    if ((result == null)) {
+    Object result = this.sourceModel_.getData(row, column, ItemDataRole.MarkerScaleFactor);
+    if (!(result != null)) {
       return super.getMarkerScaleFactor(row, column);
     } else {
-      double tmp = StringUtils.asNumber(result);
-      return tmp;
+      double scale = StringUtils.asNumber(result);
+      return scale;
     }
   }
   /**
@@ -332,9 +308,9 @@ public class WStandardChartProxyModel extends WAbstractChartModel {
     this.changed().trigger();
   }
 
-  private WColor color(int row, int column, int colorDataRole) {
+  private WColor color(int row, int column, ItemDataRole colorDataRole) {
     Object result = this.sourceModel_.getData(row, column, colorDataRole);
-    if ((result == null)) {
+    if (!(result != null)) {
       return null;
     } else {
       WColor c = ((WColor) result);

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -46,18 +47,10 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
    *
    * <p>Sets up the proxy without aggregation functionality.
    */
-  public WAggregateProxyModel(WObject parent) {
-    super(parent);
+  public WAggregateProxyModel() {
+    super();
     this.topLevel_ = new WAggregateProxyModel.Aggregate();
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WAggregateProxyModel(WObject parent) this((WObject)null)}
-   */
-  public WAggregateProxyModel() {
-    this((WObject) null);
   }
   /**
    * Adds a new column aggregation definition.
@@ -110,143 +103,115 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
     }
   }
 
-  public void setSourceModel(WAbstractItemModel model) {
-    if (this.getSourceModel() != null) {
-      for (int i = 0; i < this.modelConnections_.size(); ++i) {
-        this.modelConnections_.get(i).disconnect();
-      }
-      this.modelConnections_.clear();
+  public void setSourceModel(final WAbstractItemModel model) {
+    for (int i = 0; i < this.modelConnections_.size(); ++i) {
+      this.modelConnections_.get(i).disconnect();
     }
+    this.modelConnections_.clear();
     super.setSourceModel(model);
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsAboutToBeInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceColumnsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceColumnsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsAboutToBeInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceRowsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceRowsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceRowsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceRowsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .dataChanged()
             .addListener(
                 this,
-                new Signal2.Listener<WModelIndex, WModelIndex>() {
-                  public void trigger(WModelIndex e1, WModelIndex e2) {
-                    WAggregateProxyModel.this.sourceDataChanged(e1, e2);
-                  }
+                (WModelIndex e1, WModelIndex e2) -> {
+                  WAggregateProxyModel.this.sourceDataChanged(e1, e2);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .headerDataChanged()
             .addListener(
                 this,
-                new Signal3.Listener<Orientation, Integer, Integer>() {
-                  public void trigger(Orientation e1, Integer e2, Integer e3) {
-                    WAggregateProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
-                  }
+                (Orientation e1, Integer e2, Integer e3) -> {
+                  WAggregateProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .layoutAboutToBeChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WAggregateProxyModel.this.sourceLayoutAboutToBeChanged();
-                  }
+                () -> {
+                  WAggregateProxyModel.this.sourceLayoutAboutToBeChanged();
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .layoutChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WAggregateProxyModel.this.sourceLayoutChanged();
-                  }
+                () -> {
+                  WAggregateProxyModel.this.sourceLayoutChanged();
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .modelReset()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WAggregateProxyModel.this.sourceModelReset();
-                  }
+                () -> {
+                  WAggregateProxyModel.this.sourceModelReset();
                 }));
     this.topLevel_ = new WAggregateProxyModel.Aggregate();
   }
@@ -304,17 +269,18 @@ public class WAggregateProxyModel extends WAbstractProxyModel {
     }
   }
 
-  public boolean setHeaderData(int section, Orientation orientation, final Object value, int role) {
+  public boolean setHeaderData(
+      int section, Orientation orientation, final Object value, ItemDataRole role) {
     if (orientation == Orientation.Horizontal) {
       section = this.topLevel_.mapToSource(section);
     }
     return this.getSourceModel().setHeaderData(section, orientation, value, role);
   }
 
-  public Object getHeaderData(int section, Orientation orientation, int role) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
     if (orientation == Orientation.Horizontal) {
       section = this.topLevel_.mapToSource(section);
-      if (role == ItemDataRole.LevelRole) {
+      if (role.equals(ItemDataRole.Level)) {
         WAggregateProxyModel.Aggregate agg = this.topLevel_.findEnclosingAggregate(section);
         return agg.level_;
       } else {

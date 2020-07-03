@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,8 +19,8 @@ import javax.servlet.http.*;
 /**
  * Enumeration that indicates a relative location.
  *
- * <p>Values of CenterX, CenterY, and CenterXY are only valid for {@link
- * WCssDecorationStyle#setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat, EnumSet
+ * <p>Values of {@link Side#CenterX CenterX}, {@link Side#CenterY CenterY}, and CenterXY are only
+ * valid for {@link WCssDecorationStyle#setBackgroundImage(WLink image, EnumSet repeat, EnumSet
  * sides) WCssDecorationStyle#setBackgroundImage()}
  *
  * <p>
@@ -29,8 +30,7 @@ import javax.servlet.http.*;
  * @see WWidget#setFloatSide(Side s)
  * @see WWidget#setClearSides(EnumSet sides)
  * @see WContainerWidget#setPadding(WLength length, EnumSet sides)
- * @see WCssDecorationStyle#setBackgroundImage(WLink image, WCssDecorationStyle.Repeat repeat,
- *     EnumSet sides)
+ * @see WCssDecorationStyle#setBackgroundImage(WLink image, EnumSet repeat, EnumSet sides)
  */
 public enum Side {
   /** Top side. */
@@ -50,14 +50,7 @@ public enum Side {
   public int getValue() {
     return ordinal();
   }
-  /** No side. */
-  public static final EnumSet<Side> None = EnumSet.noneOf(Side.class);
-  /** (CenterX | CenterY) */
-  public static final EnumSet<Side> CenterXY = EnumSet.of(Side.CenterX, Side.CenterY);
-  /** (Left | Right) */
-  public static final EnumSet<Side> Horizontals = EnumSet.of(Side.Left, Side.Right);
-  /** (Top | Bottom) */
-  public static final EnumSet<Side> Verticals = EnumSet.of(Side.Top, Side.Bottom);
-  /** All sides. */
-  public static final EnumSet<Side> All = EnumSet.of(Side.Top, Side.Bottom, Side.Left, Side.Right);
+
+  public static final EnumSet<Side> AllSides =
+      EnumSet.of(Side.Left, Side.Right, Side.Top, Side.Bottom);
 }

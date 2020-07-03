@@ -5,17 +5,10 @@
  */
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
-import java.util.*;
-import java.util.regex.*;
-import java.io.*;
-import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
-import javax.servlet.*;
 import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+
+import java.util.EnumSet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +20,7 @@ class PaintBrush extends WPaintedWidget {
 		this.path_ = new WPainterPath();
 		this.color_ = new WColor();
 		this.resize(new WLength(width), new WLength(height));
-		this.getDecorationStyle().setCursor("icons/pencil.cur",
-				Cursor.CrossCursor);
+		this.getDecorationStyle().setCursor("icons/pencil.cur", Cursor.Cross);
 		this.mouseDragged().addListener(this,
 				new Signal1.Listener<WMouseEvent>() {
 					public void trigger(WMouseEvent e1) {
@@ -71,12 +63,12 @@ class PaintBrush extends WPaintedWidget {
 
 	protected void paintEvent(WPaintDevice paintDevice) {
 		WPainter painter = new WPainter(paintDevice);
-		painter.setRenderHint(WPainter.RenderHint.Antialiasing);
+		painter.setRenderHint(RenderHint.Antialiasing);
 		WPen pen = new WPen();
 		pen.setWidth(new WLength(3));
 		pen.setColor(this.color_);
-		pen.setCapStyle(PenCapStyle.FlatCap);
-		pen.setJoinStyle(PenJoinStyle.MiterJoin);
+		pen.setCapStyle(PenCapStyle.Flat);
+		pen.setJoinStyle(PenJoinStyle.Miter);
 		painter.setPen(pen);
 		painter.drawPath(this.path_);
 		this.path_.assign(new WPainterPath(this.path_.getCurrentPosition()));
@@ -93,7 +85,7 @@ class PaintBrush extends WPaintedWidget {
 	private void mouseDrag(WMouseEvent e) {
 		Coordinates c = e.getWidget();
 		this.path_.lineTo(c.x, c.y);
-		this.update(EnumSet.of(PaintFlag.PaintUpdate));
+		this.update(EnumSet.of(PaintFlag.Update));
 	}
 
 	private void touchStart(WTouchEvent e) {
@@ -104,6 +96,6 @@ class PaintBrush extends WPaintedWidget {
 	private void touchMove(WTouchEvent e) {
 		Coordinates c = e.getTouches().get(0).getWidget();
 		this.path_.lineTo(c.x, c.y);
-		this.update(EnumSet.of(PaintFlag.PaintUpdate));
+		this.update(EnumSet.of(PaintFlag.Update));
 	}
 }

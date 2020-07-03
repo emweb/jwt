@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,21 +35,8 @@ import org.slf4j.LoggerFactory;
 public class WVBoxLayout extends WBoxLayout {
   private static Logger logger = LoggerFactory.getLogger(WVBoxLayout.class);
 
-  /**
-   * Create a new vertical box layout.
-   *
-   * <p>Use <code>parent=0</code> to created a layout manager that can be nested inside other layout
-   * managers.
-   */
-  public WVBoxLayout(WWidget parent) {
-    super(WBoxLayout.Direction.TopToBottom, parent);
-  }
-  /**
-   * Create a new vertical box layout.
-   *
-   * <p>Calls {@link #WVBoxLayout(WWidget parent) this((WWidget)null)}
-   */
+  /** Create a new vertical box layout. */
   public WVBoxLayout() {
-    this((WWidget) null);
+    super(LayoutDirection.TopToBottom);
   }
 }

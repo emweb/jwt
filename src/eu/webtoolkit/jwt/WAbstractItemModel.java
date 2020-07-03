@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -32,12 +33,12 @@ import org.slf4j.LoggerFactory;
  * item (its text value, an icon, style class), or to hold auxiliary custom information. The flags
  * provide information to the View on possible interactivity.
  *
- * <p>Top level data have a <code>null</code> parent {@link WModelIndex}.
+ * <p>{@link Side#Top} level data have a <code>null</code> parent {@link WModelIndex}.
  *
  * <p>The data itself is of type Object, which can either be <code>null</code>, or be any type of
  * data. Depending on the role however, view classes may expect certain types of data (e.g.
  * numerical types for charts) or will convert the data to a string (e.g. for {@link
- * ItemDataRole#DisplayRole}).
+ * ItemDataRole#Display}).
  *
  * <p>To implement a custom model, you need to reimplement the following methods:
  *
@@ -48,10 +49,10 @@ import org.slf4j.LoggerFactory;
  *   <li>{@link WAbstractItemModel#getColumnCount(WModelIndex parent) getColumnCount()} and {@link
  *       WAbstractItemModel#getRowCount(WModelIndex parent) getRowCount()} to specify the top level
  *       geometry and the nested geometry at every item
- *   <li>{@link WAbstractItemModel#getData(WModelIndex index, int role) getData()} to return the
- *       data for an item
+ *   <li>{@link WAbstractItemModel#getData(WModelIndex index, ItemDataRole role) getData()} to
+ *       return the data for an item
  *   <li>optionally, {@link WAbstractItemModel#getHeaderData(int section, Orientation orientation,
- *       int role) getHeaderData()} to return row and column header data
+ *       ItemDataRole role) getHeaderData()} to return row and column header data
  *   <li>optionally, {@link WAbstractItemModel#getFlags(WModelIndex index) getFlags()} to indicate
  *       data options
  * </ul>
@@ -64,9 +65,9 @@ import org.slf4j.LoggerFactory;
  * pointer plays no role, since only the toplevel index has children.
  *
  * <p>If you want to support editing of the model, then you need to indicate this support using a
- * {@link ItemFlag#ItemIsEditable} flag, and reimplement {@link
- * WAbstractItemModel#setData(WModelIndex index, Object value, int role) setData()}. View classes
- * will use the {@link ItemDataRole#EditRole} to read and update the data for the editor.
+ * {@link ItemFlag#Editable} flag, and reimplement {@link WAbstractItemModel#setData(WModelIndex
+ * index, Object value, ItemDataRole role) setData()}. View classes will use the {@link
+ * ItemDataRole#Edit} to read and update the data for the editor.
  *
  * <p>When the model&apos;s data has been changed, the model must emit the {@link
  * WAbstractItemModel#dataChanged() dataChanged()} signal.
@@ -93,30 +94,22 @@ public abstract class WAbstractItemModel extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WAbstractItemModel.class);
 
   /** Creates a new data model. */
-  public WAbstractItemModel(WObject parent) {
-    super(parent);
-    this.parent_ = null;
-    this.columnsAboutToBeInserted_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.columnsAboutToBeRemoved_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.columnsInserted_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.columnsRemoved_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.rowsAboutToBeInserted_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.rowsAboutToBeRemoved_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.rowsInserted_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.rowsRemoved_ = new Signal3<WModelIndex, Integer, Integer>(this);
-    this.dataChanged_ = new Signal2<WModelIndex, WModelIndex>(this);
-    this.headerDataChanged_ = new Signal3<Orientation, Integer, Integer>(this);
-    this.layoutAboutToBeChanged_ = new Signal(this);
-    this.layoutChanged_ = new Signal(this);
-    this.modelReset_ = new Signal(this);
-  }
-  /**
-   * Creates a new data model.
-   *
-   * <p>Calls {@link #WAbstractItemModel(WObject parent) this((WObject)null)}
-   */
   public WAbstractItemModel() {
-    this((WObject) null);
+    super();
+    this.parent_ = null;
+    this.columnsAboutToBeInserted_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.columnsAboutToBeRemoved_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.columnsInserted_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.columnsRemoved_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.rowsAboutToBeInserted_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.rowsAboutToBeRemoved_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.rowsInserted_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.rowsRemoved_ = new Signal3<WModelIndex, Integer, Integer>();
+    this.dataChanged_ = new Signal2<WModelIndex, WModelIndex>();
+    this.headerDataChanged_ = new Signal3<Orientation, Integer, Integer>();
+    this.layoutAboutToBeChanged_ = new Signal();
+    this.layoutChanged_ = new Signal();
+    this.modelReset_ = new Signal();
   }
   /**
    * Returns the number of columns.
@@ -163,14 +156,14 @@ public abstract class WAbstractItemModel extends WObject {
   /**
    * Returns the flags for an item.
    *
-   * <p>The default implementation returns {@link ItemFlag#ItemIsSelectable}.
+   * <p>The default implementation returns {@link ItemFlag#Selectable}.
    *
    * <p>
    *
    * @see ItemFlag
    */
   public EnumSet<ItemFlag> getFlags(final WModelIndex index) {
-    return EnumSet.of(ItemFlag.ItemIsSelectable);
+    return EnumSet.of(ItemFlag.Selectable);
   }
   /**
    * Returns the flags for a header.
@@ -229,25 +222,25 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>You should check the <code>role</code> to decide what data to return. Usually a View class
    * will ask for data for several roles which affect not only the contents ({@link
-   * ItemDataRole#DisplayRole}) but also icons ({@link ItemDataRole#DecorationRole}), URLs ({@link
-   * ItemDataRole#LinkRole}), and other visual aspects. If your item does not specify data for a
-   * particular role, it should simply return a boost::any().
+   * ItemDataRole#Display}) but also icons ({@link ItemDataRole#Decoration}), URLs ({@link
+   * ItemDataRole#Link}), and other visual aspects. If your item does not specify data for a
+   * particular role, it should simply return a Wt::cpp17::any().
    *
    * <p>
    *
    * @see WAbstractItemModel#getFlags(WModelIndex index)
-   * @see WAbstractItemModel#getHeaderData(int section, Orientation orientation, int role)
-   * @see WAbstractItemModel#setData(WModelIndex index, Object value, int role)
+   * @see WAbstractItemModel#getHeaderData(int section, Orientation orientation, ItemDataRole role)
+   * @see WAbstractItemModel#setData(WModelIndex index, Object value, ItemDataRole role)
    */
-  public abstract Object getData(final WModelIndex index, int role);
+  public abstract Object getData(final WModelIndex index, ItemDataRole role);
   /**
    * Returns data at a specified model index for the given role.
    *
-   * <p>Returns {@link #getData(WModelIndex index, int role) getData(index,
-   * ItemDataRole.DisplayRole)}
+   * <p>Returns {@link #getData(WModelIndex index, ItemDataRole role) getData(index,
+   * ItemDataRole.Display)}
    */
   public final Object getData(final WModelIndex index) {
-    return getData(index, ItemDataRole.DisplayRole);
+    return getData(index, ItemDataRole.Display);
   }
   /**
    * Returns all data at a specific index.
@@ -257,15 +250,15 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
-  public SortedMap<Integer, Object> getItemData(final WModelIndex index) {
-    SortedMap<Integer, Object> result = new TreeMap<Integer, Object>();
+  public SortedMap<ItemDataRole, Object> getItemData(final WModelIndex index) {
+    SortedMap<ItemDataRole, Object> result = new TreeMap<ItemDataRole, Object>();
     if ((index != null)) {
-      for (int i = 0; i <= ItemDataRole.BarBrushColorRole; ++i) {
-        result.put(i, this.getData(index, i));
+      for (int i = 0; i <= ItemDataRole.BarBrushColor.getValue(); ++i) {
+        result.put(ItemDataRole.of(i), this.getData(index, ItemDataRole.of(i)));
       }
-      result.put(ItemDataRole.UserRole, this.getData(index, ItemDataRole.UserRole));
+      result.put(ItemDataRole.User, this.getData(index, ItemDataRole.User));
     }
     return result;
   }
@@ -278,13 +271,13 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
-   * @see WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int
-   *     role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
+   * @see WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value,
+   *     ItemDataRole role)
    */
-  public Object getHeaderData(int section, Orientation orientation, int role) {
-    if (role == ItemDataRole.LevelRole) {
-      return 0;
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Level)) {
+      return (int) 0;
     } else {
       return null;
     }
@@ -292,20 +285,20 @@ public abstract class WAbstractItemModel extends WObject {
   /**
    * Returns the row or column header data.
    *
-   * <p>Returns {@link #getHeaderData(int section, Orientation orientation, int role)
-   * getHeaderData(section, Orientation.Horizontal, ItemDataRole.DisplayRole)}
+   * <p>Returns {@link #getHeaderData(int section, Orientation orientation, ItemDataRole role)
+   * getHeaderData(section, Orientation.Horizontal, ItemDataRole.Display)}
    */
   public final Object getHeaderData(int section) {
-    return getHeaderData(section, Orientation.Horizontal, ItemDataRole.DisplayRole);
+    return getHeaderData(section, Orientation.Horizontal, ItemDataRole.Display);
   }
   /**
    * Returns the row or column header data.
    *
-   * <p>Returns {@link #getHeaderData(int section, Orientation orientation, int role)
-   * getHeaderData(section, orientation, ItemDataRole.DisplayRole)}
+   * <p>Returns {@link #getHeaderData(int section, Orientation orientation, ItemDataRole role)
+   * getHeaderData(section, orientation, ItemDataRole.Display)}
    */
   public final Object getHeaderData(int section, Orientation orientation) {
-    return getHeaderData(section, orientation, ItemDataRole.DisplayRole);
+    return getHeaderData(section, orientation, ItemDataRole.Display);
   }
   /**
    * Returns the child index for the given row and column.
@@ -335,18 +328,22 @@ public abstract class WAbstractItemModel extends WObject {
    * Returns an index list for data items that match.
    *
    * <p>Returns an index list of data items that match, starting at start, and searching further in
-   * that column. If flags specifies {@link MatchOptions.MatchFlag#MatchWrap MatchFlag#MatchWrap}
-   * then the search wraps around from the start. If hits is not -1, then at most that number of
-   * hits are returned.
+   * that column. If flags specifies {@link MatchOptions.MatchFlag#Wrap MatchFlag#Wrap} then the
+   * search wraps around from the start. If hits is not -1, then at most that number of hits are
+   * returned.
    */
   public List<WModelIndex> match(
-      final WModelIndex start, int role, final Object value, int hits, MatchOptions flags) {
+      final WModelIndex start,
+      ItemDataRole role,
+      final Object value,
+      int hits,
+      MatchOptions flags) {
     List<WModelIndex> result = new ArrayList<WModelIndex>();
     final int rc = this.getRowCount(start.getParent());
     for (int i = 0; i < rc; ++i) {
       int row = start.getRow() + i;
       if (row >= rc) {
-        if (!!EnumUtils.mask(flags.getFlags(), MatchOptions.MatchFlag.MatchWrap).isEmpty()) {
+        if (!!EnumUtils.mask(flags.getFlags(), MatchOptions.MatchFlag.Wrap).isEmpty()) {
           break;
         } else {
           row -= rc;
@@ -376,27 +373,27 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>
    *
    * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
-  public Object getData(int row, int column, int role, final WModelIndex parent) {
+  public Object getData(int row, int column, ItemDataRole role, final WModelIndex parent) {
     return this.getData(this.getIndex(row, column, parent), role);
   }
   /**
    * Returns the data item at the given column and row.
    *
-   * <p>Returns {@link #getData(int row, int column, int role, WModelIndex parent) getData(row,
-   * column, ItemDataRole.DisplayRole, null)}
+   * <p>Returns {@link #getData(int row, int column, ItemDataRole role, WModelIndex parent)
+   * getData(row, column, ItemDataRole.Display, null)}
    */
   public final Object getData(int row, int column) {
-    return getData(row, column, ItemDataRole.DisplayRole, null);
+    return getData(row, column, ItemDataRole.Display, null);
   }
   /**
    * Returns the data item at the given column and row.
    *
-   * <p>Returns {@link #getData(int row, int column, int role, WModelIndex parent) getData(row,
-   * column, role, null)}
+   * <p>Returns {@link #getData(int row, int column, ItemDataRole role, WModelIndex parent)
+   * getData(row, column, role, null)}
    */
-  public final Object getData(int row, int column, int role) {
+  public final Object getData(int row, int column, ItemDataRole role) {
     return getData(row, column, role, null);
   }
   /**
@@ -574,19 +571,19 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#getData(WModelIndex index, int role)
+   * @see WAbstractItemModel#getData(WModelIndex index, ItemDataRole role)
    */
-  public boolean setData(final WModelIndex index, final Object value, int role) {
+  public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
     return false;
   }
   /**
    * Sets data at the given model index.
    *
-   * <p>Returns {@link #setData(WModelIndex index, Object value, int role) setData(index, value,
-   * ItemDataRole.EditRole)}
+   * <p>Returns {@link #setData(WModelIndex index, Object value, ItemDataRole role) setData(index,
+   * value, ItemDataRole.Edit)}
    */
   public final boolean setData(final WModelIndex index, final Object value) {
-    return setData(index, value, ItemDataRole.EditRole);
+    return setData(index, value, ItemDataRole.Edit);
   }
   /**
    * Sets data at the given model index.
@@ -595,20 +592,18 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#setData(WModelIndex index, Object value, int role)
+   * @see WAbstractItemModel#setData(WModelIndex index, Object value, ItemDataRole role)
    */
-  public boolean setItemData(final WModelIndex index, final SortedMap<Integer, Object> values) {
+  public boolean setItemData(
+      final WModelIndex index, final SortedMap<ItemDataRole, Object> values) {
     boolean result = true;
-    boolean wasBlocked = this.dataChanged().isBlocked();
-    this.dataChanged().setBlocked(true);
-    for (Iterator<Map.Entry<Integer, Object>> i_it = values.entrySet().iterator();
+    for (Iterator<Map.Entry<ItemDataRole, Object>> i_it = values.entrySet().iterator();
         i_it.hasNext(); ) {
-      Map.Entry<Integer, Object> i = i_it.next();
+      Map.Entry<ItemDataRole, Object> i = i_it.next();
       if (!this.setData(index, i.getValue(), i.getKey())) {
         result = false;
       }
     }
-    this.dataChanged().setBlocked(wasBlocked);
     this.dataChanged().trigger(index, index);
     return result;
   }
@@ -619,19 +614,20 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#getHeaderData(int section, Orientation orientation, int role)
+   * @see WAbstractItemModel#getHeaderData(int section, Orientation orientation, ItemDataRole role)
    */
-  public boolean setHeaderData(int section, Orientation orientation, final Object value, int role) {
+  public boolean setHeaderData(
+      int section, Orientation orientation, final Object value, ItemDataRole role) {
     return false;
   }
   /**
    * Sets header data for a column or row.
    *
-   * <p>Returns {@link #setHeaderData(int section, Orientation orientation, Object value, int role)
-   * setHeaderData(section, orientation, value, ItemDataRole.EditRole)}
+   * <p>Returns {@link #setHeaderData(int section, Orientation orientation, Object value,
+   * ItemDataRole role) setHeaderData(section, orientation, value, ItemDataRole.Edit)}
    */
   public final boolean setHeaderData(int section, Orientation orientation, final Object value) {
-    return setHeaderData(section, orientation, value, ItemDataRole.EditRole);
+    return setHeaderData(section, orientation, value, ItemDataRole.Edit);
   }
   /**
    * Sets column header data.
@@ -639,9 +635,6 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>Returns <code>true</code> if the operation was successful.
    *
    * <p>
-   *
-   * @see WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int
-   *     role)
    */
   public boolean setHeaderData(int section, final Object value) {
     return this.setHeaderData(section, Orientation.Horizontal, value);
@@ -663,10 +656,10 @@ public abstract class WAbstractItemModel extends WObject {
   /**
    * Sorts the model according to a particular column.
    *
-   * <p>Calls {@link #sort(int column, SortOrder order) sort(column, SortOrder.AscendingOrder)}
+   * <p>Calls {@link #sort(int column, SortOrder order) sort(column, SortOrder.Ascending)}
    */
   public final void sort(int column) {
-    sort(column, SortOrder.AscendingOrder);
+    sort(column, SortOrder.Ascending);
   }
   /**
    * Expands a column.
@@ -771,8 +764,8 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>The location in the model is indicated by the <code>row</code> and <code>column</code>
    * within the <code>parent</code> index. If <code>row</code> is -1, then the item is appended to
    * the <code>parent</code>. Otherwise, the item is inserted at or copied over the indicated item
-   * (and subsequent rows). When <code>action</code> is a {@link DropAction#MoveAction}, the
-   * original items are deleted from the source model.
+   * (and subsequent rows). When <code>action</code> is a {@link DropAction#Move}, the original
+   * items are deleted from the source model.
    *
    * <p>You may want to reimplement this method if you want to handle other mime-type data, or if
    * you want to refine how the drop event of an item selection must be interpreted.
@@ -793,7 +786,7 @@ public abstract class WAbstractItemModel extends WObject {
             : null);
     if (selectionModel != null) {
       WAbstractItemModel sourceModel = selectionModel.getModel();
-      if (action == DropAction.MoveAction || row == -1) {
+      if (action == DropAction.Move || row == -1) {
         if (row == -1) {
           row = this.getRowCount(parent);
         }
@@ -807,7 +800,7 @@ public abstract class WAbstractItemModel extends WObject {
       for (Iterator<WModelIndex> i_it = selection.iterator(); i_it.hasNext(); ) {
         WModelIndex i = i_it.next();
         WModelIndex sourceIndex = i;
-        if (selectionModel.getSelectionBehavior() == SelectionBehavior.SelectRows) {
+        if (selectionModel.getSelectionBehavior() == SelectionBehavior.Rows) {
           WModelIndex sourceParent = sourceIndex.getParent();
           for (int col = 0; col < sourceModel.getColumnCount(sourceParent); ++col) {
             WModelIndex s = sourceModel.getIndex(sourceIndex.getRow(), col, sourceParent);
@@ -817,7 +810,7 @@ public abstract class WAbstractItemModel extends WObject {
           ++r;
         }
       }
-      if (action == DropAction.MoveAction) {
+      if (action == DropAction.Move) {
         while (!selectionModel.getSelectedIndexes().isEmpty()) {
           WModelIndex i = selectionModel.getSelectedIndexes().last();
           if (!sourceModel.removeRow(i.getRow(), i.getParent())) {
@@ -951,11 +944,11 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#setData(WModelIndex index, Object value, int role)
+   * @see WAbstractItemModel#setData(WModelIndex index, Object value, ItemDataRole role)
    * @see WAbstractItemModel#getIndex(int row, int column, WModelIndex parent)
    */
   public boolean setData(
-      int row, int column, final Object value, int role, final WModelIndex parent) {
+      int row, int column, final Object value, ItemDataRole role, final WModelIndex parent) {
     WModelIndex i = this.getIndex(row, column, parent);
     if ((i != null)) {
       return this.setData(i, value, role);
@@ -966,19 +959,19 @@ public abstract class WAbstractItemModel extends WObject {
   /**
    * Sets data at the given row and column.
    *
-   * <p>Returns {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
-   * setData(row, column, value, ItemDataRole.EditRole, null)}
+   * <p>Returns {@link #setData(int row, int column, Object value, ItemDataRole role, WModelIndex
+   * parent) setData(row, column, value, ItemDataRole.Edit, null)}
    */
   public final boolean setData(int row, int column, final Object value) {
-    return setData(row, column, value, ItemDataRole.EditRole, null);
+    return setData(row, column, value, ItemDataRole.Edit, null);
   }
   /**
    * Sets data at the given row and column.
    *
-   * <p>Returns {@link #setData(int row, int column, Object value, int role, WModelIndex parent)
-   * setData(row, column, value, role, null)}
+   * <p>Returns {@link #setData(int row, int column, Object value, ItemDataRole role, WModelIndex
+   * parent) setData(row, column, value, role, null)}
    */
-  public final boolean setData(int row, int column, final Object value, int role) {
+  public final boolean setData(int row, int column, final Object value, ItemDataRole role) {
     return setData(row, column, value, role, null);
   }
   /**
@@ -1101,7 +1094,7 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#setData(WModelIndex index, Object value, int role)
+   * @see WAbstractItemModel#setData(WModelIndex index, Object value, ItemDataRole role)
    */
   public Signal2<WModelIndex, WModelIndex> dataChanged() {
     return this.dataChanged_;
@@ -1114,8 +1107,8 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value, int
-   *     role)
+   * @see WAbstractItemModel#setHeaderData(int section, Orientation orientation, Object value,
+   *     ItemDataRole role)
    */
   public Signal3<Orientation, Integer, Integer> headerDataChanged() {
     return this.headerDataChanged_;
@@ -1340,10 +1333,10 @@ public abstract class WAbstractItemModel extends WObject {
       final WModelIndex sIndex,
       WAbstractItemModel destination,
       final WModelIndex dIndex) {
-    SortedMap<Integer, Object> values = destination.getItemData(dIndex);
-    for (Iterator<Map.Entry<Integer, Object>> i_it = values.entrySet().iterator();
+    SortedMap<ItemDataRole, Object> values = destination.getItemData(dIndex);
+    for (Iterator<Map.Entry<ItemDataRole, Object>> i_it = values.entrySet().iterator();
         i_it.hasNext(); ) {
-      Map.Entry<Integer, Object> i = i_it.next();
+      Map.Entry<ItemDataRole, Object> i = i_it.next();
       destination.setData(dIndex, null, i.getKey());
     }
     destination.setItemData(dIndex, source.getItemData(sIndex));

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -35,9 +36,9 @@ import org.slf4j.LoggerFactory;
  * WStandardItem#getChild(int row, int column) getChild()} methods.
  *
  * <p>It is possible to reimplement this class and specialize the methods for data acess ({@link
- * WStandardItem#setData(Object d, int role) setData()} and {@link WStandardItem#getData(int role)
- * getData()}), or provide custom sorting functionality by reimplementing {@link
- * WStandardItem#compare(WStandardItem other) compare()}.
+ * WStandardItem#setData(Object d, ItemDataRole role) setData()} and {@link
+ * WStandardItem#getData(ItemDataRole role) getData()}), or provide custom sorting functionality by
+ * reimplementing {@link WStandardItem#compare(WStandardItem other) compare()}.
  */
 public class WStandardItem {
   private static Logger logger = LoggerFactory.getLogger(WStandardItem.class);
@@ -48,8 +49,8 @@ public class WStandardItem {
     this.parent_ = null;
     this.row_ = -1;
     this.column_ = -1;
-    this.data_ = new TreeMap<Integer, Object>();
-    this.flags_ = EnumSet.of(ItemFlag.ItemIsSelectable);
+    this.data_ = new TreeMap<ItemDataRole, Object>();
+    this.flags_ = EnumSet.of(ItemFlag.Selectable);
     this.columns_ = null;
   }
   /**
@@ -64,8 +65,8 @@ public class WStandardItem {
     this.parent_ = null;
     this.row_ = -1;
     this.column_ = -1;
-    this.data_ = new TreeMap<Integer, Object>();
-    this.flags_ = EnumSet.of(ItemFlag.ItemIsSelectable);
+    this.data_ = new TreeMap<ItemDataRole, Object>();
+    this.flags_ = EnumSet.of(ItemFlag.Selectable);
     this.columns_ = null;
     this.setText(text);
   }
@@ -82,8 +83,8 @@ public class WStandardItem {
     this.parent_ = null;
     this.row_ = -1;
     this.column_ = -1;
-    this.data_ = new TreeMap<Integer, Object>();
-    this.flags_ = EnumSet.of(ItemFlag.ItemIsSelectable);
+    this.data_ = new TreeMap<ItemDataRole, Object>();
+    this.flags_ = EnumSet.of(ItemFlag.Selectable);
     this.columns_ = null;
     this.setText(text);
     this.setIcon(iconUri);
@@ -101,8 +102,8 @@ public class WStandardItem {
     this.parent_ = null;
     this.row_ = -1;
     this.column_ = -1;
-    this.data_ = new TreeMap<Integer, Object>();
-    this.flags_ = EnumSet.of(ItemFlag.ItemIsSelectable);
+    this.data_ = new TreeMap<ItemDataRole, Object>();
+    this.flags_ = EnumSet.of(ItemFlag.Selectable);
     this.columns_ = null;
     if (rows > 0) {
       columns = Math.max(columns, 1);
@@ -111,11 +112,7 @@ public class WStandardItem {
       this.columns_ = new ArrayList<List<WStandardItem>>();
       for (int i = 0; i < columns; ++i) {
         List<WStandardItem> c = new ArrayList<WStandardItem>();
-        {
-          int insertPos = c.size();
-          for (int ii = 0; ii < (rows); ++ii) c.add(insertPos + ii, (WStandardItem) null);
-        }
-        ;
+        CollectionUtils.resize(c, rows);
         this.columns_.add(c);
       }
     }
@@ -131,17 +128,17 @@ public class WStandardItem {
   /**
    * Sets the text.
    *
-   * <p>The text is stored as {@link ItemDataRole#DisplayRole} data.
+   * <p>The text is stored as {@link ItemDataRole#Display} data.
    *
    * <p>The default text is empty (&quot;&quot;).
    *
    * <p>
    *
    * @see WStandardItem#getText()
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public void setText(final CharSequence text) {
-    this.setData(text, ItemDataRole.DisplayRole);
+    this.setData(text, ItemDataRole.Display);
   }
   /**
    * Returns the text.
@@ -151,23 +148,23 @@ public class WStandardItem {
    * @see WStandardItem#setText(CharSequence text)
    */
   public WString getText() {
-    Object d = this.getData(ItemDataRole.DisplayRole);
+    Object d = this.getData(ItemDataRole.Display);
     return StringUtils.asString(d);
   }
   /**
    * Sets the icon url.
    *
-   * <p>The icon is stored as {@link ItemDataRole#DecorationRole} data.
+   * <p>The icon is stored as {@link ItemDataRole#Decoration} data.
    *
    * <p>The default icon url is empty (&quot;&quot;).
    *
    * <p>
    *
    * @see WStandardItem#getIcon()
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public void setIcon(final String uri) {
-    this.setData(uri, ItemDataRole.DecorationRole);
+    this.setData(uri, ItemDataRole.Decoration);
   }
   /**
    * Returns the icon url.
@@ -177,8 +174,8 @@ public class WStandardItem {
    * @see WStandardItem#setIcon(String uri)
    */
   public String getIcon() {
-    Object d = this.getData(ItemDataRole.DecorationRole);
-    if (!(d == null) && d.getClass().equals(String.class)) {
+    Object d = this.getData(ItemDataRole.Decoration);
+    if ((d != null) && d.getClass().equals(String.class)) {
       return ((String) d);
     } else {
       return "";
@@ -187,17 +184,17 @@ public class WStandardItem {
   /**
    * Sets the CSS style class.
    *
-   * <p>The style class is stored as {@link ItemDataRole#StyleClassRole} data.
+   * <p>The style class is stored as {@link ItemDataRole#StyleClass} data.
    *
    * <p>The default style class is empty (&quot;&quot;).
    *
    * <p>
    *
    * @see WStandardItem#getStyleClass()
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public void setStyleClass(final CharSequence styleClass) {
-    this.setData(styleClass, ItemDataRole.StyleClassRole);
+    this.setData(styleClass, ItemDataRole.StyleClass);
   }
   /**
    * Returns the item style class.
@@ -207,8 +204,8 @@ public class WStandardItem {
    * @see WStandardItem#setStyleClass(CharSequence styleClass)
    */
   public WString getStyleClass() {
-    Object d = this.getData(ItemDataRole.StyleClassRole);
-    if (!(d == null) && d.getClass().equals(WString.class)) {
+    Object d = this.getData(ItemDataRole.StyleClass);
+    if ((d != null) && d.getClass().equals(WString.class)) {
       return ((WString) d);
     } else {
       return new WString();
@@ -217,17 +214,17 @@ public class WStandardItem {
   /**
    * Sets a tool tip.
    *
-   * <p>The tool tip is stored as {@link ItemDataRole#ToolTipRole} data.
+   * <p>The tool tip is stored as {@link ItemDataRole#ToolTip} data.
    *
    * <p>The default tool tip is empty (&quot;&quot;).
    *
    * <p>
    *
    * @see WStandardItem#getToolTip()
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public void setToolTip(final CharSequence toolTip) {
-    this.setData(toolTip, ItemDataRole.ToolTipRole);
+    this.setData(toolTip, ItemDataRole.ToolTip);
   }
   /**
    * Returns the tool tip.
@@ -237,8 +234,8 @@ public class WStandardItem {
    * @see WStandardItem#setToolTip(CharSequence toolTip)
    */
   public WString getToolTip() {
-    Object d = this.getData(ItemDataRole.ToolTipRole);
-    if (!(d == null) && d.getClass().equals(WString.class)) {
+    Object d = this.getData(ItemDataRole.ToolTip);
+    if ((d != null) && d.getClass().equals(WString.class)) {
       return ((WString) d);
     } else {
       return new WString();
@@ -247,14 +244,14 @@ public class WStandardItem {
   /**
    * Sets a link.
    *
-   * <p>The link is stored as {@link ItemDataRole#LinkRole} data.
+   * <p>The link is stored as {@link ItemDataRole#Link} data.
    *
    * <p>
    *
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public void setLink(final WLink link) {
-    this.setData(link, ItemDataRole.LinkRole);
+    this.setData(link, ItemDataRole.Link);
   }
   /**
    * Returns a link.
@@ -264,73 +261,17 @@ public class WStandardItem {
    * @see WStandardItem#setLink(WLink link)
    */
   public WLink getLink() {
-    Object d = this.getData(ItemDataRole.LinkRole);
-    if (!(d == null) && d.getClass().equals(WLink.class)) {
+    Object d = this.getData(ItemDataRole.Link);
+    if ((d != null) && d.getClass().equals(WLink.class)) {
       return ((WLink) d);
     } else {
       return new WLink("");
     }
   }
   /**
-   * Sets a link to an internal path (<b>deprecated</b>).
-   *
-   * <p>The internal path is stored as {@link ItemDataRole#LinkRole} data..
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()} instead.
-   */
-  public void setInternalPath(final String internalpath) {
-    this.setLink(new WLink(WLink.Type.InternalPath, internalpath));
-  }
-  /**
-   * Returns the link to an internal path (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @see WStandardItem#setInternalPath(String internalpath)
-   * @deprecated Use {@link WStandardItem#getLink() getLink()} instead.
-   */
-  public String getInternalPath() {
-    WLink l = this.getLink();
-    if (!l.isNull()) {
-      return l.getInternalPath();
-    } else {
-      return "";
-    }
-  }
-  /**
-   * Sets a link to a URL (<b>deprecated</b>).
-   *
-   * <p>The URL is stored as {@link ItemDataRole#LinkRole} data.
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WStandardItem#setLink(WLink link) setLink()} instead.
-   */
-  public void setUrl(final String url) {
-    this.setLink(new WLink(url));
-  }
-  /**
-   * Returns the linked URL (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @see WStandardItem#setUrl(String url)
-   * @deprecated Use {@link WStandardItem#getLink() getLink()} instead.
-   */
-  public String getUrl() {
-    WLink l = this.getLink();
-    if (!l.isNull()) {
-      return l.getUrl();
-    } else {
-      return "";
-    }
-  }
-  /**
    * Checks or unchecks the item.
    *
-   * <p>The value is stored as {@link ItemDataRole#CheckStateRole} data.
+   * <p>The value is stored as ItemDataRole::CheckState data.
    *
    * <p>By default, an item is not checked.
    *
@@ -347,8 +288,8 @@ public class WStandardItem {
    * @see WStandardItem#setCheckState(CheckState state)
    */
   public void setChecked(boolean checked) {
-    Object d = this.getData(ItemDataRole.CheckStateRole);
-    if ((d == null) || this.isChecked() != checked) {
+    Object d = this.getData(ItemDataRole.Checked);
+    if (!(d != null) || this.isChecked() != checked) {
       this.setCheckState(checked ? CheckState.Checked : CheckState.Unchecked);
     }
   }
@@ -369,22 +310,22 @@ public class WStandardItem {
    * state, but allows also setting the {@link CheckState#PartiallyChecked} state when the item is
    * tri-state checkable.
    *
-   * <p>The value is stored as {@link ItemDataRole#CheckStateRole} data.
+   * <p>The value is stored as ItemDataRole::CheckState data.
    *
    * <p>
    *
    * @see WStandardItem#setCheckable(boolean checkable)
-   * @see WStandardItem#setData(Object d, int role)
+   * @see WStandardItem#setData(Object d, ItemDataRole role)
    */
   public void setCheckState(CheckState state) {
-    Object d = this.getData(ItemDataRole.CheckStateRole);
-    if ((d == null)
+    Object d = this.getData(ItemDataRole.Checked);
+    if (!(d != null)
         || this.getCheckState() != state
-        || (this.getData(ItemDataRole.CheckStateRole) == null)) {
+        || !(this.getData(ItemDataRole.Checked) != null)) {
       if (this.isTristate()) {
-        this.setData(state, ItemDataRole.CheckStateRole);
+        this.setData(state, ItemDataRole.Checked);
       } else {
-        this.setData(state == CheckState.Checked, ItemDataRole.CheckStateRole);
+        this.setData(state == CheckState.Checked, ItemDataRole.Checked);
       }
     }
   }
@@ -396,8 +337,8 @@ public class WStandardItem {
    * @see WStandardItem#setCheckState(CheckState state)
    */
   public CheckState getCheckState() {
-    Object d = this.getData(ItemDataRole.CheckStateRole);
-    if ((d == null)) {
+    Object d = this.getData(ItemDataRole.Checked);
+    if (!(d != null)) {
       return CheckState.Unchecked;
     } else {
       if (d.getClass().equals(Boolean.class)) {
@@ -414,7 +355,7 @@ public class WStandardItem {
   /**
    * Sets the flags.
    *
-   * <p>The default flag value is {@link ItemFlag#ItemIsSelectable}.
+   * <p>The default flag value is {@link ItemFlag#Selectable}.
    *
    * <p>
    *
@@ -449,7 +390,7 @@ public class WStandardItem {
   /**
    * Makes the item checkable.
    *
-   * <p>Adds {@link ItemFlag#ItemIsUserCheckable} to the item&apos;s flags.
+   * <p>Adds {@link ItemFlag#UserCheckable} to the item&apos;s flags.
    *
    * <p>
    *
@@ -458,14 +399,14 @@ public class WStandardItem {
    */
   public void setCheckable(boolean checkable) {
     if (!this.isCheckable() && checkable) {
-      this.flags_.add(ItemFlag.ItemIsUserCheckable);
-      if ((this.getData(ItemDataRole.CheckStateRole) == null)) {
+      this.flags_.add(ItemFlag.UserCheckable);
+      if (!(this.getData(ItemDataRole.Checked) != null)) {
         this.setChecked(false);
       }
       this.signalModelDataChange();
     }
     if (this.isCheckable() && !checkable) {
-      this.flags_.remove(ItemFlag.ItemIsUserCheckable);
+      this.flags_.remove(ItemFlag.UserCheckable);
       this.signalModelDataChange();
     }
   }
@@ -477,7 +418,7 @@ public class WStandardItem {
    * @see WStandardItem#setCheckable(boolean checkable)
    */
   public boolean isCheckable() {
-    return !EnumUtils.mask(this.flags_, ItemFlag.ItemIsUserCheckable).isEmpty();
+    return this.flags_.contains(ItemFlag.UserCheckable);
   }
   /**
    * Makes the item tri-state checkable.
@@ -495,9 +436,9 @@ public class WStandardItem {
    */
   public void setTristate(boolean tristate) {
     if (tristate) {
-      this.flags_.add(ItemFlag.ItemIsTristate);
+      this.flags_.add(ItemFlag.Tristate);
     } else {
-      this.flags_.remove(ItemFlag.ItemIsTristate);
+      this.flags_.remove(ItemFlag.Tristate);
     }
   }
   /**
@@ -508,23 +449,23 @@ public class WStandardItem {
    * @see WStandardItem#setTristate(boolean tristate)
    */
   public boolean isTristate() {
-    return !EnumUtils.mask(this.flags_, ItemFlag.ItemIsTristate).isEmpty();
+    return this.flags_.contains(ItemFlag.Tristate);
   }
 
   void setEditable(boolean editable) {
     if (!this.isEditable() && editable) {
-      this.flags_.add(ItemFlag.ItemIsEditable);
+      this.flags_.add(ItemFlag.Editable);
       this.signalModelDataChange();
     } else {
       if (this.isEditable() && !editable) {
-        this.flags_.remove(ItemFlag.ItemIsEditable);
+        this.flags_.remove(ItemFlag.Editable);
         this.signalModelDataChange();
       }
     }
   }
 
   boolean isEditable() {
-    return !EnumUtils.mask(this.flags_, ItemFlag.ItemIsEditable).isEmpty();
+    return this.flags_.contains(ItemFlag.Editable);
   }
   /**
    * Sets item data.
@@ -533,11 +474,11 @@ public class WStandardItem {
    *
    * <p>
    *
-   * @see WStandardItem#getData(int role)
+   * @see WStandardItem#getData(ItemDataRole role)
    */
-  public void setData(final Object d, int role) {
-    if (role == ItemDataRole.EditRole) {
-      role = ItemDataRole.DisplayRole;
+  public void setData(final Object d, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Edit)) {
+      role = ItemDataRole.Display;
     }
     this.data_.put(role, d);
     if (this.model_ != null) {
@@ -549,10 +490,10 @@ public class WStandardItem {
   /**
    * Sets item data.
    *
-   * <p>Calls {@link #setData(Object d, int role) setData(d, ItemDataRole.UserRole)}
+   * <p>Calls {@link #setData(Object d, ItemDataRole role) setData(d, ItemDataRole.User)}
    */
   public final void setData(final Object d) {
-    setData(d, ItemDataRole.UserRole);
+    setData(d, ItemDataRole.User);
   }
   /**
    * Returns item data.
@@ -561,15 +502,15 @@ public class WStandardItem {
    *
    * <p>
    *
-   * @see WStandardItem#getData(int role)
+   * @see WStandardItem#getData(ItemDataRole role)
    */
-  public Object getData(int role) {
+  public Object getData(ItemDataRole role) {
     Object i = this.data_.get(role);
     if (i != null) {
       return i;
     } else {
-      if (role == ItemDataRole.EditRole) {
-        return this.getData(ItemDataRole.DisplayRole);
+      if (role.equals(ItemDataRole.Edit)) {
+        return this.getData(ItemDataRole.Display);
       } else {
         return null;
       }
@@ -578,10 +519,10 @@ public class WStandardItem {
   /**
    * Returns item data.
    *
-   * <p>Returns {@link #getData(int role) getData(ItemDataRole.UserRole)}
+   * <p>Returns {@link #getData(ItemDataRole role) getData(ItemDataRole.User)}
    */
   public final Object getData() {
-    return getData(ItemDataRole.UserRole);
+    return getData(ItemDataRole.User);
   }
   /**
    * Returns whether the item has any children.
@@ -671,7 +612,7 @@ public class WStandardItem {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * insertColumn(columnCount(), items);
+   * insertColumn(columnCount(), std::move(items));
    *
    * }</pre>
    *
@@ -680,7 +621,7 @@ public class WStandardItem {
    * @see WStandardItem#insertColumn(int column, List items)
    * @see WStandardItem#appendRow(List items)
    */
-  public void appendColumn(final List<WStandardItem> items) {
+  public void appendColumn(List<WStandardItem> items) {
     this.insertColumn(this.getColumnCount(), items);
   }
   /**
@@ -693,16 +634,16 @@ public class WStandardItem {
    *
    * @see WStandardItem#insertRow(int row, List items)
    */
-  public void insertColumn(int column, final List<WStandardItem> items) {
+  public void insertColumn(int column, List<WStandardItem> items) {
     int rc = this.getRowCount();
     if (!(this.columns_ != null)) {
       this.setRowCount(items.size());
-      this.columns_.set(0, items);
       for (int i = 0; i < items.size(); ++i) {
         if (items.get(i) != null) {
           this.adoptChild(i, column, items.get(i));
         }
       }
+      this.columns_.set(0, items);
     } else {
       if (rc < items.size()) {
         this.setRowCount(items.size());
@@ -711,14 +652,14 @@ public class WStandardItem {
       if (this.model_ != null) {
         this.model_.beginInsertColumns(this.getIndex(), column, column);
       }
-      this.columns_.add(0 + column, items);
       for (int i = 0; i < items.size(); ++i) {
         if (items.get(i) != null) {
           this.adoptChild(i, column, items.get(i));
         }
       }
-      if (items.size() < rc) {
-        final List<WStandardItem> inserted = this.columns_.get(column);
+      this.columns_.add(0 + column, items);
+      final List<WStandardItem> inserted = this.columns_.get(column);
+      if (inserted.size() < rc) {
         CollectionUtils.resize(inserted, rc);
       }
       this.renumberColumns(column + 1);
@@ -735,7 +676,7 @@ public class WStandardItem {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * insertRow(rowCount(), items);
+   * insertRow(rowCount(), std::move(items));
    *
    * }</pre>
    *
@@ -744,7 +685,7 @@ public class WStandardItem {
    * @see WStandardItem#insertRow(int row, List items)
    * @see WStandardItem#appendColumn(List items)
    */
-  public void appendRow(final List<WStandardItem> items) {
+  public void appendRow(List<WStandardItem> items) {
     this.insertRow(this.getRowCount(), items);
   }
   /**
@@ -757,7 +698,7 @@ public class WStandardItem {
    *
    * @see WStandardItem#insertColumn(int column, List items)
    */
-  public void insertRow(int row, final List<WStandardItem> items) {
+  public void insertRow(int row, List<WStandardItem> items) {
     if (!(this.columns_ != null)) {
       this.setColumnCount(1);
     }
@@ -771,9 +712,12 @@ public class WStandardItem {
     }
     for (int i = 0; i < cc; ++i) {
       final List<WStandardItem> c = this.columns_.get(i);
-      WStandardItem item = i < items.size() ? items.get(i) : null;
-      c.add(0 + row, item);
+      WStandardItem item = null;
+      if (i < items.size()) {
+        item = items.get(i);
+      }
       this.adoptChild(row, i, item);
+      c.add(0 + row, item);
     }
     this.renumberRows(row + 1);
     if (this.model_ != null) {
@@ -800,11 +744,7 @@ public class WStandardItem {
       }
       for (int i = 0; i < count; ++i) {
         List<WStandardItem> c = new ArrayList<WStandardItem>();
-        {
-          int insertPos = c.size();
-          for (int ii = 0; ii < (rc); ++ii) c.add(insertPos + ii, (WStandardItem) null);
-        }
-        ;
+        CollectionUtils.resize(c, rc);
         this.columns_.add(0 + column + i, c);
       }
       this.renumberColumns(column + count);
@@ -833,11 +773,9 @@ public class WStandardItem {
       int cc = this.getColumnCount();
       for (int i = 0; i < cc; ++i) {
         final List<WStandardItem> c = this.columns_.get(i);
-        {
-          int insertPos = 0 + row;
-          for (int ii = 0; ii < (count); ++ii) c.add(insertPos + ii, (WStandardItem) null);
+        for (int j = 0; j < count; ++j) {
+          c.add(0 + row + j, null);
         }
-        ;
       }
       this.renumberRows(row + count);
       if (this.model_ != null) {
@@ -854,7 +792,7 @@ public class WStandardItem {
    * <p>
    *
    * <pre>{@code
-   * insertRow(rowCount(), item);
+   * insertRow(rowCount(), std::move(item));
    *
    * }</pre>
    *
@@ -896,13 +834,13 @@ public class WStandardItem {
    * <p>
    *
    * <pre>{@code
-   * insertRows(rowCount(), items);
+   * insertRows(rowCount(), std::move(items));
    *
    * }</pre>
    *
    * <p>
    */
-  public void appendRows(final List<WStandardItem> items) {
+  public void appendRows(List<WStandardItem> items) {
     this.insertRows(this.getRowCount(), items);
   }
   /**
@@ -916,19 +854,17 @@ public class WStandardItem {
    *
    * @see WStandardItem#insertRow(int row, WStandardItem item)
    */
-  public void insertRows(int row, final List<WStandardItem> items) {
-    List<WStandardItem> r = new ArrayList<WStandardItem>();
-    r.add((WStandardItem) null);
+  public void insertRows(int row, List<WStandardItem> items) {
     for (int i = 0; i < items.size(); ++i) {
-      r.set(0, items.get(i));
+      List<WStandardItem> r = new ArrayList<WStandardItem>();
+      r.add(items.get(i));
       this.insertRow(row + i, r);
     }
   }
   /**
    * Sets a child item.
    *
-   * <p>Sets a child item <i>item</i> at position (<code>row</code>, <code>column</code>). If an
-   * item was previously set, it is deleted first.
+   * <p>Sets a child item <i>item</i> at position (<code>row</code>, <code>column</code>).
    *
    * <p>If necessary, the {@link WStandardItem#getRowCount() getRowCount()} and/or the {@link
    * WStandardItem#getColumnCount() getColumnCount()} is increased.
@@ -944,11 +880,11 @@ public class WStandardItem {
     if (row >= this.getRowCount()) {
       this.setRowCount(row + 1);
     }
-    ;
-    this.columns_.get(column).set(row, item);
     this.adoptChild(row, column, item);
+    WStandardItem it = item;
+    this.columns_.get(column).set(row, item);
     if (this.model_ != null) {
-      WModelIndex self = item.getIndex();
+      WModelIndex self = it.getIndex();
       this.model_.dataChanged().trigger(self, self);
     }
   }
@@ -959,13 +895,11 @@ public class WStandardItem {
    * equivalent to:
    *
    * <pre>{@code
-   * setChild(row, 0, item);
+   * setChild(row, 0, std::move(item));
    *
    * }</pre>
    *
    * <p>
-   *
-   * @see WStandardItem#setChild(int row, int column, WStandardItem item)
    */
   public void setChild(int row, WStandardItem item) {
     this.setChild(row, 0, item);
@@ -977,8 +911,6 @@ public class WStandardItem {
    * </code> if an item was not previously set, or if the position is out of bounds.
    *
    * <p>
-   *
-   * @see WStandardItem#setChild(int row, int column, WStandardItem item)
    */
   public WStandardItem getChild(int row, int column) {
     if (row < this.getRowCount() && column < this.getColumnCount()) {
@@ -999,23 +931,23 @@ public class WStandardItem {
    * Takes a child out of the item.
    *
    * <p>Returns the child item at position (<i>row</i>, <code>column</code>), and removes it (by
-   * setting <code>null</code> instead). Ownership of the item is transferred to the caller.
+   * setting <code>null</code> instead).
    *
    * <p>
    *
    * @see WStandardItem#getChild(int row, int column)
-   * @see WStandardItem#setChild(int row, int column, WStandardItem item)
    */
   public WStandardItem takeChild(int row, int column) {
-    WStandardItem result = this.getChild(row, column);
-    if (result != null) {
-      WModelIndex idx = result.getIndex();
-      if (result.hasChildren()) {
-        this.model_.beginRemoveRows(result.getIndex(), 0, result.getRowCount() - 1);
+    WStandardItem item = this.getChild(row, column);
+    WStandardItem result = null;
+    if (item != null) {
+      WModelIndex idx = item.getIndex();
+      if (item.hasChildren()) {
+        this.model_.beginRemoveRows(item.getIndex(), 0, item.getRowCount() - 1);
       }
-      this.orphanChild(result);
-      this.columns_.get(column).set(row, null);
-      if (result.hasChildren()) {
+      this.orphanChild(item);
+      result = this.columns_.get(column).get(row);
+      if (item.hasChildren()) {
         this.model_.endRemoveRows();
       }
       this.model_.dataChanged().trigger(idx, idx);
@@ -1039,7 +971,7 @@ public class WStandardItem {
     }
     List<WStandardItem> result = this.columns_.get(column);
     this.columns_.remove(0 + column);
-    if (this.columns_.isEmpty()) {;
+    if (this.columns_.isEmpty()) {
       this.columns_ = null;
     }
     for (int i = 0; i < result.size(); ++i) {
@@ -1069,8 +1001,7 @@ public class WStandardItem {
     List<WStandardItem> result = new ArrayList<WStandardItem>();
     {
       int insertPos = result.size();
-      for (int ii = 0; ii < (this.getColumnCount()); ++ii)
-        result.add(insertPos + ii, (WStandardItem) null);
+      for (int ii = 0; ii < (this.getColumnCount()); ++ii) result.add(insertPos + ii, null);
     }
     ;
     for (int i = 0; i < result.size(); ++i) {
@@ -1119,14 +1050,10 @@ public class WStandardItem {
     if (this.model_ != null) {
       this.model_.beginRemoveColumns(this.getIndex(), column, column + count - 1);
     }
-    for (int i = 0; i < count; ++i) {
-      for (int j = 0; j < this.getRowCount(); ++j) {;
-      }
-    }
     for (int ii = 0; ii < (0 + column + count) - (0 + column); ++ii)
       this.columns_.remove(0 + column);
     ;
-    if (this.columns_.isEmpty()) {;
+    if (this.columns_.isEmpty()) {
       this.columns_ = null;
     }
     this.renumberColumns(column);
@@ -1170,8 +1097,6 @@ public class WStandardItem {
     }
     for (int i = 0; i < this.getColumnCount(); ++i) {
       final List<WStandardItem> c = this.columns_.get(i);
-      for (int j = 0; j < count; ++j) {;
-      }
       for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii) c.remove(0 + row);
       ;
     }
@@ -1248,7 +1173,7 @@ public class WStandardItem {
    */
   public WStandardItem clone() {
     WStandardItem result = new WStandardItem();
-    result.data_ = new TreeMap<Integer, Object>(this.data_);
+    result.data_ = new TreeMap<ItemDataRole, Object>(this.data_);
     result.flags_ = EnumSet.copyOf(this.flags_);
     return result;
   }
@@ -1265,7 +1190,7 @@ public class WStandardItem {
    * <p>
    *
    * @see WStandardItem#compare(WStandardItem other)
-   * @see WStandardItemModel#setSortRole(int role)
+   * @see WStandardItemModel#setSortRole(ItemDataRole role)
    */
   public void sortChildren(int column, SortOrder order) {
     if (this.model_ != null) {
@@ -1285,7 +1210,7 @@ public class WStandardItem {
     this.model_ = model;
     for (int i = 0; i < this.getColumnCount(); ++i) {
       for (int j = 0; j < this.getRowCount(); ++j) {
-        WStandardItem c = this.columns_.get(i).get(j);
+        final WStandardItem c = this.columns_.get(i).get(j);
         if (c != null) {
           c.setModel(model);
         }
@@ -1304,10 +1229,10 @@ public class WStandardItem {
    * <p>
    *
    * @see WStandardItem#sortChildren(int column, SortOrder order)
-   * @see WStandardItemModel#setSortRole(int role)
+   * @see WStandardItemModel#setSortRole(ItemDataRole role)
    */
   int compare(final WStandardItem other) {
-    int role = this.model_ != null ? this.model_.getSortRole() : ItemDataRole.DisplayRole;
+    ItemDataRole role = this.model_ != null ? this.model_.getSortRole() : ItemDataRole.Display;
     Object d1 = this.getData(role);
     Object d2 = other.getData(role);
     return ObjectUtils.compare(d1, d2);
@@ -1317,7 +1242,7 @@ public class WStandardItem {
   private WStandardItem parent_;
   private int row_;
   private int column_;
-  private SortedMap<Integer, Object> data_;
+  private SortedMap<ItemDataRole, Object> data_;
   private EnumSet<ItemFlag> flags_;
   private List<List<WStandardItem>> columns_;
 
@@ -1362,7 +1287,9 @@ public class WStandardItem {
             temp.get(r).row_ = r;
           }
         }
-        this.columns_.set(c, temp);
+        for (int r = 0; r < this.getRowCount(); ++r) {
+          cc.set(r, temp.get(r));
+        }
       }
     }
     for (int c = 0; c < this.getColumnCount(); ++c) {

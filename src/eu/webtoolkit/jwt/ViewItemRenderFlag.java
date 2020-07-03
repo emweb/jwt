@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,13 +25,13 @@ import javax.servlet.http.*;
  */
 public enum ViewItemRenderFlag {
   /** Render as selected */
-  RenderSelected,
+  Selected,
   /** Render in editing mode */
-  RenderEditing,
+  Editing,
   /** Render (the editor) focused */
-  RenderFocused,
+  Focused,
   /** Render as invalid */
-  RenderInvalid;
+  Invalid;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

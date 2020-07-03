@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,18 +30,19 @@ import org.slf4j.LoggerFactory;
  *
  * <p>To use the proxy model to filter data, you use the methods {@link
  * WSortFilterProxyModel#setFilterKeyColumn(int column) setFilterKeyColumn()}, {@link
- * WSortFilterProxyModel#setFilterRegExp(String pattern) setFilterRegExp()} and {@link
- * WSortFilterProxyModel#setFilterRole(int role) setFilterRole()} to specify a filtering operation
- * based on the values of a single column. If this filtering mechanism is too limiting, you can
- * provide specialized filtering by reimplementing the {@link
+ * WSortFilterProxyModel#setFilterRegExp(Pattern pattern) setFilterRegExp()} and {@link
+ * WSortFilterProxyModel#setFilterRole(ItemDataRole role) setFilterRole()} to specify a filtering
+ * operation based on the values of a single column. If this filtering mechanism is too limiting,
+ * you can provide specialized filtering by reimplementing the {@link
  * WSortFilterProxyModel#filterAcceptRow(int sourceRow, WModelIndex sourceParent) filterAcceptRow()}
  * method.
  *
  * <p>Sorting is provided by reimplementing the standard {@link WAbstractItemModel#sort(int column,
  * SortOrder order) WAbstractItemModel#sort()} method. In this way, a view class such as {@link
  * WTreeView} may resort the model as indicated by the user. Use {@link
- * WSortFilterProxyModel#setSortRole(int role) setSortRole()} to indicate on what data role sorting
- * should be done, or reimplement the lessThan() method to provide a specialized sorting method.
+ * WSortFilterProxyModel#setSortRole(ItemDataRole role) setSortRole()} to indicate on what data role
+ * sorting should be done, or reimplement the lessThan() method to provide a specialized sorting
+ * method.
  *
  * <p>By default, the proxy does not automatically refilter and resort when the original model
  * changes. Data changes or row additions to the source model are not automatically reflected in the
@@ -60,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * proxy.setSourceModel(model);
  * proxy.setDynamicSortFilter(true);
  * proxy.setFilterKeyColumn(0);
- * proxy.setFilterRole(ItemDataRole.UserRole);
+ * proxy.setFilterRole(ItemDataRole.User);
  * proxy.setFilterRegExp(".*");
  *
  * // configure a view to use the proxy model instead of the source model
@@ -74,27 +76,19 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
   private static Logger logger = LoggerFactory.getLogger(WSortFilterProxyModel.class);
 
   /** Constructor. */
-  public WSortFilterProxyModel(WObject parent) {
-    super(parent);
+  public WSortFilterProxyModel() {
+    super();
     this.regex_ = null;
     this.filterKeyColumn_ = 0;
-    this.filterRole_ = ItemDataRole.DisplayRole;
+    this.filterRole_ = ItemDataRole.Display;
     this.sortKeyColumn_ = -1;
-    this.sortRole_ = ItemDataRole.DisplayRole;
-    this.sortOrder_ = SortOrder.AscendingOrder;
+    this.sortRole_ = ItemDataRole.Display;
+    this.sortOrder_ = SortOrder.Ascending;
     this.dynamic_ = false;
     this.inserting_ = false;
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
     this.mappedIndexes_ = new TreeMap<WModelIndex, WAbstractProxyModel.BaseItem>();
     this.mappedRootItem_ = null;
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WSortFilterProxyModel(WObject parent) this((WObject)null)}
-   */
-  public WSortFilterProxyModel() {
-    this((WObject) null);
   }
 
   public WModelIndex mapFromSource(final WModelIndex sourceIndex) {
@@ -133,143 +127,115 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p>All signals of the source model are forwarded to the proxy model.
    */
-  public void setSourceModel(WAbstractItemModel model) {
-    if (this.getSourceModel() != null) {
-      for (int i = 0; i < this.modelConnections_.size(); ++i) {
-        this.modelConnections_.get(i).disconnect();
-      }
-      this.modelConnections_.clear();
+  public void setSourceModel(final WAbstractItemModel model) {
+    for (int i = 0; i < this.modelConnections_.size(); ++i) {
+      this.modelConnections_.get(i).disconnect();
     }
+    this.modelConnections_.clear();
     super.setSourceModel(model);
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsAboutToBeInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceColumnsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceColumnsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsAboutToBeInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceRowsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceRowsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceRowsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceRowsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .dataChanged()
             .addListener(
                 this,
-                new Signal2.Listener<WModelIndex, WModelIndex>() {
-                  public void trigger(WModelIndex e1, WModelIndex e2) {
-                    WSortFilterProxyModel.this.sourceDataChanged(e1, e2);
-                  }
+                (WModelIndex e1, WModelIndex e2) -> {
+                  WSortFilterProxyModel.this.sourceDataChanged(e1, e2);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .headerDataChanged()
             .addListener(
                 this,
-                new Signal3.Listener<Orientation, Integer, Integer>() {
-                  public void trigger(Orientation e1, Integer e2, Integer e3) {
-                    WSortFilterProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
-                  }
+                (Orientation e1, Integer e2, Integer e3) -> {
+                  WSortFilterProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .layoutAboutToBeChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WSortFilterProxyModel.this.sourceLayoutAboutToBeChanged();
-                  }
+                () -> {
+                  WSortFilterProxyModel.this.sourceLayoutAboutToBeChanged();
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .layoutChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WSortFilterProxyModel.this.sourceLayoutChanged();
-                  }
+                () -> {
+                  WSortFilterProxyModel.this.sourceLayoutChanged();
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .modelReset()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WSortFilterProxyModel.this.sourceModelReset();
-                  }
+                () -> {
+                  WSortFilterProxyModel.this.sourceModelReset();
                 }));
     this.resetMappings();
   }
@@ -283,8 +249,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p>
    *
-   * @see WSortFilterProxyModel#setFilterRegExp(String pattern)
-   * @see WSortFilterProxyModel#setFilterRole(int role)
+   * @see WSortFilterProxyModel#setFilterRegExp(Pattern pattern)
+   * @see WSortFilterProxyModel#setFilterRole(ItemDataRole role)
    */
   public void setFilterKeyColumn(int column) {
     this.filterKeyColumn_ = column;
@@ -310,14 +276,10 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    * <p>
    *
    * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
-   * @see WSortFilterProxyModel#setFilterRole(int role)
+   * @see WSortFilterProxyModel#setFilterRole(ItemDataRole role)
    */
-  public void setFilterRegExp(final String pattern) {
-    if (!(this.regex_ != null)) {
-      this.regex_ = Pattern.compile(pattern);
-    } else {
-      this.regex_ = Pattern.compile(pattern, this.regex_.flags());
-    }
+  public void setFilterRegExp(Pattern pattern) {
+    this.regex_ = pattern;
     this.invalidate();
   }
   /**
@@ -325,25 +287,10 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p>
    *
-   * @see WSortFilterProxyModel#setFilterRegExp(String pattern)
+   * @see WSortFilterProxyModel#setFilterRegExp(Pattern pattern)
    */
-  public String getFilterRegExp() {
-    return this.regex_ != null ? this.regex_.pattern() : "";
-  }
-  /** Sets the filter regular expression flags. */
-  public void setFilterFlags(int flags) {
-    if (!(this.regex_ != null)) {
-      this.regex_ = Pattern.compile(".*");
-    }
-    this.regex_ = Pattern.compile(this.regex_.pattern(), flags);
-  }
-  /** Returns the filter regular expression flags. */
-  public int getFilterFlags() {
-    if (this.regex_ != null) {
-      return this.regex_.flags();
-    } else {
-      return (int) 0;
-    }
+  public Pattern getFilterRegExp() {
+    return this.regex_;
   }
   /**
    * Specify the data role used for filtering.
@@ -351,14 +298,14 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    * <p>This configures the data role used for filtering on {@link
    * WSortFilterProxyModel#getFilterKeyColumn() getFilterKeyColumn()}.
    *
-   * <p>The default value is {@link ItemDataRole#DisplayRole}.
+   * <p>The default value is {@link ItemDataRole#Display}.
    *
    * <p>
    *
    * @see WSortFilterProxyModel#setFilterKeyColumn(int column)
-   * @see WSortFilterProxyModel#setFilterRegExp(String pattern)
+   * @see WSortFilterProxyModel#setFilterRegExp(Pattern pattern)
    */
-  public void setFilterRole(int role) {
+  public void setFilterRole(ItemDataRole role) {
     this.filterRole_ = role;
   }
   /**
@@ -366,9 +313,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p>
    *
-   * @see WSortFilterProxyModel#setFilterRole(int role)
+   * @see WSortFilterProxyModel#setFilterRole(ItemDataRole role)
    */
-  public int getFilterRole() {
+  public ItemDataRole getFilterRole() {
     return this.filterRole_;
   }
   /**
@@ -376,11 +323,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p>This configures the data role used for sorting.
    *
-   * <p>The default value is {@link ItemDataRole#DisplayRole}.
+   * <p>The default value is {@link ItemDataRole#Display}.
    *
    * <p>
    */
-  public void setSortRole(int role) {
+  public void setSortRole(ItemDataRole role) {
     this.sortRole_ = role;
   }
   /**
@@ -388,9 +335,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p>
    *
-   * @see WSortFilterProxyModel#setSortRole(int role)
+   * @see WSortFilterProxyModel#setSortRole(ItemDataRole role)
    */
-  public int getSortRole() {
+  public ItemDataRole getSortRole() {
     return this.sortRole_;
   }
   /**
@@ -479,14 +426,15 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
     return this.createIndex(row, column, item);
   }
 
-  public boolean setHeaderData(int section, Orientation orientation, final Object value, int role) {
+  public boolean setHeaderData(
+      int section, Orientation orientation, final Object value, ItemDataRole role) {
     if (orientation == Orientation.Vertical) {
       section = this.mapToSource(this.getIndex(section, 0)).getRow();
     }
     return this.getSourceModel().setHeaderData(section, orientation, value, role);
   }
 
-  public Object getHeaderData(int section, Orientation orientation, int role) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
     if (orientation == Orientation.Vertical) {
       section = this.mapToSource(this.getIndex(section, 0)).getRow();
     }
@@ -611,7 +559,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
     }
 
     public int compare(Integer sourceRow1, Integer sourceRow2) {
-      int factor = this.model.sortOrder_ == SortOrder.AscendingOrder ? 1 : -1;
+      int factor = this.model.sortOrder_ == SortOrder.Ascending ? 1 : -1;
       if (this.model.sortKeyColumn_ == -1) {
         return factor * (sourceRow1 - sourceRow2);
       }
@@ -632,9 +580,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
 
   private Pattern regex_;
   private int filterKeyColumn_;
-  private int filterRole_;
+  private ItemDataRole filterRole_;
   private int sortKeyColumn_;
-  private int sortRole_;
+  private ItemDataRole sortRole_;
   private SortOrder sortOrder_;
   private boolean dynamic_;
   private boolean inserting_;
@@ -869,10 +817,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
             this.mappedIndexes_.entrySet().iterator();
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it.next();
-      ;
     }
     this.mappedIndexes_.clear();
-    ;
+
     this.mappedRootItem_ = null;
   }
 

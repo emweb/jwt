@@ -15,6 +15,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -46,7 +47,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	private WLength height;
 
 	private WPainter painter;
-	private EnumSet<ChangeFlag> changeFlags;
+	private EnumSet<PainterChangeFlag> changeFlags;
 
 	private BufferedImage image;
 	private Graphics2D g2;
@@ -61,7 +62,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		    this.format = Format.PngFormat;
 		else
 		    throw new RuntimeException("Unsupported format: " + format);
-		this.changeFlags = EnumSet.noneOf(ChangeFlag.class);
+		this.changeFlags = EnumSet.noneOf(PainterChangeFlag.class);
 		
 		if (width.toPixels() > 0 && height.toPixels() > 0)
 			this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
@@ -112,6 +113,10 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	
 	public void drawLine(double x1, double y1, double x2, double y2) {
 		drawShape(new Line2D.Double(x1, y1, x2, y2));
+	}
+
+	public void drawRect(WRectF rect) {
+		drawShape(new Rectangle2D.Double(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()));
 	}
 
 	
@@ -171,8 +176,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	@Override
 	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
-		if (textFlag == TextFlag.TextWordWrap)
-			throw new UnsupportedOperationException("drawText(): TextWordWrap not yet implemented");
+		if (textFlag == TextFlag.WordWrap)
+			throw new UnsupportedOperationException("drawText(): WordWrap not yet implemented");
 
 		if (clipPoint != null && this.getPainter() != null) {
 			if (!this.getPainter().getClipPathTransform().map(this.getPainter().getClipPath())
@@ -191,25 +196,25 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		String s = text.toString();
 		
 		switch (horizontalAlign) {
-		case AlignLeft:
+		case Left:
 			px = rect.getLeft();
 			break;
-		case AlignRight:
+		case Right:
 			px = rect.getRight() - g2.getFontMetrics().stringWidth(s);
 			break;
-		case AlignCenter:
+		case Center:
 			px = rect.getCenter().getX() - g2.getFontMetrics().stringWidth(s)/2;
 			break;
 		}
 		
 		switch (verticalAlign) {
-		case AlignBottom:
+		case Bottom:
 			py = rect.getBottom();
 			break;
-		case AlignTop:
+		case Top:
 			py = rect.getTop() + g2.getFontMetrics().getHeight();
 			break;
-		case AlignMiddle:
+		case Middle:
 			py = rect.getCenter().getY() + g2.getFontMetrics().getHeight()/2;
 		}
 		
@@ -241,9 +246,9 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		}
 		
-		changeFlags.add(ChangeFlag.Pen);
-		changeFlags.add(ChangeFlag.Brush);
-		changeFlags.add(ChangeFlag.Font);
+		changeFlags.add(PainterChangeFlag.Pen);
+		changeFlags.add(PainterChangeFlag.Brush);
+		changeFlags.add(PainterChangeFlag.Font);
 	}
 
 	
@@ -252,12 +257,12 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	}
 
 	
-	public void setChanged(EnumSet<ChangeFlag> flags) {
+	public void setChanged(EnumSet<PainterChangeFlag> flags) {
 		this.changeFlags.addAll(flags);
 	}
 
 	
-	public void setChanged(ChangeFlag flag, ChangeFlag... flags) {
+	public void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
 		setChanged(EnumSet.of(flag, flags));
 	}
 
@@ -268,21 +273,21 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	private void drawShape(Shape shape) {
 		processChangeFlags();
 
-		if (painter.getPen().getStyle() != PenStyle.NoPen) {
+		if (painter.getPen().getStyle() != PenStyle.None) {
 			g2.setPaint(penPaint);
 			g2.draw(shape);
 		}
 
-		if (painter.getBrush().getStyle() != BrushStyle.NoBrush) {
+		if (painter.getBrush().getStyle() != BrushStyle.None) {
 			g2.setPaint(brushPaint);
 			g2.fill(shape);
 		}
 	}
 
 	private void processChangeFlags() {
-		boolean resetTransform = changeFlags.contains(ChangeFlag.Transform);
+		boolean resetTransform = changeFlags.contains(PainterChangeFlag.Transform);
 
-		if (changeFlags.contains(ChangeFlag.Clipping)) {
+		if (changeFlags.contains(PainterChangeFlag.Clipping)) {
 			setTransform(painter.getClipPathTransform());
 			if (painter.getClipPath().isEmpty())
 				g2.setClip(null);
@@ -294,19 +299,19 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		if (resetTransform)
 			setTransform(painter.getCombinedTransform());
 
-		if (changeFlags.contains(ChangeFlag.Pen)) {
+		if (changeFlags.contains(PainterChangeFlag.Pen)) {
 			g2.setStroke(createStroke(painter, painter.getPen()));
 			penPaint = createColor(painter.getPen().getColor());
 		}
 
-		if (changeFlags.contains(ChangeFlag.Brush))
+		if (changeFlags.contains(PainterChangeFlag.Brush))
 			brushPaint = createColor(painter.getBrush().getColor());
 		
-		if (changeFlags.contains(ChangeFlag.Font))
+		if (changeFlags.contains(PainterChangeFlag.Font))
 			g2.setFont(createFont(painter.getFont()));
 		
-		if (changeFlags.contains(ChangeFlag.Hints)) {
-			if ((painter.getRenderHints() & WPainter.RenderHint.Antialiasing.getValue()) != 0)
+		if (changeFlags.contains(PainterChangeFlag.Hints)) {
+			if (painter.getRenderHints().contains(RenderHint.Antialiasing))
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			else
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -333,20 +338,20 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	public static Stroke createStroke(WPainter painter, WPen pen) {
 		int cap = 0;
 		switch (pen.getCapStyle()) {
-		case FlatCap:   cap = BasicStroke.CAP_BUTT; break;
-		case RoundCap:  cap = BasicStroke.CAP_ROUND; break;
-		case SquareCap: cap = BasicStroke.CAP_SQUARE; break;
+		case Flat:      cap = BasicStroke.CAP_BUTT; break;
+		case Round:     cap = BasicStroke.CAP_ROUND; break;
+		case Square:    cap = BasicStroke.CAP_SQUARE; break;
 		}
 
 		int join = 0;
 		switch (pen.getJoinStyle()) {
-		case BevelJoin: join = BasicStroke.JOIN_BEVEL; break;
-		case MiterJoin: join = BasicStroke.JOIN_MITER; break;
-		case RoundJoin: join = BasicStroke.JOIN_ROUND; break;
+		case Bevel:     join = BasicStroke.JOIN_BEVEL; break;
+		case Miter:     join = BasicStroke.JOIN_MITER; break;
+		case Round:     join = BasicStroke.JOIN_ROUND; break;
 		}
 
 		float width = 0;
-		if (pen.getStyle() != PenStyle.NoPen)
+		if (pen.getStyle() != PenStyle.None)
 			width = (float) painter.normalizedPenWidth(pen.getWidth(), true).toPixels();
 
 		switch (pen.getStyle()) {
@@ -395,12 +400,12 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		int style = Font.PLAIN;
 		switch (font.getStyle()) {
 		case Italic: style = Font.ITALIC;  break;
-		case NormalStyle:                  break;
+		case Normal:                       break;
 		case Oblique: style = Font.ITALIC; break; // ??
 		}
 		
 		switch (font.getWeight()) {
-		case NormalWeight: break;
+		case Normal: break;
 		case Bolder:
 		case Bold: style |= Font.BOLD; break;
 		}
@@ -460,8 +465,8 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	}
 
 	@Override
-	public EnumSet<FeatureFlag> getFeatures() {
-		return EnumSet.of(FeatureFlag.HasFontMetrics, FeatureFlag.CanWordWrap);
+	public EnumSet<PaintDeviceFeatureFlag> getFeatures() {
+		return EnumSet.of(PaintDeviceFeatureFlag.FontMetrics, PaintDeviceFeatureFlag.WordWrap);
 	}
 
 }

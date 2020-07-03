@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -20,8 +21,8 @@ import org.slf4j.LoggerFactory;
 class ToggleButton extends WText {
   private static Logger logger = LoggerFactory.getLogger(ToggleButton.class);
 
-  public ToggleButton(ToggleButtonConfig config, WContainerWidget parent) {
-    super(parent);
+  public ToggleButton(ToggleButtonConfig config) {
+    super();
     this.signals_ = new ArrayList<AbstractSignal>();
     this.config_ = config;
     this.setStyleClass(this.config_.getStyleClass());
@@ -36,25 +37,13 @@ class ToggleButton extends WText {
       this.clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  ToggleButton.this.handleClick();
-                }
+              (WMouseEvent e1) -> {
+                ToggleButton.this.handleClick();
               });
       for (int i = 0; i < this.config_.getStates().size(); ++i) {
-        this.signals_.add(new Signal(this));
+        this.signals_.add(new Signal());
       }
     }
-  }
-
-  public ToggleButton(ToggleButtonConfig config) {
-    this(config, (WContainerWidget) null);
-  }
-
-  public void remove() {
-    for (int i = 0; i < this.signals_.size(); ++i) {;
-    }
-    super.remove();
   }
 
   public AbstractSignal signal(int i) {

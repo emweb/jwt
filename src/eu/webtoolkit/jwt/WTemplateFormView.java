@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -59,7 +60,7 @@ import org.slf4j.LoggerFactory;
  * with values entered in the View.
  *
  * <p>The view is passive: it will not perform any updates by itself of either the View or Model.
- * You will typically bind a method to the Ok button and do:
+ * You will typically bind a method to the {@link StandardButton#Ok} button and do:
  *
  * <pre>{@code
  * void okClicked()
@@ -89,15 +90,17 @@ public class WTemplateFormView extends WTemplate {
    *
    * }</pre>
    */
-  public WTemplateFormView(WContainerWidget parent) {
-    super(parent);
+  public WTemplateFormView(WContainerWidget parentContainer) {
+    super();
     this.fields_ = new HashMap<String, WTemplateFormView.FieldData>();
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WTemplateFormView(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTemplateFormView(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   public WTemplateFormView() {
     this((WContainerWidget) null);
@@ -114,16 +117,17 @@ public class WTemplateFormView extends WTemplate {
    *
    * }</pre>
    */
-  public WTemplateFormView(final CharSequence text, WContainerWidget parent) {
-    super(text, parent);
+  public WTemplateFormView(final CharSequence text, WContainerWidget parentContainer) {
+    super(text, (WContainerWidget) null);
     this.fields_ = new HashMap<String, WTemplateFormView.FieldData>();
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WTemplateFormView(CharSequence text, WContainerWidget parent) this(text,
-   * (WContainerWidget)null)}
+   * <p>Calls {@link #WTemplateFormView(CharSequence text, WContainerWidget parentContainer)
+   * this(text, (WContainerWidget)null)}
    */
   public WTemplateFormView(final CharSequence text) {
     this(text, (WContainerWidget) null);
@@ -147,15 +151,6 @@ public class WTemplateFormView extends WTemplate {
     this.fields_.get(field).formWidget = formWidget;
     this.bindWidget(field, formWidget);
   }
-  // public void setFormWidget(String  field, WWidget  widget, F1 updateViewValue, F2
-  // updateModelValue) ;
-  /** Interface for custom update methods for field data. */
-  public static interface FieldView {
-    /** Update the widget&apos;s value based on the model&apos;s data. */
-    public void updateViewValue();
-    /** Update the model&apos;s data based on the widget&apos;s value. */
-    public void updateModelValue();
-  }
   /**
    * Sets the form widget for a given field.
    *
@@ -163,10 +158,14 @@ public class WTemplateFormView extends WTemplate {
    * this field.
    */
   public void setFormWidget(
-      String field, WWidget formWidget, WTemplateFormView.FieldView fieldView) {
+      String field,
+      WWidget formWidget,
+      final Runnable updateViewValue,
+      final Runnable updateModelValue) {
     this.fields_.put(field, new WTemplateFormView.FieldData());
     this.fields_.get(field).formWidget = formWidget;
-    this.fields_.get(field).updateFunctions = fieldView;
+    this.fields_.get(field).updateView = updateViewValue;
+    this.fields_.get(field).updateModel = updateModelValue;
     this.bindWidget(field, formWidget);
   }
   /**
@@ -214,7 +213,8 @@ public class WTemplateFormView extends WTemplate {
       this.setCondition("if:" + var, true);
       WWidget edit = this.resolveWidget(var);
       if (!(edit != null)) {
-        edit = this.createFormWidget(field);
+        WWidget nw = this.createFormWidget(field);
+        edit = nw;
         if (!(edit != null)) {
           logger.error(
               new StringWriter()
@@ -224,7 +224,7 @@ public class WTemplateFormView extends WTemplate {
                   .toString());
           return;
         }
-        this.bindWidget(var, edit);
+        this.bindWidget(var, nw);
       }
       WFormWidget fedit = ((edit) instanceof WFormWidget ? (WFormWidget) (edit) : null);
       if (fedit != null) {
@@ -268,7 +268,7 @@ public class WTemplateFormView extends WTemplate {
         ((edit) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (edit) : null);
     if (b != null) {
       Object v = model.getValue(field);
-      if ((v == null) || ((Boolean) v) == false) {
+      if (!(v != null) || ((Boolean) v) == false) {
         b.setChecked(false);
       } else {
         b.setChecked(true);
@@ -287,8 +287,8 @@ public class WTemplateFormView extends WTemplate {
   public boolean updateViewValue(WFormModel model, String field, WWidget edit) {
     WTemplateFormView.FieldData fi = this.fields_.get(field);
     if (fi != null) {
-      if (fi.updateFunctions != null) {
-        fi.updateFunctions.updateViewValue();
+      if (fi.updateView != null) {
+        fi.updateView.run();
         return true;
       }
     }
@@ -329,10 +329,10 @@ public class WTemplateFormView extends WTemplate {
   /**
    * Updates a value in the Model.
    *
-   * <p>The default implementation calls {@link WTemplateFormView#updateModelValue(WFormModel model,
-   * String field, WWidget edit) updateModelValue()}. If this function returned <code>false</code>,
-   * it calls {@link WFormModel#setValue(String field, Object value) WFormModel#setValue()} with
-   * {@link WFormWidget#getValueText()}.
+   * <p>The default implementation calls updateModelValue({@link WFormModel} *, WFormModel::Field,
+   * {@link WWidget} *), and if that returns <code>false</code>, it then calls {@link
+   * WFormModel#setValue(String field, Object value) WFormModel#setValue()} with {@link
+   * WFormWidget#getValueText()}.
    */
   public void updateModelValue(WFormModel model, String field, WFormWidget edit) {
     if (this.updateModelValue(model, field, (WWidget) edit)) {
@@ -356,8 +356,8 @@ public class WTemplateFormView extends WTemplate {
   public boolean updateModelValue(WFormModel model, String field, WWidget edit) {
     WTemplateFormView.FieldData fi = this.fields_.get(field);
     if (fi != null) {
-      if (fi.updateFunctions != null) {
-        fi.updateFunctions.updateModelValue();
+      if (fi.updateModel != null) {
+        fi.updateModel.run();
         return true;
       }
     }
@@ -396,11 +396,11 @@ public class WTemplateFormView extends WTemplate {
       WApplication.getInstance()
           .getTheme()
           .applyValidationStyle(edit, validation, ValidationStyleFlag.ValidationAllStyles);
-      info.toggleStyleClass("Wt-error", validation.getState() != WValidator.State.Valid, true);
+      info.toggleStyleClass("Wt-error", validation.getState() != ValidationState.Valid, true);
     } else {
       WApplication.getInstance()
           .getTheme()
-          .applyValidationStyle(edit, validation, ValidationStyleFlag.ValidationNoStyle);
+          .applyValidationStyle(edit, validation, EnumSet.noneOf(ValidationStyleFlag.class));
       info.removeStyleClass("Wt-error", true);
     }
   }
@@ -413,7 +413,8 @@ public class WTemplateFormView extends WTemplate {
     }
 
     public WWidget formWidget;
-    public WTemplateFormView.FieldView updateFunctions;
+    public Runnable updateView;
+    public Runnable updateModel;
   }
 
   private Map<String, WTemplateFormView.FieldData> fields_;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * WStackedWidget contents = new WStackedWidget(contentsParent);
  *
  * // create a menu
- * WMenu menu = new WMenu(contents, menuParent);
+ * WMenu menu = new WMenu(contents);
  *
  * // add four items using the default lazy loading policy.
  * menu.addItem("Introduction", new WText("intro"));
@@ -48,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  * }</pre>
  *
- * <p>After contruction, the first entry will be selected. At any time, it is possible to select a
+ * <p>After construction, the first entry will be selected. At any time, it is possible to select a
  * particular item using {@link WMenu#select(WMenuItem item) select()}.
  *
  * <p>Each item of WMenu may be closeable (see {@link WMenuItem#setCloseable(boolean closeable)
@@ -58,21 +59,21 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The WMenu implementation offers fine-grained control on how contents should be preloaded. By
  * default, all contents is lazy-loaded, only when needed. To improve response time, an item may
- * also be preloaded (using {@link WMenu#addItem(CharSequence name, WWidget contents,
- * WMenuItem.LoadPolicy policy) addItem()}). In that case, the item will be loaded in the
- * background, before its first use. In any case, once the contents corresponding to a menu item is
- * loaded, subsequent navigation to it is handled entirely client-side.
+ * also be preloaded (using {@link WMenu#addItem(CharSequence name, WWidget contents, ContentLoading
+ * policy) addItem()}). In that case, the item will be loaded in the background, before its first
+ * use. In any case, once the contents corresponding to a menu item is loaded, subsequent navigation
+ * to it is handled entirely client-side.
  *
  * <p>The WMenu may participate in the application&apos;s internal path, which lets menu items
  * correspond to internal URLs, see {@link WMenu#setInternalPathEnabled(String basePath)
  * setInternalPathEnabled()}.
  *
- * <p>The layout of the menu may be Horizontal or Vertical. The look of the items may be defined
- * through style sheets. The default {@link WMenuItem} implementation uses four style classes to
- * distinguish between inactivated, activated, closeable inactivated and closeable activated menu
- * items: <code>&quot;item&quot;</code>, <code>&quot;itemselected&quot;</code>, <code>
- * &quot;citem&quot;</code>, <code>&quot;citemselected&quot;</code>. By using CSS nested selectors,
- * a different style may be defined for items in a different menu.
+ * <p>The look of the items may be defined through style sheets. The default {@link WMenuItem}
+ * implementation uses four style classes to distinguish between inactivated, activated, closeable
+ * inactivated and closeable activated menu items: <code>&quot;item&quot;</code>, <code>
+ * &quot;itemselected&quot;</code>, <code>&quot;citem&quot;</code>, <code>&quot;citemselected&quot;
+ * </code>. By using CSS nested selectors, a different style may be defined for items in a different
+ * menu.
  *
  * <p>You may customize the rendering and behaviour of menu entries by specializing {@link
  * WMenuItem}.
@@ -93,101 +94,37 @@ public class WMenu extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WMenu.class);
 
   /**
-   * Creates a new menu (<b>deprecated</b>).
-   *
-   * <p>Construct a menu with given <code>orientation</code>. The menu is not associated with a
-   * contents stack, and thus you will want to react to the {@link WMenu#itemSelected()
-   * itemSelected()} signal to react to menu changes.
-   *
-   * <p>
-   *
-   * @deprecated the <code>orientation</code> parameter is ignored, since menus are now always
-   *     rendered using
-   *     <ul>
-   *       elements, and CSS will determine the orientation. Use {@link WMenu#WMenu(WContainerWidget
-   *       parent) WMenu()} instead.
-   */
-  public WMenu(Orientation orientation, WContainerWidget parent) {
-    super(parent);
-    this.contentsStack_ = null;
-    this.basePath_ = "";
-    this.previousInternalPath_ = "";
-    this.itemSelected_ = new Signal1<WMenuItem>(this);
-    this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
-    this.itemClosed_ = new Signal1<WMenuItem>(this);
-    this.contentsStackConnection_ = new AbstractSignal.Connection();
-    this.init();
-  }
-  /**
-   * Creates a new menu (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #WMenu(Orientation orientation, WContainerWidget parent) this(orientation,
-   * (WContainerWidget)null)}
-   */
-  public WMenu(Orientation orientation) {
-    this(orientation, (WContainerWidget) null);
-  }
-  /**
    * Creates a new menu.
    *
    * <p>The menu is not associated with a contents stack, and thus you will want to react to the
    * {@link WMenu#itemSelected() itemSelected()} signal to react to menu changes.
    */
-  public WMenu(WContainerWidget parent) {
-    super(parent);
+  public WMenu(WContainerWidget parentContainer) {
+    super();
+    this.ul_ = null;
     this.contentsStack_ = null;
+    this.internalPathEnabled_ = false;
+    this.emitPathChange_ = false;
     this.basePath_ = "";
     this.previousInternalPath_ = "";
-    this.itemSelected_ = new Signal1<WMenuItem>(this);
-    this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
-    this.itemClosed_ = new Signal1<WMenuItem>(this);
-    this.contentsStackConnection_ = new AbstractSignal.Connection();
-    this.init();
+    this.parentItem_ = null;
+    this.itemSelected_ = new Signal1<WMenuItem>();
+    this.itemSelectRendered_ = new Signal1<WMenuItem>();
+    this.itemClosed_ = new Signal1<WMenuItem>();
+    this.current_ = -1;
+    this.previousStackIndex_ = -1;
+    this.needSelectionEventUpdate_ = false;
+    this.setImplementation(this.ul_ = new WContainerWidget());
+    this.ul_.setList(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new menu.
    *
-   * <p>Calls {@link #WMenu(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WMenu(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WMenu() {
     this((WContainerWidget) null);
-  }
-  /**
-   * Creates a new menu (<b>deprecated</b>).
-   *
-   * <p>Construct a menu to manage the widgets in <code>contentsStack</code>, and sets the menu
-   * <code>orientation</code>.
-   *
-   * <p>Each menu item will manage a single widget in the <code>contentsStack</code>, making it the
-   * current widget when the menu item is activated.
-   *
-   * <p>
-   *
-   * @deprecated the <code>orientation</code> parameter is ignored, since menus are now always
-   *     rendered using
-   *     <ul>
-   *       elements, and CSS will determine the orientation. Use {@link WMenu#WMenu(WStackedWidget
-   *       contentsStack, WContainerWidget parent) WMenu()} instead.
-   */
-  public WMenu(WStackedWidget contentsStack, Orientation orientation, WContainerWidget parent) {
-    super(parent);
-    this.contentsStack_ = contentsStack;
-    this.basePath_ = "";
-    this.previousInternalPath_ = "";
-    this.itemSelected_ = new Signal1<WMenuItem>(this);
-    this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
-    this.itemClosed_ = new Signal1<WMenuItem>(this);
-    this.contentsStackConnection_ = new AbstractSignal.Connection();
-    this.init();
-  }
-  /**
-   * Creates a new menu (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #WMenu(WStackedWidget contentsStack, Orientation orientation, WContainerWidget
-   * parent) this(contentsStack, orientation, (WContainerWidget)null)}
-   */
-  public WMenu(WStackedWidget contentsStack, Orientation orientation) {
-    this(contentsStack, orientation, (WContainerWidget) null);
   }
   /**
    * Creates a new menu.
@@ -197,21 +134,38 @@ public class WMenu extends WCompositeWidget {
    * <p>Each menu item will manage a single widget in the <code>contentsStack</code>, making it the
    * current widget when the menu item is activated.
    */
-  public WMenu(WStackedWidget contentsStack, WContainerWidget parent) {
-    super(parent);
+  public WMenu(WStackedWidget contentsStack, WContainerWidget parentContainer) {
+    super();
+    this.ul_ = null;
     this.contentsStack_ = contentsStack;
+    this.internalPathEnabled_ = false;
+    this.emitPathChange_ = false;
     this.basePath_ = "";
     this.previousInternalPath_ = "";
-    this.itemSelected_ = new Signal1<WMenuItem>(this);
-    this.itemSelectRendered_ = new Signal1<WMenuItem>(this);
-    this.itemClosed_ = new Signal1<WMenuItem>(this);
-    this.contentsStackConnection_ = new AbstractSignal.Connection();
-    this.init();
+    this.parentItem_ = null;
+    this.itemSelected_ = new Signal1<WMenuItem>();
+    this.itemSelectRendered_ = new Signal1<WMenuItem>();
+    this.itemClosed_ = new Signal1<WMenuItem>();
+    this.current_ = -1;
+    this.previousStackIndex_ = -1;
+    this.needSelectionEventUpdate_ = false;
+    if (this.contentsStack_ != null) {
+      this.contentsStack_
+          .childrenChanged()
+          .addListener(
+              this,
+              () -> {
+                WMenu.this.updateSelectionEvent();
+              });
+    }
+    this.setImplementation(this.ul_ = new WContainerWidget());
+    this.ul_.setList(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new menu.
    *
-   * <p>Calls {@link #WMenu(WStackedWidget contentsStack, WContainerWidget parent)
+   * <p>Calls {@link #WMenu(WStackedWidget contentsStack, WContainerWidget parentContainer)
    * this(contentsStack, (WContainerWidget)null)}
    */
   public WMenu(WStackedWidget contentsStack) {
@@ -219,44 +173,38 @@ public class WMenu extends WCompositeWidget {
   }
   /** Destructor. */
   public void remove() {
-    this.contentsStackConnection_.disconnect();
     super.remove();
   }
   /**
    * Adds an item.
    *
-   * <p>Use this version of {@link WMenu#addItem(CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) addItem()} if you do not want to specify an icon for this menu
-   * item.
+   * <p>Use this version of {@link WMenu#addItem(CharSequence name, WWidget contents, ContentLoading
+   * policy) addItem()} if you do not want to specify an icon for this menu item.
    *
    * <p>Returns the corresponding {@link WMenuItem}.
    *
    * <p>
-   *
-   * @see WMenu#addItem(String iconPath, CharSequence name, WWidget contents, WMenuItem.LoadPolicy
-   *     policy)
-   * @see WMenu#addItem(WMenuItem item)
    */
-  public WMenuItem addItem(final CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy) {
+  public WMenuItem addItem(final CharSequence name, WWidget contents, ContentLoading policy) {
     return this.addItem("", name, contents, policy);
   }
   /**
    * Adds an item.
    *
-   * <p>Returns {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
-   * addItem(name, (WWidget)null, WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #addItem(CharSequence name, WWidget contents, ContentLoading policy)
+   * addItem(name, null, ContentLoading.Lazy)}
    */
   public final WMenuItem addItem(final CharSequence name) {
-    return addItem(name, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    return addItem(name, null, ContentLoading.Lazy);
   }
   /**
    * Adds an item.
    *
-   * <p>Returns {@link #addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
-   * addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #addItem(CharSequence name, WWidget contents, ContentLoading policy)
+   * addItem(name, contents, ContentLoading.Lazy)}
    */
   public final WMenuItem addItem(final CharSequence name, WWidget contents) {
-    return addItem(name, contents, WMenuItem.LoadPolicy.LazyLoading);
+    return addItem(name, contents, ContentLoading.Lazy);
   }
   /**
    * Adds an item.
@@ -276,37 +224,28 @@ public class WMenu extends WCompositeWidget {
    * <p>Returns the corresponding {@link WMenuItem}.
    *
    * <p>
-   *
-   * @see WMenu#addItem(WMenuItem item)
    */
   public WMenuItem addItem(
-      final String iconPath,
-      final CharSequence name,
-      WWidget contents,
-      WMenuItem.LoadPolicy policy) {
-    WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
-    this.addItem(item);
-    return item;
+      final String iconPath, final CharSequence name, WWidget contents, ContentLoading policy) {
+    return this.addItem(new WMenuItem(iconPath, name, contents, policy));
   }
   /**
    * Adds an item.
    *
-   * <p>Returns {@link #addItem(String iconPath, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) addItem(iconPath, name, (WWidget)null,
-   * WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #addItem(String iconPath, CharSequence name, WWidget contents, ContentLoading
+   * policy) addItem(iconPath, name, null, ContentLoading.Lazy)}
    */
   public final WMenuItem addItem(final String iconPath, final CharSequence name) {
-    return addItem(iconPath, name, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    return addItem(iconPath, name, null, ContentLoading.Lazy);
   }
   /**
    * Adds an item.
    *
-   * <p>Returns {@link #addItem(String iconPath, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) addItem(iconPath, name, contents,
-   * WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #addItem(String iconPath, CharSequence name, WWidget contents, ContentLoading
+   * policy) addItem(iconPath, name, contents, ContentLoading.Lazy)}
    */
   public final WMenuItem addItem(final String iconPath, final CharSequence name, WWidget contents) {
-    return addItem(iconPath, name, contents, WMenuItem.LoadPolicy.LazyLoading);
+    return addItem(iconPath, name, contents, ContentLoading.Lazy);
   }
   // public WMenuItem  addItem(final CharSequence text, T  target, <pointertomember or
   // dependentsizedarray> methodpointertomember or dependentsizedarray>) ;
@@ -330,10 +269,8 @@ public class WMenu extends WCompositeWidget {
    * <p>
    */
   public WMenuItem addMenu(final String iconPath, final CharSequence text, WMenu menu) {
-    WMenuItem item =
-        new WMenuItem(iconPath, text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    WMenuItem item = this.addItem(iconPath, text, (WWidget) null, ContentLoading.Lazy);
     item.setMenu(menu);
-    this.addItem(item);
     return item;
   }
   /**
@@ -342,50 +279,41 @@ public class WMenu extends WCompositeWidget {
    * <p>Adds a menu item. Use this form to add specialized {@link WMenuItem} implementations.
    *
    * <p>
-   *
-   * @see WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
    */
-  public void addItem(WMenuItem item) {
-    this.insertItem(this.getUl().getCount(), item);
+  public WMenuItem addItem(WMenuItem item) {
+    return this.insertItem(this.getUl().getCount(), item);
   }
   /**
    * inserts an item.
    *
    * <p>Use this version of {@link WMenu#insertItem(int index, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) insertItem()} if you do not want to specify an icon for this menu
-   * item.
+   * ContentLoading policy) insertItem()} if you do not want to specify an icon for this menu item.
    *
    * <p>Returns the corresponding {@link WMenuItem}.
    *
    * <p>
-   *
-   * @see WMenu#insertItem(int index, String iconPath, CharSequence name, WWidget contents,
-   *     WMenuItem.LoadPolicy policy)
-   * @see WMenu#insertItem(int index, WMenuItem item)
    */
   public WMenuItem insertItem(
-      int index, final CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy) {
+      int index, final CharSequence name, WWidget contents, ContentLoading policy) {
     return this.insertItem(index, "", name, contents, policy);
   }
   /**
    * inserts an item.
    *
-   * <p>Returns {@link #insertItem(int index, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) insertItem(index, name, (WWidget)null,
-   * WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #insertItem(int index, CharSequence name, WWidget contents, ContentLoading
+   * policy) insertItem(index, name, null, ContentLoading.Lazy)}
    */
   public final WMenuItem insertItem(int index, final CharSequence name) {
-    return insertItem(index, name, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    return insertItem(index, name, null, ContentLoading.Lazy);
   }
   /**
    * inserts an item.
    *
-   * <p>Returns {@link #insertItem(int index, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) insertItem(index, name, contents,
-   * WMenuItem.LoadPolicy.LazyLoading)}
+   * <p>Returns {@link #insertItem(int index, CharSequence name, WWidget contents, ContentLoading
+   * policy) insertItem(index, name, contents, ContentLoading.Lazy)}
    */
   public final WMenuItem insertItem(int index, final CharSequence name, WWidget contents) {
-    return insertItem(index, name, contents, WMenuItem.LoadPolicy.LazyLoading);
+    return insertItem(index, name, contents, ContentLoading.Lazy);
   }
   /**
    * inserts an item.
@@ -405,39 +333,33 @@ public class WMenu extends WCompositeWidget {
    * <p>Returns the corresponding {@link WMenuItem}.
    *
    * <p>
-   *
-   * @see WMenu#insertItem(int index, WMenuItem item)
    */
   public WMenuItem insertItem(
       int index,
       final String iconPath,
       final CharSequence name,
       WWidget contents,
-      WMenuItem.LoadPolicy policy) {
-    WMenuItem item = new WMenuItem(iconPath, name, contents, policy);
-    this.insertItem(index, item);
-    return item;
+      ContentLoading policy) {
+    return this.insertItem(index, new WMenuItem(iconPath, name, contents, policy));
   }
   /**
    * inserts an item.
    *
    * <p>Returns {@link #insertItem(int index, String iconPath, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) insertItem(index, iconPath, name, (WWidget)null,
-   * WMenuItem.LoadPolicy.LazyLoading)}
+   * ContentLoading policy) insertItem(index, iconPath, name, null, ContentLoading.Lazy)}
    */
   public final WMenuItem insertItem(int index, final String iconPath, final CharSequence name) {
-    return insertItem(index, iconPath, name, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    return insertItem(index, iconPath, name, null, ContentLoading.Lazy);
   }
   /**
    * inserts an item.
    *
    * <p>Returns {@link #insertItem(int index, String iconPath, CharSequence name, WWidget contents,
-   * WMenuItem.LoadPolicy policy) insertItem(index, iconPath, name, contents,
-   * WMenuItem.LoadPolicy.LazyLoading)}
+   * ContentLoading policy) insertItem(index, iconPath, name, contents, ContentLoading.Lazy)}
    */
   public final WMenuItem insertItem(
       int index, final String iconPath, final CharSequence name, WWidget contents) {
-    return insertItem(index, iconPath, name, contents, WMenuItem.LoadPolicy.LazyLoading);
+    return insertItem(index, iconPath, name, contents, ContentLoading.Lazy);
   }
   // public WMenuItem  insertItem(int index, final CharSequence text, T  target, <pointertomember or
   // dependentsizedarray> methodpointertomember or dependentsizedarray>) ;
@@ -463,10 +385,8 @@ public class WMenu extends WCompositeWidget {
    */
   public WMenuItem insertMenu(
       int index, final String iconPath, final CharSequence text, WMenu menu) {
-    WMenuItem item =
-        new WMenuItem(iconPath, text, (WWidget) null, WMenuItem.LoadPolicy.LazyLoading);
+    WMenuItem item = this.insertItem(index, iconPath, text, (WWidget) null);
     item.setMenu(menu);
-    this.insertItem(index, item);
     return item;
   }
   /**
@@ -476,29 +396,30 @@ public class WMenu extends WCompositeWidget {
    *
    * <p>
    */
-  public void insertItem(int index, WMenuItem item) {
+  public WMenuItem insertItem(int index, WMenuItem item) {
     item.setParentMenu(this);
+    WMenuItem result = item;
     this.getUl().insertWidget(index, item);
     if (this.contentsStack_ != null) {
-      WWidget contents = item.getContents();
-      if (contents != null) {
-        this.contentsStack_.addWidget(contents);
+      WWidget contentsPtr = result.takeContentsForStack();
+      if (contentsPtr != null) {
+        WWidget contents = contentsPtr;
+        this.contentsStack_.addWidget(contentsPtr);
         if (this.contentsStack_.getCount() == 1) {
           this.setCurrent(0);
-          if (contents != null) {
-            this.contentsStack_.setCurrentWidget(contents);
-          }
-          this.renderSelected(item, true);
+          this.contentsStack_.setCurrentWidget(contents);
+          this.renderSelected(result, true);
         } else {
-          this.renderSelected(item, false);
+          this.renderSelected(result, false);
         }
       } else {
-        this.renderSelected(item, false);
+        this.renderSelected(result, false);
       }
     } else {
-      this.renderSelected(item, false);
+      this.renderSelected(result, false);
     }
-    this.itemPathChanged(item);
+    this.itemPathChanged(result);
+    return result;
   }
   /**
    * Adds a separator to the menu.
@@ -506,32 +427,29 @@ public class WMenu extends WCompositeWidget {
    * <p>Adds a separator the menu.
    */
   public WMenuItem addSeparator() {
-    WMenuItem item = new WMenuItem(true, WString.Empty);
-    this.addItem(item);
-    return item;
+    return this.addItem(new WMenuItem(true, WString.Empty));
   }
   /** Adds a section header to the menu. */
   public WMenuItem addSectionHeader(final CharSequence text) {
-    WMenuItem result = new WMenuItem(false, text);
-    this.addItem(result);
-    return result;
+    return this.addItem(new WMenuItem(false, text));
   }
   /**
    * Removes an item.
    *
-   * <p>Removes the given item. The item and its contents is not deleted.
+   * <p>Removes the given item.
    *
    * <p>
    *
-   * @see WMenu#addItem(CharSequence name, WWidget contents, WMenuItem.LoadPolicy policy)
+   * @see WMenu#addItem(CharSequence name, WWidget contents, ContentLoading policy)
    */
-  public void removeItem(WMenuItem item) {
+  public WMenuItem removeItem(WMenuItem item) {
+    WMenuItem result = null;
     WContainerWidget items = this.getUl();
     if (item.getParent() == items) {
       int itemIndex = items.getIndexOf(item);
-      items.removeWidget(item);
-      if (this.contentsStack_ != null && item.getContents() != null) {
-        this.contentsStack_.removeWidget(item.getContents());
+      result = WidgetUtils.remove(items, item);
+      if (this.contentsStack_ != null && item.getContentsInStack() != null) {
+        item.returnContentsInStack(this.contentsStack_.removeWidget(item.getContentsInStack()));
       }
       item.setParentMenu((WMenu) null);
       if (itemIndex <= this.current_ && this.current_ >= 0) {
@@ -539,6 +457,7 @@ public class WMenu extends WCompositeWidget {
       }
       this.select(this.current_, true);
     }
+    return result;
   }
   /**
    * Selects an item.
@@ -642,6 +561,8 @@ public class WMenu extends WCompositeWidget {
    */
   public List<WMenuItem> getItems() {
     List<WMenuItem> result = new ArrayList<WMenuItem>();
+    ;
+
     for (int i = 0; i < this.getCount(); ++i) {
       result.add(this.itemAt(i));
     }
@@ -777,41 +698,6 @@ public class WMenu extends WCompositeWidget {
     return this.current_;
   }
   /**
-   * Returns the orientation (<b>deprecated</b>).
-   *
-   * <p>The orientation is set at time of construction.
-   *
-   * <p>
-   *
-   * @deprecated this function no longer has any use and will be removed.
-   */
-  public Orientation getOrientation() {
-    return Orientation.Horizontal;
-  }
-  /**
-   * Renders using an HTML list (<b>deprecated</b>)
-   *
-   * <p>This function no longer has an effect, as a menu is now always rendered as a list.
-   *
-   * <p>
-   *
-   * @deprecated this function no longer has any use and will be removed.
-   */
-  public void setRenderAsList(boolean enable) {
-    logger.error(
-        new StringWriter().append("WMenu::setRenderAsList() has been deprecated.").toString());
-  }
-  /**
-   * Returns whether the menu is rendered as an HTML list (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated this function no longer has any use and will be removed.
-   */
-  public boolean renderAsList() {
-    return true;
-  }
-  /**
    * Enables internal paths for items.
    *
    * <p>The menu participates in the internal path by changing the internal path when an item has
@@ -840,10 +726,8 @@ public class WMenu extends WCompositeWidget {
       app.internalPathChanged()
           .addListener(
               this,
-              new Signal1.Listener<String>() {
-                public void trigger(String e1) {
-                  WMenu.this.handleInternalPathChange(e1);
-                }
+              (String e1) -> {
+                WMenu.this.handleInternalPathChange(e1);
               });
     }
     this.previousInternalPath_ = app.getInternalPath();
@@ -1054,18 +938,18 @@ public class WMenu extends WCompositeWidget {
       if (this.isLoaded()) {
         item.loadContents();
       }
-      WObject.DeletionTracker guard = new WObject.DeletionTracker(this);
+      WMenu self = this;
       if (changePath && this.emitPathChange_) {
         WApplication app = WApplication.getInstance();
         app.internalPathChanged().trigger(app.getInternalPath());
-        if (guard.isDeleted()) {
+        if (!(self != null)) {
           return;
         }
         this.emitPathChange_ = false;
       }
       if (last != index) {
         item.triggered().trigger(item);
-        if (!guard.isDeleted()) {
+        if (self != null) {
           if (this.getUl().getIndexOf(item) != -1) {
             this.itemSelected_.trigger(item);
           } else {
@@ -1086,13 +970,6 @@ public class WMenu extends WCompositeWidget {
   private Signal1<WMenuItem> itemSelected_;
   private Signal1<WMenuItem> itemSelectRendered_;
   private Signal1<WMenuItem> itemClosed_;
-  private AbstractSignal.Connection contentsStackConnection_;
-
-  private void contentsDestroyed() {
-    for (int i = 0; i < this.getCount(); ++i) {
-      this.itemAt(i).purgeContents();
-    }
-  }
 
   private void handleInternalPathChange(final String path) {
     if (!(this.parentItem_ != null) || !this.parentItem_.isInternalPathEnabled()) {
@@ -1103,27 +980,6 @@ public class WMenu extends WCompositeWidget {
   private int current_;
   private int previousStackIndex_;
   private boolean needSelectionEventUpdate_;
-
-  private void init() {
-    this.internalPathEnabled_ = false;
-    this.emitPathChange_ = false;
-    this.parentItem_ = null;
-    this.needSelectionEventUpdate_ = false;
-    this.current_ = -1;
-    if (this.contentsStack_ != null) {
-      this.contentsStack_
-          .childrenChanged()
-          .addListener(
-              this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WMenu.this.updateSelectionEvent();
-                }
-              });
-    }
-    this.setImplementation(this.ul_ = new WContainerWidget());
-    this.ul_.setList(true);
-  }
 
   private void updateItemsInternalPath() {
     for (int i = 0; i < this.getCount(); ++i) {
@@ -1180,7 +1036,7 @@ public class WMenu extends WCompositeWidget {
       return;
     }
     if (showContents && this.contentsStack_ != null) {
-      WWidget contents = item.getContents();
+      WWidget contents = item.getContentsInStack();
       if (contents != null) {
         this.contentsStack_.setCurrentWidget(contents);
       }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -36,13 +37,12 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
   private static Logger logger = LoggerFactory.getLogger(WCanvasPaintDevice.class);
 
   /** Create a canvas paint device. */
-  public WCanvasPaintDevice(
-      final WLength width, final WLength height, WObject parent, boolean paintUpdate) {
-    super(parent);
+  public WCanvasPaintDevice(final WLength width, final WLength height, boolean paintUpdate) {
+    super();
     this.width_ = width;
     this.height_ = height;
     this.painter_ = null;
-    this.changeFlags_ = EnumSet.noneOf(WPaintDevice.ChangeFlag.class);
+    this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
     this.paintUpdate_ = paintUpdate;
     this.currentTransform_ = new WTransform();
     this.currentBrush_ = new WBrush();
@@ -61,24 +61,24 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     WApplication app = WApplication.getInstance();
     if (app != null) {
       if (app.getEnvironment().agentIsChrome()) {
-        if (app.getEnvironment().getAgent().getValue()
-            <= WEnvironment.UserAgent.Chrome2.getValue()) {
+        if ((int) app.getEnvironment().getAgent().getValue()
+            <= (int) UserAgent.Chrome2.getValue()) {
           this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
         }
       } else {
         if (app.getEnvironment().agentIsGecko()) {
-          if (app.getEnvironment().getAgent().getValue()
-              < WEnvironment.UserAgent.Firefox3_0.getValue()) {
+          if ((int) app.getEnvironment().getAgent().getValue()
+              < (int) UserAgent.Firefox3_0.getValue()) {
             this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
           } else {
-            if (app.getEnvironment().getAgent().getValue()
-                < WEnvironment.UserAgent.Firefox3_5.getValue()) {
+            if ((int) app.getEnvironment().getAgent().getValue()
+                < (int) UserAgent.Firefox3_5.getValue()) {
               this.textMethod_ = WCanvasPaintDevice.TextMethod.MozText;
             }
           }
         } else {
           if (app.getEnvironment().agentIsSafari()) {
-            if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.Safari3) {
+            if (app.getEnvironment().getAgent() == UserAgent.Safari3) {
               this.textMethod_ = WCanvasPaintDevice.TextMethod.DomText;
             }
           }
@@ -89,35 +89,26 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
   /**
    * Create a canvas paint device.
    *
-   * <p>Calls {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent, boolean
-   * paintUpdate) this(width, height, (WObject)null, false)}
+   * <p>Calls {@link #WCanvasPaintDevice(WLength width, WLength height, boolean paintUpdate)
+   * this(width, height, false)}
    */
   public WCanvasPaintDevice(final WLength width, final WLength height) {
-    this(width, height, (WObject) null, false);
-  }
-  /**
-   * Create a canvas paint device.
-   *
-   * <p>Calls {@link #WCanvasPaintDevice(WLength width, WLength height, WObject parent, boolean
-   * paintUpdate) this(width, height, parent, false)}
-   */
-  public WCanvasPaintDevice(final WLength width, final WLength height, WObject parent) {
-    this(width, height, parent, false);
+    this(width, height, false);
   }
 
-  public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+  public EnumSet<PaintDeviceFeatureFlag> getFeatures() {
     if (ServerSideFontMetrics.isAvailable()) {
-      return EnumSet.of(WPaintDevice.FeatureFlag.HasFontMetrics);
+      return EnumSet.of(PaintDeviceFeatureFlag.FontMetrics);
     } else {
-      return EnumSet.noneOf(WPaintDevice.FeatureFlag.class);
+      return EnumSet.noneOf(PaintDeviceFeatureFlag.class);
     }
   }
 
-  public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
+  public void setChanged(EnumSet<PainterChangeFlag> flags) {
     this.changeFlags_.addAll(flags);
   }
 
-  public final void setChanged(WPaintDevice.ChangeFlag flag, WPaintDevice.ChangeFlag... flags) {
+  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
     setChanged(EnumSet.of(flag, flags));
   }
 
@@ -155,7 +146,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       }
     }
     final WPen pen = this.getPainter().getPen();
-    if (pen.getStyle() != PenStyle.NoPen) {
+    if (pen.getStyle() != PenStyle.None) {
       lw =
           this.getPainter().normalizedPenWidth(pen.getWidth(), true).getValue()
               * 1
@@ -182,10 +173,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     this.js_.append(',').append(MathUtils.roundJs(rEndAngle, 6)).append(',');
     this.js_.append(anticlockwise ? "true" : "false").append(");");
     this.js_.append("ctx.restore();");
-    if (this.painter_.getBrush().getStyle() != BrushStyle.NoBrush) {
+    if (this.painter_.getBrush().getStyle() != BrushStyle.None) {
       this.js_.append("ctx.fill();");
     }
-    if (this.painter_.getPen().getStyle() != PenStyle.NoPen) {
+    if (this.painter_.getPen().getStyle() != PenStyle.None) {
       this.js_.append("ctx.stroke();");
     }
   }
@@ -204,7 +195,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     }
     int imageIndex = this.createImage(imgUri);
     this.js_
-        .append("Wt3_6_0.gfxUtils.drawImage(ctx,images[")
+        .append("Wt4_4_0.gfxUtils.drawImage(ctx,images[")
         .append(String.valueOf(imageIndex))
         .append("],")
         .append(WWebWidget.jsStringLiteral(imgUri))
@@ -226,7 +217,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     if (path.isJavaScriptBound()) {
       this.renderStateChanges(true);
       this.js_
-          .append("Wt3_6_0.gfxUtils.drawPath(ctx,")
+          .append("Wt4_4_0.gfxUtils.drawPath(ctx,")
           .append(path.getJsRef())
           .append(",")
           .append(this.currentNoBrush_ ? "false" : "true")
@@ -244,7 +235,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       final WPainterPath stencil, final WPainterPath path, boolean softClipping) {
     this.renderStateChanges(true);
     this.js_
-        .append("Wt3_6_0")
+        .append("Wt4_4_0")
         .append(".gfxUtils.drawStencilAlongPath(ctx,")
         .append(stencil.getJsRef())
         .append(",")
@@ -259,16 +250,20 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
   }
 
   public void drawRect(final WRectF rectangle) {
-    this.renderStateChanges(true);
-    this.js_
-        .append("Wt3_6_0")
-        .append(".gfxUtils.drawRect(ctx,")
-        .append(rectangle.getJsRef())
-        .append(",")
-        .append(this.currentNoBrush_ ? "false" : "true")
-        .append(",")
-        .append(this.currentNoPen_ ? "false" : "true")
-        .append(");");
+    if (rectangle.isJavaScriptBound()) {
+      this.renderStateChanges(true);
+      this.js_
+          .append("Wt4_4_0")
+          .append(".gfxUtils.drawRect(ctx,")
+          .append(rectangle.getJsRef())
+          .append(",")
+          .append(this.currentNoBrush_ ? "false" : "true")
+          .append(",")
+          .append(this.currentNoPen_ ? "false" : "true")
+          .append(");");
+    } else {
+      this.drawPath(rectangle.toPath());
+    }
   }
 
   public void drawText(
@@ -277,8 +272,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       TextFlag textFlag,
       final CharSequence text,
       WPointF clipPoint) {
-    if (textFlag == TextFlag.TextWordWrap) {
-      throw new WException("WCanvasPaintDevice::drawText() TextWordWrap is not supported");
+    if (textFlag == TextFlag.WordWrap) {
+      throw new WException("WCanvasPaintDevice::drawText() WordWrap is not supported");
     }
     AlignmentFlag horizontalAlign =
         EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
@@ -291,7 +286,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       case Html5Text:
         {
           this.js_
-              .append("Wt3_6_0.gfxUtils.drawText(ctx,")
+              .append("Wt4_4_0.gfxUtils.drawText(ctx,")
               .append(rect.getJsRef())
               .append(',')
               .append(String.valueOf(EnumUtils.valueOf(flags)))
@@ -309,17 +304,17 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         {
           String x = "";
           switch (horizontalAlign) {
-            case AlignLeft:
+            case Left:
               x = String.valueOf(rect.getLeft());
               break;
-            case AlignRight:
+            case Right:
               x =
                   String.valueOf(rect.getRight())
                       + " - ctx.mozMeasureText("
                       + WString.toWString(text).getJsStringLiteral()
                       + ")";
               break;
-            case AlignCenter:
+            case Center:
               x =
                   String.valueOf(rect.getCenter().getX())
                       + " - ctx.mozMeasureText("
@@ -332,20 +327,20 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
           double fontSize;
           switch (this.getPainter().getFont().getSize()) {
             case FixedSize:
-              fontSize = this.getPainter().getFont().getFixedSize().toPixels();
+              fontSize = this.getPainter().getFont().getSizeLength().toPixels();
               break;
             default:
               fontSize = 16;
           }
           double y = 0;
           switch (verticalAlign) {
-            case AlignTop:
+            case Top:
               y = rect.getTop() + fontSize * 0.75;
               break;
-            case AlignMiddle:
+            case Middle:
               y = rect.getCenter().getY() + fontSize * 0.25;
               break;
-            case AlignBottom:
+            case Bottom:
               y = rect.getBottom() - fontSize * 0.25;
               break;
             default:
@@ -360,7 +355,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
               .append(");");
           if (this.currentPen_.isJavaScriptBound()) {
             this.js_
-                .append("ctx.fillStyle=Wt3_6_0.gfxUtils.css_text(")
+                .append("ctx.fillStyle=Wt4_4_0.gfxUtils.css_text(")
                 .append(this.currentPen_.getJsRef())
                 .append(".color);");
           } else {
@@ -382,39 +377,38 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       case DomText:
         {
           WPointF pos = this.getPainter().getCombinedTransform().map(rect.getTopLeft());
-          DomElement e = DomElement.createNew(DomElementType.DomElement_DIV);
-          e.setProperty(Property.PropertyStylePosition, "absolute");
-          e.setProperty(Property.PropertyStyleTop, String.valueOf(pos.getY()) + "px");
-          e.setProperty(Property.PropertyStyleLeft, String.valueOf(pos.getX()) + "px");
-          e.setProperty(Property.PropertyStyleWidth, String.valueOf(rect.getWidth()) + "px");
-          e.setProperty(Property.PropertyStyleHeight, String.valueOf(rect.getHeight()) + "px");
+          DomElement e = DomElement.createNew(DomElementType.DIV);
+          e.setProperty(Property.StylePosition, "absolute");
+          e.setProperty(Property.StyleTop, String.valueOf(pos.getY()) + "px");
+          e.setProperty(Property.StyleLeft, String.valueOf(pos.getX()) + "px");
+          e.setProperty(Property.StyleWidth, String.valueOf(rect.getWidth()) + "px");
+          e.setProperty(Property.StyleHeight, String.valueOf(rect.getHeight()) + "px");
           DomElement t = e;
-          if (verticalAlign != AlignmentFlag.AlignTop) {
-            t = DomElement.createNew(DomElementType.DomElement_DIV);
-            if (verticalAlign == AlignmentFlag.AlignMiddle) {
-              e.setProperty(Property.PropertyStyleDisplay, "table");
-              t.setProperty(Property.PropertyStyleDisplay, "table-cell");
-              t.setProperty(Property.PropertyStyleVerticalAlign, "middle");
+          if (verticalAlign != AlignmentFlag.Top) {
+            t = DomElement.createNew(DomElementType.DIV);
+            if (verticalAlign == AlignmentFlag.Middle) {
+              e.setProperty(Property.StyleDisplay, "table");
+              t.setProperty(Property.StyleDisplay, "table-cell");
+              t.setProperty(Property.StyleVerticalAlign, "middle");
             } else {
-              if (verticalAlign == AlignmentFlag.AlignBottom) {
-                t.setProperty(Property.PropertyStylePosition, "absolute");
-                t.setProperty(Property.PropertyStyleWidth, "100%");
-                t.setProperty(Property.PropertyStyleBottom, "0px");
+              if (verticalAlign == AlignmentFlag.Bottom) {
+                t.setProperty(Property.StylePosition, "absolute");
+                t.setProperty(Property.StyleWidth, "100%");
+                t.setProperty(Property.StyleBottom, "0px");
               }
             }
           }
-          t.setProperty(Property.PropertyInnerHTML, WWebWidget.escapeText(text, true).toString());
+          t.setProperty(Property.InnerHTML, WWebWidget.escapeText(text, true).toString());
           WFont f = this.getPainter().getFont();
           f.updateDomElement(t, false, true);
-          t.setProperty(
-              Property.PropertyStyleColor, this.getPainter().getPen().getColor().getCssText());
-          if (horizontalAlign == AlignmentFlag.AlignRight) {
-            t.setProperty(Property.PropertyStyleTextAlign, "right");
+          t.setProperty(Property.StyleColor, this.getPainter().getPen().getColor().getCssText());
+          if (horizontalAlign == AlignmentFlag.Right) {
+            t.setProperty(Property.StyleTextAlign, "right");
           } else {
-            if (horizontalAlign == AlignmentFlag.AlignCenter) {
-              t.setProperty(Property.PropertyStyleTextAlign, "center");
+            if (horizontalAlign == AlignmentFlag.Center) {
+              t.setProperty(Property.StyleTextAlign, "center");
             } else {
-              t.setProperty(Property.PropertyStyleTextAlign, "left");
+              t.setProperty(Property.StyleTextAlign, "left");
             }
           }
           if (t != e) {
@@ -435,7 +429,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       double lineHeight,
       boolean softClipping) {
     this.renderStateChanges(true);
-    this.js_.append("Wt3_6_0.gfxUtils.drawTextOnPath(ctx,[");
+    this.js_.append("Wt4_4_0.gfxUtils.drawTextOnPath(ctx,[");
     for (int i = 0; i < text.size(); ++i) {
       if (i != 0) {
         this.js_.append(',');
@@ -481,7 +475,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     this.currentNoBrush_ = false;
     this.currentPen_ = new WPen();
     this.currentNoPen_ = false;
-    this.currentPen_.setCapStyle(PenCapStyle.FlatCap);
+    this.currentPen_.setCapStyle(PenCapStyle.Flat);
     this.currentShadow_ = new WShadow();
     this.currentFont_ = new WFont();
     this.changeFlags_.clear();
@@ -498,7 +492,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       final String canvasId,
       DomElement text,
       final String updateAreasJs) {
-    String canvasVar = "Wt3_6_0.getElement('" + canvasId + "')";
+    String canvasVar = "Wt4_4_0.getElement('" + canvasId + "')";
     StringBuilder tmp = new StringBuilder();
     tmp.append(";(function(){");
     tmp.append("var pF=function(){");
@@ -583,7 +577,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
   private WLength width_;
   private WLength height_;
   private WPainter painter_;
-  private EnumSet<WPaintDevice.ChangeFlag> changeFlags_;
+  private EnumSet<PainterChangeFlag> changeFlags_;
   private boolean paintUpdate_;
   private WCanvasPaintDevice.TextMethod textMethod_;
   private boolean currentNoPen_;
@@ -624,7 +618,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
   private void renderStateChanges(boolean resetPathTranslation) {
     if (resetPathTranslation) {
       if (!fequal(this.pathTranslation_.getX(), 0) || !fequal(this.pathTranslation_.getY(), 0)) {
-        this.changeFlags_.add(WPaintDevice.ChangeFlag.Transform);
+        this.changeFlags_.add(PainterChangeFlag.Transform);
       }
     }
     if (!!this.changeFlags_.isEmpty()) {
@@ -636,13 +630,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       slowFirefox = false;
     }
     boolean brushChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Brush).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Brush)
             && !this.currentBrush_.equals(this.getPainter().getBrush())
-            && (slowFirefox || this.getPainter().getBrush().getStyle() != BrushStyle.NoBrush);
+            && (slowFirefox || this.getPainter().getBrush().getStyle() != BrushStyle.None);
     boolean penChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Pen).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Pen)
             && !this.currentPen_.equals(this.getPainter().getPen())
-            && (slowFirefox || this.getPainter().getPen().getStyle() != PenStyle.NoPen);
+            && (slowFirefox || this.getPainter().getPen().getStyle() != PenStyle.None);
     boolean penColorChanged =
         penChanged
             && (this.getPainter().getPen().isJavaScriptBound()
@@ -651,19 +645,18 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
                     .getGradient()
                     .equals(this.getPainter().getPen().getGradient()));
     boolean shadowChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Shadow).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Shadow)
             && !this.currentShadow_.equals(this.getPainter().getShadow());
     boolean fontChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Font).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Font)
             && !this.currentFont_.equals(this.getPainter().getFont());
     boolean clippingChanged =
-        !EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Clipping).isEmpty()
+        this.changeFlags_.contains(PainterChangeFlag.Clipping)
             && (this.currentClippingEnabled_ != this.getPainter().hasClipping()
                 || !this.currentClipPath_.equals(this.getPainter().getClipPath())
                 || !this.currentClipTransform_.equals(this.getPainter().getClipPathTransform()));
-    this.changeFlags_.remove(WPaintDevice.ChangeFlag.Clipping);
-    if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Transform).isEmpty()
-        || clippingChanged) {
+    this.changeFlags_.remove(PainterChangeFlag.Clipping);
+    if (this.changeFlags_.contains(PainterChangeFlag.Transform) || clippingChanged) {
       boolean resetTransform = false;
       if (clippingChanged) {
         this.js_.append("ctx.restore();ctx.save();");
@@ -674,7 +667,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         final WPainterPath p = this.getPainter().getClipPath();
         if (!p.isEmpty()) {
           this.js_
-              .append("Wt3_6_0")
+              .append("Wt4_4_0")
               .append(".gfxUtils.setClipPath(ctx,")
               .append(p.getJsRef())
               .append(",")
@@ -683,7 +676,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
               .append(this.getPainter().hasClipping() ? "true" : "false")
               .append(");");
         } else {
-          this.js_.append("Wt3_6_0").append(".gfxUtils.removeClipPath(ctx);");
+          this.js_.append("Wt4_4_0").append(".gfxUtils.removeClipPath(ctx);");
         }
         this.currentClipTransform_.assign(t);
         this.currentClipPath_.assign(p);
@@ -696,7 +689,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         resetTransform = true;
         this.currentClippingEnabled_ = this.getPainter().hasClipping();
       } else {
-        if (!EnumUtils.mask(this.changeFlags_, WPaintDevice.ChangeFlag.Transform).isEmpty()) {
+        if (this.changeFlags_.contains(PainterChangeFlag.Transform)) {
           WTransform f = this.getPainter().getCombinedTransform();
           resetTransform =
               !this.currentTransform_.equals(f)
@@ -728,7 +721,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
               double dy = fdy - gdy;
               this.pathTranslation_.setX(dx);
               this.pathTranslation_.setY(dy);
-              this.changeFlags_.clear();
+              this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
               resetTransform = false;
             }
           }
@@ -741,8 +734,8 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         this.pathTranslation_.setY(0);
       }
     }
-    this.currentNoPen_ = this.getPainter().getPen().getStyle() == PenStyle.NoPen;
-    this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.NoBrush;
+    this.currentNoPen_ = this.getPainter().getPen().getStyle() == PenStyle.None;
+    this.currentNoBrush_ = this.getPainter().getBrush().getStyle() == BrushStyle.None;
     if (penChanged) {
       if (penColorChanged) {
         PenCapStyle capStyle = this.currentPen_.getCapStyle();
@@ -760,7 +753,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         } else {
           if (this.getPainter().getPen().isJavaScriptBound()) {
             this.js_
-                .append("ctx.strokeStyle=Wt3_6_0.gfxUtils.css_text(")
+                .append("ctx.strokeStyle=Wt4_4_0.gfxUtils.css_text(")
                 .append(this.getPainter().getPen().getJsRef())
                 .append(".color);");
           } else {
@@ -812,31 +805,31 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
           this.js_.append(MathUtils.roundJs(lw * 2.0, 3));
           this.js_.append("]);");
           break;
-        case NoPen:
+        case None:
           break;
       }
       this.js_.append("ctx.lineWidth=").append(MathUtils.roundJs(lw, 3)).append(';');
       if (this.currentPen_.getCapStyle() != this.getPainter().getPen().getCapStyle()) {
         switch (this.getPainter().getPen().getCapStyle()) {
-          case FlatCap:
+          case Flat:
             this.js_.append("ctx.lineCap='butt';");
             break;
-          case SquareCap:
+          case Square:
             this.js_.append("ctx.lineCap='square';");
             break;
-          case RoundCap:
+          case Round:
             this.js_.append("ctx.lineCap='round';");
         }
       }
       if (this.currentPen_.getJoinStyle() != this.getPainter().getPen().getJoinStyle()) {
         switch (this.getPainter().getPen().getJoinStyle()) {
-          case MiterJoin:
+          case Miter:
             this.js_.append("ctx.lineJoin='miter';");
             break;
-          case BevelJoin:
+          case Bevel:
             this.js_.append("ctx.lineJoin='bevel';");
             break;
-          case RoundJoin:
+          case Round:
             this.js_.append("ctx.lineJoin='round';");
         }
       }
@@ -851,7 +844,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       } else {
         if (this.currentBrush_.isJavaScriptBound()) {
           this.js_
-              .append("ctx.fillStyle=Wt3_6_0.gfxUtils.css_text(")
+              .append("ctx.fillStyle=Wt4_4_0.gfxUtils.css_text(")
               .append(this.currentBrush_.getJsRef())
               .append(".color);");
         } else {
@@ -897,14 +890,14 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
           break;
       }
     }
-    this.changeFlags_.clear();
+    this.changeFlags_ = EnumSet.noneOf(PainterChangeFlag.class);
   }
   // private void resetPathTranslation() ;
   private void drawPlainPath(final StringWriter out, final WPainterPath path) {
     char[] buf = new char[30];
     out.append("ctx.beginPath();");
     final List<WPainterPath.Segment> segments = path.getSegments();
-    if (segments.size() > 0 && segments.get(0).getType() != WPainterPath.Segment.Type.MoveTo) {
+    if (segments.size() > 0 && segments.get(0).getType() != SegmentType.MoveTo) {
       out.append("ctx.moveTo(0,0);");
     }
     for (int i = 0; i < segments.size(); ++i) {
@@ -1026,7 +1019,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
 
   static String defineGradient(final WGradient gradient, final StringWriter js) {
     String jsRef = "grad";
-    if (gradient.getStyle() == GradientStyle.LinearGradient) {
+    if (gradient.getStyle() == GradientStyle.Linear) {
       final WLineF gradVec = gradient.getLinearGradientVector();
       js.append("var ")
           .append(jsRef)
@@ -1040,7 +1033,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
           .append(String.valueOf(gradVec.getY2()))
           .append(");");
     } else {
-      if (gradient.getStyle() == GradientStyle.RadialGradient) {
+      if (gradient.getStyle() == GradientStyle.Radial) {
         js.append("var ")
             .append(jsRef)
             .append(" = ctx.createRadialGradient(")

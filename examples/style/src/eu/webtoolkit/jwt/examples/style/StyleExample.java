@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.examples.style;
 
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.ValidationState;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -14,7 +15,6 @@ import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.WValidator;
 
 /**
  * A demonstration of the RoundedWidget.
@@ -80,12 +80,12 @@ public class StyleExample extends WContainerWidget {
     }
 
     private void updateStyle() {
-        if ((r_.validate() != WValidator.State.Valid)
-                || (g_.validate() != WValidator.State.Valid)
-                || (b_.validate() != WValidator.State.Valid))
+        if ((r_.validate() != ValidationState.Valid)
+                || (g_.validate() != ValidationState.Valid)
+                || (b_.validate() != ValidationState.Valid))
             error_
                     .setText("Color components must be numbers between 0 and 255.");
-        else if (radius_.validate() != WValidator.State.Valid)
+        else if (radius_.validate() != ValidationState.Valid)
             error_.setText("Radius must be between 1 and 500.");
         else {
             w_.setBackgroundColor(new WColor(Integer.parseInt(r_.getText()),

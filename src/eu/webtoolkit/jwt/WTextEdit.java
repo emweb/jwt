@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -47,18 +48,19 @@ public class WTextEdit extends WTextArea {
   private static Logger logger = LoggerFactory.getLogger(WTextEdit.class);
 
   /** Creates a new text editor. */
-  public WTextEdit(WContainerWidget parent) {
-    super(parent);
+  public WTextEdit(WContainerWidget parentContainer) {
+    super();
     this.onChange_ = new JSignal(this, "change");
     this.onRender_ = new JSignal(this, "render");
     this.contentChanged_ = false;
     this.configurationSettings_ = new HashMap<String, Object>();
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new text editor.
    *
-   * <p>Calls {@link #WTextEdit(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTextEdit(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTextEdit() {
     this((WContainerWidget) null);
@@ -68,18 +70,19 @@ public class WTextEdit extends WTextArea {
    *
    * <p>The <code>text</code> should be valid XHTML.
    */
-  public WTextEdit(final String text, WContainerWidget parent) {
-    super(text, parent);
+  public WTextEdit(final String text, WContainerWidget parentContainer) {
+    super(text, (WContainerWidget) null);
     this.onChange_ = new JSignal(this, "change");
     this.onRender_ = new JSignal(this, "render");
     this.contentChanged_ = false;
     this.configurationSettings_ = new HashMap<String, Object>();
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new text editor and initialize with given text.
    *
-   * <p>Calls {@link #WTextEdit(String text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WTextEdit(String text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WTextEdit(final String text) {
@@ -87,7 +90,6 @@ public class WTextEdit extends WTextArea {
   }
   /** Destructor. */
   public void remove() {
-    this.setParentWidget((WWidget) null);
     super.remove();
   }
   /**
@@ -232,7 +234,7 @@ public class WTextEdit extends WTextArea {
    * overridden using this method.
    */
   public void setConfigurationSetting(final String name, final Object value) {
-    if (!(value == null)) {
+    if ((value != null)) {
       this.configurationSettings_.put(name, value);
     } else {
       this.configurationSettings_.remove(name);
@@ -241,7 +243,7 @@ public class WTextEdit extends WTextArea {
   /**
    * Returns a TinyMCE configuration setting&apos;s value.
    *
-   * <p>An empty boost::any is returned when no value could be found for the provided argument.
+   * <p>An empty Any is returned when no value could be found for the provided argument.
    */
   public Object getConfigurationSetting(final String name) {
     Object it = this.configurationSettings_.get(name);
@@ -292,7 +294,7 @@ public class WTextEdit extends WTextArea {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".ed.remove();";
       if (!recursive) {
-        result += "Wt3_6_0.remove('" + this.getId() + "');";
+        result += "Wt4_4_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -302,10 +304,10 @@ public class WTextEdit extends WTextArea {
 
   void updateDom(final DomElement element, boolean all) {
     super.updateDom(element, all);
-    if (element.getType() == DomElementType.DomElement_TEXTAREA) {
-      element.removeProperty(Property.PropertyStyleDisplay);
+    if (element.getType() == DomElementType.TEXTAREA) {
+      element.removeProperty(Property.StyleDisplay);
     }
-    if (all && element.getType() == DomElementType.DomElement_TEXTAREA) {
+    if (all && element.getType() == DomElementType.TEXTAREA) {
       StringWriter config = new StringWriter();
       config.append("{");
       boolean first = true;
@@ -323,15 +325,14 @@ public class WTextEdit extends WTextArea {
         config
             .append(it.getKey())
             .append(": ")
-            .append(StringUtils.asJSLiteral(it.getValue(), TextFormat.XHTMLUnsafeText));
+            .append(StringUtils.asJSLiteral(it.getValue(), TextFormat.UnsafeXHTML));
       }
       if (!first) {
         config.append(',');
       }
       config.append("plugins: '").append(this.getPlugins()).append("'");
       config.append(",init_instance_callback: obj.init}");
-      DomElement dummy =
-          new DomElement(DomElement.Mode.ModeUpdate, DomElementType.DomElement_TABLE);
+      DomElement dummy = new DomElement(DomElement.Mode.Update, DomElementType.TABLE);
       this.updateDom(dummy, true);
       element.callJavaScript(
           "(function() { var obj = "
@@ -352,7 +353,7 @@ public class WTextEdit extends WTextArea {
   }
 
   protected void getDomChanges(final List<DomElement> result, WApplication app) {
-    DomElement e = DomElement.getForUpdate(this.getFormName(), DomElementType.DomElement_TABLE);
+    DomElement e = DomElement.getForUpdate(this.getFormName(), DomElementType.TABLE);
     this.updateDom(e, false);
     super.getDomChanges(result, app);
     result.add(e);
@@ -394,10 +395,12 @@ public class WTextEdit extends WTextArea {
     this.version_ = getTinyMCEVersion();
     this.setJavaScriptMember(
         " WTextEdit",
-        "new Wt3_6_0.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_4_0.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     this.setJavaScriptMember(
         WT_RESIZE_JS,
-        "function(e, w, h) { var obj = " + this.getJsRef() + ".wtObj; obj.wtResize(e, w, h); };");
+        "function(e, w, h, s) { var obj = "
+            + this.getJsRef()
+            + ".wtObj; obj.wtResize(e, w, h, s); };");
     String direction = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "ltr" : "rtl";
     this.setConfigurationSetting("directionality", direction);
     String toolbar = "";
@@ -421,10 +424,8 @@ public class WTextEdit extends WTextArea {
     }
     this.onChange_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WTextEdit.this.propagateOnChange();
-          }
+        () -> {
+          WTextEdit.this.propagateOnChange();
         });
   }
 
@@ -482,6 +483,6 @@ public class WTextEdit extends WTextArea {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WTextEdit",
-        "function(m,b){b.wtObj=this;var o,p,q=0,r=this,c=m.WT,s;if(!tinymce.dom.Event.domLoaded)tinymce.dom.Event.domLoaded=true;tinyMCE.init({mode:\"none\"});this.render=function(a,g,d){s=g;b.ed=new tinymce.Editor(b.id,a,tinymce.EditorManager);b.ed.render();if(d)tinymce.EditorManager.majorVersion<4?b.ed.onChange.add(function(){m.emit(b,\"change\")}):b.ed.on(\"change\",function(){m.emit(b,\"change\")});setTimeout(function(){m.emit(b,\"render\")},0)};this.init= function(){var a=c.getElement(b.id+\"_ifr\"),g,d;if(tinymce.EditorManager.majorVersion<4){d=g=a.parentNode.parentNode.parentNode.parentNode;g=g.parentNode}else g=a.parentNode.parentNode.parentNode;if(d){d.style.cssText=\"width:100%;\"+s;b.style.height=d.offsetHeight+\"px\"}g.wtResize=b.wtResize;c.isGecko?setTimeout(function(){r.wtResize(b,o,p)},100):r.wtResize(b,o,p);$((c.isIE?document.frames[a.id].document:a.contentDocument).body).bind(\"paste\",function(k){function e(n){return n.indexOf(\"image/\")==0}var f= k.clipboardData||k.originalEvent.clipboardData,i,l;if(f&&f.types){i=0;for(l=f.types.length;i<l;++i)if(e(f.types[i])||e(f.items[i].type)){var j=f.items[i].getAsFile(),h=new FileReader;h.onload=function(){b.ed.insertContent('<img src=\"'+this.result+'\"></img>')};h.readAsDataURL(j);c.cancelEvent(k)}}})};this.wtResize=function(a,g,d){if(!(d<0)){var k=c.getElement(a.id+\"_ifr\");if(k){var e=0,f=0;e=c.px(a,\"marginLeft\")+c.px(a,\"marginRight\");f=c.px(a,\"marginTop\")+c.px(a,\"marginBottom\");if(!c.boxSizing(a)){e+= c.px(a,\"borderLeftWidth\")+c.px(a,\"borderRightWidth\")+c.px(a,\"paddingLeft\")+c.px(a,\"paddingRight\");f+=c.px(a,\"borderTopWidth\")+c.px(a,\"borderBottomWidth\")+c.px(a,\"paddingTop\")+c.px(a,\"paddingBottom\")}a.style.height=d-f+\"px\";var i;f=b.style.position!==\"absolute\";if(tinymce.EditorManager.majorVersion<4){var l=k.parentNode.parentNode,j=l.parentNode.parentNode,h,n;i=j;e=j.parentNode;if(!f&&typeof g!==\"undefined\")e.style.width=g-2+\"px\";h=0;for(n=j.rows.length;h<n;h++)if(j.rows[h]!=l)d-=j.rows[h].offsetHeight}else{l= k.parentNode;j=l.parentNode;e=j.parentNode;if(!f&&typeof g!==\"undefined\")e.style.width=g-2+\"px\";h=0;for(n=j.childNodes.length;h<n;h++)if(j.childNodes[h]!=l)d-=j.childNodes[h].offsetHeight+1;d-=1}if(d<0){if(q<10){a=Math.pow(2,q)*100;setTimeout(function(){r.wtResize(b,o,p)},a)}q+=1}else{d+=\"px\";if(f){e.style.position=\"static\";e.style.display=\"block\"}else{e.style.position=a.style.position;e.style.left=a.style.left;e.style.top=a.style.top;if(!f&&i)i.style.width=g+\"px\";if(i){i.style.height=d+\"px\";e.style.height= a.style.height}}if(k.style.height!=d){q=0;k.style.height=d;m.layouts2&&m.layouts2.setElementDirty(b)}}}else{o=g;p=d}}};p=b.offsetHeight;o=b.offsetWidth}");
+        "function(m,b){b.wtObj=this;var o,p,q=0,r=this,c=m.WT,s;if(!tinymce.dom.Event.domLoaded)tinymce.dom.Event.domLoaded=true;tinyMCE.init({mode:\"none\"});this.render=function(a,g,d){s=g;b.ed=new tinymce.Editor(b.id,a,tinymce.EditorManager);b.ed.render();if(d)tinymce.EditorManager.majorVersion<4?b.ed.onChange.add(function(){m.emit(b,\"change\")}):b.ed.on(\"change\",function(){m.emit(b,\"change\")});setTimeout(function(){m.emit(b,\"render\")},0)};this.init= function(){var a=c.getElement(b.id+\"_ifr\"),g,d;if(tinymce.EditorManager.majorVersion<4){d=g=a.parentNode.parentNode.parentNode.parentNode;g=g.parentNode}else g=a.parentNode.parentNode.parentNode;if(d){d.style.cssText=\"width:100%;\"+s;b.style.height=d.offsetHeight+\"px\"}g.wtResize=b.wtResize;c.isGecko?setTimeout(function(){r.wtResize(b,o,p,true)},100):r.wtResize(b,o,p,true);$((c.isIE?document.frames[a.id].document:a.contentDocument).body).bind(\"paste\",function(k){function e(n){return n.indexOf(\"image/\")== 0}var f=k.clipboardData||k.originalEvent.clipboardData,i,l;if(f&&f.types){i=0;for(l=f.types.length;i<l;++i)if(e(f.types[i])||e(f.items[i].type)){var j=f.items[i].getAsFile(),h=new FileReader;h.onload=function(){b.ed.insertContent('<img src=\"'+this.result+'\"></img>')};h.readAsDataURL(j);c.cancelEvent(k)}}})};this.wtResize=function(a,g,d){if(!(d<0)){var k=c.getElement(a.id+\"_ifr\");if(k){var e=0,f=0;e=c.px(a,\"marginLeft\")+c.px(a,\"marginRight\");f=c.px(a,\"marginTop\")+c.px(a,\"marginBottom\");if(!c.boxSizing(a)){e+= c.px(a,\"borderLeftWidth\")+c.px(a,\"borderRightWidth\")+c.px(a,\"paddingLeft\")+c.px(a,\"paddingRight\");f+=c.px(a,\"borderTopWidth\")+c.px(a,\"borderBottomWidth\")+c.px(a,\"paddingTop\")+c.px(a,\"paddingBottom\")}a.style.height=d-f+\"px\";var i;f=b.style.position!==\"absolute\";if(tinymce.EditorManager.majorVersion<4){var l=k.parentNode.parentNode,j=l.parentNode.parentNode,h,n;i=j;e=j.parentNode;if(!f&&typeof g!==\"undefined\")e.style.width=g-2+\"px\";h=0;for(n=j.rows.length;h<n;h++)if(j.rows[h]!=l)d-=j.rows[h].offsetHeight}else{l= k.parentNode;j=l.parentNode;e=j.parentNode;if(!f&&typeof g!==\"undefined\")e.style.width=g-2+\"px\";h=0;for(n=j.childNodes.length;h<n;h++)if(j.childNodes[h]!=l)d-=j.childNodes[h].offsetHeight+1;d-=1}if(d<0){if(q<10){a=Math.pow(2,q)*100;setTimeout(function(){r.wtResize(b,o,p,true)},a)}q+=1}else{d+=\"px\";if(f){e.style.position=\"static\";e.style.display=\"block\"}else{e.style.position=a.style.position;e.style.left=a.style.left;e.style.top=a.style.top;if(!f&&i)i.style.width=g+\"px\";if(i){i.style.height=d+\"px\"; e.style.height=a.style.height}}if(k.style.height!=d){q=0;k.style.height=d;m.layouts2&&m.layouts2.setElementDirty(b)}}}else{o=g;p=d}}};p=b.offsetHeight;o=b.offsetWidth}");
   }
 }

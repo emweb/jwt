@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,14 @@ import org.slf4j.LoggerFactory;
 class GraphicsWidgets extends TopicWidget {
   private static Logger logger = LoggerFactory.getLogger(GraphicsWidgets.class);
 
-  public GraphicsWidgets() {
+  public GraphicsWidgets(WContainerWidget parentContainer) {
     super();
     addText(tr("graphics-intro"), this);
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public GraphicsWidgets() {
+    this((WContainerWidget) null);
   }
 
   public void populateSubMenu(WMenu menu) {
@@ -32,87 +38,67 @@ class GraphicsWidgets extends TopicWidget {
     menu.addItem(
         "Paintbrush",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.paintbrush();
-              }
+            () -> {
+              return GraphicsWidgets.this.paintbrush();
             }));
     menu.addItem(
         "Category chart",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.categoryChart();
-              }
+            () -> {
+              return GraphicsWidgets.this.categoryChart();
             }));
     menu.addItem(
         "Scatter plot",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.scatterPlot();
-              }
+            () -> {
+              return GraphicsWidgets.this.scatterPlot();
             }));
     menu.addItem(
         "Axis slider widget",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.axisSliderWidget();
-              }
+            () -> {
+              return GraphicsWidgets.this.axisSliderWidget();
             }));
     menu.addItem(
         "Pie chart",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.pieChart();
-              }
+            () -> {
+              return GraphicsWidgets.this.pieChart();
             }));
     menu.addItem(
         "Leaflet maps",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.leafletMap();
-              }
+            () -> {
+              return GraphicsWidgets.this.leafletMap();
             }));
     menu.addItem(
         "Google maps",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.googleMap();
-              }
+            () -> {
+              return GraphicsWidgets.this.googleMap();
             }));
     menu.addItem(
         "3D painting",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.painting3d();
-              }
+            () -> {
+              return GraphicsWidgets.this.painting3d();
             }));
     menu.addItem(
         "3D numerical chart",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.numCharts3d();
-              }
+            () -> {
+              return GraphicsWidgets.this.numCharts3d();
             }));
     menu.addItem(
         "3D category chart",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return GraphicsWidgets.this.catCharts3d();
-              }
+            () -> {
+              return GraphicsWidgets.this.catCharts3d();
             }));
   }
 
   private WWidget painting2d() {
-    WTemplate result = new TopicTemplate("graphics-Painting2D");
+    TopicTemplate result = new TopicTemplate("graphics-Painting2D");
     result.bindWidget("PaintingEvent", PaintingEvent());
     result.bindWidget("PaintingShapes", PaintingShapes());
     result.bindWidget("PaintingTransformations", PaintingTransformations());
@@ -124,19 +110,19 @@ class GraphicsWidgets extends TopicWidget {
   }
 
   private WWidget paintbrush() {
-    WTemplate result = new TopicTemplate("graphics-Paintbrush");
+    TopicTemplate result = new TopicTemplate("graphics-Paintbrush");
     result.bindWidget("Paintbrush", Paintbrush());
     return result;
   }
 
   private WWidget categoryChart() {
-    WTemplate result = new TopicTemplate("graphics-CategoryChart");
+    TopicTemplate result = new TopicTemplate("graphics-CategoryChart");
     result.bindWidget("CategoryChart", CategoryChart());
     return result;
   }
 
   private WWidget scatterPlot() {
-    WTemplate result = new TopicTemplate("graphics-ScatterPlot");
+    TopicTemplate result = new TopicTemplate("graphics-ScatterPlot");
     result.bindWidget("ScatterPlotData", ScatterPlotData());
     result.bindWidget("ScatterPlotCurve", ScatterPlotCurve());
     result.bindWidget("ScatterPlotInteractive", ScatterPlotInteractive());
@@ -144,142 +130,135 @@ class GraphicsWidgets extends TopicWidget {
   }
 
   private WWidget axisSliderWidget() {
-    WTemplate result = new TopicTemplate("graphics-AxisSliderWidget");
+    TopicTemplate result = new TopicTemplate("graphics-AxisSliderWidget");
     result.bindWidget("AxisSliderWidget", AxisSliderWidget());
     result.bindWidget("AxisSliderWidgetDifferentDataSeries", AxisSliderWidgetDifferentDataSeries());
     return result;
   }
 
   private WWidget pieChart() {
-    WTemplate result = new TopicTemplate("graphics-PieChart");
+    TopicTemplate result = new TopicTemplate("graphics-PieChart");
     result.bindWidget("PieChart", PieChart());
     return result;
   }
 
   private WWidget leafletMap() {
-    WTemplate result = new TopicTemplate("graphics-LeafletMap");
+    TopicTemplate result = new TopicTemplate("graphics-LeafletMap");
     result.bindWidget("LeafletMap", LeafletMap());
     return result;
   }
 
   private WWidget googleMap() {
-    WTemplate result = new TopicTemplate("graphics-GoogleMap");
+    TopicTemplate result = new TopicTemplate("graphics-GoogleMap");
     result.bindWidget("GoogleMap", GoogleMap());
     result.bindString(
-        "GoogleMap-controls", reindent(tr("graphics-GoogleMap-controls")), TextFormat.PlainText);
+        "GoogleMap-controls", reindent(tr("graphics-GoogleMap-controls")), TextFormat.Plain);
     return result;
   }
 
   private WWidget painting3d() {
-    WTemplate result = new TopicTemplate("graphics-Painting3D");
+    TopicTemplate result = new TopicTemplate("graphics-Painting3D");
     result.bindWidget("Painting3D", Painting3D());
     return result;
   }
 
   private WWidget numCharts3d() {
-    WTemplate result = new TopicTemplate("graphics-NumCharts3D");
+    TopicTemplate result = new TopicTemplate("graphics-NumCharts3D");
     result.bindWidget("NumericalCharts3D", NumChart3d());
     return result;
   }
 
   private WWidget catCharts3d() {
-    WTemplate result = new TopicTemplate("graphics-CatCharts3D");
+    TopicTemplate result = new TopicTemplate("graphics-CatCharts3D");
     result.bindWidget("CategoryCharts3D", CatChart3d());
     return result;
   }
   // private WAbstractItemModel  readCsvFile(final String fname, WContainerWidget  parent) ;
   WWidget PaintingEvent() {
     WContainerWidget container = new WContainerWidget();
-    final MyPaintedWidget painting = new MyPaintedWidget(container);
-    final WSpinBox sb = new WSpinBox(container);
+    final MyPaintedWidget painting = new MyPaintedWidget((WContainerWidget) container);
+    final WSpinBox sb = new WSpinBox((WContainerWidget) container);
     sb.setRange(10, 200);
     sb.setValue(100);
     sb.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                painting.setEnd(sb.getValue());
-              }
+            () -> {
+              painting.setEnd(sb.getValue());
             });
     return container;
   }
 
   WWidget PaintingShapes() {
     WContainerWidget container = new WContainerWidget();
-    new ShapesWidget(container);
+    new ShapesWidget((WContainerWidget) container);
     return container;
   }
 
   WWidget PaintingTransformations() {
     WContainerWidget container = new WContainerWidget();
-    new TransformationsWidget(container);
+    new TransformationsWidget((WContainerWidget) container);
     return container;
   }
 
   WWidget PaintingClipping() {
     WContainerWidget container = new WContainerWidget();
-    new ClippingWidget(container);
+    new ClippingWidget((WContainerWidget) container);
     return container;
   }
 
   WWidget PaintingStyle() {
     WContainerWidget container = new WContainerWidget();
-    new StyleWidget(container);
+    new StyleWidget((WContainerWidget) container);
     return container;
   }
 
   WWidget PaintingImages() {
     WContainerWidget container = new WContainerWidget();
-    new PaintingImagesWidget(container);
+    new PaintingImagesWidget((WContainerWidget) container);
     return container;
   }
 
   WWidget PaintingInteractive() {
     WContainerWidget container = new WContainerWidget();
-    final PaintingInteractiveWidget widget = new PaintingInteractiveWidget(container);
-    final WSpinBox sb = new WSpinBox(container);
+    final PaintingInteractiveWidget widget =
+        new PaintingInteractiveWidget((WContainerWidget) container);
+    final WSpinBox sb = new WSpinBox((WContainerWidget) container);
     sb.setWidth(new WLength(300));
     sb.setRange(0, 360);
     sb.setValue(0);
-    final WSlider slider = new WSlider(Orientation.Horizontal, container);
+    final WSlider slider = new WSlider(Orientation.Horizontal, (WContainerWidget) container);
     slider.resize(new WLength(300), new WLength(50));
     slider.setRange(0, 360);
     slider.sliderMoved().addListener(widget.rotateSlot);
     sb.valueChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                slider.setValue(sb.getValue());
-                widget.rotate(sb.getValue());
-              }
+            () -> {
+              slider.setValue(sb.getValue());
+              widget.rotate(sb.getValue());
             });
     sb.enterPressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                slider.setValue(sb.getValue());
-                widget.rotate(sb.getValue());
-              }
+            () -> {
+              slider.setValue(sb.getValue());
+              widget.rotate(sb.getValue());
             });
     slider
         .valueChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                sb.setValue(slider.getValue());
-                widget.rotate(slider.getValue());
-              }
+            () -> {
+              sb.setValue(slider.getValue());
+              widget.rotate(slider.getValue());
             });
     return container;
   }
 
   WPushButton createColorToggle(String className, final WColor color, final PaintBrush canvas) {
     WPushButton button = new WPushButton();
-    button.setTextFormat(TextFormat.XHTMLText);
+    button.setTextFormat(TextFormat.XHTML);
     button.setText("&nbsp;");
     button.setCheckable(true);
     button.addStyleClass(className);
@@ -288,10 +267,8 @@ class GraphicsWidgets extends TopicWidget {
         .checked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                canvas.setColor(color);
-              }
+            () -> {
+              canvas.setColor(color);
             });
     return button;
   }
@@ -301,14 +278,15 @@ class GraphicsWidgets extends TopicWidget {
     final WColor red = new WColor(218, 81, 76);
     final WColor green = new WColor(59, 195, 95);
     final WColor orange = new WColor(250, 168, 52);
-    final WColor black = WColor.black;
+    final WColor black = new WColor(StandardColor.Black);
     final WColor gray = new WColor(210, 210, 210);
     WContainerWidget result = new WContainerWidget();
-    final PaintBrush canvas = new PaintBrush(710, 400);
+    PaintBrush canvas = new PaintBrush(710, 400);
+    final PaintBrush canvas_ = canvas;
     canvas.setColor(blue);
     canvas
         .getDecorationStyle()
-        .setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium, WColor.black));
+        .setBorder(new WBorder(BorderStyle.Solid, BorderWidth.Medium, black));
     List<WPushButton> colorButtons = new ArrayList<WPushButton>();
     colorButtons.add(createColorToggle("btn-primary", blue, canvas));
     colorButtons.add(createColorToggle("btn-danger", red, canvas));
@@ -328,10 +306,8 @@ class GraphicsWidgets extends TopicWidget {
               .checked()
               .addListener(
                   other,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      other.setUnChecked();
-                    }
+                  () -> {
+                    other.setUnChecked();
                   });
         }
       }
@@ -341,10 +317,8 @@ class GraphicsWidgets extends TopicWidget {
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                canvas.clear();
-              }
+            () -> {
+              canvas_.clear();
             });
     toolBar.addSeparator();
     toolBar.addButton(clearButton);
@@ -355,49 +329,48 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget CategoryChart() {
     WContainerWidget container = new WContainerWidget();
-    WStandardItemModel model = CsvUtil.csvToModel("" + "category.csv", container);
+    WStandardItemModel model = CsvUtil.csvToModel("" + "category.csv");
     if (!(model != null)) {
       return container;
     }
     for (int row = 0; row < model.getRowCount(); ++row) {
       for (int col = 0; col < model.getColumnCount(); ++col) {
-        model.getItem(row, col).setFlags(EnumSet.of(ItemFlag.ItemIsEditable));
+        model.getItem(row, col).setFlags(EnumSet.of(ItemFlag.Editable));
       }
     }
-    WTableView table = new WTableView(container);
+    WTableView table = new WTableView((WContainerWidget) container);
     table.setModel(model);
     table.setSortingEnabled(true);
     table.setColumnResizeEnabled(true);
     table.setAlternatingRowColors(true);
-    table.setHeaderAlignment(0, EnumSet.of(AlignmentFlag.AlignCenter));
-    table.setColumnAlignment(0, AlignmentFlag.AlignCenter);
+    table.setHeaderAlignment(0, EnumSet.of(AlignmentFlag.Center));
+    table.setColumnAlignment(0, AlignmentFlag.Center);
     table.setRowHeight(new WLength(28));
     table.setHeaderHeight(new WLength(28));
     table.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
     table.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
     table.setWidth(new WLength(4 * 120 + 80 + 5 * 7 + 2));
     if (WApplication.getInstance().getEnvironment().hasAjax()) {
-      table.setEditTriggers(EnumSet.of(WAbstractItemView.EditTrigger.SingleClicked));
-      table.setEditOptions(
-          EnumUtils.or(table.getEditOptions(), WAbstractItemView.EditOption.SaveWhenClosed));
+      table.setEditTriggers(EnumSet.of(EditTrigger.SingleClicked));
+      table.setEditOptions(EnumUtils.or(table.getEditOptions(), EditOption.SaveWhenClosed));
     } else {
-      table.setEditTriggers(EnumSet.of(WAbstractItemView.EditTrigger.NoEditTrigger));
+      table.setEditTriggers(EnumSet.of(EditTrigger.None));
     }
-    WItemDelegate delegate = new WItemDelegate(table);
+    WItemDelegate delegate = new WItemDelegate();
     delegate.setTextFormat("%.f");
     table.setItemDelegate(delegate);
     table.setColumnWidth(0, new WLength(80));
     for (int i = 1; i < model.getColumnCount(); ++i) {
       table.setColumnWidth(i, new WLength(120));
     }
-    WCartesianChart chart = new WCartesianChart(container);
+    WCartesianChart chart = new WCartesianChart((WContainerWidget) container);
     chart.setModel(model);
     chart.setXSeriesColumn(0);
     chart.setLegendEnabled(true);
     chart.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Top, Side.Bottom));
     chart.setPlotAreaPadding(120, EnumSet.of(Side.Right));
     for (int column = 1; column < model.getColumnCount(); ++column) {
-      WDataSeries series = new WDataSeries(column, SeriesType.BarSeries);
+      WDataSeries series = new WDataSeries(column, SeriesType.Bar);
       series.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
       chart.addSeries(series);
     }
@@ -408,7 +381,7 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget ScatterPlotData() {
     WContainerWidget container = new WContainerWidget();
-    WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv", container);
+    WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv");
     if (!(model != null)) {
       return container;
     }
@@ -417,13 +390,13 @@ class GraphicsWidgets extends TopicWidget {
       WDate date = WDate.fromString(s.toString(), "dd/MM/yy");
       model.setData(row, 0, date);
     }
-    WTableView table = new WTableView(container);
+    WTableView table = new WTableView((WContainerWidget) container);
     table.setModel(model);
     table.setSortingEnabled(false);
     table.setColumnResizeEnabled(true);
     table.setAlternatingRowColors(true);
-    table.setColumnAlignment(0, AlignmentFlag.AlignCenter);
-    table.setHeaderAlignment(0, EnumSet.of(AlignmentFlag.AlignCenter));
+    table.setColumnAlignment(0, AlignmentFlag.Center);
+    table.setHeaderAlignment(0, EnumSet.of(AlignmentFlag.Center));
     table.setRowHeight(new WLength(28));
     table.setHeaderHeight(new WLength(28));
     table.setColumnWidth(0, new WLength(80));
@@ -431,21 +404,21 @@ class GraphicsWidgets extends TopicWidget {
       table.setColumnWidth(column, new WLength(90));
     }
     table.resize(new WLength(783), new WLength(200));
-    WItemDelegate delegate = new WItemDelegate(table);
+    WItemDelegate delegate = new WItemDelegate();
     delegate.setTextFormat("%.1f");
     table.setItemDelegate(delegate);
-    table.setItemDelegateForColumn(0, new WItemDelegate(table));
-    WCartesianChart chart = new WCartesianChart(container);
+    table.setItemDelegateForColumn(0, new WItemDelegate());
+    WCartesianChart chart = new WCartesianChart((WContainerWidget) container);
     chart.setBackground(new WBrush(new WColor(220, 220, 220)));
     chart.setModel(model);
     chart.setXSeriesColumn(0);
     chart.setLegendEnabled(true);
-    chart.setType(ChartType.ScatterPlot);
-    chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
+    chart.setType(ChartType.Scatter);
+    chart.getAxis(Axis.X).setScale(AxisScale.Date);
     chart.setPlotAreaPadding(40, EnumSet.of(Side.Left, Side.Top, Side.Bottom));
     chart.setPlotAreaPadding(120, EnumSet.of(Side.Right));
     for (int i = 2; i < 4; ++i) {
-      WDataSeries s = new WDataSeries(i, SeriesType.LineSeries);
+      WDataSeries s = new WDataSeries(i, SeriesType.Line);
       s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
       chart.addSeries(s);
     }
@@ -456,7 +429,7 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget ScatterPlotCurve() {
     WContainerWidget container = new WContainerWidget();
-    WStandardItemModel model = new WStandardItemModel(40, 2, container);
+    WStandardItemModel model = new WStandardItemModel(40, 2);
     model.setHeaderData(0, new WString("X"));
     model.setHeaderData(1, new WString("Y = sin(X)"));
     for (int i = 0; i < 40; ++i) {
@@ -464,16 +437,16 @@ class GraphicsWidgets extends TopicWidget {
       model.setData(i, 0, x);
       model.setData(i, 1, Math.sin(x));
     }
-    WCartesianChart chart = new WCartesianChart(container);
+    WCartesianChart chart = new WCartesianChart((WContainerWidget) container);
     chart.setModel(model);
     chart.setXSeriesColumn(0);
     chart.setLegendEnabled(true);
-    chart.setType(ChartType.ScatterPlot);
-    chart.getAxis(Axis.XAxis).setLocation(AxisValue.ZeroValue);
-    chart.getAxis(Axis.YAxis).setLocation(AxisValue.ZeroValue);
+    chart.setType(ChartType.Scatter);
+    chart.getAxis(Axis.X).setLocation(AxisValue.Zero);
+    chart.getAxis(Axis.Y).setLocation(AxisValue.Zero);
     chart.setPlotAreaPadding(120, EnumSet.of(Side.Right));
     chart.setPlotAreaPadding(40, EnumSet.of(Side.Top, Side.Bottom));
-    WDataSeries s = new WDataSeries(1, SeriesType.CurveSeries);
+    WDataSeries s = new WDataSeries(1, SeriesType.Curve);
     s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
     chart.addSeries(s);
     chart.resize(new WLength(800), new WLength(300));
@@ -484,7 +457,7 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget ScatterPlotInteractive() {
     WContainerWidget container = new WContainerWidget();
-    WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv", container);
+    WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv");
     if (!(model != null)) {
       return container;
     }
@@ -493,22 +466,22 @@ class GraphicsWidgets extends TopicWidget {
       WDate date = WDate.fromString(s.toString(), "dd/MM/yy");
       model.setData(row, 0, date);
     }
-    WCartesianChart chart = new WCartesianChart(container);
+    WCartesianChart chart = new WCartesianChart((WContainerWidget) container);
     chart.setBackground(new WBrush(new WColor(220, 220, 220)));
     chart.setModel(model);
     chart.setXSeriesColumn(0);
-    chart.setType(ChartType.ScatterPlot);
-    chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
+    chart.setType(ChartType.Scatter);
+    chart.getAxis(Axis.X).setScale(AxisScale.Date);
     double min = StringUtils.asNumber(model.getData(0, 0));
     double max = StringUtils.asNumber(model.getData(model.getRowCount() - 1, 0));
-    chart.getAxis(Axis.XAxis).setMinimumZoomRange((max - min) / 16.0);
+    chart.getAxis(Axis.X).setMinimumZoomRange((max - min) / 16.0);
     {
-      WDataSeries s = new WDataSeries(2, SeriesType.LineSeries);
+      WDataSeries s = new WDataSeries(2, SeriesType.Line);
       s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
       chart.addSeries(s);
     }
     {
-      WDataSeries s = new WDataSeries(3, SeriesType.LineSeries);
+      WDataSeries s = new WDataSeries(3, SeriesType.Line);
       s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
       chart.addSeries(s);
     }
@@ -521,7 +494,7 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget AxisSliderWidget() {
     WContainerWidget container = new WContainerWidget();
-    WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv", container);
+    WStandardItemModel model = CsvUtil.csvToModel("" + "timeseries.csv");
     if (!(model != null)) {
       return container;
     }
@@ -530,23 +503,24 @@ class GraphicsWidgets extends TopicWidget {
       WDate date = WDate.fromString(s.toString(), "dd/MM/yy");
       model.setData(row, 0, date);
     }
-    WCartesianChart chart = new WCartesianChart(container);
+    WCartesianChart chart = new WCartesianChart((WContainerWidget) container);
     chart.setBackground(new WBrush(new WColor(220, 220, 220)));
     chart.setModel(model);
     chart.setXSeriesColumn(0);
-    chart.setType(ChartType.ScatterPlot);
-    chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale);
+    chart.setType(ChartType.Scatter);
+    chart.getAxis(Axis.X).setScale(AxisScale.Date);
     double min = StringUtils.asNumber(model.getData(0, 0));
     double max = StringUtils.asNumber(model.getData(model.getRowCount() - 1, 0));
-    chart.getAxis(Axis.XAxis).setMinimumZoomRange((max - min) / 16.0);
-    WDataSeries s = new WDataSeries(2, SeriesType.LineSeries);
-    s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
+    chart.getAxis(Axis.X).setMinimumZoomRange((max - min) / 16.0);
+    WDataSeries s = new WDataSeries(2, SeriesType.Line);
+    WDataSeries s_ = s;
+    s_.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
     chart.addSeries(s);
     chart.resize(new WLength(800), new WLength(400));
     chart.setPanEnabled(true);
     chart.setZoomEnabled(true);
     chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
-    WAxisSliderWidget sliderWidget = new WAxisSliderWidget(s, container);
+    WAxisSliderWidget sliderWidget = new WAxisSliderWidget(s_, (WContainerWidget) container);
     sliderWidget.resize(new WLength(800), new WLength(80));
     sliderWidget.setSelectionAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
     sliderWidget.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
@@ -555,36 +529,37 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget AxisSliderWidgetDifferentDataSeries() {
     WContainerWidget container = new WContainerWidget();
-    WCartesianChart chart = new WCartesianChart(container);
+    WCartesianChart chart = new WCartesianChart((WContainerWidget) container);
     chart.setBackground(new WBrush(new WColor(220, 220, 220)));
-    chart.setType(ChartType.ScatterPlot);
-    WAbstractChartModel roughModel =
-        new SinModel(-3.14159265358979323846, 3.14159265358979323846, 100, container);
-    WDataSeries roughSeries = new WDataSeries(1, SeriesType.LineSeries);
-    roughSeries.setModel(roughModel);
-    roughSeries.setXSeriesColumn(0);
+    chart.setType(ChartType.Scatter);
+    SinModel roughModel = new SinModel(-3.14159265358979323846, 3.14159265358979323846, 100);
+    WDataSeries roughSeries = new WDataSeries(1, SeriesType.Line);
+    WDataSeries roughSeries_ = roughSeries;
+    roughSeries_.setModel(roughModel);
+    roughSeries_.setXSeriesColumn(0);
     roughSeries.setHidden(true);
     chart.addSeries(roughSeries);
-    WAbstractChartModel detailedModel =
-        new SinModel(-3.14159265358979323846, 3.14159265358979323846, 10000, container);
-    WDataSeries series = new WDataSeries(1, SeriesType.LineSeries);
+    SinModel detailedModel = new SinModel(-3.14159265358979323846, 3.14159265358979323846, 10000);
+    WDataSeries seriesPtr = new WDataSeries(1, SeriesType.Line);
+    WDataSeries series = seriesPtr;
     series.setModel(detailedModel);
     series.setXSeriesColumn(0);
     series.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
-    chart.addSeries(series);
-    chart.getAxis(Axis.XAxis).setMaximumZoomRange(3.14159265358979323846);
-    chart.getAxis(Axis.XAxis).setMinimumZoomRange(3.14159265358979323846 / 16.0);
-    chart.getAxis(Axis.XAxis).setMinimum(-3.5);
-    chart.getAxis(Axis.XAxis).setMaximum(3.5);
-    chart.getAxis(Axis.YAxis).setMinimumZoomRange(0.1);
-    chart.getAxis(Axis.YAxis).setMinimum(-1.5);
-    chart.getAxis(Axis.YAxis).setMaximum(1.5);
+    chart.addSeries(seriesPtr);
+    chart.getAxis(Axis.X).setMaximumZoomRange(3.14159265358979323846);
+    chart.getAxis(Axis.X).setMinimumZoomRange(3.14159265358979323846 / 16.0);
+    chart.getAxis(Axis.X).setMinimum(-3.5);
+    chart.getAxis(Axis.X).setMaximum(3.5);
+    chart.getAxis(Axis.Y).setMinimumZoomRange(0.1);
+    chart.getAxis(Axis.Y).setMinimum(-1.5);
+    chart.getAxis(Axis.Y).setMaximum(1.5);
     chart.resize(new WLength(800), new WLength(400));
     chart.setPanEnabled(true);
     chart.setZoomEnabled(true);
     chart.setOnDemandLoadingEnabled(true);
     chart.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
-    WAxisSliderWidget sliderWidget = new WAxisSliderWidget(roughSeries, container);
+    WAxisSliderWidget sliderWidget =
+        new WAxisSliderWidget(roughSeries_, (WContainerWidget) container);
     sliderWidget.resize(new WLength(800), new WLength(80));
     sliderWidget.setSelectionAreaPadding(40, EnumSet.of(Side.Left, Side.Right));
     sliderWidget.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
@@ -593,7 +568,7 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget PieChart() {
     WContainerWidget container = new WContainerWidget();
-    WStandardItemModel model = new WStandardItemModel(container);
+    WStandardItemModel model = new WStandardItemModel();
     model.setItemPrototype(new NumericItem());
     model.insertColumns(model.getColumnCount(), 2);
     model.setHeaderData(0, new WString("Item"));
@@ -601,7 +576,7 @@ class GraphicsWidgets extends TopicWidget {
     model.insertRows(model.getRowCount(), 6);
     int row = 0;
     model.setData(row, 0, new WString("Blueberry"));
-    model.setData(row, 1, new WString("Blueberry"), ItemDataRole.ToolTipRole);
+    model.setData(row, 1, new WString("Blueberry"), ItemDataRole.ToolTip);
     model.setData(row, 1, 120);
     model.setData(++row, 0, new WString("Cherry"));
     model.setData(row, 1, 30);
@@ -615,10 +590,10 @@ class GraphicsWidgets extends TopicWidget {
     model.setData(row, 1, 120);
     for (row = 0; row < model.getRowCount(); ++row) {
       for (int col = 0; col < model.getColumnCount(); ++col) {
-        model.getItem(row, col).setFlags(EnumSet.of(ItemFlag.ItemIsEditable));
+        model.getItem(row, col).setFlags(EnumSet.of(ItemFlag.Editable));
       }
     }
-    WTableView table = new WTableView(container);
+    WTableView table = new WTableView((WContainerWidget) container);
     table.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
     table.setMargin(WLength.Auto, EnumSet.of(Side.Left, Side.Right));
     table.setSortingEnabled(true);
@@ -628,11 +603,11 @@ class GraphicsWidgets extends TopicWidget {
     table.setHeaderHeight(new WLength(28));
     table.setWidth(new WLength(150 + 100 + 14 + 2));
     if (WApplication.getInstance().getEnvironment().hasAjax()) {
-      table.setEditTriggers(EnumSet.of(WAbstractItemView.EditTrigger.SingleClicked));
+      table.setEditTriggers(EnumSet.of(EditTrigger.SingleClicked));
     } else {
-      table.setEditTriggers(EnumSet.of(WAbstractItemView.EditTrigger.NoEditTrigger));
+      table.setEditTriggers(EnumSet.of(EditTrigger.None));
     }
-    WPieChart chart = new WPieChart(container);
+    WPieChart chart = new WPieChart((WContainerWidget) container);
     chart.setModel(model);
     chart.setLabelsColumn(0);
     chart.setDataColumn(1);
@@ -665,56 +640,54 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget NumChart3d() {
     WContainerWidget container = new WContainerWidget();
-    WCartesian3DChart chart = new WCartesian3DChart(container);
-    chart.setType(ChartType.ScatterPlot);
-    chart.setRenderOptions(
-        EnumSet.of(
-            WGLWidget.RenderOption.ClientSideRendering, WGLWidget.RenderOption.AntiAliasing));
+    WCartesian3DChart chart = new WCartesian3DChart((WContainerWidget) container);
+    chart.setType(ChartType.Scatter);
+    chart.setRenderOptions(EnumSet.of(GLRenderOption.ClientSide, GLRenderOption.AntiAliasing));
     final WCssDecorationStyle style = new WCssDecorationStyle();
-    style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium, WColor.black));
+    style.setBorder(
+        new WBorder(BorderStyle.Solid, BorderWidth.Medium, new WColor(StandardColor.Black)));
     chart.setDecorationStyle(style);
     chart.resize(new WLength(900), new WLength(700));
-    chart.setGridEnabled(Plane.XY_Plane, Axis.XAxis_3D, true);
-    chart.setGridEnabled(Plane.XY_Plane, Axis.YAxis_3D, true);
-    chart.setGridEnabled(Plane.XZ_Plane, Axis.XAxis_3D, true);
-    chart.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
-    chart.setGridEnabled(Plane.YZ_Plane, Axis.YAxis_3D, true);
-    chart.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
-    chart.axis(Axis.XAxis_3D).setTitle("X");
-    chart.axis(Axis.YAxis_3D).setTitle("Y");
-    chart.axis(Axis.ZAxis_3D).setTitle("Z");
+    chart.setGridEnabled(Plane.XY, Axis.X3D, true);
+    chart.setGridEnabled(Plane.XY, Axis.Y3D, true);
+    chart.setGridEnabled(Plane.XZ, Axis.X3D, true);
+    chart.setGridEnabled(Plane.XZ, Axis.Z3D, true);
+    chart.setGridEnabled(Plane.YZ, Axis.Y3D, true);
+    chart.setGridEnabled(Plane.YZ, Axis.Z3D, true);
+    chart.axis(Axis.X3D).setTitle("X");
+    chart.axis(Axis.Y3D).setTitle("Y");
+    chart.axis(Axis.Z3D).setTitle("Z");
     chart.setIntersectionLinesEnabled(true);
     chart.setIntersectionLinesColor(new WColor(0, 255, 255));
-    WStandardItemModel model1 = new SombreroData(40, 40, container);
+    SombreroData model1 = new SombreroData(40, 40);
     WGridData dataset1 = new WGridData(model1);
-    dataset1.setType(Series3DType.SurfaceSeries3D);
+    dataset1.setType(Series3DType.Surface);
     dataset1.setSurfaceMeshEnabled(true);
     WStandardColorMap colormap =
-        new WStandardColorMap(
-            dataset1.minimum(Axis.ZAxis_3D), dataset1.maximum(Axis.ZAxis_3D), true);
+        new WStandardColorMap(dataset1.minimum(Axis.Z3D), dataset1.maximum(Axis.Z3D), true);
     dataset1.setColorMap(colormap);
-    WStandardItemModel model2 = new PlaneData(40, 40, container);
+    PlaneData model2 = new PlaneData(40, 40);
     for (int i = 0; i < model2.getRowCount(); i++) {
-      model2.setData(i, 0, 5, ItemDataRole.MarkerScaleFactorRole);
-      model2.setData(i, model2.getColumnCount() - 1, 5, ItemDataRole.MarkerScaleFactorRole);
+      model2.setData(i, 0, 5, ItemDataRole.MarkerScaleFactor);
+      model2.setData(i, model2.getColumnCount() - 1, 5, ItemDataRole.MarkerScaleFactor);
     }
     for (int i = 0; i < model2.getColumnCount(); i++) {
-      model2.setData(0, i, 5, ItemDataRole.MarkerScaleFactorRole);
-      model2.setData(model2.getRowCount() - 1, i, 5, ItemDataRole.MarkerScaleFactorRole);
+      model2.setData(0, i, 5, ItemDataRole.MarkerScaleFactor);
+      model2.setData(model2.getRowCount() - 1, i, 5, ItemDataRole.MarkerScaleFactor);
     }
     for (int i = 0; i < model2.getRowCount(); i++) {
-      model2.setData(i, 5, new WColor(0, 255, 0), ItemDataRole.MarkerBrushColorRole);
-      model2.setData(i, 6, new WColor(0, 0, 255), ItemDataRole.MarkerBrushColorRole);
-      model2.setData(i, 7, new WColor(0, 255, 0), ItemDataRole.MarkerBrushColorRole);
-      model2.setData(i, 8, new WColor(0, 0, 255), ItemDataRole.MarkerBrushColorRole);
+      model2.setData(i, 5, new WColor(0, 255, 0), ItemDataRole.MarkerBrushColor);
+      model2.setData(i, 6, new WColor(0, 0, 255), ItemDataRole.MarkerBrushColor);
+      model2.setData(i, 7, new WColor(0, 255, 0), ItemDataRole.MarkerBrushColor);
+      model2.setData(i, 8, new WColor(0, 0, 255), ItemDataRole.MarkerBrushColor);
     }
     WEquidistantGridData dataset2 = new WEquidistantGridData(model2, -10, 0.5f, -10, 0.5f);
-    WStandardItemModel model3 = new SpiralData(100, container);
+    SpiralData model3 = new SpiralData(100);
     WScatterData dataset3 = new WScatterData(model3);
     dataset3.setPointSize(5);
-    WStandardItemModel model4 = new HorizontalPlaneData(20, 20, container);
+    HorizontalPlaneData model4 = new HorizontalPlaneData(20, 20);
     WEquidistantGridData dataset4 = new WEquidistantGridData(model4, -10, 1.0f, -10, 1.0f);
-    dataset4.setType(Series3DType.SurfaceSeries3D);
+    dataset4.setType(Series3DType.Surface);
     dataset4.setSurfaceMeshEnabled(true);
     chart.addDataSeries(dataset1);
     chart.addDataSeries(dataset2);
@@ -726,22 +699,21 @@ class GraphicsWidgets extends TopicWidget {
 
   WWidget CatChart3d() {
     WContainerWidget container = new WContainerWidget();
-    WCartesian3DChart chart = new WCartesian3DChart(container);
-    chart.setType(ChartType.CategoryChart);
-    chart.setRenderOptions(
-        EnumSet.of(
-            WGLWidget.RenderOption.ClientSideRendering, WGLWidget.RenderOption.AntiAliasing));
+    WCartesian3DChart chart = new WCartesian3DChart((WContainerWidget) container);
+    chart.setType(ChartType.Category);
+    chart.setRenderOptions(EnumSet.of(GLRenderOption.ClientSide, GLRenderOption.AntiAliasing));
     final WCssDecorationStyle style = new WCssDecorationStyle();
-    style.setBorder(new WBorder(WBorder.Style.Solid, WBorder.Width.Medium, WColor.black));
+    style.setBorder(
+        new WBorder(BorderStyle.Solid, BorderWidth.Medium, new WColor(StandardColor.Black)));
     chart.setDecorationStyle(style);
     chart.resize(new WLength(800), new WLength(600));
     chart.setTitle("Fish consumption in western Europe");
-    chart.axis(Axis.ZAxis_3D).setTitle("Consumption (pcs/year)");
-    chart.setLegendStyle(new WFont(), new WPen(), new WBrush(WColor.lightGray));
+    chart.axis(Axis.Z3D).setTitle("Consumption (pcs/year)");
+    chart.setLegendStyle(new WFont(), new WPen(), new WBrush(new WColor(StandardColor.LightGray)));
     chart.setLegendEnabled(true);
-    chart.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
-    chart.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
-    WStandardItemModel model = CsvUtil.csvToModel("" + "fish_consumption.csv", container, false);
+    chart.setGridEnabled(Plane.XZ, Axis.Z3D, true);
+    chart.setGridEnabled(Plane.YZ, Axis.Z3D, true);
+    WStandardItemModel model = CsvUtil.csvToModel("" + "fish_consumption.csv", false);
     for (int i = 0; i < model.getRowCount(); i++) {
       for (int j = 0; j < model.getColumnCount(); j++) {
         if ((StringUtils.asString(model.getData(0, j))
@@ -750,13 +722,13 @@ class GraphicsWidgets extends TopicWidget {
             && (StringUtils.asString(model.getData(i, 0))
                 .toString()
                 .equals(new WString("Belgium").toString()))) {
-          model.setData(i, j, WColor.cyan, ItemDataRole.MarkerBrushColorRole);
+          model.setData(i, j, new WColor(StandardColor.Cyan), ItemDataRole.MarkerBrushColor);
         }
       }
     }
     WGridData isotopes = new WGridData(model);
     isotopes.setTitle("made-up data");
-    isotopes.setType(Series3DType.BarSeries3D);
+    isotopes.setType(Series3DType.Bar);
     chart.addDataSeries(isotopes);
     chart.setAlternativeContent(new WImage(new WLink("pics/categoricalChartScreenshot.png")));
     return container;

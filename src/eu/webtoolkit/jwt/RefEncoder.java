@@ -36,7 +36,7 @@ class RefEncoder extends XHtmlFilter {
 			parser.setBuilder(encoder);
 			parser.setResolver(encoder);
 			IXMLReader reader
-				= StdXMLReader.stringReader("<span>" + wText.getValue() + "</span>");
+				= StdXMLReader.stringReader("<span>" + wText.toXhtml() + "</span>");
 			parser.setReader(reader);
 			parser.parse();
 
@@ -72,7 +72,7 @@ class RefEncoder extends XHtmlFilter {
 
 				if (options.contains(RefEncoderOption.EncodeInternalPaths)
 				    && path.startsWith("#/")) {
-					path = htmlAttributeDecode(path.substring(1));
+					path = htmlEntityDecode(path.substring(1));
 
 					String addClass, url;
 

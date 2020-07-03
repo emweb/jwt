@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,13 +39,10 @@ import org.slf4j.LoggerFactory;
  * WTemplate t = new WTemplate();
  * t.setTemplateText("<div> How old are you, ${friend} ? ${age-input} </div>");
  *
- * t.bindString("friend", userName, PlainText);
+ * t.bindString("friend", userName, TextFormat::Plain);
  * t.bindWidget("age-input", ageEdit_ = new WLineEdit());
  *
  * }</pre>
- *
- * <p>The ownership of the widgets bound to a {@link WTemplate} widget are transfered to the {@link
- * WTemplate} widdget, and they are deleted when the {@link WTemplate} is deleted.
  *
  * <p>There are currently three syntactic constructs defined: variable place holders, functions and
  * conditional blocks.
@@ -70,9 +68,9 @@ import org.slf4j.LoggerFactory;
  *
  * <p><code>${var arg1=&quot;A value&quot; arg2=&apos;A second value&apos;}</code>
  *
- * <p>The arguments can thus be simple simple strings or quoted strings (single or double quoted).
- * These arguments are applied to a resolved widget in {@link WTemplate#applyArguments(WWidget w,
- * List args) applyArguments()} and currently supports only style classes.
+ * <p>The arguments can thus be simple strings or quoted strings (single or double quoted). These
+ * arguments are applied to a resolved widget in {@link WTemplate#applyArguments(WWidget w, List
+ * args) applyArguments()} and currently supports only style classes.
  *
  * <p>You can bind widgets and values to variables using {@link WTemplate#bindWidget(String varName,
  * WWidget widget) bindWidget()}, {@link WTemplate#bindString(String varName, CharSequence value,
@@ -157,7 +155,7 @@ public class WTemplate extends WInteractWidget {
       for (int j = 1; j < args.size(); ++j) {
         s.arg(args.get(j));
       }
-      result.append(s.toString());
+      result.append(s.toXhtml());
       return true;
     } else {
       logger.error(
@@ -381,39 +379,9 @@ public class WTemplate extends WInteractWidget {
      */
     public static final WTemplate.Function id = new WTemplate.IdFunction();
   }
-  /**
-   * Enumeration that indicates how a widget&apos;s ID may be set.
-   *
-   * <p>
-   *
-   * @see WTemplate#setWidgetIdMode(WTemplate.WidgetIdMode mode)
-   */
-  public enum WidgetIdMode {
-    /** Do not set the widget ID. */
-    SetNoWidgetId,
-    /**
-     * Use {@link WWidget#setObjectName(String name) WWidget#setObjectName()} to prefix the ID with
-     * the varName. This is a safe choice since JWt still guarantees that the IDs are unique.
-     */
-    SetWidgetObjectName,
-    /**
-     * Use {@link WWebWidget#setId(String id) WWebWidget#setId()} to set the ID as the varName.
-     *
-     * <p>
-     *
-     * <p><i><b>Warning: </b>You must be careful that there are no two widgets with the same ID in
-     * yor application. </i>
-     */
-    SetWidgetId;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** Creates a template widget. */
-  public WTemplate(WContainerWidget parent) {
-    super(parent);
+  public WTemplate(WContainerWidget parentContainer) {
+    super();
     this.previouslyRendered_ = null;
     this.newlyRendered_ = null;
     this.functions_ = new HashMap<String, WTemplate.Function>();
@@ -425,15 +393,17 @@ public class WTemplate extends WInteractWidget {
     this.encodeInternalPaths_ = false;
     this.encodeTemplateText_ = true;
     this.changed_ = false;
-    this.widgetIdMode_ = WTemplate.WidgetIdMode.SetNoWidgetId;
+    this.widgetIdMode_ = TemplateWidgetIdMode.None;
     this.plainTextNewLineEscStream_ = new EscapeOStream();
     this.plainTextNewLineEscStream_.pushEscape(EscapeOStream.RuleSet.PlainTextNewLines);
     this.setInline(false);
+    this.setTemplateText(WString.Empty);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a template widget.
    *
-   * <p>Calls {@link #WTemplate(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTemplate(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTemplate() {
     this((WContainerWidget) null);
@@ -443,10 +413,10 @@ public class WTemplate extends WInteractWidget {
    *
    * <p>The <code>templateText</code> must be proper XHTML, and this is checked unless the XHTML is
    * resolved from a message resource bundle. This behavior is similar to a {@link WText} when
-   * configured with the {@link TextFormat#XHTMLText} textformat.
+   * configured with the {@link TextFormat#XHTML} textformat.
    */
-  public WTemplate(final CharSequence text, WContainerWidget parent) {
-    super(parent);
+  public WTemplate(final CharSequence text, WContainerWidget parentContainer) {
+    super();
     this.previouslyRendered_ = null;
     this.newlyRendered_ = null;
     this.functions_ = new HashMap<String, WTemplate.Function>();
@@ -458,16 +428,17 @@ public class WTemplate extends WInteractWidget {
     this.encodeInternalPaths_ = false;
     this.encodeTemplateText_ = true;
     this.changed_ = false;
-    this.widgetIdMode_ = WTemplate.WidgetIdMode.SetNoWidgetId;
+    this.widgetIdMode_ = TemplateWidgetIdMode.None;
     this.plainTextNewLineEscStream_ = new EscapeOStream();
     this.plainTextNewLineEscStream_.pushEscape(EscapeOStream.RuleSet.PlainTextNewLines);
     this.setInline(false);
     this.setTemplateText(text);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a template widget with given template.
    *
-   * <p>Calls {@link #WTemplate(CharSequence text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WTemplate(CharSequence text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WTemplate(final CharSequence text) {
@@ -475,7 +446,8 @@ public class WTemplate extends WInteractWidget {
   }
 
   public void remove() {
-    ;
+    this.clear();
+
     super.remove();
   }
   /**
@@ -492,9 +464,8 @@ public class WTemplate extends WInteractWidget {
    * Sets the template text.
    *
    * <p>The <code>text</code> must be proper XHTML, and this is checked unless the XHTML is resolved
-   * from a message resource bundle or TextFormat is {@link TextFormat#XHTMLUnsafeText}. This
-   * behavior is similar to a {@link WText} when configured with the {@link TextFormat#XHTMLText}
-   * textformat.
+   * from a message resource bundle or TextFormat is {@link TextFormat#UnsafeXHTML}. This behavior
+   * is similar to a {@link WText} when configured with the {@link TextFormat#XHTML} textformat.
    *
    * <p>Changing the template text does not {@link WTemplate#clear() clear()} bound widgets or
    * values.
@@ -505,36 +476,37 @@ public class WTemplate extends WInteractWidget {
    */
   public void setTemplateText(final CharSequence text, TextFormat textFormat) {
     this.text_ = WString.toWString(text);
-    if (textFormat == TextFormat.XHTMLText && this.text_.isLiteral()) {
+    if (textFormat == TextFormat.XHTML && this.text_.isLiteral()) {
       if (!removeScript(this.text_)) {
         this.text_ = escapeText(this.text_, true);
       }
     } else {
-      if (textFormat == TextFormat.PlainText) {
+      if (textFormat == TextFormat.Plain) {
         this.text_ = escapeText(this.text_, true);
       }
     }
     this.changed_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Sets the template text.
    *
    * <p>Calls {@link #setTemplateText(CharSequence text, TextFormat textFormat)
-   * setTemplateText(text, TextFormat.XHTMLText)}
+   * setTemplateText(text, TextFormat.XHTML)}
    */
   public final void setTemplateText(final CharSequence text) {
-    setTemplateText(text, TextFormat.XHTMLText);
+    setTemplateText(text, TextFormat.XHTML);
   }
   /**
    * Sets how the varName should be reflected on bound widgets.
    *
-   * <p>To easily identify a widget in the browser, it may be convenient to reflect the varName to
-   * the widget&apos;s ID. This options allows you to choose from two methods.
+   * <p>To easily identify a widget in the browser, it may be convenient to reflect the varName,
+   * either through the object name (recommended) or the widget&apos;s ID.
    *
-   * <p>The default value is SetNoWidgetId which does not reflect the varName on the bound widget.
+   * <p>The default value is {@link TemplateWidgetIdMode#None} which does not reflect the varName on
+   * the bound widget.
    */
-  public void setWidgetIdMode(WTemplate.WidgetIdMode mode) {
+  public void setWidgetIdMode(TemplateWidgetIdMode mode) {
     this.widgetIdMode_ = mode;
   }
   /**
@@ -542,9 +514,9 @@ public class WTemplate extends WInteractWidget {
    *
    * <p>
    *
-   * @see WTemplate#setWidgetIdMode(WTemplate.WidgetIdMode mode)
+   * @see WTemplate#setWidgetIdMode(TemplateWidgetIdMode mode)
    */
-  public WTemplate.WidgetIdMode getWidgetIdMode() {
+  public TemplateWidgetIdMode getWidgetIdMode() {
     return this.widgetIdMode_;
   }
   /**
@@ -555,8 +527,8 @@ public class WTemplate extends WInteractWidget {
    * <p>
    *
    * <p><i><b>Note: </b>Depending on the <code>textFormat</code>, the <code>value</code> is
-   * validated according as for a {@link WText}. The default (XHTMLText) filters &quot;active&quot;
-   * content, to avoid XSS-based security risks.</i>
+   * validated according as for a {@link WText}. The default ({@link TextFormat#XHTML}) filters
+   * &quot;active&quot; content, to avoid XSS-based security risks.</i>
    *
    * @see WTemplate#bindWidget(String varName, WWidget widget)
    * @see WTemplate#bindInt(String varName, int value)
@@ -568,12 +540,12 @@ public class WTemplate extends WInteractWidget {
       this.bindWidget(varName, (WWidget) null);
     }
     WString v = WString.toWString(value);
-    if (textFormat == TextFormat.XHTMLText && v.isLiteral()) {
+    if (textFormat == TextFormat.XHTML && v.isLiteral()) {
       if (!removeScript(v)) {
         v = escapeText(v, true);
       }
     } else {
-      if (textFormat == TextFormat.PlainText) {
+      if (textFormat == TextFormat.Plain) {
         v = escapeText(v, true);
       }
     }
@@ -581,17 +553,17 @@ public class WTemplate extends WInteractWidget {
     if (i == null || !(i.toString().equals(v.toString()))) {
       this.strings_.put(varName, v);
       this.changed_ = true;
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
    * Binds a string value to a variable.
    *
    * <p>Calls {@link #bindString(String varName, CharSequence value, TextFormat textFormat)
-   * bindString(varName, value, TextFormat.XHTMLText)}
+   * bindString(varName, value, TextFormat.XHTML)}
    */
   public final void bindString(final String varName, final CharSequence value) {
-    bindString(varName, value, TextFormat.XHTMLText);
+    bindString(varName, value, TextFormat.XHTML);
   }
   /**
    * Binds an integer value to a variable.
@@ -601,7 +573,7 @@ public class WTemplate extends WInteractWidget {
    * @see WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
    */
   public void bindInt(final String varName, int value) {
-    this.bindString(varName, String.valueOf(value), TextFormat.XHTMLUnsafeText);
+    this.bindString(varName, String.valueOf(value), TextFormat.UnsafeXHTML);
   }
   /**
    * Binds a widget to a variable.
@@ -626,27 +598,16 @@ public class WTemplate extends WInteractWidget {
    * @see WTemplate#resolveWidget(String varName)
    */
   public void bindWidget(final String varName, WWidget widget) {
-    WWidget i = this.widgets_.get(varName);
-    if (i != null) {
-      if (i == widget) {
-        return;
-      } else {
-        WWidget toDelete = i;
-        this.widgets_.remove(varName);
-        if (toDelete != null) toDelete.remove();
-      }
-    }
-    if (widget != null) {
-      widget.setParentWidget(this);
-      this.widgets_.put(varName, widget);
+    boolean setNull = !(widget != null);
+    if (!setNull) {
       this.strings_.remove(varName);
       switch (this.widgetIdMode_) {
-        case SetNoWidgetId:
+        case None:
           break;
-        case SetWidgetObjectName:
+        case SetObjectName:
           widget.setObjectName(varName);
           break;
-        case SetWidgetId:
+        case SetId:
           widget.setId(varName);
       }
     } else {
@@ -656,24 +617,62 @@ public class WTemplate extends WInteractWidget {
       }
       this.strings_.put(varName, new WString());
     }
+    {
+      WWidget toRemove = this.removeWidget(varName);
+      if (toRemove != null) toRemove.remove();
+    }
+
+    {
+      WWidget oldWidget = this.widgets_.get(varName);
+      this.widgets_.put(varName, widget);
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.widgets_.get(varName));
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     this.changed_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
+  // public Widget  bindWidget(final String varName, <Woow... some pseudoinstantiation type!>
+  // widget) ;
   /**
-   * Unbinds a widget.
+   * Unbinds a widget by variable name.
    *
    * <p>This removes a previously bound widget and unbinds the corresponding variable, effectively
    * undoing the effect of {@link WTemplate#bindWidget(String varName, WWidget widget)
    * bindWidget()}.
    *
-   * <p>cpp
+   * <p>If this template does not contain a widget for the given <code>varName</code>, <code>null
+   * </code> is returned.
    */
-  public WWidget takeWidget(final String varName) {
+  public WWidget removeWidget(final String varName) {
+    WWidget result = null;
     WWidget i = this.widgets_.get(varName);
     if (i != null) {
-      WWidget result = i;
-      result.setParentWidget((WWidget) null);
-      return result;
+      {
+        WWidget oldWidget = i;
+        i = null;
+        result = this.manageWidget(oldWidget, i);
+      }
+      this.widgets_.remove(varName);
+      this.changed_ = true;
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
+    }
+    return result;
+  }
+  /**
+   * Unbinds a widget by widget pointer.
+   *
+   * <p>This removes a previously bound widget and unbinds the corresponding variable, effectively
+   * undoing the effect of {@link WTemplate#bindWidget(String varName, WWidget widget)
+   * bindWidget()}.
+   *
+   * <p>If this template does not contain the given widget, <code>null</code> is returned.
+   */
+  public WWidget removeWidget(WWidget widget) {
+    String k = CollectionUtils.keyForValue(this.widgets_, widget);
+    if (k != null) {
+      return this.removeWidget(k);
     } else {
       return null;
     }
@@ -727,7 +726,7 @@ public class WTemplate extends WInteractWidget {
         this.conditions_.remove(name);
       }
       this.changed_ = true;
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
@@ -911,19 +910,19 @@ public class WTemplate extends WInteractWidget {
    * WTemplate#addFunction(String name, WTemplate.Function function) addFunction()}
    */
   public void clear() {
-    this.setIgnoreChildRemoves(true);
-    Map<String, WWidget> toDelete = this.widgets_;
-    this.widgets_ = new HashMap<String, WWidget>();
-    for (Iterator<Map.Entry<String, WWidget>> i_it = toDelete.entrySet().iterator();
-        i_it.hasNext(); ) {
-      Map.Entry<String, WWidget> i = i_it.next();
-      if (i.getValue() != null) i.getValue().remove();
+    for (Iterator<Map.Entry<String, WWidget>> it_it = this.widgets_.entrySet().iterator();
+        it_it.hasNext(); ) {
+      Map.Entry<String, WWidget> it = it_it.next();
+      WWidget w = it.getValue();
+      if (w != null) {
+        this.widgetRemoved(w, false);
+      }
     }
-    this.setIgnoreChildRemoves(false);
+    this.widgets_.clear();
     this.strings_.clear();
     this.conditions_.clear();
     this.changed_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Enables internal path anchors in the XHTML template.
@@ -936,8 +935,6 @@ public class WTemplate extends WInteractWidget {
    * <p>The default value is <code>false</code>.
    *
    * <p>
-   *
-   * @see WAnchor#setRefInternalPath(String path)
    */
   public void setInternalPathEncoding(boolean enabled) {
     if (this.encodeInternalPaths_ != enabled) {
@@ -983,7 +980,7 @@ public class WTemplate extends WInteractWidget {
   public void refresh() {
     if (this.text_.refresh() || !this.strings_.isEmpty()) {
       this.changed_ = true;
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
     super.refresh();
   }
@@ -1013,9 +1010,9 @@ public class WTemplate extends WInteractWidget {
     this.errorText_ = "";
     String text = "";
     if (this.encodeTemplateText_) {
-      text = this.encode(templateText.toString());
+      text = this.encode(WString.toWString(templateText).toXhtml());
     } else {
-      text = templateText.toString();
+      text = WString.toWString(templateText).toXhtml();
     }
     int lastPos = 0;
     List<WString> args = new ArrayList<WString>();
@@ -1135,20 +1132,6 @@ public class WTemplate extends WInteractWidget {
     }
   }
 
-  void removeChild(WWidget child) {
-    for (Iterator<Map.Entry<String, WWidget>> i_it = this.widgets_.entrySet().iterator();
-        i_it.hasNext(); ) {
-      Map.Entry<String, WWidget> i = i_it.next();
-      if (i.getValue() == child) {
-        i_it.remove();
-        this.changed_ = true;
-        this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
-        break;
-      }
-    }
-    super.removeChild(child);
-  }
-
   void updateDom(final DomElement element, boolean all) {
     try {
       if (this.changed_ || all) {
@@ -1158,7 +1141,7 @@ public class WTemplate extends WInteractWidget {
             i_it.hasNext(); ) {
           Map.Entry<String, WWidget> i = i_it.next();
           WWidget w = i.getValue();
-          if (w.isRendered()) {
+          if (w != null && w.isRendered()) {
             if (w.getWebWidget().domCanBeSaved()) {
               previouslyRendered.add(w);
             } else {
@@ -1166,7 +1149,7 @@ public class WTemplate extends WInteractWidget {
             }
           }
         }
-        boolean saveWidgets = element.getMode() == DomElement.Mode.ModeUpdate;
+        boolean saveWidgets = element.getMode() == DomElement.Mode.Update;
         this.previouslyRendered_ = saveWidgets ? previouslyRendered : null;
         this.newlyRendered_ = newlyRendered;
         StringWriter html = new StringWriter();
@@ -1183,9 +1166,9 @@ public class WTemplate extends WInteractWidget {
           }
         }
         if (this.encodeTemplateText_) {
-          element.setProperty(Property.PropertyInnerHTML, html.toString());
+          element.setProperty(Property.InnerHTML, html.toString());
         } else {
-          element.setProperty(Property.PropertyInnerHTML, this.encode(html.toString()));
+          element.setProperty(Property.InnerHTML, this.encode(html.toString()));
         }
         for (Iterator<WWidget> i_it = previouslyRendered.iterator(); i_it.hasNext(); ) {
           WWidget i = i_it.next();
@@ -1209,14 +1192,13 @@ public class WTemplate extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    DomElementType type =
-        this.isInline() ? DomElementType.DomElement_SPAN : DomElementType.DomElement_DIV;
+    DomElementType type = this.isInline() ? DomElementType.SPAN : DomElementType.DIV;
     WContainerWidget p =
         ((this.getParentWebWidget()) instanceof WContainerWidget
             ? (WContainerWidget) (this.getParentWebWidget())
             : null);
     if (p != null && p.isList()) {
-      type = DomElementType.DomElement_LI;
+      type = DomElementType.LI;
     }
     return type;
   }
@@ -1224,6 +1206,17 @@ public class WTemplate extends WInteractWidget {
   void propagateRenderOk(boolean deep) {
     this.changed_ = false;
     super.propagateRenderOk(deep);
+  }
+
+  protected void iterateChildren(final HandleWidgetMethod method) {
+    for (Iterator<Map.Entry<String, WWidget>> it_it = this.widgets_.entrySet().iterator();
+        it_it.hasNext(); ) {
+      Map.Entry<String, WWidget> it = it_it.next();
+      WWidget w = it.getValue();
+      if (w != null) {
+        method.handle(w);
+      }
+    }
   }
   /**
    * Utility method to safely format an XHTML string.
@@ -1240,10 +1233,10 @@ public class WTemplate extends WInteractWidget {
    * Utility method to safely format an XHTML string.
    *
    * <p>Calls {@link #format(Writer result, String s, TextFormat textFormat) format(result, s,
-   * TextFormat.PlainText)}
+   * TextFormat.Plain)}
    */
   protected final void format(final Writer result, final String s) throws IOException {
-    format(result, s, TextFormat.PlainText);
+    format(result, s, TextFormat.Plain);
   }
   /**
    * Utility method to safely format an XHTML string.
@@ -1254,7 +1247,7 @@ public class WTemplate extends WInteractWidget {
    */
   protected void format(final Writer result, final CharSequence s, TextFormat textFormat)
       throws IOException {
-    if (textFormat == TextFormat.XHTMLText) {
+    if (textFormat == TextFormat.XHTML) {
       WString v = WString.toWString(s);
       if (removeScript(v)) {
         result.append(v.toString());
@@ -1265,7 +1258,7 @@ public class WTemplate extends WInteractWidget {
         return;
       }
     } else {
-      if (textFormat == TextFormat.PlainText) {
+      if (textFormat == TextFormat.Plain) {
         EscapeOStream sout = new EscapeOStream(result);
         sout.append(s.toString(), this.plainTextNewLineEscStream_);
         return;
@@ -1277,10 +1270,10 @@ public class WTemplate extends WInteractWidget {
    * Utility method to safely format an XHTML string.
    *
    * <p>Calls {@link #format(Writer result, CharSequence s, TextFormat textFormat) format(result, s,
-   * TextFormat.PlainText)}
+   * TextFormat.Plain)}
    */
   protected final void format(final Writer result, final CharSequence s) throws IOException {
-    format(result, s, TextFormat.PlainText);
+    format(result, s, TextFormat.Plain);
   }
 
   protected void enableAjax() {
@@ -1298,7 +1291,7 @@ public class WTemplate extends WInteractWidget {
    */
   protected void reset() {
     this.changed_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
 
   private Set<WWidget> previouslyRendered_;
@@ -1312,7 +1305,7 @@ public class WTemplate extends WInteractWidget {
   private boolean encodeInternalPaths_;
   private boolean encodeTemplateText_;
   private boolean changed_;
-  private WTemplate.WidgetIdMode widgetIdMode_;
+  private TemplateWidgetIdMode widgetIdMode_;
 
   private String encode(final String text) {
     WApplication app = WApplication.getInstance();
@@ -1426,7 +1419,7 @@ public class WTemplate extends WInteractWidget {
   private void unrenderWidget(WWidget w, final DomElement el) {
     String removeJs = w.getWebWidget().renderRemoveJs(false);
     if (removeJs.charAt(0) == '_') {
-      el.callJavaScript("Wt3_6_0.remove('" + removeJs.substring(1) + "');", true);
+      el.callJavaScript("Wt4_4_0.remove('" + removeJs.substring(1) + "');", true);
     } else {
       el.callJavaScript(removeJs, true);
     }

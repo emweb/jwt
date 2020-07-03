@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,23 +42,10 @@ public class WCssTemplateRule extends WCssRule {
    * <p><i><b>Note: </b>If you want to update the rule, then the selector should be unique and not
    * contain commas, since this is not supported by Microsoft Internet Explorer. </i>
    */
-  public WCssTemplateRule(final String selector, WObject parent) {
-    super(selector, parent);
-    this.widget_ = new WCssTemplateWidget(this);
-  }
-  /**
-   * Creates a CSS rule with a given selector.
-   *
-   * <p>Calls {@link #WCssTemplateRule(String selector, WObject parent) this(selector,
-   * (WObject)null)}
-   */
   public WCssTemplateRule(final String selector) {
-    this(selector, (WObject) null);
-  }
-
-  public void remove() {
-    if (this.widget_ != null) this.widget_.remove();
-    super.remove();
+    super(selector);
+    this.widget_ = null;
+    this.widget_ = new WCssTemplateWidget(this, (WContainerWidget) null);
   }
   /**
    * Returns the widget that is used as a template.
@@ -88,7 +76,7 @@ public class WCssTemplateRule extends WCssRule {
   }
 
   public String getDeclarations() {
-    DomElement e = new DomElement(DomElement.Mode.ModeUpdate, this.widget_.getDomElementType());
+    DomElement e = new DomElement(DomElement.Mode.Update, this.widget_.getDomElementType());
     this.updateDomElement(e, true);
     return e.getCssStyle();
   }

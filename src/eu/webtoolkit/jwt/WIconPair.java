@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -45,12 +46,14 @@ public class WIconPair extends WCompositeWidget {
       final String icon1URI,
       final String icon2URI,
       boolean clickIsSwitch,
-      WContainerWidget parent) {
-    super(parent);
+      WContainerWidget parentContainer) {
+    super();
     this.impl_ = new WContainerWidget();
-    this.icon1_ = new WImage(icon1URI, this.impl_);
-    this.icon2_ = new WImage(icon2URI, this.impl_);
+    this.icon1_ = new WImage(new WLink(icon1URI), (WContainerWidget) null);
+    this.icon2_ = new WImage(new WLink(icon2URI), (WContainerWidget) null);
     this.setImplementation(this.impl_);
+    this.impl_.addWidget(this.icon1_);
+    this.impl_.addWidget(this.icon2_);
     this.impl_.setLoadLaterWhenInvisible(false);
     this.setInline(true);
     this.icon2_.hide();
@@ -61,28 +64,25 @@ public class WIconPair extends WCompositeWidget {
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WIconPair.this.showIcon2();
-                }
+              (WMouseEvent e1) -> {
+                WIconPair.this.showIcon2();
               });
       this.icon2_
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WIconPair.this.showIcon1();
-                }
+              (WMouseEvent e1) -> {
+                WIconPair.this.showIcon1();
               });
-      this.getDecorationStyle().setCursor(Cursor.PointingHandCursor);
+      this.getDecorationStyle().setCursor(Cursor.PointingHand);
     }
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Construct an icon pair from the two icons.
    *
    * <p>Calls {@link #WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch,
-   * WContainerWidget parent) this(icon1URI, icon2URI, true, (WContainerWidget)null)}
+   * WContainerWidget parentContainer) this(icon1URI, icon2URI, true, (WContainerWidget)null)}
    */
   public WIconPair(final String icon1URI, final String icon2URI) {
     this(icon1URI, icon2URI, true, (WContainerWidget) null);
@@ -91,7 +91,8 @@ public class WIconPair extends WCompositeWidget {
    * Construct an icon pair from the two icons.
    *
    * <p>Calls {@link #WIconPair(String icon1URI, String icon2URI, boolean clickIsSwitch,
-   * WContainerWidget parent) this(icon1URI, icon2URI, clickIsSwitch, (WContainerWidget)null)}
+   * WContainerWidget parentContainer) this(icon1URI, icon2URI, clickIsSwitch,
+   * (WContainerWidget)null)}
    */
   public WIconPair(final String icon1URI, final String icon2URI, boolean clickIsSwitch) {
     this(icon1URI, icon2URI, clickIsSwitch, (WContainerWidget) null);

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * <p>Usage example:
  *
  * <pre>{@code
- * enum Vote { Republican , Democrate , NoVote };
+ * enum Vote { Republican , Democrat , NoVote };
  *
  * // use a group box as widget container for 3 radio buttons, with a title
  * WGroupBox container = new WGroupBox("USA elections vote");
@@ -67,31 +68,31 @@ public class WGroupBox extends WContainerWidget {
   private static Logger logger = LoggerFactory.getLogger(WGroupBox.class);
 
   /** Creates a groupbox with empty title. */
-  public WGroupBox(WContainerWidget parent) {
-    super(parent);
+  public WGroupBox(WContainerWidget parentContainer) {
+    super();
     this.title_ = new WString();
-    this.titleChanged_ = false;
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a groupbox with empty title.
    *
-   * <p>Calls {@link #WGroupBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WGroupBox(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WGroupBox() {
     this((WContainerWidget) null);
   }
   /** Creates a groupbox with given title message. */
-  public WGroupBox(final CharSequence title, WContainerWidget parent) {
-    super(parent);
+  public WGroupBox(final CharSequence title, WContainerWidget parentContainer) {
+    super();
     this.title_ = WString.toWString(title);
-    this.titleChanged_ = false;
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a groupbox with given title message.
    *
-   * <p>Calls {@link #WGroupBox(CharSequence title, WContainerWidget parent) this(title,
+   * <p>Calls {@link #WGroupBox(CharSequence title, WContainerWidget parentContainer) this(title,
    * (WContainerWidget)null)}
    */
   public WGroupBox(final CharSequence title) {
@@ -105,31 +106,31 @@ public class WGroupBox extends WContainerWidget {
   public void setTitle(final CharSequence title) {
     this.title_ = WString.toWString(title);
     this.titleChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
 
   public void refresh() {
     if (this.title_.refresh()) {
       this.titleChanged_ = true;
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
     super.refresh();
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_FIELDSET;
+    return DomElementType.FIELDSET;
   }
 
   void updateDom(final DomElement element, boolean all) {
     if (all || this.titleChanged_) {
       DomElement legend;
       if (all) {
-        legend = DomElement.createNew(DomElementType.DomElement_LEGEND);
+        legend = DomElement.createNew(DomElementType.LEGEND);
         legend.setId(this.getId() + "l");
       } else {
-        legend = DomElement.getForUpdate(this.getId() + "l", DomElementType.DomElement_LEGEND);
+        legend = DomElement.getForUpdate(this.getId() + "l", DomElementType.LEGEND);
       }
-      legend.setProperty(Property.PropertyInnerHTML, escapeText(this.title_).toString());
+      legend.setProperty(Property.InnerHTML, escapeText(this.title_).toString());
       element.addChild(legend);
       this.titleChanged_ = false;
     }

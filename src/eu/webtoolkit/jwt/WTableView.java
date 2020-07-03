@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,12 +39,11 @@ import org.slf4j.LoggerFactory;
  * implementing a custom {@link WAbstractItemModel} if you want to optimize performance.
  *
  * <p>The view may support editing of items, if the model indicates support (see the {@link
- * ItemFlag#ItemIsEditable} flag). You can define triggers that initiate editing of an item using
- * {@link WAbstractItemView#setEditTriggers(EnumSet editTriggers)
- * WAbstractItemView#setEditTriggers()}. The actual editing is provided by the item delegate (you
- * can set an appropriate delegate for one column using {@link
- * WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
- * WAbstractItemView#setItemDelegateForColumn()}). Using {@link
+ * ItemFlag#Editable} flag). You can define triggers that initiate editing of an item using {@link
+ * WAbstractItemView#setEditTriggers(EnumSet editTriggers) WAbstractItemView#setEditTriggers()}. The
+ * actual editing is provided by the item delegate (you can set an appropriate delegate for one
+ * column using {@link WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate
+ * delegate) WAbstractItemView#setItemDelegateForColumn()}). Using {@link
  * WAbstractItemView#setEditOptions(EnumSet editOptions) WAbstractItemView#setEditOptions()} you can
  * customize if and how the view deals with multiple editors.
  *
@@ -63,15 +63,15 @@ import org.slf4j.LoggerFactory;
  * WAbstractItemView#setSelectionMode()}), and listen for changes in the selection using the {@link
  * WAbstractItemView#selectionChanged()} signal.
  *
- * <p>You may enable drag &amp; drop support for this view, whith awareness of the items in the
+ * <p>You may enable drag &amp; drop support for this view, with awareness of the items in the
  * model. When enabling dragging (see {@link WAbstractItemView#setDragEnabled(boolean enable)
  * WAbstractItemView#setDragEnabled()}), the current selection may be dragged, but only when all
  * items in the selection indicate support for dragging (controlled by the {@link
- * ItemFlag#ItemIsDragEnabled} flag), and if the model indicates a mime-type (controlled by {@link
+ * ItemFlag#DragEnabled} flag), and if the model indicates a mime-type (controlled by {@link
  * WAbstractItemModel#getMimeType()}). Likewise, by enabling support for dropping (see {@link
  * WAbstractItemView#setDropsEnabled(boolean enable) WAbstractItemView#setDropsEnabled()}), the view
  * may receive a drop event on a particular item, at least if the item indicates support for drops
- * (controlled by the {@link ItemFlag#ItemIsDropEnabled} flag).
+ * (controlled by the {@link ItemFlag#DropEnabled} flag).
  *
  * <p>You may also react to mouse click events on any item, by connecting to one of the {@link
  * WAbstractItemView#clicked()} or {@link WAbstractItemView#doubleClicked()} signals.
@@ -84,8 +84,8 @@ public class WTableView extends WAbstractItemView {
   private static Logger logger = LoggerFactory.getLogger(WTableView.class);
 
   /** Constructor. */
-  public WTableView(WContainerWidget parent) {
-    super(parent);
+  public WTableView(WContainerWidget parentContainer) {
+    super();
     this.headers_ = null;
     this.canvas_ = null;
     this.table_ = null;
@@ -110,18 +110,19 @@ public class WTableView extends WAbstractItemView {
     this.viewportTop_ = 0;
     this.viewportHeight_ = 800;
     this.scrollToRow_ = -1;
-    this.scrollToHint_ = WAbstractItemView.ScrollHint.EnsureVisible;
+    this.scrollToHint_ = ScrollHint.EnsureVisible;
     this.columnResizeConnected_ = false;
     this.preloadMargin_[0] =
         this.preloadMargin_[1] = this.preloadMargin_[2] = this.preloadMargin_[3] = new WLength();
     this.setSelectable(false);
     this.setStyleClass("Wt-itemview Wt-tableview");
     this.setup();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WTableView(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTableView(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTableView() {
     this((WContainerWidget) null);
@@ -153,107 +154,87 @@ public class WTableView extends WAbstractItemView {
     }
   }
 
-  public void setModel(WAbstractItemModel model) {
+  public void setModel(final WAbstractItemModel model) {
     super.setModel(model);
     this.modelConnections_.add(
         model
             .columnsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WTableView.this.modelColumnsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WTableView.this.modelColumnsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         model
             .columnsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WTableView.this.modelColumnsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WTableView.this.modelColumnsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         model
             .rowsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WTableView.this.modelRowsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WTableView.this.modelRowsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         model
             .rowsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WTableView.this.modelRowsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WTableView.this.modelRowsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         model
             .rowsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WTableView.this.modelRowsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WTableView.this.modelRowsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         model
             .dataChanged()
             .addListener(
                 this,
-                new Signal2.Listener<WModelIndex, WModelIndex>() {
-                  public void trigger(WModelIndex e1, WModelIndex e2) {
-                    WTableView.this.modelDataChanged(e1, e2);
-                  }
+                (WModelIndex e1, WModelIndex e2) -> {
+                  WTableView.this.modelDataChanged(e1, e2);
                 }));
     this.modelConnections_.add(
         model
             .headerDataChanged()
             .addListener(
                 this,
-                new Signal3.Listener<Orientation, Integer, Integer>() {
-                  public void trigger(Orientation e1, Integer e2, Integer e3) {
-                    WTableView.this.modelHeaderDataChanged(e1, e2, e3);
-                  }
+                (Orientation e1, Integer e2, Integer e3) -> {
+                  WTableView.this.modelHeaderDataChanged(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         model
             .layoutAboutToBeChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WTableView.this.modelLayoutAboutToBeChanged();
-                  }
+                () -> {
+                  WTableView.this.modelLayoutAboutToBeChanged();
                 }));
     this.modelConnections_.add(
         model
             .layoutChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WTableView.this.modelLayoutChanged();
-                  }
+                () -> {
+                  WTableView.this.modelLayoutChanged();
                 }));
     this.modelConnections_.add(
         model
             .modelReset()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WTableView.this.modelReset();
-                  }
+                () -> {
+                  WTableView.this.modelReset();
                 }));
     this.firstColumn_ = this.lastColumn_ = -1;
     this.adjustSize();
@@ -269,8 +250,8 @@ public class WTableView extends WAbstractItemView {
     if (this.isAjaxMode()) {
       this.headers_.setWidth(new WLength(this.headers_.getWidth().toPixels() + delta));
       this.canvas_.setWidth(new WLength(this.canvas_.getWidth().toPixels() + delta));
-      if (this.renderState_.getValue()
-          >= WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+      if ((int) this.renderState_.getValue()
+          >= (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
         return;
       }
       if (this.isColumnRendered(column)) {
@@ -281,8 +262,8 @@ public class WTableView extends WAbstractItemView {
         }
       }
     }
-    if (this.renderState_.getValue()
-        >= WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+    if ((int) this.renderState_.getValue()
+        >= (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       return;
     }
     WWidget hc;
@@ -334,7 +315,7 @@ public class WTableView extends WAbstractItemView {
 
   public void resize(final WLength width, final WLength height) {
     if (this.isAjaxMode()) {
-      if (height.getUnit() == WLength.Unit.Percentage) {
+      if (height.getUnit() == LengthUnit.Percentage) {
         logger.error(
             new StringWriter().append("resize(): height cannot be a Percentage").toString());
         return;
@@ -383,15 +364,15 @@ public class WTableView extends WAbstractItemView {
             this.setSpannerCount(Side.Left, this.getSpannerCount(Side.Left));
           }
         }
-        if (this.renderState_.getValue()
-            >= WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+        if ((int) this.renderState_.getValue()
+            >= (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
           return;
         }
         WWidget hc = this.headerWidget(column, false);
         hc.setHidden(hidden);
       } else {
-        if (this.renderState_.getValue()
-            < WAbstractItemView.RenderState.NeedRerenderData.getValue()) {
+        if ((int) this.renderState_.getValue()
+            < (int) WAbstractItemView.RenderState.NeedRerenderData.getValue()) {
           for (int i = 0; i < this.plainTable_.getRowCount(); ++i) {
             this.plainTable_.getElementAt(i, column).setHidden(hidden);
           }
@@ -458,19 +439,19 @@ public class WTableView extends WAbstractItemView {
     this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderData);
   }
 
-  public void scrollTo(final WModelIndex index, WAbstractItemView.ScrollHint hint) {
+  public void scrollTo(final WModelIndex index, ScrollHint hint) {
     if ((index.getParent() == this.getRootIndex()
         || (index.getParent() != null && index.getParent().equals(this.getRootIndex())))) {
       if (this.isAjaxMode()) {
         int rh = (int) this.getRowHeight().toPixels();
         int rowY = index.getRow() * rh;
         if (this.viewportHeight_ != 800) {
-          if (hint == WAbstractItemView.ScrollHint.EnsureVisible) {
+          if (hint == ScrollHint.EnsureVisible) {
             if (this.viewportTop_ + this.viewportHeight_ < rowY) {
-              hint = WAbstractItemView.ScrollHint.PositionAtTop;
+              hint = ScrollHint.PositionAtTop;
             } else {
               if (rowY < this.viewportTop_) {
-                hint = WAbstractItemView.ScrollHint.PositionAtBottom;
+                hint = ScrollHint.PositionAtBottom;
               }
             }
           }
@@ -488,7 +469,7 @@ public class WTableView extends WAbstractItemView {
               break;
           }
           this.viewportTop_ = Math.max(0, this.viewportTop_);
-          if (hint != WAbstractItemView.ScrollHint.EnsureVisible) {
+          if (hint != ScrollHint.EnsureVisible) {
             this.computeRenderedArea();
             this.scheduleRerender(WAbstractItemView.RenderState.NeedAdjustViewPort);
           }
@@ -530,7 +511,7 @@ public class WTableView extends WAbstractItemView {
     }
   }
   /** set css overflow */
-  public void setOverflow(WContainerWidget.Overflow overflow, EnumSet<Orientation> orientation) {
+  public void setOverflow(Overflow overflow, EnumSet<Orientation> orientation) {
     if (this.contentsContainer_ != null) {
       this.contentsContainer_.setOverflow(overflow, orientation);
     }
@@ -538,20 +519,20 @@ public class WTableView extends WAbstractItemView {
   /**
    * set css overflow
    *
-   * <p>Calls {@link #setOverflow(WContainerWidget.Overflow overflow, EnumSet orientation)
-   * setOverflow(overflow, EnumSet.of(orientatio, orientation))}
+   * <p>Calls {@link #setOverflow(Overflow overflow, EnumSet orientation) setOverflow(overflow,
+   * EnumSet.of(orientatio, orientation))}
    */
   public final void setOverflow(
-      WContainerWidget.Overflow overflow, Orientation orientatio, Orientation... orientation) {
+      Overflow overflow, Orientation orientatio, Orientation... orientation) {
     setOverflow(overflow, EnumSet.of(orientatio, orientation));
   }
   /**
    * set css overflow
    *
-   * <p>Calls {@link #setOverflow(WContainerWidget.Overflow overflow, EnumSet orientation)
-   * setOverflow(overflow, EnumSet.of (Orientation.Horizontal, Orientation.Vertical))}
+   * <p>Calls {@link #setOverflow(Overflow overflow, EnumSet orientation) setOverflow(overflow,
+   * EnumSet.of (Orientation.Horizontal, Orientation.Vertical))}
    */
-  public final void setOverflow(WContainerWidget.Overflow overflow) {
+  public final void setOverflow(Overflow overflow) {
     setOverflow(overflow, EnumSet.of(Orientation.Horizontal, Orientation.Vertical));
   }
   /**
@@ -574,16 +555,16 @@ public class WTableView extends WAbstractItemView {
    * <p>Set to a default-constructed {@link WLength} (auto) if you want to keep default behaviour.
    */
   public void setPreloadMargin(final WLength margin, EnumSet<Side> side) {
-    if (!EnumUtils.mask(side, Side.Top).isEmpty()) {
+    if (side.contains(Side.Top)) {
       this.preloadMargin_[0] = margin;
     }
-    if (!EnumUtils.mask(side, Side.Right).isEmpty()) {
+    if (side.contains(Side.Right)) {
       this.preloadMargin_[1] = margin;
     }
-    if (!EnumUtils.mask(side, Side.Bottom).isEmpty()) {
+    if (side.contains(Side.Bottom)) {
       this.preloadMargin_[2] = margin;
     }
-    if (!EnumUtils.mask(side, Side.Left).isEmpty()) {
+    if (side.contains(Side.Left)) {
       this.preloadMargin_[3] = margin;
     }
     this.computeRenderedArea();
@@ -602,10 +583,10 @@ public class WTableView extends WAbstractItemView {
    * Sets preloading margin.
    *
    * <p>Calls {@link #setPreloadMargin(WLength margin, EnumSet side) setPreloadMargin(margin,
-   * Side.All)}
+   * Side.AllSides)}
    */
   public final void setPreloadMargin(final WLength margin) {
-    setPreloadMargin(margin, Side.All);
+    setPreloadMargin(margin, Side.AllSides);
   }
   /**
    * Retrieves the preloading margin.
@@ -675,57 +656,48 @@ public class WTableView extends WAbstractItemView {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()
+    if (flags.contains(RenderFlag.Full)
         && !this.isAjaxMode()
         && WApplication.getInstance().getEnvironment().hasAjax()) {
       this.plainTable_ = null;
       this.setup();
     }
     if (this.isAjaxMode()) {
-      if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+      if (flags.contains(RenderFlag.Full)) {
         this.defineJavaScript();
       }
       if (!this.canvas_.doubleClicked().isConnected()
-          && (!EnumUtils.mask(this.getEditTriggers(), WAbstractItemView.EditTrigger.DoubleClicked)
-                  .isEmpty()
+          && (this.getEditTriggers().contains(EditTrigger.DoubleClicked)
               || this.doubleClicked().isConnected())) {
         this.canvas_
             .doubleClicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent event) {
-                    WTableView.this.handleDblClick(false, event);
-                  }
+                (WMouseEvent event) -> {
+                  WTableView.this.handleDblClick(false, event);
                 });
         this.canvas_.doubleClicked().preventPropagation();
         this.headerColumnsCanvas_
             .doubleClicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent event) {
-                    WTableView.this.handleDblClick(true, event);
-                  }
+                (WMouseEvent event) -> {
+                  WTableView.this.handleDblClick(true, event);
                 });
         this.headerColumnsCanvas_.doubleClicked().preventPropagation();
         this.contentsContainer_
             .doubleClicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent event) {
-                    WTableView.this.handleRootDoubleClick(0, event);
-                  }
+                (WMouseEvent event) -> {
+                  WTableView.this.handleRootDoubleClick(0, event);
                 });
         this.headerColumnsContainer_
             .doubleClicked()
             .addListener(
                 this,
-                new Signal1.Listener<WMouseEvent>() {
-                  public void trigger(WMouseEvent event) {
-                    WTableView.this.handleRootDoubleClick(0, event);
-                  }
+                (WMouseEvent event) -> {
+                  WTableView.this.handleRootDoubleClick(0, event);
                 });
       }
       if (!this.touchStartConnection_.isConnected() && this.touchStarted().isConnected()) {
@@ -734,10 +706,8 @@ public class WTableView extends WAbstractItemView {
                 .touchStarted()
                 .addListener(
                     this,
-                    new Signal1.Listener<WTouchEvent>() {
-                      public void trigger(WTouchEvent e1) {
-                        WTableView.this.handleTouchStarted(e1);
-                      }
+                    (WTouchEvent e1) -> {
+                      WTableView.this.handleTouchStarted(e1);
                     });
       }
       if (!this.touchMoveConnection_.isConnected() && this.touchMoved().isConnected()) {
@@ -746,10 +716,8 @@ public class WTableView extends WAbstractItemView {
                 .touchMoved()
                 .addListener(
                     this,
-                    new Signal1.Listener<WTouchEvent>() {
-                      public void trigger(WTouchEvent e1) {
-                        WTableView.this.handleTouchMoved(e1);
-                      }
+                    (WTouchEvent e1) -> {
+                      WTableView.this.handleTouchMoved(e1);
                     });
       }
       if (!this.touchEndConnection_.isConnected() && this.touchEnded().isConnected()) {
@@ -758,10 +726,8 @@ public class WTableView extends WAbstractItemView {
                 .touchEnded()
                 .addListener(
                     this,
-                    new Signal1.Listener<WTouchEvent>() {
-                      public void trigger(WTouchEvent e1) {
-                        WTableView.this.handleTouchEnded(e1);
-                      }
+                    (WTouchEvent e1) -> {
+                      WTableView.this.handleTouchEnded(e1);
                     });
       }
     }
@@ -807,37 +773,50 @@ public class WTableView extends WAbstractItemView {
     this.setup();
     this.defineJavaScript();
     this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
+    super.enableAjax();
+  }
+
+  private WTableView.ColumnWidget createColumnWidget(int column) {
+    assert this.isAjaxMode();
+    WTableView.ColumnWidget result = new WTableView.ColumnWidget(column, (WContainerWidget) null);
+    WTableView.ColumnWidget columnWidget = result;
+    final WAbstractItemView.ColumnInfo ci = this.columnInfo(column);
+    columnWidget.setStyleClass(ci.getStyleClass());
+    columnWidget.setPositionScheme(PositionScheme.Absolute);
+    columnWidget.setOffsets(new WLength(0), EnumSet.of(Side.Top, Side.Left));
+    columnWidget.setOverflow(Overflow.Hidden);
+    columnWidget.setHeight(this.table_.getHeight());
+    if (column >= this.getRowHeaderCount()) {
+      if (this.table_.getCount() == 0 || column > this.columnContainer(-1).getColumn()) {
+        this.table_.addWidget(columnWidget);
+      } else {
+        this.table_.insertWidget(0, columnWidget);
+      }
+    } else {
+      this.headerColumnsTable_.insertWidget(column, columnWidget);
+    }
+    return result;
   }
 
   static class ColumnWidget extends WContainerWidget {
     private static Logger logger = LoggerFactory.getLogger(ColumnWidget.class);
 
-    public ColumnWidget(WTableView view, int column) {
-      super();
-      this.column_ = column;
-      assert view.isAjaxMode();
-      final WAbstractItemView.ColumnInfo ci = view.columnInfo(column);
-      this.setStyleClass(ci.getStyleClass());
-      this.setPositionScheme(PositionScheme.Absolute);
-      this.setOffsets(new WLength(0), EnumSet.of(Side.Top, Side.Left));
-      this.setOverflow(WContainerWidget.Overflow.OverflowHidden);
-      this.setHeight(view.table_.getHeight());
-      if (column >= view.getRowHeaderCount()) {
-        if (view.table_.getCount() == 0 || column > view.columnContainer(-1).getColumn()) {
-          view.table_.addWidget(this);
-        } else {
-          view.table_.insertWidget(0, this);
-        }
-      } else {
-        view.headerColumnsTable_.insertWidget(column, this);
-      }
-    }
-
     public int getColumn() {
       return this.column_;
     }
 
+    private ColumnWidget(int column, WContainerWidget parentContainer) {
+      super();
+      this.column_ = column;
+      if (parentContainer != null) parentContainer.addWidget(this);
+    }
+
+    private ColumnWidget(int column) {
+      this(column, (WContainerWidget) null);
+    }
+
     private int column_;
+    // private WTableView.ColumnWidget  createColumnWidget(int column) ;
   }
 
   private WContainerWidget headers_;
@@ -868,21 +847,21 @@ public class WTableView extends WAbstractItemView {
   private int renderedFirstColumn_;
   private int renderedLastColumn_;
   private int scrollToRow_;
-  private WAbstractItemView.ScrollHint scrollToHint_;
+  private ScrollHint scrollToHint_;
   private boolean columnResizeConnected_;
 
   private void updateTableBackground() {
     if (this.isAjaxMode()) {
       WApplication.getInstance()
           .getTheme()
-          .apply(this, this.table_, WidgetThemeRole.TableViewRowContainerRole);
+          .apply(this, this.table_, WidgetThemeRole.TableViewRowContainer);
       WApplication.getInstance()
           .getTheme()
-          .apply(this, this.headerColumnsTable_, WidgetThemeRole.TableViewRowContainerRole);
+          .apply(this, this.headerColumnsTable_, WidgetThemeRole.TableViewRowContainer);
     } else {
       WApplication.getInstance()
           .getTheme()
-          .apply(this, this.plainTable_, WidgetThemeRole.TableViewRowContainerRole);
+          .apply(this, this.plainTable_, WidgetThemeRole.TableViewRowContainer);
     }
   }
 
@@ -928,8 +907,8 @@ public class WTableView extends WAbstractItemView {
     if (this.isAjaxMode()) {
       this.canvas_.setWidth(new WLength(this.canvas_.getWidth().toPixels() + width));
     }
-    if (this.renderState_.getValue()
-        < WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+    if ((int) this.renderState_.getValue()
+        < (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
     }
     if (start > this.getLastColumn() + 1
@@ -959,8 +938,9 @@ public class WTableView extends WAbstractItemView {
         width += (int) this.columnInfo(i).width.toPixels() + 7;
       }
     }
-    for (int i = start; i < start + count; i++) {
-      if (this.columns_.get(i).styleRule != null) this.columns_.get(i).styleRule.remove();
+    WApplication app = WApplication.getInstance();
+    for (int i = start; i < start + count; ++i) {
+      app.getStyleSheet().removeRule(this.columns_.get(i).styleRule);
     }
     for (int ii = 0; ii < (0 + start + count) - (0 + start); ++ii) this.columns_.remove(0 + start);
     ;
@@ -970,8 +950,8 @@ public class WTableView extends WAbstractItemView {
     if (start <= this.currentSortColumn_ && this.currentSortColumn_ <= end) {
       this.currentSortColumn_ = -1;
     }
-    if (this.renderState_.getValue()
-        < WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+    if ((int) this.renderState_.getValue()
+        < (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
     }
     if (start > this.getLastColumn()
@@ -1029,7 +1009,10 @@ public class WTableView extends WAbstractItemView {
       for (int i = 0; i < this.getRenderedColumnsCount(); ++i) {
         WTableView.ColumnWidget column = this.columnContainer(i);
         for (int j = 0; j < overlapMiddle; ++j) {
-          if (column.getWidget(first) != null) column.getWidget(first).remove();
+          {
+            WWidget toRemove = column.getWidget(first).removeFromParent();
+            if (toRemove != null) toRemove.remove();
+          }
         }
       }
       this.setSpannerCount(Side.Bottom, this.getSpannerCount(Side.Bottom) + overlapMiddle);
@@ -1060,7 +1043,8 @@ public class WTableView extends WAbstractItemView {
         || (topLeft.getParent() != null && topLeft.getParent().equals(this.getRootIndex())))) {
       return;
     }
-    if (this.renderState_.getValue() < WAbstractItemView.RenderState.NeedRerenderData.getValue()) {
+    if ((int) this.renderState_.getValue()
+        < (int) WAbstractItemView.RenderState.NeedRerenderData.getValue()) {
       int row1 = Math.max(topLeft.getRow(), this.getFirstRow());
       int row2 = Math.min(bottomRight.getRow(), this.getLastRow());
       int col1 = Math.max(topLeft.getColumn(), this.getFirstColumn());
@@ -1092,36 +1076,39 @@ public class WTableView extends WAbstractItemView {
     EnumSet<ViewItemRenderFlag> renderFlags = EnumSet.noneOf(ViewItemRenderFlag.class);
     if (this.isAjaxMode()) {
       if (this.isSelected(index)) {
-        renderFlags.add(ViewItemRenderFlag.RenderSelected);
+        renderFlags.add(ViewItemRenderFlag.Selected);
       }
     }
     if (this.isEditing(index)) {
-      renderFlags.add(ViewItemRenderFlag.RenderEditing);
+      renderFlags.add(ViewItemRenderFlag.Editing);
       if (this.hasEditFocus(index)) {
-        renderFlags.add(ViewItemRenderFlag.RenderFocused);
+        renderFlags.add(ViewItemRenderFlag.Focused);
       }
     }
     if (!this.isValid(index)) {
-      renderFlags.add(ViewItemRenderFlag.RenderInvalid);
+      renderFlags.add(ViewItemRenderFlag.Invalid);
     }
     boolean initial = !(widget != null);
-    widget = itemDelegate.update(widget, index, renderFlags);
+    WWidget wAfter = itemDelegate.update(widget, index, renderFlags);
+    if (wAfter != null) {
+      widget = wAfter;
+    }
     widget.setInline(false);
     widget.addStyleClass("Wt-tv-c");
     widget.setHeight(this.getRowHeight());
-    if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
+    if (renderFlags.contains(ViewItemRenderFlag.Editing)) {
       widget.setTabIndex(-1);
       this.setEditorWidget(index, widget);
     }
     if (initial) {
-      if (!EnumUtils.mask(renderFlags, ViewItemRenderFlag.RenderEditing).isEmpty()) {
+      if (renderFlags.contains(ViewItemRenderFlag.Editing)) {
         Object state = this.getEditState(index);
-        if (!(state == null)) {
-          itemDelegate.setEditState(widget, state);
+        if ((state != null)) {
+          itemDelegate.setEditState(widget, index, state);
         }
       }
     }
-    return widget;
+    return wAfter;
   }
 
   private int getSpannerCount(final Side side) {
@@ -1349,7 +1336,7 @@ public class WTableView extends WAbstractItemView {
         break;
       case Left:
         {
-          WTableView.ColumnWidget w = new WTableView.ColumnWidget(this, this.getFirstColumn() - 1);
+          WTableView.ColumnWidget w = this.createColumnWidget(this.getFirstColumn() - 1);
           if (!this.columnInfo(w.getColumn()).hidden) {
             this.table_.setOffsets(
                 new WLength(
@@ -1365,7 +1352,7 @@ public class WTableView extends WAbstractItemView {
         }
       case Right:
         {
-          WTableView.ColumnWidget w = new WTableView.ColumnWidget(this, this.getLastColumn() + 1);
+          WTableView.ColumnWidget w = this.createColumnWidget(this.getLastColumn() + 1);
           if (this.columnInfo(w.getColumn()).hidden) {
             w.hide();
           }
@@ -1412,7 +1399,11 @@ public class WTableView extends WAbstractItemView {
           for (int i = w.getCount() - 1; i >= 0; --i) {
             this.deleteItem(row + i, col, w.getWidget(i));
           }
-          if (w != null) w.remove();
+          {
+            WWidget toRemove = w.removeFromParent();
+            if (toRemove != null) toRemove.remove();
+          }
+
           break;
         }
       case Right:
@@ -1423,7 +1414,11 @@ public class WTableView extends WAbstractItemView {
           for (int i = w.getCount() - 1; i >= 0; --i) {
             this.deleteItem(row + i, col, w.getWidget(i));
           }
-          if (w != null) w.remove();
+          {
+            WWidget toRemove = w.removeFromParent();
+            if (toRemove != null) toRemove.remove();
+          }
+
           break;
         }
       default:
@@ -1475,14 +1470,14 @@ public class WTableView extends WAbstractItemView {
       this.table_ = new WContainerWidget();
       this.table_.setStyleClass("Wt-tv-contents");
       this.table_.setPositionScheme(PositionScheme.Absolute);
-      this.table_.setWidth(new WLength(100, WLength.Unit.Percentage));
+      this.table_.setWidth(new WLength(100, LengthUnit.Percentage));
       WGridLayout layout = new WGridLayout();
       layout.setHorizontalSpacing(0);
       layout.setVerticalSpacing(0);
       layout.setContentsMargins(0, 0, 0, 0);
       this.headerContainer_ = new WContainerWidget();
       this.headerContainer_.setStyleClass("Wt-header headerrh");
-      this.headerContainer_.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+      this.headerContainer_.setOverflow(Overflow.Hidden);
       this.headerContainer_.addWidget(this.headers_);
       this.canvas_ = new WContainerWidget();
       this.canvas_.setStyleClass("Wt-spacer");
@@ -1491,10 +1486,8 @@ public class WTableView extends WAbstractItemView {
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleSingleClick(false, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleSingleClick(false, event);
               });
       this.canvas_.clicked().addListener("function(o, e) { $(document).trigger($.event.fix(e));}");
       this.canvas_.clicked().preventPropagation();
@@ -1502,10 +1495,8 @@ public class WTableView extends WAbstractItemView {
           .mouseWentDown()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleMouseWentDown(false, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleMouseWentDown(false, event);
               });
       this.canvas_.mouseWentDown().preventPropagation();
       this.canvas_
@@ -1515,10 +1506,8 @@ public class WTableView extends WAbstractItemView {
           .mouseWentUp()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleMouseWentUp(false, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleMouseWentUp(false, event);
               });
       this.canvas_.mouseWentUp().preventPropagation();
       this.canvas_
@@ -1526,26 +1515,22 @@ public class WTableView extends WAbstractItemView {
           .addListener("function(o, e) { $(document).trigger($.event.fix(e));}");
       this.canvas_.addWidget(this.table_);
       this.contentsContainer_ = new WContainerWidget();
-      this.contentsContainer_.setOverflow(WContainerWidget.Overflow.OverflowAuto);
+      this.contentsContainer_.setOverflow(Overflow.Auto);
       this.contentsContainer_.setPositionScheme(PositionScheme.Absolute);
       this.contentsContainer_.addWidget(this.canvas_);
       this.contentsContainer_
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleRootSingleClick(0, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleRootSingleClick(0, event);
               });
       this.contentsContainer_
           .mouseWentUp()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleRootMouseWentUp(0, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleRootMouseWentUp(0, event);
               });
       this.headerColumnsHeaderContainer_ = new WContainerWidget();
       this.headerColumnsHeaderContainer_.setStyleClass("Wt-header Wt-headerdiv headerrh");
@@ -1553,7 +1538,7 @@ public class WTableView extends WAbstractItemView {
       this.headerColumnsTable_ = new WContainerWidget();
       this.headerColumnsTable_.setStyleClass("Wt-tv-contents");
       this.headerColumnsTable_.setPositionScheme(PositionScheme.Absolute);
-      this.headerColumnsTable_.setWidth(new WLength(100, WLength.Unit.Percentage));
+      this.headerColumnsTable_.setWidth(new WLength(100, LengthUnit.Percentage));
       this.headerColumnsCanvas_ = new WContainerWidget();
       this.headerColumnsCanvas_.setPositionScheme(PositionScheme.Relative);
       this.headerColumnsCanvas_.clicked().preventPropagation();
@@ -1561,10 +1546,8 @@ public class WTableView extends WAbstractItemView {
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleSingleClick(true, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleSingleClick(true, event);
               });
       this.headerColumnsCanvas_
           .clicked()
@@ -1574,10 +1557,8 @@ public class WTableView extends WAbstractItemView {
           .mouseWentDown()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleMouseWentDown(true, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleMouseWentDown(true, event);
               });
       this.headerColumnsCanvas_
           .mouseWentDown()
@@ -1587,10 +1568,8 @@ public class WTableView extends WAbstractItemView {
           .mouseWentUp()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleMouseWentUp(true, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleMouseWentUp(true, event);
               });
       this.headerColumnsCanvas_
           .mouseWentUp()
@@ -1598,26 +1577,22 @@ public class WTableView extends WAbstractItemView {
       this.headerColumnsCanvas_.addWidget(this.headerColumnsTable_);
       this.headerColumnsContainer_ = new WContainerWidget();
       this.headerColumnsContainer_.setPositionScheme(PositionScheme.Absolute);
-      this.headerColumnsContainer_.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+      this.headerColumnsContainer_.setOverflow(Overflow.Hidden);
       this.headerColumnsContainer_.addWidget(this.headerColumnsCanvas_);
       this.headerColumnsContainer_.hide();
       this.headerColumnsContainer_
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleRootSingleClick(0, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleRootSingleClick(0, event);
               });
       this.headerColumnsContainer_
           .mouseWentUp()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent event) {
-                  WTableView.this.handleRootMouseWentUp(0, event);
-                }
+              (WMouseEvent event) -> {
+                WTableView.this.handleRootMouseWentUp(0, event);
               });
       layout.addWidget(this.headerColumnsHeaderContainer_, 0, 0);
       layout.addWidget(this.headerContainer_, 0, 1);
@@ -1664,7 +1639,7 @@ public class WTableView extends WAbstractItemView {
     this.setSpannerCount(Side.Right, this.getColumnCount() - this.getRowHeaderCount());
     this.headerColumnsTable_.clear();
     for (int i = 0; i < this.getRowHeaderCount(); ++i) {
-      new WTableView.ColumnWidget(this, i);
+      this.createColumnWidget(i);
     }
   }
 
@@ -1676,14 +1651,14 @@ public class WTableView extends WAbstractItemView {
       for (int i = 0; i < this.getColumnCount(); ++i) {
         WWidget w = this.createHeaderWidget(i);
         w.setFloatSide(Side.Left);
+        w.setWidth(new WLength(this.columnInfo(i).width.toPixels() + 1));
+        if (this.columnInfo(i).hidden) {
+          w.hide();
+        }
         if (i < this.getRowHeaderCount()) {
           this.headerColumnsHeaderContainer_.addWidget(w);
         } else {
           this.headers_.addWidget(w);
-        }
-        w.setWidth(new WLength(this.columnInfo(i).width.toPixels() + 1));
-        if (this.columnInfo(i).hidden) {
-          w.hide();
         }
       }
     } else {
@@ -1692,12 +1667,12 @@ public class WTableView extends WAbstractItemView {
         WTableCell cell = this.plainTable_.getElementAt(0, i);
         cell.clear();
         cell.setStyleClass("headerrh");
-        cell.addWidget(w);
         w.setWidth(new WLength(this.columnInfo(i).width.toPixels() + 1));
         cell.resize(new WLength(this.columnInfo(i).width.toPixels() + 1), w.getHeight());
         if (this.columnInfo(i).hidden) {
           cell.hide();
         }
+        cell.addWidget(w);
       }
     }
   }
@@ -1713,33 +1688,37 @@ public class WTableView extends WAbstractItemView {
     } else {
       this.pageChanged().trigger();
       while (this.plainTable_.getRowCount() > 1) {
-        this.plainTable_.deleteRow(this.plainTable_.getRowCount() - 1);
+        this.plainTable_.removeRow(this.plainTable_.getRowCount() - 1);
       }
       for (int i = this.getFirstRow(); i <= this.getLastRow(); ++i) {
         int renderedRow = i - this.getFirstRow();
         String cl = WApplication.getInstance().getTheme().getActiveClass();
-        if (this.getSelectionBehavior() == SelectionBehavior.SelectRows
+        if (this.getSelectionBehavior() == SelectionBehavior.Rows
             && this.isSelected(this.getModel().getIndex(i, 0, this.getRootIndex()))) {
           WTableRow row = this.plainTable_.getRowAt(renderedRow + 1);
           row.setStyleClass(cl);
         }
         for (int j = this.getFirstColumn(); j <= this.getLastColumn(); ++j) {
           int renderedCol = j - this.getFirstColumn();
-          WModelIndex index = this.getModel().getIndex(i, j, this.getRootIndex());
+          final WModelIndex index = this.getModel().getIndex(i, j, this.getRootIndex());
           WWidget w = this.renderWidget((WWidget) null, index);
           WTableCell cell = this.plainTable_.getElementAt(renderedRow + 1, renderedCol);
           if (this.columnInfo(j).hidden) {
             cell.hide();
           }
-          cell.addWidget(w);
           WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w) : null);
           if (wi != null && !this.isEditing(index)) {
-            this.clickedMapper_.mapConnect1(wi.clicked(), index);
+            wi.clicked()
+                .addListener(
+                    this,
+                    (WMouseEvent event) -> {
+                      WTableView.this.handleClick(index, event);
+                    });
           }
-          if (this.getSelectionBehavior() == SelectionBehavior.SelectItems
-              && this.isSelected(index)) {
+          if (this.getSelectionBehavior() == SelectionBehavior.Items && this.isSelected(index)) {
             cell.setStyleClass(cl);
           }
+          cell.addWidget(w);
         }
       }
     }
@@ -2039,23 +2018,36 @@ public class WTableView extends WAbstractItemView {
       wIndex = 0;
     }
     WWidget current = parentWidget.getWidget(wIndex);
-    WWidget w = this.renderWidget(current, index);
-    if (!(w.getParent() != null)) {
-      if (!(w.findById(current.getId()) != null)) {
-        if (current != null) current.remove();
+    WWidget wAfter = this.renderWidget(current, index);
+    WWidget w = null;
+    if (wAfter != null) {
+      w = wAfter;
+    } else {
+      w = current;
+    }
+    if (wAfter != null) {
+      {
+        WWidget toRemove = parentWidget.removeWidget(current);
+        if (toRemove != null) toRemove.remove();
       }
-      parentWidget.insertWidget(wIndex, w);
+
+      parentWidget.insertWidget(wIndex, wAfter);
       if (!this.isAjaxMode() && !this.isEditing(index)) {
         WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w) : null);
         if (wi != null) {
-          this.clickedMapper_.mapConnect1(wi.clicked(), index);
+          wi.clicked()
+              .addListener(
+                  this,
+                  (WMouseEvent event) -> {
+                    WTableView.this.handleClick(index, event);
+                  });
         }
       }
     }
   }
 
   boolean internalSelect(final WModelIndex index, SelectionFlag option) {
-    if (this.getSelectionBehavior() == SelectionBehavior.SelectRows && index.getColumn() != 0) {
+    if (this.getSelectionBehavior() == SelectionBehavior.Rows && index.getColumn() != 0) {
       return this.internalSelect(
           this.getModel().getIndex(index.getRow(), 0, index.getParent()), option);
     }
@@ -2148,7 +2140,7 @@ public class WTableView extends WAbstractItemView {
 
   private void renderSelected(boolean selected, final WModelIndex index) {
     String cl = WApplication.getInstance().getTheme().getActiveClass();
-    if (this.getSelectionBehavior() == SelectionBehavior.SelectRows) {
+    if (this.getSelectionBehavior() == SelectionBehavior.Rows) {
       if (this.isRowRendered(index.getRow())) {
         int renderedRow = index.getRow() - this.getFirstRow();
         if (this.isAjaxMode()) {
@@ -2179,7 +2171,7 @@ public class WTableView extends WAbstractItemView {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WTableView.js", wtjs1());
     StringBuilder s = new StringBuilder();
-    s.append("new Wt3_6_0.WTableView(")
+    s.append("new Wt4_4_0.WTableView(")
         .append(app.getJavaScriptClass())
         .append(',')
         .append(this.getJsRef())
@@ -2198,38 +2190,30 @@ public class WTableView extends WAbstractItemView {
     if (!this.dropEvent_.isConnected()) {
       this.dropEvent_.addListener(
           this,
-          new Signal5.Listener<Integer, Integer, String, String, WMouseEvent>() {
-            public void trigger(Integer e1, Integer e2, String e3, String e4, WMouseEvent e5) {
-              WTableView.this.onDropEvent(e1, e2, e3, e4, e5);
-            }
+          (Integer e1, Integer e2, String e3, String e4, WMouseEvent e5) -> {
+            WTableView.this.onDropEvent(e1, e2, e3, e4, e5);
           });
     }
     if (!this.scrolled_.isConnected()) {
       this.scrolled_.addListener(
           this,
-          new Signal4.Listener<Integer, Integer, Integer, Integer>() {
-            public void trigger(Integer e1, Integer e2, Integer e3, Integer e4) {
-              WTableView.this.onViewportChange(e1, e2, e3, e4);
-            }
+          (Integer e1, Integer e2, Integer e3, Integer e4) -> {
+            WTableView.this.onViewportChange(e1, e2, e3, e4);
           });
     }
     if (!this.itemTouchSelectEvent_.isConnected()) {
       this.itemTouchSelectEvent_.addListener(
           this,
-          new Signal1.Listener<WTouchEvent>() {
-            public void trigger(WTouchEvent e1) {
-              WTableView.this.handleTouchSelected(e1);
-            }
+          (WTouchEvent e1) -> {
+            WTableView.this.handleTouchSelected(e1);
           });
     }
     if (!this.columnResizeConnected_) {
       this.columnResized()
           .addListener(
               this,
-              new Signal2.Listener<Integer, WLength>() {
-                public void trigger(Integer e1, WLength e2) {
-                  WTableView.this.onColumnResize();
-                }
+              (Integer e1, WLength e2) -> {
+                WTableView.this.onColumnResize();
               });
       this.columnResizeConnected_ = true;
     }
@@ -2355,7 +2339,10 @@ public class WTableView extends WAbstractItemView {
 
   private void deleteItem(int row, int col, WWidget w) {
     this.persistEditor(this.getModel().getIndex(row, col, this.getRootIndex()));
-    if (w != null) w.remove();
+    {
+      WWidget toRemove = w.removeFromParent();
+      if (toRemove != null) toRemove.remove();
+    }
   }
 
   private boolean isAjaxMode() {

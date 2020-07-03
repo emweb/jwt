@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -27,9 +28,9 @@ import org.slf4j.LoggerFactory;
  * the color for each point. The same is possible for the size. Color-information in the model
  * should be present as a {@link WColor}.
  *
- * <p>If these extra columns are not included, the MarkerBrushColorRole and MarkerScaleFactorRole
- * can still be used to style individual points. These dataroles should be set on the values in the
- * column containing the z-values.
+ * <p>If these extra columns are not included, the {@link ItemDataRole#MarkerBrushColor} and {@link
+ * ItemDataRole#MarkerScaleFactor} can still be used to style individual points. These dataroles
+ * should be set on the values in the column containing the z-values.
  *
  * <p>The figure below shows an upward spiral of points, with droplines enabled and a pointsize of 5
  * pixels.
@@ -48,8 +49,8 @@ public class WScatterData extends WAbstractDataSeries3D {
     this.YSeriesColumn_ = 1;
     this.ZSeriesColumn_ = 2;
     this.colorColumn_ = -1;
-    this.asColorRole_ = ItemDataRole.MarkerPenColorRole;
-    this.asSizeRole_ = ItemDataRole.MarkerScaleFactorRole;
+    this.asColorRole_ = ItemDataRole.MarkerPenColor;
+    this.asSizeRole_ = ItemDataRole.MarkerScaleFactor;
     this.sizeColumn_ = -1;
     this.droplinesEnabled_ = false;
     this.droplinesPen_ = new WPen();
@@ -110,7 +111,7 @@ public class WScatterData extends WAbstractDataSeries3D {
     if (this.droplinesEnabled_ != enabled) {
       this.droplinesEnabled_ = enabled;
       if (this.chart_ != null) {
-        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
       }
     }
   }
@@ -147,7 +148,7 @@ public class WScatterData extends WAbstractDataSeries3D {
   public void setDroplinesPen(final WPen pen) {
     this.droplinesPen_ = pen;
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
     }
   }
   /**
@@ -202,10 +203,13 @@ public class WScatterData extends WAbstractDataSeries3D {
    *
    * <p>The default Z column index is 2.
    *
-   * <p>Note that this column is also used to check for a MarkerBrushColorRole and a
-   * MarkerScaleFactorRole is no color-column or size-column are set.
+   * <p>Note that this column is also used to check for a {@link ItemDataRole#MarkerBrushColor} and
+   * a {@link ItemDataRole#MarkerScaleFactor} is no color-column or size-column are set.
    *
    * <p>
+   *
+   * @see WScatterData#setColorColumn(int columnNumber, ItemDataRole role)
+   * @see WScatterData#setSizeColumn(int columnNumber, ItemDataRole role)
    */
   public void setZSeriesColumn(int columnNumber) {
     this.ZSeriesColumn_ = columnNumber;
@@ -220,23 +224,53 @@ public class WScatterData extends WAbstractDataSeries3D {
   public int ZSeriesColumn() {
     return this.ZSeriesColumn_;
   }
-
-  public void setColorColumn(int columnNumber, int role) {
+  /**
+   * Configure a column in the model to be used for the color of the points.
+   *
+   * <p>By default, the color-column is set to -1. This means there is no column which specifies
+   * color-values. Also, the basic mechanism of using the {@link ItemDataRole#MarkerBrushColor} (if
+   * present) is then active. The Z-seriescolumn is checked for the presence of this Role.
+   *
+   * <p>
+   *
+   * @see WScatterData#setZSeriesColumn(int columnNumber)
+   */
+  public void setColorColumn(int columnNumber, ItemDataRole role) {
     this.colorColumn_ = columnNumber;
     this.asColorRole_ = role;
   }
-
+  /**
+   * Configure a column in the model to be used for the color of the points.
+   *
+   * <p>Calls {@link #setColorColumn(int columnNumber, ItemDataRole role)
+   * setColorColumn(columnNumber, ItemDataRole.Display)}
+   */
   public final void setColorColumn(int columnNumber) {
-    setColorColumn(columnNumber, ItemDataRole.DisplayRole);
+    setColorColumn(columnNumber, ItemDataRole.Display);
   }
-
-  public void setSizeColumn(int columnNumber, int role) {
+  /**
+   * Configure a column in the model to be used for the size of the points.
+   *
+   * <p>By default, the size-column is set to -1. This means there is no column which specifies
+   * size-values. Also, the basic mechanism of using the {@link ItemDataRole#MarkerScaleFactor} (if
+   * present) is then active. The Z-seriescolumn is checked for the presence of this Role.
+   *
+   * <p>
+   *
+   * @see WScatterData#setZSeriesColumn(int columnNumber)
+   */
+  public void setSizeColumn(int columnNumber, ItemDataRole role) {
     this.sizeColumn_ = columnNumber;
     this.asSizeRole_ = role;
   }
-
+  /**
+   * Configure a column in the model to be used for the size of the points.
+   *
+   * <p>Calls {@link #setSizeColumn(int columnNumber, ItemDataRole role) setSizeColumn(columnNumber,
+   * ItemDataRole.Display)}
+   */
   public final void setSizeColumn(int columnNumber) {
-    setSizeColumn(columnNumber, ItemDataRole.DisplayRole);
+    setSizeColumn(columnNumber, ItemDataRole.Display);
   }
   /**
    * Pick points on this {@link WScatterData} using a single pixel.
@@ -247,12 +281,12 @@ public class WScatterData extends WAbstractDataSeries3D {
    */
   public List<WPointSelection> pickPoints(int x, int y, int radius) {
     double otherY = this.chart_.getHeight().getValue() - y;
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     javax.vecmath.Matrix4f transform =
         WebGLUtils.multiply(this.chart_.getCameraMatrix(), this.mvMatrix_);
     javax.vecmath.Matrix4f invTransform = new javax.vecmath.Matrix4f(transform);
@@ -299,12 +333,12 @@ public class WScatterData extends WAbstractDataSeries3D {
     int rightX = Math.max(x1, x2);
     double bottomY = Math.min(otherY1, otherY2);
     double topY = Math.max(otherY1, otherY2);
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     javax.vecmath.Matrix4f transform =
         WebGLUtils.multiply(this.chart_.getCameraMatrix(), this.mvMatrix_);
     javax.vecmath.Matrix4f invTransform = new javax.vecmath.Matrix4f(transform);
@@ -338,19 +372,19 @@ public class WScatterData extends WAbstractDataSeries3D {
   }
 
   public double minimum(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       if (!this.xRangeCached_) {
         this.findXRange();
       }
       return this.xMin_;
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         if (!this.yRangeCached_) {
           this.findYRange();
         }
         return this.yMin_;
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           if (!this.rangeCached_) {
             this.findZRange();
           }
@@ -363,19 +397,19 @@ public class WScatterData extends WAbstractDataSeries3D {
   }
 
   public double maximum(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       if (!this.xRangeCached_) {
         this.findXRange();
       }
       return this.xMax_;
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         if (!this.yRangeCached_) {
           this.findYRange();
         }
         return this.yMax_;
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           if (!this.rangeCached_) {
             this.findZRange();
           }
@@ -580,8 +614,8 @@ public class WScatterData extends WAbstractDataSeries3D {
     float text_min;
     float text_max;
     if (this.colormap_ != null) {
-      text_min = (float) this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.ZAxis_3D);
-      text_max = (float) this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.ZAxis_3D);
+      text_min = (float) this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.Z3D);
+      text_max = (float) this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.Z3D);
       this.chart_.uniform1f(this.offsetUniform_, text_min);
       this.chart_.uniform1f(this.scaleFactorUniform_, 1.0 / (text_max - text_min));
     } else {
@@ -672,8 +706,7 @@ public class WScatterData extends WAbstractDataSeries3D {
       result = 0;
     } else {
       for (int i = 0; i < N; i++) {
-        if ((this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColorRole)
-            == null)) {
+        if (!(this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColor) != null)) {
           result++;
         }
       }
@@ -688,16 +721,16 @@ public class WScatterData extends WAbstractDataSeries3D {
       final java.nio.ByteBuffer coloredPtsSize,
       final java.nio.ByteBuffer coloredPtsColor) {
     int N = this.model_.getRowCount();
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     for (int i = 0; i < N; i++) {
       if (this.colorColumn_ == -1
-          && (this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColorRole)
-              == null)) {
+          && !(this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColor)
+              != null)) {
         simplePtsArray.putFloat(
             (float)
                 ((StringUtils.asNumber(this.model_.getData(i, this.XSeriesColumn_)) - xMin)
@@ -725,8 +758,7 @@ public class WScatterData extends WAbstractDataSeries3D {
                   ((StringUtils.asNumber(this.model_.getData(i, this.ZSeriesColumn_)) - zMin)
                       / (zMax - zMin)));
           WColor color =
-              ((WColor)
-                  this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColorRole));
+              ((WColor) this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColor));
           coloredPtsColor.putFloat((float) color.getRed());
           coloredPtsColor.putFloat((float) color.getGreen());
           coloredPtsColor.putFloat((float) color.getBlue());
@@ -753,21 +785,20 @@ public class WScatterData extends WAbstractDataSeries3D {
       }
       final java.nio.ByteBuffer sizeArrayAlias =
           this.colorColumn_ == -1
-                  && (this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColorRole)
-                      == null)
+                  && !(this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerBrushColor)
+                      != null)
               ? simplePtsSize
               : coloredPtsSize;
       if (this.sizeColumn_ == -1
-          && (this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerScaleFactorRole)
-              == null)) {
+          && !(this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerScaleFactor)
+              != null)) {
         sizeArrayAlias.putFloat((float) this.pointSize_);
       } else {
         if (this.sizeColumn_ == -1) {
           sizeArrayAlias.putFloat(
               (float)
                   StringUtils.asNumber(
-                      this.model_.getData(
-                          i, this.ZSeriesColumn_, ItemDataRole.MarkerScaleFactorRole)));
+                      this.model_.getData(i, this.ZSeriesColumn_, ItemDataRole.MarkerScaleFactor)));
         } else {
           sizeArrayAlias.putFloat(
               (float)
@@ -910,8 +941,8 @@ public class WScatterData extends WAbstractDataSeries3D {
   private int YSeriesColumn_;
   private int ZSeriesColumn_;
   private int colorColumn_;
-  private int asColorRole_;
-  private int asSizeRole_;
+  private ItemDataRole asColorRole_;
+  private ItemDataRole asSizeRole_;
   private int sizeColumn_;
   private boolean droplinesEnabled_;
   private WPen droplinesPen_;

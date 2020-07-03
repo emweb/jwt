@@ -72,7 +72,7 @@ public class CsvUtil {
 
     public static WAbstractItemModel readCsvFile(String fname,
             WContainerWidget parent) {
-        WStandardItemModel model = new WStandardItemModel(0, 0, parent);
+        WStandardItemModel model = new WStandardItemModel(0, 0);
 
         InputStream is = model.getClass().getResourceAsStream(
                 "/eu/webtoolkit/jwt/examples/charts/csv/" + fname);

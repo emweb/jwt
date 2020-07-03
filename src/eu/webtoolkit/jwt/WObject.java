@@ -28,14 +28,6 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * @see Signal#addListener(WObject, eu.webtoolkit.jwt.Signal.Listener)
  */
 public class WObject {
-	static class DeletionTracker {
-		DeletionTracker(WObject object) { }
-
-		public boolean isDeleted() {
-			return false;
-		}
-	}
-
 	protected static class FormData {
 		public FormData(String[] parameters, List<UploadedFile> uploadedFiles) {
 			values = parameters;
@@ -46,7 +38,6 @@ public class WObject {
 		List<UploadedFile> files;
 	}
 
-	private WObject parent_;
 	private int id_;
 	private String objectName_;
 	private static final AtomicInteger nextObjId_ = new AtomicInteger(0);
@@ -57,37 +48,12 @@ public class WObject {
 	 * Default constructor.
 	 */
 	public WObject() {
-		this(null);
-	}
-
-	protected WObject(WObject parent) {
 		id_ = nextObjId_.getAndIncrement();
-		parent_ = parent;
 		objectName_ = "";
 	}
 
 	int getRawUniqueId() {
 		return id_;
-	}
-
-	void setParent(WObject parent) {
-		parent_ = parent;
-	}
-
-	WObject getParent() {
-		return parent_;
-	}
-	
-	boolean hasParent() {
-		return parent_ != null;
-	}
-
-	protected void addChild(WObject child) {
-		child.setParent(this);
-	}
-
-	void removeChild(WObject child) {
-		child.setParent(null);
 	}
 
 	/**

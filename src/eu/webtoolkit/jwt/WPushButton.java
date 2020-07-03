@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -35,19 +36,20 @@ public class WPushButton extends WFormWidget {
   private static Logger logger = LoggerFactory.getLogger(WPushButton.class);
 
   /** Creates a push button. */
-  public WPushButton(WContainerWidget parent) {
-    super(parent);
+  public WPushButton(WContainerWidget parentContainer) {
+    super();
     this.linkState_ = new WAnchor.LinkState();
     this.text_ = new WText.RichText();
     this.icon_ = new WLink();
     this.flags_ = new BitSet();
     this.popupMenu_ = null;
-    this.text_.format = TextFormat.PlainText;
+    this.text_.format = TextFormat.Plain;
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a push button.
    *
-   * <p>Calls {@link #WPushButton(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WPushButton(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WPushButton() {
     this((WContainerWidget) null);
@@ -55,44 +57,46 @@ public class WPushButton extends WFormWidget {
   /**
    * Creates a push button with given label text.
    *
-   * <p>The default text format is PlainText.
+   * <p>The default text format is {@link TextFormat#Plain}.
    */
-  public WPushButton(final CharSequence text, WContainerWidget parent) {
-    super(parent);
+  public WPushButton(final CharSequence text, WContainerWidget parentContainer) {
+    super();
     this.linkState_ = new WAnchor.LinkState();
     this.text_ = new WText.RichText();
     this.icon_ = new WLink();
     this.flags_ = new BitSet();
     this.popupMenu_ = null;
-    this.text_.format = TextFormat.PlainText;
+    this.text_.format = TextFormat.Plain;
     this.text_.text = WString.toWString(text);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a push button with given label text.
    *
-   * <p>Calls {@link #WPushButton(CharSequence text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WPushButton(CharSequence text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WPushButton(final CharSequence text) {
     this(text, (WContainerWidget) null);
   }
   /** Creates a push button with given label text. */
-  public WPushButton(final CharSequence text, TextFormat format, WContainerWidget parent) {
-    super(parent);
+  public WPushButton(final CharSequence text, TextFormat format, WContainerWidget parentContainer) {
+    super();
     this.linkState_ = new WAnchor.LinkState();
     this.text_ = new WText.RichText();
     this.icon_ = new WLink();
     this.flags_ = new BitSet();
     this.popupMenu_ = null;
-    this.text_.format = TextFormat.PlainText;
+    this.text_.format = TextFormat.Plain;
     this.text_.text = WString.toWString(text);
     this.setTextFormat(format);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a push button with given label text.
    *
-   * <p>Calls {@link #WPushButton(CharSequence text, TextFormat format, WContainerWidget parent)
-   * this(text, format, (WContainerWidget)null)}
+   * <p>Calls {@link #WPushButton(CharSequence text, TextFormat format, WContainerWidget
+   * parentContainer) this(text, format, (WContainerWidget)null)}
    */
   public WPushButton(final CharSequence text, TextFormat format) {
     this(text, format, (WContainerWidget) null);
@@ -142,10 +146,8 @@ public class WPushButton extends WFormWidget {
       this.clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WPushButton.this.toggled();
-                }
+              (WMouseEvent e1) -> {
+                WPushButton.this.toggled();
               });
     }
   }
@@ -217,12 +219,12 @@ public class WPushButton extends WFormWidget {
   /**
    * Sets the button text.
    *
-   * <p>The default text format is {@link TextFormat#PlainText}.
+   * <p>The default text format is {@link TextFormat#Plain}.
    *
-   * <p>When the current text format is {@link TextFormat#XHTMLText}, and <code>text</code> is
-   * literal (not created using {@link WString#tr(String key) WString#tr()}), it is parsed using an
-   * XML parser which discards malicious tags and attributes silently. When the parser encounters an
-   * XML parse error, the textFormat is changed to {@link TextFormat#PlainText}.
+   * <p>When the current text format is {@link TextFormat#XHTML}, and <code>text</code> is literal
+   * (not created using {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
+   * parser which discards malicious tags and attributes silently. When the parser encounters an XML
+   * parse error, the textFormat is changed to {@link TextFormat#Plain}.
    *
    * <p>Returns whether the text could be set using the current textFormat. A return value of <code>
    * false</code> indicates that the text format was changed in order to be able to accept the new
@@ -238,7 +240,7 @@ public class WPushButton extends WFormWidget {
     }
     boolean ok = this.text_.setText(text);
     this.flags_.set(BIT_TEXT_CHANGED);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     return ok;
   }
   /**
@@ -257,15 +259,14 @@ public class WPushButton extends WFormWidget {
    * <p>The textFormat controls how the string should be interpreted: either as plain text, which is
    * displayed literally, or as XHTML-markup.
    *
-   * <p>When changing the textFormat to {@link TextFormat#XHTMLText}, and the current text is
-   * literal (not created using {@link WString#tr(String key) WString#tr()}), the current text is
-   * parsed using an XML parser which discards malicious tags and attributes silently. When the
-   * parser encounters an XML parse error, the textFormat is left unchanged, and this method returns
-   * false.
+   * <p>When changing the textFormat to {@link TextFormat#XHTML}, and the current text is literal
+   * (not created using {@link WString#tr(String key) WString#tr()}), the current text is parsed
+   * using an XML parser which discards malicious tags and attributes silently. When the parser
+   * encounters an XML parse error, the textFormat is left unchanged, and this method returns false.
    *
    * <p>Returns whether the textFormat could be set for the current text.
    *
-   * <p>The default format is {@link TextFormat#PlainText}.
+   * <p>The default format is {@link TextFormat#Plain}.
    */
   public boolean setTextFormat(TextFormat textFormat) {
     return this.text_.setFormat(textFormat);
@@ -291,7 +292,7 @@ public class WPushButton extends WFormWidget {
     }
     this.icon_ = link;
     this.flags_.set(BIT_ICON_CHANGED);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Returns the icon.
@@ -326,17 +327,15 @@ public class WPushButton extends WFormWidget {
     }
     this.linkState_.link = link;
     this.flags_.set(BIT_LINK_CHANGED);
-    if (this.linkState_.link.getType() == WLink.Type.Resource) {
+    if (this.linkState_.link.getType() == LinkType.Resource) {
       this.linkState_
           .link
           .getResource()
           .dataChanged()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WPushButton.this.resourceChanged();
-                }
+              () -> {
+                WPushButton.this.resourceChanged();
               });
     }
     this.repaint();
@@ -352,67 +351,6 @@ public class WPushButton extends WFormWidget {
     return this.linkState_.link;
   }
   /**
-   * Sets a destination URL (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WPushButton#setLink(WLink link) setLink()} insteadd.
-   */
-  public void setRef(final String url) {
-    this.setLink(new WLink(url));
-  }
-  /**
-   * Returns the destination URL (<b>deprecated</b>).
-   *
-   * <p>When the button refers to a resource, the current resource URL is returned. Otherwise, the
-   * URL is returned that was set using {@link WPushButton#setRef(String url) setRef()}.
-   *
-   * <p>
-   *
-   * @see WPushButton#setRef(String url)
-   * @see WResource#getUrl()
-   * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
-   */
-  public String getRef() {
-    return this.linkState_.link.getUrl();
-  }
-  /**
-   * Sets a destination resource (<b>deprecated</b>).
-   *
-   * <p>This method can be used to make the button behave like a {@link WAnchor} (or conversely, an
-   * anchor look like a button) and redirect to another resource when clicked.
-   *
-   * <p>A resource specifies application-dependent content, which may be generated by your
-   * application on demand.
-   *
-   * <p>This sets the <code>resource</code> as the destination of the button, and is an alternative
-   * to {@link WPushButton#setRef(String url) setRef()}. The resource may be cleared by passing
-   * <code>resource</code> = <code>null</code>.
-   *
-   * <p>The button does not assume ownership of the resource.
-   *
-   * <p>
-   *
-   * @see WPushButton#setRef(String url)
-   * @deprecated Use {@link WPushButton#setLink(WLink link) setLink()} instead.
-   */
-  public void setResource(WResource resource) {
-    this.setLink(new WLink(resource));
-  }
-  /**
-   * Returns the destination resource (<b>deprecated</b>).
-   *
-   * <p>Returns <code>null</code> if no resource has been set.
-   *
-   * <p>
-   *
-   * @see WPushButton#setResource(WResource resource)
-   * @deprecated Use {@link WPushButton#getLink() getLink()} instead.
-   */
-  public WResource getResource() {
-    return this.linkState_.link.getResource();
-  }
-  /**
    * Returns the current value.
    *
    * <p>Returns an empty string, since a button has no value.
@@ -426,25 +364,6 @@ public class WPushButton extends WFormWidget {
    * <p>Has no effect, since a button has not value.
    */
   public void setValueText(final String value) {}
-  /**
-   * Sets the link target.
-   *
-   * <p>This sets the target where the linked contents should be displayed. The default target is
-   * TargetSelf.
-   */
-  public void setLinkTarget(AnchorTarget target) {
-    this.linkState_.link.setTarget(target);
-  }
-  /**
-   * Returns the location where the linked content should be displayed.
-   *
-   * <p>
-   *
-   * @see WPushButton#setLinkTarget(AnchorTarget target)
-   */
-  public AnchorTarget getLinkTarget() {
-    return this.linkState_.link.getTarget();
-  }
   /**
    * Links a popup menu to the button.
    *
@@ -470,7 +389,7 @@ public class WPushButton extends WFormWidget {
   public void refresh() {
     if (this.text_.text.refresh()) {
       this.flags_.set(BIT_TEXT_CHANGED);
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
     super.refresh();
   }
@@ -526,24 +445,24 @@ public class WPushButton extends WFormWidget {
   private WPopupMenu popupMenu_;
 
   void updateDom(final DomElement element, boolean all) {
-    if (all && element.getType() == DomElementType.DomElement_BUTTON) {
+    if (all && element.getType() == DomElementType.BUTTON) {
       element.setAttribute("type", "button");
     }
     boolean updateInnerHtml = !this.icon_.isNull() && this.flags_.get(BIT_TEXT_CHANGED);
     if (updateInnerHtml || this.flags_.get(BIT_ICON_CHANGED) || all && !this.icon_.isNull()) {
-      DomElement image = DomElement.createNew(DomElementType.DomElement_IMG);
-      image.setProperty(Property.PropertySrc, this.icon_.resolveUrl(WApplication.getInstance()));
+      DomElement image = DomElement.createNew(DomElementType.IMG);
+      image.setProperty(Property.Src, this.icon_.resolveUrl(WApplication.getInstance()));
       image.setId("im" + this.getFormName());
       element.insertChildAt(image, 0);
       this.flags_.set(BIT_ICON_RENDERED);
       this.flags_.clear(BIT_ICON_CHANGED);
     }
     if (this.flags_.get(BIT_TEXT_CHANGED) || all) {
-      element.setProperty(Property.PropertyInnerHTML, this.text_.getFormattedText());
+      element.setProperty(Property.InnerHTML, this.text_.getFormattedText());
       this.flags_.clear(BIT_TEXT_CHANGED);
     }
     if (this.flags_.get(BIT_LINK_CHANGED) || all) {
-      if (element.getType() == DomElementType.DomElement_A) {
+      if (element.getType() == DomElementType.A) {
         WAnchor.renderHRef(this, this.linkState_, element);
         WAnchor.renderHTarget(this.linkState_, element, all);
       } else {
@@ -560,9 +479,7 @@ public class WPushButton extends WFormWidget {
       }
     }
     if (!all) {
-      WApplication.getInstance()
-          .getTheme()
-          .apply(this, element, ElementThemeRole.MainElementThemeRole);
+      WApplication.getInstance().getTheme().apply(this, element, ElementThemeRole.MainElement);
     }
     super.updateDom(element, all);
   }
@@ -571,10 +488,10 @@ public class WPushButton extends WFormWidget {
     if (!this.linkState_.link.isNull()) {
       WApplication app = WApplication.getInstance();
       if (app.getTheme().isCanStyleAnchorAsButton()) {
-        return DomElementType.DomElement_A;
+        return DomElementType.A;
       }
     }
-    return DomElementType.DomElement_BUTTON;
+    return DomElementType.BUTTON;
   }
 
   void propagateRenderOk(boolean deep) {
@@ -587,13 +504,12 @@ public class WPushButton extends WFormWidget {
 
   protected void getDomChanges(final List<DomElement> result, WApplication app) {
     if (this.flags_.get(BIT_ICON_CHANGED) && this.flags_.get(BIT_ICON_RENDERED)) {
-      DomElement image =
-          DomElement.getForUpdate("im" + this.getFormName(), DomElementType.DomElement_IMG);
+      DomElement image = DomElement.getForUpdate("im" + this.getFormName(), DomElementType.IMG);
       if (this.icon_.isNull()) {
         image.removeFromParent();
         this.flags_.clear(BIT_ICON_RENDERED);
       } else {
-        image.setProperty(Property.PropertySrc, this.icon_.resolveUrl(app));
+        image.setProperty(Property.Src, this.icon_.resolveUrl(app));
       }
       result.add(image);
       this.flags_.clear(BIT_ICON_CHANGED);
@@ -621,7 +537,7 @@ public class WPushButton extends WFormWidget {
   private void doRedirect() {
     WApplication app = WApplication.getInstance();
     if (!app.getEnvironment().hasAjax()) {
-      if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
+      if (this.linkState_.link.getType() == LinkType.InternalPath) {
         app.setInternalPath(this.linkState_.link.getInternalPath(), true);
       } else {
         app.redirect(this.linkState_.link.getUrl());
@@ -644,14 +560,12 @@ public class WPushButton extends WFormWidget {
           this.clicked()
               .addListener(
                   this,
-                  new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent e1) {
-                      WPushButton.this.doRedirect();
-                    }
+                  (WMouseEvent e1) -> {
+                    WPushButton.this.doRedirect();
                   });
         }
       }
-      if (this.linkState_.link.getType() == WLink.Type.InternalPath) {
+      if (this.linkState_.link.getType() == LinkType.InternalPath) {
         this.linkState_.clickJS.setJavaScript(
             "function(){"
                 + app.getJavaScriptClass()
@@ -660,11 +574,11 @@ public class WPushButton extends WFormWidget {
                 + ",true);}");
       } else {
         String url = this.linkState_.link.resolveUrl(app);
-        if (this.linkState_.link.getTarget() == AnchorTarget.TargetNewWindow) {
+        if (this.linkState_.link.getTarget() == LinkTarget.NewWindow) {
           this.linkState_.clickJS.setJavaScript(
               "function(){window.open(" + jsStringLiteral(url) + ");}");
         } else {
-          if (this.linkState_.link.getTarget() == AnchorTarget.TargetDownload) {
+          if (this.linkState_.link.getTarget() == LinkTarget.Download) {
             this.linkState_.clickJS.setJavaScript(
                 "function(){var ifr = document.getElementById('wt_iframe_dl_id');ifr.src = "
                     + jsStringLiteral(url)
@@ -675,8 +589,9 @@ public class WPushButton extends WFormWidget {
           }
         }
       }
-      this.clicked().senderRepaint();
-    } else {;
+      this.clicked().ownerRepaint();
+    } else {
+
       this.linkState_.clickJS = null;
     }
   }

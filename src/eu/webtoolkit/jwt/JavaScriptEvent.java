@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -65,18 +66,18 @@ class JavaScriptEvent {
     this.dragDX = parseIntParameter(request, concat(s, seLength, "dragdX"), 0);
     this.dragDY = parseIntParameter(request, concat(s, seLength, "dragdY"), 0);
     this.wheelDelta = parseIntParameter(request, concat(s, seLength, "wheel"), 0);
-    this.modifiers.clear();
+    EnumUtils.setOnly(this.modifiers, KeyboardModifier.None);
     if (request.getParameter(concat(s, seLength, "altKey")) != null) {
-      this.modifiers.add(KeyboardModifier.AltModifier);
+      this.modifiers.add(KeyboardModifier.Alt);
     }
     if (request.getParameter(concat(s, seLength, "ctrlKey")) != null) {
-      this.modifiers.add(KeyboardModifier.ControlModifier);
+      this.modifiers.add(KeyboardModifier.Control);
     }
     if (request.getParameter(concat(s, seLength, "shiftKey")) != null) {
-      this.modifiers.add(KeyboardModifier.ShiftModifier);
+      this.modifiers.add(KeyboardModifier.Shift);
     }
     if (request.getParameter(concat(s, seLength, "metaKey")) != null) {
-      this.modifiers.add(KeyboardModifier.MetaModifier);
+      this.modifiers.add(KeyboardModifier.Meta);
     }
     this.keyCode = parseIntParameter(request, concat(s, seLength, "keyCode"), 0);
     this.charCode = parseIntParameter(request, concat(s, seLength, "charCode"), 0);
@@ -125,7 +126,7 @@ class JavaScriptEvent {
     if ((p = request.getParameter(name)) != null) {
       try {
         return asInt(p);
-      } catch (final NumberFormatException ee) {
+      } catch (final RuntimeException ee) {
         logger.error(
             new StringWriter()
                 .append("Could not cast event property '")
@@ -179,7 +180,7 @@ class JavaScriptEvent {
                 asInt(s.get(i + 7)),
                 asInt(s.get(i + 8))));
       }
-    } catch (final NumberFormatException ee) {
+    } catch (final RuntimeException ee) {
       logger.error(
           new StringWriter()
               .append("Could not parse touches array '")

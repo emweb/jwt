@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -67,7 +68,7 @@ import org.slf4j.LoggerFactory;
  *   <li>Wt.WMessageBox.Cancel: Cancel
  *   <li>Wt.WMessageBox.Ignore: Ignore
  *   <li>Wt.WMessageBox.No: No
- *   <li>Wt.WMessageBox.NoToAll: No to All
+ *   <li>Wt.WMessageBox.NoToAll: No To All
  *   <li>Wt.WMessageBox.Ok: Ok
  *   <li>Wt.WMessageBox.Retry: Retry
  *   <li>Wt.WMessageBox.Yes: Yes
@@ -78,54 +79,46 @@ public class WMessageBox extends WDialog {
   private static Logger logger = LoggerFactory.getLogger(WMessageBox.class);
 
   /** Creates an empty message box. */
-  public WMessageBox(WObject parent) {
-    super(parent);
+  public WMessageBox() {
+    super();
     this.buttons_ = new ArrayList<WMessageBox.Button>();
-    this.icon_ = Icon.NoIcon;
-    this.result_ = StandardButton.NoButton;
-    this.buttonClicked_ = new Signal1<StandardButton>(this);
+    this.icon_ = Icon.None;
+    this.result_ = StandardButton.None;
+    this.buttonClicked_ = new Signal1<StandardButton>();
     this.defaultButton_ = null;
     this.escapeButton_ = null;
     this.create();
-  }
-  /**
-   * Creates an empty message box.
-   *
-   * <p>Calls {@link #WMessageBox(WObject parent) this((WObject)null)}
-   */
-  public WMessageBox() {
-    this((WObject) null);
   }
   /** Creates a message box with given caption, text, icon, and buttons. */
   public WMessageBox(
       final CharSequence caption,
       final CharSequence text,
       Icon icon,
-      EnumSet<StandardButton> buttons,
-      WObject parent) {
-    super(caption, parent);
+      EnumSet<StandardButton> buttons) {
+    super(caption);
     this.buttons_ = new ArrayList<WMessageBox.Button>();
-    this.icon_ = Icon.NoIcon;
-    this.buttonClicked_ = new Signal1<StandardButton>(this);
+    this.icon_ = Icon.None;
+    this.buttonClicked_ = new Signal1<StandardButton>();
     this.defaultButton_ = null;
     this.escapeButton_ = null;
     this.create();
     this.setText(text);
     this.setIcon(icon);
-    this.setButtons(buttons);
+    this.setStandardButtons(buttons);
   }
   /**
    * Creates a message box with given caption, text, icon, and buttons.
    *
    * <p>Calls {@link #WMessageBox(CharSequence caption, CharSequence text, Icon icon, EnumSet
-   * buttons, WObject parent) this(caption, text, icon, buttons, (WObject)null)}
+   * buttons) this(caption, text, icon, EnumSet.of(button, buttons))}
    */
   public WMessageBox(
       final CharSequence caption,
       final CharSequence text,
       Icon icon,
-      EnumSet<StandardButton> buttons) {
-    this(caption, text, icon, buttons, (WObject) null);
+      StandardButton button,
+      StandardButton... buttons) {
+    this(caption, text, icon, EnumSet.of(button, buttons));
   }
   /** Sets the text for the message box. */
   public void setText(final CharSequence text) {
@@ -146,11 +139,11 @@ public class WMessageBox extends WDialog {
   /** Sets the icon. */
   public void setIcon(Icon icon) {
     this.icon_ = icon;
-    this.iconW_.toggleStyleClass("Wt-msgbox-icon", this.icon_ != Icon.NoIcon);
-    this.text_.toggleStyleClass("Wt-msgbox-text", this.icon_ != Icon.NoIcon);
-    this.iconW_.setSize(this.icon_ != Icon.NoIcon ? 2.5 : 1);
+    this.iconW_.toggleStyleClass("Wt-msgbox-icon", this.icon_ != Icon.None);
+    this.text_.toggleStyleClass("Wt-msgbox-text", this.icon_ != Icon.None);
+    this.iconW_.setSize(this.icon_ != Icon.None ? 2.5 : 1);
     switch (this.icon_) {
-      case NoIcon:
+      case None:
         this.iconW_.setName("");
         break;
       case Information:
@@ -175,15 +168,21 @@ public class WMessageBox extends WDialog {
    *
    * <p>When the button is clicked, the associated result will be returned.
    */
-  public void addButton(WPushButton button, StandardButton result) {
+  public void addButton(WPushButton button, final StandardButton result) {
     this.buttons_.add(new WMessageBox.Button());
     this.buttons_.get(this.buttons_.size() - 1).button = button;
     this.buttons_.get(this.buttons_.size() - 1).result = result;
-    this.getFooter().addWidget(button);
-    this.buttonMapper_.mapConnect(button.clicked(), result);
+    button
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              WMessageBox.this.onButtonClick(result);
+            });
     if (button.isDefault()) {
       this.setDefaultButton(button);
     }
+    this.getFooter().addWidget(button);
   }
   /**
    * Adds a custom button with given text.
@@ -191,7 +190,7 @@ public class WMessageBox extends WDialog {
    * <p>When the button is clicked, the associated result will be returned.
    */
   public WPushButton addButton(final CharSequence text, StandardButton result) {
-    WPushButton b = new WPushButton(text);
+    WPushButton b = new WPushButton(text, (WContainerWidget) null);
     this.addButton(b, result);
     return b;
   }
@@ -199,32 +198,13 @@ public class WMessageBox extends WDialog {
   public WPushButton addButton(StandardButton result) {
     return this.addButton(standardButtonText(result), result);
   }
-  /**
-   * Sets standard buttons for the message box (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated this method has been renamed to {@link WMessageBox#setStandardButtons(EnumSet
-   *     buttons) setStandardButtons()}.
-   */
-  public void setButtons(EnumSet<StandardButton> buttons) {
-    this.setStandardButtons(buttons);
-  }
-  /**
-   * Sets standard buttons for the message box (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #setButtons(EnumSet buttons) setButtons(EnumSet.of(button, buttons))}
-   */
-  public final void setButtons(StandardButton button, StandardButton... buttons) {
-    setButtons(EnumSet.of(button, buttons));
-  }
   /** Sets standard buttons for the message box. */
   public void setStandardButtons(EnumSet<StandardButton> buttons) {
     this.buttons_.clear();
     this.getFooter().clear();
     this.defaultButton_ = this.escapeButton_ = null;
     for (int i = 0; i < 9; ++i) {
-      if (!EnumUtils.mask(buttons, order_[i]).isEmpty()) {
+      if (buttons.contains(order_[i])) {
         this.addButton(order_[i]);
       }
     }
@@ -380,10 +360,8 @@ public class WMessageBox extends WDialog {
     box.buttonClicked()
         .addListener(
             box,
-            new Signal1.Listener<StandardButton>() {
-              public void trigger(StandardButton e1) {
-                box.accept();
-              }
+            (StandardButton e1) -> {
+              box.accept();
             });
     box.exec(animation);
     return box.getButtonResult();
@@ -433,35 +411,24 @@ public class WMessageBox extends WDialog {
   private WPushButton escapeButton_;
   private WText text_;
   private WIcon iconW_;
-  private WSignalMapper1<StandardButton> buttonMapper_;
 
   private void create() {
-    this.iconW_ = new WIcon(this.getContents());
-    this.text_ = new WText(this.getContents());
+    WIcon icon = this.iconW_ = new WIcon();
+    this.getContents().addWidget(icon);
+    WText text = this.text_ = new WText();
+    this.getContents().addWidget(text);
     this.getContents().addStyleClass("Wt-msgbox-body");
-    this.buttonMapper_ = new WSignalMapper1<StandardButton>(this);
-    this.buttonMapper_
-        .mapped()
-        .addListener(
-            this,
-            new Signal1.Listener<StandardButton>() {
-              public void trigger(StandardButton e1) {
-                WMessageBox.this.onButtonClick(e1);
-              }
-            });
     this.rejectWhenEscapePressed();
     this.finished()
         .addListener(
             this,
-            new Signal1.Listener<WDialog.DialogCode>() {
-              public void trigger(WDialog.DialogCode e1) {
-                WMessageBox.this.onFinished();
-              }
+            (DialogCode e1) -> {
+              WMessageBox.this.onFinished();
             });
   }
 
   private void onFinished() {
-    if (this.getResult() == WDialog.DialogCode.Rejected) {
+    if (this.getResult() == DialogCode.Rejected) {
       if (this.escapeButton_ != null) {
         for (int i = 0; i < this.buttons_.size(); ++i) {
           if (this.buttons_.get(i).button == this.escapeButton_) {
@@ -484,7 +451,7 @@ public class WMessageBox extends WDialog {
             this.onButtonClick(StandardButton.No);
             return;
           }
-          this.onButtonClick(StandardButton.NoButton);
+          this.onButtonClick(StandardButton.None);
         }
       }
     }

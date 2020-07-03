@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,13 +22,9 @@ import org.slf4j.LoggerFactory;
 class MyResource extends WResource {
   private static Logger logger = LoggerFactory.getLogger(MyResource.class);
 
-  public MyResource(WObject parent) {
-    super(parent);
-    this.suggestFileName("data.txt");
-  }
-
   public MyResource() {
-    this((WObject) null);
+    super();
+    this.suggestFileName("data.txt");
   }
 
   public void handleRequest(final WebRequest request, final WebResponse response)

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -46,8 +47,8 @@ public class WTextArea extends WFormWidget {
   private static Logger logger = LoggerFactory.getLogger(WTextArea.class);
 
   /** Creates a text area with empty content and optional parent. */
-  public WTextArea(WContainerWidget parent) {
-    super(parent);
+  public WTextArea(WContainerWidget parentContainer) {
+    super();
     this.content_ = "";
     this.cols_ = 20;
     this.rows_ = 5;
@@ -55,18 +56,19 @@ public class WTextArea extends WFormWidget {
     this.attributesChanged_ = false;
     this.setInline(true);
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a text area with empty content and optional parent.
    *
-   * <p>Calls {@link #WTextArea(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTextArea(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTextArea() {
     this((WContainerWidget) null);
   }
   /** Creates a text area with given content and optional parent. */
-  public WTextArea(final String text, WContainerWidget parent) {
-    super(parent);
+  public WTextArea(final String text, WContainerWidget parentContainer) {
+    super();
     this.content_ = text;
     this.cols_ = 20;
     this.rows_ = 5;
@@ -74,11 +76,12 @@ public class WTextArea extends WFormWidget {
     this.attributesChanged_ = false;
     this.setInline(true);
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a text area with given content and optional parent.
    *
-   * <p>Calls {@link #WTextArea(String text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WTextArea(String text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WTextArea(final String text) {
@@ -92,7 +95,7 @@ public class WTextArea extends WFormWidget {
   public void setColumns(int columns) {
     this.cols_ = columns;
     this.attributesChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Sets the number of rows.
@@ -102,7 +105,7 @@ public class WTextArea extends WFormWidget {
   public void setRows(int rows) {
     this.rows_ = rows;
     this.attributesChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Returns the number of columns.
@@ -242,9 +245,9 @@ public class WTextArea extends WFormWidget {
   private boolean attributesChanged_;
 
   void updateDom(final DomElement element, boolean all) {
-    if (element.getType() == DomElementType.DomElement_TEXTAREA) {
+    if (element.getType() == DomElementType.TEXTAREA) {
       if (this.contentChanged_ || all) {
-        element.setProperty(Property.PropertyValue, this.content_);
+        element.setProperty(Property.Value, this.content_);
         this.contentChanged_ = false;
       }
     }
@@ -257,7 +260,7 @@ public class WTextArea extends WFormWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_TEXTAREA;
+    return DomElementType.TEXTAREA;
   }
 
   void propagateRenderOk(boolean deep) {

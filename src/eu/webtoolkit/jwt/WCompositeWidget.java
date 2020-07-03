@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,17 +38,16 @@ public class WCompositeWidget extends WWidget {
    * <p>You need to set an implemetation using {@link WCompositeWidget#setImplementation(WWidget
    * widget) setImplementation()} directly after construction.
    */
-  public WCompositeWidget(WContainerWidget parent) {
-    super(parent);
+  public WCompositeWidget(WContainerWidget parentContainer) {
+    super();
     this.impl_ = null;
-    if (parent != null) {
-      parent.addWidget(this);
-    }
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a WCompositeWidget.
    *
-   * <p>Calls {@link #WCompositeWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WCompositeWidget(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   public WCompositeWidget() {
     this((WContainerWidget) null);
@@ -59,19 +59,52 @@ public class WCompositeWidget extends WWidget {
    *
    * @see WCompositeWidget#setImplementation(WWidget widget)
    */
-  public WCompositeWidget(WWidget implementation, WContainerWidget parent) {
-    super(parent);
+  public WCompositeWidget(WWidget implementation, WContainerWidget parentContainer) {
+    super();
     this.impl_ = null;
-    if (parent != null) {
-      parent.addWidget(this);
-    }
     this.setImplementation(implementation);
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+  /**
+   * Creates a WCompositeWidget with given implementation.
+   *
+   * <p>Calls {@link #WCompositeWidget(WWidget implementation, WContainerWidget parentContainer)
+   * this(implementation, (WContainerWidget)null)}
+   */
+  public WCompositeWidget(WWidget implementation) {
+    this(implementation, (WContainerWidget) null);
   }
 
   public void remove() {
-    this.setParentWidget((WWidget) null);
-    if (this.impl_ != null) this.impl_.remove();
+    if (this.impl_ != null) {
+      {
+        WWidget toRemove = this.impl_.removeFromParent();
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    {
+      WWidget toRemove = this.removeFromParent();
+      if (toRemove != null) toRemove.remove();
+    }
+
     super.remove();
+  }
+
+  public List<WWidget> getChildren() {
+    List<WWidget> result = new ArrayList<WWidget>();
+    result.add(this.impl_);
+    return result;
+  }
+
+  public WWidget removeWidget(WWidget child) {
+    child.setParentWidget((WWidget) null);
+    if (this.impl_ != null) {
+      {
+        WWidget toRemove = this.impl_.removeFromParent();
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    return null;
   }
 
   public void setObjectName(final String name) {
@@ -91,7 +124,11 @@ public class WCompositeWidget extends WWidget {
   }
 
   public PositionScheme getPositionScheme() {
-    return this.impl_.getPositionScheme();
+    if (this.impl_ != null) {
+      return this.impl_.getPositionScheme();
+    } else {
+      return PositionScheme.Static;
+    }
   }
 
   public void setOffsets(final WLength offset, EnumSet<Side> sides) {
@@ -266,7 +303,7 @@ public class WCompositeWidget extends WWidget {
   }
 
   public void setVerticalAlignment(AlignmentFlag alignment, final WLength length) {
-    if (!EnumUtils.mask(AlignmentFlag.AlignHorizontalMask, alignment).isEmpty()) {
+    if (AlignmentFlag.AlignHorizontalMask.contains(alignment)) {
       logger.error(
           new StringWriter()
               .append("setVerticalAlignment(): alignment ")
@@ -440,22 +477,6 @@ public class WCompositeWidget extends WWidget {
     return this.impl_.getBaseZIndex();
   }
 
-  void addChild(WWidget child) {
-    if (child != this.impl_) {
-      this.impl_.addChild(child);
-    } else {
-      this.impl_.setParent(this);
-    }
-  }
-
-  void removeChild(WWidget child) {
-    if (child != this.impl_) {
-      this.impl_.removeChild(child);
-    } else {
-      this.impl_.setParent((WObject) null);
-    }
-  }
-
   void setHideWithOffsets(boolean hideWithOffsets) {
     this.impl_.setHideWithOffsets(hideWithOffsets);
   }
@@ -483,22 +504,18 @@ public class WCompositeWidget extends WWidget {
    * rendered. </i>
    */
   protected void setImplementation(WWidget widget) {
-    if (widget.getParent() != null) {
-      throw new WException("WCompositeWidget implementation widget cannot have a parent");
-    }
-    if (this.impl_ != null) this.impl_.remove();
     this.impl_ = widget;
-    if (this.getParent() != null) {
-      WWebWidget ww = this.impl_.getWebWidget();
-      if (ww != null) {
-        ww.gotParent();
-      }
-      if (this.getParent().isLoaded()) {
-        this.impl_.load();
-      }
+    this.impl_.setParentWidget(this);
+    WWidget p = this.getParent();
+    if (p != null && p.isLoaded()) {
+      this.impl_.load();
     }
-    widget.setParentWidget(this);
   }
+  // protected Widget  setImplementation(<Woow... some pseudoinstantiation type!> widget) ;
+  // protected W  getSetNewImplementation() ;
+  // protected W  setNewImplementation(Arg1) ;
+  // protected W  setNewImplementation(Arg1, Arg2) ;
+  // protected W  setNewImplementation(Arg1, Arg2, Arg3) ;
   /**
    * Get the implementation widget.
    *
@@ -509,20 +526,15 @@ public class WCompositeWidget extends WWidget {
   }
 
   protected WWidget getTakeImplementation() {
-    WWidget result = this.impl_;
-    if (result != null) {
-      this.removeChild(result);
-      this.impl_ = null;
-    }
-    return result;
+    return this.impl_;
   }
 
   void getSDomChanges(final List<DomElement> result, WApplication app) {
     if (this.needsToBeRendered()) {
       this.render(
           this.impl_.isRendered() || !WWebWidget.canOptimizeUpdates()
-              ? RenderFlag.RenderUpdate
-              : RenderFlag.RenderFull);
+              ? RenderFlag.Update
+              : RenderFlag.Full);
     }
     this.impl_.getSDomChanges(result, app);
   }
@@ -545,16 +557,4 @@ public class WCompositeWidget extends WWidget {
   }
 
   private WWidget impl_;
-
-  void setLayout(WLayout layout) {
-    this.impl_.setLayout(layout);
-  }
-
-  WLayout getLayout() {
-    return this.impl_.getLayout();
-  }
-
-  WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
-    return this.impl_.createLayoutItemImpl(item);
-  }
 }

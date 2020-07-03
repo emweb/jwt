@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,21 +38,21 @@ public class WGridData extends WAbstractGridData {
   }
 
   public double minimum(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       if (this.YAbscisRow_ != 0) {
         return StringUtils.asNumber(this.model_.getData(0, this.XAbscisColumn_));
       } else {
         return StringUtils.asNumber(this.model_.getData(1, this.XAbscisColumn_));
       }
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         if (this.XAbscisColumn_ != 0) {
           return StringUtils.asNumber(this.model_.getData(this.YAbscisRow_, 0));
         } else {
           return StringUtils.asNumber(this.model_.getData(this.YAbscisRow_, 1));
         }
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           if (!this.rangeCached_) {
             this.findRange();
           }
@@ -64,8 +65,8 @@ public class WGridData extends WAbstractGridData {
   }
 
   public double maximum(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
-      if (this.seriesType_ == Series3DType.BarSeries3D) {
+    if (axis == Axis.X3D) {
+      if (this.seriesType_ == Series3DType.Bar) {
         return this.model_.getRowCount() - 1 - 0.5;
       }
       if (this.YAbscisRow_ != this.model_.getRowCount()) {
@@ -76,8 +77,8 @@ public class WGridData extends WAbstractGridData {
             this.model_.getData(this.model_.getRowCount() - 2, this.XAbscisColumn_));
       }
     } else {
-      if (axis == Axis.YAxis_3D) {
-        if (this.seriesType_ == Series3DType.BarSeries3D) {
+      if (axis == Axis.Y3D) {
+        if (this.seriesType_ == Series3DType.Bar) {
           return this.model_.getColumnCount() - 1 - 0.5;
         }
         if (this.XAbscisColumn_ != this.model_.getColumnCount()) {
@@ -88,7 +89,7 @@ public class WGridData extends WAbstractGridData {
               this.model_.getData(this.YAbscisRow_, this.model_.getColumnCount() - 2));
         }
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           if (!this.rangeCached_) {
             this.findRange();
           }
@@ -147,13 +148,13 @@ public class WGridData extends WAbstractGridData {
   }
 
   public WString axisLabel(int u, Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       if (u >= this.YAbscisRow_) {
         u++;
       }
       return StringUtils.asString(this.model_.getData(u, this.XAbscisColumn_));
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         if (u >= this.XAbscisColumn_) {
           u++;
         }
@@ -186,7 +187,7 @@ public class WGridData extends WAbstractGridData {
         if (j == this.XAbscisColumn_) {
           continue;
         }
-        if ((this.model_.getData(i, j, ItemDataRole.MarkerBrushColorRole) == null)) {
+        if (!(this.model_.getData(i, j, ItemDataRole.MarkerBrushColor) != null)) {
           result++;
         }
       }
@@ -204,12 +205,12 @@ public class WGridData extends WAbstractGridData {
     int nbModelCols = this.model_.getColumnCount();
     java.nio.ByteBuffer scaledXAxis = WebGLUtils.newByteBuffer(4 * (nbModelRows - 1));
     java.nio.ByteBuffer scaledYAxis = WebGLUtils.newByteBuffer(4 * (nbModelCols - 1));
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     for (int i = 0; i < nbModelRows; i++) {
       if (i == this.YAbscisRow_) {
         continue;
@@ -241,19 +242,18 @@ public class WGridData extends WAbstractGridData {
           colOffset = 1;
           continue;
         }
-        if ((this.model_.getData(i, j, ItemDataRole.MarkerBrushColorRole) == null)) {
+        if (!(this.model_.getData(i, j, ItemDataRole.MarkerBrushColor) != null)) {
           simplePtsArray.putFloat(scaledXAxis.getFloat(4 * (i - rowOffset)));
           simplePtsArray.putFloat(scaledYAxis.getFloat(4 * (j - colOffset)));
           simplePtsArray.putFloat(
               (float)
-                  ((StringUtils.asNumber(this.model_.getData(i, j, ItemDataRole.DisplayRole))
-                          - zMin)
+                  ((StringUtils.asNumber(this.model_.getData(i, j, ItemDataRole.Display)) - zMin)
                       / (zMax - zMin)));
-          if (!(this.model_.getData(i, j, ItemDataRole.MarkerScaleFactorRole) == null)) {
+          if ((this.model_.getData(i, j, ItemDataRole.MarkerScaleFactor) != null)) {
             simplePtsSize.putFloat(
                 (float)
                     StringUtils.asNumber(
-                        this.model_.getData(i, j, ItemDataRole.MarkerScaleFactorRole)));
+                        this.model_.getData(i, j, ItemDataRole.MarkerScaleFactor)));
           } else {
             simplePtsSize.putFloat((float) this.getPointSize());
           }
@@ -262,16 +262,16 @@ public class WGridData extends WAbstractGridData {
           coloredPtsArray.putFloat(scaledYAxis.getFloat(4 * (j - colOffset)));
           coloredPtsArray.putFloat(
               (float) ((StringUtils.asNumber(this.model_.getData(i, j)) - zMin) / (zMax - zMin)));
-          WColor color = ((WColor) this.model_.getData(i, j, ItemDataRole.MarkerBrushColorRole));
+          WColor color = ((WColor) this.model_.getData(i, j, ItemDataRole.MarkerBrushColor));
           coloredPtsColor.putFloat((float) color.getRed());
           coloredPtsColor.putFloat((float) color.getGreen());
           coloredPtsColor.putFloat((float) color.getBlue());
           coloredPtsColor.putFloat((float) color.getAlpha());
-          if (!(this.model_.getData(i, j, ItemDataRole.MarkerScaleFactorRole) == null)) {
+          if ((this.model_.getData(i, j, ItemDataRole.MarkerScaleFactor) != null)) {
             coloredPtsSize.putFloat(
                 (float)
                     StringUtils.asNumber(
-                        this.model_.getData(i, j, ItemDataRole.MarkerScaleFactorRole)));
+                        this.model_.getData(i, j, ItemDataRole.MarkerScaleFactor)));
           } else {
             coloredPtsSize.putFloat((float) this.getPointSize());
           }
@@ -285,12 +285,12 @@ public class WGridData extends WAbstractGridData {
     int nbModelCols = this.model_.getColumnCount();
     java.nio.ByteBuffer scaledXAxis = WebGLUtils.newByteBuffer(4 * (nbModelRows - 1));
     java.nio.ByteBuffer scaledYAxis = WebGLUtils.newByteBuffer(4 * (nbModelCols - 1));
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     for (int i = 0; i < nbModelRows; i++) {
       if (i == this.YAbscisRow_) {
         continue;
@@ -448,7 +448,7 @@ public class WGridData extends WAbstractGridData {
             ((dataseries.get(i)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (dataseries.get(i))
                 : null);
-        if (griddata == this || griddata.getType() != Series3DType.BarSeries3D) {
+        if (griddata == this || griddata.getType() != Series3DType.Bar) {
           break;
         }
         if (first) {
@@ -471,12 +471,12 @@ public class WGridData extends WAbstractGridData {
     int nbModelCols = this.model_.getColumnCount();
     java.nio.ByteBuffer scaledXAxis = WebGLUtils.newByteBuffer(4 * (nbModelRows - 1));
     java.nio.ByteBuffer scaledYAxis = WebGLUtils.newByteBuffer(4 * (nbModelCols - 1));
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     for (int i = 0; i < nbModelRows - 1; i++) {
       scaledXAxis.putFloat((float) ((xMin + 0.5 + i - xMin) / (xMax - xMin)));
     }
@@ -532,7 +532,7 @@ public class WGridData extends WAbstractGridData {
             ((dataseries.get(i)) instanceof WAbstractGridData
                 ? (WAbstractGridData) (dataseries.get(i))
                 : null);
-        if (griddata == this || griddata.getType() != Series3DType.BarSeries3D) {
+        if (griddata == this || griddata.getType() != Series3DType.Bar) {
           break;
         }
         if (first) {
@@ -555,12 +555,12 @@ public class WGridData extends WAbstractGridData {
     int nbModelCols = this.model_.getColumnCount();
     java.nio.ByteBuffer scaledXAxis = WebGLUtils.newByteBuffer(4 * (nbModelRows - 1));
     java.nio.ByteBuffer scaledYAxis = WebGLUtils.newByteBuffer(4 * (nbModelCols - 1));
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     for (int i = 0; i < nbModelRows - 1; i++) {
       scaledXAxis.putFloat((float) ((xMin + 0.5 + i - xMin) / (xMax - xMin)));
     }
@@ -583,8 +583,8 @@ public class WGridData extends WAbstractGridData {
           colOffset = 1;
         }
         float z0 = this.stackAllValues(prevDataseries, i, j);
-        if ((this.model_.getData(i + rowOffset, j + colOffset, ItemDataRole.MarkerBrushColorRole)
-            == null)) {
+        if (!(this.model_.getData(i + rowOffset, j + colOffset, ItemDataRole.MarkerBrushColor)
+            != null)) {
           if (simpleCount == BAR_BUFFER_LIMIT) {
             simpleBufferIndex++;
             simpleCount = 0;
@@ -613,8 +613,7 @@ public class WGridData extends WAbstractGridData {
               .putFloat((float) ((modelVal - zMin) / (zMax - zMin)) + delta);
           WColor color =
               ((WColor)
-                  this.model_.getData(
-                      i + rowOffset, j + colOffset, ItemDataRole.MarkerBrushColorRole));
+                  this.model_.getData(i + rowOffset, j + colOffset, ItemDataRole.MarkerBrushColor));
           for (int k = 0; k < 8; k++) {
             coloredPtsColors.get(coloredBufferIndex).putFloat((float) color.getRed());
             coloredPtsColors.get(coloredBufferIndex).putFloat((float) color.getGreen());

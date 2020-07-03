@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,13 +19,13 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class SimpleSelectorImpl implements SimpleSelector {
+final class SimpleSelectorImpl implements SimpleSelector {
   private static Logger logger = LoggerFactory.getLogger(SimpleSelectorImpl.class);
 
   public SimpleSelectorImpl() {
     super();
     this.elementName_ = "";
-    this.elementType_ = DomElementType.DomElement_UNKNOWN;
+    this.elementType_ = DomElementType.UNKNOWN;
     this.classes_ = new ArrayList<String>();
     this.hashid_ = "";
   }

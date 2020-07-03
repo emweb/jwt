@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -48,15 +49,18 @@ public enum HeaderFlag {
    */
   ColumnIsExpandedRight,
   /** Flag that indicates that the header can be checked. */
-  HeaderIsUserCheckable,
+  UserCheckable,
   /**
    * Flag that indicates that the item has three states.
    *
-   * <p>When set, {@link ItemDataRole#CheckStateRole} data is of type {@link CheckState}
+   * <p>When set, {@link ItemDataRole#Checked} data is of type {@link CheckState}
    */
-  HeaderIsTristate,
-  /** Flag that indicates that the item text (DisplayRole, ToolTipRole) is HTML. */
-  HeaderIsXHTMLText;
+  Tristate,
+  /**
+   * Flag that indicates that the item text ({@link ItemDataRole#Display}, {@link
+   * ItemDataRole#ToolTip}) is HTML.
+   */
+  XHTMLText;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

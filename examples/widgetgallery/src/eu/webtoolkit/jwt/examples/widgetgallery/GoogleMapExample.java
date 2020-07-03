@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,40 +22,37 @@ import org.slf4j.LoggerFactory;
 class GoogleMapExample extends WContainerWidget {
   private static Logger logger = LoggerFactory.getLogger(GoogleMapExample.class);
 
-  public GoogleMapExample(WContainerWidget parent) {
-    super(parent);
+  public GoogleMapExample(WContainerWidget parentContainer) {
+    super();
+    this.mapTypeModel_ = null;
     WHBoxLayout layout = new WHBoxLayout();
     this.setLayout(layout);
     this.setHeight(new WLength(400));
-    this.map_ = new WGoogleMap(WGoogleMap.ApiVersion.Version3);
+    this.map_ = new WGoogleMap(GoogleMapsVersion.v3);
     layout.addWidget(this.map_, 1);
-    this.map_.setMapTypeControl(WGoogleMap.MapTypeControl.DefaultControl);
+    this.map_.setMapTypeControl(MapTypeControl.Default);
     this.map_.enableScrollWheelZoom();
     WTemplate controls = new WTemplate(tr("graphics-GoogleMap-controls"));
     layout.addWidget(controls);
     WPushButton zoomIn = new WPushButton("+");
-    zoomIn.addStyleClass("zoom");
     controls.bindWidget("zoom-in", zoomIn);
+    zoomIn.addStyleClass("zoom");
     zoomIn
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.zoomIn();
-              }
+            () -> {
+              GoogleMapExample.this.map_.zoomIn();
             });
     WPushButton zoomOut = new WPushButton("-");
-    zoomOut.addStyleClass("zoom");
     controls.bindWidget("zoom-out", zoomOut);
+    zoomOut.addStyleClass("zoom");
     zoomOut
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.zoomOut();
-              }
+            () -> {
+              GoogleMapExample.this.map_.zoomOut();
             });
     String[] cityNames = {"Brussels", "Lisbon", "Paris"};
     WGoogleMap.Coordinate[] cityCoords = {
@@ -69,10 +67,8 @@ class GoogleMapExample extends WContainerWidget {
       city.clicked()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  GoogleMapExample.this.map_.panTo(coord);
-                }
+              () -> {
+                GoogleMapExample.this.map_.panTo(coord);
               });
     }
     WPushButton reset = new WPushButton("Reset");
@@ -81,10 +77,8 @@ class GoogleMapExample extends WContainerWidget {
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.panToEmWeb();
-              }
+            () -> {
+              GoogleMapExample.this.panToEmWeb();
             });
     WPushButton savePosition = new WPushButton("Save current position");
     controls.bindWidget("save-position", savePosition);
@@ -92,10 +86,8 @@ class GoogleMapExample extends WContainerWidget {
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.savePosition();
-              }
+            () -> {
+              GoogleMapExample.this.savePosition();
             });
     this.returnToPosition_ = new WPushButton("Return to saved position");
     controls.bindWidget("return-to-saved-position", this.returnToPosition_);
@@ -104,33 +96,29 @@ class GoogleMapExample extends WContainerWidget {
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.returnToSavedPosition();
-              }
+            () -> {
+              GoogleMapExample.this.map_.returnToSavedPosition();
             });
-    this.mapTypeModel_ = new WStringListModel(this);
-    this.addMapTypeControl("No control", WGoogleMap.MapTypeControl.NoControl);
-    this.addMapTypeControl("Default", WGoogleMap.MapTypeControl.DefaultControl);
-    this.addMapTypeControl("Menu", WGoogleMap.MapTypeControl.MenuControl);
-    if (this.map_.getApiVersion() == WGoogleMap.ApiVersion.Version2) {
-      this.addMapTypeControl("Hierarchical", WGoogleMap.MapTypeControl.HierarchicalControl);
+    this.mapTypeModel_ = new WStringListModel();
+    this.addMapTypeControl("No control", MapTypeControl.None);
+    this.addMapTypeControl("Default", MapTypeControl.Default);
+    this.addMapTypeControl("Menu", MapTypeControl.Menu);
+    if (this.map_.getApiVersion() == GoogleMapsVersion.v2) {
+      this.addMapTypeControl("Hierarchical", MapTypeControl.Hierarchical);
     }
-    if (this.map_.getApiVersion() == WGoogleMap.ApiVersion.Version3) {
-      this.addMapTypeControl("Horizontal bar", WGoogleMap.MapTypeControl.HorizontalBarControl);
+    if (this.map_.getApiVersion() == GoogleMapsVersion.v3) {
+      this.addMapTypeControl("Horizontal bar", MapTypeControl.HorizontalBar);
     }
     WComboBox menuControls = new WComboBox();
+    controls.bindWidget("control-menu-combo", menuControls);
     menuControls.setModel(this.mapTypeModel_);
     menuControls.setCurrentIndex(1);
-    controls.bindWidget("control-menu-combo", menuControls);
     menuControls
         .activated()
         .addListener(
             this,
-            new Signal1.Listener<Integer>() {
-              public void trigger(Integer mapType) {
-                GoogleMapExample.this.setMapTypeControl(mapType);
-              }
+            (Integer mapType) -> {
+              GoogleMapExample.this.setMapTypeControl(mapType);
             });
     WCheckBox draggingCB = new WCheckBox("Enable dragging");
     controls.bindWidget("dragging-cb", draggingCB);
@@ -140,19 +128,15 @@ class GoogleMapExample extends WContainerWidget {
         .checked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.enableDragging();
-              }
+            () -> {
+              GoogleMapExample.this.map_.enableDragging();
             });
     draggingCB
         .unChecked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.disableDragging();
-              }
+            () -> {
+              GoogleMapExample.this.map_.disableDragging();
             });
     WCheckBox enableDoubleClickZoomCB = new WCheckBox("Enable double click zoom");
     controls.bindWidget("double-click-zoom-cb", enableDoubleClickZoomCB);
@@ -162,19 +146,15 @@ class GoogleMapExample extends WContainerWidget {
         .checked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.enableDoubleClickZoom();
-              }
+            () -> {
+              GoogleMapExample.this.map_.enableDoubleClickZoom();
             });
     enableDoubleClickZoomCB
         .unChecked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.disableDoubleClickZoom();
-              }
+            () -> {
+              GoogleMapExample.this.map_.disableDoubleClickZoom();
             });
     WCheckBox enableScrollWheelZoomCB = new WCheckBox("Enable scroll wheel zoom");
     controls.bindWidget("scroll-wheel-zoom-cb", enableScrollWheelZoomCB);
@@ -184,19 +164,15 @@ class GoogleMapExample extends WContainerWidget {
         .checked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.enableScrollWheelZoom();
-              }
+            () -> {
+              GoogleMapExample.this.map_.enableScrollWheelZoom();
             });
     enableScrollWheelZoomCB
         .unChecked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                GoogleMapExample.this.map_.disableScrollWheelZoom();
-              }
+            () -> {
+              GoogleMapExample.this.map_.disableScrollWheelZoom();
             });
     List<WGoogleMap.Coordinate> road = this.getRoadDescription();
     this.map_.addPolyline(road, new WColor(0, 191, 255));
@@ -209,20 +185,17 @@ class GoogleMapExample extends WContainerWidget {
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WGoogleMap.Coordinate>() {
-              public void trigger(WGoogleMap.Coordinate c) {
-                GoogleMapExample.this.googleMapClicked(c);
-              }
+            (WGoogleMap.Coordinate c) -> {
+              GoogleMapExample.this.googleMapClicked(c);
             });
     this.map_
         .doubleClicked()
         .addListener(
             this,
-            new Signal1.Listener<WGoogleMap.Coordinate>() {
-              public void trigger(WGoogleMap.Coordinate c) {
-                GoogleMapExample.this.googleMapDoubleClicked(c);
-              }
+            (WGoogleMap.Coordinate c) -> {
+              GoogleMapExample.this.googleMapDoubleClicked(c);
             });
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public GoogleMapExample() {
@@ -238,16 +211,16 @@ class GoogleMapExample extends WContainerWidget {
     this.map_.savePosition();
   }
 
-  private void addMapTypeControl(final CharSequence description, WGoogleMap.MapTypeControl value) {
+  private void addMapTypeControl(final CharSequence description, MapTypeControl value) {
     int r = this.mapTypeModel_.getRowCount();
     this.mapTypeModel_.insertRow(r);
     this.mapTypeModel_.setData(r, 0, description);
-    this.mapTypeModel_.setData(r, 0, value, ItemDataRole.UserRole);
+    this.mapTypeModel_.setData(r, 0, value, ItemDataRole.User);
   }
 
   private void setMapTypeControl(int row) {
-    Object mtc = this.mapTypeModel_.getData(row, 0, ItemDataRole.UserRole);
-    this.map_.setMapTypeControl(((WGoogleMap.MapTypeControl) mtc));
+    Object mtc = this.mapTypeModel_.getData(row, 0, ItemDataRole.User);
+    this.map_.setMapTypeControl(((MapTypeControl) mtc));
   }
 
   private List<WGoogleMap.Coordinate> getRoadDescription() {

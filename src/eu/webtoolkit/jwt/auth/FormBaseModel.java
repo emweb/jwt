@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,24 +31,14 @@ public class FormBaseModel extends WFormModel {
   /** {@link Login} name field. */
   public static final String LoginNameField = "user-name";
   /** Constructor. */
-  public FormBaseModel(
-      final AuthService baseAuth, final AbstractUserDatabase users, WObject parent) {
-    super(parent);
+  public FormBaseModel(final AuthService baseAuth, final AbstractUserDatabase users) {
+    super();
     this.baseAuth_ = baseAuth;
     this.users_ = users;
     this.passwordAuth_ = null;
     this.oAuth_ = new ArrayList<OAuthService>();
     WApplication app = WApplication.getInstance();
     app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthStrings_xml);
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #FormBaseModel(AuthService baseAuth, AbstractUserDatabase users, WObject
-   * parent) this(baseAuth, users, (WObject)null)}
-   */
-  public FormBaseModel(final AuthService baseAuth, final AbstractUserDatabase users) {
-    this(baseAuth, users, (WObject) null);
   }
   /**
    * Returns the authentication base service.
@@ -123,7 +114,7 @@ public class FormBaseModel extends WFormModel {
 
   public WString label(String field) {
     if (field == LoginNameField
-        && this.baseAuth_.getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+        && this.baseAuth_.getIdentityPolicy() == IdentityPolicy.EmailAddress) {
       field = "email";
     }
     return WString.tr("Wt.Auth." + field);
@@ -141,19 +132,18 @@ public class FormBaseModel extends WFormModel {
     if (!user.isValid()) {
       return false;
     }
-    if (user.getStatus() == User.Status.Disabled) {
+    if (user.getStatus() == AccountStatus.Disabled) {
       this.setValidation(
           LoginNameField,
-          new WValidator.Result(WValidator.State.Invalid, WString.tr("Wt.Auth.account-disabled")));
-      login.login(user, LoginState.DisabledLogin);
+          new WValidator.Result(ValidationState.Invalid, WString.tr("Wt.Auth.account-disabled")));
+      login.login(user, LoginState.Disabled);
       return false;
     } else {
       if (this.getBaseAuth().isEmailVerificationRequired() && user.getEmail().length() == 0) {
         this.setValidation(
             LoginNameField,
-            new WValidator.Result(
-                WValidator.State.Invalid, WString.tr("Wt.Auth.email-unverified")));
-        login.login(user, LoginState.DisabledLogin);
+            new WValidator.Result(ValidationState.Invalid, WString.tr("Wt.Auth.email-unverified")));
+        login.login(user, LoginState.Disabled);
         return false;
       } else {
         login.login(user, state);
@@ -165,10 +155,10 @@ public class FormBaseModel extends WFormModel {
    * Logs the user in.
    *
    * <p>Returns {@link #loginUser(Login login, User user, LoginState state) loginUser(login, user,
-   * LoginState.StrongLogin)}
+   * LoginState.Strong)}
    */
   public final boolean loginUser(final Login login, final User user) {
-    return loginUser(login, user, LoginState.StrongLogin);
+    return loginUser(login, user, LoginState.Strong);
   }
 
   protected void setValid(String field) {
@@ -179,7 +169,7 @@ public class FormBaseModel extends WFormModel {
     this.setValidation(
         field,
         new WValidator.Result(
-            WValidator.State.Valid,
+            ValidationState.Valid,
             (message.length() == 0) ? WString.tr("Wt.Auth.valid") : message));
   }
 

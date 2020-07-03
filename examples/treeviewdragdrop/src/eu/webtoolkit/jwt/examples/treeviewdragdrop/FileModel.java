@@ -5,7 +5,6 @@
  */
 package eu.webtoolkit.jwt.examples.treeviewdragdrop;
 
-import eu.webtoolkit.jwt.WObject;
 import eu.webtoolkit.jwt.WStandardItemModel;
 
 /**
@@ -19,8 +18,8 @@ public class FileModel extends WStandardItemModel {
     /**
      * Constructor.
      */
-    public FileModel(WObject parent) {
-        super(parent);
+    public FileModel() {
+    	super();
     }
 
     @Override

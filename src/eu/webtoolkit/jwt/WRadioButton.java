@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -71,29 +72,31 @@ public class WRadioButton extends WAbstractToggleButton {
   private static Logger logger = LoggerFactory.getLogger(WRadioButton.class);
 
   /** Creates an unchecked radio button with empty label and optional parent. */
-  public WRadioButton(WContainerWidget parent) {
-    super(parent);
-    this.buttonGroup_ = null;
+  public WRadioButton(WContainerWidget parentContainer) {
+    super();
+    this.buttonGroup_ = (WButtonGroup) null;
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an unchecked radio button with empty label and optional parent.
    *
-   * <p>Calls {@link #WRadioButton(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WRadioButton(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WRadioButton() {
     this((WContainerWidget) null);
   }
   /** Creates an unchecked radio button with given text and optional parent. */
-  public WRadioButton(final CharSequence text, WContainerWidget parent) {
-    super(text, parent);
-    this.buttonGroup_ = null;
+  public WRadioButton(final CharSequence text, WContainerWidget parentContainer) {
+    super(text, (WContainerWidget) null);
+    this.buttonGroup_ = (WButtonGroup) null;
     this.setFormObject(true);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an unchecked radio button with given text and optional parent.
    *
-   * <p>Calls {@link #WRadioButton(CharSequence text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WRadioButton(CharSequence text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WRadioButton(final CharSequence text) {

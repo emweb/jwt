@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,58 +22,55 @@ import org.slf4j.LoggerFactory;
 class UserFormView extends WTemplateFormView {
   private static Logger logger = LoggerFactory.getLogger(UserFormView.class);
 
-  public UserFormView() {
+  public UserFormView(WContainerWidget parentContainer) {
     super();
-    this.model = new UserFormModel(this);
+    this.model = null;
+    this.model = new UserFormModel();
     this.setTemplateText(tr("userForm-template"));
     this.addFunction("id", WTemplate.Functions.id);
     this.addFunction("block", WTemplate.Functions.id);
     this.setFormWidget(UserFormModel.FirstNameField, new WLineEdit());
     this.setFormWidget(UserFormModel.LastNameField, new WLineEdit());
-    final WComboBox countryCB = new WComboBox();
+    WComboBox countryCB = new WComboBox();
+    final WComboBox countryCB_ = countryCB;
     countryCB.setModel(this.model.getCountryModel());
-    countryCB
+    countryCB_
         .activated()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                String code = UserFormView.this.model.countryCode(countryCB.getCurrentIndex());
-                UserFormView.this.model.updateCityModel(code);
-              }
+            () -> {
+              String code = UserFormView.this.model.countryCode(countryCB_.getCurrentIndex());
+              UserFormView.this.model.updateCityModel(code);
             });
     this.setFormWidget(
         UserFormModel.CountryField,
         countryCB,
-        new WTemplateFormView.FieldView() {
-          public void updateViewValue() {
-            String code = ((String) UserFormView.this.model.getValue(UserFormModel.CountryField));
-            int row = UserFormView.this.model.countryModelRow(code);
-            countryCB.setCurrentIndex(row);
-          }
-
-          public void updateModelValue() {
-            String code = UserFormView.this.model.countryCode(countryCB.getCurrentIndex());
-            UserFormView.this.model.setValue(UserFormModel.CountryField, code);
-          }
+        () -> {
+          String code =
+              StringUtils.asString(UserFormView.this.model.getValue(UserFormModel.CountryField))
+                  .toString();
+          int row = UserFormView.this.model.countryModelRow(code);
+          countryCB_.setCurrentIndex(row);
+        },
+        () -> {
+          String code = UserFormView.this.model.countryCode(countryCB_.getCurrentIndex());
+          UserFormView.this.model.setValue(UserFormModel.CountryField, code);
         });
     WComboBox cityCB = new WComboBox();
     cityCB.setModel(this.model.getCityModel());
     this.setFormWidget(UserFormModel.CityField, cityCB);
-    final WDateEdit dateEdit = new WDateEdit();
+    WDateEdit dateEdit = new WDateEdit();
+    final WDateEdit dateEdit_ = dateEdit;
     this.setFormWidget(
         UserFormModel.BirthField,
         dateEdit,
-        new WTemplateFormView.FieldView() {
-          public void updateViewValue() {
-            WDate date = ((WDate) UserFormView.this.model.getValue(UserFormModel.BirthField));
-            dateEdit.setDate(date);
-          }
-
-          public void updateModelValue() {
-            WDate date = dateEdit.getDate();
-            UserFormView.this.model.setValue(UserFormModel.BirthField, date);
-          }
+        () -> {
+          WDate date = ((WDate) UserFormView.this.model.getValue(UserFormModel.BirthField));
+          dateEdit_.setDate(date);
+        },
+        () -> {
+          WDate date = dateEdit_.getDate();
+          UserFormView.this.model.setValue(UserFormModel.BirthField, date);
         });
     this.setFormWidget(UserFormModel.ChildrenField, new WSpinBox());
     WTextArea remarksTA = new WTextArea();
@@ -88,12 +86,15 @@ class UserFormView extends WTemplateFormView {
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                UserFormView.this.process();
-              }
+            (WMouseEvent e1) -> {
+              UserFormView.this.process();
             });
     this.updateView(this.model);
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public UserFormView() {
+    this((WContainerWidget) null);
   }
 
   private void process() {
@@ -102,7 +103,7 @@ class UserFormView extends WTemplateFormView {
       this.bindString(
           "submit-info",
           new WString("Saved user data for ").append(this.model.getUserData()),
-          TextFormat.PlainText);
+          TextFormat.Plain);
       this.updateView(this.model);
       WLineEdit viewField = (WLineEdit) this.resolveWidget(UserFormModel.FirstNameField);
       viewField.setFocus(true);

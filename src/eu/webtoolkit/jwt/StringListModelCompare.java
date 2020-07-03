@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -31,7 +32,7 @@ class StringListModelCompare implements Comparator<Integer> {
 
   public int compare(Integer r1, Integer r2) {
     int result = this.model_.getStringList().get(r1).compareTo(this.model_.getStringList().get(r2));
-    if (this.order_ == SortOrder.DescendingOrder) {
+    if (this.order_ == SortOrder.Descending) {
       result = -result;
     }
     return result;

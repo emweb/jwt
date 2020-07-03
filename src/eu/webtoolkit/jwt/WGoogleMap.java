@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,36 +42,6 @@ import org.slf4j.LoggerFactory;
 public class WGoogleMap extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WGoogleMap.class);
 
-  /** ApiVersion. */
-  public enum ApiVersion {
-    /** API Version 2.x. */
-    Version2,
-    /** API Version 3.x. */
-    Version3;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** MapTypeControl. */
-  public enum MapTypeControl {
-    /** Show no maptype control. */
-    NoControl,
-    /** Show the default maptype control. */
-    DefaultControl,
-    /** Show the dropdown menu maptype control. */
-    MenuControl,
-    /** Show the hierarchical maptype control. */
-    HierarchicalControl,
-    /** Show the horizontal bar maptype control. */
-    HorizontalBarControl;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /** A geographical coordinate (latitude/longitude) */
   public static class Coordinate {
     private static Logger logger = LoggerFactory.getLogger(Coordinate.class);
@@ -126,8 +97,8 @@ public class WGoogleMap extends WCompositeWidget {
     private double lat_;
     private double lon_;
   }
-  /** Creates a map widget with a version and optionally a parent argument. */
-  public WGoogleMap(WGoogleMap.ApiVersion version, WContainerWidget parent) {
+  /** Creates a map widget with a version. */
+  public WGoogleMap(GoogleMapsVersion version, WContainerWidget parentContainer) {
     super();
     this.clicked_ = new JSignal1<WGoogleMap.Coordinate>(this, "click") {};
     this.doubleClicked_ = new JSignal1<WGoogleMap.Coordinate>(this, "dblclick") {};
@@ -136,52 +107,40 @@ public class WGoogleMap extends WCompositeWidget {
     this.additions_ = new ArrayList<String>();
     this.apiVersion_ = version;
     this.setImplementation(new WContainerWidget());
-    this.init();
-    if (parent != null) {
-      parent.addWidget(this);
-    }
+    WApplication app = WApplication.getInstance();
+    this.googlekey_ = localhost_key;
+    this.googlekey_ = WApplication.readConfigurationProperty("google_api_key", this.googlekey_);
+    final String gmuri = "//www.google.com/jsapi?key=" + this.googlekey_;
+    app.require(gmuri, "google");
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Creates a map widget with a version and optionally a parent argument.
+   * Creates a map widget with a version.
    *
-   * <p>Calls {@link #WGoogleMap(WGoogleMap.ApiVersion version, WContainerWidget parent)
-   * this(version, (WContainerWidget)null)}
-   */
-  public WGoogleMap(WGoogleMap.ApiVersion version) {
-    this(version, (WContainerWidget) null);
-  }
-  /** Creates a map widget with optionally a parent argument. */
-  public WGoogleMap(WContainerWidget parent) {
-    super();
-    this.clicked_ = new JSignal1<WGoogleMap.Coordinate>(this, "click") {};
-    this.doubleClicked_ = new JSignal1<WGoogleMap.Coordinate>(this, "dblclick") {};
-    this.mouseMoved_ = null;
-    this.googlekey_ = "";
-    this.additions_ = new ArrayList<String>();
-    this.apiVersion_ = WGoogleMap.ApiVersion.Version2;
-    this.setImplementation(new WContainerWidget());
-    this.init();
-    if (parent != null) {
-      parent.addWidget(this);
-    }
-  }
-  /**
-   * Creates a map widget with optionally a parent argument.
-   *
-   * <p>Calls {@link #WGoogleMap(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WGoogleMap(GoogleMapsVersion version, WContainerWidget parentContainer)
+   * this(GoogleMapsVersion.v3, (WContainerWidget)null)}
    */
   public WGoogleMap() {
-    this((WContainerWidget) null);
+    this(GoogleMapsVersion.v3, (WContainerWidget) null);
+  }
+  /**
+   * Creates a map widget with a version.
+   *
+   * <p>Calls {@link #WGoogleMap(GoogleMapsVersion version, WContainerWidget parentContainer)
+   * this(version, (WContainerWidget)null)}
+   */
+  public WGoogleMap(GoogleMapsVersion version) {
+    this(version, (WContainerWidget) null);
   }
   /** Destructor. */
   public void remove() {
-    ;
+
     super.remove();
   }
   /** Adds a marker overlay to the map. */
   public void addMarker(final WGoogleMap.Coordinate pos) {
     StringWriter strm = new StringWriter();
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       strm.append("var marker = ");
       write(strm, pos);
       strm.append(";").append(this.getJsRef()).append(".map.addOverlay(marker);");
@@ -218,7 +177,7 @@ public class WGoogleMap extends WCompositeWidget {
       write(strm, points.get(i));
       strm.append(";");
     }
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       strm.append("var poly = new google.maps.Polyline(waypoints, \"")
           .append(color.getCssText())
           .append("\", ")
@@ -250,10 +209,10 @@ public class WGoogleMap extends WCompositeWidget {
    * Adds a polyline overlay to the map.
    *
    * <p>Calls {@link #addPolyline(List points, WColor color, int width, double opacity)
-   * addPolyline(points, WColor.red, 2, 1.0)}
+   * addPolyline(points, new WColor(StandardColor.Red), 2, 1.0)}
    */
   public final void addPolyline(final List<WGoogleMap.Coordinate> points) {
-    addPolyline(points, WColor.red, 2, 1.0);
+    addPolyline(points, new WColor(StandardColor.Red), 2, 1.0);
   }
   /**
    * Adds a polyline overlay to the map.
@@ -286,7 +245,7 @@ public class WGoogleMap extends WCompositeWidget {
       final WColor strokeColor,
       int strokeWidth,
       final WColor fillColor) {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       throw new UnsupportedOperationException(
           "WGoogleMap::addCircle is not supported in the Google Maps API v2.");
     } else {
@@ -331,7 +290,7 @@ public class WGoogleMap extends WCompositeWidget {
   /** Adds a icon marker overlay to the map. */
   public void addIconMarker(final WGoogleMap.Coordinate pos, final String iconURL) {
     StringWriter strm = new StringWriter();
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       throw new UnsupportedOperationException(
           "WGoogleMap::addIconMarker is not supported in the Google Maps API v2.");
     } else {
@@ -354,7 +313,7 @@ public class WGoogleMap extends WCompositeWidget {
   }
   /** Removes all overlays from the map. */
   public void clearOverlays() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.clearOverlays();");
     } else {
       StringWriter strm = new StringWriter();
@@ -381,7 +340,7 @@ public class WGoogleMap extends WCompositeWidget {
     strm.append("var pos = ");
     write(strm, pos);
     strm.append(";");
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       strm.append(this.getJsRef())
           .append(".map.openInfoWindow(pos, ")
           .append(WWebWidget.jsStringLiteral(myHtml))
@@ -452,7 +411,7 @@ public class WGoogleMap extends WCompositeWidget {
     strm.append(", ");
     write(strm, rightBottomC);
     strm.append(");");
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       strm.append("var zooml = ")
           .append(this.getJsRef())
           .append(".map.getBoundsZoomLevel(bbox);")
@@ -496,7 +455,7 @@ public class WGoogleMap extends WCompositeWidget {
    * returnToSavedPosition()}.
    */
   public void savePosition() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.savePosition();");
     } else {
       StringWriter strm = new StringWriter();
@@ -513,7 +472,7 @@ public class WGoogleMap extends WCompositeWidget {
   }
   /** Restores the map view that was saved by {@link WGoogleMap#savePosition() savePosition()}. */
   public void returnToSavedPosition() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.returnToSavedPosition();");
     } else {
       StringWriter strm = new StringWriter();
@@ -528,22 +487,9 @@ public class WGoogleMap extends WCompositeWidget {
       this.doGmJavaScript(strm.toString());
     }
   }
-  /**
-   * Notifies the map of a change of the size of its container.
-   *
-   * <p>Call this method after the size of the container DOM object has changed, so that the map can
-   * adjust itself to fit the new size.
-   *
-   * <p>
-   *
-   * @deprecated the map is resized automatically when necessary
-   */
-  public void checkResize() {
-    this.doGmJavaScript(this.getJsRef() + ".map.checkResize();");
-  }
   /** Enables the dragging of the map (enabled by default). */
   public void enableDragging() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.enableDragging();");
     } else {
       this.setMapOption("draggable", "true");
@@ -551,7 +497,7 @@ public class WGoogleMap extends WCompositeWidget {
   }
   /** Disables the dragging of the map. */
   public void disableDragging() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.disableDragging();");
     } else {
       this.setMapOption("draggable", "false");
@@ -559,7 +505,7 @@ public class WGoogleMap extends WCompositeWidget {
   }
   /** Enables double click to zoom in and out (enabled by default). */
   public void enableDoubleClickZoom() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.enableDoubleClickZoom();");
     } else {
       this.setMapOption("disableDoubleClickZoom", "false");
@@ -567,7 +513,7 @@ public class WGoogleMap extends WCompositeWidget {
   }
   /** Disables double click to zoom in and out. */
   public void disableDoubleClickZoom() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.disableDoubleClickZoom();");
     } else {
       this.setMapOption("disableDoubleClickZoom", "true");
@@ -585,7 +531,7 @@ public class WGoogleMap extends WCompositeWidget {
    * <p><i><b>Note: </b>This functionality is no longer available in the Google Maps API v3. </i>
    */
   public void enableGoogleBar() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.enableGoogleBar();");
     } else {
       throw new UnsupportedOperationException(
@@ -603,7 +549,7 @@ public class WGoogleMap extends WCompositeWidget {
    * <p><i><b>Note: </b>This functionality is no longer available in the Google Maps API v3. </i>
    */
   public void disableGoogleBar() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.disableGoogleBar();");
     } else {
       throw new UnsupportedOperationException(
@@ -616,7 +562,7 @@ public class WGoogleMap extends WCompositeWidget {
    * <p>Scroll wheel zoom is disabled by default.
    */
   public void enableScrollWheelZoom() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.enableScrollWheelZoom();");
     } else {
       this.setMapOption("scrollwheel", "true");
@@ -628,7 +574,7 @@ public class WGoogleMap extends WCompositeWidget {
    * <p>Scroll wheel zoom is disabled by default.
    */
   public void disableScrollWheelZoom() {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       this.doGmJavaScript(this.getJsRef() + ".map.disableScrollWheelZoom();");
     } else {
       this.setMapOption("scrollwheel", "false");
@@ -639,21 +585,21 @@ public class WGoogleMap extends WCompositeWidget {
    *
    * <p>The control allows selecting and switching between supported map types via buttons.
    */
-  public void setMapTypeControl(WGoogleMap.MapTypeControl type) {
+  public void setMapTypeControl(MapTypeControl type) {
     StringWriter strm = new StringWriter();
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       String control = "";
       switch (type) {
-        case DefaultControl:
+        case Default:
           control = "google.maps.MapTypeControl";
           break;
-        case MenuControl:
+        case Menu:
           control = "google.maps.MenuMapTypeControl";
           break;
-        case HierarchicalControl:
+        case Hierarchical:
           control = "google.maps.HierarchicalMapTypeControl";
           break;
-        case HorizontalBarControl:
+        case HorizontalBar:
           throw new UnsupportedOperationException(
               "WGoogleMap::setMapTypeControl: HorizontalBarControl is not supported when using Google Maps API v2.");
         default:
@@ -675,16 +621,16 @@ public class WGoogleMap extends WCompositeWidget {
     } else {
       String control = "";
       switch (type) {
-        case DefaultControl:
+        case Default:
           control = "DEFAULT";
           break;
-        case MenuControl:
+        case Menu:
           control = "DROPDOWN_MENU";
           break;
-        case HorizontalBarControl:
+        case HorizontalBar:
           control = "HORIZONTAL_BAR";
           break;
-        case HierarchicalControl:
+        case Hierarchical:
           throw new UnsupportedOperationException(
               "WGoogleMap::setMapTypeControl: HierarchicalControl is not supported when using Google Maps API v3.");
         default:
@@ -726,7 +672,7 @@ public class WGoogleMap extends WCompositeWidget {
     return this.mouseMoved_;
   }
   /** Return the used Google Maps API version. */
-  public WGoogleMap.ApiVersion getApiVersion() {
+  public GoogleMapsVersion getApiVersion() {
     return this.apiVersion_;
   }
 
@@ -736,7 +682,7 @@ public class WGoogleMap extends WCompositeWidget {
   private String googlekey_;
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       WApplication app = WApplication.getInstance();
       String initFunction = app.getJavaScriptClass() + ".init_google_maps_" + this.getId();
       StringBuilder strm = new StringBuilder();
@@ -747,7 +693,7 @@ public class WGoogleMap extends WCompositeWidget {
           .append(";if (!self) { setTimeout(")
           .append(initFunction)
           .append(", 0);return;}");
-      if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+      if (this.apiVersion_ == GoogleMapsVersion.v2) {
         strm.append(
             "var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
         this.setJavaScriptMember(
@@ -774,7 +720,7 @@ public class WGoogleMap extends WCompositeWidget {
           .append(";}, 0)};")
           .append(app.getJavaScriptClass())
           .append("._p_.loadGoogleMaps('")
-          .append(this.apiVersion_ == WGoogleMap.ApiVersion.Version2 ? '2' : '3')
+          .append(this.apiVersion_ == GoogleMapsVersion.v2 ? '2' : '3')
           .append("',")
           .append(WWebWidget.jsStringLiteral(this.googlekey_))
           .append(",")
@@ -802,17 +748,9 @@ public class WGoogleMap extends WCompositeWidget {
 
   private List<String> additions_;
 
-  private void init() {
-    WApplication app = WApplication.getInstance();
-    this.googlekey_ = localhost_key;
-    this.googlekey_ = WApplication.readConfigurationProperty("google_api_key", this.googlekey_);
-    final String gmuri = "//www.google.com/jsapi?key=" + this.googlekey_;
-    app.require(gmuri, "google");
-  }
-
   private void streamJSListener(
       final JSignal1<WGoogleMap.Coordinate> signal, String signalName, final StringBuilder strm) {
-    if (this.apiVersion_ == WGoogleMap.ApiVersion.Version2) {
+    if (this.apiVersion_ == GoogleMapsVersion.v2) {
       strm.append("google.maps.Event.addListener(map, \"")
           .append(signalName)
           .append("\", function(overlay, latlng) {if (latlng) {")
@@ -839,7 +777,7 @@ public class WGoogleMap extends WCompositeWidget {
     this.doGmJavaScript(strm.toString());
   }
 
-  private WGoogleMap.ApiVersion apiVersion_;
+  private GoogleMapsVersion apiVersion_;
   private static final String localhost_key =
       "ABQIAAAAWqrN5o4-ISwj0Up_depYvhTwM0brOpm-All5BF6PoaKBxRWWERS-S9gPtCri-B6BZeXV8KpT4F80DQ";
 

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,18 +29,9 @@ public class WCssTextRule extends WCssRule {
   private static Logger logger = LoggerFactory.getLogger(WCssTextRule.class);
 
   /** Creates a CSS rule with a given selector and declarations. */
-  public WCssTextRule(final String selector, final String declarations, WObject parent) {
-    super(selector, parent);
-    this.declarations_ = declarations;
-  }
-  /**
-   * Creates a CSS rule with a given selector and declarations.
-   *
-   * <p>Calls {@link #WCssTextRule(String selector, String declarations, WObject parent)
-   * this(selector, declarations, (WObject)null)}
-   */
   public WCssTextRule(final String selector, final String declarations) {
-    this(selector, declarations, (WObject) null);
+    super(selector);
+    this.declarations_ = declarations;
   }
 
   public String getDeclarations() {

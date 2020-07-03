@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class BarSeriesRenderer extends SeriesRenderer {
+final class BarSeriesRenderer extends SeriesRenderer {
   private static Logger logger = LoggerFactory.getLogger(BarSeriesRenderer.class);
 
   public BarSeriesRenderer(
@@ -47,7 +48,7 @@ class BarSeriesRenderer extends SeriesRenderer {
             x, stacky, xAxis, yAxis, this.it_.getCurrentXSegment(), this.it_.getCurrentYSegment());
     FillRangeType fr = this.series_.getFillRange();
     switch (fr) {
-      case MinimumValueFill:
+      case MinimumValue:
         bottomMid =
             new WPointF(
                 this.chart_
@@ -61,7 +62,7 @@ class BarSeriesRenderer extends SeriesRenderer {
                     .getX(),
                 this.chart_.chartArea_.getBottom());
         break;
-      case MaximumValueFill:
+      case MaximumValue:
         bottomMid =
             new WPointF(
                 this.chart_
@@ -99,13 +100,13 @@ class BarSeriesRenderer extends SeriesRenderer {
     if (nonZeroWidth) {
       WBrush brush = this.series_.getBrush().clone();
       SeriesIterator.setBrushColor(
-          brush, this.series_, xRow, xColumn, yRow, yColumn, ItemDataRole.BarBrushColorRole);
+          brush, this.series_, xRow, xColumn, yRow, yColumn, ItemDataRole.BarBrushColor);
       this.painter_.fillPath(transform.map(bar), brush);
     }
     this.painter_.setShadow(new WShadow());
     WPen pen = this.series_.getPen().clone();
     SeriesIterator.setPenColor(
-        pen, this.series_, xRow, xColumn, yRow, yColumn, ItemDataRole.BarPenColorRole);
+        pen, this.series_, xRow, xColumn, yRow, yColumn, ItemDataRole.BarPenColor);
     this.painter_.strokePath(transform.map(bar).getCrisp(), pen);
     WString toolTip = this.series_.getModel().getToolTip(yRow, yColumn);
     if (!(toolTip.length() == 0) && nonZeroWidth) {
@@ -114,11 +115,8 @@ class BarSeriesRenderer extends SeriesRenderer {
       WPointF tr = t.map(segmentPoint(bar, 1));
       WPointF br = t.map(segmentPoint(bar, 2));
       WPointF bl = t.map(segmentPoint(bar, 3));
-      if (!EnumUtils.mask(
-                  this.series_.getModel().flags(yRow, yColumn), ItemFlag.ItemHasDeferredTooltip)
-              .isEmpty()
-          || !EnumUtils.mask(this.series_.getModel().flags(yRow, yColumn), ItemFlag.ItemIsXHTMLText)
-              .isEmpty()) {
+      if (this.series_.getModel().flags(yRow, yColumn).contains(ItemFlag.DeferredToolTip)
+          || this.series_.getModel().flags(yRow, yColumn).contains(ItemFlag.XHTMLText)) {
         this.chart_.hasDeferredToolTips_ = true;
         WCartesianChart.BarTooltip btt =
             new WCartesianChart.BarTooltip(this.series_, xRow, xColumn, yRow, yColumn);
@@ -152,7 +150,7 @@ class BarSeriesRenderer extends SeriesRenderer {
             useRect = true;
           }
         }
-        WAbstractArea area;
+        WAbstractArea area = null;
         if (useRect) {
           area = new WRectArea(tlx, tly, brx - tlx, bry - tly);
         } else {
@@ -175,7 +173,7 @@ class BarSeriesRenderer extends SeriesRenderer {
       breakPath.lineTo(this.hv(left + width + 10, bTopMidY + 1));
       breakPath.lineTo(this.hv(left + width + 10, bTopMidY - 1));
       breakPath.lineTo(this.hv(left - 10, bTopMidY - 1));
-      this.painter_.setPen(new WPen(PenStyle.NoPen));
+      this.painter_.setPen(new WPen(PenStyle.None));
       this.painter_.setBrush(this.chart_.getBackground());
       this.painter_.drawPath(transform.map(breakPath).getCrisp());
       this.painter_.setPen(new WPen());
@@ -191,7 +189,7 @@ class BarSeriesRenderer extends SeriesRenderer {
       breakPath.lineTo(this.hv(left - 10, bBottomMidY + 1));
       breakPath.lineTo(this.hv(left + width + 10, bBottomMidY + 1));
       this.painter_.setBrush(this.chart_.getBackground());
-      this.painter_.setPen(new WPen(PenStyle.NoPen));
+      this.painter_.setPen(new WPen(PenStyle.None));
       this.painter_.drawPath(transform.map(breakPath).getCrisp());
       this.painter_.setPen(new WPen());
       WPainterPath line = new WPainterPath();

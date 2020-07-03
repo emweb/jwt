@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,11 +27,11 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The current selection may be set and read using {@link WComboBox#setCurrentIndex(int index)
  * WComboBox#setCurrentIndex()} and {@link WComboBox#getCurrentIndex()}, for {@link
- * SelectionMode#SingleSelection} mode, or {@link WSelectionBox#setSelectedIndexes(Set selection)
+ * SelectionMode#Single} mode, or {@link WSelectionBox#setSelectedIndexes(Set selection)
  * setSelectedIndexes()} and {@link WSelectionBox#getSelectedIndexes() getSelectedIndexes()} for
- * {@link SelectionMode#ExtendedSelection} mode. The {@link WComboBox#activated()} and {@link
- * WComboBox#sactivated()} signals are not emited in the {@link SelectionMode#ExtendedSelection}
- * mode, use the {@link WFormWidget#changed()} signal.
+ * {@link SelectionMode#Extended} mode. The {@link WComboBox#activated()} and {@link
+ * WComboBox#sactivated()} signals are not emited in the {@link SelectionMode#Extended} mode, use
+ * the {@link WFormWidget#changed()} signal.
  *
  * <p>WSelectionBox is an MVC view class, using a simple string list model by default. The model may
  * be populated using {@link WComboBox#addItem(CharSequence text) WComboBox#addItem()} or {@link
@@ -54,18 +55,19 @@ public class WSelectionBox extends WComboBox {
   private static Logger logger = LoggerFactory.getLogger(WSelectionBox.class);
 
   /** Constructor. */
-  public WSelectionBox(WContainerWidget parent) {
-    super(parent);
+  public WSelectionBox(WContainerWidget parentContainer) {
+    super();
     this.verticalSize_ = 5;
-    this.selectionMode_ = SelectionMode.SingleSelection;
+    this.selectionMode_ = SelectionMode.Single;
     this.selection_ = new HashSet<Integer>();
     this.configChanged_ = false;
     this.noSelectionEnabled_ = true;
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WSelectionBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WSelectionBox(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WSelectionBox() {
     this((WContainerWidget) null);
@@ -82,20 +84,20 @@ public class WSelectionBox extends WComboBox {
   public void setVerticalSize(int items) {
     this.verticalSize_ = items;
     this.configChanged_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Sets the selection mode.
    *
-   * <p>The default selection mode is SingleSelection. You can change to {@link
-   * SelectionMode#ExtendedSelection} to allow selection of multiple items.
+   * <p>The default selection mode is {@link SelectionMode#Single}. You can change to {@link
+   * SelectionMode#Extended} to allow selection of multiple items.
    */
   public void setSelectionMode(SelectionMode mode) {
     if (mode != this.selectionMode_) {
       this.selectionMode_ = mode;
       this.configChanged_ = true;
       this.repaint();
-      if (mode == SelectionMode.ExtendedSelection) {
+      if (mode == SelectionMode.Extended) {
         this.selection_.clear();
         if (this.getCurrentIndex() != -1) {
           this.selection_.add(this.getCurrentIndex());
@@ -121,38 +123,36 @@ public class WSelectionBox extends WComboBox {
     return this.selectionMode_;
   }
   /**
-   * Returns the current selection (in {@link SelectionMode#ExtendedSelection} mode).
+   * Returns the current selection (in {@link SelectionMode#Extended} mode).
    *
    * <p>Get the list of currently selected items. This method is only defined when {@link
-   * WSelectionBox#getSelectionMode() getSelectionMode()} is {@link
-   * SelectionMode#ExtendedSelection}. Otherwise, you should use {@link WComboBox#getCurrentIndex()}
-   * to get item currently selected.
+   * WSelectionBox#getSelectionMode() getSelectionMode()} is {@link SelectionMode#Extended}.
+   * Otherwise, you should use {@link WComboBox#getCurrentIndex()} to get item currently selected.
    *
    * <p>
    *
    * @see WComboBox#getCurrentIndex()
    */
   public Set<Integer> getSelectedIndexes() {
-    if (this.selectionMode_ != SelectionMode.ExtendedSelection) {
+    if (this.selectionMode_ != SelectionMode.Extended) {
       throw new WException(
-          "WSelectionBox::setSelectedIndexes() can only be used for an ExtendedSelection mode");
+          "WSelectionBox::setSelectedIndexes() can only be used for an SelectionMode::Extended mode");
     }
     return this.selection_;
   }
   /**
-   * Sets the selection (in {@link SelectionMode#ExtendedSelection} mode).
+   * Sets the selection (in {@link SelectionMode#Extended} mode).
    *
-   * <p>For an {@link SelectionMode#ExtendedSelection} mode, set the list of currently selected
-   * items.
+   * <p>For an {@link SelectionMode#Extended} mode, set the list of currently selected items.
    *
    * <p>
    *
    * @see WSelectionBox#getSelectedIndexes()
    */
   public void setSelectedIndexes(final Set<Integer> selection) {
-    if (this.selectionMode_ != SelectionMode.ExtendedSelection) {
+    if (this.selectionMode_ != SelectionMode.Extended) {
       throw new WException(
-          "WSelectionBox::setSelectedIndexes() can only be used for an ExtendedSelection mode");
+          "WSelectionBox::setSelectedIndexes() can only be used for an SelectionMode::Extended mode");
     }
     this.selection_ = selection;
     this.selectionChanged_ = true;
@@ -169,7 +169,7 @@ public class WSelectionBox extends WComboBox {
    * @see WSelectionBox#setSelectedIndexes(Set selection)
    */
   public void clearSelection() {
-    if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
+    if (this.selectionMode_ == SelectionMode.Extended) {
       this.setSelectedIndexes(new HashSet<Integer>());
     } else {
       this.setCurrentIndex(-1);
@@ -188,17 +188,16 @@ public class WSelectionBox extends WComboBox {
   void updateDom(final DomElement element, boolean all) {
     if (this.configChanged_ || all) {
       element.setAttribute("size", String.valueOf(this.verticalSize_));
-      if (!all || this.selectionMode_ == SelectionMode.ExtendedSelection) {
+      if (!all || this.selectionMode_ == SelectionMode.Extended) {
         element.setProperty(
-            Property.PropertyMultiple,
-            this.selectionMode_ == SelectionMode.ExtendedSelection ? "true" : "false");
+            Property.Multiple, this.selectionMode_ == SelectionMode.Extended ? "true" : "false");
         if (!all) {
           this.selectionChanged_ = true;
         }
       }
       this.configChanged_ = false;
     }
-    if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
+    if (this.selectionMode_ == SelectionMode.Extended) {
       if (this.selectionChanged_ && !all) {
         for (int i = 0; i < this.getCount(); ++i) {
           element.callMethod(
@@ -217,7 +216,7 @@ public class WSelectionBox extends WComboBox {
     if (this.selectionChanged_) {
       return;
     }
-    if (this.selectionMode_ == SelectionMode.SingleSelection) {
+    if (this.selectionMode_ == SelectionMode.Single) {
       super.setFormData(formData);
     } else {
       this.selection_.clear();
@@ -227,7 +226,7 @@ public class WSelectionBox extends WComboBox {
           try {
             int i = Integer.parseInt(v);
             this.selection_.add(i);
-          } catch (final NumberFormatException error) {
+          } catch (final RuntimeException e) {
             logger.error(
                 new StringWriter()
                     .append("received illegal form value: '")
@@ -247,7 +246,7 @@ public class WSelectionBox extends WComboBox {
   }
 
   boolean isSelected(int index) {
-    if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
+    if (this.selectionMode_ == SelectionMode.Extended) {
       boolean i = this.selection_.contains(index);
       return i != false;
     } else {

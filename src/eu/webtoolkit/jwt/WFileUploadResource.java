@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,11 +18,11 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WFileUploadResource extends WResource {
+final class WFileUploadResource extends WResource {
   private static Logger logger = LoggerFactory.getLogger(WFileUploadResource.class);
 
   public WFileUploadResource(WFileUpload fileUpload) {
-    super(fileUpload);
+    super();
     this.fileUpload_ = fileUpload;
   }
 
@@ -41,11 +42,11 @@ class WFileUploadResource extends WResource {
     Writer o = response.out();
     o.append("<!DOCTYPE html><html>\n<head><script type=\"text/javascript\">\nfunction load() { ");
     if (triggerUpdate || 0 != 0) {
-      WEnvironment.UserAgent agent = WApplication.getInstance().getEnvironment().getAgent();
+      UserAgent agent = WApplication.getInstance().getEnvironment().getAgent();
       if (triggerUpdate) {
         logger.debug(
             new StringWriter().append("Resource handleRequest(): signaling uploaded").toString());
-        if (agent == WEnvironment.UserAgent.IE6 || agent == WEnvironment.UserAgent.IE7) {
+        if (agent == UserAgent.IE6 || agent == UserAgent.IE7) {
           o.append("window.parent.")
               .append(WApplication.getInstance().getJavaScriptClass())
               .append("._p_.update(null, '")
@@ -68,7 +69,7 @@ class WFileUploadResource extends WResource {
                   .append("Resource handleRequest(): signaling file-too-large")
                   .toString());
           String s = String.valueOf(0);
-          if (agent == WEnvironment.UserAgent.IE6 || agent == WEnvironment.UserAgent.IE7) {
+          if (agent == UserAgent.IE6 || agent == UserAgent.IE7) {
             o.append(this.fileUpload_.fileTooLarge().createCall(s));
           } else {
             o.append(" window.parent.postMessage(")

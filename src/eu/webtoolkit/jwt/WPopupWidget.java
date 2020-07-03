@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,66 +39,44 @@ public class WPopupWidget extends WCompositeWidget {
    * <p>You need to pass in a widget that provides the main contents of the widget (e.g. a {@link
    * WTemplate} or {@link WContainerWidget}).
    *
-   * <p>Unlike other widgets, a popup widget does not need a parent widget (it acts like a pseudo
-   * top-level widget), but it can be given a parent object which is used to scope its lifetime.
+   * <p>Unlike other widgets, a popup widget is a top-level widget that should not be added to
+   * another container.
    */
-  public WPopupWidget(WWidget impl, WObject parent) {
+  public WPopupWidget(WWidget impl) {
     super();
-    this.fakeParent_ = null;
-    this.anchorWidget_ = null;
+    this.anchorWidget_ = (WWidget) null;
     this.orientation_ = Orientation.Vertical;
     this.transient_ = false;
     this.autoHideDelay_ = 0;
-    this.deleteWhenHidden_ = false;
-    this.hidden_ = new Signal(this);
-    this.shown_ = new Signal(this);
+    this.hidden_ = new Signal();
+    this.shown_ = new Signal();
     this.jsHidden_ = new JSignal(impl, "hidden");
     this.jsShown_ = new JSignal(impl, "shown");
     this.setImplementation(impl);
-    if (parent != null) {
-      parent.addChild(this);
-    }
     WApplication.getInstance().addGlobalWidget(this);
     this.hide();
     this.setPopup(true);
     this.setPositionScheme(PositionScheme.Absolute);
     this.jsHidden_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WPopupWidget.this.hide();
-          }
+        () -> {
+          WPopupWidget.this.hide();
         });
     this.jsShown_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WPopupWidget.this.show();
-          }
+        () -> {
+          WPopupWidget.this.show();
         });
     WApplication.getInstance()
         .internalPathChanged()
         .addListener(
             this,
-            new Signal1.Listener<String>() {
-              public void trigger(String e1) {
-                WPopupWidget.this.onPathChange();
-              }
+            (String e1) -> {
+              WPopupWidget.this.onPathChange();
             });
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WPopupWidget(WWidget impl, WObject parent) this(impl, (WObject)null)}
-   */
-  public WPopupWidget(WWidget impl) {
-    this(impl, (WObject) null);
   }
   /** Destructor. */
   public void remove() {
-    if (this.fakeParent_ != null) {
-      this.fakeParent_.removeChild(this);
-    }
     WApplication.getInstance().removeGlobalWidget(this);
     super.remove();
   }
@@ -133,7 +112,7 @@ public class WPopupWidget extends WCompositeWidget {
    *
    * <p>A transient popup will automatically hide when the user clicks outside of the popup. When
    * <code>autoHideDelay</code> is not 0, then it will also automatically hide when the user moves
-   * the mouse outside the widget for longer than this delay.
+   * the mouse outside the widget for longer than this delay (in ms).
    */
   public void setTransient(boolean isTransient, int autoHideDelay) {
     this.transient_ = isTransient;
@@ -178,29 +157,6 @@ public class WPopupWidget extends WCompositeWidget {
   public int getAutoHideDelay() {
     return this.autoHideDelay_;
   }
-  /**
-   * Lets the popup delete itself when hidden.
-   *
-   * <p>When this is enabled, the popup will delete itself when hidden. You need to take care that
-   * when overriding {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation)
-   * setHidden()}, the popup may thus be deleted from within {@link WPopupWidget#setHidden(boolean
-   * hidden, WAnimation animation) setHidden()}.
-   *
-   * <p>The default value is <code>false</code>.
-   */
-  public void setDeleteWhenHidden(boolean enable) {
-    this.deleteWhenHidden_ = enable;
-  }
-  /**
-   * Returns whether auto delete is enabled.
-   *
-   * <p>
-   *
-   * @see WPopupWidget#setDeleteWhenHidden(boolean enable)
-   */
-  public boolean isDeleteWhenHidden() {
-    return this.deleteWhenHidden_;
-  }
 
   public void setHidden(boolean hidden, final WAnimation animation) {
     if (WWebWidget.canOptimizeUpdates() && hidden == this.isHidden()) {
@@ -223,9 +179,6 @@ public class WPopupWidget extends WCompositeWidget {
         this.doJavaScript("var o = " + this.getJsRef() + ";if (o && o.wtPopup) o.wtPopup.shown();");
       }
     }
-    if (!WWebWidget.canOptimizeUpdates() && hidden && this.deleteWhenHidden_) {
-      if (this != null) this.remove();
-    }
   }
   /**
    * Signal emitted when the popup is hidden.
@@ -240,7 +193,7 @@ public class WPopupWidget extends WCompositeWidget {
   /**
    * Signal emitted when the popup is shown.
    *
-   * <p>This signal is emitted when the popup is being hidden because of a client-side event (not
+   * <p>This signal is emitted when the popup is being shown because of a client-side event (not
    * when {@link WPopupWidget#setHidden(boolean hidden, WAnimation animation) setHidden()} or {@link
    * WWidget#show()} is called).
    */
@@ -249,35 +202,20 @@ public class WPopupWidget extends WCompositeWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       this.defineJS();
     }
     super.render(flags);
-  }
-
-  protected void setParent(WObject p) {
-    if (!(p != null) || p == WApplication.getInstance().getDomRoot()) {
-      if (!(p != null)) {
-        this.fakeParent_ = null;
-      }
-      super.setParent(p);
-    } else {
-      if (p != null) {
-        this.fakeParent_ = p;
-      }
-    }
   }
 
   protected void onPathChange() {
     this.hide();
   }
 
-  private WObject fakeParent_;
   private WWidget anchorWidget_;
   private Orientation orientation_;
   private boolean transient_;
   private int autoHideDelay_;
-  private boolean deleteWhenHidden_;
   private Signal hidden_;
   private Signal shown_;
   private JSignal jsHidden_;
@@ -288,7 +226,7 @@ public class WPopupWidget extends WCompositeWidget {
     app.loadJavaScript("js/WPopupWidget.js", wtjs1());
     StringBuilder jsObj = new StringBuilder();
     jsObj
-        .append("new Wt3_6_0.WPopupWidget(")
+        .append("new Wt4_4_0.WPopupWidget(")
         .append(app.getJavaScriptClass())
         .append(',')
         .append(this.getJsRef())

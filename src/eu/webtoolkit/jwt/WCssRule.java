@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -33,12 +34,6 @@ import org.slf4j.LoggerFactory;
 public abstract class WCssRule extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WCssRule.class);
 
-  /** Destructor. */
-  public void remove() {
-    if (this.sheet_ != null) {
-      this.sheet_.removeRule(this);
-    }
-  }
   /**
    * Sets the selector.
    *
@@ -75,18 +70,10 @@ public abstract class WCssRule extends WObject {
     return false;
   }
   /** Creates a new CSS rule with given selector. */
-  protected WCssRule(final String selector, WObject parent) {
-    super(parent);
+  protected WCssRule(final String selector) {
+    super();
     this.selector_ = selector;
     this.sheet_ = null;
-  }
-  /**
-   * Creates a new CSS rule with given selector.
-   *
-   * <p>Calls {@link #WCssRule(String selector, WObject parent) this(selector, (WObject)null)}
-   */
-  protected WCssRule(final String selector) {
-    this(selector, (WObject) null);
   }
 
   private String selector_;

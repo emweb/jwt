@@ -80,6 +80,7 @@ public class Configuration {
 	private int bootstrapTimeout = 10;
 	private String uaCompatible = "";
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
+	private List<HeadMatter> headMatter = new ArrayList<HeadMatter>();
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
@@ -826,12 +827,28 @@ public class Configuration {
 	}
 
 	/**
+	 * Returns configured head matter.
+	 * Like meta headers, but also supports e.g. &lt;link&gt; tags.
+	 */
+	public List<HeadMatter> getHeadMatter() {
+		return headMatter;
+	}
+
+	/**
 	 * Sets (static) meta headers. This is an alternative to using
 	 * {@link WApplication#addMetaHeader(String, CharSequence)}, but having the
 	 * benefit that they are added to all sessions.
 	 */
 	public void setMetaHeaders(List<MetaHeader> headers) {
 		this.metaHeaders = headers;
+	}
+
+	/**
+	 * Sets (static) head matter.
+	 * Like meta headers, but also supports e.g. &lt;link&gt; tags.
+	 */
+	public void setHeadMatter(List<HeadMatter> headMatter) {
+		this.headMatter = headMatter;
 	}
 
 	public boolean isAllowedOrigin(String origin) {

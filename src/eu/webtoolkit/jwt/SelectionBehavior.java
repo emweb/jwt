@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,9 +25,9 @@ import javax.servlet.http.*;
  */
 public enum SelectionBehavior {
   /** Select single items. */
-  SelectItems(0),
+  Items(0),
   /** Select only rows. */
-  SelectRows(1);
+  Rows(1);
 
   private int value;
 

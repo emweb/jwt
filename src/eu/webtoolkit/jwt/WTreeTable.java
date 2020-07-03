@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -64,35 +65,41 @@ public class WTreeTable extends WCompositeWidget {
    * width) addColumn()} calls, and then data using {@link WTreeTable#setTreeRoot(WTreeTableNode
    * root, CharSequence h) setTreeRoot()}.
    */
-  public WTreeTable(WContainerWidget parent) {
-    super(parent);
+  public WTreeTable(WContainerWidget parentContainer) {
+    super();
     this.columnWidths_ = new ArrayList<WLength>();
     this.setImplementation(this.impl_ = new WContainerWidget());
     this.setStyleClass("Wt-treetable");
     this.setPositionScheme(PositionScheme.Relative);
-    this.headers_ = new WContainerWidget(this.impl_);
+    this.headers_ = new WContainerWidget();
+    this.impl_.addWidget(this.headers_);
     this.headers_.setStyleClass("Wt-header header");
-    WContainerWidget spacer = new WContainerWidget(this.headers_);
+    WContainerWidget spacer = new WContainerWidget();
+    this.headers_.addWidget(spacer);
     spacer.setStyleClass("Wt-sbspacer");
-    this.headerContainer_ = new WContainerWidget(this.headers_);
+    this.headerContainer_ = new WContainerWidget();
+    this.headers_.addWidget(this.headerContainer_);
     this.headerContainer_.setFloatSide(Side.Right);
     this.headers_.addWidget(new WText());
     this.columnWidths_.add(WLength.Auto);
-    WContainerWidget content = new WContainerWidget(this.impl_);
+    WContainerWidget content = new WContainerWidget();
+    this.impl_.addWidget(content);
     content.setStyleClass("Wt-content");
     if (!WApplication.getInstance().getEnvironment().agentIsIE()) {
-      content.setOverflow(WContainerWidget.Overflow.OverflowAuto);
+      content.setOverflow(Overflow.Auto);
     } else {
       content.setAttributeValue("style", "overflow-y: auto; overflow-x: hidden; zoom: 1");
     }
-    content.addWidget(this.tree_ = new WTree());
+    this.tree_ = new WTree();
+    content.addWidget(this.tree_);
     this.tree_.setMargin(new WLength(3), EnumSet.of(Side.Top));
-    this.tree_.resize(new WLength(100, WLength.Unit.Percentage), WLength.Auto);
+    this.tree_.resize(new WLength(100, LengthUnit.Percentage), WLength.Auto);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new tree table.
    *
-   * <p>Calls {@link #WTreeTable(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTreeTable(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTreeTable() {
     this((WContainerWidget) null);
@@ -109,7 +116,7 @@ public class WTreeTable extends WCompositeWidget {
     if (this.getTreeRoot() != null) {
       throw new WException("WTreeTable::addColumn(): must be called before setTreeRoot()");
     }
-    WText t = new WText(header);
+    WText t = new WText(header, (WContainerWidget) null);
     t.resize(width, WLength.Auto);
     t.setInline(false);
     t.setFloatSide(Side.Left);
@@ -134,7 +141,7 @@ public class WTreeTable extends WCompositeWidget {
    *
    * <p>Sets the data for the tree table, and specify the header for the first column.
    *
-   * <p>The initial <code>root</code> is <code>null</code>.
+   * <p>The initial <code>root</code> is nullptr.
    *
    * <p>
    *
@@ -142,9 +149,9 @@ public class WTreeTable extends WCompositeWidget {
    * @see WTreeTable#setTree(WTree root, CharSequence h)
    */
   public void setTreeRoot(WTreeTableNode root, final CharSequence h) {
+    root.setTable(this);
     this.tree_.setTreeRoot(root);
     this.header(0).setText((h.length() == 0) ? "&nbsp;" : h);
-    root.setTable(this);
   }
   /** Returns the tree root. */
   public WTreeTableNode getTreeRoot() {
@@ -164,10 +171,15 @@ public class WTreeTable extends WCompositeWidget {
         ((this.tree_.getParent()) instanceof WContainerWidget
             ? (WContainerWidget) (this.tree_.getParent())
             : null);
-    if (this.tree_ != null) this.tree_.remove();
-    parent.addWidget(this.tree_ = root);
+    {
+      WWidget toRemove = WidgetUtils.remove(parent, this.tree_);
+      if (toRemove != null) toRemove.remove();
+    }
+
+    this.tree_ = root;
+    parent.addWidget(root);
     this.header(0).setText(h);
-    this.tree_.resize(new WLength(100, WLength.Unit.Percentage), WLength.Auto);
+    this.tree_.resize(new WLength(100, LengthUnit.Percentage), WLength.Auto);
     this.getTreeRoot().setTable(this);
   }
   /**
@@ -233,7 +245,7 @@ public class WTreeTable extends WCompositeWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       this.defineJavaScript();
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.resize(this.getWidth(), this.getHeight());
@@ -257,7 +269,7 @@ public class WTreeTable extends WCompositeWidget {
     app.loadJavaScript("js/WTreeTable.js", wtjs1());
     this.setJavaScriptMember(
         " WTreeTable",
-        "new Wt3_6_0.WTreeTable(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_4_0.WTreeTable(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
   }
 
   static WJavaScriptPreamble wtjs1() {
@@ -265,6 +277,6 @@ public class WTreeTable extends WCompositeWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WTreeTable",
-        "function(g,a){a.wtObj=this;var h=this,i=g.WT,f=$(a).find(\".Wt-content\").get(0),j=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,d,c){d=c>=0;b.style.height=d?c+\"px\":\"\";var e=b.lastChild;c-=$(b.firstChild).outerHeight();if(d&&c>0){if(e.style.height!=c+\"px\")e.style.height=c+\"px\"}else e.style.height=\"\"};this.autoJavaScript=function(){if(a.parentNode){j.style.display=f.scrollHeight>f.offsetHeight?\"block\":\"none\";var b=i.pxself(a,\"height\"); b&&h.wtResize(a,0,b,true)}}}");
+        "function(g,a){a.wtObj=this;var h=this,i=g.WT,f=$(a).find(\".Wt-content\").get(0),j=$(a).find(\".Wt-sbspacer\").get(0);this.wtResize=function(b,e,c,d){e=c>=0;if(d)b.style.height=e?c+\"px\":\"\";d=b.lastChild;c-=$(b.firstChild).outerHeight();if(e&&c>0){if(d.style.height!=c+\"px\")d.style.height=c+\"px\"}else d.style.height=\"\"};this.autoJavaScript=function(){if(a.parentNode){j.style.display=f.scrollHeight>f.offsetHeight?\"block\":\"none\";var b=i.pxself(a,\"height\"); b&&h.wtResize(a,0,b,false)}}}");
   }
 }

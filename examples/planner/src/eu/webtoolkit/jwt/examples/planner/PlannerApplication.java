@@ -91,7 +91,7 @@ public class PlannerApplication extends WApplication {
 
 	private void fatalError(Exception err) {
 		WMessageBox box = new WMessageBox(tr("fatalerror.title"), tr("fatalerror.body").arg(err.getMessage()),
-				Icon.NoIcon, EnumSet.of(StandardButton.Ok));
+				Icon.None, EnumSet.of(StandardButton.Ok));
 		box.show();
 		
 		err.printStackTrace();

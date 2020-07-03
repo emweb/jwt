@@ -30,7 +30,7 @@ public class Circle extends Shape {
 	public void paint(WPainter painter) {
 		//create a brush to define the circle's color and style
 		WBrush b = new WBrush();
-		b.setStyle(BrushStyle.SolidPattern);
+		b.setStyle(BrushStyle.Solid);
 		b.setColor(getColor());
 		
 		//create a painterpath, and add an ellipse to it

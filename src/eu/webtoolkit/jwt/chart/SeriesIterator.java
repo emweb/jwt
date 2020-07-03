@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -32,7 +33,7 @@ public class SeriesIterator {
    *
    * <p>Because of a &apos;break&apos; specified in an axis, axes may be divided in one or two
    * segments (in fact only the API limits this now to two). The iterator will iterate all segments
-   * seperately, but each time with a different clipping region specified in the painter,
+   * separately, but each time with a different clipping region specified in the painter,
    * corresponding to that segment.
    *
    * <p>The <i>currentSegmentArea</i> specifies the clipping area.
@@ -99,22 +100,22 @@ public class SeriesIterator {
       int xColumn,
       int yRow,
       int yColumn,
-      int colorRole) {
+      ItemDataRole colorRole) {
     WColor color = null;
     if (yRow >= 0 && yColumn >= 0) {
-      if (colorRole == ItemDataRole.MarkerPenColorRole) {
+      if (colorRole.equals(ItemDataRole.MarkerPenColor)) {
         color = series.getModel().getMarkerPenColor(yRow, yColumn);
       } else {
-        if (colorRole == ItemDataRole.MarkerBrushColorRole) {
+        if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
           color = series.getModel().getMarkerBrushColor(yRow, yColumn);
         }
       }
     }
     if (!(color != null) && xRow >= 0 && xColumn >= 0) {
-      if (colorRole == ItemDataRole.MarkerPenColorRole) {
+      if (colorRole.equals(ItemDataRole.MarkerPenColor)) {
         color = series.getModel().getMarkerPenColor(xRow, xColumn);
       } else {
-        if (colorRole == ItemDataRole.MarkerBrushColorRole) {
+        if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
           color = series.getModel().getMarkerBrushColor(xRow, xColumn);
         }
       }
@@ -131,22 +132,22 @@ public class SeriesIterator {
       int xColumn,
       int yRow,
       int yColumn,
-      int colorRole) {
+      ItemDataRole colorRole) {
     WColor color = null;
     if (yRow >= 0 && yColumn >= 0) {
-      if (colorRole == ItemDataRole.MarkerBrushColorRole) {
+      if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
         color = series.getModel().getMarkerBrushColor(yRow, yColumn);
       } else {
-        if (colorRole == ItemDataRole.BarBrushColorRole) {
+        if (colorRole.equals(ItemDataRole.BarBrushColor)) {
           color = series.getModel().getBarBrushColor(yRow, yColumn);
         }
       }
     }
     if (!(color != null) && xRow >= 0 && xColumn >= 0) {
-      if (colorRole == ItemDataRole.MarkerBrushColorRole) {
+      if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
         color = series.getModel().getMarkerBrushColor(xRow, xColumn);
       } else {
-        if (colorRole == ItemDataRole.BarBrushColorRole) {
+        if (colorRole.equals(ItemDataRole.BarBrushColor)) {
           color = series.getModel().getBarBrushColor(xRow, xColumn);
         }
       }
@@ -177,13 +178,13 @@ public class SeriesIterator {
 
   static String locToJsString(AxisValue loc) {
     switch (loc) {
-      case MinimumValue:
+      case Minimum:
         return "min";
-      case MaximumValue:
+      case Maximum:
         return "max";
-      case ZeroValue:
+      case Zero:
         return "zero";
-      case BothSides:
+      case Both:
         return "both";
     }
     assert false;

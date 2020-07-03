@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,10 @@ import org.slf4j.LoggerFactory;
 class AgeFormView extends WTemplateFormView {
   private static Logger logger = LoggerFactory.getLogger(AgeFormView.class);
 
-  public AgeFormView() {
+  public AgeFormView(WContainerWidget parentContainer) {
     super();
-    this.model_ = new AgeFormModel(this);
+    this.model_ = null;
+    this.model_ = new AgeFormModel();
     this.setTemplateText(tr("validation-template"));
     this.setFormWidget(AgeFormModel.AgeField, new WLineEdit());
     WPushButton button = new WPushButton("Save");
@@ -32,12 +34,15 @@ class AgeFormView extends WTemplateFormView {
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                AgeFormView.this.process();
-              }
+            (WMouseEvent e1) -> {
+              AgeFormView.this.process();
             });
     this.updateView(this.model_);
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public AgeFormView() {
+    this((WContainerWidget) null);
   }
 
   private void process() {

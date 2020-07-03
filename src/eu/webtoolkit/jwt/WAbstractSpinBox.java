@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -53,11 +54,11 @@ public abstract class WAbstractSpinBox extends WLineEdit {
       }
       final WEnvironment env = WApplication.getInstance().getEnvironment();
       if (env.agentIsChrome()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5.getValue()
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Chrome5.getValue()
           || env.agentIsSafari()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Safari4.getValue()
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Safari4.getValue()
           || env.agentIsOpera()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Opera10.getValue()) {
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Opera10.getValue()) {
         return true;
       }
     }
@@ -141,7 +142,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
     super.setText(this.getTextFromValue());
   }
 
-  public WValidator.State validate() {
+  public ValidationState validate() {
     return super.validate();
   }
 
@@ -160,8 +161,8 @@ public abstract class WAbstractSpinBox extends WLineEdit {
     return this.jsValueChanged_;
   }
   /** Constructor. */
-  protected WAbstractSpinBox(WContainerWidget parent) {
-    super(parent);
+  protected WAbstractSpinBox(WContainerWidget parentContainer) {
+    super();
     this.changed_ = false;
     this.valueChangedConnection_ = false;
     this.preferNative_ = false;
@@ -169,11 +170,13 @@ public abstract class WAbstractSpinBox extends WLineEdit {
     this.prefix_ = new WString();
     this.suffix_ = new WString();
     this.jsValueChanged_ = new JSignal2<Integer, Integer>(this, "spinboxValueChanged", true) {};
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #WAbstractSpinBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WAbstractSpinBox(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   protected WAbstractSpinBox() {
     this((WContainerWidget) null);
@@ -207,7 +210,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!this.setup_ && !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (!this.setup_ && flags.contains(RenderFlag.Full)) {
       this.setup();
     }
     if (this.jsValueChanged().needsUpdate(true)) {
@@ -268,7 +271,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WSpinBox.js", wtjs1());
     StringBuilder ss = new StringBuilder();
-    ss.append("new Wt3_6_0.WSpinBox(")
+    ss.append("new Wt4_4_0.WSpinBox(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())

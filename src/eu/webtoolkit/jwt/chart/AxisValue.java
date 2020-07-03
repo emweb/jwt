@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,14 +26,14 @@ import javax.servlet.http.*;
  * @see WAxis#setLocation(AxisValue location)
  */
 public enum AxisValue {
-  /** At the minimum value. */
-  MinimumValue,
-  /** At the maximum value. */
-  MaximumValue,
-  /** At the zero value (if displayed). */
-  ZeroValue,
-  /** At both sides (MinimumValue and MaximumValue). */
-  BothSides;
+  /** The minimum value. */
+  Minimum,
+  /** The maximum value. */
+  Maximum,
+  /** The zero value (if displayed). */
+  Zero,
+  /** At both sides (Minimum and Maximum). */
+  Both;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

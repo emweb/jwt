@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A localized string class.
@@ -34,6 +35,8 @@ public class WString implements Comparable<WString>, CharSequence {
 	private String key;
 	private String value;
 	private ArrayList<WString> arguments;
+	private boolean plural; // Whether this localized string has a plural key
+	private long count; // Count in plural localized string
 
 	/**
 	 * Creates an empty string.
@@ -42,6 +45,8 @@ public class WString implements Comparable<WString>, CharSequence {
 		this.value = "";
 		this.key = null;
 		this.arguments = null;
+		this.plural = false;
+		this.count = 0L;
 	}
 
 	/**
@@ -58,6 +63,8 @@ public class WString implements Comparable<WString>, CharSequence {
 		this.value = s;
 		this.key = null;
 		this.arguments = null;
+		this.plural = false;
+		this.count = 0L;
 	}
 
 	/**
@@ -71,6 +78,16 @@ public class WString implements Comparable<WString>, CharSequence {
 		this.value = "";
 		this.key = key;
 		this.arguments = null;
+		this.plural = false;
+		this.count = 0L;
+	}
+	
+	private WString(String key, boolean b, long count) {
+		this.value = "";
+		this.key = key;
+		this.arguments = null;
+		this.plural = true;
+		this.count = count;
 	}
 
 	/**
@@ -133,29 +150,55 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * @return the value.
 	 */
 	public String getValue() {
+		return getValue(TextFormat.Plain);
+	}
+	
+	/**
+	 * Returns the value.
+	 * <p>
+	 * A localized string is resolved using the {@link WApplication#getLocalizedStrings()}.
+	 * <p>
+	 * Arguments place holders are substituted with actual arguments. 
+	 * 
+	 * @return the value.
+	 */
+	public String getValue(TextFormat format) {
 		String result = value;
 
-		if (key != null)
-			result = resolveKey(key);
+		if (key != null) {
+			result = resolveKey(format);
+		}
 
 		if (arguments != null) {
 			for (int i = 0; i < arguments.size(); ++i) {
 				String key = '{' + String.valueOf(i + 1) + '}';
 				WString arg = arguments.get(i);
-				result = result.replace(key, arg != null ? arg.toString() : "null");
+				result = result.replace(key, arg != null ? arg.getValue(format) : "null");
 			}
 		}
 
 		return result;
 	}
 
-	private static String resolveKey(String key) {
-		String result = WApplication.getInstance().localizedStrings_.resolveKey(key);
-		if (result == null)
-			result = "??" + key + "??";
-		return result;
+	private String resolveKey(TextFormat format) {
+		Locale locale = WApplication.getInstance().getLocale();
+		LocalizedString localizedString;
+		if (plural)
+			localizedString = WApplication.getInstance().localizedStrings_.resolvePluralKey(locale, key, count);
+		else
+			localizedString = WApplication.getInstance().localizedStrings_.resolveKey(locale, key);
+		if (!localizedString.success)
+			localizedString = new LocalizedString("??" + key + "??", TextFormat.Plain);
+		if (localizedString.format == format) {
+			return localizedString.value;
+		} else if (localizedString.format == TextFormat.Plain &&
+			       format != TextFormat.Plain) {
+			return WWebWidget.escapeText(localizedString.value);
+		} else {
+			return WWebWidget.unescapeText(localizedString.value);
+		}
 	}
-
+	
 	/**
 	 * Compares this WString object with the specified WString object for order.
 	 */
@@ -169,10 +212,24 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * @param key the key which is used to resolve within a locale.
 	 * @return the localized string.
 	 * 
-	 * @see WLocalizedStrings#resolveKey(String)
+	 * @see WLocalizedStrings#resolveKey(Locale, String)
 	 */
 	public static WString tr(String key) {
 		return new WString(key, true);
+	}
+
+	/**
+	 * Creates a localized plural string.
+	 * 
+	 * @param key the key which is used to resolve within a locale.
+	 * @param count the count, to retrieve the correct plural form. 
+	 * 
+	 * @return the localized string.
+	 * 
+	 * @see WLocalizedStrings#resolvePluralKey(Locale, String, long)
+	 */
+	public static WString trn(String key, long count) {
+		return new WString(key, true, count);
 	}
 
 	/**
@@ -295,8 +352,10 @@ public class WString implements Comparable<WString>, CharSequence {
 
 	private void makeLiteral() {
 		if (key != null) {
-			value = resolveKey(key);
+			value = resolveKey(TextFormat.Plain);
 			key = null;
+			plural = false;
+			count = 0L;
 		}
 	}
 
@@ -327,7 +386,14 @@ public class WString implements Comparable<WString>, CharSequence {
 	 * @see #getValue()
 	 */
 	public String toString() {
-		return getValue();
+		return getValue(TextFormat.Plain);
+	}
+
+	/**
+	 * Returns the XHTML-encoded value of this string.
+	 */
+	public String toXhtml() {
+		return getValue(TextFormat.XHTML);
 	}
 
 	private static List<WString> stArguments = new ArrayList<WString>();

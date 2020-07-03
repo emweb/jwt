@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,9 +23,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>General information can be found at {@link WAbstractDataSeries3D}. Information on how the
  * model is structured is provided in the subclasses. GridData can be represented in three ways.
- * This is indicated by {@link Series3DType} and can be either PointSeries3D, SurfaceSeries3D or
- * BarSeries3D. Note that points and surfaces can only be added to charts of type {@link ChartType
- * ScatterPlot}, while bars can only be added to charts of type {@link ChartType CategoryChart}.
+ * This is indicated by {@link Series3DType} and can be either {@link Series3DType#Point}, {@link
+ * Series3DType#Surface} or {@link Series3DType#Bar}. Note that points and surfaces can only be
+ * added to charts of type {@link ChartType#Scatter}, while bars can only be added to charts of type
+ * {@link ChartType#Category}.
  *
  * <p>When the data is shown as a surface, a mesh can be added to the surface. This draws lines over
  * the surface at the positions of the x- and y-values. For bar-series data, it is possible to
@@ -42,7 +44,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   /** Constructor. */
   public WAbstractGridData(WAbstractItemModel model) {
     super(model);
-    this.seriesType_ = Series3DType.PointSeries3D;
+    this.seriesType_ = Series3DType.Point;
     this.surfaceMeshEnabled_ = false;
     this.colorRoleEnabled_ = false;
     this.barWidthX_ = 0.5f;
@@ -56,7 +58,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     this.lineBufferSizes2_ = new ArrayList<Integer>();
     this.isoLineBufferSizes_ = new ArrayList<Integer>();
     this.isoLineHeights_ = new ArrayList<Double>();
-    this.isoLineColorMap_ = null;
+    this.isoLineColorMap_ = (WAbstractColorMap) null;
     this.vertexPosBuffers_ = new ArrayList<WGLWidget.Buffer>();
     this.vertexPosBuffers2_ = new ArrayList<WGLWidget.Buffer>();
     this.vertexSizeBuffers_ = new ArrayList<WGLWidget.Buffer>();
@@ -172,18 +174,19 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   /**
    * Sets the type of representation that will be used for the data.
    *
-   * <p>All representations in {@link Series3DType} are possible for the data. Note that
-   * PointSeries3D and SurfaceSeries3D can only be used on a chart that is configured as a {@link
-   * ChartType ScatterPlot} and BarSeries3D can only be used on a chart that is configured to be a
-   * {@link ChartType CategoryChart}.
+   * <p>All representations in {@link Series3DType} are possible for the data. Note that {@link
+   * Series3DType#Point} and {@link Series3DType#Surface} can only be used on a chart that is
+   * configured as a {@link ChartType#Scatter} and {@link Series3DType#Bar} can only be used on a
+   * chart that is configured to be a {@link ChartType#Category}.
    *
-   * <p>The default value is PointSeries3D.
+   * <p>The default value is {@link Series3DType#Point}.
    */
   public void setType(Series3DType type) {
     if (this.seriesType_ != type) {
       this.seriesType_ = type;
       if (this.chart_ != null) {
-        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+        this.chart_.updateChart(
+            EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
       }
     }
   }
@@ -201,15 +204,16 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
    * Enables or disables a mesh for when a surface is drawn.
    *
    * <p>The default value is false. This option only takes effect when the type of this {@link
-   * WGridData} is {@link Series3DType SurfaceSeries3D}. The mesh is drawn at the position of the
-   * x-axis and y-axis values.
+   * WGridData} is {@link Series3DType#Surface}. The mesh is drawn at the position of the x-axis and
+   * y-axis values.
    */
   public void setSurfaceMeshEnabled(boolean enabled) {
     if (enabled != this.surfaceMeshEnabled_) {
       this.surfaceMeshEnabled_ = enabled;
-      if (this.seriesType_ == Series3DType.SurfaceSeries3D) {
+      if (this.seriesType_ == Series3DType.Surface) {
         if (this.chart_ != null) {
-          this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+          this.chart_.updateChart(
+              EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
         }
       }
     }
@@ -235,9 +239,9 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   /**
    * Sets the bar-width.
    *
-   * <p>This option only takes effect when the type of this {@link WGridData} is BarSeries3D. The
-   * values provided should be between 0 and 1, where 1 lets the bars each take up 1/(nb of
-   * x/y-values) of the axis.
+   * <p>This option only takes effect when the type of this {@link WGridData} is {@link
+   * Series3DType#Bar}. The values provided should be between 0 and 1, where 1 lets the bars each
+   * take up 1/(nb of x/y-values) of the axis.
    *
    * <p>The default bar-width is 0.5 in both directions.
    */
@@ -246,7 +250,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       this.barWidthX_ = xWidth;
       this.barWidthY_ = yWidth;
       if (this.chart_ != null) {
-        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+        this.chart_.updateChart(
+            EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
       }
     }
   }
@@ -285,7 +290,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   public void setPen(final WPen pen) {
     this.meshPen_ = pen;
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /**
@@ -404,19 +410,19 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         if (distance != Double.POSITIVE_INFINITY) {
           double resX =
               point.getElement(0)
-                      * (this.chart_.axis(Axis.XAxis_3D).getMaximum()
-                          - this.chart_.axis(Axis.XAxis_3D).getMinimum())
-                  + this.chart_.axis(Axis.XAxis_3D).getMinimum();
+                      * (this.chart_.axis(Axis.X3D).getMaximum()
+                          - this.chart_.axis(Axis.X3D).getMinimum())
+                  + this.chart_.axis(Axis.X3D).getMinimum();
           double resY =
               point.getElement(1)
-                      * (this.chart_.axis(Axis.YAxis_3D).getMaximum()
-                          - this.chart_.axis(Axis.YAxis_3D).getMinimum())
-                  + this.chart_.axis(Axis.YAxis_3D).getMinimum();
+                      * (this.chart_.axis(Axis.Y3D).getMaximum()
+                          - this.chart_.axis(Axis.Y3D).getMinimum())
+                  + this.chart_.axis(Axis.Y3D).getMinimum();
           double resZ =
               point.getElement(2)
-                      * (this.chart_.axis(Axis.ZAxis_3D).getMaximum()
-                          - this.chart_.axis(Axis.ZAxis_3D).getMinimum())
-                  + this.chart_.axis(Axis.ZAxis_3D).getMinimum();
+                      * (this.chart_.axis(Axis.Z3D).getMaximum()
+                          - this.chart_.axis(Axis.Z3D).getMinimum())
+                  + this.chart_.axis(Axis.Z3D).getMinimum();
           result.add(new WSurfaceSelection(distance, resX, resY, resZ));
         }
       }
@@ -523,14 +529,15 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
    * Set isoline levels.
    *
    * <p>Isolines are drawn on the top or ground plane of the chart. Only applies if the type is
-   * SurfaceSeries3D.
+   * {@link Series3DType#Surface}.
    *
    * <p>The isoline levels are set in the coordinate system of the item model.
    */
   public void setIsoLevels(final List<Double> isoLevels) {
     Utils.copyList(isoLevels, this.isoLineHeights_);
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /** Get all of the isoline levels. */
@@ -544,17 +551,17 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
    * WAbstractGridData#getIsoColorMap() getIsoColorMap()} is set to NULL, the color map of this
    * {@link WAbstractGridData} will be used.
    *
-   * <p>The isolines are only drawn if the type is SurfaceSeries3D.
+   * <p>The isolines are only drawn if the type is {@link Series3DType#Surface}.
    *
    * <p>
    *
    * @see WAbstractDataSeries3D#setColorMap(WAbstractColorMap colormap)
    */
-  public void setIsoColorMap(WAbstractColorMap colormap) {
+  public void setIsoColorMap(final WAbstractColorMap colormap) {
     this.isoLineColorMap_ = colormap;
-    if (this.isoLineColorMap_ != null) {}
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /**
@@ -570,7 +577,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   /**
    * Set the value below which the data series will be clipped on the given axis.
    *
-   * <p>This only affects data series whose type is SurfaceSeries3D.
+   * <p>This only affects data series whose type is {@link Series3DType#Surface}.
    */
   public void setClippingMin(Axis axis, float v) {
     this.minPtChanged_ = true;
@@ -579,7 +586,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     }
     this.minPt_.set(axisToIndex(axis), v);
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /**
@@ -608,13 +616,13 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
    * @see WAbstractGridData#setClippingMin(Axis axis, float v)
    */
   public JSlot changeClippingMin(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       return this.changeClippingMinX_;
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         return this.changeClippingMinY_;
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           return this.changeClippingMinZ_;
         } else {
           throw new WException("Invalid axis for 3D chart");
@@ -625,7 +633,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   /**
    * Set the value above which the data series will be clipped on the given axis.
    *
-   * <p>This only affects data series whose type is SurfaceSeries3D.
+   * <p>This only affects data series whose type is {@link Series3DType#Surface}.
    */
   public void setClippingMax(Axis axis, float v) {
     this.maxPtChanged_ = true;
@@ -634,7 +642,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     }
     this.maxPt_.set(axisToIndex(axis), v);
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /**
@@ -663,13 +672,13 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
    * @see WAbstractGridData#setClippingMax(Axis axis, float v)
    */
   public JSlot changeClippingMax(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       return this.changeClippingMaxX_;
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         return this.changeClippingMaxY_;
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           return this.changeClippingMaxZ_;
         } else {
           throw new WException("Invalid axis for 3D chart");
@@ -686,7 +695,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   public void setClippingLinesEnabled(boolean clippingLinesEnabled) {
     this.clippingLinesEnabled_ = clippingLinesEnabled;
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /**
@@ -709,7 +719,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   public void setClippingLinesColor(WColor clippingLinesColor) {
     this.clippingLinesColor_ = clippingLinesColor;
     if (this.chart_ != null) {
-      this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+      this.chart_.updateChart(
+          EnumUtils.or(EnumSet.of(ChartUpdates.GLContext), ChartUpdates.GLTextures));
     }
   }
   /**
@@ -862,18 +873,18 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         WGLWidget.GLenum.TEXTURE_WRAP_T,
         WGLWidget.GLenum.CLAMP_TO_EDGE);
     switch (this.seriesType_) {
-      case PointSeries3D:
-        if (this.chart_.getType() != ChartType.ScatterPlot) {
+      case Point:
+        if (this.chart_.getType() != ChartType.Scatter) {
           return;
         }
         break;
-      case SurfaceSeries3D:
-        if (this.chart_.getType() != ChartType.ScatterPlot) {
+      case Surface:
+        if (this.chart_.getType() != ChartType.Scatter) {
           return;
         }
         break;
-      case BarSeries3D:
-        if (this.chart_.getType() != ChartType.CategoryChart) {
+      case Bar:
+        if (this.chart_.getType() != ChartType.Category) {
           return;
         }
         break;
@@ -886,18 +897,18 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.vertexPosBuffers_.get(i));
       this.chart_.vertexAttribPointer(this.vertexPosAttr_, 3, WGLWidget.GLenum.FLOAT, false, 0, 0);
       this.chart_.enableVertexAttribArray(this.vertexPosAttr_);
-      if (this.seriesType_ == Series3DType.BarSeries3D) {
+      if (this.seriesType_ == Series3DType.Bar) {
         this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.colormapTexBuffers_.get(i));
         this.chart_.vertexAttribPointer(
             this.barTexCoordAttr_, 2, WGLWidget.GLenum.FLOAT, false, 0, 0);
         this.chart_.enableVertexAttribArray(this.barTexCoordAttr_);
       }
-      double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-      double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-      double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-      double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-      double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-      double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+      double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+      double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+      double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+      double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+      double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+      double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
       this.chart_.activeTexture(WGLWidget.GLenum.TEXTURE0);
       this.chart_.bindTexture(WGLWidget.GLenum.TEXTURE_2D, this.colormapTexture_);
       this.chart_.uniform1i(this.TexSampler_, 0);
@@ -907,7 +918,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.chart_.uniform3f(this.dataMinPtUniform_, xMin, yMin, zMin);
         this.chart_.uniform3f(this.dataMaxPtUniform_, xMax, yMax, zMax);
       }
-      if (this.seriesType_ == Series3DType.BarSeries3D) {
+      if (this.seriesType_ == Series3DType.Bar) {
         this.chart_.enable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
         float unitOffset =
             (float)
@@ -924,7 +935,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.chart_.disableVertexAttribArray(this.vertexPosAttr_);
         this.chart_.disableVertexAttribArray(this.barTexCoordAttr_);
       } else {
-        if (this.seriesType_ == Series3DType.SurfaceSeries3D) {
+        if (this.seriesType_ == Series3DType.Surface) {
           this.chart_.enable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
           float unitOffset =
               (float)
@@ -954,8 +965,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
           this.chart_.disableVertexAttribArray(this.vertexSizeAttr_);
         }
       }
-      if (this.seriesType_ == Series3DType.BarSeries3D
-          || this.seriesType_ == Series3DType.SurfaceSeries3D && this.surfaceMeshEnabled_) {
+      if (this.seriesType_ == Series3DType.Bar
+          || this.seriesType_ == Series3DType.Surface && this.surfaceMeshEnabled_) {
         this.chart_.useProgram(this.meshProgram_);
         this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
         this.chart_.uniformMatrix4(this.mesh_cMatrix_, this.chart_.getJsMatrix());
@@ -975,7 +986,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.chart_.enableVertexAttribArray(this.meshVertexPosAttr_);
         this.chart_.bindBuffer(
             WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER, this.overlayLinesBuffers_.get(i));
-        if (this.seriesType_ == Series3DType.SurfaceSeries3D) {
+        if (this.seriesType_ == Series3DType.Surface) {
           this.chart_.lineWidth(
               this.meshPen_.getWidth().getValue() == 0 ? 1.0 : this.meshPen_.getWidth().getValue());
           this.chart_.drawElements(
@@ -984,7 +995,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
               WGLWidget.GLenum.UNSIGNED_SHORT,
               0);
         } else {
-          if (this.seriesType_ == Series3DType.BarSeries3D) {
+          if (this.seriesType_ == Series3DType.Bar) {
             this.chart_.lineWidth(
                 this.meshPen_.getWidth().getValue() == 0
                     ? 1.0
@@ -1008,7 +1019,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.vertexColorBuffers2_.get(i));
       this.chart_.vertexAttribPointer(this.vertexColAttr2_, 4, WGLWidget.GLenum.FLOAT, false, 0, 0);
       this.chart_.enableVertexAttribArray(this.vertexColAttr2_);
-      if (this.seriesType_ == Series3DType.PointSeries3D) {
+      if (this.seriesType_ == Series3DType.Point) {
         this.chart_.bindBuffer(WGLWidget.GLenum.ARRAY_BUFFER, this.vertexSizeBuffers2_.get(i));
         this.chart_.vertexAttribPointer(
             this.vertexSizeAttr2_, 1, WGLWidget.GLenum.FLOAT, false, 0, 0);
@@ -1020,7 +1031,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.chart_.drawArrays(WGLWidget.GLenum.POINTS, 0, this.vertexPosBuffer2Sizes_.get(i) / 3);
         this.chart_.disableVertexAttribArray(this.vertexSizeAttr2_);
       } else {
-        if (this.seriesType_ == Series3DType.BarSeries3D) {
+        if (this.seriesType_ == Series3DType.Bar) {
           this.chart_.bindBuffer(WGLWidget.GLenum.ELEMENT_ARRAY_BUFFER, this.indexBuffers2_.get(i));
           this.chart_.drawElements(
               WGLWidget.GLenum.TRIANGLES,
@@ -1031,7 +1042,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       }
       this.chart_.disableVertexAttribArray(this.vertexPosAttr2_);
       this.chart_.disableVertexAttribArray(this.vertexColAttr2_);
-      if (this.seriesType_ == Series3DType.BarSeries3D) {
+      if (this.seriesType_ == Series3DType.Bar) {
         this.chart_.useProgram(this.meshProgram_);
         this.chart_.depthFunc(WGLWidget.GLenum.LEQUAL);
         this.chart_.enable(WGLWidget.GLenum.POLYGON_OFFSET_FILL);
@@ -1051,7 +1062,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.chart_.disableVertexAttribArray(this.meshVertexPosAttr_);
       }
     }
-    if (this.seriesType_ == Series3DType.SurfaceSeries3D && this.isoLineHeights_.size() > 0) {
+    if (this.seriesType_ == Series3DType.Surface && this.isoLineHeights_.size() > 0) {
       this.drawIsoLines();
     }
     this.chart_.enable(WGLWidget.GLenum.CULL_FACE);
@@ -1060,20 +1071,20 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 
   public void updateGL() {
     switch (this.seriesType_) {
-      case PointSeries3D:
-        if (this.chart_.getType() != ChartType.ScatterPlot) {
+      case Point:
+        if (this.chart_.getType() != ChartType.Scatter) {
           return;
         }
         this.initializePointSeriesBuffers();
         break;
-      case SurfaceSeries3D:
-        if (this.chart_.getType() != ChartType.ScatterPlot) {
+      case Surface:
+        if (this.chart_.getType() != ChartType.Scatter) {
           return;
         }
         this.initializeSurfaceSeriesBuffers();
         break;
-      case BarSeries3D:
-        if (this.chart_.getType() != ChartType.CategoryChart) {
+      case Bar:
+        if (this.chart_.getType() != ChartType.Category) {
           return;
         }
         this.initializeBarSeriesBuffers();
@@ -1136,14 +1147,14 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     double min;
     double max;
     switch (this.seriesType_) {
-      case BarSeries3D:
+      case Bar:
         break;
-      case PointSeries3D:
-      case SurfaceSeries3D:
+      case Point:
+      case Surface:
         this.chart_.useProgram(this.seriesProgram_);
         if (this.colormap_ != null) {
-          min = this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.ZAxis_3D);
-          max = this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.ZAxis_3D);
+          min = this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.Z3D);
+          max = this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.Z3D);
           this.chart_.uniform1f(this.offset_, min);
           this.chart_.uniform1f(this.scaleFactor_, 1.0 / (max - min));
         } else {
@@ -1153,14 +1164,14 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         if (this.isoLineHeights_.size() > 0) {
           this.chart_.useProgram(this.isoLineProgram_);
           if (this.isoLineColorMap_ != null) {
-            min = this.chart_.toPlotCubeCoords(this.isoLineColorMap_.getMinimum(), Axis.ZAxis_3D);
-            max = this.chart_.toPlotCubeCoords(this.isoLineColorMap_.getMaximum(), Axis.ZAxis_3D);
+            min = this.chart_.toPlotCubeCoords(this.isoLineColorMap_.getMinimum(), Axis.Z3D);
+            max = this.chart_.toPlotCubeCoords(this.isoLineColorMap_.getMaximum(), Axis.Z3D);
             this.chart_.uniform1f(this.isoLine_offset_, min);
             this.chart_.uniform1f(this.isoLine_scaleFactor_, 1.0 / (max - min));
           } else {
             if (this.colormap_ != null) {
-              min = this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.ZAxis_3D);
-              max = this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.ZAxis_3D);
+              min = this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.Z3D);
+              max = this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.Z3D);
               this.chart_.uniform1f(this.isoLine_offset_, min);
               this.chart_.uniform1f(this.isoLine_scaleFactor_, 1.0 / (max - min));
             } else {
@@ -1176,16 +1187,16 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     this.chart_.uniformMatrix4(this.mvMatrixUniform_, this.mvMatrix_);
     this.chart_.uniformMatrix4(this.pMatrix_, this.chart_.getPMatrix());
     switch (this.seriesType_) {
-      case BarSeries3D:
+      case Bar:
         this.chart_.useProgram(this.meshProgram_);
         this.chart_.uniformMatrix4(this.mesh_mvMatrixUniform_, this.mvMatrix_);
         this.chart_.uniformMatrix4(this.mesh_pMatrix_, this.chart_.getPMatrix());
-      case PointSeries3D:
+      case Point:
         this.chart_.useProgram(this.colSeriesProgram_);
         this.chart_.uniformMatrix4(this.mvMatrixUniform2_, this.mvMatrix_);
         this.chart_.uniformMatrix4(this.pMatrix2_, this.chart_.getPMatrix());
         break;
-      case SurfaceSeries3D:
+      case Surface:
         if (this.surfaceMeshEnabled_) {
           this.chart_.useProgram(this.meshProgram_);
           this.chart_.uniformMatrix4(this.mesh_mvMatrixUniform_, this.mvMatrix_);
@@ -1410,7 +1421,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       float plotCubeVal =
           (float)
               this.chart_.toPlotCubeCoords(
-                  StringUtils.asNumber(dataseries.get(k).data(i, j)), Axis.ZAxis_3D);
+                  StringUtils.asNumber(dataseries.get(k).data(i, j)), Axis.Z3D);
       if (plotCubeVal <= 0) {
         plotCubeVal = zeroBarCompensation;
       }
@@ -1429,7 +1440,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
 
   private void initShaders() {
     switch (this.seriesType_) {
-      case BarSeries3D:
+      case Bar:
         this.fragShader_ = this.chart_.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
         this.chart_.shaderSource(this.fragShader_, barFragShaderSrc);
         this.chart_.compileShader(this.fragShader_);
@@ -1465,7 +1476,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.pMatrix2_ = this.chart_.getUniformLocation(this.colSeriesProgram_, "uPMatrix");
         this.cMatrix2_ = this.chart_.getUniformLocation(this.colSeriesProgram_, "uCMatrix");
         break;
-      case PointSeries3D:
+      case Point:
         this.fragShader_ = this.chart_.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
         this.chart_.shaderSource(this.fragShader_, ptFragShaderSrc);
         this.chart_.compileShader(this.fragShader_);
@@ -1510,7 +1521,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         this.vpHeightUniform2_ =
             this.chart_.getUniformLocation(this.colSeriesProgram_, "uVPHeight");
         break;
-      case SurfaceSeries3D:
+      case Surface:
         this.fragShader_ = this.chart_.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
         this.chart_.shaderSource(this.fragShader_, surfFragShaderSrc);
         this.chart_.compileShader(this.fragShader_);
@@ -1593,8 +1604,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
         break;
     }
     ;
-    if (this.seriesType_ == Series3DType.BarSeries3D
-        || this.seriesType_ == Series3DType.SurfaceSeries3D && this.surfaceMeshEnabled_) {
+    if (this.seriesType_ == Series3DType.Bar
+        || this.seriesType_ == Series3DType.Surface && this.surfaceMeshEnabled_) {
       this.meshFragShader_ = this.chart_.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
       this.chart_.shaderSource(this.meshFragShader_, meshFragShaderSrc);
       this.chart_.compileShader(this.meshFragShader_);
@@ -1615,7 +1626,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       this.mesh_dataMinPtUniform_ = this.chart_.getUniformLocation(this.meshProgram_, "uDataMinPt");
       this.mesh_dataMaxPtUniform_ = this.chart_.getUniformLocation(this.meshProgram_, "uDataMaxPt");
     }
-    if (this.seriesType_ == Series3DType.SurfaceSeries3D && this.isoLineHeights_.size() > 0) {
+    if (this.seriesType_ == Series3DType.Surface && this.isoLineHeights_.size() > 0) {
       this.isoLineFragShader_ = this.chart_.createShader(WGLWidget.GLenum.FRAGMENT_SHADER);
       this.chart_.shaderSource(this.isoLineFragShader_, isoLineFragShaderSrc);
       this.chart_.compileShader(this.isoLineFragShader_);
@@ -1930,9 +1941,9 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
       final java.nio.IntBuffer indicesOUT, int Nx, int Ny, int size) {
     boolean forward = true;
     switch (this.seriesType_) {
-      case PointSeries3D:
+      case Point:
         break;
-      case SurfaceSeries3D:
+      case Surface:
         for (int i = 0; i < Nx - 1; i++) {
           if (forward) {
             for (int j = 0; j < Ny; j++) {
@@ -1951,7 +1962,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
           }
         }
         break;
-      case BarSeries3D:
+      case Bar:
         for (int i = 0; i < size; i++) {
           int index = i * 8;
           push(indicesOUT, index + 0, index + 1, index + 2);
@@ -1979,9 +1990,9 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   private void generateMeshIndices(final java.nio.IntBuffer indicesOUT, int Nx, int Ny, int size) {
     boolean forward = true;
     switch (this.seriesType_) {
-      case PointSeries3D:
+      case Point:
         break;
-      case SurfaceSeries3D:
+      case Surface:
         for (int i = 0; i < Nx; i++) {
           if (forward) {
             for (int j = 0; j < Ny; j++) {
@@ -2027,7 +2038,7 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
           }
         }
         break;
-      case BarSeries3D:
+      case Bar:
         for (int i = 0; i < size; i++) {
           int index = i * 8;
           indicesOUT.put(index + 0);
@@ -2067,10 +2078,10 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   private void generateTextureCoords(
       final java.nio.ByteBuffer coordsOUT, final java.nio.ByteBuffer dataArray, int size) {
     switch (this.seriesType_) {
-      case PointSeries3D:
-      case SurfaceSeries3D:
+      case Point:
+      case Surface:
         break;
-      case BarSeries3D:
+      case Bar:
         if (this.colormap_ == null) {
           for (int i = 0; i < size; i++) {
             for (int k = 0; k < 16; k++) {
@@ -2078,10 +2089,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
             }
           }
         } else {
-          float min =
-              (float) this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.ZAxis_3D);
-          float max =
-              (float) this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.ZAxis_3D);
+          float min = (float) this.chart_.toPlotCubeCoords(this.colormap_.getMinimum(), Axis.Z3D);
+          float max = (float) this.chart_.toPlotCubeCoords(this.colormap_.getMaximum(), Axis.Z3D);
           for (int i = 0; i < size; i++) {
             float zNorm = (dataArray.getFloat(4 * (i * 4 + 3)) - min) / (max - min);
             for (int k = 0; k < 8; k++) {
@@ -2103,16 +2112,15 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     if (this.hidden_) {
       return;
     }
-    if (this.seriesType_ != Series3DType.SurfaceSeries3D
-        || this.chart_.getType() != ChartType.ScatterPlot) {
+    if (this.seriesType_ != Series3DType.Surface || this.chart_.getType() != ChartType.Scatter) {
       return;
     }
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     this.chart_.disable(WGLWidget.GLenum.CULL_FACE);
     this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
     for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
@@ -2151,16 +2159,15 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     if (this.hidden_) {
       return;
     }
-    if (this.seriesType_ != Series3DType.SurfaceSeries3D
-        || this.chart_.getType() != ChartType.ScatterPlot) {
+    if (this.seriesType_ != Series3DType.Surface || this.chart_.getType() != ChartType.Scatter) {
       return;
     }
-    double xMin = this.chart_.axis(Axis.XAxis_3D).getMinimum();
-    double xMax = this.chart_.axis(Axis.XAxis_3D).getMaximum();
-    double yMin = this.chart_.axis(Axis.YAxis_3D).getMinimum();
-    double yMax = this.chart_.axis(Axis.YAxis_3D).getMaximum();
-    double zMin = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double zMax = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double xMin = this.chart_.axis(Axis.X3D).getMinimum();
+    double xMax = this.chart_.axis(Axis.X3D).getMaximum();
+    double yMin = this.chart_.axis(Axis.Y3D).getMinimum();
+    double yMax = this.chart_.axis(Axis.Y3D).getMaximum();
+    double zMin = this.chart_.axis(Axis.Z3D).getMinimum();
+    double zMax = this.chart_.axis(Axis.Z3D).getMaximum();
     this.chart_.disable(WGLWidget.GLenum.CULL_FACE);
     this.chart_.enable(WGLWidget.GLenum.DEPTH_TEST);
     for (int i = 0; i < this.vertexPosBuffers_.size(); i++) {
@@ -2244,8 +2251,8 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   private void linesForIsoLevel(double z, final List<Float> result) {
     int Nx = this.getNbXPoints();
     int Ny = this.getNbYPoints();
-    double minZ = this.chart_.axis(Axis.ZAxis_3D).getMinimum();
-    double maxZ = this.chart_.axis(Axis.ZAxis_3D).getMaximum();
+    double minZ = this.chart_.axis(Axis.Z3D).getMinimum();
+    double maxZ = this.chart_.axis(Axis.Z3D).getMaximum();
     double scaledZ = (z - minZ) / (maxZ - minZ);
     List<java.nio.ByteBuffer> simplePtsArrays = new ArrayList<java.nio.ByteBuffer>();
     int nbXaxisBuffers;
@@ -2544,13 +2551,13 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
   }
 
   static int axisToIndex(Axis axis) {
-    if (axis == Axis.XAxis_3D) {
+    if (axis == Axis.X3D) {
       return 0;
     } else {
-      if (axis == Axis.YAxis_3D) {
+      if (axis == Axis.Y3D) {
         return 1;
       } else {
-        if (axis == Axis.ZAxis_3D) {
+        if (axis == Axis.Z3D) {
           return 2;
         } else {
           throw new WException("Invalid axis for 3D chart");

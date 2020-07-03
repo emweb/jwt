@@ -77,21 +77,15 @@ public abstract class WResource extends WObject {
 	private boolean trackUploadProgress_;
 	private DispositionType dispositionType_;
 
-	protected WResource(WObject parent) {
-		super(parent);
-
+	/**
+	 * Constructor.
+	 */
+	public WResource() {
 		suggestedFileName_ = "";
 		internalPath_ = "";
 		dispositionType_ = DispositionType.NoDisposition;
 
 		generateUrl();
-	}
-
-	/**
-	 * Constructor.
-	 */
-	public WResource() {
-		this(null);
 	}
 
 	/**

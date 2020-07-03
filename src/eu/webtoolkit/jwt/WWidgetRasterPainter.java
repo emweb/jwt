@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,17 +26,18 @@ class WWidgetRasterPainter extends WWidgetPainter {
     this.device_ = null;
   }
 
-  public WRasterPaintDevice createPaintDevice(boolean paintUpdate) {
+  public WPaintDevice createPaintDevice(boolean paintUpdate) {
     return new WRasterPaintDevice(
         "png", new WLength(this.widget_.renderWidth_), new WLength(this.widget_.renderHeight_));
   }
 
   public WPaintDevice getPaintDevice(boolean paintUpdate) {
-    if (!(this.device_ != null) || this.widget_.sizeChanged_) {;
+    if (!(this.device_ != null) || this.widget_.sizeChanged_) {
       this.device_ = this.createPaintDevice(paintUpdate);
     }
     if (!paintUpdate) {
-      this.device_.clear();
+      (((this.device_) instanceof WRasterPaintDevice ? (WRasterPaintDevice) (this.device_) : null))
+          .clear();
     }
     return this.device_;
   }
@@ -43,7 +45,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
   public void createContents(DomElement result, WPaintDevice device) {
     String wstr = String.valueOf(this.widget_.renderWidth_);
     String hstr = String.valueOf(this.widget_.renderHeight_);
-    DomElement img = DomElement.createNew(DomElementType.DomElement_IMG);
+    DomElement img = DomElement.createNew(DomElementType.IMG);
     img.setId('i' + this.widget_.getId());
     img.setAttribute("width", wstr);
     img.setAttribute("height", hstr);
@@ -54,12 +56,12 @@ class WWidgetRasterPainter extends WWidgetPainter {
     WResource resource = ((device) instanceof WResource ? (WResource) (device) : null);
     img.setAttribute("src", resource.generateUrl());
     result.addChild(img);
+    this.device_ = device;
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
     WResource resource = ((device) instanceof WResource ? (WResource) (device) : null);
-    DomElement img =
-        DomElement.getForUpdate('i' + this.widget_.getId(), DomElementType.DomElement_IMG);
+    DomElement img = DomElement.getForUpdate('i' + this.widget_.getId(), DomElementType.IMG);
     if (this.widget_.sizeChanged_) {
       img.setAttribute("width", String.valueOf(this.widget_.renderWidth_));
       img.setAttribute("height", String.valueOf(this.widget_.renderHeight_));
@@ -67,11 +69,12 @@ class WWidgetRasterPainter extends WWidgetPainter {
     }
     img.setAttribute("src", resource.generateUrl());
     result.add(img);
+    this.device_ = device;
   }
 
   public WWidgetPainter.RenderType getRenderType() {
     return WWidgetPainter.RenderType.PngImage;
   }
 
-  private WRasterPaintDevice device_;
+  private WPaintDevice device_;
 }

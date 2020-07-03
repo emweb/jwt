@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,20 +42,20 @@ public class Login extends WObject {
   /**
    * Default constructor.
    *
-   * <p>Creates a login object in the LoggedOut state.
+   * <p>Creates a login object in the {@link LoginState#LoggedOut} state.
    */
   public Login() {
     super();
-    this.changed_ = new Signal(this);
+    this.changed_ = new Signal();
     this.user_ = new User();
     this.state_ = LoginState.LoggedOut;
   }
   /**
    * Logs a user in.
    *
-   * <p>A user can be logged in using either a DisabledLogin, WeakLogin or StrongLogin <code>state
-   * </code>. The login state is forced to DisabledLogin if {@link User#getStatus()} returns
-   * Disabled.
+   * <p>A user can be logged in using either a {@link LoginState#Disabled}, {@link LoginState#Weak}
+   * or {@link LoginState#Strong} <code>state</code>. The login state is forced to {@link
+   * LoginState#Disabled} if {@link User#getStatus()} returns Disabled.
    *
    * <p>
    *
@@ -66,8 +67,8 @@ public class Login extends WObject {
       this.logout();
       return;
     } else {
-      if (state != LoginState.DisabledLogin && user.getStatus() == User.Status.Disabled) {
-        state = LoginState.DisabledLogin;
+      if (state != LoginState.Disabled && user.getStatus() == AccountStatus.Disabled) {
+        state = LoginState.Disabled;
       }
       if (!user.equals(this.user_)) {
         this.user_ = user;
@@ -84,15 +85,15 @@ public class Login extends WObject {
   /**
    * Logs a user in.
    *
-   * <p>Calls {@link #login(User user, LoginState state) login(user, LoginState.StrongLogin)}
+   * <p>Calls {@link #login(User user, LoginState state) login(user, LoginState.Strong)}
    */
   public final void login(final User user) {
-    login(user, LoginState.StrongLogin);
+    login(user, LoginState.Strong);
   }
   /**
    * Logs the current user out.
    *
-   * <p>Sets the state to LoggedOut.
+   * <p>Sets the state to {@link LoginState#LoggedOut}.
    */
   public void logout() {
     if (this.user_.isValid()) {
@@ -115,14 +116,15 @@ public class Login extends WObject {
   /**
    * Returns whether a user has successfully logged in.
    *
-   * <p>This returns <code>true</code> only if the state is WeakLogin or StrongLogin.
+   * <p>This returns <code>true</code> only if the state is {@link LoginState#Weak} or {@link
+   * LoginState#Strong}.
    *
    * <p>
    *
    * @see Login#getState()
    */
   public boolean isLoggedIn() {
-    return this.user_.isValid() && this.state_ != LoginState.DisabledLogin;
+    return this.user_.isValid() && this.state_ != LoginState.Disabled;
   }
   /**
    * Returns the user currently identified.
@@ -143,7 +145,7 @@ public class Login extends WObject {
    * login()} or {@link Login#logout() logout()}. If no user was logged in, then a {@link
    * Login#changed() changed()} signal does not necessarily mean that user is {@link
    * Login#isLoggedIn() isLoggedIn()} as the user may have been identified correctly but have a
-   * DisabledLogin {@link Login#getState() getState()} for example.
+   * {@link LoginState#Disabled} {@link Login#getState() getState()} for example.
    */
   public Signal changed() {
     return this.changed_;

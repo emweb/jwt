@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -187,19 +188,19 @@ public abstract class AbstractUserDatabase {
    * <p>If there is support for suspending accounts, then this method may be implemented to return
    * whether a user account is disabled.
    *
-   * <p>The default implementation always returns {@link User.Status#Normal Status#Normal}.
+   * <p>The default implementation always returns {@link AccountStatus#Normal}.
    *
    * <p>
    */
-  public User.Status getStatus(final User user) {
-    return User.Status.Normal;
+  public AccountStatus getStatus(final User user) {
+    return AccountStatus.Normal;
   }
   /**
    * Sets the user status.
    *
    * <p>This sets the status for a user (if supported).
    */
-  public void setStatus(final User user, User.Status status) {
+  public void setStatus(final User user, AccountStatus status) {
     logger.error(new StringWriter().append(new Require("setStatus()").toString()).toString());
   }
   /**
@@ -304,7 +305,7 @@ public abstract class AbstractUserDatabase {
    *
    * <p>This is only used when email verification is enabled or for lost password functionality.
    */
-  public void setEmailToken(final User user, final Token token, User.EmailTokenRole role) {
+  public void setEmailToken(final User user, final Token token, EmailTokenRole role) {
     logger.error(
         new StringWriter()
             .append(new Require("setEmailToken()", EMAIL_VERIFICATION).toString())
@@ -315,7 +316,7 @@ public abstract class AbstractUserDatabase {
    *
    * <p>This is only used when email verification is enabled and for lost password functionality. It
    * should return the email token previously set with {@link
-   * AbstractUserDatabase#setEmailToken(User user, Token token, User.EmailTokenRole role)
+   * AbstractUserDatabase#setEmailToken(User user, Token token, EmailTokenRole role)
    * setEmailToken()}
    */
   public Token getEmailToken(final User user) {
@@ -331,12 +332,12 @@ public abstract class AbstractUserDatabase {
    * <p>This is only used when email verification is enabled or for lost password functionality. It
    * should return the role previously set with setEailToken().
    */
-  public User.EmailTokenRole getEmailTokenRole(final User user) {
+  public EmailTokenRole getEmailTokenRole(final User user) {
     logger.error(
         new StringWriter()
             .append(new Require("emailTokenRole()", EMAIL_VERIFICATION).toString())
             .toString());
-    return User.EmailTokenRole.VerifyEmail;
+    return EmailTokenRole.VerifyEmail;
   }
   /**
    * Finds a user with a given email token.

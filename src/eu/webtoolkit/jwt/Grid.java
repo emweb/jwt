@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -63,12 +64,13 @@ class Grid {
     }
 
     public Item() {
-      this((WLayoutItem) null, EnumSet.noneOf(AlignmentFlag.class));
+      this(null, EnumSet.noneOf(AlignmentFlag.class));
     }
 
     public Item(WLayoutItem item) {
       this(item, EnumSet.noneOf(AlignmentFlag.class));
     }
+    // public  Item(final Grid.Item other) ;
   }
 
   public List<Grid.Section> rows_;

@@ -1,7 +1,7 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="3.6.0"/>
+  <property name="proj.version" value="4.4.0"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
@@ -46,8 +46,11 @@
   </target>
 
   <target name="run">
-    <java jar="lib/antlr-3.5.2-complete.jar" fork="true">
-      <arg line="src/eu/webtoolkit/jwt/render/Css21.g"/>
+    <java jar="lib/antlr-4.7.2-complete.jar" fork="true">
+      <arg line="-no-listener -visitor -package eu.webtoolkit.jwt src/eu/webtoolkit/jwt/PluralExpression.g4" />
+    </java>
+    <java jar="lib/antlr-4.7.2-complete.jar" fork="true">
+      <arg line="-listener -no-visitor -package eu.webtoolkit.jwt.render src/eu/webtoolkit/jwt/render/Css22.g4" />
     </java>
   </target>
 
@@ -58,8 +61,8 @@
        srcdir="${src.java.dir}"
        destdir="${build.dir}"
        debug="on"
-       source="1.7"
-       target="1.7">
+       source="1.8"
+       target="1.8">
       <src path="${src.java.dir}"/>        
       <src path="${test.java.dir}"/>        
       <classpath >
@@ -111,6 +114,7 @@
     <junit printsummary="yes" haltonfailure="no">
       <classpath refid="project.classpath" />
       <classpath location="${build.dir}" />
+      <classpath location="${test.java.dir}" />
       <classpath location="." />
 
       <formatter type="plain" />

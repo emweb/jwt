@@ -3,6 +3,8 @@ package eu.webtoolkit.jwt.examples.googlemap;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.webtoolkit.jwt.GoogleMapsVersion;
+import eu.webtoolkit.jwt.MapTypeControl;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -17,10 +19,10 @@ public class GoogleMapExample extends WContainerWidget {
 	private WGoogleMap map;
 	public GoogleMapExample() {
 		  WTable layout = new WTable(this);
-		  map = new WGoogleMap(layout.getElementAt(0,0));
+		  map = new WGoogleMap(GoogleMapsVersion.v3, layout.getElementAt(0,0));
 		  map.resize(700, 500);
 
-		  map.setMapTypeControl(WGoogleMap.MapTypeControl.DefaultControl);
+		  map.setMapTypeControl(MapTypeControl.Default);
 		  map.enableScrollWheelZoom();
 
 		  layout.getElementAt(0,1).setPadding(new WLength(3));

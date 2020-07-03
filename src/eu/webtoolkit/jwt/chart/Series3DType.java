@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,11 +19,11 @@ import javax.servlet.http.*;
 /** Enumeration with the possible representations of a {@link WAbstractGridData}. */
 public enum Series3DType {
   /** Series rendered as points. */
-  PointSeries3D,
+  Point,
   /** Series rendered as a surface. */
-  SurfaceSeries3D,
+  Surface,
   /** Series rendered as bars. */
-  BarSeries3D;
+  Bar;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

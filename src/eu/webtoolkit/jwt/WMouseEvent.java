@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,44 +38,22 @@ public class WMouseEvent implements WAbstractEvent {
     super();
     this.jsEvent_ = new JavaScriptEvent();
   }
-  /** Enumeration for the mouse button. */
-  public enum Button {
-    /** No button. */
-    NoButton(0),
-    /** Left button. */
-    LeftButton(1),
-    /** Middle button. */
-    MiddleButton(2),
-    /** Right button. */
-    RightButton(4);
-
-    private int value;
-
-    Button(int value) {
-      this.value = value;
-    }
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return value;
-    }
-  }
   /**
    * Returns the button.
    *
    * <p>If multiple buttons are currently pressed for a mouse moved or mouse dragged event, then the
    * one with the smallest numerical value is returned.
    */
-  public WMouseEvent.Button getButton() {
+  public MouseButton getButton() {
     switch (this.jsEvent_.button) {
       case 1:
-        return WMouseEvent.Button.LeftButton;
+        return MouseButton.Left;
       case 2:
-        return WMouseEvent.Button.MiddleButton;
+        return MouseButton.Middle;
       case 4:
-        return WMouseEvent.Button.RightButton;
+        return MouseButton.Right;
       default:
-        return WMouseEvent.Button.NoButton;
+        return MouseButton.None;
     }
   }
   /**
@@ -154,7 +133,7 @@ public class WMouseEvent implements WAbstractEvent {
     if ((p = request.getParameter(name)) != null) {
       try {
         return asInt(p);
-      } catch (final NumberFormatException ee) {
+      } catch (final RuntimeException ee) {
         logger.error(
             new StringWriter()
                 .append("Could not cast event property '")
@@ -208,7 +187,7 @@ public class WMouseEvent implements WAbstractEvent {
                 asInt(s.get(i + 7)),
                 asInt(s.get(i + 8))));
       }
-    } catch (final NumberFormatException ee) {
+    } catch (final RuntimeException ee) {
       logger.error(
           new StringWriter()
               .append("Could not parse touches array '")

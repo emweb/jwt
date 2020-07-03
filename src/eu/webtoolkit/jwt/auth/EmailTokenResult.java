@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,63 +42,31 @@ import org.slf4j.LoggerFactory;
 public class EmailTokenResult {
   private static Logger logger = LoggerFactory.getLogger(EmailTokenResult.class);
 
-  /** Enumeration that describes the result. */
-  public enum Result {
-    /** The token was invalid. */
-    Invalid,
-    /** The token has expired. */
-    Expired,
-    /**
-     * A token was presented which requires the user to enter a new password.
-     *
-     * <p>The presented token was a token sent by the {@link AuthService#lostPassword(String
-     * emailAddress, AbstractUserDatabase users) AuthService#lostPassword()} function. When this is
-     * returned as result of {@link AuthService#processEmailToken(String token, AbstractUserDatabase
-     * users) AuthService#processEmailToken()}, you should present the user with a dialog where he
-     * can enter a new password.
-     */
-    UpdatePassword,
-    /**
-     * A The token was presented which verifies the email address.
-     *
-     * <p>The presented token was a token sent by the {@link AuthService#verifyEmailAddress(User
-     * user, String address) AuthService#verifyEmailAddress()} function. When this is returned as
-     * result of processEmailToken(), you can indicate to the user that his email address is now
-     * confirmed.
-     */
-    EmailConfirmed;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Constructor.
    *
    * <p>Creates an email token result.
    */
-  public EmailTokenResult(EmailTokenResult.Result result, final User user) {
-    this.result_ = result;
+  public EmailTokenResult(EmailTokenState state, final User user) {
+    this.state_ = state;
     this.user_ = user;
   }
   /**
    * Constructor.
    *
-   * <p>Calls {@link #EmailTokenResult(EmailTokenResult.Result result, User user) this(result, new
-   * User())}
+   * <p>Calls {@link #EmailTokenResult(EmailTokenState state, User user) this(state, new User())}
    */
-  public EmailTokenResult(EmailTokenResult.Result result) {
-    this(result, new User());
+  public EmailTokenResult(EmailTokenState state) {
+    this(state, new User());
   }
   /** Returns the result. */
-  public EmailTokenResult.Result getResult() {
-    return this.result_;
+  public EmailTokenState getState() {
+    return this.state_;
   }
   /**
    * Returns the user, if any.
    *
-   * <p>The identified user is only valid when the token result is UpdatePassword or EmailConfirmed.
+   * <p>The identified user is only valid when the token state is UpdatePassword or EmailConfirmed.
    * In that case, you may login the user as strongly authenticated since he presented a random
    * token that was sent to his own email address.
    */
@@ -109,6 +78,6 @@ public class EmailTokenResult {
     }
   }
 
-  private EmailTokenResult.Result result_;
+  private EmailTokenState state_;
   private User user_;
 }

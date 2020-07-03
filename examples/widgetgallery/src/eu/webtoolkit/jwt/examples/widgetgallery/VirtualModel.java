@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,14 +22,10 @@ import org.slf4j.LoggerFactory;
 class VirtualModel extends WAbstractTableModel {
   private static Logger logger = LoggerFactory.getLogger(VirtualModel.class);
 
-  public VirtualModel(int rows, int columns, WObject parent) {
-    super(parent);
+  public VirtualModel(int rows, int columns) {
+    super();
     this.rows_ = rows;
     this.columns_ = columns;
-  }
-
-  public VirtualModel(int rows, int columns) {
-    this(rows, columns, (WObject) null);
   }
 
   public int getRowCount(final WModelIndex parent) {
@@ -47,26 +44,24 @@ class VirtualModel extends WAbstractTableModel {
     }
   }
 
-  public Object getData(final WModelIndex index, int role) {
-    switch (role) {
-      case ItemDataRole.DisplayRole:
-        if (index.getColumn() == 0) {
-          return new WString("Row {1}").arg(index.getRow());
-        } else {
-          return new WString("Item row {1}, col {2}").arg(index.getRow()).arg(index.getColumn());
-        }
-      default:
-        return null;
+  public Object getData(final WModelIndex index, ItemDataRole role) {
+    if (role.equals(ItemDataRole.Display)) {
+      if (index.getColumn() == 0) {
+        return new WString("Row {1}").arg(index.getRow());
+      } else {
+        return new WString("Item row {1}, col {2}").arg(index.getRow()).arg(index.getColumn());
+      }
+    } else {
+      return null;
     }
   }
 
-  public Object getHeaderData(int section, Orientation orientation, int role) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
     if (orientation == Orientation.Horizontal) {
-      switch (role) {
-        case ItemDataRole.DisplayRole:
-          return new WString("Column {1}").arg(section);
-        default:
-          return null;
+      if (role.equals(ItemDataRole.Display)) {
+        return new WString("Column {1}").arg(section);
+      } else {
+        return null;
       }
     } else {
       return null;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,10 +26,7 @@ import org.slf4j.LoggerFactory;
  * the container widget.
  *
  * <p>The implementation of the layout manager depends on the container widget to which it is set,
- * and is therefore deferred to WLayoutImpl.
- *
- * <p>A layout never assumes ownership of contained items, instead these are owned by the parent
- * widget to which the layout is applied.
+ * and is therefore deferred to {@link WLayoutImpl}.
  *
  * <p>
  *
@@ -39,6 +37,46 @@ import org.slf4j.LoggerFactory;
 public abstract class WLayout extends WObject implements WLayoutItem {
   private static Logger logger = LoggerFactory.getLogger(WLayout.class);
 
+  /**
+   * Set the preferred layout implementation.
+   *
+   * <p>The default implementation for box layouts and fit layouts is {@link
+   * LayoutImplementation#Flex} (if supported by the browser). Otherwise a fallback to {@link
+   * LayoutImplementation#JavaScript} is used.
+   *
+   * <p>
+   *
+   * @see WLayout#setDefaultImplementation(LayoutImplementation implementation)
+   */
+  public void setPreferredImplementation(LayoutImplementation implementation) {
+    if (this.preferredImplementation_ != implementation) {
+      this.preferredImplementation_ = implementation;
+      if (this.impl_ != null && this.getImplementation() != this.getPreferredImplementation()) {
+        this.updateImplementation();
+      }
+    }
+  }
+  /**
+   * Sets the preferred layout implementation globally.
+   *
+   * <p>The default implementation for box layouts and fit layouts is {@link
+   * LayoutImplementation#Flex} (if supported by the browser). Otherwise a fallback to {@link
+   * LayoutImplementation#JavaScript} is used.
+   *
+   * <p>Because there are cases where {@link LayoutImplementation#Flex} does not work properly, this
+   * method can be used to set the global preferred implementation to {@link
+   * LayoutImplementation#JavaScript} instead.
+   *
+   * <p>Since this is a system-wide setting, and not a per-session setting, you should call this
+   * function before any session is created, e.g. in main() before calling WRun().
+   *
+   * <p>
+   *
+   * @see WLayout#setPreferredImplementation(LayoutImplementation implementation)
+   */
+  public static void setDefaultImplementation(LayoutImplementation implementation) {
+    defaultImplementation_ = implementation;
+  }
   /**
    * Adds a layout <i>item</i>.
    *
@@ -51,14 +89,12 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    * <p>
    *
    * @see WLayout#removeItem(WLayoutItem item)
-   * @see WLayout#addWidget(WWidget w)
    */
   public abstract void addItem(WLayoutItem item);
   /**
    * Adds the given <i>widget</i> to the layout.
    *
-   * <p>This method wraps the widget in a {@link WWidgetItem} and calls {@link
-   * WLayout#addItem(WLayoutItem item) addItem()}.
+   * <p>This method wraps the widget in a {@link WWidgetItem} and calls addItem(WLayoutItem *).
    *
    * <p>How the widget is layed out with respect to siblings is implementation specific to the
    * layout manager. In some cases, a layout manager will overload this method with extra arguments
@@ -67,7 +103,6 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    * <p>
    *
    * @see WLayout#removeWidget(WWidget w)
-   * @see WLayout#addItem(WLayoutItem item)
    */
   public void addWidget(WWidget w) {
     this.addItem(new WWidgetItem(w));
@@ -77,31 +112,26 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    *
    * <p>
    *
-   * @see WLayout#addItem(WLayoutItem item)
    * @see WLayout#removeWidget(WWidget w)
    */
-  public abstract void removeItem(WLayoutItem item);
+  public abstract WLayoutItem removeItem(WLayoutItem item);
   /**
    * Removes the given <i>widget</i> from the layout.
    *
    * <p>This method finds the corresponding {@link WWidgetItem} and calls {@link
-   * WLayout#removeItem(WLayoutItem item) removeItem()}. The widget itself is not destroyed.
-   *
-   * <p>Returns <code>true</code> if succesful.
+   * WLayout#removeItem(WLayoutItem item) removeItem()}, and returns the widget.
    *
    * <p>
    *
-   * @see WLayout#addWidget(WWidget w)
    * @see WLayout#removeItem(WLayoutItem item)
    */
-  public boolean removeWidget(WWidget w) {
+  public WWidget removeWidget(WWidget w) {
     WWidgetItem widgetItem = this.findWidgetItem(w);
     if (widgetItem != null) {
-      widgetItem.getParentLayout().removeItem(widgetItem);
-      ;
-      return true;
+      WLayoutItem wi = widgetItem.getParentLayout().removeItem(widgetItem);
+      return widgetItem.getTakeWidget();
     } else {
-      return false;
+      return null;
     }
   }
   /**
@@ -156,22 +186,6 @@ public abstract class WLayout extends WObject implements WLayoutItem {
     }
     return null;
   }
-  /**
-   * Provides a hint to the layout implementation.
-   *
-   * <p>In some cases, a layout implementation may require some hints for rendering its contents.
-   * Possible hints are indicated in the reference documentation for each layout manager.
-   */
-  public void setLayoutHint(final String name, final String value) {
-    if (this.impl_ != null) {
-      this.impl_.setHint(name, value);
-    } else {
-      if (!(this.hints_ != null)) {
-        this.hints_ = new ArrayList<WLayout.Hint>();
-      }
-      this.hints_.add(new WLayout.Hint(name, value));
-    }
-  }
 
   public WWidget getWidget() {
     return null;
@@ -182,10 +196,22 @@ public abstract class WLayout extends WObject implements WLayoutItem {
   }
 
   public WLayout getParentLayout() {
-    return ((this.getParent()) instanceof WLayout ? (WLayout) (this.getParent()) : null);
+    return this.parentLayout_;
   }
 
-  public WLayoutItemImpl getImpl() {
+  public WWidget getParentWidget() {
+    if (this.parentWidget_ != null) {
+      return this.parentWidget_;
+    } else {
+      if (this.parentLayout_ != null) {
+        return this.parentLayout_.getParentWidget();
+      } else {
+        return null;
+      }
+    }
+  }
+
+  public WLayoutImpl getImpl() {
     return this.impl_;
   }
   /**
@@ -201,9 +227,6 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    * @see WLayout#setContentsMargins(int left, int top, int right, int bottom)
    */
   public void setContentsMargins(int left, int top, int right, int bottom) {
-    if (!(this.margins_ != null)) {
-      this.margins_ = new int[4];
-    }
     this.margins_[0] = left;
     this.margins_[1] = top;
     this.margins_[2] = right;
@@ -217,9 +240,6 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    * @see WLayout#setContentsMargins(int left, int top, int right, int bottom)
    */
   public int getContentsMargin(Side side) {
-    if (!(this.margins_ != null)) {
-      return 9;
-    }
     switch (side) {
       case Left:
         return this.margins_[0];
@@ -233,19 +253,18 @@ public abstract class WLayout extends WObject implements WLayoutItem {
         return 9;
     }
   }
-  /**
-   * Removes and deletes all child widgets and nested layouts.
-   *
-   * <p>This is similar to {@link WContainerWidget#clear()}, with the exception that the layout
-   * itself is not deleted.
-   */
-  public abstract void clear();
+
+  public boolean isImplementationIsFlexLayout() {
+    return false;
+  }
   /** Create a layout. */
   protected WLayout() {
     super();
-    this.margins_ = null;
+    this.parentLayout_ = null;
+    this.parentWidget_ = null;
     this.impl_ = null;
-    this.hints_ = null;
+    this.preferredImplementation_ = defaultImplementation_;
+    this.margins_[0] = this.margins_[1] = this.margins_[2] = this.margins_[3] = 9;
   }
   /**
    * Update the layout.
@@ -254,7 +273,7 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    */
   protected void update(WLayoutItem item) {
     if (this.impl_ != null) {
-      this.impl_.update(item);
+      this.impl_.update();
     }
   }
   /**
@@ -265,88 +284,28 @@ public abstract class WLayout extends WObject implements WLayoutItem {
   protected final void update() {
     update((WLayoutItem) null);
   }
-  /**
-   * Update the layout, adding the given layout <i>item</i>.
-   *
-   * <p>Must be called from the implementation of {@link WLayout#addItem(WLayoutItem item)
-   * addItem()}
-   */
-  protected void updateAddItem(WLayoutItem item) {
-    if (item.getParentLayout() != null) {
-      throw new WException("Cannot add item to two Layouts");
-    }
+
+  protected void itemAdded(WLayoutItem item) {
     item.setParentLayout(this);
+    WWidget w = this.getParentWidget();
+    if (w != null) {
+      item.setParentWidget(w);
+    }
     if (this.impl_ != null) {
-      item.setParentWidget(this.impl_.getParentWidget());
-      this.impl_.updateAddItem(item);
+      this.impl_.itemAdded(item);
     }
   }
-  /**
-   * Update the layout, remove the given layout <i>item</i>.
-   *
-   * <p>Must be called from the implementation of {@link WLayout#removeItem(WLayoutItem item)
-   * removeItem()}
-   */
-  protected void updateRemoveItem(WLayoutItem item) {
+
+  protected void itemRemoved(WLayoutItem item) {
     if (this.impl_ != null) {
-      this.impl_.updateRemoveItem(item);
+      this.impl_.itemRemoved(item);
     }
+    item.setParentWidget((WWidget) null);
     item.setParentLayout((WLayout) null);
   }
-  /**
-   * Set the layout in the <i>parent</i>.
-   *
-   * <p>Must be called from the constructor after the layout has been fully created (since it will
-   * call virtual methods {@link WLayout#getCount() getCount()} and {@link WLayout#getItemAt(int
-   * index) getItemAt()}).
-   */
-  protected void setLayoutInParent(WWidget parent) {
-    parent.setLayout(this);
-  }
-  /**
-   * Clears and deletes an item.
-   *
-   * <p>This also deletes nested widgets and layouts.
-   *
-   * <p>
-   *
-   * @see WLayout#clear()
-   */
-  protected void clearLayoutItem(WLayoutItem item) {
-    if (item != null) {
-      WWidget widget = null;
-      if (item.getLayout() != null) {
-        item.getLayout().clear();
-      } else {
-        widget = item.getWidget();
-      }
-      this.removeItem(item);
-      ;
-      if (widget != null) widget.remove();
-    }
-  }
-
-  static class Hint {
-    private static Logger logger = LoggerFactory.getLogger(Hint.class);
-
-    public Hint(final String aName, final String aValue) {
-      this.name = aName;
-      this.value = aValue;
-    }
-
-    public String name;
-    public String value;
-  }
-
-  private int[] margins_;
-  private WLayoutItemImpl impl_;
-  private List<WLayout.Hint> hints_;
 
   public void setParentWidget(WWidget parent) {
-    if (!(this.getParent() != null)) {
-      this.setParent(parent);
-    }
-    assert !(this.impl_ != null);
+    this.parentWidget_ = parent;
     int c = this.getCount();
     for (int i = 0; i < c; ++i) {
       WLayoutItem item = this.getItemAt(i);
@@ -354,21 +313,40 @@ public abstract class WLayout extends WObject implements WLayoutItem {
         item.setParentWidget(parent);
       }
     }
-    this.impl_ = parent.createLayoutItemImpl(this);
-    if (this.hints_ != null) {
-      for (int i = 0; i < this.hints_.size(); ++i) {
-        this.impl_.setHint(this.hints_.get(i).name, this.hints_.get(i).value);
-      }
-      ;
-      this.hints_ = null;
+    if (!(parent != null)) {
+      this.impl_ = null;
     }
   }
 
-  public void setParentLayout(WLayout layout) {
-    if (layout != null) {
-      layout.addChild(this);
-    } else {
-      this.getParent().removeChild(this);
+  protected void setImpl(WLayoutImpl impl) {
+    this.impl_ = impl;
+  }
+
+  protected LayoutImplementation getImplementation() {
+    if (((this.impl_) instanceof StdGridLayoutImpl2 ? (StdGridLayoutImpl2) (this.impl_) : null)
+        != null) {
+      return LayoutImplementation.JavaScript;
     }
+    if (((this.impl_) instanceof FlexLayoutImpl ? (FlexLayoutImpl) (this.impl_) : null) != null) {
+      return LayoutImplementation.Flex;
+    }
+    return this.preferredImplementation_;
+  }
+
+  protected LayoutImplementation getPreferredImplementation() {
+    return this.preferredImplementation_;
+  }
+
+  protected void updateImplementation() {}
+
+  private WLayout parentLayout_;
+  private WWidget parentWidget_;
+  private int[] margins_ = new int[4];
+  private WLayoutImpl impl_;
+  private LayoutImplementation preferredImplementation_;
+  private static LayoutImplementation defaultImplementation_ = LayoutImplementation.Flex;
+
+  public void setParentLayout(WLayout layout) {
+    this.parentLayout_ = layout;
   }
 }

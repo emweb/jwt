@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -33,8 +34,8 @@ public class DomElement {
 
   /** Enumeration for the access mode (creation or update) */
   public enum Mode {
-    ModeCreate,
-    ModeUpdate;
+    Create,
+    Update;
 
     /** Returns the numerical representation of this enum. */
     public int getValue() {
@@ -56,7 +57,7 @@ public class DomElement {
    */
   public DomElement(DomElement.Mode mode, DomElementType type) {
     this.mode_ = mode;
-    this.wasEmpty_ = this.mode_ == DomElement.Mode.ModeCreate;
+    this.wasEmpty_ = this.mode_ == DomElement.Mode.Create;
     this.removeAllChildren_ = -1;
     this.minMaxSizeProperties_ = false;
     this.unstubbed_ = false;
@@ -133,7 +134,7 @@ public class DomElement {
   }
   /** Creates a reference to a new element. */
   public static DomElement createNew(DomElementType type) {
-    DomElement e = new DomElement(DomElement.Mode.ModeCreate, type);
+    DomElement e = new DomElement(DomElement.Mode.Create, type);
     return e;
   }
   /** Creates a reference to an existing element, using its ID. */
@@ -141,7 +142,7 @@ public class DomElement {
     if (id.length() == 0) {
       throw new WException("Cannot update widget without id");
     }
-    DomElement e = new DomElement(DomElement.Mode.ModeUpdate, type);
+    DomElement e = new DomElement(DomElement.Mode.Update, type);
     e.id_ = id;
     return e;
   }
@@ -155,7 +156,7 @@ public class DomElement {
   }
   /** Creates a reference to an existing element, using an expression to access the element. */
   public static DomElement updateGiven(final String var, DomElementType type) {
-    DomElement e = new DomElement(DomElement.Mode.ModeUpdate, type);
+    DomElement e = new DomElement(DomElement.Mode.Update, type);
     e.var_ = var;
     return e;
   }
@@ -185,11 +186,11 @@ public class DomElement {
    * deleted.
    */
   public void addChild(DomElement child) {
-    if (child.getMode() == DomElement.Mode.ModeCreate) {
+    if (child.getMode() == DomElement.Mode.Create) {
       this.numManipulations_ += 2;
       if (this.wasEmpty_ && this.canWriteInnerHTML(WApplication.getInstance())) {
         child.asHTML(this.childrenHtml_, this.javaScript_, this.timeouts_);
-        ;
+
       } else {
         this.childrenToAdd_.add(new DomElement.ChildInsertion(-1, child));
       }
@@ -248,8 +249,8 @@ public class DomElement {
   public void setProperty(Property property, final String value) {
     ++this.numManipulations_;
     this.properties_.put(property, value);
-    if (property.getValue() >= Property.PropertyStyleMinWidth.getValue()
-        && property.getValue() <= Property.PropertyStyleMaxHeight.getValue()) {
+    if (property.getValue() >= Property.StyleMinWidth.getValue()
+        && property.getValue() <= Property.StyleMaxHeight.getValue()) {
       this.minMaxSizeProperties_ = true;
     }
   }
@@ -319,13 +320,13 @@ public class DomElement {
       String eventName, final String jsCode, final String signalName, boolean isExposed) {
     WApplication app = WApplication.getInstance();
     boolean anchorClick =
-        this.getType() == DomElementType.DomElement_A && eventName == WInteractWidget.CLICK_SIGNAL;
+        this.getType() == DomElementType.A && eventName == WInteractWidget.CLICK_SIGNAL;
     StringBuilder js = new StringBuilder();
     if (isExposed || anchorClick || jsCode.length() != 0) {
       js.append("var e=event||window.event,");
       js.append("o=this;");
       if (anchorClick) {
-        js.append("if(e.ctrlKey||e.metaKey||(Wt3_6_0.button(e) > 1))return true;else{");
+        js.append("if(e.ctrlKey||e.metaKey||(Wt4_4_0.button(e) > 1))return true;else{");
       }
       js.append(jsCode);
       if (isExposed) {
@@ -432,7 +433,7 @@ public class DomElement {
   public void callMethod(final String method) {
     ++this.numManipulations_;
     if (this.var_.length() == 0) {
-      this.javaScript_.append("Wt3_6_0").append(".$('").append(this.id_).append("').");
+      this.javaScript_.append("Wt4_4_0").append(".$('").append(this.id_).append("').");
     } else {
       this.javaScript_.append(this.var_).append('.');
     }
@@ -480,7 +481,7 @@ public class DomElement {
   }
   /** Removes the element. */
   public void removeFromParent() {
-    this.callJavaScript("Wt3_6_0.remove('" + this.getId() + "');", true);
+    this.callJavaScript("Wt4_4_0.remove('" + this.getId() + "');", true);
   }
   /** Replaces the element by another element. */
   public void replaceWith(DomElement newElement) {
@@ -545,11 +546,11 @@ public class DomElement {
   }
   /** Renders the element as JavaScript. */
   public void asJavaScript(final StringBuilder out) {
-    this.mode_ = DomElement.Mode.ModeUpdate;
+    this.mode_ = DomElement.Mode.Update;
     EscapeOStream eout = new EscapeOStream(out);
     this.declare(eout);
     eout.append(this.var_).append(".setAttribute('id', '").append(this.id_).append("');\n");
-    this.mode_ = DomElement.Mode.ModeCreate;
+    this.mode_ = DomElement.Mode.Create;
     this.setJavaScriptProperties(eout, WApplication.getInstance());
     this.setJavaScriptAttributes(eout);
     this.asJavaScript(eout, DomElement.Priority.Update);
@@ -569,7 +570,7 @@ public class DomElement {
           if (this.removeAllChildren_ >= 0) {
             this.declare(out);
             if (this.removeAllChildren_ == 0) {
-              out.append("Wt3_6_0").append(".setHtml(").append(this.var_).append(", '');\n");
+              out.append("Wt4_4_0").append(".setHtml(").append(this.var_).append(", '');\n");
             } else {
               out.append("$(")
                   .append(this.var_)
@@ -581,7 +582,7 @@ public class DomElement {
         }
         return this.var_;
       case Create:
-        if (this.mode_ == DomElement.Mode.ModeCreate) {
+        if (this.mode_ == DomElement.Mode.Create) {
           if (this.id_.length() != 0) {
             out.append(this.var_).append(".setAttribute('id', '").append(this.id_).append("');\n");
           }
@@ -593,30 +594,32 @@ public class DomElement {
         {
           WApplication app = WApplication.getInstance();
           boolean childrenUpdated = false;
-          if (this.mode_ == DomElement.Mode.ModeUpdate && this.numManipulations_ == 1) {
+          if (this.mode_ == DomElement.Mode.Update && this.numManipulations_ == 1) {
             for (int i = 0; i < this.updatedChildren_.size(); ++i) {
               DomElement child = this.updatedChildren_.get(i);
               child.asJavaScript(out, DomElement.Priority.Update);
             }
             childrenUpdated = true;
-            if (this.properties_.get(Property.PropertyStyleDisplay) != null) {
-              String style = this.properties_.get(Property.PropertyStyleDisplay);
+            if (this.properties_.get(Property.StyleDisplay) != null) {
+              String style = this.properties_.get(Property.StyleDisplay);
               if (style.equals("none")) {
-                out.append("Wt3_6_0.hide('").append(this.id_).append("');\n");
+                out.append("Wt4_4_0.hide('").append(this.id_).append("');\n");
                 return this.var_;
               } else {
-                if (style.length() == 0) {
-                  out.append("Wt3_6_0.show('").append(this.id_).append("');\n");
+                if (style.equals("inline")) {
+                  out.append("Wt4_4_0.inline('" + this.id_ + "');\n");
                   return this.var_;
                 } else {
-                  if (style.equals("inline")) {
-                    out.append("Wt3_6_0.inline('" + this.id_ + "');\n");
+                  if (style.equals("block")) {
+                    out.append("Wt4_4_0.block('" + this.id_ + "');\n");
                     return this.var_;
                   } else {
-                    if (style.equals("block")) {
-                      out.append("Wt3_6_0.block('" + this.id_ + "');\n");
-                      return this.var_;
-                    }
+                    out.append("Wt4_4_0.show('")
+                        .append(this.id_)
+                        .append("', '")
+                        .append(style)
+                        .append("');\n");
+                    return this.var_;
                   }
                 }
               }
@@ -628,7 +631,7 @@ public class DomElement {
             }
           }
           if (this.unwrapped_) {
-            out.append("Wt3_6_0.unwrap('").append(this.id_).append("');\n");
+            out.append("Wt4_4_0.unwrap('").append(this.id_).append("');\n");
           }
           this.processEvents(app);
           this.processProperties(app);
@@ -645,7 +648,7 @@ public class DomElement {
                 .append(");\n");
             this.replaced_.createElement(out, app, insertJs.toString());
             if (this.unstubbed_) {
-              out.append("Wt3_6_0.unstub(")
+              out.append("Wt4_4_0.unstub(")
                   .append(this.var_)
                   .append(',')
                   .append(varr)
@@ -671,7 +674,7 @@ public class DomElement {
           }
           if (!this.childrenToSave_.isEmpty()) {
             this.declare(out);
-            out.append("Wt3_6_0").append(".saveReparented(").append(this.var_).append(");");
+            out.append("Wt4_4_0").append(".saveReparented(").append(this.var_).append(");");
           }
           for (int i = 0; i < this.childrenToSave_.size(); ++i) {
             out.append("var c")
@@ -686,7 +689,7 @@ public class DomElement {
             }
             out.append(";");
           }
-          if (this.mode_ != DomElement.Mode.ModeCreate) {
+          if (this.mode_ != DomElement.Mode.Create) {
             this.setJavaScriptProperties(out, app);
             this.setJavaScriptAttributes(out);
           }
@@ -694,13 +697,13 @@ public class DomElement {
                   this.eventHandlers_.entrySet().iterator();
               i_it.hasNext(); ) {
             Map.Entry<String, DomElement.EventHandler> i = i_it.next();
-            if (this.mode_ == DomElement.Mode.ModeUpdate || i.getValue().jsCode.length() != 0) {
+            if (this.mode_ == DomElement.Mode.Update || i.getValue().jsCode.length() != 0) {
               this.setJavaScriptEvent(out, i.getKey(), i.getValue(), app);
             }
           }
           this.renderInnerHtmlJS(out, app);
           for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-            out.append("Wt3_6_0.replaceWith('")
+            out.append("Wt4_4_0.replaceWith('")
                 .append(this.childrenToSave_.get(i))
                 .append("',c")
                 .append(this.var_)
@@ -729,7 +732,7 @@ public class DomElement {
       final EscapeOStream javaScript,
       final List<DomElement.TimeoutEvent> timeouts,
       boolean openingTagOnly) {
-    if (this.mode_ != DomElement.Mode.ModeCreate) {
+    if (this.mode_ != DomElement.Mode.Create) {
       throw new WException("DomElement::asHTML() called with ModeUpdate");
     }
     WApplication app = WApplication.getInstance();
@@ -744,14 +747,14 @@ public class DomElement {
     boolean isSubmit = needButtonWrap;
     DomElementType renderedType = this.type_;
     if (needButtonWrap) {
-      if (this.type_ == DomElementType.DomElement_BUTTON) {
+      if (this.type_ == DomElementType.BUTTON) {
         DomElement self = this;
         self.setAttribute("type", "submit");
         self.setAttribute("name", "signal=" + clickEvent.signalName);
         needButtonWrap = false;
       } else {
-        if (this.type_ == DomElementType.DomElement_IMG) {
-          renderedType = DomElementType.DomElement_INPUT;
+        if (this.type_ == DomElementType.IMG) {
+          renderedType = DomElementType.INPUT;
           DomElement self = this;
           self.setAttribute("type", "image");
           self.setAttribute("name", "signal=" + clickEvent.signalName);
@@ -760,15 +763,15 @@ public class DomElement {
       }
     }
     if (needButtonWrap) {
-      if (this.type_ == DomElementType.DomElement_AREA
-          || this.type_ == DomElementType.DomElement_INPUT
-          || this.type_ == DomElementType.DomElement_SELECT) {
+      if (this.type_ == DomElementType.AREA
+          || this.type_ == DomElementType.INPUT
+          || this.type_ == DomElementType.SELECT) {
         needButtonWrap = false;
       }
-      if (this.type_ == DomElementType.DomElement_A) {
+      if (this.type_ == DomElementType.A) {
         String href = this.getAttribute("href");
-        if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE7
-            || app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE8
+        if (app.getEnvironment().getAgent() == UserAgent.IE7
+            || app.getEnvironment().getAgent() == UserAgent.IE8
             || href.length() > 1) {
           needButtonWrap = false;
         } else {
@@ -780,7 +783,7 @@ public class DomElement {
           }
         }
       } else {
-        if (this.type_ == DomElementType.DomElement_AREA) {
+        if (this.type_ == DomElementType.AREA) {
           DomElement self = this;
           self.setAttribute(
               "href", app.url(app.getInternalPath()) + "&signal=" + clickEvent.signalName);
@@ -789,14 +792,14 @@ public class DomElement {
     }
     final boolean supportButton = true;
     boolean needAnchorWrap = false;
-    if (!supportButton && this.type_ == DomElementType.DomElement_BUTTON) {
-      renderedType = DomElementType.DomElement_INPUT;
+    if (!supportButton && this.type_ == DomElementType.BUTTON) {
+      renderedType = DomElementType.INPUT;
       DomElement self = this;
       if (!isSubmit) {
         self.setAttribute("type", "button");
       }
-      self.setAttribute("value", this.properties_.get(Property.PropertyInnerHTML));
-      self.setProperty(Property.PropertyInnerHTML, "");
+      self.setAttribute("value", this.properties_.get(Property.InnerHTML));
+      self.setProperty(Property.InnerHTML, "");
     }
     EscapeOStream attributeValues = out.push();
     attributeValues.pushEscape(EscapeOStream.RuleSet.HtmlAttribute);
@@ -806,11 +809,11 @@ public class DomElement {
         out.append("<button type=\"submit\" name=\"signal=");
         out.append(clickEvent.signalName, attributeValues);
         out.append("\" class=\"Wt-wrap ");
-        String l = this.properties_.get(Property.PropertyClass);
+        String l = this.properties_.get(Property.Class);
         if (l != null) {
           out.append(l);
           final SortedMap<Property, String> map = this.properties_;
-          map.remove(Property.PropertyClass);
+          map.remove(Property.Class);
         }
         out.append('"');
         String wrapStyle = this.getCssStyle();
@@ -821,7 +824,7 @@ public class DomElement {
           out.append(" style=");
           fastHtmlAttributeValue(out, attributeValues, wrapStyle);
         }
-        String i = this.properties_.get(Property.PropertyDisabled);
+        String i = this.properties_.get(Property.Disabled);
         if (i != null && i.equals("true")) {
           out.append(" disabled=\"disabled\"");
         }
@@ -833,14 +836,14 @@ public class DomElement {
             fastHtmlAttributeValue(out, attributeValues, j.getValue());
           }
         }
-        if (app.getEnvironment().getAgent() != WEnvironment.UserAgent.Konqueror
+        if (app.getEnvironment().getAgent() != UserAgent.Konqueror
             && !app.getEnvironment().agentIsWebKit()
             && !app.getEnvironment().agentIsIE()) {
           style = "margin: 0px -3px -2px -3px;";
         }
-        out.append("><").append(elementNames_[renderedType.getValue()]);
+        out.append("><").append(elementNames_[(int) renderedType.getValue()]);
       } else {
-        if (this.type_ == DomElementType.DomElement_IMG) {
+        if (this.type_ == DomElementType.IMG) {
           out.append("<input type=\"image\"");
         } else {
           out.append("<input type=\"submit\"");
@@ -848,7 +851,7 @@ public class DomElement {
         out.append(" name=");
         fastHtmlAttributeValue(out, attributeValues, "signal=" + clickEvent.signalName);
         out.append(" value=");
-        String i = this.properties_.get(Property.PropertyInnerHTML);
+        String i = this.properties_.get(Property.InnerHTML);
         if (i != null) {
           fastHtmlAttributeValue(out, attributeValues, i);
         } else {
@@ -859,12 +862,12 @@ public class DomElement {
       if (needAnchorWrap) {
         out.append("<a href=\"#\" class=\"Wt-wrap\" onclick=");
         fastHtmlAttributeValue(out, attributeValues, clickEvent.jsCode);
-        out.append("><").append(elementNames_[renderedType.getValue()]);
+        out.append("><").append(elementNames_[(int) renderedType.getValue()]);
       } else {
-        if (renderedType == DomElementType.DomElement_OTHER) {
+        if (renderedType == DomElementType.OTHER) {
           out.append('<').append(this.elementTagName_);
         } else {
-          out.append('<').append(elementNames_[renderedType.getValue()]);
+          out.append('<').append(elementNames_[(int) renderedType.getValue()]);
         }
       }
     }
@@ -889,8 +892,8 @@ public class DomElement {
           if (this.globalUnfocused_
               || i.getKey() == WInteractWidget.WHEEL_SIGNAL
                   && app.getEnvironment().agentIsIE()
-                  && app.getEnvironment().getAgent().getValue()
-                      >= WEnvironment.UserAgent.IE9.getValue()) {
+                  && (int) app.getEnvironment().getAgent().getValue()
+                      >= (int) UserAgent.IE9.getValue()) {
             this.setJavaScriptEvent(javaScript, i.getKey(), i.getValue(), app);
           } else {
             out.append(" on").append(i.getKey()).append('=');
@@ -904,57 +907,57 @@ public class DomElement {
         i_it.hasNext(); ) {
       Map.Entry<Property, String> i = i_it.next();
       switch (i.getKey()) {
-        case PropertyInnerHTML:
+        case InnerHTML:
           innerHTML += i.getValue();
           break;
-        case PropertyDisabled:
+        case Disabled:
           if (i.getValue().equals("true")) {
             out.append(" disabled=\"disabled\"");
           }
           break;
-        case PropertyReadOnly:
+        case ReadOnly:
           if (i.getValue().equals("true")) {
             out.append(" readonly=\"readonly\"");
           }
           break;
-        case PropertyTabIndex:
+        case TabIndex:
           out.append(" tabindex=\"").append(i.getValue()).append('"');
           break;
-        case PropertyChecked:
+        case Checked:
           if (i.getValue().equals("true")) {
             out.append(" checked=\"checked\"");
           }
           break;
-        case PropertySelected:
+        case Selected:
           if (i.getValue().equals("true")) {
             out.append(" selected=\"selected\"");
           }
           break;
-        case PropertySelectedIndex:
+        case SelectedIndex:
           if (i.getValue().equals("-1")) {
             DomElement self = this;
             self.callMethod("selectedIndex=-1");
           }
           break;
-        case PropertyMultiple:
+        case Multiple:
           if (i.getValue().equals("true")) {
             out.append(" multiple=\"multiple\"");
           }
           break;
-        case PropertyTarget:
+        case Target:
           out.append(" target=\"").append(i.getValue()).append("\"");
           break;
-        case PropertyDownload:
+        case Download:
           out.append(" download=\"").append(i.getValue()).append("\"");
           break;
-        case PropertyIndeterminate:
+        case Indeterminate:
           if (i.getValue().equals("true")) {
             DomElement self = this;
             self.callMethod("indeterminate=" + i.getValue());
           }
           break;
-        case PropertyValue:
-          if (this.type_ != DomElementType.DomElement_TEXTAREA) {
+        case Value:
+          if (this.type_ != DomElementType.TEXTAREA) {
             out.append(" value=");
             fastHtmlAttributeValue(out, attributeValues, i.getValue());
           } else {
@@ -962,27 +965,27 @@ public class DomElement {
             innerHTML += WWebWidget.escapeText(v, false);
           }
           break;
-        case PropertySrc:
+        case Src:
           out.append(" src=");
           fastHtmlAttributeValue(out, attributeValues, i.getValue());
           break;
-        case PropertyColSpan:
+        case ColSpan:
           out.append(" colspan=");
           fastHtmlAttributeValue(out, attributeValues, i.getValue());
           break;
-        case PropertyRowSpan:
+        case RowSpan:
           out.append(" rowspan=");
           fastHtmlAttributeValue(out, attributeValues, i.getValue());
           break;
-        case PropertyClass:
+        case Class:
           out.append(" class=");
           fastHtmlAttributeValue(out, attributeValues, i.getValue());
           break;
-        case PropertyLabel:
+        case Label:
           out.append(" label=");
           fastHtmlAttributeValue(out, attributeValues, i.getValue());
           break;
-        case PropertyPlaceholder:
+        case Placeholder:
           out.append(" placeholder=");
           fastHtmlAttributeValue(out, attributeValues, i.getValue());
           break;
@@ -1011,17 +1014,17 @@ public class DomElement {
         }
         out.append(innerHTML);
         out.append(this.childrenHtml_.toString());
-        if (renderedType == DomElementType.DomElement_DIV
-            && app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+        if (renderedType == DomElementType.DIV
+            && app.getEnvironment().getAgent() == UserAgent.IE6
             && innerHTML.length() == 0
             && this.childrenToAdd_.isEmpty()
             && this.childrenHtml_.isEmpty()) {
           out.append("&nbsp;");
         }
-        if (renderedType == DomElementType.DomElement_OTHER) {
+        if (renderedType == DomElementType.OTHER) {
           out.append("</").append(this.elementTagName_).append(">");
         } else {
-          out.append("</").append(elementNames_[renderedType.getValue()]).append(">");
+          out.append("</").append(elementNames_[(int) renderedType.getValue()]).append(">");
         }
       } else {
         out.append(" />");
@@ -1084,7 +1087,7 @@ public class DomElement {
     if (this.var_.length() == 0) {
       out.append("var ")
           .append(this.getCreateVar())
-          .append("=Wt3_6_0.$('")
+          .append("=Wt4_4_0.$('")
           .append(this.id_)
           .append("');\n");
     }
@@ -1099,34 +1102,34 @@ public class DomElement {
     for (Iterator<Map.Entry<Property, String>> j_it = this.properties_.entrySet().iterator();
         j_it.hasNext(); ) {
       Map.Entry<Property, String> j = j_it.next();
-      if (j.getKey() == Property.PropertyStyle) {
+      int p = j.getKey().getValue();
+      if (j.getKey() == Property.Style) {
         styleProperty = j.getValue();
       } else {
-        if (j.getKey().getValue() >= Property.PropertyStylePosition.getValue()
-            && j.getKey().getValue() <= Property.PropertyStyleBoxSizing.getValue()) {
-          if (j.getKey() == Property.PropertyStyleCursor && j.getValue().equals("pointer")) {
+        if (p >= (int) Property.StylePosition.getValue()
+            && p < (int) Property.LastPlusOne.getValue()) {
+          if (j.getKey() == Property.StyleCursor && j.getValue().equals("pointer")) {
             style.append("cursor:pointer;cursor:hand;");
           } else {
             if (j.getValue().length() != 0) {
               style
-                  .append(
-                      cssNames_[j.getKey().getValue() - Property.PropertyStylePosition.getValue()])
+                  .append(cssNames_[p - (int) Property.StylePosition.getValue()])
                   .append(':')
                   .append(j.getValue())
                   .append(';');
-              if (j.getKey().getValue() >= Property.PropertyStyleBoxSizing.getValue()) {
+              if (p >= (int) Property.StyleBoxSizing.getValue()) {
                 WApplication app = WApplication.getInstance();
-                if (app.getEnvironment().agentIsGecko()) {
-                  style.append("-moz-");
-                } else {
-                  if (app.getEnvironment().agentIsWebKit()) {
-                    style.append("-webkit-");
+                if (app != null) {
+                  if (app.getEnvironment().agentIsGecko()) {
+                    style.append("-moz-");
+                  } else {
+                    if (app.getEnvironment().agentIsWebKit()) {
+                      style.append("-webkit-");
+                    }
                   }
                 }
                 style
-                    .append(
-                        cssNames_[
-                            j.getKey().getValue() - Property.PropertyStylePosition.getValue()])
+                    .append(cssNames_[p - (int) Property.StylePosition.getValue()])
                     .append(':')
                     .append(j.getValue())
                     .append(';');
@@ -1134,7 +1137,7 @@ public class DomElement {
             }
           }
         } else {
-          if (j.getKey() == Property.PropertyStyleWidthExpression) {
+          if (j.getKey() == Property.StyleWidthExpression) {
             style.append("width:expression(").append(j.getValue()).append(");");
           }
         }
@@ -1200,34 +1203,34 @@ public class DomElement {
   }
   /** Returns whether a tag is self-closing in HTML. */
   public static boolean isSelfClosingTag(DomElementType element) {
-    return element == DomElementType.DomElement_BR
-        || element == DomElementType.DomElement_IMG
-        || element == DomElementType.DomElement_AREA
-        || element == DomElementType.DomElement_COL
-        || element == DomElementType.DomElement_INPUT;
+    return element == DomElementType.BR
+        || element == DomElementType.IMG
+        || element == DomElementType.AREA
+        || element == DomElementType.COL
+        || element == DomElementType.INPUT;
   }
   /** Parses a tag name to a DOMElement type. */
   public static DomElementType parseTagName(final String tag) {
-    for (int i = 0; i < DomElementType.DomElement_UNKNOWN.getValue(); ++i) {
+    for (int i = 0; i < (int) DomElementType.UNKNOWN.getValue(); ++i) {
       if (tag.equals(elementNames_[i])) {
         return DomElementType.values()[i];
       }
     }
-    return DomElementType.DomElement_UNKNOWN;
+    return DomElementType.UNKNOWN;
   }
   /** Returns the tag name for a DOMElement type. */
   public static String tagName(DomElementType type) {
-    assert type.getValue() < DomElementType.DomElement_UNKNOWN.getValue();
-    return elementNames_[type.getValue()];
+    assert (int) type.getValue() < (int) DomElementType.UNKNOWN.getValue();
+    return elementNames_[(int) type.getValue()];
   }
   /** Returns the name for a CSS property, as a string. */
   public static String cssName(Property property) {
-    return cssNames_[property.getValue() - Property.PropertyStylePosition.getValue()];
+    return cssNames_[(int) property.getValue() - (int) Property.StylePosition.getValue()];
   }
   /** Returns whether a paritcular element is by default inline. */
   public static boolean isDefaultInline(DomElementType type) {
-    assert type.getValue() < DomElementType.DomElement_UNKNOWN.getValue();
-    return defaultInline_[type.getValue()];
+    assert (int) type.getValue() < (int) DomElementType.UNKNOWN.getValue();
+    return defaultInline_[(int) type.getValue()];
   }
   /** Returns all custom JavaScript collected in this element. */
   public String getJavaScript() {
@@ -1235,7 +1238,7 @@ public class DomElement {
   }
   /** Something to do with broken IE Mobile 5 browsers... */
   public void updateInnerHtmlOnly() {
-    this.mode_ = DomElement.Mode.ModeUpdate;
+    this.mode_ = DomElement.Mode.Update;
     assert this.replaced_ == null;
     assert this.insertBefore_ == null;
     this.attributes_.clear();
@@ -1244,7 +1247,7 @@ public class DomElement {
     for (Iterator<Map.Entry<Property, String>> i_it = this.properties_.entrySet().iterator();
         i_it.hasNext(); ) {
       Map.Entry<Property, String> i = i_it.next();
-      if (i.getKey() == Property.PropertyInnerHTML || i.getKey() == Property.PropertyTarget) {
+      if (i.getKey() == Property.InnerHTML || i.getKey() == Property.Target) {
       } else {
         i_it.remove();
       }
@@ -1298,16 +1301,15 @@ public class DomElement {
   }
 
   private boolean canWriteInnerHTML(WApplication app) {
-    if ((app.getEnvironment().agentIsIE()
-            || app.getEnvironment().getAgent() == WEnvironment.UserAgent.Konqueror)
-        && (this.type_ == DomElementType.DomElement_TBODY
-            || this.type_ == DomElementType.DomElement_THEAD
-            || this.type_ == DomElementType.DomElement_TABLE
-            || this.type_ == DomElementType.DomElement_COLGROUP
-            || this.type_ == DomElementType.DomElement_TR
-            || this.type_ == DomElementType.DomElement_SELECT
-            || this.type_ == DomElementType.DomElement_TD
-            || this.type_ == DomElementType.DomElement_OPTGROUP)) {
+    if ((app.getEnvironment().agentIsIE() || app.getEnvironment().getAgent() == UserAgent.Konqueror)
+        && (this.type_ == DomElementType.TBODY
+            || this.type_ == DomElementType.THEAD
+            || this.type_ == DomElementType.TABLE
+            || this.type_ == DomElementType.COLGROUP
+            || this.type_ == DomElementType.TR
+            || this.type_ == DomElementType.SELECT
+            || this.type_ == DomElementType.TD
+            || this.type_ == DomElementType.OPTGROUP)) {
       return false;
     }
     return true;
@@ -1319,7 +1321,7 @@ public class DomElement {
     DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
     if (keypress != null && keypress.jsCode.length() != 0) {
       MapUtils.access(self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode =
-          "if (Wt3_6_0.isKeyPress(event)){"
+          "if (Wt4_4_0.isKeyPress(event)){"
               + MapUtils.access(self.eventHandlers_, S_keypress, DomElement.EventHandler.class)
                   .jsCode
               + '}';
@@ -1327,37 +1329,36 @@ public class DomElement {
   }
 
   private void processProperties(WApplication app) {
-    if (this.minMaxSizeProperties_
-        && app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
+    if (this.minMaxSizeProperties_ && app.getEnvironment().getAgent() == UserAgent.IE6) {
       DomElement self = this;
-      String w = self.properties_.get(Property.PropertyStyleWidth);
-      String minw = self.properties_.get(Property.PropertyStyleMinWidth);
-      String maxw = self.properties_.get(Property.PropertyStyleMaxWidth);
+      String w = self.properties_.get(Property.StyleWidth);
+      String minw = self.properties_.get(Property.StyleMinWidth);
+      String maxw = self.properties_.get(Property.StyleMaxWidth);
       if (minw != null || maxw != null) {
         if (w == null) {
           StringBuilder expr = new StringBuilder();
-          expr.append("Wt3_6_0.IEwidth(this,");
+          expr.append("Wt4_4_0.IEwidth(this,");
           if (minw != null) {
             expr.append('\'').append(minw).append('\'');
-            self.properties_.remove(Property.PropertyStyleMinWidth);
+            self.properties_.remove(Property.StyleMinWidth);
           } else {
             expr.append("'0px'");
           }
           expr.append(',');
           if (maxw != null) {
             expr.append('\'').append(maxw).append('\'');
-            self.properties_.remove(Property.PropertyStyleMaxWidth);
+            self.properties_.remove(Property.StyleMaxWidth);
           } else {
             expr.append("'100000px'");
           }
           expr.append(")");
-          self.properties_.remove(Property.PropertyStyleWidth);
-          self.properties_.put(Property.PropertyStyleWidthExpression, expr.toString());
+          self.properties_.remove(Property.StyleWidth);
+          self.properties_.put(Property.StyleWidthExpression, expr.toString());
         }
       }
-      String i = self.properties_.get(Property.PropertyStyleMinHeight);
+      String i = self.properties_.get(Property.StyleMinHeight);
       if (i != null) {
-        self.properties_.put(Property.PropertyStyleHeight, i);
+        self.properties_.put(Property.StyleHeight, i);
       }
     }
   }
@@ -1370,25 +1371,25 @@ public class DomElement {
       Map.Entry<Property, String> i = i_it.next();
       this.declare(out);
       switch (i.getKey()) {
-        case PropertyInnerHTML:
-        case PropertyAddedInnerHTML:
+        case InnerHTML:
+        case AddedInnerHTML:
           if (this.willRenderInnerHtmlJS(app)) {
             break;
           }
-          out.append("Wt3_6_0.setHtml(").append(this.var_).append(',');
+          out.append("Wt4_4_0.setHtml(").append(this.var_).append(',');
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
             pushed = true;
           }
           fastJsStringLiteral(out, escaped, i.getValue());
-          if (i.getKey() == Property.PropertyInnerHTML) {
+          if (i.getKey() == Property.InnerHTML) {
             out.append(",false");
           } else {
             out.append(",true");
           }
           out.append(");");
           break;
-        case PropertyValue:
+        case Value:
           out.append(this.var_).append(".value=");
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1397,14 +1398,14 @@ public class DomElement {
           fastJsStringLiteral(out, escaped, i.getValue());
           out.append(';');
           break;
-        case PropertyTarget:
+        case Target:
           out.append(this.var_).append(".target='").append(i.getValue()).append("';");
           break;
-        case PropertyIndeterminate:
+        case Indeterminate:
           out.append(this.var_).append(".indeterminate=").append(i.getValue()).append(";");
           break;
-        case PropertyDisabled:
-          if (this.type_ == DomElementType.DomElement_A) {
+        case Disabled:
+          if (this.type_ == DomElementType.A) {
             if (i.getValue().equals("true")) {
               out.append(this.var_).append(".setAttribute('disabled', 'disabled');");
             } else {
@@ -1414,38 +1415,38 @@ public class DomElement {
             out.append(this.var_).append(".disabled=").append(i.getValue()).append(';');
           }
           break;
-        case PropertyReadOnly:
+        case ReadOnly:
           out.append(this.var_).append(".readOnly=").append(i.getValue()).append(';');
           break;
-        case PropertyTabIndex:
+        case TabIndex:
           out.append(this.var_).append(".tabIndex=").append(i.getValue()).append(';');
           break;
-        case PropertyChecked:
+        case Checked:
           out.append(this.var_).append(".checked=").append(i.getValue()).append(';');
           break;
-        case PropertySelected:
+        case Selected:
           out.append(this.var_).append(".selected=").append(i.getValue()).append(';');
           break;
-        case PropertySelectedIndex:
+        case SelectedIndex:
           out.append("setTimeout(function() { ")
               .append(this.var_)
               .append(".selectedIndex=")
               .append(i.getValue())
               .append(";}, 0);");
           break;
-        case PropertyMultiple:
+        case Multiple:
           out.append(this.var_).append(".multiple=").append(i.getValue()).append(';');
           break;
-        case PropertySrc:
+        case Src:
           out.append(this.var_).append(".src='").append(i.getValue()).append("\';");
           break;
-        case PropertyColSpan:
+        case ColSpan:
           out.append(this.var_).append(".colSpan=").append(i.getValue()).append(";");
           break;
-        case PropertyRowSpan:
+        case RowSpan:
           out.append(this.var_).append(".rowSpan=").append(i.getValue()).append(";");
           break;
-        case PropertyLabel:
+        case Label:
           out.append(this.var_).append(".label=");
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1454,7 +1455,7 @@ public class DomElement {
           fastJsStringLiteral(out, escaped, i.getValue());
           out.append(';');
           break;
-        case PropertyPlaceholder:
+        case Placeholder:
           out.append(this.var_).append(".placeholder=");
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1463,7 +1464,7 @@ public class DomElement {
           fastJsStringLiteral(out, escaped, i.getValue());
           out.append(';');
           break;
-        case PropertyClass:
+        case Class:
           out.append(this.var_).append(".className=");
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1472,7 +1473,7 @@ public class DomElement {
           fastJsStringLiteral(out, escaped, i.getValue());
           out.append(';');
           break;
-        case PropertyStyleFloat:
+        case StyleFloat:
           out.append(this.var_).append(".style.");
           if (app.getEnvironment().agentIsIE()) {
             out.append("styleFloat");
@@ -1481,7 +1482,7 @@ public class DomElement {
           }
           out.append("=\'").append(i.getValue()).append("\';");
           break;
-        case PropertyStyleWidthExpression:
+        case StyleWidthExpression:
           out.append(this.var_).append(".style.setExpression('width',");
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
@@ -1491,23 +1492,24 @@ public class DomElement {
           out.append(");");
           break;
         default:
-          if (i.getKey().getValue() >= Property.PropertyStyle.getValue()
-              && i.getKey().getValue() <= Property.PropertyStyleBoxSizing.getValue()) {
-            if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-              out.append(this.var_)
-                  .append(".style['")
-                  .append(
-                      cssNames_[i.getKey().getValue() - Property.PropertyStylePosition.getValue()])
-                  .append("']='")
-                  .append(i.getValue())
-                  .append("';");
-            } else {
-              out.append(this.var_)
-                  .append(".style.")
-                  .append(cssCamelNames_[i.getKey().getValue() - Property.PropertyStyle.getValue()])
-                  .append("='")
-                  .append(i.getValue())
-                  .append("';");
+          {
+            int p = i.getKey().getValue();
+            if (p >= (int) Property.Style.getValue() && p < (int) Property.LastPlusOne.getValue()) {
+              if (app.getEnvironment().getAgent() == UserAgent.IE6) {
+                out.append(this.var_)
+                    .append(".style['")
+                    .append(cssNames_[p - (int) Property.StylePosition.getValue()])
+                    .append("']='")
+                    .append(i.getValue())
+                    .append("';");
+              } else {
+                out.append(this.var_)
+                    .append(".style.")
+                    .append(cssCamelNames_[p - (int) Property.Style.getValue()])
+                    .append("='")
+                    .append(i.getValue())
+                    .append("';");
+              }
             }
           }
       }
@@ -1562,7 +1564,7 @@ public class DomElement {
     }
     if (eventName == WInteractWidget.WHEEL_SIGNAL
         && app.getEnvironment().agentIsIE()
-        && app.getEnvironment().getAgent().getValue() >= WEnvironment.UserAgent.IE9.getValue()) {
+        && (int) app.getEnvironment().getAgent().getValue() >= (int) UserAgent.IE9.getValue()) {
       out.append(".addEventListener('wheel', f").append(fid).append(", false);\n");
     } else {
       out.append(".on").append(eventName).append("=f").append(fid).append(";\n");
@@ -1575,8 +1577,8 @@ public class DomElement {
     }
     out.append("var ").append(this.var_).append("=");
     if (app.getEnvironment().agentIsIE()
-        && app.getEnvironment().getAgent().getValue() <= WEnvironment.UserAgent.IE8.getValue()
-        && this.type_ != DomElementType.DomElement_TEXTAREA) {
+        && app.getEnvironment().getAgent().getValue() <= UserAgent.IE8.getValue()
+        && this.type_ != DomElementType.TEXTAREA) {
       out.append("document.createElement('");
       out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
       List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
@@ -1589,7 +1591,7 @@ public class DomElement {
       this.renderDeferredJavaScript(out);
     } else {
       out.append("document.createElement('")
-          .append(elementNames_[this.type_.getValue()])
+          .append(elementNames_[(int) this.type_.getValue()])
           .append("');");
       out.append(domInsertJS);
       this.asJavaScript(out, DomElement.Priority.Create);
@@ -1600,9 +1602,9 @@ public class DomElement {
   private String addToParent(
       final EscapeOStream out, final String parentVar, int pos, WApplication app) {
     this.getCreateVar();
-    if (this.type_ == DomElementType.DomElement_TD || this.type_ == DomElementType.DomElement_TR) {
+    if (this.type_ == DomElementType.TD || this.type_ == DomElementType.TR) {
       out.append("var ").append(this.var_).append("=");
-      if (this.type_ == DomElementType.DomElement_TD) {
+      if (this.type_ == DomElementType.TD) {
         out.append(parentVar).append(".insertCell(").append(pos).append(");\n");
       } else {
         out.append(parentVar).append(".insertRow(").append(pos).append(");\n");
@@ -1613,7 +1615,7 @@ public class DomElement {
       StringBuilder insertJS = new StringBuilder();
       if (pos != -1) {
         insertJS
-            .append("Wt3_6_0.insertAt(")
+            .append("Wt4_4_0.insertAt(")
             .append(parentVar)
             .append(",")
             .append(this.var_)
@@ -1633,22 +1635,21 @@ public class DomElement {
     if (this.willRenderInnerHtmlJS(app)) {
       String innerHTML = "";
       if (!this.properties_.isEmpty()) {
-        String i = this.properties_.get(Property.PropertyInnerHTML);
+        String i = this.properties_.get(Property.InnerHTML);
         if (i != null) {
           innerHTML += i;
         }
-        i = this.properties_.get(Property.PropertyAddedInnerHTML);
+        i = this.properties_.get(Property.AddedInnerHTML);
         if (i != null) {
           innerHTML += i;
         }
       }
-      if (this.type_ == DomElementType.DomElement_DIV
-              && app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+      if (this.type_ == DomElementType.DIV && app.getEnvironment().getAgent() == UserAgent.IE6
           || !this.childrenToAdd_.isEmpty()
           || !this.childrenHtml_.isEmpty()
           || innerHTML.length() != 0) {
         this.declare(out);
-        out.append("Wt3_6_0.setHtml(").append(this.var_).append(",'");
+        out.append("Wt4_4_0.setHtml(").append(this.var_).append(",'");
         out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
         List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
         EscapeOStream js = new EscapeOStream();
@@ -1657,8 +1658,8 @@ public class DomElement {
         }
         out.append(innerHTML);
         out.append(this.childrenHtml_.toString());
-        if (this.type_ == DomElementType.DomElement_DIV
-            && app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6
+        if (this.type_ == DomElementType.DIV
+            && app.getEnvironment().getAgent() == UserAgent.IE6
             && this.childrenToAdd_.isEmpty()
             && innerHTML.length() == 0
             && this.childrenHtml_.isEmpty()) {
@@ -1834,6 +1835,7 @@ public class DomElement {
     "padding-right",
     "padding-bottom",
     "padding-left",
+    "margin",
     "margin-top",
     "margin-right",
     "margin-bottom",
@@ -1875,7 +1877,11 @@ public class DomElement {
     "zoom",
     "visibility",
     "display",
-    "box-sizing"
+    "box-sizing",
+    "flex",
+    "flex-flow",
+    "align-self",
+    "justify-content"
   };
   private static String[] cssCamelNames_ = {
     "cssText",
@@ -1902,6 +1908,7 @@ public class DomElement {
     "paddingRight",
     "paddingBottom",
     "paddingLeft",
+    "margin",
     "marginTop",
     "marginRight",
     "marginBottom",
@@ -1943,7 +1950,11 @@ public class DomElement {
     "zoom",
     "visibility",
     "display",
-    "boxSizing"
+    "boxSizing",
+    "flex",
+    "flexFlow",
+    "alignSelf",
+    "justifyContent"
   };
   private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`/";
 

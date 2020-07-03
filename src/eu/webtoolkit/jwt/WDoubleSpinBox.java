@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -43,22 +44,23 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
    *
    * <p>The initial value is 0.0.
    */
-  public WDoubleSpinBox(WContainerWidget parent) {
-    super(parent);
+  public WDoubleSpinBox(WContainerWidget parentContainer) {
+    super();
     this.setup_ = false;
     this.value_ = -1;
     this.min_ = 0.0;
     this.max_ = 99.99;
     this.step_ = 1.0;
     this.precision_ = 2;
-    this.valueChanged_ = new Signal1<Double>(this);
+    this.valueChanged_ = new Signal1<Double>();
     this.setValidator(this.createValidator());
     this.setValue(0.0);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a spin-box.
    *
-   * <p>Calls {@link #WDoubleSpinBox(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WDoubleSpinBox(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WDoubleSpinBox() {
     this((WContainerWidget) null);
@@ -70,10 +72,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
    */
   public void setMinimum(double minimum) {
     this.min_ = minimum;
-    WDoubleValidator v =
-        ((this.getValidator()) instanceof WDoubleValidator
-            ? (WDoubleValidator) (this.getValidator())
-            : null);
+    WDoubleValidator v = ((WDoubleValidator) this.getValidator());
     if (v != null) {
       v.setBottom(this.min_);
     }
@@ -97,10 +96,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
    */
   public void setMaximum(double maximum) {
     this.max_ = maximum;
-    WDoubleValidator v =
-        ((this.getValidator()) instanceof WDoubleValidator
-            ? (WDoubleValidator) (this.getValidator())
-            : null);
+    WDoubleValidator v = ((WDoubleValidator) this.getValidator());
     if (v != null) {
       v.setTop(this.max_);
     }
@@ -224,7 +220,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
         element.setAttribute("max", String.valueOf(this.max_));
         element.setAttribute("step", String.valueOf(this.step_));
       } else {
-        final WDoubleValidator v = new WDoubleValidator();
+        WDoubleValidator v = new WDoubleValidator();
         v.getJavaScriptValidate();
       }
     }
@@ -233,7 +229,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
 
   protected void render(EnumSet<RenderFlag> flags) {
     super.render(flags);
-    if (!this.setup_ && !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (!this.setup_ && flags.contains(RenderFlag.Full)) {
       this.setup();
     }
   }
@@ -244,10 +240,8 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
       this.changed()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WDoubleSpinBox.this.onChange();
-                }
+              () -> {
+                WDoubleSpinBox.this.onChange();
               });
     }
     super.signalConnectionsChanged();
@@ -267,7 +261,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
         this.value_ = LocaleUtils.toDouble(LocaleUtils.getCurrentLocale(), text);
       }
       return true;
-    } catch (final NumberFormatException e) {
+    } catch (final RuntimeException e) {
       return false;
     }
   }
@@ -289,7 +283,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
   }
 
   protected WValidator.Result getValidateRange() {
-    final WDoubleValidator validator = new WDoubleValidator();
+    WDoubleValidator validator = new WDoubleValidator();
     validator.setRange(this.min_, this.max_);
     String badRangeText = WString.tr("Wt.WDoubleValidator.BadRange").toString();
     StringUtils.replace(badRangeText, "{1}", "{1}" + this.getSuffix().toString());

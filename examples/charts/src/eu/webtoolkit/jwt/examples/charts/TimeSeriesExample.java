@@ -4,11 +4,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.EditTrigger;
 import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WAbstractItemModel;
-import eu.webtoolkit.jwt.WAbstractItemView;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -68,27 +68,27 @@ public class TimeSeriesExample extends WContainerWidget {
         table.setModel(model);
         table.setSortingEnabled(false); // Does not make much sense for time series
         table.setColumnResizeEnabled(true);
-        table.setSelectionMode(SelectionMode.NoSelection);
+        table.setSelectionMode(SelectionMode.None);
         table.setAlternatingRowColors(true);
-        table.setColumnAlignment(0, AlignmentFlag.AlignCenter);
-        table.setHeaderAlignment(0, AlignmentFlag.AlignCenter);
+        table.setColumnAlignment(0, AlignmentFlag.Center);
+        table.setHeaderAlignment(0, AlignmentFlag.Center);
         table.setRowHeight(new WLength(22));
 
         // Editing does not really work without Ajax, it would require an
         // additional button somewhere to confirm the edited value.
         if (WApplication.getInstance().getEnvironment().hasAjax()) {
           table.resize(800, 20 + 5*22);
-          table.setEditTriggers(WAbstractItemView.EditTrigger.SingleClicked);
+          table.setEditTriggers(EditTrigger.SingleClicked);
         } else {
           table.resize(800, 20 + 5*22 + 25);
-          table.setEditTriggers(WAbstractItemView.EditTrigger.NoEditTrigger);
+          table.setEditTriggers(EditTrigger.None);
         }
 
         table.setColumnWidth(0, new WLength(80));
         for (int i = 1; i < model.getColumnCount(); ++i)
           table.setColumnWidth(i, new WLength(90));
         
-        WItemDelegate delegate = new WItemDelegate(this);
+        WItemDelegate delegate = new WItemDelegate();
         delegate.setTextFormat("dd/MM/yy");
         table.setItemDelegateForColumn(0, delegate);
 
@@ -100,11 +100,11 @@ public class TimeSeriesExample extends WContainerWidget {
         chart.setXSeriesColumn(0); // set the column that holds the X data
         chart.setLegendEnabled(true); // enable the legend
 
-        chart.setType(ChartType.ScatterPlot); // set type to ScatterPlot
-        chart.getAxis(Axis.XAxis).setScale(AxisScale.DateScale); // set scale of
+        chart.setType(ChartType.Scatter); // set type to ScatterPlot
+        chart.getAxis(Axis.X).setScale(AxisScale.Date); // set scale of
         // X axis to
         // DateScale
-        chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
+        chart.getAxis(Axis.Y).setLabelFormat("%.0f");
 
         chart.setAutoLayoutEnabled();
 
@@ -112,7 +112,7 @@ public class TimeSeriesExample extends WContainerWidget {
          * Add first two columns as line series
          */
         for (int i = 1; i < 3; ++i) {
-            WDataSeries s = new WDataSeries(i, SeriesType.LineSeries);
+            WDataSeries s = new WDataSeries(i, SeriesType.Line);
             s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
             chart.addSeries(s);
         }

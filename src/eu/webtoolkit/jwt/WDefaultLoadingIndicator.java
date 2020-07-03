@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -45,12 +46,14 @@ import org.slf4j.LoggerFactory;
  *
  * @see WApplication#setLoadingIndicator(WLoadingIndicator indicator)
  */
-public class WDefaultLoadingIndicator extends WText implements WLoadingIndicator {
+public class WDefaultLoadingIndicator extends WLoadingIndicator {
   private static Logger logger = LoggerFactory.getLogger(WDefaultLoadingIndicator.class);
 
   /** Constructor. */
-  public WDefaultLoadingIndicator() {
-    super(tr("Wt.WDefaultLoadingIndicator.Loading"));
+  public WDefaultLoadingIndicator(WContainerWidget parentContainer) {
+    super();
+    this.setImplementation(
+        new WText(tr("Wt.WDefaultLoadingIndicator.Loading"), (WContainerWidget) null));
     this.setInline(false);
     this.setStyleClass("Wt-loading");
     WApplication app = WApplication.getInstance();
@@ -66,31 +69,24 @@ public class WDefaultLoadingIndicator extends WText implements WLoadingIndicator
               "div.Wt-loading",
               "right: expression(((ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft )) + 'px' );top: expression(((ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop)) + 'px' );");
     }
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Returns the widget that visually represents the indicator.
+   * Constructor.
    *
-   * <p>You should reimplement this method to return a widget that will be shown to indicate that a
-   * response is pending. The widget should be positioned using CSS.
-   *
-   * <p>The widget will be shown and hidden using {@link WWidget#show()} and {@link WWidget#hide()}.
-   * If you want to customize this behaviour, you should reimplement the {@link
-   * WWidget#setHidden(boolean hidden, WAnimation animation) WWidget#setHidden()} method. Note that
-   * {@link WWidget#show()} and {@link WWidget#hide()} are stateless slots, and thus you need to
-   * make sure that your implementation comforms to that contract, so that it may be optimized to
-   * JavaScript (the server-side implementation will only be called during stateless slot
-   * prelearning).
-   *
-   * <p>
-   *
-   * <p><i><b>Note: </b>The widget will not be added to the {@link WApplication#getRoot()}
-   * container. </i>
+   * <p>Calls {@link #WDefaultLoadingIndicator(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
+  public WDefaultLoadingIndicator() {
+    this((WContainerWidget) null);
+  }
+
   public WWidget getWidget() {
     return this;
   }
 
   public void setMessage(final CharSequence text) {
-    this.setText(text);
+    (((this.getImplementation()) instanceof WText ? (WText) (this.getImplementation()) : null))
+        .setText(text);
   }
 }

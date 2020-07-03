@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -47,14 +48,14 @@ public class WTableCell extends WContainerWidget {
 
   /** Create a table cell. */
   public WTableCell() {
-    super((WContainerWidget) null);
+    super();
     this.row_ = null;
     this.column_ = 0;
     this.rowSpan_ = 1;
     this.columnSpan_ = 1;
     this.spanChanged_ = false;
-    this.contentAlignment_ =
-        EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
+    this.overSpanned_ = false;
+    this.contentAlignment_ = EnumSet.copyOf(EnumSet.of(AlignmentFlag.Left, AlignmentFlag.Top));
   }
   /**
    * Sets the row span.
@@ -69,7 +70,7 @@ public class WTableCell extends WContainerWidget {
       this.row_.getTable().expand(this.getRow(), this.column_, this.rowSpan_, this.columnSpan_);
       this.spanChanged_ = true;
       this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
-      this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.getTable().repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
@@ -95,7 +96,7 @@ public class WTableCell extends WContainerWidget {
       this.row_.getTable().expand(this.getRow(), this.column_, this.rowSpan_, this.columnSpan_);
       this.spanChanged_ = true;
       this.getTable().flags_.set(WTable.BIT_GRID_CHANGED);
-      this.getTable().repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.getTable().repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
@@ -138,30 +139,19 @@ public class WTableCell extends WContainerWidget {
     return super.isVisible();
   }
 
-  WTableCell(WTableRow row, int column) {
-    super((WContainerWidget) null);
-    this.row_ = row;
-    this.column_ = column;
-    this.rowSpan_ = 1;
-    this.columnSpan_ = 1;
-    this.spanChanged_ = false;
-    this.contentAlignment_ =
-        EnumSet.copyOf(EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop));
-    this.setParentWidget(row.getTable());
-  }
-
   WTableRow row_;
   int column_;
   private int rowSpan_;
   private int columnSpan_;
   private boolean spanChanged_;
+  boolean overSpanned_;
 
   void updateDom(final DomElement element, boolean all) {
     if (all && this.rowSpan_ != 1 || this.spanChanged_) {
-      element.setProperty(Property.PropertyRowSpan, String.valueOf(this.rowSpan_));
+      element.setProperty(Property.RowSpan, String.valueOf(this.rowSpan_));
     }
     if (all && this.columnSpan_ != 1 || this.spanChanged_) {
-      element.setProperty(Property.PropertyColSpan, String.valueOf(this.columnSpan_));
+      element.setProperty(Property.ColSpan, String.valueOf(this.columnSpan_));
     }
     if (this.getRow() < this.getTable().getHeaderCount(Orientation.Horizontal)) {
       element.setAttribute("scope", "col");
@@ -177,9 +167,9 @@ public class WTableCell extends WContainerWidget {
   DomElementType getDomElementType() {
     if (this.column_ < this.getTable().getHeaderCount(Orientation.Vertical)
         || this.getRow() < this.getTable().getHeaderCount(Orientation.Horizontal)) {
-      return DomElementType.DomElement_TH;
+      return DomElementType.TH;
     } else {
-      return DomElementType.DomElement_TD;
+      return DomElementType.TD;
     }
   }
 

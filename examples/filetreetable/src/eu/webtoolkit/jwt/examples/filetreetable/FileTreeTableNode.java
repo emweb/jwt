@@ -32,7 +32,7 @@ public class FileTreeTableNode extends WTreeTableNode {
         super("", createIcon(path));
         path_ = path;
 
-        getLabel().setTextFormat(TextFormat.PlainText);
+        getLabel().setTextFormat(TextFormat.Plain);
         getLabel().setText(path_.getName());
 
         if (path.exists()) {

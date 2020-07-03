@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -64,8 +65,8 @@ public class WSlider extends WFormWidget {
    *
    * <p>The initial value is 0.
    */
-  public WSlider(WContainerWidget parent) {
-    super(parent);
+  public WSlider(WContainerWidget parentContainer) {
+    super();
     this.orientation_ = Orientation.Horizontal;
     this.tickInterval_ = 0;
     this.tickPosition_ = EnumSet.noneOf(WSlider.TickPosition.class);
@@ -76,15 +77,16 @@ public class WSlider extends WFormWidget {
     this.minimum_ = 0;
     this.maximum_ = 99;
     this.value_ = 0;
-    this.valueChanged_ = new Signal1<Integer>(this);
+    this.valueChanged_ = new Signal1<Integer>();
     this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {};
     this.paintedSlider_ = null;
     this.resize(new WLength(150), new WLength(50));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a default horizontal slider.
    *
-   * <p>Calls {@link #WSlider(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WSlider(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WSlider() {
     this((WContainerWidget) null);
@@ -97,8 +99,8 @@ public class WSlider extends WFormWidget {
    *
    * <p>The initial value is 0.
    */
-  public WSlider(Orientation orientation, WContainerWidget parent) {
-    super(parent);
+  public WSlider(Orientation orientation, WContainerWidget parentContainer) {
+    super();
     this.orientation_ = orientation;
     this.tickInterval_ = 0;
     this.tickPosition_ = EnumSet.noneOf(WSlider.TickPosition.class);
@@ -109,7 +111,7 @@ public class WSlider extends WFormWidget {
     this.minimum_ = 0;
     this.maximum_ = 99;
     this.value_ = 0;
-    this.valueChanged_ = new Signal1<Integer>(this);
+    this.valueChanged_ = new Signal1<Integer>();
     this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {};
     this.paintedSlider_ = null;
     if (orientation == Orientation.Horizontal) {
@@ -117,18 +119,27 @@ public class WSlider extends WFormWidget {
     } else {
       this.resize(new WLength(50), new WLength(150));
     }
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a default slider of the given orientation.
    *
-   * <p>Calls {@link #WSlider(Orientation orientation, WContainerWidget parent) this(orientation,
-   * (WContainerWidget)null)}
+   * <p>Calls {@link #WSlider(Orientation orientation, WContainerWidget parentContainer)
+   * this(orientation, (WContainerWidget)null)}
    */
   public WSlider(Orientation orientation) {
     this(orientation, (WContainerWidget) null);
   }
   /** Destructor. */
   public void remove() {
+    {
+      WWidget oldWidget = this.paintedSlider_;
+      this.paintedSlider_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.paintedSlider_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     super.remove();
   }
   /**
@@ -158,11 +169,11 @@ public class WSlider extends WFormWidget {
     if (this.preferNative_) {
       final WEnvironment env = WApplication.getInstance().getEnvironment();
       if (env.agentIsChrome()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Chrome5.getValue()
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Chrome5.getValue()
           || env.agentIsSafari()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Safari4.getValue()
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Safari4.getValue()
           || env.agentIsOpera()
-              && env.getAgent().getValue() >= WEnvironment.UserAgent.Opera10.getValue()) {
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Opera10.getValue()) {
         return true;
       }
     }
@@ -424,7 +435,7 @@ public class WSlider extends WFormWidget {
   public void setValueText(final String value) {
     try {
       this.value_ = Integer.parseInt(value);
-    } catch (final NumberFormatException e) {
+    } catch (final RuntimeException e) {
     }
   }
 
@@ -451,7 +462,7 @@ public class WSlider extends WFormWidget {
       }
       WPen pen = new WPen();
       pen.setColor(new WColor(0xd7, 0xd7, 0xd7));
-      pen.setCapStyle(PenCapStyle.FlatCap);
+      pen.setCapStyle(PenCapStyle.Flat);
       pen.setWidth(new WLength(1));
       painter.setPen(pen);
       int y1 = h / 4;
@@ -460,18 +471,18 @@ public class WSlider extends WFormWidget {
       int y4 = h - h / 4;
       switch (this.orientation_) {
         case Horizontal:
-          if (!EnumUtils.mask(this.tickPosition_, WSlider.TickPosition.TicksAbove).isEmpty()) {
+          if (this.tickPosition_.contains(WSlider.TickPosition.TicksAbove)) {
             painter.drawLine(x + 0.5, y1, x + 0.5, y2);
           }
-          if (!EnumUtils.mask(this.tickPosition_, WSlider.TickPosition.TicksBelow).isEmpty()) {
+          if (this.tickPosition_.contains(WSlider.TickPosition.TicksBelow)) {
             painter.drawLine(x + 0.5, y3, x + 0.5, y4);
           }
           break;
         case Vertical:
-          if (!EnumUtils.mask(this.tickPosition_, WSlider.TickPosition.TicksAbove).isEmpty()) {
+          if (this.tickPosition_.contains(WSlider.TickPosition.TicksAbove)) {
             painter.drawLine(y1, y + 0.5, y2, y + 0.5);
           }
-          if (!EnumUtils.mask(this.tickPosition_, WSlider.TickPosition.TicksBelow).isEmpty()) {
+          if (this.tickPosition_.contains(WSlider.TickPosition.TicksBelow)) {
             painter.drawLine(y3, y + 0.5, y4, y + 0.5);
           }
       }
@@ -501,16 +512,30 @@ public class WSlider extends WFormWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       boolean useNative = this.isNativeControl();
       if (!useNative) {
         if (!(this.paintedSlider_ != null)) {
-          this.addChild(this.paintedSlider_ = new PaintedSlider(this));
+          PaintedSlider paintedSlider = new PaintedSlider(this);
+          {
+            WWidget oldWidget = this.paintedSlider_;
+            this.paintedSlider_ = paintedSlider;
+            {
+              WWidget toRemove = this.manageWidget(oldWidget, this.paintedSlider_);
+              if (toRemove != null) toRemove.remove();
+            }
+          }
           this.paintedSlider_.sliderResized(this.getWidth(), this.getHeight());
         }
       } else {
-        if (this.paintedSlider_ != null) this.paintedSlider_.remove();
-        this.paintedSlider_ = null;
+        {
+          WWidget oldWidget = this.paintedSlider_;
+          this.paintedSlider_ = null;
+          {
+            WWidget toRemove = this.manageWidget(oldWidget, this.paintedSlider_);
+            if (toRemove != null) toRemove.remove();
+          }
+        }
       }
       this.setLayoutSizeAware(!useNative);
       this.setFormObject(useNative);
@@ -524,7 +549,7 @@ public class WSlider extends WFormWidget {
     } else {
       if (all || this.changed_) {
         element.setAttribute("type", "range");
-        element.setProperty(Property.PropertyValue, String.valueOf(this.value_));
+        element.setProperty(Property.Value, String.valueOf(this.value_));
         element.setAttribute("min", String.valueOf(this.minimum_));
         element.setAttribute("max", String.valueOf(this.maximum_));
         if (!this.changedConnected_
@@ -533,10 +558,8 @@ public class WSlider extends WFormWidget {
           this.changed()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WSlider.this.onChange();
-                    }
+                  () -> {
+                    WSlider.this.onChange();
                   });
         }
         this.changed_ = false;
@@ -546,9 +569,7 @@ public class WSlider extends WFormWidget {
   }
 
   DomElementType getDomElementType() {
-    return this.paintedSlider_ != null
-        ? DomElementType.DomElement_DIV
-        : DomElementType.DomElement_INPUT;
+    return this.paintedSlider_ != null ? DomElementType.DIV : DomElementType.INPUT;
   }
 
   protected void setFormData(final WObject.FormData formData) {
@@ -559,7 +580,7 @@ public class WSlider extends WFormWidget {
       final String value = formData.values[0];
       try {
         this.value_ = Integer.parseInt(value);
-      } catch (final NumberFormatException e) {
+      } catch (final RuntimeException e) {
       }
     }
   }

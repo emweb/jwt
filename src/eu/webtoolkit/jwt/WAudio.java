@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -52,13 +53,14 @@ public class WAudio extends WAbstractMedia {
    * <p>A freshly constructed Audio widget has no media sources, no options, and has preload mode
    * set to PreloadAuto.
    */
-  public WAudio(WContainerWidget parent) {
-    super(parent);
+  public WAudio(WContainerWidget parentContainer) {
+    super();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a audio widget.
    *
-   * <p>Calls {@link #WAudio(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WAudio(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WAudio() {
     this((WContainerWidget) null);
@@ -76,10 +78,10 @@ public class WAudio extends WAbstractMedia {
   }
 
   DomElement createMediaDomElement() {
-    return DomElement.createNew(DomElementType.DomElement_AUDIO);
+    return DomElement.createNew(DomElementType.AUDIO);
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_AUDIO;
+    return DomElementType.AUDIO;
   }
 }

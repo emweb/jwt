@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -27,14 +28,16 @@ public class AxisConfig {
   private static Logger logger = LoggerFactory.getLogger(AxisConfig.class);
 
   public AxisConfig() {
-    this.side = AxisValue.MinimumValue;
+    this.side = AxisValue.Minimum;
     this.zoomLevel = 1;
   }
-  /** The side the axis is drawn on, should be MinimumValue, MaximumValue, or ZeroValue. */
+  /** The side the axis is drawn on, should be Minimum, Maximum, or Zero. */
   public AxisValue side;
   /**
-   * The zoom level. Different axis labels can be drawn depending on the zoom level. These are
-   * requested by {@link eu.webtoolkit.jwt.chart.WCartesianChart} in powers of 2 (1, 2, 4, 8,...)
+   * The zoom level.
+   *
+   * <p>Different axis labels can be drawn depending on the zoom level. These are requested by
+   * {@link eu.webtoolkit.jwt.chart.WCartesianChart} in powers of 2 (1, 2, 4, 8,...)
    */
   public int zoomLevel;
 

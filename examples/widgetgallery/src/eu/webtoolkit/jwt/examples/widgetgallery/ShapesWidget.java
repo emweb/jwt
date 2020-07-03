@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,10 @@ import org.slf4j.LoggerFactory;
 class ShapesWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(ShapesWidget.class);
 
-  public ShapesWidget(WContainerWidget parent) {
-    super(parent);
+  public ShapesWidget(WContainerWidget parentContainer) {
+    super();
     this.resize(new WLength(310), new WLength(400));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public ShapesWidget() {
@@ -32,11 +34,11 @@ class ShapesWidget extends WPaintedWidget {
 
   protected void paintEvent(WPaintDevice paintDevice) {
     WPainter painter = new WPainter(paintDevice);
-    painter.setPen(new WPen(WColor.red));
+    painter.setPen(new WPen(new WColor(StandardColor.Red)));
     painter.drawLine(0, 0, 200, 0);
     painter.drawLine(200, 0, 200, 30);
     painter.drawRect(0, 25, 80, 50);
-    painter.setBrush(new WBrush(WColor.green));
+    painter.setBrush(new WBrush(new WColor(StandardColor.Green)));
     painter.drawRect(100, 25, 80, 50);
     painter.fillRect(220, 25, 80, 50, new WBrush(new WColor(0, 255, 0, 64)));
     painter.drawEllipse(0, 100, 80, 50);
@@ -89,7 +91,7 @@ class ShapesWidget extends WPaintedWidget {
     bezierCurvePath.cubicTo(290, 347, 310, 325, 310, 307.5);
     bezierCurvePath.cubicTo(310, 307.5, 310, 270, 290, 270);
     bezierCurvePath.cubicTo(265, 270, 255, 282, 255, 285);
-    painter.setBrush(new WBrush(WColor.red));
+    painter.setBrush(new WBrush(new WColor(StandardColor.Red)));
     painter.drawPath(bezierCurvePath);
   }
 }

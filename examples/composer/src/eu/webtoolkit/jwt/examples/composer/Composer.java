@@ -12,6 +12,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.LengthUnit;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -340,7 +341,7 @@ public class Composer extends WCompositeWidget {
          * Top buttons
          */
         horiz = new WContainerWidget(layout_);
-        horiz.setPadding(new WLength(5), Side.All);
+        horiz.setPadding(new WLength(5), Side.AllSides);
         topSendButton_ = new WPushButton(tr("msg.send"), horiz);
         topSendButton_.setStyleClass("default"); // default action
         topSaveNowButton_ = new WPushButton(tr("msg.savenow"), horiz);
@@ -348,7 +349,7 @@ public class Composer extends WCompositeWidget {
 
         // Text widget which shows status messages, next to the top buttons.
         statusMsg_ = new WText(horiz);
-        statusMsg_.setMargin(new WLength(15, WLength.Unit.Pixel), EnumSet
+        statusMsg_.setMargin(new WLength(15, LengthUnit.Pixel), EnumSet
                 .of(Side.Left));
 
         /*
@@ -357,9 +358,9 @@ public class Composer extends WCompositeWidget {
          */
         edits_ = new WTable(layout_);
         edits_.setStyleClass("lighter");
-        edits_.resize(new WLength(100, WLength.Unit.Percentage), new WLength());
+        edits_.resize(new WLength(100, LengthUnit.Percentage), new WLength());
         edits_.getElementAt(0, 0).resize(
-                new WLength(1, WLength.Unit.Percentage), new WLength());
+                new WLength(1, LengthUnit.Percentage), new WLength());
 
         /*
          * To, Cc, Bcc
@@ -399,14 +400,14 @@ public class Composer extends WCompositeWidget {
         new Label("msg.subject", edits_.getElementAt(4, 0));
         subject_ = new WLineEdit(edits_.getElementAt(4, 1));
         subject_
-                .resize(new WLength(99, WLength.Unit.Percentage), new WLength());
+                .resize(new WLength(99, LengthUnit.Percentage), new WLength());
 
         /*
          * Attachments
          */
         new WImage(new WLink("pics/paperclip.png"), edits_.getElementAt(5, 0));
         edits_.getElementAt(5, 0).setContentAlignment(
-                EnumSet.of(AlignmentFlag.AlignTop, AlignmentFlag.AlignRight));
+                EnumSet.of(AlignmentFlag.Top, AlignmentFlag.Right));
 
         // Attachment edits: we always have the next attachmentedit ready
         // but hidden. This improves the response time, since the show()
@@ -428,13 +429,13 @@ public class Composer extends WCompositeWidget {
         message_ = new WTextArea(layout_);
         message_.setColumns(80);
         message_.setRows(10); // should be 20, but let's keep it smaller
-        message_.setMargin(new WLength(10, WLength.Unit.Pixel));
+        message_.setMargin(new WLength(10, LengthUnit.Pixel));
 
         /*
          * Bottom buttons
          */
         horiz = new WContainerWidget(layout_);
-        horiz.setPadding(new WLength(5), Side.All);
+        horiz.setPadding(new WLength(5), Side.AllSides);
         botSendButton_ = new WPushButton(tr("msg.send"), horiz);
         botSendButton_.setStyleClass("default");
         botSaveNowButton_ = new WPushButton(tr("msg.savenow"), horiz);

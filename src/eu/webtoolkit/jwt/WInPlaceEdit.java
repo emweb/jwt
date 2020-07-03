@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -69,34 +70,36 @@ public class WInPlaceEdit extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WInPlaceEdit.class);
 
   /** Creates an in-place edit. */
-  public WInPlaceEdit(WContainerWidget parent) {
-    super(parent);
-    this.valueChanged_ = new Signal1<WString>(this);
+  public WInPlaceEdit(WContainerWidget parentContainer) {
+    super();
+    this.valueChanged_ = new Signal1<WString>();
     this.placeholderText_ = new WString();
     this.c2_ = new AbstractSignal.Connection();
     this.create();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an in-place edit.
    *
-   * <p>Calls {@link #WInPlaceEdit(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WInPlaceEdit(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WInPlaceEdit() {
     this((WContainerWidget) null);
   }
   /** Creates an in-place edit with the given text. */
-  public WInPlaceEdit(final CharSequence text, WContainerWidget parent) {
-    super(parent);
-    this.valueChanged_ = new Signal1<WString>(this);
+  public WInPlaceEdit(final CharSequence text, WContainerWidget parentContainer) {
+    super();
+    this.valueChanged_ = new Signal1<WString>();
     this.placeholderText_ = new WString();
     this.c2_ = new AbstractSignal.Connection();
     this.create();
     this.setText(text);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an in-place edit with the given text.
    *
-   * <p>Calls {@link #WInPlaceEdit(CharSequence text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WInPlaceEdit(CharSequence text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WInPlaceEdit(final CharSequence text) {
@@ -111,20 +114,21 @@ public class WInPlaceEdit extends WCompositeWidget {
    *
    * @see WInPlaceEdit#setButtonsEnabled(boolean enabled)
    */
-  public WInPlaceEdit(boolean buttons, final CharSequence text, WContainerWidget parent) {
-    super(parent);
-    this.valueChanged_ = new Signal1<WString>(this);
+  public WInPlaceEdit(boolean buttons, final CharSequence text, WContainerWidget parentContainer) {
+    super();
+    this.valueChanged_ = new Signal1<WString>();
     this.placeholderText_ = new WString();
     this.c2_ = new AbstractSignal.Connection();
     this.create();
     this.setText(text);
     this.setButtonsEnabled(buttons);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an in-place edit with the given text.
    *
-   * <p>Calls {@link #WInPlaceEdit(boolean buttons, CharSequence text, WContainerWidget parent)
-   * this(buttons, text, (WContainerWidget)null)}
+   * <p>Calls {@link #WInPlaceEdit(boolean buttons, CharSequence text, WContainerWidget
+   * parentContainer) this(buttons, text, (WContainerWidget)null)}
    */
   public WInPlaceEdit(boolean buttons, final CharSequence text) {
     this(buttons, text, (WContainerWidget) null);
@@ -154,27 +158,6 @@ public class WInPlaceEdit extends WCompositeWidget {
       this.text_.setText(this.getPlaceholderText());
     }
     this.edit_.setText(text.toString());
-  }
-  /**
-   * Sets the placeholder text (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated use {@link WInPlaceEdit#setPlaceholderText(CharSequence text)
-   *     setPlaceholderText()}x instead
-   */
-  public void setEmptyText(final CharSequence text) {
-    this.setPlaceholderText(text);
-  }
-  /**
-   * Returns the placeholder text (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated use {@link WInPlaceEdit#getPlaceholderText() getPlaceholderText()} instead.
-   */
-  public WString getEmptyText() {
-    return this.getPlaceholderText();
   }
   /**
    * Sets the placeholder text.
@@ -259,89 +242,81 @@ public class WInPlaceEdit extends WCompositeWidget {
    */
   public void setButtonsEnabled(boolean enabled) {
     if (enabled && !(this.save_ != null)) {
-      if (this.c2_.isConnected()) {
-        this.c2_.disconnect();
-      }
-      this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), this.buttons_);
-      this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"), this.buttons_);
+      this.c2_.disconnect();
+      this.buttons_.addWidget(
+          this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), (WContainerWidget) null));
+      this.buttons_.addWidget(
+          this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"), (WContainerWidget) null));
       this.save_
           .clicked()
           .addListener(
               this.edit_,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.edit_.disable();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.edit_.disable();
               });
       this.save_
           .clicked()
           .addListener(
               this.save_,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.save_.disable();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.save_.disable();
               });
       this.save_
           .clicked()
           .addListener(
               this.cancel_,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.cancel_.disable();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.cancel_.disable();
               });
       this.save_
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.save();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.save();
               });
       this.cancel_
           .clicked()
           .addListener(
               this.editing_,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.editing_.hide();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.editing_.hide();
               });
       this.cancel_
           .clicked()
           .addListener(
               this.text_,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.text_.show();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.text_.show();
               });
       this.cancel_
           .clicked()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WInPlaceEdit.this.cancel();
-                }
+              (WMouseEvent e1) -> {
+                WInPlaceEdit.this.cancel();
               });
     } else {
       if (!enabled && this.save_ != null) {
-        if (this.save_ != null) this.save_.remove();
+        {
+          WWidget toRemove = WidgetUtils.remove(this.save_.getParent(), this.save_);
+          if (toRemove != null) toRemove.remove();
+        }
+
+        {
+          WWidget toRemove = WidgetUtils.remove(this.cancel_.getParent(), this.cancel_);
+          if (toRemove != null) toRemove.remove();
+        }
+
         this.save_ = null;
-        if (this.cancel_ != null) this.cancel_.remove();
         this.cancel_ = null;
         this.c2_ =
             this.edit_
                 .blurred()
                 .addListener(
                     this,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WInPlaceEdit.this.save();
-                      }
+                    () -> {
+                      WInPlaceEdit.this.save();
                     });
       }
     }
@@ -356,10 +331,10 @@ public class WInPlaceEdit extends WCompositeWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (this.save_ != null && !EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (this.save_ != null && flags.contains(RenderFlag.Full)) {
       WApplication.getInstance()
           .getTheme()
-          .apply(this, this.editing_, WidgetThemeRole.InPlaceEditingRole);
+          .apply(this, this.editing_, WidgetThemeRole.InPlaceEditing);
     }
     super.render(flags);
   }
@@ -367,12 +342,13 @@ public class WInPlaceEdit extends WCompositeWidget {
   private void create() {
     this.setImplementation(this.impl_ = new WContainerWidget());
     this.setInline(true);
-    this.text_ = new WText(WString.Empty, TextFormat.PlainText, this.impl_);
-    this.text_.getDecorationStyle().setCursor(Cursor.ArrowCursor);
-    this.editing_ = new WContainerWidget(this.impl_);
+    this.impl_.addWidget(
+        this.text_ = new WText(WString.Empty, TextFormat.Plain, (WContainerWidget) null));
+    this.text_.getDecorationStyle().setCursor(Cursor.Arrow);
+    this.impl_.addWidget(this.editing_ = new WContainerWidget());
     this.editing_.setInline(true);
     this.editing_.hide();
-    this.edit_ = new WLineEdit(this.editing_);
+    this.editing_.addWidget(this.edit_ = new WLineEdit());
     this.edit_.setTextSize(20);
     this.save_ = null;
     this.cancel_ = null;
@@ -380,77 +356,61 @@ public class WInPlaceEdit extends WCompositeWidget {
         .clicked()
         .addListener(
             this.text_,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                WInPlaceEdit.this.text_.hide();
-              }
+            (WMouseEvent e1) -> {
+              WInPlaceEdit.this.text_.hide();
             });
     this.text_
         .clicked()
         .addListener(
             this.editing_,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                WInPlaceEdit.this.editing_.show();
-              }
+            (WMouseEvent e1) -> {
+              WInPlaceEdit.this.editing_.show();
             });
     this.text_
         .clicked()
         .addListener(
             this.edit_,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                WInPlaceEdit.this.edit_.setFocus();
-              }
+            (WMouseEvent e1) -> {
+              WInPlaceEdit.this.edit_.setFocus();
             });
     this.edit_
         .enterPressed()
         .addListener(
             this.edit_,
-            new Signal.Listener() {
-              public void trigger() {
-                WInPlaceEdit.this.edit_.disable();
-              }
+            () -> {
+              WInPlaceEdit.this.edit_.disable();
             });
     this.edit_
         .enterPressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WInPlaceEdit.this.save();
-              }
+            () -> {
+              WInPlaceEdit.this.save();
             });
     this.edit_.enterPressed().preventPropagation();
     this.edit_
         .escapePressed()
         .addListener(
             this.editing_,
-            new Signal.Listener() {
-              public void trigger() {
-                WInPlaceEdit.this.editing_.hide();
-              }
+            () -> {
+              WInPlaceEdit.this.editing_.hide();
             });
     this.edit_
         .escapePressed()
         .addListener(
             this.text_,
-            new Signal.Listener() {
-              public void trigger() {
-                WInPlaceEdit.this.text_.show();
-              }
+            () -> {
+              WInPlaceEdit.this.text_.show();
             });
     this.edit_
         .escapePressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WInPlaceEdit.this.cancel();
-              }
+            () -> {
+              WInPlaceEdit.this.cancel();
             });
     this.edit_.escapePressed().preventPropagation();
-    this.buttons_ = new WContainerWidget(this.editing_);
+    this.editing_.addWidget(this.buttons_ = new WContainerWidget());
     this.buttons_.setInline(true);
     this.buttons_.addStyleClass("input-group-btn");
     this.setButtonsEnabled();

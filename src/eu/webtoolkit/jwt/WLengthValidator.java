@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -43,37 +44,20 @@ public class WLengthValidator extends WValidator {
   private static Logger logger = LoggerFactory.getLogger(WLengthValidator.class);
 
   /** Creates a length validator that accepts input of any length. */
-  public WLengthValidator(WObject parent) {
-    super(parent);
+  public WLengthValidator() {
+    super();
     this.minLength_ = 0;
     this.maxLength_ = Integer.MAX_VALUE;
     this.tooLongText_ = new WString();
     this.tooShortText_ = new WString();
   }
-  /**
-   * Creates a length validator that accepts input of any length.
-   *
-   * <p>Calls {@link #WLengthValidator(WObject parent) this((WObject)null)}
-   */
-  public WLengthValidator() {
-    this((WObject) null);
-  }
   /** Creates a length validator that accepts input within a length range. */
-  public WLengthValidator(int minLength, int maxLength, WObject parent) {
-    super(parent);
+  public WLengthValidator(int minLength, int maxLength) {
+    super();
     this.minLength_ = minLength;
     this.maxLength_ = maxLength;
     this.tooLongText_ = new WString();
     this.tooShortText_ = new WString();
-  }
-  /**
-   * Creates a length validator that accepts input within a length range.
-   *
-   * <p>Calls {@link #WLengthValidator(int minLength, int maxLength, WObject parent) this(minLength,
-   * maxLength, (WObject)null)}
-   */
-  public WLengthValidator(int minLength, int maxLength) {
-    this(minLength, maxLength, (WObject) null);
   }
   /**
    * Sets the minimum length.
@@ -129,16 +113,15 @@ public class WLengthValidator extends WValidator {
     }
     String text = input;
     if ((int) text.length() < this.minLength_) {
-      return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooShortText());
+      return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooShortText());
     } else {
       if ((int) text.length() > this.maxLength_) {
-        return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooLongText());
+        return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooLongText());
       } else {
-        return new WValidator.Result(WValidator.State.Valid);
+        return new WValidator.Result(ValidationState.Valid);
       }
     }
   }
-  // public void createExtConfig(final Writer config) throws IOException;
   /**
    * Sets the message to display when the input is too short.
    *
@@ -217,7 +200,7 @@ public class WLengthValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt3_6_0.WLengthValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_4_0.WLengthValidator(").append(this.isMandatory()).append(',');
     if (this.minLength_ != 0) {
       js.append(this.minLength_);
     } else {

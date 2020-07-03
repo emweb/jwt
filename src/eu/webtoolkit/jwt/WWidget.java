@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,11 +27,9 @@ import org.slf4j.LoggerFactory;
  *
  * <p>This is an abstract base class. Implementations derive either from the abstract {@link
  * WWebWidget} (for basic widgets with a direct HTML counter-part) or from the abstract {@link
- * WCompositeWidget} (for anything else). To add a WWebWidget directly to a parent container, either
- * specify the parent in the constructor (which is conventionally the last constructor argument), or
- * add the widget to the parent using {@link WContainerWidget#addWidget(WWidget widget)
- * WContainerWidget#addWidget()}. Alternatively, you may add the widget to a layout manager set for
- * a WContainerWidget.
+ * WCompositeWidget} (for anything else). To add a WWidget to a parent container add the widget to
+ * the parent using {@link WContainerWidget#addWidget(WWidget widget) WContainerWidget#addWidget()}.
+ * Alternatively, you may add the widget to a layout manager set for a WContainerWidget.
  *
  * <p>A widget provides methods to manage its decorative style base on CSS. It also provides access
  * to CSS-based layout, which you may not use when the widget is not inserted into a layout manager.
@@ -41,12 +40,11 @@ public abstract class WWidget extends WObject {
   /**
    * Destructor.
    *
-   * <p>Deletes a widget and all children (recursively). If the widget is contained in another
-   * widget, it is removed first.
+   * <p>Deletes a widget and all contained contents.
    *
    * <p>
    *
-   * @see WContainerWidget#removeWidget(WWidget widget)
+   * @see WWidget#removeWidget(WWidget widget)
    */
   public void remove() {
     while (!this.eventSignals_.isEmpty()) {
@@ -57,37 +55,38 @@ public abstract class WWidget extends WObject {
     this.renderOk();
     super.remove();
   }
-  /**
-   * Returns the parent widget.
-   *
-   * <p>With a few exceptions, the parent is a {@link WContainerWidget}, and has been set implicitly
-   * when adding the widget to a container using {@link WContainerWidget#addWidget(WWidget widget)
-   * WContainerWidget#addWidget()}, by passing a container as a parent to the constructor, or by
-   * inserting the widget into a layout manager.
-   */
+  /** Returns the parent widget. */
   public WWidget getParent() {
-    return ((super.getParent()) instanceof WWidget ? (WWidget) (super.getParent()) : null);
+    return this.parent_;
   }
   /**
-   * Removes a child object.
+   * Returns child widgets.
    *
-   * <p>The child must have been previously added.
-   *
-   * <p>
+   * <p>This returns widgets for which widget.{@link WWidget#getParent() getParent()} == this.
    */
-  public void removeChild(WObject child) {
-    WWidget w = ((child) instanceof WWidget ? (WWidget) (child) : null);
-    if (w != null) {
-      this.removeChild(w);
+  public abstract List<WWidget> getChildren();
+  /** Removes a child widget. */
+  public WWidget removeWidget(WWidget widget) {
+    throw new UnsupportedOperationException("WWidget::removeWidget() ought not to be called");
+  }
+  /**
+   * Removes the widget from its parent.
+   *
+   * <p>This is equivalent to {@link WWidget#getParent() getParent()}.removeWidget(this);
+   */
+  public WWidget removeFromParent() {
+    WWidget p = this.getParent();
+    if (p != null) {
+      return p.removeWidget(this);
     } else {
-      super.removeChild(child);
+      return null;
     }
   }
   /**
    * Sets the CSS position scheme.
    *
    * <p>Establishes how the widget must be layed-out relative to its siblings. The default position
-   * scheme is Static.
+   * scheme is {@link PositionScheme#Static}.
    *
    * <p>This applies to CSS-based layout.
    *
@@ -122,8 +121,8 @@ public abstract class WWidget extends WObject {
    * relative to the position the widget would have when layed-out using a {@link
    * PositionScheme#Static static} position scheme. The widget may be shifted to the left or right
    * by specifying an offset for the {@link Side#Left left} or {@link Side#Right right}) side. The
-   * widget may be shifted vertically, by specifying an offset for the {@link AlignmentFlag#AlignTop
-   * top} or {@link Side#Bottom bottom} side.
+   * widget may be shifted vertically, by specifying an offset for the {@link Side#Top top} or
+   * {@link Side#Bottom bottom} side.
    *
    * <p>For an {@link PositionScheme#Absolute absolutely positioned} widget, an offset specifies a
    * distance of the corresponding side of the widget with respect to the corresponding side of the
@@ -155,10 +154,10 @@ public abstract class WWidget extends WObject {
   /**
    * Sets CSS offsets for a non-statically positioned widget.
    *
-   * <p>Calls {@link #setOffsets(WLength offset, EnumSet sides) setOffsets(offset, Side.All)}
+   * <p>Calls {@link #setOffsets(WLength offset, EnumSet sides) setOffsets(offset, Side.AllSides)}
    */
   public final void setOffsets(final WLength offset) {
-    setOffsets(offset, Side.All);
+    setOffsets(offset, Side.AllSides);
   }
   /**
    * Sets CSS offsets for a non-statically positioned widget.
@@ -184,10 +183,10 @@ public abstract class WWidget extends WObject {
   /**
    * Sets CSS offsets for a non-statically positioned widget.
    *
-   * <p>Calls {@link #setOffsets(int pixels, EnumSet sides) setOffsets(pixels, Side.All)}
+   * <p>Calls {@link #setOffsets(int pixels, EnumSet sides) setOffsets(pixels, Side.AllSides)}
    */
   public final void setOffsets(int pixels) {
-    setOffsets(pixels, Side.All);
+    setOffsets(pixels, Side.AllSides);
   }
   /**
    * Returns a CSS offset.
@@ -297,7 +296,7 @@ public abstract class WWidget extends WObject {
   /**
    * Sets the height.
    *
-   * <p>This is a convenience method to change only the width of a widget, and is implemented as:
+   * <p>This is a convenience method to change only the height of a widget, and is implemented as:
    *
    * <pre>{@code
    * resize(width(), height)
@@ -321,9 +320,8 @@ public abstract class WWidget extends WObject {
    * min-height</code> properties.
    *
    * <p>The default minimum width and height is 0. The special value {@link WLength#Auto} indicates
-   * that the initial width is used as minimum size. A {@link WLength.Unit#Percentage
-   * Unit#Percentage} size should not be used, as this is (in virtually all cases) undefined
-   * behaviour.
+   * that the initial width is used as minimum size. A {@link LengthUnit#Percentage} size should not
+   * be used, as this is (in virtually all cases) undefined behaviour.
    *
    * <p>When the widget is inserted in a layout manager, then the minimum size will be taken into
    * account.
@@ -366,8 +364,8 @@ public abstract class WWidget extends WObject {
    * max-height</code> properties.
    *
    * <p>The default the maximum width and height are {@link WLength#Auto}, indicating no maximum
-   * size. A {@link WLength.Unit#Percentage Unit#Percentage} size should not be used, as this is (in
-   * virtually all cases) undefined behaviour.
+   * size. A {@link LengthUnit#Percentage} size should not be used, as this is (in virtually all
+   * cases) undefined behaviour.
    *
    * <p>When the widget is a container widget that contains a layout manager, then setting a maximum
    * size will have the effect of letting the size of the container to reflect the preferred size of
@@ -430,11 +428,11 @@ public abstract class WWidget extends WObject {
     }
     String side = orientation == Orientation.Horizontal ? ".Horizontal" : ".Vertical";
     this.doJavaScript(
-        "Wt3_6_0.positionAtWidget('"
+        "Wt4_4_0.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt3_6_0"
+            + "',Wt4_4_0"
             + side
             + ");");
   }
@@ -462,8 +460,8 @@ public abstract class WWidget extends WObject {
    * WWidget#getPositionScheme() getPositionScheme()}.
    *
    * <p>This lets the widget float to one of the sides of the parent widget, at the current line. A
-   * typical use is to position images within text. Valid values for Side orjava {@link Side#None
-   * None} , {@link Side#Left} or {@link Side#Right}.
+   * typical use is to position images within text. Valid values for Side {@link Side#Left}, or
+   * {@link Side#Right}.
    *
    * <p>This applies to CSS-based layout.
    */
@@ -533,10 +531,10 @@ public abstract class WWidget extends WObject {
   /**
    * Sets CSS margins around the widget.
    *
-   * <p>Calls {@link #setMargin(WLength margin, EnumSet sides) setMargin(margin, Side.All)}
+   * <p>Calls {@link #setMargin(WLength margin, EnumSet sides) setMargin(margin, Side.AllSides)}
    */
   public final void setMargin(final WLength margin) {
-    setMargin(margin, Side.All);
+    setMargin(margin, Side.AllSides);
   }
   /**
    * Sets CSS margins around the widget.
@@ -562,10 +560,10 @@ public abstract class WWidget extends WObject {
   /**
    * Sets CSS margins around the widget.
    *
-   * <p>Calls {@link #setMargin(int pixels, EnumSet sides) setMargin(pixels, Side.All)}
+   * <p>Calls {@link #setMargin(int pixels, EnumSet sides) setMargin(pixels, Side.AllSides)}
    */
   public final void setMargin(int pixels) {
-    setMargin(pixels, Side.All);
+    setMargin(pixels, Side.AllSides);
   }
   /**
    * Returns a CSS margin set.
@@ -874,8 +872,8 @@ public abstract class WWidget extends WObject {
    *
    * <p>The tooltip is displayed when the cursor hovers over the widget.
    *
-   * <p>When <code>textFormat</code> is XHTMLText, the tooltip may contain any valid XHTML snippet.
-   * The tooltip will then be rendered using JavaScript.
+   * <p>When <code>textFormat</code> is {@link TextFormat#XHTML}, the tooltip may contain any valid
+   * XHTML snippet. The tooltip will then be rendered using JavaScript.
    *
    * <p>Note: This will set deferred tooltip to false.
    *
@@ -886,10 +884,10 @@ public abstract class WWidget extends WObject {
    * Sets a tooltip.
    *
    * <p>Calls {@link #setToolTip(CharSequence text, TextFormat textFormat) setToolTip(text,
-   * TextFormat.PlainText)}
+   * TextFormat.Plain)}
    */
   public final void setToolTip(final CharSequence text) {
-    setToolTip(text, TextFormat.PlainText);
+    setToolTip(text, TextFormat.Plain);
   }
   /** Returns the tooltip. */
   public abstract WString getToolTip();
@@ -899,8 +897,8 @@ public abstract class WWidget extends WObject {
    * <p>You may override {@link WWidget#getToolTip() getToolTip()} to read data only when the user
    * hovers over the widget.
    *
-   * <p>When <code>textFormat</code> is XHTMLText, the tooltip may contain any valid XHTML snippet.
-   * The tooltip will then be rendered using JavaScript.
+   * <p>When <code>textFormat</code> is {@link TextFormat#XHTML}, the tooltip may contain any valid
+   * XHTML snippet. The tooltip will then be rendered using JavaScript.
    *
    * <p>Note: To change existing toolTip call {@link WWidget#setDeferredToolTip(boolean enable,
    * TextFormat textFormat) setDeferredToolTip()} again.
@@ -914,10 +912,10 @@ public abstract class WWidget extends WObject {
    * Enable deferred tooltip.
    *
    * <p>Calls {@link #setDeferredToolTip(boolean enable, TextFormat textFormat)
-   * setDeferredToolTip(enable, TextFormat.PlainText)}
+   * setDeferredToolTip(enable, TextFormat.Plain)}
    */
   public final void setDeferredToolTip(boolean enable) {
-    setDeferredToolTip(enable, TextFormat.PlainText);
+    setDeferredToolTip(enable, TextFormat.Plain);
   }
   /**
    * Refresh the widget.
@@ -946,7 +944,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt3_6_0.$('" + this.getId() + "')";
+    return "Wt4_4_0.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.
@@ -1125,17 +1123,13 @@ public abstract class WWidget extends WObject {
     if (thisWebWidget.setAcceptDropsImpl(mimeType, true, hoverStyleClass)) {
       thisWebWidget.otherImpl_.dropSignal_.addListener(
           this,
-          new Signal3.Listener<String, String, WMouseEvent>() {
-            public void trigger(String e1, String e2, WMouseEvent e3) {
-              WWidget.this.getDrop(e1, e2, e3);
-            }
+          (String e1, String e2, WMouseEvent e3) -> {
+            WWidget.this.getDrop(e1, e2, e3);
           });
       thisWebWidget.otherImpl_.dropSignal2_.addListener(
           this,
-          new Signal3.Listener<String, String, WTouchEvent>() {
-            public void trigger(String e1, String e2, WTouchEvent e3) {
-              WWidget.this.getDropTouch(e1, e2, e3);
-            }
+          (String e1, String e2, WTouchEvent e3) -> {
+            WWidget.this.getDropTouch(e1, e2, e3);
           });
     }
   }
@@ -1182,32 +1176,15 @@ public abstract class WWidget extends WObject {
    *
    * <p>
    *
-   * @see WWidget#setObjectName(String name)
+   * @see WObject#setObjectName(String name)
    */
   public abstract WWidget find(final String name);
-
-  public void setObjectName(final String name) {
-    WApplication app = WApplication.getInstance();
-    for (int i = 0; i < this.jsignals_.size(); ++i) {
-      AbstractEventSignal signal = this.jsignals_.get(i);
-      if (signal.isExposedSignal()) {
-        app.removeExposedSignal(signal);
-      }
-    }
-    super.setObjectName(name);
-    for (int i = 0; i < this.jsignals_.size(); ++i) {
-      AbstractEventSignal signal = this.jsignals_.get(i);
-      if (signal.isExposedSignal()) {
-        app.addExposedSignal(signal);
-      }
-    }
-  }
   /** Finds a descendent widget by id. */
   public abstract WWidget findById(final String id);
   /**
    * Streams the (X)HTML representation.
    *
-   * <p>Streams the widget as UTF8-encoded (HTML-compatible) XHTML.
+   * <p>Streams the widget as CharEncoding::UTF8-encoded (HTML-compatible) XHTML.
    *
    * <p>This may be useful as a debugging tool for the web-savvy, or in other rare situations.
    * Usually, you will not deal directly with HTML, and calling this method on a widget that is
@@ -1220,7 +1197,6 @@ public abstract class WWidget extends WObject {
     EscapeOStream js = new EscapeOStream();
     element.asHTML(sout, js, timeouts);
     WApplication.getInstance().doJavaScript(js.toString());
-    ;
   }
   /**
    * Sets as selectable.
@@ -1267,7 +1243,7 @@ public abstract class WWidget extends WObject {
     DomElement e = DomElement.getForUpdate(ww, ww.getDomElementType());
     ww.updateDom(e, true);
     String result = e.getCssStyle();
-    ;
+
     return result;
   }
 
@@ -1279,7 +1255,7 @@ public abstract class WWidget extends WObject {
       insertJS += var + ");";
     }
     de.createElement(js, app, insertJS);
-    ;
+
     return var;
   }
   /**
@@ -1467,7 +1443,7 @@ public abstract class WWidget extends WObject {
       return result;
     } else {
       this.getWebWidget().setRendered(true);
-      this.render(EnumSet.of(RenderFlag.RenderFull));
+      this.render(EnumSet.of(RenderFlag.Full));
       return this.getWebWidget().createActualElement(this, app);
     }
   }
@@ -1535,10 +1511,8 @@ public abstract class WWidget extends WObject {
             .resized()
             .addListener(
                 this,
-                new Signal2.Listener<Integer, Integer>() {
-                  public void trigger(Integer e1, Integer e2) {
-                    WWidget.this.layoutSizeChanged(e1, e2);
-                  }
+                (Integer e1, Integer e2) -> {
+                  WWidget.this.layoutSizeChanged(e1, e2);
                 });
       }
     } else {
@@ -1556,23 +1530,20 @@ public abstract class WWidget extends WObject {
    * @see WWidget#setLayoutSizeAware(boolean aware)
    */
   protected void layoutSizeChanged(int width, int height) {}
-  /**
-   * Creates a widget.
-   *
-   * <p>When a parent container is specified, the widget is added to the container, using {@link
-   * WContainerWidget#addWidget(WWidget widget) WContainerWidget#addWidget()}.
-   */
-  protected WWidget(WContainerWidget parent) {
-    super((WObject) null);
+  /** Creates a widget. */
+  protected WWidget(WContainerWidget parentContainer) {
+    super();
     this.flags_ = new BitSet();
     this.eventSignals_ = new LinkedList<AbstractEventSignal>();
     this.jsignals_ = new ArrayList<AbstractEventSignal>();
+    this.parent_ = null;
     this.flags_.set(BIT_NEED_RERENDER);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a widget.
    *
-   * <p>Calls {@link #WWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WWidget(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   protected WWidget() {
     this((WContainerWidget) null);
@@ -1682,26 +1653,10 @@ public abstract class WWidget extends WObject {
     this.dropEvent(e);
   }
 
-  abstract void addChild(WWidget child);
-
-  abstract void removeChild(WWidget child);
-
   abstract void setHideWithOffsets(boolean how);
 
   final void setHideWithOffsets() {
     setHideWithOffsets(true);
-  }
-
-  void setParentWidget(WWidget p) {
-    if (p == this.getParent()) {
-      return;
-    }
-    if (this.getParent() != null) {
-      this.getParent().removeChild(this);
-    }
-    if (p != null) {
-      p.addChild(this);
-    }
   }
 
   abstract boolean isStubbed();
@@ -1777,10 +1732,6 @@ public abstract class WWidget extends WObject {
     return p != null ? p.getAdam() : this;
   }
 
-  void setLayout(WLayout layout) {
-    layout.setParentWidget(this);
-  }
-
   void addEventSignal(final AbstractEventSignal s) {
     this.eventSignals_.addLast(s);
   }
@@ -1817,7 +1768,7 @@ public abstract class WWidget extends WObject {
       this.flags_.set(BIT_NEED_RERENDER);
       WApplication.getInstance().getSession().getRenderer().needUpdate(this, laterOnly);
     }
-    if (!EnumUtils.mask(flags, RepaintFlag.RepaintSizeAffected).isEmpty()
+    if (flags.contains(RepaintFlag.SizeAffected)
         && !this.flags_.get(BIT_NEED_RERENDER_SIZE_CHANGE)) {
       this.flags_.set(BIT_NEED_RERENDER_SIZE_CHANGE);
       this.getWebWidget().parentResized(this, EnumSet.of(Orientation.Vertical));
@@ -1859,18 +1810,15 @@ public abstract class WWidget extends WObject {
   }
 
   boolean hasParent() {
-    if (this.flags_.get(BIT_HAS_PARENT)) {
-      return true;
-    } else {
-      return super.hasParent();
-    }
+    return this.parent_ != null;
   }
 
   protected WCssTextRule addCssRule(
       final String selector, final String declarations, final String ruleName) {
     WApplication app = WApplication.getInstance();
-    WCssTextRule result = new WCssTextRule(selector, declarations, this);
-    app.getStyleSheet().addRule(result, ruleName);
+    WCssTextRule rule = new WCssTextRule(selector, declarations);
+    WCssTextRule result = rule;
+    app.getStyleSheet().addRule(rule, ruleName);
     return result;
   }
 
@@ -1888,15 +1836,11 @@ public abstract class WWidget extends WObject {
   private BitSet flags_;
   private LinkedList<AbstractEventSignal> eventSignals_;
   List<AbstractEventSignal> jsignals_;
-
-  void setHasParent(boolean hasParent) {
-    this.flags_.set(BIT_HAS_PARENT, hasParent);
-    this.setParent(this.getParent());
-  }
+  WWidget parent_;
 
   private void setJsSize() {
     if (!this.getHeight().isAuto()
-        && this.getHeight().getUnit() != WLength.Unit.Percentage
+        && this.getHeight().getUnit() != LengthUnit.Percentage
         && this.getJavaScriptMember(WT_RESIZE_JS).length() != 0) {
       this.callJavaScriptMember(
           WT_RESIZE_JS,
@@ -1918,13 +1862,9 @@ public abstract class WWidget extends WObject {
     this.setDisabled(this.flags_.get(BIT_WAS_DISABLED));
   }
 
+  void setParentWidget(WWidget p) {
+    this.parent_ = p;
+  }
+
   abstract WWebWidget getWebWidget();
-
-  WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
-    throw new WException("WWidget::setLayout(): widget does not support layout managers");
-  }
-
-  WLayout getLayout() {
-    return null;
-  }
 }

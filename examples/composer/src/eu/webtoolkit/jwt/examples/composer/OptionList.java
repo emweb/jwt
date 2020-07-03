@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt.examples.composer;
 
 import java.util.ArrayList;
 
+import eu.webtoolkit.jwt.LengthUnit;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
 
@@ -35,7 +36,7 @@ public class OptionList extends WContainerWidget {
      */
     public OptionList(WContainerWidget parent) {
         super(parent);
-        resize(new WLength(), new WLength(2.5, WLength.Unit.FontEx));
+        resize(new WLength(), new WLength(2.5, LengthUnit.FontEx));
     }
 
     /**

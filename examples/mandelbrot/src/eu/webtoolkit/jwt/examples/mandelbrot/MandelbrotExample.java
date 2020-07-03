@@ -36,7 +36,7 @@ public class MandelbrotExample extends WContainerWidget {
         WContainerWidget buttons = new WContainerWidget(layout.getElementAt(0,
                 0));
         buttons.resize(new WLength(400), new WLength());
-        buttons.setContentAlignment(EnumSet.of(AlignmentFlag.AlignCenter));
+        buttons.setContentAlignment(EnumSet.of(AlignmentFlag.Center));
         new WPushButton(new WString("Left"), buttons).clicked().addListener(
                 this, new Signal1.Listener<WMouseEvent>() {
                     public void trigger(WMouseEvent e1) {

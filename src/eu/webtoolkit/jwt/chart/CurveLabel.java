@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -258,15 +259,13 @@ public class CurveLabel {
       if (this.getWidth() != 0) {
         rectWidth = this.getWidth();
       } else {
-        if (!EnumUtils.mask(
-                painter.getDevice().getFeatures(), WPaintDevice.FeatureFlag.HasFontMetrics)
-            .isEmpty()) {
+        if (painter.getDevice().getFeatures().contains(PaintDeviceFeatureFlag.FontMetrics)) {
           WMeasurePaintDevice device = new WMeasurePaintDevice(painter.getDevice());
           WPainter measPainter = new WPainter(device);
           measPainter.drawText(
               new WRectF(0, 0, 100, 100),
-              EnumSet.of(AlignmentFlag.AlignMiddle, AlignmentFlag.AlignCenter),
-              TextFlag.TextSingleLine,
+              EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center),
+              TextFlag.SingleLine,
               this.getLabel(),
               (WPointF) null);
           rectWidth = device.getBoundingRect().getWidth() + CURVE_LABEL_PADDING / 2;
@@ -330,8 +329,8 @@ public class CurveLabel {
     painter.setPen(this.getTextPen());
     painter.drawText(
         translation.map(rect),
-        EnumSet.of(AlignmentFlag.AlignMiddle, AlignmentFlag.AlignCenter),
-        TextFlag.TextSingleLine,
+        EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center),
+        TextFlag.SingleLine,
         this.getLabel(),
         (WPointF) null);
   }
@@ -384,13 +383,13 @@ public class CurveLabel {
 
   static String locToJsString(AxisValue loc) {
     switch (loc) {
-      case MinimumValue:
+      case Minimum:
         return "min";
-      case MaximumValue:
+      case Maximum:
         return "max";
-      case ZeroValue:
+      case Zero:
         return "zero";
-      case BothSides:
+      case Both:
         return "both";
     }
     assert false;

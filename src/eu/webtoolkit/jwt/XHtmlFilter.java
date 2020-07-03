@@ -343,7 +343,7 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 	        }
 
 	        if (resolveToUnicode)
-	        	writer.pushEscape(EscapeOStream.RuleSet.PlainText);
+	        	writer.pushEscape(EscapeOStream.RuleSet.Plain);
 	        writer.append(new String(buf, 0, size));
 	        if (resolveToUnicode)
 	        	writer.popEscape();
@@ -387,8 +387,8 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 		return null;
 	}
 	
-	protected static String htmlAttributeDecode(String attribute) {
-		Pattern p = Pattern.compile("&(?:[A-Za-z]+|#?[0-9]+);");
+	protected static String htmlEntityDecode(String attribute) {
+		Pattern p = Pattern.compile("&(?:[A-Za-z]+|#x?[0-9]+);");
 		Matcher m = p.matcher(attribute);
 
 		StringBuilder result = new StringBuilder();
@@ -398,11 +398,16 @@ public class XHtmlFilter implements IXMLBuilder, IXMLEntityResolver {
 			String entity = m.group();
 			entity = entity.substring(1, entity.length() - 1);
 			Integer unicodeSymbol = xhtmlEntities.get(entity);
-			if (unicodeSymbol != null)
-				result.append((char)unicodeSymbol.intValue() + "");
-			else {
-				int i = Integer.valueOf(entity);
-				result.append((char)i + "");
+			if (unicodeSymbol != null) {
+				result.append(Character.toChars(unicodeSymbol));
+			} else if (entity.startsWith("#x")) {
+				int codePoint = Integer.valueOf(entity.substring(2));
+				result.append(Character.toChars(codePoint));
+			} else if (entity.startsWith("#")) {
+				int codePoint = Integer.valueOf(entity.substring(1));
+				result.append(Character.toChars(codePoint));
+			} else {
+				result.append(entity);
 			}
 			cur = m.end();
 		}

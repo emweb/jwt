@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -52,59 +53,77 @@ public class WLabel extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WLabel.class);
 
   /** Creates a label with empty text and optional parent. */
-  public WLabel(WContainerWidget parent) {
-    super(parent);
+  public WLabel(WContainerWidget parentContainer) {
+    super();
     this.buddy_ = null;
     this.text_ = null;
     this.image_ = null;
     this.buddyChanged_ = false;
     this.newImage_ = false;
     this.newText_ = false;
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a label with empty text and optional parent.
    *
-   * <p>Calls {@link #WLabel(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WLabel(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WLabel() {
     this((WContainerWidget) null);
   }
   /** Creates a label with a given text. */
-  public WLabel(final CharSequence text, WContainerWidget parent) {
-    super(parent);
+  public WLabel(final CharSequence text, WContainerWidget parentContainer) {
+    super();
     this.buddy_ = null;
+    this.text_ = null;
     this.image_ = null;
     this.buddyChanged_ = false;
     this.newImage_ = false;
     this.newText_ = false;
-    this.text_ = new WText(text);
+    WText wtext = new WText(WString.toWString(text));
+    {
+      WWidget oldWidget = this.text_;
+      this.text_ = wtext;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.text_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     this.text_.setWordWrap(false);
-    this.text_.setParentWidget(this);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a label with a given text.
    *
-   * <p>Calls {@link #WLabel(CharSequence text, WContainerWidget parent) this(text,
+   * <p>Calls {@link #WLabel(CharSequence text, WContainerWidget parentContainer) this(text,
    * (WContainerWidget)null)}
    */
   public WLabel(final CharSequence text) {
     this(text, (WContainerWidget) null);
   }
   /** Creates a label with an image. */
-  public WLabel(WImage image, WContainerWidget parent) {
-    super(parent);
+  public WLabel(WImage image, WContainerWidget parentContainer) {
+    super();
     this.buddy_ = null;
     this.text_ = null;
+    this.image_ = null;
     this.buddyChanged_ = false;
     this.newImage_ = false;
     this.newText_ = false;
-    this.image_ = image;
-    this.image_.setParentWidget(this);
+    {
+      WWidget oldWidget = this.image_;
+      this.image_ = image;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.image_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a label with an image.
    *
-   * <p>Calls {@link #WLabel(WImage image, WContainerWidget parent) this(image,
+   * <p>Calls {@link #WLabel(WImage image, WContainerWidget parentContainer) this(image,
    * (WContainerWidget)null)}
    */
   public WLabel(WImage image) {
@@ -112,6 +131,23 @@ public class WLabel extends WInteractWidget {
   }
 
   public void remove() {
+    this.beingDeleted();
+    {
+      WWidget oldWidget = this.text_;
+      this.text_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.text_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    {
+      WWidget oldWidget = this.image_;
+      this.image_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.image_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     this.setBuddy((WFormWidget) null);
     super.remove();
   }
@@ -152,11 +188,18 @@ public class WLabel extends WInteractWidget {
       return;
     }
     if (!(this.text_ != null)) {
-      this.text_ = new WText();
+      WText wtext = new WText(WString.toWString(text));
+      {
+        WWidget oldWidget = this.text_;
+        this.text_ = wtext;
+        {
+          WWidget toRemove = this.manageWidget(oldWidget, this.text_);
+          if (toRemove != null) toRemove.remove();
+        }
+      }
       this.text_.setWordWrap(false);
-      this.text_.setParentWidget(this);
       this.newText_ = true;
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
     this.text_.setText(text);
   }
@@ -165,7 +208,7 @@ public class WLabel extends WInteractWidget {
     if (this.text_ != null) {
       return this.text_.getText();
     } else {
-      return empty;
+      return WString.Empty;
     }
   }
   /**
@@ -174,15 +217,14 @@ public class WLabel extends WInteractWidget {
    * <p>The textFormat controls how the string should be interpreted: either as plain text, which is
    * displayed literally, or as XHTML-markup.
    *
-   * <p>When changing the textFormat to {@link TextFormat#XHTMLText}, and the current text is
-   * literal (not created using {@link WString#tr(String key) WString#tr()}), the current text is
-   * parsed using an XML parser which discards malicious tags and attributes silently. When the
-   * parser encounters an XML parse error, the textFormat is left unchanged, and this method returns
-   * false.
+   * <p>When changing the textFormat to {@link TextFormat#XHTML}, and the current text is literal
+   * (not created using {@link WString#tr(String key) WString#tr()}), the current text is parsed
+   * using an XML parser which discards malicious tags and attributes silently. When the parser
+   * encounters an XML parse error, the textFormat is left unchanged, and this method returns false.
    *
    * <p>Returns whether the textFormat could be set for the current text.
    *
-   * <p>The default format is {@link TextFormat#XHTMLText}.
+   * <p>The default format is {@link TextFormat#XHTML}.
    */
   public boolean setTextFormat(TextFormat format) {
     if (!(this.text_ != null)) {
@@ -200,21 +242,24 @@ public class WLabel extends WInteractWidget {
    */
   public TextFormat getTextFormat() {
     if (!(this.text_ != null)) {
-      return TextFormat.XHTMLText;
+      return TextFormat.XHTML;
     } else {
       return this.text_.getTextFormat();
     }
   }
   /** Sets the image. */
   public void setImage(WImage image, Side side) {
-    if (this.image_ != null) this.image_.remove();
-    this.image_ = image;
-    if (this.image_ != null) {
-      this.image_.setParentWidget(this);
-      this.imageSide_ = side;
+    {
+      WWidget oldWidget = this.image_;
+      this.image_ = image;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.image_);
+        if (toRemove != null) toRemove.remove();
+      }
     }
+    this.imageSide_ = side;
     this.newImage_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Sets the image.
@@ -233,8 +278,8 @@ public class WLabel extends WInteractWidget {
    *
    * <p>When <code>wordWrap</code> is <code>true</code>, the widget may break lines, creating a
    * multi-line text. When <code>wordWrap</code> is <code>false</code>, the text will displayed on a
-   * single line, unless the text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
-   * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
+   * single line, unless the text contains end-of-lines (for {@link TextFormat#Plain}) or &lt;br
+   * /&gt; tags or other block-level tags (for {@link TextFormat#XHTML}).
    *
    * <p>The default value is <code>false</code>.
    *
@@ -244,10 +289,8 @@ public class WLabel extends WInteractWidget {
    */
   public void setWordWrap(boolean wordWrap) {
     if (!(this.text_ != null)) {
-      this.text_ = new WText();
-      this.text_.setParentWidget(this);
-      this.newText_ = true;
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.setText("A");
+      this.setText("");
     }
     this.text_.setWordWrap(wordWrap);
   }
@@ -295,19 +338,19 @@ public class WLabel extends WInteractWidget {
 
   DomElementType getDomElementType() {
     if (this.buddy_ != null) {
-      return DomElementType.DomElement_LABEL;
+      return DomElementType.LABEL;
     } else {
-      return this.isInline() ? DomElementType.DomElement_SPAN : DomElementType.DomElement_DIV;
+      return this.isInline() ? DomElementType.SPAN : DomElementType.DIV;
     }
   }
 
   protected void getDomChanges(final List<DomElement> result, WApplication app) {
     super.getDomChanges(result, app);
     if (this.text_ != null) {
-      ((WWebWidget) this.text_).getDomChanges(result, app);
+      this.text_.getDomChanges(result, app);
     }
     if (this.image_ != null) {
-      ((WWebWidget) this.image_).getDomChanges(result, app);
+      this.image_.getDomChanges(result, app);
     }
   }
 
@@ -323,6 +366,15 @@ public class WLabel extends WInteractWidget {
       this.text_.propagateSetEnabled(enabled);
     }
     super.propagateSetEnabled(enabled);
+  }
+
+  protected void iterateChildren(final HandleWidgetMethod method) {
+    if (this.text_ != null) {
+      method.handle(this.text_);
+    }
+    if (this.image_ != null) {
+      method.handle(this.image_);
+    }
   }
 
   protected void updateImage(final DomElement element, boolean all, WApplication app, int pos) {
@@ -342,6 +394,4 @@ public class WLabel extends WInteractWidget {
       this.newText_ = false;
     }
   }
-
-  static WString empty = new WString("");
 }

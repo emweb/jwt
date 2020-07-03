@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -20,8 +21,8 @@ import org.slf4j.LoggerFactory;
 class SoundManager extends WMediaPlayer {
   private static Logger logger = LoggerFactory.getLogger(SoundManager.class);
 
-  public SoundManager(WContainerWidget parent) {
-    super(WMediaPlayer.MediaType.Audio, parent);
+  public SoundManager(WContainerWidget parentContainer) {
+    super(MediaType.Audio, (WContainerWidget) null);
     this.resize(new WLength(0), new WLength(0));
     this.setAttributeValue("style", "overflow: hidden");
     this.getControlsWidget().hide();
@@ -34,6 +35,7 @@ class SoundManager extends WMediaPlayer {
         .append(".jPlayer('play');}}");
     this.ended().addListener(ss.toString());
     this.ended().setNotExposed();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public SoundManager() {

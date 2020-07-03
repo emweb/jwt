@@ -28,13 +28,7 @@ public class WMemoryResource extends WResource {
 	 * You must call {@link #setMimeType(String)} and {@link #setData(byte[])} before using the resource.
 	 */
 	public WMemoryResource() {
-		this("", (WObject) null);
-	}
-
-	public WMemoryResource(String mimeType, WObject parent) {
-		super(parent);
-		this.data_ = null;
-		this.mimeType_ = mimeType;
+		this("");
 	}
 
 	/**
@@ -43,7 +37,8 @@ public class WMemoryResource extends WResource {
 	 * You must call {@link #setData(byte[])} before using the resource.
 	 */
 	public WMemoryResource(String mimeType) {
-		this(mimeType, (WObject) null);
+		this.data_ = null;
+		this.mimeType_ = mimeType;
 	}
 
 	/**

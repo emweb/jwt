@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -67,17 +68,9 @@ public class WFormModel extends WObject {
    *
    * <p>Creates a new form model.
    */
-  public WFormModel(WObject parent) {
-    super(parent);
-    this.fields_ = new HashMap<String, WFormModel.FieldData>();
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WFormModel(WObject parent) this((WObject)null)}
-   */
   public WFormModel() {
-    this((WObject) null);
+    super();
+    this.fields_ = new HashMap<String, WFormModel.FieldData>();
   }
   /**
    * Adds a field.
@@ -90,7 +83,7 @@ public class WFormModel extends WObject {
    */
   public void addField(String field, final CharSequence info) {
     this.fields_.put(field, new WFormModel.FieldData());
-    this.fields_.get(field).validation = new WValidator.Result(WValidator.State.Invalid, info);
+    this.fields_.get(field).validation = new WValidator.Result(ValidationState.Invalid, info);
   }
   /**
    * Adds a field.
@@ -181,7 +174,7 @@ public class WFormModel extends WObject {
       if (!fd.visible) {
         continue;
       }
-      if (!fd.validated || fd.validation.getState() != WValidator.State.Valid) {
+      if (!fd.validated || fd.validation.getState() != ValidationState.Valid) {
         return false;
       }
     }
@@ -310,21 +303,12 @@ public class WFormModel extends WObject {
     WValidator v = this.getValidator(field);
     return StringUtils.asString(this.getValue(field), v != null ? v.getFormat() : "").toString();
   }
-  /**
-   * Sets a validator.
-   *
-   * <p>If the validator has no ownership yet, the form model will take ownership.
-   */
-  public void setValidator(String field, WValidator validator) {
+  /** Sets a validator. */
+  public void setValidator(String field, final WValidator validator) {
     WFormModel.FieldData i = this.fields_.get(field);
     if (i != null) {
       final WFormModel.FieldData d = i;
-      if (d.validator != null && d.validator.getParent() == this) {;
-      }
       d.validator = validator;
-      if (validator != null && !(validator.getParent() != null)) {
-        this.addChild(validator);
-      }
     } else {
       logger.error(
           new StringWriter()
@@ -372,7 +356,7 @@ public class WFormModel extends WObject {
       } else {
         this.setValidation(field, Valid);
       }
-      return d.validation.getState() == WValidator.State.Valid;
+      return d.validation.getState() == ValidationState.Valid;
     } else {
       return true;
     }
@@ -460,7 +444,7 @@ public class WFormModel extends WObject {
     private static Logger logger = LoggerFactory.getLogger(FieldData.class);
 
     public FieldData() {
-      this.validator = null;
+      this.validator = (WValidator) null;
       this.value = new Object();
       this.validation = new WValidator.Result();
       this.visible = true;
@@ -479,6 +463,6 @@ public class WFormModel extends WObject {
 
   private Map<String, WFormModel.FieldData> fields_;
   private static final WValidator.Result Valid =
-      new WValidator.Result(WValidator.State.Valid, new WString());
+      new WValidator.Result(ValidationState.Valid, new WString());
   private static final Object NoValue = new Object();
 }

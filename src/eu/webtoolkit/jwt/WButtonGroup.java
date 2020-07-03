@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -37,20 +38,21 @@ import org.slf4j.LoggerFactory;
 public class WButtonGroup extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WButtonGroup.class);
 
-  /** Creates a new empty button group. */
-  public WButtonGroup(WObject parent) {
-    super(parent);
-    this.buttons_ = new ArrayList<WButtonGroup.Button>();
-    this.checkedChanged_ = new Signal1<WRadioButton>();
-    this.checkedChangedConnected_ = false;
-  }
   /**
    * Creates a new empty button group.
    *
-   * <p>Calls {@link #WButtonGroup(WObject parent) this((WObject)null)}
+   * <p>
+   *
+   * <p><i><b>Note: </b>The {@link WRadioButton WRadioButtons} associated with this {@link
+   * WButtonGroup} keep a shared_ptr to this {@link WButtonGroup}. Therefore, you should store a
+   * {@link WButtonGroup} in a shared_ptr (e.g. construct it with make_shared) before adding any
+   * radio buttons to it. </i>
    */
   public WButtonGroup() {
-    this((WObject) null);
+    super();
+    this.buttons_ = new ArrayList<WButtonGroup.Button>();
+    this.checkedChanged_ = new Signal1<WRadioButton>();
+    this.checkedChangedConnected_ = false;
   }
   /**
    * Adds a radio button to the group.
@@ -59,6 +61,9 @@ public class WButtonGroup extends WObject {
    * generated.
    *
    * <p>
+   *
+   * <p><i><b>Note: </b>{@link WButtonGroup} should be owned by a shared_ptr before addButton is
+   * called on it!</i>
    *
    * @see WButtonGroup#removeButton(WRadioButton button)
    */
@@ -73,10 +78,8 @@ public class WButtonGroup extends WObject {
           .changed()
           .addListener(
               this,
-              new Signal.Listener() {
-                public void trigger() {
-                  WButtonGroup.this.onButtonChange();
-                }
+              () -> {
+                WButtonGroup.this.onButtonChange();
               });
     }
   }
@@ -104,9 +107,10 @@ public class WButtonGroup extends WObject {
       }
     }
   }
-  // public void removeButton(RadioButton  button) ;
   /**
    * Returns the button for the given id.
+   *
+   * <p>Returns <code>null</code> if no button exists for the given id.
    *
    * <p>
    *
@@ -245,10 +249,8 @@ public class WButtonGroup extends WObject {
             .changed()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WButtonGroup.this.onButtonChange();
-                  }
+                () -> {
+                  WButtonGroup.this.onButtonChange();
                 });
       }
     }

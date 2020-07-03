@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -20,31 +21,18 @@ import org.slf4j.LoggerFactory;
 class WTimePicker extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WTimePicker.class);
 
-  public WTimePicker(WTimeEdit timeEdit) {
+  public WTimePicker(WTimeEdit timeEdit, WContainerWidget parentContainer) {
     super();
     this.format_ = "";
     this.timeEdit_ = timeEdit;
     this.selectionChanged_ = new Signal();
     this.toggleAmPm_ = new JSlot(2, this);
     this.init();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
-  public void remove() {
-    WTemplate container =
-        ((this.getImplementation()) instanceof WTemplate
-            ? (WTemplate) (this.getImplementation())
-            : null);
-    container.takeWidget("hour");
-    container.takeWidget("minute");
-    container.takeWidget("second");
-    container.takeWidget("millisecond");
-    container.takeWidget("ampm");
-    if (this.sbhour_ != null) this.sbhour_.remove();
-    if (this.sbminute_ != null) this.sbminute_.remove();
-    if (this.sbsecond_ != null) this.sbsecond_.remove();
-    if (this.sbmillisecond_ != null) this.sbmillisecond_.remove();
-    if (this.cbAP_ != null) this.cbAP_.remove();
-    super.remove();
+  public WTimePicker(WTimeEdit timeEdit) {
+    this(timeEdit, (WContainerWidget) null);
   }
 
   public WTime getTime() {
@@ -55,7 +43,9 @@ class WTimePicker extends WCompositeWidget {
     try {
       hours = Integer.parseInt(this.sbhour_.getText());
       minutes = Integer.parseInt(this.sbminute_.getText());
-      seconds = Integer.parseInt(this.sbsecond_.getText());
+      if (this.isFormatS()) {
+        seconds = Integer.parseInt(this.sbsecond_.getText());
+      }
       if (this.isFormatMs()) {
         milliseconds = Integer.parseInt(this.sbmillisecond_.getText());
       }
@@ -70,11 +60,9 @@ class WTimePicker extends WCompositeWidget {
           }
         }
       }
-    } catch (final NumberFormatException ex) {
+    } catch (final RuntimeException e) {
       logger.error(
-          new StringWriter()
-              .append("boost::bad_lexical_cast caught in WTimePicker::time()")
-              .toString());
+          new StringWriter().append("stoi() std::exception in WTimePicker::time()").toString());
     }
     return new WTime(hours, minutes, seconds, milliseconds);
   }
@@ -100,7 +88,9 @@ class WTimePicker extends WCompositeWidget {
     int millisecond = time.getMsec();
     this.sbhour_.setValue(hours);
     this.sbminute_.setValue(minutes);
-    this.sbsecond_.setValue(seconds);
+    if (this.isFormatS()) {
+      this.sbsecond_.setValue(seconds);
+    }
     if (this.isFormatMs()) {
       this.sbmillisecond_.setValue(millisecond);
     }
@@ -127,26 +117,42 @@ class WTimePicker extends WCompositeWidget {
   }
 
   public void setSecondStep(int step) {
-    this.sbsecond_.setSingleStep(step);
+    if (this.sbsecond_ != null) {
+      this.sbsecond_.setSingleStep(step);
+    }
   }
 
   public int getSecondStep() {
-    return this.sbsecond_.getSingleStep();
+    if (this.sbsecond_ != null) {
+      return this.sbsecond_.getSingleStep();
+    } else {
+      return 1;
+    }
   }
 
   public void setMillisecondStep(int step) {
-    this.sbmillisecond_.setSingleStep(step);
+    if (this.sbmillisecond_ != null) {
+      this.sbmillisecond_.setSingleStep(step);
+    }
   }
 
   public int getMillisecondStep() {
-    return this.sbmillisecond_.getSingleStep();
+    if (this.sbmillisecond_ != null) {
+      return this.sbmillisecond_.getSingleStep();
+    } else {
+      return 1;
+    }
   }
 
   public void setWrapAroundEnabled(boolean enabled) {
     this.sbhour_.setWrapAroundEnabled(enabled);
     this.sbminute_.setWrapAroundEnabled(enabled);
-    this.sbsecond_.setWrapAroundEnabled(enabled);
-    this.sbmillisecond_.setWrapAroundEnabled(enabled);
+    if (this.sbsecond_ != null) {
+      this.sbsecond_.setWrapAroundEnabled(enabled);
+    }
+    if (this.sbmillisecond_ != null) {
+      this.sbmillisecond_.setWrapAroundEnabled(enabled);
+    }
     if (enabled) {
       this.sbhour_.jsValueChanged().addListener(this.toggleAmPm_);
     } else {
@@ -163,27 +169,105 @@ class WTimePicker extends WCompositeWidget {
         ((this.getImplementation()) instanceof WTemplate
             ? (WTemplate) (this.getImplementation())
             : null);
-    container.bindWidget("hour", this.sbhour_);
-    container.bindWidget("minute", this.sbminute_);
     if (this.isFormatS()) {
+      this.sbsecond_ = new WSpinBox();
       container.bindWidget("second", this.sbsecond_);
+      this.sbsecond_.setWidth(new WLength(70));
+      this.sbsecond_.setRange(0, 59);
+      this.sbsecond_.setSingleStep(1);
+      this.sbsecond_
+          .changed()
+          .addListener(
+              this,
+              () -> {
+                WTimePicker.this.secondValueChanged();
+              });
+      this.sbsecond_.setWrapAroundEnabled(this.isWrapAroundEnabled());
     } else {
-      container.takeWidget("second");
-      container.bindEmpty("second");
+      if (this.sbsecond_ != null) {
+        {
+          WWidget toRemove = container.removeWidget("second");
+          if (toRemove != null) toRemove.remove();
+        }
+
+        this.sbsecond_ = null;
+        container.bindEmpty("second");
+      }
     }
     if (this.isFormatMs()) {
-      container.bindWidget("millisecond", this.sbmillisecond_);
+      if (!(this.sbmillisecond_ != null)) {
+        this.sbmillisecond_ = new WSpinBox();
+        container.bindWidget("millisecond", this.sbmillisecond_);
+        this.sbmillisecond_.setWidth(new WLength(70));
+        this.sbmillisecond_.setRange(0, 999);
+        this.sbmillisecond_.setSingleStep(1);
+        this.sbmillisecond_
+            .changed()
+            .addListener(
+                this,
+                () -> {
+                  WTimePicker.this.msecValueChanged();
+                });
+        this.sbmillisecond_.setWrapAroundEnabled(this.isWrapAroundEnabled());
+      }
     } else {
-      container.takeWidget("millisecond");
-      container.bindEmpty("millisecond");
+      if (this.sbmillisecond_ != null) {
+        {
+          WWidget toRemove = container.removeWidget("millisecond");
+          if (toRemove != null) toRemove.remove();
+        }
+
+        this.sbmillisecond_ = null;
+        container.bindEmpty("millisecond");
+      }
     }
     if (this.isFormatAp()) {
+      if (!(this.cbAP_ != null)) {
+        this.cbAP_ = new WComboBox();
+        container.bindWidget("ampm", this.cbAP_);
+        this.cbAP_.setWidth(new WLength(90));
+        this.cbAP_.addItem("AM");
+        this.cbAP_.addItem("PM");
+        this.cbAP_
+            .changed()
+            .addListener(
+                this,
+                () -> {
+                  WTimePicker.this.ampmValueChanged();
+                });
+      }
       this.sbhour_.setRange(1, 12);
-      container.bindWidget("ampm", this.cbAP_);
     } else {
-      container.takeWidget("ampm");
-      container.bindEmpty("ampm");
+      if (this.cbAP_ != null) {
+        {
+          WWidget toRemove = container.removeWidget("ampm");
+          if (toRemove != null) toRemove.remove();
+        }
+
+        this.cbAP_ = null;
+        container.bindEmpty("ampm");
+      }
       this.sbhour_.setRange(0, 23);
+    }
+    if (this.cbAP_ != null) {
+      StringBuilder jsValueChanged = new StringBuilder();
+      jsValueChanged
+          .append("function(o,e,oldv,v){")
+          .append("var obj = ")
+          .append(this.cbAP_.getJsRef())
+          .append(";")
+          .append("if(obj){")
+          .append("if (v==12 && oldv==11) {")
+          .append("obj.selectedIndex = (obj.selectedIndex + 1) % 2;")
+          .append("}")
+          .append("if (v==11 && oldv==12) {")
+          .append("obj.selectedIndex = (obj.selectedIndex + 1) % 2;")
+          .append("}")
+          .append("}")
+          .append("}");
+      this.toggleAmPm_.setJavaScript(jsValueChanged.toString());
+    } else {
+      this.toggleAmPm_.setJavaScript("function(){}");
     }
   }
 
@@ -192,7 +276,35 @@ class WTimePicker extends WCompositeWidget {
     this.setImplementation(container);
     container.addStyleClass("form-inline");
     container.setTemplateText(tr("Wt.WTimePicker.template"));
-    this.createWidgets();
+    this.sbhour_ = new WSpinBox();
+    container.bindWidget("hour", this.sbhour_);
+    this.sbhour_.setWidth(new WLength(70));
+    this.sbhour_.setSingleStep(1);
+    this.sbhour_
+        .changed()
+        .addListener(
+            this,
+            () -> {
+              WTimePicker.this.hourValueChanged();
+            });
+    this.sbminute_ = new WSpinBox();
+    container.bindWidget("minute", this.sbminute_);
+    this.sbminute_.setWidth(new WLength(70));
+    this.sbminute_.setRange(0, 59);
+    this.sbminute_.setSingleStep(1);
+    this.sbminute_
+        .changed()
+        .addListener(
+            this,
+            () -> {
+              WTimePicker.this.minuteValueChanged();
+            });
+    this.sbsecond_ = null;
+    container.bindEmpty("second");
+    this.sbmillisecond_ = null;
+    container.bindEmpty("millisecond");
+    this.cbAP_ = null;
+    container.bindEmpty("ampm");
     this.configure();
   }
 
@@ -208,115 +320,32 @@ class WTimePicker extends WCompositeWidget {
   private WComboBox cbAP_;
   private WTimeEdit timeEdit_;
 
-  private void createWidgets() {
-    this.sbhour_ = new WSpinBox();
-    this.sbhour_.setWidth(new WLength(70));
-    this.sbhour_.setSingleStep(1);
-    this.sbhour_
-        .changed()
-        .addListener(
-            this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimePicker.this.hourValueChanged();
-              }
-            });
-    this.sbminute_ = new WSpinBox();
-    this.sbminute_.setWidth(new WLength(70));
-    this.sbminute_.setRange(0, 59);
-    this.sbminute_.setSingleStep(1);
-    this.sbminute_
-        .changed()
-        .addListener(
-            this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimePicker.this.minuteValueChanged();
-              }
-            });
-    this.sbsecond_ = new WSpinBox();
-    this.sbsecond_.setWidth(new WLength(70));
-    this.sbsecond_.setRange(0, 59);
-    this.sbsecond_.setSingleStep(1);
-    this.sbsecond_
-        .changed()
-        .addListener(
-            this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimePicker.this.secondValueChanged();
-              }
-            });
-    this.sbmillisecond_ = new WSpinBox();
-    this.sbmillisecond_.setWidth(new WLength(70));
-    this.sbmillisecond_.setRange(0, 999);
-    this.sbmillisecond_.setSingleStep(1);
-    this.sbmillisecond_
-        .changed()
-        .addListener(
-            this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimePicker.this.msecValueChanged();
-              }
-            });
-    this.cbAP_ = new WComboBox();
-    this.cbAP_.setWidth(new WLength(90));
-    this.cbAP_.addItem("AM");
-    this.cbAP_.addItem("PM");
-    this.cbAP_
-        .changed()
-        .addListener(
-            this,
-            new Signal.Listener() {
-              public void trigger() {
-                WTimePicker.this.ampmValueChanged();
-              }
-            });
-    StringBuilder jsValueChanged = new StringBuilder();
-    jsValueChanged
-        .append("function(o,e,oldv,v){")
-        .append("var obj = ")
-        .append(this.cbAP_.getJsRef())
-        .append(";")
-        .append("if(obj){")
-        .append("if (v==12 && oldv==11) {")
-        .append("obj.selectedIndex = (obj.selectedIndex + 1) % 2;")
-        .append("}")
-        .append("if (v==11 && oldv==12) {")
-        .append("obj.selectedIndex = (obj.selectedIndex + 1) % 2;")
-        .append("}")
-        .append("}")
-        .append("}");
-    this.toggleAmPm_.setJavaScript(jsValueChanged.toString());
-  }
-
   private void hourValueChanged() {
-    if (this.sbhour_.validate() == WValidator.State.Valid) {
+    if (this.sbhour_.validate() == ValidationState.Valid) {
       this.selectionChanged_.trigger();
     }
   }
 
   private void minuteValueChanged() {
-    if (this.sbminute_.validate() == WValidator.State.Valid) {
+    if (this.sbminute_.validate() == ValidationState.Valid) {
       this.selectionChanged_.trigger();
     }
   }
 
   private void secondValueChanged() {
-    if (this.sbsecond_.validate() == WValidator.State.Valid) {
+    if (this.sbsecond_.validate() == ValidationState.Valid) {
       this.selectionChanged_.trigger();
     }
   }
 
   private void msecValueChanged() {
-    if (this.sbmillisecond_.validate() == WValidator.State.Valid) {
+    if (this.sbmillisecond_.validate() == ValidationState.Valid) {
       this.selectionChanged_.trigger();
     }
   }
 
   private void ampmValueChanged() {
-    if (this.cbAP_.validate() == WValidator.State.Valid) {
+    if (this.cbAP_.validate() == ValidationState.Valid) {
       this.selectionChanged_.trigger();
     }
   }

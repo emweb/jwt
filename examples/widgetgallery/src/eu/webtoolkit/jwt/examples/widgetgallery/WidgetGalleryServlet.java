@@ -1,5 +1,6 @@
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
+import eu.webtoolkit.jwt.BootstrapVersion;
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBootstrapTheme;
@@ -8,8 +9,6 @@ import eu.webtoolkit.jwt.WHBoxLayout;
 import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
 import eu.webtoolkit.jwt.WtServlet;
-import eu.webtoolkit.jwt.Configuration.ErrorReporting;
-import eu.webtoolkit.jwt.WBootstrapTheme.Version;
 
 public class WidgetGalleryServlet extends WtServlet {
 	public WidgetGalleryServlet() {
@@ -43,7 +42,7 @@ public class WidgetGalleryServlet extends WtServlet {
 		WApplication app = new WApplication(env);
 		  
 		WBootstrapTheme theme = new WBootstrapTheme();
-		theme.setVersion(Version.Version3);
+		theme.setVersion(BootstrapVersion.v3);
 		// load the default bootstrap3 (sub-)theme
 	    app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "themes/bootstrap/3/bootstrap-theme.min.css"));
 
@@ -55,9 +54,10 @@ public class WidgetGalleryServlet extends WtServlet {
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/src");
 		app.setLocalizedStrings(resourceBundle);
 
-		WHBoxLayout layout = new WHBoxLayout(app.getRoot());
+		WHBoxLayout layout = new WHBoxLayout();
 		layout.setContentsMargins(0, 0, 0, 0);
 		layout.addWidget(new WidgetGallery());
+		app.getRoot().setLayout(layout);
 		
 		app.setTitle("JWt Widget Gallery");
 

@@ -11,10 +11,11 @@ package eu.webtoolkit.jwt.utils;
 import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.AnimationEffect;
 import eu.webtoolkit.jwt.Key;
 import eu.webtoolkit.jwt.KeyboardModifier;
+import eu.webtoolkit.jwt.RenderHint;
 import eu.webtoolkit.jwt.ValidationStyleFlag;
-import eu.webtoolkit.jwt.WAnimation.AnimationEffect;
 
 /**
  * @author wim
@@ -55,7 +56,7 @@ public class EnumUtils {
 				return k;
 		}
 
-		return Key.Key_unknown;
+		return Key.Unknown;
 	}
 
 	public static <E extends Enum<E>> EnumSet<E> or(EnumSet<E> theSet, E flag) {
@@ -81,10 +82,16 @@ public class EnumUtils {
 				return valueOfKeyboardModifiers(enumSet);
 			else if (o instanceof AlignmentFlag)
 				return valueOfAlignmentFlags(enumSet);
+			else if (o instanceof RenderHint)
+				return valueOfRenderHints(enumSet);
 			else
 				throw new RuntimeException("Not supported valueOf()");
 		} else
 			return 0;
+	}
+
+	public static int valueOf(int v) {
+		return v;
 	}
 	
 	public static <E extends Enum<E>> int valueOfAnimationEffects(EnumSet<E> enumSet) {
@@ -112,9 +119,9 @@ public class EnumUtils {
 
 		// TODO: could replace this with a loop that uses result |= 1 << v.ordinal()
 		
-		if (enumSet.contains(ValidationStyleFlag.ValidationInvalidStyle))
+		if (enumSet.contains(ValidationStyleFlag.InvalidStyle))
 			result |= 0x1;
-		if (enumSet.contains(ValidationStyleFlag.ValidationValidStyle))
+		if (enumSet.contains(ValidationStyleFlag.ValidStyle))
 			result |= 0x2;
 		
 		return result;
@@ -132,6 +139,16 @@ public class EnumUtils {
 	}
 
 	private static <E extends Enum<E>> int valueOfAlignmentFlags(EnumSet<E> enumSet) {
+		int result = 0;
+
+		for (Enum<E> e : enumSet) {
+			result |= 1 << e.ordinal();
+		}
+
+		return result;
+	}
+
+	private static <E extends Enum<E>> int valueOfRenderHints(EnumSet<E> enumSet) {
 		int result = 0;
 
 		for (Enum<E> e : enumSet) {

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,15 +22,11 @@ import org.slf4j.LoggerFactory;
 class SinModel extends WAbstractChartModel {
   private static Logger logger = LoggerFactory.getLogger(SinModel.class);
 
-  public SinModel(double minimum, double maximum, int rows, WObject parent) {
-    super(parent);
+  public SinModel(double minimum, double maximum, int rows) {
+    super();
     this.minimum_ = minimum;
     this.maximum_ = maximum;
     this.rows_ = rows;
-  }
-
-  public SinModel(double minimum, double maximum, int rows) {
-    this(minimum, maximum, rows, (WObject) null);
   }
 
   public double getData(int row, int column) {

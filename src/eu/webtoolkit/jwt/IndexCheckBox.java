@@ -17,6 +17,6 @@ class IndexCheckBox extends WCheckBox {
 
 	public WString getToolTip(){
 		return StringUtils.asString(
-			  index.getData(ItemDataRole.ToolTipRole));
+			  index.getData(ItemDataRole.ToolTip));
 	}
 }

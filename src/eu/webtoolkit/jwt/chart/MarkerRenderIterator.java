@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class MarkerRenderIterator extends SeriesIterator {
+final class MarkerRenderIterator extends SeriesIterator {
   private static Logger logger = LoggerFactory.getLogger(MarkerRenderIterator.class);
 
   public MarkerRenderIterator(final WCartesianChart chart, final WPainter painter) {
@@ -28,7 +29,7 @@ class MarkerRenderIterator extends SeriesIterator {
     this.pathFragment_ = new WPainterPath();
     this.currentPen_ = new WPen();
     this.currentBrush_ = new WBrush();
-    this.currentMarkerType_ = MarkerType.NoMarker;
+    this.currentMarkerType_ = MarkerType.None;
     this.currentScale_ = 0;
     this.series_ = null;
   }
@@ -36,7 +37,7 @@ class MarkerRenderIterator extends SeriesIterator {
   public boolean startSeries(
       final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
     this.marker_.assign(new WPainterPath());
-    if (series.getMarker() != MarkerType.NoMarker) {
+    if (series.getMarker() != MarkerType.None) {
       this.chart_.drawMarker(series, this.marker_);
       this.painter_.save();
       this.needRestore_ = true;
@@ -82,10 +83,10 @@ class MarkerRenderIterator extends SeriesIterator {
       if (pointMarker != null) {
         markerType = pointMarker;
       }
-      if (markerType != MarkerType.NoMarker) {
+      if (markerType != MarkerType.None) {
         WPen pen = series.getMarkerPen().clone();
         SeriesIterator.setPenColor(
-            pen, series, xRow, xColumn, yRow, yColumn, ItemDataRole.MarkerPenColorRole);
+            pen, series, xRow, xColumn, yRow, yColumn, ItemDataRole.MarkerPenColor);
         if (this.chart_.isSeriesSelectionEnabled()
             && this.chart_.getSelectedSeries() != null
             && this.chart_.getSelectedSeries() != series) {
@@ -93,7 +94,7 @@ class MarkerRenderIterator extends SeriesIterator {
         }
         WBrush brush = series.getMarkerBrush().clone();
         SeriesIterator.setBrushColor(
-            brush, series, xRow, xColumn, yRow, yColumn, ItemDataRole.MarkerBrushColorRole);
+            brush, series, xRow, xColumn, yRow, yColumn, ItemDataRole.MarkerBrushColor);
         double scale =
             this.calculateMarkerScale(series, xRow, xColumn, yRow, yColumn, series.getMarkerSize());
         if (this.chart_.isSeriesSelectionEnabled()
@@ -129,14 +130,11 @@ class MarkerRenderIterator extends SeriesIterator {
         }
         this.pathFragment_.moveTo(this.hv(p));
       }
-      if (series.getType() != SeriesType.BarSeries) {
+      if (series.getType() != SeriesType.Bar) {
         WString toolTip = series.getModel().getToolTip(yRow, yColumn);
         if (!(toolTip.length() == 0)) {
-          if (!(!EnumUtils.mask(
-                      series.getModel().flags(yRow, yColumn), ItemFlag.ItemHasDeferredTooltip)
-                  .isEmpty()
-              || !EnumUtils.mask(series.getModel().flags(yRow, yColumn), ItemFlag.ItemIsXHTMLText)
-                  .isEmpty())) {
+          if (!(series.getModel().flags(yRow, yColumn).contains(ItemFlag.DeferredToolTip)
+              || series.getModel().flags(yRow, yColumn).contains(ItemFlag.XHTMLText))) {
             WTransform t = this.painter_.getWorldTransform();
             p = t.map(this.hv(p));
             WCircleArea circleArea = new WCircleArea();
@@ -205,13 +203,13 @@ class MarkerRenderIterator extends SeriesIterator {
     WTransform currentTransform =
         new WTransform(1.0 / this.currentScale_, 0, 0, 1.0 / this.currentScale_, 0, 0)
             .multiply(this.chart_.zoomRangeTransform(xAxis, yAxis));
-    this.painter_.setPen(new WPen(PenStyle.NoPen));
-    this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
+    this.painter_.setPen(new WPen(PenStyle.None));
+    this.painter_.setBrush(new WBrush(BrushStyle.None));
     this.painter_.setShadow(series.getShadow());
-    if (this.currentMarkerType_ != MarkerType.CrossMarker
-        && this.currentMarkerType_ != MarkerType.XCrossMarker
-        && this.currentMarkerType_ != MarkerType.AsteriskMarker
-        && this.currentMarkerType_ != MarkerType.StarMarker) {
+    if (this.currentMarkerType_ != MarkerType.Cross
+        && this.currentMarkerType_ != MarkerType.XCross
+        && this.currentMarkerType_ != MarkerType.Asterisk
+        && this.currentMarkerType_ != MarkerType.Star) {
       this.painter_.setBrush(this.currentBrush_);
       if (!series.getShadow().isNone()) {
         this.painter_.drawStencilAlongPath(
@@ -221,7 +219,7 @@ class MarkerRenderIterator extends SeriesIterator {
     }
     this.painter_.setPen(this.currentPen_);
     if (!series.getShadow().isNone()) {
-      this.painter_.setBrush(new WBrush(BrushStyle.NoBrush));
+      this.painter_.setBrush(new WBrush(BrushStyle.None));
     }
     this.painter_.drawStencilAlongPath(
         this.marker_, currentTransform.map(this.pathFragment_), false);

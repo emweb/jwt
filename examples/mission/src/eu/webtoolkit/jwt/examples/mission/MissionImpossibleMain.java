@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt.examples.mission;
 
+import java.time.Duration;
+
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
@@ -35,7 +37,7 @@ public class MissionImpossibleMain extends WtServlet {
         new WBreak(appl.getRoot());
 
         new WText("This program will quit in ", appl.getRoot());
-        final CountDownWidget countdown = new CountDownWidget(10, 0, 1000, appl
+        final CountDownWidget countdown = new CountDownWidget(10, 0, Duration.ofMillis(1000L), appl
                 .getRoot());
         new WText(" seconds.", appl.getRoot());
 

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -20,9 +21,14 @@ import org.slf4j.LoggerFactory;
 class WCssTemplateWidget extends WWebWidget {
   private static Logger logger = LoggerFactory.getLogger(WCssTemplateWidget.class);
 
-  public WCssTemplateWidget(WCssTemplateRule rule) {
+  public WCssTemplateWidget(WCssTemplateRule rule, WContainerWidget parentContainer) {
     super();
     this.rule_ = rule;
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public WCssTemplateWidget(WCssTemplateRule rule) {
+    this(rule, (WContainerWidget) null);
   }
 
   public void setPositionScheme(PositionScheme scheme) {
@@ -96,7 +102,7 @@ class WCssTemplateWidget extends WWebWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_SPAN;
+    return DomElementType.SPAN;
   }
 
   private WCssTemplateRule rule_;

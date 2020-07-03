@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,8 +29,8 @@ import org.slf4j.LoggerFactory;
  * <p>All editing operations are supported:
  *
  * <ul>
- *   <li>changing data ({@link WBatchEditProxyModel#setData(WModelIndex index, Object value, int
- *       role) setData()})
+ *   <li>changing data ({@link WBatchEditProxyModel#setData(WModelIndex index, Object value,
+ *       ItemDataRole role) setData()})
  *   <li>inserting and removing rows ({@link WBatchEditProxyModel#insertRows(int row, int count,
  *       WModelIndex parent) insertRows()} and {@link WBatchEditProxyModel#removeRows(int row, int
  *       count, WModelIndex parent) removeRows()})
@@ -43,31 +44,23 @@ import org.slf4j.LoggerFactory;
  * treetable-like) models, with children under items in the first column.
  *
  * <p>Default values for a newly inserted row can be set using {@link
- * WBatchEditProxyModel#setNewRowData(int column, Object data, int role) setNewRowData()} and flags
- * for its items using {@link WBatchEditProxyModel#setNewRowFlags(int column, EnumSet flags)
- * setNewRowFlags()}.
+ * WBatchEditProxyModel#setNewRowData(int column, Object data, ItemDataRole role) setNewRowData()}
+ * and flags for its items using {@link WBatchEditProxyModel#setNewRowFlags(int column, EnumSet
+ * flags) setNewRowFlags()}.
  */
 public class WBatchEditProxyModel extends WAbstractProxyModel {
   private static Logger logger = LoggerFactory.getLogger(WBatchEditProxyModel.class);
 
   /** Constructor. */
-  public WBatchEditProxyModel(WObject parent) {
-    super(parent);
+  public WBatchEditProxyModel() {
+    super();
     this.submitting_ = false;
-    this.newRowData_ = new HashMap<Integer, SortedMap<Integer, Object>>();
+    this.newRowData_ = new HashMap<Integer, SortedMap<ItemDataRole, Object>>();
     this.newRowFlags_ = new HashMap<Integer, EnumSet<ItemFlag>>();
-    this.dirtyIndicationRole_ = -1;
+    this.dirtyIndicationRole_ = ItemDataRole.of(-1);
     this.dirtyIndicationData_ = new Object();
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
     this.mappedIndexes_ = new TreeMap<WModelIndex, WAbstractProxyModel.BaseItem>();
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WBatchEditProxyModel(WObject parent) this((WObject)null)}
-   */
-  public WBatchEditProxyModel() {
-    this((WObject) null);
   }
   /**
    * Returns whether changes have not yet been committed.
@@ -126,13 +119,13 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
       while (!item.insertedRows_.isEmpty()) {
         this.getSourceModel().insertRow(item.insertedRows_.get(0), item.sourceIndex_);
       }
-      for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>> j_it =
+      for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>>> j_it =
               item.editedValues_.entrySet().iterator();
           j_it.hasNext(); ) {
-        Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> j = j_it.next();
+        Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> j = j_it.next();
         WModelIndex index =
             this.getSourceModel().getIndex(j.getKey().row, j.getKey().column, item.sourceIndex_);
-        SortedMap<Integer, Object> data = j.getValue();
+        SortedMap<ItemDataRole, Object> data = j.getValue();
         j_it.remove();
         this.getSourceModel().setItemData(index, data);
       }
@@ -178,10 +171,10 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
         this.shiftRows(item, row, 1);
         this.endInsertRows();
       }
-      for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>> j_it =
+      for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>>> j_it =
               item.editedValues_.entrySet().iterator();
           j_it.hasNext(); ) {
-        Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> j = j_it.next();
+        Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> j = j_it.next();
         WBatchEditProxyModel.Cell c = j.getKey();
         j_it.remove();
         WModelIndex child = this.getIndex(c.row, c.column, proxyIndex);
@@ -194,23 +187,23 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
    *
    * <p>You can use this method to initialize data for a newly inserted row.
    */
-  public void setNewRowData(int column, final Object data, int role) {
+  public void setNewRowData(int column, final Object data, ItemDataRole role) {
     this.newRowData_.get(column).put(role, data);
   }
   /**
    * Sets default data for a newly inserted row.
    *
-   * <p>Calls {@link #setNewRowData(int column, Object data, int role) setNewRowData(column, data,
-   * ItemDataRole.DisplayRole)}
+   * <p>Calls {@link #setNewRowData(int column, Object data, ItemDataRole role)
+   * setNewRowData(column, data, ItemDataRole.Display)}
    */
   public final void setNewRowData(int column, final Object data) {
-    setNewRowData(column, data, ItemDataRole.DisplayRole);
+    setNewRowData(column, data, ItemDataRole.Display);
   }
   /**
    * Sets the item flags for items in a newly inserted row.
    *
    * <p>By default, {@link WBatchEditProxyModel#getFlags(WModelIndex index) getFlags()} will return
-   * ItemIsSelectable.
+   * {@link ItemFlag#Selectable}.
    */
   public void setNewRowFlags(int column, EnumSet<ItemFlag> flags) {
     this.newRowFlags_.put(column, flags);
@@ -228,17 +221,18 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
    * Configures data used to indicate a modified item.
    *
    * <p>This sets <code>data</code> for item data role <code>role</code> to be returned by {@link
-   * WBatchEditProxyModel#getData(WModelIndex index, int role) getData()} for an item that is dirty
-   * (e.g. because it belongs to a newly inserted row/column, or because new data has been set for
-   * it.
+   * WBatchEditProxyModel#getData(WModelIndex index, ItemDataRole role) getData()} for an item that
+   * is dirty (e.g. because it belongs to a newly inserted row/column, or because new data has been
+   * set for it.
    *
-   * <p>When <code>role</code> is {@link ItemDataRole#StyleClassRole}, the style class is appended
-   * to any style already returned by the source model or set by {@link
-   * WBatchEditProxyModel#setNewRowData(int column, Object data, int role) setNewRowData()}.
+   * <p>When <code>role</code> is {@link ItemDataRole#StyleClass}, the style class is appended to
+   * any style already returned by the source model or set by {@link
+   * WBatchEditProxyModel#setNewRowData(int column, Object data, ItemDataRole role)
+   * setNewRowData()}.
    *
    * <p>By default there is no dirty indication.
    */
-  public void setDirtyIndication(int role, final Object data) {
+  public void setDirtyIndication(ItemDataRole role, final Object data) {
     this.dirtyIndicationRole_ = role;
     this.dirtyIndicationData_ = data;
   }
@@ -285,143 +279,115 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
    *
    * <p>All signals of the source model are propagated to the proxy model.
    */
-  public void setSourceModel(WAbstractItemModel model) {
-    if (this.getSourceModel() != null) {
-      for (int i = 0; i < this.modelConnections_.size(); ++i) {
-        this.modelConnections_.get(i).disconnect();
-      }
-      this.modelConnections_.clear();
+  public void setSourceModel(final WAbstractItemModel model) {
+    for (int i = 0; i < this.modelConnections_.size(); ++i) {
+      this.modelConnections_.get(i).disconnect();
     }
+    this.modelConnections_.clear();
     super.setSourceModel(model);
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsAboutToBeInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceColumnsAboutToBeInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceColumnsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceColumnsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceColumnsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .columnsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceColumnsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsAboutToBeInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceRowsAboutToBeInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsInserted()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceRowsInserted(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceRowsInserted(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsAboutToBeRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceRowsAboutToBeRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .rowsRemoved()
             .addListener(
                 this,
-                new Signal3.Listener<WModelIndex, Integer, Integer>() {
-                  public void trigger(WModelIndex e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceRowsRemoved(e1, e2, e3);
-                  }
+                (WModelIndex e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceRowsRemoved(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .dataChanged()
             .addListener(
                 this,
-                new Signal2.Listener<WModelIndex, WModelIndex>() {
-                  public void trigger(WModelIndex e1, WModelIndex e2) {
-                    WBatchEditProxyModel.this.sourceDataChanged(e1, e2);
-                  }
+                (WModelIndex e1, WModelIndex e2) -> {
+                  WBatchEditProxyModel.this.sourceDataChanged(e1, e2);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .headerDataChanged()
             .addListener(
                 this,
-                new Signal3.Listener<Orientation, Integer, Integer>() {
-                  public void trigger(Orientation e1, Integer e2, Integer e3) {
-                    WBatchEditProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
-                  }
+                (Orientation e1, Integer e2, Integer e3) -> {
+                  WBatchEditProxyModel.this.sourceHeaderDataChanged(e1, e2, e3);
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .layoutAboutToBeChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WBatchEditProxyModel.this.sourceLayoutAboutToBeChanged();
-                  }
+                () -> {
+                  WBatchEditProxyModel.this.sourceLayoutAboutToBeChanged();
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .layoutChanged()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WBatchEditProxyModel.this.sourceLayoutChanged();
-                  }
+                () -> {
+                  WBatchEditProxyModel.this.sourceLayoutChanged();
                 }));
     this.modelConnections_.add(
         this.getSourceModel()
             .modelReset()
             .addListener(
                 this,
-                new Signal.Listener() {
-                  public void trigger() {
-                    WBatchEditProxyModel.this.sourceModelReset();
-                  }
+                () -> {
+                  WBatchEditProxyModel.this.sourceModelReset();
                 }));
     this.resetMappings();
   }
@@ -470,9 +436,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
     return this.createIndex(row, column, item);
   }
 
-  public Object getData(final WModelIndex index, int role) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
     WBatchEditProxyModel.Item item = this.itemFromIndex(index.getParent());
-    SortedMap<Integer, Object> i =
+    SortedMap<ItemDataRole, Object> i =
         item.editedValues_.get(new WBatchEditProxyModel.Cell(index.getRow(), index.getColumn()));
     if (i != null) {
       Object j = i.get(role);
@@ -492,30 +458,30 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
   /**
    * Sets item data.
    *
-   * <p>The default implementation will copy {@link ItemDataRole#EditRole} data to {@link
-   * ItemDataRole#DisplayRole}. You may want to specialize the model to provide a more specialized
+   * <p>The default implementation will copy {@link ItemDataRole#Edit} data to {@link
+   * ItemDataRole#Display}. You may want to specialize the model to provide a more specialized
    * editing behaviour.
    */
-  public boolean setData(final WModelIndex index, final Object value, int role) {
+  public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
     WBatchEditProxyModel.Item item = this.itemFromIndex(index.getParent());
-    SortedMap<Integer, Object> i =
+    SortedMap<ItemDataRole, Object> i =
         item.editedValues_.get(new WBatchEditProxyModel.Cell(index.getRow(), index.getColumn()));
     if (i == null) {
       WModelIndex sourceIndex = this.mapToSource(index);
-      SortedMap<Integer, Object> dataMap = new TreeMap<Integer, Object>();
+      SortedMap<ItemDataRole, Object> dataMap = new TreeMap<ItemDataRole, Object>();
       if ((sourceIndex != null)) {
         dataMap = this.getSourceModel().getItemData(sourceIndex);
       }
       dataMap.put(role, value);
-      if (role == ItemDataRole.EditRole) {
-        dataMap.put(ItemDataRole.DisplayRole, value);
+      if (role.equals(ItemDataRole.Edit)) {
+        dataMap.put(ItemDataRole.Display, value);
       }
       item.editedValues_.put(
           new WBatchEditProxyModel.Cell(index.getRow(), index.getColumn()), dataMap);
     } else {
       i.put(role, value);
-      if (role == ItemDataRole.EditRole) {
-        i.put(ItemDataRole.DisplayRole, value);
+      if (role.equals(ItemDataRole.Edit)) {
+        i.put(ItemDataRole.Display, value);
       }
     }
     this.dataChanged().trigger(index, index);
@@ -536,7 +502,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
     }
   }
 
-  public Object getHeaderData(int section, Orientation orientation, int role) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
     if (orientation == Orientation.Vertical) {
       return null;
     } else {
@@ -554,8 +520,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
     this.insertIndexes(item, item.insertedRows_, item.insertedItems_, row, count);
     for (int i = 0; i < count; ++i) {
       for (int j = 0; j < this.getColumnCount(parent); ++j) {
-        SortedMap<Integer, Object> data = new TreeMap<Integer, Object>();
-        SortedMap<Integer, Object> nri = this.newRowData_.get(j);
+        SortedMap<ItemDataRole, Object> data = new TreeMap<ItemDataRole, Object>();
+        SortedMap<ItemDataRole, Object> nri = this.newRowData_.get(j);
         if (nri != null) {
           data = nri;
         }
@@ -621,7 +587,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
     private static Logger logger = LoggerFactory.getLogger(Item.class);
 
     public WBatchEditProxyModel.Item insertedParent_;
-    public Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> editedValues_;
+    public Map<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> editedValues_;
     public List<Integer> removedRows_;
     public List<Integer> insertedRows_;
     public List<WBatchEditProxyModel.Item> insertedItems_;
@@ -631,7 +597,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
     public Item(final WModelIndex sourceIndex) {
       super(sourceIndex);
       this.insertedParent_ = null;
-      this.editedValues_ = new HashMap<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>();
+      this.editedValues_ =
+          new HashMap<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>>();
       this.removedRows_ = new ArrayList<Integer>();
       this.insertedRows_ = new ArrayList<Integer>();
       this.insertedItems_ = new ArrayList<WBatchEditProxyModel.Item>();
@@ -642,7 +609,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
     public Item(WBatchEditProxyModel.Item insertedParent) {
       super(null);
       this.insertedParent_ = insertedParent;
-      this.editedValues_ = new HashMap<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>();
+      this.editedValues_ =
+          new HashMap<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>>();
       this.removedRows_ = new ArrayList<Integer>();
       this.insertedRows_ = new ArrayList<Integer>();
       this.insertedItems_ = new ArrayList<WBatchEditProxyModel.Item>();
@@ -652,9 +620,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
   }
 
   private boolean submitting_;
-  private Map<Integer, SortedMap<Integer, Object>> newRowData_;
+  private Map<Integer, SortedMap<ItemDataRole, Object>> newRowData_;
   private Map<Integer, EnumSet<ItemFlag>> newRowFlags_;
-  private int dirtyIndicationRole_;
+  private ItemDataRole dirtyIndicationRole_;
   private Object dirtyIndicationData_;
   private List<AbstractSignal.Connection> modelConnections_;
   private SortedMap<WModelIndex, WAbstractProxyModel.BaseItem> mappedIndexes_;
@@ -1003,7 +971,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
       int insi = CollectionUtils.lowerBound(ins, index);
       if (insi != ins.size() && ins.get(insi) == index) {
         ins.remove(0 + insi);
-        if (rowItems != null) {;
+        if (rowItems != null) {
+
           rowItems.remove(0 + insi);
         }
       } else {
@@ -1023,7 +992,8 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
             this.mappedIndexes_.tailMap(sourceIndex).entrySet().iterator();
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it.next();
-      if (isAncestor(sourceIndex, i.getKey())) {;
+      if (isAncestor(sourceIndex, i.getKey())) {
+
         i_it.remove();
       } else {
         break;
@@ -1039,11 +1009,11 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
   }
 
   private void shiftRows(
-      final Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> v, int row, int count) {
-    for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>> i_it =
+      final Map<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> v, int row, int count) {
+    for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>>> i_it =
             v.entrySet().iterator();
         i_it.hasNext(); ) {
-      Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> i = i_it.next();
+      Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> i = i_it.next();
       if (i.getKey().row >= row) {
         final WBatchEditProxyModel.Cell c = i.getKey();
         if (count < 0) {
@@ -1068,11 +1038,13 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
   }
 
   private void shiftColumns(
-      final Map<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> v, int column, int count) {
-    for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>>> i_it =
+      final Map<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> v,
+      int column,
+      int count) {
+    for (Iterator<Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>>> i_it =
             v.entrySet().iterator();
         i_it.hasNext(); ) {
-      Map.Entry<WBatchEditProxyModel.Cell, SortedMap<Integer, Object>> i = i_it.next();
+      Map.Entry<WBatchEditProxyModel.Cell, SortedMap<ItemDataRole, Object>> i = i_it.next();
       if (i.getKey().column >= column) {
         final WBatchEditProxyModel.Cell c = i.getKey();
         if (count < 0) {
@@ -1100,14 +1072,13 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
             this.mappedIndexes_.entrySet().iterator();
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it.next();
-      ;
     }
     this.mappedIndexes_.clear();
   }
 
-  private Object indicateDirty(int role, final Object value) {
-    if (role == this.dirtyIndicationRole_) {
-      if (role == ItemDataRole.StyleClassRole) {
+  private Object indicateDirty(ItemDataRole role, final Object value) {
+    if (role.equals(this.dirtyIndicationRole_)) {
+      if (role.equals(ItemDataRole.StyleClass)) {
         WString s1 = StringUtils.asString(value);
         WString s2 = StringUtils.asString(this.dirtyIndicationData_);
         if (!(s1.length() == 0)) {

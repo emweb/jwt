@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -48,7 +49,7 @@ public class Coordinates {
     if ((p = request.getParameter(name)) != null) {
       try {
         return asInt(p);
-      } catch (final NumberFormatException ee) {
+      } catch (final RuntimeException ee) {
         logger.error(
             new StringWriter()
                 .append("Could not cast event property '")
@@ -102,7 +103,7 @@ public class Coordinates {
                 asInt(s.get(i + 7)),
                 asInt(s.get(i + 8))));
       }
-    } catch (final NumberFormatException ee) {
+    } catch (final RuntimeException ee) {
       logger.error(
           new StringWriter()
               .append("Could not parse touches array '")

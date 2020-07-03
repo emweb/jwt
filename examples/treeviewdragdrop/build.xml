@@ -47,8 +47,8 @@
        srcdir="${src.dir}"
        destdir="${build.dir}"
        debug="on"
-       source="1.7"
-       target="1.7"
+       source="1.8"
+       target="1.8"
        encoding="UTF-8">
       <classpath refid="project.classpath"/>
     </javac>

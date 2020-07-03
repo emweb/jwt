@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -49,22 +50,8 @@ import org.slf4j.LoggerFactory;
 public class WHBoxLayout extends WBoxLayout {
   private static Logger logger = LoggerFactory.getLogger(WHBoxLayout.class);
 
-  /**
-   * Creates a new horizontal box layout.
-   *
-   * <p>Use <code>parent</code> = <code>null</code> to create a layout manager that can be nested
-   * inside other layout managers, or to specify a specific alignment when setting the layout to a
-   * {@link WContainerWidget}.
-   */
-  public WHBoxLayout(WWidget parent) {
-    super(WBoxLayout.Direction.LeftToRight, parent);
-  }
-  /**
-   * Creates a new horizontal box layout.
-   *
-   * <p>Calls {@link #WHBoxLayout(WWidget parent) this((WWidget)null)}
-   */
+  /** Creates a new horizontal box layout. */
   public WHBoxLayout() {
-    this((WWidget) null);
+    super(LayoutDirection.LeftToRight);
   }
 }

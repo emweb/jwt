@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,119 +31,119 @@ import javax.servlet.http.*;
  */
 public enum Key {
   /** Unknown key. */
-  Key_unknown(0),
+  Unknown(0),
   /** Enter key. */
-  Key_Enter(13),
+  Enter(13),
   /** Tab key. */
-  Key_Tab(9),
+  Tab(9),
   /** Backspace key. */
-  Key_Backspace(8),
+  Backspace(8),
   /** Shift key. */
-  Key_Shift(16),
+  Shift(16),
   /** Control key. */
-  Key_Control(17),
+  Control(17),
   /** Alt key. */
-  Key_Alt(18),
+  Alt(18),
   /** Page up key. */
-  Key_PageUp(33),
+  PageUp(33),
   /** Page down key. */
-  Key_PageDown(34),
+  PageDown(34),
   /** End key. */
-  Key_End(35),
+  End(35),
   /** Home key. */
-  Key_Home(36),
+  Home(36),
   /** Left arrow key. */
-  Key_Left(37),
+  Left(37),
   /** Up arrow key. */
-  Key_Up(38),
+  Up(38),
   /** Right arrow key. */
-  Key_Right(39),
+  Right(39),
   /** Down arrow key. */
-  Key_Down(40),
+  Down(40),
   /** Insert key. */
-  Key_Insert(45),
+  Insert(45),
   /** Delete key. */
-  Key_Delete(46),
+  Delete(46),
   /** Escape key. */
-  Key_Escape(27),
+  Escape(27),
   /** F1 function key. */
-  Key_F1(112),
+  F1(112),
   /** F2 function key. */
-  Key_F2(113),
+  F2(113),
   /** F3 function key. */
-  Key_F3(114),
+  F3(114),
   /** F4 function key. */
-  Key_F4(115),
+  F4(115),
   /** F5 function key. */
-  Key_F5(116),
+  F5(116),
   /** F6 function key. */
-  Key_F6(117),
+  F6(117),
   /** F7 function key. */
-  Key_F7(118),
+  F7(118),
   /** F8 function key. */
-  Key_F8(119),
+  F8(119),
   /** F9 function key. */
-  Key_F9(120),
+  F9(120),
   /** F10 function key. */
-  Key_F10(121),
+  F10(121),
   /** F11 function key. */
-  Key_F11(122),
+  F11(122),
   /** F12 function key. */
-  Key_F12(123),
+  F12(123),
   /** Space. */
-  Key_Space(' '),
+  Space(' '),
   /** &apos;A&apos; key */
-  Key_A('A'),
+  A('A'),
   /** &apos;B&apos; key */
-  Key_B('B'),
+  B('B'),
   /** &apos;C&apos; key */
-  Key_C('C'),
+  C('C'),
   /** &apos;D&apos; key */
-  Key_D('D'),
+  D('D'),
   /** &apos;E&apos; key */
-  Key_E('E'),
+  E('E'),
   /** &apos;F&apos; key */
-  Key_F('F'),
+  F('F'),
   /** &apos;G&apos; key */
-  Key_G('G'),
+  G('G'),
   /** &apos;H&apos; key */
-  Key_H('H'),
+  H('H'),
   /** &apos;I&apos; key */
-  Key_I('I'),
+  I('I'),
   /** &apos;J&apos; key */
-  Key_J('J'),
+  J('J'),
   /** &apos;K&apos; key */
-  Key_K('K'),
+  K('K'),
   /** &apos;L&apos; key */
-  Key_L('L'),
+  L('L'),
   /** &apos;M&apos; key */
-  Key_M('M'),
+  M('M'),
   /** &apos;N&apos; key */
-  Key_N('N'),
+  N('N'),
   /** &apos;O&apos; key */
-  Key_O('O'),
+  O('O'),
   /** &apos;P&apos; key */
-  Key_P('P'),
+  P('P'),
   /** &apos;Q&apos; key */
-  Key_Q('Q'),
+  Q('Q'),
   /** &apos;R&apos; key */
-  Key_R('R'),
+  R('R'),
   /** &apos;S&apos; key */
-  Key_S('S'),
+  S('S'),
   /** &apos;T&apos; key */
-  Key_T('T'),
+  T('T'),
   /** &apos;U&apos; key */
-  Key_U('U'),
+  U('U'),
   /** &apos;V&apos; key */
-  Key_V('V'),
+  V('V'),
   /** &apos;W&apos; key */
-  Key_W('W'),
+  W('W'),
   /** &apos;X&apos; key */
-  Key_X('X'),
+  X('X'),
   /** &apos;Y&apos; key */
-  Key_Y('Y'),
+  Y('Y'),
   /** &apos;Z&apos; key */
-  Key_Z('Z'),
+  Z('Z'),
   /** &apos;1&apos; key */
   Key_1('1'),
   /** &apos;2&apos; key */

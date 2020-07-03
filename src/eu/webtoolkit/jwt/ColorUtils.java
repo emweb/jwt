@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -19,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 class ColorUtils {
   private static Logger logger = LoggerFactory.getLogger(ColorUtils.class);
+
+  private ColorUtils() {}
 
   static boolean ishex(char c) {
     return c >= '0' && c <= '9' || c >= 'a' && c <= 'f' || c >= 'A' && c <= 'F';
@@ -41,7 +44,7 @@ class ColorUtils {
       } else {
         return Integer.parseInt(arg);
       }
-    } catch (final NumberFormatException e) {
+    } catch (final RuntimeException e) {
       logger.error(new StringWriter().append("invalid color component: ").append(arg).toString());
       return 0;
     }
@@ -128,8 +131,8 @@ class ColorUtils {
             if (alpha_d < 0.0 || alpha_d > 1.0) {
               throw new WException("parseCssColor: alpha value out of range 0.0 to 1.0");
             }
-            alpha = (int) Math.floor(alpha_d * 255. + 0.5);
-          } catch (final NumberFormatException e) {
+            alpha = (int) Math.round(alpha_d * 255.);
+          } catch (final RuntimeException e) {
             logger.error(
                 new StringWriter().append("could not parse rgb format: ").append(n).toString());
             alpha = 255;

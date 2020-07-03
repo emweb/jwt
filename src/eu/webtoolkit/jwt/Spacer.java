@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,6 +27,6 @@ class Spacer extends WWebWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_DIV;
+    return DomElementType.DIV;
   }
 }

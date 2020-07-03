@@ -7,13 +7,13 @@ package eu.webtoolkit.jwt.examples.dialog;
 
 import java.util.EnumSet;
 
+import eu.webtoolkit.jwt.AnimationEffect;
 import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
+import eu.webtoolkit.jwt.TimingFunction;
 import eu.webtoolkit.jwt.WAnimation;
-import eu.webtoolkit.jwt.WAnimation.AnimationEffect;
-import eu.webtoolkit.jwt.WAnimation.TimingFunction;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -133,7 +133,7 @@ public class DialogApplication extends WApplication {
 
     private void messageBox2() {
         messageBox_ = new WMessageBox("Question",
-                "Are you getting comfortable ?", Icon.NoIcon, EnumSet.of(
+                "Are you getting comfortable ?", Icon.None, EnumSet.of(
                         StandardButton.Yes, StandardButton.No,
                         StandardButton.Cancel));
 
@@ -151,7 +151,7 @@ public class DialogApplication extends WApplication {
 
     private void messageBox3() {
         final WMessageBox box = new WMessageBox("Confirm",
-                "About to wreak havoc... Continue ?", Icon.NoIcon, EnumSet.of(
+                "About to wreak havoc... Continue ?", Icon.None, EnumSet.of(
                         StandardButton.Ok, StandardButton.Cancel));
 
         box.buttonClicked().addListener(this,
@@ -173,7 +173,7 @@ public class DialogApplication extends WApplication {
 
     private void messageBox4() {
         messageBox_ = new WMessageBox("Your work", "Your work is not saved",
-                Icon.NoIcon, EnumSet.of(StandardButton.NoButton));
+                Icon.None, EnumSet.of(StandardButton.None));
 
         messageBox_.addButton("Cancel modifications", StandardButton.Cancel);
         messageBox_.addButton("Continue modifying work", StandardButton.Ok);

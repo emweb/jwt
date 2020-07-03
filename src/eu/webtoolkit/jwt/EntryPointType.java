@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -44,7 +45,8 @@ public enum EntryPointType {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>A WidgetSet application requires JavaScript support</i>
+   * <p><i><b>Note: </b>A {@link EntryPointType#WidgetSet WidgetSet} application requires JavaScript
+   * support</i>
    *
    * @see WApplication#bindWidget(WWidget widget, String domId)
    */

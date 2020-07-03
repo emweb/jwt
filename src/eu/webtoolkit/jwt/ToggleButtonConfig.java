@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -22,6 +23,7 @@ class ToggleButtonConfig {
 
   public ToggleButtonConfig(WWidget parent, final String styleClass) {
     this.states_ = new ArrayList<String>();
+    this.toggleJS_ = null;
     this.styleClass_ = styleClass;
     this.toggleJS_ = new JSlot(parent);
   }

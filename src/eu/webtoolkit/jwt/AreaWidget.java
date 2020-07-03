@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -26,10 +27,6 @@ class AreaWidget extends WInteractWidget {
   }
 
   public void remove() {
-    if (this.facade_ != null) {
-      this.facade_.impl_ = null;
-      if (this.facade_ != null) this.facade_.remove();
-    }
     super.remove();
   }
 
@@ -42,7 +39,7 @@ class AreaWidget extends WInteractWidget {
   void updateDom(final DomElement element, boolean all) {
     boolean needsUrlResolution = this.facade_.updateDom(element, all);
     super.updateDom(element, all);
-    if (element.getProperty(Property.PropertyStyleCursor).length() != 0
+    if (element.getProperty(Property.StyleCursor).length() != 0
         && !WApplication.getInstance().getEnvironment().agentIsGecko()
         && element.getAttribute("href").length() == 0) {
       element.setAttribute("href", "javascript:void(0);");
@@ -53,6 +50,6 @@ class AreaWidget extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_AREA;
+    return DomElementType.AREA;
   }
 }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,19 +26,12 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
   }
 
   public WContainerWidget getContainer() {
-    StdLayoutImpl p = this.getParentLayoutImpl();
-    if (p != null) {
-      return p.getContainer();
-    } else {
-      return null;
-    }
+    return ((this.getLayoutItem().getParentWidget()) instanceof WContainerWidget
+        ? (WContainerWidget) (this.getLayoutItem().getParentWidget())
+        : null);
   }
 
   public abstract WLayoutItem getLayoutItem();
-
-  public WWidget getParentWidget() {
-    return this.getContainer();
-  }
 
   public abstract int getMinimumWidth();
 
@@ -54,8 +48,6 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
     }
   }
 
-  abstract void containerAddWidgets(WContainerWidget container);
-
   public abstract DomElement createDomElement(
-      boolean fitWidth, boolean fitHeight, WApplication app);
+      DomElement parent, boolean fitWidth, boolean fitHeight, WApplication app);
 }

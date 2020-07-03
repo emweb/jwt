@@ -2,6 +2,7 @@ package eu.webtoolkit.jwt.auth;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.Duration;
 import java.util.List;
 
 import org.apache.http.Header;
@@ -25,7 +26,7 @@ class HttpClient {
 	
 	private Signal2<Exception, HttpMessage> done = new Signal2<Exception, HttpMessage>();
 	
-	public HttpClient(WObject object) {
+	public HttpClient() {
 		
 	}
 
@@ -74,9 +75,9 @@ class HttpClient {
 		}
 	}
 
-	public void setTimeout(int timeout) {
+	public void setTimeout(Duration timeout) {
 		HttpParams params = httpClient.getParams();
-		HttpConnectionParams.setConnectionTimeout(params, timeout * 1000);
+		HttpConnectionParams.setConnectionTimeout(params, (int)timeout.toMillis());
 	}
 
 	public void setMaximumResponseSize(int i) {

@@ -13,6 +13,7 @@ import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StringUtils;
+import eu.webtoolkit.jwt.ValidationState;
 import eu.webtoolkit.jwt.WAbstractItemModel;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WCheckBox;
@@ -32,7 +33,6 @@ import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WTable;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.WValidator;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.AxisScale;
 import eu.webtoolkit.jwt.chart.ChartType;
@@ -58,22 +58,22 @@ public class ChartConfig extends WContainerWidget {
     public ChartConfig(WCartesianChart chart, WContainerWidget parent) {
         super(parent);
         chart_ = chart;
-        fill_ = FillRangeType.MinimumValueFill;
+        fill_ = FillRangeType.MinimumValue;
 
         PanelList list = new PanelList(this);
 
-        WIntValidator sizeValidator = new WIntValidator(200, 2000, this);
+        WIntValidator sizeValidator = new WIntValidator(200, 2000);
         sizeValidator.setMandatory(true);
 
-        WDoubleValidator anyNumberValidator = new WDoubleValidator(this);
+        WDoubleValidator anyNumberValidator = new WDoubleValidator();
         anyNumberValidator.setMandatory(true);
 
-        WDoubleValidator angleValidator = new WDoubleValidator(-90, 90, this);
+        WDoubleValidator angleValidator = new WDoubleValidator(-90, 90);
         angleValidator.setMandatory(true);
 
         // ---- Chart properties ----
 
-        WStandardItemModel orientation = new WStandardItemModel(0, 1, this);
+        WStandardItemModel orientation = new WStandardItemModel(0, 1);
         addEntry(orientation, "Vertical");
         addEntry(orientation, "Horizontal");
 
@@ -122,7 +122,7 @@ public class ChartConfig extends WContainerWidget {
 
         // ---- Series properties ----
 
-        WStandardItemModel types = new WStandardItemModel(0, 1, this);
+        WStandardItemModel types = new WStandardItemModel(0, 1);
         addEntry(types, "Points");
         addEntry(types, "Line");
         addEntry(types, "Curve");
@@ -133,7 +133,7 @@ public class ChartConfig extends WContainerWidget {
         addEntry(types, "Stacked Line Area");
         addEntry(types, "Stacked Curve Area");
 
-        WStandardItemModel markers = new WStandardItemModel(0, 1, this);
+        WStandardItemModel markers = new WStandardItemModel(0, 1);
         addEntry(markers, "None");
         addEntry(markers, "Square");
         addEntry(markers, "Circle");
@@ -141,11 +141,11 @@ public class ChartConfig extends WContainerWidget {
         addEntry(markers, "X cross");
         addEntry(markers, "Triangle");
 
-        WStandardItemModel axes = new WStandardItemModel(0, 1, this);
+        WStandardItemModel axes = new WStandardItemModel(0, 1);
         addEntry(axes, "1st Y axis");
         addEntry(axes, "2nd Y axis");
 
-        WStandardItemModel labels = new WStandardItemModel(0, 1, this);
+        WStandardItemModel labels = new WStandardItemModel(0, 1);
         addEntry(labels, "None");
         addEntry(labels, "X");
         addEntry(labels, "Y");
@@ -208,22 +208,22 @@ public class ChartConfig extends WContainerWidget {
                 sc.enabledEdit.setChecked();
                 WDataSeries s = chart_.getSeries(j);
                 switch (s.getType()) {
-                case PointSeries:
+                case Point:
                     sc.typeEdit.setCurrentIndex(0);
                     break;
-                case LineSeries:
+                case Line:
                     sc.typeEdit
-                            .setCurrentIndex(s.getFillRange() != FillRangeType.NoFill ? (s
+                            .setCurrentIndex(s.getFillRange() != FillRangeType.None ? (s
                                     .isStacked() ? 7 : 4)
                                     : 1);
                     break;
-                case CurveSeries:
+                case Curve:
                     sc.typeEdit
-                            .setCurrentIndex(s.getFillRange() != FillRangeType.NoFill ? (s
+                            .setCurrentIndex(s.getFillRange() != FillRangeType.None ? (s
                                     .isStacked() ? 8 : 5)
                                     : 2);
                     break;
-                case BarSeries:
+                case Bar:
                     sc.typeEdit.setCurrentIndex(s.isStacked() ? 6 : 3);
                 }
 
@@ -245,11 +245,11 @@ public class ChartConfig extends WContainerWidget {
 
         // ---- Axis properties ----
 
-        WStandardItemModel yScales = new WStandardItemModel(0, 1, this);
+        WStandardItemModel yScales = new WStandardItemModel(0, 1);
         addEntry(yScales, "Linear scale");
         addEntry(yScales, "Log scale");
 
-        WStandardItemModel xScales = new WStandardItemModel(0, 1, this);
+        WStandardItemModel xScales = new WStandardItemModel(0, 1);
         addEntry(xScales, "Categories");
         addEntry(xScales, "Linear scale");
         addEntry(xScales, "Log scale");
@@ -292,10 +292,10 @@ public class ChartConfig extends WContainerWidget {
             connectSignals(sc.visibleEdit);
 
             sc.scaleEdit = new WComboBox(axisConfig.getElementAt(j, 2));
-            if (axis.getScale() == AxisScale.CategoryScale)
+            if (axis.getScale() == AxisScale.Discrete)
                 sc.scaleEdit.addItem("Category scale");
             else {
-                if (axis.getId() == Axis.XAxis) {
+                if (axis.getId() == Axis.X) {
                     sc.scaleEdit.setModel(xScales);
                     sc.scaleEdit.setCurrentIndex(axis.getScale().getValue());
                 } else {
@@ -457,38 +457,38 @@ public class ChartConfig extends WContainerWidget {
 
                 switch (sc.typeEdit.getCurrentIndex()) {
                 case 0:
-                    s.setType(SeriesType.PointSeries);
+                    s.setType(SeriesType.Point);
                     if (sc.markerEdit.getCurrentIndex() == 0)
                         sc.markerEdit.setCurrentIndex(1);
                     break;
                 case 1:
-                    s.setType(SeriesType.LineSeries);
+                    s.setType(SeriesType.Line);
                     break;
                 case 2:
-                    s.setType(SeriesType.CurveSeries);
+                    s.setType(SeriesType.Curve);
                     break;
                 case 3:
-                    s.setType(SeriesType.BarSeries);
+                    s.setType(SeriesType.Bar);
                     break;
                 case 4:
-                    s.setType(SeriesType.LineSeries);
+                    s.setType(SeriesType.Line);
                     s.setFillRange(fill_);
                     break;
                 case 5:
-                    s.setType(SeriesType.CurveSeries);
+                    s.setType(SeriesType.Curve);
                     s.setFillRange(fill_);
                     break;
                 case 6:
-                    s.setType(SeriesType.BarSeries);
+                    s.setType(SeriesType.Bar);
                     s.setStacked(true);
                     break;
                 case 7:
-                    s.setType(SeriesType.LineSeries);
+                    s.setType(SeriesType.Line);
                     s.setFillRange(fill_);
                     s.setStacked(true);
                     break;
                 case 8:
-                    s.setType(SeriesType.CurveSeries);
+                    s.setType(SeriesType.Curve);
                     s.setFillRange(fill_);
                     s.setStacked(true);
                 }
@@ -500,7 +500,7 @@ public class ChartConfig extends WContainerWidget {
                 }
 
                 if (sc.axisEdit.getCurrentIndex() == 1) {
-                    s.bindToAxis(Axis.Y2Axis);
+                    s.bindToAxis(Axis.Y2);
                 }
 
                 if (sc.legendEdit.isChecked()) {
@@ -516,14 +516,14 @@ public class ChartConfig extends WContainerWidget {
 
                 switch (sc.labelsEdit.getCurrentIndex()) {
                 case 1:
-                    s.setLabelsEnabled(Axis.XAxis);
+                    s.setLabelsEnabled(Axis.X);
                     break;
                 case 2:
-                    s.setLabelsEnabled(Axis.YAxis);
+                    s.setLabelsEnabled(Axis.Y);
                     break;
                 case 3:
-                    s.setLabelsEnabled(Axis.XAxis);
-                    s.setLabelsEnabled(Axis.YAxis);
+                    s.setLabelsEnabled(Axis.X);
+                    s.setLabelsEnabled(Axis.Y);
                     break;
                 }
 
@@ -547,30 +547,30 @@ public class ChartConfig extends WContainerWidget {
 
             if (sc.scaleEdit.getCount() != 1) {
                 int k = sc.scaleEdit.getCurrentIndex();
-                if (axis.getId() != Axis.XAxis)
+                if (axis.getId() != Axis.X)
                     k += 1;
                 else {
                     if (k == 0)
-                        chart_.setType(ChartType.CategoryChart);
+                        chart_.setType(ChartType.Category);
                     else
-                        chart_.setType(ChartType.ScatterPlot);
+                        chart_.setType(ChartType.Scatter);
                 }
 
                 switch (k) {
                 case 1:
-                    axis.setScale(AxisScale.LinearScale);
+                    axis.setScale(AxisScale.Linear);
                     break;
                 case 2:
-                    axis.setScale(AxisScale.LogScale);
+                    axis.setScale(AxisScale.Log);
                     break;
                 case 3:
-                    axis.setScale(AxisScale.DateScale);
+                    axis.setScale(AxisScale.Date);
                     break;
                 }
             }
 
             if (sc.autoEdit.isChecked()){
-            	if(axis.getScale() == AxisScale.DateScale){
+            	if(axis.getScale() == AxisScale.Date){
             		axis.setRange(gregDays(1986), gregDays(1988));
             	} else{
             		axis.setRange(WAxis.AUTO_MINIMUM, WAxis.AUTO_MAXIMUM);
@@ -580,13 +580,13 @@ public class ChartConfig extends WContainerWidget {
             		double min = getDouble(sc.minimumEdit);
             		double max = getDouble(sc.maximumEdit);
 
-            		if (axis.getScale() == AxisScale.LogScale)
+            		if (axis.getScale() == AxisScale.Log)
             			if (min <= 0)
             				min = 0.0001;
 
             		max = Math.max(min, max);
 
-            		if (axis.getScale() == AxisScale.DateScale){
+            		if (axis.getScale() == AxisScale.Date){
             			double gregDaysMin = gregDays(1900);
             			double gregDaysMax = gregDays(3000);
 
@@ -636,7 +636,7 @@ public class ChartConfig extends WContainerWidget {
     }
 
     private static boolean validate(WFormWidget w) {
-        boolean valid = w.validate() == WValidator.State.Valid;
+        boolean valid = w.validate() == ValidationState.Valid;
 
         if (!WApplication.getInstance().getEnvironment().hasJavaScript()) {
             w.setStyleClass(valid ? "" : "Wt-invalid");

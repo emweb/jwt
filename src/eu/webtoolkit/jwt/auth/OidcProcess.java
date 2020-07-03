@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,6 +39,7 @@ public class OidcProcess extends OAuthProcess {
 
   public OidcProcess(final OidcService service, final String scope) {
     super(service, scope);
+    this.httpClient_ = null;
   }
   /**
    * Starts an authorization and authentication process.
@@ -74,22 +76,20 @@ public class OidcProcess extends OAuthProcess {
         return;
       }
     }
-    HttpClient client = new HttpClient(this);
-    client.setTimeout(15);
-    client.setMaximumResponseSize(10 * 1024);
-    client
+    this.httpClient_ = new HttpClient();
+    this.httpClient_.setTimeout(Duration.ofSeconds(15));
+    this.httpClient_.setMaximumResponseSize(10 * 1024);
+    this.httpClient_
         .done()
         .addListener(
             this,
-            new Signal2.Listener<Exception, HttpMessage>() {
-              public void trigger(Exception event1, HttpMessage event2) {
-                OidcProcess.this.handleResponse(event1, event2);
-              }
+            (Exception event1, HttpMessage event2) -> {
+              OidcProcess.this.handleResponse(event1, event2);
             });
     List<org.apache.http.Header> headers = new ArrayList<org.apache.http.Header>();
     headers.add(
         new org.apache.http.message.BasicHeader("Authorization", "Bearer " + token.getValue()));
-    client.get(this.getService().getUserInfoEndpoint(), headers);
+    this.httpClient_.get(this.getService().getUserInfoEndpoint(), headers);
   }
 
   private void handleResponse(Exception err, final HttpMessage response) {
@@ -170,4 +170,6 @@ public class OidcProcess extends OAuthProcess {
     String providerName = this.getService().getName();
     return new Identity(providerName, id, name, email, emailVerified);
   }
+
+  private HttpClient httpClient_;
 }

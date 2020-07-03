@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * <p>Each tree node has a label, and optionally a label icon pair. The icon pair offers the
  * capability to show a different icon depending on the state of the node (expanded or collapsed).
  * When the node has any children, a child count may be displayed next to the label using {@link
- * WTreeNode#setChildCountPolicy(WTreeNode.ChildCountPolicy policy) setChildCountPolicy()}.
+ * WTreeNode#setChildCountPolicy(ChildCountPolicy policy) setChildCountPolicy()}.
  *
  * <p>Expanding a tree node it will collapse all its children, so that a user may collapse/expand a
  * node as a short-cut to collapsing all children.
@@ -36,22 +37,20 @@ import org.slf4j.LoggerFactory;
  * client (if possible):
  *
  * <ul>
- *   <li>{@link WTreeNode.LoadPolicy#PreLoading PreLoading}: the entire tree is transmitted to the
- *       client, and all tree navigation requires no further communication.
- *   <li>{@link WTreeNode.LoadPolicy#LazyLoading LazyLoading}: only the minimum is transmitted to
- *       the client. When expanding a node for the first time, only then it is transmitted to the
- *       client, and this may thus have some latency.
- *   <li>{@link WTreeNode.LoadPolicy#NextLevelLoading NextLevelLoading}: all leafs of visible
- *       children are transmitted, but not their children. This provides a good trade-off between
- *       bandwith use and interactivity, since expanding any tree node will happen instantly, and at
- *       the same time trigger some communication in the back-ground to load the next level of
- *       invisible nodes.
+ *   <li>{@link ContentLoading#Eager}: the entire tree is transmitted to the client, and all tree
+ *       navigation requires no further communication.
+ *   <li>ContentLoading::Lazy: only the minimum is transmitted to the client. When expanding a node
+ *       for the first time, only then it is transmitted to the client, and this may thus have some
+ *       latency.
+ *   <li>{@link ContentLoading#NextLevel}: all leafs of visible children are transmitted, but not
+ *       their children. This provides a good trade-off between bandwith use and interactivity,
+ *       since expanding any tree node will happen instantly, and at the same time trigger some
+ *       communication in the back-ground to load the next level of invisible nodes.
  * </ul>
  *
- * <p>The default policy is {@link WTreeNode.LoadPolicy#LazyLoading LazyLoading}. Another load
- * policy may be specified using {@link WTreeNode#setLoadPolicy(WTreeNode.LoadPolicy loadPolicy)
- * setLoadPolicy()} on the root node and before adding any children. The load policy is inherited by
- * all children in the tree.
+ * <p>The default policy is ContentLoading::Lazy. Another load policy may be specified using {@link
+ * WTreeNode#setLoadPolicy(ContentLoading loadPolicy) setLoadPolicy()} on the root node and before
+ * adding any children. The load policy is inherited by all children in the tree.
  *
  * <p>There are a few scenarios where it makes sense to specialize the WTreeNode class. One scenario
  * is create a tree that is populated dynamically while browsing. For this purpose you should
@@ -74,34 +73,6 @@ import org.slf4j.LoggerFactory;
 public class WTreeNode extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WTreeNode.class);
 
-  /** An enumeration for the policy to load children. */
-  public enum LoadPolicy {
-    /** Load-on-demand of child nodes. */
-    LazyLoading,
-    /** Pre-load all child nodes. */
-    PreLoading,
-    /** Pre-load one level of child nodes. */
-    NextLevelLoading;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** An enumeration for the policy to display the child count. */
-  public enum ChildCountPolicy {
-    /** Do not display a child count. */
-    Disabled,
-    /** Always display a child count. */
-    Enabled,
-    /** Only display a child count when the node is populated. */
-    Lazy;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Creates a tree node with the given label.
    *
@@ -110,40 +81,37 @@ public class WTreeNode extends WCompositeWidget {
    *
    * <p>The node is initialized to be collapsed.
    */
-  public WTreeNode(final CharSequence labelText, WIconPair labelIcon, WTreeNode parent) {
+  public WTreeNode(final CharSequence labelText, WIconPair labelIcon, WTreeNode parentNode) {
     super();
-    this.childNodes_ = new ArrayList<WTreeNode>();
     this.collapsed_ = true;
     this.selectable_ = true;
     this.visible_ = true;
     this.childrenDecorated_ = true;
     this.parentNode_ = null;
-    this.childCountPolicy_ = WTreeNode.ChildCountPolicy.Disabled;
+    this.notLoadedChildren_ = new ArrayList<WTreeNode>();
+    this.childCountPolicy_ = ChildCountPolicy.Disabled;
     this.labelIcon_ = labelIcon;
-    this.labelText_ = new WText(labelText);
     this.childrenLoaded_ = false;
     this.populated_ = false;
     this.interactive_ = true;
-    this.selected_ = new Signal1<Boolean>(this);
+    this.selected_ = new Signal1<Boolean>();
     this.clickedConnection_ = new AbstractSignal.Connection();
-    this.create();
-    if (parent != null) {
-      parent.addChildNode(this);
-    }
+    this.init(labelText, labelIcon);
+    if (parentNode != null) parentNode.addChildNode(this);
   }
   /**
    * Creates a tree node with the given label.
    *
-   * <p>Calls {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
-   * this(labelText, (WIconPair)null, (WTreeNode)null)}
+   * <p>Calls {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parentNode)
+   * this(labelText, null, (WTreeNode)null)}
    */
   public WTreeNode(final CharSequence labelText) {
-    this(labelText, (WIconPair) null, (WTreeNode) null);
+    this(labelText, null, (WTreeNode) null);
   }
   /**
    * Creates a tree node with the given label.
    *
-   * <p>Calls {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parent)
+   * <p>Calls {@link #WTreeNode(CharSequence labelText, WIconPair labelIcon, WTreeNode parentNode)
    * this(labelText, labelIcon, (WTreeNode)null)}
    */
   public WTreeNode(final CharSequence labelText, WIconPair labelIcon) {
@@ -151,11 +119,6 @@ public class WTreeNode extends WCompositeWidget {
   }
   /** Destructor. */
   public void remove() {
-    for (int i = 0; i < this.childNodes_.size(); ++i) {
-      if (this.childNodes_.get(i) != null) this.childNodes_.get(i).remove();
-    }
-    if (this.noExpandIcon_ != null) this.noExpandIcon_.remove();
-    if (this.expandIcon_ != null) this.expandIcon_.remove();
     super.remove();
   }
   /**
@@ -176,13 +139,18 @@ public class WTreeNode extends WCompositeWidget {
   }
   /** Sets the label icon. */
   public void setLabelIcon(WIconPair labelIcon) {
-    if (this.labelIcon_ != null) this.labelIcon_.remove();
-    this.labelIcon_ = labelIcon;
     if (this.labelIcon_ != null) {
+      {
+        WWidget toRemove = this.labelIcon_.removeFromParent();
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    this.labelIcon_ = labelIcon;
+    if (labelIcon != null) {
       if (this.labelText_ != null) {
-        this.getLabelArea().insertBefore(this.labelIcon_, this.labelText_);
+        this.getLabelArea().insertBefore(labelIcon, this.labelText_);
       } else {
-        this.getLabelArea().addWidget(this.labelIcon_);
+        this.getLabelArea().addWidget(labelIcon);
       }
       this.labelIcon_.setState(this.isExpanded() ? 1 : 0);
     }
@@ -193,24 +161,24 @@ public class WTreeNode extends WCompositeWidget {
    * <p>Inserts the node <code>node</code> at index <code>index</code>.
    */
   public void insertChildNode(int index, WTreeNode node) {
-    this.childNodes_.add(0 + index, node);
     node.parentNode_ = this;
+    WTreeNode added = node;
     if (this.childrenLoaded_) {
       this.getChildContainer().insertWidget(index, node);
     } else {
-      node.setParent((WObject) null);
+      this.notLoadedChildren_.add(0 + index, node);
     }
-    this.descendantAdded(node);
-    if (this.loadPolicy_ != node.loadPolicy_) {
-      node.setLoadPolicy(this.loadPolicy_);
+    this.descendantAdded(added);
+    if (this.loadPolicy_ != added.loadPolicy_) {
+      added.setLoadPolicy(this.loadPolicy_);
     }
-    if (this.childCountPolicy_ != node.childCountPolicy_) {
-      node.setChildCountPolicy(this.childCountPolicy_);
+    if (this.childCountPolicy_ != added.childCountPolicy_) {
+      added.setChildCountPolicy(this.childCountPolicy_);
     }
-    if (index == (int) this.childNodes_.size() - 1 && this.childNodes_.size() > 1) {
-      this.childNodes_.get(this.childNodes_.size() - 2).update();
+    if (index == (int) this.getChildCount() - 1 && this.getChildCount() > 1) {
+      this.getChildNodes().get(this.getChildCount() - 2).update();
     }
-    node.update();
+    added.update();
     this.update();
     this.resetLearnedSlots();
   }
@@ -220,7 +188,7 @@ public class WTreeNode extends WCompositeWidget {
    * <p>Equivalent to:
    *
    * <pre>{@code
-   * insertChildNode(childNodes().size(), node);
+   * insertChildNode(childNodes().size(), std::move(node));
    *
    * }</pre>
    *
@@ -228,22 +196,39 @@ public class WTreeNode extends WCompositeWidget {
    *
    * @see WTreeNode#insertChildNode(int index, WTreeNode node)
    */
-  public void addChildNode(WTreeNode node) {
-    this.insertChildNode(this.childNodes_.size(), node);
+  public WTreeNode addChildNode(WTreeNode node) {
+    WTreeNode result = node;
+    this.insertChildNode(this.getChildCount(), node);
+    return result;
   }
   /** Removes a child node. */
-  public void removeChildNode(WTreeNode node) {
-    this.childNodes_.remove(node);
+  public WTreeNode removeChildNode(WTreeNode node) {
     node.parentNode_ = null;
+    WTreeNode result = null;
     if (this.childrenLoaded_) {
-      this.getChildContainer().removeWidget(node);
+      result = WidgetUtils.remove(this.getChildContainer(), node);
+    } else {
+      result = CollectionUtils.take(this.notLoadedChildren_, node);
     }
     this.descendantRemoved(node);
     this.updateChildren();
+    return result;
   }
   /** Returns the list of children. */
   public List<WTreeNode> getChildNodes() {
-    return this.childNodes_;
+    List<WTreeNode> result = new ArrayList<WTreeNode>();
+    ;
+
+    for (int i = 0; i < this.getChildContainer().getCount(); ++i) {
+      result.add(
+          ((this.getChildContainer().getWidget(i)) instanceof WTreeNode
+              ? (WTreeNode) (this.getChildContainer().getWidget(i))
+              : null));
+    }
+    for (WTreeNode i : this.notLoadedChildren_) {
+      result.add(i);
+    }
+    return result;
   }
   /**
    * Returns the number of children that should be displayed.
@@ -252,7 +237,7 @@ public class WTreeNode extends WCompositeWidget {
    * returns {@link WTreeNode#getChildNodes() getChildNodes()}.size().
    */
   public int getDisplayedChildCount() {
-    return this.childNodes_.size();
+    return this.getChildCount();
   }
   /**
    * Configures how and when the child count should be displayed.
@@ -262,15 +247,15 @@ public class WTreeNode extends WCompositeWidget {
    *
    * <p>The child count policy is inherited by all children in the tree.
    */
-  public void setChildCountPolicy(WTreeNode.ChildCountPolicy policy) {
-    if (policy != WTreeNode.ChildCountPolicy.Disabled && !(this.childCountLabel_ != null)) {
+  public void setChildCountPolicy(ChildCountPolicy policy) {
+    if (policy != ChildCountPolicy.Disabled && !(this.childCountLabel_ != null)) {
       this.childCountLabel_ = new WText();
+      this.getLabelArea().addWidget(this.childCountLabel_);
       this.childCountLabel_.setMargin(new WLength(7), EnumSet.of(Side.Left));
       this.childCountLabel_.setStyleClass("Wt-childcount");
-      this.getLabelArea().addWidget(this.childCountLabel_);
     }
     this.childCountPolicy_ = policy;
-    if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled) {
+    if (this.childCountPolicy_ == ChildCountPolicy.Enabled) {
       WTreeNode parent = this.getParentNode();
       if (parent != null && parent.isExpanded()) {
         if (this.isDoPopulate()) {
@@ -278,9 +263,10 @@ public class WTreeNode extends WCompositeWidget {
         }
       }
     }
-    if (this.childCountPolicy_ != WTreeNode.ChildCountPolicy.Disabled) {
-      for (int i = 0; i < this.childNodes_.size(); ++i) {
-        this.childNodes_.get(i).setChildCountPolicy(this.childCountPolicy_);
+    if (this.childCountPolicy_ != ChildCountPolicy.Disabled) {
+      List<WTreeNode> children = this.getChildNodes();
+      for (WTreeNode c : children) {
+        c.setChildCountPolicy(this.childCountPolicy_);
       }
     }
   }
@@ -289,32 +275,23 @@ public class WTreeNode extends WCompositeWidget {
    *
    * <p>
    *
-   * @see WTreeNode#setChildCountPolicy(WTreeNode.ChildCountPolicy policy)
+   * @see WTreeNode#setChildCountPolicy(ChildCountPolicy policy)
    */
-  public WTreeNode.ChildCountPolicy getChildCountPolicy() {
+  public ChildCountPolicy getChildCountPolicy() {
     return this.childCountPolicy_;
   }
-  /**
-   * Sets the image pack for this (sub)tree (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated This method does not do anything since JWt 3.1.1, as the tree is now styled based
-   *     on the current CSS theme.
-   */
-  public void setImagePack(final String url) {}
   /**
    * Sets the load policy for this tree.
    *
    * <p>This may only be set on the root of a tree, and before adding any children.
    */
-  public void setLoadPolicy(WTreeNode.LoadPolicy loadPolicy) {
+  public void setLoadPolicy(ContentLoading loadPolicy) {
     this.loadPolicy_ = loadPolicy;
     switch (loadPolicy) {
-      case PreLoading:
+      case Eager:
         this.loadChildren();
         break;
-      case NextLevelLoading:
+      case NextLevel:
         if (this.isExpanded()) {
           this.loadChildren();
           this.loadGrandChildren();
@@ -327,18 +304,16 @@ public class WTreeNode extends WCompositeWidget {
               .icon1Clicked()
               .addListener(
                   this,
-                  new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent e1) {
-                      WTreeNode.this.loadGrandChildren();
-                    }
+                  (WMouseEvent e1) -> {
+                    WTreeNode.this.loadGrandChildren();
                   });
         }
         break;
-      case LazyLoading:
+      case Lazy:
         if (this.isExpanded()) {
           this.loadChildren();
         } else {
-          if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled) {
+          if (this.childCountPolicy_ == ChildCountPolicy.Enabled) {
             WTreeNode parent = this.getParentNode();
             if (parent != null && parent.isExpanded()) {
               this.isDoPopulate();
@@ -348,16 +323,15 @@ public class WTreeNode extends WCompositeWidget {
               .icon1Clicked()
               .addListener(
                   this,
-                  new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent e1) {
-                      WTreeNode.this.expand();
-                    }
+                  (WMouseEvent e1) -> {
+                    WTreeNode.this.expand();
                   });
         }
     }
-    if (this.loadPolicy_ != WTreeNode.LoadPolicy.LazyLoading) {
-      for (int i = 0; i < this.childNodes_.size(); ++i) {
-        this.childNodes_.get(i).setLoadPolicy(this.loadPolicy_);
+    if (this.loadPolicy_ != ContentLoading.Lazy) {
+      List<WTreeNode> children = this.getChildNodes();
+      for (WTreeNode c : children) {
+        c.setLoadPolicy(this.loadPolicy_);
       }
     }
   }
@@ -446,11 +420,11 @@ public class WTreeNode extends WCompositeWidget {
       if (!this.childrenLoaded_) {
         this.loadChildren();
       }
-      if (this.getParentNode() != null && this.childNodes_.isEmpty()) {
+      if (this.getParentNode() != null && this.getChildCount() == 0) {
         this.getParentNode().resetLearnedSlots();
         this.update();
       }
-      if (this.loadPolicy_ == WTreeNode.LoadPolicy.NextLevelLoading) {
+      if (this.loadPolicy_ == ContentLoading.NextLevel) {
         this.loadGrandChildren();
       }
       this.doExpand();
@@ -506,31 +480,28 @@ public class WTreeNode extends WCompositeWidget {
    * <p>This tree node has no label or labelicon, and is therefore ideally suited to provide a
    * custom look.
    */
-  protected WTreeNode(WTreeNode parent) {
+  protected WTreeNode(WTreeNode parentNode) {
     super();
-    this.childNodes_ = new ArrayList<WTreeNode>();
     this.collapsed_ = true;
     this.selectable_ = true;
     this.visible_ = true;
     this.childrenDecorated_ = true;
     this.parentNode_ = null;
-    this.childCountPolicy_ = WTreeNode.ChildCountPolicy.Disabled;
+    this.notLoadedChildren_ = new ArrayList<WTreeNode>();
+    this.childCountPolicy_ = ChildCountPolicy.Disabled;
     this.labelIcon_ = null;
-    this.labelText_ = null;
     this.childrenLoaded_ = false;
     this.populated_ = false;
     this.interactive_ = true;
-    this.selected_ = new Signal1<Boolean>(this);
+    this.selected_ = new Signal1<Boolean>();
     this.clickedConnection_ = new AbstractSignal.Connection();
-    this.create();
-    if (parent != null) {
-      parent.addChildNode(this);
-    }
+    this.init(WString.Empty, (WIconPair) null);
+    if (parentNode != null) parentNode.addChildNode(this);
   }
   /**
    * Creates a tree node with empty {@link WTreeNode#getLabelArea() getLabelArea()}.
    *
-   * <p>Calls {@link #WTreeNode(WTreeNode parent) this((WTreeNode)null)}
+   * <p>Calls {@link #WTreeNode(WTreeNode parentNode) this((WTreeNode)null)}
    */
   protected WTreeNode() {
     this((WTreeNode) null);
@@ -578,7 +549,7 @@ public class WTreeNode extends WCompositeWidget {
   protected boolean isExpandable() {
     if (this.interactive_) {
       this.isDoPopulate();
-      return !this.childNodes_.isEmpty();
+      return this.getChildCount() > 0;
     } else {
       return false;
     }
@@ -593,17 +564,6 @@ public class WTreeNode extends WCompositeWidget {
     this.layout_.bindString(
         "selected", isSelected ? WApplication.getInstance().getTheme().getActiveClass() : "");
     this.selected().trigger(isSelected);
-  }
-  /**
-   * The image pack that is used for this tree node (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated This method returns "" since JWt 3.1.1, as the image pack is no longer used in
-   *     favour of the CSS themes.
-   */
-  protected String getImagePack() {
-    return "";
   }
   /**
    * Reacts to the removal of a descendant node.
@@ -651,8 +611,9 @@ public class WTreeNode extends WCompositeWidget {
     if (this.labelIcon_ != null) {
       this.labelIcon_.setState(1);
     }
-    for (int i = 0; i < this.childNodes_.size(); ++i) {
-      this.childNodes_.get(i).doCollapse();
+    List<WTreeNode> children = this.getChildNodes();
+    for (WTreeNode c : children) {
+      c.doCollapse();
     }
   }
   /**
@@ -694,8 +655,9 @@ public class WTreeNode extends WCompositeWidget {
       }
       this.collapsed_ = true;
     }
-    for (int i = 0; i < this.childNodes_.size(); ++i) {
-      this.childNodes_.get(i).undoDoCollapse();
+    List<WTreeNode> children = this.getChildNodes();
+    for (WTreeNode c : children) {
+      c.undoDoCollapse();
     }
   }
   /**
@@ -724,14 +686,14 @@ public class WTreeNode extends WCompositeWidget {
     return this.layout_;
   }
 
-  private List<WTreeNode> childNodes_;
   private boolean collapsed_;
   private boolean selectable_;
   private boolean visible_;
   private boolean childrenDecorated_;
   private WTreeNode parentNode_;
-  private WTreeNode.LoadPolicy loadPolicy_;
-  private WTreeNode.ChildCountPolicy childCountPolicy_;
+  private List<WTreeNode> notLoadedChildren_;
+  private ContentLoading loadPolicy_;
+  private ChildCountPolicy childCountPolicy_;
   private WTemplate layout_;
   private WIconPair expandIcon_;
   private WText noExpandIcon_;
@@ -743,47 +705,9 @@ public class WTreeNode extends WCompositeWidget {
   private boolean interactive_;
   private Signal1<Boolean> selected_;
 
-  private WContainerWidget getChildContainer() {
-    return (WContainerWidget) this.layout_.resolveWidget("children");
-  }
-
-  private void loadChildren() {
-    if (!this.childrenLoaded_) {
-      this.isDoPopulate();
-      for (int i = 0; i < this.childNodes_.size(); ++i) {
-        this.getChildContainer().addWidget(this.childNodes_.get(i));
-      }
-      this.expandIcon_
-          .icon1Clicked()
-          .addListener(
-              this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WTreeNode.this.doExpand();
-                }
-              });
-      this.expandIcon_
-          .icon2Clicked()
-          .addListener(
-              this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WTreeNode.this.doCollapse();
-                }
-              });
-      this.resetLearnedSlots();
-      this.childrenLoaded_ = true;
-    }
-  }
-
-  private void loadGrandChildren() {
-    for (int i = 0; i < this.childNodes_.size(); ++i) {
-      this.childNodes_.get(i).loadChildren();
-    }
-  }
-
-  private void create() {
-    this.setImplementation(this.layout_ = new WTemplate(tr("Wt.WTreeNode.template")));
+  private void init(final CharSequence labelText, WIconPair labelIcon) {
+    this.setImplementation(
+        this.layout_ = new WTemplate(tr("Wt.WTreeNode.template"), (WContainerWidget) null));
     this.setStyleClass("Wt-tree");
     this.layout_.setSelectable(false);
     this.layout_.bindEmpty("cols-row");
@@ -792,41 +716,82 @@ public class WTreeNode extends WCompositeWidget {
     // this.implementStateless(WTreeNode.doCollapse,WTreeNode.undoDoCollapse);
     WApplication app = WApplication.getInstance();
     WContainerWidget children = new WContainerWidget();
+    this.layout_.bindWidget("children", children);
     children.setList(true);
     children.hide();
-    this.layout_.bindWidget("children", children);
     if (WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {
       this.expandIcon_ =
           new WIconPair(
               app.getTheme().getResourcesUrl() + imagePlusRtl_,
               app.getTheme().getResourcesUrl() + imageMinRtl_);
+      this.layout_.bindWidget("expand", this.expandIcon_);
     } else {
       this.expandIcon_ =
           new WIconPair(
               app.getTheme().getResourcesUrl() + imagePlus_,
               app.getTheme().getResourcesUrl() + imageMin_);
+      this.layout_.bindWidget("expand", this.expandIcon_);
     }
     this.expandIcon_.setStyleClass("Wt-ctrl Wt-expand");
+    this.expandIcon_.hide();
     this.noExpandIcon_ = new WText();
+    this.layout_.bindWidget("no-expand", this.noExpandIcon_);
     this.noExpandIcon_.setStyleClass("Wt-ctrl Wt-noexpand");
-    this.layout_.bindWidget("expand", this.noExpandIcon_);
     this.addStyleClass("Wt-trunk");
     this.layout_.bindWidget("label-area", new WContainerWidget());
-    if (this.labelText_ != null) {
-      this.labelText_.setStyleClass("Wt-label");
-    }
     this.childCountLabel_ = null;
     if (this.labelIcon_ != null) {
-      this.getLabelArea().addWidget(this.labelIcon_);
-      this.labelIcon_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+      this.getLabelArea().addWidget(labelIcon);
+      this.labelIcon_.setVerticalAlignment(AlignmentFlag.Middle);
     }
-    if (this.labelText_ != null) {
-      this.getLabelArea().addWidget(this.labelText_);
-    }
+    this.labelText_ = new WText(WString.toWString(labelText));
+    this.getLabelArea().addWidget(this.labelText_);
+    this.labelText_.setStyleClass("Wt-label");
     this.childrenLoaded_ = false;
-    this.setLoadPolicy(WTreeNode.LoadPolicy.LazyLoading);
+    this.setLoadPolicy(ContentLoading.Lazy);
   }
 
+  private WContainerWidget getChildContainer() {
+    return (WContainerWidget) this.layout_.resolveWidget("children");
+  }
+
+  private int getChildCount() {
+    return this.getChildContainer().getCount() + this.notLoadedChildren_.size();
+  }
+
+  private void loadChildren() {
+    if (!this.childrenLoaded_) {
+      this.isDoPopulate();
+      for (int i = 0; i < this.notLoadedChildren_.size(); ++i) {
+        this.getChildContainer().addWidget(this.notLoadedChildren_.get(i));
+      }
+      this.notLoadedChildren_.clear();
+      this.expandIcon_
+          .icon1Clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WTreeNode.this.doExpand();
+              });
+      this.expandIcon_
+          .icon2Clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WTreeNode.this.doCollapse();
+              });
+      this.resetLearnedSlots();
+      this.childrenLoaded_ = true;
+    }
+  }
+
+  private void loadGrandChildren() {
+    List<WTreeNode> children = this.getChildNodes();
+    for (WTreeNode c : children) {
+      c.loadChildren();
+    }
+  }
+  // private void create() ;
   private void update() {
     boolean isLast = this.isLastChildNode();
     if (!this.visible_) {
@@ -860,22 +825,13 @@ public class WTreeNode extends WCompositeWidget {
     this.toggleStyleClass("Wt-trunk", !isLast);
     this.layout_.bindString("trunk-class", isLast ? "Wt-end" : "Wt-trunk");
     if (!(this.getParentNode() != null) || this.getParentNode().isExpanded()) {
-      if (this.childCountPolicy_ == WTreeNode.ChildCountPolicy.Enabled && !this.populated_) {
+      if (this.childCountPolicy_ == ChildCountPolicy.Enabled && !this.populated_) {
         this.isDoPopulate();
       }
-      if (!this.isExpandable()) {
-        if (this.noExpandIcon_.getParent() == null) {
-          this.layout_.takeWidget("expand");
-          this.layout_.bindWidget("expand", this.noExpandIcon_);
-        }
-      } else {
-        if (this.expandIcon_.getParent() == null) {
-          this.layout_.takeWidget("expand");
-          this.layout_.bindWidget("expand", this.expandIcon_);
-        }
-      }
+      this.expandIcon_.setHidden(!this.isExpandable());
+      this.noExpandIcon_.setHidden(this.isExpandable());
     }
-    if (this.childCountPolicy_ != WTreeNode.ChildCountPolicy.Disabled
+    if (this.childCountPolicy_ != ChildCountPolicy.Disabled
         && this.populated_
         && this.childCountLabel_ != null) {
       int n = this.getDisplayedChildCount();
@@ -890,18 +846,19 @@ public class WTreeNode extends WCompositeWidget {
   private boolean isLastChildNode() {
     WTreeNode parent = this.getParentNode();
     if (parent != null) {
-      return parent.childNodes_.get(parent.childNodes_.size() - 1) == this;
+      return parent.getChildNodes().get(parent.getChildNodes().size() - 1) == this;
     } else {
       return true;
     }
   }
 
   private void updateChildren(boolean recursive) {
-    for (int i = 0; i < this.childNodes_.size(); ++i) {
+    List<WTreeNode> children = this.getChildNodes();
+    for (WTreeNode c : children) {
       if (recursive) {
-        this.childNodes_.get(i).updateChildren(recursive);
+        c.updateChildren(recursive);
       } else {
-        this.childNodes_.get(i).update();
+        c.update();
       }
     }
     this.update();

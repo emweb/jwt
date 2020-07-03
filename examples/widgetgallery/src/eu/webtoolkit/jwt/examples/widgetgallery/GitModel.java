@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,19 +22,15 @@ import org.slf4j.LoggerFactory;
 class GitModel extends WAbstractItemModel {
   private static Logger logger = LoggerFactory.getLogger(GitModel.class);
 
-  public static final int ContentsRole = ItemDataRole.UserRole + 1;
+  public static ItemDataRole ContentsRole = ItemDataRole.of(ItemDataRole.User.getValue() + 1);
 
-  public GitModel(final String repository, WObject parent) {
-    super(parent);
+  public GitModel(final String repository) {
+    super();
     this.git_ = new Git();
     this.treeData_ = new ArrayList<GitModel.Tree>();
     this.childPointer_ = new HashMap<GitModel.ChildIndex, Integer>();
     this.git_.setRepositoryPath(repository);
     this.loadRevision("master");
-  }
-
-  public GitModel(final String repository) {
-    this(repository, (WObject) null);
   }
 
   public void loadRevision(final String revName) {
@@ -87,21 +84,21 @@ class GitModel extends WAbstractItemModel {
     return this.treeData_.get(treeId).getRowCount();
   }
 
-  public Object getData(final WModelIndex index, int role) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
     if (!(index != null)) {
       return null;
     }
     Git.Object object = this.getObject(index);
     switch (index.getColumn()) {
       case 0:
-        if (role == ItemDataRole.DisplayRole) {
+        if (role.equals(ItemDataRole.Display)) {
           if (object.type == Git.ObjectType.Tree) {
             return object.name + '/';
           } else {
             return object.name;
           }
         } else {
-          if (role == ItemDataRole.DecorationRole) {
+          if (role.equals(ItemDataRole.Decoration)) {
             if (object.type == Git.ObjectType.Blob) {
               return "icons/git-blob.png";
             } else {
@@ -110,7 +107,7 @@ class GitModel extends WAbstractItemModel {
               }
             }
           } else {
-            if (role == ContentsRole) {
+            if (role.equals(ContentsRole)) {
               if (object.type == Git.ObjectType.Blob) {
                 return this.git_.catFile(object.id);
               }
@@ -119,7 +116,7 @@ class GitModel extends WAbstractItemModel {
         }
         break;
       case 1:
-        if (role == ItemDataRole.DisplayRole) {
+        if (role.equals(ItemDataRole.Display)) {
           if (object.type == Git.ObjectType.Tree) {
             return "Folder";
           } else {
@@ -159,8 +156,8 @@ class GitModel extends WAbstractItemModel {
     return null;
   }
 
-  public Object getHeaderData(int section, Orientation orientation, int role) {
-    if (orientation == Orientation.Horizontal && role == ItemDataRole.DisplayRole) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
+    if (orientation == Orientation.Horizontal && role.equals(ItemDataRole.Display)) {
       switch (section) {
         case 0:
           return "File";

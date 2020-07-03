@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,14 @@ import org.slf4j.LoggerFactory;
 class FormWidgets extends TopicWidget {
   private static Logger logger = LoggerFactory.getLogger(FormWidgets.class);
 
-  public FormWidgets() {
+  public FormWidgets(WContainerWidget parentContainer) {
     super();
     addText(tr("formwidgets-intro"), this);
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+
+  public FormWidgets() {
+    this((WContainerWidget) null);
   }
 
   public void populateSubMenu(WMenu menu) {
@@ -31,130 +37,101 @@ class FormWidgets extends TopicWidget {
     menu.addItem(
         "Line/Text editor",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.textEditors();
-              }
+            () -> {
+              return FormWidgets.this.textEditors();
             }));
     menu.addItem(
         "Check boxes",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.checkBox();
-              }
+            () -> {
+              return FormWidgets.this.checkBox();
             }));
     menu.addItem(
         "Radio buttons",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.radioButton();
-              }
+            () -> {
+              return FormWidgets.this.radioButton();
             }));
     menu.addItem(
         "Combo box",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.comboBox();
-              }
+            () -> {
+              return FormWidgets.this.comboBox();
             }));
     menu.addItem(
         "Selection box",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.selectionBox();
-              }
+            () -> {
+              return FormWidgets.this.selectionBox();
             }));
     menu.addItem(
         "Autocomplete",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.autoComplete();
-              }
+            () -> {
+              return FormWidgets.this.autoComplete();
             }));
     menu.addItem(
         "Date & Time entry",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.dateEntry();
-              }
+            () -> {
+              return FormWidgets.this.dateEntry();
             }));
     menu.addItem(
         "In-place edit",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.inPlaceEdit();
-              }
+            () -> {
+              return FormWidgets.this.inPlaceEdit();
             }));
     menu.addItem(
         "Slider",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.slider();
-              }
+            () -> {
+              return FormWidgets.this.slider();
             }));
     menu.addItem(
         "Progress bar",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.progressBar();
-              }
+            () -> {
+              return FormWidgets.this.progressBar();
             }));
     menu.addItem(
         "File upload",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.fileUpload();
-              }
+            () -> {
+              return FormWidgets.this.fileUpload();
             }));
     menu.addItem(
         "Push button",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.pushButton();
-              }
+            () -> {
+              return FormWidgets.this.pushButton();
             }));
     menu.addItem(
         "Validation",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.validation();
-              }
+            () -> {
+              return FormWidgets.this.validation();
             }));
     menu.addItem(
         "Integration example",
         DeferredWidget.deferCreate(
-            new WidgetCreator() {
-              public WWidget create() {
-                return FormWidgets.this.example();
-              }
+            () -> {
+              return FormWidgets.this.example();
             }));
   }
 
   private WWidget introduction() {
-    WTemplate result = new TopicTemplate("forms-introduction");
+    TopicTemplate result = new TopicTemplate("forms-introduction");
     result.bindWidget("SimpleForm", SimpleForm());
     result.bindWidget("FormModel", FormModel());
-    result.bindString(
-        "simpleForm-template", reindent(tr("simpleForm-template")), TextFormat.PlainText);
-    result.bindString("form-field", reindent(tr("form-field")), TextFormat.PlainText);
-    result.bindString("userForm-template", reindent(tr("userForm-template")), TextFormat.PlainText);
+    result.bindString("simpleForm-template", reindent(tr("simpleForm-template")), TextFormat.Plain);
+    result.bindString("form-field", reindent(tr("form-field")), TextFormat.Plain);
+    result.bindString("userForm-template", reindent(tr("userForm-template")), TextFormat.Plain);
     return result;
   }
 
   private WWidget textEditors() {
-    WTemplate result = new TopicTemplate("forms-textEditors");
+    TopicTemplate result = new TopicTemplate("forms-textEditors");
     result.bindWidget("LineEdit", LineEdit());
     result.bindWidget("LineEditEvent", LineEditEvent());
     result.bindWidget("TextArea", TextArea());
@@ -162,20 +139,20 @@ class FormWidgets extends TopicWidget {
     result.bindWidget("SpinBox", SpinBox());
     result.bindWidget("TextSide", TextSide());
     result.bindWidget("InputMask", InputMask());
-    result.bindString("lineEdit-template", reindent(tr("lineEdit-template")), TextFormat.PlainText);
-    result.bindString("editSide-template", reindent(tr("editSide-template")), TextFormat.PlainText);
+    result.bindString("lineEdit-template", reindent(tr("lineEdit-template")), TextFormat.Plain);
+    result.bindString("editSide-template", reindent(tr("editSide-template")), TextFormat.Plain);
     return result;
   }
 
   private WWidget checkBox() {
-    WTemplate result = new TopicTemplate("forms-checkBox");
+    TopicTemplate result = new TopicTemplate("forms-checkBox");
     result.bindWidget("CheckBoxInline", CheckBoxInline());
     result.bindWidget("CheckBoxStack", CheckBoxStack());
     return result;
   }
 
   private WWidget radioButton() {
-    WTemplate result = new TopicTemplate("forms-radioButton");
+    TopicTemplate result = new TopicTemplate("forms-radioButton");
     result.bindWidget("RadioButtonsLoose", RadioButtonsLoose());
     result.bindWidget("RadioButtonGroup", RadioButtonGroup());
     result.bindWidget("RadioButtonStack", RadioButtonStack());
@@ -184,7 +161,7 @@ class FormWidgets extends TopicWidget {
   }
 
   private WWidget comboBox() {
-    WTemplate result = new TopicTemplate("forms-comboBox");
+    TopicTemplate result = new TopicTemplate("forms-comboBox");
     result.bindWidget("ComboBox", ComboBox());
     result.bindWidget("ComboBoxActivated", ComboBoxActivated());
     result.bindWidget("ComboBoxModel", ComboBoxModel());
@@ -192,20 +169,20 @@ class FormWidgets extends TopicWidget {
   }
 
   private WWidget selectionBox() {
-    WTemplate result = new TopicTemplate("forms-selectionBox");
+    TopicTemplate result = new TopicTemplate("forms-selectionBox");
     result.bindWidget("SelectionBoxSimple", SelectionBoxSimple());
     result.bindWidget("SelectionBoxExtended", SelectionBoxExtended());
     return result;
   }
 
   private WWidget autoComplete() {
-    WTemplate result = new TopicTemplate("forms-autoComplete");
+    TopicTemplate result = new TopicTemplate("forms-autoComplete");
     result.bindWidget("AutoComplete", AutoComplete());
     return result;
   }
 
   private WWidget dateEntry() {
-    WTemplate result = new TopicTemplate("forms-dateEntry");
+    TopicTemplate result = new TopicTemplate("forms-dateEntry");
     result.bindWidget("CalendarSimple", CalendarSimple());
     result.bindWidget("CalendarExtended", CalendarExtended());
     result.bindWidget("DateEdit", DateEdit());
@@ -215,34 +192,34 @@ class FormWidgets extends TopicWidget {
   }
 
   private WWidget inPlaceEdit() {
-    WTemplate result = new TopicTemplate("forms-inPlaceEdit");
+    TopicTemplate result = new TopicTemplate("forms-inPlaceEdit");
     result.bindWidget("InPlaceEditButtons", InPlaceEditButtons());
     result.bindWidget("InPlaceEdit", InPlaceEdit());
     return result;
   }
 
   private WWidget slider() {
-    WTemplate result = new TopicTemplate("forms-slider");
+    TopicTemplate result = new TopicTemplate("forms-slider");
     result.bindWidget("Slider", Slider());
     result.bindWidget("SliderVertical", SliderVertical());
     return result;
   }
 
   private WWidget progressBar() {
-    WTemplate result = new TopicTemplate("forms-progressBar");
+    TopicTemplate result = new TopicTemplate("forms-progressBar");
     result.bindWidget("ProgressBar", ProgressBar());
     return result;
   }
 
   private WWidget fileUpload() {
-    WTemplate result = new TopicTemplate("forms-fileUpload");
+    TopicTemplate result = new TopicTemplate("forms-fileUpload");
     result.bindWidget("FileUpload", FileUpload());
     result.bindWidget("FileDrop", FileDrop());
     return result;
   }
 
   private WWidget pushButton() {
-    WTemplate result = new TopicTemplate("forms-pushButton");
+    TopicTemplate result = new TopicTemplate("forms-pushButton");
     result.bindWidget("PushButton", PushButton());
     result.bindWidget("PushButtonOnce", PushButtonOnce());
     result.bindWidget("PushButtonLink", PushButtonLink());
@@ -254,33 +231,30 @@ class FormWidgets extends TopicWidget {
     result.bindString(
         "appendedDropdownButton-template",
         reindent(tr("appendedDropdownButton-template")),
-        TextFormat.PlainText);
+        TextFormat.Plain);
     result.bindString(
-        "pushButtonColor-template", reindent(tr("pushButtonColor-template")), TextFormat.PlainText);
+        "pushButtonColor-template", reindent(tr("pushButtonColor-template")), TextFormat.Plain);
     result.bindString(
-        "pushButtonSize-template", reindent(tr("pushButtonSize-template")), TextFormat.PlainText);
+        "pushButtonSize-template", reindent(tr("pushButtonSize-template")), TextFormat.Plain);
     result.bindString(
-        "pushButtonAction-template",
-        reindent(tr("pushButtonAction-template")),
-        TextFormat.PlainText);
+        "pushButtonAction-template", reindent(tr("pushButtonAction-template")), TextFormat.Plain);
     return result;
   }
 
   private WWidget validation() {
-    WTemplate result = new TopicTemplate("forms-validation");
+    TopicTemplate result = new TopicTemplate("forms-validation");
     result.bindWidget("Validation", Validation());
     result.bindWidget("ValidationDate", ValidationDate());
     result.bindWidget("ValidationModel", ValidationModel());
-    result.bindString(
-        "validation-template", reindent(tr("validation-template")), TextFormat.PlainText);
+    result.bindString("validation-template", reindent(tr("validation-template")), TextFormat.Plain);
     return result;
   }
 
   private WWidget example() {
-    WTemplate result = new TopicTemplate("forms-integration-example");
+    TopicTemplate result = new TopicTemplate("forms-integration-example");
     result.bindWidget("FormModel", FormModel());
-    result.bindString("form-field", reindent(tr("form-field")), TextFormat.PlainText);
-    result.bindString("userForm-template", reindent(tr("userForm-template")), TextFormat.PlainText);
+    result.bindString("form-field", reindent(tr("form-field")), TextFormat.Plain);
+    result.bindString("userForm-template", reindent(tr("userForm-template")), TextFormat.Plain);
     return result;
   }
 
@@ -288,23 +262,21 @@ class FormWidgets extends TopicWidget {
     WTemplate result = new WTemplate(WString.tr("simpleForm-template"));
     final WLineEdit name = new WLineEdit();
     result.bindWidget("name", name);
-    name.setEmptyText("first name");
+    name.setPlaceholderText("first name");
     WPushButton button = new WPushButton("OK");
     result.bindWidget("button", button);
-    final WText out = new WText("");
+    final WText out = new WText();
     result.bindWidget("out", out);
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText(
-                    "Hello, "
-                        + name.getText()
-                        + "! I just want to help you... You"
-                        + " could complete this simple form by adding validation.");
-              }
+            () -> {
+              out.setText(
+                  "Hello, "
+                      + name.getText()
+                      + "! I just want to help you... You"
+                      + " could complete this simple form by adding validation.");
             });
     return result;
   }
@@ -375,59 +347,53 @@ class FormWidgets extends TopicWidget {
 
   WWidget LineEditEvent() {
     WContainerWidget container = new WContainerWidget();
-    WLineEdit edit = new WLineEdit(container);
+    WLineEdit edit = new WLineEdit((WContainerWidget) container);
     edit.setPlaceholderText("Edit me");
-    final WText out = new WText("", container);
+    final WText out = new WText("", (WContainerWidget) container);
     out.addStyleClass("help-block");
     edit.keyPressed()
         .addListener(
             this,
-            new Signal1.Listener<WKeyEvent>() {
-              public void trigger(WKeyEvent e) {
-                out.setText("You pressed the '" + e.getText() + "' key.");
-              }
+            (WKeyEvent e) -> {
+              out.setText("You pressed the '" + e.getText() + "' key.");
             });
     return container;
   }
 
   WWidget TextArea() {
     WContainerWidget container = new WContainerWidget();
-    WTextArea ta = new WTextArea(container);
+    WTextArea ta = new WTextArea((WContainerWidget) container);
     ta.setColumns(80);
     ta.setRows(5);
     ta.setText("Change this text... \nand click outside the text area to get a changed event.");
-    final WText out = new WText("<p></p>", container);
+    final WText out = new WText("<p></p>", (WContainerWidget) container);
     out.addStyleClass("help-block");
     ta.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText(
-                    "<p>Text area changed at " + WDate.getCurrentServerDate().toString() + ".</p>");
-              }
+            () -> {
+              out.setText(
+                  "<p>Text area changed at " + WDate.getCurrentServerDate().toString() + ".</p>");
             });
     return container;
   }
 
   WWidget TextEdit() {
     WContainerWidget container = new WContainerWidget();
-    final WTextEdit edit = new WTextEdit(container);
+    final WTextEdit edit = new WTextEdit((WContainerWidget) container);
     edit.setHeight(new WLength(300));
     edit.setText(
         "<p><span style=\"font-family: 'courier new', courier; font-size: medium;\"><strong>WTextEdit</strong></span></p><p>Hey, I'm a <strong>WTextEdit</strong> and you can make me <span style=\"text-decoration: underline;\"><em>rich</em></span> by adding your <span style=\"color: #ff0000;\"><em>style</em></span>!</p><p>Other widgets like...</p><ul style=\"padding: 0px; margin: 0px 0px 10px 25px;\"><li>WLineEdit</li><li>WTextArea</li><li>WSpinBox</li></ul><p>don't have style.</p>");
-    WPushButton button = new WPushButton("Get text", container);
+    WPushButton button = new WPushButton("Get text", (WContainerWidget) container);
     button.setMargin(new WLength(10), EnumSet.of(Side.Top, Side.Bottom));
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     out.setStyleClass("xhtml-output");
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("<pre>" + Utils.htmlEncode(edit.getText()) + "</pre>");
-              }
+            () -> {
+              out.setText("<pre>" + Utils.htmlEncode(edit.getText()) + "</pre>");
             });
     return container;
   }
@@ -435,25 +401,23 @@ class FormWidgets extends TopicWidget {
   WWidget SpinBox() {
     WContainerWidget container = new WContainerWidget();
     container.addStyleClass("form-group");
-    WLabel label = new WLabel("Enter a number (0 - 100):", container);
-    final WDoubleSpinBox sb = new WDoubleSpinBox(container);
+    WLabel label = new WLabel("Enter a number (0 - 100):", (WContainerWidget) container);
+    final WDoubleSpinBox sb = new WDoubleSpinBox((WContainerWidget) container);
     sb.setRange(0, 100);
     sb.setValue(50);
     sb.setDecimals(2);
     sb.setSingleStep(0.1);
     label.setBuddy(sb);
-    final WText out = new WText("", container);
+    final WText out = new WText("", (WContainerWidget) container);
     out.addStyleClass("help-block");
     sb.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (sb.validate() == WValidator.State.Valid) {
-                  out.setText(new WString("Spin box value changed to {1}").arg(sb.getText()));
-                } else {
-                  out.setText(new WString("Invalid spin box value!"));
-                }
+            () -> {
+              if (sb.validate() == ValidationState.Valid) {
+                out.setText(new WString("Spin box value changed to {1}").arg(sb.getText()));
+              } else {
+                out.setText(new WString("Invalid spin box value!"));
               }
             });
     return container;
@@ -476,10 +440,10 @@ class FormWidgets extends TopicWidget {
   WWidget CheckBoxInline() {
     WContainerWidget result = new WContainerWidget();
     WCheckBox cb;
-    cb = new WCheckBox("Check me!", result);
+    cb = new WCheckBox("Check me!", (WContainerWidget) result);
     cb.setChecked(true);
-    cb = new WCheckBox("Check me too!", result);
-    cb = new WCheckBox("Check me, I'm tristate!", result);
+    cb = new WCheckBox("Check me too!", (WContainerWidget) result);
+    cb = new WCheckBox("Check me, I'm tristate!", (WContainerWidget) result);
     cb.setTristate();
     cb.setCheckState(CheckState.PartiallyChecked);
     return result;
@@ -488,12 +452,12 @@ class FormWidgets extends TopicWidget {
   WWidget CheckBoxStack() {
     WContainerWidget result = new WContainerWidget();
     WCheckBox cb;
-    cb = new WCheckBox("Check me!", result);
+    cb = new WCheckBox("Check me!", (WContainerWidget) result);
     cb.setInline(false);
     cb.setChecked(true);
-    cb = new WCheckBox("Check me too!", result);
+    cb = new WCheckBox("Check me too!", (WContainerWidget) result);
     cb.setInline(false);
-    cb = new WCheckBox("Check me, I'm tristate!", result);
+    cb = new WCheckBox("Check me, I'm tristate!", (WContainerWidget) result);
     cb.setInline(false);
     cb.setTristate();
     cb.setCheckState(CheckState.PartiallyChecked);
@@ -502,20 +466,20 @@ class FormWidgets extends TopicWidget {
 
   WWidget RadioButtonsLoose() {
     WContainerWidget container = new WContainerWidget();
-    new WRadioButton("Radio me!", container);
-    new WRadioButton("Radio me too!", container);
+    new WRadioButton("Radio me!", (WContainerWidget) container);
+    new WRadioButton("Radio me too!", (WContainerWidget) container);
     return container;
   }
 
   WWidget RadioButtonGroup() {
     WContainerWidget container = new WContainerWidget();
-    WButtonGroup group = new WButtonGroup(container);
+    WButtonGroup group = new WButtonGroup();
     WRadioButton button;
-    button = new WRadioButton("Radio me!", container);
+    button = new WRadioButton("Radio me!", (WContainerWidget) container);
     group.addButton(button);
-    button = new WRadioButton("No, radio me!", container);
+    button = new WRadioButton("No, radio me!", (WContainerWidget) container);
     group.addButton(button);
-    button = new WRadioButton("Nono, radio me!", container);
+    button = new WRadioButton("Nono, radio me!", (WContainerWidget) container);
     group.addButton(button);
     group.setSelectedButtonIndex(0);
     return container;
@@ -523,15 +487,15 @@ class FormWidgets extends TopicWidget {
 
   WWidget RadioButtonStack() {
     WContainerWidget container = new WContainerWidget();
-    WButtonGroup group = new WButtonGroup(container);
+    WButtonGroup group = new WButtonGroup();
     WRadioButton button;
-    button = new WRadioButton("Radio me!", container);
+    button = new WRadioButton("Radio me!", (WContainerWidget) container);
     button.setInline(false);
     group.addButton(button);
-    button = new WRadioButton("No, radio me!", container);
+    button = new WRadioButton("No, radio me!", (WContainerWidget) container);
     button.setInline(false);
     group.addButton(button);
-    button = new WRadioButton("Nono, radio me!", container);
+    button = new WRadioButton("Nono, radio me!", (WContainerWidget) container);
     button.setInline(false);
     group.addButton(button);
     group.setSelectedButtonIndex(0);
@@ -540,46 +504,45 @@ class FormWidgets extends TopicWidget {
 
   WWidget RadioButtonsActivated() {
     WContainerWidget container = new WContainerWidget();
-    final WButtonGroup group = new WButtonGroup(container);
+    WButtonGroup group = new WButtonGroup();
     WRadioButton rb;
-    rb = new WRadioButton("sleeping", container);
+    rb = new WRadioButton("sleeping", (WContainerWidget) container);
     rb.setInline(false);
     group.addButton(rb, 1);
-    rb = new WRadioButton("eating", container);
+    rb = new WRadioButton("eating", (WContainerWidget) container);
     rb.setInline(false);
     group.addButton(rb, 2);
-    rb = new WRadioButton("driving", container);
+    rb = new WRadioButton("driving", (WContainerWidget) container);
     rb.setInline(false);
     group.addButton(rb, 3);
-    rb = new WRadioButton("learning Wt", container);
+    rb = new WRadioButton("learning Wt", (WContainerWidget) container);
     rb.setInline(false);
     group.addButton(rb, 4);
     group.setSelectedButtonIndex(0);
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
+    final WButtonGroup rawGroup = group;
     group
         .checkedChanged()
         .addListener(
             this,
-            new Signal1.Listener<WRadioButton>() {
-              public void trigger(WRadioButton selection) {
-                WString text = new WString();
-                switch (group.getId(selection)) {
-                  case 1:
-                    text = new WString("You checked button {1}.").arg(group.getCheckedId());
-                    break;
-                  case 2:
-                    text = new WString("You selected button {1}.").arg(group.getCheckedId());
-                    break;
-                  case 3:
-                    text = new WString("You clicked button {1}.").arg(group.getCheckedId());
-                    break;
-                }
-                text.append(new WString("... Are your really {1} now?").arg(selection.getText()));
-                if (group.getId(selection) == 4) {
-                  text = new WString("That's what I expected!");
-                }
-                out.setText(new WString("<p>").append(text).append("</p>"));
+            (WRadioButton selection) -> {
+              WString text = new WString();
+              switch (rawGroup.getId(selection)) {
+                case 1:
+                  text = new WString("You checked button {1}.").arg(rawGroup.getCheckedId());
+                  break;
+                case 2:
+                  text = new WString("You selected button {1}.").arg(rawGroup.getCheckedId());
+                  break;
+                case 3:
+                  text = new WString("You clicked button {1}.").arg(rawGroup.getCheckedId());
+                  break;
               }
+              text.append(new WString("... Are your really {1} now?").arg(selection.getText()));
+              if (rawGroup.getId(selection) == 4) {
+                text = new WString("That's what I expected!");
+              }
+              out.setText(new WString("<p>").append(text).append("</p>"));
             });
     return container;
   }
@@ -594,84 +557,76 @@ class FormWidgets extends TopicWidget {
 
   WWidget ComboBoxActivated() {
     WContainerWidget container = new WContainerWidget();
-    final WComboBox cb = new WComboBox(container);
+    final WComboBox cb = new WComboBox((WContainerWidget) container);
     cb.addItem("Heavy");
     cb.addItem("Medium");
     cb.addItem("Light");
     cb.setCurrentIndex(1);
     cb.setMargin(new WLength(10), EnumSet.of(Side.Right));
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     out.addStyleClass("help-block");
     cb.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText(new WString("You selected {1}.").arg(cb.getCurrentText()));
-              }
+            () -> {
+              out.setText(new WString("You selected {1}.").arg(cb.getCurrentText()));
             });
     return container;
   }
 
   WWidget ComboBoxModel() {
     WContainerWidget container = new WContainerWidget();
-    final WComboBox cb = new WComboBox(container);
+    final WComboBox cb = new WComboBox((WContainerWidget) container);
     cb.setMargin(new WLength(10), EnumSet.of(Side.Right));
-    final WStringListModel model = new WStringListModel(cb);
+    final WStringListModel model = new WStringListModel();
     model.addString("Belgium");
-    model.setData(0, 0, "BE", ItemDataRole.UserRole);
+    model.setData(0, 0, "BE", ItemDataRole.User);
     model.addString("Netherlands");
-    model.setData(1, 0, "NL", ItemDataRole.UserRole);
+    model.setData(1, 0, "NL", ItemDataRole.User);
     model.addString("United Kingdom");
-    model.setData(2, 0, "UK", ItemDataRole.UserRole);
+    model.setData(2, 0, "UK", ItemDataRole.User);
     model.addString("United States");
-    model.setData(3, 0, "US", ItemDataRole.UserRole);
-    model.setFlags(3, EnumSet.noneOf(ItemFlag.class));
+    model.setData(3, 0, "US", ItemDataRole.User);
+    model.setFlags(3, EnumSet.of(ItemFlag.Selectable));
     cb.setNoSelectionEnabled(true);
     cb.setModel(model);
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     out.addStyleClass("help-block");
     cb.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WString countryName = cb.getCurrentText();
-                int row = cb.getCurrentIndex();
-                String countryCode =
-                    ((String) model.getData(model.getIndex(row, 0), ItemDataRole.UserRole));
-                out.setText(
-                    new WString("You selected {1} with key {2}.")
-                        .arg(countryName)
-                        .arg(countryCode));
-              }
+            () -> {
+              WString countryName = cb.getCurrentText();
+              int row = cb.getCurrentIndex();
+              WString countryCode =
+                  StringUtils.asString(model.getData(model.getIndex(row, 0), ItemDataRole.User));
+              out.setText(
+                  new WString("You selected {1} with key {2}.").arg(countryName).arg(countryCode));
             });
     return container;
   }
 
   WWidget SelectionBoxSimple() {
     WContainerWidget container = new WContainerWidget();
-    final WSelectionBox sb1 = new WSelectionBox(container);
+    final WSelectionBox sb1 = new WSelectionBox((WContainerWidget) container);
     sb1.addItem("Heavy");
     sb1.addItem("Medium");
     sb1.addItem("Light");
     sb1.setCurrentIndex(1);
     sb1.setMargin(new WLength(10), EnumSet.of(Side.Right));
-    final WText out = new WText("", container);
+    final WText out = new WText("", (WContainerWidget) container);
     sb1.activated()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText(new WString("You selected {1}.").arg(sb1.getCurrentText()));
-              }
+            () -> {
+              out.setText(new WString("You selected {1}.").arg(sb1.getCurrentText()));
             });
     return container;
   }
 
   WWidget SelectionBoxExtended() {
     WContainerWidget container = new WContainerWidget();
-    final WSelectionBox sb2 = new WSelectionBox(container);
+    final WSelectionBox sb2 = new WSelectionBox((WContainerWidget) container);
     sb2.addItem("Bacon");
     sb2.addItem("Cheese");
     sb2.addItem("Mushrooms");
@@ -680,30 +635,28 @@ class FormWidgets extends TopicWidget {
     sb2.addItem("Pepperoni");
     sb2.addItem("Red peppers");
     sb2.addItem("Turkey");
-    sb2.setSelectionMode(SelectionMode.ExtendedSelection);
+    sb2.setSelectionMode(SelectionMode.Extended);
     Set<Integer> selection = new HashSet<Integer>();
     selection.add(1);
     selection.add(4);
     sb2.setSelectedIndexes(selection);
     sb2.setMargin(new WLength(10), EnumSet.of(Side.Right));
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     out.addStyleClass("help-block");
     sb2.activated()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WString selected = new WString();
-                Set<Integer> selection = sb2.getSelectedIndexes();
-                for (Iterator<Integer> it_it = selection.iterator(); it_it.hasNext(); ) {
-                  int it = it_it.next();
-                  if (!(selected.length() == 0)) {
-                    selected.append(", ");
-                  }
-                  selected.append(sb2.getItemText(it));
+            () -> {
+              WString selected = new WString();
+              Set<Integer> newSelection = sb2.getSelectedIndexes();
+              for (Iterator<Integer> it_it = newSelection.iterator(); it_it.hasNext(); ) {
+                int it = it_it.next();
+                if (!(selected.length() == 0)) {
+                  selected.append(", ");
                 }
-                out.setText(new WString("You choose {1}.").arg(selected));
+                selected.append(sb2.getItemText(it));
               }
+              out.setText(new WString("You choose {1}.").arg(selected));
             });
     return container;
   }
@@ -721,9 +674,9 @@ class FormWidgets extends TopicWidget {
         new WSuggestionPopup(
             WSuggestionPopup.generateMatcherJS(contactOptions),
             WSuggestionPopup.generateReplacerJS(contactOptions),
-            container);
-    WLineEdit le = new WLineEdit(container);
-    le.setEmptyText("Enter a name starting with 'J'");
+            (WContainerWidget) container);
+    WLineEdit le = new WLineEdit((WContainerWidget) container);
+    le.setPlaceholderText("Enter a name starting with 'J'");
     sp.forEdit(le);
     sp.addSuggestion("John Tech <techie@mycompany.com>");
     sp.addSuggestion("Johnny Cash <cash@mycompany.com>");
@@ -734,23 +687,20 @@ class FormWidgets extends TopicWidget {
 
   WWidget CalendarSimple() {
     WContainerWidget container = new WContainerWidget();
-    final WCalendar c1 = new WCalendar(container);
-    final WText out = new WText(container);
+    final WCalendar c1 = new WCalendar((WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
     out.addStyleClass("help-block");
     c1.selectionChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                Set<WDate> selection = c1.getSelection();
-                if (selection.size() != 0) {
-                  WDate d = null;
-                  d = selection.iterator().next();
-                  WDate toDate = new WDate(d.getYear() + 1, 1, 1);
-                  int days = d.getDaysTo(toDate);
-                  out.setText(
-                      new WString("<p>That's {1} days until New Year's Day!</p>").arg(days));
-                }
+            () -> {
+              Set<WDate> selection = c1.getSelection();
+              if (selection.size() != 0) {
+                WDate d = null;
+                d = selection.iterator().next();
+                WDate toDate = new WDate(d.getYear() + 1, 1, 1);
+                int days = d.getDaysTo(toDate);
+                out.setText(new WString("<p>That's {1} days until New Year's Day!</p>").arg(days));
               }
             });
     return container;
@@ -758,28 +708,24 @@ class FormWidgets extends TopicWidget {
 
   WWidget CalendarExtended() {
     WContainerWidget container = new WContainerWidget();
-    final WCalendar c2 = new WCalendar(container);
-    c2.setSelectionMode(SelectionMode.ExtendedSelection);
-    final WText out = new WText(container);
+    final WCalendar c2 = new WCalendar((WContainerWidget) container);
+    c2.setSelectionMode(SelectionMode.Extended);
+    final WText out = new WText((WContainerWidget) container);
     out.addStyleClass("help-block");
     c2.selectionChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WString selected = new WString();
-                Set<WDate> selection = c2.getSelection();
-                for (Iterator<WDate> it_it = selection.iterator(); it_it.hasNext(); ) {
-                  WDate it = it_it.next();
-                  if (!(selected.length() == 0)) {
-                    selected.append(", ");
-                  }
-                  final WDate d = it;
-                  selected.append(d.toString("dd/MM/yyyy"));
+            () -> {
+              WString selected = new WString();
+              Set<WDate> selection = c2.getSelection();
+              for (WDate date : c2.getSelection()) {
+                if (!(selected.length() == 0)) {
+                  selected.append(", ");
                 }
-                out.setText(
-                    new WString("<p>You selected the following dates: {1}</p>").arg(selected));
+                selected.append(date.toString("dd/MM/yyyy"));
               }
+              out.setText(
+                  new WString("<p>You selected the following dates: {1}</p>").arg(selected));
             });
     return container;
   }
@@ -793,8 +739,7 @@ class FormWidgets extends TopicWidget {
     final WDateEdit de2 = new WDateEdit();
     form.bindWidget("to", de2);
     de2.setFormat("dd MM yyyy");
-    de2.getCalendar()
-        .setHorizontalHeaderFormat(WCalendar.HorizontalHeaderFormat.SingleLetterDayNames);
+    de2.getCalendar().setHorizontalHeaderFormat(CalendarHeaderFormat.SingleLetterDayNames);
     de2.setBottom(de1.getDate());
     WPushButton button = new WPushButton("Save");
     form.bindWidget("save", button);
@@ -803,45 +748,39 @@ class FormWidgets extends TopicWidget {
     de1.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (de1.validate() == WValidator.State.Valid) {
-                  de2.setBottom(de1.getDate());
-                  out.setText("Date picker 1 is changed.");
-                }
+            () -> {
+              if (de1.validate() == ValidationState.Valid) {
+                de2.setBottom(de1.getDate());
+                out.setText("Date picker 1 is changed.");
               }
             });
     de2.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (de1.validate() == WValidator.State.Valid) {
-                  de1.setTop(de2.getDate());
-                  out.setText("Date picker 2 is changed.");
-                }
+            () -> {
+              if (de1.validate() == ValidationState.Valid) {
+                de1.setTop(de2.getDate());
+                out.setText("Date picker 2 is changed.");
               }
             });
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (de1.getText().length() == 0 || de2.getText().length() == 0) {
-                  out.setText("You should enter two dates!");
+            () -> {
+              if (de1.getText().length() == 0 || de2.getText().length() == 0) {
+                out.setText("You should enter two dates!");
+              } else {
+                int days = de1.getDate().getDaysTo(de2.getDate()) + 1;
+                if (days == 1) {
+                  out.setText("It's fine to take holiday just for one day!");
                 } else {
-                  int days = de1.getDate().getDaysTo(de2.getDate()) + 1;
-                  if (days == 1) {
-                    out.setText("It's fine to take holiday just for one day!");
+                  if (days > 1) {
+                    out.setText(
+                        new WString("So, you want to take holiday for a period of {1} days?")
+                            .arg(days));
                   } else {
-                    if (days > 1) {
-                      out.setText(
-                          new WString("So, you want to take holiday for a period of {1} days?...")
-                              .arg(days));
-                    } else {
-                      out.setText("Invalid period!");
-                    }
+                    out.setText("Invalid period!");
                   }
                 }
               }
@@ -852,58 +791,51 @@ class FormWidgets extends TopicWidget {
   WWidget TimeEdit() {
     WTemplate form = new WTemplate(WString.tr("timeEdit-template"));
     form.addFunction("id", WTemplate.Functions.id);
-    final WTimeEdit de1 = new WTimeEdit();
-    form.bindWidget("from", de1);
-    form.bindString("from-format", de1.getFormat());
-    de1.setTime(WTime.getCurrentTime());
-    final WTimeEdit de2 = new WTimeEdit();
-    form.bindWidget("to", de2);
-    de2.setFormat("h:mm:ss.SSS a");
-    de2.setTime(WTime.getCurrentTime().addSecs(60 * 15));
-    form.bindString("to-format", de2.getFormat());
+    final WTimeEdit te1 = new WTimeEdit();
+    form.bindWidget("from", te1);
+    form.bindString("from-format", te1.getFormat());
+    te1.setTime(WTime.getCurrentTime());
+    final WTimeEdit te2 = new WTimeEdit();
+    form.bindWidget("to", te2);
+    te2.setFormat("h:mm:ss.SSS a");
+    te2.setTime(WTime.getCurrentTime().addSecs(60 * 15));
+    form.bindString("to-format", te2.getFormat());
     WPushButton button = new WPushButton("Save");
     form.bindWidget("save", button);
     final WText out = new WText();
     form.bindWidget("out", out);
-    de1.changed()
+    te1.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (de1.validate() == WValidator.State.Valid) {
-                  out.setText("Time picker 1 is changed.");
-                }
+            () -> {
+              if (te1.validate() == ValidationState.Valid) {
+                out.setText("Time picker 1 is changed.");
               }
             });
-    de2.changed()
+    te2.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (de1.validate() == WValidator.State.Valid) {
-                  out.setText("Time picker 2 is changed.");
-                }
+            () -> {
+              if (te2.validate() == ValidationState.Valid) {
+                out.setText("Time picker 2 is changed.");
               }
             });
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (de1.getText().length() == 0 || de2.getText().length() == 0) {
-                  out.setText("You should enter two times!");
+            () -> {
+              if (te1.getText().length() == 0 || te2.getText().length() == 0) {
+                out.setText("You should enter two times!");
+              } else {
+                long secs = te1.getTime().secsTo(te2.getTime()) + 1;
+                if (secs <= 60 * 10) {
+                  out.setText("This is a really small range of time");
                 } else {
-                  long secs = de1.getTime().secsTo(de2.getTime()) + 1;
-                  if (secs <= 60 * 10) {
-                    out.setText("This is a really small range of time");
-                  } else {
-                    out.setText(
-                        new WString(
-                                "So, you want your package to be delivered between {1} and {2} ?...")
-                            .arg(de1.getTime().toString())
-                            .arg(de2.getTime().toString()));
-                  }
+                  out.setText(
+                      new WString("So, you want your package to be delivered between {1} and {2}?")
+                          .arg(te1.getTime().toString())
+                          .arg(te2.getTime().toString()));
                 }
               }
             });
@@ -919,8 +851,7 @@ class FormWidgets extends TopicWidget {
     final WDatePicker dp2 = new WDatePicker();
     form.bindWidget("to", dp2);
     dp2.setFormat("dd MM yyyy");
-    dp2.getCalendar()
-        .setHorizontalHeaderFormat(WCalendar.HorizontalHeaderFormat.SingleLetterDayNames);
+    dp2.getCalendar().setHorizontalHeaderFormat(CalendarHeaderFormat.SingleLetterDayNames);
     dp2.setBottom(dp1.getDate());
     WPushButton button = new WPushButton("Save");
     form.bindWidget("save", button);
@@ -930,43 +861,37 @@ class FormWidgets extends TopicWidget {
         .changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                dp2.setBottom(dp1.getDate());
-                out.setText("Date picker 1 is changed.");
-              }
+            () -> {
+              dp2.setBottom(dp1.getDate());
+              out.setText("Date picker 1 is changed.");
             });
     dp2.getLineEdit()
         .changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                dp1.setTop(dp2.getDate());
-                out.setText("Date picker 2 is changed.");
-              }
+            () -> {
+              dp1.setTop(dp2.getDate());
+              out.setText("Date picker 2 is changed.");
             });
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (dp1.getLineEdit().getText().length() == 0
-                    || dp2.getLineEdit().getText().length() == 0) {
-                  out.setText("You should enter two dates!");
+            () -> {
+              if (dp1.getLineEdit().getText().length() == 0
+                  || dp2.getLineEdit().getText().length() == 0) {
+                out.setText("You should enter two dates!");
+              } else {
+                int days = dp1.getDate().getDaysTo(dp2.getDate()) + 1;
+                if (days == 0) {
+                  out.setText("It's fine to take holiday just for one day!");
                 } else {
-                  int days = dp1.getDate().getDaysTo(dp2.getDate()) + 1;
-                  if (days == 0) {
-                    out.setText("It's fine to take holiday just for one day!");
+                  if (days > 1) {
+                    out.setText(
+                        new WString("So, you want to take holiday for a period of {1} days?...")
+                            .arg(days));
                   } else {
-                    if (days > 1) {
-                      out.setText(
-                          new WString("So, you want to take holiday for a period of {1} days?...")
-                              .arg(days));
-                    } else {
-                      out.setText("Invalid period!");
-                    }
+                    out.setText("Invalid period!");
                   }
                 }
               }
@@ -976,14 +901,14 @@ class FormWidgets extends TopicWidget {
 
   WWidget InPlaceEditButtons() {
     WContainerWidget container = new WContainerWidget();
-    WInPlaceEdit ipe = new WInPlaceEdit("This is editable text", container);
+    WInPlaceEdit ipe = new WInPlaceEdit("This is editable text", (WContainerWidget) container);
     ipe.setPlaceholderText("Enter something");
     return container;
   }
 
   WWidget InPlaceEdit() {
     WContainerWidget container = new WContainerWidget();
-    WInPlaceEdit ipe = new WInPlaceEdit("This is editable text", container);
+    WInPlaceEdit ipe = new WInPlaceEdit("This is editable text", (WContainerWidget) container);
     ipe.setPlaceholderText("Enter something");
     ipe.setButtonsEnabled(false);
     return container;
@@ -991,49 +916,45 @@ class FormWidgets extends TopicWidget {
 
   WWidget Slider() {
     WContainerWidget container = new WContainerWidget();
-    new WText("In which year were you born?", container);
-    new WBreak(container);
-    final WSlider slider = new WSlider(container);
+    new WText("In which year were you born?", (WContainerWidget) container);
+    new WBreak((WContainerWidget) container);
+    final WSlider slider = new WSlider((WContainerWidget) container);
     slider.resize(new WLength(500), new WLength(50));
     slider.setTickPosition(EnumSet.of(WSlider.TickPosition.TicksAbove));
     slider.setTickInterval(10);
     slider.setMinimum(1910);
     slider.setMaximum(2010);
     slider.setValue(1960);
-    new WBreak(container);
-    final WText out = new WText(container);
+    new WBreak((WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
     slider
         .valueChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("I was born in the year " + slider.getValueText() + ".");
-              }
+            () -> {
+              out.setText("I was born in the year " + slider.getValueText() + ".");
             });
     return container;
   }
 
   WWidget SliderVertical() {
     WContainerWidget container = new WContainerWidget();
-    new WText("How much does Wt increase your efficiency?", container);
-    new WBreak(container);
-    final WSlider verticalSlider = new WSlider(Orientation.Vertical, container);
+    new WText("How much does Wt increase your efficiency?", (WContainerWidget) container);
+    new WBreak((WContainerWidget) container);
+    final WSlider verticalSlider = new WSlider(Orientation.Vertical, (WContainerWidget) container);
     verticalSlider.resize(new WLength(50), new WLength(150));
     verticalSlider.setTickPosition(WSlider.TicksBothSides);
     verticalSlider.setRange(5, 50);
-    new WBreak(container);
-    final WText out = new WText(container);
+    new WBreak((WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
     out.setMargin(new WLength(10), EnumSet.of(Side.Left));
     verticalSlider
         .valueChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText(
-                    "Currenly, my efficiency increased " + verticalSlider.getValueText() + "%!");
-              }
+            () -> {
+              out.setText(
+                  "Currenly, my efficiency increased " + verticalSlider.getValueText() + "%!");
             });
     return container;
   }
@@ -1041,66 +962,58 @@ class FormWidgets extends TopicWidget {
   WWidget ProgressBar() {
     WContainerWidget container = new WContainerWidget();
     container.setStyleClass("inline-buttons");
-    final WProgressBar bar = new WProgressBar(container);
+    final WProgressBar bar = new WProgressBar((WContainerWidget) container);
     bar.setRange(0, 10);
-    final WPushButton startButton = new WPushButton("Start", container);
-    final WPushButton stopButton = new WPushButton("Stop", container);
-    final WPushButton resetButton = new WPushButton("Reset", container);
+    final WPushButton startButton = new WPushButton("Start", (WContainerWidget) container);
+    final WPushButton stopButton = new WPushButton("Stop", (WContainerWidget) container);
+    final WPushButton resetButton = new WPushButton("Reset", (WContainerWidget) container);
     stopButton.disable();
     resetButton.disable();
-    final WTimer intervalTimer = new WTimer(container);
-    intervalTimer.setInterval(1000);
+    final WTimer intervalTimer = new WTimer();
+    intervalTimer.setInterval(Duration.ofMillis(1000));
     startButton
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                if (bar.getValue() < 10) {
-                  intervalTimer.start();
-                  startButton.setText("Resume");
-                }
-                startButton.disable();
-                stopButton.enable();
-                resetButton.disable();
+            () -> {
+              if (bar.getValue() < 10) {
+                intervalTimer.start();
+                startButton.setText("Resume");
               }
+              startButton.disable();
+              stopButton.enable();
+              resetButton.disable();
             });
     stopButton
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                intervalTimer.stop();
-                startButton.enable();
-                stopButton.disable();
-                resetButton.enable();
-              }
+            () -> {
+              intervalTimer.stop();
+              startButton.enable();
+              stopButton.disable();
+              resetButton.enable();
             });
     resetButton
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                bar.setValue(0.0);
-                startButton.setText("Start");
-                startButton.enable();
-                stopButton.disable();
-                resetButton.disable();
-              }
+            () -> {
+              bar.setValue(0.0);
+              startButton.setText("Start");
+              startButton.enable();
+              stopButton.disable();
+              resetButton.disable();
             });
     intervalTimer
         .timeout()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                bar.setValue(bar.getValue() + 1);
-                if (bar.getValue() == 10) {
-                  stopButton.clicked().trigger(new WMouseEvent());
-                  startButton.disable();
-                }
+            () -> {
+              bar.setValue(bar.getValue() + 1);
+              if (bar.getValue() == 10) {
+                stopButton.clicked().trigger(new WMouseEvent());
+                startButton.disable();
               }
             });
     return container;
@@ -1108,128 +1021,113 @@ class FormWidgets extends TopicWidget {
 
   WWidget FileUpload() {
     WContainerWidget container = new WContainerWidget();
-    final WFileUpload fu = new WFileUpload(container);
+    final WFileUpload fu = new WFileUpload((WContainerWidget) container);
     fu.setFileTextSize(50);
     fu.setProgressBar(new WProgressBar());
     fu.setMargin(new WLength(10), EnumSet.of(Side.Right));
-    final WPushButton uploadButton = new WPushButton("Send", container);
+    final WPushButton uploadButton = new WPushButton("Send", (WContainerWidget) container);
     uploadButton.setMargin(new WLength(10), EnumSet.of(Side.Left, Side.Right));
-    final WText out = new WText(container);
+    final WText out = new WText((WContainerWidget) container);
     uploadButton
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                fu.upload();
-                uploadButton.disable();
-              }
+            () -> {
+              fu.upload();
+              uploadButton.disable();
             });
     fu.changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                fu.upload();
-                uploadButton.disable();
-                out.setText("File upload is changed.");
-              }
+            () -> {
+              fu.upload();
+              uploadButton.disable();
+              out.setText("File upload is changed.");
             });
     fu.uploaded()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("File upload is finished.");
-              }
+            () -> {
+              out.setText("File upload is finished.");
             });
     fu.fileTooLarge()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.setText("File is too large.");
-              }
+            () -> {
+              out.setText("File is too large.");
             });
     return container;
   }
 
   WWidget FileDrop() {
-    final WFileDropWidget dropWidget = new WFileDropWidget();
+    WFileDropWidget dropWidgetPtr = new WFileDropWidget();
+    final WFileDropWidget dropWidget = dropWidgetPtr;
     dropWidget
         .drop()
         .addListener(
             this,
-            new Signal1.Listener<List<WFileDropWidget.File>>() {
-              public void trigger(List<WFileDropWidget.File> files) {
-                final int maxFiles = 5;
-                int prevNbFiles = dropWidget.getUploads().size() - files.size();
-                for (int i = 0; i < files.size(); i++) {
-                  if (prevNbFiles + i >= maxFiles) {
-                    dropWidget.cancelUpload(files.get(i));
-                    continue;
-                  }
-                  WContainerWidget block = new WContainerWidget(dropWidget);
-                  block.setToolTip(files.get(i).getClientFileName());
-                  block.addStyleClass("upload-block spinner");
+            (List<WFileDropWidget.File> files) -> {
+              final int maxFiles = 5;
+              int prevNbFiles = dropWidget.getUploads().size() - files.size();
+              for (int i = 0; i < files.size(); i++) {
+                if (prevNbFiles + i >= maxFiles) {
+                  dropWidget.cancelUpload(files.get(i));
+                  continue;
                 }
-                if (dropWidget.getUploads().size() >= maxFiles) {
-                  dropWidget.setAcceptDrops(false);
-                }
+                WContainerWidget block = new WContainerWidget((WContainerWidget) dropWidget);
+                block.setToolTip(files.get(i).getClientFileName());
+                block.addStyleClass("upload-block spinner");
+              }
+              if (dropWidget.getUploads().size() >= maxFiles) {
+                dropWidget.setAcceptDrops(false);
               }
             });
     dropWidget
         .uploaded()
         .addListener(
             this,
-            new Signal1.Listener<WFileDropWidget.File>() {
-              public void trigger(WFileDropWidget.File file) {
-                List<WFileDropWidget.File> uploads = dropWidget.getUploads();
-                int idx = 0;
-                for (; idx != uploads.size(); ++idx) {
-                  if (uploads.get(idx) == file) {
-                    break;
-                  }
+            (WFileDropWidget.File file) -> {
+              List<WFileDropWidget.File> uploads = dropWidget.getUploads();
+              int idx = 0;
+              for (; idx != uploads.size(); ++idx) {
+                if (uploads.get(idx) == file) {
+                  break;
                 }
-                dropWidget.getWidget(idx).removeStyleClass("spinner");
-                dropWidget.getWidget(idx).addStyleClass("ready");
               }
+              dropWidget.getWidget(idx).removeStyleClass("spinner");
+              dropWidget.getWidget(idx).addStyleClass("ready");
             });
     dropWidget
         .tooLarge()
         .addListener(
             this,
-            new Signal2.Listener<WFileDropWidget.File, Long>() {
-              public void trigger(WFileDropWidget.File file, Long size) {
-                List<WFileDropWidget.File> uploads = dropWidget.getUploads();
-                int idx = 0;
-                for (; idx != uploads.size(); ++idx) {
-                  if (uploads.get(idx) == file) {
-                    break;
-                  }
+            (WFileDropWidget.File file, Long size) -> {
+              List<WFileDropWidget.File> uploads = dropWidget.getUploads();
+              int idx = 0;
+              for (; idx != uploads.size(); ++idx) {
+                if (uploads.get(idx) == file) {
+                  break;
                 }
-                dropWidget.getWidget(idx).removeStyleClass("spinner");
-                dropWidget.getWidget(idx).addStyleClass("failed");
               }
+              dropWidget.getWidget(idx).removeStyleClass("spinner");
+              dropWidget.getWidget(idx).addStyleClass("failed");
             });
     dropWidget
         .uploadFailed()
         .addListener(
             this,
-            new Signal1.Listener<WFileDropWidget.File>() {
-              public void trigger(WFileDropWidget.File file) {
-                List<WFileDropWidget.File> uploads = dropWidget.getUploads();
-                int idx = 0;
-                for (; idx != uploads.size(); ++idx) {
-                  if (uploads.get(idx) == file) {
-                    break;
-                  }
+            (WFileDropWidget.File file) -> {
+              List<WFileDropWidget.File> uploads = dropWidget.getUploads();
+              int idx = 0;
+              for (; idx != uploads.size(); ++idx) {
+                if (uploads.get(idx) == file) {
+                  break;
                 }
-                dropWidget.getWidget(idx).removeStyleClass("spinner");
-                dropWidget.getWidget(idx).addStyleClass("failed");
               }
+              dropWidget.getWidget(idx).removeStyleClass("spinner");
+              dropWidget.getWidget(idx).addStyleClass("failed");
             });
-    return dropWidget;
+    return dropWidgetPtr;
   }
 
   WWidget PushButton() {
@@ -1244,29 +1142,26 @@ class FormWidgets extends TopicWidget {
   }
 
   WWidget PushButtonOnce() {
-    final WPushButton ok = new WPushButton("Send");
+    WPushButton okPtr = new WPushButton("Send");
+    final WPushButton ok = okPtr;
     ok.clicked()
         .addListener(
             ok,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                ok.disable();
-              }
+            (WMouseEvent e1) -> {
+              ok.disable();
             });
     ok.clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                ok.setText("Thank you");
-              }
+            () -> {
+              ok.setText("Thank you");
             });
-    return ok;
+    return okPtr;
   }
 
   WWidget PushButtonLink() {
     WPushButton button = new WPushButton("Navigate");
-    button.setLink(new WLink(WLink.Type.InternalPath, "/navigation/anchor"));
+    button.setLink(new WLink(LinkType.InternalPath, "/navigation/anchor"));
     return button;
   }
 
@@ -1280,9 +1175,9 @@ class FormWidgets extends TopicWidget {
     popup.addItem("Button style").setLink(new WLink("#style"));
     WLineEdit input = new WLineEdit();
     result.bindWidget("input", input);
-    WPushButton appendedDropdownButton = new WPushButton("Action");
-    result.bindWidget("appendedButton", appendedDropdownButton);
-    appendedDropdownButton.setMenu(popup);
+    WPushButton button = new WPushButton("Action");
+    result.bindWidget("appendedButton", button);
+    button.setMenu(popup);
     return result;
   }
 
@@ -1332,9 +1227,9 @@ class FormWidgets extends TopicWidget {
 
   WWidget PushButtonPrimary() {
     WContainerWidget container = new WContainerWidget();
-    WPushButton button = new WPushButton("Save", container);
+    WPushButton button = new WPushButton("Save", (WContainerWidget) container);
     button.setStyleClass("btn-primary");
-    button = new WPushButton("Cancel", container);
+    button = new WPushButton("Cancel", (WContainerWidget) container);
     button.setMargin(new WLength(5), EnumSet.of(Side.Left));
     return container;
   }
@@ -1344,8 +1239,7 @@ class FormWidgets extends TopicWidget {
     WPushButton button = new WPushButton("Save");
     result.bindWidget("button-save", button);
     button.setStyleClass("btn-primary");
-    button = new WPushButton("Cancel");
-    result.bindWidget("button-cancel", button);
+    result.bindWidget("button-cancel", new WPushButton("Cancel"));
     return result;
   }
 
@@ -1360,33 +1254,29 @@ class FormWidgets extends TopicWidget {
     final WPushButton button = new WPushButton("Save");
     t.bindWidget("button", button);
     final WText out = new WText();
+    t.bindWidget("age-info", out);
     out.setInline(false);
     out.hide();
-    t.bindWidget("age-info", out);
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.show();
-                if (ageEdit.validate() == WValidator.State.Valid) {
-                  out.setText("Age of " + ageEdit.getText() + " is saved!");
-                  out.setStyleClass("alert alert-success");
-                } else {
-                  out.setText("The number must be in the range 0 to 150");
-                  out.setStyleClass("alert alert-danger");
-                }
+            () -> {
+              out.show();
+              if (ageEdit.validate() == ValidationState.Valid) {
+                out.setText("Age of " + ageEdit.getText() + " is saved!");
+                out.setStyleClass("alert alert-success");
+              } else {
+                out.setText("The number must be in the range 0 to 150");
+                out.setStyleClass("alert alert-danger");
               }
             });
     ageEdit
         .enterPressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                button.clicked().trigger(new WMouseEvent());
-              }
+            () -> {
+              button.clicked().trigger(new WMouseEvent());
             });
     return t;
   }
@@ -1413,44 +1303,40 @@ class FormWidgets extends TopicWidget {
     final WPushButton button = new WPushButton("Ok");
     t.bindWidget("button", button);
     final WText out = new WText();
+    t.bindWidget("info", out);
     out.setInline(false);
     out.hide();
-    t.bindWidget("info", out);
     button
         .clicked()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                out.show();
-                WValidator.Result result = dv.validate(dateEdit.getText());
-                if (result.getState() == WValidator.State.Valid) {
-                  WDate d = WDate.getCurrentServerDate();
-                  int years = d.getYear() - dateEdit.getDate().getYear();
-                  int days = d.getDaysTo(dateEdit.getDate().addYears(years));
-                  if (days < 0) {
-                    days = d.getDaysTo(dateEdit.getDate().addYears(years + 1));
-                  }
-                  out.setText(
-                      "<p>In "
-                          + String.valueOf(days)
-                          + " days, we will be celebrating your next anniversary!</p>");
-                  out.setStyleClass("alert alert-success");
-                } else {
-                  dateEdit.setFocus(true);
-                  out.setText(result.getMessage());
-                  out.setStyleClass("alert alert-danger");
+            () -> {
+              out.show();
+              WValidator.Result result = dv.validate(dateEdit.getText());
+              if (result.getState() == ValidationState.Valid) {
+                WDate d = WDate.getCurrentServerDate();
+                int years = d.getYear() - dateEdit.getDate().getYear();
+                int days = d.getDaysTo(dateEdit.getDate().addYears(years));
+                if (days < 0) {
+                  days = d.getDaysTo(dateEdit.getDate().addYears(years + 1));
                 }
+                out.setText(
+                    "<p>In "
+                        + String.valueOf(days)
+                        + " days, we will be celebrating your next anniversary!</p>");
+                out.setStyleClass("alert alert-success");
+              } else {
+                dateEdit.setFocus(true);
+                out.setText(result.getMessage());
+                out.setStyleClass("alert alert-danger");
               }
             });
     dateEdit
         .enterPressed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                button.clicked().trigger(new WMouseEvent());
-              }
+            () -> {
+              button.clicked().trigger(new WMouseEvent());
             });
     return t;
   }

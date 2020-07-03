@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt.examples.mission;
 
+import java.time.Duration;
+
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -22,7 +24,7 @@ public class CountDownWidget extends WText {
      * The widget will count down from start to stop, decrementing the number
      * every msec milliseconds.
      */
-    public CountDownWidget(int start, int stop, int msec,
+    public CountDownWidget(int start, int stop, Duration msec,
             WContainerWidget parent) {
         super(parent);
 
@@ -34,7 +36,7 @@ public class CountDownWidget extends WText {
         stop_ = Math.min(start_ - 1, stop_); // stop must be smaller than start
         current_ = start_;
 
-        timer_ = new WTimer(this);
+        timer_ = new WTimer();
         timer_.setInterval(msec);
         timer_.timeout().addListener(this, new Signal1.Listener<WMouseEvent>() {
 

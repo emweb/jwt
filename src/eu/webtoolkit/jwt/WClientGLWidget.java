@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -36,7 +37,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
     this.canvas_ = 0;
     this.currentlyBoundBuffer_ = new WGLWidget.Buffer();
     this.currentlyBoundTexture_ = new WGLWidget.Texture();
-    this.binaryResources_ = new ArrayList<WMemoryResource>();
+    this.binaryResources_ = new ArrayList<WResource>();
     this.preloadImages_ = new ArrayList<WClientGLWidget.PreloadImage>();
     this.preloadArrayBuffers_ = new ArrayList<WClientGLWidget.PreloadArrayBuffer>();
   }
@@ -366,12 +367,13 @@ class WClientGLWidget extends WAbstractGLImplementation {
       WGLWidget.GLenum usage,
       boolean binary) {
     if (binary) {
-      WMemoryResource res = new WMemoryResource("application/octet", this);
+      WMemoryResource res = new WMemoryResource("application/octet");
+      WMemoryResource resPtr = res;
       res.setData(v.array());
       this.binaryResources_.add(res);
       this.preloadArrayBuffers_.add(
           new WClientGLWidget.PreloadArrayBuffer(
-              this.currentlyBoundBuffer_.getJsRef(), res.getUrl()));
+              this.currentlyBoundBuffer_.getJsRef(), resPtr.getUrl()));
       this.js_.append("ctx.bufferData(").append("ctx." + target.toString()).append(",");
       this.js_.append(this.currentlyBoundBuffer_.getJsRef()).append(".data, ");
       this.js_.append("ctx." + usage.toString()).append(");");
@@ -404,12 +406,12 @@ class WClientGLWidget extends WAbstractGLImplementation {
   public void bufferSubDatafv(
       WGLWidget.GLenum target, int offset, final java.nio.ByteBuffer buffer, boolean binary) {
     if (binary) {
-      WMemoryResource res = new WMemoryResource("application/octet", this);
+      WMemoryResource res = new WMemoryResource("application/octet");
       res.setData(buffer.array());
-      this.binaryResources_.add(res);
       this.preloadArrayBuffers_.add(
           new WClientGLWidget.PreloadArrayBuffer(
               this.currentlyBoundBuffer_.getJsRef(), res.getUrl()));
+      this.binaryResources_.add(res);
       this.js_.append("ctx.bufferSubData(").append("ctx." + target.toString()).append(",");
       this.js_.append(String.valueOf(offset)).append(",");
       this.js_.append(this.currentlyBoundBuffer_.getJsRef()).append(".data);");
@@ -481,8 +483,6 @@ class WClientGLWidget extends WAbstractGLImplementation {
   }
 
   public void clearBinaryResources() {
-    for (int i = 0; i < this.binaryResources_.size(); i++) {;
-    }
     this.binaryResources_.clear();
   }
 
@@ -782,7 +782,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
   }
 
   public WPaintDevice createPaintDevice(final WLength width, final WLength height) {
-    return new WCanvasPaintDevice(width, height, this);
+    return new WCanvasPaintDevice(width, height);
   }
 
   public void cullFace(WGLWidget.GLenum mode) {
@@ -1610,7 +1610,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
       WGLWidget.GLenum type,
       String image) {
     int imgNb = this.images_++;
-    WFileResource imgFile = new WFileResource("image/png", image, this);
+    WFileResource imgFile = new WFileResource("image/png", image);
     this.preloadImages_.add(
         new WClientGLWidget.PreloadImage(
             this.currentlyBoundTexture_.getJsRef(), imgFile.getUrl(), imgNb));
@@ -1653,7 +1653,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
         != null) {
       WCanvasPaintDevice cpd =
           ((paintdevice) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (paintdevice) : null);
-      String jsRef = this.currentlyBoundTexture_.getJsRef() + String.valueOf("Canvas");
+      String jsRef = this.currentlyBoundTexture_.getJsRef() + "Canvas";
       this.js_.append(jsRef).append("=document.createElement('canvas');");
       this.js_
           .append(jsRef)
@@ -1685,7 +1685,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
                 ? (WRasterPaintDevice) (paintdevice)
                 : null);
         rpd.done();
-        WMemoryResource mr = WebGLUtils.rpdToMemResource(rpd);
+        WResource mr = WebGLUtils.rpdToMemResource(rpd);
         this.preloadImages_.add(
             new WClientGLWidget.PreloadImage(
                 this.currentlyBoundTexture_.getJsRef(), mr.getUrl(), imgNb));
@@ -2405,7 +2405,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 
   public void setJavaScriptMatrix4(
       final WGLWidget.JavaScriptMatrix4x4 jsm, final javax.vecmath.Matrix4f m) {
-    this.js_.append("Wt3_6_0.glMatrix.mat4.set(");
+    this.js_.append("Wt4_4_0.glMatrix.mat4.set(");
     javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
     WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
     this.js_.append(", ").append(jsm.getJsRef()).append(");");
@@ -2550,9 +2550,9 @@ class WClientGLWidget extends WAbstractGLImplementation {
   }
 
   public void render(final String jsRef, EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+    if (flags.contains(RenderFlag.Full)) {
       StringWriter tmp = new StringWriter();
-      tmp.append("{\nvar o = new Wt3_6_0.WGLWidget(")
+      tmp.append("{\nvar o = new Wt4_4_0.WGLWidget(")
           .append(WApplication.getInstance().getJavaScriptClass())
           .append(",")
           .append(jsRef)
@@ -2560,8 +2560,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
           .append(this.webglNotAvailable_.createCall())
           .append("}, ")
           .append(
-              !EnumUtils.mask(this.glInterface_.renderOptions_, WGLWidget.RenderOption.AntiAliasing)
-                      .isEmpty()
+              this.glInterface_.renderOptions_.contains(GLRenderOption.AntiAliasing)
                   ? "true"
                   : "false")
           .append(");\n");
@@ -2688,7 +2687,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
   private int canvas_;
   private WGLWidget.Buffer currentlyBoundBuffer_;
   private WGLWidget.Texture currentlyBoundTexture_;
-  private List<WMemoryResource> binaryResources_;
+  private List<WResource> binaryResources_;
 
   static class PreloadImage {
     private static Logger logger = LoggerFactory.getLogger(PreloadImage.class);
@@ -3315,7 +3314,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
     }
     return "BAD_GL_ENUM";
   }
-  // private WMemoryResource  (WRasterPaintDevice  rpd) ;
+  // private WResource (WRasterPaintDevice  rpd) ;
   private static void renderiv(final Writer os, final java.nio.IntBuffer a, WGLWidget.GLenum type) {
     try {
       switch (type) {

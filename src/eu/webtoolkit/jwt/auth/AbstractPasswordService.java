@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -114,17 +115,17 @@ public interface AbstractPasswordService {
     public WValidator.Result validate(
         final String password, final String loginName, final String email) {
       if (!this.isMandatory() && password.length() == 0) {
-        return new WValidator.Result(WValidator.State.Valid);
+        return new WValidator.Result(ValidationState.Valid);
       }
       AbstractPasswordService.StrengthValidatorResult result =
           this.evaluateStrength(password, loginName, email);
       if (result.isValid()) {
-        return new WValidator.Result(WValidator.State.Valid, result.getMessage());
+        return new WValidator.Result(ValidationState.Valid, result.getMessage());
       } else {
         if (this.isMandatory() && password.length() == 0) {
-          return new WValidator.Result(WValidator.State.InvalidEmpty, result.getMessage());
+          return new WValidator.Result(ValidationState.InvalidEmpty, result.getMessage());
         } else {
-          return new WValidator.Result(WValidator.State.Invalid, result.getMessage());
+          return new WValidator.Result(ValidationState.Invalid, result.getMessage());
         }
       }
     }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,7 +25,7 @@ import javax.servlet.http.*;
  */
 public enum Icon {
   /** No icon. */
-  NoIcon(0),
+  None(0),
   /** An information icon. */
   Information(1),
   /** A warning icon. */

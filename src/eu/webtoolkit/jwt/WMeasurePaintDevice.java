@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -46,19 +47,18 @@ public class WMeasurePaintDevice implements WPaintDevice {
     return this.bounds_;
   }
 
-  public EnumSet<WPaintDevice.FeatureFlag> getFeatures() {
+  public EnumSet<PaintDeviceFeatureFlag> getFeatures() {
     return this.device_.getFeatures();
   }
 
-  public void setChanged(EnumSet<WPaintDevice.ChangeFlag> flags) {
-    if (this.device_.getPainter() != this.painter_
-        && !EnumUtils.mask(flags, WPaintDevice.ChangeFlag.Font).isEmpty()) {
+  public void setChanged(EnumSet<PainterChangeFlag> flags) {
+    if (this.device_.getPainter() != this.painter_ && flags.contains(PainterChangeFlag.Font)) {
       this.device_.getPainter().setFont(this.painter_.getFont());
     }
     this.device_.setChanged(flags);
   }
 
-  public final void setChanged(WPaintDevice.ChangeFlag flag, WPaintDevice.ChangeFlag... flags) {
+  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
     setChanged(EnumSet.of(flag, flags));
   }
 
@@ -83,6 +83,10 @@ public class WMeasurePaintDevice implements WPaintDevice {
 
   public void drawLine(double x1, double y1, double x2, double y2) {
     this.expandBounds(new WRectF(x1, y1, x2 - x1, y2 - y1));
+  }
+
+  public void drawRect(final WRectF rect) {
+    this.drawPath(rect.toPath());
   }
 
   public void drawPath(final WPainterPath path) {
@@ -114,7 +118,7 @@ public class WMeasurePaintDevice implements WPaintDevice {
     WFontMetrics fm = this.getFontMetrics();
     for (; ; ) {
       WTextItem t =
-          this.measureText(line, rect.getWidth(), textFlag == TextFlag.TextWordWrap ? true : false);
+          this.measureText(line, rect.getWidth(), textFlag == TextFlag.WordWrap ? true : false);
       h += fm.getHeight();
       w = Math.max(w, t.getWidth());
       if ((t.getText().toString().equals(line.toString()))) {
@@ -130,25 +134,25 @@ public class WMeasurePaintDevice implements WPaintDevice {
     double x;
     double y;
     switch (horizontalAlign) {
-      case AlignLeft:
+      case Left:
         x = rect.getLeft();
         break;
-      case AlignCenter:
+      case Center:
         x = rect.getLeft() + (rect.getWidth() - w) / 2;
         break;
-      case AlignRight:
+      case Right:
       default:
         x = rect.getRight() - w;
         break;
     }
     switch (verticalAlign) {
-      case AlignTop:
+      case Top:
         y = rect.getTop();
         break;
-      case AlignMiddle:
+      case Middle:
         y = rect.getTop() + (rect.getHeight() - h) / 2;
         break;
-      case AlignBottom:
+      case Bottom:
       default:
         y = rect.getBottom() - h;
         break;

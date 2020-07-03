@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,19 +35,21 @@ public abstract class WAbstractToggleButton extends WFormWidget {
   private static Logger logger = LoggerFactory.getLogger(WAbstractToggleButton.class);
 
   /** Creates an unchecked toggle button without label. */
-  protected WAbstractToggleButton(WContainerWidget parent) {
-    super(parent);
+  protected WAbstractToggleButton(WContainerWidget parentContainer) {
+    super();
     this.state_ = CheckState.Unchecked;
     this.text_ = new WText.RichText();
     this.flags_ = new BitSet();
     this.flags_.set(BIT_NAKED);
     this.flags_.set(BIT_WORD_WRAP);
-    this.text_.format = TextFormat.PlainText;
+    this.text_.format = TextFormat.Plain;
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an unchecked toggle button without label.
    *
-   * <p>Calls {@link #WAbstractToggleButton(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WAbstractToggleButton(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   protected WAbstractToggleButton() {
     this((WContainerWidget) null);
@@ -56,20 +59,21 @@ public abstract class WAbstractToggleButton extends WFormWidget {
    *
    * <p>The text label is rendered to the right side of the button.
    */
-  protected WAbstractToggleButton(final CharSequence text, WContainerWidget parent) {
-    super(parent);
+  protected WAbstractToggleButton(final CharSequence text, WContainerWidget parentContainer) {
+    super();
     this.state_ = CheckState.Unchecked;
     this.text_ = new WText.RichText();
     this.flags_ = new BitSet();
-    this.text_.format = TextFormat.PlainText;
-    this.text_.text = WString.toWString(text);
     this.flags_.set(BIT_WORD_WRAP);
+    this.text_.format = TextFormat.Plain;
+    this.text_.text = WString.toWString(text);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates an unchecked toggle button with given text label.
    *
-   * <p>Calls {@link #WAbstractToggleButton(CharSequence text, WContainerWidget parent) this(text,
-   * (WContainerWidget)null)}
+   * <p>Calls {@link #WAbstractToggleButton(CharSequence text, WContainerWidget parentContainer)
+   * this(text, (WContainerWidget)null)}
    */
   protected WAbstractToggleButton(final CharSequence text) {
     this(text, (WContainerWidget) null);
@@ -97,7 +101,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
     this.text_.setText(text);
     this.flags_.clear(BIT_NAKED);
     this.flags_.set(BIT_TEXT_CHANGED);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Returns the label text.
@@ -115,15 +119,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
    * <p>The textFormat controls how the string should be interpreted: either as plain text, which is
    * displayed literally, or as XHTML-markup.
    *
-   * <p>When changing the textFormat to {@link TextFormat#XHTMLText}, and the current text is
-   * literal (not created using {@link WString#tr(String key) WString#tr()}), the current text is
-   * parsed using an XML parser which discards malicious tags and attributes silently. When the
-   * parser encounters an XML parse error, the textFormat is left unchanged, and this method returns
-   * false.
+   * <p>When changing the textFormat to {@link TextFormat#XHTML}, and the current text is literal
+   * (not created using {@link WString#tr(String key) WString#tr()}), the current text is parsed
+   * using an XML parser which discards malicious tags and attributes silently. When the parser
+   * encounters an XML parse error, the textFormat is left unchanged, and this method returns false.
    *
    * <p>Returns whether the textFormat could be set for the current text.
    *
-   * <p>The default format is {@link TextFormat#PlainText}.
+   * <p>The default format is {@link TextFormat#Plain}.
    */
   public boolean setTextFormat(TextFormat format) {
     return this.text_.setFormat(format);
@@ -248,7 +251,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
   public void refresh() {
     if (this.text_.text.refresh()) {
       this.flags_.set(BIT_TEXT_CHANGED);
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
     super.refresh();
   }
@@ -257,8 +260,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
    *
    * <p>When <code>wordWrap</code> is <code>true</code>, the widget may break lines, creating a
    * multi-line text. When <code>wordWrap</code> is <code>false</code>, the text will displayed on a
-   * single line, unless the text contains end-of-lines (for {@link TextFormat#PlainText}) or &lt;br
-   * /&gt; tags or other block-level tags (for {@link TextFormat#XHTMLText}).
+   * single line, unless the text contains end-of-lines (for {@link TextFormat#Plain}) or &lt;br
+   * /&gt; tags or other block-level tags (for {@link TextFormat#XHTML}).
    *
    * <p>The default value is <code>false</code>.
    *
@@ -270,7 +273,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
     if (this.flags_.get(BIT_WORD_WRAP) != wordWrap) {
       this.flags_.set(BIT_WORD_WRAP, wordWrap);
       this.flags_.set(BIT_WORD_WRAP_CHANGED);
-      this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     }
   }
   /**
@@ -297,21 +300,21 @@ public abstract class WAbstractToggleButton extends WFormWidget {
     if (all) {
       app.getTheme().apply(this, element, 1);
     }
-    if (element.getType() == DomElementType.DomElement_INPUT) {
+    if (element.getType() == DomElementType.INPUT) {
       input = element;
     } else {
       if (all) {
-        input = DomElement.createNew(DomElementType.DomElement_INPUT);
+        input = DomElement.createNew(DomElementType.INPUT);
         input.setName("in" + this.getId());
-        span = DomElement.createNew(DomElementType.DomElement_SPAN);
+        span = DomElement.createNew(DomElementType.SPAN);
         span.setName("t" + this.getId());
-        if (element.getType() != DomElementType.DomElement_LABEL) {
-          label = DomElement.createNew(DomElementType.DomElement_LABEL);
+        if (element.getType() != DomElementType.LABEL) {
+          label = DomElement.createNew(DomElementType.LABEL);
           label.setName("l" + this.getId());
         }
       } else {
-        input = DomElement.getForUpdate("in" + this.getId(), DomElementType.DomElement_INPUT);
-        span = DomElement.getForUpdate("t" + this.getId(), DomElementType.DomElement_SPAN);
+        input = DomElement.getForUpdate("in" + this.getId(), DomElementType.INPUT);
+        span = DomElement.getForUpdate("t" + this.getId(), DomElementType.SPAN);
       }
     }
     if (all) {
@@ -330,25 +333,25 @@ public abstract class WAbstractToggleButton extends WFormWidget {
         click != null && click.needsUpdate(all) || piggyBackChangeOnClick && needUpdateChangeSignal;
     super.updateDom(input, all);
     if (element != input) {
-      if (element.getProperties().get(Property.PropertyClass) != null) {
-        input.addPropertyWord(Property.PropertyClass, element.getProperty(Property.PropertyClass));
+      if (element.getProperties().get(Property.Class) != null) {
+        input.addPropertyWord(Property.Class, element.getProperty(Property.Class));
       }
       element.setProperties(input.getProperties());
       input.clearProperties();
-      String v = element.getProperty(Property.PropertyDisabled);
+      String v = element.getProperty(Property.Disabled);
       if (v.length() != 0) {
-        input.setProperty(Property.PropertyDisabled, v);
-        element.removeProperty(Property.PropertyDisabled);
+        input.setProperty(Property.Disabled, v);
+        element.removeProperty(Property.Disabled);
       }
-      v = element.getProperty(Property.PropertyReadOnly);
+      v = element.getProperty(Property.ReadOnly);
       if (v.length() != 0) {
-        input.setProperty(Property.PropertyReadOnly, v);
-        element.removeProperty(Property.PropertyReadOnly);
+        input.setProperty(Property.ReadOnly, v);
+        element.removeProperty(Property.ReadOnly);
       }
-      v = element.getProperty(Property.PropertyTabIndex);
+      v = element.getProperty(Property.TabIndex);
       if (v.length() != 0) {
-        input.setProperty(Property.PropertyTabIndex, v);
-        element.removeProperty(Property.PropertyTabIndex);
+        input.setProperty(Property.TabIndex, v);
+        element.removeProperty(Property.TabIndex);
       }
       v = input.getAttribute("title");
       if (v.length() != 0) {
@@ -356,15 +359,13 @@ public abstract class WAbstractToggleButton extends WFormWidget {
       }
     }
     if (this.flags_.get(BIT_STATE_CHANGED) || all) {
-      input.setProperty(
-          Property.PropertyChecked, this.state_ == CheckState.Unchecked ? "false" : "true");
+      input.setProperty(Property.Checked, this.state_ == CheckState.Unchecked ? "false" : "true");
       if (this.supportsIndeterminate(env)) {
         input.setProperty(
-            Property.PropertyIndeterminate,
-            this.state_ == CheckState.PartiallyChecked ? "true" : "false");
+            Property.Indeterminate, this.state_ == CheckState.PartiallyChecked ? "true" : "false");
       } else {
         input.setProperty(
-            Property.PropertyStyleOpacity, this.state_ == CheckState.PartiallyChecked ? "0.5" : "");
+            Property.StyleOpacity, this.state_ == CheckState.PartiallyChecked ? "0.5" : "");
       }
       this.flags_.clear(BIT_STATE_CHANGED);
     }
@@ -426,11 +427,10 @@ public abstract class WAbstractToggleButton extends WFormWidget {
     }
     if (span != null) {
       if (all || this.flags_.get(BIT_TEXT_CHANGED)) {
-        span.setProperty(Property.PropertyInnerHTML, this.text_.getFormattedText());
+        span.setProperty(Property.InnerHTML, this.text_.getFormattedText());
         if (all || this.flags_.get(BIT_WORD_WRAP_CHANGED)) {
           span.setProperty(
-              Property.PropertyStyleWhiteSpace,
-              this.flags_.get(BIT_WORD_WRAP) ? "normal" : "nowrap");
+              Property.StyleWhiteSpace, this.flags_.get(BIT_WORD_WRAP) ? "normal" : "nowrap");
           this.flags_.clear(BIT_WORD_WRAP_CHANGED);
         }
         this.flags_.clear(BIT_TEXT_CHANGED);
@@ -484,9 +484,9 @@ public abstract class WAbstractToggleButton extends WFormWidget {
 
   DomElementType getDomElementType() {
     if (!this.flags_.get(BIT_NAKED)) {
-      return DomElementType.DomElement_LABEL;
+      return DomElementType.LABEL;
     } else {
-      return DomElementType.DomElement_INPUT;
+      return DomElementType.INPUT;
     }
   }
 
@@ -496,11 +496,11 @@ public abstract class WAbstractToggleButton extends WFormWidget {
             || env.agentIsSafari()
             || env.agentIsChrome()
             || env.agentIsGecko()
-                && env.getAgent().getValue() >= WEnvironment.UserAgent.Firefox3_6.getValue());
+                && (int) env.getAgent().getValue() >= (int) UserAgent.Firefox3_6.getValue());
   }
 
   String getFormName() {
-    if (this.getDomElementType() == DomElementType.DomElement_LABEL) {
+    if (this.getDomElementType() == DomElementType.LABEL) {
       return "in" + this.getId();
     } else {
       return super.getFormName();

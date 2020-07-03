@@ -5,11 +5,10 @@
  */
 package eu.webtoolkit.jwt.utils;
 
-import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.StringUtils;
 
 public class ObjectUtils {
-
 	@SuppressWarnings("unchecked")
 	public static int compare(Object d1, Object d2) {
 		if (d1 == null && d2 == null)

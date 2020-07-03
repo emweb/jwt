@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,21 +22,5 @@ import javax.servlet.http.*;
  * <p>
  *
  * @see WLayoutItem
- * @see WLayout
  */
-public interface WLayoutItemImpl {
-  /**
-   * Adds a layout <i>item</i>.
-   *
-   * <p>The <code>item</code> already has an implementation set.
-   */
-  public void updateAddItem(WLayoutItem item);
-  /** Removes a layout <i>item</i>. */
-  public void updateRemoveItem(WLayoutItem item);
-  /** Updates the layout. */
-  public void update(WLayoutItem item);
-  /** Returns the widget for which this layout item participates in layout management. */
-  public WWidget getParentWidget();
-  /** Provides a hint that can aid in layout strategy / algorithm. */
-  public void setHint(final String name, final String value);
-}
+public interface WLayoutItemImpl {}

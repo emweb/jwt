@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,18 +35,10 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
   private static Logger logger = LoggerFactory.getLogger(WAbstractProxyModel.class);
 
   /** Constructor. */
-  public WAbstractProxyModel(WObject parent) {
-    super(parent);
-    this.itemsToShift_ = new ArrayList<WAbstractProxyModel.BaseItem>();
-    this.sourceModel_ = null;
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WAbstractProxyModel(WObject parent) this((WObject)null)}
-   */
   public WAbstractProxyModel() {
-    this((WObject) null);
+    super();
+    this.itemsToShift_ = new ArrayList<WAbstractProxyModel.BaseItem>();
+    this.sourceModel_ = (WAbstractItemModel) null;
   }
   /**
    * Maps a source model index to the proxy model.
@@ -80,11 +73,11 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    *
    * <p>Note that the source model&apos;s signals are not forwarded to the proxy model by default,
    * but some specializations, like {@link WBatchEditProxyModel} and {@link WSortFilterProxyModel}
-   * do. If you want to reimplement {@link WAbstractProxyModel#getData(WModelIndex index, int role)
-   * getData()} with no changes to row or column indices, consider the use of {@link
-   * WIdentityProxyModel}.
+   * do. If you want to reimplement {@link WAbstractProxyModel#getData(WModelIndex index,
+   * ItemDataRole role) getData()} with no changes to row or column indices, consider the use of
+   * {@link WIdentityProxyModel}.
    */
-  public void setSourceModel(WAbstractItemModel sourceModel) {
+  public void setSourceModel(final WAbstractItemModel sourceModel) {
     this.sourceModel_ = sourceModel;
   }
   /**
@@ -102,9 +95,9 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    *
    * <p>The default proxy implementation translates the index to the source model, and calls {@link
    * WAbstractProxyModel#getSourceModel() getSourceModel()}.{@link
-   * WAbstractProxyModel#getData(WModelIndex index, int role) getData()} with this index.
+   * WAbstractProxyModel#getData(WModelIndex index, ItemDataRole role) getData()} with this index.
    */
-  public Object getData(final WModelIndex index, int role) {
+  public Object getData(final WModelIndex index, ItemDataRole role) {
     return this.sourceModel_.getData(this.mapToSource(index), role);
   }
   /**
@@ -117,10 +110,10 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    *
    * <p>The resulting section that is forwarded to {@link WAbstractProxyModel#getSourceModel()
    * getSourceModel()}.{@link WAbstractProxyModel#getHeaderData(int section, Orientation
-   * orientation, int role) getHeaderData()} depends on how the {@link WModelIndex} is transformed
-   * with {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex) mapToSource()}.
+   * orientation, ItemDataRole role) getHeaderData()} depends on how the {@link WModelIndex} is
+   * transformed with {@link WAbstractProxyModel#mapToSource(WModelIndex proxyIndex) mapToSource()}.
    */
-  public Object getHeaderData(int section, Orientation orientation, int role) {
+  public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
     if (orientation == Orientation.Horizontal) {
       section = this.mapToSource(this.getIndex(0, section, null)).getColumn();
     } else {
@@ -134,7 +127,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    * <p>The default proxy implementation calls {@link WAbstractProxyModel#getSourceModel()
    * getSourceModel()}.setData(mapToSource(index), value, role)
    */
-  public boolean setData(final WModelIndex index, final Object value, int role) {
+  public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
     return this.sourceModel_.setData(this.mapToSource(index), value, role);
   }
   /**
@@ -143,7 +136,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    * <p>The default proxy implementation calls {@link WAbstractProxyModel#getSourceModel()
    * getSourceModel()}.setData(mapToSource(index), values)
    */
-  public boolean setItemData(final WModelIndex index, final SortedMap<Integer, Object> values) {
+  public boolean setItemData(
+      final WModelIndex index, final SortedMap<ItemDataRole, Object> values) {
     return this.sourceModel_.setItemData(this.mapToSource(index), values);
   }
   /**
@@ -362,7 +356,6 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
     }
     for (int i = 0; i < erased.size(); ++i) {
       items.remove(erased.get(i).sourceIndex_);
-      ;
     }
     if (count > 0) {
       this.endShiftModelIndexes(sourceParent, start, count, items);

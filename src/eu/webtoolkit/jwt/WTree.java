@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -61,18 +62,19 @@ public class WTree extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WTree.class);
 
   /** Creates a new tree. */
-  public WTree(WContainerWidget parent) {
-    super(parent);
+  public WTree(WContainerWidget parentContainer) {
+    super();
     this.treeRoot_ = null;
-    this.selectionMode_ = SelectionMode.NoSelection;
+    this.selectionMode_ = SelectionMode.None;
     this.selection_ = new HashSet<WTreeNode>();
-    this.itemSelectionChanged_ = new Signal(this);
+    this.itemSelectionChanged_ = new Signal();
     this.setImplementation(this.sentinelRoot_ = new SentinelTreeNode(this));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new tree.
    *
-   * <p>Calls {@link #WTree(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WTree(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WTree() {
     this((WContainerWidget) null);
@@ -84,8 +86,10 @@ public class WTree extends WCompositeWidget {
    */
   public void setTreeRoot(WTreeNode node) {
     if (this.treeRoot_ != null) {
-      this.sentinelRoot_.removeChildNode(this.treeRoot_);
-      if (this.treeRoot_ != null) this.treeRoot_.remove();
+      {
+        WTreeNode toRemove = this.sentinelRoot_.removeChildNode(this.treeRoot_);
+        if (toRemove != null) toRemove.remove();
+      }
     }
     this.treeRoot_ = node;
     this.sentinelRoot_.addChildNode(node);
@@ -103,7 +107,7 @@ public class WTree extends WCompositeWidget {
   /**
    * Sets the selection mode.
    *
-   * <p>The default selection mode is {@link SelectionMode#NoSelection}.
+   * <p>The default selection mode is {@link SelectionMode#None}.
    */
   public void setSelectionMode(SelectionMode mode) {
     if (mode != this.selectionMode_) {
@@ -130,16 +134,16 @@ public class WTree extends WCompositeWidget {
   }
   /** Selects or unselect the given <i>node</i>. */
   public void select(WTreeNode node, boolean selected) {
-    if (this.selectionMode_ == SelectionMode.SingleSelection
+    if (this.selectionMode_ == SelectionMode.Single
         && selected
         && this.selection_.size() == 1
         && this.selection_.iterator().next() == node) {
       return;
     }
-    if (this.selectionMode_ == SelectionMode.SingleSelection && selected) {
+    if (this.selectionMode_ == SelectionMode.Single && selected) {
       this.clearSelection();
     }
-    if (!selected || this.selectionMode_ != SelectionMode.NoSelection) {
+    if (!selected || this.selectionMode_ != SelectionMode.None) {
       if (selected) {
         if (node.isSelectable()) {
           this.selection_.add(node);
@@ -187,16 +191,15 @@ public class WTree extends WCompositeWidget {
   private Signal itemSelectionChanged_;
 
   private void onClick(WTreeNode node, WMouseEvent event) {
-    if (this.selectionMode_ == SelectionMode.NoSelection) {
+    if (this.selectionMode_ == SelectionMode.None) {
       return;
     }
-    if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
-      if (!EnumUtils.mask(event.getModifiers(), KeyboardModifier.ShiftModifier).isEmpty()) {
+    if (this.selectionMode_ == SelectionMode.Extended) {
+      if (event.getModifiers().contains(KeyboardModifier.Shift)) {
         this.extendSelection(node);
       } else {
         if (!!EnumUtils.mask(
-                event.getModifiers(),
-                EnumSet.of(KeyboardModifier.ControlModifier, KeyboardModifier.MetaModifier))
+                event.getModifiers(), EnumSet.of(KeyboardModifier.Control, KeyboardModifier.Meta))
             .isEmpty()) {
           if (this.isSelected(node)) {
             return;
@@ -297,10 +300,8 @@ public class WTree extends WCompositeWidget {
           w.clicked()
               .addListener(
                   this,
-                  new Signal1.Listener<WMouseEvent>() {
-                    public void trigger(WMouseEvent event) {
-                      WTree.this.onClick(node, event);
-                    }
+                  (WMouseEvent event) -> {
+                    WTree.this.onClick(node, event);
                   });
       w.clicked().preventPropagation();
       for (int i = 0; i < node.getChildNodes().size(); ++i) {

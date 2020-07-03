@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,20 +35,13 @@ public class WSound extends WObject {
    *
    * <p>
    *
-   * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
-   */
-  public WSound(WObject parent) {
-    super(parent);
-    this.media_ = new ArrayList<WSound.Source>();
-    this.loops_ = 1;
-  }
-  /**
-   * Constructs a sound object.
-   *
-   * <p>Calls {@link #WSound(WObject parent) this((WObject)null)}
+   * @see WSound#addSource(MediaEncoding encoding, WLink link)
    */
   public WSound() {
-    this((WObject) null);
+    super();
+    this.manager_ = WApplication.getInstance().getSoundManager();
+    this.media_ = new ArrayList<WSound.Source>();
+    this.loops_ = 1;
   }
   /**
    * Constructs a sound object for an MP3 media source.
@@ -56,43 +50,28 @@ public class WSound extends WObject {
    *
    * <p>
    *
-   * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
-   */
-  public WSound(final String url, WObject parent) {
-    super(parent);
-    this.media_ = new ArrayList<WSound.Source>();
-    this.loops_ = 1;
-    this.addSource(WMediaPlayer.Encoding.MP3, new WLink(url));
-  }
-  /**
-   * Constructs a sound object for an MP3 media source.
-   *
-   * <p>Calls {@link #WSound(String url, WObject parent) this(url, (WObject)null)}
+   * @see WSound#addSource(MediaEncoding encoding, WLink link)
    */
   public WSound(final String url) {
-    this(url, (WObject) null);
+    super();
+    this.manager_ = WApplication.getInstance().getSoundManager();
+    this.media_ = new ArrayList<WSound.Source>();
+    this.loops_ = 1;
+    this.addSource(MediaEncoding.MP3, new WLink(url));
   }
   /**
    * Constructs a sound object.
    *
    * <p>
    *
-   * @see WSound#addSource(WMediaPlayer.Encoding encoding, WLink link)
+   * @see WSound#addSource(MediaEncoding encoding, WLink link)
    */
-  public WSound(WMediaPlayer.Encoding encoding, final WLink link, WObject parent) {
-    super(parent);
+  public WSound(MediaEncoding encoding, final WLink link) {
+    super();
+    this.manager_ = WApplication.getInstance().getSoundManager();
     this.media_ = new ArrayList<WSound.Source>();
     this.loops_ = 1;
     this.addSource(encoding, link);
-  }
-  /**
-   * Constructs a sound object.
-   *
-   * <p>Calls {@link #WSound(WMediaPlayer.Encoding encoding, WLink link, WObject parent)
-   * this(encoding, link, (WObject)null)}
-   */
-  public WSound(WMediaPlayer.Encoding encoding, final WLink link) {
-    this(encoding, link, (WObject) null);
   }
   /**
    * Adds a media source.
@@ -100,19 +79,11 @@ public class WSound extends WObject {
    * <p>You may add multiple media sources (with different encodings) to allow the file to be played
    * in more browsers without needing Flash plugins.
    */
-  public void addSource(WMediaPlayer.Encoding encoding, final WLink link) {
+  public void addSource(MediaEncoding encoding, final WLink link) {
     this.media_.add(new WSound.Source(encoding, link));
-    WApplication.getInstance().getSoundManager().add(this);
-  }
-  /**
-   * Returns the media source (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @deprecated use getSource(WMediaPlayer::Encoding) instead.
-   */
-  public String getUrl() {
-    return this.getSource(WMediaPlayer.Encoding.MP3).getUrl();
+    if (this.manager_ != null) {
+      this.manager_.add(this);
+    }
   }
   /**
    * Returns the media source.
@@ -120,7 +91,7 @@ public class WSound extends WObject {
    * <p>This returns the link set for a specific encoding, or an empty link if no URL was set for
    * that encoding.
    */
-  public WLink getSource(WMediaPlayer.Encoding encoding) {
+  public WLink getSource(MediaEncoding encoding) {
     for (int i = 0; i < this.media_.size(); ++i) {
       if (this.media_.get(i).encoding == encoding) {
         return this.media_.get(i).link;
@@ -157,7 +128,9 @@ public class WSound extends WObject {
    * want to avoid mixing multiple instances of a single {@link WSound} object.
    */
   public void play() {
-    WApplication.getInstance().getSoundManager().play(this, this.loops_);
+    if (this.manager_ != null) {
+      this.manager_.play(this, this.loops_);
+    }
   }
   /**
    * Stops playback of the sound.
@@ -166,21 +139,24 @@ public class WSound extends WObject {
    * stopped.
    */
   public void stop() {
-    WApplication.getInstance().getSoundManager().stop(this);
+    if (this.manager_ != null) {
+      this.manager_.stop(this);
+    }
   }
 
   static class Source {
     private static Logger logger = LoggerFactory.getLogger(Source.class);
 
-    public Source(WMediaPlayer.Encoding anEncoding, WLink aLink) {
+    public Source(MediaEncoding anEncoding, WLink aLink) {
       this.encoding = anEncoding;
       this.link = aLink;
     }
 
-    public WMediaPlayer.Encoding encoding;
+    public MediaEncoding encoding;
     public WLink link;
   }
 
+  private SoundManager manager_;
   List<WSound.Source> media_;
   private int loops_;
 }

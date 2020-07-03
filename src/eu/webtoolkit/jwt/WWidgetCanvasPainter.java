@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,11 +25,10 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     super(widget);
   }
 
-  public WCanvasPaintDevice createPaintDevice(boolean paintUpdate) {
+  public WPaintDevice createPaintDevice(boolean paintUpdate) {
     return new WCanvasPaintDevice(
         new WLength(this.widget_.renderWidth_),
         new WLength(this.widget_.renderHeight_),
-        (WObject) null,
         paintUpdate);
   }
 
@@ -39,12 +39,12 @@ class WWidgetCanvasPainter extends WWidgetPainter {
   public void createContents(DomElement result, WPaintDevice device) {
     String wstr = String.valueOf(this.widget_.renderWidth_);
     String hstr = String.valueOf(this.widget_.renderHeight_);
-    result.setProperty(Property.PropertyStylePosition, "relative");
-    result.setProperty(Property.PropertyStyleOverflowX, "hidden");
-    result.setProperty(Property.PropertyStyleOverflowY, "hidden");
-    DomElement canvas = DomElement.createNew(DomElementType.DomElement_CANVAS);
+    result.setProperty(Property.StylePosition, "relative");
+    result.setProperty(Property.StyleOverflowX, "hidden");
+    result.setProperty(Property.StyleOverflowY, "hidden");
+    DomElement canvas = DomElement.createNew(DomElementType.CANVAS);
     canvas.setId('c' + this.widget_.getId());
-    canvas.setProperty(Property.PropertyStyleDisplay, "block");
+    canvas.setProperty(Property.StyleDisplay, "block");
     canvas.setAttribute("width", wstr);
     canvas.setAttribute("height", hstr);
     result.addChild(canvas);
@@ -53,19 +53,19 @@ class WWidgetCanvasPainter extends WWidgetPainter {
         ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device) : null);
     DomElement text = null;
     if (canvasDevice.getTextMethod() == WCanvasPaintDevice.TextMethod.DomText) {
-      text = DomElement.createNew(DomElementType.DomElement_DIV);
+      text = DomElement.createNew(DomElementType.DIV);
       text.setId('t' + this.widget_.getId());
-      text.setProperty(Property.PropertyStylePosition, "absolute");
-      text.setProperty(Property.PropertyStyleZIndex, "1");
-      text.setProperty(Property.PropertyStyleTop, "0px");
-      text.setProperty(Property.PropertyStyleLeft, "0px");
+      text.setProperty(Property.StylePosition, "absolute");
+      text.setProperty(Property.StyleZIndex, "1");
+      text.setProperty(Property.StyleTop, "0px");
+      text.setProperty(Property.StyleLeft, "0px");
     }
     DomElement el = text != null ? text : result;
     boolean hasJsObjects = this.widget_.jsObjects_.size() > 0;
     WApplication app = WApplication.getInstance();
     {
       StringBuilder ss = new StringBuilder();
-      ss.append("new Wt3_6_0.WPaintedWidget(")
+      ss.append("new Wt4_4_0.WPaintedWidget(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.widget_.getJsRef())
@@ -75,7 +75,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     String updateAreasJs = "";
     if (hasJsObjects) {
       StringBuilder ss = new StringBuilder();
-      ss.append("new Wt3_6_0.WJavaScriptObjectStorage(")
+      ss.append("new Wt4_4_0.WJavaScriptObjectStorage(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.widget_.getJsRef())
@@ -91,7 +91,6 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     if (text != null) {
       result.addChild(text);
     }
-    ;
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
@@ -99,7 +98,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
         ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device) : null);
     if (this.widget_.sizeChanged_) {
       DomElement canvas =
-          DomElement.getForUpdate('c' + this.widget_.getId(), DomElementType.DomElement_CANVAS);
+          DomElement.getForUpdate('c' + this.widget_.getId(), DomElementType.CANVAS);
       canvas.setAttribute("width", String.valueOf(this.widget_.renderWidth_));
       canvas.setAttribute("height", String.valueOf(this.widget_.renderHeight_));
       result.add(canvas);
@@ -108,8 +107,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     boolean domText = canvasDevice.getTextMethod() == WCanvasPaintDevice.TextMethod.DomText;
     DomElement el =
         DomElement.getForUpdate(
-            domText ? 't' + this.widget_.getId() : this.widget_.getId(),
-            DomElementType.DomElement_DIV);
+            domText ? 't' + this.widget_.getId() : this.widget_.getId(), DomElementType.DIV);
     if (domText) {
       el.removeAllChildren();
     }
@@ -126,7 +124,6 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     }
     canvasDevice.render(this.widget_.getObjJsRef(), 'c' + this.widget_.getId(), el, updateAreasJs);
     result.add(el);
-    ;
   }
 
   public WWidgetPainter.RenderType getRenderType() {

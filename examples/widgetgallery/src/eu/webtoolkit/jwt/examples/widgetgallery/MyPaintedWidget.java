@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,10 +22,11 @@ import org.slf4j.LoggerFactory;
 class MyPaintedWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(MyPaintedWidget.class);
 
-  public MyPaintedWidget(WContainerWidget parent) {
-    super(parent);
+  public MyPaintedWidget(WContainerWidget parentContainer) {
+    super();
     this.end_ = 100;
     this.resize(new WLength(200), new WLength(60));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public MyPaintedWidget() {
@@ -38,7 +40,7 @@ class MyPaintedWidget extends WPaintedWidget {
 
   protected void paintEvent(WPaintDevice paintDevice) {
     WPainter painter = new WPainter(paintDevice);
-    painter.setBrush(new WBrush(WColor.blue).clone());
+    painter.setBrush(new WBrush(new WColor(StandardColor.Blue)));
     painter.drawRect(0, 0, this.end_, 50);
   }
 

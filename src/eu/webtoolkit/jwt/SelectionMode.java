@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,11 +25,11 @@ import javax.servlet.http.*;
  */
 public enum SelectionMode {
   /** No selections. */
-  NoSelection(0),
+  None(0),
   /** Single selection only. */
-  SingleSelection(1),
+  Single(1),
   /** Multiple selection. */
-  ExtendedSelection(3);
+  Extended(3);
 
   private int value;
 

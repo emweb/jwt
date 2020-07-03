@@ -20,7 +20,7 @@ public class PlannerCalendar extends WCalendar {
 		
 		//disable the default selection 
 		//(CalendarCell implements a proper selection action)
-		setSelectionMode(SelectionMode.NoSelection);
+		setSelectionMode(SelectionMode.None);
 	}
 
 	@Override

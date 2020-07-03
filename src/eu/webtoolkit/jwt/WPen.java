@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -60,66 +61,84 @@ public class WPen extends WJavaScriptExposableObject {
    * Creates a black cosmetic pen.
    *
    * <p>Constructs a black solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#SquareCap} line ends and {@link PenJoinStyle#BevelJoin} line join style.
+   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
    */
   public WPen() {
     super();
     this.penStyle_ = PenStyle.SolidLine;
-    this.penCapStyle_ = PenCapStyle.SquareCap;
-    this.penJoinStyle_ = PenJoinStyle.BevelJoin;
+    this.penCapStyle_ = PenCapStyle.Square;
+    this.penJoinStyle_ = PenJoinStyle.Bevel;
     this.width_ = new WLength(0);
-    this.color_ = WColor.black;
+    this.color_ = new WColor(StandardColor.Black);
     this.gradient_ = new WGradient();
   }
   /**
    * Creates a black pen with a particular style.
    *
    * <p>Constructs a black pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#SquareCap} line ends and {@link PenJoinStyle#BevelJoin} line join style.
+   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
    *
    * <p>The line style is set to <code>style</code>.
    */
   public WPen(PenStyle style) {
     super();
     this.penStyle_ = style;
-    this.penCapStyle_ = PenCapStyle.SquareCap;
-    this.penJoinStyle_ = PenJoinStyle.BevelJoin;
+    this.penCapStyle_ = PenCapStyle.Square;
+    this.penJoinStyle_ = PenJoinStyle.Bevel;
     this.width_ = new WLength(0);
-    this.color_ = WColor.black;
+    this.color_ = new WColor(StandardColor.Black);
     this.gradient_ = new WGradient();
   }
   /**
    * Creates a solid pen of a particular color.
    *
    * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#SquareCap} line ends and {@link PenJoinStyle#BevelJoin} line join style.
+   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
    *
    * <p>The pen color is set to <code>color</code>.
    */
   public WPen(final WColor color) {
     super();
     this.penStyle_ = PenStyle.SolidLine;
-    this.penCapStyle_ = PenCapStyle.SquareCap;
-    this.penJoinStyle_ = PenJoinStyle.BevelJoin;
+    this.penCapStyle_ = PenCapStyle.Square;
+    this.penJoinStyle_ = PenJoinStyle.Bevel;
     this.width_ = new WLength(0);
     this.color_ = color;
+    this.gradient_ = new WGradient();
+  }
+  /**
+   * Creates a solid pen of a standard color.
+   *
+   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
+   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
+   *
+   * <p>The pen color is set to <code>color</code>.
+   */
+  public WPen(StandardColor color) {
+    super();
+    this.penStyle_ = PenStyle.SolidLine;
+    this.penCapStyle_ = PenCapStyle.Square;
+    this.penJoinStyle_ = PenJoinStyle.Bevel;
+    this.width_ = new WLength(0);
+    this.color_ = new WColor(color);
     this.gradient_ = new WGradient();
   }
   /**
    * Creates a solid pen with a gradient color.
    *
    * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#SquareCap} line ends and {@link PenJoinStyle#BevelJoin} line join style.
+   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
    *
    * <p>The pen&apos;s color is defined by the gradient <code>color</code>.
    */
   public WPen(final WGradient gradient) {
     super();
     this.penStyle_ = PenStyle.SolidLine;
-    this.penCapStyle_ = PenCapStyle.SquareCap;
-    this.penJoinStyle_ = PenJoinStyle.BevelJoin;
+    this.penCapStyle_ = PenCapStyle.Square;
+    this.penJoinStyle_ = PenJoinStyle.Bevel;
     this.width_ = new WLength(0);
-    this.color_ = WColor.black;
+    this.color_ = new WColor(StandardColor.Black);
+    this.gradient_ = new WGradient();
     this.gradient_ = gradient;
   }
   /**
@@ -234,8 +253,7 @@ public class WPen extends WJavaScriptExposableObject {
   /**
    * Sets the pen width.
    *
-   * <p>A pen width <code>must</code> be specified using {@link WLength.Unit#Pixel Unit#Pixel}
-   * units.
+   * <p>A pen width <code>must</code> be specified using {@link LengthUnit#Pixel} units.
    *
    * <p>
    *

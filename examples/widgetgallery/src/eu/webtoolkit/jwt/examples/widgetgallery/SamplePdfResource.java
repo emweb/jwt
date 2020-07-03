@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,14 +22,10 @@ import org.slf4j.LoggerFactory;
 class SamplePdfResource extends WPdfImage {
   private static Logger logger = LoggerFactory.getLogger(SamplePdfResource.class);
 
-  public SamplePdfResource(WObject parent) {
-    super(new WLength(400), new WLength(300), parent);
+  public SamplePdfResource() {
+    super(new WLength(400), new WLength(300));
     this.suggestFileName("line.pdf");
     this.paint();
-  }
-
-  public SamplePdfResource() {
-    this((WObject) null);
   }
 
   private void paint() {
@@ -39,11 +36,6 @@ class SamplePdfResource extends WPdfImage {
     painter.drawLine(50, 250, 150, 50);
     painter.drawLine(150, 50, 250, 50);
     painter.drawText(
-        0,
-        0,
-        400,
-        300,
-        EnumSet.of(AlignmentFlag.AlignCenter, AlignmentFlag.AlignTop),
-        "Hello, PDF");
+        0, 0, 400, 300, EnumSet.of(AlignmentFlag.Center, AlignmentFlag.Top), "Hello, PDF");
   }
 }

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -30,9 +31,9 @@ public class WDropEvent {
   /** The type of the original event. */
   public enum OriginalEventType {
     /** The original event was a {@link WMouseEvent}. */
-    MouseEvent,
+    Mouse,
     /** The original event was a {@link WTouchEvent}. */
-    TouchEvent;
+    Touch;
 
     /** Returns the numerical representation of this enum. */
     public int getValue() {
@@ -44,13 +45,13 @@ public class WDropEvent {
     this.dropSource_ = source;
     this.dropMimeType_ = mimeType;
     this.mouseEvent_ = mouseEvent;
-    this.touchEvent_ = null;
+    this.touchEvent_ = (WTouchEvent) null;
   }
   /** Constructor. */
   public WDropEvent(WObject source, final String mimeType, final WTouchEvent touchEvent) {
     this.dropSource_ = source;
     this.dropMimeType_ = mimeType;
-    this.mouseEvent_ = null;
+    this.mouseEvent_ = (WMouseEvent) null;
     this.touchEvent_ = touchEvent;
   }
   /**
@@ -70,8 +71,8 @@ public class WDropEvent {
   /**
    * Returns the original mouse event.
    *
-   * <p>If eventType() == MouseEvent, this returns the original mouse event, otherwise this returns
-   * null.
+   * <p>If eventType() == {@link WDropEvent.OriginalEventType#Mouse Mouse}, this returns the
+   * original mouse event, otherwise this returns null.
    */
   public WMouseEvent getMouseEvent() {
     return this.mouseEvent_;
@@ -79,8 +80,8 @@ public class WDropEvent {
   /**
    * Returns the original touch event.
    *
-   * <p>If eventType() == TouchEvent, this returns the original touch event, otherwise this returns
-   * null.
+   * <p>If eventType() == {@link WDropEvent.OriginalEventType#Touch Touch}, this returns the
+   * original touch event, otherwise this returns null.
    */
   public WTouchEvent getTouchEvent() {
     return this.touchEvent_;
@@ -88,14 +89,14 @@ public class WDropEvent {
   /** Returns the type of the original event. */
   public WDropEvent.OriginalEventType getOriginalEventType() {
     return this.mouseEvent_ != null
-        ? WDropEvent.OriginalEventType.MouseEvent
-        : WDropEvent.OriginalEventType.TouchEvent;
+        ? WDropEvent.OriginalEventType.Mouse
+        : WDropEvent.OriginalEventType.Touch;
   }
 
   private WObject dropSource_;
   private String dropMimeType_;
-  private WMouseEvent mouseEvent_;
-  private WTouchEvent touchEvent_;
+  private final WMouseEvent mouseEvent_;
+  private final WTouchEvent touchEvent_;
 
   static String concat(final String prefix, int prefixLength, String s2) {
     return prefix + s2;
@@ -114,7 +115,7 @@ public class WDropEvent {
     if ((p = request.getParameter(name)) != null) {
       try {
         return asInt(p);
-      } catch (final NumberFormatException ee) {
+      } catch (final RuntimeException ee) {
         logger.error(
             new StringWriter()
                 .append("Could not cast event property '")
@@ -168,7 +169,7 @@ public class WDropEvent {
                 asInt(s.get(i + 7)),
                 asInt(s.get(i + 8))));
       }
-    } catch (final NumberFormatException ee) {
+    } catch (final RuntimeException ee) {
       logger.error(
           new StringWriter()
               .append("Could not parse touches array '")

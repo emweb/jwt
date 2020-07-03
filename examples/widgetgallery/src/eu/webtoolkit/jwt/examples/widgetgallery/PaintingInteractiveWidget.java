@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,8 +22,8 @@ import org.slf4j.LoggerFactory;
 class PaintingInteractiveWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(PaintingInteractiveWidget.class);
 
-  public PaintingInteractiveWidget(WContainerWidget parent) {
-    super(parent);
+  public PaintingInteractiveWidget(WContainerWidget parentContainer) {
+    super();
     this.rotateSlot = new JSlot(1, this);
     this.transform = null;
     this.resize(new WLength(300), new WLength(300));
@@ -35,6 +36,7 @@ class PaintingInteractiveWidget extends WPaintedWidget {
             + " = [c,-s,s,c,0,0];"
             + this.getRepaintSlot().execJs()
             + ";}}");
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public PaintingInteractiveWidget() {

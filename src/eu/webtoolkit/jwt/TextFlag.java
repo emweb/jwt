@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,9 +19,9 @@ import javax.servlet.http.*;
 /** Enumeration that specifies the way text should be printed. */
 public enum TextFlag {
   /** Text will be printed on just one line. */
-  TextSingleLine,
+  SingleLine,
   /** Lines will break at word boundaries. */
-  TextWordWrap;
+  WordWrap;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

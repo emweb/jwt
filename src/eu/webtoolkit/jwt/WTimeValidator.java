@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -29,8 +30,8 @@ public class WTimeValidator extends WRegExpValidator {
   private static Logger logger = LoggerFactory.getLogger(WTimeValidator.class);
 
   /** Creates a new {@link WTimeValidator}. */
-  public WTimeValidator(WObject parent) {
-    super(parent);
+  public WTimeValidator() {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = null;
     this.top_ = null;
@@ -39,17 +40,9 @@ public class WTimeValidator extends WRegExpValidator {
     this.notATimeText_ = new WString();
     this.setFormat(WTime.getDefaultFormat());
   }
-  /**
-   * Creates a new {@link WTimeValidator}.
-   *
-   * <p>Calls {@link #WTimeValidator(WObject parent) this((WObject)null)}
-   */
-  public WTimeValidator() {
-    this((WObject) null);
-  }
   /** Creates a new {@link WTimeValidator}. */
-  public WTimeValidator(final String format, WObject parent) {
-    super(parent);
+  public WTimeValidator(final String format) {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = null;
     this.top_ = null;
@@ -61,19 +54,11 @@ public class WTimeValidator extends WRegExpValidator {
   /**
    * Creates a new {@link WTimeValidator}.
    *
-   * <p>Calls {@link #WTimeValidator(String format, WObject parent) this(format, (WObject)null)}
-   */
-  public WTimeValidator(final String format) {
-    this(format, (WObject) null);
-  }
-  /**
-   * Creates a new {@link WTimeValidator}.
-   *
    * <p>The validator will accept only times within the indicated range <i>bottom</i> to <i>top</i>,
    * in the time formate <code>format</code>
    */
-  public WTimeValidator(final String format, final WTime bottom, final WTime top, WObject parent) {
-    super(parent);
+  public WTimeValidator(final String format, final WTime bottom, final WTime top) {
+    super();
     this.formats_ = new ArrayList<String>();
     this.bottom_ = bottom;
     this.top_ = top;
@@ -81,15 +66,6 @@ public class WTimeValidator extends WRegExpValidator {
     this.tooLateText_ = new WString();
     this.notATimeText_ = new WString();
     this.setFormat(format);
-  }
-  /**
-   * Creates a new {@link WTimeValidator}.
-   *
-   * <p>Calls {@link #WTimeValidator(String format, WTime bottom, WTime top, WObject parent)
-   * this(format, bottom, top, (WObject)null)}
-   */
-  public WTimeValidator(final String format, final WTime bottom, final WTime top) {
-    this(format, bottom, top, (WObject) null);
   }
   /** Sets the validator format. */
   public void setFormat(final String format) {
@@ -225,24 +201,24 @@ public class WTimeValidator extends WRegExpValidator {
         WTime t = WTime.fromString(input, this.formats_.get(i));
         if ((t != null && t.isValid())) {
           if (!(this.bottom_ == null) && t.before(this.bottom_)) {
-            return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooEarlyText());
+            return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooEarlyText());
           }
           if (!(this.top_ == null) && t.after(this.top_)) {
-            return new WValidator.Result(WValidator.State.Invalid, this.getInvalidTooLateText());
+            return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooLateText());
           }
-          return new WValidator.Result(WValidator.State.Valid);
+          return new WValidator.Result(ValidationState.Valid);
         }
       } catch (final RuntimeException e) {
         logger.warn(new StringWriter().append("validate(): ").append(e.toString()).toString());
       }
     }
-    return new WValidator.Result(WValidator.State.Invalid, this.getInvalidNotATimeText());
+    return new WValidator.Result(ValidationState.Invalid, this.getInvalidNotATimeText());
   }
 
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt3_6_0.WTimeValidator(").append(this.isMandatory()).append(",[");
+    js.append("new Wt4_4_0.WTimeValidator(").append(this.isMandatory()).append(",[");
     for (int i = 0; i < this.formats_.size(); ++i) {
       WTime.RegExpInfo r = WTime.formatToRegExp(this.formats_.get(i));
       if (i != 0) {

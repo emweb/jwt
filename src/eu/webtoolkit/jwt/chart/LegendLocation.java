@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -18,9 +19,9 @@ import javax.servlet.http.*;
 /** Enumeration type that indicates a legend location. */
 public enum LegendLocation {
   /** Inside the chart area. */
-  LegendInside,
+  Inside,
   /** Outside the chart area (in the padding area) */
-  LegendOutside;
+  Outside;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

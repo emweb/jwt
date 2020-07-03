@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -28,8 +29,8 @@ import org.slf4j.LoggerFactory;
  * WAbstractDataSeries3D#setModel(WAbstractItemModel model) setModel()} contains the data of a
  * dataseries. Implementations of this class format the data for representation on the chart and
  * perform all necessary drawing operations. Note that if a dataseries holds numerical data it
- * should be added to a chart of type {@link ChartType ScatterPlot}, if it holds categorical data it
- * should be added to a chart of type {@link ChartType CategoryChart}.
+ * should be added to a chart of type {@link ChartType#Scatter}, if it holds categorical data it
+ * should be added to a chart of type {@link ChartType#Category}.
  *
  * <p>
  *
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <ol>
- *   <li><code>MarkerBrushColorRole</code> set on a value in the model
+ *   <li>{@link ItemDataRole#MarkerBrushColor} set on a value in the model
  *   <li>{@link WAbstractColorMap} set on the dataseries
  *   <li>{@link WChartPalette} present in the chart
  * </ol>
@@ -59,10 +60,10 @@ import org.slf4j.LoggerFactory;
  * <p>The roles on the model which are taken into account are:<br>
  *
  * <ul>
- *   <li><code>MarkerBrushColorRole:</code> this determines the color of a datapoint and overrides
- *       the default
- *   <li><code>MarkerScaleFactorRole:</code> this determines the size of a datapoint and overrides
- *       the default
+ *   <li>{@link ItemDataRole#MarkerBrushColor}: this determines the color of a datapoint and
+ *       overrides the default
+ *   <li>{@link ItemDataRole#MarkerScaleFactor}: this determines the size of a datapoint and
+ *       overrides the default
  * </ul>
  *
  * <p>Some representations of the data ignore these roles. For example, when a surface is drawn, the
@@ -104,12 +105,12 @@ public abstract class WAbstractDataSeries3D extends WObject {
   public WAbstractDataSeries3D(WAbstractItemModel model) {
     super();
     this.name_ = new WString();
-    this.model_ = model;
+    this.model_ = null;
     this.chart_ = null;
     this.rangeCached_ = false;
     this.pointSize_ = 2.0;
     this.pointSprite_ = "";
-    this.colormap_ = null;
+    this.colormap_ = (WAbstractColorMap) null;
     this.showColorMap_ = false;
     this.colorMapSide_ = Side.Right;
     this.legendEnabled_ = true;
@@ -119,6 +120,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
             1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f);
     this.connections_ = new ArrayList<AbstractSignal.Connection>();
+    this.model_ = model;
   }
   /**
    * Sets the title of this dataseries.
@@ -151,7 +153,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
    * @see WAbstractDataSeries3D#getModel()
    * @see WAbstractDataSeries3D#WAbstractDataSeries3D(WAbstractItemModel model)
    */
-  public void setModel(WAbstractItemModel model) {
+  public void setModel(final WAbstractItemModel model) {
     if (model != this.model_) {
       if (this.model_ != null && this.chart_ != null) {
         clearConnections(this.connections_);
@@ -165,66 +167,54 @@ public abstract class WAbstractDataSeries3D extends WObject {
                 .modelReset()
                 .addListener(
                     this.chart_,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WAbstractDataSeries3D.this.chart_.updateChart(
-                            EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                      }
+                    () -> {
+                      WAbstractDataSeries3D.this.chart_.updateChart(
+                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                     }));
         this.connections_.add(
             this.model_
                 .dataChanged()
                 .addListener(
                     this.chart_,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WAbstractDataSeries3D.this.chart_.updateChart(
-                            EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                      }
+                    () -> {
+                      WAbstractDataSeries3D.this.chart_.updateChart(
+                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                     }));
         this.connections_.add(
             this.model_
                 .rowsInserted()
                 .addListener(
                     this.chart_,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WAbstractDataSeries3D.this.chart_.updateChart(
-                            EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                      }
+                    () -> {
+                      WAbstractDataSeries3D.this.chart_.updateChart(
+                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                     }));
         this.connections_.add(
             this.model_
                 .columnsInserted()
                 .addListener(
                     this.chart_,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WAbstractDataSeries3D.this.chart_.updateChart(
-                            EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                      }
+                    () -> {
+                      WAbstractDataSeries3D.this.chart_.updateChart(
+                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                     }));
         this.connections_.add(
             this.model_
                 .rowsRemoved()
                 .addListener(
                     this.chart_,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WAbstractDataSeries3D.this.chart_.updateChart(
-                            EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                      }
+                    () -> {
+                      WAbstractDataSeries3D.this.chart_.updateChart(
+                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                     }));
         this.connections_.add(
             this.model_
                 .columnsRemoved()
                 .addListener(
                     this.chart_,
-                    new Signal.Listener() {
-                      public void trigger() {
-                        WAbstractDataSeries3D.this.chart_.updateChart(
-                            EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                      }
+                    () -> {
+                      WAbstractDataSeries3D.this.chart_.updateChart(
+                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                     }));
       }
     }
@@ -270,7 +260,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
     if (size != this.pointSize_) {
       this.pointSize_ = size;
       if (this.chart_ != null) {
-        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
       }
     }
   }
@@ -302,7 +292,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
     if (!image.equals(this.pointSprite_)) {
       this.pointSprite_ = image;
       if (this.chart_ != null) {
-        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
       }
     }
   }
@@ -331,9 +321,8 @@ public abstract class WAbstractDataSeries3D extends WObject {
    * @see WAbstractDataSeries3D#setColorMapVisible(boolean enabled)
    * @see WAbstractDataSeries3D#setColorMapSide(Side side)
    */
-  public void setColorMap(WAbstractColorMap colormap) {
+  public void setColorMap(final WAbstractColorMap colormap) {
     this.colormap_ = colormap;
-    if (this.colormap_ != null) {}
     if (this.chart_ != null) {
       this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
     }
@@ -396,9 +385,9 @@ public abstract class WAbstractDataSeries3D extends WObject {
   /**
    * Sets whether the colormap is shown on the left or right.
    *
-   * <p>The default side is Right.
+   * <p>The default side is {@link Side#Right}.
    *
-   * <p>Note: only Left and Right are valid values for this function.
+   * <p>Note: only {@link Side#Left} and {@link Side#Right} are valid values for this function.
    *
    * <p>
    *
@@ -461,7 +450,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
     if (enabled != this.hidden_) {
       this.hidden_ = enabled;
       if (this.chart_ != null) {
-        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext));
+        this.chart_.updateChart(EnumSet.of(ChartUpdates.GLContext, ChartUpdates.GLTextures));
       }
     }
   }
@@ -525,66 +514,54 @@ public abstract class WAbstractDataSeries3D extends WObject {
               .modelReset()
               .addListener(
                   this.chart_,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WAbstractDataSeries3D.this.chart_.updateChart(
-                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                    }
+                  () -> {
+                    WAbstractDataSeries3D.this.chart_.updateChart(
+                        EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                   }));
       this.connections_.add(
           this.model_
               .dataChanged()
               .addListener(
                   this.chart_,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WAbstractDataSeries3D.this.chart_.updateChart(
-                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                    }
+                  () -> {
+                    WAbstractDataSeries3D.this.chart_.updateChart(
+                        EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                   }));
       this.connections_.add(
           this.model_
               .rowsInserted()
               .addListener(
                   this.chart_,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WAbstractDataSeries3D.this.chart_.updateChart(
-                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                    }
+                  () -> {
+                    WAbstractDataSeries3D.this.chart_.updateChart(
+                        EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                   }));
       this.connections_.add(
           this.model_
               .columnsInserted()
               .addListener(
                   this.chart_,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WAbstractDataSeries3D.this.chart_.updateChart(
-                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                    }
+                  () -> {
+                    WAbstractDataSeries3D.this.chart_.updateChart(
+                        EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                   }));
       this.connections_.add(
           this.model_
               .rowsRemoved()
               .addListener(
                   this.chart_,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WAbstractDataSeries3D.this.chart_.updateChart(
-                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                    }
+                  () -> {
+                    WAbstractDataSeries3D.this.chart_.updateChart(
+                        EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                   }));
       this.connections_.add(
           this.model_
               .columnsRemoved()
               .addListener(
                   this.chart_,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WAbstractDataSeries3D.this.chart_.updateChart(
-                          EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
-                    }
+                  () -> {
+                    WAbstractDataSeries3D.this.chart_.updateChart(
+                        EnumSet.of(ChartUpdates.GLTextures, ChartUpdates.GLContext));
                   }));
     }
   }
@@ -635,7 +612,7 @@ public abstract class WAbstractDataSeries3D extends WObject {
 
   WGLWidget.Texture getColorTexture() {
     WPaintDevice cpd = null;
-    if (this.colormap_ == null) {
+    if (!(this.colormap_ != null)) {
       cpd = this.chart_.createPaintDevice(new WLength(1), new WLength(1));
       WColor seriesColor = this.getChartpaletteColor();
       WPainter painter = new WPainter(cpd);

@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -60,34 +61,6 @@ public class RegistrationModel extends FormBaseModel {
   public static final String RepeatPasswordField = "repeat-password";
   /** Email field (if login name is not email) */
   public static final String EmailField = "email";
-  /** Enumeration for an email policy. */
-  public enum EmailPolicy {
-    /** The email address is not asked for. */
-    EmailDisabled,
-    /** A user may optionally provide an email address. */
-    EmailOptional,
-    /** A user must provide an email address. */
-    EmailMandatory;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** Method for confirming to be an existing user. */
-  public enum IdentityConfirmationMethod {
-    /** Confirm using a password prompt. */
-    ConfirmWithPassword,
-    /** Confirm by using an email procedure. */
-    ConfirmWithEmail,
-    /** Confirmation is not possible. */
-    ConfirmationNotPossible;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Constructor.
    *
@@ -97,38 +70,25 @@ public class RegistrationModel extends FormBaseModel {
    * and thus the registration process may be aborted.
    */
   public RegistrationModel(
-      final AuthService baseAuth,
-      final AbstractUserDatabase users,
-      final Login login,
-      WObject parent) {
-    super(baseAuth, users, parent);
+      final AuthService baseAuth, final AbstractUserDatabase users, final Login login) {
+    super(baseAuth, users);
     this.login_ = login;
     this.minLoginNameLength_ = 4;
-    this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
+    this.emailPolicy_ = EmailPolicy.Disabled;
     this.idpIdentity_ = new Identity();
     this.existingUser_ = new User();
-    if (baseAuth.getIdentityPolicy() != IdentityPolicy.EmailAddressIdentity) {
+    if (baseAuth.getIdentityPolicy() != IdentityPolicy.EmailAddress) {
       if (baseAuth.isEmailVerificationRequired()) {
-        this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailMandatory;
+        this.emailPolicy_ = EmailPolicy.Mandatory;
       } else {
         if (baseAuth.isEmailVerificationEnabled()) {
-          this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailOptional;
+          this.emailPolicy_ = EmailPolicy.Optional;
         } else {
-          this.emailPolicy_ = RegistrationModel.EmailPolicy.EmailDisabled;
+          this.emailPolicy_ = EmailPolicy.Disabled;
         }
       }
     }
     this.reset();
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #RegistrationModel(AuthService baseAuth, AbstractUserDatabase users, Login
-   * login, WObject parent) this(baseAuth, users, login, (WObject)null)}
-   */
-  public RegistrationModel(
-      final AuthService baseAuth, final AbstractUserDatabase users, final Login login) {
-    this(baseAuth, users, login, (WObject) null);
   }
   /**
    * Resets the model.
@@ -139,7 +99,7 @@ public class RegistrationModel extends FormBaseModel {
   public void reset() {
     this.idpIdentity_ = new Identity();
     this.existingUser_ = new User();
-    if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+    if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddress) {
       this.addField(LoginNameField, WString.tr("Wt.Auth.email-info"));
     } else {
       this.addField(LoginNameField, WString.tr("Wt.Auth.user-name-info"));
@@ -175,7 +135,7 @@ public class RegistrationModel extends FormBaseModel {
    *
    * <p>You may specify whether you want the user to enter an email address.
    *
-   * <p>This has no effect when the IdentityPolicy is EmailAddressIdentity.
+   * <p>This has no effect when the IdentityPolicy is {@link IdentityPolicy#EmailAddress}.
    *
    * <p>The default policy is:
    *
@@ -184,13 +144,13 @@ public class RegistrationModel extends FormBaseModel {
    *   <li>EmailDisabled otherwise
    * </ul>
    */
-  public void setEmailPolicy(RegistrationModel.EmailPolicy policy) {
+  public void setEmailPolicy(EmailPolicy policy) {
     this.emailPolicy_ = policy;
     switch (this.emailPolicy_) {
-      case EmailMandatory:
+      case Mandatory:
         this.addField(EmailField, WString.tr("Wt.Auth.email-info"));
         break;
-      case EmailOptional:
+      case Optional:
         this.addField(EmailField, WString.tr("Wt.Auth.optional-email-info"));
         break;
       default:
@@ -202,9 +162,9 @@ public class RegistrationModel extends FormBaseModel {
    *
    * <p>
    *
-   * @see RegistrationModel#setEmailPolicy(RegistrationModel.EmailPolicy policy)
+   * @see RegistrationModel#setEmailPolicy(EmailPolicy policy)
    */
-  public RegistrationModel.EmailPolicy getEmailPolicy() {
+  public EmailPolicy getEmailPolicy() {
     return this.emailPolicy_;
   }
   /**
@@ -228,7 +188,7 @@ public class RegistrationModel extends FormBaseModel {
         return this.loginUser(this.login_, user);
       } else {
         switch (this.getBaseAuth().getIdentityPolicy()) {
-          case LoginNameIdentity:
+          case LoginName:
             if (this.idpIdentity_.getName().length() != 0) {
               this.setValue(LoginNameField, this.idpIdentity_.getName());
             } else {
@@ -242,7 +202,7 @@ public class RegistrationModel extends FormBaseModel {
               }
             }
             break;
-          case EmailAddressIdentity:
+          case EmailAddress:
             if (this.idpIdentity_.getEmail().length() != 0) {
               this.setValue(LoginNameField, new WString(this.idpIdentity_.getEmail()));
             }
@@ -253,7 +213,7 @@ public class RegistrationModel extends FormBaseModel {
         if (this.idpIdentity_.getEmail().length() != 0) {
           this.setValue(EmailField, this.idpIdentity_.getEmail());
           this.setValidation(
-              EmailField, new WValidator.Result(WValidator.State.Valid, WString.Empty));
+              EmailField, new WValidator.Result(ValidationState.Valid, WString.Empty));
         }
         return false;
       }
@@ -288,18 +248,18 @@ public class RegistrationModel extends FormBaseModel {
    *
    * @see RegistrationModel#existingUserConfirmed()
    */
-  public RegistrationModel.IdentityConfirmationMethod getConfirmIsExistingUser() {
+  public IdentityConfirmationMethod getConfirmIsExistingUser() {
     if (this.existingUser_.isValid()) {
       if (!this.existingUser_.getPassword().isEmpty()) {
-        return RegistrationModel.IdentityConfirmationMethod.ConfirmWithPassword;
+        return IdentityConfirmationMethod.ConfirmWithPassword;
       } else {
         if (this.getBaseAuth().isEmailVerificationEnabled()
             && this.existingUser_.getEmail().length() != 0) {
-          return RegistrationModel.IdentityConfirmationMethod.ConfirmWithEmail;
+          return IdentityConfirmationMethod.ConfirmWithEmail;
         }
       }
     }
-    return RegistrationModel.IdentityConfirmationMethod.ConfirmationNotPossible;
+    return IdentityConfirmationMethod.ConfirmationNotPossible;
   }
   /**
    * Confirms that the user is indeed an existing user.
@@ -320,13 +280,13 @@ public class RegistrationModel extends FormBaseModel {
    */
   public WString validateLoginName(final String userName) {
     switch (this.getBaseAuth().getIdentityPolicy()) {
-      case LoginNameIdentity:
+      case LoginName:
         if ((int) userName.length() < this.minLoginNameLength_) {
           return WString.tr("Wt.Auth.user-name-tooshort").arg(this.minLoginNameLength_);
         } else {
           return WString.Empty;
         }
-      case EmailAddressIdentity:
+      case EmailAddress:
         if ((int) userName.length() < 3 || userName.indexOf('@') == -1) {
           return WString.tr("Wt.Auth.email-invalid");
         } else {
@@ -355,7 +315,7 @@ public class RegistrationModel extends FormBaseModel {
         User user = this.getUsers().registerNew();
         if (this.idpIdentity_.isValid()) {
           user.addIdentity(this.idpIdentity_.getProvider(), this.idpIdentity_.getId());
-          if (this.getBaseAuth().getIdentityPolicy() != IdentityPolicy.OptionalIdentity) {
+          if (this.getBaseAuth().getIdentityPolicy() != IdentityPolicy.Optional) {
             user.addIdentity(Identity.LoginName, this.valueText(LoginNameField));
           }
           String email = "";
@@ -364,7 +324,7 @@ public class RegistrationModel extends FormBaseModel {
             email = this.idpIdentity_.getEmail();
             emailVerified = this.idpIdentity_.isEmailVerified();
           } else {
-            if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+            if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddress) {
               email = this.valueText(LoginNameField);
             } else {
               email = this.valueText(EmailField);
@@ -382,7 +342,7 @@ public class RegistrationModel extends FormBaseModel {
           this.getPasswordAuth().updatePassword(user, this.valueText(ChoosePasswordField));
           if (this.getBaseAuth().isEmailVerificationEnabled()) {
             String email = "";
-            if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+            if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddress) {
               email = this.valueText(LoginNameField);
             } else {
               email = this.valueText(EmailField);
@@ -402,7 +362,7 @@ public class RegistrationModel extends FormBaseModel {
 
   public boolean isVisible(String field) {
     if (field == LoginNameField) {
-      if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.OptionalIdentity) {
+      if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.Optional) {
         return this.getPasswordAuth() != null && !this.idpIdentity_.isValid();
       } else {
         return true;
@@ -412,10 +372,10 @@ public class RegistrationModel extends FormBaseModel {
         return this.getPasswordAuth() != null && !this.idpIdentity_.isValid();
       } else {
         if (field == EmailField) {
-          if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity) {
+          if (this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddress) {
             return false;
           } else {
-            if (this.emailPolicy_ == RegistrationModel.EmailPolicy.EmailDisabled) {
+            if (this.emailPolicy_ == EmailPolicy.Disabled) {
               return false;
             } else {
               return true;
@@ -433,7 +393,7 @@ public class RegistrationModel extends FormBaseModel {
       return true;
     }
     if (field == LoginNameField) {
-      return this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddressIdentity
+      return this.getBaseAuth().getIdentityPolicy() == IdentityPolicy.EmailAddress
           && this.idpIdentity_.isValid()
           && this.idpIdentity_.isEmailVerified();
     } else {
@@ -459,7 +419,7 @@ public class RegistrationModel extends FormBaseModel {
         valid = !exists;
         if (exists
             && this.getConfirmIsExistingUser()
-                == RegistrationModel.IdentityConfirmationMethod.ConfirmationNotPossible) {
+                == IdentityConfirmationMethod.ConfirmationNotPossible) {
           error = WString.tr("Wt.Auth.user-name-exists");
         }
       } else {
@@ -478,14 +438,14 @@ public class RegistrationModel extends FormBaseModel {
                   this.valueText(ChoosePasswordField),
                   this.valueText(LoginNameField),
                   this.valueText(EmailField));
-          valid = r.getState() == WValidator.State.Valid;
+          valid = r.getState() == ValidationState.Valid;
           error = r.getMessage();
         } else {
           valid = true;
         }
       } else {
         if (field == RepeatPasswordField) {
-          if (this.getValidation(ChoosePasswordField).getState() == WValidator.State.Valid) {
+          if (this.getValidation(ChoosePasswordField).getState() == ValidationState.Valid) {
             if (!this.valueText(ChoosePasswordField).equals(this.valueText(RepeatPasswordField))) {
               error = WString.tr("Wt.Auth.passwords-dont-match");
             }
@@ -507,7 +467,7 @@ public class RegistrationModel extends FormBaseModel {
                 }
               }
             } else {
-              if (this.emailPolicy_ != RegistrationModel.EmailPolicy.EmailOptional) {
+              if (this.emailPolicy_ != EmailPolicy.Optional) {
                 error = WString.tr("Wt.Auth.email-invalid");
               }
             }
@@ -521,9 +481,9 @@ public class RegistrationModel extends FormBaseModel {
     if (valid) {
       this.setValid(field, error);
     } else {
-      this.setValidation(field, new WValidator.Result(WValidator.State.Invalid, error));
+      this.setValidation(field, new WValidator.Result(ValidationState.Invalid, error));
     }
-    return this.getValidation(field).getState() == WValidator.State.Valid;
+    return this.getValidation(field).getState() == ValidationState.Valid;
   }
   /**
    * Returns whether an existing user needs to be confirmed.
@@ -532,8 +492,7 @@ public class RegistrationModel extends FormBaseModel {
    * that he is in fact the same user.
    */
   public boolean isConfirmUserButtonVisible() {
-    return this.getConfirmIsExistingUser()
-        != RegistrationModel.IdentityConfirmationMethod.ConfirmationNotPossible;
+    return this.getConfirmIsExistingUser() != IdentityConfirmationMethod.ConfirmationNotPossible;
   }
   /**
    * Returns whether federated login options can be shown.
@@ -557,16 +516,16 @@ public class RegistrationModel extends FormBaseModel {
                 + info2.getJsRef()
                 + ",o1="
                 + password.getJsRef()
-                + ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt3_6_0.setHtml(i,"
+                + ";if (!$(o1).hasClass('Wt-invalid')) {if (o.value == o1.value) {$(o).removeClass('Wt-invalid');Wt4_4_0.setHtml(i,"
                 + WString.toWString(WString.tr("Wt.Auth.valid")).getJsStringLiteral()
-                + ");} else {$(o).removeClass('Wt-valid');Wt3_6_0.setHtml(i,"
+                + ");} else {$(o).removeClass('Wt-valid');Wt4_4_0.setHtml(i,"
                 + WString.toWString(WString.tr("Wt.Auth.repeat-password-info")).getJsStringLiteral()
                 + ");}}}");
   }
 
   private final Login login_;
   private int minLoginNameLength_;
-  private RegistrationModel.EmailPolicy emailPolicy_;
+  private EmailPolicy emailPolicy_;
   private Identity idpIdentity_;
   private User existingUser_;
 }

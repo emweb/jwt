@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -38,10 +39,9 @@ import org.slf4j.LoggerFactory;
  * using {@link WWidget#setMinimumSize(WLength width, WLength height) WWidget#setMinimumSize()} or
  * using CSS <code>min-width</code> or <code>min-height</code> properties.
  *
- * <p>You should use {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet
- * orientation) WContainerWidget#setOverflow()} or use a {@link WScrollArea} to automatically show
- * scrollbars for widgets inserted in the layout to cope with a size set by the layout manager that
- * is smaller than the preferred size.
+ * <p>You should use {@link WContainerWidget#setOverflow(Overflow value, EnumSet orientation)
+ * WContainerWidget#setOverflow()} to automatically show scrollbars for widgets inserted in the
+ * layout to cope with a size set by the layout manager that is smaller than the preferred size.
  *
  * <p>When the container of a layout manager does not have a defined size (by having an explicit
  * size, or by being inside a layout manager), or has has only a maximum size set using {@link
@@ -78,22 +78,6 @@ import org.slf4j.LoggerFactory;
 public class WBoxLayout extends WLayout {
   private static Logger logger = LoggerFactory.getLogger(WBoxLayout.class);
 
-  /** Enumeration of the direction in which widgets are layed out. */
-  public enum Direction {
-    /** Horizontal layout, widgets are arranged from left to right. */
-    LeftToRight,
-    /** Horizontal layout, widgets are arranged from right to left. */
-    RightToLeft,
-    /** Vertical layout, widgets are arranged from top to bottom. */
-    TopToBottom,
-    /** Vertical layout, widgets are arranged from bottom to top. */
-    BottomToTop;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
   /**
    * Creates a new box layout.
    *
@@ -103,55 +87,64 @@ public class WBoxLayout extends WLayout {
    * <p>Use <code>parent</code> = <code>null</code> to created a layout manager that can be nested
    * inside other layout managers.
    */
-  public WBoxLayout(WBoxLayout.Direction dir, WWidget parent) {
+  public WBoxLayout(LayoutDirection dir) {
     super();
     this.direction_ = dir;
     this.grid_ = new Grid();
-    if (parent != null) {
-      this.setLayoutInParent(parent);
-    }
-  }
-  /**
-   * Creates a new box layout.
-   *
-   * <p>Calls {@link #WBoxLayout(WBoxLayout.Direction dir, WWidget parent) this(dir, (WWidget)null)}
-   */
-  public WBoxLayout(WBoxLayout.Direction dir) {
-    this(dir, (WWidget) null);
   }
 
   public void addItem(WLayoutItem item) {
     this.insertItem(this.getCount(), item, 0, EnumSet.noneOf(AlignmentFlag.class));
   }
 
-  public void removeItem(WLayoutItem item) {
+  public WLayoutItem removeItem(WLayoutItem item) {
+    WLayoutItem result = null;
     int index = this.indexOf(item);
     if (index != -1) {
       switch (this.direction_) {
         case RightToLeft:
-          index = this.grid_.columns_.size() - 1 - index;
+          if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+              || !this.isImplementationIsFlexLayout()) {
+            index = this.grid_.columns_.size() - 1 - index;
+          }
         case LeftToRight:
-          this.grid_.columns_.remove(0 + index);
-          this.grid_.items_.get(0).remove(0 + index);
-          break;
+          {
+            result = this.grid_.items_.get(0).get(index).item_;
+            this.grid_.columns_.remove(0 + index);
+            this.grid_.items_.get(0).remove(0 + index);
+            break;
+          }
         case BottomToTop:
-          index = this.grid_.rows_.size() - 1 - index;
+          if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+              || !this.isImplementationIsFlexLayout()) {
+            index = this.grid_.rows_.size() - 1 - index;
+          }
         case TopToBottom:
-          this.grid_.rows_.remove(0 + index);
-          this.grid_.items_.remove(0 + index);
+          {
+            result = this.grid_.items_.get(index).get(0).item_;
+            this.grid_.rows_.remove(0 + index);
+            this.grid_.items_.remove(0 + index);
+          }
       }
-      this.updateRemoveItem(item);
+      this.itemRemoved(item);
     }
+    return result;
   }
 
   public WLayoutItem getItemAt(int index) {
     switch (this.direction_) {
       case RightToLeft:
-        index = this.grid_.columns_.size() - 1 - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.columns_.size() - 1 - index;
+        }
       case LeftToRight:
         return this.grid_.items_.get(0).get(index).item_;
       case BottomToTop:
-        index = this.grid_.rows_.size() - 1 - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.rows_.size() - 1 - index;
+        }
       case TopToBottom:
         return this.grid_.items_.get(index).get(0).item_;
     }
@@ -162,21 +155,17 @@ public class WBoxLayout extends WLayout {
   public int getCount() {
     return this.grid_.rows_.size() * this.grid_.columns_.size();
   }
-
-  public void clear() {
-    while (this.getCount() != 0) {
-      WLayoutItem item = this.getItemAt(this.getCount() - 1);
-      this.clearLayoutItem(item);
-    }
-  }
   /**
    * Sets the layout direction.
    *
    * <p>
    *
+   * <p><i><b>Note: </b>Changing the layout direction after something (a widget or nested layout)
+   * has been added is not supported.</i>
+   *
    * @see WBoxLayout#getDirection()
    */
-  public void setDirection(WBoxLayout.Direction direction) {
+  public void setDirection(LayoutDirection direction) {
     if (this.direction_ != direction) {
       this.direction_ = direction;
     }
@@ -186,9 +175,9 @@ public class WBoxLayout extends WLayout {
    *
    * <p>
    *
-   * @see WBoxLayout#setDirection(WBoxLayout.Direction direction)
+   * @see WBoxLayout#setDirection(LayoutDirection direction)
    */
-  public WBoxLayout.Direction getDirection() {
+  public LayoutDirection getDirection() {
     return this.direction_;
   }
   /**
@@ -222,9 +211,9 @@ public class WBoxLayout extends WLayout {
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
    * default value 0 indicates that the item is stretched to fill the entire column or row. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or {@link
+   * AlignmentFlag#Bottom}).
    *
    * <p>
    *
@@ -262,6 +251,8 @@ public class WBoxLayout extends WLayout {
   public final void addWidget(WWidget widget, int stretch) {
     addWidget(widget, stretch, EnumSet.noneOf(AlignmentFlag.class));
   }
+  // public Widget  addWidget(<Woow... some pseudoinstantiation type!> widget) ;
+  // public Widget  addWidget(<Woow... some pseudoinstantiation type!> widget, int stretch) ;
   /**
    * Adds a nested layout to the layout.
    *
@@ -269,7 +260,6 @@ public class WBoxLayout extends WLayout {
    *
    * <p>
    *
-   * @see WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
    * @see WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
    */
   public void addLayout(WLayout layout, int stretch, EnumSet<AlignmentFlag> alignment) {
@@ -345,16 +335,15 @@ public class WBoxLayout extends WLayout {
    * manager (stretched to take excess space).
    *
    * <p>The <code>alignment</code> specifies the vertical and horizontal alignment of the item. The
-   * default value 0 indicates that the item is stretched to fill the entire column or row. The
+   * default value None indicates that the item is stretched to fill the entire column or row. The
    * alignment can be specified as a logical combination of a horizontal alignment ({@link
-   * AlignmentFlag#AlignLeft}, {@link AlignmentFlag#AlignCenter}, or {@link
-   * AlignmentFlag#AlignRight}) and a vertical alignment ({@link AlignmentFlag#AlignTop}, {@link
-   * AlignmentFlag#AlignMiddle}, or {@link AlignmentFlag#AlignBottom}).
+   * AlignmentFlag#Left}, {@link AlignmentFlag#Center}, or {@link AlignmentFlag#Right}) and a
+   * vertical alignment ({@link AlignmentFlag#Top}, {@link AlignmentFlag#Middle}, or
+   * Wt::AlignmentFlag::AlignBottom).
    *
    * <p>
    *
    * @see WBoxLayout#insertLayout(int index, WLayout layout, int stretch, EnumSet alignment)
-   * @see WBoxLayout#addWidget(WWidget widget, int stretch, EnumSet alignment)
    */
   public void insertWidget(
       int index, WWidget widget, int stretch, EnumSet<AlignmentFlag> alignment) {
@@ -391,6 +380,8 @@ public class WBoxLayout extends WLayout {
   public final void insertWidget(int index, WWidget widget, int stretch) {
     insertWidget(index, widget, stretch, EnumSet.noneOf(AlignmentFlag.class));
   }
+  // public Widget  insertWidget(int index, <Woow... some pseudoinstantiation type!> widget, int
+  // stretch) ;
   /**
    * Inserts a nested layout in the layout.
    *
@@ -434,6 +425,8 @@ public class WBoxLayout extends WLayout {
   public final void insertLayout(int index, WLayout layout, int stretch) {
     insertLayout(index, layout, stretch, EnumSet.noneOf(AlignmentFlag.class));
   }
+  // public Layout  insertLayout(int index, <Woow... some pseudoinstantiation type!> layout, int
+  // stretch) ;
   /**
    * Inserts extra spacing in the layout.
    *
@@ -523,15 +516,29 @@ public class WBoxLayout extends WLayout {
    * is used for the size of the item, overriding the size it would be given by the layout manager.
    */
   public void setResizable(int index, boolean enabled, final WLength initialSize) {
+    if (this.getPreferredImplementation() == LayoutImplementation.Flex) {
+      logger.warn(
+          new StringWriter()
+              .append(
+                  "Resize handles are not supported for flex layout implementation, using JavaScript implementation instead")
+              .toString());
+      this.setPreferredImplementation(LayoutImplementation.JavaScript);
+    }
     switch (this.direction_) {
       case RightToLeft:
-        index = this.grid_.columns_.size() - 1 - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.columns_.size() - 1 - index;
+        }
       case LeftToRight:
         this.grid_.columns_.get(index).resizable_ = enabled;
         this.grid_.columns_.get(index).initialSize_ = initialSize;
         break;
       case BottomToTop:
-        index = this.grid_.rows_.size() - 1 - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.rows_.size() - 1 - index;
+        }
       case TopToBottom:
         this.grid_.rows_.get(index).resizable_ = enabled;
         this.grid_.rows_.get(index).initialSize_ = initialSize;
@@ -569,26 +576,48 @@ public class WBoxLayout extends WLayout {
   public boolean isResizable(int index) {
     switch (this.direction_) {
       case RightToLeft:
-        index = this.grid_.columns_.size() - 1 - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.columns_.size() - 1 - index;
+        }
       case LeftToRight:
         return this.grid_.columns_.get(index).resizable_;
       case BottomToTop:
-        index = this.grid_.rows_.size() - 1 - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.rows_.size() - 1 - index;
+        }
       case TopToBottom:
         return this.grid_.rows_.get(index).resizable_;
     }
     return false;
   }
 
-  Grid getGrid() {
-    return this.grid_;
+  public void iterateWidgets(final HandleWidgetMethod method) {
+    for (int r = 0; r < this.grid_.rows_.size(); ++r) {
+      for (int c = 0; c < this.grid_.columns_.size(); ++c) {
+        WLayoutItem item = this.grid_.items_.get(r).get(c).item_;
+        if (item != null) {
+          item.iterateWidgets(method);
+        }
+      }
+    }
+  }
+
+  public boolean isImplementationIsFlexLayout() {
+    final WEnvironment env = WApplication.getInstance().getEnvironment();
+    return this.getPreferredImplementation() == LayoutImplementation.Flex && !env.agentIsIElt(10);
   }
 
   protected void insertItem(
       int index, WLayoutItem item, int stretch, EnumSet<AlignmentFlag> alignment) {
+    WLayoutItem it = item;
     switch (this.direction_) {
       case RightToLeft:
-        index = this.grid_.columns_.size() - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.columns_.size() - index;
+        }
       case LeftToRight:
         this.grid_.columns_.add(0 + index, new Grid.Section(stretch));
         if (this.grid_.items_.isEmpty()) {
@@ -599,7 +628,10 @@ public class WBoxLayout extends WLayout {
         this.grid_.items_.get(0).add(0 + index, new Grid.Item(item, alignment));
         break;
       case BottomToTop:
-        index = this.grid_.rows_.size() - index;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          index = this.grid_.rows_.size() - index;
+        }
       case TopToBottom:
         if (this.grid_.columns_.isEmpty()) {
           this.grid_.columns_.add(new Grid.Section());
@@ -610,7 +642,7 @@ public class WBoxLayout extends WLayout {
         this.grid_.items_.get(index).add(new Grid.Item(item, alignment));
         break;
     }
-    this.updateAddItem(item);
+    this.itemAdded(it);
   }
 
   protected final void insertItem(
@@ -622,18 +654,31 @@ public class WBoxLayout extends WLayout {
     insertItem(index, item, stretch, EnumSet.of(alignmen, alignment));
   }
 
-  private WBoxLayout.Direction direction_;
+  protected void updateImplementation() {
+    if (!(this.getParentWidget() != null)) {
+      return;
+    }
+    this.setImplementation();
+  }
+
+  private LayoutDirection direction_;
   private Grid grid_;
 
   private void setStretchFactor(int i, int stretch) {
     switch (this.direction_) {
       case RightToLeft:
-        i = this.grid_.columns_.size() - 1 - i;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          i = this.grid_.columns_.size() - 1 - i;
+        }
       case LeftToRight:
         this.grid_.columns_.get(i).stretch_ = stretch;
         break;
       case BottomToTop:
-        i = this.grid_.rows_.size() - 1 - i;
+        if (this.getImpl() != null && this.getImplementation() != LayoutImplementation.Flex
+            || !this.isImplementationIsFlexLayout()) {
+          i = this.grid_.rows_.size() - 1 - i;
+        }
       case TopToBottom:
         this.grid_.rows_.get(i).stretch_ = stretch;
     }
@@ -642,13 +687,27 @@ public class WBoxLayout extends WLayout {
   private WWidget createSpacer(final WLength size) {
     Spacer spacer = new Spacer();
     if (size.toPixels() > 0) {
-      if (this.direction_ == WBoxLayout.Direction.LeftToRight
-          || this.direction_ == WBoxLayout.Direction.RightToLeft) {
+      if (this.direction_ == LayoutDirection.LeftToRight
+          || this.direction_ == LayoutDirection.RightToLeft) {
         spacer.setMinimumSize(size, WLength.Auto);
       } else {
         spacer.setMinimumSize(WLength.Auto, size);
       }
     }
     return spacer;
+  }
+
+  public void setParentWidget(WWidget parent) {
+    super.setParentWidget(parent);
+    this.updateImplementation();
+  }
+
+  private void setImplementation() {
+    boolean isFlexLayout = this.isImplementationIsFlexLayout();
+    if (isFlexLayout) {
+      this.setImpl(new FlexLayoutImpl(this, this.grid_));
+    } else {
+      this.setImpl(new StdGridLayoutImpl2(this, this.grid_));
+    }
   }
 }

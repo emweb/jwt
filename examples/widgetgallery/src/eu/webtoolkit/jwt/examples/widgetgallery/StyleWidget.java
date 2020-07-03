@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,10 @@ import org.slf4j.LoggerFactory;
 class StyleWidget extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(StyleWidget.class);
 
-  public StyleWidget(WContainerWidget parent) {
-    super(parent);
+  public StyleWidget(WContainerWidget parentContainer) {
+    super();
     this.resize(new WLength(310), new WLength(1140));
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public StyleWidget() {
@@ -50,10 +52,10 @@ class StyleWidget extends WPaintedWidget {
       }
     }
     painter.translate(0, 160);
-    painter.fillRect(0, 0, 150, 37.5, new WBrush(WColor.yellow));
-    painter.fillRect(0, 37.5, 150, 37.5, new WBrush(WColor.green));
-    painter.fillRect(0, 75, 150, 37.5, new WBrush(WColor.blue));
-    painter.fillRect(0, 112.5, 150, 37.5, new WBrush(WColor.red));
+    painter.fillRect(0, 0, 150, 37.5, new WBrush(new WColor(StandardColor.Yellow)));
+    painter.fillRect(0, 37.5, 150, 37.5, new WBrush(new WColor(StandardColor.Green)));
+    painter.fillRect(0, 75, 150, 37.5, new WBrush(new WColor(StandardColor.Blue)));
+    painter.fillRect(0, 112.5, 150, 37.5, new WBrush(new WColor(StandardColor.Red)));
     for (int i = 0; i < 10; i++) {
       WBrush brush = new WBrush(new WColor(255, 255, 255, 255 / 10 * i));
       for (int j = 0; j < 4; j++) {
@@ -63,10 +65,10 @@ class StyleWidget extends WPaintedWidget {
       }
     }
     painter.translate(0, 160);
-    painter.fillRect(0, 0, 75, 75, new WBrush(WColor.yellow));
-    painter.fillRect(75, 0, 75, 75, new WBrush(WColor.green));
-    painter.fillRect(0, 75, 75, 75, new WBrush(WColor.blue));
-    painter.fillRect(75, 75, 75, 75, new WBrush(WColor.red));
+    painter.fillRect(0, 0, 75, 75, new WBrush(new WColor(StandardColor.Yellow)));
+    painter.fillRect(75, 0, 75, 75, new WBrush(new WColor(StandardColor.Green)));
+    painter.fillRect(0, 75, 75, 75, new WBrush(new WColor(StandardColor.Blue)));
+    painter.fillRect(75, 75, 75, 75, new WBrush(new WColor(StandardColor.Red)));
     for (int i = 1; i < 8; i++) {
       WPainterPath path = new WPainterPath();
       path.addEllipse(75 - i * 10, 75 - i * 10, i * 20, i * 20);
@@ -74,7 +76,7 @@ class StyleWidget extends WPaintedWidget {
       painter.fillPath(path, brush);
     }
     painter.translate(0, 170);
-    painter.setPen(new WPen(PenStyle.NoPen));
+    painter.setPen(new WPen(PenStyle.None));
     WGradient linGrad = new WGradient();
     linGrad.setLinearGradient(0, 0, 100, 150);
     linGrad.addColorStop(0, new WColor(255, 0, 0, 255));
@@ -111,7 +113,7 @@ class StyleWidget extends WPaintedWidget {
         path.lineTo(i * 14, 150);
       }
       pen = new WPen();
-      pen.setCapStyle(PenCapStyle.FlatCap);
+      pen.setCapStyle(PenCapStyle.Flat);
       pen.setWidth(new WLength(i + 1));
       painter.strokePath(path, pen);
     }
@@ -121,7 +123,7 @@ class StyleWidget extends WPaintedWidget {
     guidePath.lineTo(150, 10);
     guidePath.moveTo(0, 140);
     guidePath.lineTo(150, 140);
-    pen = new WPen(WColor.blue);
+    pen = new WPen(new WColor(StandardColor.Blue));
     painter.strokePath(guidePath, pen);
     List<WPainterPath> paths = new ArrayList<WPainterPath>();
     for (int i = 0; i < 3; i++) {
@@ -132,15 +134,15 @@ class StyleWidget extends WPaintedWidget {
     }
     pen = new WPen();
     pen.setWidth(new WLength(20));
-    pen.setCapStyle(PenCapStyle.FlatCap);
+    pen.setCapStyle(PenCapStyle.Flat);
     painter.strokePath(paths.get(0), pen);
     pen = new WPen();
     pen.setWidth(new WLength(20));
-    pen.setCapStyle(PenCapStyle.SquareCap);
+    pen.setCapStyle(PenCapStyle.Square);
     painter.strokePath(paths.get(1), pen);
     pen = new WPen();
     pen.setWidth(new WLength(20));
-    pen.setCapStyle(PenCapStyle.RoundCap);
+    pen.setCapStyle(PenCapStyle.Round);
     painter.strokePath(paths.get(2), pen);
     painter.translate(0, 170);
     paths.clear();
@@ -155,15 +157,15 @@ class StyleWidget extends WPaintedWidget {
     }
     pen = new WPen();
     pen.setWidth(new WLength(20));
-    pen.setJoinStyle(PenJoinStyle.MiterJoin);
+    pen.setJoinStyle(PenJoinStyle.Miter);
     painter.strokePath(paths.get(0), pen);
     pen = new WPen();
     pen.setWidth(new WLength(20));
-    pen.setJoinStyle(PenJoinStyle.BevelJoin);
+    pen.setJoinStyle(PenJoinStyle.Bevel);
     painter.strokePath(paths.get(1), pen);
     pen = new WPen();
     pen.setWidth(new WLength(20));
-    pen.setJoinStyle(PenJoinStyle.RoundJoin);
+    pen.setJoinStyle(PenJoinStyle.Round);
     painter.strokePath(paths.get(2), pen);
   }
 }

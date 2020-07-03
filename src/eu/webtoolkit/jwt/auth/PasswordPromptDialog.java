@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,11 +42,13 @@ public class PasswordPromptDialog extends WDialog {
    * valid password needs to be entered. The result, if successful, is signalled using {@link
    * Login#login(User user, LoginState state) Login#login()}.
    */
-  public PasswordPromptDialog(final Login login, AuthModel model) {
+  public PasswordPromptDialog(
+      final Login login, final AuthModel model, WContainerWidget parentContainer) {
     super(tr("Wt.Auth.enter-password"));
     this.login_ = login;
     this.model_ = model;
     this.impl_ = new WTemplateFormView(tr("Wt.Auth.template.password-prompt"));
+    this.getContents().addWidget(this.impl_);
     this.model_.reset();
     this.model_.setValue(
         AuthModel.LoginNameField, this.login_.getUser().getIdentity(Identity.LoginName));
@@ -54,38 +57,43 @@ public class PasswordPromptDialog extends WDialog {
     this.impl_.bindWidget(AuthModel.LoginNameField, nameEdit);
     this.impl_.updateViewField(this.model_, AuthModel.LoginNameField);
     WLineEdit passwordEdit = new WLineEdit();
-    passwordEdit.setEchoMode(WLineEdit.EchoMode.Password);
+    passwordEdit.setEchoMode(EchoMode.Password);
     passwordEdit.setFocus(true);
     this.impl_.bindWidget(AuthModel.PasswordField, passwordEdit);
     this.impl_.updateViewField(this.model_, AuthModel.PasswordField);
     WPushButton okButton = new WPushButton(tr("Wt.WMessageBox.Ok"));
-    WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
-    this.model_.configureThrottling(okButton);
     this.impl_.bindWidget("ok-button", okButton);
+    WPushButton cancelButton = new WPushButton(tr("Wt.WMessageBox.Cancel"));
     this.impl_.bindWidget("cancel-button", cancelButton);
+    this.model_.configureThrottling(okButton);
     okButton
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                PasswordPromptDialog.this.check();
-              }
+            (WMouseEvent e1) -> {
+              PasswordPromptDialog.this.check();
             });
     cancelButton
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                PasswordPromptDialog.this.reject();
-              }
+            (WMouseEvent e1) -> {
+              PasswordPromptDialog.this.reject();
             });
-    this.getContents().addWidget(this.impl_);
     if (!WApplication.getInstance().getEnvironment().hasAjax()) {
       this.setMargin(new WLength("-21em"), EnumSet.of(Side.Left));
       this.setMargin(new WLength("-200px"), EnumSet.of(Side.Top));
     }
+    if (parentContainer != null) parentContainer.addWidget(this);
+  }
+  /**
+   * Constructor.
+   *
+   * <p>Calls {@link #PasswordPromptDialog(Login login, AuthModel model, WContainerWidget
+   * parentContainer) this(login, model, (WContainerWidget)null)}
+   */
+  public PasswordPromptDialog(final Login login, final AuthModel model) {
+    this(login, model, (WContainerWidget) null);
   }
 
   protected final Login login_;
@@ -97,7 +105,7 @@ public class PasswordPromptDialog extends WDialog {
     if (this.model_.validate()) {
       Login login = this.login_;
       this.accept();
-      login.login(login.getUser(), LoginState.StrongLogin);
+      login.login(login.getUser(), LoginState.Strong);
     } else {
       this.impl_.updateViewField(this.model_, AuthModel.PasswordField);
       WPushButton okButton = (WPushButton) this.impl_.resolveWidget("ok-button");

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -20,20 +21,23 @@ import org.slf4j.LoggerFactory;
 class WIcon extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WIcon.class);
 
-  public WIcon(WContainerWidget parent) {
-    super(parent);
+  public WIcon(WContainerWidget parentContainer) {
+    super();
     this.name_ = "";
     this.iconChanged_ = false;
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public WIcon() {
     this((WContainerWidget) null);
   }
 
-  public WIcon(final String name, WContainerWidget parent) {
+  public WIcon(final String name, WContainerWidget parentContainer) {
     super();
     this.name_ = "";
+    this.iconChanged_ = false;
     this.setName(name);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public WIcon(final String name) {
@@ -56,12 +60,12 @@ class WIcon extends WInteractWidget {
   }
 
   public void setSize(double factor) {
-    this.getDecorationStyle().getFont().setSize(new WLength(factor, WLength.Unit.FontEm));
+    this.getDecorationStyle().getFont().setSize(new WLength(factor, LengthUnit.FontEm));
   }
 
   public double getSize() {
     final WFont f = this.getDecorationStyle().getFont();
-    if (f.getSizeLength().getUnit() == WLength.Unit.FontEm) {
+    if (f.getSizeLength().getUnit() == LengthUnit.FontEm) {
       return f.getSizeLength().getValue();
     } else {
       return 1;
@@ -83,14 +87,14 @@ class WIcon extends WInteractWidget {
       if (this.name_.length() != 0) {
         sc = StringUtils.addWord(sc, "fa fa-" + this.name_);
       }
-      element.setProperty(Property.PropertyClass, sc);
+      element.setProperty(Property.Class, sc);
       this.iconChanged_ = false;
     }
     super.updateDom(element, all);
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_I;
+    return DomElementType.I;
   }
 
   void propagateRenderOk(boolean deep) {

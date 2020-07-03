@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -80,7 +81,8 @@ import org.slf4j.LoggerFactory;
  * manager with respect to the container: when the container&apos;s height is unconstrained (not
  * specified explicitly using {@link WWebWidget#resize(WLength width, WLength height)
  * WWebWidget#resize()} or a style class, and the container is not included in a layout manager),
- * you should pass AlignTop to {@link WContainerWidget#setLayout(WLayout layout) setLayout()}.
+ * you should pass {@link AlignmentFlag#Top} to {@link WContainerWidget#setLayout(WLayout layout)
+ * setLayout()}.
  *
  * <p>
  *
@@ -105,50 +107,37 @@ import org.slf4j.LoggerFactory;
 public class WContainerWidget extends WInteractWidget {
   private static Logger logger = LoggerFactory.getLogger(WContainerWidget.class);
 
-  /** How to handle overflow of inner content. */
-  public enum Overflow {
-    /** Show content that overflows. */
-    OverflowVisible,
-    /** Show scrollbars when needed. */
-    OverflowAuto,
-    /** Hide content that overflows. */
-    OverflowHidden,
-    /** Always show scroll bars. */
-    OverflowScroll;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /** Creates a container with optional parent. */
-  public WContainerWidget(WContainerWidget parent) {
-    super(parent);
+  /** Creates a container. */
+  public WContainerWidget(WContainerWidget parentContainer) {
+    super();
     this.flags_ = new BitSet();
-    this.contentAlignment_ = EnumSet.of(AlignmentFlag.AlignLeft);
+    this.contentAlignment_ = EnumSet.of(AlignmentFlag.Left);
     this.overflow_ = null;
     this.padding_ = null;
+    this.children_ = new ArrayList<WWidget>();
     this.layout_ = null;
+    this.addedChildren_ = null;
     this.globalUnfocused_ = false;
     this.scrollTop_ = 0;
     this.scrollLeft_ = 0;
     this.setInline(false);
     this.setLoadLaterWhenInvisible(false);
-    this.children_ = new ArrayList<WWidget>();
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
-   * Creates a container with optional parent.
+   * Creates a container.
    *
-   * <p>Calls {@link #WContainerWidget(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WContainerWidget(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   public WContainerWidget() {
     this((WContainerWidget) null);
   }
   /** Destructor. */
   public void remove() {
-    WLayout layout = this.layout_;
-    this.layout_ = null;
-    ;;;
+    this.beingDeleted();
+    this.clear();
+
     super.remove();
   }
   /**
@@ -166,85 +155,22 @@ public class WContainerWidget extends WInteractWidget {
    * @see WContainerWidget#getLayout()
    */
   public void setLayout(WLayout layout) {
-    this.setLayout(layout, EnumSet.of(AlignmentFlag.AlignJustify));
-  }
-  /**
-   * Sets a layout manager for the container (<b>deprecated</b>).
-   *
-   * <p>The <code>alignment</code> argument determines how the layout is aligned inside the
-   * container. By default, the layout manager arranges children over the entire width and height of
-   * the container, corresponding to a value of AlignJustify.
-   *
-   * <p>In general, <code>alignment</code> is the logical OR of a horizontal and a vertical flag:
-   *
-   * <ul>
-   *   <li>The horizontal alignment option may be one of {@link AlignmentFlag#AlignLeft}, {@link
-   *       AlignmentFlag#AlignCenter}, {@link AlignmentFlag#AlignRight}, or {@link
-   *       AlignmentFlag#AlignJustify}.
-   *   <li>The vertical alignment option may be &apos;0&apos; (corresponding to vertical
-   *       justification to the full height), or {@link AlignmentFlag#AlignTop}.
-   * </ul>
-   *
-   * <p>When using a horizontal alignment different from {@link AlignmentFlag#AlignJustify}, and a
-   * vertical alignment different from &apos;0&apos;, the widget is sized in that direction to fit
-   * the contents, instead of the contents being adjusted to the widget size. This is useful when
-   * the container does not have a specific size in that direction and when the layout manager does
-   * not contain any widgets that wish to consume all remaining space in that direction.
-   *
-   * <p>The widget will take ownership of <code>layout</code>.
-   *
-   * <p>
-   *
-   * <p>
-   *
-   * @see WContainerWidget#getLayout()
-   * @deprecated using {@link WContainerWidget#setLayout(WLayout layout) setLayout()} instead, use
-   *     spacers or a nested layout to control the overall alignment of the layout contents within
-   *     the container, and use {@link WWebWidget#setMaximumSize(WLength width, WLength height)
-   *     WWebWidget#setMaximumSize()} (if needed) to let the layout contents determine the size of
-   *     the container.
-   */
-  public void setLayout(WLayout layout, EnumSet<AlignmentFlag> alignment) {
-    if (this.layout_ != null && layout != this.layout_) {;
+    this.clear();
+    this.layout_ = layout;
+    if (this.layout_ != null) {
+      this.layout_.setParentWidget(this);
     }
-    AlignmentFlag hAlign =
-        EnumUtils.enumFromSet(EnumUtils.mask(alignment, AlignmentFlag.AlignHorizontalMask));
-    AlignmentFlag vAlign =
-        EnumUtils.enumFromSet(EnumUtils.mask(alignment, AlignmentFlag.AlignVerticalMask));
-    if (hAlign != AlignmentFlag.AlignJustify || vAlign != null) {
-      logger.warn(
-          new StringWriter()
-              .append(
-                  "setLayout(layout, alignment) is being deprecated (and does no longer have the special meaning it used to have). Use spacers or CSS instead to control alignment")
-              .toString());
-    }
-    this.contentAlignment_ = EnumSet.copyOf(alignment);
-    if (layout != this.layout_) {
-      this.layout_ = layout;
-      this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
-      if (layout != null) {
-        super.setLayout(layout);
-        this.getLayoutImpl().setContainer(this);
-      }
-    }
+    EnumUtils.setOnly(this.contentAlignment_, AlignmentFlag.Justify);
+    this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
+    this.repaint();
   }
-  /**
-   * Sets a layout manager for the container (<b>deprecated</b>).
-   *
-   * <p>Calls {@link #setLayout(WLayout layout, EnumSet alignment) setLayout(layout,
-   * EnumSet.of(alignmen, alignment))}
-   */
-  public final void setLayout(WLayout layout, AlignmentFlag alignmen, AlignmentFlag... alignment) {
-    setLayout(layout, EnumSet.of(alignmen, alignment));
-  }
+  // public Layout  setLayout(<Woow... some pseudoinstantiation type!> layout) ;
   /**
    * Returns the layout manager that was set for the container.
    *
    * <p>If no layout manager was previously set using setLayout({@link WLayout} *), 0 is returned.
    *
    * <p>
-   *
-   * @see WContainerWidget#setLayout(WLayout layout)
    */
   public WLayout getLayout() {
     return this.layout_;
@@ -252,119 +178,135 @@ public class WContainerWidget extends WInteractWidget {
   /**
    * Adds a child widget to this container.
    *
-   * <p>This is equivalent to passing this container as the parent when constructing the child. The
-   * widget is appended to the list of children, and thus also layed-out at the end.
+   * <p>The widget is appended to the list of children, and thus also layed-out at the end.
+   *
+   * <p>If, for some reason, you want to be in control of the lifetime of the widget, you can
+   * retrieve a unique_ptr with WObject::removeChild()
    */
   public void addWidget(WWidget widget) {
-    if (widget.getParent() != null) {
-      if (widget.getParent() != this) {
-        logger.warn(new StringWriter().append("addWidget(): reparenting widget").toString());
-        widget.setParentWidget((WWidget) null);
-      } else {
-        return;
-      }
-    }
-    if (!(this.transientImpl_ != null)) {
-      this.transientImpl_ = new WWebWidget.TransientImpl();
-      if (this.getDomElementType() != DomElementType.DomElement_TD
-          && this.getDomElementType() != DomElementType.DomElement_TH) {
-        this.setLoadLaterWhenInvisible(true);
-      }
-    }
-    this.transientImpl_.addedChildren_.add(widget);
-    this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
-    widget.setParentWidget(this);
+    this.insertWidget(this.children_.size(), widget);
   }
+  // public Widget  addWidget(<Woow... some pseudoinstantiation type!> widget) ;
+  // public Widget  () ;
+  // public Widget  (Arg1 arg1) ;
+  // public Widget  (Arg1 arg1, Arg2 arg2) ;
+  // public Widget  (Arg1 arg1, Arg2 arg2, Arg3 arg3) ;
+  // public Widget  (Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) ;
+  // public Widget  addNew(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4, Arg5 arg5) ;
   /**
    * Inserts a child widget in this container, before another widget.
    *
    * <p>The <i>widget</i> is inserted at the place of the <code>before</code> widget, and subsequent
    * widgets are shifted.
    *
-   * <p>
+   * <p>If, for some reason, you want to be in control of the lifetime of the widget, you can regain
+   * ownership of the widget (without any functional implication) using WObject::removeChild()
    *
-   * @see WContainerWidget#insertWidget(int index, WWidget widget)
+   * <p>
    */
   public void insertBefore(WWidget widget, WWidget before) {
-    if (before.getParent() != this) {
+    int index = this.getIndexOf(before);
+    if (index == -1) {
       logger.error(
-          new StringWriter().append("insertBefore(): 'before' not in this container").toString());
-      return;
+          new StringWriter()
+              .append("insertBefore(): before is not in container, appending at back")
+              .toString());
+      index = this.children_.size();
     }
-    if (widget.getParent() != null) {
-      if (widget.getParent() != this) {
-        logger.warn(new StringWriter().append("insertWidget(): reparenting widget").toString());
-        widget.setParentWidget((WWidget) null);
-      } else {
-        return;
-      }
-    }
-    int i = this.children_.indexOf(before);
-    if (i == -1) {
-      i = this.children_.size();
-    }
-    this.children_.add(0 + i, widget);
-    this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
-    if (!(this.transientImpl_ != null)) {
-      this.transientImpl_ = new WWebWidget.TransientImpl();
-    }
-    this.transientImpl_.addedChildren_.add(widget);
-    this.childAdded(widget);
+    this.insertWidget(index, widget);
   }
+  // public Widget  insertBefore(<Woow... some pseudoinstantiation type!> widget, WWidget  before) ;
   /**
    * Inserts a child widget in this container at given index.
    *
    * <p>The <i>widget</i> is inserted at the given <code>index</code>, and subsequent widgets are
    * shifted.
    *
-   * <p>
+   * <p>If, for some reason, you want to be in control of the lifetime of the widget, you can regain
+   * ownership of the widget (without any functional implication) using WObject::removeChild()
    *
-   * @see WContainerWidget#insertBefore(WWidget widget, WWidget before)
+   * <p>
    */
   public void insertWidget(int index, WWidget widget) {
-    if (index == (int) this.children_.size()) {
-      this.addWidget(widget);
-    } else {
-      this.insertBefore(widget, this.getChildren().get(index));
+    WWidget w = widget;
+    if (!(this.addedChildren_ != null)) {
+      this.addedChildren_ = new ArrayList<WWidget>();
+      if (this.getDomElementType() != DomElementType.TD
+          && this.getDomElementType() != DomElementType.TH) {
+        this.setLoadLaterWhenInvisible(true);
+      }
     }
+    this.addedChildren_.add(widget);
+    this.children_.add(0 + index, widget);
+    this.flags_.set(BIT_ADJUST_CHILDREN_ALIGN);
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
+    this.widgetAdded(w);
   }
+  // public Widget  insertWidget(int index, <Woow... some pseudoinstantiation type!> widget) ;
   /**
    * Removes a child widget from this container.
    *
-   * <p>This removes the widget from this container, but does not delete the widget !
+   * <p>If the {@link WContainerWidget} owns the given widget (i.e. if it was added with {@link
+   * WContainerWidget#addWidget(WWidget widget) addWidget()} or {@link
+   * WContainerWidget#insertWidget(int index, WWidget widget) insertWidget()} and not removed with
+   * WObject::removeChild()), a unique_ptr to this widget is returned. Otherwise, this returns
+   * nullptr.
    */
-  public void removeWidget(WWidget widget) {
-    widget.setParentWidget((WWidget) null);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+  public WWidget removeWidget(WWidget widget) {
+    if (this.layout_ != null) {
+      WWidget result = this.layout_.removeWidget(widget);
+      if (result != null) {
+        this.widgetRemoved(result, false);
+      }
+      return result;
+    }
+    int index = this.getIndexOf(widget);
+    if (index != -1) {
+      boolean renderRemove = true;
+      if (this.addedChildren_ != null && this.addedChildren_.remove(widget)) {
+        renderRemove = false;
+      }
+      this.children_.remove(0 + index);
+      WWidget result = widget;
+      this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
+      this.widgetRemoved(widget, renderRemove);
+      return result;
+    } else {
+      logger.error(new StringWriter().append("removeWidget(): widget not in container").toString());
+      return null;
+    }
   }
   /**
-   * Removes and deletes all child widgets.
+   * Removes all widgets.
    *
-   * <p>This deletes all children that have been added to this container.
-   *
-   * <p>If a layout was set, also the layout manager is deleted.
+   * <p>This removes all children that have been added to this container. If a layout was set, also
+   * the layout manager is cleared.
    */
   public void clear() {
-    while (!this.getChildren().isEmpty()) {
-      WWidget w = this.getChildren().get(this.getChildren().size() - 1);
-      if (w != null) w.remove();
-    }
-    ;
     this.layout_ = null;
+    while (!this.children_.isEmpty()) {
+      {
+        WWidget toRemove = this.removeWidget(this.children_.get(this.children_.size() - 1));
+        if (toRemove != null) toRemove.remove();
+      }
+    }
   }
   /** Returns the index of a widget. */
   public int getIndexOf(WWidget widget) {
-    return this.getChildren().indexOf(widget);
+    for (int i = 0; i < this.children_.size(); ++i) {
+      if (this.children_.get(i) == widget) {
+        return i;
+      }
+    }
+    return -1;
   }
   /** Returns the widget at <i>index</i> */
   public WWidget getWidget(int index) {
-    return this.getChildren().get(index);
+    return this.children_.get(index);
   }
   /** Returns the number of widgets in this container. */
   public int getCount() {
-    return this.getChildren().size();
+    return this.children_.size();
   }
   /**
    * Specifies how child widgets must be aligned within the container.
@@ -374,7 +316,7 @@ public class WContainerWidget extends WInteractWidget {
    * of the container.
    *
    * <p>For a {@link WTableCell}, this may also specify the vertical alignment. The default
-   * alignment is ({@link AlignmentFlag#AlignTop} | {@link AlignmentFlag#AlignLeft}).
+   * alignment is ({@link AlignmentFlag#Top} | {@link AlignmentFlag#Left}).
    */
   public void setContentAlignment(EnumSet<AlignmentFlag> alignment) {
     this.contentAlignment_ = EnumSet.copyOf(alignment);
@@ -382,7 +324,7 @@ public class WContainerWidget extends WInteractWidget {
         EnumUtils.enumFromSet(
             EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
     if (vAlign == null) {
-      this.contentAlignment_.add(AlignmentFlag.AlignTop);
+      this.contentAlignment_.add(AlignmentFlag.Top);
     }
     this.flags_.set(BIT_CONTENT_ALIGNMENT_CHANGED);
     this.repaint();
@@ -420,7 +362,7 @@ public class WContainerWidget extends WInteractWidget {
       this.padding_[3] = length;
     }
     this.flags_.set(BIT_PADDINGS_CHANGED);
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
   /**
    * Sets padding inside the widget.
@@ -434,10 +376,10 @@ public class WContainerWidget extends WInteractWidget {
   /**
    * Sets padding inside the widget.
    *
-   * <p>Calls {@link #setPadding(WLength length, EnumSet sides) setPadding(length, Side.All)}
+   * <p>Calls {@link #setPadding(WLength length, EnumSet sides) setPadding(length, Side.AllSides)}
    */
   public final void setPadding(final WLength length) {
-    setPadding(length, Side.All);
+    setPadding(length, Side.AllSides);
   }
   /**
    * Returns the padding set for the widget.
@@ -474,29 +416,16 @@ public class WContainerWidget extends WInteractWidget {
   public EnumSet<AlignmentFlag> getContentAlignment() {
     return this.contentAlignment_;
   }
-  /**
-   * Sets how overflow of contained children must be handled.
-   *
-   * <p>This is an alternative (CSS-ish) way to configure scroll bars on a container widget,
-   * compared to wrapping inside a {@link WScrollArea}.
-   *
-   * <p>Unlike {@link WScrollArea}, horizontal scrolling does not work reliably when the container
-   * widget is inserted in a layout manager: the layout manager will overflow rather than use
-   * scrollbars for this container widget. A solution then is to use {@link WScrollArea} instead.
-   *
-   * <p>
-   *
-   * @see WScrollArea
-   */
-  public void setOverflow(WContainerWidget.Overflow value, EnumSet<Orientation> orientation) {
+  /** Sets how overflow of contained children must be handled. */
+  public void setOverflow(Overflow value, EnumSet<Orientation> orientation) {
     if (!(this.overflow_ != null)) {
-      this.overflow_ = new WContainerWidget.Overflow[2];
-      this.overflow_[0] = this.overflow_[1] = WContainerWidget.Overflow.OverflowVisible;
+      this.overflow_ = new Overflow[2];
+      this.overflow_[0] = this.overflow_[1] = Overflow.Visible;
     }
-    if (!EnumUtils.mask(orientation, Orientation.Horizontal).isEmpty()) {
+    if (orientation.contains(Orientation.Horizontal)) {
       this.overflow_[0] = value;
     }
-    if (!EnumUtils.mask(orientation, Orientation.Vertical).isEmpty()) {
+    if (orientation.contains(Orientation.Vertical)) {
       this.overflow_[1] = value;
     }
     this.flags_.set(BIT_OVERFLOW_CHANGED);
@@ -505,20 +434,20 @@ public class WContainerWidget extends WInteractWidget {
   /**
    * Sets how overflow of contained children must be handled.
    *
-   * <p>Calls {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
-   * setOverflow(value, EnumSet.of(orientatio, orientation))}
+   * <p>Calls {@link #setOverflow(Overflow value, EnumSet orientation) setOverflow(value,
+   * EnumSet.of(orientatio, orientation))}
    */
   public final void setOverflow(
-      WContainerWidget.Overflow value, Orientation orientatio, Orientation... orientation) {
+      Overflow value, Orientation orientatio, Orientation... orientation) {
     setOverflow(value, EnumSet.of(orientatio, orientation));
   }
   /**
    * Sets how overflow of contained children must be handled.
    *
-   * <p>Calls {@link #setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
-   * setOverflow(value, EnumSet.of (Orientation.Horizontal, Orientation.Vertical))}
+   * <p>Calls {@link #setOverflow(Overflow value, EnumSet orientation) setOverflow(value, EnumSet.of
+   * (Orientation.Horizontal, Orientation.Vertical))}
    */
-  public final void setOverflow(WContainerWidget.Overflow value) {
+  public final void setOverflow(Overflow value) {
     setOverflow(value, EnumSet.of(Orientation.Horizontal, Orientation.Vertical));
   }
   /**
@@ -593,13 +522,13 @@ public class WContainerWidget extends WInteractWidget {
    * Event signal emitted when scrolling in the widget.
    *
    * <p>This event is emitted when the user scrolls in the widget (for setting the scroll bar
-   * policy, see {@link WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet
-   * orientation) setOverflow()}). The event conveys details such as the new scroll bar position,
-   * the total contents height and the current widget height.
+   * policy, see {@link WContainerWidget#setOverflow(Overflow value, EnumSet orientation)
+   * setOverflow()}). The event conveys details such as the new scroll bar position, the total
+   * contents height and the current widget height.
    *
    * <p>
    *
-   * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+   * @see WContainerWidget#setOverflow(Overflow value, EnumSet orientation)
    */
   public EventSignal1<WScrollEvent> scrolled() {
     return this.scrollEventSignal(SCROLL_SIGNAL, true);
@@ -607,12 +536,12 @@ public class WContainerWidget extends WInteractWidget {
   /**
    * return the number of pixels the container is scrolled horizontally
    *
-   * <p>This value is only set if {@link WContainerWidget#setOverflow(WContainerWidget.Overflow
-   * value, EnumSet orientation) setOverflow()} has been called
+   * <p>This value is only set if {@link WContainerWidget#setOverflow(Overflow value, EnumSet
+   * orientation) setOverflow()} has been called
    *
    * <p>
    *
-   * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+   * @see WContainerWidget#setOverflow(Overflow value, EnumSet orientation)
    * @see WContainerWidget#getScrollLeft()
    */
   public int getScrollTop() {
@@ -621,12 +550,12 @@ public class WContainerWidget extends WInteractWidget {
   /**
    * return the number of pixels the container is scrolled vertically
    *
-   * <p>This value is only set if {@link WContainerWidget#setOverflow(WContainerWidget.Overflow
-   * value, EnumSet orientation) setOverflow()} has been called
+   * <p>This value is only set if {@link WContainerWidget#setOverflow(Overflow value, EnumSet
+   * orientation) setOverflow()} has been called
    *
    * <p>
    *
-   * @see WContainerWidget#setOverflow(WContainerWidget.Overflow value, EnumSet orientation)
+   * @see WContainerWidget#setOverflow(Overflow value, EnumSet orientation)
    * @see WContainerWidget#getScrollTop()
    */
   public int getScrollLeft() {
@@ -652,9 +581,11 @@ public class WContainerWidget extends WInteractWidget {
   private static final int BIT_LAYOUT_NEEDS_UPDATE = 7;
   BitSet flags_;
   EnumSet<AlignmentFlag> contentAlignment_;
-  private WContainerWidget.Overflow[] overflow_;
+  private Overflow[] overflow_;
   private WLength[] padding_;
+  List<WWidget> children_;
   private WLayout layout_;
+  private List<WWidget> addedChildren_;
   private boolean globalUnfocused_;
   private int scrollTop_;
   private int scrollLeft_;
@@ -663,16 +594,13 @@ public class WContainerWidget extends WInteractWidget {
     if (this.isPopup() || this.getFirstChildIndex() > 0) {
       return false;
     } else {
-      return (this.transientImpl_ != null ? this.transientImpl_.addedChildren_.size() : 0)
+      return (this.addedChildren_ != null ? this.addedChildren_.size() : 0)
           == this.children_.size();
     }
   }
 
   void rootAsJavaScript(WApplication app, final StringBuilder out, boolean all) {
-    List<WWidget> toAdd =
-        all
-            ? this.children_
-            : this.transientImpl_ != null ? this.transientImpl_.addedChildren_ : null;
+    List<WWidget> toAdd = all ? this.children_ : this.addedChildren_;
     if (toAdd != null) {
       for (int i = 0; i < toAdd.size(); ++i) {
         DomElement c = toAdd.get(i).createSDomElement(app);
@@ -687,41 +615,11 @@ public class WContainerWidget extends WInteractWidget {
                 + "._p_.dragEnd(event);}");
         c.callMethod("dragstart=function(){return false;}");
         c.asJavaScript(out);
-        ;
       }
     }
-    if (this.transientImpl_ != null) {
-      this.transientImpl_.addedChildren_.clear();
-    }
+    this.addedChildren_ = null;
     if (!all) {}
     this.propagateRenderOk(false);
-  }
-
-  void removeChild(WWidget child) {
-    boolean ignoreThisChildRemove = false;
-    if (this.transientImpl_ != null) {
-      if (this.transientImpl_.addedChildren_.remove(child)) {
-        ignoreThisChildRemove = true;
-      }
-    }
-    if (this.layout_ != null) {
-      ignoreThisChildRemove = true;
-      if (this.layout_.removeWidget(child)) {
-        return;
-      }
-    }
-    if (ignoreThisChildRemove) {
-      if (this.isIgnoreChildRemoves()) {
-        ignoreThisChildRemove = false;
-      }
-    }
-    if (ignoreThisChildRemove) {
-      this.setIgnoreChildRemoves(true);
-    }
-    super.removeChild(child);
-    if (ignoreThisChildRemove) {
-      this.setIgnoreChildRemoves(false);
-    }
   }
 
   int getFirstChildIndex() {
@@ -774,10 +672,17 @@ public class WContainerWidget extends WInteractWidget {
     result.add(e);
   }
 
-  DomElement createDomElement(WApplication app, boolean addChildren) {
-    if (this.transientImpl_ != null) {
-      this.transientImpl_.addedChildren_.clear();
+  protected void iterateChildren(final HandleWidgetMethod method) {
+    for (int i = 0; i < this.children_.size(); ++i) {
+      method.handle(this.children_.get(i));
     }
+    if (this.layout_ != null) {
+      this.layout_.iterateWidgets(method);
+    }
+  }
+
+  DomElement createDomElement(WApplication app, boolean addChildren) {
+    this.addedChildren_ = null;
     DomElement result = super.createDomElement(app);
     if (addChildren) {
       this.createDomChildren(result, app);
@@ -788,82 +693,39 @@ public class WContainerWidget extends WInteractWidget {
   void createDomChildren(final DomElement parent, WApplication app) {
     if (this.layout_ != null) {
       this.containsLayout();
-      boolean fitWidth =
-          !EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignJustify).isEmpty();
-      boolean fitHeight =
-          !!EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignVerticalMask).isEmpty();
-      DomElement c = this.getLayoutImpl().createDomElement(fitWidth, fitHeight, app);
-      if (this.getPositionScheme() == PositionScheme.Relative
-          || this.getPositionScheme() == PositionScheme.Absolute) {
-        c.setProperty(Property.PropertyStylePosition, "absolute");
-        c.setProperty(Property.PropertyStyleLeft, "0");
-        c.setProperty(Property.PropertyStyleRight, "0");
-      } else {
-        if (app.getEnvironment().agentIsIE()) {
-          if (app.getEnvironment().agentIsIE()
-              && this.getParent().getPositionScheme() != PositionScheme.Static) {
-            parent.setProperty(Property.PropertyStylePosition, "relative");
-          }
-        }
+      boolean fitWidth = true;
+      boolean fitHeight = true;
+      DomElement c = this.getLayoutImpl().createDomElement(parent, fitWidth, fitHeight, app);
+      if (c != parent) {
+        parent.addChild(c);
       }
-      switch (EnumUtils.enumFromSet(
-          EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignHorizontalMask))) {
-        case AlignCenter:
-          {
-            DomElement itable = DomElement.createNew(DomElementType.DomElement_TABLE);
-            itable.setProperty(Property.PropertyClass, "Wt-hcenter");
-            if (fitHeight) {
-              itable.setProperty(Property.PropertyStyle, "height:100%;");
-            }
-            DomElement irow = DomElement.createNew(DomElementType.DomElement_TR);
-            DomElement itd = DomElement.createNew(DomElementType.DomElement_TD);
-            if (fitHeight) {
-              itd.setProperty(Property.PropertyStyle, "height:100%;");
-            }
-            itd.addChild(c);
-            irow.addChild(itd);
-            itable.addChild(irow);
-            itable.setId(this.getId() + "l");
-            c = itable;
-            break;
-          }
-        case AlignLeft:
-          break;
-        case AlignRight:
-          c.setProperty(Property.PropertyStyleFloat, "right");
-          break;
-        default:
-          break;
-      }
-      parent.addChild(c);
       this.flags_.clear(BIT_LAYOUT_NEEDS_RERENDER);
+      this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
     } else {
       for (int i = 0; i < this.children_.size(); ++i) {
         parent.addChild(this.children_.get(i).createSDomElement(app));
       }
     }
-    if (this.transientImpl_ != null) {
-      this.transientImpl_.addedChildren_.clear();
-    }
+    this.addedChildren_ = null;
   }
 
   void updateDomChildren(final DomElement parent, WApplication app) {
     if (!app.getSession().getRenderer().isPreLearning() && !(this.layout_ != null)) {
-      if (parent.getMode() == DomElement.Mode.ModeUpdate) {
+      if (parent.getMode() == DomElement.Mode.Update) {
         parent.setWasEmpty(this.isWasEmpty());
       }
-      if (this.transientImpl_ != null) {
+      if (this.addedChildren_ != null) {
         for (; ; ) {
           List<Integer> orderedInserts = new ArrayList<Integer>();
-          final List<WWidget> ac = this.transientImpl_.addedChildren_;
+          final List<WWidget> ac = this.addedChildren_;
           for (int i = 0; i < ac.size(); ++i) {
-            orderedInserts.add(this.children_.indexOf(ac.get(i)));
+            orderedInserts.add(this.getIndexOf(ac.get(i)));
           }
           Collections.sort(orderedInserts);
-          int addedCount = this.transientImpl_.addedChildren_.size();
+          int addedCount = this.addedChildren_.size();
           int totalCount = this.children_.size();
           int insertCount = 0;
-          this.transientImpl_.addedChildren_.clear();
+          this.addedChildren_ = null;
           for (int i = 0; i < orderedInserts.size(); ++i) {
             int pos = orderedInserts.get(i);
             DomElement c = this.children_.get(pos).createSDomElement(app);
@@ -874,10 +736,11 @@ public class WContainerWidget extends WInteractWidget {
             }
             ++insertCount;
           }
-          if (this.transientImpl_.addedChildren_.isEmpty()) {
+          if (!(this.addedChildren_ != null) || this.addedChildren_.isEmpty()) {
             break;
           }
         }
+        this.addedChildren_ = null;
       }
     }
     if (this.flags_.get(BIT_LAYOUT_NEEDS_UPDATE)) {
@@ -889,25 +752,24 @@ public class WContainerWidget extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    DomElementType type =
-        this.isInline() ? DomElementType.DomElement_SPAN : DomElementType.DomElement_DIV;
+    DomElementType type = this.isInline() ? DomElementType.SPAN : DomElementType.DIV;
     WContainerWidget p =
         ((this.getParentWebWidget()) instanceof WContainerWidget
             ? (WContainerWidget) (this.getParentWebWidget())
             : null);
     if (p != null && p.isList()) {
-      type = DomElementType.DomElement_LI;
+      type = DomElementType.LI;
     }
     if (this.isList()) {
-      type = this.isOrderedList() ? DomElementType.DomElement_OL : DomElementType.DomElement_UL;
+      type = this.isOrderedList() ? DomElementType.OL : DomElementType.UL;
     }
     return type;
   }
 
   void updateDom(final DomElement element, boolean all) {
     element.setGlobalUnfocused(this.globalUnfocused_);
-    if (all && element.getType() == DomElementType.DomElement_LI && this.isInline()) {
-      element.setProperty(Property.PropertyStyleDisplay, "inline");
+    if (all && element.getType() == DomElementType.LI && this.isInline()) {
+      element.setProperty(Property.StyleDisplay, "inline");
     }
     if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED) || all) {
       AlignmentFlag hAlign =
@@ -915,40 +777,40 @@ public class WContainerWidget extends WInteractWidget {
               EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignHorizontalMask));
       boolean ltr = WApplication.getInstance().getLayoutDirection() == LayoutDirection.LeftToRight;
       switch (hAlign) {
-        case AlignLeft:
+        case Left:
           if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED)) {
-            element.setProperty(Property.PropertyStyleTextAlign, ltr ? "left" : "right");
+            element.setProperty(Property.StyleTextAlign, ltr ? "left" : "right");
           }
           break;
-        case AlignRight:
-          element.setProperty(Property.PropertyStyleTextAlign, ltr ? "right" : "left");
+        case Right:
+          element.setProperty(Property.StyleTextAlign, ltr ? "right" : "left");
           break;
-        case AlignCenter:
-          element.setProperty(Property.PropertyStyleTextAlign, "center");
+        case Center:
+          element.setProperty(Property.StyleTextAlign, "center");
           break;
-        case AlignJustify:
+        case Justify:
           if (!(this.layout_ != null)) {
-            element.setProperty(Property.PropertyStyleTextAlign, "justify");
+            element.setProperty(Property.StyleTextAlign, "justify");
           }
           break;
         default:
           break;
       }
-      if (this.getDomElementType() == DomElementType.DomElement_TD) {
+      if (this.getDomElementType() == DomElementType.TD) {
         AlignmentFlag vAlign =
             EnumUtils.enumFromSet(
                 EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignVerticalMask));
         switch (vAlign) {
-          case AlignTop:
+          case Top:
             if (this.flags_.get(BIT_CONTENT_ALIGNMENT_CHANGED)) {
-              element.setProperty(Property.PropertyStyleVerticalAlign, "top");
+              element.setProperty(Property.StyleVerticalAlign, "top");
             }
             break;
-          case AlignMiddle:
-            element.setProperty(Property.PropertyStyleVerticalAlign, "middle");
+          case Middle:
+            element.setProperty(Property.StyleVerticalAlign, "middle");
             break;
-          case AlignBottom:
-            element.setProperty(Property.PropertyStyleVerticalAlign, "bottom");
+          case Bottom:
+            element.setProperty(Property.StyleVerticalAlign, "bottom");
           default:
             break;
         }
@@ -963,7 +825,7 @@ public class WContainerWidget extends WInteractWidget {
           AlignmentFlag ha =
               EnumUtils.enumFromSet(
                   EnumUtils.mask(this.contentAlignment_, AlignmentFlag.AlignHorizontalMask));
-          if (ha == AlignmentFlag.AlignCenter) {
+          if (ha == AlignmentFlag.Center) {
             if (!child.getMargin(Side.Left).isAuto()) {
               child.setMargin(WLength.Auto, EnumSet.of(Side.Left));
             }
@@ -971,7 +833,7 @@ public class WContainerWidget extends WInteractWidget {
               child.setMargin(WLength.Auto, EnumSet.of(Side.Right));
             }
           } else {
-            if (ha == AlignmentFlag.AlignRight) {
+            if (ha == AlignmentFlag.Right) {
               if (!child.getMargin(Side.Left).isAuto()) {
                 child.setMargin(WLength.Auto, EnumSet.of(Side.Left));
               }
@@ -992,7 +854,7 @@ public class WContainerWidget extends WInteractWidget {
       if (this.padding_[0].equals(this.padding_[1])
           && this.padding_[0].equals(this.padding_[2])
           && this.padding_[0].equals(this.padding_[3])) {
-        element.setProperty(Property.PropertyStylePadding, this.padding_[0].getCssText());
+        element.setProperty(Property.StylePadding, this.padding_[0].getCssText());
       } else {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < 4; ++i) {
@@ -1001,7 +863,7 @@ public class WContainerWidget extends WInteractWidget {
           }
           s.append(this.padding_[i].isAuto() ? "0" : this.padding_[i].getCssText());
         }
-        element.setProperty(Property.PropertyStylePadding, s.toString());
+        element.setProperty(Property.StylePadding, s.toString());
       }
       this.flags_.clear(BIT_PADDINGS_CHANGED);
     }
@@ -1009,10 +871,9 @@ public class WContainerWidget extends WInteractWidget {
     if (this.flags_.get(BIT_OVERFLOW_CHANGED)
         || all
             && this.overflow_ != null
-            && !(this.overflow_[0] == WContainerWidget.Overflow.OverflowVisible
-                && this.overflow_[1] == WContainerWidget.Overflow.OverflowVisible)) {
-      element.setProperty(Property.PropertyStyleOverflowX, cssText[this.overflow_[0].getValue()]);
-      element.setProperty(Property.PropertyStyleOverflowY, cssText[this.overflow_[1].getValue()]);
+            && !(this.overflow_[0] == Overflow.Visible && this.overflow_[1] == Overflow.Visible)) {
+      element.setProperty(Property.StyleOverflowX, cssText[(int) this.overflow_[0].getValue()]);
+      element.setProperty(Property.StyleOverflowY, cssText[(int) this.overflow_[1].getValue()]);
       this.setFormObject(true);
       this.doJavaScript(
           this.getJsRef()
@@ -1027,10 +888,9 @@ public class WContainerWidget extends WInteractWidget {
       this.flags_.clear(BIT_OVERFLOW_CHANGED);
       WApplication app = WApplication.getInstance();
       if (app.getEnvironment().agentIsIE()
-          && (this.overflow_[0] == WContainerWidget.Overflow.OverflowAuto
-              || this.overflow_[0] == WContainerWidget.Overflow.OverflowScroll)) {
+          && (this.overflow_[0] == Overflow.Auto || this.overflow_[0] == Overflow.Scroll)) {
         if (this.getPositionScheme() == PositionScheme.Static) {
-          element.setProperty(Property.PropertyStylePosition, "relative");
+          element.setProperty(Property.StylePosition, "relative");
         }
       }
     }
@@ -1045,50 +905,13 @@ public class WContainerWidget extends WInteractWidget {
     if (this.layout_ != null && deep) {
       this.propagateLayoutItemsOk(this.getLayout());
     } else {
-      if (this.transientImpl_ != null) {
-        this.transientImpl_.addedChildren_.clear();
-      }
+      this.addedChildren_ = null;
     }
     super.propagateRenderOk(deep);
   }
 
   protected DomElement createDomElement(WApplication app) {
     return this.createDomElement(app, true);
-  }
-
-  WLayoutItemImpl createLayoutItemImpl(WLayoutItem item) {
-    {
-      WWidgetItem wi = ((item) instanceof WWidgetItem ? (WWidgetItem) (item) : null);
-      if (wi != null) {
-        return new StdWidgetItemImpl(wi);
-      }
-    }
-    {
-      WBorderLayout l = ((item) instanceof WBorderLayout ? (WBorderLayout) (item) : null);
-      if (l != null) {
-        return new StdGridLayoutImpl2(l, l.getGrid());
-      }
-    }
-    {
-      WBoxLayout l = ((item) instanceof WBoxLayout ? (WBoxLayout) (item) : null);
-      if (l != null) {
-        return new StdGridLayoutImpl2(l, l.getGrid());
-      }
-    }
-    {
-      WGridLayout l = ((item) instanceof WGridLayout ? (WGridLayout) (item) : null);
-      if (l != null) {
-        return new StdGridLayoutImpl2(l, l.getGrid());
-      }
-    }
-    {
-      WFitLayout l = ((item) instanceof WFitLayout ? (WFitLayout) (item) : null);
-      if (l != null) {
-        return new StdGridLayoutImpl2(l, l.getGrid());
-      }
-    }
-    assert false;
-    return null;
   }
 
   StdLayoutImpl getLayoutImpl() {
@@ -1133,22 +956,13 @@ public class WContainerWidget extends WInteractWidget {
     }
   }
 
-  void layoutChanged(boolean rerender, boolean deleted) {
+  void layoutChanged(boolean rerender) {
     if (rerender) {
       this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
     } else {
       this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
     }
-    if (deleted) {
-      this.layout_ = null;
-    }
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
-  }
-
-  void removeFromLayout(WWidget widget) {
-    if (this.layout_ != null) {
-      this.removeWidget(widget);
-    }
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
 
   private static String[] cssText = {"visible", "auto", "hidden", "scroll"};

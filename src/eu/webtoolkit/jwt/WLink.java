@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -34,34 +35,15 @@ public class WLink {
   private static Logger logger = LoggerFactory.getLogger(WLink.class);
 
   /**
-   * An enumeration for a link type.
-   *
-   * <p>
-   *
-   * @see WLink#getType()
-   */
-  public enum Type {
-    /** A static URL. */
-    Url,
-    /** A dynamic resource. */
-    Resource,
-    /** An internal path. */
-    InternalPath;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
    * Default constructor.
    *
    * <p>This constructs a null link.
    */
   public WLink() {
-    this.type_ = WLink.Type.Url;
-    this.value_ = new Object();
-    this.target_ = AnchorTarget.TargetSelf;
+    this.type_ = LinkType.Url;
+    this.stringValue_ = "";
+    this.resource_ = null;
+    this.target_ = LinkTarget.Self;
     this.setUrl("");
   }
   /**
@@ -72,26 +54,28 @@ public class WLink {
    * @see WLink#setUrl(String url)
    */
   public WLink(String url) {
-    this.value_ = new Object();
-    this.target_ = AnchorTarget.TargetSelf;
+    this.stringValue_ = "";
+    this.resource_ = null;
+    this.target_ = LinkTarget.Self;
     this.setUrl(url);
   }
   /**
    * Creates a link to a (static) URL or an internal path.
    *
    * <p>Using this constructor, you can create a link to a static URL (<code>type</code> == {@link
-   * WLink.Type#Url Url}) or an internal path (<code>type</code> == {@link WLink.Type#InternalPath
-   * InternalPath}). For an internal path, the <code>value</code> will be interpreted as a UTF8
-   * encoded string.
+   * LinkType#Url}) or an internal path (<code>type</code> == {@link LinkType#InternalPath}). For an
+   * internal path, the <code>value</code> will be interpreted as a CharEncoding::UTF8 encoded
+   * string.
    *
    * <p>
    *
    * @see WLink#setUrl(String url)
    * @see WLink#setInternalPath(String internalPath)
    */
-  public WLink(WLink.Type type, final String value) {
-    this.value_ = new Object();
-    this.target_ = AnchorTarget.TargetSelf;
+  public WLink(LinkType type, final String value) {
+    this.stringValue_ = "";
+    this.resource_ = null;
+    this.target_ = LinkTarget.Self;
     switch (type) {
       case Url:
         this.setUrl(value);
@@ -110,9 +94,10 @@ public class WLink {
    *
    * @see WLink#setResource(WResource resource)
    */
-  public WLink(WResource resource) {
-    this.value_ = new Object();
-    this.target_ = AnchorTarget.TargetSelf;
+  public WLink(final WResource resource) {
+    this.stringValue_ = "";
+    this.resource_ = null;
+    this.target_ = LinkTarget.Self;
     this.setResource(resource);
   }
   /**
@@ -122,9 +107,9 @@ public class WLink {
    * WLink#setUrl(String url) setUrl()}, {@link WLink#setResource(WResource resource) setResource()}
    * or {@link WLink#setInternalPath(String internalPath) setInternalPath()}.
    *
-   * <p>The default type for a null link is {@link WLink.Type#Url Url}.
+   * <p>The default type for a null link is {@link LinkType#Url}.
    */
-  public WLink.Type getType() {
+  public LinkType getType() {
     return this.type_;
   }
   /**
@@ -137,16 +122,17 @@ public class WLink {
    * @see WLink#WLink()
    */
   public boolean isNull() {
-    return this.type_ == WLink.Type.Url && this.getUrl().length() == 0;
+    return this.type_ == LinkType.Url && this.getUrl().length() == 0;
   }
   /**
    * Sets the link URL.
    *
-   * <p>This sets the type to {@link WLink.Type#Url Url}.
+   * <p>This sets the type to {@link LinkType#Url}.
    */
   public void setUrl(final String url) {
-    this.type_ = WLink.Type.Url;
-    this.value_ = url;
+    this.type_ = LinkType.Url;
+    this.stringValue_ = url;
+    this.resource_ = null;
   }
   /**
    * Returns the link URL.
@@ -158,7 +144,7 @@ public class WLink {
   public String getUrl() {
     switch (this.type_) {
       case Url:
-        return ((String) this.value_);
+        return this.stringValue_;
       case Resource:
         return this.getResource().getUrl();
       case InternalPath:
@@ -169,11 +155,12 @@ public class WLink {
   /**
    * Sets the link resource.
    *
-   * <p>This sets the type to {@link WLink.Type#Resource Resource}.
+   * <p>This sets the type to {@link LinkType#Resource}.
    */
-  public void setResource(WResource resource) {
-    this.type_ = WLink.Type.Resource;
-    this.value_ = resource;
+  public void setResource(final WResource resource) {
+    this.type_ = LinkType.Resource;
+    this.resource_ = resource;
+    this.stringValue_ = "";
   }
   /**
    * Returns the link resource.
@@ -186,11 +173,7 @@ public class WLink {
    * @see WLink#setResource(WResource resource)
    */
   public WResource getResource() {
-    if (this.type_ == WLink.Type.Resource) {
-      return ((WResource) this.value_);
-    } else {
-      return null;
-    }
+    return this.resource_;
   }
   /**
    * Sets the link internal path.
@@ -198,12 +181,13 @@ public class WLink {
    * <p>This points the link to the given internal path.
    */
   public void setInternalPath(final String internalPath) {
-    this.type_ = WLink.Type.InternalPath;
+    this.type_ = LinkType.InternalPath;
     String path = internalPath;
     if (path.startsWith("#/")) {
       path = path.substring(1);
     }
-    this.value_ = path;
+    this.stringValue_ = path;
+    this.resource_ = null;
   }
   /**
    * Returns the internal path.
@@ -216,8 +200,8 @@ public class WLink {
    * @see WLink#setInternalPath(String internalPath)
    */
   public String getInternalPath() {
-    if (this.type_ == WLink.Type.InternalPath) {
-      return ((String) this.value_);
+    if (this.type_ == LinkType.InternalPath) {
+      return this.stringValue_;
     } else {
       return "";
     }
@@ -225,20 +209,19 @@ public class WLink {
   /**
    * Sets the location where the linked content should be displayed.
    *
-   * <p>By default, the linked content is displayed in the application ({@link
-   * AnchorTarget#TargetSelf}). When the destination is an HTML document, the application is
-   * replaced with the new document. When the link is to a document that cannot be displayed in the
-   * browser, it is offered for download or opened using an external program, depending on browser
-   * settings.
+   * <p>By default, the linked content is displayed in the application ({@link LinkTarget#Self}).
+   * When the destination is an HTML document, the application is replaced with the new document.
+   * When the link is to a document that cannot be displayed in the browser, it is offered for
+   * download or opened using an external program, depending on browser settings.
    *
-   * <p>By setting <code>target</code> to {@link AnchorTarget#TargetNewWindow}, the destination is
-   * displayed in a new browser window or tab.
+   * <p>By setting <code>target</code> to {@link LinkTarget#NewWindow}, the destination is displayed
+   * in a new browser window or tab.
    *
    * <p>
    *
    * @see WLink#getTarget()
    */
-  public void setTarget(AnchorTarget target) {
+  public void setTarget(LinkTarget target) {
     this.target_ = target;
   }
   /**
@@ -246,14 +229,16 @@ public class WLink {
    *
    * <p>
    *
-   * @see WLink#setTarget(AnchorTarget target)
+   * @see WLink#setTarget(LinkTarget target)
    */
-  public AnchorTarget getTarget() {
+  public LinkTarget getTarget() {
     return this.target_;
   }
   /** Indicates whether some other object is "equal to" this one. */
   public boolean equals(final WLink other) {
-    return this.type_ == other.type_ && this.value_.equals(other.value_);
+    return this.type_ == other.type_
+        && this.stringValue_.equals(other.stringValue_)
+        && this.resource_ == other.resource_;
   }
 
   String resolveUrl(WApplication app) {
@@ -278,12 +263,13 @@ public class WLink {
     return app.resolveRelativeUrl(relativeUrl);
   }
 
-  private WLink.Type type_;
-  private Object value_;
-  private AnchorTarget target_;
+  private LinkType type_;
+  private String stringValue_;
+  private WResource resource_;
+  private LinkTarget target_;
 
   JSlot manageInternalPathChange(WApplication app, WInteractWidget widget, JSlot slot) {
-    if (this.type_ == WLink.Type.InternalPath) {
+    if (this.type_ == LinkType.InternalPath) {
       if (app.getEnvironment().hasAjax()) {
         if (!(slot != null)) {
           slot = new JSlot();
@@ -300,7 +286,7 @@ public class WLink {
         return slot;
       }
     }
-    ;
+
     return null;
   }
 }

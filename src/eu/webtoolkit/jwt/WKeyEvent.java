@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -76,9 +77,8 @@ public class WKeyEvent implements WAbstractEvent {
    * events, &apos;0&apos; is returned.
    *
    * <p>The {@link WKeyEvent#getCharCode() getCharCode()} may be different from {@link
-   * WKeyEvent#getKey() getKey()}. For example, a {@link Key#Key_M} key may correspond to
-   * &apos;m&apos; or &apos;M&apos; character, depending on whether the shift key is pressed
-   * simultaneously.
+   * WKeyEvent#getKey() getKey()}. For example, a {@link Key#M} key may correspond to &apos;m&apos;
+   * or &apos;M&apos; character, depending on whether the shift key is pressed simultaneously.
    *
    * <p>
    *
@@ -136,7 +136,7 @@ public class WKeyEvent implements WAbstractEvent {
     if ((p = request.getParameter(name)) != null) {
       try {
         return asInt(p);
-      } catch (final NumberFormatException ee) {
+      } catch (final RuntimeException ee) {
         logger.error(
             new StringWriter()
                 .append("Could not cast event property '")
@@ -190,7 +190,7 @@ public class WKeyEvent implements WAbstractEvent {
                 asInt(s.get(i + 7)),
                 asInt(s.get(i + 8))));
       }
-    } catch (final NumberFormatException ee) {
+    } catch (final RuntimeException ee) {
       logger.error(
           new StringWriter()
               .append("Could not parse touches array '")

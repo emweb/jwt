@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,12 +22,13 @@ import org.slf4j.LoggerFactory;
 class LeafletMapExample extends WContainerWidget {
   private static Logger logger = LoggerFactory.getLogger(LeafletMapExample.class);
 
-  public LeafletMapExample(WContainerWidget parent) {
-    super(parent);
+  public LeafletMapExample(WContainerWidget parentContainer) {
+    super();
     WHBoxLayout layout = new WHBoxLayout();
     this.setLayout(layout);
     this.setHeight(new WLength(400));
     this.map_ = new WLeafletMap();
+    layout.addWidget(this.map_, 1);
     com.google.gson.JsonObject options = new com.google.gson.JsonObject();
     options.add("maxZoom", (new com.google.gson.JsonPrimitive(19)));
     options.add(
@@ -37,11 +39,11 @@ class LeafletMapExample extends WContainerWidget {
     this.map_.panTo(EMWEB_COORDS);
     this.addEmwebLogoMarker();
     WPen pen = new WPen(new WColor(0, 191, 255));
-    pen.setCapStyle(PenCapStyle.RoundCap);
-    pen.setJoinStyle(PenJoinStyle.RoundJoin);
+    pen.setCapStyle(PenCapStyle.Round);
+    pen.setJoinStyle(PenJoinStyle.Round);
     pen.setWidth(new WLength(3.0));
     this.map_.addPolyline(this.getRoadDescription(), pen);
-    layout.addWidget(this.map_, 1);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
 
   public LeafletMapExample() {

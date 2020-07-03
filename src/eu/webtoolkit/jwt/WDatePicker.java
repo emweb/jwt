@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -49,18 +50,20 @@ public class WDatePicker extends WCompositeWidget {
    * <p>This constructor creates a line edit with an icon that leads to a popup calendar. A {@link
    * WDateValidator} is configured for the line edit.
    */
-  public WDatePicker(WContainerWidget parent) {
-    super(parent);
+  public WDatePicker(WContainerWidget parentContainer) {
+    super();
     this.format_ = "";
+    this.popup_ = null;
     this.popupClosed_ = new Signal();
     this.changed_ = new Signal();
     this.positionJS_ = new JSlot();
     this.createDefault((WLineEdit) null);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Create a new date picker.
    *
-   * <p>Calls {@link #WDatePicker(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WDatePicker(WContainerWidget parentContainer) this((WContainerWidget)null)}
    */
   public WDatePicker() {
     this((WContainerWidget) null);
@@ -73,18 +76,20 @@ public class WDatePicker extends WCompositeWidget {
    * <p>The <code>forEdit</code> argument is the lineEdit that works in conjunction with the date
    * picker. This widget does not become part of the date picker, and may be located anywhere else.
    */
-  public WDatePicker(WLineEdit forEdit, WContainerWidget parent) {
-    super(parent);
+  public WDatePicker(WLineEdit forEdit, WContainerWidget parentContainer) {
+    super();
     this.format_ = "";
+    this.popup_ = null;
     this.popupClosed_ = new Signal();
     this.changed_ = new Signal();
     this.positionJS_ = new JSlot();
     this.createDefault(forEdit);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Create a new date picker for a line edit.
    *
-   * <p>Calls {@link #WDatePicker(WLineEdit forEdit, WContainerWidget parent) this(forEdit,
+   * <p>Calls {@link #WDatePicker(WLineEdit forEdit, WContainerWidget parentContainer) this(forEdit,
    * (WContainerWidget)null)}
    */
   public WDatePicker(WLineEdit forEdit) {
@@ -94,32 +99,42 @@ public class WDatePicker extends WCompositeWidget {
    * Create a new date picker for existing line edit and with custom display widget.
    *
    * <p>The <code>displayWidget</code> is a button or image which much be clicked to open the date
-   * picker. This widget will become owned by the picker.
+   * picker.
    *
    * <p>The <code>forEdit</code> argument is the lineEdit that works in conjunction with the date
-   * picker. This widget does not become part of the date picker, and may be located anywhere else.
+   * picker.
    */
-  public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, WContainerWidget parent) {
-    super(parent);
+  public WDatePicker(
+      WInteractWidget displayWidget, WLineEdit forEdit, WContainerWidget parentContainer) {
+    super();
     this.format_ = "";
+    this.popup_ = null;
     this.popupClosed_ = new Signal();
     this.changed_ = new Signal();
     this.positionJS_ = new JSlot();
     this.create(displayWidget, forEdit);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Create a new date picker for existing line edit and with custom display widget.
    *
    * <p>Calls {@link #WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit, WContainerWidget
-   * parent) this(displayWidget, forEdit, (WContainerWidget)null)}
+   * parentContainer) this(displayWidget, forEdit, (WContainerWidget)null)}
    */
   public WDatePicker(WInteractWidget displayWidget, WLineEdit forEdit) {
     this(displayWidget, forEdit, (WContainerWidget) null);
   }
   /** Destructor. */
   public void remove() {
-    WApplication.getInstance().doJavaScript("Wt3_6_0.remove('" + this.popup_.getId() + "');");
     super.remove();
+  }
+  /**
+   * Returns the validator.
+   *
+   * <p>Most of the configuration of the date edit is stored in the validator.
+   */
+  public WDateValidator getDateValidator() {
+    return ((WDateValidator) this.forEdit_.getValidator());
   }
   /**
    * Sets the format used for parsing or writing the date in the line edit.
@@ -137,10 +152,7 @@ public class WDatePicker extends WCompositeWidget {
   public void setFormat(final String format) {
     WDate d = this.getDate();
     this.format_ = format;
-    WDateValidator dv =
-        ((this.forEdit_.getValidator()) instanceof WDateValidator
-            ? (WDateValidator) (this.forEdit_.getValidator())
-            : null);
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setFormat(format);
     }
@@ -242,10 +254,7 @@ public class WDatePicker extends WCompositeWidget {
   }
   /** Sets the bottom of the valid date range. */
   public void setBottom(final WDate bottom) {
-    WDateValidator dv =
-        ((this.forEdit_.getValidator()) instanceof WDateValidator
-            ? (WDateValidator) (this.forEdit_.getValidator())
-            : null);
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setBottom(bottom);
       this.calendar_.setBottom(bottom);
@@ -253,10 +262,7 @@ public class WDatePicker extends WCompositeWidget {
   }
   /** Returns the bottom date of the valid range. */
   public WDate getBottom() {
-    WDateValidator dv =
-        ((this.forEdit_.getValidator()) instanceof WDateValidator
-            ? (WDateValidator) (this.forEdit_.getValidator())
-            : null);
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       return dv.getBottom();
     } else {
@@ -265,10 +271,7 @@ public class WDatePicker extends WCompositeWidget {
   }
   /** Sets the top of the valid date range. */
   public void setTop(final WDate top) {
-    WDateValidator dv =
-        ((this.forEdit_.getValidator()) instanceof WDateValidator
-            ? (WDateValidator) (this.forEdit_.getValidator())
-            : null);
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setTop(top);
       this.calendar_.setTop(top);
@@ -276,10 +279,7 @@ public class WDatePicker extends WCompositeWidget {
   }
   /** Returns the top date of the valid range. */
   public WDate getTop() {
-    WDateValidator dv =
-        ((this.forEdit_.getValidator()) instanceof WDateValidator
-            ? (WDateValidator) (this.forEdit_.getValidator())
-            : null);
+    WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       return dv.getTop();
     } else {
@@ -295,14 +295,6 @@ public class WDatePicker extends WCompositeWidget {
   public Signal changed() {
     return this.changed_;
   }
-  /**
-   * Controls how the calendar popup is positioned.
-   *
-   * <p>
-   *
-   * @deprecated since 3.3.0, this does nothing
-   */
-  public void setGlobalPopup(boolean anon1) {}
   /** Shows or hides the popup. */
   public void setPopupVisible(boolean visible) {
     this.popup_.setHidden(!visible);
@@ -317,11 +309,8 @@ public class WDatePicker extends WCompositeWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
-      WDateValidator dv =
-          ((this.forEdit_.getValidator()) instanceof WDateValidator
-              ? (WDateValidator) (this.forEdit_.getValidator())
-              : null);
+    if (flags.contains(RenderFlag.Full)) {
+      WDateValidator dv = this.getDateValidator();
       if (dv != null) {
         this.setTop(dv.getTop());
         this.setBottom(dv.getBottom());
@@ -342,110 +331,97 @@ public class WDatePicker extends WCompositeWidget {
   private JSlot positionJS_;
 
   private void createDefault(WLineEdit forEdit) {
-    WImage icon = new WImage(WApplication.getRelativeResourcesUrl() + "date.gif");
+    WImage icon =
+        new WImage(
+            new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"),
+            (WContainerWidget) null);
     icon.resize(new WLength(16), new WLength(16));
-    icon.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+    icon.setVerticalAlignment(AlignmentFlag.Middle);
     if (!(forEdit != null)) {
-      forEdit = new WLineEdit();
-      this.create(icon, forEdit);
-      this.layout_.insertWidget(0, forEdit);
+      WLineEdit edit = new WLineEdit();
+      this.create(icon, edit);
+      this.layout_.insertWidget(0, edit);
     } else {
       this.create(icon, forEdit);
     }
   }
 
   private void create(WInteractWidget displayWidget, WLineEdit forEdit) {
-    this.setImplementation(this.layout_ = new WContainerWidget());
+    this.layout_ = new WContainerWidget();
+    this.setImplementation(this.layout_);
     this.displayWidget_ = displayWidget;
     this.forEdit_ = forEdit;
-    this.forEdit_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+    this.forEdit_.setVerticalAlignment(AlignmentFlag.Middle);
     this.forEdit_
         .changed()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WDatePicker.this.setFromLineEdit();
-              }
+            () -> {
+              WDatePicker.this.setFromLineEdit();
             });
     this.format_ = "dd/MM/yyyy";
     this.layout_.setInline(true);
     this.layout_.addWidget(displayWidget);
     this.layout_.setAttributeValue("style", "white-space: nowrap");
-    String TEMPLATE = "${calendar}";
-    WTemplate t = new WTemplate(new WString(TEMPLATE));
-    this.popup_ = new WPopupWidget(t, this);
-    this.popup_.setAnchorWidget(this.displayWidget_, Orientation.Horizontal);
-    this.popup_.setTransient(true);
     this.calendar_ = new WCalendar();
     this.calendar_.setSingleClickSelect(true);
     this.calendar_
         .activated()
         .addListener(
-            this.popup_,
-            new Signal1.Listener<WDate>() {
-              public void trigger(WDate e1) {
-                WDatePicker.this.popup_.hide();
-              }
-            });
-    this.calendar_
-        .activated()
-        .addListener(
             this,
-            new Signal1.Listener<WDate>() {
-              public void trigger(WDate e1) {
-                WDatePicker.this.onPopupHidden();
-              }
+            (WDate e1) -> {
+              WDatePicker.this.onPopupHidden();
             });
     this.calendar_
         .selectionChanged()
         .addListener(
             this,
-            new Signal.Listener() {
-              public void trigger() {
-                WDatePicker.this.setFromCalendar();
-              }
+            () -> {
+              WDatePicker.this.setFromCalendar();
             });
-    t.escapePressed()
+    String TEMPLATE = "${calendar}";
+    WTemplate temp;
+    WTemplate t = temp = new WTemplate(new WString(TEMPLATE), (WContainerWidget) null);
+    this.popup_ = new WPopupWidget(t);
+    temp.escapePressed()
         .addListener(
             this.popup_,
-            new Signal.Listener() {
-              public void trigger() {
-                WDatePicker.this.popup_.hide();
-              }
+            () -> {
+              WDatePicker.this.popup_.hide();
             });
-    t.escapePressed()
+    temp.escapePressed()
         .addListener(
             this.forEdit_,
-            new Signal.Listener() {
-              public void trigger() {
-                WDatePicker.this.forEdit_.setFocus();
-              }
+            () -> {
+              WDatePicker.this.forEdit_.setFocus();
             });
-    t.bindWidget("calendar", this.calendar_);
-    WApplication.getInstance()
-        .getTheme()
-        .apply(this, this.popup_, WidgetThemeRole.DatePickerPopupRole);
-    displayWidget
+    temp.bindWidget("calendar", this.calendar_);
+    this.popup_.setAnchorWidget(this.displayWidget_, Orientation.Horizontal);
+    this.popup_.setTransient(true);
+    this.calendar_
+        .activated()
+        .addListener(
+            this.popup_,
+            (WDate e1) -> {
+              WDatePicker.this.popup_.hide();
+            });
+    WApplication.getInstance().getTheme().apply(this, this.popup_, WidgetThemeRole.DatePickerPopup);
+    this.displayWidget_
         .clicked()
         .addListener(
             this.popup_,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                WDatePicker.this.popup_.show();
-              }
+            (WMouseEvent e1) -> {
+              WDatePicker.this.popup_.show();
             });
-    displayWidget
+    this.displayWidget_
         .clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent e1) {
-                WDatePicker.this.setFromLineEdit();
-              }
+            (WMouseEvent e1) -> {
+              WDatePicker.this.setFromLineEdit();
             });
     if (!(this.forEdit_.getValidator() != null)) {
-      this.forEdit_.setValidator(new WDateValidator(this.format_, this));
+      this.forEdit_.setValidator(new WDateValidator(this.format_));
     }
   }
 

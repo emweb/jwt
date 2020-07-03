@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -48,30 +49,8 @@ import org.slf4j.LoggerFactory;
 public class WStandardPalette implements WChartPalette {
   private static Logger logger = LoggerFactory.getLogger(WStandardPalette.class);
 
-  /** Enumeration that indicates the palette flavour. */
-  public enum Flavour {
-    /** Neutral palette. */
-    Neutral(0),
-    /** Bold palette. */
-    Bold(1),
-    /** Muted palette. */
-    Muted(2),
-    /** Grayscale palette. */
-    GrayScale(255);
-
-    private int value;
-
-    Flavour(int value) {
-      this.value = value;
-    }
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return value;
-    }
-  }
   /** Creates a standard palette of a particular flavour. */
-  public WStandardPalette(WStandardPalette.Flavour flavour) {
+  public WStandardPalette(PaletteFlavour flavour) {
     super();
     this.flavour_ = flavour;
   }
@@ -82,30 +61,30 @@ public class WStandardPalette implements WChartPalette {
 
   public WPen getBorderPen(int index) {
     WPen p = new WPen(new WColor(0x44, 0x44, 0x44));
-    p.setCapStyle(PenCapStyle.SquareCap);
+    p.setCapStyle(PenCapStyle.Square);
     return p;
   }
 
   public WPen getStrokePen(int index) {
     WPen p = new WPen(this.color(index));
     p.setWidth(new WLength(2));
-    p.setJoinStyle(PenJoinStyle.RoundJoin);
-    p.setCapStyle(PenCapStyle.RoundCap);
+    p.setJoinStyle(PenJoinStyle.Round);
+    p.setCapStyle(PenCapStyle.Round);
     return p;
   }
 
   public WColor getFontColor(int index) {
     WColor c = this.color(index);
     if (c.getRed() + c.getGreen() + c.getBlue() > 3 * 128) {
-      return WColor.black;
+      return new WColor(StandardColor.Black);
     } else {
-      return WColor.white;
+      return new WColor(StandardColor.White);
     }
   }
   /** Returns the color for the given index. */
   public WColor color(int index) {
-    if (this.flavour_ != WStandardPalette.Flavour.GrayScale) {
-      int rgb = standardColors[this.flavour_.getValue()][index % 8];
+    if (this.flavour_ != PaletteFlavour.GrayScale) {
+      int rgb = standardColors[(int) this.flavour_.getValue()][index % 8];
       return new WColor((rgb & 0xFF0000) >> 16, (rgb & 0x00FF00) >> 8, rgb & 0x0000FF);
     } else {
       int v = 255 - index % 8 * 32;
@@ -113,7 +92,7 @@ public class WStandardPalette implements WChartPalette {
     }
   }
 
-  private WStandardPalette.Flavour flavour_;
+  private PaletteFlavour flavour_;
   private static int[][] standardColors = {
     {0xC3D9FF, 0xEEEEEE, 0xFFFF88, 0xCDEB8B, 0x356AA0, 0x36393D, 0xF9F7ED, 0xFF7400},
     {0xFF1A00, 0x4096EE, 0xFF7400, 0x008C00, 0xFF0084, 0x006E2E, 0xF9F7ED, 0xCC0000},

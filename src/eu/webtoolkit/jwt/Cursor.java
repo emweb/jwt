@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -25,21 +26,21 @@ import javax.servlet.http.*;
  */
 public enum Cursor {
   /** Arrow, CSS &apos;default&apos; cursor. */
-  ArrowCursor,
+  Arrow,
   /** Cursor chosen by the browser, CSS &apos;auto&apos; cursor. */
-  AutoCursor,
+  Auto,
   /** Crosshair, CSS &apos;cross&apos; cursor. */
-  CrossCursor,
+  Cross,
   /** Pointing hand, CSS &apos;pointer&apos; cursor. */
-  PointingHandCursor,
+  PointingHand,
   /** Open hand, CSS &apos;move&apos; cursor. */
-  OpenHandCursor,
+  OpenHand,
   /** Wait, CSS &apos;wait&apos; cursor. */
-  WaitCursor,
+  Wait,
   /** Text edit, CSS &apos;text&apos; cursor. */
-  IBeamCursor,
+  IBeam,
   /** Help, CSS &apos;help&apos; cursor. */
-  WhatsThisCursor;
+  WhatsThis;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

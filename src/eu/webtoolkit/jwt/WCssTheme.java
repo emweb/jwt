@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -127,17 +128,9 @@ public class WCssTheme extends WTheme {
    * <p>Creates a classic JWt theme. JWt comes with two CSS themes: &quot;polished&quot; and
    * default. For the bootstrap theme, use {@link WBootstrapTheme}.
    */
-  public WCssTheme(final String name, WObject parent) {
-    super(parent);
-    this.name_ = name;
-  }
-  /**
-   * Constructor.
-   *
-   * <p>Calls {@link #WCssTheme(String name, WObject parent) this(name, (WObject)null)}
-   */
   public WCssTheme(final String name) {
-    this(name, (WObject) null);
+    super();
+    this.name_ = name;
   }
 
   public String getName() {
@@ -149,17 +142,17 @@ public class WCssTheme extends WTheme {
    * <p>Returns wt.css, plus on IE wt_ie.css, plus on IE6 wt_ie6.css. The style sheets are located
    * in the theme directory in the resources folder.
    */
-  public List<WCssStyleSheet> getStyleSheets() {
-    List<WCssStyleSheet> result = new ArrayList<WCssStyleSheet>();
+  public List<WLinkedCssStyleSheet> getStyleSheets() {
+    List<WLinkedCssStyleSheet> result = new ArrayList<WLinkedCssStyleSheet>();
     if (this.name_.length() != 0) {
       String themeDir = this.getResourcesUrl();
       WApplication app = WApplication.getInstance();
-      result.add(new WCssStyleSheet(new WLink(themeDir + "wt.css")));
+      result.add(new WLinkedCssStyleSheet(new WLink(themeDir + "wt.css")));
       if (app.getEnvironment().agentIsIElt(9)) {
-        result.add(new WCssStyleSheet(new WLink(themeDir + "wt_ie.css")));
+        result.add(new WLinkedCssStyleSheet(new WLink(themeDir + "wt_ie.css")));
       }
-      if (app.getEnvironment().getAgent() == WEnvironment.UserAgent.IE6) {
-        result.add(new WCssStyleSheet(new WLink(themeDir + "wt_ie6.css")));
+      if (app.getEnvironment().getAgent() == UserAgent.IE6) {
+        result.add(new WLinkedCssStyleSheet(new WLink(themeDir + "wt_ie6.css")));
       }
     }
     return result;
@@ -170,32 +163,32 @@ public class WCssTheme extends WTheme {
       return;
     }
     switch (widgetRole) {
-      case WidgetThemeRole.MenuItemIconRole:
+      case WidgetThemeRole.MenuItemIcon:
         child.addStyleClass("Wt-icon");
         break;
-      case WidgetThemeRole.MenuItemCheckBoxRole:
+      case WidgetThemeRole.MenuItemCheckBox:
         child.addStyleClass("Wt-chkbox");
         break;
-      case WidgetThemeRole.MenuItemCloseRole:
+      case WidgetThemeRole.MenuItemClose:
         widget.addStyleClass("Wt-closable");
         child.addStyleClass("closeicon");
         break;
-      case WidgetThemeRole.DialogCoverRole:
+      case WidgetThemeRole.DialogCoverWidget:
         child.setStyleClass("Wt-dialogcover in");
         break;
-      case WidgetThemeRole.DialogTitleBarRole:
+      case WidgetThemeRole.DialogTitleBar:
         child.addStyleClass("titlebar");
         break;
-      case WidgetThemeRole.DialogBodyRole:
+      case WidgetThemeRole.DialogBody:
         child.addStyleClass("body");
         break;
-      case WidgetThemeRole.DialogFooterRole:
+      case WidgetThemeRole.DialogFooter:
         child.addStyleClass("footer");
         break;
-      case WidgetThemeRole.DialogCloseIconRole:
+      case WidgetThemeRole.DialogCloseIcon:
         child.addStyleClass("closeicon");
         break;
-      case WidgetThemeRole.TableViewRowContainerRole:
+      case WidgetThemeRole.TableViewRowContainer:
         {
           WAbstractItemView view =
               ((widget) instanceof WAbstractItemView ? (WAbstractItemView) (widget) : null);
@@ -213,13 +206,13 @@ public class WCssTheme extends WTheme {
           child.getDecorationStyle().setBackgroundImage(new WLink(backgroundImage));
           break;
         }
-      case WidgetThemeRole.DatePickerPopupRole:
+      case WidgetThemeRole.DatePickerPopup:
         child.addStyleClass("Wt-datepicker");
         break;
-      case WidgetThemeRole.PanelTitleBarRole:
+      case WidgetThemeRole.PanelTitleBar:
         child.addStyleClass("titlebar");
         break;
-      case WidgetThemeRole.PanelBodyRole:
+      case WidgetThemeRole.PanelBody:
         child.addStyleClass("body");
         break;
       case WidgetThemeRole.AuthWidgets:
@@ -231,110 +224,110 @@ public class WCssTheme extends WTheme {
   }
 
   public void apply(WWidget widget, final DomElement element, int elementRole) {
+    boolean creating = element.getMode() == DomElement.Mode.Create;
     if (!widget.isThemeStyleEnabled()) {
       return;
     }
-    boolean creating = element.getMode() == DomElement.Mode.ModeCreate;
     {
       WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget) : null);
       if (popup != null) {
-        element.addPropertyWord(Property.PropertyClass, "Wt-outset");
+        element.addPropertyWord(Property.Class, "Wt-outset");
       }
     }
     switch (element.getType()) {
-      case DomElement_BUTTON:
+      case BUTTON:
         if (creating) {
-          element.addPropertyWord(Property.PropertyClass, "Wt-btn");
+          element.addPropertyWord(Property.Class, "Wt-btn");
           WPushButton b = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
           if (b != null) {
             if (b.isDefault()) {
-              element.addPropertyWord(Property.PropertyClass, "Wt-btn-default");
+              element.addPropertyWord(Property.Class, "Wt-btn-default");
             }
             if (!(b.getText().length() == 0)) {
-              element.addPropertyWord(Property.PropertyClass, "with-label");
+              element.addPropertyWord(Property.Class, "with-label");
             }
           }
         }
         break;
-      case DomElement_UL:
+      case UL:
         if (((widget) instanceof WPopupMenu ? (WPopupMenu) (widget) : null) != null) {
-          element.addPropertyWord(Property.PropertyClass, "Wt-popupmenu Wt-outset");
+          element.addPropertyWord(Property.Class, "Wt-popupmenu Wt-outset");
         } else {
           WTabWidget tabs =
               ((widget.getParent().getParent()) instanceof WTabWidget
                   ? (WTabWidget) (widget.getParent().getParent())
                   : null);
           if (tabs != null) {
-            element.addPropertyWord(Property.PropertyClass, "Wt-tabs");
+            element.addPropertyWord(Property.Class, "Wt-tabs");
           } else {
             WSuggestionPopup suggestions =
                 ((widget) instanceof WSuggestionPopup ? (WSuggestionPopup) (widget) : null);
             if (suggestions != null) {
-              element.addPropertyWord(Property.PropertyClass, "Wt-suggest");
+              element.addPropertyWord(Property.Class, "Wt-suggest");
             }
           }
         }
         break;
-      case DomElement_LI:
+      case LI:
         {
           WMenuItem item = ((widget) instanceof WMenuItem ? (WMenuItem) (widget) : null);
           if (item != null) {
             if (item.isSeparator()) {
-              element.addPropertyWord(Property.PropertyClass, "Wt-separator");
+              element.addPropertyWord(Property.Class, "Wt-separator");
             }
             if (item.isSectionHeader()) {
-              element.addPropertyWord(Property.PropertyClass, "Wt-sectheader");
+              element.addPropertyWord(Property.Class, "Wt-sectheader");
             }
             if (item.getMenu() != null) {
-              element.addPropertyWord(Property.PropertyClass, "submenu");
+              element.addPropertyWord(Property.Class, "submenu");
             }
           }
         }
         break;
-      case DomElement_DIV:
+      case DIV:
         {
           WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget) : null);
           if (dialog != null) {
-            element.addPropertyWord(Property.PropertyClass, "Wt-dialog");
+            element.addPropertyWord(Property.Class, "Wt-dialog");
             return;
           }
           WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
           if (panel != null) {
-            element.addPropertyWord(Property.PropertyClass, "Wt-panel Wt-outset");
+            element.addPropertyWord(Property.Class, "Wt-panel Wt-outset");
             return;
           }
           WProgressBar bar = ((widget) instanceof WProgressBar ? (WProgressBar) (widget) : null);
           if (bar != null) {
             switch (elementRole) {
-              case ElementThemeRole.MainElementThemeRole:
-                element.addPropertyWord(Property.PropertyClass, "Wt-progressbar");
+              case ElementThemeRole.MainElement:
+                element.addPropertyWord(Property.Class, "Wt-progressbar");
                 break;
-              case ElementThemeRole.ProgressBarBarRole:
-                element.addPropertyWord(Property.PropertyClass, "Wt-pgb-bar");
+              case ElementThemeRole.ProgressBarBar:
+                element.addPropertyWord(Property.Class, "Wt-pgb-bar");
                 break;
-              case ElementThemeRole.ProgressBarLabelRole:
-                element.addPropertyWord(Property.PropertyClass, "Wt-pgb-label");
+              case ElementThemeRole.ProgressBarLabel:
+                element.addPropertyWord(Property.Class, "Wt-pgb-label");
             }
             return;
           }
         }
         break;
-      case DomElement_INPUT:
+      case INPUT:
         {
           WAbstractSpinBox spinBox =
               ((widget) instanceof WAbstractSpinBox ? (WAbstractSpinBox) (widget) : null);
           if (spinBox != null) {
-            element.addPropertyWord(Property.PropertyClass, "Wt-spinbox");
+            element.addPropertyWord(Property.Class, "Wt-spinbox");
             return;
           }
           WDateEdit dateEdit = ((widget) instanceof WDateEdit ? (WDateEdit) (widget) : null);
           if (dateEdit != null) {
-            element.addPropertyWord(Property.PropertyClass, "Wt-dateedit");
+            element.addPropertyWord(Property.Class, "Wt-dateedit");
             return;
           }
           WTimeEdit timeEdit = ((widget) instanceof WTimeEdit ? (WTimeEdit) (widget) : null);
           if (timeEdit != null) {
-            element.addPropertyWord(Property.PropertyClass, "Wt-timeedit");
+            element.addPropertyWord(Property.Class, "Wt-timeedit");
             return;
           }
         }
@@ -384,10 +377,10 @@ public class WCssTheme extends WTheme {
     app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt3_6_0.setValidationState(")
+      js.append("Wt4_4_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
-          .append(validation.getState() == WValidator.State.Valid ? 1 : 0)
+          .append(validation.getState() == ValidationState.Valid ? 1 : 0)
           .append(",")
           .append(WString.toWString(validation.getMessage()).getJsStringLiteral())
           .append(",")
@@ -396,11 +389,11 @@ public class WCssTheme extends WTheme {
       widget.doJavaScript(js.toString());
     } else {
       boolean validStyle =
-          validation.getState() == WValidator.State.Valid
-              && !EnumUtils.mask(styles, ValidationStyleFlag.ValidationValidStyle).isEmpty();
+          validation.getState() == ValidationState.Valid
+              && styles.contains(ValidationStyleFlag.ValidStyle);
       boolean invalidStyle =
-          validation.getState() != WValidator.State.Valid
-              && !EnumUtils.mask(styles, ValidationStyleFlag.ValidationInvalidStyle).isEmpty();
+          validation.getState() != ValidationState.Valid
+              && styles.contains(ValidationStyleFlag.InvalidStyle);
       widget.toggleStyleClass("Wt-valid", validStyle);
       widget.toggleStyleClass("Wt-invalid", invalidStyle);
     }

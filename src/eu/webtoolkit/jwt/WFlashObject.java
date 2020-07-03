@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -44,8 +45,8 @@ public class WFlashObject extends WWebWidget {
   private static Logger logger = LoggerFactory.getLogger(WFlashObject.class);
 
   /** Constructs a Flash widget. */
-  public WFlashObject(final String url, WContainerWidget parent) {
-    super(parent);
+  public WFlashObject(final String url, WContainerWidget parentContainer) {
+    super();
     this.url_ = url;
     this.sizeChanged_ = false;
     this.parameters_ = new HashMap<String, WString>();
@@ -59,19 +60,20 @@ public class WFlashObject extends WWebWidget {
             new WLink("http://www.adobe.com/go/getflashplayer"),
             new WImage(
                 new WLink(
-                    "http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"))));
+                    "http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"),
+                (WContainerWidget) null),
+            (WContainerWidget) null));
     this.ieRendersAlternative_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WFlashObject.this.renderIeAltnerative();
-          }
+        () -> {
+          WFlashObject.this.renderIeAltnerative();
         });
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Constructs a Flash widget.
    *
-   * <p>Calls {@link #WFlashObject(String url, WContainerWidget parent) this(url,
+   * <p>Calls {@link #WFlashObject(String url, WContainerWidget parentContainer) this(url,
    * (WContainerWidget)null)}
    */
   public WFlashObject(final String url) {
@@ -83,6 +85,14 @@ public class WFlashObject extends WWebWidget {
    * <p>The Flash object is removed.
    */
   public void remove() {
+    {
+      WWidget oldWidget = this.alternative_;
+      this.alternative_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.alternative_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
     super.remove();
   }
 
@@ -134,7 +144,7 @@ public class WFlashObject extends WWebWidget {
    * for example on IE when flash is not installed.
    */
   public String getJsFlashRef() {
-    return "Wt3_6_0.getElement('" + this.getId() + "_flash')";
+    return "Wt4_4_0.getElement('" + this.getId() + "_flash')";
   }
   /**
    * Sets content to be displayed if Flash is not available.
@@ -146,23 +156,24 @@ public class WFlashObject extends WWebWidget {
    * <p>Call this method with a NULL pointer to remove the alternative content.
    */
   public void setAlternativeContent(WWidget alternative) {
-    if (this.alternative_ != null) {
-      if (this.alternative_ != null) this.alternative_.remove();
-    }
-    this.alternative_ = alternative;
-    if (this.alternative_ != null) {
-      this.addChild(this.alternative_);
+    {
+      WWidget oldWidget = this.alternative_;
+      this.alternative_ = alternative;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.alternative_);
+        if (toRemove != null) toRemove.remove();
+      }
     }
   }
 
   void updateDom(final DomElement element, boolean all) {
     if (all) {
-      DomElement obj = DomElement.createNew(DomElementType.DomElement_OBJECT);
+      DomElement obj = DomElement.createNew(DomElementType.OBJECT);
       if (this.isInLayout()) {
-        obj.setProperty(Property.PropertyStylePosition, "absolute");
-        obj.setProperty(Property.PropertyStyleLeft, "0");
-        obj.setProperty(Property.PropertyStyleRight, "0");
-        element.setProperty(Property.PropertyStylePosition, "relative");
+        obj.setProperty(Property.StylePosition, "absolute");
+        obj.setProperty(Property.StyleLeft, "0");
+        obj.setProperty(Property.StyleRight, "0");
+        element.setProperty(Property.StylePosition, "relative");
         StringWriter ss = new StringWriter();
         ss.append(
             "function(self, w, h) {v="
@@ -189,7 +200,7 @@ public class WFlashObject extends WWebWidget {
           i_it.hasNext(); ) {
         Map.Entry<String, WString> i = i_it.next();
         if (!i.getKey().equals("flashvars")) {
-          DomElement param = DomElement.createNew(DomElementType.DomElement_PARAM);
+          DomElement param = DomElement.createNew(DomElementType.PARAM);
           param.setAttribute("name", i.getKey());
           param.setAttribute("value", i.getValue().toString());
           obj.addChild(param);
@@ -197,7 +208,7 @@ public class WFlashObject extends WWebWidget {
       }
       if (WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
         obj.setAttribute("classid", "clsid:D27CDB6E-AE6D-11cf-96B8-444553540000");
-        DomElement param = DomElement.createNew(DomElementType.DomElement_PARAM);
+        DomElement param = DomElement.createNew(DomElementType.PARAM);
         param.setAttribute("name", "movie");
         param.setAttribute("value", this.url_);
         obj.addChild(param);
@@ -214,7 +225,7 @@ public class WFlashObject extends WWebWidget {
               .append("=")
               .append(Utils.urlEncode(i.getValue().toString()));
         }
-        DomElement param = DomElement.createNew(DomElementType.DomElement_PARAM);
+        DomElement param = DomElement.createNew(DomElementType.PARAM);
         param.setAttribute("name", "flashvars");
         param.setAttribute("value", ss.toString());
         obj.addChild(param);
@@ -222,7 +233,7 @@ public class WFlashObject extends WWebWidget {
       if (this.alternative_ != null) {
         if (WApplication.getInstance().getEnvironment().hasJavaScript()
             && WApplication.getInstance().getEnvironment().agentIsIElt(9)) {
-          DomElement dummyDiv = DomElement.createNew(DomElementType.DomElement_DIV);
+          DomElement dummyDiv = DomElement.createNew(DomElementType.DIV);
           dummyDiv.setId(this.alternative_.getId());
           dummyDiv.setAttribute(
               "style",
@@ -254,8 +265,7 @@ public class WFlashObject extends WWebWidget {
       this.sizeChanged_ = false;
     }
     if (this.alternative_ != null && this.replaceDummyIeContent_) {
-      DomElement element =
-          DomElement.getForUpdate(this.alternative_.getId(), DomElementType.DomElement_DIV);
+      DomElement element = DomElement.getForUpdate(this.alternative_.getId(), DomElementType.DIV);
       element.replaceWith(this.alternative_.createSDomElement(app));
       result.add(element);
       this.replaceDummyIeContent_ = false;
@@ -263,7 +273,7 @@ public class WFlashObject extends WWebWidget {
   }
 
   DomElementType getDomElementType() {
-    return DomElementType.DomElement_DIV;
+    return DomElementType.DIV;
   }
 
   private String url_;
@@ -276,14 +286,14 @@ public class WFlashObject extends WWebWidget {
 
   private void renderIeAltnerative() {
     this.replaceDummyIeContent_ = true;
-    this.repaint(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+    this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
   }
 
   static String toString(final WLength length) {
     if (length.isAuto()) {
       return "";
     } else {
-      if (length.getUnit() == WLength.Unit.Percentage) {
+      if (length.getUnit() == LengthUnit.Percentage) {
         return "100%";
       } else {
         return String.valueOf((int) length.toPixels()) + "px";

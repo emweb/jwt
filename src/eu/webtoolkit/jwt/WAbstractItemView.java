@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -40,81 +41,11 @@ import org.slf4j.LoggerFactory;
 public abstract class WAbstractItemView extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WAbstractItemView.class);
 
-  /**
-   * Enumeration that specifies the user action that triggers editing.
-   *
-   * <p>
-   *
-   * @see WAbstractItemView#setEditTriggers(EnumSet editTriggers)
-   * @see WAbstractItemView#edit(WModelIndex index)
-   */
-  public enum EditTrigger {
-    /** Do not allow user to initiate editing. */
-    NoEditTrigger,
-    /** Edit an item when clicked. */
-    SingleClicked,
-    /** Edit an item when double clicked. */
-    DoubleClicked,
-    /** Edit a selected item that is clicked again. */
-    SelectedClicked;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
-   * Enumeration that specifies editing options.
-   *
-   * <p>
-   *
-   * @see WAbstractItemView#setEditOptions(EnumSet editOptions)
-   */
-  public enum EditOption {
-    /** Never show more than one active editor. */
-    SingleEditor,
-    /** Allow multiple editors at the same time. */
-    MultipleEditors,
-    /** Always save the current edit value when closing. */
-    SaveWhenClosed,
-    /**
-     * Editors can only be closed using {@link WAbstractItemView#closeEditor(WModelIndex index,
-     * boolean saveData) closeEditor()}
-     */
-    LeaveEditorsOpen;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
-   * Enumeration that specifies a scrolling option.
-   *
-   * <p>
-   *
-   * @see WAbstractItemView#scrollTo(WModelIndex index, WAbstractItemView.ScrollHint hint)
-   */
-  public enum ScrollHint {
-    /** Scrolls minimally to make it visible. */
-    EnsureVisible,
-    /** Positions the item at the top of the viewport. */
-    PositionAtTop,
-    /** Positions the item at the bottom of the viewport. */
-    PositionAtBottom,
-    /** Positions the item at the center of the viewport. */
-    PositionAtCenter;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-
   public void remove() {
-    if (this.headerHeightRule_ != null) this.headerHeightRule_.remove();
+    WApplication app = WApplication.getInstance();
+    app.getStyleSheet().removeRule(this.headerHeightRule_);
     for (int i = 0; i < this.columns_.size(); ++i) {
-      if (this.columns_.get(i).styleRule != null) this.columns_.get(i).styleRule.remove();
+      app.getStyleSheet().removeRule(this.columns_.get(i).styleRule);
     }
     super.remove();
   }
@@ -130,31 +61,24 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#setRootIndex(WModelIndex rootIndex)
    */
-  public void setModel(WAbstractItemModel model) {
+  public void setModel(final WAbstractItemModel model) {
     if (!this.columnWidthChanged_.isConnected()) {
       this.columnWidthChanged_.addListener(
           this,
-          new Signal2.Listener<Integer, Integer>() {
-            public void trigger(Integer e1, Integer e2) {
-              WAbstractItemView.this.updateColumnWidth(e1, e2);
-            }
+          (Integer e1, Integer e2) -> {
+            WAbstractItemView.this.updateColumnWidth(e1, e2);
           });
     }
-    boolean isReset = false;
-    if (this.model_ != null) {
-      for (int i = 0; i < this.modelConnections_.size(); ++i) {
-        this.modelConnections_.get(i).disconnect();
-      }
-      this.modelConnections_.clear();
-      isReset = true;
+    boolean isReset = this.model_ != null;
+    for (int i = 0; i < this.modelConnections_.size(); ++i) {
+      this.modelConnections_.get(i).disconnect();
     }
+    this.modelConnections_.clear();
     this.model_ = model;
-    ;
-    this.headerModel_ = new HeaderProxyModel(this.model_, this);
-    WItemSelectionModel oldSelectionModel = this.selectionModel_;
-    this.selectionModel_ = new WItemSelectionModel(model, this);
+    this.headerModel_ = new HeaderProxyModel(this.model_);
+    final WItemSelectionModel oldSelectionModel = this.selectionModel_;
+    this.selectionModel_ = new WItemSelectionModel(model);
     this.selectionModel_.setSelectionBehavior(oldSelectionModel.getSelectionBehavior());
-    ;
     this.delayedClearAndSelectIndex_ = null;
     this.editedItems_.clear();
     if (!isReset) {
@@ -190,9 +114,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     this.rootIndex_ = rootIndex;
     this.scheduleRerender(WAbstractItemView.RenderState.NeedRerender);
     int modelColumnCount = this.model_.getColumnCount(this.rootIndex_);
+    WApplication app = WApplication.getInstance();
     while (this.columns_.size() > modelColumnCount) {
       int i = this.columns_.size() - 1;
-      if (this.columns_.get(i).styleRule != null) this.columns_.get(i).styleRule.remove();
+      app.getStyleSheet().removeRule(this.columns_.get(i).styleRule);
       this.columns_.remove(0 + i);
     }
     while (this.columns_.size() < modelColumnCount) {
@@ -221,16 +146,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#setItemDelegateForColumn(int column, WAbstractItemDelegate delegate)
    */
-  public void setItemDelegate(WAbstractItemDelegate delegate) {
+  public void setItemDelegate(final WAbstractItemDelegate delegate) {
     this.itemDelegate_ = delegate;
     this.itemDelegate_
         .closeEditor()
         .addListener(
             this,
-            new Signal2.Listener<WWidget, Boolean>() {
-              public void trigger(WWidget e1, Boolean e2) {
-                WAbstractItemView.this.closeEditorWidget(e1, e2);
-              }
+            (WWidget e1, Boolean e2) -> {
+              WAbstractItemView.this.closeEditorWidget(e1, e2);
             });
   }
   /**
@@ -252,16 +175,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#setItemDelegate(WAbstractItemDelegate delegate)
    */
-  public void setItemDelegateForColumn(int column, WAbstractItemDelegate delegate) {
+  public void setItemDelegateForColumn(int column, final WAbstractItemDelegate delegate) {
     this.columnInfo(column).itemDelegate_ = delegate;
     delegate
         .closeEditor()
         .addListener(
             this,
-            new Signal2.Listener<WWidget, Boolean>() {
-              public void trigger(WWidget e1, Boolean e2) {
-                WAbstractItemView.this.closeEditorWidget(e1, e2);
-              }
+            (WWidget e1, Boolean e2) -> {
+              WAbstractItemView.this.closeEditorWidget(e1, e2);
             });
   }
   /**
@@ -316,7 +237,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>The default item delegate is a {@link WItemDelegate}.
    */
-  public void setHeaderItemDelegate(WAbstractItemDelegate delegate) {
+  public void setHeaderItemDelegate(final WAbstractItemDelegate delegate) {
     this.headerItemDelegate_ = delegate;
   }
   /**
@@ -332,7 +253,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   /**
    * Sets the content alignment for a column.
    *
-   * <p>The default value is {@link AlignmentFlag#AlignLeft}.
+   * <p>The default value is {@link AlignmentFlag#Left}.
    *
    * <p>
    *
@@ -343,16 +264,16 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     WApplication app = WApplication.getInstance();
     String align = null;
     switch (alignment) {
-      case AlignLeft:
+      case Left:
         align = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "left" : "right";
         break;
-      case AlignCenter:
+      case Center:
         align = "center";
         break;
-      case AlignRight:
+      case Right:
         align = app.getLayoutDirection() == LayoutDirection.LeftToRight ? "right" : "left";
         break;
-      case AlignJustify:
+      case Justify:
         align = "justify";
         break;
       default:
@@ -377,14 +298,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * Sets the header alignment for a column.
    *
    * <p>The default alignemnt is horizontally left, and vertically centered. ({@link
-   * AlignmentFlag#AlignLeft} | {@link AlignmentFlag#AlignMiddle}).
+   * AlignmentFlag#Left} | {@link AlignmentFlag#Middle}).
    *
-   * <p>Valid options for horizontal alignment are {@link AlignmentFlag#AlignLeft}, {@link
-   * AlignmentFlag#AlignCenter} or {@link AlignmentFlag#AlignRight}.
+   * <p>Valid options for horizontal alignment are {@link AlignmentFlag#Left}, {@link
+   * AlignmentFlag#Center} or {@link AlignmentFlag#Right}.
    *
-   * <p>Valid options for vertical alignment are {@link AlignmentFlag#AlignMiddle} or {@link
-   * AlignmentFlag#AlignTop}. In the latter case, other contents may be added below the label in
-   * {@link WAbstractItemView#createExtraHeaderWidget(int column) createExtraHeaderWidget()}.
+   * <p>Valid options for vertical alignment are {@link AlignmentFlag#Middle} or {@link
+   * AlignmentFlag#Top}. In the latter case, other contents may be added below the label in {@link
+   * WAbstractItemView#createExtraHeaderWidget(int column) createExtraHeaderWidget()}.
    *
    * <p>
    *
@@ -393,13 +314,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   public void setHeaderAlignment(int column, EnumSet<AlignmentFlag> alignment) {
     this.columnInfo(column).headerHAlignment =
         EnumUtils.enumFromSet(EnumUtils.mask(alignment, AlignmentFlag.AlignHorizontalMask));
-    if (!EnumUtils.mask(alignment, AlignmentFlag.AlignVerticalMask).isEmpty()) {
+    if (alignment.contains(AlignmentFlag.AlignVerticalMask)) {
       this.columnInfo(column).headerVAlignment =
           EnumUtils.enumFromSet(EnumUtils.mask(alignment, AlignmentFlag.AlignVerticalMask));
     }
     if (this.columnInfo(column).hidden
-        || this.renderState_.getValue()
-            >= WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+        || (int) this.renderState_.getValue()
+            >= (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       return;
     }
     WContainerWidget wc =
@@ -407,7 +328,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
             ? (WContainerWidget) (this.headerWidget(column))
             : null);
     wc.setContentAlignment(alignment);
-    if (this.columnInfo(column).headerVAlignment == AlignmentFlag.AlignMiddle) {
+    if (this.columnInfo(column).headerVAlignment == AlignmentFlag.Middle) {
       wc.setLineHeight(this.headerLineHeight_);
     } else {
       wc.setLineHeight(WLength.Auto);
@@ -422,18 +343,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   public final void setHeaderAlignment(
       int column, AlignmentFlag alignmen, AlignmentFlag... alignment) {
     setHeaderAlignment(column, EnumSet.of(alignmen, alignment));
-  }
-  /**
-   * Returns the horizontal header alignment for a column (<b>deprecated</b>).
-   *
-   * <p>
-   *
-   * @see WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
-   * @deprecated use {@link WAbstractItemView#horizontalHeaderAlignment(int column)
-   *     horizontalHeaderAlignment()} instead.
-   */
-  public AlignmentFlag getHeaderAlignment(int column) {
-    return this.horizontalHeaderAlignment(column);
   }
   /**
    * Returns the horizontal header alignment for a column.
@@ -465,11 +374,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   public void setHeaderWordWrap(int column, boolean enabled) {
     this.columnInfo(column).headerWordWrap = enabled;
     if (this.columnInfo(column).hidden
-        || this.renderState_.getValue()
-            >= WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+        || (int) this.renderState_.getValue()
+            >= (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       return;
     }
-    if (this.columnInfo(column).headerVAlignment == AlignmentFlag.AlignTop) {
+    if (this.columnInfo(column).headerVAlignment == AlignmentFlag.Top) {
       WContainerWidget wc =
           ((this.headerWidget(column)) instanceof WContainerWidget
               ? (WContainerWidget) (this.headerWidget(column))
@@ -526,7 +435,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       WText t = this.headerSortIconWidget(this.currentSortColumn_);
       if (t != null) {
         t.setStyleClass(
-            order == SortOrder.AscendingOrder ? "Wt-tv-sh Wt-tv-sh-up" : "Wt-tv-sh Wt-tv-sh-down");
+            order == SortOrder.Ascending ? "Wt-tv-sh Wt-tv-sh-up" : "Wt-tv-sh Wt-tv-sh-down");
       }
     }
     this.model_.sort(column, order);
@@ -554,7 +463,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     if (this.currentSortColumn_ >= 0 && this.currentSortColumn_ < (int) this.columns_.size()) {
       return this.columns_.get(this.currentSortColumn_).sortOrder;
     } else {
-      return SortOrder.AscendingOrder;
+      return SortOrder.Ascending;
     }
   }
   /**
@@ -643,11 +552,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>The selection behavior indicates whether whole rows or individual items can be selected. It
    * is a property of the {@link WAbstractItemView#getSelectionModel() getSelectionModel()}.
    *
-   * <p>By default, selection operates on rows ({@link SelectionBehavior#SelectRows}), in which case
-   * model indexes will always be in the first column (column <code>null</code>).
+   * <p>By default, selection operates on rows ({@link SelectionBehavior#Rows}), in which case model
+   * indexes will always be in the first column (column <code>null</code>).
    *
    * <p>Alternatively, you can allow selection for individual items ({@link
-   * SelectionBehavior#SelectItems}).
+   * SelectionBehavior#Items})
    *
    * <p>
    *
@@ -673,7 +582,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   /**
    * Sets the selection mode.
    *
-   * <p>By default selection is disabled ({@link SelectionMode#NoSelection}).
+   * <p>By default selection is disabled ({@link SelectionMode#None}).
    *
    * <p>
    *
@@ -708,8 +617,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>Replaces the current selection with <code>indexes</code>.
    *
-   * <p>When selection operates on rows ({@link SelectionBehavior#SelectRows}), it is sufficient to
-   * pass the first element in a row (column <code>null</code> ) to select the entire row.
+   * <p>When selection operates on rows ({@link SelectionBehavior#Rows}), it is sufficient to pass
+   * the first element in a row (column <code>null</code> ) to select the entire row.
    *
    * <p>
    *
@@ -766,8 +675,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   /**
    * Returns wheter an item is selected.
    *
-   * <p>When selection operates on rows ({@link SelectionBehavior#SelectRows}), this method returns
-   * true for each element in a selected row.
+   * <p>When selection operates on rows ({@link SelectionBehavior#Rows}), this method returns true
+   * for each element in a selected row.
    *
    * <p>This is a convenience method for:
    *
@@ -791,8 +700,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>The model indexes are returned as a set, topologically ordered (in the order they appear in
    * the view).
    *
-   * <p>When selection operates on rows ({@link SelectionBehavior#SelectRows}), this method only
-   * returns the model index of first column&apos;s element of the selected rows.
+   * <p>When selection operates on rows ({@link SelectionBehavior#Rows}), this method only returns
+   * the model index of first column&apos;s element of the selected rows.
    *
    * <p>This is a convenience method for:
    *
@@ -815,8 +724,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * WAbstractItemView#setSelectionMode(SelectionMode mode) setSelectionMode()}.
    *
    * <p>Whether an individual item may be dragged is controlled by the item&apos;s {@link
-   * ItemFlag#ItemIsDragEnabled} flag. The selection can be dragged only if all items currently
-   * selected can be dragged.
+   * ItemFlag#DragEnabled} flag. The selection can be dragged only if all items currently selected
+   * can be dragged.
    *
    * <p>
    *
@@ -826,11 +735,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     if (this.dragEnabled_ != enable) {
       this.dragEnabled_ = enable;
       if (enable) {
-        this.dragWidget_ = new WText(this.getHeaderContainer());
+        this.uDragWidget_ = new WText();
+        this.dragWidget_ = this.uDragWidget_;
         this.dragWidget_.setId(this.getId() + "dw");
         this.dragWidget_.setInline(false);
         this.dragWidget_.hide();
         this.setAttributeValue("dwid", this.dragWidget_.getId());
+        if (this.getHeaderContainer() != null) {
+          this.getHeaderContainer().addWidget(this.uDragWidget_);
+        }
         this.configureModelDragDrop();
       }
     }
@@ -843,7 +756,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * mime-types (see {@link WAbstractItemModel#getAcceptDropMimeTypes()}) or this widget&apos;s
    * accepted drop mime-types (see {@link WWidget#acceptDrops(String mimeType, String
    * hoverStyleClass) WWidget#acceptDrops()}), and the target item has drop enabled (which is
-   * controlled by the item&apos;s {@link ItemFlag#ItemIsDropEnabled} flag).
+   * controlled by the item&apos;s {@link ItemFlag#DropEnabled} flag).
    *
    * <p>Drop events must be handled in {@link WAbstractItemView#dropEvent(WDropEvent e, WModelIndex
    * index) dropEvent()}.
@@ -868,8 +781,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The height must be specified in {@link WLength.Unit#Pixel Unit#Pixel}
-   * units.</i>
+   * <p><i><b>Note: </b>The height must be specified in {@link LengthUnit#Pixel} units.</i>
    *
    * @see WAbstractItemView#setColumnWidth(int column, WLength width)
    */
@@ -887,8 +799,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The width must be specified in {@link WLength.Unit#Pixel Unit#Pixel}
-   * units.</i>
+   * <p><i><b>Note: </b>The width must be specified in {@link LengthUnit#Pixel} units.</i>
    *
    * <p><i><b>Note: </b>The actual space occupied by each column is the column width augmented by 7
    * pixels for internal padding and a border. </i>
@@ -947,29 +858,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     this.setColumnHidden(column, false);
   }
   /**
-   * Sets the column border color (deprecated)
-   *
-   * <p>This method has no effect. The border color should be set using CSS.
-   *
-   * <p>
-   *
-   * @deprecated
-   */
-  public void setColumnBorder(final WColor anon1) {
-    logger.warn(
-        new StringWriter()
-            .append("setColumnBorder has no effect and has been deprecated. Use CSS instead!")
-            .toString());
-  }
-  /**
    * Sets the header height.
    *
    * <p>The default value is 20 pixels.
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The height must be specified in {@link WLength.Unit#Pixel Unit#Pixel} units.
-   * </i>
+   * <p><i><b>Note: </b>The height must be specified in {@link LengthUnit#Pixel} units. </i>
    */
   public void setHeaderHeight(final WLength height) {
     this.headerLineHeight_ = height;
@@ -978,47 +873,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     if (this.columns_.size() > 0) {
       WWidget w = this.headerWidget(0, false);
       if (w != null) {
-        w.scheduleRender(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+        w.scheduleRender(EnumSet.of(RepaintFlag.SizeAffected));
       }
     }
     this.headerHeightRule_.getTemplateWidget().resize(WLength.Auto, headerHeight);
-  }
-  /**
-   * Sets the header height, and vertical alignment (<b>deprecated</b>). By default, the header text
-   * is a single line that is centered vertically.
-   *
-   * <p>Along with setting the header height, this also configures vertical aligment and header
-   * label word wrapping. This has been deprecated in favour of the more fine grained control using
-   * {@link WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
-   * setHeaderAlignment()} and {@link WAbstractItemView#setHeaderWordWrap(int column, boolean
-   * enabled) setHeaderWordWrap()}.
-   *
-   * <p>When <code>multiLine</code> is <code>false</code>, the header alignment is set to {@link
-   * AlignmentFlag#AlignMiddle}. When <code>multiLine</code> is <code>true</code>, the header
-   * alignment is set to {@link AlignmentFlag#AlignTop} and header word wrap is set to <code>true
-   * </code>.
-   *
-   * <p>
-   *
-   * @deprecated use {@link WAbstractItemView#setHeaderHeight(WLength height) setHeaderHeight()},
-   *     {@link WAbstractItemView#setHeaderAlignment(int column, EnumSet alignment)
-   *     setHeaderAlignment()} and {@link WAbstractItemView#setHeaderWordWrap(int column, boolean
-   *     enabled) setHeaderWordWrap()} instead.
-   */
-  public void setHeaderHeight(final WLength height, boolean multiLine) {
-    this.setHeaderHeight(height);
-    if (multiLine) {
-      this.defaultHeaderVAlignment_ = AlignmentFlag.AlignTop;
-      this.defaultHeaderWordWrap_ = true;
-    } else {
-      this.defaultHeaderVAlignment_ = AlignmentFlag.AlignMiddle;
-      this.defaultHeaderWordWrap_ = false;
-    }
-    for (int i = 0; i < this.columns_.size(); ++i) {
-      this.setHeaderAlignment(
-          i, EnumSet.of(this.columns_.get(i).headerHAlignment, this.defaultHeaderVAlignment_));
-      this.setHeaderWordWrap(i, this.defaultHeaderWordWrap_);
-    }
   }
   /**
    * Returns the header height.
@@ -1091,15 +949,15 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p><i><b>Note: </b>Currently only implemented to scroll to the correct row, not taking into
    * account the column. </i>
    */
-  public abstract void scrollTo(final WModelIndex index, WAbstractItemView.ScrollHint hint);
+  public abstract void scrollTo(final WModelIndex index, ScrollHint hint);
   /**
    * Scrolls the view to an item.
    *
-   * <p>Calls {@link #scrollTo(WModelIndex index, WAbstractItemView.ScrollHint hint) scrollTo(index,
-   * WAbstractItemView.ScrollHint.EnsureVisible)}
+   * <p>Calls {@link #scrollTo(WModelIndex index, ScrollHint hint) scrollTo(index,
+   * ScrollHint.EnsureVisible)}
    */
   public final void scrollTo(final WModelIndex index) {
-    scrollTo(index, WAbstractItemView.ScrollHint.EnsureVisible);
+    scrollTo(index, ScrollHint.EnsureVisible);
   }
   /**
    * Configures what actions should trigger editing.
@@ -1110,7 +968,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#edit(WModelIndex index)
    */
-  public void setEditTriggers(EnumSet<WAbstractItemView.EditTrigger> editTriggers) {
+  public void setEditTriggers(EnumSet<EditTrigger> editTriggers) {
     this.editTriggers_ = EnumSet.copyOf(editTriggers);
   }
   /**
@@ -1119,8 +977,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>Calls {@link #setEditTriggers(EnumSet editTriggers) setEditTriggers(EnumSet.of(editTrigger,
    * editTriggers))}
    */
-  public final void setEditTriggers(
-      WAbstractItemView.EditTrigger editTrigger, WAbstractItemView.EditTrigger... editTriggers) {
+  public final void setEditTriggers(EditTrigger editTrigger, EditTrigger... editTriggers) {
     setEditTriggers(EnumSet.of(editTrigger, editTriggers));
   }
   /**
@@ -1130,7 +987,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#setEditTriggers(EnumSet editTriggers)
    */
-  public EnumSet<WAbstractItemView.EditTrigger> getEditTriggers() {
+  public EnumSet<EditTrigger> getEditTriggers() {
     return this.editTriggers_;
   }
   /**
@@ -1138,7 +995,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>The default value is SingleEditor;
    */
-  public void setEditOptions(EnumSet<WAbstractItemView.EditOption> editOptions) {
+  public void setEditOptions(EnumSet<EditOption> editOptions) {
     this.editOptions_ = EnumSet.copyOf(editOptions);
   }
   /**
@@ -1147,8 +1004,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>Calls {@link #setEditOptions(EnumSet editOptions) setEditOptions(EnumSet.of(editOption,
    * editOptions))}
    */
-  public final void setEditOptions(
-      WAbstractItemView.EditOption editOption, WAbstractItemView.EditOption... editOptions) {
+  public final void setEditOptions(EditOption editOption, EditOption... editOptions) {
     setEditOptions(EnumSet.of(editOption, editOptions));
   }
   /**
@@ -1158,7 +1014,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#setEditOptions(EnumSet editOptions)
    */
-  public EnumSet<WAbstractItemView.EditOption> getEditOptions() {
+  public EnumSet<EditOption> getEditOptions() {
     return this.editOptions_;
   }
   /**
@@ -1173,15 +1029,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * @see WAbstractItemView#closeEditor(WModelIndex index, boolean saveData)
    */
   public void edit(final WModelIndex index) {
-    if (!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsEditable).isEmpty()
-        && !this.isEditing(index)) {
-      if (!EnumUtils.mask(this.editOptions_, WAbstractItemView.EditOption.SingleEditor).isEmpty()) {
+    if (index.getFlags().contains(ItemFlag.Editable) && !this.isEditing(index)) {
+      if (this.editOptions_.contains(EditOption.SingleEditor)) {
         while (!this.editedItems_.isEmpty()) {
           this.closeEditor(this.editedItems_.entrySet().iterator().next().getKey(), false);
         }
       }
       this.editedItems_.put(index, new WAbstractItemView.Editor());
-      this.editedItems_.get(index).widget = null;
+      this.editedItems_.get(index).widget = (WWidget) null;
       this.editedItems_.get(index).stateSaved = false;
       this.modelDataChanged(index, index);
     }
@@ -1202,9 +1057,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       WAbstractItemView.Editor editor = i;
       WModelIndex closed = index;
       this.editedItems_.remove(index);
-      if (saveData
-          || !EnumUtils.mask(this.editOptions_, WAbstractItemView.EditOption.SaveWhenClosed)
-              .isEmpty()) {
+      if (saveData || this.editOptions_.contains(EditOption.SaveWhenClosed)) {
         this.saveEditedValue(closed, editor);
       }
       this.modelDataChanged(closed, closed);
@@ -1247,22 +1100,22 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>Validation is done by invoking {@link WAbstractItemDelegate#validate(WModelIndex index,
    * Object editState) WAbstractItemDelegate#validate()}.
    */
-  public WValidator.State validateEditor(final WModelIndex index) {
+  public ValidationState validateEditor(final WModelIndex index) {
     WAbstractItemView.Editor i = this.editedItems_.get(index);
     if (i != null) {
       WAbstractItemDelegate delegate = this.getItemDelegate(index);
       Object editState = new Object();
       final WAbstractItemView.Editor editor = i;
       if (editor.widget != null) {
-        editState = delegate.getEditState(editor.widget);
+        editState = delegate.getEditState(editor.widget, index);
       } else {
         editState = editor.editState;
       }
-      WValidator.State state = delegate.validate(index, editState);
-      editor.valid = state == WValidator.State.Valid;
+      ValidationState state = delegate.validate(index, editState);
+      editor.valid = state == ValidationState.Valid;
       return state;
     }
-    return WValidator.State.Invalid;
+    return ValidationState.Invalid;
   }
   /**
    * Validates all editors.
@@ -1271,13 +1124,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * @see WAbstractItemView#validateEditor(WModelIndex index)
    */
-  public WValidator.State validateEditors() {
-    WValidator.State state = WValidator.State.Valid;
+  public ValidationState validateEditors() {
+    ValidationState state = ValidationState.Valid;
     for (Iterator<Map.Entry<WModelIndex, WAbstractItemView.Editor>> i_it =
             this.editedItems_.entrySet().iterator();
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it.next();
-      WValidator.State s = this.validateEditor(i.getKey());
+      ValidationState s = this.validateEditor(i.getKey());
       if (s.getValue() < state.getValue()) {
         state = s;
       }
@@ -1541,43 +1394,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     return this.rowHeaderCount_;
   }
   /**
-   * Configures whether horizontal scrolling includes the first column (<b>deprecated</b>)
-   *
-   * <p>To display a model with many columns, this option allows you to keep the first column fixed
-   * while scrolling through the other columns of the model.
-   *
-   * <p>The default value is <code>false</code>.
-   *
-   * <p>
-   *
-   * @deprecated Use {@link WAbstractItemView#setRowHeaderCount(int count) setRowHeaderCount()}
-   *     instead.
-   */
-  public void setColumn1Fixed(boolean enable) {
-    this.setRowHeaderCount(enable ? 1 : 0);
-  }
-  /**
-   * Returns whether horizontal scrolling includes the first column. (<b>deprecated</b>)
-   *
-   * <p>
-   *
-   * @see WAbstractItemView#setColumn1Fixed(boolean enable)
-   * @deprecated Use {@link WAbstractItemView#getRowHeaderCount() getRowHeaderCount()} instead.
-   */
-  public boolean isColumn1Fixed() {
-    return this.rowHeaderCount_ == 1;
-  }
-
-  public void setObjectName(final String name) {
-    super.setObjectName(name);
-    this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
-    this.headerHeightRule_.setSelector("#" + this.getId() + " .headerrh");
-    for (int i = 0; i < this.columns_.size(); ++i) {
-      final WAbstractItemView.ColumnInfo ci = this.columns_.get(i);
-      ci.styleRule.setSelector("#" + this.getId() + " ." + ci.getStyleClass());
-    }
-  }
-  /**
    * Event signal emitted when a keyboard key is pushed down.
    *
    * <p>The keyWentDown signal is the first signal emitted when a key is pressed (before the
@@ -1625,102 +1441,81 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     return this.impl_.keyWentUp();
   }
   /** Creates a new item view. */
-  protected WAbstractItemView(WContainerWidget parent) {
-    super(parent);
-    this.impl_ = new WContainerWidget();
+  protected WAbstractItemView(WContainerWidget parentContainer) {
+    super(new WContainerWidget(), (WContainerWidget) null);
     this.renderState_ = WAbstractItemView.RenderState.NeedRerender;
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
     this.columns_ = new ArrayList<WAbstractItemView.ColumnInfo>();
     this.currentSortColumn_ = -1;
     this.dragEnabled_ = false;
     this.dropsEnabled_ = false;
+    this.uDragWidget_ = null;
+    this.dragWidget_ = null;
     this.model_ = null;
     this.headerModel_ = null;
     this.rootIndex_ = null;
     this.itemDelegate_ = null;
     this.headerItemDelegate_ = null;
-    this.selectionModel_ = new WItemSelectionModel((WAbstractItemModel) null, this);
+    this.selectionModel_ = new WItemSelectionModel();
     this.rowHeight_ = new WLength(20);
     this.headerLineHeight_ = new WLength(20);
-    this.selectionMode_ = SelectionMode.NoSelection;
+    this.selectionMode_ = SelectionMode.None;
     this.sorting_ = true;
     this.columnResize_ = true;
-    this.defaultHeaderVAlignment_ = AlignmentFlag.AlignMiddle;
+    this.defaultHeaderVAlignment_ = AlignmentFlag.Middle;
     this.defaultHeaderWordWrap_ = true;
     this.rowHeaderCount_ = 0;
     this.computedDragMimeType_ = new WString();
     this.sortEnabled_ = true;
     this.delayedClearAndSelectIndex_ = null;
-    this.columnWidthChanged_ = new JSignal2<Integer, Integer>(this.impl_, "columnResized") {};
-    this.columnResized_ = new Signal2<Integer, WLength>(this);
+    this.columnWidthChanged_ =
+        new JSignal2<Integer, Integer>(this.getImplementation(), "columnResized") {};
+    this.columnResized_ = new Signal2<Integer, WLength>();
+    this.headerHeightRule_ = null;
     this.nextColumnId_ = 1;
     this.alternatingRowColors_ = false;
     this.resizeHandleMDownJS_ = new JSlot();
     this.editedItems_ = new HashMap<WModelIndex, WAbstractItemView.Editor>();
-    this.headerClicked_ = new Signal2<Integer, WMouseEvent>(this);
-    this.headerDblClicked_ = new Signal2<Integer, WMouseEvent>(this);
-    this.headerMouseWentDown_ = new Signal2<Integer, WMouseEvent>(this);
-    this.headerMouseWentUp_ = new Signal2<Integer, WMouseEvent>(this);
-    this.clicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
-    this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>(this);
-    this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>(this);
-    this.mouseWentUp_ = new Signal2<WModelIndex, WMouseEvent>(this);
-    this.touchStart_ = new Signal2<WModelIndex, WTouchEvent>(this);
-    this.touchStarted_ = new Signal2<List<WModelIndex>, WTouchEvent>(this);
+    this.headerClicked_ = new Signal2<Integer, WMouseEvent>();
+    this.headerDblClicked_ = new Signal2<Integer, WMouseEvent>();
+    this.headerMouseWentDown_ = new Signal2<Integer, WMouseEvent>();
+    this.headerMouseWentUp_ = new Signal2<Integer, WMouseEvent>();
+    this.clicked_ = new Signal2<WModelIndex, WMouseEvent>();
+    this.doubleClicked_ = new Signal2<WModelIndex, WMouseEvent>();
+    this.mouseWentDown_ = new Signal2<WModelIndex, WMouseEvent>();
+    this.mouseWentUp_ = new Signal2<WModelIndex, WMouseEvent>();
+    this.touchStart_ = new Signal2<WModelIndex, WTouchEvent>();
+    this.touchStarted_ = new Signal2<List<WModelIndex>, WTouchEvent>();
     this.touchMoved_ = new Signal2<List<WModelIndex>, WTouchEvent>();
-    this.touchEnded_ = new Signal2<List<WModelIndex>, WTouchEvent>(this);
-    this.selectionChanged_ = new Signal(this);
-    this.pageChanged_ = new Signal(this);
-    this.editTriggers_ = EnumSet.of(WAbstractItemView.EditTrigger.DoubleClicked);
-    this.editOptions_ = EnumSet.of(WAbstractItemView.EditOption.SingleEditor);
+    this.touchEnded_ = new Signal2<List<WModelIndex>, WTouchEvent>();
+    this.selectionChanged_ = new Signal();
+    this.pageChanged_ = new Signal();
+    this.editTriggers_ = EnumSet.of(EditTrigger.DoubleClicked);
+    this.editOptions_ = EnumSet.of(EditOption.SingleEditor);
     this.touchRegistered_ = false;
-    this.setImplementation(this.impl_);
-    this.setItemDelegate(new WItemDelegate(this));
-    this.setHeaderItemDelegate(new WItemDelegate(this));
+    this.impl_ =
+        ((this.getImplementation()) instanceof WContainerWidget
+            ? (WContainerWidget) (this.getImplementation())
+            : null);
+    WItemDelegate d = new WItemDelegate();
+    this.setItemDelegate(d);
+    this.setHeaderItemDelegate(d);
     WApplication app = WApplication.getInstance();
-    this.clickedForCollapseMapper_ = new WSignalMapper1<Integer>(this);
-    this.clickedForCollapseMapper_
-        .mapped()
-        .addListener(
-            this,
-            new Signal1.Listener<Integer>() {
-              public void trigger(Integer e1) {
-                WAbstractItemView.this.collapseColumn(e1);
-              }
-            });
-    this.clickedForExpandMapper_ = new WSignalMapper1<Integer>(this);
-    this.clickedForExpandMapper_
-        .mapped()
-        .addListener(
-            this,
-            new Signal1.Listener<Integer>() {
-              public void trigger(Integer e1) {
-                WAbstractItemView.this.expandColumn(e1);
-              }
-            });
     SizeHandle.loadJavaScript(app);
     if (!app.getEnvironment().hasAjax()) {
-      this.clickedMapper_ = new WSignalMapper2<WModelIndex, WMouseEvent>(this);
-      this.clickedMapper_
-          .mapped()
-          .addListener(
-              this,
-              new Signal2.Listener<WModelIndex, WMouseEvent>() {
-                public void trigger(WModelIndex e1, WMouseEvent e2) {
-                  WAbstractItemView.this.handleClick(e1, e2);
-                }
-              });
       this.columnResize_ = false;
     }
     this.bindObjJS(this.resizeHandleMDownJS_, "resizeHandleMDown");
     this.headerHeightRule_ = new WCssTemplateRule("#" + this.getId() + " .headerrh");
     app.getStyleSheet().addRule(this.headerHeightRule_);
     this.setHeaderHeight(this.headerLineHeight_);
+    if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
    * Creates a new item view.
    *
-   * <p>Calls {@link #WAbstractItemView(WContainerWidget parent) this((WContainerWidget)null)}
+   * <p>Calls {@link #WAbstractItemView(WContainerWidget parentContainer)
+   * this((WContainerWidget)null)}
    */
   protected WAbstractItemView() {
     this((WContainerWidget) null);
@@ -1735,8 +1530,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>The drop event can be handled either by the view itself, or by the model. The default
    * implementation checks if the mime-type is accepted by the model, and if so passes the drop
    * event to the model. If the source is the view&apos;s own selection model, then the drop event
-   * will be handled as a {@link DropAction#MoveAction}, otherwise the drop event will be handled as
-   * a {@link DropAction#CopyAction}.
+   * will be handled as a {@link DropAction#Move}, otherwise the drop event will be handled as a
+   * {@link DropAction#Copy}.
    *
    * <p>
    *
@@ -1749,7 +1544,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       for (int i = 0; i < acceptMimeTypes.size(); ++i) {
         if (acceptMimeTypes.get(i).equals(e.getMimeType())) {
           boolean internal = e.getSource() == this.selectionModel_;
-          DropAction action = internal ? DropAction.MoveAction : DropAction.CopyAction;
+          DropAction action = internal ? DropAction.Move : DropAction.Copy;
           this.model_.dropEvent(e, action, index.getRow(), index.getColumn(), index.getParent());
           this.setSelectedIndexes(new TreeSet<WModelIndex>());
           return;
@@ -1830,21 +1625,23 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     }
 
     public ColumnInfo(WAbstractItemView view, int anId) {
+      this.styleRule = null;
       this.id = anId;
-      this.sortOrder = SortOrder.AscendingOrder;
-      this.alignment = AlignmentFlag.AlignLeft;
-      this.headerHAlignment = AlignmentFlag.AlignLeft;
+      this.sortOrder = SortOrder.Ascending;
+      this.alignment = AlignmentFlag.Left;
+      this.headerHAlignment = AlignmentFlag.Left;
       this.headerVAlignment = view.defaultHeaderVAlignment_;
       this.headerWordWrap = view.defaultHeaderWordWrap_;
       this.width = new WLength();
-      this.extraHeaderWidget = null;
+      this.extraHeaderWidget = (WWidget) null;
       this.sorting = view.sorting_;
       this.hidden = false;
-      this.itemDelegate_ = null;
+      this.itemDelegate_ = (WAbstractItemDelegate) null;
       this.width = new WLength(150);
-      this.styleRule = new WCssTemplateRule("#" + view.getId() + " ." + this.getStyleClass());
-      this.styleRule.getTemplateWidget().resize(new WLength(this.width.toPixels()), WLength.Auto);
-      WApplication.getInstance().getStyleSheet().addRule(this.styleRule);
+      WCssTemplateRule r = new WCssTemplateRule("#" + view.getId() + " ." + this.getStyleClass());
+      r.getTemplateWidget().resize(new WLength(this.width.toPixels()), WLength.Auto);
+      this.styleRule = r;
+      CssUtils.add(WApplication.getInstance().getStyleSheet(), r);
     }
   }
 
@@ -1871,11 +1668,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   WContainerWidget impl_;
   WAbstractItemView.RenderState renderState_;
   List<AbstractSignal.Connection> modelConnections_;
-  WSignalMapper2<WModelIndex, WMouseEvent> clickedMapper_;
   List<WAbstractItemView.ColumnInfo> columns_;
   int currentSortColumn_;
   boolean dragEnabled_;
   boolean dropsEnabled_;
+  protected WWidget uDragWidget_;
   WWidget dragWidget_;
 
   void scheduleRerender(WAbstractItemView.RenderState what) {
@@ -1931,8 +1728,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   }
 
   protected void modelHeaderDataChanged(Orientation orientation, int start, int end) {
-    if (this.renderState_.getValue()
-        < WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
+    if ((int) this.renderState_.getValue()
+        < (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       if (orientation == Orientation.Horizontal) {
         for (int i = start; i <= end; ++i) {
           WContainerWidget hw =
@@ -1940,8 +1737,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
                   ? (WContainerWidget) (this.headerWidget(i, true))
                   : null);
           WWidget tw = hw.getWidget(hw.getCount() - 1);
-          this.headerItemDelegate_.update(
-              tw, this.headerModel_.getIndex(0, i), EnumSet.noneOf(ViewItemRenderFlag.class));
+          {
+            WWidget toRemove =
+                this.headerItemDelegate_.update(
+                    tw, this.headerModel_.getIndex(0, i), EnumSet.noneOf(ViewItemRenderFlag.class));
+            if (toRemove != null) toRemove.remove();
+          }
+
           tw.setInline(false);
           tw.addStyleClass("Wt-label");
           WWidget h = this.headerWidget(i, false);
@@ -1949,7 +1751,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
           h.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
           String sc =
               StringUtils.asString(
-                      this.headerModel_.getIndex(0, i).getData(ItemDataRole.StyleClassRole))
+                      this.headerModel_.getIndex(0, i).getData(ItemDataRole.StyleClass))
                   .toString();
           if (sc.length() != 0) {
             h.addStyleClass(sc);
@@ -2028,8 +1830,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     for (int i = 0; i < this.getColumnCount(); ++i) {
       WWidget w = this.columnInfo(i).extraHeaderWidget;
       if (w != null && w.getParent() != null) {
-        (((w.getParent()) instanceof WContainerWidget ? (WContainerWidget) (w.getParent()) : null))
-            .removeWidget(w);
+        w.getParent().removeWidget(w);
       }
     }
   }
@@ -2039,32 +1840,46 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     WContainerWidget contents = new WContainerWidget();
     contents.setObjectName("contents");
     if (info.sorting) {
-      WText sortIcon = new WText(contents);
+      WText sortIcon = new WText();
       sortIcon.setObjectName("sort");
       sortIcon.setInline(false);
       sortIcon.setStyleClass("Wt-tv-sh Wt-tv-sh-none");
       if (this.currentSortColumn_ == column) {
         sortIcon.setStyleClass(
-            info.sortOrder == SortOrder.AscendingOrder
+            info.sortOrder == SortOrder.Ascending
                 ? "Wt-tv-sh Wt-tv-sh-up"
                 : "Wt-tv-sh Wt-tv-sh-down");
       }
+      contents.addWidget(sortIcon);
     }
     if (!EnumUtils.mask(
             this.model_.getHeaderFlags(column),
             EnumSet.of(HeaderFlag.ColumnIsExpandedLeft, HeaderFlag.ColumnIsExpandedRight))
         .isEmpty()) {
-      WImage collapseIcon = new WImage(contents);
+      WImage collapseIcon = new WImage();
       collapseIcon.setFloatSide(Side.Left);
       collapseIcon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "minus.gif"));
-      this.clickedForCollapseMapper_.mapConnect(collapseIcon.clicked(), info.id);
+      collapseIcon
+          .clicked()
+          .addListener(
+              this,
+              () -> {
+                WAbstractItemView.this.collapseColumn(info.id);
+              });
+      contents.addWidget(collapseIcon);
     } else {
-      if (!EnumUtils.mask(this.model_.getHeaderFlags(column), HeaderFlag.ColumnIsCollapsed)
-          .isEmpty()) {
-        WImage expandIcon = new WImage(contents);
+      if (this.model_.getHeaderFlags(column).contains(HeaderFlag.ColumnIsCollapsed)) {
+        WImage expandIcon = new WImage();
         expandIcon.setFloatSide(Side.Left);
         expandIcon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "plus.gif"));
-        this.clickedForExpandMapper_.mapConnect(expandIcon.clicked(), info.id);
+        expandIcon
+            .clicked()
+            .addListener(
+                this,
+                () -> {
+                  WAbstractItemView.this.expandColumn(info.id);
+                });
+        contents.addWidget(expandIcon);
       }
     }
     WModelIndex index = this.headerModel_.getIndex(0, column);
@@ -2084,10 +1899,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
         EnumSet<HeaderFlag> flagsLeft = this.model_.getHeaderFlags(column);
         EnumSet<HeaderFlag> flagsRight = this.model_.getHeaderFlags(rightColumn);
         int rightHeaderLevel = this.headerLevel(rightColumn);
-        if (!EnumUtils.mask(flagsLeft, HeaderFlag.ColumnIsExpandedRight).isEmpty()) {
+        if (flagsLeft.contains(HeaderFlag.ColumnIsExpandedRight)) {
           rightBorderLevel = headerLevel + 1;
         } else {
-          if (!EnumUtils.mask(flagsRight, HeaderFlag.ColumnIsExpandedLeft).isEmpty()) {
+          if (flagsRight.contains(HeaderFlag.ColumnIsExpandedLeft)) {
             rightBorderLevel = rightHeaderLevel + 1;
           } else {
             rightBorderLevel = Math.min(headerLevel, rightHeaderLevel);
@@ -2112,11 +1927,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     result.setStyleClass(info.getStyleClass() + " Wt-tv-c headerrh");
     result.addWidget(resizeHandle);
     WContainerWidget main = new WContainerWidget();
-    main.setOverflow(WContainerWidget.Overflow.OverflowHidden);
+    main.setOverflow(Overflow.Hidden);
     main.setContentAlignment(info.headerHAlignment);
-    result.addWidget(main);
     main.addWidget(contents);
-    if (info.headerVAlignment == AlignmentFlag.AlignMiddle) {
+    if (info.headerVAlignment == AlignmentFlag.Middle) {
       main.setLineHeight(this.headerLineHeight_);
     } else {
       main.setLineHeight(WLength.Auto);
@@ -2130,36 +1944,29 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     main.clicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent event) {
-                WAbstractItemView.this.handleHeaderClicked(info.id, event);
-              }
+            (WMouseEvent event) -> {
+              WAbstractItemView.this.handleHeaderClicked(info.id, event);
             });
     main.mouseWentDown()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent event) {
-                WAbstractItemView.this.handleHeaderMouseDown(info.id, event);
-              }
+            (WMouseEvent event) -> {
+              WAbstractItemView.this.handleHeaderMouseDown(info.id, event);
             });
     main.mouseWentUp()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent event) {
-                WAbstractItemView.this.handleHeaderMouseUp(info.id, event);
-              }
+            (WMouseEvent event) -> {
+              WAbstractItemView.this.handleHeaderMouseUp(info.id, event);
             });
     main.doubleClicked()
         .addListener(
             this,
-            new Signal1.Listener<WMouseEvent>() {
-              public void trigger(WMouseEvent event) {
-                WAbstractItemView.this.handleHeaderDblClicked(info.id, event);
-              }
+            (WMouseEvent event) -> {
+              WAbstractItemView.this.handleHeaderDblClicked(info.id, event);
             });
-    String sc = StringUtils.asString(index.getData(ItemDataRole.StyleClassRole)).toString();
+    result.addWidget(main);
+    String sc = StringUtils.asString(index.getData(ItemDataRole.StyleClass)).toString();
     if (sc.length() != 0) {
       result.addStyleClass(sc);
     }
@@ -2182,10 +1989,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
         this.select(this.delayedClearAndSelectIndex_, SelectionFlag.ClearAndSelect);
       }
     }
-    boolean doEdit =
-        (index != null)
-            && !EnumUtils.mask(this.getEditTriggers(), WAbstractItemView.EditTrigger.SingleClicked)
-                .isEmpty();
+    boolean doEdit = (index != null) && this.getEditTriggers().contains(EditTrigger.SingleClicked);
     if (doEdit) {
       this.edit(index);
     }
@@ -2200,10 +2004,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * <p>You may want to override this signal to override the built-in editing behaviour.
    */
   void handleDoubleClick(final WModelIndex index, final WMouseEvent event) {
-    boolean doEdit =
-        (index != null)
-            && !EnumUtils.mask(this.getEditTriggers(), WAbstractItemView.EditTrigger.DoubleClicked)
-                .isEmpty();
+    boolean doEdit = (index != null) && this.getEditTriggers().contains(EditTrigger.DoubleClicked);
     if (doEdit) {
       this.edit(index);
     }
@@ -2220,12 +2021,10 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     }
     boolean doEdit =
         (index != null)
-            && !EnumUtils.mask(
-                    this.getEditTriggers(), WAbstractItemView.EditTrigger.SelectedClicked)
-                .isEmpty()
+            && this.getEditTriggers().contains(EditTrigger.SelectedClicked)
             && this.isSelected(index);
     this.delayedClearAndSelectIndex_ = null;
-    if ((index != null) && event.getButton() == WMouseEvent.Button.LeftButton) {
+    if ((index != null) && event.getButton() == MouseButton.Left) {
       this.selectionHandleClick(index, event.getModifiers());
     }
     if (doEdit) {
@@ -2253,9 +2052,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     if (indices.size() == 1) {
       boolean doEdit =
           (index != null)
-              && !EnumUtils.mask(
-                      this.getEditTriggers(), WAbstractItemView.EditTrigger.SelectedClicked)
-                  .isEmpty()
+              && this.getEditTriggers().contains(EditTrigger.SelectedClicked)
               && this.isSelected(index);
       if (doEdit) {
         this.edit(index);
@@ -2280,15 +2077,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   }
 
   boolean internalSelect(final WModelIndex index, SelectionFlag option) {
-    if (!!EnumUtils.mask(index.getFlags(), ItemFlag.ItemIsSelectable).isEmpty()
-        || this.getSelectionMode() == SelectionMode.NoSelection) {
+    if (!!EnumUtils.mask(index.getFlags(), ItemFlag.Selectable).isEmpty()
+        || this.getSelectionMode() == SelectionMode.None) {
       return false;
     }
     if (option == SelectionFlag.ToggleSelect) {
       option = this.isSelected(index) ? SelectionFlag.Deselect : SelectionFlag.Select;
     }
-    if (this.getSelectionMode() == SelectionMode.SingleSelection
-        && option == SelectionFlag.Select) {
+    if (this.getSelectionMode() == SelectionMode.Single && option == SelectionFlag.Select) {
       option = SelectionFlag.ClearAndSelect;
     }
     if ((option == SelectionFlag.ClearAndSelect || option == SelectionFlag.Select)
@@ -2310,6 +2106,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       this.getSelectionModel().selection_.remove(index);
     }
     return true;
+  }
+
+  protected void enableAjax() {
+    super.enableAjax();
+    if (this.uDragWidget_ != null) {
+      this.getHeaderContainer().addWidget(this.uDragWidget_);
+      this.configureModelDragDrop();
+    }
   }
 
   void setEditState(final WModelIndex index, final Object editState) {
@@ -2479,7 +2283,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     private static Logger logger = LoggerFactory.getLogger(Editor.class);
 
     public Editor() {
-      this.widget = null;
+      this.widget = (WWidget) null;
       this.editState = new Object();
       this.stateSaved = false;
       this.valid = false;
@@ -2513,8 +2317,6 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   private Signal2<Integer, WLength> columnResized_;
   private WCssTemplateRule headerHeightRule_;
   private int nextColumnId_;
-  private WSignalMapper1<Integer> clickedForExpandMapper_;
-  private WSignalMapper1<Integer> clickedForCollapseMapper_;
   private boolean alternatingRowColors_;
   private JSlot resizeHandleMDownJS_;
   private Map<WModelIndex, WAbstractItemView.Editor> editedItems_;
@@ -2532,8 +2334,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   private Signal2<List<WModelIndex>, WTouchEvent> touchEnded_;
   private Signal selectionChanged_;
   private Signal pageChanged_;
-  private EnumSet<WAbstractItemView.EditTrigger> editTriggers_;
-  private EnumSet<WAbstractItemView.EditOption> editOptions_;
+  private EnumSet<EditTrigger> editTriggers_;
+  private EnumSet<EditOption> editOptions_;
   private boolean touchRegistered_;
 
   private void closeEditorWidget(WWidget editor, boolean saveData) {
@@ -2542,8 +2344,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractItemView.Editor> i = i_it.next();
       if (i.getValue().widget == editor) {
-        if (!EnumUtils.mask(this.editOptions_, WAbstractItemView.EditOption.LeaveEditorsOpen)
-            .isEmpty()) {
+        if (this.editOptions_.contains(EditOption.LeaveEditorsOpen)) {
           if (saveData) {
             this.saveEditedValue(i.getKey(), i.getValue());
           }
@@ -2559,18 +2360,18 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     Object editState = new Object();
     WAbstractItemDelegate delegate = this.getItemDelegate(index);
     if (editor.widget != null) {
-      editState = delegate.getEditState(editor.widget);
+      editState = delegate.getEditState(editor.widget, index);
     } else {
       editState = editor.editState;
     }
-    delegate.setModelData(editState, this.getModel(), index);
+    delegate.setModelData(editState, this.model_, index);
   }
 
   private void persistEditor(final WModelIndex index, final WAbstractItemView.Editor editor) {
     if (editor.widget != null) {
-      editor.editState = this.getItemDelegate(index).getEditState(editor.widget);
+      editor.editState = this.getItemDelegate(index).getEditState(editor.widget, index);
       editor.stateSaved = true;
-      editor.widget = null;
+      editor.widget = (WWidget) null;
     }
   }
 
@@ -2593,16 +2394,14 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   }
 
   private void selectionHandleClick(final WModelIndex index, EnumSet<KeyboardModifier> modifiers) {
-    if (this.selectionMode_ == SelectionMode.NoSelection) {
+    if (this.selectionMode_ == SelectionMode.None) {
       return;
     }
-    if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
-      if (!EnumUtils.mask(modifiers, KeyboardModifier.ShiftModifier).isEmpty()) {
+    if (this.selectionMode_ == SelectionMode.Extended) {
+      if (modifiers.contains(KeyboardModifier.Shift)) {
         this.extendSelection(index);
       } else {
-        if (!!EnumUtils.mask(
-                modifiers,
-                EnumSet.of(KeyboardModifier.ControlModifier, KeyboardModifier.MetaModifier))
+        if (!!EnumUtils.mask(modifiers, EnumSet.of(KeyboardModifier.Control, KeyboardModifier.Meta))
             .isEmpty()) {
           if (!this.dragEnabled_) {
             this.select(index, SelectionFlag.ClearAndSelect);
@@ -2618,9 +2417,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
         }
       }
     } else {
-      if (!EnumUtils.mask(
-                  modifiers,
-                  EnumSet.of(KeyboardModifier.ControlModifier, KeyboardModifier.MetaModifier))
+      if (!EnumUtils.mask(modifiers, EnumSet.of(KeyboardModifier.Control, KeyboardModifier.Meta))
               .isEmpty()
           && this.isSelected(index)) {
         this.clearSelection();
@@ -2637,11 +2434,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   }
 
   private void selectionHandleTouch(final List<WModelIndex> indices, final WTouchEvent event) {
-    if (this.selectionMode_ == SelectionMode.NoSelection) {
+    if (this.selectionMode_ == SelectionMode.None) {
       return;
     }
     final WModelIndex index = indices.get(0);
-    if (this.selectionMode_ == SelectionMode.ExtendedSelection) {
+    if (this.selectionMode_ == SelectionMode.Extended) {
       if (event.getTouches().size() > 1) {
         this.extendSelection(indices);
       } else {
@@ -2661,7 +2458,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     if (this.selectionModel_.selection_.isEmpty()) {
       this.internalSelect(index, SelectionFlag.Select);
     } else {
-      if (this.getSelectionBehavior() == SelectionBehavior.SelectRows && index.getColumn() != 0) {
+      if (this.getSelectionBehavior() == SelectionBehavior.Rows && index.getColumn() != 0) {
         this.extendSelection(this.model_.getIndex(index.getRow(), 0, index.getParent()));
         return;
       }
@@ -2749,9 +2546,9 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     } else {
       this.sortByColumn(
           column,
-          this.columnInfo(column).sortOrder == SortOrder.AscendingOrder
-              ? SortOrder.DescendingOrder
-              : SortOrder.AscendingOrder);
+          this.columnInfo(column).sortOrder == SortOrder.Ascending
+              ? SortOrder.Descending
+              : SortOrder.Ascending);
     }
   }
 
@@ -2762,7 +2559,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       this.columnResized_.trigger(column, this.columnInfo(column).width);
       WWidget w = this.headerWidget(column, 0 != 0);
       if (w != null) {
-        w.scheduleRender(EnumSet.of(RepaintFlag.RepaintSizeAffected));
+        w.scheduleRender(EnumSet.of(RepaintFlag.SizeAffected));
       }
     }
   }
@@ -2770,8 +2567,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   abstract WContainerWidget getHeaderContainer();
 
   private int headerLevel(int column) {
-    Object d = this.model_.getHeaderData(column, Orientation.Horizontal, ItemDataRole.LevelRole);
-    if (!(d == null)) {
+    Object d = this.model_.getHeaderData(column, Orientation.Horizontal, ItemDataRole.Level);
+    if ((d != null)) {
       return (int) StringUtils.asNumber(d);
     } else {
       return 0;
@@ -2815,10 +2612,8 @@ public abstract class WAbstractItemView extends WCompositeWidget {
             + "items-ok.gif);");
     this.selectionChanged_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            WAbstractItemView.this.checkDragSelection();
-          }
+        () -> {
+          WAbstractItemView.this.checkDragSelection();
         });
   }
 

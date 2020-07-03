@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -75,16 +76,16 @@ public class WPdfRenderer extends WTextRenderer {
    * <p>This sets page margins, in <code>cm</code>, for one or more <code>sides</code>.
    */
   public void setMargin(double margin, EnumSet<Side> sides) {
-    if (!EnumUtils.mask(sides, Side.Top).isEmpty()) {
+    if (sides.contains(Side.Top)) {
       this.margin_[0] = margin;
     }
-    if (!EnumUtils.mask(sides, Side.Right).isEmpty()) {
+    if (sides.contains(Side.Right)) {
       this.margin_[1] = margin;
     }
-    if (!EnumUtils.mask(sides, Side.Bottom).isEmpty()) {
+    if (sides.contains(Side.Bottom)) {
       this.margin_[2] = margin;
     }
-    if (!EnumUtils.mask(sides, Side.Left).isEmpty()) {
+    if (sides.contains(Side.Left)) {
       this.margin_[3] = margin;
     }
   }
@@ -100,10 +101,10 @@ public class WPdfRenderer extends WTextRenderer {
   /**
    * Sets the page margins.
    *
-   * <p>Calls {@link #setMargin(double margin, EnumSet sides) setMargin(margin, Side.All)}
+   * <p>Calls {@link #setMargin(double margin, EnumSet sides) setMargin(margin, Side.AllSides)}
    */
   public final void setMargin(double margin) {
-    setMargin(margin, Side.All);
+    setMargin(margin, Side.AllSides);
   }
   /**
    * Sets the resolution.
@@ -223,9 +224,8 @@ public class WPdfRenderer extends WTextRenderer {
   }
 
   public void endPage(WPaintDevice device) {
-    ;
+
     this.painter_ = null;
-    ;
   }
 
   public WPainter getPainter(WPaintDevice device) {

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -41,11 +42,11 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
    * Adds a string resolver.
    *
    * <p>The order in which string resolvers are added is significant: {@link
-   * WCombinedLocalizedStrings#resolveKey(String key) resolveKey()} will consult each string
-   * resolver in the order they have been added, until a match is found.
+   * WCombinedLocalizedStrings#resolveKey(Locale locale, String key) resolveKey()} will consult each
+   * string resolver in the order they have been added, until a match is found.
    */
-  public void add(WLocalizedStrings resolver) {
-    this.localizedStrings_.add(resolver);
+  public void add(final WLocalizedStrings resolver) {
+    this.insert(this.localizedStrings_.size(), resolver);
   }
   /**
    * Inserts a string resolver.
@@ -54,7 +55,7 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
    *
    * @see WCombinedLocalizedStrings#add(WLocalizedStrings resolver)
    */
-  public void insert(int index, WLocalizedStrings resolver) {
+  public void insert(int index, final WLocalizedStrings resolver) {
     this.localizedStrings_.add(0 + index, resolver);
   }
   /**
@@ -64,25 +65,12 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
    *
    * @see WCombinedLocalizedStrings#add(WLocalizedStrings resolver)
    */
-  public void remove(WLocalizedStrings resolver) {
+  public void remove(final WLocalizedStrings resolver) {
     this.localizedStrings_.remove(resolver);
   }
-  /**
-   * Returns the list of resolvers.
-   *
-   * <p>
-   *
-   * @see WCombinedLocalizedStrings#add(WLocalizedStrings resolver)
-   * @see WCombinedLocalizedStrings#remove(WLocalizedStrings resolver)
-   */
+
   public List<WLocalizedStrings> getItems() {
     return this.localizedStrings_;
-  }
-
-  public void refresh() {
-    for (int i = 0; i < this.localizedStrings_.size(); ++i) {
-      this.localizedStrings_.get(i).refresh();
-    }
   }
 
   public void hibernate() {
@@ -91,15 +79,24 @@ public class WCombinedLocalizedStrings extends WLocalizedStrings {
     }
   }
 
-  public String resolveKey(final String key) {
-    String result = null;
+  public LocalizedString resolveKey(final Locale locale, final String key) {
     for (int i = 0; i < this.localizedStrings_.size(); ++i) {
-      result = this.localizedStrings_.get(i).resolveKey(key);
-      if (result != null) {
+      LocalizedString result = this.localizedStrings_.get(i).resolveKey(locale, key);
+      if (result.success) {
         return result;
       }
     }
-    return null;
+    return new LocalizedString();
+  }
+
+  public LocalizedString resolvePluralKey(final Locale locale, final String key, long amount) {
+    for (int i = 0; i < this.localizedStrings_.size(); ++i) {
+      LocalizedString result = this.localizedStrings_.get(i).resolvePluralKey(locale, key, amount);
+      if (result.success) {
+        return result;
+      }
+    }
+    return new LocalizedString();
   }
 
   private List<WLocalizedStrings> localizedStrings_;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -21,9 +22,9 @@ import org.slf4j.LoggerFactory;
  * A utility class which provides timer signals and single-shot timers.
  *
  * <p>To use a timer, create a WTimer instance, set the timer interval using {@link
- * WTimer#setInterval(int msec) setInterval()} and connect a slot to the timeout signal. Then, start
- * the timer using {@link WTimer#start() start()}. An active timer may be cancelled at any time
- * using {@link WTimer#stop() stop()}.
+ * WTimer#setInterval(Duration msec) setInterval()} and connect a slot to the timeout signal. Then,
+ * start the timer using {@link WTimer#start() start()}. An active timer may be cancelled at any
+ * time using {@link WTimer#stop() stop()}.
  *
  * <p>By default, a timer will continue to generate events until you {@link WTimer#stop() stop()}
  * it. To create a timer that will fire only once, use {@link WTimer#setSingleShot(boolean
@@ -42,30 +43,23 @@ public class WTimer extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WTimer.class);
 
   /** Construct a new timer with the given parent. */
-  public WTimer(WObject parent) {
-    super(parent);
-    this.timerWidget_ = new WTimerWidget(this);
+  public WTimer() {
+    super();
+    this.timerWidget_ = null;
+    this.uTimerWidget_ = new WTimerWidget(this);
     this.singleShot_ = false;
-    this.selfDestruct_ = false;
-    this.interval_ = 0;
+    this.interval_ = Duration.ofMillis(0);
     this.active_ = false;
     this.timeoutConnected_ = false;
     this.timeout_ = new Time();
+    this.timerWidget_ = this.uTimerWidget_;
   }
-  /**
-   * Construct a new timer with the given parent.
-   *
-   * <p>Calls {@link #WTimer(WObject parent) this((WObject)null)}
-   */
-  public WTimer() {
-    this((WObject) null);
-  }
-  /** Returns the interval (msec). */
-  public int getInterval() {
+  /** Returns the interval. */
+  public Duration getInterval() {
     return this.interval_;
   }
-  /** Sets the interval (msec). */
-  public void setInterval(int msec) {
+  /** Sets the interval. */
+  public void setInterval(Duration msec) {
     this.interval_ = msec;
   }
   /** Returns if the timer is running. */
@@ -95,11 +89,11 @@ public class WTimer extends WObject {
     WApplication app = WApplication.getInstance();
     if (!this.active_) {
       if (app != null && app.getTimerRoot() != null) {
-        app.getTimerRoot().addWidget(this.timerWidget_);
+        app.getTimerRoot().addWidget(this.uTimerWidget_);
       }
     }
     this.active_ = true;
-    this.timeout_ = new Time().add(this.interval_);
+    this.timeout_ = new Time().add((int) this.interval_.toMillis());
     boolean jsRepeat =
         !this.singleShot_
             && (app != null && app.getEnvironment().hasAjax() || !this.timeout().isExposedSignal());
@@ -108,10 +102,8 @@ public class WTimer extends WObject {
       this.timeout()
           .addListener(
               this,
-              new Signal1.Listener<WMouseEvent>() {
-                public void trigger(WMouseEvent e1) {
-                  WTimer.this.gotTimeout();
-                }
+              (WMouseEvent e1) -> {
+                WTimer.this.gotTimeout();
               });
       this.timeoutConnected_ = true;
     }
@@ -128,9 +120,8 @@ public class WTimer extends WObject {
    */
   public void stop() {
     if (this.active_) {
-      WApplication app = WApplication.getInstance();
-      if (app != null && app.getTimerRoot() != null) {
-        app.getTimerRoot().removeWidget(this.timerWidget_);
+      if (this.timerWidget_ != null && this.timerWidget_.getParent() != null) {
+        this.uTimerWidget_ = WidgetUtils.remove(this.timerWidget_.getParent(), this.timerWidget_);
       }
       this.active_ = false;
     }
@@ -146,9 +137,9 @@ public class WTimer extends WObject {
   }
 
   WTimerWidget timerWidget_;
+  private WTimerWidget uTimerWidget_;
   private boolean singleShot_;
-  private boolean selfDestruct_;
-  private int interval_;
+  private Duration interval_;
   private boolean active_;
   private boolean timeoutConnected_;
   private Time timeout_;
@@ -156,7 +147,7 @@ public class WTimer extends WObject {
   private void gotTimeout() {
     if (this.active_) {
       if (!this.singleShot_) {
-        this.timeout_ = new Time().add(this.interval_);
+        this.timeout_ = new Time().add((int) this.interval_.toMillis());
         if (!this.timerWidget_.isJsRepeat()) {
           WApplication app = WApplication.getInstance();
           this.timerWidget_.timerStart(app.getEnvironment().hasAjax());
@@ -165,12 +156,6 @@ public class WTimer extends WObject {
         this.stop();
       }
     }
-    if (this.selfDestruct_) {;
-    }
-  }
-
-  private void setSelfDestruct() {
-    this.selfDestruct_ = true;
   }
 
   int getRemainingInterval() {

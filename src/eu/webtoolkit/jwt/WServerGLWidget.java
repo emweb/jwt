@@ -1038,7 +1038,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		ctx_.makeCurrent();
 		
 
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+		if (!EnumUtils.mask(flags, RenderFlag.Full).isEmpty()) {
 			if (serverWindow_) {
 				window_.setSize((int)glInterface_.getWidth().getValue(), (int)glInterface_.getHeight().getValue());
 			} else {

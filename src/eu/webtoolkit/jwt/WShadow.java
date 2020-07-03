@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -33,7 +34,7 @@ public class WShadow {
    * <p>Constructs a disabled shadow effect (offsetX = offsetY = blur = 0)
    */
   public WShadow() {
-    this.color_ = WColor.black;
+    this.color_ = new WColor(StandardColor.Black);
     this.offsetX_ = 0;
     this.offsetY_ = 0;
     this.blur_ = 0;

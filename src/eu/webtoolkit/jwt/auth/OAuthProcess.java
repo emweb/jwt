@@ -11,6 +11,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -119,7 +120,7 @@ public class OAuthProcess extends WObject {
     if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
       StringBuilder js = new StringBuilder();
       js.append("function(object, event) {")
-          .append("Wt3_6_0.PopupWindow(Wt3_6_0")
+          .append("Wt4_4_0.PopupWindow(Wt4_4_0")
           .append(",")
           .append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
           .append(", ")
@@ -132,10 +133,8 @@ public class OAuthProcess extends WObject {
     }
     s.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            OAuthProcess.this.startAuthenticate();
-          }
+        () -> {
+          OAuthProcess.this.startAuthenticate();
         });
   }
   /**
@@ -224,13 +223,15 @@ public class OAuthProcess extends WObject {
     this.service_ = service;
     this.scope_ = scope;
     this.authenticate_ = false;
-    this.authorized_ = new Signal1<OAuthAccessToken>(this);
-    this.authenticated_ = new Signal1<Identity>(this);
+    this.authorized_ = new Signal1<OAuthAccessToken>();
+    this.authenticated_ = new Signal1<Identity>();
     this.redirected_ = new JSignal(this, "redirected");
     this.oAuthState_ = "";
     this.token_ = new OAuthAccessToken();
     this.error_ = new WString();
     this.startInternalPath_ = "";
+    this.redirectEndpoint_ = null;
+    this.httpClient_ = null;
     this.redirectEndpoint_ = new OAuthRedirectEndpoint(this);
     WApplication app = WApplication.getInstance();
     PopupWindow.loadJavaScript(app);
@@ -238,10 +239,8 @@ public class OAuthProcess extends WObject {
     this.oAuthState_ = this.service_.encodeState(url);
     this.redirected_.addListener(
         this,
-        new Signal.Listener() {
-          public void trigger() {
-            OAuthProcess.this.onOAuthDone();
-          }
+        () -> {
+          OAuthProcess.this.onOAuthDone();
         });
   }
   /**
@@ -333,6 +332,7 @@ public class OAuthProcess extends WObject {
   private WString error_;
   String startInternalPath_;
   private OAuthRedirectEndpoint redirectEndpoint_;
+  private HttpClient httpClient_;
 
   void requestToken(final String authorizationCode) {
     try {
@@ -344,16 +344,14 @@ public class OAuthProcess extends WObject {
           .append(Utils.urlEncode(this.service_.getGenerateRedirectEndpoint()))
           .append("&code=")
           .append(authorizationCode);
-      HttpClient client = new HttpClient(this);
-      client.setTimeout(15);
-      client
+      this.httpClient_ = new HttpClient();
+      this.httpClient_.setTimeout(Duration.ofSeconds(15));
+      this.httpClient_
           .done()
           .addListener(
               this,
-              new Signal2.Listener<Exception, HttpMessage>() {
-                public void trigger(Exception event1, HttpMessage event2) {
-                  OAuthProcess.this.handleToken(event1, event2);
-                }
+              (Exception event1, HttpMessage event2) -> {
+                OAuthProcess.this.handleToken(event1, event2);
               });
       String clientId = Utils.urlEncode(this.service_.getClientId());
       String clientSecret = Utils.urlEncode(this.service_.getClientSecret());
@@ -374,7 +372,7 @@ public class OAuthProcess extends WObject {
         }
         boolean hasQuery = url.indexOf('?') != -1;
         url += (hasQuery ? '&' : '?') + ss.toString();
-        client.get(url, headers);
+        this.httpClient_.get(url, headers);
       } else {
         HttpMessage post = new HttpMessage();
         post.setHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -390,7 +388,7 @@ public class OAuthProcess extends WObject {
           }
         }
         post.addBodyText(ss.toString());
-        client.post(url, post);
+        this.httpClient_.post(url, post);
       }
     } catch (Exception e) {
       logger.info("Ignoring exception {}", e.getMessage(), e);

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -53,37 +54,6 @@ public class WDataSeries extends WObject {
   private static Logger logger = LoggerFactory.getLogger(WDataSeries.class);
 
   /**
-   * Enumeration that indicates an aspect of the look.
-   *
-   * <p>These flags are used to keep track of which aspects of the look that are overridden from the
-   * values provided by the chart palette, using one of the methods in this class.
-   *
-   * <p>
-   *
-   * @see WDataSeries#setPen(WPen pen)
-   * @see WDataSeries#setBrush(WBrush brush)
-   * @see WDataSeries#setMarkerPen(WPen pen)
-   * @see WDataSeries#setMarkerBrush(WBrush brush)
-   * @see WDataSeries#setLabelColor(WColor color)
-   */
-  public enum CustomFlag {
-    /** A custom pen is set. */
-    CustomPen,
-    /** A custom brush is set. */
-    CustomBrush,
-    /** A custom marker pen is set. */
-    CustomMarkerPen,
-    /** A custom marker brush is set. */
-    CustomMarkerBrush,
-    /** A custom label color is set. */
-    CustomLabelColor;
-
-    /** Returns the numerical representation of this enum. */
-    public int getValue() {
-      return ordinal();
-    }
-  }
-  /**
    * Constructs a new data series.
    *
    * <p>Creates a new data series which plots the Y values from the model column <i>modelColumn</i>,
@@ -97,22 +67,22 @@ public class WDataSeries extends WObject {
   public WDataSeries(int modelColumn, SeriesType type, Axis axis) {
     super();
     this.chart_ = null;
-    this.model_ = null;
+    this.model_ = (WAbstractChartModel) null;
     this.modelColumn_ = modelColumn;
     this.XSeriesColumn_ = -1;
     this.stacked_ = false;
     this.type_ = type;
     this.xAxis_ = 0;
-    this.yAxis_ = axis == Axis.Y1Axis ? 0 : 1;
-    this.customFlags_ = EnumSet.noneOf(WDataSeries.CustomFlag.class);
+    this.yAxis_ = axis == Axis.Y1 ? 0 : 1;
+    this.customFlags_ = EnumSet.noneOf(CustomFlag.class);
     this.pen_ = new WPen();
     this.markerPen_ = new WPen();
     this.brush_ = new WBrush();
     this.markerBrush_ = new WBrush();
     this.labelColor_ = new WColor();
     this.shadow_ = new WShadow();
-    this.fillRange_ = FillRangeType.NoFill;
-    this.marker_ = type == SeriesType.PointSeries ? MarkerType.CircleMarker : MarkerType.NoMarker;
+    this.fillRange_ = FillRangeType.None;
+    this.marker_ = type == SeriesType.Point ? MarkerType.Circle : MarkerType.None;
     this.markerSize_ = 6;
     this.legend_ = true;
     this.xLabel_ = false;
@@ -130,19 +100,19 @@ public class WDataSeries extends WObject {
    * Constructs a new data series.
    *
    * <p>Calls {@link #WDataSeries(int modelColumn, SeriesType type, Axis axis) this(modelColumn,
-   * SeriesType.PointSeries, Axis.Y1Axis)}
+   * SeriesType.Point, Axis.Y1)}
    */
   public WDataSeries(int modelColumn) {
-    this(modelColumn, SeriesType.PointSeries, Axis.Y1Axis);
+    this(modelColumn, SeriesType.Point, Axis.Y1);
   }
   /**
    * Constructs a new data series.
    *
    * <p>Calls {@link #WDataSeries(int modelColumn, SeriesType type, Axis axis) this(modelColumn,
-   * type, Axis.Y1Axis)}
+   * type, Axis.Y1)}
    */
   public WDataSeries(int modelColumn, SeriesType type) {
-    this(modelColumn, type, Axis.Y1Axis);
+    this(modelColumn, type, Axis.Y1);
   }
   /**
    * Constructs a new data series.
@@ -155,25 +125,25 @@ public class WDataSeries extends WObject {
    *
    * @see WCartesianChart#addSeries(WDataSeries series)
    */
-  public WDataSeries(int modelColumn, SeriesType type, int yAxis) {
+  public WDataSeries(int modelColumn, SeriesType type, int axis) {
     super();
     this.chart_ = null;
-    this.model_ = null;
+    this.model_ = (WAbstractChartModel) null;
     this.modelColumn_ = modelColumn;
     this.XSeriesColumn_ = -1;
     this.stacked_ = false;
     this.type_ = type;
     this.xAxis_ = 0;
-    this.yAxis_ = yAxis;
-    this.customFlags_ = EnumSet.noneOf(WDataSeries.CustomFlag.class);
+    this.yAxis_ = axis;
+    this.customFlags_ = EnumSet.noneOf(CustomFlag.class);
     this.pen_ = new WPen();
     this.markerPen_ = new WPen();
     this.brush_ = new WBrush();
     this.markerBrush_ = new WBrush();
     this.labelColor_ = new WColor();
     this.shadow_ = new WShadow();
-    this.fillRange_ = FillRangeType.NoFill;
-    this.marker_ = type == SeriesType.PointSeries ? MarkerType.CircleMarker : MarkerType.NoMarker;
+    this.fillRange_ = FillRangeType.None;
+    this.marker_ = type == SeriesType.Point ? MarkerType.Circle : MarkerType.None;
     this.markerSize_ = 6;
     this.legend_ = true;
     this.xLabel_ = false;
@@ -186,59 +156,6 @@ public class WDataSeries extends WObject {
     this.offsetDirty_ = true;
     this.scaleDirty_ = true;
     this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-  }
-  /**
-   * Copy constructor.
-   *
-   * <p>This does not copy over the associated chart.
-   *
-   * <p>
-   *
-   * @deprecated
-   */
-  public WDataSeries(final WDataSeries other) {
-    super();
-    this.chart_ = null;
-    this.model_ = other.model_;
-    this.modelColumn_ = other.modelColumn_;
-    this.XSeriesColumn_ = other.XSeriesColumn_;
-    this.stacked_ = other.stacked_;
-    this.type_ = other.type_;
-    this.xAxis_ = other.xAxis_;
-    this.yAxis_ = other.yAxis_;
-    this.customFlags_ = other.customFlags_;
-    this.pen_ = other.pen_;
-    this.markerPen_ = other.markerPen_;
-    this.brush_ = other.brush_;
-    this.markerBrush_ = other.markerBrush_;
-    this.labelColor_ = other.labelColor_;
-    this.shadow_ = other.shadow_;
-    this.fillRange_ = other.fillRange_;
-    this.marker_ = other.marker_;
-    this.markerSize_ = other.markerSize_;
-    this.legend_ = other.legend_;
-    this.xLabel_ = other.xLabel_;
-    this.yLabel_ = other.yLabel_;
-    this.barWidth_ = other.barWidth_;
-    this.hidden_ = other.hidden_;
-    this.customMarker_ = other.customMarker_;
-    this.offset_ = other.offset_;
-    this.scale_ = other.scale_;
-    this.offsetDirty_ = true;
-    this.scaleDirty_ = true;
-    this.modelConnections_ = new ArrayList<AbstractSignal.Connection>();
-    if (this.model_ != null) {
-      this.modelConnections_.add(
-          this.model_
-              .changed()
-              .addListener(
-                  this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WDataSeries.this.modelReset();
-                    }
-                  }));
-    }
   }
   /**
    * Sets the bar width.
@@ -377,8 +294,8 @@ public class WDataSeries extends WObject {
   /**
    * Binds this series to a chart axis.
    *
-   * <p>A data series can only be bound to a Y axis. Note that the second Y axis will not be
-   * displayed by default.
+   * <p>A data series may be bound to either the first or second Y axis. Note that the second Y axis
+   * is by default not displayed.
    *
    * <p>The default value is the first Y axis.
    *
@@ -387,8 +304,8 @@ public class WDataSeries extends WObject {
    * @see WAxis#setVisible(boolean visible)
    */
   public void bindToAxis(Axis axis) {
-    if (!ChartUtils.equals(this.yAxis_, axis == Axis.Y1Axis ? 0 : 1)) {
-      this.yAxis_ = axis == Axis.Y1Axis ? 0 : 1;
+    if (!ChartUtils.equals(this.yAxis_, axis == Axis.Y1 ? 0 : 1)) {
+      this.yAxis_ = axis == Axis.Y1 ? 0 : 1;
       update();
     }
     ;
@@ -437,7 +354,7 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#bindToAxis(Axis axis)
    */
   public Axis getAxis() {
-    return this.yAxis_ == 1 ? Axis.Y2Axis : Axis.Y1Axis;
+    return this.yAxis_ == 1 ? Axis.Y2 : Axis.Y1;
   }
   /**
    * Returns the Y axis used for this series.
@@ -467,7 +384,7 @@ public class WDataSeries extends WObject {
    *
    * <p>The default value is 0 (nothing overridden).
    */
-  public void setCustomFlags(EnumSet<WDataSeries.CustomFlag> flags) {
+  public void setCustomFlags(EnumSet<CustomFlag> flags) {
     if (!ChartUtils.equals(this.customFlags_, flags)) {
       this.customFlags_ = flags;
       update();
@@ -479,7 +396,7 @@ public class WDataSeries extends WObject {
    *
    * <p>Calls {@link #setCustomFlags(EnumSet flags) setCustomFlags(EnumSet.of(flag, flags))}
    */
-  public final void setCustomFlags(WDataSeries.CustomFlag flag, WDataSeries.CustomFlag... flags) {
+  public final void setCustomFlags(CustomFlag flag, CustomFlag... flags) {
     setCustomFlags(EnumSet.of(flag, flags));
   }
   /**
@@ -489,7 +406,7 @@ public class WDataSeries extends WObject {
    *
    * @see WDataSeries#setCustomFlags(EnumSet flags)
    */
-  public EnumSet<WDataSeries.CustomFlag> getCustomFlags() {
+  public EnumSet<CustomFlag> getCustomFlags() {
     return this.customFlags_;
   }
   /**
@@ -511,7 +428,7 @@ public class WDataSeries extends WObject {
       update();
     }
     ;
-    this.customFlags_.add(WDataSeries.CustomFlag.CustomPen);
+    this.customFlags_.add(CustomFlag.Pen);
   }
   /**
    * Returns the pen used for drawing lines for this series.
@@ -521,19 +438,19 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setPen(WPen pen)
    */
   public WPen getPen() {
-    if (!EnumUtils.mask(this.customFlags_, WDataSeries.CustomFlag.CustomPen).isEmpty()) {
+    if (this.customFlags_.contains(CustomFlag.Pen)) {
       return this.pen_;
     } else {
       if (this.chart_ != null) {
-        if (this.type_ == SeriesType.BarSeries) {
+        if (this.type_ == SeriesType.Bar) {
           return this.chart_.getPalette().getBorderPen(this.chart_.getSeriesIndexOf(this));
         } else {
           return this.chart_.getPalette().getStrokePen(this.chart_.getSeriesIndexOf(this));
         }
       } else {
         WPen defaultPen = new WPen();
-        defaultPen.setCapStyle(PenCapStyle.RoundCap);
-        defaultPen.setJoinStyle(PenJoinStyle.RoundJoin);
+        defaultPen.setCapStyle(PenCapStyle.Round);
+        defaultPen.setJoinStyle(PenJoinStyle.Round);
         return defaultPen;
       }
     }
@@ -556,7 +473,7 @@ public class WDataSeries extends WObject {
       update();
     }
     ;
-    this.customFlags_.add(WDataSeries.CustomFlag.CustomBrush);
+    this.customFlags_.add(CustomFlag.Brush);
   }
   /**
    * Returns the brush used for filling areas for this series.
@@ -566,7 +483,7 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setBrush(WBrush brush)
    */
   public WBrush getBrush() {
-    if (!EnumUtils.mask(this.customFlags_, WDataSeries.CustomFlag.CustomBrush).isEmpty()) {
+    if (this.customFlags_.contains(CustomFlag.Brush)) {
       return this.brush_;
     } else {
       if (this.chart_ != null) {
@@ -599,12 +516,13 @@ public class WDataSeries extends WObject {
    *
    * <p>Line or curve series may be filled under or above the curve, using the {@link
    * WDataSeries#getBrush() getBrush()}. This setting specifies the range that is filled. The
-   * default value for all but BarSeries is NoFill.
+   * default value for all but {@link SeriesType#Bar} is {@link FillRangeType#None}.
    *
-   * <p>Bar series may use MinimumValueFill to configure the chart to render its bars from the data
-   * point to the bottom of the chart or MaximumValueFill to render the bars from the data point to
-   * the top of the chart. The default value for BarSeries is ZeroValueFill, which render bars from
-   * zero to the data value.
+   * <p>Bar series may use {@link FillRangeType#MinimumValue} to configure the chart to render its
+   * bars from the data point to the bottom of the chart or {@link FillRangeType#MaximumValue} to
+   * render the bars from the data point to the top of the chart. The default value for {@link
+   * SeriesType#Bar} is {@link FillRangeType#ZeroValue}, which render bars from zero to the data
+   * value.
    */
   public void setFillRange(FillRangeType fillRange) {
     if (!ChartUtils.equals(this.fillRange_, fillRange)) {
@@ -621,8 +539,8 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setFillRange(FillRangeType fillRange)
    */
   public FillRangeType getFillRange() {
-    if (this.type_ == SeriesType.BarSeries && this.fillRange_ == FillRangeType.NoFill) {
-      return FillRangeType.ZeroValueFill;
+    if (this.type_ == SeriesType.Bar && this.fillRange_ == FillRangeType.None) {
+      return FillRangeType.ZeroValue;
     } else {
       return this.fillRange_;
     }
@@ -632,7 +550,8 @@ public class WDataSeries extends WObject {
    *
    * <p>Specifies a marker that is displayed at the (X,Y) coordinate for each series data point.
    *
-   * <p>The default value is a CircleMarker for a PointSeries, or NoMarker otherwise.
+   * <p>The default value is a {@link MarkerType#Circle} for a {@link SeriesType#Point}, or {@link
+   * MarkerType#None} otherwise.
    *
    * <p>
    *
@@ -650,15 +569,15 @@ public class WDataSeries extends WObject {
   /**
    * Sets the custom marker.
    *
-   * <p>This will also changes the marker type to CustomMarker.
+   * <p>This will also changes the marker type to {@link MarkerType#Custom}.
    *
    * <p>
    *
    * @see WDataSeries#setMarker(MarkerType marker)
    */
   public void setCustomMarker(final WPainterPath path) {
-    if (!ChartUtils.equals(this.marker_, MarkerType.CustomMarker)) {
-      this.marker_ = MarkerType.CustomMarker;
+    if (!ChartUtils.equals(this.marker_, MarkerType.Custom)) {
+      this.marker_ = MarkerType.Custom;
       update();
     }
     ;
@@ -724,7 +643,7 @@ public class WDataSeries extends WObject {
       update();
     }
     ;
-    this.customFlags_.add(WDataSeries.CustomFlag.CustomMarkerPen);
+    this.customFlags_.add(CustomFlag.MarkerPen);
   }
   /**
    * Returns the marker pen.
@@ -734,7 +653,7 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setMarkerPen(WPen pen)
    */
   public WPen getMarkerPen() {
-    if (!EnumUtils.mask(this.customFlags_, WDataSeries.CustomFlag.CustomMarkerPen).isEmpty()) {
+    if (this.customFlags_.contains(CustomFlag.MarkerPen)) {
       return this.markerPen_;
     } else {
       return this.getPen();
@@ -758,7 +677,7 @@ public class WDataSeries extends WObject {
       update();
     }
     ;
-    this.customFlags_.add(WDataSeries.CustomFlag.CustomMarkerBrush);
+    this.customFlags_.add(CustomFlag.MarkerBrush);
   }
   /**
    * Returns the marker brush.
@@ -768,7 +687,7 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setMarkerBrush(WBrush brush)
    */
   public WBrush getMarkerBrush() {
-    if (!EnumUtils.mask(this.customFlags_, WDataSeries.CustomFlag.CustomMarkerBrush).isEmpty()) {
+    if (this.customFlags_.contains(CustomFlag.MarkerBrush)) {
       return this.markerBrush_;
     } else {
       return this.getBrush();
@@ -809,9 +728,9 @@ public class WDataSeries extends WObject {
   /**
    * Enables a label that is shown at the series data points.
    *
-   * <p>You may enable labels for the XAxis, YAxis or both axes. The label that is displayed is the
-   * corresponding value on that axis. If both labels are enabled then they are combined in a single
-   * text using the format: &quot;&lt;x-value&gt;: &lt;y-value&gt;&quot;.
+   * <p>You may enable labels for the {@link Axis#X}, {@link Axis#Y} or both axes. The label that is
+   * displayed is the corresponding value on that axis. If both labels are enabled then they are
+   * combined in a single text using the format: &quot;&lt;x-value&gt;: &lt;y-value&gt;&quot;.
    *
    * <p>The default values are false for both axes (no labels).
    *
@@ -820,7 +739,7 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#isLabelsEnabled(Axis axis)
    */
   public void setLabelsEnabled(Axis axis, boolean enabled) {
-    if (axis == Axis.XAxis) {
+    if (axis == Axis.X) {
       this.xLabel_ = enabled;
     } else {
       this.yLabel_ = enabled;
@@ -843,7 +762,7 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setLabelsEnabled(Axis axis, boolean enabled)
    */
   public boolean isLabelsEnabled(Axis axis) {
-    return axis == Axis.XAxis ? this.xLabel_ : this.yLabel_;
+    return axis == Axis.X ? this.xLabel_ : this.yLabel_;
   }
   /**
    * Sets the label color.
@@ -860,7 +779,7 @@ public class WDataSeries extends WObject {
       update();
     }
     ;
-    this.customFlags_.add(WDataSeries.CustomFlag.CustomLabelColor);
+    this.customFlags_.add(CustomFlag.LabelColor);
   }
   /**
    * Returns the label color.
@@ -870,13 +789,13 @@ public class WDataSeries extends WObject {
    * @see WDataSeries#setLabelColor(WColor color)
    */
   public WColor getLabelColor() {
-    if (!EnumUtils.mask(this.customFlags_, WDataSeries.CustomFlag.CustomLabelColor).isEmpty()) {
+    if (this.customFlags_.contains(CustomFlag.LabelColor)) {
       return this.labelColor_;
     } else {
       if (this.chart_ != null) {
         return this.chart_.getPalette().getFontColor(this.chart_.getSeriesIndexOf(this));
       } else {
-        return WColor.black;
+        return new WColor(StandardColor.Black);
       }
     }
   }
@@ -1034,12 +953,12 @@ public class WDataSeries extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Individual models per data series are only supported for ScatterPlot type
-   * charts.</i>
+   * <p><i><b>Note: </b>Individual models per data series are only supported for {@link
+   * ChartType#Scatter} type charts.</i>
    *
    * @see WAbstractChart#setModel(WAbstractItemModel model)
    */
-  public void setModel(WAbstractChartModel model) {
+  public void setModel(final WAbstractChartModel model) {
     if (this.model_ != null) {
       for (int i = 0; i < this.modelConnections_.size(); ++i) {
         this.modelConnections_.get(i).disconnect();
@@ -1053,10 +972,8 @@ public class WDataSeries extends WObject {
               .changed()
               .addListener(
                   this,
-                  new Signal.Listener() {
-                    public void trigger() {
-                      WDataSeries.this.modelReset();
-                    }
+                  () -> {
+                    WDataSeries.this.modelReset();
                   }));
     }
     if (this.chart_ != null) {
@@ -1101,7 +1018,7 @@ public class WDataSeries extends WObject {
   private SeriesType type_;
   private int xAxis_;
   private int yAxis_;
-  private EnumSet<WDataSeries.CustomFlag> customFlags_;
+  private EnumSet<CustomFlag> customFlags_;
   private WPen pen_;
   private WPen markerPen_;
   private WBrush brush_;

@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -24,13 +25,13 @@ import javax.servlet.http.*;
  */
 public enum EventType {
   /** An event which is not user- or timer-initiated. */
-  OtherEvent,
+  Other,
   /** A user-initiated event. */
-  UserEvent,
+  User,
   /** A timer-initiated event. */
-  TimerEvent,
+  Timer,
   /** An event which is a resource request. */
-  ResourceEvent;
+  Resource;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

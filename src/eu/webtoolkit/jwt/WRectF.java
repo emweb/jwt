@@ -10,6 +10,7 @@ import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.time.*;
 import java.util.*;
 import java.util.regex.*;
 import javax.servlet.*;
@@ -419,7 +420,7 @@ public class WRectF extends WJavaScriptExposableObject {
     }
     WRectF result = new WRectF(x, y, w, h);
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt3_6_0.gfxUtils.rect_normalized(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt4_4_0.gfxUtils.rect_normalized(" + this.getJsRef() + ')');
     }
     return result;
   }
@@ -433,6 +434,15 @@ public class WRectF extends WJavaScriptExposableObject {
     ss.append(MathUtils.roundJs(this.width_, 3)).append(',');
     ss.append(MathUtils.roundJs(this.height_, 3)).append(']');
     return ss.toString();
+  }
+
+  public WPainterPath toPath() {
+    WPainterPath path = new WPainterPath(new WPointF(this.x_, this.y_));
+    path.lineTo(this.x_ + this.width_, this.y_);
+    path.lineTo(this.x_ + this.width_, this.y_ + this.height_);
+    path.lineTo(this.x_, this.y_ + this.height_);
+    path.closeSubPath();
+    return path;
   }
 
   protected void assignFromJSON(final com.google.gson.JsonElement value) {
