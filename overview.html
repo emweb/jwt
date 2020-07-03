@@ -25,6 +25,56 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 3.7.0 (July 2020)</h2>
+
+<p>JWt 3.7.0 adds support for multiple X axes, among other fixes and tweaks.</p>
+
+<h3>Security related</h3>
+
+<p>
+  JWt now rejects GET requests for Ajax-enabled sessions that are not for resources, as an
+  extra means to prevent session hijacking attempts. Wt patch provided by Bruce Toll in
+  <a href="https://redmine.webtoolkit.eu/issues/7585" target="_blank">issue #7585</a>.
+</p>
+
+<h3>Multiple X axes</h3>
+
+<p>
+  <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a>: similar to how
+  JWt 3.3.11 added support for multiple Y axes, JWt 3.7.0 adds support for multiple X axes,
+  too. Instead of trying to squeeze another <tt>int</tt> argument into functions like
+  <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#map-double-double-int-int-int-">WCartesianChart#map</a>,
+  we decided to add overloads that take two <a href="eu/webtoolkit/jwt/chart/WAxis.html">WAxis</a> references.
+</p>
+
+<h3>Bug fixes</h3>
+
+<ul>
+  <li>
+      Auth:
+      <ul>
+          <li>
+              <a href="https://redmine.webtoolkit.eu/issues/7518" target="_blank">Issue #7518</a>: previously, it was
+              not possible to set
+              <a href="eu/webtoolkit/jwt/auth/AbstractPasswordService.AbstractStrengthValidator.html">AbstractStrengthValidator</a>
+              to non-mandatory. This has now been fixed. It now also correctly reports
+              <a href="eu/webtoolkit/jwt/WValidator.State.html#InvalidEmpty">InvalidEmpty</a> when the input is left empty.
+          </li>
+          <li>
+              Fixed an issue where signal listeners connected to <a href="eu/webtoolkit/jwt/auth/Login.html#changed--">Login#changed()</a>
+              would still have the old session id, which would afterwards be updated, causing resource urls created in the slot
+              to have the wrong session id.
+          </li>
+      </ul>
+  </li>
+  <li>
+    <a href="eu/webtoolkit/jwt/WPaintedWidget.html">WPaintedWidget</a>: fixed an issue where combining incremental painting (<a href="eu/webtoolkit/jwt/PaintFlag.html#PaintUpdate">PaintFlag.PaintUpdate</a>) with images could cause the first paint event to be discarded, resulting in an incomplete result.
+  </li>
+  <li>
+    Previously, having multiple instances of <a href="eu/webtoolkit/jwt/WGoogleMap.html">WGoogleMap</a> could cause JavaScript errors. This has now been resolved.
+  </li>
+</ul>
+
 <h2>Release 3.6.0 (March 26, 2020)</h2>
 
 <p>JWt 3.6.0 looks like a pretty major change if you just look at the diff. This is however mostly formatting, since we changed the
