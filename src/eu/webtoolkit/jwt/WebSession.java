@@ -2254,7 +2254,7 @@ class WebSession {
   private void processQueuedEvents(final WebSession.Handler handler) {
     for (; ; ) {
       ApplicationEvent event = this.getPopQueuedEvent();
-      if (!event.isEmpty()) {
+      if (event != null) {
         if (!this.isDead()) {
           this.externalNotify(new WEvent.Impl(handler, event.function));
           if (this.getApp() != null && this.getApp().hasQuit()) {
@@ -2277,7 +2277,7 @@ class WebSession {
 
   private ApplicationEvent getPopQueuedEvent() {
     this.eventQueueMutex_.lock();
-    ApplicationEvent result = new ApplicationEvent();
+    ApplicationEvent result = null;
     logger.debug(
         new StringWriter()
             .append("popQueuedEvent(): ")

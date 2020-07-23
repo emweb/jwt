@@ -47,12 +47,17 @@ public class WTimer extends WObject {
     super();
     this.timerWidget_ = null;
     this.uTimerWidget_ = new WTimerWidget(this);
-    this.singleShot_ = false;
     this.interval_ = Duration.ofMillis(0);
+    this.singleShot_ = false;
     this.active_ = false;
-    this.timeoutConnected_ = false;
     this.timeout_ = new Time();
     this.timerWidget_ = this.uTimerWidget_;
+    this.timeout()
+        .addListener(
+            this,
+            (WMouseEvent e1) -> {
+              WTimer.this.gotTimeout();
+            });
   }
   /** Returns the interval. */
   public Duration getInterval() {
@@ -98,15 +103,6 @@ public class WTimer extends WObject {
         !this.singleShot_
             && (app != null && app.getEnvironment().hasAjax() || !this.timeout().isExposedSignal());
     this.timerWidget_.timerStart(jsRepeat);
-    if (!this.timeoutConnected_) {
-      this.timeout()
-          .addListener(
-              this,
-              (WMouseEvent e1) -> {
-                WTimer.this.gotTimeout();
-              });
-      this.timeoutConnected_ = true;
-    }
   }
   /**
    * Stops the timer.
@@ -138,10 +134,9 @@ public class WTimer extends WObject {
 
   WTimerWidget timerWidget_;
   private WTimerWidget uTimerWidget_;
-  private boolean singleShot_;
   private Duration interval_;
+  private boolean singleShot_;
   private boolean active_;
-  private boolean timeoutConnected_;
   private Time timeout_;
 
   private void gotTimeout() {

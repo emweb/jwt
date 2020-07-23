@@ -21,10 +21,6 @@ import org.slf4j.LoggerFactory;
 class ApplicationEvent {
   private static Logger logger = LoggerFactory.getLogger(ApplicationEvent.class);
 
-  public ApplicationEvent() {
-    this.sessionId = "";
-  }
-
   public ApplicationEvent(
       final String aSessionId, final Runnable aFunction, final Runnable aFallbackFunction) {
     this.sessionId = aSessionId;
@@ -34,10 +30,6 @@ class ApplicationEvent {
 
   public ApplicationEvent(final String aSessionId, final Runnable aFunction) {
     this(aSessionId, aFunction, (Runnable) null);
-  }
-
-  public boolean isEmpty() {
-    return !(this.function != null);
   }
 
   public String sessionId;

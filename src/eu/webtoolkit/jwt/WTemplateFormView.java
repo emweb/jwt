@@ -19,12 +19,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A template-based View class form models.
+ * A template-based View class for form models.
  *
  * <p>This implements a View to be used in conjunction with {@link WFormModel} models to implement
  * forms.
  *
- * <p>For each model field, it uses a number of conventional template placholder variables to
+ * <p>For each model field, it uses a number of conventional template placeholder variables to
  * represent the label, editor, and validation messages in the template. For a field name
  * &apos;<i>field</i>&apos;, we have:
  *

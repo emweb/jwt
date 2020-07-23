@@ -4143,7 +4143,7 @@ public class WCartesianChart extends WAbstractChart {
               } else {
                 for (int i = this.getXAxisCount() - 1; i >= 0; --i) {
                   if (this.getXAxis(i).isVisible()
-                      && (this.xAxes_.get(i).location.initLoc == AxisValue.Minimum
+                      && (this.xAxes_.get(i).location.initLoc == AxisValue.Maximum
                           || this.xAxes_.get(i).location.initLoc == AxisValue.Both)) {
                     yOffset =
                         -(this.xAxes_.get(i).location.minOffset
@@ -4170,7 +4170,7 @@ public class WCartesianChart extends WAbstractChart {
               } else {
                 for (int i = this.getXAxisCount() - 1; i >= 0; --i) {
                   if (this.getXAxis(i).isVisible()
-                      && (this.xAxes_.get(i).location.initLoc == AxisValue.Maximum
+                      && (this.xAxes_.get(i).location.initLoc == AxisValue.Minimum
                           || this.xAxes_.get(i).location.initLoc == AxisValue.Both)) {
                     yOffset =
                         this.xAxes_.get(i).location.maxOffset + this.xAxes_.get(i).calculatedWidth;
