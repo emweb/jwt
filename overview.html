@@ -25,6 +25,128 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.4.0 (July 2020)</h2>
+
+<p>In this release, the JWt version makes a leap forward. In September 2017 Wt 4.0.0
+was released, and now JWt has finally caught up. Since we keep Wt and JWt in sync, that means
+we suddenly jump from version 3.6.0 to version 4.4.0.</p>
+
+<h3>JWt 4 changes</h3>
+
+<dl>
+  <dt>
+    Enums
+  </dt>
+  <dd>
+    With Wt 4, many of the names of enums changed to be a bit more sensible, since C++11 supports
+    scoped enums. This means that many of the enums in JWt had to change, too. This probably
+    constitutes the bulk of the changes that you will have to make when porting to JWt 4.
+  </dd>
+  <dt>
+    <a href="eu/webtoolkit/jwt/ItemDataRole.html">ItemDataRole</a> as a proper class
+  </dt>
+  <dd>
+    Previously, we would use <tt>int</tt> for roles in
+    <a href="eu/webtoolkit/jwt/WAbstractItemModel.html">WAbstractItemModel</a>. Now,
+    <a href="eu/webtoolkit/jwt/ItemDataRole.html">ItemDataRole</a> has become a proper class.
+    Instead of an integer for user-defined roles, you can now use
+    <tt>ItemDataRole.of(ItemDataRole.User.getValue() + 1)</tt>.
+  </dd>
+  <dt>
+    i18n changes
+  </dt>
+  <dd>
+    JWt 4 now supports plural expressions, using <a href="eu/webtoolkit/jwt/WString.html#trn-java.lang.String-long-">WString#trn</a>.
+    String retrieved through
+    <a href="eu/webtoolkit/jwt/WString.html#tr-java.lang.String-">tr</a> and
+    <a href="eu/webtoolkit/jwt/WString.html#trn-java.lang.String-long-">trn</a>
+    now include information about whether the original string
+    was XHTML encoded, and
+    <a href="eu/webtoolkit/jwt/WString.html#toString--">toString</a> and
+    <a href="eu/webtoolkit/jwt/WString.html#toXhtml--">toXhtml</a> will properly (un)escape the string.
+  </dd>
+  <dt>
+    <tt>WObject#setObjectName</tt>
+  </dt>
+  <dd>
+    <a href="eu/webtoolkit/jwt/WObject.html#setObjectName-java.lang.String-">WObject#setObjectName</a>
+    no longer affects the id of the widget. It is now placed into an extra attribute called
+    <tt>data-object-name</tt> instead. Changing the id could often lead
+    to nasty bugs, since JWt relies on the id to identify a widget.
+  </dd>
+  <dt>
+    CSS flex based layout implementation
+  </dt>
+  <dd>
+    <a href="eu/webtoolkit/jwt/WLayout.html">WBoxLayout</a> is now implemented using CSS flex.
+    Should you encounter any issues, you can still switch
+    back to the old JavaScript based implementation using
+    <a href="eu/webtoolkit/jwt/WLayout.html#setPreferredImplementation-eu.webtoolkit.jwt.LayoutImplementation-">WLayout#setPreferredImplementation</a>.
+    You can globally change the default with the static method
+    <a href="eu/webtoolkit/jwt/WLayout.html#setDefaultImplementation-eu.webtoolkit.jwt.LayoutImplementation-">WLayout#setDefaultImplementation</a>.
+    Note: setting the default is not thread safe, it should be changed when the servlet is being initialized.
+  </dd>
+  <dt>
+    ANTLR4
+  </dt>
+  <dd>
+    All of the included parsers were updated to use ANTLR 4 instead of ANTLR 3.
+  </dd>
+  <dt>
+    Java 8
+  </dt>
+  <dd>
+    The minimum supported Java version is now Java 8. This allowed us to also use Java 8's <tt>time</tt> API a bit more.
+    You will notice that in many places, a <tt>Duration</tt> is now used instead of an <tt>int</tt>.
+  </dd>
+</dl>
+
+<h3>Security related</h3>
+
+<p>
+  JWt now rejects GET requests for Ajax-enabled sessions that are not for resources, as an
+  extra means to prevent session hijacking attempts. Wt patch provided by Bruce Toll in
+  <a href="https://redmine.webtoolkit.eu/issues/7585" target="_blank">issue #7585</a>.
+</p>
+
+<h3>Multiple X axes</h3>
+
+<p>
+  <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a>: similar to how
+  JWt 3.3.11 added support for multiple Y axes, JWt 4.4.0 adds support for multiple X axes,
+  too. Instead of trying to squeeze another <tt>int</tt> argument into functions like
+  <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#map-double-double-int-int-int-">WCartesianChart#map</a>,
+  we decided to add overloads that take two <a href="eu/webtoolkit/jwt/chart/WAxis.html">WAxis</a> references.
+</p>
+
+<h3>Bug fixes</h3>
+
+<ul>
+  <li>
+      Auth:
+      <ul>
+          <li>
+              <a href="https://redmine.webtoolkit.eu/issues/7518" target="_blank">Issue #7518</a>: previously, it was
+              not possible to set
+              <a href="eu/webtoolkit/jwt/auth/AbstractPasswordService.AbstractStrengthValidator.html">AbstractStrengthValidator</a>
+              to non-mandatory. This has now been fixed. It now also correctly reports
+              <a href="eu/webtoolkit/jwt/WValidator.State.html#InvalidEmpty">InvalidEmpty</a> when the input is left empty.
+          </li>
+          <li>
+              Fixed an issue where signal listeners connected to <a href="eu/webtoolkit/jwt/auth/Login.html#changed--">Login#changed()</a>
+              would still have the old session id, which would afterwards be updated, causing resource urls created in the slot
+              to have the wrong session id.
+          </li>
+      </ul>
+  </li>
+  <li>
+    <a href="eu/webtoolkit/jwt/WPaintedWidget.html">WPaintedWidget</a>: fixed an issue where combining incremental painting (<a href="eu/webtoolkit/jwt/PaintFlag.html#PaintUpdate">PaintFlag.PaintUpdate</a>) with images could cause the first paint event to be discarded, resulting in an incomplete result.
+  </li>
+  <li>
+    Previously, having multiple instances of <a href="eu/webtoolkit/jwt/WGoogleMap.html">WGoogleMap</a> could cause JavaScript errors. This has now been resolved.
+  </li>
+</ul>
+
 <h2>Release 3.6.0 (March 26, 2020)</h2>
 
 <p>JWt 3.6.0 looks like a pretty major change if you just look at the diff. This is however mostly formatting, since we changed the
