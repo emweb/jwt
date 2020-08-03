@@ -15,9 +15,9 @@ public class TimeSuggestionPopup extends WSuggestionPopup {
         timeOptions.appendReplacedText = "";
     }
     
-    public TimeSuggestionPopup(WContainerWidget parent) {
+    public TimeSuggestionPopup() {
         super(WSuggestionPopup.generateMatcherJS(timeOptions),
-                WSuggestionPopup.generateReplacerJS(timeOptions), parent);
+              WSuggestionPopup.generateReplacerJS(timeOptions));
         
         for (int i = 0; i < 24; i++) {
         	String h = String.format("%02d", i);
