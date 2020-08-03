@@ -35,9 +35,9 @@ public class ContactSuggestions extends WSuggestionPopup {
     /**
      * Create a new ContactSuggestions popup.
      */
-    public ContactSuggestions(WContainerWidget parent) {
+    public ContactSuggestions() {
         super(WSuggestionPopup.generateMatcherJS(contactOptions),
-                WSuggestionPopup.generateReplacerJS(contactOptions), parent);
+              WSuggestionPopup.generateReplacerJS(contactOptions));
     }
 
     /**

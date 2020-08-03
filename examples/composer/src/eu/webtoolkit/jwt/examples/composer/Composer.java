@@ -381,7 +381,7 @@ public class Composer extends WCompositeWidget {
         /*
          * Addressbook suggestions popup
          */
-        contactSuggestions_ = new ContactSuggestions(layout_);
+        contactSuggestions_ = new ContactSuggestions();
         contactSuggestions_.forEdit(toEdit_);
         contactSuggestions_.forEdit(ccEdit_);
         contactSuggestions_.forEdit(bccEdit_);
