@@ -68,7 +68,7 @@ public class EntryDialog extends WDialog {
 		
 		//construct a TimeSuggestions suggestion popup,
 		//and connect it to the start and stop line edits
-		TimeSuggestionPopup suggestions = new TimeSuggestionPopup(getContents());
+		TimeSuggestionPopup suggestions = new TimeSuggestionPopup();
 		suggestions.forEdit(start);
 		suggestions.forEdit(stop);
 		
