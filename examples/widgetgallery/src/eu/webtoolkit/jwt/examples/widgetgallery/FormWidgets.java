@@ -673,8 +673,7 @@ class FormWidgets extends TopicWidget {
     WSuggestionPopup sp =
         new WSuggestionPopup(
             WSuggestionPopup.generateMatcherJS(contactOptions),
-            WSuggestionPopup.generateReplacerJS(contactOptions),
-            (WContainerWidget) container);
+            WSuggestionPopup.generateReplacerJS(contactOptions));
     WLineEdit le = new WLineEdit((WContainerWidget) container);
     le.setPlaceholderText("Enter a name starting with 'J'");
     sp.forEdit(le);

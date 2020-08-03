@@ -244,8 +244,7 @@ public class WSuggestionPopup extends WPopupWidget {
    * @see WSuggestionPopup#generateMatcherJS(WSuggestionPopup.Options options)
    * @see WSuggestionPopup#generateReplacerJS(WSuggestionPopup.Options options)
    */
-  public WSuggestionPopup(
-      final WSuggestionPopup.Options options, WContainerWidget parentContainer) {
+  public WSuggestionPopup(final WSuggestionPopup.Options options) {
     super(new WContainerWidget());
     this.model_ = null;
     this.modelColumn_ = 0;
@@ -265,24 +264,13 @@ public class WSuggestionPopup extends WPopupWidget {
     this.jactivated_ = new JSignal2<String, String>(this.getImplementation(), "select") {};
     this.edits_ = new ArrayList<WFormWidget>();
     this.init();
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-  /**
-   * Creates a suggestion popup.
-   *
-   * <p>Calls {@link #WSuggestionPopup(WSuggestionPopup.Options options, WContainerWidget
-   * parentContainer) this(options, (WContainerWidget)null)}
-   */
-  public WSuggestionPopup(final WSuggestionPopup.Options options) {
-    this(options, (WContainerWidget) null);
   }
   /**
    * Creates a suggestion popup with given matcherJS and replacerJS.
    *
    * <p>See supra for the expected signature of the matcher and replace JavaScript functions.
    */
-  public WSuggestionPopup(
-      final String matcherJS, final String replacerJS, WContainerWidget parentContainer) {
+  public WSuggestionPopup(final String matcherJS, final String replacerJS) {
     super(new WContainerWidget());
     this.model_ = null;
     this.modelColumn_ = 0;
@@ -302,16 +290,6 @@ public class WSuggestionPopup extends WPopupWidget {
     this.jactivated_ = new JSignal2<String, String>(this.getImplementation(), "select") {};
     this.edits_ = new ArrayList<WFormWidget>();
     this.init();
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-  /**
-   * Creates a suggestion popup with given matcherJS and replacerJS.
-   *
-   * <p>Calls {@link #WSuggestionPopup(String matcherJS, String replacerJS, WContainerWidget
-   * parentContainer) this(matcherJS, replacerJS, (WContainerWidget)null)}
-   */
-  public WSuggestionPopup(final String matcherJS, final String replacerJS) {
-    this(matcherJS, replacerJS, (WContainerWidget) null);
   }
   /**
    * Lets this suggestion popup assist in editing an edit field.

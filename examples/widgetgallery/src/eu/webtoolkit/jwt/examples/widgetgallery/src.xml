@@ -72,8 +72,7 @@
     <span class="n">WSuggestionPopup</span> <span class="n">sp</span> <span class="o">=</span>
         <span class="k">new</span> <span class="n">WSuggestionPopup</span><span class="o">(</span>
             <span class="n">WSuggestionPopup</span><span class="o">.</span><span class="na">generateMatcherJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">),</span>
-            <span class="n">WSuggestionPopup</span><span class="o">.</span><span class="na">generateReplacerJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">),</span>
-            <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="n">container</span><span class="o">);</span>
+            <span class="n">WSuggestionPopup</span><span class="o">.</span><span class="na">generateReplacerJS</span><span class="o">(</span><span class="n">contactOptions</span><span class="o">));</span>
     <span class="n">WLineEdit</span> <span class="n">le</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLineEdit</span><span class="o">((</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="n">container</span><span class="o">);</span>
     <span class="n">le</span><span class="o">.</span><span class="na">setPlaceholderText</span><span class="o">(</span><span class="s">&quot;Enter a name starting with &#39;J&#39;&quot;</span><span class="o">);</span>
     <span class="n">sp</span><span class="o">.</span><span class="na">forEdit</span><span class="o">(</span><span class="n">le</span><span class="o">);</span>
