@@ -465,9 +465,9 @@ public class WebRequest extends HttpServletRequestWrapper {
 		return false;
 	}
 
-	public String getClientAddress(final boolean behindReverseProxy) {
-		String result = "";
-		if (behindReverseProxy) {
+	public String getClientAddress(final Configuration conf) {
+		final String remoteAddr = getRemoteAddr();
+		if (conf.isBehindReverseProxy()) {
 			String clientIp = str(getHeaderValue("Client-IP"));
 			clientIp = clientIp.trim();
 			List<String> ips = new ArrayList<String>();
@@ -482,20 +482,27 @@ public class WebRequest extends HttpServletRequestWrapper {
 			}
 			ips.addAll(forwardedIps);
 			for (int i = 0; i < ips.size(); ++i) {
-				result = ips.get(i);
-				result = result.trim();
-				if (result.length() != 0 && !isPrivateIP(result)) {
-					break;
+				String ip = ips.get(i);
+				ip = ip.trim();
+				if (ip.length() != 0 && !isPrivateIP(ip)) {
+					return ip;
+				}
+			}
+		} else if (conf.isTrustedProxy(remoteAddr)) {
+			String forwardedFor = str(getHeaderValue(conf.getForwardedHeader()));
+			forwardedFor = forwardedFor.trim();
+			String[] forwardedIps = forwardedFor.split("[,]");
+			for (int i = forwardedIps.length - 1; i >= 0; --i) {
+				final String currentIp = forwardedIps[i].trim();
+				if (!currentIp.isEmpty() && !conf.isTrustedProxy(currentIp)) {
+					return currentIp;
 				}
 			}
 		}
-		if (result.length() == 0) {
-			result = getRemoteAddr();
-		}
-		return result;
+		return remoteAddr;
 	}
 
-	static String str(String s) {
+	private static String str(String s) {
 		return s != null ? s : "";
 	}
 

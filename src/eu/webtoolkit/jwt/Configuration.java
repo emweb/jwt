@@ -7,11 +7,17 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,6 +66,70 @@ public class Configuration {
 		ErrorMessageWithStack
 	}
 
+	public static class Network {
+		public Network(InetAddress address,
+					   int prefixLength)
+		{
+			this.address = address;
+			this.prefixLength = prefixLength;
+		}
+
+		public static Network fromString(String s) {
+			final int slashPos = s.indexOf("/");
+			if (slashPos == -1) {
+				try {
+					final InetAddress address = InetAddress.getByName(s);
+					final int prefixLength = (address instanceof Inet6Address ? 128 : 32);
+					return new Network(address, prefixLength);
+				} catch (UnknownHostException e) {
+					throw new IllegalArgumentException("'" + s + "' is not a valid IP address", e);
+				}
+			} else {
+				try {
+					final InetAddress address = InetAddress.getByName(s.substring(0, slashPos));
+					final int prefixLength = Integer.parseInt(s.substring(slashPos + 1), 10);
+					final boolean isIpv4 = address instanceof Inet4Address;
+					final boolean isIpv6 = address instanceof Inet6Address;
+					if (prefixLength < 0 ||
+						(isIpv4 && prefixLength > 32) ||
+						(isIpv6 && prefixLength > 128)) {
+						throw new IllegalArgumentException("Invalid prefix length " + s.substring(slashPos + 1) + " for IPv" +
+						                                   (isIpv4 ? "4" : "6") + " address");
+					}
+					return new Network(address, prefixLength);
+				} catch (UnknownHostException e) {
+					throw new IllegalArgumentException("'" + s + "' is not a valid IP address", e);
+				}
+			}
+		}
+
+		public boolean contains(InetAddress address) {
+			final byte[] networkBytes = this.address.getAddress();
+			final byte[] addressBytes = address.getAddress();
+			if (networkBytes.length != addressBytes.length) {
+				return false;
+			}
+			return prefixMatches(networkBytes, addressBytes, prefixLength);
+		}
+
+		private boolean prefixMatches(byte[] network, byte[] address, int prefixLength) {
+			for (int i = 0; i < network.length; ++i) {
+				if ((i + 1) * 8 < prefixLength) {
+					if (network[i] != address[i]) {
+						return false;
+					}
+				} else {
+					int shift = (i + 1) * 8 - prefixLength;
+					return (network[i] >> shift) == (address[i] >> shift);
+				}
+			}
+			return true;
+		}
+
+		public InetAddress address;
+		public int prefixLength;
+	}
+
 	private HashMap<String, String> properties_ = new HashMap<String, String>();
 	private String redirectMessage_ = "Plain HTML version";
 	private boolean sendXHTMLMimeType = false;
@@ -84,6 +154,8 @@ public class Configuration {
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
+	private String forwardedHeader = "X-Forwarded-For";
+	private List<Network> trustedProxies;
 	private boolean webSocketsEnabled = false;
 	private long asyncContextTimeout = 90000;
 
@@ -103,6 +175,8 @@ public class Configuration {
 		botList.add(".ia_archiver.*");
 		botList.add(".*Googlebot.*");
 		botList.add(".*Twiceler.*");
+
+		trustedProxies = Collections.emptyList();
 	}
 
 	/**
@@ -801,6 +875,36 @@ public class Configuration {
 	 */
 	public boolean isBehindReverseProxy() {
 		return this.behindReverseProxy;
+	}
+
+	public void setForwardedHeader(String forwardedHeader) {
+		this.forwardedHeader = forwardedHeader;
+	}
+
+	public String getForwardedHeader() {
+		return this.forwardedHeader;
+	}
+
+	public void setTrustedProxies(List<Network> trustedProxies) {
+		this.trustedProxies = trustedProxies;
+	}
+
+	public List<Network> getTrustedProxies() {
+		return this.trustedProxies;
+	}
+
+	public boolean isTrustedProxy(String addressStr) {
+		try {
+			final InetAddress address = InetAddress.getByName(addressStr);
+			for (Network trustedProxy : trustedProxies) {
+				if (trustedProxy.contains(address)) {
+					return true;
+				}
+			}
+			return false;
+		} catch (UnknownHostException e) {
+			return false;
+		}
 	}
 
 	public boolean isCookieChecks() {

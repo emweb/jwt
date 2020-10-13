@@ -938,7 +938,7 @@ public class WEnvironment {
     this.setUserAgent(str(request.getHeaderValue("User-Agent")));
     this.updateUrlScheme(request);
     logger.info(new StringWriter().append("UserAgent: ").append(this.userAgent_).toString());
-    if (conf.isBehindReverseProxy()) {
+    if (conf.isBehindReverseProxy() || conf.isTrustedProxy(request.getRemoteAddr())) {
       String forwardedHost = str(request.getHeaderValue("X-Forwarded-Host"));
       if (forwardedHost.length() != 0) {
         int i = forwardedHost.lastIndexOf(',');
@@ -955,7 +955,7 @@ public class WEnvironment {
         this.host_ += ":" + (request.getServerPort() + "");
       }
     }
-    this.clientAddress_ = request.getClientAddress(conf.isBehindReverseProxy());
+    this.clientAddress_ = request.getClientAddress(conf);
     String cookie = request.getHeaderValue("Cookie");
     this.doesCookies_ = cookie != null;
     if (cookie != null) {
@@ -968,7 +968,7 @@ public class WEnvironment {
     final Configuration conf = this.session_.getController().getConfiguration();
     String oldHost = this.host_;
     this.host_ = str(request.getHeaderValue("Host"));
-    if (conf.isBehindReverseProxy()) {
+    if (conf.isBehindReverseProxy() || conf.isTrustedProxy(request.getRemoteAddr())) {
       String forwardedHost = str(request.getHeaderValue("X-Forwarded-Host"));
       if (forwardedHost.length() != 0) {
         int i = forwardedHost.lastIndexOf(',');
@@ -987,7 +987,7 @@ public class WEnvironment {
   void updateUrlScheme(final WebRequest request) {
     this.urlScheme_ = str(request.getScheme());
     final Configuration conf = this.session_.getController().getConfiguration();
-    if (conf.isBehindReverseProxy()) {
+    if (conf.isBehindReverseProxy() || conf.isTrustedProxy(request.getRemoteAddr())) {
       String forwardedProto = str(request.getHeaderValue("X-Forwarded-Proto"));
       if (forwardedProto.length() != 0) {
         int i = forwardedProto.lastIndexOf(',');
