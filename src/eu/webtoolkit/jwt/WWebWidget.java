@@ -1066,6 +1066,15 @@ public abstract class WWebWidget extends WWidget {
   public void setScrollVisibilityEnabled(boolean enabled) {
     if (enabled && !(this.otherImpl_ != null)) {
       this.otherImpl_ = new WWebWidget.OtherImpl(this);
+      if (!(this.otherImpl_.jsScrollVisibilityChanged_ != null)) {
+        this.otherImpl_.jsScrollVisibilityChanged_ =
+            new JSignal1<Boolean>(this, "scrollVisibilityChanged") {};
+        this.otherImpl_.jsScrollVisibilityChanged_.addListener(
+            this,
+            (Boolean e1) -> {
+              WWebWidget.this.jsScrollVisibilityChanged(e1);
+            });
+      }
     }
     if (this.isScrollVisibilityEnabled() != enabled) {
       this.flags_.set(BIT_SCROLL_VISIBILITY_ENABLED, enabled);
@@ -2234,12 +2243,7 @@ public abstract class WWebWidget extends WWidget {
       this.childrenChanged_ = new Signal();
       this.scrollVisibilityMargin_ = 0;
       this.scrollVisibilityChanged_ = new Signal1<Boolean>();
-      this.jsScrollVisibilityChanged_ = new JSignal1<Boolean>(self, "scrollVisibilityChanged") {};
-      this.jsScrollVisibilityChanged_.addListener(
-          self,
-          (Boolean e1) -> {
-            self.jsScrollVisibilityChanged(e1);
-          });
+      this.jsScrollVisibilityChanged_ = null;
     }
   }
 
