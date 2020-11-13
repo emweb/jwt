@@ -94,6 +94,7 @@ public class WMediaPlayer extends WCompositeWidget {
     this.gui_ = this;
     this.boundSignals_ = 0;
     this.boundSignalsDouble_ = 0;
+    this.mediaUpdated_ = false;
     this.status_ = new WMediaPlayer.State();
     for (int i = 0; i < 11; ++i) {
       this.control_[i] = (WInteractWidget) null;
@@ -110,8 +111,8 @@ public class WMediaPlayer extends WCompositeWidget {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WMediaPlayer.js", wtjs1());
     String res = WApplication.getRelativeResourcesUrl() + "jPlayer/";
-    if (!app.getEnvironment().hasAjax()) {
-      app.require(res + "jquery.min.js");
+    if (!app.isCustomJQuery()) {
+      app.requireJQuery(res + "jquery.min.js");
     }
     if (app.require(res + "jquery.jplayer.min.js")) {
       app.useStyleSheet(new WLink(res + "skin/jplayer.blue.monday.css"));
@@ -634,7 +635,7 @@ public class WMediaPlayer extends WCompositeWidget {
 
   protected void render(EnumSet<RenderFlag> flags) {
     WApplication app = WApplication.getInstance();
-    if (this.mediaUpdated_) {
+    if (this.mediaUpdated_ || flags.contains(RenderFlag.Full) && !this.media_.isEmpty()) {
       StringBuilder ss = new StringBuilder();
       ss.append('{');
       boolean first = true;

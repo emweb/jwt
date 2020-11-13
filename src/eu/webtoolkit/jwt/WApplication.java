@@ -2418,6 +2418,7 @@ public class WApplication extends WObject {
 
   public void addGlobalWidget(WWidget w) {
     this.domRoot_.addWidget(w);
+    w.setGlobalWidget(true);
   }
 
   public void removeGlobalWidget(WWidget w) {

@@ -928,7 +928,7 @@ public abstract class WWidget extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>This does *not* rerender the widget! Calling {@link WWidget#refresh()
+   * <p><i><b>Note: </b>This does **not** rerender the widget! Calling {@link WWidget#refresh()
    * refresh()} usually does not have any effect (unless you&apos;ve reimplemented {@link
    * WWidget#refresh() refresh()} to attach to it an effect). </i>
    */
@@ -1833,6 +1833,7 @@ public abstract class WWidget extends WObject {
   private static final int BIT_HAS_PARENT = 4;
   private static final int BIT_RESIZE_AWARE = 5;
   private static final int BIT_SCROLL_VISIBILITY_ENABLED = 6;
+  private static final int BIT_GLOBAL_WIDGET = 7;
   private BitSet flags_;
   private LinkedList<AbstractEventSignal> eventSignals_;
   List<AbstractEventSignal> jsignals_;
@@ -1864,6 +1865,14 @@ public abstract class WWidget extends WObject {
 
   void setParentWidget(WWidget p) {
     this.parent_ = p;
+  }
+
+  private boolean isGlobalWidget() {
+    return this.flags_.get(BIT_GLOBAL_WIDGET);
+  }
+
+  void setGlobalWidget(boolean globalWidget) {
+    this.flags_.set(BIT_GLOBAL_WIDGET, globalWidget);
   }
 
   abstract WWebWidget getWebWidget();

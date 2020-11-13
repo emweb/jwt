@@ -268,7 +268,7 @@ public class WCartesian3DChart extends WGLWidget {
   /**
    * Constructor.
    *
-   * <p>Construct a cartesian 3D chart with the specified type , a transparent background, a {@link
+   * <p>Construct a cartesian 3D chart with the specified type, a transparent background, a {@link
    * PaletteFlavour#Muted} palette and no gridlines.
    */
   public WCartesian3DChart(ChartType type, WContainerWidget parentContainer) {
