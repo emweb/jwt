@@ -134,11 +134,11 @@ final class PaintedSlider extends WPaintedWidget {
     char[] buf = new char[30];
     StringBuilder mouseDownJS = new StringBuilder();
     mouseDownJS
-        .append("obj.setAttribute('down', Wt4_4_0")
+        .append("obj.setAttribute('down', Wt4_5_0")
         .append(".widgetCoordinates(obj, event).")
         .append(u)
         .append(");")
-        .append("Wt4_4_0.cancelEvent(event);");
+        .append("Wt4_5_0.cancelEvent(event);");
     StringBuilder computeD = new StringBuilder();
     computeD
         .append("var objh = ")
@@ -169,7 +169,7 @@ final class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseMovedJS = new StringBuilder();
     mouseMovedJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt4_4_0;")
+        .append("var WT = Wt4_5_0;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString());
     mouseMovedJS
@@ -213,7 +213,7 @@ final class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseUpJS = new StringBuilder();
     mouseUpJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt4_4_0;")
+        .append("var WT = Wt4_5_0;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString())
         .append("d += ")
@@ -231,9 +231,9 @@ final class PaintedSlider extends WPaintedWidget {
         "function(obj, event) {" + (enabled ? mouseUpJS.toString() : "") + "}");
     this.handleClickedJS_.setJavaScript(
         "function(obj, event) {"
-            + "Wt4_4_0"
+            + "Wt4_5_0"
             + ".cancelEvent(event,"
-            + "Wt4_4_0"
+            + "Wt4_5_0"
             + ".CancelPropagate); }");
     this.update();
     this.updateSliderPosition();

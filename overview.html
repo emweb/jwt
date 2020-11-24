@@ -25,6 +25,24 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.5.0 (December 2020)</h2>
+
+<ul>
+  <li>
+    Added
+    <a href="eu/webtoolkit/jwt/Configuration.html#setTrustedProxies(java.util.List)">Configuration#setTrustedProxies</a> and
+    <a href="eu/webtoolkit/jwt/Configuration.html#setOriginalIPHeader(java.lang.String)">Configuration#setOriginalIPHeader</a>
+    and deprecated
+    <a href="eu/webtoolkit/jwt/Configuration.html#setBehindReverseProxy(boolean)">Configuration::setBehindReverseProxy</a>.
+  </li>
+  <li>
+    Added a fix for when
+    <a href="eu/webtoolkit/jwt/EntryPointType.html#WidgetSet">WidgetSet</a>
+    mode is used to load two different instances of Wt. This could cause
+    a JavaScript error when using popup menus or suggestion popups.
+  </li>
+</ul>
+
 <h2>Release 4.4.0 (August 3, 2020)</h2>
 
 <p>In this release, the JWt version makes a leap forward. In September 2017 Wt 4.0.0

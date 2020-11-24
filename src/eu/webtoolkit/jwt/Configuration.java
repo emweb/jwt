@@ -7,13 +7,11 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.net.Inet4Address;
@@ -66,14 +64,46 @@ public class Configuration {
 		ErrorMessageWithStack
 	}
 
+	/**
+	 * A class describing an IPv4 or IPv6 network
+	 */
 	public static class Network {
+		/**
+		 * Constructor
+		 *
+		 * @throws IllegalArgumentException if the prefix length is not valid for the type of IP address
+		 */
 		public Network(InetAddress address,
 					   int prefixLength)
 		{
+		    checkValidPrefixLengthForAddress(address, prefixLength);
 			this.address = address;
 			this.prefixLength = prefixLength;
 		}
 
+		private static void checkValidPrefixLengthForAddress(InetAddress address,
+													  int prefixLength)
+		{
+			final boolean isIPv4 = address instanceof Inet4Address;
+			final boolean isIPv6 = address instanceof Inet6Address;
+			if (prefixLength < 0 ||
+					(isIPv4 && prefixLength > 32) ||
+					(isIPv6 && prefixLength > 128)) {
+				throw new IllegalArgumentException("Invalid prefix length " + prefixLength + " for IPv" +
+						(isIPv4 ? "4" : "6") + " address");
+			}
+		}
+
+		/**
+		 * Creates a network from CIDR notation
+		 * <p>
+		 * This parses either an IPv4 or IPv6 network in CIDR notation, e.g. 192.168.0.0/16 or fe80::/10,
+		 * or if the slash is omitted, it is treated as the subnetwork that only contains that specific address,
+		 * e.g. 192.168.1.1 is interpreted as 192.168.1.1/32.
+		 *
+		 * @param s the network in CIDR notation e.g. 192.168.0.0/16, or fe80::/10
+		 * @throws IllegalArgumentException if the address can not be parsed or the prefix length is not valid for the type of IP address
+		 */
 		public static Network fromString(String s) {
 			final int slashPos = s.indexOf("/");
 			if (slashPos == -1) {
@@ -88,21 +118,18 @@ public class Configuration {
 				try {
 					final InetAddress address = InetAddress.getByName(s.substring(0, slashPos));
 					final int prefixLength = Integer.parseInt(s.substring(slashPos + 1), 10);
-					final boolean isIpv4 = address instanceof Inet4Address;
-					final boolean isIpv6 = address instanceof Inet6Address;
-					if (prefixLength < 0 ||
-						(isIpv4 && prefixLength > 32) ||
-						(isIpv6 && prefixLength > 128)) {
-						throw new IllegalArgumentException("Invalid prefix length " + s.substring(slashPos + 1) + " for IPv" +
-						                                   (isIpv4 ? "4" : "6") + " address");
-					}
 					return new Network(address, prefixLength);
 				} catch (UnknownHostException e) {
-					throw new IllegalArgumentException("'" + s + "' is not a valid IP address", e);
+					throw new IllegalArgumentException("'" + s.substring(0, slashPos) + "' is not a valid IP address", e);
+				} catch (NumberFormatException e) {
+					throw new IllegalArgumentException("Prefix length string '" + s.substring(slashPos + 1) + "' could not be parsed", e);
 				}
 			}
 		}
 
+		/**
+		 * Checks whether this network contains the given address
+		 */
 		public boolean contains(InetAddress address) {
 			final byte[] networkBytes = this.address.getAddress();
 			final byte[] addressBytes = address.getAddress();
@@ -126,8 +153,8 @@ public class Configuration {
 			return true;
 		}
 
-		public InetAddress address;
-		public int prefixLength;
+		public final InetAddress address;
+		public final int prefixLength;
 	}
 
 	private HashMap<String, String> properties_ = new HashMap<String, String>();
@@ -154,7 +181,7 @@ public class Configuration {
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
-	private String forwardedHeader = "X-Forwarded-For";
+	private String originalIPHeader = "X-Forwarded-For";
 	private List<Network> trustedProxies;
 	private boolean webSocketsEnabled = false;
 	private long asyncContextTimeout = 90000;
@@ -859,9 +886,14 @@ public class Configuration {
 
 	/**
 	 * Configures whether the application is hosted behind a reverse proxy.
-	 * 
+	 *
 	 * @see #isBehindReverseProxy()
+	 *
+	 * @deprecated
+	 * Use {@link #setTrustedProxies(List)} instead. If set to true, the old behavior is used and the upstream server
+	 * is trusted as being a reverse proxy.
 	 */
+	@Deprecated
 	public void setBehindReverseProxy(boolean enabled) {
 		this.behindReverseProxy = enabled;
 	}
@@ -872,27 +904,62 @@ public class Configuration {
 	 * by the reverse proxy are interpreted correctly:
 	 *  - X-Forwarded-Host
 	 *  - X-Forwarded-Proto
+	 *
+	 * @see #setBehindReverseProxy(boolean)
+	 *
+	 * @deprecated
+	 * Use {@link #setTrustedProxies(List)} and {@link #getTrustedProxies()} instead.
 	 */
+	@Deprecated
 	public boolean isBehindReverseProxy() {
 		return this.behindReverseProxy;
 	}
 
-	public void setForwardedHeader(String forwardedHeader) {
-		this.forwardedHeader = forwardedHeader;
+	/**
+	 * Sets the header to be considered to derive the client address when behind a reverse proxy. This is X-Forwarded-For by default.
+	 *
+	 * @see #getOriginalIPHeader()
+	 * @see #setTrustedProxies(List)
+	 */
+	public void setOriginalIPHeader(String originalIPHeader) {
+		this.originalIPHeader = originalIPHeader;
 	}
 
-	public String getForwardedHeader() {
-		return this.forwardedHeader;
+	/**
+	 * Gets the header to be considered to derive the client address when behind a reverse proxy. This is X-Forwarded-For by default.
+	 *
+	 * @see #setOriginalIPHeader(String)
+	 */
+	public String getOriginalIPHeader() {
+		return this.originalIPHeader;
 	}
 
+	/**
+	 * Set the proxy servers or networks that are trusted.
+	 * <p>
+	 * JWt will only trust proxy headers like X-Forwarded-* headers if the proxy server
+	 * is in the list of trusted proxies.
+	 *
+	 * @see #setOriginalIPHeader(String)
+	 */
 	public void setTrustedProxies(List<Network> trustedProxies) {
 		this.trustedProxies = trustedProxies;
 	}
 
+	/**
+	 * Gets the proxy servers or networks that are trusted.
+     *
+	 * @see #setTrustedProxies(List)
+	 */
 	public List<Network> getTrustedProxies() {
 		return this.trustedProxies;
 	}
 
+	/**
+	 * Checks whether the given IP address string is a trusted proxy server.
+	 *
+	 * @see #setTrustedProxies(List)
+	 */
 	public boolean isTrustedProxy(String addressStr) {
 		try {
 			final InetAddress address = InetAddress.getByName(addressStr);

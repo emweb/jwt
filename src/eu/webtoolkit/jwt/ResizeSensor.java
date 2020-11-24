@@ -26,7 +26,7 @@ class ResizeSensor {
       WApplication app = WApplication.getInstance();
       loadJavaScript(app);
       w.setJavaScriptMember(
-          " ResizeSensor", "new Wt4_4_0.ResizeSensor(Wt4_4_0," + w.getJsRef() + ")");
+          " ResizeSensor", "new Wt4_5_0.ResizeSensor(Wt4_5_0," + w.getJsRef() + ")");
     }
   }
 

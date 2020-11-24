@@ -195,7 +195,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     }
     int imageIndex = this.createImage(imgUri);
     this.js_
-        .append("Wt4_4_0.gfxUtils.drawImage(ctx,images[")
+        .append("Wt4_5_0.gfxUtils.drawImage(ctx,images[")
         .append(String.valueOf(imageIndex))
         .append("],")
         .append(WWebWidget.jsStringLiteral(imgUri))
@@ -217,7 +217,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     if (path.isJavaScriptBound()) {
       this.renderStateChanges(true);
       this.js_
-          .append("Wt4_4_0.gfxUtils.drawPath(ctx,")
+          .append("Wt4_5_0.gfxUtils.drawPath(ctx,")
           .append(path.getJsRef())
           .append(",")
           .append(this.currentNoBrush_ ? "false" : "true")
@@ -235,7 +235,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       final WPainterPath stencil, final WPainterPath path, boolean softClipping) {
     this.renderStateChanges(true);
     this.js_
-        .append("Wt4_4_0")
+        .append("Wt4_5_0")
         .append(".gfxUtils.drawStencilAlongPath(ctx,")
         .append(stencil.getJsRef())
         .append(",")
@@ -253,7 +253,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     if (rectangle.isJavaScriptBound()) {
       this.renderStateChanges(true);
       this.js_
-          .append("Wt4_4_0")
+          .append("Wt4_5_0")
           .append(".gfxUtils.drawRect(ctx,")
           .append(rectangle.getJsRef())
           .append(",")
@@ -286,7 +286,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       case Html5Text:
         {
           this.js_
-              .append("Wt4_4_0.gfxUtils.drawText(ctx,")
+              .append("Wt4_5_0.gfxUtils.drawText(ctx,")
               .append(rect.getJsRef())
               .append(',')
               .append(String.valueOf(EnumUtils.valueOf(flags)))
@@ -355,7 +355,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
               .append(");");
           if (this.currentPen_.isJavaScriptBound()) {
             this.js_
-                .append("ctx.fillStyle=Wt4_4_0.gfxUtils.css_text(")
+                .append("ctx.fillStyle=Wt4_5_0.gfxUtils.css_text(")
                 .append(this.currentPen_.getJsRef())
                 .append(".color);");
           } else {
@@ -429,7 +429,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       double lineHeight,
       boolean softClipping) {
     this.renderStateChanges(true);
-    this.js_.append("Wt4_4_0.gfxUtils.drawTextOnPath(ctx,[");
+    this.js_.append("Wt4_5_0.gfxUtils.drawTextOnPath(ctx,[");
     for (int i = 0; i < text.size(); ++i) {
       if (i != 0) {
         this.js_.append(',');
@@ -492,7 +492,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       final String canvasId,
       DomElement text,
       final String updateAreasJs) {
-    String canvasVar = "Wt4_4_0.getElement('" + canvasId + "')";
+    String canvasVar = "Wt4_5_0.getElement('" + canvasId + "')";
     StringBuilder tmp = new StringBuilder();
     tmp.append(";(function(){");
     tmp.append("var pF=function(){");
@@ -667,7 +667,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         final WPainterPath p = this.getPainter().getClipPath();
         if (!p.isEmpty()) {
           this.js_
-              .append("Wt4_4_0")
+              .append("Wt4_5_0")
               .append(".gfxUtils.setClipPath(ctx,")
               .append(p.getJsRef())
               .append(",")
@@ -676,7 +676,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
               .append(this.getPainter().hasClipping() ? "true" : "false")
               .append(");");
         } else {
-          this.js_.append("Wt4_4_0").append(".gfxUtils.removeClipPath(ctx);");
+          this.js_.append("Wt4_5_0").append(".gfxUtils.removeClipPath(ctx);");
         }
         this.currentClipTransform_.assign(t);
         this.currentClipPath_.assign(p);
@@ -753,7 +753,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
         } else {
           if (this.getPainter().getPen().isJavaScriptBound()) {
             this.js_
-                .append("ctx.strokeStyle=Wt4_4_0.gfxUtils.css_text(")
+                .append("ctx.strokeStyle=Wt4_5_0.gfxUtils.css_text(")
                 .append(this.getPainter().getPen().getJsRef())
                 .append(".color);");
           } else {
@@ -844,7 +844,7 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       } else {
         if (this.currentBrush_.isJavaScriptBound()) {
           this.js_
-              .append("ctx.fillStyle=Wt4_4_0.gfxUtils.css_text(")
+              .append("ctx.fillStyle=Wt4_5_0.gfxUtils.css_text(")
               .append(this.currentBrush_.getJsRef())
               .append(".color);");
         } else {

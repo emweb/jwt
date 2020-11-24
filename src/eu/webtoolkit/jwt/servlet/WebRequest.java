@@ -468,19 +468,19 @@ public class WebRequest extends HttpServletRequestWrapper {
 	public String getClientAddress(final Configuration conf) {
 		final String remoteAddr = getRemoteAddr();
 		if (conf.isBehindReverseProxy()) {
-			String clientIp = str(getHeaderValue("Client-IP"));
-			clientIp = clientIp.trim();
+			String clientIP = str(getHeaderValue("Client-IP"));
+			clientIP = clientIP.trim();
 			List<String> ips = new ArrayList<String>();
-			if (clientIp.length() != 0) {
-				ips = new ArrayList<String>(Arrays.asList(clientIp.split(",")));
+			if (clientIP.length() != 0) {
+				ips = new ArrayList<String>(Arrays.asList(clientIP.split(",")));
 			}
 			String forwardedFor = str(getHeaderValue("X-Forwarded-For"));
 			forwardedFor = forwardedFor.trim();
-			List<String> forwardedIps = new ArrayList<String>();
+			List<String> forwardedIPs = new ArrayList<String>();
 			if (forwardedFor.length() != 0) {
-				forwardedIps = new ArrayList<String>(Arrays.asList(forwardedFor.split(",")));
+				forwardedIPs = new ArrayList<String>(Arrays.asList(forwardedFor.split(",")));
 			}
-			ips.addAll(forwardedIps);
+			ips.addAll(forwardedIPs);
 			for (int i = 0; i < ips.size(); ++i) {
 				String ip = ips.get(i);
 				ip = ip.trim();
@@ -489,13 +489,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 				}
 			}
 		} else if (conf.isTrustedProxy(remoteAddr)) {
-			String forwardedFor = str(getHeaderValue(conf.getForwardedHeader()));
-			forwardedFor = forwardedFor.trim();
-			String[] forwardedIps = forwardedFor.split("[,]");
-			for (int i = forwardedIps.length - 1; i >= 0; --i) {
-				final String currentIp = forwardedIps[i].trim();
-				if (!currentIp.isEmpty() && !conf.isTrustedProxy(currentIp)) {
-					return currentIp;
+			String originalIP = str(getHeaderValue(conf.getOriginalIPHeader()));
+			originalIP = originalIP.trim();
+			String[] forwardedIPs = originalIP.split("[,]");
+			for (int i = forwardedIPs.length - 1; i >= 0; --i) {
+				final String currentIP = forwardedIPs[i].trim();
+				if (!currentIP.isEmpty() && !conf.isTrustedProxy(currentIP)) {
+					return currentIP;
 				}
 			}
 		}
