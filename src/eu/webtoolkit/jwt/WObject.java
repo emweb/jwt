@@ -97,12 +97,7 @@ public class WObject {
 	 * auto-generated id is created by concatenating {@link #getObjectName()} with a unique number.
 	 */
 	public String getId() {
-		String result = getObjectName();
-
-		if (result != "")
-			return result + '_' + getUniqueId();
-		else
-			return getUniqueId();
+		return getUniqueId();
 	}
 
 	protected void setFormData(FormData formData) {
