@@ -287,7 +287,7 @@ public class WTimeEdit extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WTimeEdit.js", wtjs1());
     String jsObj =
-        "new Wt3_7_0.WTimeEdit("
+        "new Wt3_7_1.WTimeEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

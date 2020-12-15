@@ -2082,7 +2082,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt3_7_0.scrollHistory();");
+                this.app_.doJavaScript("Wt3_7_1.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }
