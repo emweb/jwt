@@ -1168,6 +1168,13 @@ public abstract class WWidget extends WObject {
    * digits ([0-9]), hyphens (&quot;-&quot;), underscores (&quot;_&quot;), colons (&quot;:&quot;),
    * and periods (&quot;.&quot;).</i>
    *
+   * <p><i><b>Warning: </b>We recommend that you leave the id of a widget unchanged. JWt uses the id
+   * to identify widgets in the JavaScript it generates, and this can often leads to bugs. If you do
+   * change the id, **only** change the id right after widget construction. However, usually
+   * there&apos;s a more preferable alternative, like setting the object name ({@link
+   * WObject#setObjectName(String name) WObject#setObjectName()}), or adding style classes ({@link
+   * WWidget#addStyleClass(String styleClass, boolean force) addStyleClass()}).</i>
+   *
    * @see WObject#getId()
    */
   public abstract void setId(final String id);
