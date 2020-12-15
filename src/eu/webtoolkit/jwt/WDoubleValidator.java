@@ -269,7 +269,7 @@ public class WDoubleValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt3_7_0.WDoubleValidator(")
+    js.append("new Wt3_7_1.WDoubleValidator(")
         .append(this.isMandatory())
         .append(',')
         .append(this.ignoreTrailingSpaces_)
