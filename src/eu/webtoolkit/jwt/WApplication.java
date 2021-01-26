@@ -193,6 +193,7 @@ public class WApplication extends WObject {
     this.domRoot_ = new WContainerWidget();
     this.domRoot_.setGlobalUnfocused(true);
     this.domRoot_.setStyleClass("Wt-domRoot");
+    this.domRoot_.load();
     if (this.session_.getType() == EntryPointType.Application) {
       this.domRoot_.resize(WLength.Auto, new WLength(100, LengthUnit.Percentage));
     }
@@ -207,6 +208,7 @@ public class WApplication extends WObject {
       this.widgetRoot_.resize(WLength.Auto, new WLength(100, LengthUnit.Percentage));
     } else {
       this.domRoot2_ = new WContainerWidget();
+      this.domRoot2_.load();
     }
     this.styleSheet_.addRule("table", "border-collapse: collapse; border: 0px;border-spacing: 0px");
     this.styleSheet_.addRule("div, td, img", "margin: 0px; padding: 0px; border: 0px");

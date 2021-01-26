@@ -1011,11 +1011,10 @@ public abstract class WWidget extends WObject {
   /**
    * Loads content just before the widget is used.
    *
-   * <p>This method is called after a widget is inserted in the widget hierarchy and fully
-   * constructed, but before the widget is rendered. Widgets that get inserted in the widget
-   * hierarchy will be rendered. Visible widgets are rendered immediately, and invisible widgets in
-   * the back-ground (or not for a plain HTML session). This method is called when the widget is
-   * directly or indirectly inserted into the widget tree.
+   * <p>This function is called when a widget is inserted in the widget hierarchy. Widgets that get
+   * inserted in the widget hierarchy will be rendered. Visible widgets are rendered immediately,
+   * and invisible widgets in the back-ground (or not for a plain HTML session). This method is
+   * called when the widget is directly or indirectly inserted into the widget tree.
    *
    * <p>The default implementation simply propagates the load signal to its children. You may want
    * to override this method to delay loading of resource-intensive contents.
@@ -1440,9 +1439,6 @@ public abstract class WWidget extends WObject {
   public abstract boolean isThemeStyleEnabled();
 
   DomElement createSDomElement(WApplication app) {
-    if (!this.isLoaded()) {
-      this.load();
-    }
     if (!this.needsToBeRendered()) {
       DomElement result = this.getWebWidget().createStubElement(app);
       this.renderOk();

@@ -407,6 +407,9 @@ public class WMenu extends WCompositeWidget {
         this.contentsStack_.addWidget(contentsPtr);
         if (this.contentsStack_.getCount() == 1) {
           this.setCurrent(0);
+          if (this.isLoaded()) {
+            this.getCurrentItem().loadContents();
+          }
           this.contentsStack_.setCurrentWidget(contents);
           this.renderSelected(result, true);
         } else {

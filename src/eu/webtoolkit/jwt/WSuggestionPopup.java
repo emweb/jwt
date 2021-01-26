@@ -252,6 +252,7 @@ public class WSuggestionPopup extends WPopupWidget {
     this.filtering_ = false;
     this.defaultValue_ = -1;
     this.isDropDownIconUnfiltered_ = false;
+    this.isAutoSelectEnabled_ = true;
     this.currentItem_ = -1;
     this.editRole_ = ItemDataRole.User;
     this.matcherJS_ = generateMatcherJS(options);
@@ -278,6 +279,7 @@ public class WSuggestionPopup extends WPopupWidget {
     this.filtering_ = false;
     this.defaultValue_ = -1;
     this.isDropDownIconUnfiltered_ = false;
+    this.isAutoSelectEnabled_ = true;
     this.currentItem_ = -1;
     this.editRole_ = ItemDataRole.User;
     this.matcherJS_ = matcherJS;
@@ -605,6 +607,14 @@ public class WSuggestionPopup extends WPopupWidget {
     this.isDropDownIconUnfiltered_ = isUnfiltered;
   }
   /**
+   * When the popup is opened the first item is automatically selected.
+   *
+   * <p>This cannot be changed after the widget is rendered. The default value is true.
+   */
+  public void setAutoSelectEnabled(boolean enabled) {
+    this.isAutoSelectEnabled_ = enabled;
+  }
+  /**
    * Returns the last activated index.
    *
    * <p>Returns -1 if the popup hasn&apos;t been activated yet.
@@ -640,6 +650,7 @@ public class WSuggestionPopup extends WPopupWidget {
   private boolean filtering_;
   private int defaultValue_;
   private boolean isDropDownIconUnfiltered_;
+  private boolean isAutoSelectEnabled_;
   private int currentItem_;
   private ItemDataRole editRole_;
   private String matcherJS_;
@@ -848,6 +859,7 @@ public class WSuggestionPopup extends WPopupWidget {
     app.loadJavaScript(THIS_JS, wtjs1());
     app.loadJavaScript(THIS_JS, wtjs2());
     String ddUnfiltered = this.isDropDownIconUnfiltered_ ? "true" : "false";
+    String autoSelect = this.isAutoSelectEnabled_ ? "true" : "false";
     this.setJavaScriptMember(
         " WSuggestionPopup",
         "new Wt4_5_0.WSuggestionPopup("
@@ -866,6 +878,8 @@ public class WSuggestionPopup extends WPopupWidget {
             + String.valueOf(this.defaultValue_)
             + ","
             + ddUnfiltered
+            + ","
+            + autoSelect
             + ");");
   }
 
@@ -884,7 +898,7 @@ public class WSuggestionPopup extends WPopupWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WSuggestionPopup",
-        "function(s,g,y,G,q,t,z,u){function c(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function d(){return g.style.display!=\"none\"}function j(a){g.style.display=\"block\";e.positionAtWidget(g.id,a.id,e.Vertical)}function h(a){a=e.target(a||window.event);if(!e.hasTag(a,\"UL\")){for(;a&&!e.hasTag(a,\"LI\");)a=a.parentNode;a&&p(a)}}function p(a){var b=a.firstChild.firstChild,i=e.getElement(f),l=b.innerHTML;b=b.getAttribute(\"sug\"); i.focus();y(i,l,b);s.emit(g,\"select\",a.id,i.id);m();f=null}function m(){g.style.display=\"none\";if(f!=null&&A!=null){e.getElement(f).onkeydown=A;A=null}}function B(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(e.hasTag(a,\"LI\"))if(a.style.display!=\"none\")return a;return null}function J(a){var b=a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop= a.offsetTop}$(\".Wt-domRoot\").add(g);g.wtObj=this;var r=this,e=s.WT,o=null,f=null,K=false,C=null,M=null,N=t,D=null,E=null,v=false;this.defaultValue=z;var A=null;this.showPopup=function(a){g.style.display=\"block\";E=o=null;A=a.onkeydown;a.onkeydown=function(b){r.editKeyDown(this,b||window.event)}};this.editMouseMove=function(a,b){if(c(a))a.style.cursor=e.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a,b){m();f=a.id;v=true;r.refilter(b)};this.editClick=function(a,b){if(c(a))if(e.widgetCoordinates(a, b).x>a.offsetWidth-16)if(f!=a.id||!d())r.showAt(a,\"\");else{m();f=null}};this.editKeyDown=function(a,b){if(!c(a))return true;if(f!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){f=a.id;v=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){f=a.id;v=true}else{f=null;return true}var i=o?e.getElement(o):null;if(d()&&i)if(b.keyCode==13||b.keyCode==9){p(i);e.cancelEvent(b);setTimeout(function(){a.focus()},0);return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()== \"KEYDOWN\"){K=true;e.cancelEvent(b,e.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&K==true){e.cancelEvent(b);return false}var l=i,F=b.keyCode==40||b.keyCode==34;b=b.keyCode==34||b.keyCode==33?g.clientHeight/i.offsetHeight:1;var n;for(n=0;l&&n<b;++n){var w=B(l,F);if(!w)break;l=w}if(l&&e.hasTag(l,\"LI\")){i.className=\"\";l.className=\"active\";o=l.id}return false}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a,b){C=a;N=b;r.refilter(E)};this.refilter=function(a){if(f){var b=o?e.getElement(o): null,i=e.getElement(f),l=G(i),F=g.childNodes,n=u&&a!=null?a:l(null);E=u?a:i.value;if(q>0||t)if(n.length<q&&!v){m();return}else{a=N?n:n.substring(0,Math.max(C!==null?C.length:0,q));if(a!=C)if(a!=M){M=a;s.emit(g,\"filter\",a)}}var w=a=null;n=v&&n.length==0;var x,O;x=0;for(O=F.length;x<O;++x){var k=F[x];if(e.hasTag(k,\"LI\")){var H=k.firstChild;if(k.orig==null)k.orig=H.firstChild.innerHTML;var I=l(k.orig),P=n||I.match;if(I.suggestion!=H.firstChild.innerHTML)H.firstChild.innerHTML=I.suggestion;if(P){if(k.style.display!= \"\")k.style.display=\"\";if(a==null)a=k;if(x==this.defaultValue)w=k}else if(k.style.display!=\"none\")k.style.display=\"none\";if(k.className!=\"\")k.className=\"\"}}if(a==null)m();else{if(!d()){j(i);r.showPopup(i);b=null}if(!b||b.style.display==\"none\"){b=w||a;b.parentNode.scrollTop=0;o=b.id}b.className=\"active\";J(b)}}};this.editKeyUp=function(a,b){if(f!=null)if(c(a))if(!(!d()&&(b.keyCode==13||b.keyCode==9)))if(b.keyCode==27||b.keyCode==37||b.keyCode==39)m();else if(!(b.keyCode==40||b.keyCode==38||b.keyCode== 34||b.keyCode==33))if(a.value!=E){f=a.id;r.refilter(a.value)}else(a=o?e.getElement(o):null)&&J(a)};g.onclick=h;g.onscroll=function(){if(D){clearTimeout(D);var a=e.getElement(f);a&&a.focus()}};this.delayHide=function(a){D=setTimeout(function(){D=null;if(g&&(a==null||f==a.id))m()},300)}}");
+        "function(u,f,B,H,q,v,C,w,c){function d(a){return $(a).hasClass(\"Wt-suggest-onedit\")||$(a).hasClass(\"Wt-suggest-dropdown\")}function h(){return f.style.display!=\"none\"}function k(a){f.style.display=\"block\";e.positionAtWidget(f.id,a.id,e.Vertical)}function r(a){a=e.target(a||window.event);if(!e.hasTag(a,\"UL\")){for(;a&&!e.hasTag(a,\"LI\");)a=a.parentNode;a&&x(a)}}function x(a){var b=a.firstChild.firstChild,i=e.getElement(g),j=b.innerHTML;b= b.getAttribute(\"sug\");i.focus();B(i,j,b);u.emit(f,\"select\",a.id,i.id);m();g=null}function m(){f.style.display=\"none\";if(g!=null&&D!=null){e.getElement(g).onkeydown=D;D=null}}function Q(a){var b=f.childNodes;for(n=a?b[0]:b[b.length-1];n;n=a?n.nextSibling:n.previousSibling)if(e.hasTag(n,\"LI\")&&n.style.display!=\"none\")return n;return null}function S(a,b){for(a=b?a.nextSibling:a.previousSibling;a;a=b?a.nextSibling:a.previousSibling)if(e.hasTag(a,\"LI\"))if(a.style.display!=\"none\")return a;return null}function I(a){var b= a.parentNode;if(a.offsetTop+a.offsetHeight>b.scrollTop+b.clientHeight)b.scrollTop=a.offsetTop+a.offsetHeight-b.clientHeight;else if(a.offsetTop<b.scrollTop)b.scrollTop=a.offsetTop}$(\".Wt-domRoot\").add(f);f.wtObj=this;var s=this,e=u.WT,o=null,g=null,M=false,E=null,N=null,O=v,F=null,G=null,y=false;this.defaultValue=C;var D=null;this.showPopup=function(a){f.style.display=\"block\";G=o=null;D=a.onkeydown;a.onkeydown=function(b){s.editKeyDown(this,b||window.event)}};this.editMouseMove=function(a,b){if(d(a))a.style.cursor= e.widgetCoordinates(a,b).x>a.offsetWidth-16?\"default\":\"\"};this.showAt=function(a,b){m();g=a.id;y=true;s.refilter(b)};this.editClick=function(a,b){if(d(a))if(e.widgetCoordinates(a,b).x>a.offsetWidth-16)if(g!=a.id||!h())s.showAt(a,\"\");else{m();g=null}};this.editKeyDown=function(a,b){if(!d(a))return true;if(g!=a.id)if($(a).hasClass(\"Wt-suggest-onedit\")){g=a.id;y=false}else if($(a).hasClass(\"Wt-suggest-dropdown\")&&b.keyCode==40){g=a.id;y=true}else{g=null;return true}if(h()){var i=o?e.getElement(o):null; if(b.keyCode==13||b.keyCode==9){if(i){x(i);e.cancelEvent(b);setTimeout(function(){a.focus()},0)}else m();return false}else if(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33){if(b.type.toUpperCase()==\"KEYDOWN\"){M=true;e.cancelEvent(b,e.CancelDefaultAction)}if(b.type.toUpperCase()==\"KEYPRESS\"&&M==true){e.cancelEvent(b);return false}var j=i,z=b.keyCode==40||b.keyCode==34;if(j){b=b.keyCode==34||b.keyCode==33?f.clientHeight/i.offsetHeight:1;var p;for(p=0;j&&p<b;++p){var t=S(j,z);if(!t&&c)break; j=t}}else{j=Q(z);I(j)}if(i){i.className=\"\";o=null}if(j&&e.hasTag(j,\"LI\")){j.className=\"active\";o=j.id}return false}}return b.keyCode!=13&&b.keyCode!=9};this.filtered=function(a,b){E=a;O=b;s.refilter(G)};this.refilter=function(a){if(g){var b=o?e.getElement(o):null,i=e.getElement(g),j=H(i),z=f.childNodes,p=w&&a!=null?a:j(null);G=w?a:i.value;if(q>0||v)if(p.length<q&&!y){m();return}else{a=O?p:p.substring(0,Math.max(E!==null?E.length:0,q));if(a!=E)if(a!=N){N=a;u.emit(f,\"filter\",a)}}var t=a=null;p=y&&p.length== 0;var A,P;A=0;for(P=z.length;A<P;++A){var l=z[A];if(e.hasTag(l,\"LI\")){var J=l.firstChild;if(l.orig==null)l.orig=J.firstChild.innerHTML;var K=j(l.orig),T=p||K.match;if(K.suggestion!=J.firstChild.innerHTML)J.firstChild.innerHTML=K.suggestion;if(T){if(l.style.display!=\"\")l.style.display=\"\";if(a==null)a=l;if(A==this.defaultValue)t=l}else if(l.style.display!=\"none\")l.style.display=\"none\";if(l.className!=\"\")l.className=\"\"}}if(a==null)m();else{if(!h()){k(i);s.showPopup(i);b=null}if((c||t)&&(!b||b.style.display== \"none\")){b=t||a;b.parentNode.scrollTop=0;o=b.id}if(b){b.className=\"active\";I(b)}}}};this.editKeyUp=function(a,b){if(g!=null)if(d(a))if(!(!h()&&(b.keyCode==13||b.keyCode==9)))if(b.keyCode==27||b.keyCode==37||b.keyCode==39)m();else if(!(b.keyCode==40||b.keyCode==38||b.keyCode==34||b.keyCode==33))if(a.value!=G){g=a.id;s.refilter(a.value)}else(a=o?e.getElement(o):null)&&I(a)};f.onclick=r;f.onscroll=function(){if(F){clearTimeout(F);var a=e.getElement(g);a&&a.focus()}};this.delayHide=function(a){F=setTimeout(function(){F= null;if(f&&(a==null||g==a.id))m()},300)}}");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -892,7 +906,7 @@ public class WSuggestionPopup extends WPopupWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WSuggestionPopupStdMatcher",
-        "function(s,g,y,G,q,t,z){function u(c){var d=c.value;c=c.selectionStart?c.selectionStart:d.length;for(var j=y?d.lastIndexOf(y,c-1)+1:0;j<c&&G.indexOf(d.charAt(j))!=-1;)++j;return{start:j,end:c}}this.match=function(c){var d=u(c),j=c.value.substring(d.start,d.end),h;if(t.length==0)if(q.length!=0){h=\"(^|(?:[\";for(c=0;c<q.length;++c){for(d=q.charCodeAt(c).toString(16);d.length<4;)d=\"0\"+d;h+=\"\\\\u\"+d}h+=\"]))\"}else h=\"(^)\";else h=\"(\"+ t+\")\";h+=\"(\"+j.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";h=new RegExp(h,\"gi\");return function(p){if(!p)return j;var m=false;if(j.length){var B=p.replace(h,\"$1\"+s+\"$2\"+g);if(B!=p){m=true;p=B}}return{match:m,suggestion:p}}};this.replace=function(c,d,j){d=u(c);var h=c.value.substring(0,d.start)+j+z;if(d.end<c.value.length)h+=c.value.substring(d.end,c.value.length);c.value=h;if(c.selectionStart){c.selectionStart=d.start+j.length+z.length;c.selectionEnd=c.selectionStart}}}");
+        "function(u,f,B,H,q,v,C){function w(c){var d=c.value;c=c.selectionStart?c.selectionStart:d.length;for(var h=B?d.lastIndexOf(B,c-1)+1:0;h<c&&H.indexOf(d.charAt(h))!=-1;)++h;return{start:h,end:c}}this.match=function(c){var d=w(c),h=c.value.substring(d.start,d.end),k;if(v.length==0)if(q.length!=0){k=\"(^|(?:[\";for(c=0;c<q.length;++c){for(d=q.charCodeAt(c).toString(16);d.length<4;)d=\"0\"+d;k+=\"\\\\u\"+d}k+=\"]))\"}else k=\"(^)\";else k=\"(\"+ v+\")\";k+=\"(\"+h.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\")+\")\";k=new RegExp(k,\"gi\");return function(r){if(!r)return h;var x=false;if(h.length){var m=r.replace(k,\"$1\"+u+\"$2\"+f);if(m!=r){x=true;r=m}}return{match:x,suggestion:r}}};this.replace=function(c,d,h){d=w(c);var k=c.value.substring(0,d.start)+h+C;if(d.end<c.value.length)k+=c.value.substring(d.end,c.value.length);c.value=k;if(c.selectionStart){c.selectionStart=d.start+h.length+C.length;c.selectionEnd=c.selectionStart}}}");
   }
 
   static String instantiateStdMatcher(final WSuggestionPopup.Options options) {

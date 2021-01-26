@@ -1967,6 +1967,9 @@ public abstract class WWebWidget extends WWidget {
 
   protected void widgetAdded(WWidget child) {
     child.setParentWidget(this);
+    if (this.flags_.get(BIT_LOADED)) {
+      this.doLoad(child);
+    }
     WApplication.getInstance().getSession().getRenderer().updateFormObjects(this, false);
     if (!(this.transientImpl_ != null)) {
       this.transientImpl_ = new WWebWidget.TransientImpl();
