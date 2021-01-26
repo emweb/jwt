@@ -2814,8 +2814,8 @@ public class WGLWidget extends WInteractWidget {
    *       </code> is the <code>TouchEvent</code>.
    * </ul>
    *
-   * <p>For example, if we wanted to scale some object when we scroll, we could create a {@link
-   * JavaScriptMatrix4x4} called <code>transform_:</code>
+   * <p>For example, if we wanted to scale some object when we scroll, we could create a
+   * JavaScriptMatrix4x4 called \p transform_:
    *
    * <p>
    *
@@ -3074,7 +3074,7 @@ public class WGLWidget extends WInteractWidget {
 
   String renderRemoveJs(boolean recursive) {
     if (this.webGlNotAvailable_) {
-      return this.alternative_.getWebWidget().renderRemoveJs(recursive);
+      return this.alternative_.renderRemoveJs(recursive);
     } else {
       return super.renderRemoveJs(recursive);
     }

@@ -164,12 +164,16 @@ public abstract class WInteractWidget extends WWebWidget {
     return this.voidEventSignal(ESCAPE_PRESS_SIGNAL, true);
   }
   /**
-   * Event signal emitted when a mouse key was clicked on this widget.
+   * Event signal emitted when the primary mouse button was clicked on this widget.
    *
    * <p>The event details contains information such as the {@link WMouseEvent#getButton()}, optional
    * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse coordinates relative to the
    * {@link WMouseEvent#getWidget()}, the window {@link WMouseEvent#getWindow()}, or the {@link
    * WMouseEvent#getDocument()}.
+   *
+   * <p>For more details, see the <a
+   * href="https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event">MDN
+   * documentation</a>.
    *
    * <p>
    *
@@ -180,12 +184,16 @@ public abstract class WInteractWidget extends WWebWidget {
     return this.mouseEventSignal(M_CLICK_SIGNAL, true);
   }
   /**
-   * Event signal emitted when a mouse key was double clicked on this widget.
+   * Event signal emitted when the primary mouse button was double clicked on this widget.
    *
    * <p>The event details contains information such as the {@link WMouseEvent#getButton()}, optional
    * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse coordinates relative to the
    * {@link WMouseEvent#getWidget()}, the window {@link WMouseEvent#getWindow()}, or the {@link
    * WMouseEvent#getDocument()}.
+   *
+   * <p>For more details, see the <a
+   * href="https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event">MDN
+   * documentation</a>.
    *
    * <p>
    *
@@ -195,7 +203,7 @@ public abstract class WInteractWidget extends WWebWidget {
     return this.mouseEventSignal(DBL_CLICK_SIGNAL, true);
   }
   /**
-   * Event signal emitted when a mouse key was pushed down on this widget.
+   * Event signal emitted when a mouse button was pushed down on this widget.
    *
    * <p>The event details contains information such as the {@link WMouseEvent#getButton()}, optional
    * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse coordinates relative to the
@@ -210,7 +218,7 @@ public abstract class WInteractWidget extends WWebWidget {
     return this.mouseEventSignal(MOUSE_DOWN_SIGNAL, true);
   }
   /**
-   * Event signal emitted when a mouse key was released on this widget.
+   * Event signal emitted when a mouse button was released on this widget.
    *
    * <p>The event details contains information such as the {@link WMouseEvent#getButton()}, optional
    * {@link WMouseEvent#getModifiers() keyboard modifiers}, and mouse coordinates relative to the

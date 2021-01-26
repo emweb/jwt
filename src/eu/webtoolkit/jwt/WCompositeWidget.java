@@ -556,5 +556,9 @@ public class WCompositeWidget extends WWidget {
     this.renderOk();
   }
 
+  String renderRemoveJs(boolean recursive) {
+    return this.impl_.renderRemoveJs(recursive);
+  }
+
   private WWidget impl_;
 }

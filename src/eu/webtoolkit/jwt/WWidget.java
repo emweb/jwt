@@ -928,7 +928,7 @@ public abstract class WWidget extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>This does **not** rerender the widget! Calling {@link WWidget#refresh()
+   * <p><i><b>Note: </b>This does <b>not</b> rerender the widget! Calling {@link WWidget#refresh()
    * refresh()} usually does not have any effect (unless you&apos;ve reimplemented {@link
    * WWidget#refresh() refresh()} to attach to it an effect). </i>
    */
@@ -1170,7 +1170,7 @@ public abstract class WWidget extends WObject {
    *
    * <p><i><b>Warning: </b>We recommend that you leave the id of a widget unchanged. JWt uses the id
    * to identify widgets in the JavaScript it generates, and this can often leads to bugs. If you do
-   * change the id, **only** change the id right after widget construction. However, usually
+   * change the id, <b>only</b> change the id right after widget construction. However, usually
    * there&apos;s a more preferable alternative, like setting the object name ({@link
    * WObject#setObjectName(String name) WObject#setObjectName()}), or adding style classes ({@link
    * WWidget#addStyleClass(String styleClass, boolean force) addStyleClass()}).</i>
@@ -1833,6 +1833,12 @@ public abstract class WWidget extends WObject {
     return addCssRule(selector, declarations, "");
   }
 
+  protected boolean isGlobalWidget() {
+    return this.flags_.get(BIT_GLOBAL_WIDGET);
+  }
+
+  abstract String renderRemoveJs(boolean recursive);
+
   private static final int BIT_WAS_HIDDEN = 0;
   private static final int BIT_WAS_DISABLED = 1;
   private static final int BIT_NEED_RERENDER = 2;
@@ -1872,10 +1878,6 @@ public abstract class WWidget extends WObject {
 
   void setParentWidget(WWidget p) {
     this.parent_ = p;
-  }
-
-  private boolean isGlobalWidget() {
-    return this.flags_.get(BIT_GLOBAL_WIDGET);
   }
 
   void setGlobalWidget(boolean globalWidget) {

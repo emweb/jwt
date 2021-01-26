@@ -1868,7 +1868,7 @@ public abstract class WWebWidget extends WWidget {
     }
     this.iterateChildren(
         (WWidget c) -> {
-          result.append(c.getWebWidget().renderRemoveJs(true));
+          result.append(c.renderRemoveJs(true));
         });
     if (!recursive) {
       if ((result.length() == 0)) {
@@ -1977,7 +1977,7 @@ public abstract class WWebWidget extends WWidget {
 
   protected void widgetRemoved(WWidget child, boolean renderRemove) {
     if (!this.flags_.get(BIT_BEING_DELETED) && renderRemove) {
-      String js = child.getWebWidget().renderRemoveJs(false);
+      String js = child.renderRemoveJs(false);
       if (!(this.transientImpl_ != null)) {
         this.transientImpl_ = new WWebWidget.TransientImpl();
       }

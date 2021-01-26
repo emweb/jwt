@@ -148,7 +148,9 @@ public class WPopupMenu extends WMenu {
         b.setMenu((WPopupMenu) null);
       }
     }
-    WApplication.getInstance().removeGlobalWidget(this);
+    if (this.isGlobalWidget()) {
+      WApplication.getInstance().removeGlobalWidget(this);
+    }
     super.remove();
   }
   /**
@@ -411,6 +413,12 @@ public class WPopupMenu extends WMenu {
   protected void render(EnumSet<RenderFlag> flags) {
     super.render(flags);
     this.willPopup_ = false;
+  }
+
+  String renderRemoveJs(boolean recursive) {
+    String result = super.renderRemoveJs(true);
+    result += "Wt4_5_0.remove('" + this.getId() + "');";
+    return result;
   }
 
   private WPopupMenu topLevel_;

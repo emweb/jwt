@@ -878,6 +878,7 @@ public class WApplication extends WObject {
       throw new WException("WApplication::bindWidget() can be used only in WidgetSet mode.");
     }
     widget.setId(domId);
+    widget.setJavaScriptMember("wtReparentBarrier", "true");
     this.domRoot2_.addWidget(widget);
   }
   /**
@@ -2423,6 +2424,7 @@ public class WApplication extends WObject {
 
   public void removeGlobalWidget(WWidget w) {
     if (this.domRoot_ != null) {
+      w.setGlobalWidget(false);
       WWidget removed = this.domRoot_.removeWidget(w);
     }
   }
