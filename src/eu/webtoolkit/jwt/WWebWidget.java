@@ -1064,8 +1064,10 @@ public abstract class WWebWidget extends WWidget {
   }
 
   public void setScrollVisibilityEnabled(boolean enabled) {
-    if (enabled && !(this.otherImpl_ != null)) {
-      this.otherImpl_ = new WWebWidget.OtherImpl(this);
+    if (enabled) {
+      if (!(this.otherImpl_ != null)) {
+        this.otherImpl_ = new WWebWidget.OtherImpl(this);
+      }
       if (!(this.otherImpl_.jsScrollVisibilityChanged_ != null)) {
         this.otherImpl_.jsScrollVisibilityChanged_ =
             new JSignal1<Boolean>(this, "scrollVisibilityChanged") {};

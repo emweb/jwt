@@ -753,6 +753,8 @@ public class WTreeView extends WAbstractItemView {
           break;
       }
     }
+    this.contents_.setHeight(
+        new WLength(this.subTreeHeight(this.getRootIndex()) * this.getRowHeight().toPixels()));
     if (app.getEnvironment().hasAjax()
         && this.getRowHeaderCount() != 0
         && this.renderedNodesAdded_) {

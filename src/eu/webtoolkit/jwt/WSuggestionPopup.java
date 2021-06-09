@@ -125,7 +125,16 @@ import org.slf4j.LoggerFactory;
  *
  * }</pre>
  *
- * <p>A screenshot of this example:
+ * <p>
+ *
+ * <p><i><b>Note: </b>This widget is not supposed to be added explicitly, as it is a global widget
+ * (much like {@link WPopupWidget}). Managing its lifetime can be achieved with
+ * WContainerWidget::addNew() or WObject::addChild(), where the former uses the latter. Do NOT bind
+ * it to a template using {@link WTemplate#bindWidget(String varName, WWidget widget)
+ * WTemplate#bindWidget()}, WTemplate::bindNew() or {@link WLayout#addWidget(WWidget w)
+ * WLayout#addWidget()}. If bound this way, the placeholder is not replaced with the correct list of
+ * suggestions, since this causes the widget to be placed into the widget tree twice.</i> A
+ * screenshot of this example:
  *
  * <table border="1" cellspacing="3" cellpadding="3">
  * <tr><td><div align="center">

@@ -87,7 +87,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
         updateAreasJs = this.widget_.areaImage_.getUpdateAreasJS();
       }
     }
-    canvasDevice.render(this.widget_.getObjJsRef(), 'c' + this.widget_.getId(), el, updateAreasJs);
+    canvasDevice.render(this.widget_.getJsRef(), 'c' + this.widget_.getId(), el, updateAreasJs);
     if (text != null) {
       result.addChild(text);
     }
@@ -122,7 +122,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
         updateAreasJs = this.widget_.areaImage_.getUpdateAreasJS();
       }
     }
-    canvasDevice.render(this.widget_.getObjJsRef(), 'c' + this.widget_.getId(), el, updateAreasJs);
+    canvasDevice.render(this.widget_.getJsRef(), 'c' + this.widget_.getId(), el, updateAreasJs);
     result.add(el);
   }
 
