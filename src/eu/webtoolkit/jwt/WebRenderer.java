@@ -41,7 +41,7 @@ class WebRenderer implements SlotLearnerInterface {
     this.formObjectsChanged_ = true;
     this.updateLayout_ = false;
     this.wsRequestsToHandle_ = new ArrayList<Integer>();
-    this.multiSessionCookieUpdateNeeded_ = false;
+    this.cookieUpdateNeeded_ = false;
     this.collectedJS1_ = new StringBuilder();
     this.collectedJS2_ = new StringBuilder();
     this.invisibleJS_ = new StringBuilder();
@@ -165,7 +165,7 @@ class WebRenderer implements SlotLearnerInterface {
         || !(this.collectedJS2_.length() == 0)
         || !(this.invisibleJS_.length() == 0)
         || !this.wsRequestsToHandle_.isEmpty()
-        || this.multiSessionCookieUpdateNeeded_;
+        || this.cookieUpdateNeeded_;
   }
 
   public int getScriptId() {
@@ -265,6 +265,7 @@ class WebRenderer implements SlotLearnerInterface {
       final String path,
       boolean secure) {
     this.cookiesToSet_.put(name, new WebRenderer.CookieValue(value, path, domain, expires, secure));
+    this.cookieUpdateNeeded_ = true;
   }
 
   public boolean isPreLearning() {
@@ -446,7 +447,7 @@ class WebRenderer implements SlotLearnerInterface {
   private boolean formObjectsChanged_;
   private boolean updateLayout_;
   private List<Integer> wsRequestsToHandle_;
-  boolean multiSessionCookieUpdateNeeded_;
+  private boolean cookieUpdateNeeded_;
 
   private void setHeaders(final WebResponse response, final String mimeType) {
     for (Iterator<Map.Entry<String, WebRenderer.CookieValue>> i_it =
@@ -481,15 +482,14 @@ class WebRenderer implements SlotLearnerInterface {
       } else {
         header.append(" Path=").append(cookie.path).append(';');
       }
-      if (!response.isWebSocketMessage()) {
-        header.append(" httponly;");
-      }
+      header.append(" httponly;");
       if (cookie.secure) {
         header.append(" secure;");
       }
       response.addHeader("Set-Cookie", header.toString());
     }
     this.cookiesToSet_.clear();
+    this.cookieUpdateNeeded_ = false;
     response.setContentType(mimeType);
   }
 
@@ -504,8 +504,10 @@ class WebRenderer implements SlotLearnerInterface {
   }
 
   private void serveJavaScriptUpdate(final WebResponse response) throws IOException {
-    this.setCaching(response, false);
-    this.setHeaders(response, "text/javascript; charset=UTF-8");
+    if (!response.isWebSocketMessage()) {
+      this.setCaching(response, false);
+      this.setHeaders(response, "text/javascript; charset=UTF-8");
+    }
     if (this.session_.sessionIdChanged_) {
       this.collectedJS1_
           .append(this.session_.getApp().getJavaScriptClass())
@@ -528,7 +530,7 @@ class WebRenderer implements SlotLearnerInterface {
               .toString());
       out.append(this.collectedJS1_.toString()).append(this.collectedJS2_.toString());
       if (response.isWebSocketMessage()) {
-        this.renderMultiSessionCookieUpdate(out);
+        this.renderCookieUpdate(out);
         this.renderWsRequestsDone(out);
         logger.debug(
             new StringWriter()
@@ -592,6 +594,8 @@ class WebRenderer implements SlotLearnerInterface {
       script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this.getSessionUrl()));
       script.setVar(
           "QUITTED_STR", WString.toWString(WString.tr("Wt.QuittedMessage")).getJsStringLiteral());
+      script.setVar("MAX_FORMDATA_SIZE", conf.getMaxFormDataSize());
+      script.setVar("MAX_PENDING_EVENTS", conf.getMaxPendingEvents());
       String deployPath = this.session_.getEnv().publicDeploymentPath_;
       if (deployPath.length() == 0) {
         deployPath = this.session_.getDeploymentPath();
@@ -1737,10 +1741,10 @@ class WebRenderer implements SlotLearnerInterface {
         this.session_.getEnv().getUrlScheme().equals("https"));
   }
 
-  private void renderMultiSessionCookieUpdate(final StringBuilder out) {
-    if (this.multiSessionCookieUpdateNeeded_) {
+  private void renderCookieUpdate(final StringBuilder out) {
+    if (this.cookieUpdateNeeded_) {
       out.append(this.session_.getApp().getJavaScriptClass()).append("._p_.refreshCookie();");
-      this.multiSessionCookieUpdateNeeded_ = false;
+      this.cookieUpdateNeeded_ = false;
     }
   }
 

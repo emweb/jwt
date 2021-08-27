@@ -1475,9 +1475,6 @@ public class WApplication extends WObject {
    * @see WApplication#enableUpdates(boolean enabled)
    */
   public void triggerUpdate() {
-    if (WebSession.Handler.getInstance().getRequest() != null) {
-      return;
-    }
     if (!(this.serverPush_ != 0)) {
       logger.warn(
           new StringWriter()
@@ -2431,6 +2428,17 @@ public class WApplication extends WObject {
     }
   }
   /**
+   * Suspend the application.
+   *
+   * <p>Keep this application alive for a certain amount of time, while allowing the user to
+   * navigate away from the page. This can be useful when using 3rd party login or payment
+   * providers. You can later return to the application with a url that includes the session ID as
+   * query parameter (see {@link WApplication#url(String internalPath) url()}).
+   */
+  public void suspend(Duration duration) {
+    this.session_.setState(WebSession.State.Suspended, (int) duration.getSeconds());
+  }
+  /**
    * Notifies an event to the application.
    *
    * <p>This method is called by the event loop for propagating an event to the application. It
@@ -2776,6 +2784,7 @@ public class WApplication extends WObject {
 
   String addExposedResource(WResource resource) {
     this.exposedResources_.put(this.resourceMapKey(resource), resource);
+    resource.incrementVersion();
     String fn = resource.getSuggestedFileName().toString();
     if (fn.length() != 0 && fn.charAt(0) != '/') {
       fn = '/' + fn;
@@ -2784,8 +2793,8 @@ public class WApplication extends WObject {
       return this.session_.getMostRelativeUrl(fn)
           + "&request=resource&resource="
           + Utils.urlEncode(resource.getId())
-          + "&rand="
-          + String.valueOf(seq++);
+          + "&ver="
+          + String.valueOf(resource.getVersion());
     } else {
       fn = resource.getInternalPath() + fn;
       if (this.session_.getApplicationName().length() != 0 && fn.charAt(0) != '/') {
@@ -2818,6 +2827,18 @@ public class WApplication extends WObject {
         return null;
       }
     }
+  }
+
+  WResource decodeExposedResource(final String resourceKey, int ver) {
+    WResource i = this.exposedResources_.get(resourceKey);
+    WResource resource = null;
+    if (i != null) {
+      resource = i;
+    }
+    if (resource != null && resource.isInvalidAfterChanged() && resource.getVersion() != ver) {
+      resource = null;
+    }
+    return resource;
   }
 
   private boolean changeInternalPath(final String aPath) {
@@ -2879,14 +2900,14 @@ public class WApplication extends WObject {
             .append(preamble.src)
             .append(").apply(")
             .append(scope)
-            .append(", arguments) };");
+            .append(", arguments) };\n");
       } else {
         out.append(scope)
             .append('.')
             .append(preamble.name)
             .append(" = ")
             .append(preamble.src)
-            .append('\n');
+            .append(";\n");
       }
     }
     this.newJavaScriptPreamble_ = 0;
@@ -2901,6 +2922,9 @@ public class WApplication extends WObject {
   }
 
   private void doUnload() {
+    if (this.session_.isSuspended()) {
+      return;
+    }
     final Configuration conf = this.getEnvironment().getServer().getConfiguration();
     if (conf.reloadIsNewSession()) {
       this.unload();
@@ -2949,5 +2973,4 @@ public class WApplication extends WObject {
     0x00, 0x00, 0x00, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00, 0x00,
     0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3b
   };
-  private static int seq = 0;
 }

@@ -572,21 +572,24 @@ public class WStandardItemModel extends WAbstractItemModel {
         && action == DropAction.Move) {
       SortedSet<WModelIndex> selection = selectionModel.getSelectedIndexes();
       int r = row;
+      if (r < 0) {
+        r = this.getRowCount(parent);
+      }
+      WStandardItem targetParentItem = this.getItemFromIndex(parent);
       List<List<WStandardItem>> rows = new ArrayList<List<WStandardItem>>();
       for (Iterator<WModelIndex> i_it = selection.iterator(); i_it.hasNext(); ) {
         WModelIndex i = i_it.next();
         WModelIndex sourceIndex = i;
         if ((sourceIndex.getParent() == parent
                 || (sourceIndex.getParent() != null && sourceIndex.getParent().equals(parent)))
-            && sourceIndex.getRow() < row) {
+            && sourceIndex.getRow() < r) {
           r--;
         }
         WStandardItem parentItem = this.getItemFromIndex(sourceIndex.getParent());
         rows.add(parentItem.takeRow(sourceIndex.getRow()));
       }
       for (int i = 0; i < rows.size(); i++) {
-        WStandardItem parentItem = this.getItemFromIndex(parent);
-        parentItem.insertRow(r + i, rows.get(i));
+        targetParentItem.insertRow(r + i, rows.get(i));
       }
     } else {
       super.dropEvent(e, action, row, column, parent);

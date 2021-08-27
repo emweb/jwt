@@ -761,6 +761,11 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>The default implementation only handles generic drag&amp;drop between abstract item models.
    * Source item data is copied (but not the source item&apos;s flags).
    *
+   * <p>This method is overloaded for handling drop events on top of items or drop events between
+   * items (see {@link DropLocation}). This overload handles drops on top of items, but note that
+   * due to historical reasons it will also insert the items in between when called with {@link
+   * DropAction#Move}.
+   *
    * <p>The location in the model is indicated by the <code>row</code> and <code>column</code>
    * within the <code>parent</code> index. If <code>row</code> is -1, then the item is appended to
    * the <code>parent</code>. Otherwise, the item is inserted at or copied over the indicated item
@@ -794,6 +799,71 @@ public abstract class WAbstractItemModel extends WObject {
           logger.error(new StringWriter().append("dropEvent(): could not insertRows()").toString());
           return;
         }
+      }
+      SortedSet<WModelIndex> selection = selectionModel.getSelectedIndexes();
+      int r = row;
+      for (Iterator<WModelIndex> i_it = selection.iterator(); i_it.hasNext(); ) {
+        WModelIndex i = i_it.next();
+        WModelIndex sourceIndex = i;
+        if (selectionModel.getSelectionBehavior() == SelectionBehavior.Rows) {
+          WModelIndex sourceParent = sourceIndex.getParent();
+          for (int col = 0; col < sourceModel.getColumnCount(sourceParent); ++col) {
+            WModelIndex s = sourceModel.getIndex(sourceIndex.getRow(), col, sourceParent);
+            WModelIndex d = this.getIndex(r, col, parent);
+            copyData(sourceModel, s, this, d);
+          }
+          ++r;
+        }
+      }
+      if (action == DropAction.Move) {
+        while (!selectionModel.getSelectedIndexes().isEmpty()) {
+          WModelIndex i = selectionModel.getSelectedIndexes().last();
+          if (!sourceModel.removeRow(i.getRow(), i.getParent())) {
+            logger.error(
+                new StringWriter().append("dropEvent(): could not removeRows()").toString());
+            return;
+          }
+        }
+      }
+    }
+  }
+  /**
+   * Handles a drop event.
+   *
+   * <p>The default implementation only handles generic drag&amp;drop between abstract item models.
+   * Source item data is copied (but not the source item&apos;s flags).
+   *
+   * <p>This method is overloaded for handling drop events on top of items or drop events between
+   * items. This overload handles drops between items. The drop was received relative to the <code>
+   * index</code> item and the <code>side</code> parameter will only be Wt::Top or Wt::Bottom.
+   *
+   * <p>You may want to reimplement this method if you want to handle other mime-type data, or if
+   * you want to refine how the drop event of an item selection must be interpreted.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>Currently, only row selections are handled by the default
+   * implementation.</i>
+   *
+   * @see WAbstractItemModel#getMimeType()
+   * @see WItemSelectionModel
+   */
+  public void dropEvent(
+      final WDropEvent e, DropAction action, final WModelIndex pindex, Side side) {
+    WItemSelectionModel selectionModel =
+        ((e.getSource()) instanceof WItemSelectionModel
+            ? (WItemSelectionModel) (e.getSource())
+            : null);
+    if (selectionModel != null) {
+      WAbstractItemModel sourceModel = selectionModel.getModel();
+      final WModelIndex parent = pindex.getParent();
+      int row =
+          !(pindex != null)
+              ? this.getRowCount()
+              : side == Side.Bottom ? pindex.getRow() + 1 : pindex.getRow();
+      if (!this.insertRows(row, selectionModel.getSelectedIndexes().size(), parent)) {
+        logger.error(new StringWriter().append("dropEvent(): could not insertRows()").toString());
+        return;
       }
       SortedSet<WModelIndex> selection = selectionModel.getSelectedIndexes();
       int r = row;

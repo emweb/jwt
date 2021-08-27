@@ -785,7 +785,7 @@ public class WDate implements Comparable<WDate> {
 		// FIXME we shouldn't need a loop here!
 		while (true) {
 			c.add(Calendar.DATE, -1);
-			if (c.get(Calendar.DAY_OF_WEEK) == (gw == 1 ? 7 : gw - 1))
+			if (c.get(Calendar.DAY_OF_WEEK) == (gw == 7 ? 1 : gw + 1))
 				break;
 		}
 		

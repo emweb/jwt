@@ -76,6 +76,8 @@ public abstract class WResource extends WObject {
 	private String internalPath_;
 	private boolean trackUploadProgress_;
 	private DispositionType dispositionType_;
+	private int version_ = 0;
+	private boolean invalidAfterChanged_ = false;
 
 	/**
 	 * Constructor.
@@ -95,7 +97,8 @@ public abstract class WResource extends WObject {
 	 * can thus be used to refer to a new "version" of the resource, which can
 	 * be indicated by triggering the {@link #dataChanged()} signal.
 	 * 
-	 * The old urls are not invalidated by calling this method.
+	 * The old urls are not invalidated by calling this method, unless
+	 * you enable setInvalidAfterChanged().
 	 * 
 	 * @return the url.
 	 */
@@ -304,13 +307,40 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Generates a new URL for this resource and emits the changed signal
+	 *
+	 * @see #setInvalidAfterChanged(boolean)
 	 */
 	public void setChanged() {
 		generateUrl();
 
 		dataChanged_.trigger();
 	}
-	
+
+	/**
+	 * Return "page not found" for prior resource URLs after change
+	 *
+	 * This option invalidates earlier versions of the resource url prior to
+	 * the last call of setChanged() or generateUrl(). The default value is false.
+	 *
+	 * This does not work when the resource is deployed at an internal path using
+	 * setInternalPath().
+	 *
+	 * @see #setChanged()
+	 * @see #generateUrl()
+	 */
+	public void setInvalidAfterChanged(boolean enabled) {
+		invalidAfterChanged_ = enabled;
+	}
+
+	/**
+	 * Should "page not found" be returned for outdated resource URLs
+	 *
+	 * @see #setInvalidAfterChanged()
+	 */
+	public boolean isInvalidAfterChanged() {
+		return invalidAfterChanged_;
+	}
+
 	/**
 	 * Configures the Content-Disposition header
 	 * 
@@ -424,6 +454,14 @@ public abstract class WResource extends WObject {
 	 */
 	public boolean takesUpdateLock() {
 		return takesUpdateLock_;
+	}
+
+	public int getVersion() {
+		return version_;
+	}
+
+	public void incrementVersion() {
+		version_++;
 	}
 
 	/**

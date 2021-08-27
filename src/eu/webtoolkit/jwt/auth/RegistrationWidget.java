@@ -42,6 +42,7 @@ public class RegistrationWidget extends WTemplateFormView {
     this.model_ = null;
     this.created_ = false;
     this.confirmPasswordLogin_ = null;
+    this.isYouDialog_ = null;
     this.setWidgetIdMode(TemplateWidgetIdMode.SetObjectName);
     WApplication app = WApplication.getInstance();
     app.getTheme().apply(this, this, WidgetThemeRole.AuthWidgets);
@@ -64,6 +65,10 @@ public class RegistrationWidget extends WTemplateFormView {
    */
   public RegistrationWidget(AuthWidget authWidget) {
     this(authWidget, (WContainerWidget) null);
+  }
+
+  public void remove() {
+    super.remove();
   }
   /** Sets the registration model. */
   public void setModel(RegistrationModel model) {
@@ -314,6 +319,7 @@ public class RegistrationWidget extends WTemplateFormView {
   private RegistrationModel model_;
   private boolean created_;
   private Login confirmPasswordLogin_;
+  private WDialog isYouDialog_;
 
   private void checkLoginName() {
     this.updateModelField(this.model_, RegistrationModel.LoginNameField);
@@ -353,8 +359,21 @@ public class RegistrationWidget extends WTemplateFormView {
                   () -> {
                     RegistrationWidget.this.confirmedIsYou();
                   });
-          WDialog dialog = this.authWidget_.createPasswordPromptDialog(this.confirmPasswordLogin_);
-          dialog.show();
+          this.isYouDialog_ =
+              this.authWidget_.createPasswordPromptDialog(this.confirmPasswordLogin_);
+          this.isYouDialog_
+              .finished()
+              .addListener(
+                  this,
+                  () -> {
+                    {
+                      WDialog toRemove = RegistrationWidget.this.isYouDialog_;
+                      if (toRemove != null) toRemove.remove();
+                    }
+
+                    RegistrationWidget.this.isYouDialog_ = null;
+                  });
+          this.isYouDialog_.show();
         }
         break;
       case ConfirmWithEmail:

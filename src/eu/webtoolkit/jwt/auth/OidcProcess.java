@@ -128,6 +128,8 @@ public class OidcProcess extends OAuthProcess {
       }
       this.authenticated().trigger(Identity.Invalid);
     }
+    WApplication.getInstance().triggerUpdate();
+    WApplication.getInstance().enableUpdates(false);
   }
 
   private Identity parseIdToken(final String idToken) {

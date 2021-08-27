@@ -399,7 +399,7 @@ public class AuthWidget extends WTemplateFormView {
    * <p>The default implementation instantiates a {@link PasswordPromptDialog}.
    */
   public WDialog createPasswordPromptDialog(final Login login) {
-    return new PasswordPromptDialog(login, this.model_, (WContainerWidget) null);
+    return new PasswordPromptDialog(login, this.model_);
   }
 
   void attemptPasswordLogin() {
@@ -663,8 +663,18 @@ public class AuthWidget extends WTemplateFormView {
   // private void loginThrottle(int delay) ;
   private void closeDialog() {
     if (this.dialog_ != null) {
+      {
+        WDialog toRemove = this.dialog_;
+        if (toRemove != null) toRemove.remove();
+      }
+
       this.dialog_ = null;
     } else {
+      {
+        WMessageBox toRemove = this.messageBox_;
+        if (toRemove != null) toRemove.remove();
+      }
+
       this.messageBox_ = null;
     }
     if (this.basePath_.length() != 0) {

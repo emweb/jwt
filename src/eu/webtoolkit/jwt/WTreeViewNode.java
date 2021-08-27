@@ -171,6 +171,7 @@ class WTreeViewNode extends WContainerWidget {
     } else {
       WText noExpandIcon = (WText) this.nodeWidget_.resolveWidget("no-expand");
       if (!(noExpandIcon != null)) {
+        this.nodeWidget_.bindEmpty("expand");
         noExpandIcon = new WText();
         this.nodeWidget_.bindWidget("no-expand", noExpandIcon);
         noExpandIcon.setInline(false);

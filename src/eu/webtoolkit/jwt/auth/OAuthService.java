@@ -82,6 +82,7 @@ public abstract class OAuthService {
   public OAuthService(final AuthService auth) {
     this.baseAuth_ = auth;
     this.impl_ = new Impl();
+    this.usePopup_ = true;
   }
   /** Returns the basic authentication service. */
   public AuthService getBaseAuth() {
@@ -98,6 +99,23 @@ public abstract class OAuthService {
    * @see OAuthService#getAuthenticationScope()
    */
   public abstract OAuthProcess createProcess(final String scope);
+  /**
+   * Configure if a popup should be used for the login.
+   *
+   * <p>When set to false, the session will be suspended when the login starts, allowing the state
+   * to be restored when it completes. A timeout can be configured in wt_config.xml (see <code>
+   * oauth2-redirect-timeout</code>).
+   *
+   * <p>The default value is true. When JavaScript is not available, a redirect without popup is
+   * always used.
+   */
+  public void setPopupEnabled(boolean enable) {
+    this.usePopup_ = enable;
+  }
+  /** Returns if a popup is used for the login. */
+  public boolean isPopupEnabled() {
+    return this.usePopup_;
+  }
   /**
    * Returns the provider name.
    *
@@ -324,6 +342,7 @@ public abstract class OAuthService {
   // private  OAuthService(final OAuthService anon1) ;
   private final AuthService baseAuth_;
   private OAuthService.Impl impl_;
+  private boolean usePopup_;
 
   static class Impl {
     private static Logger logger = LoggerFactory.getLogger(Impl.class);

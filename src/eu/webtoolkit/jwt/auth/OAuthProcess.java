@@ -80,12 +80,31 @@ public class OAuthProcess extends WObject {
    */
   public void startAuthorize() {
     WApplication app = WApplication.getInstance();
-    if (!app.getEnvironment().hasJavaScript()) {
-      this.startInternalPath_ = app.getInternalPath();
-      app.redirect(this.getAuthorizeUrl());
-    } else {
-      this.redirectEndpoint_.getUrl();
+    if (app.getEnvironment().hasJavaScript() && this.service_.isPopupEnabled()) {
+      return;
     }
+    if (app.getEnvironment().hasJavaScript()) {
+      this.redirectEndpoint_.getUrl();
+      int timeout = 600;
+      ;
+      String value = "";
+      if (app.readConfigurationProperty("oauth2-redirect-timeout", value) != null) {
+        try {
+          timeout = Integer.parseInt(value);
+        } catch (final RuntimeException e) {
+          logger.error(
+              new StringWriter()
+                  .append(
+                      WString.tr(
+                          "Wt.Auth.OAuthService.could not convert 'oauth2-redirect-timeout' to int: "))
+                  .append(value)
+                  .toString());
+        }
+      }
+      app.suspend(Duration.ofSeconds(timeout));
+    }
+    this.startInternalPath_ = app.getInternalPath();
+    app.redirect(this.getAuthorizeUrl());
   }
   /**
    * Starts an authorization and authentication process.
@@ -117,7 +136,8 @@ public class OAuthProcess extends WObject {
    * <code>signal</code>.
    */
   public void connectStartAuthenticate(final AbstractEventSignal s) {
-    if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
+    if (WApplication.getInstance().getEnvironment().hasJavaScript()
+        && this.service_.isPopupEnabled()) {
       StringBuilder js = new StringBuilder();
       js.append("function(object, event) {")
           .append("Wt4_5_0.PopupWindow(Wt4_5_0")
@@ -321,7 +341,7 @@ public class OAuthProcess extends WObject {
     this.error_ = WString.toWString(error);
   }
 
-  private final OAuthService service_;
+  final OAuthService service_;
   private String scope_;
   private boolean authenticate_;
   private Signal1<OAuthAccessToken> authorized_;
@@ -502,7 +522,7 @@ public class OAuthProcess extends WObject {
     }
   }
 
-  private void onOAuthDone() {
+  void onOAuthDone() {
     boolean success = (this.error_.length() == 0);
     this.authorized().trigger(success ? this.token_ : OAuthAccessToken.Invalid);
     if (success && this.authenticate_) {

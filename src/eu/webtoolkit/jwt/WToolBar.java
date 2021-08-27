@@ -32,6 +32,7 @@ public class WToolBar extends WCompositeWidget {
     super();
     this.compact_ = true;
     this.lastGroup_ = null;
+    this.widgets_ = new ArrayList<WWidget>();
     this.setImplementation(this.impl_ = new WContainerWidget());
     this.setStyleClass("btn-group");
     if (parentContainer != null) parentContainer.addWidget(this);
@@ -58,6 +59,7 @@ public class WToolBar extends WCompositeWidget {
   }
   /** Adds a button. */
   public void addButton(WPushButton button, AlignmentFlag alignmentFlag) {
+    this.widgets_.add(button);
     if (this.compact_) {
       if (alignmentFlag == AlignmentFlag.Right) {
         button.setAttributeValue("style", "float:right;");
@@ -90,6 +92,7 @@ public class WToolBar extends WCompositeWidget {
    * @see WToolBar#setCompact(boolean compact)
    */
   public void addButton(WSplitButton button, AlignmentFlag alignmentFlag) {
+    this.widgets_.add(button);
     this.setCompact(false);
     this.lastGroup_ = null;
     if (alignmentFlag == AlignmentFlag.Right) {
@@ -112,6 +115,7 @@ public class WToolBar extends WCompositeWidget {
    * <p>The toolbar automatically becomes non-compact.
    */
   public void addWidget(WWidget widget, AlignmentFlag alignmentFlag) {
+    this.widgets_.add(widget);
     this.setCompact(false);
     this.lastGroup_ = null;
     if (alignmentFlag == AlignmentFlag.Right) {
@@ -130,26 +134,21 @@ public class WToolBar extends WCompositeWidget {
   }
 
   public WWidget removeWidget(WWidget widget) {
-    WWidget p = widget.getParent();
-    if (p == this.impl_) {
-      return this.impl_.removeWidget(widget);
-    } else {
-      int i = this.impl_.getIndexOf(p);
-      if (i >= 0) {
-        WContainerWidget cw = ((p) instanceof WContainerWidget ? (WContainerWidget) (p) : null);
-        if (cw != null) {
-          WWidget result = cw.removeWidget(widget);
-          if (cw.getCount() == 0) {
-            {
-              WWidget toRemove = WidgetUtils.remove(cw.getParent(), cw);
-              if (toRemove != null) toRemove.remove();
-            }
-          }
-          return result;
+    int idx = this.widgets_.indexOf(widget);
+    if (idx != -1) {
+      WContainerWidget parent = (WContainerWidget) widget.getParent();
+      WWidget retval = parent.removeWidget(widget);
+      if (parent != this.impl_ && parent.getCount() == 0) {
+        {
+          WWidget toRemove = WidgetUtils.remove(this.impl_, parent);
+          if (toRemove != null) toRemove.remove();
         }
       }
+      this.widgets_.remove(0 + idx);
+      return retval;
+    } else {
+      return null;
     }
-    return null;
   }
   /**
    * Adds a separator.
@@ -165,29 +164,18 @@ public class WToolBar extends WCompositeWidget {
     this.lastGroup_ = null;
   }
   /**
-   * Returns the number of buttons.
+   * Returns the number of widgets.
+   *
+   * <p>The counted widgets are either a {@link WPushButton} or {@link WSplitButton} added by {@link
+   * WToolBar#addButton(WPushButton button, AlignmentFlag alignmentFlag) addButton()} or a widget
+   * added by {@link WToolBar#addWidget(WWidget widget, AlignmentFlag alignmentFlag) addWidget()}.
    *
    * <p>
    *
    * @see WToolBar#widget(int index)
    */
   public int getCount() {
-    if (this.compact_) {
-      return this.impl_.getCount();
-    } else {
-      int result = 0;
-      for (int i = 0; i < this.impl_.getCount(); ++i) {
-        WWidget w = this.impl_.getWidget(i);
-        if (((w) instanceof WSplitButton ? (WSplitButton) (w) : null) != null) {
-          ++result;
-        } else {
-          WContainerWidget group =
-              ((w) instanceof WContainerWidget ? (WContainerWidget) (w) : null);
-          result += group.getCount();
-        }
-      }
-      return result;
-    }
+    return this.widgets_.size();
   }
   /**
    * Returns a button.
@@ -197,26 +185,9 @@ public class WToolBar extends WCompositeWidget {
    * added by {@link WToolBar#addWidget(WWidget widget, AlignmentFlag alignmentFlag) addWidget()}.
    */
   public WWidget widget(int index) {
-    if (this.compact_) {
-      return this.impl_.getWidget(index);
+    if (index < this.widgets_.size()) {
+      return this.widgets_.get(index);
     } else {
-      int current = 0;
-      for (int i = 0; i < this.impl_.getCount(); ++i) {
-        WWidget w = this.impl_.getWidget(i);
-        if (((w) instanceof WSplitButton ? (WSplitButton) (w) : null) != null) {
-          if (index == current) {
-            return w;
-          }
-          ++current;
-        } else {
-          WContainerWidget group =
-              ((w) instanceof WContainerWidget ? (WContainerWidget) (w) : null);
-          if (index < current + group.getCount()) {
-            return group.getWidget(index - current);
-          }
-          current += group.getCount();
-        }
-      }
       return null;
     }
   }
@@ -264,6 +235,7 @@ public class WToolBar extends WCompositeWidget {
   private boolean compact_;
   private WContainerWidget impl_;
   private WContainerWidget lastGroup_;
+  private List<WWidget> widgets_;
 
   private WContainerWidget getLastGroup() {
     if (!(this.lastGroup_ != null)) {

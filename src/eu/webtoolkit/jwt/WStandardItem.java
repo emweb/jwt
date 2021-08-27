@@ -1172,10 +1172,7 @@ public class WStandardItem {
    * @see WStandardItemModel#setItemPrototype(WStandardItem item)
    */
   public WStandardItem clone() {
-    WStandardItem result = new WStandardItem();
-    result.data_ = new TreeMap<ItemDataRole, Object>(this.data_);
-    result.flags_ = EnumSet.copyOf(this.flags_);
-    return result;
+    return new WStandardItem(this);
   }
   /**
    * Sorts the children according to a given column and sort order.
@@ -1200,6 +1197,17 @@ public class WStandardItem {
     if (this.model_ != null) {
       this.model_.layoutChanged().trigger();
     }
+  }
+  /**
+   * Create a copy of other.
+   *
+   * <p>Copies other&apos;s data and flags to this item. This function is useful when reimplementing
+   * {@link WStandardItem#clone() clone()}.
+   */
+  protected WStandardItem(final WStandardItem other) {
+    this.data_ = new TreeMap<ItemDataRole, Object>(other.data_);
+    this.flags_ = EnumSet.copyOf(other.flags_);
+    this.columns_ = null;
   }
   /**
    * Set the model for this {@link WStandardItem} and its children.

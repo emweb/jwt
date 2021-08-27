@@ -30,12 +30,8 @@ class OAuthWidget extends WImage {
     this.setStyleClass("Wt-auth-icon");
     this.setVerticalAlignment(AlignmentFlag.Middle);
     this.process_ = oAuthService.createProcess(oAuthService.getAuthenticationScope());
-    this.clicked()
-        .addListener(
-            this.process_,
-            (WMouseEvent e1) -> {
-              OAuthWidget.this.process_.startAuthenticate();
-            });
+    final EventSignal1<WMouseEvent> clickedSignal = this.clicked();
+    this.process_.connectStartAuthenticate(clickedSignal);
     this.process_
         .authenticated()
         .addListener(

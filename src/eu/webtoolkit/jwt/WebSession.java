@@ -26,6 +26,7 @@ class WebSession {
     JustCreated,
     ExpectLoad,
     Loaded,
+    Suspended,
     Dead;
 
     /** Returns the numerical representation of this enum. */
@@ -317,6 +318,7 @@ class WebSession {
         break;
       case ExpectLoad:
       case Loaded:
+      case Suspended:
         if ((!(requestE != null) || !requestE.equals("resource"))
             && handler.getResponse().getResponseType() == WebRequest.ResponseType.Page) {
           if (!this.env_.agentIsIE()) {
@@ -420,6 +422,7 @@ class WebSession {
           }
           String resourceE = request.getParameter("resource");
           String signalE = this.getSignal(request, "");
+          String verE = request.getParameter("ver");
           if (signalE != null) {
             this.progressiveBoot_ = false;
           }
@@ -434,7 +437,15 @@ class WebSession {
               handler.flushResponse();
             } else {
               if (!(resource != null)) {
-                resource = this.app_.decodeExposedResource(resourceE);
+                int ver = 0;
+                try {
+                  if (verE != null) {
+                    ver = Integer.parseInt(verE);
+                  }
+                } catch (final RuntimeException e) {
+                  ver = 0;
+                }
+                resource = this.app_.decodeExposedResource(resourceE, ver);
               }
               if (resource != null) {
                 try {
@@ -455,11 +466,12 @@ class WebSession {
                         .append(resourceE)
                         .append("' not exposed")
                         .toString());
+                handler.getResponse().setStatus(404);
                 handler.getResponse().setContentType("text/html");
                 handler
                     .getResponse()
                     .out()
-                    .append("<html><body><h1>Nothing to say about that.</h1></body></html>");
+                    .append("<html><body><h1>Page not found.</h1></body></html>");
                 handler.flushResponse();
               }
             }
@@ -694,6 +706,10 @@ class WebSession {
   // public WObject  getEmitStackTop() ;
   public boolean isDead() {
     return this.state_ == WebSession.State.Dead;
+  }
+
+  public boolean isSuspended() {
+    return this.state_ == WebSession.State.Suspended;
   }
 
   public WebSession.State getState() {
@@ -1030,6 +1046,7 @@ class WebSession {
     switch (this.state_) {
       case ExpectLoad:
       case Loaded:
+      case Suspended:
         if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
           return EventType.Other;
         } else {
@@ -1358,6 +1375,7 @@ class WebSession {
           && isEqual(request.getRequestMethod(), "GET")
           && !requestForResource
           && conf.reloadIsNewSession()
+          && !this.isSuspended()
           && wtdE != null
           && wtdE.equals(this.sessionId_)) {
         logger.warn(
@@ -1507,17 +1525,14 @@ class WebSession {
               }
             case ExpectLoad:
             case Loaded:
+            case Suspended:
               {
                 if (conf.getSessionTracking() == Configuration.SessionTracking.Combined) {
                   String signalE = handler.getRequest().getParameter("signal");
                   boolean isKeepAlive =
                       requestE != null && signalE != null && signalE.equals("keepAlive");
                   if (isKeepAlive || !this.env_.hasAjax()) {
-                    if (request.isWebSocketMessage()) {
-                      this.getRenderer().multiSessionCookieUpdateNeeded_ = true;
-                    } else {
-                      this.getRenderer().updateMultiSessionCookie(request);
-                    }
+                    this.getRenderer().updateMultiSessionCookie(request);
                   }
                 }
                 if (requestE != null) {
@@ -1627,12 +1642,14 @@ class WebSession {
                     doNotify = true;
                     if (this.env_.hasAjax()) {
                       if (this.state_ != WebSession.State.ExpectLoad
+                          && this.state_ != WebSession.State.Suspended
                           && handler.getResponse().getResponseType()
                               == WebRequest.ResponseType.Update) {
                         this.setLoaded();
                       }
                     } else {
                       if (this.state_ != WebSession.State.ExpectLoad
+                          && this.state_ != WebSession.State.Suspended
                           && !this.controller_.limitPlainHtmlSessions()) {
                         this.setLoaded();
                       }
@@ -1695,6 +1712,11 @@ class WebSession {
   }
 
   public void setLoaded() {
+    if (this.state_ == WebSession.State.Suspended
+        && this.env_.hasAjax()
+        && this.controller_.getConfiguration().reloadIsNewSession()) {
+      this.app_.doJavaScript("Wt4_5_0.history.removeSessionId()");
+    }
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
   }
   // public void generateNewSessionId() ;

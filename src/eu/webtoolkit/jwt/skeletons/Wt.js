@@ -1970,6 +1970,20 @@ if (html5History) {
     stateMap[w.location.pathname + w.location.search] = state;
   }
 
+  function stripParameter(q, name) {
+    if (q.length > 1)
+      q = q.substr(1);
+
+    var qp = q.split("&"), i, il;
+    q = "";
+
+    for (i=0, il = qp.length; i<il; ++i)
+      if (qp[i].split("=")[0] != name)
+	q += (q.length ? '&' : '?') + qp[i];
+
+    return q;
+  }
+
   return {
     _initialize: function() { },
 
@@ -2023,6 +2037,16 @@ _$_$endif_$_();
       }
     },
 
+    removeSessionId: function () {
+      var pathname = w.location.pathname;
+      var idx = pathname.indexOf(";jsessionid=");
+      if (idx != -1)
+        pathname = pathname.substr(0, idx);
+
+      var url = pathname + stripParameter(w.location.search, 'wtd');
+      w.history.replaceState(null, null, url);
+    },
+
     navigate: function (state, generateEvent) {
       //console.log("navigate: " + state);
       WT.resolveRelativeAnchors();
@@ -2037,21 +2061,7 @@ _$_$endif_$_();
       if (!ugly) {
 	url += window.location.search;
       } else {
-	function stripHashParameter(q) {
-	  if (q.length > 1)
-	    q = q.substr(1);
-
-	  var qp = q.split("&"), i, il;
-	  q = "";
-
-	  for (i=0, il = qp.length; i<il; ++i)
-	    if (qp[i].split("=")[0] != '_')
-	      q += (q.length ? '&' : '?') + qp[i];
-
-	  return q;
-	}
-
-	var q = stripHashParameter(window.location.search);
+	var q = stripParameter(window.location.search, '_');
 
 	if (q.length > 1) {
 	  if (q.length > 2 && q[0] == '?' && q[1] == '&')
@@ -2888,22 +2898,35 @@ function encodeEvent(event, i) {
 
 var sentEvents = [], pendingEvents = [];
 
-function encodePendingEvents() {
+function encodePendingEvents(maxLength) {
   var se, result = '', feedback = false;
 
-  for (var i = 0; i < pendingEvents.length; ++i) {
+  var i = 0;
+  for (; i < pendingEvents.length; ++i) {
     se = i > 0 ? '&e' + i : '&';
-    feedback = feedback || pendingEvents[i].feedback;
-    result += se + pendingEvents[i].data.join(se);
-    if (pendingEvents[i].evAckId < ackUpdateId) {
-      result += se + 'evAckId=' + pendingEvents[i].evAckId;
+    var eventData = se + pendingEvents[i].data.join(se);
+    if (pendingEvents[i].evAckId < ackUpdateId)
+      eventData += se + 'evAckId=' + pendingEvents[i].evAckId;
+    
+    if ((result.length + eventData.length) < maxLength) {
+      feedback = feedback || pendingEvents[i].feedback;
+      result += eventData;
+    } else {
+      console.warn("splitting up pending events: max-formdata-size reached (" + _$_MAX_FORMDATA_SIZE_$_ + " bytes)");
+      break;
     }
+  }
+
+  if (i == 0) {
+    var errMsg = "single event exceeds max-formdata-size, cannot proceed";
+    sendError(errMsg, "Wt internal error; description: " + errMsg);
+    throw new Error(errMsg);
   }
 
   // With HTTP: sentEvents should be empty before this concat
   // With WebSockets: sentEvents possibly not empty
-  sentEvents = sentEvents.concat(pendingEvents);
-  pendingEvents = [];
+  sentEvents = sentEvents.concat(pendingEvents.slice(0,i));
+  pendingEvents = pendingEvents.slice(i);
 
   return { feedback: feedback, result: result };
 }
@@ -3158,6 +3181,11 @@ function handleResponse(status, msg, timer) {
     return;
   }
 
+  if (pollTimer) {
+    clearTimeout(pollTimer);
+    pollTimer = null;
+  }
+
   if (status == 0) {
     WT.resolveRelativeAnchors();
 _$_$if_CATCH_ERROR_$_();
@@ -3186,11 +3214,6 @@ _$_$endif_$_();
   }
 
   sentEvents = [];
-
-  if (pollTimer) {
-    clearTimeout(pollTimer);
-    pollTimer = null;
-  }
 
   responsePending = null;
 
@@ -3254,6 +3277,8 @@ function setConnectionMonitor(aMonitor) {
 var updating = false;
 
 function update(el, signalName, e, feedback) {
+  checkEventOverflow();
+  
   /*
    * Konqueror may recurisvely call update() because
    * /reading/ offsetLeft or offsetTop triggers an onscroll event ??
@@ -3536,28 +3561,17 @@ function sendUpdate() {
   if (hasQuit)
     return;
 
-  var data, tm, poll;
+  var data = "", tm, poll;
 
   var useWebSockets = websocket.socket !== null &&
                       websocket.socket.readyState === 1 &&
                       websocket.state === WebSocketWorking;
 
-  if (pendingEvents.length > 0) {
-    data = encodePendingEvents();
-    tm = data.feedback ? setTimeout(useWebSockets ? wsWaitFeedback : waitFeedback, _$_INDICATOR_TIMEOUT_$_)
-      : null;
-    poll = false;
-  } else {
-    data = {result: '&signal=poll' };
-    tm = null;
-    poll = true;
-  }
-
   if (!useWebSockets) {
-    data.result += '&ackId=' + ackUpdateId;
+    data += '&ackId=' + ackUpdateId;
   }
 
-  data.result += '&pageId=' + pageId;
+  data += '&pageId=' + pageId;
 
   if (ackPuzzle) {
     var solution = '';
@@ -3573,7 +3587,7 @@ function sendUpdate() {
       }
     }
 
-    data.result += '&ackPuzzle=' + encodeURIComponent(solution);
+    data += '&ackPuzzle=' + encodeURIComponent(solution);
   }
 
   function getParams() {
@@ -3582,7 +3596,24 @@ function sendUpdate() {
   }
   var params = getParams();
   if (params.length > 0)
-    data.result += '&Wt-params=' + encodeURIComponent(params);
+    data += '&Wt-params=' + encodeURIComponent(params);
+
+  
+  if (pendingEvents.length > 0) {
+    var maxEventsSize = _$_MAX_FORMDATA_SIZE_$_ - data.length;
+    if (useWebSockets)
+      maxEventsSize -= ('&wsRqId=' + nextWsRqId).length;
+
+    var eventsData = encodePendingEvents(maxEventsSize);
+    tm = eventsData.feedback ? setTimeout(useWebSockets ? wsWaitFeedback : waitFeedback, _$_INDICATOR_TIMEOUT_$_)
+      : null;
+    data += eventsData.result;
+    poll = false;
+  } else {
+    data +='&signal=poll';
+    tm = null;
+    poll = true;
+  }
 
   if (useWebSockets) {
     responsePending = null;
@@ -3592,10 +3623,10 @@ function sendUpdate() {
 	var wsRqId = nextWsRqId;
 	pendingWsRequests[wsRqId] = {time: Date.now(), tm: tm};
 	++nextWsRqId;
-	data.result += '&wsRqId=' + wsRqId;
+	data += '&wsRqId=' + wsRqId;
       }
 
-      websocket.socket.send(data.result);
+      websocket.socket.send(data);
     }
   } else {
     if (responsePending) {
@@ -3616,7 +3647,7 @@ function sendUpdate() {
 
     responsePending = 1;
     responsePending = comm.sendUpdate
-      ('request=jsupdate' + data.result, tm, ackUpdateId, -1);
+      ('request=jsupdate' + data, tm, ackUpdateId, -1);
   }
 }
 
@@ -3642,6 +3673,8 @@ function propagateSize(element, width, height) {
 }
 
 function emit(object, config) {
+  checkEventOverflow();
+  
   var userEvent = new Object(), ei = pendingEvents.length;
   userEvent.signal = "user";
 
@@ -3680,6 +3713,17 @@ function emit(object, config) {
   pendingEvents[ei] = encodeEvent(userEvent, ei);
 
   scheduleUpdate();
+}
+
+function checkEventOverflow() {
+  if (_$_MAX_PENDING_EVENTS_$_ > 0 &&
+      pendingEvents.length >= _$_MAX_PENDING_EVENTS_$_) {
+    var errMsg = "too many pending events";
+    sendError(errMsg, "Wt internal error; description: " + errMsg);
+    
+    pendingEvents = [];
+    throw new Error(errMsg);
+  }
 }
 
 function addTimerEvent(timerid, msec, repeat) {
@@ -4016,7 +4060,7 @@ function bindGlobal(event, id, f) {
     }, 0);
 }
 
-function refreshMultiSessionCookie() {
+function refreshCookie() {
   comm.sendUpdate('request=jsupdate&signal=keepAlive&ackId=' + ackUpdateId, false, ackUpdateId, -1);
 }
 
@@ -4081,7 +4125,7 @@ this._p_ = {
   setConnectionMonitor : setConnectionMonitor,
   updateGlobal: updateGlobal,
   bindGlobal: bindGlobal,
-  refreshCookie: refreshMultiSessionCookie,
+  refreshCookie: refreshCookie,
 
   propagateSize : propagateSize,
 

@@ -1359,7 +1359,7 @@ public abstract class WWidget extends WObject {
    *
    * <p>This feature can be useful to implement infinite scroll, where a sentinel widget placed at
    * the bottom of the page causes more content to be loaded when it becomes visible, see the <code>
-   * infinite-scroll</code> example.
+   * scrollvisibility</code> example.
    *
    * <p>This feature can also be used to lazy load widgets when they become visible.
    *

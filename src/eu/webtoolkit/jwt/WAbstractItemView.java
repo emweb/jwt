@@ -763,14 +763,59 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>
    *
+   * <p>
+   *
    * @see WAbstractItemView#setDragEnabled(boolean enable)
    * @see WAbstractItemView#dropEvent(WDropEvent e, WModelIndex index)
+   * @deprecated Use {@link WAbstractItemView#setEnabledDropLocations(EnumSet dropLocations)
+   *     setEnabledDropLocations()} instead. This method now enables {@link DropLocation#OnItem}.
    */
   public void setDropsEnabled(boolean enable) {
-    if (this.dropsEnabled_ != enable) {
-      this.dropsEnabled_ = enable;
-      this.configureModelDragDrop();
+    if (enable) {
+      this.setEnabledDropLocations(EnumSet.of(DropLocation.OnItem));
+    } else {
+      this.setEnabledDropLocations(EnumSet.noneOf(DropLocation.class));
     }
+  }
+  /**
+   * Enables drop operations (drag &amp; drop).
+   *
+   * <p>When drop is enabled, the tree view will indicate that something may be dropped when the
+   * mime-type of the dragged object is compatible with one of the model&apos;s accepted drop
+   * mime-types (see {@link WAbstractItemModel#getAcceptDropMimeTypes()}) or this widget&apos;s
+   * accepted drop mime-types (see {@link WWidget#acceptDrops(String mimeType, String
+   * hoverStyleClass) WWidget#acceptDrops()}).
+   *
+   * <p>When {@link DropLocation#OnItem} is enabled, the view will allow drops on items that have
+   * the {@link ItemFlag#DropEnabled} flag set. When {@link DropLocation#BetweenRows} is enabled,
+   * the view will indicate that something may be dropped between any two rows. When {@link
+   * DropLocation#OnItem} and {@link DropLocation#BetweenRows} are both enabled, the drop indication
+   * differs depending on whether {@link ItemFlag#DropEnabled} is set on the item.
+   *
+   * <p>Drop events must be handled in {@link WAbstractItemView#dropEvent(WDropEvent e, WModelIndex
+   * index) dropEvent()}.
+   */
+  public void setEnabledDropLocations(EnumSet<DropLocation> dropLocations) {
+    if (this.enabledDropLocations_.equals(dropLocations)) {
+      return;
+    }
+    this.enabledDropLocations_ = EnumSet.copyOf(dropLocations);
+    this.configureModelDragDrop();
+    this.scheduleRender();
+  }
+  /**
+   * Enables drop operations (drag &amp; drop).
+   *
+   * <p>Calls {@link #setEnabledDropLocations(EnumSet dropLocations)
+   * setEnabledDropLocations(EnumSet.of(dropLocation, dropLocations))}
+   */
+  public final void setEnabledDropLocations(
+      DropLocation dropLocation, DropLocation... dropLocations) {
+    setEnabledDropLocations(EnumSet.of(dropLocation, dropLocations));
+  }
+  /** Returns the enabled drop locations. */
+  public EnumSet<DropLocation> getEnabledDropLocations() {
+    return this.enabledDropLocations_;
   }
   /**
    * Sets the row height.
@@ -1448,7 +1493,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     this.columns_ = new ArrayList<WAbstractItemView.ColumnInfo>();
     this.currentSortColumn_ = -1;
     this.dragEnabled_ = false;
-    this.dropsEnabled_ = false;
+    this.enabledDropLocations_ = EnumSet.noneOf(DropLocation.class);
     this.uDragWidget_ = null;
     this.dragWidget_ = null;
     this.model_ = null;
@@ -1539,13 +1584,46 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *     WModelIndex parent)
    */
   protected void dropEvent(final WDropEvent e, final WModelIndex index) {
-    if (this.dropsEnabled_) {
+    if (this.enabledDropLocations_.contains(DropLocation.OnItem)) {
       List<String> acceptMimeTypes = this.model_.getAcceptDropMimeTypes();
       for (int i = 0; i < acceptMimeTypes.size(); ++i) {
         if (acceptMimeTypes.get(i).equals(e.getMimeType())) {
           boolean internal = e.getSource() == this.selectionModel_;
           DropAction action = internal ? DropAction.Move : DropAction.Copy;
           this.model_.dropEvent(e, action, index.getRow(), index.getColumn(), index.getParent());
+          this.setSelectedIndexes(new TreeSet<WModelIndex>());
+          return;
+        }
+      }
+    }
+    super.dropEvent(e);
+  }
+  /**
+   * Handles a drop event (drag &amp; drop).
+   *
+   * <p>The <code>event</code> object contains details about the drop operation, identifying the
+   * source (which provides the data) and the mime-type of the data. The drop was received relative
+   * to the <code>index</code> item and the <code>side</code> parameter will only be Wt::Top or
+   * Wt::Bottom.
+   *
+   * <p>A drop below the lowest item or on an empty view will result in a call to this method with
+   * an invalid index and side Wt::Bottom.
+   *
+   * <p>The drop event can be handled either by the view itself, or by the model. The default
+   * implementation checks if the mime-type is accepted by the model, and if so passes the drop
+   * event to the model as a {@link DropAction#Move}.
+   *
+   * <p>
+   *
+   * @see WAbstractItemModel#dropEvent(WDropEvent e, DropAction action, int row, int column,
+   *     WModelIndex parent)
+   */
+  protected void dropEvent(final WDropEvent e, final WModelIndex index, Side side) {
+    if (this.enabledDropLocations_.contains(DropLocation.BetweenRows)) {
+      List<String> acceptMimeTypes = this.model_.getAcceptDropMimeTypes();
+      for (int i = 0; i < acceptMimeTypes.size(); ++i) {
+        if (acceptMimeTypes.get(i).equals(e.getMimeType())) {
+          this.model_.dropEvent(e, DropAction.Move, index, side);
           this.setSelectedIndexes(new TreeSet<WModelIndex>());
           return;
         }
@@ -1671,7 +1749,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   List<WAbstractItemView.ColumnInfo> columns_;
   int currentSortColumn_;
   boolean dragEnabled_;
-  boolean dropsEnabled_;
+  protected EnumSet<DropLocation> enabledDropLocations_;
   protected WWidget uDragWidget_;
   WWidget dragWidget_;
 
@@ -2510,7 +2588,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     }
     List<String> acceptMimeTypes = this.model_.getAcceptDropMimeTypes();
     for (int i = 0; i < acceptMimeTypes.size(); ++i) {
-      if (this.dropsEnabled_) {
+      if (!this.enabledDropLocations_.isEmpty()) {
         this.acceptDrops(acceptMimeTypes.get(i), "Wt-drop-site");
       } else {
         this.stopAcceptDrops(acceptMimeTypes.get(i));

@@ -424,7 +424,7 @@ public class WMenuItem extends WContainerWidget {
    * <p>Only a menu item that can be selected can be the result of a popup menu selection.
    *
    * <p>The default value is <code>true</code> for a normal menu item, and <code>false</code> for a
-   * menu item that has a submenu.
+   * menu item that has a popup submenu.
    *
    * <p>An item that is selectable but is disabled can still not be selected.
    */

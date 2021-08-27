@@ -525,6 +525,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
     }
     WWidget newImage = new WImage();
     image = (WImage) newImage;
+    image.mouseWentDown().preventDefaultAction(true);
     image.setObjectName("i");
     image.setStyleClass("icon");
     wc.insertWidget(wc.getCount() - 1, newImage);

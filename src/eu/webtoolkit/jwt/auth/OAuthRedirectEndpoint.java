@@ -72,17 +72,26 @@ final class OAuthRedirectEndpoint extends WResource {
     Writer o = response.out();
     WApplication app = WApplication.getInstance();
     if (app.getEnvironment().hasAjax()) {
-      String appJs = app.getJavaScriptClass();
-      o.append(
-              "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\">\n<head><title></title>\n<script type=\"text/javascript\">\nfunction load() { if (window.opener.")
-          .append(appJs)
-          .append(") {var ")
-          .append(appJs)
-          .append("= window.opener.")
-          .append(appJs)
-          .append(";")
-          .append(this.process_.redirected_.createCall())
-          .append(";window.close();}\n}\n</script></head><body onload=\"load();\"></body></html>");
+      if (!this.process_.service_.isPopupEnabled()) {
+        this.process_.onOAuthDone();
+        o.append(
+                "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\">\n<head><meta http-equiv=\"refresh\" content=\"0; url=")
+            .append(app.makeAbsoluteUrl(app.url(this.process_.startInternalPath_)))
+            .append("\" /></head>\n<body></body></html>");
+      } else {
+        String appJs = app.getJavaScriptClass();
+        o.append(
+                "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\">\n<head><title></title>\n<script type=\"text/javascript\">\nfunction load() { if (window.opener.")
+            .append(appJs)
+            .append(") {var ")
+            .append(appJs)
+            .append("= window.opener.")
+            .append(appJs)
+            .append(";")
+            .append(this.process_.redirected_.createCall())
+            .append(
+                ";window.close();}\n}\n</script></head><body onload=\"load();\"></body></html>");
+      }
     } else {
       String redirectTo = app.makeAbsoluteUrl(app.url(this.process_.startInternalPath_));
       o.append(

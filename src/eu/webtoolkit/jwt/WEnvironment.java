@@ -966,21 +966,9 @@ public class WEnvironment {
 
   void updateHostName(final WebRequest request) {
     final Configuration conf = this.session_.getController().getConfiguration();
-    String oldHost = this.host_;
-    this.host_ = str(request.getHeaderValue("Host"));
-    if (conf.isBehindReverseProxy() || conf.isTrustedProxy(request.getRemoteAddr())) {
-      String forwardedHost = str(request.getHeaderValue("X-Forwarded-Host"));
-      if (forwardedHost.length() != 0) {
-        int i = forwardedHost.lastIndexOf(',');
-        if (i == -1) {
-          this.host_ = forwardedHost;
-        } else {
-          this.host_ = forwardedHost.substring(i + 1);
-        }
-      }
-    }
-    if (this.host_.length() == 0) {
-      this.host_ = oldHost;
+    String newHost = request.getHostName(conf);
+    if (newHost.length() != 0) {
+      this.host_ = newHost;
     }
   }
 

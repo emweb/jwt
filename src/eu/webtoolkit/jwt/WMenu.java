@@ -932,6 +932,12 @@ public class WMenu extends WCompositeWidget {
    * <code>false</code> in case an internal path change itself is the reason for selection.
    */
   void select(int index, boolean changePath) {
+    if (this.parentItem_ != null) {
+      WMenu parentItemMenu = this.parentItem_.getParentMenu();
+      if (parentItemMenu.getCurrentItem() != this.parentItem_ && this.parentItem_.isSelectable()) {
+        parentItemMenu.select(parentItemMenu.indexOf(this.parentItem_), false);
+      }
+    }
     int last = this.current_;
     this.setCurrent(index);
     this.selectVisual(this.current_, changePath, true);

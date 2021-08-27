@@ -502,6 +502,26 @@ public class WebRequest extends HttpServletRequestWrapper {
 		return remoteAddr;
 	}
 
+	public String getHostName(final Configuration conf) {
+		String host = str(getHeaderValue("Host"));
+
+		if (conf.isBehindReverseProxy() ||
+			conf.isTrustedProxy(getRemoteAddr())) {
+			final String forwardedHost = str(getHeaderValue("X-Forwarded-Host"));
+
+			if (!forwardedHost.isEmpty()) {
+				int i = forwardedHost.lastIndexOf(',');
+				if (i == -1) {
+					host = forwardedHost;
+				} else {
+					host = forwardedHost.substring(i + 1);
+				}
+			}
+		}
+
+		return host;
+	}
+
 	private static String str(String s) {
 		return s != null ? s : "";
 	}

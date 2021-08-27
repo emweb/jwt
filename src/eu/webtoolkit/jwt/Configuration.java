@@ -180,9 +180,11 @@ public class Configuration {
 	private List<HeadMatter> headMatter = new ArrayList<HeadMatter>();
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
+	private long maxFormDataSize = 1024*1024; // 1 Megabyte
+	private int maxPendingEvents = 1000;
 	private boolean behindReverseProxy = false;
 	private String originalIPHeader = "X-Forwarded-For";
-	private List<Network> trustedProxies;
+	private List<Network> trustedProxies = Collections.emptyList();
 	private boolean webSocketsEnabled = false;
 	private long asyncContextTimeout = 90000;
 
@@ -202,8 +204,6 @@ public class Configuration {
 		botList.add(".ia_archiver.*");
 		botList.add(".*Googlebot.*");
 		botList.add(".*Twiceler.*");
-
-		trustedProxies = Collections.emptyList();
 	}
 
 	/**
@@ -874,6 +874,24 @@ public class Configuration {
 	 */
 	public long getMaxRequestSize() {
 		return maxRequestSize;
+	}
+
+	/** Returns the maximum request size.
+	 */
+	public long getMaxFormDataSize() {
+		return maxFormDataSize;
+	}
+
+	/** Returns the maximum amount of pending events.
+	*/
+	public int getMaxPendingEvents() {
+		return maxPendingEvents;
+	}
+
+	/** Sets the maximum amount of pending events.
+	 */
+	public void setMaxPendingEvents(int maxPendingEvents) {
+		this.maxPendingEvents = maxPendingEvents;
 	}
 
 	SessionTracking getSessionTracking() {

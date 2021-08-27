@@ -84,5 +84,7 @@ final class FacebookProcess extends OAuthProcess {
       this.setError(WString.tr("Wt.Auth.FacebookService.badresponse"));
       this.authenticated().trigger(Identity.Invalid);
     }
+    WApplication.getInstance().triggerUpdate();
+    WApplication.getInstance().enableUpdates(false);
   }
 }

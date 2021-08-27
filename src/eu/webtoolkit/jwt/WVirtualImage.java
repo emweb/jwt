@@ -434,7 +434,7 @@ public class WVirtualImage extends WCompositeWidget {
                 WImage img =
                     this.createImage(
                         i * this.gridImageSize_, j * this.gridImageSize_, width, height);
-                img.setAttributeValue("onmousedown", "return false;");
+                img.mouseWentDown().preventDefaultAction(true);
                 img.setPositionScheme(PositionScheme.Absolute);
                 img.setOffsets(
                     new WLength((double) i * this.gridImageSize_), EnumSet.of(Side.Left));

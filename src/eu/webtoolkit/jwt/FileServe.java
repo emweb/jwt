@@ -33,6 +33,10 @@ class FileServe {
 		setVar(name, String.valueOf(i));
 	}
 
+	public void setVar(String name, long i) {
+		setVar(name, String.valueOf(i));
+	}
+
 	public void stream(StringBuilder out) throws IOException {
 		this.streamUntil(out, "");
 	}

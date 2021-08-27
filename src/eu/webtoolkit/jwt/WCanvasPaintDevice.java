@@ -154,7 +154,6 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     } else {
       lw = 0;
     }
-    r = Math.max(0.005, r - lw / 2);
     char[] buf = new char[30];
     this.js_
         .append("ctx.save();")
@@ -493,12 +492,13 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       DomElement text,
       final String updateAreasJs) {
     String canvasVar = "Wt4_5_0.getElement('" + canvasId + "')";
+    String paintedWidgetObjRef = paintedWidgetJsRef + ".wtObj";
     StringBuilder tmp = new StringBuilder();
     tmp.append(";(function(){");
     tmp.append("var pF=function(){");
     tmp.append("if(").append(canvasVar).append(".getContext){");
     if (!this.images_.isEmpty()) {
-      tmp.append("var images=").append(paintedWidgetJsRef).append(".images;");
+      tmp.append("var images=").append(paintedWidgetObjRef).append(".images;");
     }
     tmp.append("var ctx=").append(canvasVar).append(".getContext('2d');");
     tmp.append("if (!ctx.setLineDash) {ctx.setLineDash = function(a){};}");
@@ -515,10 +515,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
     tmp.append(updateAreasJs);
     tmp.append("};");
     if (!this.paintUpdate_) {
-      tmp.append(paintedWidgetJsRef).append(".repaint=pF;");
-      tmp.append("pF=function(){").append(paintedWidgetJsRef).append(".repaint();").append("};");
+      tmp.append(paintedWidgetObjRef).append(".repaint=pF;");
+      tmp.append("pF=function(){").append(paintedWidgetObjRef).append(".repaint();").append("};");
     }
-    tmp.append("var o=").append(paintedWidgetJsRef).append(";");
+    tmp.append("var o=").append(paintedWidgetObjRef).append(";");
     if (!this.paintUpdate_) {
       tmp.append("o.cancelPreloaders();");
     }
@@ -531,8 +531,10 @@ public class WCanvasPaintDevice extends WObject implements WPaintDevice {
       }
       tmp.append('\'').append(this.images_.get(i)).append('\'');
     }
-    tmp.append("],function(images){this.done = true;var o=")
+    tmp.append("],function(images){if (!")
         .append(paintedWidgetJsRef)
+        .append(")return;this.done = true;var o=")
+        .append(paintedWidgetObjRef)
         .append(
             ";if(o.imagePreloaders.length===0||this===o.imagePreloaders[0]){o.images=images;pF();o.imagePreloaders.shift();}else{while(o.imagePreloaders.length>0&&o.imagePreloaders[0].done){o.imagePreloaders[0].callback(o.imagePreloaders[0].images);}}});if(!l.done)o.imagePreloaders.push(l);}})();");
     text.callJavaScript(tmp.toString());
