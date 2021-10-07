@@ -11,12 +11,12 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 3.4.2</title>
+<title>JWt 4.5.1</title>
 </head>
 <body>
 
 This is the reference documentation
-for <a href="http://jwt.webtoolkit.eu/jwt">JWt</a>.
+for <a href="https://www.webtoolkit.eu/jwt">JWt</a>.
 
 <h1>Release notes</h1>
 
@@ -24,6 +24,88 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.5.1 (October 7, 2021)</h2>
+
+<p>JWt 4.5.1 is a bugfix release containing the following changes:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/9008" target="_blank">Issue #9008</a>:
+    Fixed possible JavaScript issues by appending a semicolon to all JavaScript statements when using
+    <a href="eu/webtoolkit/jwt/WApplication.html#doJavaScript(java.lang.String,boolean)">doJavaScript</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8765" target="_blank">Issue #8765</a>:
+    fixed an issue where <code>trustedProxies</code> was <code>null</code> if the <a href="eu/webtoolkit/jwt/Configuration.html">Configuration</a>
+    was loaded from an XML file.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8407" target="_blank">Issue #8407</a>:
+    fixed an issue in <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a> where the expand icon was not removed
+    when removing the last child.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8376" target="_blank">Issue #8376</a>:
+    made dragging and dropping icons work correctly in
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html">WAbstractItemView</a> by
+    preventing the default action.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8335" target="_blank">Issue #8335</a>:
+    fixed an issue where
+    <a href="eu/webtoolkit/jwt/WWidget.html#layoutSizeChanged(int,int)">WWidget#layoutSizeChanged()</a> would
+    sometimes not be called.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8311" target="_blank">Issue #8311</a>:
+    fixed day of week conversion issue that caused <a href="eu/webtoolkit/jwt/WCalendar.html">WCalendar</a> to show up wrong.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8194" target="_blank">Issue #8194</a>:
+    fixed an issue where
+    <a href="eu/webtoolkit/jwt/WVirtualImage.html">WVirtualImage</a> would break if you added a
+    <a href="eu/webtoolkit/jwt/WInteractWidget.html#mouseMoved()">mouseMoved()</a> handler to images.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8114" target="_blank">Issue #8114</a>:
+    fixed a possible JavaScript error in <a href="eu/webtoolkit/jwt/WCanvasPaintDevice.html">WCanvasPaintDevice</a>
+    if an image load handler was executed after the painted widget was already removed.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8041" target="_blank">Issue #8041</a>:
+    fixed an inconsistency in how ellipses were rendered when using
+    <a href="eu/webtoolkit/jwt/WPainter.html#drawArc(eu.webtoolkit.jwt.WRectF,int,int)">drawArc()</a> with
+    wide <a href="eu/webtoolkit/jwt/WPen.html">WPen</a> on an HTML canvas.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7998" target="_blank">Issue #7998</a>:
+    made sure the scroll position is preserved when a <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a>
+    is sorted.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7996" target="_blank">Issue #7996</a>:
+    clarified the documentation of <a href="eu/webtoolkit/jwt/WInteractWidget.html#clicked()">WInteractWidget#clicked()</a>
+    to note that middle clicks do not emit the clicked event.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7912" target="_blank">Issue #7912</a>:
+    fixed JavaScript errors when using <a href="eu/webtoolkit/jwt/WPopupMenu.html">WPopupMenu</a>
+    in <a href="eu/webtoolkit/jwt/EntryPointType.html#WidgetSet">WidgetSet</a>
+    mode.
+  </li>
+  <li>
+    Added warning to the <a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a> documentation: this widget should not be bound to a template.
+  </li>
+  <li>
+    Fixed an issue where the
+    <a href="eu/webtoolkit/jwt/WWidget.html#scrollVisibilityChanged()">scrollVisibilityChanged()</a>
+    signal would not always be created.
+  </li>
+  <li>
+    Fixed a "size is not a function" issue when using jQuery 3.x (contributed by Steven K&ouml;hler)
+  </li>
+</ul>
 
 <h2>Release 4.5.0 (December 15, 2020)</h2>
 
