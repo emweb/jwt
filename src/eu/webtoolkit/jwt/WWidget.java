@@ -428,11 +428,11 @@ public abstract class WWidget extends WObject {
     }
     String side = orientation == Orientation.Horizontal ? ".Horizontal" : ".Vertical";
     this.doJavaScript(
-        "Wt4_5_0.positionAtWidget('"
+        "Wt4_5_1.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_5_0"
+            + "',Wt4_5_1"
             + side
             + ");");
   }
@@ -944,7 +944,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_5_0.$('" + this.getId() + "')";
+    return "Wt4_5_1.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.
@@ -1360,7 +1360,7 @@ public abstract class WWidget extends WObject {
    *
    * <p>This feature can be useful to implement infinite scroll, where a sentinel widget placed at
    * the bottom of the page causes more content to be loaded when it becomes visible, see the <code>
-   * infinite-scroll</code> example.
+   * scrollvisibility</code> example.
    *
    * <p>This feature can also be used to lazy load widgets when they become visible.
    *

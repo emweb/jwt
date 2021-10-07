@@ -27,7 +27,7 @@ class ResizeSensor {
       loadJavaScript(app);
       w.setJavaScriptMember(" ResizeSensor", "");
       w.setJavaScriptMember(
-          " ResizeSensor", "new Wt4_5_0.ResizeSensor(Wt4_5_0," + w.getJsRef() + ")");
+          " ResizeSensor", "new Wt4_5_1.ResizeSensor(Wt4_5_1," + w.getJsRef() + ")");
     }
   }
 
