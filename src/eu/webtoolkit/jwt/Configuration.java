@@ -182,7 +182,7 @@ public class Configuration {
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
 	private boolean behindReverseProxy = false;
 	private String originalIPHeader = "X-Forwarded-For";
-	private List<Network> trustedProxies;
+	private List<Network> trustedProxies = Collections.emptyList();
 	private boolean webSocketsEnabled = false;
 	private long asyncContextTimeout = 90000;
 
@@ -202,8 +202,6 @@ public class Configuration {
 		botList.add(".ia_archiver.*");
 		botList.add(".*Googlebot.*");
 		botList.add(".*Twiceler.*");
-
-		trustedProxies = Collections.emptyList();
 	}
 
 	/**
