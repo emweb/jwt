@@ -1271,7 +1271,7 @@ public class DomElement {
   }
   /** Allocates a JavaScript variable. */
   public String getCreateVar() {
-    this.var_ = "j" + String.valueOf(nextId_++);
+    this.var_ = "j" + String.valueOf(nextId_.getAndIncrement());
     return this.var_;
   }
 
@@ -1544,7 +1544,7 @@ public class DomElement {
       String eventName,
       final DomElement.EventHandler handler,
       WApplication app) {
-    int fid = nextId_++;
+    int fid = nextId_.getAndIncrement();
     out.append("function f").append(fid).append("(event) { ");
     out.append(handler.jsCode);
     out.append("}\n");
@@ -1753,7 +1753,8 @@ public class DomElement {
   private EscapeOStream childrenHtml_;
   private List<DomElement.TimeoutEvent> timeouts_;
   private String elementTagName_;
-  private static int nextId_ = 0;
+  private static java.util.concurrent.atomic.AtomicInteger nextId_ =
+      new java.util.concurrent.atomic.AtomicInteger(0);
   private static String[] elementNames_ = {
     "a",
     "br",
