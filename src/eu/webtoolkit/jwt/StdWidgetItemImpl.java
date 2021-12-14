@@ -29,25 +29,25 @@ class StdWidgetItemImpl extends StdLayoutItemImpl implements WWidgetItemImpl {
   public static String getChildrenResizeJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs10());
-    return "Wt4_5_0.ChildrenResize";
+    return "Wt4_6_0.ChildrenResize";
   }
 
   public static String getChildrenGetPSJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs11());
-    return "Wt4_5_0.ChildrenGetPS";
+    return "Wt4_6_0.ChildrenGetPS";
   }
 
   public static String getSecondResizeJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs12());
-    return "Wt4_5_0.LastResize";
+    return "Wt4_6_0.LastResize";
   }
 
   public static String getSecondGetPSJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs13());
-    return "Wt4_5_0.LastGetPS";
+    return "Wt4_6_0.LastGetPS";
   }
 
   public String getId() {
