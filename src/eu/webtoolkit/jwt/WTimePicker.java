@@ -274,7 +274,9 @@ class WTimePicker extends WCompositeWidget {
   private void init(final WTime time) {
     WTemplate container = new WTemplate();
     this.setImplementation(container);
-    container.addStyleClass("form-inline");
+    WApplication.getInstance()
+        .getTheme()
+        .apply(this, container, WidgetThemeRole.TimePickerPopupContent);
     container.setTemplateText(tr("Wt.WTimePicker.template"));
     this.sbhour_ = new WSpinBox();
     container.bindWidget("hour", this.sbhour_);

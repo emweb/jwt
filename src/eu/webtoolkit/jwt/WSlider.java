@@ -173,7 +173,9 @@ public class WSlider extends WFormWidget {
           || env.agentIsSafari()
               && (int) env.getAgent().getValue() >= (int) UserAgent.Safari4.getValue()
           || env.agentIsOpera()
-              && (int) env.getAgent().getValue() >= (int) UserAgent.Opera10.getValue()) {
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Opera10.getValue()
+          || env.agentIsGecko()
+              && (int) env.getAgent().getValue() >= (int) UserAgent.Firefox5_0.getValue()) {
         return true;
       }
     }
@@ -283,6 +285,7 @@ public class WSlider extends WFormWidget {
       this.paintedSlider_.updateSliderPosition();
     } else {
       this.update();
+      this.onChange();
     }
   }
   /**
@@ -410,6 +413,14 @@ public class WSlider extends WFormWidget {
   public int getHandleWidth() {
     return this.handleWidth_;
   }
+  /**
+   * Signal emitted when input was captured.
+   *
+   * <p>The signal is only emitted when keyboard input (arrow keys) are captured.
+   */
+  public EventSignal input() {
+    return this.voidEventSignal(INPUT_SIGNAL, true);
+  }
 
   public void setDisabled(boolean disabled) {
     if (this.paintedSlider_ != null) {
@@ -422,7 +433,18 @@ public class WSlider extends WFormWidget {
   }
 
   public void resize(final WLength width, final WLength height) {
-    super.resize(width, height);
+    if (this.getOrientation() == Orientation.Vertical) {
+      WApplication app = WApplication.getInstance();
+      WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+      if (bs5Theme != null) {
+        WLength w = width;
+        WLength h = height;
+        WLength size = new WLength(Math.max(w.toPixels(), h.toPixels()));
+        super.resize(size, size);
+      }
+    } else {
+      super.resize(width, height);
+    }
     if (this.paintedSlider_ != null) {
       this.paintedSlider_.sliderResized(width, height);
     }
@@ -444,6 +466,8 @@ public class WSlider extends WFormWidget {
       this.paintedSlider_.connectSlots();
     }
   }
+
+  protected static String INPUT_SIGNAL = "input";
   /**
    * Paints a slider ticks (for a non-native widget)
    *
@@ -527,15 +551,6 @@ public class WSlider extends WFormWidget {
           }
           this.paintedSlider_.sliderResized(this.getWidth(), this.getHeight());
         }
-      } else {
-        {
-          WWidget oldWidget = this.paintedSlider_;
-          this.paintedSlider_ = null;
-          {
-            WWidget toRemove = this.manageWidget(oldWidget, this.paintedSlider_);
-            if (toRemove != null) toRemove.remove();
-          }
-        }
       }
       this.setLayoutSizeAware(!useNative);
       this.setFormObject(useNative);
@@ -561,6 +576,17 @@ public class WSlider extends WFormWidget {
                   () -> {
                     WSlider.this.onChange();
                   });
+        } else {
+          if (!this.inputConnected_
+              && (this.valueChanged_.isConnected() || this.sliderMoved_.isConnected())) {
+            this.changedConnected_ = true;
+            this.input()
+                .addListener(
+                    this,
+                    () -> {
+                      WSlider.this.onChange();
+                    });
+          }
         }
         this.changed_ = false;
       }
@@ -591,6 +617,7 @@ public class WSlider extends WFormWidget {
   private boolean preferNative_;
   private boolean changed_;
   private boolean changedConnected_;
+  private boolean inputConnected_;
   private int handleWidth_;
   private int minimum_;
   private int maximum_;

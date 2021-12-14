@@ -83,26 +83,23 @@ public class OAuthProcess extends WObject {
     if (app.getEnvironment().hasJavaScript() && this.service_.isPopupEnabled()) {
       return;
     }
-    if (app.getEnvironment().hasJavaScript()) {
-      this.redirectEndpoint_.getUrl();
-      int timeout = 600;
-      ;
-      String value = "";
-      if (app.readConfigurationProperty("oauth2-redirect-timeout", value) != null) {
-        try {
-          timeout = Integer.parseInt(value);
-        } catch (final RuntimeException e) {
-          logger.error(
-              new StringWriter()
-                  .append(
-                      WString.tr(
-                          "Wt.Auth.OAuthService.could not convert 'oauth2-redirect-timeout' to int: "))
-                  .append(value)
-                  .toString());
-        }
+    this.redirectEndpoint_.getUrl();
+    int timeout = 600;
+    String value = "";
+    if (app.readConfigurationProperty("oauth2-redirect-timeout", value) != null) {
+      try {
+        timeout = Integer.parseInt(value);
+      } catch (final RuntimeException e) {
+        logger.error(
+            new StringWriter()
+                .append(
+                    WString.tr(
+                        "Wt.Auth.OAuthService.could not convert 'oauth2-redirect-timeout' to int: "))
+                .append(value)
+                .toString());
       }
-      app.suspend(Duration.ofSeconds(timeout));
     }
+    app.suspend(Duration.ofSeconds(timeout));
     this.startInternalPath_ = app.getInternalPath();
     app.redirect(this.getAuthorizeUrl());
   }
@@ -252,6 +249,7 @@ public class OAuthProcess extends WObject {
     this.startInternalPath_ = "";
     this.redirectEndpoint_ = null;
     this.httpClient_ = null;
+    this.doneCallbackConnection_ = new AbstractSignal.Connection();
     this.redirectEndpoint_ = new OAuthRedirectEndpoint(this);
     WApplication app = WApplication.getInstance();
     PopupWindow.loadJavaScript(app);
@@ -353,6 +351,7 @@ public class OAuthProcess extends WObject {
   String startInternalPath_;
   private OAuthRedirectEndpoint redirectEndpoint_;
   private HttpClient httpClient_;
+  AbstractSignal.Connection doneCallbackConnection_;
 
   void requestToken(final String authorizationCode) {
     try {
@@ -528,6 +527,9 @@ public class OAuthProcess extends WObject {
     if (success && this.authenticate_) {
       this.authenticate_ = false;
       this.getIdentity(this.token_);
+    }
+    if (this.doneCallbackConnection_.isConnected()) {
+      this.doneCallbackConnection_.disconnect();
     }
   }
 }

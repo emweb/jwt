@@ -19,21 +19,21 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Navigation extends TopicWidget {
+class Navigation extends Topic {
   private static Logger logger = LoggerFactory.getLogger(Navigation.class);
 
-  public Navigation(WContainerWidget parentContainer) {
-    super();
-    addText(tr("navigation-intro"), this);
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-
   public Navigation() {
-    this((WContainerWidget) null);
+    super();
   }
 
   public void populateSubMenu(WMenu menu) {
-    menu.addItem("Internal paths", this.internalPaths()).setPathComponent("");
+    menu.addItem(
+            "Internal paths",
+            DeferredWidget.deferCreate(
+                () -> {
+                  return Navigation.this.internalPaths();
+                }))
+        .setPathComponent("");
     menu.addItem(
         "Anchor",
         DeferredWidget.deferCreate(
@@ -218,7 +218,7 @@ class Navigation extends TopicWidget {
     WContainerWidget container = new WContainerWidget();
     WStackedWidget contents = new WStackedWidget();
     WMenu menu = new WMenu(contents, (WContainerWidget) container);
-    menu.setStyleClass("nav nav-pills nav-stacked");
+    menu.setStyleClass("nav nav-pills flex-column");
     menu.setWidth(new WLength(150));
     menu.addItem("Internal paths", new WTextArea("Internal paths contents"));
     menu.addItem("Anchor", new WTextArea("Anchor contents"));
@@ -256,8 +256,9 @@ class Navigation extends TopicWidget {
   WWidget NavigationBar() {
     WContainerWidget container = new WContainerWidget();
     WNavigationBar navigation = new WNavigationBar((WContainerWidget) container);
-    navigation.setTitle("Corpy Inc.", new WLink("https://www.google.com/search?q=corpy+inc"));
     navigation.setResponsive(true);
+    navigation.addStyleClass("navbar-light bg-light");
+    navigation.setTitle("Corpy Inc.", new WLink("https://www.google.com/search?q=corpy+inc"));
     WStackedWidget contentsStack = new WStackedWidget((WContainerWidget) container);
     contentsStack.addStyleClass("contents");
     WMenu leftMenu = new WMenu(contentsStack);
@@ -269,8 +270,20 @@ class Navigation extends TopicWidget {
         .addItem("Layout", new WText("Layout contents"))
         .setLink(new WLink(LinkType.InternalPath, "/layout"));
     leftMenu_.addItem("Sales", searchResult);
+    leftMenu_.addStyleClass("me-auto");
+    WLineEdit editPtr = new WLineEdit();
+    final WLineEdit edit = editPtr;
+    edit.setPlaceholderText("Enter a search item");
+    edit.enterPressed()
+        .addListener(
+            this,
+            () -> {
+              leftMenu_.select(2);
+              searchResult_.setText(new WString("Nothing found for {1}.").arg(edit.getText()));
+            });
+    navigation.addSearch(editPtr);
     WMenu rightMenu = new WMenu();
-    WMenu rightMenu_ = navigation.addMenu(rightMenu, AlignmentFlag.Right);
+    WMenu rightMenu_ = navigation.addMenu(rightMenu);
     WPopupMenu popupPtr = new WPopupMenu();
     WPopupMenu popup = popupPtr;
     popup.addItem("Contents");
@@ -300,17 +313,6 @@ class Navigation extends TopicWidget {
     WMenuItem item = new WMenuItem("Help");
     item.setMenu(popupPtr);
     rightMenu_.addItem(item);
-    WLineEdit editPtr = new WLineEdit();
-    final WLineEdit edit = editPtr;
-    edit.setPlaceholderText("Enter a search item");
-    edit.enterPressed()
-        .addListener(
-            this,
-            () -> {
-              leftMenu_.select(2);
-              searchResult_.setText(new WString("Nothing found for {1}.").arg(edit.getText()));
-            });
-    navigation.addSearch(editPtr, AlignmentFlag.Right);
     return container;
   }
 

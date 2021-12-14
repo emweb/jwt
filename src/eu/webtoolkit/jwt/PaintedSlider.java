@@ -28,7 +28,6 @@ final class PaintedSlider extends WPaintedWidget {
     this.mouseDownJS_ = new JSlot();
     this.mouseMovedJS_ = new JSlot();
     this.mouseUpJS_ = new JSlot();
-    this.handleClickedJS_ = new JSlot();
     this.handle_ = null;
     this.fill_ = null;
     this.setStyleClass("Wt-slider-bg");
@@ -60,6 +59,8 @@ final class PaintedSlider extends WPaintedWidget {
     this.fill_.setStyleClass("fill");
     this.handle_.setPositionScheme(PositionScheme.Absolute);
     this.handle_.setStyleClass("handle");
+    this.handle_.setCanReceiveFocus(true);
+    this.slider_.setCanReceiveFocus(true);
     this.connectSlots();
   }
 
@@ -91,7 +92,6 @@ final class PaintedSlider extends WPaintedWidget {
       this.handle_.touchMoved().addListener(this.mouseMovedJS_);
       this.handle_.mouseWentUp().addListener(this.mouseUpJS_);
       this.handle_.touchEnded().addListener(this.mouseUpJS_);
-      this.handle_.clicked().addListener(this.handleClickedJS_);
       this.slider_
           .clicked()
           .addListener(
@@ -137,8 +137,7 @@ final class PaintedSlider extends WPaintedWidget {
         .append("obj.setAttribute('down', Wt4_5_0")
         .append(".widgetCoordinates(obj, event).")
         .append(u)
-        .append(");")
-        .append("Wt4_5_0.cancelEvent(event);");
+        .append(");");
     StringBuilder computeD = new StringBuilder();
     computeD
         .append("var objh = ")
@@ -229,12 +228,6 @@ final class PaintedSlider extends WPaintedWidget {
         "function(obj, event) {" + (enabled ? mouseMovedJS.toString() : "") + "}");
     this.mouseUpJS_.setJavaScript(
         "function(obj, event) {" + (enabled ? mouseUpJS.toString() : "") + "}");
-    this.handleClickedJS_.setJavaScript(
-        "function(obj, event) {"
-            + "Wt4_5_0"
-            + ".cancelEvent(event,"
-            + "Wt4_5_0"
-            + ".CancelPropagate); }");
     this.update();
     this.updateSliderPosition();
   }
@@ -251,6 +244,7 @@ final class PaintedSlider extends WPaintedWidget {
           new WLength(this.getH() - this.slider_.getHandleWidth() - u), EnumSet.of(Side.Top));
       this.fill_.setHeight(new WLength(u + this.slider_.getHandleWidth() / 2));
     }
+    this.handle_.setFocus(true);
   }
 
   public void doUpdateDom(final DomElement element, boolean all) {
@@ -329,7 +323,6 @@ final class PaintedSlider extends WPaintedWidget {
   private JSlot mouseDownJS_;
   private JSlot mouseMovedJS_;
   private JSlot mouseUpJS_;
-  private JSlot handleClickedJS_;
   private WInteractWidget handle_;
   private WInteractWidget fill_;
 

@@ -3,6 +3,7 @@ package eu.webtoolkit.jwt.examples.widgetgallery;
 import eu.webtoolkit.jwt.BootstrapVersion;
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WBootstrap5Theme;
 import eu.webtoolkit.jwt.WBootstrapTheme;
 import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WHBoxLayout;
@@ -40,27 +41,23 @@ public class WidgetGalleryServlet extends WtServlet {
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);
-		  
-		WBootstrapTheme theme = new WBootstrapTheme();
-		theme.setVersion(BootstrapVersion.v3);
-		// load the default bootstrap3 (sub-)theme
-	    app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "themes/bootstrap/3/bootstrap-theme.min.css"));
+
+		WBootstrap5Theme theme = new WBootstrap5Theme();
 
 		app.setTheme(theme);
 
 		WXmlLocalizedStrings resourceBundle = new WXmlLocalizedStrings();
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/text");
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/report");
+		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/tpl");
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/src");
 		app.setLocalizedStrings(resourceBundle);
 
-		WHBoxLayout layout = new WHBoxLayout();
-		layout.setContentsMargins(0, 0, 0, 0);
-		layout.addWidget(new WidgetGallery());
-		app.getRoot().setLayout(layout);
+		app.getRoot().addWidget(new WidgetGallery());
 		
 		app.setTitle("JWt Widget Gallery");
-
+		
+		app.useStyleSheet(new WLink("style/widgetgallery.css"));
 		app.useStyleSheet(new WLink("style/everywidget.css"));
 		app.useStyleSheet(new WLink("style/dragdrop.css"));
 		app.useStyleSheet(new WLink("style/combostyle.css"));

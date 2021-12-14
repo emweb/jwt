@@ -1050,16 +1050,10 @@ class WebSession {
         if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
           return EventType.Other;
         } else {
-          WResource resource = null;
-          if (!(requestE != null) && request.getPathInfo().length() != 0) {
-            resource = this.app_.decodeExposedResource("/path/" + request.getPathInfo());
-          }
-          String resourceE = request.getParameter("resource");
-          String signalE = this.getSignal(request, "");
-          if (resource != null
-              || requestE != null && requestE.equals("resource") && resourceE != null) {
+          if (this.resourceRequest(request)) {
             return EventType.Resource;
           } else {
+            String signalE = this.getSignal(request, "");
             if (signalE != null) {
               if (signalE.equals("none")
                   || signalE.equals("load")
@@ -1335,7 +1329,8 @@ class WebSession {
         }
       }
       String requestE = request.getParameter("request");
-      boolean requestForResource = requestE != null && requestE.equals("resource");
+      boolean requestForResource = this.resourceRequest(request);
+      boolean requestForStyle = requestE != null && requestE.equals("style");
       if (requestE != null && requestE.equals("ws") && !request.isWebSocketRequest()) {
         logger.error(new StringWriter().append("invalid WebSocket request, ignoring").toString());
         logger.info(
@@ -1374,6 +1369,7 @@ class WebSession {
       if (this.env_.hasAjax()
           && isEqual(request.getRequestMethod(), "GET")
           && !requestForResource
+          && !requestForStyle
           && conf.reloadIsNewSession()
           && !this.isSuspended()
           && wtdE != null
@@ -1487,7 +1483,7 @@ class WebSession {
                       break;
                     }
                   case WidgetSet:
-                    if (requestForResource) {
+                    if (requestForResource || requestForStyle) {
                       String resourceE = request.getParameter("resource");
                       if (resourceE != null && resourceE.equals("blank")) {
                         handler.getResponse().setContentType("text/html");
@@ -1498,7 +1494,7 @@ class WebSession {
                       } else {
                         logger.info(
                             new StringWriter()
-                                .append("not starting session for resource.")
+                                .append("not starting session for unexpected request type.")
                                 .toString());
                         handler.getResponse().setContentType("text/html");
                         handler
@@ -1649,7 +1645,7 @@ class WebSession {
                       }
                     } else {
                       if (this.state_ != WebSession.State.ExpectLoad
-                          && this.state_ != WebSession.State.Suspended
+                          && !(this.state_ == WebSession.State.Suspended && requestForResource)
                           && !this.controller_.limitPlainHtmlSessions()) {
                         this.setLoaded();
                       }
@@ -1712,12 +1708,15 @@ class WebSession {
   }
 
   public void setLoaded() {
-    if (this.state_ == WebSession.State.Suspended
-        && this.env_.hasAjax()
-        && this.controller_.getConfiguration().reloadIsNewSession()) {
-      this.app_.doJavaScript("Wt4_5_0.history.removeSessionId()");
-    }
+    boolean wasSuspended = this.state_ == WebSession.State.Suspended;
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
+    if (wasSuspended) {
+      if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
+        this.app_.doJavaScript("Wt4_5_0.history.removeSessionId()");
+        this.sessionIdInUrl_ = false;
+      }
+      this.app_.unsuspended().trigger();
+    }
   }
   // public void generateNewSessionId() ;
   public void queueEvent(final ApplicationEvent event) {
@@ -1790,6 +1789,32 @@ class WebSession {
     if (this.app_ != null && this.app_.localizedStrings_ != null) {
       this.app_.localizedStrings_.hibernate();
     }
+  }
+
+  private boolean resourceRequest(final WebRequest request) {
+    if (this.state_ == WebSession.State.ExpectLoad
+        || this.state_ == WebSession.State.Loaded
+        || this.state_ == WebSession.State.Suspended) {
+      String requestE = request.getParameter("request");
+      String resourceE = request.getParameter("resource");
+      if (requestE != null && requestE.equals("resource") && resourceE != null) {
+        return true;
+      } else {
+        if (!(requestE != null)) {
+          if (request.getPathInfo().length() != 0
+              && this.app_.decodeExposedResource(
+                      "/path/" + StringUtils.prepend(request.getPathInfo(), '/'))
+                  != null) {
+            return true;
+          }
+          String hashE = request.getParameter("_");
+          if (hashE != null && this.app_.decodeExposedResource("/path/" + hashE) != null) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   private ReentrantLock mutex_;

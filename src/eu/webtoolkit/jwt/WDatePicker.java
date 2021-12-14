@@ -40,6 +40,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Internationalization of {@link WDatePicker} is mostly handled through the internationalization
  * mechanism of {@link eu.webtoolkit.jwt.WDate}.
+ *
+ * <p>
+ *
+ * @deprecated The date picker is deprecated in favor of {@link WDateEdit}
  */
 public class WDatePicker extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WDatePicker.class);
@@ -57,7 +61,7 @@ public class WDatePicker extends WCompositeWidget {
     this.popupClosed_ = new Signal();
     this.changed_ = new Signal();
     this.positionJS_ = new JSlot();
-    this.createDefault((WLineEdit) null);
+    this.create((WInteractWidget) null, (WLineEdit) null);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
@@ -83,7 +87,7 @@ public class WDatePicker extends WCompositeWidget {
     this.popupClosed_ = new Signal();
     this.changed_ = new Signal();
     this.positionJS_ = new JSlot();
-    this.createDefault(forEdit);
+    this.create((WInteractWidget) null, forEdit);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
@@ -330,25 +334,19 @@ public class WDatePicker extends WCompositeWidget {
   private Signal changed_;
   private JSlot positionJS_;
 
-  private void createDefault(WLineEdit forEdit) {
-    WImage icon =
-        new WImage(
-            new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"),
-            (WContainerWidget) null);
-    icon.resize(new WLength(16), new WLength(16));
-    icon.setVerticalAlignment(AlignmentFlag.Middle);
-    if (!(forEdit != null)) {
-      WLineEdit edit = new WLineEdit();
-      this.create(icon, edit);
-      this.layout_.insertWidget(0, edit);
-    } else {
-      this.create(icon, forEdit);
-    }
-  }
-
   private void create(WInteractWidget displayWidget, WLineEdit forEdit) {
-    this.layout_ = new WContainerWidget();
-    this.setImplementation(this.layout_);
+    WContainerWidget layout = new WContainerWidget();
+    this.layout_ = layout;
+    this.setImplementation(layout);
+    if (!(forEdit != null)) {
+      forEdit = new WLineEdit((WContainerWidget) this.layout_);
+    }
+    if (!(displayWidget != null)) {
+      displayWidget = new WImage();
+      WApplication.getInstance()
+          .getTheme()
+          .apply(this, displayWidget, WidgetThemeRole.DatePickerIcon);
+    }
     this.displayWidget_ = displayWidget;
     this.forEdit_ = forEdit;
     this.forEdit_.setVerticalAlignment(AlignmentFlag.Middle);

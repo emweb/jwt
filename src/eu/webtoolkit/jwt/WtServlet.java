@@ -108,6 +108,7 @@ public abstract class WtServlet extends HttpServlet {
 	static final String AuthBootstrapTheme_xml = "/eu/webtoolkit/jwt/auth/auth_bootstrap_theme";
 	static final String BootstrapTheme_xml = "/eu/webtoolkit/jwt/bootstrap_theme";
 	static final String Bootstrap3Theme_xml = "/eu/webtoolkit/jwt/bootstrap3_theme";
+	static final String Bootstrap5Theme_xml = "/eu/webtoolkit/jwt/bootstrap5_theme";
 	
 	private static WtServlet instance;
 

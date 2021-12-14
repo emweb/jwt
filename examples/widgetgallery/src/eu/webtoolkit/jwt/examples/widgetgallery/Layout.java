@@ -19,21 +19,21 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Layout extends TopicWidget {
+class Layout extends Topic {
   private static Logger logger = LoggerFactory.getLogger(Layout.class);
 
-  public Layout(WContainerWidget parentContainer) {
-    super();
-    addText(tr("layout-intro"), this);
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-
   public Layout() {
-    this((WContainerWidget) null);
+    super();
   }
 
   public void populateSubMenu(WMenu menu) {
-    menu.addItem("Containers", this.containers()).setPathComponent("");
+    menu.addItem(
+            "Containers",
+            DeferredWidget.deferCreate(
+                () -> {
+                  return Layout.this.containers();
+                }))
+        .setPathComponent("");
     menu.addItem(
         "HTML Templates",
         DeferredWidget.deferCreate(
@@ -93,7 +93,7 @@ class Layout extends TopicWidget {
   private WWidget templates() {
     TopicTemplate result = new TopicTemplate("layout-Template");
     result.bindWidget("Template", Template());
-    result.bindString("template-text", reindent(tr("WTemplate-example")), TextFormat.Plain);
+    result.bindString("template-text", reindent(WString.tr("WTemplate-example")), TextFormat.Plain);
     return result;
   }
 
@@ -147,13 +147,14 @@ class Layout extends TopicWidget {
   private WWidget css() {
     TopicTemplate result = new TopicTemplate("layout-CSS");
     result.bindWidget("CSS", CSS());
-    result.bindString("CSS-example-style", reindent(tr("CSS-example-style")), TextFormat.Plain);
+    result.bindString(
+        "CSS-example-style", reindent(WString.tr("CSS-example-style")), TextFormat.Plain);
     return result;
   }
 
   private WWidget themes() {
     TopicTemplate result = new TopicTemplate("layout-Themes");
-    result.bindString("Theme", reindent(tr("theme")), TextFormat.Plain);
+    result.bindString("Theme", reindent(WString.tr("theme")), TextFormat.Plain);
     return result;
   }
   // private WWidget  loadingIndicator() ;
@@ -642,7 +643,7 @@ class Layout extends TopicWidget {
     final WPushButton removeB = new WPushButton("Remove info class", (WContainerWidget) container);
     removeB.setMargin(new WLength(10), EnumSet.of(Side.Left, Side.Right));
     removeB.disable();
-    final WPushButton toggleB = new WPushButton("Toggle condensed", (WContainerWidget) container);
+    final WPushButton toggleB = new WPushButton("Toggle compact", (WContainerWidget) container);
     toggleB.disable();
     WText text = new WText((WContainerWidget) container);
     text.setText("<p>These are the most import API classes and methods for working with CSS:</p>");
@@ -683,12 +684,12 @@ class Layout extends TopicWidget {
         .addListener(
             this,
             () -> {
-              if ((toggleB.getText().toString().equals("Toggle condensed".toString()))) {
-                table.toggleStyleClass("table-condensed", true);
+              if ((toggleB.getText().toString().equals("Toggle compact".toString()))) {
+                table.toggleStyleClass("table-sm", true);
                 toggleB.setText("Toggle expanded");
               } else {
-                table.toggleStyleClass("table-condensed", false);
-                toggleB.setText("Toggle condensed");
+                table.toggleStyleClass("table-sm", false);
+                toggleB.setText("Toggle compact");
               }
             });
     return container;

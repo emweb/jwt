@@ -673,10 +673,15 @@ public class WMenuItem extends WContainerWidget {
   public void renderSelected(boolean selected) {
     WApplication app = WApplication.getInstance();
     String active = app.getTheme().getActiveClass();
+    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
     if (active.equals("Wt-selected")) {
       this.removeStyleClass(!selected ? "itemselected" : "item", true);
       this.addStyleClass(selected ? "itemselected" : "item", true);
     } else {
+      if (bs5Theme != null) {
+        WAnchor a = this.getAnchor();
+        a.toggleStyleClass(active, selected, true);
+      }
       this.toggleStyleClass(active, selected, true);
     }
   }

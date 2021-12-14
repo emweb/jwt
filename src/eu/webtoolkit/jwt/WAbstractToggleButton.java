@@ -298,7 +298,7 @@ public abstract class WAbstractToggleButton extends WFormWidget {
     DomElement span = null;
     DomElement label = null;
     if (all) {
-      app.getTheme().apply(this, element, 1);
+      app.getTheme().apply(this, element, ElementThemeRole.ToggleButtonRole);
     }
     if (element.getType() == DomElementType.INPUT) {
       input = element;
@@ -357,6 +357,10 @@ public abstract class WAbstractToggleButton extends WFormWidget {
       if (v.length() != 0) {
         element.setAttribute("title", v);
       }
+    }
+    app.getTheme().apply(this, input, ElementThemeRole.ToggleButtonInput);
+    if (span != null) {
+      app.getTheme().apply(this, span, ElementThemeRole.ToggleButtonSpan);
     }
     if (this.flags_.get(BIT_STATE_CHANGED) || all) {
       input.setProperty(Property.Checked, this.state_ == CheckState.Unchecked ? "false" : "true");

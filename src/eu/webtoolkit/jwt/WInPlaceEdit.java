@@ -243,10 +243,21 @@ public class WInPlaceEdit extends WCompositeWidget {
   public void setButtonsEnabled(boolean enabled) {
     if (enabled && !(this.save_ != null)) {
       this.c2_.disconnect();
-      this.buttons_.addWidget(
-          this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), (WContainerWidget) null));
-      this.buttons_.addWidget(
-          this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"), (WContainerWidget) null));
+      WApplication app = WApplication.getInstance();
+      WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+      if (!(bs5Theme != null)) {
+        this.buttons_.addWidget(
+            this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), (WContainerWidget) null));
+        this.buttons_.addWidget(
+            this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"), (WContainerWidget) null));
+      } else {
+        this.editing_.addWidget(
+            this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), (WContainerWidget) null));
+        this.editing_.addWidget(
+            this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"), (WContainerWidget) null));
+      }
+      app.getTheme().apply(this, this.save_, WidgetThemeRole.InPlaceEditingButton);
+      app.getTheme().apply(this, this.cancel_, WidgetThemeRole.InPlaceEditingButton);
       this.save_
           .clicked()
           .addListener(
@@ -410,9 +421,13 @@ public class WInPlaceEdit extends WCompositeWidget {
               WInPlaceEdit.this.cancel();
             });
     this.edit_.escapePressed().preventPropagation();
-    this.editing_.addWidget(this.buttons_ = new WContainerWidget());
-    this.buttons_.setInline(true);
-    this.buttons_.addStyleClass("input-group-btn");
+    WApplication app = WApplication.getInstance();
+    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    if (!(bs5Theme != null)) {
+      this.editing_.addWidget(this.buttons_ = new WContainerWidget());
+      this.buttons_.setInline(true);
+      app.getTheme().apply(this, this.buttons_, WidgetThemeRole.InPlaceEditingButtonsContainer);
+    }
     this.setButtonsEnabled();
   }
 

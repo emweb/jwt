@@ -19,24 +19,39 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WidgetGallery extends WContainerWidget {
+class WidgetGallery extends WTemplate {
   private static Logger logger = LoggerFactory.getLogger(WidgetGallery.class);
 
   public WidgetGallery(WContainerWidget parentContainer) {
-    super();
-    this.setOverflow(Overflow.Hidden);
-    WNavigationBar navigation = new WNavigationBar();
-    this.navigation_ = navigation;
-    this.navigation_.addStyleClass("main-nav");
-    this.navigation_.setTitle("Wt Widget Gallery", new WLink("https://www.webtoolkit.eu/widgets"));
-    this.navigation_.setResponsive(true);
-    WStackedWidget contentsStack = new WStackedWidget();
-    this.contentsStack_ = contentsStack;
+    super(tr("tpl:widget-gallery"), (WContainerWidget) null);
+    this.openMenuButton_ = null;
+    this.menuOpen_ = false;
+    this.contentsStack_ = (WStackedWidget) this.bindWidget("contents", new WStackedWidget());
     WAnimation animation = new WAnimation(AnimationEffect.Fade, TimingFunction.Linear, 200);
     this.contentsStack_.setTransitionAnimation(animation, true);
-    WMenu menu = new WMenu(this.contentsStack_);
+    WMenu menu = (WMenu) this.bindWidget("menu", new WMenu(this.contentsStack_));
+    menu.addStyleClass("flex-column");
     menu.setInternalPathEnabled();
     menu.setInternalBasePath("/");
+    this.openMenuButton_ = (WPushButton) this.bindWidget("open-menu", new WPushButton());
+    this.openMenuButton_.setTextFormat(TextFormat.UnsafeXHTML);
+    this.openMenuButton_.setText(showMenuText);
+    this.openMenuButton_
+        .clicked()
+        .addListener(
+            this,
+            (WMouseEvent e1) -> {
+              WidgetGallery.this.toggleMenu();
+            });
+    WContainerWidget contentsCover =
+        (WContainerWidget) this.bindWidget("contents-cover", new WContainerWidget());
+    contentsCover
+        .clicked()
+        .addListener(
+            this,
+            (WMouseEvent e1) -> {
+              WidgetGallery.this.closeMenu();
+            });
     this.addToMenu(menu, "Layout", new Layout());
     this.addToMenu(menu, "Forms", new FormWidgets());
     this.addToMenu(menu, "Navigation", new Navigation());
@@ -44,12 +59,10 @@ class WidgetGallery extends WContainerWidget {
     this.addToMenu(menu, "Graphics & Charts", new GraphicsWidgets())
         .setPathComponent("graphics-charts");
     this.addToMenu(menu, "Media", new Media());
-    this.navigation_.addMenu(menu);
-    WVBoxLayout layout = new WVBoxLayout();
-    this.setLayout(layout);
-    layout.addWidget(navigation, 0);
-    layout.addWidget(contentsStack, 1);
-    layout.setContentsMargins(0, 0, 0, 0);
+    if (menu.getCurrentIndex() < 0) {
+      menu.select(0);
+      menu.itemAt(0).getMenu().select(0);
+    }
     if (parentContainer != null) parentContainer.addWidget(this);
   }
 
@@ -57,34 +70,59 @@ class WidgetGallery extends WContainerWidget {
     this((WContainerWidget) null);
   }
 
-  private WNavigationBar navigation_;
   private WStackedWidget contentsStack_;
+  private WPushButton openMenuButton_;
+  private boolean menuOpen_;
 
-  private WMenuItem addToMenu(WMenu menu, final CharSequence name, TopicWidget topic) {
-    TopicWidget topic_ = topic;
+  private WMenuItem addToMenu(WMenu menu, final CharSequence name, Topic topicPtr) {
+    Topic topic = topicPtr;
     WContainerWidget result = new WContainerWidget();
-    WContainerWidget pane = new WContainerWidget();
-    WContainerWidget pane_ = pane;
-    WVBoxLayout vLayout = new WVBoxLayout();
-    result.setLayout(vLayout);
-    vLayout.setContentsMargins(0, 0, 0, 0);
-    vLayout.addWidget(topic);
-    vLayout.addWidget(pane, 1);
-    WHBoxLayout hLayout = new WHBoxLayout();
-    pane_.setLayout(hLayout);
-    WMenuItem item = new WMenuItem(WString.toWString(name), result);
-    WMenuItem item_ = menu.addItem(item);
-    WStackedWidget subStack = new WStackedWidget();
-    subStack.addStyleClass("contents");
-    WMenu subMenu = new WMenu(subStack);
-    WMenu subMenu_ = subMenu;
-    subMenu_.addStyleClass("nav-pills nav-stacked submenu");
-    subMenu_.setWidth(new WLength(200));
-    hLayout.addWidget(subMenu);
-    hLayout.addWidget(subStack, 1);
-    subMenu_.setInternalPathEnabled();
-    subMenu_.setInternalBasePath("/" + item_.getPathComponent());
-    topic_.populateSubMenu(subMenu_);
-    return item_;
+    WMenu subMenuPtr = new WMenu(this.contentsStack_);
+    WMenu subMenu = subMenuPtr;
+    WMenuItem itemPtr = new WMenuItem(WString.toWString(name));
+    itemPtr.setMenu(subMenuPtr);
+    WMenuItem item = menu.addItem(itemPtr);
+    subMenu.addStyleClass("nav-stacked submenu");
+    subMenu
+        .itemSelected()
+        .addListener(
+            this,
+            (WMenuItem e1) -> {
+              WidgetGallery.this.closeMenu();
+            });
+    subMenu.setInternalPathEnabled("/" + item.getPathComponent());
+    topic.populateSubMenu(subMenu);
+    return item;
   }
+
+  private void toggleMenu() {
+    if (this.menuOpen_) {
+      this.closeMenu();
+    } else {
+      this.openMenu();
+    }
+  }
+
+  private void openMenu() {
+    if (this.menuOpen_) {
+      return;
+    }
+    this.openMenuButton_.setText(closeMenuText);
+    this.addStyleClass("menu-open");
+    this.menuOpen_ = true;
+  }
+
+  private void closeMenu() {
+    if (!this.menuOpen_) {
+      return;
+    }
+    this.openMenuButton_.setText(showMenuText);
+    this.removeStyleClass("menu-open");
+    this.menuOpen_ = false;
+  }
+
+  private static final String showMenuText =
+      "<i class='fa fa-bars' aria-hidden='true'></i> Show menu";
+  private static final String closeMenuText =
+      "<i class='fa fa-bars' aria-hidden='true'></i> Close menu";
 }

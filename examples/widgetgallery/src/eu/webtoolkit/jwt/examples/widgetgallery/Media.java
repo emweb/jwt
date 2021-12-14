@@ -19,17 +19,11 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Media extends TopicWidget {
+class Media extends Topic {
   private static Logger logger = LoggerFactory.getLogger(Media.class);
 
-  public Media(WContainerWidget parentContainer) {
-    super();
-    addText(tr("specialpurposewidgets-intro"), this);
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-
   public Media() {
-    this((WContainerWidget) null);
+    super();
   }
 
   public void populateSubMenu(WMenu menu) {
@@ -121,7 +115,8 @@ class Media extends TopicWidget {
     TopicTemplate result = new TopicTemplate("media-PDF");
     result.bindWidget("PdfImage", PdfImage());
     result.bindWidget("PdfRenderer", PdfRenderer());
-    result.bindString("PdfImageWrite", reindent(tr("media-PdfImageWrite")), TextFormat.Plain);
+    result.bindString(
+        "PdfImageWrite", reindent(WString.tr("media-PdfImageWrite")), TextFormat.Plain);
     return result;
   }
 

@@ -32,7 +32,7 @@ public abstract class AbstractSignal {
 			this.listener = listener;
 		}
 
-		Connection() {
+		public Connection() {
 			signalImpl = null;
 			listener = null;
 		}

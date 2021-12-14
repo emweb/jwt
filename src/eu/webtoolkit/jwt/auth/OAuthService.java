@@ -231,12 +231,7 @@ public abstract class OAuthService {
    * decodeState()}.
    */
   public String encodeState(final String url) {
-    String hash = Utils.base64Encode(Utils.hmac_sha1(url, this.impl_.secret_));
-    String b = Utils.base64Encode(hash + "|" + url, false);
-    b = StringUtils.replace(b, "+", "-");
-    b = StringUtils.replace(b, "/", "_");
-    b = StringUtils.replace(b, "=", ".");
-    return b;
+    return AuthUtils.encodeState(this.impl_.secret_, url);
   }
   /**
    * Validates and decodes a state parameter.
@@ -246,23 +241,7 @@ public abstract class OAuthService {
    * encodeState()}.
    */
   public String decodeState(final String state) {
-    String s = state;
-    s = StringUtils.replace(s, "-", "+");
-    s = StringUtils.replace(s, "_", "/");
-    s = StringUtils.replace(s, ".", "=");
-    s = Utils.base64DecodeS(s);
-    int i = s.indexOf('|');
-    if (i != -1) {
-      String url = s.substring(i + 1);
-      String check = this.encodeState(url);
-      if (check.equals(state)) {
-        return url;
-      } else {
-        return "";
-      }
-    } else {
-      return "";
-    }
+    return AuthUtils.decodeState(this.impl_.secret_, state);
   }
   /**
    * Returns the HTTP method used for the token request.
@@ -320,24 +299,7 @@ public abstract class OAuthService {
   }
 
   protected static String configurationProperty(final String property) {
-    WtServlet instance = WtServlet.getInstance();
-    if (instance != null) {
-      String result = "";
-      boolean error;
-      String v = instance.readConfigurationProperty(property, result);
-      if (v != result) {
-        error = false;
-        result = v;
-      } else {
-        error = true;
-      }
-      if (error) {
-        throw new WException("OAuth: no '" + property + "' property configured");
-      }
-      return result;
-    } else {
-      throw new WException("OAuth: could not find a WServer instance");
-    }
+    return AuthUtils.configurationProperty("OAuth", property);
   }
   // private  OAuthService(final OAuthService anon1) ;
   private final AuthService baseAuth_;
@@ -351,7 +313,7 @@ public abstract class OAuthService {
       this.redirectResource_ = (OAuthService.Impl.RedirectEndpoint) null;
       this.secret_ = "";
       try {
-        this.secret_ = configurationProperty("oauth2-secret");
+        this.secret_ = OAuthService.configurationProperty("oauth2-secret");
       } catch (final RuntimeException e) {
         this.secret_ = MathUtils.randomId(32);
       }

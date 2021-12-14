@@ -209,6 +209,14 @@ public class WCssTheme extends WTheme {
       case WidgetThemeRole.DatePickerPopup:
         child.addStyleClass("Wt-datepicker");
         break;
+      case WidgetThemeRole.DatePickerIcon:
+        {
+          WImage icon = ((child) instanceof WImage ? (WImage) (child) : null);
+          icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
+          icon.setVerticalAlignment(AlignmentFlag.Middle);
+          icon.resize(new WLength(16), new WLength(16));
+          break;
+        }
       case WidgetThemeRole.PanelTitleBar:
         child.addStyleClass("titlebar");
         break;

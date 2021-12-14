@@ -50,6 +50,7 @@ public class WProgressBar extends WInteractWidget {
     this.valueChanged_ = new Signal1<Double>();
     this.progressCompleted_ = new Signal();
     this.format_ = new WString("%.0f %%");
+    this.setFlexBox(true);
     this.setInline(true);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -234,22 +235,31 @@ public class WProgressBar extends WInteractWidget {
   void updateDom(final DomElement element, boolean all) {
     DomElement bar = null;
     DomElement label = null;
+    WApplication app = WApplication.getInstance();
+    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
     if (all) {
-      WApplication app = WApplication.getInstance();
       bar = DomElement.createNew(DomElementType.DIV);
       bar.setId("bar" + this.getId());
       bar.setProperty(Property.Class, this.valueStyleClass_);
       app.getTheme().apply(this, bar, ElementThemeRole.ProgressBarBar);
-      label = DomElement.createNew(DomElementType.DIV);
-      label.setId("lbl" + this.getId());
-      app.getTheme().apply(this, label, ElementThemeRole.ProgressBarLabel);
+      if (bs5Theme != null) {
+        label = bar;
+      } else {
+        label = DomElement.createNew(DomElementType.DIV);
+        label.setId("lbl" + this.getId());
+        app.getTheme().apply(this, label, ElementThemeRole.ProgressBarLabel);
+      }
     }
     if (this.changed_ || all) {
       if (!(bar != null)) {
         bar = DomElement.getForUpdate("bar" + this.getId(), DomElementType.DIV);
       }
       if (!(label != null)) {
-        label = DomElement.getForUpdate("lbl" + this.getId(), DomElementType.DIV);
+        if (bs5Theme != null) {
+          label = bar;
+        } else {
+          label = DomElement.getForUpdate("lbl" + this.getId(), DomElementType.DIV);
+        }
       }
       this.updateBar(bar);
       WString s = this.getText();
@@ -260,7 +270,7 @@ public class WProgressBar extends WInteractWidget {
     if (bar != null) {
       element.addChild(bar);
     }
-    if (label != null) {
+    if (label != null && !(bs5Theme != null)) {
       element.addChild(label);
     }
     super.updateDom(element, all);

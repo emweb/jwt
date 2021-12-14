@@ -19,22 +19,22 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class GraphicsWidgets extends TopicWidget {
+class GraphicsWidgets extends Topic {
   private static Logger logger = LoggerFactory.getLogger(GraphicsWidgets.class);
 
-  public GraphicsWidgets(WContainerWidget parentContainer) {
-    super();
-    addText(tr("graphics-intro"), this);
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-
   public GraphicsWidgets() {
-    this((WContainerWidget) null);
+    super();
   }
 
   public void populateSubMenu(WMenu menu) {
     menu.setInternalBasePath("/graphics-charts");
-    menu.addItem("2D painting", this.painting2d()).setPathComponent("");
+    menu.addItem(
+            "2D painting",
+            DeferredWidget.deferCreate(
+                () -> {
+                  return GraphicsWidgets.this.painting2d();
+                }))
+        .setPathComponent("");
     menu.addItem(
         "Paintbrush",
         DeferredWidget.deferCreate(
@@ -152,7 +152,9 @@ class GraphicsWidgets extends TopicWidget {
     TopicTemplate result = new TopicTemplate("graphics-GoogleMap");
     result.bindWidget("GoogleMap", GoogleMap());
     result.bindString(
-        "GoogleMap-controls", reindent(tr("graphics-GoogleMap-controls")), TextFormat.Plain);
+        "GoogleMap-controls",
+        reindent(WString.tr("graphics-GoogleMap-controls")),
+        TextFormat.Plain);
     return result;
   }
 

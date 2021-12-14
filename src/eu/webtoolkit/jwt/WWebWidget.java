@@ -1203,7 +1203,7 @@ public abstract class WWebWidget extends WWidget {
         String InlineBlock = "inline-block";
         String Block = "block";
         String Flex = "flex";
-        String FlexInline = "flex-inline";
+        String InlineFlex = "inline-flex";
         String Empty = "";
         String display = null;
         final boolean defaultInline =
@@ -1243,7 +1243,7 @@ public abstract class WWebWidget extends WWidget {
           }
         }
         if (this.flags_.get(BIT_FLEX_BOX)) {
-          display = this.flags_.get(BIT_INLINE) ? FlexInline : Flex;
+          display = this.flags_.get(BIT_INLINE) ? InlineFlex : Flex;
         } else {
           if (this.flags_.get(BIT_FLEX_BOX_CHANGED) && !(display != null)) {
             display = Empty;
@@ -2294,7 +2294,7 @@ public abstract class WWebWidget extends WWidget {
           this.setRendered(true);
           self.render(EnumSet.of(RenderFlag.Full));
           DomElement realElement = this.createDomElement(app);
-          app.getTheme().apply(self, realElement, 0);
+          app.getTheme().apply(self, realElement, ElementThemeRole.MainElement);
           stub.unstubWith(realElement, !this.flags_.get(BIT_HIDE_WITH_OFFSETS));
           result.add(stub);
         }

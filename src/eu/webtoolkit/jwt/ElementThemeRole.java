@@ -25,6 +25,14 @@ import javax.servlet.http.*;
  */
 public class ElementThemeRole {
   public static final int MainElement = 0;
+  public static final int ToggleButtonRole = 1;
+  public static final int ToggleButtonInput = 2;
+  public static final int ToggleButtonSpan = 3;
+  public static final int FormLabel = 4;
+  public static final int FormText = 5;
+  public static final int FormButton = 6;
+  public static final int FileUploadForm = 7;
+  public static final int FileUploadInput = 8;
   public static final int ProgressBarBar = 100;
   public static final int ProgressBarLabel = 101;
 }

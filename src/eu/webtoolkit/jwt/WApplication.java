@@ -100,6 +100,7 @@ public class WApplication extends WObject {
   public WApplication(final WEnvironment env) {
     super();
     this.requestTooLarge_ = new Signal1<Long>();
+    this.unsuspended_ = new Signal();
     this.session_ = env.session_;
     this.title_ = new WString();
     this.closeMessage_ = new WString();
@@ -587,6 +588,7 @@ public class WApplication extends WObject {
    */
   public void setTheme(final WTheme theme) {
     this.theme_ = theme;
+    this.theme_.init(this);
   }
   /** Returns the theme. */
   public WTheme getTheme() {
@@ -2439,6 +2441,15 @@ public class WApplication extends WObject {
     this.session_.setState(WebSession.State.Suspended, (int) duration.getSeconds());
   }
   /**
+   * {@link Signal} that is emitted when the application is no longer suspended.
+   *
+   * <p>This can be used to apply changes which were difficult to do as a result of the application
+   * not being rendered. Eg. JWt uses this to trigger a login as a result of single sign-on.
+   */
+  public Signal unsuspended() {
+    return this.unsuspended_;
+  }
+  /**
    * Notifies an event to the application.
    *
    * <p>This method is called by the event loop for propagating an event to the application. It
@@ -2614,6 +2625,7 @@ public class WApplication extends WObject {
   }
 
   private Signal1<Long> requestTooLarge_;
+  private Signal unsuspended_;
 
   static class ScriptLibrary {
     private static Logger logger = LoggerFactory.getLogger(ScriptLibrary.class);

@@ -597,8 +597,9 @@ public class WTemplate extends WInteractWidget {
    * @see WTemplate#bindString(String varName, CharSequence value, TextFormat textFormat)
    * @see WTemplate#resolveWidget(String varName)
    */
-  public void bindWidget(final String varName, WWidget widget) {
+  public WWidget bindWidget(final String varName, WWidget widget) {
     boolean setNull = !(widget != null);
+    WWidget widgetPtrCopy = widget;
     if (!setNull) {
       this.strings_.remove(varName);
       switch (this.widgetIdMode_) {
@@ -613,7 +614,7 @@ public class WTemplate extends WInteractWidget {
     } else {
       WString j = this.strings_.get(varName);
       if (j != null && (j.length() == 0)) {
-        return;
+        return widgetPtrCopy;
       }
       this.strings_.put(varName, new WString());
     }
@@ -632,9 +633,15 @@ public class WTemplate extends WInteractWidget {
     }
     this.changed_ = true;
     this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
+    return widgetPtrCopy;
   }
   // public Widget  bindWidget(final String varName, <Woow... some pseudoinstantiation type!>
   // widget) ;
+  // public Widget  (final String varName) ;
+  // public Widget  (final String varName, Arg1 arg1) ;
+  // public Widget  (final String varName, Arg1 arg1, Arg2 arg2) ;
+  // public Widget  (final String varName, Arg1 arg1, Arg2 arg2, Arg3 arg3) ;
+  // public Widget  (final String varName, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) ;
   /**
    * Unbinds a widget by variable name.
    *

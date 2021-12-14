@@ -835,7 +835,7 @@ public class WLineEdit extends WFormWidget {
     if (app.getEnvironment().agentIsIE() && this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
       DomElement e = DomElement.getForUpdate(this, this.getDomElementType());
       DomElement d = this.createDomElement(app);
-      app.getTheme().apply(this.getSelfWidget(), d, 0);
+      app.getTheme().apply(this.getSelfWidget(), d, ElementThemeRole.MainElement);
       e.replaceWith(d);
       result.add(e);
     } else {

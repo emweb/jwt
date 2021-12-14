@@ -210,7 +210,7 @@ public class WToolBar extends WCompositeWidget {
         this.setStyleClass("btn-toolbar");
         if (this.impl_.getCount() > 0) {
           WContainerWidget group = new WContainerWidget();
-          group.setStyleClass("btn-group");
+          group.setStyleClass("btn-group me-2");
           while (this.impl_.getCount() > 0) {
             WWidget w = this.impl_.removeWidget(this.impl_.getWidget(0));
             group.addWidget(w);
@@ -241,7 +241,7 @@ public class WToolBar extends WCompositeWidget {
     if (!(this.lastGroup_ != null)) {
       this.lastGroup_ = new WContainerWidget();
       this.impl_.addWidget(this.lastGroup_);
-      this.lastGroup_.addStyleClass("btn-group");
+      this.lastGroup_.addStyleClass("btn-group me-2");
     }
     return this.lastGroup_;
   }

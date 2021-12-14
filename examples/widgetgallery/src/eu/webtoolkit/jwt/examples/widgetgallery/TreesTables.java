@@ -19,24 +19,24 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class TreesTables extends TopicWidget {
+class TreesTables extends Topic {
   private static Logger logger = LoggerFactory.getLogger(TreesTables.class);
 
-  public TreesTables(WContainerWidget parentContainer) {
+  public TreesTables() {
     super();
     this.filteredCocktails = null;
     this.filteredSortedCocktails = null;
-    addText(tr("mvc-intro"), this);
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-
-  public TreesTables() {
-    this((WContainerWidget) null);
   }
 
   public void populateSubMenu(WMenu menu) {
     menu.setInternalBasePath("/trees-tables");
-    menu.addItem("Tables", this.tables()).setPathComponent("");
+    menu.addItem(
+            "Tables",
+            DeferredWidget.deferCreate(
+                () -> {
+                  return TreesTables.this.tables();
+                }))
+        .setPathComponent("");
     menu.addItem(
         "Trees",
         DeferredWidget.deferCreate(
@@ -173,13 +173,13 @@ class TreesTables extends TopicWidget {
           new WString("{1}").arg(employee.pay).toString(),
           (WContainerWidget) table_.getElementAt(row, 3));
     }
-    table_.addStyleClass("table form-inline");
+    table_.addStyleClass("table");
     WContainerWidget result = new WContainerWidget();
     result.addWidget(table);
     new WText("Options:", (WContainerWidget) result);
     addOptionToggle(table_, "borders", "table-bordered", result);
     addOptionToggle(table_, "hover", "table-hover", result);
-    addOptionToggle(table_, "condensed", "table-condensed", result);
+    addOptionToggle(table_, "small", "table-sm", result);
     addOptionToggle(table_, "stripes", "table-striped", result);
     return result;
   }

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,7 +192,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	private byte flags_;
 	private int id_;
 	private String name_;
-	private static int nextId_ = 0;
+	private static AtomicInteger nextId_ = new AtomicInteger(0);
 	private WObject sender_;
 
 	AbstractEventSignal(String name, WObject sender, boolean autoLearn) {
@@ -199,7 +200,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		name_ = name;
 		learningListeners = null;
 		flags_ = 0;
-		id_ = nextId_++;
+		id_ = nextId_.incrementAndGet();
 		
 		if (name_ == null)
 			flags_ |= BIT_SIGNAL_SERVER_ANYWAY;

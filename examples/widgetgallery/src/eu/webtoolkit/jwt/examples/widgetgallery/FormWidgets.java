@@ -19,21 +19,21 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FormWidgets extends TopicWidget {
+class FormWidgets extends Topic {
   private static Logger logger = LoggerFactory.getLogger(FormWidgets.class);
 
-  public FormWidgets(WContainerWidget parentContainer) {
-    super();
-    addText(tr("formwidgets-intro"), this);
-    if (parentContainer != null) parentContainer.addWidget(this);
-  }
-
   public FormWidgets() {
-    this((WContainerWidget) null);
+    super();
   }
 
   public void populateSubMenu(WMenu menu) {
-    menu.addItem("Introduction", this.introduction()).setPathComponent("");
+    menu.addItem(
+            "Introduction",
+            DeferredWidget.deferCreate(
+                () -> {
+                  return FormWidgets.this.introduction();
+                }))
+        .setPathComponent("");
     menu.addItem(
         "Line/Text editor",
         DeferredWidget.deferCreate(
@@ -124,9 +124,11 @@ class FormWidgets extends TopicWidget {
     TopicTemplate result = new TopicTemplate("forms-introduction");
     result.bindWidget("SimpleForm", SimpleForm());
     result.bindWidget("FormModel", FormModel());
-    result.bindString("simpleForm-template", reindent(tr("simpleForm-template")), TextFormat.Plain);
-    result.bindString("form-field", reindent(tr("form-field")), TextFormat.Plain);
-    result.bindString("userForm-template", reindent(tr("userForm-template")), TextFormat.Plain);
+    result.bindString(
+        "simpleForm-template", reindent(WString.tr("simpleForm-template")), TextFormat.Plain);
+    result.bindString("form-field", reindent(WString.tr("form-field")), TextFormat.Plain);
+    result.bindString(
+        "userForm-template", reindent(WString.tr("userForm-template")), TextFormat.Plain);
     return result;
   }
 
@@ -139,8 +141,10 @@ class FormWidgets extends TopicWidget {
     result.bindWidget("SpinBox", SpinBox());
     result.bindWidget("TextSide", TextSide());
     result.bindWidget("InputMask", InputMask());
-    result.bindString("lineEdit-template", reindent(tr("lineEdit-template")), TextFormat.Plain);
-    result.bindString("editSide-template", reindent(tr("editSide-template")), TextFormat.Plain);
+    result.bindString(
+        "lineEdit-template", reindent(WString.tr("lineEdit-template")), TextFormat.Plain);
+    result.bindString(
+        "editSide-template", reindent(WString.tr("editSide-template")), TextFormat.Plain);
     return result;
   }
 
@@ -187,7 +191,6 @@ class FormWidgets extends TopicWidget {
     result.bindWidget("CalendarExtended", CalendarExtended());
     result.bindWidget("DateEdit", DateEdit());
     result.bindWidget("TimeEdit", TimeEdit());
-    result.bindWidget("DatePicker", DatePicker());
     return result;
   }
 
@@ -230,14 +233,20 @@ class FormWidgets extends TopicWidget {
     result.bindWidget("PushButtonAction", PushButtonAction());
     result.bindString(
         "appendedDropdownButton-template",
-        reindent(tr("appendedDropdownButton-template")),
+        reindent(WString.tr("appendedDropdownButton-template")),
         TextFormat.Plain);
     result.bindString(
-        "pushButtonColor-template", reindent(tr("pushButtonColor-template")), TextFormat.Plain);
+        "pushButtonColor-template",
+        reindent(WString.tr("pushButtonColor-template")),
+        TextFormat.Plain);
     result.bindString(
-        "pushButtonSize-template", reindent(tr("pushButtonSize-template")), TextFormat.Plain);
+        "pushButtonSize-template",
+        reindent(WString.tr("pushButtonSize-template")),
+        TextFormat.Plain);
     result.bindString(
-        "pushButtonAction-template", reindent(tr("pushButtonAction-template")), TextFormat.Plain);
+        "pushButtonAction-template",
+        reindent(WString.tr("pushButtonAction-template")),
+        TextFormat.Plain);
     return result;
   }
 
@@ -246,15 +255,17 @@ class FormWidgets extends TopicWidget {
     result.bindWidget("Validation", Validation());
     result.bindWidget("ValidationDate", ValidationDate());
     result.bindWidget("ValidationModel", ValidationModel());
-    result.bindString("validation-template", reindent(tr("validation-template")), TextFormat.Plain);
+    result.bindString(
+        "validation-template", reindent(WString.tr("validation-template")), TextFormat.Plain);
     return result;
   }
 
   private WWidget example() {
     TopicTemplate result = new TopicTemplate("forms-integration-example");
     result.bindWidget("FormModel", FormModel());
-    result.bindString("form-field", reindent(tr("form-field")), TextFormat.Plain);
-    result.bindString("userForm-template", reindent(tr("userForm-template")), TextFormat.Plain);
+    result.bindString("form-field", reindent(WString.tr("form-field")), TextFormat.Plain);
+    result.bindString(
+        "userForm-template", reindent(WString.tr("userForm-template")), TextFormat.Plain);
     return result;
   }
 
@@ -841,63 +852,6 @@ class FormWidgets extends TopicWidget {
     return form;
   }
 
-  WWidget DatePicker() {
-    WTemplate form = new WTemplate(WString.tr("dateEdit-template"));
-    form.addFunction("id", WTemplate.Functions.id);
-    final WDatePicker dp1 = new WDatePicker();
-    form.bindWidget("from", dp1);
-    dp1.setDate(WDate.getCurrentServerDate().addDays(1));
-    final WDatePicker dp2 = new WDatePicker();
-    form.bindWidget("to", dp2);
-    dp2.setFormat("dd MM yyyy");
-    dp2.getCalendar().setHorizontalHeaderFormat(CalendarHeaderFormat.SingleLetterDayNames);
-    dp2.setBottom(dp1.getDate());
-    WPushButton button = new WPushButton("Save");
-    form.bindWidget("save", button);
-    final WText out = new WText();
-    form.bindWidget("out", out);
-    dp1.getLineEdit()
-        .changed()
-        .addListener(
-            this,
-            () -> {
-              dp2.setBottom(dp1.getDate());
-              out.setText("Date picker 1 is changed.");
-            });
-    dp2.getLineEdit()
-        .changed()
-        .addListener(
-            this,
-            () -> {
-              dp1.setTop(dp2.getDate());
-              out.setText("Date picker 2 is changed.");
-            });
-    button
-        .clicked()
-        .addListener(
-            this,
-            () -> {
-              if (dp1.getLineEdit().getText().length() == 0
-                  || dp2.getLineEdit().getText().length() == 0) {
-                out.setText("You should enter two dates!");
-              } else {
-                int days = dp1.getDate().getDaysTo(dp2.getDate()) + 1;
-                if (days == 0) {
-                  out.setText("It's fine to take holiday just for one day!");
-                } else {
-                  if (days > 1) {
-                    out.setText(
-                        new WString("So, you want to take holiday for a period of {1} days?...")
-                            .arg(days));
-                  } else {
-                    out.setText("Invalid period!");
-                  }
-                }
-              }
-            });
-    return form;
-  }
-
   WWidget InPlaceEditButtons() {
     WContainerWidget container = new WContainerWidget();
     WInPlaceEdit ipe = new WInPlaceEdit("This is editable text", (WContainerWidget) container);
@@ -1021,7 +975,6 @@ class FormWidgets extends TopicWidget {
   WWidget FileUpload() {
     WContainerWidget container = new WContainerWidget();
     final WFileUpload fu = new WFileUpload((WContainerWidget) container);
-    fu.setFileTextSize(50);
     fu.setProgressBar(new WProgressBar());
     fu.setMargin(new WLength(10), EnumSet.of(Side.Right));
     final WPushButton uploadButton = new WPushButton("Send", (WContainerWidget) container);
@@ -1182,11 +1135,11 @@ class FormWidgets extends TopicWidget {
 
   WWidget PushButtonColor() {
     WTemplate result = new WTemplate(WString.tr("pushButtonColor-template"));
-    WPushButton button = new WPushButton("Default");
-    result.bindWidget("button-default", button);
-    button = new WPushButton("Primary");
+    WPushButton button = new WPushButton("Primary");
     button.setStyleClass("btn-primary");
     result.bindWidget("button-primary", button);
+    button = new WPushButton("Secondary");
+    result.bindWidget("button-secondary", button);
     button = new WPushButton("Info");
     button.setStyleClass("btn-info");
     result.bindWidget("button-info", button);
@@ -1199,12 +1152,21 @@ class FormWidgets extends TopicWidget {
     button = new WPushButton("Danger");
     button.setStyleClass("btn-danger");
     result.bindWidget("button-danger", button);
-    button = new WPushButton("Inverse");
-    button.setStyleClass("btn-inverse");
-    result.bindWidget("button-inverse", button);
+    button = new WPushButton("Light");
+    button.setStyleClass("btn-light");
+    result.bindWidget("button-light", button);
+    button = new WPushButton("Dark");
+    button.setStyleClass("btn-dark");
+    result.bindWidget("button-dark", button);
+    button = new WPushButton("Outline");
+    button.setStyleClass("btn-outline-primary");
+    result.bindWidget("button-outline", button);
     button = new WPushButton("Link");
     button.setStyleClass("btn-link");
     result.bindWidget("button-link", button);
+    button = new WPushButton("");
+    button.setStyleClass("btn-close");
+    result.bindWidget("button-close", button);
     return result;
   }
 
@@ -1218,9 +1180,6 @@ class FormWidgets extends TopicWidget {
     button = new WPushButton("Small");
     button.setStyleClass("btn-sm");
     result.bindWidget("button-small", button);
-    button = new WPushButton("Mini");
-    button.setStyleClass("btn-xs");
-    result.bindWidget("button-mini", button);
     return result;
   }
 

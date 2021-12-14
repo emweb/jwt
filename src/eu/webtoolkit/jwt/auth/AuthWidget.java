@@ -515,9 +515,13 @@ public class AuthWidget extends WTemplateFormView {
   /**
    * Creates a widget to login using OAuth.
    *
-   * <p>The default implementation adds an icon for each OAuth service provider available.
+   * <p>The default implementation adds an icon for each OAuth service provider available. The icon
+   * that will be used for each service is a PNG file with a path based on the {@link
+   * OAuthService#getName()} of the service. If the name is is &quot;myService&quot;, then the icon
+   * path will be &quot;css/oauth-myService.png&quot;. JWt does not bundle any icons by default, so
+   * you should make sure that the icon is in place.
    *
-   * <p>There&apos;s alot to say about making a usable login mechanism for OAuth (and federated
+   * <p>There&apos;s a lot to say about making a usable login mechanism for OAuth (and federated
    * login services in general), see <a
    * href="https://sites.google.com/site/oauthgoog/UXFedLogin">https://sites.google.com/site/oauthgoog/UXFedLogin</a>.
    *

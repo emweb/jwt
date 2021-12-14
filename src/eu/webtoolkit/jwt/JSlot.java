@@ -86,7 +86,7 @@ public class JSlot {
    */
   public JSlot(WWidget parent) {
     this.widget_ = parent;
-    this.fid_ = nextFid_++;
+    this.fid_ = nextFid_.getAndIncrement();
     this.nbArgs_ = 0;
     this.create();
   }
@@ -110,7 +110,7 @@ public class JSlot {
    */
   public JSlot(final String javaScript, WWidget parent) {
     this.widget_ = parent;
-    this.fid_ = nextFid_++;
+    this.fid_ = nextFid_.getAndIncrement();
     this.nbArgs_ = 0;
     this.create();
     this.setJavaScript(javaScript);
@@ -133,7 +133,7 @@ public class JSlot {
    */
   public JSlot(int nbArgs, WWidget parent) {
     this.widget_ = parent;
-    this.fid_ = nextFid_++;
+    this.fid_ = nextFid_.getAndIncrement();
     this.nbArgs_ = nbArgs;
     if (this.nbArgs_ < 0 || this.nbArgs_ > 6) {
       throw new WException("The number of arguments given must be between 0 and 6.");
@@ -150,7 +150,7 @@ public class JSlot {
    */
   public JSlot(final String javaScript, int nbArgs, WWidget parent) {
     this.widget_ = parent;
-    this.fid_ = nextFid_++;
+    this.fid_ = nextFid_.getAndIncrement();
     this.nbArgs_ = nbArgs;
     if (this.nbArgs_ < 0 || this.nbArgs_ > 6) {
       throw new WException("The number of arguments given must be between 0 and 6.");
@@ -537,7 +537,8 @@ public class JSlot {
     this.imp_ = new AbstractEventSignal.JavaScriptListener(this.widget_, null, ss.toString());
   }
 
-  private int fid_;
-  private static int nextFid_ = 0;
+  private final int fid_;
+  private static java.util.concurrent.atomic.AtomicInteger nextFid_ =
+      new java.util.concurrent.atomic.AtomicInteger(0);
   private int nbArgs_;
 }

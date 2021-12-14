@@ -82,7 +82,15 @@ public class WFileUpload extends WWebWidget {
     this.containedProgressBar_ = null;
     this.progressBar_ = null;
     this.acceptAttributes_ = "";
-    this.setInline(true);
+    WApplication app = WApplication.getInstance();
+    if (app != null) {
+      WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+      if (bs5Theme != null) {
+        super.setInline(false);
+      } else {
+        super.setInline(true);
+      }
+    }
     this.create();
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -575,8 +583,10 @@ public class WFileUpload extends WWebWidget {
     DomElement result = DomElement.createNew(this.getDomElementType());
     if (result.getType() == DomElementType.FORM) {
       result.setId(this.getId());
+      app.getTheme().apply(this, result, ElementThemeRole.FileUploadForm);
     } else {
       result.setName(this.getId());
+      app.getTheme().apply(this, result, ElementThemeRole.FileUploadInput);
     }
     EventSignal change = this.voidEventSignal(CHANGE_SIGNAL, false);
     if (this.fileUploadTarget_ != null) {
@@ -591,12 +601,12 @@ public class WFileUpload extends WWebWidget {
       form.setAttribute("method", "post");
       form.setAttribute("action", this.fileUploadTarget_.getUrl());
       form.setAttribute("enctype", "multipart/form-data");
-      form.setProperty(Property.Style, "margin:0;padding:0;display:inline");
       form.setProperty(Property.Target, "if" + this.getId());
       DomElement d = DomElement.createNew(DomElementType.SPAN);
       d.addChild(i);
       form.addChild(d);
       DomElement input = DomElement.createNew(DomElementType.INPUT);
+      app.getTheme().apply(this, input, ElementThemeRole.FileUploadInput);
       input.setAttribute("type", "file");
       if (this.flags_.get(BIT_MULTIPLE)) {
         input.setAttribute("multiple", "multiple");

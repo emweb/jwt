@@ -70,6 +70,15 @@ public abstract class WTheme extends WObject {
    */
   public abstract List<WLinkedCssStyleSheet> getStyleSheets();
   /**
+   * Called when the theme is assigned to a {@link WApplication}.
+   *
+   * <p>This allows the theme to do things like load resource bundles when it is added to an
+   * application using {@link WApplication#setTheme(WTheme theme) WApplication#setTheme()}.
+   *
+   * <p>The default implementation does nothing.
+   */
+  public void init(WApplication app) {}
+  /**
    * Applies the theme to a child of a composite widget.
    *
    * <p>The <code>widgetRole</code> indicates the role that <code>child</code> has within the
@@ -83,6 +92,14 @@ public abstract class WTheme extends WObject {
    * further customized to reflect the theme.
    */
   public abstract void apply(WWidget widget, final DomElement element, int elementRole);
+  /**
+   * Sets the data target for a widget.
+   *
+   * <p>The <code>widget</code> is a bootstrap element that requires a data-bs-target attribute to
+   * function (with Bootstrap JS). The <code>target</code> is the element that is targeted by the
+   * <code>widget</code>.
+   */
+  public void setDataTarget(WWidget widget, WWidget target) {}
   /** Returns a generic CSS class name for a disabled element. */
   public abstract String getDisabledClass();
   /** Returns a generic CSS class name for an active element. */
