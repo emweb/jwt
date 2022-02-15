@@ -1078,10 +1078,7 @@ class WebSession {
                       if (!(esb != null)) {
                         continue;
                       }
-                      WTimerWidget t =
-                          ((esb.getOwner()) instanceof WTimerWidget
-                              ? (WTimerWidget) (esb.getOwner())
-                              : null);
+                      WTimerWidget t = ObjectUtils.cast(esb.getOwner(), WTimerWidget.class);
                       if (t != null) {
                         ++timerSignals;
                       } else {
@@ -1771,10 +1768,7 @@ class WebSession {
     final List<WWidget> timerWidgets = timers.getChildren();
     List<WTimerWidget> expired = new ArrayList<WTimerWidget>();
     for (int i = 0; i < timerWidgets.size(); ++i) {
-      WTimerWidget wti =
-          ((timerWidgets.get(i)) instanceof WTimerWidget
-              ? (WTimerWidget) (timerWidgets.get(i))
-              : null);
+      WTimerWidget wti = ObjectUtils.cast(timerWidgets.get(i), WTimerWidget.class);
       if (wti.isTimerExpired()) {
         expired.add(wti);
       }
@@ -1905,7 +1899,7 @@ class WebSession {
   private AbstractEventSignal decodeSignal(final String signalId, boolean checkExposed) {
     AbstractEventSignal result = this.app_.decodeExposedSignal(signalId);
     if (result != null && checkExposed) {
-      WWidget w = ((result.getOwner()) instanceof WWidget ? (WWidget) (result.getOwner()) : null);
+      WWidget w = ObjectUtils.cast(result.getOwner(), WWidget.class);
       if (w != null && !this.app_.isExposed(w)) {
         result = null;
       }
@@ -2177,7 +2171,7 @@ class WebSession {
       String formName = i.getKey();
       WObject obj = i.getValue();
       if (!(0L != 0)) {
-        WWidget w = ((obj) instanceof WWidget ? (WWidget) (obj) : null);
+        WWidget w = ObjectUtils.cast(obj, WWidget.class);
         if (w != null && !w.isEnabled()) {
           continue;
         }

@@ -165,10 +165,7 @@ class WTimePicker extends WCompositeWidget {
   }
 
   public void configure() {
-    WTemplate container =
-        ((this.getImplementation()) instanceof WTemplate
-            ? (WTemplate) (this.getImplementation())
-            : null);
+    WTemplate container = ObjectUtils.cast(this.getImplementation(), WTemplate.class);
     if (this.isFormatS()) {
       this.sbsecond_ = new WSpinBox();
       container.bindWidget("second", this.sbsecond_);

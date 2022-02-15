@@ -44,10 +44,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
     }
     WAbstractGridData first;
     if (axis == Axis.X3D) {
-      first =
-          ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (this.chart_.getDataSeries().get(0))
-              : null);
+      first = ObjectUtils.cast(this.chart_.getDataSeries().get(0), WAbstractGridData.class);
       if (first == null) {
         throw new WException(
             "WChart3DImplementation: can only count the categories in WAbstractGridData");
@@ -56,10 +53,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
       }
     } else {
       if (axis == Axis.Y3D) {
-        first =
-            ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (this.chart_.getDataSeries().get(0))
-                : null);
+        first = ObjectUtils.cast(this.chart_.getDataSeries().get(0), WAbstractGridData.class);
         if (first == null) {
           throw new WException(
               "WChart3DImplementation: can only count the categories in WAbstractGridData");
@@ -81,9 +75,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
       return new WString(String.valueOf(u));
     }
     WAbstractGridData first =
-        ((this.chart_.getDataSeries().get(0)) instanceof WAbstractGridData
-            ? (WAbstractGridData) (this.chart_.getDataSeries().get(0))
-            : null);
+        ObjectUtils.cast(this.chart_.getDataSeries().get(0), WAbstractGridData.class);
     if (!(first != null)) {
       throw new WException(
           "WChart3DImplementation: can only count the categories in WAbstractGridData");
@@ -123,24 +115,13 @@ class WChart3DImplementation implements WAbstractChartImplementation {
         return range;
       case Category:
         for (int k = 0; k < series.size(); k++) {
-          griddata =
-              ((series.get(k)) instanceof WAbstractGridData
-                  ? (WAbstractGridData) (series.get(k))
-                  : null);
+          griddata = ObjectUtils.cast(series.get(k), WAbstractGridData.class);
           if (griddata == null || griddata.getType() != Series3DType.Bar) {
             throw new WException("WChart3DImplementation: not all data is categorical");
           }
         }
-        xDim =
-            (((series.get(0)) instanceof WAbstractGridData
-                    ? (WAbstractGridData) (series.get(0))
-                    : null))
-                .getNbXPoints();
-        yDim =
-            (((series.get(0)) instanceof WAbstractGridData
-                    ? (WAbstractGridData) (series.get(0))
-                    : null))
-                .getNbYPoints();
+        xDim = (ObjectUtils.cast(series.get(0), WAbstractGridData.class)).getNbXPoints();
+        yDim = (ObjectUtils.cast(series.get(0), WAbstractGridData.class)).getNbYPoints();
         min = 0.0;
         for (int i = 0; i < xDim; i++) {
           for (int j = 0; j < yDim; j++) {
@@ -148,10 +129,7 @@ class WChart3DImplementation implements WAbstractChartImplementation {
               if (series.get(k).isHidden()) {
                 continue;
               }
-              griddata =
-                  ((series.get(k)) instanceof WAbstractGridData
-                      ? (WAbstractGridData) (series.get(k))
-                      : null);
+              griddata = ObjectUtils.cast(series.get(k), WAbstractGridData.class);
               stackedBarsHeight += StringUtils.asNumber(griddata.data(i, j));
             }
             if (stackedBarsHeight > max) {

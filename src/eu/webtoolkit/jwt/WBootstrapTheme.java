@@ -70,13 +70,11 @@ public class WBootstrapTheme extends WTheme {
    */
   public void setResponsive(boolean enabled) {
     if (this.getVersion() == BootstrapVersion.v2) {
-      WBootstrap2Theme bootstrap2 =
-          ((this.impl_) instanceof WBootstrap2Theme ? (WBootstrap2Theme) (this.impl_) : null);
+      WBootstrap2Theme bootstrap2 = ObjectUtils.cast(this.impl_, WBootstrap2Theme.class);
       assert bootstrap2 != null;
       bootstrap2.setResponsive(enabled);
     } else {
-      WBootstrap3Theme bootstrap3 =
-          ((this.impl_) instanceof WBootstrap3Theme ? (WBootstrap3Theme) (this.impl_) : null);
+      WBootstrap3Theme bootstrap3 = ObjectUtils.cast(this.impl_, WBootstrap3Theme.class);
       assert bootstrap3 != null;
       bootstrap3.setResponsive(enabled);
     }
@@ -90,13 +88,11 @@ public class WBootstrapTheme extends WTheme {
    */
   public boolean isResponsive() {
     if (this.getVersion() == BootstrapVersion.v2) {
-      WBootstrap2Theme bootstrap2 =
-          ((this.impl_) instanceof WBootstrap2Theme ? (WBootstrap2Theme) (this.impl_) : null);
+      WBootstrap2Theme bootstrap2 = ObjectUtils.cast(this.impl_, WBootstrap2Theme.class);
       assert bootstrap2 != null;
       return bootstrap2.isResponsive();
     } else {
-      WBootstrap3Theme bootstrap3 =
-          ((this.impl_) instanceof WBootstrap3Theme ? (WBootstrap3Theme) (this.impl_) : null);
+      WBootstrap3Theme bootstrap3 = ObjectUtils.cast(this.impl_, WBootstrap3Theme.class);
       assert bootstrap3 != null;
       return bootstrap3.isResponsive();
     }
@@ -152,8 +148,7 @@ public class WBootstrapTheme extends WTheme {
   public void setFormControlStyleEnabled(boolean enabled) {
     this.formControlStyle_ = enabled;
     if (this.getVersion() == BootstrapVersion.v3) {
-      WBootstrap3Theme bootstrap3 =
-          ((this.impl_) instanceof WBootstrap3Theme ? (WBootstrap3Theme) (this.impl_) : null);
+      WBootstrap3Theme bootstrap3 = ObjectUtils.cast(this.impl_, WBootstrap3Theme.class);
       assert bootstrap3 != null;
       bootstrap3.setFormControlStyleEnabled(enabled);
     }

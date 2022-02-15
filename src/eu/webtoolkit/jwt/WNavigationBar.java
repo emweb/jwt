@@ -44,7 +44,7 @@ public class WNavigationBar extends WTemplate {
     // this.implementStateless(WNavigationBar.collapseContents,WNavigationBar.undoExpandContents);
     // this.implementStateless(WNavigationBar.expandContents,WNavigationBar.undoExpandContents);
     WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
     if (bs5Theme != null) {
       this.setResponsive(true);
     }
@@ -99,7 +99,7 @@ public class WNavigationBar extends WTemplate {
   public void setResponsive(boolean responsive) {
     NavContainer contents = (NavContainer) this.resolveWidget("contents");
     WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
     if (bs5Theme != null) {
       if (!responsive || (WInteractWidget) this.resolveWidget("collapse-button") != null) {
         return;
@@ -252,7 +252,7 @@ public class WNavigationBar extends WTemplate {
    * &quot;me-auto&quot; and &quot;ms-auto&quot; for alignment instead. </i>
    */
   public void addWidget(WWidget widget, AlignmentFlag alignment) {
-    if (((widget) instanceof WMenu ? (WMenu) (widget) : null) != null) {
+    if (ObjectUtils.cast(widget, WMenu.class) != null) {
       this.align(widget, alignment);
       WContainerWidget contents = (WContainerWidget) this.resolveWidget("contents");
       contents.addWidget(widget);

@@ -258,10 +258,7 @@ class WTreeViewNode extends WContainerWidget {
     WContainerWidget c = this.getChildContainer();
     int first = this.topSpacer() != null ? 1 : 0;
     if (first < c.getCount()) {
-      WTreeViewNode n =
-          ((c.getWidget(first)) instanceof WTreeViewNode
-              ? (WTreeViewNode) (c.getWidget(first))
-              : null);
+      WTreeViewNode n = ObjectUtils.cast(c.getWidget(first), WTreeViewNode.class);
       if (n != null) {
         int row = this.getTopSpacerHeight();
         int index = first + (modelRow - row);
@@ -289,9 +286,7 @@ class WTreeViewNode extends WContainerWidget {
     WContainerWidget c = this.getChildContainer();
     int nextI = prev != null ? c.getIndexOf(prev) + 1 : this.topSpacer() != null ? 1 : 0;
     if (nextI < c.getCount()) {
-      return ((c.getWidget(nextI)) instanceof WTreeViewNode
-          ? (WTreeViewNode) (c.getWidget(nextI))
-          : null);
+      return ObjectUtils.cast(c.getWidget(nextI), WTreeViewNode.class);
     } else {
       return null;
     }
@@ -351,9 +346,7 @@ class WTreeViewNode extends WContainerWidget {
     WContainerWidget c = this.getChildContainer();
     RowSpacer result = null;
     if (c.getCount() == 0
-        || !((result =
-                ((c.getWidget(0)) instanceof RowSpacer ? (RowSpacer) (c.getWidget(0)) : null))
-            != null)) {
+        || !((result = ObjectUtils.cast(c.getWidget(0), RowSpacer.class)) != null)) {
       if (!create) {
         return null;
       } else {
@@ -372,11 +365,7 @@ class WTreeViewNode extends WContainerWidget {
     WContainerWidget c = this.getChildContainer();
     RowSpacer result = null;
     if (c.getCount() == 0
-        || !((result =
-                ((c.getWidget(c.getCount() - 1)) instanceof RowSpacer
-                    ? (RowSpacer) (c.getWidget(c.getCount() - 1))
-                    : null))
-            != null)) {
+        || !((result = ObjectUtils.cast(c.getWidget(c.getCount() - 1), RowSpacer.class)) != null)) {
       if (!create) {
         return null;
       } else {
@@ -422,8 +411,7 @@ class WTreeViewNode extends WContainerWidget {
       inc = 1;
     }
     for (int i = first; i != end; i += inc) {
-      WTreeViewNode n =
-          ((c.getWidget(i)) instanceof WTreeViewNode ? (WTreeViewNode) (c.getWidget(i)) : null);
+      WTreeViewNode n = ObjectUtils.cast(c.getWidget(i), WTreeViewNode.class);
       if (n != null && n.getModelIndex().getRow() >= start) {
         this.view_.removeRenderedNode(n);
         n.index_ =
@@ -608,10 +596,7 @@ class WTreeViewNode extends WContainerWidget {
     } else {
       WContainerWidget row = (WContainerWidget) this.nodeWidget_.resolveWidget("cols-row");
       if (this.view_.getRowHeaderCount() != 0) {
-        row =
-            ((row.getWidget(0)) instanceof WContainerWidget
-                ? (WContainerWidget) (row.getWidget(0))
-                : null);
+        row = ObjectUtils.cast(row.getWidget(0), WContainerWidget.class);
       }
       return row.getCount() >= column ? row.getWidget(column - 1) : null;
     }
@@ -648,7 +633,7 @@ class WTreeViewNode extends WContainerWidget {
       current.setStyleClass(WString.Empty.toString());
     }
     if (!WApplication.getInstance().getEnvironment().hasAjax()) {
-      WInteractWidget wi = ((newW) instanceof WInteractWidget ? (WInteractWidget) (newW) : null);
+      WInteractWidget wi = ObjectUtils.cast(newW, WInteractWidget.class);
       final WModelIndex ci = this.childIndex(column);
       if (wi != null) {
         wi.clicked()
@@ -665,10 +650,7 @@ class WTreeViewNode extends WContainerWidget {
     } else {
       WContainerWidget row = (WContainerWidget) this.nodeWidget_.resolveWidget("cols-row");
       if (this.view_.getRowHeaderCount() != 0) {
-        row =
-            ((row.getWidget(0)) instanceof WContainerWidget
-                ? (WContainerWidget) (row.getWidget(0))
-                : null);
+        row = ObjectUtils.cast(row.getWidget(0), WContainerWidget.class);
       }
       if (current != null) {
         {

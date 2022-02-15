@@ -602,8 +602,7 @@ public class WPainter {
    */
   public void drawStencilAlongPath(
       final WPainterPath stencil, final WPainterPath path, boolean softClipping) {
-    WCanvasPaintDevice cDevice =
-        ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_) : null);
+    WCanvasPaintDevice cDevice = ObjectUtils.cast(this.device_, WCanvasPaintDevice.class);
     if (cDevice != null) {
       cDevice.drawStencilAlongPath(stencil, path, softClipping);
     } else {
@@ -917,8 +916,7 @@ public class WPainter {
     if (!!EnumUtils.mask(alignmentFlags, AlignmentFlag.AlignHorizontalMask).isEmpty()) {
       alignmentFlags.add(AlignmentFlag.Left);
     }
-    WCanvasPaintDevice cDevice =
-        ((this.device_) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (this.device_) : null);
+    WCanvasPaintDevice cDevice = ObjectUtils.cast(this.device_, WCanvasPaintDevice.class);
     if (cDevice != null) {
       cDevice.drawTextOnPath(
           rect, alignmentFlags, text, transform, path, angle, lineHeight, softClipping);

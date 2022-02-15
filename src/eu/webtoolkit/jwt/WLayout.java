@@ -323,11 +323,10 @@ public abstract class WLayout extends WObject implements WLayoutItem {
   }
 
   protected LayoutImplementation getImplementation() {
-    if (((this.impl_) instanceof StdGridLayoutImpl2 ? (StdGridLayoutImpl2) (this.impl_) : null)
-        != null) {
+    if (ObjectUtils.cast(this.impl_, StdGridLayoutImpl2.class) != null) {
       return LayoutImplementation.JavaScript;
     }
-    if (((this.impl_) instanceof FlexLayoutImpl ? (FlexLayoutImpl) (this.impl_) : null) != null) {
+    if (ObjectUtils.cast(this.impl_, FlexLayoutImpl.class) != null) {
       return LayoutImplementation.Flex;
     }
     return this.preferredImplementation_;

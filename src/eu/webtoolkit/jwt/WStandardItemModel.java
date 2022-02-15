@@ -562,10 +562,7 @@ public class WStandardItemModel extends WAbstractItemModel {
 
   public void dropEvent(
       final WDropEvent e, DropAction action, int row, int column, final WModelIndex parent) {
-    WItemSelectionModel selectionModel =
-        ((e.getSource()) instanceof WItemSelectionModel
-            ? (WItemSelectionModel) (e.getSource())
-            : null);
+    WItemSelectionModel selectionModel = ObjectUtils.cast(e.getSource(), WItemSelectionModel.class);
     if (selectionModel != null
         && selectionModel.getModel() == this
         && selectionModel.getSelectionBehavior() == SelectionBehavior.Rows

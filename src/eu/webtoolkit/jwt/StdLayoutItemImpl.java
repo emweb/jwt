@@ -26,9 +26,7 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
   }
 
   public WContainerWidget getContainer() {
-    return ((this.getLayoutItem().getParentWidget()) instanceof WContainerWidget
-        ? (WContainerWidget) (this.getLayoutItem().getParentWidget())
-        : null);
+    return ObjectUtils.cast(this.getLayoutItem().getParentWidget(), WContainerWidget.class);
   }
 
   public abstract WLayoutItem getLayoutItem();
@@ -40,9 +38,7 @@ abstract class StdLayoutItemImpl extends WObject implements WLayoutItemImpl {
   public StdLayoutImpl getParentLayoutImpl() {
     WLayoutItem i = this.getLayoutItem();
     if (i.getParentLayout() != null) {
-      return ((i.getParentLayout().getImpl()) instanceof StdLayoutImpl
-          ? (StdLayoutImpl) (i.getParentLayout().getImpl())
-          : null);
+      return ObjectUtils.cast(i.getParentLayout().getImpl(), StdLayoutImpl.class);
     } else {
       return null;
     }

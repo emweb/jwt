@@ -526,6 +526,9 @@ public class WComboBox extends WFormWidget {
     if (this.itemsChanged_ || all) {
       if (!all) {
         element.removeAllChildren();
+        if (this.currentIndex_ == -1) {
+          this.selectionChanged_ = true;
+        }
       }
       DomElement currentGroup = null;
       boolean groupDisabled = true;

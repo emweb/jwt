@@ -226,7 +226,7 @@ public class WTemplateFormView extends WTemplate {
         }
         this.bindWidget(var, nw);
       }
-      WFormWidget fedit = ((edit) instanceof WFormWidget ? (WFormWidget) (edit) : null);
+      WFormWidget fedit = ObjectUtils.cast(edit, WFormWidget.class);
       if (fedit != null) {
         if (fedit.getValidator() != model.getValidator(field)
             && model.getValidator(field) != null) {
@@ -264,8 +264,7 @@ public class WTemplateFormView extends WTemplate {
     if (this.updateViewValue(model, field, (WWidget) edit)) {
       return;
     }
-    WAbstractToggleButton b =
-        ((edit) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (edit) : null);
+    WAbstractToggleButton b = ObjectUtils.cast(edit, WAbstractToggleButton.class);
     if (b != null) {
       Object v = model.getValue(field);
       if (!(v != null) || ((Boolean) v) == false) {
@@ -319,7 +318,7 @@ public class WTemplateFormView extends WTemplate {
    */
   public void updateModelField(WFormModel model, String field) {
     WWidget edit = this.resolveWidget(field);
-    WFormWidget fedit = ((edit) instanceof WFormWidget ? (WFormWidget) (edit) : null);
+    WFormWidget fedit = ObjectUtils.cast(edit, WFormWidget.class);
     if (fedit != null) {
       this.updateModelValue(model, field, fedit);
     } else {
@@ -338,8 +337,7 @@ public class WTemplateFormView extends WTemplate {
     if (this.updateModelValue(model, field, (WWidget) edit)) {
       return;
     }
-    WAbstractToggleButton b =
-        ((edit) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (edit) : null);
+    WAbstractToggleButton b = ObjectUtils.cast(edit, WAbstractToggleButton.class);
     if (b != null) {
       model.setValue(field, b.isChecked());
     } else {

@@ -183,8 +183,7 @@ public class WTreeView extends WAbstractItemView {
   public void setExpanded(final WModelIndex index, boolean expanded) {
     if (this.isExpanded(index) != expanded) {
       WWidget w = this.widgetForIndex(index);
-      WTreeViewNode node =
-          w != null ? ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w) : null) : null;
+      WTreeViewNode node = w != null ? ObjectUtils.cast(w, WTreeViewNode.class) : null;
       if (node != null) {
         if (expanded) {
           node.doExpand();
@@ -199,7 +198,7 @@ public class WTreeView extends WAbstractItemView {
           this.setCollapsed(index);
         }
         if (w != null) {
-          RowSpacer spacer = ((w) instanceof RowSpacer ? (RowSpacer) (w) : null);
+          RowSpacer spacer = ObjectUtils.cast(w, RowSpacer.class);
           int diff = this.subTreeHeight(index) - height;
           spacer.setRows(spacer.getRows() + diff);
           spacer.getNode().adjustChildrenHeight(diff);
@@ -556,9 +555,7 @@ public class WTreeView extends WAbstractItemView {
     if (count != 0 && !(oldCount != 0)) {
       this.addStyleClass("column1");
       WContainerWidget rootWrap =
-          ((this.contents_.getWidget(0)) instanceof WContainerWidget
-              ? (WContainerWidget) (this.contents_.getWidget(0))
-              : null);
+          ObjectUtils.cast(this.contents_.getWidget(0), WContainerWidget.class);
       rootWrap.setWidth(new WLength(100, LengthUnit.Percentage));
       rootWrap.setOverflow(Overflow.Hidden);
       this.contents_.setPositionScheme(PositionScheme.Relative);
@@ -914,9 +911,7 @@ public class WTreeView extends WAbstractItemView {
 
   private void rerenderTree() {
     WContainerWidget wrapRoot =
-        ((this.contents_.getWidget(0)) instanceof WContainerWidget
-            ? (WContainerWidget) (this.contents_.getWidget(0))
-            : null);
+        ObjectUtils.cast(this.contents_.getWidget(0), WContainerWidget.class);
     wrapRoot.clear();
     this.firstRenderedRow_ = this.getCalcOptimalFirstRenderedRow();
     this.validRowCount_ = 0;
@@ -1137,8 +1132,7 @@ public class WTreeView extends WAbstractItemView {
     WWidget parentWidget = this.widgetForIndex(parent);
     boolean renderedRowsChange = this.isExpandedRecursive(parent);
     if (parentWidget != null) {
-      WTreeViewNode parentNode =
-          ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget) : null);
+      WTreeViewNode parentNode = ObjectUtils.cast(parentWidget, WTreeViewNode.class);
       if (parentNode != null) {
         if (parentNode.isChildrenLoaded()) {
           WWidget startWidget = null;
@@ -1209,11 +1203,9 @@ public class WTreeView extends WAbstractItemView {
                 int extraBottomSpacer = 0;
                 while (parentNode.getChildContainer().getCount() > targetSize) {
                   WTreeViewNode n =
-                      ((parentNode.getChildContainer().getWidget(targetSize - 1))
-                              instanceof WTreeViewNode
-                          ? (WTreeViewNode)
-                              (parentNode.getChildContainer().getWidget(targetSize - 1))
-                          : null);
+                      ObjectUtils.cast(
+                          parentNode.getChildContainer().getWidget(targetSize - 1),
+                          WTreeViewNode.class);
                   assert n != null;
                   extraBottomSpacer += n.getRenderedHeight();
                   if (renderedRowsChange) {
@@ -1236,9 +1228,7 @@ public class WTreeView extends WAbstractItemView {
               }
               if (end == this.getModel().getRowCount(parent) - 1 && start >= 1) {
                 WTreeViewNode n =
-                    ((parentNode.widgetForModelRow(start - 1)) instanceof WTreeViewNode
-                        ? (WTreeViewNode) (parentNode.widgetForModelRow(start - 1))
-                        : null);
+                    ObjectUtils.cast(parentNode.widgetForModelRow(start - 1), WTreeViewNode.class);
                 if (n != null) {
                   n.updateGraphics(false, !this.getModel().hasChildren(n.getModelIndex()));
                 }
@@ -1251,7 +1241,7 @@ public class WTreeView extends WAbstractItemView {
         }
       } else {
         if (this.isExpanded(parent)) {
-          RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget) : null);
+          RowSpacer s = ObjectUtils.cast(parentWidget, RowSpacer.class);
           s.setRows(s.getRows() + count);
           s.getNode().adjustChildrenHeight(count);
           if (renderedRowsChange) {
@@ -1277,14 +1267,13 @@ public class WTreeView extends WAbstractItemView {
       this.removedHeight_ = 0;
       WWidget parentWidget = this.widgetForIndex(parent);
       if (parentWidget != null) {
-        WTreeViewNode parentNode =
-            ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget) : null);
+        WTreeViewNode parentNode = ObjectUtils.cast(parentWidget, WTreeViewNode.class);
         if (parentNode != null) {
           if (parentNode.isChildrenLoaded()) {
             for (int i = end; i >= start; --i) {
               WWidget w = parentNode.widgetForModelRow(i);
               assert w != null;
-              RowSpacer s = ((w) instanceof RowSpacer ? (RowSpacer) (w) : null);
+              RowSpacer s = ObjectUtils.cast(w, RowSpacer.class);
               if (s != null) {
                 WModelIndex childIndex = this.getModel().getIndex(i, 0, parent);
                 if (i == start && renderedRowsChange) {
@@ -1296,7 +1285,7 @@ public class WTreeView extends WAbstractItemView {
                 }
                 s.setRows(s.getRows() - childHeight);
               } else {
-                WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w) : null);
+                WTreeViewNode node = ObjectUtils.cast(w, WTreeViewNode.class);
                 if (renderedRowsChange) {
                   if (i == start) {
                     this.firstRemovedRow_ = node.renderedRow();
@@ -1312,7 +1301,7 @@ public class WTreeView extends WAbstractItemView {
           }
         } else {
           if (this.isExpanded(parent)) {
-            RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget) : null);
+            RowSpacer s = ObjectUtils.cast(parentWidget, RowSpacer.class);
             for (int i = start; i <= end; ++i) {
               WModelIndex childIndex = this.getModel().getIndex(i, 0, parent);
               int childHeight = this.subTreeHeight(childIndex);
@@ -1336,8 +1325,7 @@ public class WTreeView extends WAbstractItemView {
         && this.renderState_ != WAbstractItemView.RenderState.NeedRerenderData) {
       WWidget parentWidget = this.widgetForIndex(parent);
       if (parentWidget != null) {
-        WTreeViewNode parentNode =
-            ((parentWidget) instanceof WTreeViewNode ? (WTreeViewNode) (parentWidget) : null);
+        WTreeViewNode parentNode = ObjectUtils.cast(parentWidget, WTreeViewNode.class);
         if (parentNode != null) {
           if (parentNode.isChildrenLoaded()) {
             parentNode.normalizeSpacers();
@@ -1345,9 +1333,7 @@ public class WTreeView extends WAbstractItemView {
             parentNode.shiftModelIndexes(start, -count);
             if (end >= this.getModel().getRowCount(parent) && start >= 1) {
               WTreeViewNode n =
-                  ((parentNode.widgetForModelRow(start - 1)) instanceof WTreeViewNode
-                      ? (WTreeViewNode) (parentNode.widgetForModelRow(start - 1))
-                      : null);
+                  ObjectUtils.cast(parentNode.widgetForModelRow(start - 1), WTreeViewNode.class);
               if (n != null) {
                 n.updateGraphics(true, !this.getModel().hasChildren(n.getModelIndex()));
               }
@@ -1358,7 +1344,7 @@ public class WTreeView extends WAbstractItemView {
           }
         } else {
           if (this.isExpanded(parent)) {
-            RowSpacer s = ((parentWidget) instanceof RowSpacer ? (RowSpacer) (parentWidget) : null);
+            RowSpacer s = ObjectUtils.cast(parentWidget, RowSpacer.class);
             WTreeViewNode node = s.getNode();
             s.setRows(s.getRows() - this.removedHeight_);
             node.adjustChildrenHeight(-this.removedHeight_);
@@ -1763,10 +1749,7 @@ public class WTreeView extends WAbstractItemView {
           int i = node.getChildContainer().getIndexOf(c);
           int prunedHeight = 0;
           while (c != null && i < node.getChildContainer().getCount()) {
-            c =
-                ((node.getChildContainer().getWidget(i)) instanceof WTreeViewNode
-                    ? (WTreeViewNode) (node.getChildContainer().getWidget(i))
-                    : null);
+            c = ObjectUtils.cast(node.getChildContainer().getWidget(i), WTreeViewNode.class);
             if (c != null) {
               prunedHeight += c.getRenderedHeight();
               {
@@ -1850,9 +1833,7 @@ public class WTreeView extends WAbstractItemView {
       int childCount = this.getModel().getRowCount(index);
       while (topSpacerHeight != 0 && nodeRow + topSpacerHeight > this.firstRenderedRow_) {
         WTreeViewNode n =
-            ((node.getChildContainer().getWidget(1)) instanceof WTreeViewNode
-                ? (WTreeViewNode) (node.getChildContainer().getWidget(1))
-                : null);
+            ObjectUtils.cast(node.getChildContainer().getWidget(1), WTreeViewNode.class);
         assert n != null;
         WModelIndex childIndex = this.getModel().getIndex(n.getModelIndex().getRow() - 1, 0, index);
         assert (childIndex != null);
@@ -1883,9 +1864,8 @@ public class WTreeView extends WAbstractItemView {
           && nodeRow + bottomSpacerStart <= this.firstRenderedRow_ + this.validRowCount_) {
         int lastNodeIndex = node.getChildContainer().getCount() - 2;
         WTreeViewNode n =
-            ((node.getChildContainer().getWidget(lastNodeIndex)) instanceof WTreeViewNode
-                ? (WTreeViewNode) (node.getChildContainer().getWidget(lastNodeIndex))
-                : null);
+            ObjectUtils.cast(
+                node.getChildContainer().getWidget(lastNodeIndex), WTreeViewNode.class);
         assert n != null;
         WModelIndex childIndex = this.getModel().getIndex(n.getModelIndex().getRow() + 1, 0, index);
         assert (childIndex != null);
@@ -1927,8 +1907,7 @@ public class WTreeView extends WAbstractItemView {
         return null;
       }
       WWidget parent = this.widgetForIndex(index.getParent());
-      WTreeViewNode parentNode =
-          ((parent) instanceof WTreeViewNode ? (WTreeViewNode) (parent) : null);
+      WTreeViewNode parentNode = ObjectUtils.cast(parent, WTreeViewNode.class);
       if (parentNode != null) {
         int row = this.getIndexRow(index, parentNode.getModelIndex(), 0, Integer.MAX_VALUE);
         return parentNode.widgetForModelRow(row);
@@ -1981,11 +1960,11 @@ public class WTreeView extends WAbstractItemView {
   }
 
   private int renderedRow(final WModelIndex index, WWidget w, int lowerBound, int upperBound) {
-    WTreeViewNode node = ((w) instanceof WTreeViewNode ? (WTreeViewNode) (w) : null);
+    WTreeViewNode node = ObjectUtils.cast(w, WTreeViewNode.class);
     if (node != null) {
       return node.renderedRow(lowerBound, upperBound);
     } else {
-      RowSpacer s = ((w) instanceof RowSpacer ? (RowSpacer) (w) : null);
+      RowSpacer s = ObjectUtils.cast(w, RowSpacer.class);
       int result = s.renderedRow(0, upperBound);
       if (result > upperBound) {
         return result;
@@ -2067,15 +2046,9 @@ public class WTreeView extends WAbstractItemView {
   }
 
   private WContainerWidget getHeaderRow() {
-    WContainerWidget row =
-        ((this.headers_.getWidget(0)) instanceof WContainerWidget
-            ? (WContainerWidget) (this.headers_.getWidget(0))
-            : null);
+    WContainerWidget row = ObjectUtils.cast(this.headers_.getWidget(0), WContainerWidget.class);
     if (this.getRowHeaderCount() != 0) {
-      row =
-          ((row.getWidget(0)) instanceof WContainerWidget
-              ? (WContainerWidget) (row.getWidget(0))
-              : null);
+      row = ObjectUtils.cast(row.getWidget(0), WContainerWidget.class);
     }
     return row;
   }

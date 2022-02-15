@@ -36,25 +36,15 @@ class ComboDelegate extends WItemDelegate {
 
   public Object getEditState(WWidget editor, final WModelIndex index) {
     WComboBox combo =
-        (((((editor) instanceof WContainerWidget ? (WContainerWidget) (editor) : null))
-                    .getWidget(0))
-                instanceof WComboBox
-            ? (WComboBox)
-                ((((editor) instanceof WContainerWidget ? (WContainerWidget) (editor) : null))
-                    .getWidget(0))
-            : null);
+        ObjectUtils.cast(
+            (ObjectUtils.cast(editor, WContainerWidget.class)).getWidget(0), WComboBox.class);
     return combo.getCurrentIndex();
   }
 
   public void setEditState(WWidget editor, final WModelIndex index, final Object value) {
     WComboBox combo =
-        (((((editor) instanceof WContainerWidget ? (WContainerWidget) (editor) : null))
-                    .getWidget(0))
-                instanceof WComboBox
-            ? (WComboBox)
-                ((((editor) instanceof WContainerWidget ? (WContainerWidget) (editor) : null))
-                    .getWidget(0))
-            : null);
+        ObjectUtils.cast(
+            (ObjectUtils.cast(editor, WContainerWidget.class)).getWidget(0), WComboBox.class);
     combo.setCurrentIndex((int) StringUtils.asNumber(value));
   }
 

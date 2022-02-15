@@ -1304,9 +1304,7 @@ public class WCartesian3DChart extends WGLWidget {
     this.disable(WGLWidget.GLenum.BLEND);
     for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
       WAbstractGridData gridData =
-          ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-              : null);
+          ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
       if (gridData != null
           && gridData.getType() == Series3DType.Surface
           && gridData.isClippingLinesEnabled()) {
@@ -1328,9 +1326,7 @@ public class WCartesian3DChart extends WGLWidget {
     }
     for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
       WAbstractGridData gridData =
-          ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-              : null);
+          ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
       if (gridData != null
           && gridData.getType() == Series3DType.Surface
           && !gridData.isClippingLinesEnabled()) {
@@ -1340,9 +1336,7 @@ public class WCartesian3DChart extends WGLWidget {
     if (!this.intersectionLinesEnabled_ && this.intersectionPlanes_.isEmpty()) {
       for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
         WAbstractGridData gridData =
-            ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-                : null);
+            ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
         if (!(gridData != null && gridData.getType() == Series3DType.Surface)) {
           this.dataSeriesVector_.get(i).paintGL();
         }
@@ -1373,9 +1367,7 @@ public class WCartesian3DChart extends WGLWidget {
       this.enable(WGLWidget.GLenum.DEPTH_TEST);
       for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
         WAbstractGridData gridData =
-            ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-                : null);
+            ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
         if (!(gridData != null) || gridData.getType() != Series3DType.Surface) {
           this.dataSeriesVector_.get(i).paintGL();
         }
@@ -1420,9 +1412,7 @@ public class WCartesian3DChart extends WGLWidget {
       }
       for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
         WAbstractGridData data =
-            ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-                : null);
+            ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
         if (data != null) {
           this.initializeClippingPlaneProgram();
           if (!this.intersectionLinesEnabled_ && this.intersectionPlanes_.isEmpty()) {
@@ -1488,9 +1478,7 @@ public class WCartesian3DChart extends WGLWidget {
     boolean clippingLinesEnabled = false;
     for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
       WAbstractGridData data =
-          ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-              : null);
+          ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
       if (data != null && data.isClippingLinesEnabled()) {
         clippingLinesEnabled = true;
         break;
@@ -2129,9 +2117,7 @@ public class WCartesian3DChart extends WGLWidget {
     this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT, WGLWidget.GLenum.DEPTH_BUFFER_BIT));
     for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
       WAbstractGridData gridData =
-          ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-              : null);
+          ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
       if (gridData != null && gridData.getType() == Series3DType.Surface) {
         gridData.paintGLIndex(i);
       }
@@ -2140,9 +2126,7 @@ public class WCartesian3DChart extends WGLWidget {
     this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT, WGLWidget.GLenum.DEPTH_BUFFER_BIT));
     for (int i = 0; i < this.dataSeriesVector_.size(); i++) {
       WAbstractGridData gridData =
-          ((this.dataSeriesVector_.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (this.dataSeriesVector_.get(i))
-              : null);
+          ObjectUtils.cast(this.dataSeriesVector_.get(i), WAbstractGridData.class);
       if (gridData != null && gridData.getType() == Series3DType.Surface) {
         gridData.paintGLPositions();
       }
@@ -2191,9 +2175,7 @@ public class WCartesian3DChart extends WGLWidget {
       this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT, WGLWidget.GLenum.DEPTH_BUFFER_BIT));
       for (int j = 0; j < this.dataSeriesVector_.size(); j++) {
         WAbstractGridData gridData =
-            ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
-                : null);
+            ObjectUtils.cast(this.dataSeriesVector_.get(j), WAbstractGridData.class);
         if (gridData != null && gridData.getType() == Series3DType.Surface) {
           gridData.paintGLIndex(1);
         }
@@ -2241,9 +2223,7 @@ public class WCartesian3DChart extends WGLWidget {
       this.clear(EnumSet.of(WGLWidget.GLenum.COLOR_BUFFER_BIT, WGLWidget.GLenum.DEPTH_BUFFER_BIT));
       for (int j = 0; j < this.dataSeriesVector_.size(); j++) {
         WAbstractGridData gridData =
-            ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
-                : null);
+            ObjectUtils.cast(this.dataSeriesVector_.get(j), WAbstractGridData.class);
         if (gridData != null && gridData.getType() == Series3DType.Surface) {
           gridData.paintGLPositions();
         }
@@ -2350,9 +2330,7 @@ public class WCartesian3DChart extends WGLWidget {
       for (int j = 0; j < this.dataSeriesVector_.size(); ++j) {
         if (this.dataSeriesVector_.get(j) != data) {
           WAbstractGridData gridData =
-              ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData
-                  ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
-                  : null);
+              ObjectUtils.cast(this.dataSeriesVector_.get(j), WAbstractGridData.class);
           if (gridData != null
               && gridData.getType() == Series3DType.Surface
               && gridData.isClippingLinesEnabled()) {
@@ -2379,9 +2357,7 @@ public class WCartesian3DChart extends WGLWidget {
       for (int j = 0; j < this.dataSeriesVector_.size(); ++j) {
         if (this.dataSeriesVector_.get(j) != data) {
           WAbstractGridData gridData =
-              ((this.dataSeriesVector_.get(j)) instanceof WAbstractGridData
-                  ? (WAbstractGridData) (this.dataSeriesVector_.get(j))
-                  : null);
+              ObjectUtils.cast(this.dataSeriesVector_.get(j), WAbstractGridData.class);
           if (gridData != null
               && gridData.getType() == Series3DType.Surface
               && gridData.isClippingLinesEnabled()) {

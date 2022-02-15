@@ -150,7 +150,7 @@ class DialogCover extends WContainerWidget {
   private boolean isInOtherPopup(WWidget w) {
     WApplication app = WApplication.getInstance();
     for (WWidget p = w; p != null; p = p.getParent()) {
-      if (((p) instanceof WDialog ? (WDialog) (p) : null) != null) {
+      if (ObjectUtils.cast(p, WDialog.class) != null) {
         return false;
       }
       if (p == app.getDomRoot()) {

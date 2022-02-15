@@ -485,10 +485,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
   }
 
   protected void enableAjax() {
-    if (((this.painter_) instanceof WWidgetCanvasPainter
-                ? (WWidgetCanvasPainter) (this.painter_)
-                : null)
-            != null
+    if (ObjectUtils.cast(this.painter_, WWidgetCanvasPainter.class) != null
         && this.renderWidth_ != 0
         && this.renderHeight_ != 0) {
       this.update();

@@ -144,7 +144,7 @@ public class WBootstrap2Theme extends WTheme {
         break;
       case WidgetThemeRole.DatePickerIcon:
         {
-          WImage icon = ((child) instanceof WImage ? (WImage) (child) : null);
+          WImage icon = ObjectUtils.cast(child, WImage.class);
           icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
           icon.setVerticalAlignment(AlignmentFlag.Middle);
           icon.resize(new WLength(16), new WLength(16));
@@ -202,9 +202,9 @@ public class WBootstrap2Theme extends WTheme {
       return;
     }
     {
-      WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget) : null);
+      WPopupWidget popup = ObjectUtils.cast(widget, WPopupWidget.class);
       if (popup != null) {
-        WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget) : null);
+        WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
         if (!(dialog != null)) {
           element.addPropertyWord(Property.Class, "dropdown-menu");
         }
@@ -213,7 +213,7 @@ public class WBootstrap2Theme extends WTheme {
     switch (element.getType()) {
       case A:
         {
-          WPushButton btn = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
+          WPushButton btn = ObjectUtils.cast(widget, WPushButton.class);
           if (creating && btn != null) {
             element.addPropertyWord(Property.Class, "btn");
             if (btn.isDefault()) {
@@ -221,14 +221,8 @@ public class WBootstrap2Theme extends WTheme {
             }
           }
           if (element.getProperty(Property.Class).indexOf("dropdown-toggle") != -1) {
-            WMenuItem item =
-                ((widget.getParent()) instanceof WMenuItem
-                    ? (WMenuItem) (widget.getParent())
-                    : null);
-            if (!(((item.getParentMenu()) instanceof WPopupMenu
-                    ? (WPopupMenu) (item.getParentMenu())
-                    : null)
-                != null)) {
+            WMenuItem item = ObjectUtils.cast(widget.getParent(), WMenuItem.class);
+            if (!(ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class) != null)) {
               DomElement b = DomElement.createNew(DomElementType.B);
               b.setProperty(Property.Class, "caret");
               element.addChild(b);
@@ -241,7 +235,7 @@ public class WBootstrap2Theme extends WTheme {
           if (creating && !widget.hasStyleClass("list-group-item")) {
             element.addPropertyWord(Property.Class, "btn");
           }
-          WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
+          WPushButton button = ObjectUtils.cast(widget, WPushButton.class);
           if (button != null) {
             if (creating && button.isDefault()) {
               element.addPropertyWord(Property.Class, "btn-primary");
@@ -265,17 +259,17 @@ public class WBootstrap2Theme extends WTheme {
         }
       case DIV:
         {
-          WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget) : null);
+          WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
             element.addPropertyWord(Property.Class, "modal");
             return;
           }
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null) {
             element.addPropertyWord(Property.Class, "accordion-group");
             return;
           }
-          WProgressBar bar = ((widget) instanceof WProgressBar ? (WProgressBar) (widget) : null);
+          WProgressBar bar = ObjectUtils.cast(widget, WProgressBar.class);
           if (bar != null) {
             switch (elementRole) {
               case ElementThemeRole.MainElement:
@@ -289,19 +283,17 @@ public class WBootstrap2Theme extends WTheme {
             }
             return;
           }
-          WGoogleMap map = ((widget) instanceof WGoogleMap ? (WGoogleMap) (widget) : null);
+          WGoogleMap map = ObjectUtils.cast(widget, WGoogleMap.class);
           if (map != null) {
             element.addPropertyWord(Property.Class, "Wt-googlemap");
             return;
           }
-          WAbstractItemView itemView =
-              ((widget) instanceof WAbstractItemView ? (WAbstractItemView) (widget) : null);
+          WAbstractItemView itemView = ObjectUtils.cast(widget, WAbstractItemView.class);
           if (itemView != null) {
             element.addPropertyWord(Property.Class, "form-inline");
             return;
           }
-          WNavigationBar navBar =
-              ((widget) instanceof WNavigationBar ? (WNavigationBar) (widget) : null);
+          WNavigationBar navBar = ObjectUtils.cast(widget, WNavigationBar.class);
           if (navBar != null) {
             element.addPropertyWord(Property.Class, "navbar");
             return;
@@ -311,12 +303,12 @@ public class WBootstrap2Theme extends WTheme {
       case LABEL:
         {
           if (elementRole == ElementThemeRole.ToggleButtonRole) {
-            WCheckBox cb = ((widget) instanceof WCheckBox ? (WCheckBox) (widget) : null);
+            WCheckBox cb = ObjectUtils.cast(widget, WCheckBox.class);
             WRadioButton rb = null;
             if (cb != null) {
               element.addPropertyWord(Property.Class, "checkbox");
             } else {
-              rb = ((widget) instanceof WRadioButton ? (WRadioButton) (widget) : null);
+              rb = ObjectUtils.cast(widget, WRadioButton.class);
               if (rb != null) {
                 element.addPropertyWord(Property.Class, "radio");
               }
@@ -329,7 +321,7 @@ public class WBootstrap2Theme extends WTheme {
         }
       case LI:
         {
-          WMenuItem item = ((widget) instanceof WMenuItem ? (WMenuItem) (widget) : null);
+          WMenuItem item = ObjectUtils.cast(widget, WMenuItem.class);
           if (item != null) {
             if (item.isSeparator()) {
               element.addPropertyWord(Property.Class, "divider");
@@ -338,10 +330,7 @@ public class WBootstrap2Theme extends WTheme {
               element.addPropertyWord(Property.Class, "nav-header");
             }
             if (item.getMenu() != null) {
-              if (((item.getParentMenu()) instanceof WPopupMenu
-                      ? (WPopupMenu) (item.getParentMenu())
-                      : null)
-                  != null) {
+              if (ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class) != null) {
                 element.addPropertyWord(Property.Class, "dropdown-submenu");
               } else {
                 element.addPropertyWord(Property.Class, "dropdown");
@@ -352,18 +341,17 @@ public class WBootstrap2Theme extends WTheme {
         }
       case INPUT:
         {
-          WAbstractSpinBox spinBox =
-              ((widget) instanceof WAbstractSpinBox ? (WAbstractSpinBox) (widget) : null);
+          WAbstractSpinBox spinBox = ObjectUtils.cast(widget, WAbstractSpinBox.class);
           if (spinBox != null) {
             element.addPropertyWord(Property.Class, "Wt-spinbox");
             return;
           }
-          WDateEdit dateEdit = ((widget) instanceof WDateEdit ? (WDateEdit) (widget) : null);
+          WDateEdit dateEdit = ObjectUtils.cast(widget, WDateEdit.class);
           if (dateEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-dateedit");
             return;
           }
-          WTimeEdit timeEdit = ((widget) instanceof WTimeEdit ? (WTimeEdit) (widget) : null);
+          WTimeEdit timeEdit = ObjectUtils.cast(widget, WTimeEdit.class);
           if (timeEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-timeedit");
             return;
@@ -372,30 +360,24 @@ public class WBootstrap2Theme extends WTheme {
         }
       case UL:
         {
-          WPopupMenu popupMenu = ((widget) instanceof WPopupMenu ? (WPopupMenu) (widget) : null);
+          WPopupMenu popupMenu = ObjectUtils.cast(widget, WPopupMenu.class);
           if (popupMenu != null) {
             element.addPropertyWord(Property.Class, "dropdown-menu");
             if (popupMenu.getParentItem() != null
-                && ((popupMenu.getParentItem().getParentMenu()) instanceof WPopupMenu
-                        ? (WPopupMenu) (popupMenu.getParentItem().getParentMenu())
-                        : null)
+                && ObjectUtils.cast(popupMenu.getParentItem().getParentMenu(), WPopupMenu.class)
                     != null) {
               element.addPropertyWord(Property.Class, "submenu");
             }
           } else {
-            WMenu menu = ((widget) instanceof WMenu ? (WMenu) (widget) : null);
+            WMenu menu = ObjectUtils.cast(widget, WMenu.class);
             if (menu != null) {
               element.addPropertyWord(Property.Class, "nav");
-              WTabWidget tabs =
-                  ((menu.getParent().getParent()) instanceof WTabWidget
-                      ? (WTabWidget) (menu.getParent().getParent())
-                      : null);
+              WTabWidget tabs = ObjectUtils.cast(menu.getParent().getParent(), WTabWidget.class);
               if (tabs != null) {
                 element.addPropertyWord(Property.Class, "nav-tabs");
               }
             } else {
-              WSuggestionPopup suggestions =
-                  ((widget) instanceof WSuggestionPopup ? (WSuggestionPopup) (widget) : null);
+              WSuggestionPopup suggestions = ObjectUtils.cast(widget, WSuggestionPopup.class);
               if (suggestions != null) {
                 element.addPropertyWord(Property.Class, "typeahead");
               }
@@ -405,12 +387,11 @@ public class WBootstrap2Theme extends WTheme {
         }
       case SPAN:
         {
-          WInPlaceEdit inPlaceEdit =
-              ((widget) instanceof WInPlaceEdit ? (WInPlaceEdit) (widget) : null);
+          WInPlaceEdit inPlaceEdit = ObjectUtils.cast(widget, WInPlaceEdit.class);
           if (inPlaceEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-in-place-edit");
           } else {
-            WDatePicker picker = ((widget) instanceof WDatePicker ? (WDatePicker) (widget) : null);
+            WDatePicker picker = ObjectUtils.cast(widget, WDatePicker.class);
             if (picker != null) {
               element.addPropertyWord(Property.Class, "Wt-datepicker");
             }

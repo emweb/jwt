@@ -1200,10 +1200,7 @@ public class WTemplate extends WInteractWidget {
 
   DomElementType getDomElementType() {
     DomElementType type = this.isInline() ? DomElementType.SPAN : DomElementType.DIV;
-    WContainerWidget p =
-        ((this.getParentWebWidget()) instanceof WContainerWidget
-            ? (WContainerWidget) (this.getParentWebWidget())
-            : null);
+    WContainerWidget p = ObjectUtils.cast(this.getParentWebWidget(), WContainerWidget.class);
     if (p != null && p.isList()) {
       type = DomElementType.LI;
     }

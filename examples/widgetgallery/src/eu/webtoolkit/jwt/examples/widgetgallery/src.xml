@@ -532,25 +532,15 @@
 
     <span class="n">Object</span> <span class="nf">getEditState</span><span class="o">(</span><span class="n">WWidget</span> <span class="n">editor</span><span class="o">,</span> <span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">index</span><span class="o">)</span> <span class="o">{</span>
       <span class="n">WComboBox</span> <span class="n">combo</span> <span class="o">=</span>
-          <span class="o">(((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">))</span>
-                      <span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
-                  <span class="k">instanceof</span> <span class="n">WComboBox</span>
-              <span class="o">?</span> <span class="o">(</span><span class="n">WComboBox</span><span class="o">)</span>
-                  <span class="o">((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">))</span>
-                      <span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
-              <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+          <span class="n">ObjectUtils</span><span class="o">.</span><span class="na">cast</span><span class="o">(</span>
+              <span class="o">(</span><span class="n">ObjectUtils</span><span class="o">.</span><span class="na">cast</span><span class="o">(</span><span class="n">editor</span><span class="o">,</span> <span class="n">WContainerWidget</span><span class="o">.</span><span class="na">class</span><span class="o">)).</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">WComboBox</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
       <span class="k">return</span> <span class="n">combo</span><span class="o">.</span><span class="na">getCurrentIndex</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="kt">void</span> <span class="nf">setEditState</span><span class="o">(</span><span class="n">WWidget</span> <span class="n">editor</span><span class="o">,</span> <span class="kd">final</span> <span class="n">WModelIndex</span> <span class="n">index</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
       <span class="n">WComboBox</span> <span class="n">combo</span> <span class="o">=</span>
-          <span class="o">(((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">))</span>
-                      <span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
-                  <span class="k">instanceof</span> <span class="n">WComboBox</span>
-              <span class="o">?</span> <span class="o">(</span><span class="n">WComboBox</span><span class="o">)</span>
-                  <span class="o">((((</span><span class="n">editor</span><span class="o">)</span> <span class="k">instanceof</span> <span class="n">WContainerWidget</span> <span class="o">?</span> <span class="o">(</span><span class="n">WContainerWidget</span><span class="o">)</span> <span class="o">(</span><span class="n">editor</span><span class="o">)</span> <span class="o">:</span> <span class="kc">null</span><span class="o">))</span>
-                      <span class="o">.</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
-              <span class="o">:</span> <span class="kc">null</span><span class="o">);</span>
+          <span class="n">ObjectUtils</span><span class="o">.</span><span class="na">cast</span><span class="o">(</span>
+              <span class="o">(</span><span class="n">ObjectUtils</span><span class="o">.</span><span class="na">cast</span><span class="o">(</span><span class="n">editor</span><span class="o">,</span> <span class="n">WContainerWidget</span><span class="o">.</span><span class="na">class</span><span class="o">)).</span><span class="na">getWidget</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">WComboBox</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
       <span class="n">combo</span><span class="o">.</span><span class="na">setCurrentIndex</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">asNumber</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
     <span class="o">}</span>
 

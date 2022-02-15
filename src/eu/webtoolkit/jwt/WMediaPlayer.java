@@ -210,10 +210,7 @@ public class WMediaPlayer extends WCompositeWidget {
    */
   public void setControlsWidget(WWidget controlsWidget) {
     this.gui_ = controlsWidget;
-    WTemplate impl =
-        ((this.getImplementation()) instanceof WTemplate
-            ? (WTemplate) (this.getImplementation())
-            : null);
+    WTemplate impl = ObjectUtils.cast(this.getImplementation(), WTemplate.class);
     if (controlsWidget != null) {
       controlsWidget.addStyleClass("jp-gui");
       impl.bindWidget("gui", controlsWidget);
@@ -246,7 +243,7 @@ public class WMediaPlayer extends WCompositeWidget {
     if (this.display_[(int) MediaPlayerTextId.Title.getValue()] != null) {
       this.display_[(int) MediaPlayerTextId.Title.getValue()].setText(this.title_);
       if (this.gui_ != null) {
-        WTemplate t = ((this.gui_) instanceof WTemplate ? (WTemplate) (this.gui_) : null);
+        WTemplate t = ObjectUtils.cast(this.gui_, WTemplate.class);
         if (t != null) {
           t.bindString("title-display", (this.title_.length() == 0) ? "none" : "");
         }

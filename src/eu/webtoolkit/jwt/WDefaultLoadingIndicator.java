@@ -86,7 +86,6 @@ public class WDefaultLoadingIndicator extends WLoadingIndicator {
   }
 
   public void setMessage(final CharSequence text) {
-    (((this.getImplementation()) instanceof WText ? (WText) (this.getImplementation()) : null))
-        .setText(text);
+    (ObjectUtils.cast(this.getImplementation(), WText.class)).setText(text);
   }
 }

@@ -49,8 +49,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     canvas.setAttribute("height", hstr);
     result.addChild(canvas);
     this.widget_.sizeChanged_ = false;
-    WCanvasPaintDevice canvasDevice =
-        ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device) : null);
+    WCanvasPaintDevice canvasDevice = ObjectUtils.cast(device, WCanvasPaintDevice.class);
     DomElement text = null;
     if (canvasDevice.getTextMethod() == WCanvasPaintDevice.TextMethod.DomText) {
       text = DomElement.createNew(DomElementType.DIV);
@@ -94,8 +93,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
-    WCanvasPaintDevice canvasDevice =
-        ((device) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (device) : null);
+    WCanvasPaintDevice canvasDevice = ObjectUtils.cast(device, WCanvasPaintDevice.class);
     if (this.widget_.sizeChanged_) {
       DomElement canvas =
           DomElement.getForUpdate('c' + this.widget_.getId(), DomElementType.CANVAS);

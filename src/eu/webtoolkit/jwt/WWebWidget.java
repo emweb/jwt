@@ -1952,8 +1952,7 @@ public abstract class WWebWidget extends WWidget {
     do {
       p = p_parent;
       p_parent = p.getParent();
-    } while (p_parent != null
-        && ((p_parent) instanceof WCompositeWidget ? (WCompositeWidget) (p_parent) : null) != null);
+    } while (p_parent != null && ObjectUtils.cast(p_parent, WCompositeWidget.class) != null);
     return p;
   }
 
@@ -2315,7 +2314,7 @@ public abstract class WWebWidget extends WWidget {
 
   WWebWidget getParentWebWidget() {
     WWidget p = this.getParent();
-    while (p != null && ((p) instanceof WCompositeWidget ? (WCompositeWidget) (p) : null) != null) {
+    while (p != null && ObjectUtils.cast(p, WCompositeWidget.class) != null) {
       p = p.getParent();
     }
     return p != null ? p.getWebWidget() : null;

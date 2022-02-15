@@ -244,7 +244,7 @@ public class WInPlaceEdit extends WCompositeWidget {
     if (enabled && !(this.save_ != null)) {
       this.c2_.disconnect();
       WApplication app = WApplication.getInstance();
-      WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+      WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
       if (!(bs5Theme != null)) {
         this.buttons_.addWidget(
             this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), (WContainerWidget) null));
@@ -422,7 +422,7 @@ public class WInPlaceEdit extends WCompositeWidget {
             });
     this.edit_.escapePressed().preventPropagation();
     WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
     if (!(bs5Theme != null)) {
       this.editing_.addWidget(this.buttons_ = new WContainerWidget());
       this.buttons_.setInline(true);

@@ -84,7 +84,7 @@ public class WFileUpload extends WWebWidget {
     this.acceptAttributes_ = "";
     WApplication app = WApplication.getInstance();
     if (app != null) {
-      WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+      WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
       if (bs5Theme != null) {
         super.setInline(false);
       } else {

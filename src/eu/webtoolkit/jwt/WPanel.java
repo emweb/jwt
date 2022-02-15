@@ -87,9 +87,8 @@ public class WPanel extends WCompositeWidget {
       this.title_ = new WText();
       this.getTitleBarWidget().addWidget(this.title_);
     }
-    WText text = ((this.title_) instanceof WText ? (WText) (this.title_) : null);
-    WPushButton button =
-        ((this.title_) instanceof WPushButton ? (WPushButton) (this.title_) : null);
+    WText text = ObjectUtils.cast(this.title_, WText.class);
+    WPushButton button = ObjectUtils.cast(this.title_, WPushButton.class);
     if (text != null) {
       text.setText(title);
     } else {
@@ -109,9 +108,8 @@ public class WPanel extends WCompositeWidget {
    * @see WPanel#setTitle(CharSequence title)
    */
   public WString getTitle() {
-    WText text = ((this.title_) instanceof WText ? (WText) (this.title_) : null);
-    WPushButton button =
-        ((this.title_) instanceof WPushButton ? (WPushButton) (this.title_) : null);
+    WText text = ObjectUtils.cast(this.title_, WText.class);
+    WPushButton button = ObjectUtils.cast(this.title_, WPushButton.class);
     if (text != null) {
       return text.getText();
     } else {
@@ -172,9 +170,7 @@ public class WPanel extends WCompositeWidget {
    * @see WPanel#setTitleBar(boolean enable)
    */
   public WContainerWidget getTitleBarWidget() {
-    return ((this.impl_.resolveWidget("titlebar")) instanceof WContainerWidget
-        ? (WContainerWidget) (this.impl_.resolveWidget("titlebar"))
-        : null);
+    return ObjectUtils.cast(this.impl_.resolveWidget("titlebar"), WContainerWidget.class);
   }
   /**
    * Makes the panel collapsible.
@@ -195,7 +191,7 @@ public class WPanel extends WCompositeWidget {
    */
   public void setCollapsible(boolean on) {
     WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
     if (!(bs5Theme != null)) {
       if (on && !this.isCollapsible()) {
         this.isCollapsible_ = on;
@@ -261,8 +257,7 @@ public class WPanel extends WCompositeWidget {
         this.isCollapsible_ = on;
         this.setTitleBar(true);
         if (this.title_ != null) {
-          final WString currentText =
-              (((this.title_) instanceof WText ? (WText) (this.title_) : null)).getText();
+          final WString currentText = (ObjectUtils.cast(this.title_, WText.class)).getText();
           {
             WWidget toRemove = this.getTitleBarWidget().removeWidget(this.title_);
             if (toRemove != null) toRemove.remove();
@@ -270,8 +265,7 @@ public class WPanel extends WCompositeWidget {
 
           this.title_ = new WPushButton();
           this.getTitleBarWidget().addWidget(this.title_);
-          (((this.title_) instanceof WPushButton ? (WPushButton) (this.title_) : null))
-              .setText(currentText);
+          (ObjectUtils.cast(this.title_, WPushButton.class)).setText(currentText);
           app.getTheme().apply(this, this.title_, WidgetThemeRole.PanelCollapseButton);
           app.getTheme().apply(this, this.getTitleBarWidget(), WidgetThemeRole.PanelTitleBar);
           app.getTheme().setDataTarget(this.title_, this.getCentralArea());
@@ -380,9 +374,7 @@ public class WPanel extends WCompositeWidget {
    */
   public void setAnimation(final WAnimation transition) {
     WBootstrap5Theme bs5Theme =
-        ((WApplication.getInstance().getTheme()) instanceof WBootstrap5Theme
-            ? (WBootstrap5Theme) (WApplication.getInstance().getTheme())
-            : null);
+        ObjectUtils.cast(WApplication.getInstance().getTheme(), WBootstrap5Theme.class);
     if (bs5Theme != null) {
       return;
     }
@@ -528,8 +520,6 @@ public class WPanel extends WCompositeWidget {
   }
 
   private WContainerWidget getCentralArea() {
-    return ((this.impl_.resolveWidget("contents")) instanceof WContainerWidget
-        ? (WContainerWidget) (this.impl_.resolveWidget("contents"))
-        : null);
+    return ObjectUtils.cast(this.impl_.resolveWidget("contents"), WContainerWidget.class);
   }
 }

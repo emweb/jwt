@@ -323,10 +323,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
             >= (int) WAbstractItemView.RenderState.NeedRerenderHeader.getValue()) {
       return;
     }
-    WContainerWidget wc =
-        ((this.headerWidget(column)) instanceof WContainerWidget
-            ? (WContainerWidget) (this.headerWidget(column))
-            : null);
+    WContainerWidget wc = ObjectUtils.cast(this.headerWidget(column), WContainerWidget.class);
     wc.setContentAlignment(alignment);
     if (this.columnInfo(column).headerVAlignment == AlignmentFlag.Middle) {
       wc.setLineHeight(this.headerLineHeight_);
@@ -379,10 +376,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       return;
     }
     if (this.columnInfo(column).headerVAlignment == AlignmentFlag.Top) {
-      WContainerWidget wc =
-          ((this.headerWidget(column)) instanceof WContainerWidget
-              ? (WContainerWidget) (this.headerWidget(column))
-              : null);
+      WContainerWidget wc = ObjectUtils.cast(this.headerWidget(column), WContainerWidget.class);
       wc.toggleStyleClass("Wt-wwrap", enabled);
     }
   }
@@ -1538,10 +1532,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     this.editTriggers_ = EnumSet.of(EditTrigger.DoubleClicked);
     this.editOptions_ = EnumSet.of(EditOption.SingleEditor);
     this.touchRegistered_ = false;
-    this.impl_ =
-        ((this.getImplementation()) instanceof WContainerWidget
-            ? (WContainerWidget) (this.getImplementation())
-            : null);
+    this.impl_ = ObjectUtils.cast(this.getImplementation(), WContainerWidget.class);
     WItemDelegate d = new WItemDelegate();
     this.setItemDelegate(d);
     this.setHeaderItemDelegate(d);
@@ -1811,9 +1802,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       if (orientation == Orientation.Horizontal) {
         for (int i = start; i <= end; ++i) {
           WContainerWidget hw =
-              ((this.headerWidget(i, true)) instanceof WContainerWidget
-                  ? (WContainerWidget) (this.headerWidget(i, true))
-                  : null);
+              ObjectUtils.cast(this.headerWidget(i, true), WContainerWidget.class);
           WWidget tw = hw.getWidget(hw.getCount() - 1);
           {
             WWidget toRemove =
@@ -2465,7 +2454,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     }
     WWidget hw = this.headerWidget(column);
     if (hw != null) {
-      return ((hw.find("sort")) instanceof WText ? (WText) (hw.find("sort")) : null);
+      return ObjectUtils.cast(hw.find("sort"), WText.class);
     } else {
       return null;
     }

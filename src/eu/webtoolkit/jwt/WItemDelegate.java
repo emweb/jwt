@@ -70,8 +70,7 @@ public class WItemDelegate extends WAbstractItemDelegate {
       if (!editing) {
         widgetRef.created = this.createEditor(index, flags);
         widgetRef.w = widgetRef.created;
-        WInteractWidget iw =
-            ((widget) instanceof WInteractWidget ? (WInteractWidget) (widget) : null);
+        WInteractWidget iw = ObjectUtils.cast(widget, WInteractWidget.class);
         if (iw != null) {
           iw.mouseWentDown().preventPropagation();
           iw.clicked().preventPropagation();
@@ -207,16 +206,15 @@ public class WItemDelegate extends WAbstractItemDelegate {
       }
     }
     if (index.getFlags().contains(ItemFlag.DeferredToolTip)) {
-      IndexText text = ((widget) instanceof IndexText ? (IndexText) (widget) : null);
+      IndexText text = ObjectUtils.cast(widget, IndexText.class);
       if (text != null) {
         text.setIndex(index);
       }
-      IndexAnchor anchor = ((widget) instanceof IndexAnchor ? (IndexAnchor) (widget) : null);
+      IndexAnchor anchor = ObjectUtils.cast(widget, IndexAnchor.class);
       if (anchor != null) {
         anchor.setIndex(index);
       }
-      IndexContainerWidget c =
-          ((widget) instanceof IndexContainerWidget ? (IndexContainerWidget) (widget) : null);
+      IndexContainerWidget c = ObjectUtils.cast(widget, IndexContainerWidget.class);
       if (c != null) {
         c.setIndex(index);
       }
@@ -292,10 +290,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
    * @see WItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex index)
    */
   public Object getEditState(WWidget editor, final WModelIndex index) {
-    IndexContainerWidget w =
-        ((editor) instanceof IndexContainerWidget ? (IndexContainerWidget) (editor) : null);
-    WLineEdit lineEdit =
-        ((w.getWidget(0)) instanceof WLineEdit ? (WLineEdit) (w.getWidget(0)) : null);
+    IndexContainerWidget w = ObjectUtils.cast(editor, IndexContainerWidget.class);
+    WLineEdit lineEdit = ObjectUtils.cast(w.getWidget(0), WLineEdit.class);
     return lineEdit.getText();
   }
   /**
@@ -320,10 +316,8 @@ public class WItemDelegate extends WAbstractItemDelegate {
    * @see WItemDelegate#createEditor(WModelIndex index, EnumSet flags)
    */
   public void setEditState(WWidget editor, final WModelIndex index, final Object value) {
-    IndexContainerWidget w =
-        ((editor) instanceof IndexContainerWidget ? (IndexContainerWidget) (editor) : null);
-    WLineEdit lineEdit =
-        ((w.getWidget(0)) instanceof WLineEdit ? (WLineEdit) (w.getWidget(0)) : null);
+    IndexContainerWidget w = ObjectUtils.cast(editor, IndexContainerWidget.class);
+    WLineEdit lineEdit = ObjectUtils.cast(w.getWidget(0), WLineEdit.class);
     lineEdit.setText(((String) value));
   }
   /**
@@ -437,17 +431,13 @@ public class WItemDelegate extends WAbstractItemDelegate {
       boolean autoCreate,
       boolean update,
       boolean triState) {
-    IndexCheckBox checkBox =
-        ((w.w.find("c")) instanceof IndexCheckBox ? (IndexCheckBox) (w.w.find("c")) : null);
+    IndexCheckBox checkBox = ObjectUtils.cast(w.w.find("c"), IndexCheckBox.class);
     if (!(checkBox != null)) {
       if (autoCreate) {
         IndexCheckBox newBox = checkBox = new IndexCheckBox(index);
         checkBox.setObjectName("c");
         checkBox.clicked().preventPropagation();
-        IndexContainerWidget wc =
-            ((w.w.find("o")) instanceof IndexContainerWidget
-                ? (IndexContainerWidget) (w.w.find("o"))
-                : null);
+        IndexContainerWidget wc = ObjectUtils.cast(w.w.find("o"), IndexContainerWidget.class);
         if (!(wc != null)) {
           WWidget oldW = null;
           if (w.created != null) {
@@ -498,22 +488,18 @@ public class WItemDelegate extends WAbstractItemDelegate {
   }
 
   private IndexText textWidget(final WItemDelegate.WidgetRef w, final WModelIndex index) {
-    return ((w.w.find("t")) instanceof IndexText ? (IndexText) (w.w.find("t")) : null);
+    return ObjectUtils.cast(w.w.find("t"), IndexText.class);
   }
 
   private WImage iconWidget(
       final WItemDelegate.WidgetRef w, final WModelIndex index, boolean autoCreate) {
-    WImage image = ((w.w.find("i")) instanceof WImage ? (WImage) (w.w.find("i")) : null);
+    WImage image = ObjectUtils.cast(w.w.find("i"), WImage.class);
     if (image != null || !autoCreate) {
       return image;
     }
-    WContainerWidget wc =
-        ((w.w.find("a")) instanceof IndexAnchor ? (IndexAnchor) (w.w.find("a")) : null);
+    WContainerWidget wc = ObjectUtils.cast(w.w.find("a"), IndexAnchor.class);
     if (!(wc != null)) {
-      wc =
-          ((w.w.find("o")) instanceof IndexContainerWidget
-              ? (IndexContainerWidget) (w.w.find("o"))
-              : null);
+      wc = ObjectUtils.cast(w.w.find("o"), IndexContainerWidget.class);
     }
     if (!(wc != null)) {
       WWidget newWc = new IndexContainerWidget(index);
@@ -546,22 +532,17 @@ public class WItemDelegate extends WAbstractItemDelegate {
 
   private IndexAnchor anchorWidget(
       final WItemDelegate.WidgetRef w, final WModelIndex index, boolean autoCreate) {
-    IndexAnchor anchor =
-        ((w.w.find("a")) instanceof IndexAnchor ? (IndexAnchor) (w.w.find("a")) : null);
+    IndexAnchor anchor = ObjectUtils.cast(w.w.find("a"), IndexAnchor.class);
     if (anchor != null || !autoCreate) {
       return anchor;
     }
     WWidget newAnchor = new IndexAnchor(index);
     anchor = (IndexAnchor) newAnchor;
     anchor.setObjectName("a");
-    IndexContainerWidget wc =
-        ((w.w.find("o")) instanceof IndexContainerWidget
-            ? (IndexContainerWidget) (w.w.find("o"))
-            : null);
+    IndexContainerWidget wc = ObjectUtils.cast(w.w.find("o"), IndexContainerWidget.class);
     if (wc != null) {
       int firstToMove = 0;
-      WCheckBox cb =
-          ((wc.getWidget(0)) instanceof WCheckBox ? (WCheckBox) (wc.getWidget(0)) : null);
+      WCheckBox cb = ObjectUtils.cast(wc.getWidget(0), WCheckBox.class);
       if (cb != null) {
         firstToMove = 1;
       }

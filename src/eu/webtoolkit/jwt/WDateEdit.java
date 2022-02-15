@@ -115,7 +115,7 @@ public class WDateEdit extends WLineEdit {
    * <p>Most of the configuration of the date edit is stored in the validator.
    */
   public WDateValidator getDateValidator() {
-    return ((WDateValidator) super.getValidator());
+    return ObjectUtils.cast(super.getValidator(), WDateValidator.class);
   }
   /**
    * Sets the format used for representing the date.

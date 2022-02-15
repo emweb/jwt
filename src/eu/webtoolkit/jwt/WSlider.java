@@ -435,7 +435,7 @@ public class WSlider extends WFormWidget {
   public void resize(final WLength width, final WLength height) {
     if (this.getOrientation() == Orientation.Vertical) {
       WApplication app = WApplication.getInstance();
-      WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+      WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
       if (bs5Theme != null) {
         WLength w = width;
         WLength h = height;

@@ -805,9 +805,7 @@ public class WMenu extends WCompositeWidget {
    * @see WMenu#indexOf(WMenuItem item)
    */
   public WMenuItem itemAt(int index) {
-    return ((this.getUl().getWidget(index)) instanceof WMenuItem
-        ? (WMenuItem) (this.getUl().getWidget(index))
-        : null);
+    return ObjectUtils.cast(this.getUl().getWidget(index), WMenuItem.class);
   }
   /**
    * Returns the index of an item.

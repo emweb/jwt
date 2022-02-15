@@ -36,8 +36,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
       this.device_ = this.createPaintDevice(paintUpdate);
     }
     if (!paintUpdate) {
-      (((this.device_) instanceof WRasterPaintDevice ? (WRasterPaintDevice) (this.device_) : null))
-          .clear();
+      (ObjectUtils.cast(this.device_, WRasterPaintDevice.class)).clear();
     }
     return this.device_;
   }
@@ -53,14 +52,14 @@ class WWidgetRasterPainter extends WWidgetPainter {
     img.setAttribute("unselectable", "on");
     img.setAttribute("onselectstart", "return false;");
     img.setAttribute("onmousedown", "return false;");
-    WResource resource = ((device) instanceof WResource ? (WResource) (device) : null);
+    WResource resource = ObjectUtils.cast(device, WResource.class);
     img.setAttribute("src", resource.generateUrl());
     result.addChild(img);
     this.device_ = device;
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
-    WResource resource = ((device) instanceof WResource ? (WResource) (device) : null);
+    WResource resource = ObjectUtils.cast(device, WResource.class);
     DomElement img = DomElement.getForUpdate('i' + this.widget_.getId(), DomElementType.IMG);
     if (this.widget_.sizeChanged_) {
       img.setAttribute("width", String.valueOf(this.widget_.renderWidth_));

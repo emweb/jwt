@@ -1530,7 +1530,7 @@ class WebRenderer implements SlotLearnerInterface {
       if (!c.isHidden()) {
         this.addContainerWidgets(c.getWebWidget(), result);
       }
-      WContainerWidget wc = ((c) instanceof WContainerWidget ? (WContainerWidget) (c) : null);
+      WContainerWidget wc = ObjectUtils.cast(c, WContainerWidget.class);
       if (wc != null) {
         result.add(wc);
       }

@@ -155,9 +155,7 @@ public class WTreeTable extends WCompositeWidget {
   }
   /** Returns the tree root. */
   public WTreeTableNode getTreeRoot() {
-    return ((this.tree_.getTreeRoot()) instanceof WTreeTableNode
-        ? (WTreeTableNode) (this.tree_.getTreeRoot())
-        : null);
+    return ObjectUtils.cast(this.tree_.getTreeRoot(), WTreeTableNode.class);
   }
   /**
    * Sets the tree which provides the data for the tree table.
@@ -167,10 +165,7 @@ public class WTreeTable extends WCompositeWidget {
    * @see WTreeTable#setTreeRoot(WTreeTableNode root, CharSequence h)
    */
   public void setTree(WTree root, final CharSequence h) {
-    WContainerWidget parent =
-        ((this.tree_.getParent()) instanceof WContainerWidget
-            ? (WContainerWidget) (this.tree_.getParent())
-            : null);
+    WContainerWidget parent = ObjectUtils.cast(this.tree_.getParent(), WContainerWidget.class);
     {
       WWidget toRemove = WidgetUtils.remove(parent, this.tree_);
       if (toRemove != null) toRemove.remove();
@@ -216,23 +211,13 @@ public class WTreeTable extends WCompositeWidget {
    */
   public WText header(int column) {
     if (column == 0) {
-      return (((((this.impl_.getChildren().get(0)) instanceof WContainerWidget
-                      ? (WContainerWidget) (this.impl_.getChildren().get(0))
-                      : null))
-                  .getChildren()
-                  .get(2))
-              instanceof WText
-          ? (WText)
-              ((((this.impl_.getChildren().get(0)) instanceof WContainerWidget
-                      ? (WContainerWidget) (this.impl_.getChildren().get(0))
-                      : null))
-                  .getChildren()
-                  .get(2))
-          : null);
+      return ObjectUtils.cast(
+          (ObjectUtils.cast(this.impl_.getChildren().get(0), WContainerWidget.class))
+              .getChildren()
+              .get(2),
+          WText.class);
     } else {
-      return ((this.headerContainer_.getChildren().get(column - 1)) instanceof WText
-          ? (WText) (this.headerContainer_.getChildren().get(column - 1))
-          : null);
+      return ObjectUtils.cast(this.headerContainer_.getChildren().get(column - 1), WText.class);
     }
   }
   /**

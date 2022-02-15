@@ -785,10 +785,7 @@ public abstract class WAbstractItemModel extends WObject {
    */
   public void dropEvent(
       final WDropEvent e, DropAction action, int row, int column, final WModelIndex parent) {
-    WItemSelectionModel selectionModel =
-        ((e.getSource()) instanceof WItemSelectionModel
-            ? (WItemSelectionModel) (e.getSource())
-            : null);
+    WItemSelectionModel selectionModel = ObjectUtils.cast(e.getSource(), WItemSelectionModel.class);
     if (selectionModel != null) {
       WAbstractItemModel sourceModel = selectionModel.getModel();
       if (action == DropAction.Move || row == -1) {
@@ -850,10 +847,7 @@ public abstract class WAbstractItemModel extends WObject {
    */
   public void dropEvent(
       final WDropEvent e, DropAction action, final WModelIndex pindex, Side side) {
-    WItemSelectionModel selectionModel =
-        ((e.getSource()) instanceof WItemSelectionModel
-            ? (WItemSelectionModel) (e.getSource())
-            : null);
+    WItemSelectionModel selectionModel = ObjectUtils.cast(e.getSource(), WItemSelectionModel.class);
     if (selectionModel != null) {
       WAbstractItemModel sourceModel = selectionModel.getModel();
       final WModelIndex parent = pindex.getParent();

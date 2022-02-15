@@ -572,7 +572,7 @@ public abstract class WInteractWidget extends WWebWidget {
         if (enterPress.needsUpdate(true)) {
           String extraJS = "";
           final WEnvironment env = app.getEnvironment();
-          if (((this) instanceof WFormWidget ? (WFormWidget) (this) : null) != null
+          if (ObjectUtils.cast(this, WFormWidget.class) != null
               && !env.agentIsOpera()
               && !env.agentIsIE()) {
             extraJS = "var g=this.onchange;this.onchange=function(){this.onchange=g;};";

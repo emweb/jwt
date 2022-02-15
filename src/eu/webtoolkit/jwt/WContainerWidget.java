@@ -630,9 +630,7 @@ public class WContainerWidget extends WInteractWidget {
     if (this.layout_ != null) {
       WWidgetItem item = this.layout_.findWidgetItem(child);
       if (item != null) {
-        if ((((item.getParentLayout().getImpl()) instanceof StdLayoutImpl
-                ? (StdLayoutImpl) (item.getParentLayout().getImpl())
-                : null))
+        if ((ObjectUtils.cast(item.getParentLayout().getImpl(), StdLayoutImpl.class))
             .itemResized(item)) {
           this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
           this.repaint();
@@ -645,10 +643,7 @@ public class WContainerWidget extends WInteractWidget {
 
   protected void parentResized(WWidget parent, EnumSet<Orientation> directions) {
     if (this.layout_ != null) {
-      if ((((this.layout_.getImpl()) instanceof StdLayoutImpl
-              ? (StdLayoutImpl) (this.layout_.getImpl())
-              : null))
-          .isParentResized()) {
+      if ((ObjectUtils.cast(this.layout_.getImpl(), StdLayoutImpl.class)).isParentResized()) {
         this.flags_.set(BIT_LAYOUT_NEEDS_UPDATE);
         this.repaint();
       }
@@ -753,10 +748,7 @@ public class WContainerWidget extends WInteractWidget {
 
   DomElementType getDomElementType() {
     DomElementType type = this.isInline() ? DomElementType.SPAN : DomElementType.DIV;
-    WContainerWidget p =
-        ((this.getParentWebWidget()) instanceof WContainerWidget
-            ? (WContainerWidget) (this.getParentWebWidget())
-            : null);
+    WContainerWidget p = ObjectUtils.cast(this.getParentWebWidget(), WContainerWidget.class);
     if (p != null && p.isList()) {
       type = DomElementType.LI;
     }
@@ -915,9 +907,7 @@ public class WContainerWidget extends WInteractWidget {
   }
 
   StdLayoutImpl getLayoutImpl() {
-    return ((this.layout_.getImpl()) instanceof StdLayoutImpl
-        ? (StdLayoutImpl) (this.layout_.getImpl())
-        : null);
+    return ObjectUtils.cast(this.layout_.getImpl(), StdLayoutImpl.class);
   }
 
   protected void setFormData(final WObject.FormData formData) {

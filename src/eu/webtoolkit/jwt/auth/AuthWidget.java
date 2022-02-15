@@ -296,9 +296,7 @@ public class AuthWidget extends WTemplateFormView {
   public void letUpdatePassword(final User user, boolean promptPassword) {
     WWidget updatePasswordView = this.createUpdatePasswordView(user, promptPassword);
     UpdatePasswordWidget defaultUpdatePasswordWidget =
-        ((updatePasswordView) instanceof UpdatePasswordWidget
-            ? (UpdatePasswordWidget) (updatePasswordView)
-            : null);
+        ObjectUtils.cast(updatePasswordView, UpdatePasswordWidget.class);
     this.showDialog(tr("Wt.Auth.updatepassword"), updatePasswordView);
     if (defaultUpdatePasswordWidget != null) {
       defaultUpdatePasswordWidget

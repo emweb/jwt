@@ -789,7 +789,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
       this.updateItem(result);
       return result;
     } else {
-      return ((i) instanceof WSortFilterProxyModel.Item ? (WSortFilterProxyModel.Item) (i) : null);
+      return ObjectUtils.cast(i, WSortFilterProxyModel.Item.class);
     }
   }
 

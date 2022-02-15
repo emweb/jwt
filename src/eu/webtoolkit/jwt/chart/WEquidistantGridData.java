@@ -347,14 +347,8 @@ public class WEquidistantGridData extends WAbstractGridData {
     int xDim = 0;
     int yDim = 0;
     for (int i = 0; i < dataseries.size(); i++) {
-      if (((dataseries.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (dataseries.get(i))
-              : null)
-          != null) {
-        WAbstractGridData griddata =
-            ((dataseries.get(i)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (dataseries.get(i))
-                : null);
+      if (ObjectUtils.cast(dataseries.get(i), WAbstractGridData.class) != null) {
+        WAbstractGridData griddata = ObjectUtils.cast(dataseries.get(i), WAbstractGridData.class);
         if (griddata == this || griddata.getType() != Series3DType.Bar) {
           break;
         }
@@ -425,14 +419,8 @@ public class WEquidistantGridData extends WAbstractGridData {
     int xDim = 0;
     int yDim = 0;
     for (int i = 0; i < dataseries.size(); i++) {
-      if (((dataseries.get(i)) instanceof WAbstractGridData
-              ? (WAbstractGridData) (dataseries.get(i))
-              : null)
-          != null) {
-        WAbstractGridData griddata =
-            ((dataseries.get(i)) instanceof WAbstractGridData
-                ? (WAbstractGridData) (dataseries.get(i))
-                : null);
+      if (ObjectUtils.cast(dataseries.get(i), WAbstractGridData.class) != null) {
+        WAbstractGridData griddata = ObjectUtils.cast(dataseries.get(i), WAbstractGridData.class);
         if (griddata == this || griddata.getType() != Series3DType.Bar) {
           break;
         }

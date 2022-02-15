@@ -148,10 +148,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
         if (item != null) {
           WLayout nested = item.getLayout();
           if (nested != null) {
-            (((nested.getImpl()) instanceof StdLayoutImpl
-                    ? (StdLayoutImpl) (nested.getImpl())
-                    : null))
-                .updateDom(parent);
+            (ObjectUtils.cast(nested.getImpl(), StdLayoutImpl.class)).updateDom(parent);
           }
         }
       }
@@ -196,9 +193,7 @@ class StdGridLayoutImpl2 extends StdLayoutImpl {
         .append(this.getId())
         .append("',");
     if (this.getLayout().getParentLayout() != null
-        && ((getImpl(this.getLayout().getParentLayout())) instanceof StdGridLayoutImpl2
-                ? (StdGridLayoutImpl2) (getImpl(this.getLayout().getParentLayout()))
-                : null)
+        && ObjectUtils.cast(getImpl(this.getLayout().getParentLayout()), StdGridLayoutImpl2.class)
             != null) {
       js.append("'").append(getImpl(this.getLayout().getParentLayout()).getId()).append("',");
     } else {

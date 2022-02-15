@@ -1804,11 +1804,11 @@ public abstract class WWidget extends WObject {
   boolean isInLayout() {
     WWidget p = this.getParent();
     if (p != null
-        && (((p) instanceof WCompositeWidget ? (WCompositeWidget) (p) : null) != null
+        && (ObjectUtils.cast(p, WCompositeWidget.class) != null
             || p.getJavaScriptMember(WT_RESIZE_JS).length() != 0)) {
       return p.isInLayout();
     }
-    WContainerWidget c = ((p) instanceof WContainerWidget ? (WContainerWidget) (p) : null);
+    WContainerWidget c = ObjectUtils.cast(p, WContainerWidget.class);
     return c != null && c.getLayout() != null;
   }
 

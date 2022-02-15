@@ -143,7 +143,7 @@ public class WPopupMenu extends WMenu {
 
   public void remove() {
     if (this.button_ != null) {
-      WPushButton b = ((this.button_) instanceof WPushButton ? (WPushButton) (this.button_) : null);
+      WPushButton b = ObjectUtils.cast(this.button_, WPushButton.class);
       if (b != null) {
         b.setMenu((WPopupMenu) null);
       }
@@ -526,8 +526,7 @@ public class WPopupMenu extends WMenu {
     for (int i = 0; i < this.getCount(); ++i) {
       WMenuItem item = this.itemAt(i);
       item.setItemPadding(needPadding);
-      WPopupMenu subMenu =
-          ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item.getMenu()) : null);
+      WPopupMenu subMenu = ObjectUtils.cast(item.getMenu(), WPopupMenu.class);
       if (subMenu != null) {
         subMenu.adjustPadding();
       }
@@ -557,8 +556,7 @@ public class WPopupMenu extends WMenu {
             });
     for (int i = 0; i < this.getCount(); ++i) {
       WMenuItem item = this.itemAt(i);
-      WPopupMenu subMenu =
-          ((item.getMenu()) instanceof WPopupMenu ? (WPopupMenu) (item.getMenu()) : null);
+      WPopupMenu subMenu = ObjectUtils.cast(item.getMenu(), WPopupMenu.class);
       if (subMenu != null) {
         subMenu.connectSignals(topLevel);
       }

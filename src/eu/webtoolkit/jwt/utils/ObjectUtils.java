@@ -32,4 +32,7 @@ public class ObjectUtils {
 
 	}
 
+    public static <T> T cast(Object object, Class<T> clazz) {
+      return clazz.isInstance(object) ? clazz.cast(object) : null;
+    }
 }

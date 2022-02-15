@@ -771,11 +771,9 @@ public class WApplication extends WObject {
    * @see WApplication#getLocalizedStrings()
    */
   public WXmlLocalizedStrings getBuiltinLocalizedStrings() {
-    return (((this.localizedStrings_.getItems().get(this.localizedStrings_.getItems().size() - 1))
-            instanceof WXmlLocalizedStrings
-        ? (WXmlLocalizedStrings)
-            (this.localizedStrings_.getItems().get(this.localizedStrings_.getItems().size() - 1))
-        : null));
+    return (ObjectUtils.cast(
+        this.localizedStrings_.getItems().get(this.localizedStrings_.getItems().size() - 1),
+        WXmlLocalizedStrings.class));
   }
   /**
    * Sets the resource object that provides localized strings.

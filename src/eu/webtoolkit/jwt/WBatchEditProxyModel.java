@@ -75,9 +75,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it.next();
       WBatchEditProxyModel.Item item =
-          ((i.getValue()) instanceof WBatchEditProxyModel.Item
-              ? (WBatchEditProxyModel.Item) (i.getValue())
-              : null);
+          ObjectUtils.cast(i.getValue(), WBatchEditProxyModel.Item.class);
       if (!item.removedColumns_.isEmpty()
           || !item.insertedColumns_.isEmpty()
           || !item.removedRows_.isEmpty()
@@ -104,9 +102,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it.next();
       WBatchEditProxyModel.Item item =
-          ((i.getValue()) instanceof WBatchEditProxyModel.Item
-              ? (WBatchEditProxyModel.Item) (i.getValue())
-              : null);
+          ObjectUtils.cast(i.getValue(), WBatchEditProxyModel.Item.class);
       while (!item.removedColumns_.isEmpty()) {
         this.getSourceModel().removeColumn(item.removedColumns_.get(0), item.sourceIndex_);
       }
@@ -147,9 +143,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
         i_it.hasNext(); ) {
       Map.Entry<WModelIndex, WAbstractProxyModel.BaseItem> i = i_it.next();
       WBatchEditProxyModel.Item item =
-          ((i.getValue()) instanceof WBatchEditProxyModel.Item
-              ? (WBatchEditProxyModel.Item) (i.getValue())
-              : null);
+          ObjectUtils.cast(i.getValue(), WBatchEditProxyModel.Item.class);
       WModelIndex proxyIndex = this.mapFromSource(item.sourceIndex_);
       while (!item.insertedColumns_.isEmpty()) {
         this.removeColumn(item.insertedColumns_.get(0), proxyIndex);
@@ -817,7 +811,7 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
         return null;
       }
     } else {
-      return ((i) instanceof WBatchEditProxyModel.Item ? (WBatchEditProxyModel.Item) (i) : null);
+      return ObjectUtils.cast(i, WBatchEditProxyModel.Item.class);
     }
   }
 

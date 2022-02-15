@@ -488,10 +488,7 @@ public class WDialog extends WPopupWidget {
       if (!hidden) {
         if (this.footer_ != null) {
           for (int i = 0; i < this.getFooter().getCount(); ++i) {
-            WPushButton b =
-                ((this.getFooter().getWidget(i)) instanceof WPushButton
-                    ? (WPushButton) (this.getFooter().getWidget(i))
-                    : null);
+            WPushButton b = ObjectUtils.cast(this.getFooter().getWidget(i), WPushButton.class);
             if (b != null && b.isDefault()) {
               this.enterConnection1_ =
                   this.enterPressed()
@@ -787,10 +784,7 @@ public class WDialog extends WPopupWidget {
     this.recursiveEventLoop_ = false;
     this.escapeIsReject_ = false;
     this.autoFocus_ = true;
-    this.impl_ =
-        ((this.getImplementation()) instanceof WTemplate
-            ? (WTemplate) (this.getImplementation())
-            : null);
+    this.impl_ = ObjectUtils.cast(this.getImplementation(), WTemplate.class);
     String CSS_RULES_NAME = "Wt::WDialog";
     WApplication app = WApplication.getInstance();
     if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -872,10 +866,7 @@ public class WDialog extends WPopupWidget {
     DialogCover c = this.getCover();
     if (this.footer_ != null && c != null && c.isTopDialogRendered(this)) {
       for (int i = 0; i < this.getFooter().getCount(); ++i) {
-        WPushButton b =
-            ((this.getFooter().getWidget(i)) instanceof WPushButton
-                ? (WPushButton) (this.getFooter().getWidget(i))
-                : null);
+        WPushButton b = ObjectUtils.cast(this.getFooter().getWidget(i), WPushButton.class);
         if (b != null && b.isDefault()) {
           if (b.isEnabled()) {
             b.clicked().trigger(new WMouseEvent());
@@ -909,7 +900,7 @@ public class WDialog extends WPopupWidget {
     if (app.getDomRoot() != null) {
       WWidget w = app.findWidget("dialog-cover");
       if (w != null) {
-        return ((w) instanceof DialogCover ? (DialogCover) (w) : null);
+        return ObjectUtils.cast(w, DialogCover.class);
       } else {
         DialogCover d = new DialogCover();
         DialogCover result = d;

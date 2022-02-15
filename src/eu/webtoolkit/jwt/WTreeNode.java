@@ -220,10 +220,7 @@ public class WTreeNode extends WCompositeWidget {
     ;
 
     for (int i = 0; i < this.getChildContainer().getCount(); ++i) {
-      result.add(
-          ((this.getChildContainer().getWidget(i)) instanceof WTreeNode
-              ? (WTreeNode) (this.getChildContainer().getWidget(i))
-              : null));
+      result.add(ObjectUtils.cast(this.getChildContainer().getWidget(i), WTreeNode.class));
     }
     for (WTreeNode i : this.notLoadedChildren_) {
       result.add(i);

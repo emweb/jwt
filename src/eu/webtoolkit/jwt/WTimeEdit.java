@@ -104,7 +104,7 @@ public class WTimeEdit extends WLineEdit {
    * @see WTimeValidator
    */
   public WTimeValidator getTimeValidator() {
-    return ((WTimeValidator) super.getValidator());
+    return ObjectUtils.cast(super.getValidator(), WTimeValidator.class);
   }
   /** Sets the format of the Time. */
   public void setFormat(final String format) {

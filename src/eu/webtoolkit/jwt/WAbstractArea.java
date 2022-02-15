@@ -512,6 +512,6 @@ public abstract class WAbstractArea extends WObject {
   }
 
   void returnWidget(WWidget w) {
-    this.uWidget_ = ((AreaWidget) w);
+    this.uWidget_ = ObjectUtils.cast(w, AreaWidget.class);
   }
 }

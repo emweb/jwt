@@ -115,8 +115,7 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case WidgetThemeRole.TableViewRowContainer:
         {
-          WAbstractItemView view =
-              ((widget) instanceof WAbstractItemView ? (WAbstractItemView) (widget) : null);
+          WAbstractItemView view = ObjectUtils.cast(widget, WAbstractItemView.class);
           child.toggleStyleClass("Wt-striped", view.hasAlternatingRowColors());
           break;
         }
@@ -125,7 +124,7 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case WidgetThemeRole.DatePickerIcon:
         {
-          WImage icon = ((child) instanceof WImage ? (WImage) (child) : null);
+          WImage icon = ObjectUtils.cast(child, WImage.class);
           icon.setImageLink(new WLink(this.getResourcesUrl() + "calendar-date.svg"));
           icon.setVerticalAlignment(AlignmentFlag.Middle);
           icon.resize(new WLength(20), new WLength(20));
@@ -138,7 +137,7 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case WidgetThemeRole.PanelTitle:
         {
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null && panel.isCollapsible()) {
             child.addStyleClass("accordion-item");
           }
@@ -146,7 +145,7 @@ public class WBootstrap5Theme extends WTheme {
         }
       case WidgetThemeRole.PanelTitleBar:
         {
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null && panel.isCollapsible()) {
             child.addStyleClass("accordion-header");
             child.removeStyleClass("card-header");
@@ -157,7 +156,7 @@ public class WBootstrap5Theme extends WTheme {
         }
       case WidgetThemeRole.PanelCollapseButton:
         {
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null && panel.isCollapsible()) {
             child.addStyleClass("accordion-button");
           }
@@ -165,7 +164,7 @@ public class WBootstrap5Theme extends WTheme {
         }
       case WidgetThemeRole.PanelBody:
         {
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null && panel.isCollapsible()) {
             child.addStyleClass("accordion-collapse collapse show");
           } else {
@@ -175,7 +174,7 @@ public class WBootstrap5Theme extends WTheme {
         }
       case WidgetThemeRole.PanelBodyContent:
         {
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null && panel.isCollapsible()) {
             child.addStyleClass("accordion-body");
           }
@@ -220,9 +219,9 @@ public class WBootstrap5Theme extends WTheme {
       return;
     }
     {
-      WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget) : null);
+      WPopupWidget popup = ObjectUtils.cast(widget, WPopupWidget.class);
       if (popup != null) {
-        WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget) : null);
+        WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
         if (!(dialog != null)) {
           element.addPropertyWord(Property.Class, "dropdown-menu");
         }
@@ -231,16 +230,14 @@ public class WBootstrap5Theme extends WTheme {
     switch (element.getType()) {
       case A:
         {
-          if (creating
-              && ((widget) instanceof WPushButton ? (WPushButton) (widget) : null) != null) {
+          if (creating && ObjectUtils.cast(widget, WPushButton.class) != null) {
             element.addPropertyWord(Property.Class, classBtn(widget));
           }
-          WPushButton btn = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
+          WPushButton btn = ObjectUtils.cast(widget, WPushButton.class);
           if (creating && btn != null && btn.isDefault()) {
             element.addPropertyWord(Property.Class, "btn-primary");
           }
-          WMenuItem item =
-              ((widget.getParent()) instanceof WMenuItem ? (WMenuItem) (widget.getParent()) : null);
+          WMenuItem item = ObjectUtils.cast(widget.getParent(), WMenuItem.class);
           if (item != null) {
             element.addPropertyWord(Property.Class, "nav-link");
           }
@@ -252,7 +249,7 @@ public class WBootstrap5Theme extends WTheme {
         }
       case BUTTON:
         {
-          WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
+          WPushButton button = ObjectUtils.cast(widget, WPushButton.class);
           if (button != null) {
             if (creating && button.isDefault()) {
               element.addPropertyWord(Property.Class, "btn btn-primary");
@@ -273,12 +270,12 @@ public class WBootstrap5Theme extends WTheme {
         }
       case DIV:
         {
-          WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget) : null);
+          WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
             element.addPropertyWord(Property.Class, "modal-dialog Wt-dialog");
             return;
           }
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null) {
             if (panel.isCollapsible()) {
               element.addPropertyWord(Property.Class, "accordion-item");
@@ -287,7 +284,7 @@ public class WBootstrap5Theme extends WTheme {
             }
             return;
           }
-          WProgressBar bar = ((widget) instanceof WProgressBar ? (WProgressBar) (widget) : null);
+          WProgressBar bar = ObjectUtils.cast(widget, WProgressBar.class);
           if (bar != null) {
             switch (elementRole) {
               case ElementThemeRole.MainElement:
@@ -299,13 +296,12 @@ public class WBootstrap5Theme extends WTheme {
             }
             return;
           }
-          WGoogleMap map = ((widget) instanceof WGoogleMap ? (WGoogleMap) (widget) : null);
+          WGoogleMap map = ObjectUtils.cast(widget, WGoogleMap.class);
           if (map != null) {
             element.addPropertyWord(Property.Class, "Wt-googlemap");
             return;
           }
-          WNavigationBar navBar =
-              ((widget) instanceof WNavigationBar ? (WNavigationBar) (widget) : null);
+          WNavigationBar navBar = ObjectUtils.cast(widget, WNavigationBar.class);
           if (navBar != null) {
             element.addPropertyWord(Property.Class, "navbar");
             if (!hasNavbarExpandClass(navBar)) {
@@ -318,12 +314,12 @@ public class WBootstrap5Theme extends WTheme {
       case LABEL:
         {
           if (elementRole == ElementThemeRole.ToggleButtonRole) {
-            WCheckBox cb = ((widget) instanceof WCheckBox ? (WCheckBox) (widget) : null);
+            WCheckBox cb = ObjectUtils.cast(widget, WCheckBox.class);
             WRadioButton rb = null;
             if (cb != null) {
               element.addPropertyWord(Property.Class, "form-check");
             } else {
-              rb = ((widget) instanceof WRadioButton ? (WRadioButton) (widget) : null);
+              rb = ObjectUtils.cast(widget, WRadioButton.class);
               if (rb != null) {
                 element.addPropertyWord(Property.Class, "form-check");
               }
@@ -342,7 +338,7 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case LI:
         {
-          WMenuItem item = ((widget) instanceof WMenuItem ? (WMenuItem) (widget) : null);
+          WMenuItem item = ObjectUtils.cast(widget, WMenuItem.class);
           if (item != null) {
             final boolean separator = item.isSeparator();
             final boolean sectionHeader = item.isSectionHeader();
@@ -353,10 +349,7 @@ public class WBootstrap5Theme extends WTheme {
               element.addPropertyWord(Property.Class, "nav-item");
             }
             if (item.getMenu() != null) {
-              if (((item.getParentMenu()) instanceof WPopupMenu
-                      ? (WPopupMenu) (item.getParentMenu())
-                      : null)
-                  != null) {
+              if (ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class) != null) {
                 element.addPropertyWord(Property.Class, "dropdown");
               }
             }
@@ -374,10 +367,9 @@ public class WBootstrap5Theme extends WTheme {
               break;
             }
           }
-          WAbstractToggleButton tb =
-              ((widget) instanceof WAbstractToggleButton ? (WAbstractToggleButton) (widget) : null);
-          WSlider sl = ((widget) instanceof WSlider ? (WSlider) (widget) : null);
-          WFileUpload fu = ((widget) instanceof WFileUpload ? (WFileUpload) (widget) : null);
+          WAbstractToggleButton tb = ObjectUtils.cast(widget, WAbstractToggleButton.class);
+          WSlider sl = ObjectUtils.cast(widget, WSlider.class);
+          WFileUpload fu = ObjectUtils.cast(widget, WFileUpload.class);
           if (!(tb != null || sl != null || fu != null)) {
             element.addPropertyWord(Property.Class, "form-control");
           } else {
@@ -388,18 +380,17 @@ public class WBootstrap5Theme extends WTheme {
               }
             }
           }
-          WAbstractSpinBox spinBox =
-              ((widget) instanceof WAbstractSpinBox ? (WAbstractSpinBox) (widget) : null);
+          WAbstractSpinBox spinBox = ObjectUtils.cast(widget, WAbstractSpinBox.class);
           if (spinBox != null) {
             element.addPropertyWord(Property.Class, "Wt-spinbox");
             return;
           }
-          WDateEdit dateEdit = ((widget) instanceof WDateEdit ? (WDateEdit) (widget) : null);
+          WDateEdit dateEdit = ObjectUtils.cast(widget, WDateEdit.class);
           if (dateEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-dateedit");
             return;
           }
-          WTimeEdit timeEdit = ((widget) instanceof WTimeEdit ? (WTimeEdit) (widget) : null);
+          WTimeEdit timeEdit = ObjectUtils.cast(widget, WTimeEdit.class);
           if (timeEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-timeedit");
             return;
@@ -414,32 +405,26 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case UL:
         {
-          WPopupMenu popupMenu = ((widget) instanceof WPopupMenu ? (WPopupMenu) (widget) : null);
+          WPopupMenu popupMenu = ObjectUtils.cast(widget, WPopupMenu.class);
           if (popupMenu != null) {
             element.addPropertyWord(Property.Class, "dropdown-menu");
             if (popupMenu.getParentItem() != null
-                && ((popupMenu.getParentItem().getParentMenu()) instanceof WPopupMenu
-                        ? (WPopupMenu) (popupMenu.getParentItem().getParentMenu())
-                        : null)
+                && ObjectUtils.cast(popupMenu.getParentItem().getParentMenu(), WPopupMenu.class)
                     != null) {
               element.addPropertyWord(Property.Class, "submenu");
             }
           } else {
-            WMenu menu = ((widget) instanceof WMenu ? (WMenu) (widget) : null);
+            WMenu menu = ObjectUtils.cast(widget, WMenu.class);
             if (menu != null) {
               if (element.getProperty(Property.Class).indexOf("navbar-nav") == -1) {
                 element.addPropertyWord(Property.Class, "nav");
               }
-              WTabWidget tabs =
-                  ((menu.getParent().getParent()) instanceof WTabWidget
-                      ? (WTabWidget) (menu.getParent().getParent())
-                      : null);
+              WTabWidget tabs = ObjectUtils.cast(menu.getParent().getParent(), WTabWidget.class);
               if (tabs != null) {
                 element.addPropertyWord(Property.Class, "nav-tabs");
               }
             } else {
-              WSuggestionPopup suggestions =
-                  ((widget) instanceof WSuggestionPopup ? (WSuggestionPopup) (widget) : null);
+              WSuggestionPopup suggestions = ObjectUtils.cast(widget, WSuggestionPopup.class);
               if (suggestions != null) {
                 element.addPropertyWord(Property.Class, "typeahead");
               }
@@ -460,12 +445,11 @@ public class WBootstrap5Theme extends WTheme {
               }
             }
           }
-          WInPlaceEdit inPlaceEdit =
-              ((widget) instanceof WInPlaceEdit ? (WInPlaceEdit) (widget) : null);
+          WInPlaceEdit inPlaceEdit = ObjectUtils.cast(widget, WInPlaceEdit.class);
           if (inPlaceEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-in-place-edit");
           } else {
-            WDatePicker picker = ((widget) instanceof WDatePicker ? (WDatePicker) (widget) : null);
+            WDatePicker picker = ObjectUtils.cast(widget, WDatePicker.class);
             if (picker != null) {
               element.addPropertyWord(Property.Class, "Wt-datepicker");
             }
@@ -546,7 +530,7 @@ public class WBootstrap5Theme extends WTheme {
   }
 
   private static String classBtn(WWidget widget) {
-    WPushButton button = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
+    WPushButton button = ObjectUtils.cast(widget, WPushButton.class);
     return hasButtonStyleClass(widget) || button != null && button.isDefault()
         ? "btn"
         : "btn btn-secondary";

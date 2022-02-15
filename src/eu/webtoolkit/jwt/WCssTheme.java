@@ -190,8 +190,7 @@ public class WCssTheme extends WTheme {
         break;
       case WidgetThemeRole.TableViewRowContainer:
         {
-          WAbstractItemView view =
-              ((widget) instanceof WAbstractItemView ? (WAbstractItemView) (widget) : null);
+          WAbstractItemView view = ObjectUtils.cast(widget, WAbstractItemView.class);
           String backgroundImage = "";
           if (view.hasAlternatingRowColors()) {
             backgroundImage = "stripes/stripe-";
@@ -211,7 +210,7 @@ public class WCssTheme extends WTheme {
         break;
       case WidgetThemeRole.DatePickerIcon:
         {
-          WImage icon = ((child) instanceof WImage ? (WImage) (child) : null);
+          WImage icon = ObjectUtils.cast(child, WImage.class);
           icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
           icon.setVerticalAlignment(AlignmentFlag.Middle);
           icon.resize(new WLength(16), new WLength(16));
@@ -237,7 +236,7 @@ public class WCssTheme extends WTheme {
       return;
     }
     {
-      WPopupWidget popup = ((widget) instanceof WPopupWidget ? (WPopupWidget) (widget) : null);
+      WPopupWidget popup = ObjectUtils.cast(widget, WPopupWidget.class);
       if (popup != null) {
         element.addPropertyWord(Property.Class, "Wt-outset");
       }
@@ -246,7 +245,7 @@ public class WCssTheme extends WTheme {
       case BUTTON:
         if (creating) {
           element.addPropertyWord(Property.Class, "Wt-btn");
-          WPushButton b = ((widget) instanceof WPushButton ? (WPushButton) (widget) : null);
+          WPushButton b = ObjectUtils.cast(widget, WPushButton.class);
           if (b != null) {
             if (b.isDefault()) {
               element.addPropertyWord(Property.Class, "Wt-btn-default");
@@ -258,18 +257,14 @@ public class WCssTheme extends WTheme {
         }
         break;
       case UL:
-        if (((widget) instanceof WPopupMenu ? (WPopupMenu) (widget) : null) != null) {
+        if (ObjectUtils.cast(widget, WPopupMenu.class) != null) {
           element.addPropertyWord(Property.Class, "Wt-popupmenu Wt-outset");
         } else {
-          WTabWidget tabs =
-              ((widget.getParent().getParent()) instanceof WTabWidget
-                  ? (WTabWidget) (widget.getParent().getParent())
-                  : null);
+          WTabWidget tabs = ObjectUtils.cast(widget.getParent().getParent(), WTabWidget.class);
           if (tabs != null) {
             element.addPropertyWord(Property.Class, "Wt-tabs");
           } else {
-            WSuggestionPopup suggestions =
-                ((widget) instanceof WSuggestionPopup ? (WSuggestionPopup) (widget) : null);
+            WSuggestionPopup suggestions = ObjectUtils.cast(widget, WSuggestionPopup.class);
             if (suggestions != null) {
               element.addPropertyWord(Property.Class, "Wt-suggest");
             }
@@ -278,7 +273,7 @@ public class WCssTheme extends WTheme {
         break;
       case LI:
         {
-          WMenuItem item = ((widget) instanceof WMenuItem ? (WMenuItem) (widget) : null);
+          WMenuItem item = ObjectUtils.cast(widget, WMenuItem.class);
           if (item != null) {
             if (item.isSeparator()) {
               element.addPropertyWord(Property.Class, "Wt-separator");
@@ -294,17 +289,17 @@ public class WCssTheme extends WTheme {
         break;
       case DIV:
         {
-          WDialog dialog = ((widget) instanceof WDialog ? (WDialog) (widget) : null);
+          WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
             element.addPropertyWord(Property.Class, "Wt-dialog");
             return;
           }
-          WPanel panel = ((widget) instanceof WPanel ? (WPanel) (widget) : null);
+          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null) {
             element.addPropertyWord(Property.Class, "Wt-panel Wt-outset");
             return;
           }
-          WProgressBar bar = ((widget) instanceof WProgressBar ? (WProgressBar) (widget) : null);
+          WProgressBar bar = ObjectUtils.cast(widget, WProgressBar.class);
           if (bar != null) {
             switch (elementRole) {
               case ElementThemeRole.MainElement:
@@ -322,18 +317,17 @@ public class WCssTheme extends WTheme {
         break;
       case INPUT:
         {
-          WAbstractSpinBox spinBox =
-              ((widget) instanceof WAbstractSpinBox ? (WAbstractSpinBox) (widget) : null);
+          WAbstractSpinBox spinBox = ObjectUtils.cast(widget, WAbstractSpinBox.class);
           if (spinBox != null) {
             element.addPropertyWord(Property.Class, "Wt-spinbox");
             return;
           }
-          WDateEdit dateEdit = ((widget) instanceof WDateEdit ? (WDateEdit) (widget) : null);
+          WDateEdit dateEdit = ObjectUtils.cast(widget, WDateEdit.class);
           if (dateEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-dateedit");
             return;
           }
-          WTimeEdit timeEdit = ((widget) instanceof WTimeEdit ? (WTimeEdit) (widget) : null);
+          WTimeEdit timeEdit = ObjectUtils.cast(widget, WTimeEdit.class);
           if (timeEdit != null) {
             element.addPropertyWord(Property.Class, "Wt-timeedit");
             return;

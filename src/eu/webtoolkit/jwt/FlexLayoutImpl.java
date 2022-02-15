@@ -206,19 +206,13 @@ class FlexLayoutImpl extends StdLayoutImpl {
     final Grid.Item it = this.item(orientation, index);
     final Grid.Section s = this.section(orientation, index);
     DomElement el = getImpl(it.item_).createDomElement((DomElement) null, true, true, app);
-    if (((getImpl(it.item_)) instanceof StdGridLayoutImpl2
-            ? (StdGridLayoutImpl2) (getImpl(it.item_))
-            : null)
-        != null) {
+    if (ObjectUtils.cast(getImpl(it.item_), StdGridLayoutImpl2.class) != null) {
       DomElement wrapEl = DomElement.createNew(DomElementType.DIV);
       wrapEl.addChild(el);
       el = wrapEl;
     }
     int[] m = {0, 0, 0, 0};
-    FlexLayoutImpl flexImpl =
-        ((getImpl(it.item_)) instanceof FlexLayoutImpl
-            ? (FlexLayoutImpl) (getImpl(it.item_))
-            : null);
+    FlexLayoutImpl flexImpl = ObjectUtils.cast(getImpl(it.item_), FlexLayoutImpl.class);
     if (flexImpl != null) {
       Orientation elOrientation = flexImpl.getOrientation();
       if (elOrientation == Orientation.Horizontal) {
@@ -373,8 +367,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
   }
 
   private LayoutDirection getDirection() {
-    WBoxLayout boxLayout =
-        ((this.getLayout()) instanceof WBoxLayout ? (WBoxLayout) (this.getLayout()) : null);
+    WBoxLayout boxLayout = ObjectUtils.cast(this.getLayout(), WBoxLayout.class);
     if (boxLayout != null) {
       return boxLayout.getDirection();
     } else {

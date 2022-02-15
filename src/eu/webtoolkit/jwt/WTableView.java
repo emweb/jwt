@@ -629,9 +629,7 @@ public class WTableView extends WAbstractItemView {
     for (WWidget w = widget; w != null; w = w.getParent()) {
       if (w.hasStyleClass("Wt-tv-c")) {
         WTableView.ColumnWidget column =
-            ((w.getParent()) instanceof WTableView.ColumnWidget
-                ? (WTableView.ColumnWidget) (w.getParent())
-                : null);
+            ObjectUtils.cast(w.getParent(), WTableView.ColumnWidget.class);
         if (!(column != null)) {
           return null;
         }
@@ -874,23 +872,17 @@ public class WTableView extends WAbstractItemView {
   private WTableView.ColumnWidget columnContainer(int renderedColumn) {
     assert this.isAjaxMode();
     if (renderedColumn < this.headerColumnsTable_.getCount() && renderedColumn >= 0) {
-      return ((this.headerColumnsTable_.getWidget(renderedColumn))
-              instanceof WTableView.ColumnWidget
-          ? (WTableView.ColumnWidget) (this.headerColumnsTable_.getWidget(renderedColumn))
-          : null);
+      return ObjectUtils.cast(
+          this.headerColumnsTable_.getWidget(renderedColumn), WTableView.ColumnWidget.class);
     } else {
       if (this.table_.getCount() > 0) {
         if (renderedColumn < 0) {
-          return ((this.table_.getWidget(this.table_.getCount() - 1))
-                  instanceof WTableView.ColumnWidget
-              ? (WTableView.ColumnWidget) (this.table_.getWidget(this.table_.getCount() - 1))
-              : null);
+          return ObjectUtils.cast(
+              this.table_.getWidget(this.table_.getCount() - 1), WTableView.ColumnWidget.class);
         } else {
-          return ((this.table_.getWidget(renderedColumn - this.headerColumnsTable_.getCount()))
-                  instanceof WTableView.ColumnWidget
-              ? (WTableView.ColumnWidget)
-                  (this.table_.getWidget(renderedColumn - this.headerColumnsTable_.getCount()))
-              : null);
+          return ObjectUtils.cast(
+              this.table_.getWidget(renderedColumn - this.headerColumnsTable_.getCount()),
+              WTableView.ColumnWidget.class);
         }
       } else {
         return null;
@@ -1712,7 +1704,7 @@ public class WTableView extends WAbstractItemView {
           if (this.columnInfo(j).hidden) {
             cell.hide();
           }
-          WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w) : null);
+          WInteractWidget wi = ObjectUtils.cast(w, WInteractWidget.class);
           if (wi != null && !this.isEditing(index)) {
             wi.clicked()
                 .addListener(
@@ -2039,7 +2031,7 @@ public class WTableView extends WAbstractItemView {
 
       parentWidget.insertWidget(wIndex, wAfter);
       if (!this.isAjaxMode() && !this.isEditing(index)) {
-        WInteractWidget wi = ((w) instanceof WInteractWidget ? (WInteractWidget) (w) : null);
+        WInteractWidget wi = ObjectUtils.cast(w, WInteractWidget.class);
         if (wi != null) {
           wi.clicked()
               .addListener(

@@ -3008,8 +3008,7 @@ public class WGLWidget extends WInteractWidget {
   }
 
   DomElementType getDomElementType() {
-    if (((this.pImpl_) instanceof WClientGLWidget ? (WClientGLWidget) (this.pImpl_) : null)
-        != null) {
+    if (ObjectUtils.cast(this.pImpl_, WClientGLWidget.class) != null) {
       return DomElementType.CANVAS;
     } else {
       return DomElementType.IMG;

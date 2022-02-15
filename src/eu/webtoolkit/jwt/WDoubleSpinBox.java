@@ -72,7 +72,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
    */
   public void setMinimum(double minimum) {
     this.min_ = minimum;
-    WDoubleValidator v = ((WDoubleValidator) this.getValidator());
+    WDoubleValidator v = ObjectUtils.cast(this.getValidator(), WDoubleValidator.class);
     if (v != null) {
       v.setBottom(this.min_);
     }
@@ -96,7 +96,7 @@ public class WDoubleSpinBox extends WAbstractSpinBox {
    */
   public void setMaximum(double maximum) {
     this.max_ = maximum;
-    WDoubleValidator v = ((WDoubleValidator) this.getValidator());
+    WDoubleValidator v = ObjectUtils.cast(this.getValidator(), WDoubleValidator.class);
     if (v != null) {
       v.setTop(this.max_);
     }

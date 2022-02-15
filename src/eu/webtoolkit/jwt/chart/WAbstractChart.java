@@ -124,10 +124,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
    * @see WAbstractChart#setModel(WAbstractChartModel model)
    */
   public WAbstractItemModel getItemModel() {
-    WStandardChartProxyModel proxy =
-        ((this.model_) instanceof WStandardChartProxyModel
-            ? (WStandardChartProxyModel) (this.model_)
-            : null);
+    WStandardChartProxyModel proxy = ObjectUtils.cast(this.model_, WStandardChartProxyModel.class);
     if (proxy != null) {
       return proxy.getSourceModel();
     } else {

@@ -1649,10 +1649,8 @@ class WClientGLWidget extends WAbstractGLImplementation {
       WGLWidget.GLenum type,
       WPaintDevice paintdevice) {
     int imgNb = this.images_++;
-    if (((paintdevice) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (paintdevice) : null)
-        != null) {
-      WCanvasPaintDevice cpd =
-          ((paintdevice) instanceof WCanvasPaintDevice ? (WCanvasPaintDevice) (paintdevice) : null);
+    if (ObjectUtils.cast(paintdevice, WCanvasPaintDevice.class) != null) {
+      WCanvasPaintDevice cpd = ObjectUtils.cast(paintdevice, WCanvasPaintDevice.class);
       String jsRef = this.currentlyBoundTexture_.getJsRef() + "Canvas";
       this.js_.append(jsRef).append("=document.createElement('canvas');");
       this.js_
@@ -1678,12 +1676,8 @@ class WClientGLWidget extends WAbstractGLImplementation {
           .append(";");
       this.js_.append("delete ").append(jsRef).append(";");
     } else {
-      if (((paintdevice) instanceof WRasterPaintDevice ? (WRasterPaintDevice) (paintdevice) : null)
-          != null) {
-        WRasterPaintDevice rpd =
-            ((paintdevice) instanceof WRasterPaintDevice
-                ? (WRasterPaintDevice) (paintdevice)
-                : null);
+      if (ObjectUtils.cast(paintdevice, WRasterPaintDevice.class) != null) {
+        WRasterPaintDevice rpd = ObjectUtils.cast(paintdevice, WRasterPaintDevice.class);
         rpd.done();
         WResource mr = WebGLUtils.rpdToMemResource(rpd);
         this.preloadImages_.add(

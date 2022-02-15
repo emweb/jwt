@@ -673,10 +673,7 @@ public class WSuggestionPopup extends WPopupWidget {
   private List<WFormWidget> edits_;
 
   private void init() {
-    this.impl_ =
-        ((this.getImplementation()) instanceof WContainerWidget
-            ? (WContainerWidget) (this.getImplementation())
-            : null);
+    this.impl_ = ObjectUtils.cast(this.getImplementation(), WContainerWidget.class);
     this.impl_.setList(true);
     this.impl_.setLoadLaterWhenInvisible(false);
     this.setAttributeValue("style", "z-index: 10000; display: none; overflow: auto");
@@ -737,8 +734,8 @@ public class WSuggestionPopup extends WPopupWidget {
         this.currentItem_ = i;
         this.activated_.trigger(i, edit);
         if (edit != null) {
-          WLineEdit le = ((edit) instanceof WLineEdit ? (WLineEdit) (edit) : null);
-          WTextArea ta = ((edit) instanceof WTextArea ? (WTextArea) (edit) : null);
+          WLineEdit le = ObjectUtils.cast(edit, WLineEdit.class);
+          WTextArea ta = ObjectUtils.cast(edit, WTextArea.class);
           if (le != null) {
             le.textInput().trigger();
           } else {
@@ -823,12 +820,9 @@ public class WSuggestionPopup extends WPopupWidget {
       return;
     }
     for (int i = topLeft.getRow(); i <= bottomRight.getRow(); ++i) {
-      WContainerWidget w =
-          ((this.impl_.getWidget(i)) instanceof WContainerWidget
-              ? (WContainerWidget) (this.impl_.getWidget(i))
-              : null);
-      WAnchor anchor = ((w.getWidget(0)) instanceof WAnchor ? (WAnchor) (w.getWidget(0)) : null);
-      WText value = ((anchor.getWidget(0)) instanceof WText ? (WText) (anchor.getWidget(0)) : null);
+      WContainerWidget w = ObjectUtils.cast(this.impl_.getWidget(i), WContainerWidget.class);
+      WAnchor anchor = ObjectUtils.cast(w.getWidget(0), WAnchor.class);
+      WText value = ObjectUtils.cast(anchor.getWidget(0), WText.class);
       WModelIndex index = this.model_.getIndex(i, this.modelColumn_);
       Object d = index.getData();
       value.setText(StringUtils.asString(d));

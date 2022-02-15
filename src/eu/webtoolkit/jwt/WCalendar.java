@@ -424,10 +424,7 @@ public class WCalendar extends WCompositeWidget {
           WDate date = new WDate(d.getYear(), d.getMonth(), d.getDay());
           WWidget w = this.impl_.resolveWidget(cell);
           WWidget rw = this.renderCell(w, date);
-          WInteractWidget iw =
-              ((rw.getWebWidget()) instanceof WInteractWidget
-                  ? (WInteractWidget) (rw.getWebWidget())
-                  : null);
+          WInteractWidget iw = ObjectUtils.cast(rw.getWebWidget(), WInteractWidget.class);
           if (rw != w) {
             this.impl_.bindWidget(cell, rw);
           }
@@ -475,7 +472,7 @@ public class WCalendar extends WCompositeWidget {
    * return a new widget, the prevoius widget will be deleted.
    */
   protected WWidget renderCell(WWidget widget, final WDate date) {
-    WText t = ((widget) instanceof WText ? (WText) (widget) : null);
+    WText t = ObjectUtils.cast(widget, WText.class);
     if (!(t != null)) {
       t = new WText();
       t.setInline(false);

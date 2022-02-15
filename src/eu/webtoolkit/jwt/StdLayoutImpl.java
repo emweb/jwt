@@ -41,9 +41,7 @@ abstract class StdLayoutImpl extends StdLayoutItemImpl implements WLayoutImpl {
   }
 
   protected static StdLayoutItemImpl getImpl(WLayoutItem item) {
-    return ((item.getImpl()) instanceof StdLayoutItemImpl
-        ? (StdLayoutItemImpl) (item.getImpl())
-        : null);
+    return ObjectUtils.cast(item.getImpl(), StdLayoutItemImpl.class);
   }
 
   private WLayout layout_;

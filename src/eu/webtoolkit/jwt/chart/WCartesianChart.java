@@ -2381,12 +2381,8 @@ public class WCartesianChart extends WAbstractChart {
     for (int g = 0; g < this.series_.size(); ++g) {
       if (this.series_.get(g).isHidden()
           && !(this.axisSliderWidgetForSeries(this.series_.get(g))
-              && (((iterator) instanceof SeriesRenderIterator
-                          ? (SeriesRenderIterator) (iterator)
-                          : null)
-                      != null
-                  || ((iterator) instanceof ExtremesIterator ? (ExtremesIterator) (iterator) : null)
-                      != null))) {
+              && (ObjectUtils.cast(iterator, SeriesRenderIterator.class) != null
+                  || ObjectUtils.cast(iterator, ExtremesIterator.class) != null))) {
         continue;
       }
       groupWidth =
@@ -4335,10 +4331,7 @@ public class WCartesianChart extends WAbstractChart {
             ? this.xAxes_.get(axis.getXAxisId()).location.finLoc
             : this.yAxes_.get(axis.getYAxisId()).location.finLoc;
     if (this.isInteractive()
-        && ((painter.getDevice()) instanceof WCanvasPaintDevice
-                ? (WCanvasPaintDevice) (painter.getDevice())
-                : null)
-            != null) {
+        && ObjectUtils.cast(painter.getDevice(), WCanvasPaintDevice.class) != null) {
       WRectF clipRect = null;
       WRectF area = this.hv(this.chartArea_);
       if (axis.getLocation() == AxisValue.Zero && location == AxisValue.Zero) {

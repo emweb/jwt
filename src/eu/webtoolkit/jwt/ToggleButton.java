@@ -60,8 +60,7 @@ class ToggleButton extends WText {
   private void handleClick() {
     for (int i = 0; i < this.config_.getStates().size(); ++i) {
       if (this.getStyleClass().endsWith(this.config_.getStates().get(i))) {
-        (((this.signals_.get(i)) instanceof Signal ? (Signal) (this.signals_.get(i)) : null))
-            .trigger();
+        (ObjectUtils.cast(this.signals_.get(i), Signal.class)).trigger();
         break;
       }
     }

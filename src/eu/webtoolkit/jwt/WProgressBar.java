@@ -236,7 +236,7 @@ public class WProgressBar extends WInteractWidget {
     DomElement bar = null;
     DomElement label = null;
     WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
     if (all) {
       bar = DomElement.createNew(DomElementType.DIV);
       bar.setId("bar" + this.getId());

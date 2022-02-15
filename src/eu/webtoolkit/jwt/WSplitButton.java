@@ -62,9 +62,7 @@ public class WSplitButton extends WCompositeWidget {
    * <p>This is the button that represents the main action.
    */
   public WPushButton getActionButton() {
-    return ((this.impl_.widget(0)) instanceof WPushButton
-        ? (WPushButton) (this.impl_.widget(0))
-        : null);
+    return ObjectUtils.cast(this.impl_.widget(0), WPushButton.class);
   }
   /**
    * Returns the drop down button.
@@ -72,9 +70,7 @@ public class WSplitButton extends WCompositeWidget {
    * <p>This represents the button that represents the drop-down action.
    */
   public WPushButton getDropDownButton() {
-    return ((this.impl_.widget(1)) instanceof WPushButton
-        ? (WPushButton) (this.impl_.widget(1))
-        : null);
+    return ObjectUtils.cast(this.impl_.widget(1), WPushButton.class);
   }
   /** Sets the menu for the drop-down button. */
   public void setMenu(WPopupMenu popupMenu) {

@@ -47,7 +47,7 @@ class MapWidget extends WContainerWidget {
 
   protected void render(EnumSet<RenderFlag> flags) {
     super.render(flags);
-    WImage parent_img = ((this.getParent()) instanceof WImage ? (WImage) (this.getParent()) : null);
+    WImage parent_img = ObjectUtils.cast(this.getParent(), WImage.class);
     if (parent_img != null) {
       if (parent_img.targetJS_.length() != 0) {
         parent_img.doJavaScript(parent_img.getSetAreaCoordsJS());

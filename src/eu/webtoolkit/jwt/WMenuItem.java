@@ -348,8 +348,7 @@ public class WMenuItem extends WContainerWidget {
   public void setMenu(WMenu menu) {
     this.subMenu_ = menu;
     this.subMenu_.parentItem_ = this;
-    WPopupMenu popup =
-        ((this.subMenu_) instanceof WPopupMenu ? (WPopupMenu) (this.subMenu_) : null);
+    WPopupMenu popup = ObjectUtils.cast(this.subMenu_, WPopupMenu.class);
     if (popup != null) {
       WApplication.getInstance().removeGlobalWidget(menu);
     }
@@ -363,7 +362,7 @@ public class WMenuItem extends WContainerWidget {
       this.setSelectable(false);
       popup.setButton(this.getAnchor());
       this.updateInternalPath();
-      if (((this.menu_) instanceof WPopupMenu ? (WPopupMenu) (this.menu_) : null) != null) {
+      if (ObjectUtils.cast(this.menu_, WPopupMenu.class) != null) {
         popup.show();
       }
     }
@@ -390,10 +389,7 @@ public class WMenuItem extends WContainerWidget {
    */
   public void setChecked(boolean checked) {
     if (this.isCheckable()) {
-      WCheckBox cb =
-          ((this.getAnchor().getWidget(0)) instanceof WCheckBox
-              ? (WCheckBox) (this.getAnchor().getWidget(0))
-              : null);
+      WCheckBox cb = ObjectUtils.cast(this.getAnchor().getWidget(0), WCheckBox.class);
       cb.setChecked(checked);
     }
   }
@@ -409,10 +405,7 @@ public class WMenuItem extends WContainerWidget {
    */
   public boolean isChecked() {
     if (this.isCheckable()) {
-      WCheckBox cb =
-          ((this.getAnchor().getWidget(0)) instanceof WCheckBox
-              ? (WCheckBox) (this.getAnchor().getWidget(0))
-              : null);
+      WCheckBox cb = ObjectUtils.cast(this.getAnchor().getWidget(0), WCheckBox.class);
       return cb.isChecked();
     } else {
       return false;
@@ -651,8 +644,7 @@ public class WMenuItem extends WContainerWidget {
    */
   public WAnchor getAnchor() {
     for (int i = 0; i < this.getCount(); ++i) {
-      WAnchor result =
-          ((this.getWidget(i)) instanceof WAnchor ? (WAnchor) (this.getWidget(i)) : null);
+      WAnchor result = ObjectUtils.cast(this.getWidget(i), WAnchor.class);
       if (result != null) {
         return result;
       }
@@ -673,7 +665,7 @@ public class WMenuItem extends WContainerWidget {
   public void renderSelected(boolean selected) {
     WApplication app = WApplication.getInstance();
     String active = app.getTheme().getActiveClass();
-    WBootstrap5Theme bs5Theme = ((WBootstrap5Theme) app.getTheme());
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
     if (active.equals("Wt-selected")) {
       this.removeStyleClass(!selected ? "itemselected" : "item", true);
       this.addStyleClass(selected ? "itemselected" : "item", true);

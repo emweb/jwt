@@ -45,12 +45,12 @@ class WWidgetVectorPainter extends WWidgetPainter {
   }
 
   public void createContents(DomElement canvas, WPaintDevice device) {
-    WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device) : null);
+    WVectorImage vectorDevice = ObjectUtils.cast(device, WVectorImage.class);
     canvas.setProperty(Property.InnerHTML, vectorDevice.getRendered());
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
-    WVectorImage vectorDevice = ((device) instanceof WVectorImage ? (WVectorImage) (device) : null);
+    WVectorImage vectorDevice = ObjectUtils.cast(device, WVectorImage.class);
     if (this.widget_.repaintFlags_.contains(PaintFlag.Update)) {
       DomElement painter =
           DomElement.updateGiven(

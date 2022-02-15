@@ -163,10 +163,7 @@ public class WBorderLayout extends WLayout {
    * <p>Returns <code>null</code> if no widget was set for that position.
    */
   public WWidget widgetAt(LayoutPosition position) {
-    WWidgetItem item =
-        ((this.getItemAt(position)) instanceof WWidgetItem
-            ? (WWidgetItem) (this.getItemAt(position))
-            : null);
+    WWidgetItem item = ObjectUtils.cast(this.getItemAt(position), WWidgetItem.class);
     if (item != null) {
       return item.getWidget();
     } else {

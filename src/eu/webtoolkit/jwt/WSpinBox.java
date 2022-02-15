@@ -70,10 +70,7 @@ public class WSpinBox extends WAbstractSpinBox {
    */
   public void setMinimum(int minimum) {
     this.min_ = minimum;
-    WIntValidator v =
-        ((this.getValidator()) instanceof WIntValidator
-            ? (WIntValidator) (this.getValidator())
-            : null);
+    WIntValidator v = ObjectUtils.cast(this.getValidator(), WIntValidator.class);
     if (v != null) {
       v.setBottom(this.min_);
     }
@@ -97,10 +94,7 @@ public class WSpinBox extends WAbstractSpinBox {
    */
   public void setMaximum(int maximum) {
     this.max_ = maximum;
-    WIntValidator v =
-        ((this.getValidator()) instanceof WIntValidator
-            ? (WIntValidator) (this.getValidator())
-            : null);
+    WIntValidator v = ObjectUtils.cast(this.getValidator(), WIntValidator.class);
     if (v != null) {
       v.setTop(this.max_);
     }

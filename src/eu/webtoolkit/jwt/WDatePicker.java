@@ -138,7 +138,7 @@ public class WDatePicker extends WCompositeWidget {
    * <p>Most of the configuration of the date edit is stored in the validator.
    */
   public WDateValidator getDateValidator() {
-    return ((WDateValidator) this.forEdit_.getValidator());
+    return ObjectUtils.cast(this.forEdit_.getValidator(), WDateValidator.class);
   }
   /**
    * Sets the format used for parsing or writing the date in the line edit.

@@ -83,8 +83,7 @@ public class WWidgetItem implements WLayoutItem {
       return;
     }
     if (parent != null) {
-      WContainerWidget pc =
-          ((parent) instanceof WContainerWidget ? (WContainerWidget) (parent) : null);
+      WContainerWidget pc = ObjectUtils.cast(parent, WContainerWidget.class);
       if (this.widget_.getParent() != null) {
         if (this.widget_.getParent() != pc) {
           throw new WException("Cannot move a WWidgetItem to another container");
@@ -99,15 +98,10 @@ public class WWidgetItem implements WLayoutItem {
         this.impl_ = new StdWidgetItemImpl(this);
       }
     } else {
-      WContainerWidget pc =
-          ((this.widget_.getParent()) instanceof WContainerWidget
-              ? (WContainerWidget) (this.widget_.getParent())
-              : null);
+      WContainerWidget pc = ObjectUtils.cast(this.widget_.getParent(), WContainerWidget.class);
       if (pc != null) {
         assert this.impl_ != null;
-        boolean flex =
-            ((this.getImpl()) instanceof FlexItemImpl ? (FlexItemImpl) (this.getImpl()) : null)
-                != null;
+        boolean flex = ObjectUtils.cast(this.getImpl(), FlexItemImpl.class) != null;
         pc.widgetRemoved(this.widget_, flex);
       }
       this.impl_ = null;

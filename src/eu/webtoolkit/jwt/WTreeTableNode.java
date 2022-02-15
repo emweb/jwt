@@ -123,7 +123,7 @@ public class WTreeTableNode extends WTreeNode {
 
   public void insertChildNode(int index, WTreeNode node) {
     if (this.table_ != null) {
-      (((node) instanceof WTreeTableNode ? (WTreeTableNode) (node) : null)).setTable(this.table_);
+      (ObjectUtils.cast(node, WTreeTableNode.class)).setTable(this.table_);
     }
     super.insertChildNode(index, node);
   }
@@ -144,10 +144,7 @@ public class WTreeTableNode extends WTreeNode {
     if (this.table_ != table) {
       this.table_ = table;
       for (int i = 0; i < this.getChildNodes().size(); ++i) {
-        (((this.getChildNodes().get(i)) instanceof WTreeTableNode
-                ? (WTreeTableNode) (this.getChildNodes().get(i))
-                : null))
-            .setTable(table);
+        (ObjectUtils.cast(this.getChildNodes().get(i), WTreeTableNode.class)).setTable(table);
       }
       this.createExtraColumns(table.getColumnCount() - 1);
       for (int i = 0; i < this.columnWidgets_.size(); ++i) {
