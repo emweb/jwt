@@ -178,7 +178,8 @@ public class WText extends WInteractWidget {
    * <p>When the current format is {@link TextFormat#XHTML}, and <code>text</code> is literal (not
    * created using {@link WString#tr(String key) WString#tr()}), it is parsed using an XML parser
    * which discards malicious tags and attributes silently. When the parser encounters an XML parse
-   * error, the textFormat is changed to {@link TextFormat#Plain}.
+   * error, the textFormat is changed to {@link TextFormat#Plain}. If <code>text</code> is not a
+   * literal, the same parser is applied only when the text is resolved.
    *
    * <p>Returns whether the text could be set using the current textFormat. A return value of <code>
    * false</code> indicates that the textFormat was changed in order to be able to accept the new
@@ -474,8 +475,7 @@ public class WText extends WInteractWidget {
     }
 
     public boolean isCheckWellFormed() {
-      if (this.format == TextFormat.XHTML
-          && (this.text.isLiteral() || !this.text.getArgs().isEmpty())) {
+      if (this.format == TextFormat.XHTML && this.text.isLiteral()) {
         return removeScript(this.text);
       } else {
         return true;
@@ -483,10 +483,19 @@ public class WText extends WInteractWidget {
     }
 
     public String getFormattedText() {
-      if (this.format == TextFormat.Plain) {
-        return escapeText(this.text, true).toString();
+      if (this.format == TextFormat.XHTML && !this.text.isLiteral()) {
+        WString copy = this.text;
+        if (removeScript(copy)) {
+          return copy.toXhtml();
+        } else {
+          return escapeText(this.text, true).toString();
+        }
       } else {
-        return this.text.toXhtml();
+        if (this.format == TextFormat.Plain) {
+          return escapeText(this.text, true).toString();
+        } else {
+          return this.text.toXhtml();
+        }
       }
     }
   }
