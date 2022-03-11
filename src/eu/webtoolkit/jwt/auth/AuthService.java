@@ -637,7 +637,9 @@ public class AuthService {
           WApplication.readConfigurationProperty("auth-mail-sender-address", senderAddress);
       m.setFrom(new javax.mail.internet.InternetAddress(senderAddress, senderName));
     }
-    m.writeTo(System.out);
+    ByteArrayOutputStream ss = new ByteArrayOutputStream();
+    m.writeTo(ss);
+    logger.info(new StringWriter().append("Sending Mail:\n").append(ss.toString()).toString());
     MailUtils.sendMail(m);
   }
   /**

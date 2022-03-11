@@ -522,6 +522,24 @@ public class WebRequest extends HttpServletRequestWrapper {
 		return host;
 	}
 
+	public String getUrlScheme(final Configuration conf) {
+		if (conf.isBehindReverseProxy() ||
+			conf.isTrustedProxy(getRemoteAddr())) {
+			final String forwardedProto = str(getHeaderValue("X-Forwarded-Proto"));
+
+			if (!forwardedProto.isEmpty()) {
+				int i = forwardedProto.lastIndexOf(',');
+				if (i == -1) {
+					return forwardedProto;
+				} else {
+					return forwardedProto.substring(i + 1);
+				}
+			}
+		}
+
+		return getScheme();
+	}
+
 	private static String str(String s) {
 		return s != null ? s : "";
 	}

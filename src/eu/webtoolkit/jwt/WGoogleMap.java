@@ -140,23 +140,17 @@ public class WGoogleMap extends WCompositeWidget {
   /** Adds a marker overlay to the map. */
   public void addMarker(final WGoogleMap.Coordinate pos) {
     StringWriter strm = new StringWriter();
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      strm.append("var marker = ");
-      write(strm, pos);
-      strm.append(";").append(this.getJsRef()).append(".map.addOverlay(marker);");
-    } else {
-      strm.append("var position = ");
-      write(strm, pos);
-      strm.append(";")
-          .append("var marker = new google.maps.Marker({")
-          .append("position: position,")
-          .append("map: ")
-          .append(this.getJsRef())
-          .append(".map")
-          .append("});")
-          .append(this.getJsRef())
-          .append(".map.overlays.push(marker);");
-    }
+    strm.append("var position = ");
+    write(strm, pos);
+    strm.append(";")
+        .append("var marker = new google.maps.Marker({")
+        .append("position: position,")
+        .append("map: ")
+        .append(this.getJsRef())
+        .append(".map")
+        .append("});")
+        .append(this.getJsRef())
+        .append(".map.overlays.push(marker);");
     this.doGmJavaScript(strm.toString());
   }
   /**
@@ -177,32 +171,20 @@ public class WGoogleMap extends WCompositeWidget {
       write(strm, points.get(i));
       strm.append(";");
     }
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      strm.append("var poly = new google.maps.Polyline(waypoints, \"")
-          .append(color.getCssText())
-          .append("\", ")
-          .append(String.valueOf(width))
-          .append(", ")
-          .append(String.valueOf(opacity))
-          .append(");")
-          .append(this.getJsRef())
-          .append(".map.addOverlay(poly);");
-    } else {
-      strm.append("var poly = new google.maps.Polyline({path: waypoints,strokeColor: \"")
-          .append(color.getCssText())
-          .append("\",")
-          .append("strokeOpacity: ")
-          .append(String.valueOf(opacity))
-          .append(",")
-          .append("strokeWeight: ")
-          .append(String.valueOf(width))
-          .append("});")
-          .append("poly.setMap(")
-          .append(this.getJsRef())
-          .append(".map);")
-          .append(this.getJsRef())
-          .append(".map.overlays.push(poly);");
-    }
+    strm.append("var poly = new google.maps.Polyline({path: waypoints,strokeColor: \"")
+        .append(color.getCssText(false))
+        .append("\",")
+        .append("strokeOpacity: ")
+        .append(String.valueOf(opacity))
+        .append(",")
+        .append("strokeWeight: ")
+        .append(String.valueOf(width))
+        .append("});")
+        .append("poly.setMap(")
+        .append(this.getJsRef())
+        .append(".map);")
+        .append(this.getJsRef())
+        .append(".map.overlays.push(poly);");
     this.doGmJavaScript(strm.toString());
   }
   /**
@@ -245,33 +227,28 @@ public class WGoogleMap extends WCompositeWidget {
       final WColor strokeColor,
       int strokeWidth,
       final WColor fillColor) {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      throw new UnsupportedOperationException(
-          "WGoogleMap::addCircle is not supported in the Google Maps API v2.");
-    } else {
-      StringWriter strm = new StringWriter();
-      double strokeOpacity = strokeColor.getAlpha() / 255.0;
-      double fillOpacity = fillColor.getAlpha() / 255.0;
-      strm.append("var mapLocal = ").append(this.getJsRef() + ".map;").append("var latLng = ");
-      write(strm, center);
-      strm.append(";")
-          .append("var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
-          .append(String.valueOf(radius))
-          .append(",   center:  latLng  ,  fillOpacity: \"")
-          .append(String.valueOf(fillOpacity))
-          .append("\",  fillColor: \"")
-          .append(fillColor.getCssText())
-          .append("\",  strokeWeight: ")
-          .append(String.valueOf(strokeWidth))
-          .append(",  strokeColor:\"")
-          .append(strokeColor.getCssText())
-          .append("\",  strokeOpacity: ")
-          .append(String.valueOf(strokeOpacity))
-          .append("} );")
-          .append(this.getJsRef())
-          .append(".map.overlays.push(circle);");
-      this.doGmJavaScript(strm.toString());
-    }
+    StringWriter strm = new StringWriter();
+    double strokeOpacity = strokeColor.getAlpha() / 255.0;
+    double fillOpacity = fillColor.getAlpha() / 255.0;
+    strm.append("var mapLocal = ").append(this.getJsRef() + ".map;").append("var latLng = ");
+    write(strm, center);
+    strm.append(";")
+        .append("var circle = new google.maps.Circle( {   map: mapLocal,   radius: ")
+        .append(String.valueOf(radius))
+        .append(",   center:  latLng  ,  fillOpacity: \"")
+        .append(String.valueOf(fillOpacity))
+        .append("\",  fillColor: \"")
+        .append(fillColor.getCssText(false))
+        .append("\",  strokeWeight: ")
+        .append(String.valueOf(strokeWidth))
+        .append(",  strokeColor:\"")
+        .append(strokeColor.getCssText(false))
+        .append("\",  strokeOpacity: ")
+        .append(String.valueOf(strokeOpacity))
+        .append("} );")
+        .append(this.getJsRef())
+        .append(".map.overlays.push(circle);");
+    this.doGmJavaScript(strm.toString());
   }
   /**
    * Adds a circle to the map.
@@ -290,49 +267,40 @@ public class WGoogleMap extends WCompositeWidget {
   /** Adds a icon marker overlay to the map. */
   public void addIconMarker(final WGoogleMap.Coordinate pos, final String iconURL) {
     StringWriter strm = new StringWriter();
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      throw new UnsupportedOperationException(
-          "WGoogleMap::addIconMarker is not supported in the Google Maps API v2.");
-    } else {
-      strm.append("var position = ");
-      write(strm, pos);
-      strm.append(";")
-          .append("var marker = new google.maps.Marker({")
-          .append("position: position,")
-          .append("icon: \"")
-          .append(iconURL)
-          .append("\",")
-          .append("map: ")
-          .append(this.getJsRef())
-          .append(".map")
-          .append("});")
-          .append(this.getJsRef())
-          .append(".map.overlays.push(marker);");
-    }
+    strm.append("var position = ");
+    write(strm, pos);
+    strm.append(";")
+        .append("var marker = new google.maps.Marker({")
+        .append("position: position,")
+        .append("icon: \"")
+        .append(iconURL)
+        .append("\",")
+        .append("map: ")
+        .append(this.getJsRef())
+        .append(".map")
+        .append("});")
+        .append(this.getJsRef())
+        .append(".map.overlays.push(marker);");
     this.doGmJavaScript(strm.toString());
   }
   /** Removes all overlays from the map. */
   public void clearOverlays() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.clearOverlays();");
-    } else {
-      StringWriter strm = new StringWriter();
-      strm.append("var mapLocal = ")
-          .append(this.getJsRef() + ".map, i;\n")
-          .append("if (mapLocal.overlays) {\n")
-          .append("for (i in mapLocal.overlays) {\n")
-          .append("mapLocal.overlays[i].setMap(null);\n")
-          .append("}\n")
-          .append("mapLocal.overlays.length = 0;\n")
-          .append("}\n")
-          .append("if (mapLocal.infowindows) {\n")
-          .append("for (i in mapLocal.infowindows) {\n")
-          .append("mapLocal.infowindows[i].close();\n")
-          .append("}\n")
-          .append("mapLocal.infowindows.length = 0;\n")
-          .append("}\n");
-      this.doGmJavaScript(strm.toString());
-    }
+    StringWriter strm = new StringWriter();
+    strm.append("var mapLocal = ")
+        .append(this.getJsRef() + ".map, i;\n")
+        .append("if (mapLocal.overlays) {\n")
+        .append("for (i in mapLocal.overlays) {\n")
+        .append("mapLocal.overlays[i].setMap(null);\n")
+        .append("}\n")
+        .append("mapLocal.overlays.length = 0;\n")
+        .append("}\n")
+        .append("if (mapLocal.infowindows) {\n")
+        .append("for (i in mapLocal.infowindows) {\n")
+        .append("mapLocal.infowindows[i].close();\n")
+        .append("}\n")
+        .append("mapLocal.infowindows.length = 0;\n")
+        .append("}\n");
+    this.doGmJavaScript(strm.toString());
   }
   /** Opens a text bubble with html text at a specific location. */
   public void openInfoWindow(final WGoogleMap.Coordinate pos, final CharSequence myHtml) {
@@ -340,21 +308,14 @@ public class WGoogleMap extends WCompositeWidget {
     strm.append("var pos = ");
     write(strm, pos);
     strm.append(";");
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      strm.append(this.getJsRef())
-          .append(".map.openInfoWindow(pos, ")
-          .append(WWebWidget.jsStringLiteral(myHtml))
-          .append(");");
-    } else {
-      strm.append("var infowindow = new google.maps.InfoWindow({content: ")
-          .append(WWebWidget.jsStringLiteral(myHtml))
-          .append(",")
-          .append("position: pos});infowindow.open(")
-          .append(this.getJsRef())
-          .append(".map);")
-          .append(this.getJsRef())
-          .append(".map.infowindows.push(infowindow);");
-    }
+    strm.append("var infowindow = new google.maps.InfoWindow({content: ")
+        .append(WWebWidget.jsStringLiteral(myHtml))
+        .append(",")
+        .append("position: pos});infowindow.open(")
+        .append(this.getJsRef())
+        .append(".map);")
+        .append(this.getJsRef())
+        .append(".map.infowindows.push(infowindow);");
     this.doGmJavaScript(strm.toString());
   }
   /** Sets the map view to the given center. */
@@ -411,17 +372,7 @@ public class WGoogleMap extends WCompositeWidget {
     strm.append(", ");
     write(strm, rightBottomC);
     strm.append(");");
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      strm.append("var zooml = ")
-          .append(this.getJsRef())
-          .append(".map.getBoundsZoomLevel(bbox);")
-          .append(this.getJsRef())
-          .append(".map.setCenter(");
-      write(strm, center);
-      strm.append(", zooml);");
-    } else {
-      strm.append(this.getJsRef()).append(".map.fitBounds(bbox);");
-    }
+    strm.append(this.getJsRef()).append(".map.fitBounds(bbox);");
     this.doGmJavaScript(strm.toString());
   }
   /** Sets the zoom level to the given new value. */
@@ -455,69 +406,45 @@ public class WGoogleMap extends WCompositeWidget {
    * returnToSavedPosition()}.
    */
   public void savePosition() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.savePosition();");
-    } else {
-      StringWriter strm = new StringWriter();
-      strm.append(this.getJsRef())
-          .append(".map.savedZoom = ")
-          .append(this.getJsRef())
-          .append(".map.getZoom();")
-          .append(this.getJsRef())
-          .append(".map.savedPosition = ")
-          .append(this.getJsRef())
-          .append(".map.getCenter();");
-      this.doGmJavaScript(strm.toString());
-    }
+    StringWriter strm = new StringWriter();
+    strm.append(this.getJsRef())
+        .append(".map.savedZoom = ")
+        .append(this.getJsRef())
+        .append(".map.getZoom();")
+        .append(this.getJsRef())
+        .append(".map.savedPosition = ")
+        .append(this.getJsRef())
+        .append(".map.getCenter();");
+    this.doGmJavaScript(strm.toString());
   }
   /** Restores the map view that was saved by {@link WGoogleMap#savePosition() savePosition()}. */
   public void returnToSavedPosition() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.returnToSavedPosition();");
-    } else {
-      StringWriter strm = new StringWriter();
-      strm.append(this.getJsRef())
-          .append(".map.setZoom(")
-          .append(this.getJsRef())
-          .append(".map.savedZoom);")
-          .append(this.getJsRef())
-          .append(".map.setCenter(")
-          .append(this.getJsRef())
-          .append(".map.savedPosition);");
-      this.doGmJavaScript(strm.toString());
-    }
+    StringWriter strm = new StringWriter();
+    strm.append(this.getJsRef())
+        .append(".map.setZoom(")
+        .append(this.getJsRef())
+        .append(".map.savedZoom);")
+        .append(this.getJsRef())
+        .append(".map.setCenter(")
+        .append(this.getJsRef())
+        .append(".map.savedPosition);");
+    this.doGmJavaScript(strm.toString());
   }
   /** Enables the dragging of the map (enabled by default). */
   public void enableDragging() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.enableDragging();");
-    } else {
-      this.setMapOption("draggable", "true");
-    }
+    this.setMapOption("draggable", "true");
   }
   /** Disables the dragging of the map. */
   public void disableDragging() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.disableDragging();");
-    } else {
-      this.setMapOption("draggable", "false");
-    }
+    this.setMapOption("draggable", "false");
   }
   /** Enables double click to zoom in and out (enabled by default). */
   public void enableDoubleClickZoom() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.enableDoubleClickZoom();");
-    } else {
-      this.setMapOption("disableDoubleClickZoom", "false");
-    }
+    this.setMapOption("disableDoubleClickZoom", "false");
   }
   /** Disables double click to zoom in and out. */
   public void disableDoubleClickZoom() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.disableDoubleClickZoom();");
-    } else {
-      this.setMapOption("disableDoubleClickZoom", "true");
-    }
+    this.setMapOption("disableDoubleClickZoom", "true");
   }
   /**
    * Enables the GoogleBar, an integrated search control, on the map.
@@ -531,12 +458,8 @@ public class WGoogleMap extends WCompositeWidget {
    * <p><i><b>Note: </b>This functionality is no longer available in the Google Maps API v3. </i>
    */
   public void enableGoogleBar() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.enableGoogleBar();");
-    } else {
-      throw new UnsupportedOperationException(
-          "WGoogleMap::enableGoogleBar is not supported in the Google Maps API v3.");
-    }
+    throw new UnsupportedOperationException(
+        "WGoogleMap::enableGoogleBar is not supported in the Google Maps API v3.");
   }
   /**
    * Disables the GoogleBar integrated search control.
@@ -549,12 +472,8 @@ public class WGoogleMap extends WCompositeWidget {
    * <p><i><b>Note: </b>This functionality is no longer available in the Google Maps API v3. </i>
    */
   public void disableGoogleBar() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.disableGoogleBar();");
-    } else {
-      throw new UnsupportedOperationException(
-          "WGoogleMap::disableGoogleBar is not supported in the Google Maps API v3.");
-    }
+    throw new UnsupportedOperationException(
+        "WGoogleMap::disableGoogleBar is not supported in the Google Maps API v3.");
   }
   /**
    * Enables zooming using a mouse&apos;s scroll wheel.
@@ -562,11 +481,7 @@ public class WGoogleMap extends WCompositeWidget {
    * <p>Scroll wheel zoom is disabled by default.
    */
   public void enableScrollWheelZoom() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.enableScrollWheelZoom();");
-    } else {
-      this.setMapOption("scrollwheel", "true");
-    }
+    this.setMapOption("scrollwheel", "true");
   }
   /**
    * Disables zooming using a mouse&apos;s scroll wheel.
@@ -574,11 +489,7 @@ public class WGoogleMap extends WCompositeWidget {
    * <p>Scroll wheel zoom is disabled by default.
    */
   public void disableScrollWheelZoom() {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      this.doGmJavaScript(this.getJsRef() + ".map.disableScrollWheelZoom();");
-    } else {
-      this.setMapOption("scrollwheel", "false");
-    }
+    this.setMapOption("scrollwheel", "false");
   }
   /**
    * Sets the map type control.
@@ -587,65 +498,36 @@ public class WGoogleMap extends WCompositeWidget {
    */
   public void setMapTypeControl(MapTypeControl type) {
     StringWriter strm = new StringWriter();
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      String control = "";
-      switch (type) {
-        case Default:
-          control = "google.maps.MapTypeControl";
-          break;
-        case Menu:
-          control = "google.maps.MenuMapTypeControl";
-          break;
-        case Hierarchical:
-          control = "google.maps.HierarchicalMapTypeControl";
-          break;
-        case HorizontalBar:
-          throw new UnsupportedOperationException(
-              "WGoogleMap::setMapTypeControl: HorizontalBarControl is not supported when using Google Maps API v2.");
-        default:
-          control = "";
-      }
-      strm.append(this.getJsRef())
-          .append(".map.removeControl(")
-          .append(this.getJsRef())
-          .append(".mtc);");
-      if (!control.equals("")) {
-        strm.append("var mtc = new ")
-            .append(control)
-            .append("();")
-            .append(this.getJsRef())
-            .append(".mtc = mtc;")
-            .append(this.getJsRef())
-            .append(".map.addControl(mtc);");
-      }
-    } else {
-      String control = "";
-      switch (type) {
-        case Default:
-          control = "DEFAULT";
-          break;
-        case Menu:
-          control = "DROPDOWN_MENU";
-          break;
-        case HorizontalBar:
-          control = "HORIZONTAL_BAR";
-          break;
-        case Hierarchical:
-          throw new UnsupportedOperationException(
-              "WGoogleMap::setMapTypeControl: HierarchicalControl is not supported when using Google Maps API v3.");
-        default:
-          control = "";
-      }
-      strm.append("var options = {")
-          .append("disableDefaultUI: ")
-          .append(control.equals("") ? "true" : "false")
-          .append(",")
-          .append("mapTypeControlOptions: {");
-      if (!control.equals("")) {
-        strm.append("style: google.maps.MapTypeControlStyle.").append(control);
-      }
-      strm.append("}").append("};").append(this.getJsRef()).append(".map.setOptions(options);");
+    strm.append(this.getJsRef())
+        .append(".map.removeControl(")
+        .append(this.getJsRef())
+        .append(".mtc);");
+    String control = "";
+    switch (type) {
+      case Default:
+        control = "DEFAULT";
+        break;
+      case Menu:
+        control = "DROPDOWN_MENU";
+        break;
+      case HorizontalBar:
+        control = "HORIZONTAL_BAR";
+        break;
+      case Hierarchical:
+        throw new UnsupportedOperationException(
+            "WGoogleMap::setMapTypeControl: HierarchicalControl is not supported when using Google Maps API v3.");
+      default:
+        control = "";
     }
+    strm.append("var options = {")
+        .append("disableDefaultUI: ")
+        .append(control.equals("") ? "true" : "false")
+        .append(",")
+        .append("mapTypeControlOptions: {");
+    if (!control.equals("")) {
+      strm.append("style: google.maps.MapTypeControlStyle.").append(control);
+    }
+    strm.append("}").append("};").append(this.getJsRef()).append(".map.setOptions(options);");
     this.doGmJavaScript(strm.toString());
   }
   /**
@@ -693,19 +575,11 @@ public class WGoogleMap extends WCompositeWidget {
           .append(";if (!self) { setTimeout(")
           .append(initFunction)
           .append(", 0);return;}");
-      if (this.apiVersion_ == GoogleMapsVersion.v2) {
-        strm.append(
-            "var map = new google.maps.Map(self);map.setCenter(new google.maps.LatLng(47.01887777, 8.651888), 13);");
-        this.setJavaScriptMember(
-            WT_RESIZE_JS,
-            "function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) self.map.checkResize();}");
-      } else {
-        strm.append(
-            "var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
-        this.setJavaScriptMember(
-            WT_RESIZE_JS,
-            "function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
-      }
+      strm.append(
+          "var latlng = new google.maps.LatLng(47.01887777, 8.651888);var myOptions = {zoom: 13,center: latlng,mapTypeId: google.maps.MapTypeId.ROADMAP};var map = new google.maps.Map(self, myOptions);map.overlays = [];map.infowindows = [];");
+      this.setJavaScriptMember(
+          WT_RESIZE_JS,
+          "function(self, w, h) {if (w >= 0) self.style.width=w + 'px';if (h >= 0) self.style.height=h + 'px';if (self.map) google.maps.event.trigger(self.map, 'resize');}");
       strm.append("self.map = map;");
       this.streamJSListener(this.clicked_, "click", strm);
       this.streamJSListener(this.doubleClicked_, "dblclick", strm);
@@ -720,7 +594,7 @@ public class WGoogleMap extends WCompositeWidget {
           .append(";}, 0)};")
           .append(app.getJavaScriptClass())
           .append("._p_.loadGoogleMaps('")
-          .append(this.apiVersion_ == GoogleMapsVersion.v2 ? '2' : '3')
+          .append('3')
           .append("',")
           .append(WWebWidget.jsStringLiteral(this.googlekey_))
           .append(",")
@@ -750,19 +624,11 @@ public class WGoogleMap extends WCompositeWidget {
 
   private void streamJSListener(
       final JSignal1<WGoogleMap.Coordinate> signal, String signalName, final StringBuilder strm) {
-    if (this.apiVersion_ == GoogleMapsVersion.v2) {
-      strm.append("google.maps.Event.addListener(map, \"")
-          .append(signalName)
-          .append("\", function(overlay, latlng) {if (latlng) {")
-          .append(signal.createCall("latlng.lat() +' '+ latlng.lng()"))
-          .append(";}});");
-    } else {
-      strm.append("google.maps.event.addListener(map, \"")
-          .append(signalName)
-          .append("\", function(event) {if (event && event.latLng) {")
-          .append(signal.createCall("event.latLng.lat() +' '+ event.latLng.lng()"))
-          .append(";}});");
-    }
+    strm.append("google.maps.event.addListener(map, \"")
+        .append(signalName)
+        .append("\", function(event) {if (event && event.latLng) {")
+        .append(signal.createCall("event.latLng.lat() +' '+ event.latLng.lng()"))
+        .append(";}});");
   }
 
   private void setMapOption(final String option, final String value) {

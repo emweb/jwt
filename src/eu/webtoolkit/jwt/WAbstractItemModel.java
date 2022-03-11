@@ -807,7 +807,7 @@ public abstract class WAbstractItemModel extends WObject {
           for (int col = 0; col < sourceModel.getColumnCount(sourceParent); ++col) {
             WModelIndex s = sourceModel.getIndex(sourceIndex.getRow(), col, sourceParent);
             WModelIndex d = this.getIndex(r, col, parent);
-            copyData(sourceModel, s, this, d);
+            this.copyData(s, d);
           }
           ++r;
         }
@@ -869,7 +869,7 @@ public abstract class WAbstractItemModel extends WObject {
           for (int col = 0; col < sourceModel.getColumnCount(sourceParent); ++col) {
             WModelIndex s = sourceModel.getIndex(sourceIndex.getRow(), col, sourceParent);
             WModelIndex d = this.getIndex(r, col, parent);
-            copyData(sourceModel, s, this, d);
+            this.copyData(s, d);
           }
           ++r;
         }
@@ -1374,6 +1374,24 @@ public abstract class WAbstractItemModel extends WObject {
   protected void endRemoveRows() {
     this.rowsRemoved().trigger(this.parent_, this.first_, this.last_);
   }
+  /**
+   * Copy data to an index in this model.
+   *
+   * <p>The source index can be any valid index. The destination index must be part of this model.
+   */
+  protected void copyData(final WModelIndex sIndex, final WModelIndex dIndex) {
+    if (dIndex.getModel() != this) {
+      throw new WException("WAbstractItemModel::copyData(): dIndex must be an index of this model");
+    }
+    SortedMap<ItemDataRole, Object> values = this.getItemData(dIndex);
+    for (Iterator<Map.Entry<ItemDataRole, Object>> i_it = values.entrySet().iterator();
+        i_it.hasNext(); ) {
+      Map.Entry<ItemDataRole, Object> i = i_it.next();
+      this.setData(dIndex, null, i.getKey());
+    }
+    WAbstractItemModel source = sIndex.getModel();
+    this.setItemData(dIndex, source.getItemData(sIndex));
+  }
 
   private int first_;
   private int last_;
@@ -1391,20 +1409,5 @@ public abstract class WAbstractItemModel extends WObject {
   private Signal layoutAboutToBeChanged_;
   private Signal layoutChanged_;
   private Signal modelReset_;
-
-  private static void copyData(
-      WAbstractItemModel source,
-      final WModelIndex sIndex,
-      WAbstractItemModel destination,
-      final WModelIndex dIndex) {
-    SortedMap<ItemDataRole, Object> values = destination.getItemData(dIndex);
-    for (Iterator<Map.Entry<ItemDataRole, Object>> i_it = values.entrySet().iterator();
-        i_it.hasNext(); ) {
-      Map.Entry<ItemDataRole, Object> i = i_it.next();
-      destination.setData(dIndex, null, i.getKey());
-    }
-    destination.setItemData(dIndex, source.getItemData(sIndex));
-  }
-
   private static String DRAG_DROP_MIME_TYPE = "application/x-wabstractitemmodelselection";
 }

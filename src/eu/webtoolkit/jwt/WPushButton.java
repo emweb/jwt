@@ -224,7 +224,8 @@ public class WPushButton extends WFormWidget {
    * <p>When the current text format is {@link TextFormat#XHTML}, and <code>text</code> is literal
    * (not created using {@link WString#tr(String key) WString#tr()}), it is parsed using an XML
    * parser which discards malicious tags and attributes silently. When the parser encounters an XML
-   * parse error, the textFormat is changed to {@link TextFormat#Plain}.
+   * parse error, the textFormat is changed to {@link TextFormat#Plain}. If <code>text</code> is not
+   * a literal, the same parser is applied only when the text is resolved.
    *
    * <p>Returns whether the text could be set using the current textFormat. A return value of <code>
    * false</code> indicates that the text format was changed in order to be able to accept the new

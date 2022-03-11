@@ -243,6 +243,14 @@ public abstract class WAbstractToggleButton extends WFormWidget {
    *
    * <p>You can use the {@link WFormWidget#changed()} signal to react to any change of the button
    * state.
+   *
+   * <p>
+   *
+   * <p><i><b>Remark: </b>This signal is not emitted for {@link WRadioButton}. In this case a button
+   * can only be unchecked because another button is checked. The browser will only generate an
+   * event for the button which was checked. Since {@link EventSignal} mirrors browser events, JWt
+   * will also not emit this signal. The function {@link WButtonGroup#checkedChanged()} might be
+   * easier to use in this case. </i>
    */
   public EventSignal unChecked() {
     return this.voidEventSignal(UNCHECKED_SIGNAL, true);

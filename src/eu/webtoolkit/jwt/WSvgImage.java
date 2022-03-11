@@ -226,7 +226,7 @@ public class WSvgImage extends WResource implements WVectorImage {
         || this.getPainter().getBrush().getStyle() == BrushStyle.None) {
       final WColor color = this.getPainter().getPen().getColor();
       style
-          .append("fill:" + color.getCssText())
+          .append("fill:" + color.getCssText(false))
           .append(';')
           .append("fill-opacity:")
           .append(MathUtils.roundCss(color.getAlpha() / 255., 3))
@@ -588,7 +588,7 @@ public class WSvgImage extends WResource implements WVectorImage {
       case Solid:
         {
           final WColor color = this.getPainter().getBrush().getColor();
-          result += "fill:" + color.getCssText() + ";";
+          result += "fill:" + color.getCssText(false) + ";";
           if (color.getAlpha() != 255) {
             result += "fill-opacity:";
             result += MathUtils.roundCss(color.getAlpha() / 255., 3);
@@ -622,7 +622,7 @@ public class WSvgImage extends WResource implements WVectorImage {
             .append(String.valueOf(this.currentStrokeGradientId_))
             .append(");");
       } else {
-        result.append("stroke:").append(color.getCssText()).append(';');
+        result.append("stroke:").append(color.getCssText(false)).append(';');
         if (color.getAlpha() != 255) {
           result
               .append("stroke-opacity:")
@@ -758,7 +758,7 @@ public class WSvgImage extends WResource implements WVectorImage {
       this.shapes_.append("offset=\"").append(offset).append("\" ");
       this.shapes_
           .append("stop-color=\"")
-          .append(gradient.getColorstops().get(i).getColor().getCssText())
+          .append(gradient.getColorstops().get(i).getColor().getCssText(false))
           .append("\" ");
       this.shapes_
           .append("stop-opacity=\"")

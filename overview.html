@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.6.0</title>
+<title>JWt 4.7.0</title>
 </head>
 <body>
 
@@ -24,6 +24,61 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.7.0 (March 11, 2022)</h2>
+
+<p>JWt 4.7.0 is a smaller release with no major new features to speak of, just some improvements and bug fixes here and there.</p>
+
+<h3>Notable changes in default behavior</h3>
+
+<p>These changes affect default behavior in JWt, and may require special attention:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7434" target="_blank">Issue #7434</a>:
+    <a href="eu/webtoolkit/jwt/WColor.html#getCssText()">WColor#getCssText()</a> now outputs
+    the color in <code>rgba</code> format by default.
+    It is now possible to set the opacity using such functions as
+    <a href="eu/webtoolkit/jwt/WCssDecorationStyle.html#setBackgroundColor(eu.webtoolkit.jwt.WColor)">WCssDecorationStyle#setBackgroundColor()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8782" target="_blank">Issue #8782</a>:
+    When using drag/drop in combination with
+    <a href="eu/webtoolkit/jwt/WStandardItemModel.html">WStandardItemModel</a>,
+    the item flags are now copied. Previously, after dragging an item one time
+    the <a href="eu/webtoolkit/jwt/ItemFlag.html#DragEnabled">ItemFlag.DragEnabled</a>
+    flag would be lost and the item would no longer be draggable.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/9591" target="_blank">Issue #9591</a>:
+    Added <a href="eu/webtoolkit/jwt/servlet/WebRequest.html#getUrlScheme(eu.webtoolkit.jwt.Configuration)">WebRequest#getUrlScheme</a>,
+    which looks at <code>X-Forwarded-Proto</code> if JWt is behind a trusted reverse proxy.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/9056" target="_blank">Issue #9056</a>:
+    <a href="eu/webtoolkit/jwt/WFileDropWidget.html#getUploads()">WFileDropWidget#uploads()</a> now returns a copy of the list of uploads.
+  </li>
+</ul>
+
+<h3>Removals</h3>
+
+<ul>
+  <li>
+    Since Google Maps v2 is no longer available as of May 26 2021, JWt no longer supports v2.
+  </li>
+</ul>
+
+<h2>Release 4.6.3 (March 10, 2022)</h2>
+
+<p>
+  JWt 4.6.3 is a patch release that addresses the following issues:
+  <ul>
+    <li>
+      <a href="https://redmine.webtoolkit.eu/issues/9790" target="_blank">Issue #9790</a>:
+      A localized <a href="eu/webtoolkit/jwt/WText.html">WText</a> with <a href="eu/webtoolkit/jwt/TextFormat.html#XHTML">TextFormat.XHTML</a> was not refreshed properly when using arguments.
+    </li>
+  </ul>
+</p>
 
 <h2>Release 4.6.2 (February 15, 2022)</h2>
 

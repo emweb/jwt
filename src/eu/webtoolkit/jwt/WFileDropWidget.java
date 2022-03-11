@@ -198,7 +198,7 @@ public class WFileDropWidget extends WContainerWidget {
   public WFileDropWidget(WContainerWidget parentContainer) {
     super();
     this.uploadWorkerResource_ = null;
-    this.resource_ = null;
+    this.resource_ = (WFileDropWidget.WFileDropUploadResource) null;
     this.currentFileIdx_ = 0;
     this.jsFilterFn_ = "";
     this.jsFilterImports_ = new ArrayList<String>();
@@ -250,10 +250,17 @@ public class WFileDropWidget extends WContainerWidget {
    *
    * <p>
    *
+   * <p><i><b>Remark: </b>Since version 4.7.0, this method returns a copy of the vector because we
+   * changed the internal vector to hold values of type std::unique_ptr.</i>
+   *
    * @see WFileDropWidget#getCurrentIndex()
    */
   public List<WFileDropWidget.File> getUploads() {
-    return this.uploads_;
+    List<WFileDropWidget.File> copy = new ArrayList<WFileDropWidget.File>();
+    for (WFileDropWidget.File upload : this.uploads_) {
+      copy.add(upload);
+    }
+    return copy;
   }
   /**
    * Return the index of the file that is currently being handled.
@@ -460,7 +467,7 @@ public class WFileDropWidget extends WContainerWidget {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".destructor();";
       if (!recursive) {
-        result += "Wt4_6_2.remove('" + this.getId() + "');";
+        result += "Wt4_7_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -522,7 +529,7 @@ public class WFileDropWidget extends WContainerWidget {
     String maxFileSize = String.valueOf(WApplication.getInstance().getMaximumRequestSize());
     this.setJavaScriptMember(
         " WFileDropWidget",
-        "new Wt4_6_2.WFileDropWidget("
+        "new Wt4_7_0.WFileDropWidget("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -596,7 +603,7 @@ public class WFileDropWidget extends WContainerWidget {
           }
         }
       }
-      WFileDropWidget.File file = new WFileDropWidget.File(id, name, type, size, this.chunkSize_);
+      WFileDropWidget.File file = new File(id, name, type, size, this.chunkSize_);
       drops.add(file);
       this.uploads_.add(file);
     }
@@ -618,10 +625,8 @@ public class WFileDropWidget extends WContainerWidget {
       if (this.uploads_.get(i).getUploadId() == id) {
         fileFound = true;
         this.currentFileIdx_ = i;
-
-        this.resource_ =
-            new WFileDropWidget.WFileDropUploadResource(
-                this, this.uploads_.get(this.currentFileIdx_));
+        WFileDropWidget.File currentFile = this.uploads_.get(this.currentFileIdx_);
+        this.resource_ = new WFileDropUploadResource(this, currentFile);
         this.resource_
             .dataReceived()
             .addListener(
@@ -641,9 +646,9 @@ public class WFileDropWidget extends WContainerWidget {
                 + ".send('"
                 + this.resource_.getUrl()
                 + "', "
-                + (this.uploads_.get(i).isFilterEnabled() ? "true" : "false")
+                + (currentFile.isFilterEnabled() ? "true" : "false")
                 + ");");
-        this.uploadStart_.trigger(this.uploads_.get(this.currentFileIdx_));
+        this.uploadStart_.trigger(currentFile);
         break;
       } else {
         if (!this.uploads_.get(i).isCancelled()) {

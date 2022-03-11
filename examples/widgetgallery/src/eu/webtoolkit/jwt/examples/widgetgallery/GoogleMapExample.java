@@ -103,9 +103,6 @@ class GoogleMapExample extends WContainerWidget {
     this.addMapTypeControl("No control", MapTypeControl.None);
     this.addMapTypeControl("Default", MapTypeControl.Default);
     this.addMapTypeControl("Menu", MapTypeControl.Menu);
-    if (this.map_.getApiVersion() == GoogleMapsVersion.v2) {
-      this.addMapTypeControl("Hierarchical", MapTypeControl.Hierarchical);
-    }
     if (this.map_.getApiVersion() == GoogleMapsVersion.v3) {
       this.addMapTypeControl("Horizontal bar", MapTypeControl.HorizontalBar);
     }

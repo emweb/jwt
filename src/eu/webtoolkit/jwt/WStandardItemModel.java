@@ -672,6 +672,19 @@ public class WStandardItemModel extends WAbstractItemModel {
         last - first + 1);
   }
 
+  protected void copyData(final WModelIndex sIndex, final WModelIndex dIndex) {
+    if (dIndex.getModel() != this) {
+      throw new WException("WStandardItemModel::copyData(): dIndex must be an index of this model");
+    }
+    WStandardItemModel source = ObjectUtils.cast(sIndex.getModel(), WStandardItemModel.class);
+    if (source != null) {
+      WStandardItem sItem = source.getItemFromIndex(sIndex);
+      WStandardItem dItem = this.getItemFromIndex(dIndex);
+      dItem.setFlags(sItem.getFlags());
+    }
+    super.copyData(sIndex, dIndex);
+  }
+
   private ItemDataRole sortRole_;
   private List<Map<ItemDataRole, Object>> columnHeaderData_;
   private List<Map<ItemDataRole, Object>> rowHeaderData_;

@@ -711,7 +711,7 @@ public class WVmlImage implements WVectorImage {
   }
 
   private static String colorAttributes(final WColor color) {
-    String result = " color=" + quote(color.getCssText());
+    String result = " color=" + quote(color.getCssText(false));
     if (color.getAlpha() != 255) {
       result += " opacity=" + quote(color.getAlpha() / 255.);
     }

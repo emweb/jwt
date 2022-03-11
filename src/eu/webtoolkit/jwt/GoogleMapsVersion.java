@@ -18,8 +18,6 @@ import javax.servlet.http.*;
 
 /** Google Maps API version. */
 public enum GoogleMapsVersion {
-  /** API Version 2.x. */
-  v2,
   /** API Version 3.x. */
   v3;
 

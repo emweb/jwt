@@ -50,7 +50,7 @@ public class WEnvironment {
 
   /** Wt&apos;s JavaScript scope. */
   public static String getJavaScriptWtScope() {
-    return "Wt4_6_2";
+    return "Wt4_7_0";
   }
   /**
    * Parameters passed to the application.
@@ -447,7 +447,7 @@ public class WEnvironment {
    * <p>Example: <code>&quot;1.99.2&quot;</code>
    */
   public static String getLibraryVersion() {
-    return "4.6.2";
+    return "4.7.0";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int
   // major, final bad java simple ref int minor) ;
@@ -973,19 +973,8 @@ public class WEnvironment {
   }
 
   void updateUrlScheme(final WebRequest request) {
-    this.urlScheme_ = str(request.getScheme());
     final Configuration conf = this.session_.getController().getConfiguration();
-    if (conf.isBehindReverseProxy() || conf.isTrustedProxy(request.getRemoteAddr())) {
-      String forwardedProto = str(request.getHeaderValue("X-Forwarded-Proto"));
-      if (forwardedProto.length() != 0) {
-        int i = forwardedProto.lastIndexOf(',');
-        if (i == -1) {
-          this.urlScheme_ = forwardedProto;
-        } else {
-          this.urlScheme_ = forwardedProto.substring(i + 1);
-        }
-      }
-    }
+    this.urlScheme_ = request.getUrlScheme(conf);
   }
 
   void enableAjax(final WebRequest request) {

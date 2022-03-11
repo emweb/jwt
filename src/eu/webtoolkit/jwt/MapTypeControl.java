@@ -22,7 +22,7 @@ public enum MapTypeControl {
   None,
   /** Show the default maptype control. */
   Default,
-  /** Show the dropdown menu maptype control. */
+  /** Show the drop-down menu maptype control. */
   Menu,
   /** Show the hierarchical maptype control. */
   Hierarchical,

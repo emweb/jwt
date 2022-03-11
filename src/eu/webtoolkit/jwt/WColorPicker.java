@@ -139,7 +139,7 @@ public class WColorPicker extends WFormWidget {
    * }</pre>
    */
   public String getValueText() {
-    return this.getColor().getCssText();
+    return this.getColor().getCssText(false);
   }
   /**
    * Sets the current value of the color picker as a string. The string must be in a format from

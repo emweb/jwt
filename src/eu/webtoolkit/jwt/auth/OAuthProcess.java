@@ -137,7 +137,7 @@ public class OAuthProcess extends WObject {
         && this.service_.isPopupEnabled()) {
       StringBuilder js = new StringBuilder();
       js.append("function(object, event) {")
-          .append("Wt4_6_2.PopupWindow(Wt4_6_2")
+          .append("Wt4_7_0.PopupWindow(Wt4_7_0")
           .append(",")
           .append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
           .append(", ")
