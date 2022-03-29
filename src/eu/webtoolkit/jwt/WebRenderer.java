@@ -1137,7 +1137,6 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void collectJavaScriptUpdate(final StringBuilder out) {
     WApplication app = this.session_.getApp();
-    out.append('{');
     try {
       if (this.session_.sessionIdChanged_) {
         if (this.session_.hasSessionIdInUrl()) {
@@ -1147,7 +1146,6 @@ class WebRenderer implements SlotLearnerInterface {
           } else {
             this.streamRedirectJS(out, app.url(app.getInternalPath()));
           }
-          out.append('}');
           return;
         }
         out.append(this.session_.getApp().getJavaScriptClass())
@@ -1185,10 +1183,8 @@ class WebRenderer implements SlotLearnerInterface {
       app.renderedInternalPath_ = app.newInternalPath_;
       this.updateLoadIndicator(out, app, false);
     } catch (final RuntimeException e) {
-      out.append('}');
       throw e;
     }
-    out.append('}');
   }
 
   private void loadStyleSheet(
