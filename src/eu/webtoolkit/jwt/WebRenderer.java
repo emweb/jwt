@@ -161,7 +161,8 @@ class WebRenderer implements SlotLearnerInterface {
         || !this.session_.getApp().styleSheetsToRemove_.isEmpty()
         || this.session_.getApp().getStyleSheet().isDirty()
         || this.session_.getApp().internalPathIsChanged_
-        || !(this.collectedJS1_.length() == 0)
+        || !((this.collectedJS1_.length() == 0)
+            || this.collectedJS1_.length() == 2 && this.collectedJS1_.toString().equals("{}"))
         || !(this.collectedJS2_.length() == 0)
         || !(this.invisibleJS_.length() == 0)
         || !this.wsRequestsToHandle_.isEmpty()
