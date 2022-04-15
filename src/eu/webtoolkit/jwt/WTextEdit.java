@@ -294,7 +294,7 @@ public class WTextEdit extends WTextArea {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".ed.remove();";
       if (!recursive) {
-        result += "Wt4_7_0.remove('" + this.getId() + "');";
+        result += "Wt4_7_1.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -395,7 +395,7 @@ public class WTextEdit extends WTextArea {
     this.version_ = getTinyMCEVersion();
     this.setJavaScriptMember(
         " WTextEdit",
-        "new Wt4_7_0.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_7_1.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     this.setJavaScriptMember(
         WT_RESIZE_JS,
         "function(e, w, h, s) { var obj = "

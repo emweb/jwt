@@ -25,6 +25,28 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.7.1 (April 15, 2022)</h2>
+
+<p>
+  JWt 4.7.1 is a patch release that addresses the following issues:
+  <ul>
+    <li>
+      <a href="https://redmine.webtoolkit.eu/issues/9922" target="_blank">Issue #9922</a>:
+      JWt would send an update to the browser on every call to
+      <a href="eu/webtoolkit/jwt/WApplication.html#triggerUpdate()">WApplication#triggerUpdate()</a>
+      if server push was enabled.
+      This is because JWt thought the state was dirty when its JavaScript response buffer contained only <code>{}</code> (empty
+      block). This has been fixed by not sending a response if the buffer contains only <code>{}</code>.
+    </li>
+    <li>
+      <a href="https://redmine.webtoolkit.eu/issues/9695" target="_blank">Issue #9695</a>:
+      If a <a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a> was created before the dialog it appears in,
+      it would be displayed below the dialog. The <code>z-index</code> of
+      <code>WSuggestionPopup</code> is now calculated using javascript so it is always shown on top.
+    </li>
+  </ul>
+</p>
+
 <h2>Release 4.7.0 (March 11, 2022)</h2>
 
 <p>JWt 4.7.0 is a smaller release with no major new features to speak of, just some improvements and bug fixes here and there.</p>
