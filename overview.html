@@ -25,6 +25,20 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.7.2 (May 12, 2022)</h2>
+
+<p>
+  JWt 4.7.2 is a patch release that addresses the following issue:
+  <ul>
+    <li>
+      <a href="https://redmine.webtoolkit.eu/issues/10003" target="_blank">Issue #10003</a>:
+      Calling <a href="eu/webtoolkit/jwt/WApplication.html#refresh()">WApplication#refresh()</a>
+      in the application constructor (e.g. by setting the locale) would produce a JavaScript error if there was
+      a <a href="eu/webtoolkit/jwt/WSpinBox.html">WSpinBox</a> in the widget tree.
+    </li>
+  </ul>
+</p>
+
 <h2>Release 4.7.1 (April 15, 2022)</h2>
 
 <p>
