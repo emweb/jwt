@@ -144,7 +144,7 @@ public class WDialog extends WPopupWidget {
    * @see WDialog#setTitleBarEnabled(boolean enable)
    */
   public void setWindowTitle(final CharSequence windowTitle) {
-    this.caption_.setText(new WString("<h4>" + Utils.htmlEncode(windowTitle.toString()) + "</h4>"));
+    this.caption_.bindString("title", windowTitle, TextFormat.Plain);
   }
   /**
    * Returns the dialog window title.
@@ -154,12 +154,7 @@ public class WDialog extends WPopupWidget {
    * @see WDialog#setWindowTitle(CharSequence windowTitle)
    */
   public WString getWindowTitle() {
-    String text = this.caption_.getText().toString();
-    if (text.length() > 9) {
-      return new WString(text.substring(4, 4 + text.length() - 9));
-    } else {
-      return WString.Empty;
-    }
+    return this.caption_.resolveStringValue("title");
   }
   /**
    * Enables or disables the title bar.
@@ -399,7 +394,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt4_7_1.Resizable(Wt4_7_1,"
+            "(new Wt4_8_0.Resizable(Wt4_8_0,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -447,11 +442,14 @@ public class WDialog extends WPopupWidget {
   public void setClosable(boolean closable) {
     if (closable) {
       if (!(this.closeIcon_ != null)) {
-        WText closeIcon = this.closeIcon_ = new WText();
-        this.titleBar_.insertWidget(0, closeIcon);
-        WApplication.getInstance()
-            .getTheme()
-            .apply(this, this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
+        WTheme theme = WApplication.getInstance().getTheme();
+        if (ObjectUtils.cast(theme, WBootstrap5Theme.class) != null) {
+          this.closeIcon_ = new WPushButton((WContainerWidget) this.titleBar_);
+        } else {
+          this.closeIcon_ = new WText();
+          this.titleBar_.insertWidget(0, this.closeIcon_);
+        }
+        theme.apply(this, this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
         this.closeIcon_
             .clicked()
             .addListener(
@@ -696,7 +694,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt4_7_1.WDialog("
+          "new Wt4_8_0.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()
@@ -753,8 +751,8 @@ public class WDialog extends WPopupWidget {
   protected void onPathChange() {}
 
   private WTemplate impl_;
-  private WText caption_;
-  private WText closeIcon_;
+  private WTemplate caption_;
+  private WInteractWidget closeIcon_;
   private WContainerWidget titleBar_;
   private WContainerWidget contents_;
   WContainerWidget layoutContainer_;
@@ -829,9 +827,7 @@ public class WDialog extends WPopupWidget {
     this.impl_.bindWidget("layout", layoutContainer);
     this.titleBar_ = new WContainerWidget();
     app.getTheme().apply(this, this.titleBar_, WidgetThemeRole.DialogTitleBar);
-    this.caption_ = new WText();
-    this.caption_.setInline(false);
-    this.titleBar_.addWidget(this.caption_);
+    this.caption_ = new WTemplate(tr("Wt.WDialog.titlebar"), (WContainerWidget) this.titleBar_);
     this.contents_ = new WContainerWidget();
     app.getTheme().apply(this, this.contents_, WidgetThemeRole.DialogBody);
     layout.addWidget(this.titleBar_);

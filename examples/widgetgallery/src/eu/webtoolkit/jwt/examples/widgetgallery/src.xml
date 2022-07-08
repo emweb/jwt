@@ -5135,20 +5135,20 @@
   ]]></message>
   <message id="src-matcher"><![CDATA[
 <div class="highlight"><pre><span></span><span class="kd">function</span> <span class="p">(</span><span class="nx">editElement</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// fetch the location of cursor and current text in the editElement.</span>
+  <span class="c1">// fetch the location of cursor and current text in the editElement.</span>
 
-    <span class="c1">// return a function that matches a given suggestion with the current</span>
-    <span class="c1">// value of the editElement.</span>
-    <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// return a function that matches a given suggestion with the current</span>
+  <span class="c1">// value of the editElement.</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">suggestion</span><span class="p">)</span> <span class="p">{</span>
 
-	<span class="c1">// 1) if suggestion is null, simply return the current text &#39;value&#39;</span>
-	<span class="c1">// 2) check suggestion if it matches</span>
-	<span class="c1">// 3) add highlighting markup to suggestion if necessary</span>
+    <span class="c1">// 1) if suggestion is null, simply return the current text &#39;value&#39;</span>
+    <span class="c1">// 2) check suggestion if it matches</span>
+    <span class="c1">// 3) add highlighting markup to suggestion if necessary</span>
 
-	<span class="k">return</span> <span class="p">{</span> <span class="nx">match</span> <span class="o">:</span> <span class="p">...,</span>      <span class="c1">// does the suggestion match ? (boolean)</span>
-		 <span class="nx">suggestion</span> <span class="o">:</span> <span class="p">...</span>  <span class="c1">// modified suggestion with highlighting</span>
-	       <span class="p">};</span>
-    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="nx">match</span> <span class="o">:</span> <span class="p">...,</span>      <span class="c1">// does the suggestion match ? (boolean)</span>
+      <span class="nx">suggestion</span> <span class="o">:</span> <span class="p">...</span>  <span class="c1">// modified suggestion with highlighting</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
   ]]></message>
@@ -5341,7 +5341,7 @@
 <span class="nt">span</span><span class="p">.</span><span class="nc">reactive</span> <span class="p">{</span>
     <span class="k">display</span><span class="p">:</span> <span class="kc">block</span><span class="p">;</span>
     <span class="k">background-color</span><span class="p">:</span> <span class="mh">#CCCCCC</span><span class="p">;</span>
-    <span class="k">cursor</span><span class="p">:</span> <span class="kc">pointer</span><span class="p">;</span><span class="k">cursor</span><span class="p">:</span><span class="n">hand</span><span class="p">;</span>
+    <span class="k">cursor</span><span class="p">:</span> <span class="kc">pointer</span><span class="p">;</span>
     <span class="k">margin</span><span class="p">:</span> <span class="mi">3</span><span class="kt">px</span> <span class="mi">0</span><span class="kt">px</span><span class="p">;</span>
 <span class="p">}</span>
 

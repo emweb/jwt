@@ -532,7 +532,6 @@ public class WTemplate extends WInteractWidget {
    *
    * @see WTemplate#bindWidget(String varName, WWidget widget)
    * @see WTemplate#bindInt(String varName, int value)
-   * @see WTemplate#resolveString(String varName, List args, Writer result)
    */
   public void bindString(final String varName, final CharSequence value, TextFormat textFormat) {
     WWidget w = this.resolveWidget(varName);
@@ -855,6 +854,24 @@ public class WTemplate extends WInteractWidget {
       return j;
     } else {
       return null;
+    }
+  }
+  /**
+   * Resolves a string that was bound to a variable name.
+   *
+   * <p>Returns the string that was bound to the variable with {@link WTemplate#bindString(String
+   * varName, CharSequence value, TextFormat textFormat) bindString()}.
+   *
+   * <p>This method is not to be confused with {@link WTemplate#resolveString(String varName, List
+   * args, Writer result) resolveString()} which resolves any variable to a string (both strings and
+   * widgets alike).
+   */
+  public WString resolveStringValue(final String varName) {
+    WString i = this.strings_.get(varName);
+    if (i != null) {
+      return i;
+    } else {
+      return WString.Empty;
     }
   }
 
@@ -1423,7 +1440,7 @@ public class WTemplate extends WInteractWidget {
   private void unrenderWidget(WWidget w, final DomElement el) {
     String removeJs = w.renderRemoveJs(false);
     if (removeJs.charAt(0) == '_') {
-      el.callJavaScript("Wt4_7_1.remove('" + removeJs.substring(1) + "');", true);
+      el.callJavaScript("Wt4_8_0.remove('" + removeJs.substring(1) + "');", true);
     } else {
       el.callJavaScript(removeJs, true);
     }

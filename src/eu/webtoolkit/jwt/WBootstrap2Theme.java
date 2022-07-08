@@ -433,7 +433,7 @@ public class WBootstrap2Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_7_1.setValidationState(")
+      js.append("Wt4_8_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid ? 1 : 0)
@@ -466,7 +466,7 @@ public class WBootstrap2Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "function(a){var b;b=a.options?a.options.item(a.selectedIndex)==null?\"\":a.options.item(a.selectedIndex).text:a.value;b=a.wtValidate.validate(b);this.setValidationState(a,b.valid,b.message,1)}");
+        "function(a){var b;b=a.options?a.options.item(a.selectedIndex)==null?\"\":a.options.item(a.selectedIndex).text:typeof a.wtLObj===\"object\"&&typeof a.wtLObj.getValue===\"function\"?a.wtLObj.getValue():a.value;b=a.wtValidate.validate(b);this.setValidationState(a,b.valid,b.message,1)}");
   }
 
   static WJavaScriptPreamble wtjs2() {

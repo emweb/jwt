@@ -82,7 +82,7 @@ public abstract class OAuthService {
   public OAuthService(final AuthService auth) {
     this.baseAuth_ = auth;
     this.impl_ = new Impl();
-    this.usePopup_ = true;
+    this.usePopup_ = false;
   }
   /** Returns the basic authentication service. */
   public AuthService getBaseAuth() {
@@ -106,8 +106,12 @@ public abstract class OAuthService {
    * to be restored when it completes. A timeout can be configured in wt_config.xml (see <code>
    * oauth2-redirect-timeout</code>).
    *
-   * <p>The default value is true. When JavaScript is not available, a redirect without popup is
+   * <p>The default value is false. When JavaScript is not available, a redirect without popup is
    * always used.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>In JWt 4.8.0 the default value changed from true to false </i>
    */
   public void setPopupEnabled(boolean enable) {
     this.usePopup_ = enable;

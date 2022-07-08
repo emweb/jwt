@@ -328,6 +328,40 @@ public abstract class WFormWidget extends WInteractWidget {
     super.enableAjax();
   }
 
+  protected void validatorChanged() {
+    String validateJS = this.validator_.getJavaScriptValidate();
+    if (validateJS.length() != 0) {
+      this.setJavaScriptMember("wtValidate", validateJS);
+      if (!(this.validateJs_ != null)) {
+        this.validateJs_ = new JSlot();
+        this.validateJs_.setJavaScript("function(o){Wt4_8_0.validate(o)}");
+        this.keyWentUp().addListener(this.validateJs_);
+        this.changed().addListener(this.validateJs_);
+        if (this.getDomElementType() != DomElementType.SELECT) {
+          this.clicked().addListener(this.validateJs_);
+        }
+      }
+    } else {
+      this.validateJs_ = null;
+    }
+    String inputFilter = this.validator_.getInputFilter();
+    if (inputFilter.length() != 0) {
+      if (!(this.filterInput_ != null)) {
+        this.filterInput_ = new JSlot();
+        this.keyPressed().addListener(this.filterInput_);
+      }
+      StringUtils.replace(inputFilter, '/', "\\/");
+      this.filterInput_.setJavaScript(
+          "function(o,e){Wt4_8_0.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
+    } else {
+      if (this.filterInput_ != null) {
+        this.keyPressed().removeListener(this.filterInput_);
+      }
+      this.filterInput_ = null;
+    }
+    this.validate();
+  }
+
   private static final int BIT_ENABLED_CHANGED = 0;
   private static final int BIT_READONLY = 1;
   private static final int BIT_READONLY_CHANGED = 2;
@@ -350,40 +384,6 @@ public abstract class WFormWidget extends WInteractWidget {
     }
   }
 
-  void validatorChanged() {
-    String validateJS = this.validator_.getJavaScriptValidate();
-    if (validateJS.length() != 0) {
-      this.setJavaScriptMember("wtValidate", validateJS);
-      if (!(this.validateJs_ != null)) {
-        this.validateJs_ = new JSlot();
-        this.validateJs_.setJavaScript("function(o){Wt4_7_1.validate(o)}");
-        this.keyWentUp().addListener(this.validateJs_);
-        this.changed().addListener(this.validateJs_);
-        if (this.getDomElementType() != DomElementType.SELECT) {
-          this.clicked().addListener(this.validateJs_);
-        }
-      }
-    } else {
-      this.validateJs_ = null;
-    }
-    String inputFilter = this.validator_.getInputFilter();
-    if (inputFilter.length() != 0) {
-      if (!(this.filterInput_ != null)) {
-        this.filterInput_ = new JSlot();
-        this.keyPressed().addListener(this.filterInput_);
-      }
-      StringUtils.replace(inputFilter, '/', "\\/");
-      this.filterInput_.setJavaScript(
-          "function(o,e){Wt4_7_1.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
-    } else {
-      if (this.filterInput_ != null) {
-        this.keyPressed().removeListener(this.filterInput_);
-      }
-      this.filterInput_ = null;
-    }
-    this.validate();
-  }
-
   private void defineJavaScript(boolean force) {
     if (force || !this.flags_.get(BIT_JS_OBJECT)) {
       this.flags_.set(BIT_JS_OBJECT);
@@ -394,7 +394,7 @@ public abstract class WFormWidget extends WInteractWidget {
       app.loadJavaScript("js/WFormWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WFormWidget",
-          "new Wt4_7_1.WFormWidget("
+          "new Wt4_8_0.WFormWidget("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()

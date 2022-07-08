@@ -147,13 +147,15 @@ public abstract class WAbstractSpinBox extends WLineEdit {
   }
 
   public void refresh() {
-    this.doJavaScript(
-        this.getJsRef()
-            + ".wtObj.setLocale("
-            + jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils.getCurrentLocale()))
-            + ","
-            + jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils.getCurrentLocale()))
-            + ");");
+    if (this.isRendered()) {
+      this.doJavaScript(
+          this.getJsRef()
+              + ".wtObj.setLocale("
+              + jsStringLiteral(LocaleUtils.getDecimalPoint(LocaleUtils.getCurrentLocale()))
+              + ","
+              + jsStringLiteral(LocaleUtils.getGroupSeparator(LocaleUtils.getCurrentLocale()))
+              + ");");
+    }
     super.refresh();
   }
 
@@ -271,7 +273,7 @@ public abstract class WAbstractSpinBox extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WSpinBox.js", wtjs1());
     StringBuilder ss = new StringBuilder();
-    ss.append("new Wt4_7_1.WSpinBox(")
+    ss.append("new Wt4_8_0.WSpinBox(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())

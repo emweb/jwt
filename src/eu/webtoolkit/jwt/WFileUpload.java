@@ -470,7 +470,7 @@ public class WFileUpload extends WWebWidget {
 
   private void onDataExceeded(long dataExceeded) {
     this.doJavaScript(
-        "Wt4_7_1.$('if" + this.getId() + "').src='" + this.fileUploadTarget_.getUrl() + "';");
+        "Wt4_8_0.$('if" + this.getId() + "').src='" + this.fileUploadTarget_.getUrl() + "';");
     if (this.flags_.get(BIT_UPLOADING)) {
       this.flags_.clear(BIT_UPLOADING);
       this.handleFileTooLarge(dataExceeded);
@@ -531,7 +531,7 @@ public class WFileUpload extends WWebWidget {
       element.setAttribute("action", this.fileUploadTarget_.generateUrl());
       String maxFileSize = String.valueOf(WApplication.getInstance().getMaximumRequestSize());
       String command =
-          "{var submit = true;var x = Wt4_7_1.$('in"
+          "{var submit = true;var x = Wt4_8_0.$('in"
               + this.getId()
               + "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > "
               + maxFileSize
@@ -678,9 +678,9 @@ public class WFileUpload extends WWebWidget {
   String renderRemoveJs(boolean recursive) {
     boolean isIE = WApplication.getInstance().getEnvironment().agentIsIE();
     if (this.isRendered() && isIE) {
-      String result = "Wt4_7_1.$('if" + this.getId() + "').innerHTML = \"\";";
+      String result = "Wt4_8_0.$('if" + this.getId() + "').innerHTML = \"\";";
       if (!recursive) {
-        result += "Wt4_7_1.remove('" + this.getId() + "');";
+        result += "Wt4_8_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {

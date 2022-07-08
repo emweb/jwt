@@ -229,7 +229,7 @@ public class WApplication extends WObject {
     }
     this.styleSheet_.addRule(
         ".Wt-wrap",
-        "border: 0px;margin: 0px;padding: 0px;font: inherit; cursor: pointer; cursor: hand;background: transparent;text-decoration: none;color: inherit;");
+        "border: 0px;margin: 0px;padding: 0px;font: inherit; cursor: pointer;background: transparent;text-decoration: none;color: inherit;");
     this.styleSheet_.addRule(".Wt-wrap", "text-align: left;");
     this.styleSheet_.addRule(".Wt-rtl .Wt-wrap", "text-align: right;");
     this.styleSheet_.addRule("div.Wt-chwrap", "width: 100%; height: 100%");
@@ -2136,9 +2136,9 @@ public class WApplication extends WObject {
     if (this.loadingIndicator_ != null) {
       this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt4_7_1.inline('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_8_0.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt4_7_1.hide('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_8_0.hide('" + this.loadingIndicator_.getId() + "');}");
       this.loadingIndicator_.hide();
     }
   }
@@ -2544,7 +2544,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt4_7_1.ajaxInternalPaths("
+        "Wt4_8_0.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2560,7 +2560,16 @@ public class WApplication extends WObject {
    * refresh).
    *
    * <p>You may want to reimplement this if you want to keep the application running until it times
-   * out (as was the behaviour before JWt 3.1.6).
+   * out.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>There is no guarantee that closing the browser tab sends the unload event.
+   * This is because it is at the web browser&apos;s discretion whether it still sends requests for
+   * a closed tab. It&apos;s also possible that there was no connection upon closing the tab.
+   * Sessions that don&apos;t receive the unload event will eventually time out according to the
+   * <code>session-timeout</code> set in <code>wt_config.xml</code> (this defaults to 10 minutes).
+   * </i>
    */
   protected void unload() {
     this.quit();
@@ -2901,7 +2910,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt4_7_1";
+              : "Wt4_8_0";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')

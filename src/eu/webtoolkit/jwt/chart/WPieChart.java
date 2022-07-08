@@ -49,8 +49,6 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>Example of a pie chart</strong> </div>
  *
- * <p>
- *
  * @see eu.webtoolkit.jwt.chart.WCartesianChart
  */
 public class WPieChart extends WAbstractChart {
