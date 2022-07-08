@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.7.2</title>
+<title>JWt 4.7.3</title>
 </head>
 <body>
 
@@ -24,6 +24,60 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.7.3 (July 8, 2022)</h2>
+
+<p>
+  Wt 4.7.3 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10341" target="_blank">Issue #10341</a>:
+    Fixed an issue where JavaScript validators would incorrectly mark a
+    <a href="eu/webtoolkit/jwt/WLineEdit.html">WLineEdit</a>
+    that used an
+    <a href="eu/webtoolkit/jwt/WLineEdit.html#setInputMask(java.lang.String)">input mask</a>
+    as invalid, since they would not take the input mask into account.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/9719" target="_blank">Issue #9719</a>
+    (<a href="https://github.com/emweb/wt/pull/186" target="_blank">PR #186</a>):
+    Fixed a regression where panning an interactive
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a>
+    would not update the
+    <a href="eu/webtoolkit/jwt/chart/WAxisSliderWidget.html">WAxisSliderWidget</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10362" target="_blank">Issue #10362</a>:
+    <a href="eu/webtoolkit/jwt/WPanel.html#collapse()">WPanel#collapse()</a> and
+    <a href="eu/webtoolkit/jwt/WPanel.html#expand()">WPanel#expand()</a>
+    would cause a null pointer exception
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>. Now they do nothing.
+  </li>
+  <li>
+    <a href="https://github.com/emweb/wt/pull/188" target="_blank">PR #188</a>:
+    Fixed an issue where
+    <a href="eu/webtoolkit/jwt/WAbstractItemModel.html#insertColumn(int)">WTable#insertColumn</a>
+    would not properly associate the table with the newly created column.
+  </li>
+  <li>
+    Fixed <a href="https://redmine.webtoolkit.eu/issues/9923" target="_blank">issue #9923</a>:
+    A <a href="eu/webtoolkit/jwt/WFileDropWidget.html">WFileDropWidget</a> with
+    <a href="eu/webtoolkit/jwt/WFileDropWidget.html#setAcceptDrops(boolean)">setAcceptDrops()</a>
+    <code>false</code> and
+    <a href="eu/webtoolkit/jwt/WFileDropWidget.html#setDropIndicationEnabled(boolean)">setDropIndicationEnabled()</a>
+    <code>true</code> would render the page unresponsive.
+  </li>
+  <li>
+    Fixed <a href="https://redmine.webtoolkit.eu/issues/10578" target="_blank">issue #10578</a>:
+    Changing the validator of a
+    <a href="eu/webtoolkit/jwt/WDateEdit.html">WDateEdit</a> would not update the
+    <a href="eu/webtoolkit/jwt/WDateEdit.html#getBottom()">getBottom()</a> and
+    <a href="eu/webtoolkit/jwt/WDateEdit.html#getTop()">getTop()</a> of the
+    <code>WDateEdit</code> correctly.
+  </li>
+</ul>
 
 <h2>Release 4.7.2 (May 12, 2022)</h2>
 
