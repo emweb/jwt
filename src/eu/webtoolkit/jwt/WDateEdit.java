@@ -174,8 +174,9 @@ public class WDateEdit extends WLineEdit {
     WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setBottom(bottom);
+    } else {
+      this.calendar_.setBottom(bottom);
     }
-    this.calendar_.setBottom(bottom);
   }
   /**
    * Returns the lower limit of the valid date range.
@@ -200,8 +201,9 @@ public class WDateEdit extends WLineEdit {
     WDateValidator dv = this.getDateValidator();
     if (dv != null) {
       dv.setTop(top);
+    } else {
+      this.calendar_.setTop(top);
     }
-    this.calendar_.setTop(top);
   }
   /**
    * Returns the upper limit of the valid range.
@@ -297,6 +299,15 @@ public class WDateEdit extends WLineEdit {
   protected void propagateSetEnabled(boolean enabled) {
     super.propagateSetEnabled(enabled);
   }
+
+  protected void validatorChanged() {
+    WDateValidator dv = this.getDateValidator();
+    if (dv != null) {
+      this.calendar_.setBottom(dv.getBottom());
+      this.calendar_.setTop(dv.getTop());
+    }
+    super.validatorChanged();
+  }
   /** Sets the value from the calendar to the line edit. */
   protected void setFromCalendar() {
     if (!this.calendar_.getSelection().isEmpty()) {
@@ -333,7 +344,7 @@ public class WDateEdit extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WDateEdit.js", wtjs1());
     String jsObj =
-        "new Wt4_7_2.WDateEdit("
+        "new Wt4_7_3.WDateEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

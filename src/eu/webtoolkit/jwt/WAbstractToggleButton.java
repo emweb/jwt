@@ -230,8 +230,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
    *
    * <p>This signal is emitted when the user checks the button.
    *
-   * <p>You can use the {@link WFormWidget#changed()} signal to react to any change of the button
-   * state.
+   * <p>You can use the {@link WFormWidget#changed()} signal to react when the user makes any change
+   * to the button state.
    */
   public EventSignal checked() {
     return this.voidEventSignal(CHECKED_SIGNAL, true);
@@ -241,8 +241,8 @@ public abstract class WAbstractToggleButton extends WFormWidget {
    *
    * <p>This signal is emitted when the user unchecks the button.
    *
-   * <p>You can use the {@link WFormWidget#changed()} signal to react to any change of the button
-   * state.
+   * <p>You can use the {@link WFormWidget#changed()} signal to react when the user makes any change
+   * to the button state.
    *
    * <p>
    *

@@ -201,8 +201,8 @@ public class WTable extends WInteractWidget {
     if ((int) column <= this.columns_.size()) {
       if (!(tableColumn != null)) {
         tableColumn = this.createColumn(column);
-        tableColumn.setTable(this);
       }
+      tableColumn.setTable(this);
       this.columns_.add(0 + column, tableColumn);
     }
     this.flags_.set(BIT_GRID_CHANGED);

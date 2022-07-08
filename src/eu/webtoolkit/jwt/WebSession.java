@@ -1709,7 +1709,7 @@ class WebSession {
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
     if (wasSuspended) {
       if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
-        this.app_.doJavaScript("Wt4_7_2.history.removeSessionId()");
+        this.app_.doJavaScript("Wt4_7_3.history.removeSessionId()");
         this.sessionIdInUrl_ = false;
       }
       this.app_.unsuspended().trigger();
@@ -2106,7 +2106,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt4_7_2.scrollHistory();");
+                this.app_.doJavaScript("Wt4_7_3.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }
@@ -2251,10 +2251,14 @@ class WebSession {
   private boolean start(WebResponse response) {
     try {
       this.app_ = this.controller_.doCreateApplication(this);
-      if (!this.app_.internalPathValid_) {
-        if (response.getResponseType() == WebRequest.ResponseType.Page) {
-          response.setStatus(404);
+      if (this.app_ != null) {
+        if (!this.app_.internalPathValid_) {
+          if (response.getResponseType() == WebRequest.ResponseType.Page) {
+            response.setStatus(404);
+          }
         }
+      } else {
+        throw new WException("WebSession::start: ApplicationCreator returned a nullptr");
       }
     } catch (final RuntimeException e) {
       this.app_ = null;
