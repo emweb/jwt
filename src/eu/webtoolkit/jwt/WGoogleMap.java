@@ -498,10 +498,6 @@ public class WGoogleMap extends WCompositeWidget {
    */
   public void setMapTypeControl(MapTypeControl type) {
     StringWriter strm = new StringWriter();
-    strm.append(this.getJsRef())
-        .append(".map.removeControl(")
-        .append(this.getJsRef())
-        .append(".mtc);");
     String control = "";
     switch (type) {
       case Default:

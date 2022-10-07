@@ -188,7 +188,7 @@ public class AuthModel extends FormBaseModel {
       app.loadJavaScript("js/AuthModel.js", wtjs1());
       button.setJavaScriptMember(
           " AuthThrottle",
-          "new Wt4_8_0.AuthThrottle(Wt4_8_0,"
+          "new Wt4_8_1.AuthThrottle(Wt4_8_1,"
               + button.getJsRef()
               + ","
               + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()
@@ -335,6 +335,6 @@ public class AuthModel extends FormBaseModel {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "AuthThrottle",
-        "function(e,a,h){function f(){clearInterval(b);b=null;e.setHtml(a,d);a.disabled=false;d=null}function g(){if(c==0)f();else{e.setHtml(a,h.replace(\"{1}\",c));--c}}a.wtThrottle=this;var b=null,d=null,c=0;this.reset=function(i){b&&f();d=a.innerHTML;if(c=i){b=setInterval(g,1E3);a.disabled=true;g()}}}");
+        "(function(t,l,e){l.wtThrottle=this;var n=null,i=null,r=0;function s(){clearInterval(n);n=null;t.setHtml(l,i);l.disabled=!1;i=null}function u(){if(0==r)s();else{t.setHtml(l,e.replace(\"{1}\",r));--r}}this.reset=function(t){n&&s();i=l.innerHTML;if(r=t){n=setInterval(u,1e3);l.disabled=!0;u()}}})");
   }
 }

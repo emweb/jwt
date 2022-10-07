@@ -200,7 +200,7 @@ public class WLengthValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_8_0.WLengthValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_8_1.WLengthValidator(").append(this.isMandatory()).append(',');
     if (this.minLength_ != 0) {
       js.append(this.minLength_);
     } else {
@@ -236,6 +236,6 @@ public class WLengthValidator extends WValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WLengthValidator",
-        "function(d,b,c,e,f,g){this.validate=function(a){if(a.length==0)return d?{valid:false,message:e}:{valid:true};if(b!==null)if(a.length<b)return{valid:false,message:f};if(c!==null)if(a.length>c)return{valid:false,message:g};return{valid:true}}}");
+        "(function(a,l,t,e,n,i){this.validate=function(s){return 0==s.length?a?{valid:!1,message:e}:{valid:!0}:null!==l&&s.length<l?{valid:!1,message:n}:null!==t&&s.length>t?{valid:!1,message:i}:{valid:!0}}})");
   }
 }

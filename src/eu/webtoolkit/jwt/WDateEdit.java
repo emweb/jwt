@@ -344,7 +344,7 @@ public class WDateEdit extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WDateEdit.js", wtjs1());
     String jsObj =
-        "new Wt4_8_0.WDateEdit("
+        "new Wt4_8_1.WDateEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -379,6 +379,6 @@ public class WDateEdit extends WLineEdit {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WDateEdit",
-        "function(g,a,h){function f(){return a.readOnly}function i(){return $(\"#\"+h).get(0).wtPopup}function j(){b.removeClass(\"active\")}function k(){var c=i();c.bindHide(j);c.show(a,e.Vertical)}a.wtDObj=this;var e=g.WT,b=$(a);this.mouseOut=function(){b.removeClass(\"hover\")};this.mouseMove=function(c,d){if(!f())if(e.widgetCoordinates(a,d).x>a.offsetWidth-40)b.addClass(\"hover\");else b.hasClass(\"hover\")&&b.removeClass(\"hover\")};this.mouseDown=function(c, d){f()||e.widgetCoordinates(a,d).x>a.offsetWidth-40&&b.addClass(\"unselectable\").addClass(\"active\")};this.mouseUp=function(c,d){b.removeClass(\"unselectable\");e.widgetCoordinates(a,d).x>a.offsetWidth-40&&k()}}");
+        "(function(t,s,e){var o=\"hover\",i=\"active\",a=\"unselectable\";s.wtDObj=this;var n=t.WT,d=$(s);function r(){return s.readOnly}function u(){d.removeClass(i)}function f(){var t=$(\"#\"+e).get(0).wtPopup;t.bindHide(u);t.show(s,n.Vertical)}this.mouseOut=function(t,s){d.removeClass(o)};this.mouseMove=function(t,e){if(!r()){n.widgetCoordinates(s,e).x>s.offsetWidth-40?d.addClass(o):d.hasClass(o)&&d.removeClass(o)}};this.mouseDown=function(t,e){if(!r()){n.widgetCoordinates(s,e).x>s.offsetWidth-40&&d.addClass(a).addClass(i)}};this.mouseUp=function(t,e){d.removeClass(a);n.widgetCoordinates(s,e).x>s.offsetWidth-40&&f()}})");
   }
 }

@@ -571,21 +571,14 @@ class WebRenderer implements SlotLearnerInterface {
         out.append(WtServlet.JQuery_js);
         out.append('}');
       }
-      List<String> parts = new ArrayList<String>();
-      String Wt_js_combined = "";
-      if (parts.size() > 1) {
-        for (int i = 0; i < parts.size(); ++i) {
-          Wt_js_combined += parts.get(i);
-        }
-      }
-      FileServe script = new FileServe(parts.size() > 1 ? Wt_js_combined : WtServlet.Wt_js);
+      FileServe script = new FileServe(WtServlet.Wt_js);
       script.setCondition(
           "CATCH_ERROR", conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
       script.setCondition(
           "SHOW_ERROR", conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
       script.setCondition("UGLY_INTERNAL_PATHS", this.session_.isUseUglyInternalPaths());
       script.setCondition("DYNAMIC_JS", false);
-      script.setVar("WT_CLASS", "Wt4_8_0");
+      script.setVar("WT_CLASS", "Wt4_8_1");
       script.setVar("APP_CLASS", app.getJavaScriptClass());
       script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf.serializedEvents());
       script.setCondition("WEB_SOCKETS", conf.webSockets());
@@ -652,18 +645,18 @@ class WebRenderer implements SlotLearnerInterface {
         boolean enabledAjax = app.enableAjax_;
         if (app.enableAjax_) {
           this.collectedJS1_
-              .append("var form = Wt4_8_0.getElement('Wt-form'); if (form) {")
+              .append("var form = Wt4_8_1.getElement('Wt-form'); if (form) {")
               .append(this.beforeLoadJS_.toString());
           this.beforeLoadJS_.setLength(0);
           this.collectedJS1_
               .append("var domRoot=")
               .append(app.domRoot_.getJsRef())
               .append(';')
-              .append("Wt4_8_0.progressed(domRoot);");
+              .append("Wt4_8_1.progressed(domRoot);");
           int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
           app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
           this.collectedJS2_
-              .append("Wt4_8_0.resolveRelativeAnchors();")
+              .append("Wt4_8_1.resolveRelativeAnchors();")
               .append("domRoot.style.visibility = 'visible';")
               .append(app.getJavaScriptClass())
               .append("._p_.doAutoJavaScript();");
@@ -956,6 +949,20 @@ class WebRenderer implements SlotLearnerInterface {
     this.setRendered(true);
     this.setJSSynced(true);
     this.preLearnStateless(app, this.collectedJS1_);
+    if (this.visibleOnly_) {
+      this.preCollectInvisibleChanges();
+      if (this.twoPhaseThreshold_ > 0
+          && this.invisibleJS_.length() < (int) this.twoPhaseThreshold_) {
+        this.collectedJS1_.append(this.invisibleJS_.toString());
+        this.invisibleJS_.setLength(0);
+      } else {
+        if (widgetset) {
+          this.collectedJS1_
+              .append(this.session_.getApp().getJavaScriptClass())
+              .append("._p_.update(null, 'none', null, false);");
+        }
+      }
+    }
     logger.debug(
         new StringWriter().append("js: ").append(this.collectedJS1_.toString()).toString());
     out.append(this.collectedJS1_.toString());
@@ -964,7 +971,7 @@ class WebRenderer implements SlotLearnerInterface {
     if (widgetset) {
       String historyE = app.getEnvironment().getParameter("Wt-history");
       if (historyE != null) {
-        out.append("Wt4_8_0")
+        out.append("Wt4_8_1")
             .append(".history.initialize('")
             .append(historyE.charAt(0))
             .append("-field', '")
@@ -1030,23 +1037,14 @@ class WebRenderer implements SlotLearnerInterface {
       this.collectedJS1_.append("');");
     }
     if (this.visibleOnly_) {
-      boolean needFetchInvisible = false;
-      if (!this.updateMap_.isEmpty()) {
-        needFetchInvisible = true;
-        if (this.twoPhaseThreshold_ > 0) {
-          this.visibleOnly_ = false;
-          this.collectJavaScriptUpdate(this.invisibleJS_);
-          if (this.invisibleJS_.length() < (int) this.twoPhaseThreshold_) {
-            this.collectedJS1_.append(this.invisibleJS_.toString());
-            this.invisibleJS_.setLength(0);
-            needFetchInvisible = false;
-          }
-          this.visibleOnly_ = true;
-        }
-      }
-      if (needFetchInvisible) {
+      this.preCollectInvisibleChanges();
+      if (this.twoPhaseThreshold_ > 0
+          && this.invisibleJS_.length() < (int) this.twoPhaseThreshold_) {
+        this.collectedJS1_.append(this.invisibleJS_.toString());
+        this.invisibleJS_.setLength(0);
+      } else {
         this.collectedJS1_
-            .append(app.getJavaScriptClass())
+            .append(this.session_.getApp().getJavaScriptClass())
             .append("._p_.update(null, 'none', null, false);");
       }
     }
@@ -1189,7 +1187,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void loadStyleSheet(
       final StringBuilder out, WApplication app, final WLinkedCssStyleSheet sheet) {
-    out.append("Wt4_8_0")
+    out.append("Wt4_8_1")
         .append(".addStyleSheet('")
         .append(sheet.getLink().resolveUrl(app))
         .append("', '")
@@ -1208,7 +1206,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void removeStyleSheets(final StringBuilder out, WApplication app) {
     for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
-      out.append("Wt4_8_0")
+      out.append("Wt4_8_1")
           .append(".removeStyleSheet('")
           .append(app.styleSheetsToRemove_.get(i).getLink().resolveUrl(app))
           .append("');\n ");
@@ -1741,6 +1739,14 @@ class WebRenderer implements SlotLearnerInterface {
     if (this.cookieUpdateNeeded_) {
       out.append(this.session_.getApp().getJavaScriptClass()).append("._p_.refreshCookie();");
       this.cookieUpdateNeeded_ = false;
+    }
+  }
+
+  private void preCollectInvisibleChanges() {
+    if (this.visibleOnly_ && !this.updateMap_.isEmpty() && this.twoPhaseThreshold_ > 0) {
+      this.visibleOnly_ = false;
+      this.collectJavaScriptUpdate(this.invisibleJS_);
+      this.visibleOnly_ = true;
     }
   }
 

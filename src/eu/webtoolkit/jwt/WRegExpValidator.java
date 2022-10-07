@@ -159,7 +159,7 @@ public class WRegExpValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_8_0.WRegExpValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_8_1.WRegExpValidator(").append(this.isMandatory()).append(',');
     js.append(WWebWidget.jsStringLiteral(this.pattern_)).append(",'");
     if ((this.regex_.flags() & Pattern.CASE_INSENSITIVE) != 0) {
       js.append('i');
@@ -186,7 +186,7 @@ public class WRegExpValidator extends WValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WRegExpValidator",
-        "function(e,b,f,g,h){var c=b?new RegExp(b,f):null;this.validate=function(a){if(a.length==0)return e?{valid:false,message:g}:{valid:true};if(c){var d=c.exec(a);return d!==null&&d[0].length===a.length?{valid:true}:{valid:false,message:h}}else return{valid:true}}}");
+        "(function(e,a,l,n,t){var i=a?new RegExp(a,l):null;this.validate=function(a){if(0==a.length)return e?{valid:!1,message:n}:{valid:!0};if(i){var l=i.exec(a);return null!==l&&l[0].length===a.length?{valid:!0}:{valid:!1,message:t}}return{valid:!0}}})");
   }
 
   private static int MatchCaseInsensitive = 1;

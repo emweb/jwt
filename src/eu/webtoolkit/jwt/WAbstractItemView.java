@@ -314,7 +314,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   public void setHeaderAlignment(int column, EnumSet<AlignmentFlag> alignment) {
     this.columnInfo(column).headerHAlignment =
         EnumUtils.enumFromSet(EnumUtils.mask(alignment, AlignmentFlag.AlignHorizontalMask));
-    if (alignment.contains(AlignmentFlag.AlignVerticalMask)) {
+    if (!EnumUtils.mask(alignment, AlignmentFlag.AlignVerticalMask).isEmpty()) {
       this.columnInfo(column).headerVAlignment =
           EnumUtils.enumFromSet(EnumUtils.mask(alignment, AlignmentFlag.AlignVerticalMask));
     }

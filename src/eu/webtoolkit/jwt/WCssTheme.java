@@ -379,7 +379,7 @@ public class WCssTheme extends WTheme {
     app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_8_0.setValidationState(")
+      js.append("Wt4_8_1.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid ? 1 : 0)
@@ -412,7 +412,7 @@ public class WCssTheme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "function(a){var b;b=a.options?a.options.item(a.selectedIndex).text:typeof a.wtLObj===\"object\"&&typeof a.wtLObj.getValue===\"function\"?a.wtLObj.getValue():a.value;b=a.wtValidate.validate(b);this.setValidationState(a,b.valid,b.message,1)}");
+        "(function(t){var e;e=t.options?t.options.item(t.selectedIndex).text:\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -420,6 +420,6 @@ public class WCssTheme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "setValidationState",
-        "function(a,b,d,c){var e=b==1&&(c&2)!=0;c=b!=1&&(c&1)!=0;$(a).toggleClass(\"Wt-valid\",e).toggleClass(\"Wt-invalid\",c);if(typeof a.defaultTT===\"undefined\")a.defaultTT=a.getAttribute(\"title\")||\"\";b?a.setAttribute(\"title\",a.defaultTT):a.setAttribute(\"title\",d)}");
+        "(function(t,e,a,i){var l=1==e&&0!=(2&i),o=1!=e&&0!=(1&i);$(t).toggleClass(\"Wt-valid\",l).toggleClass(\"Wt-invalid\",o);void 0===t.defaultTT&&(t.defaultTT=t.getAttribute(\"title\")||\"\");e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",a)})");
   }
 }

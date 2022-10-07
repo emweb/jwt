@@ -767,7 +767,7 @@ public class WMediaPlayer extends WCompositeWidget {
         first = false;
       }
       ss.append('}').append("});");
-      ss.append("new Wt4_8_0.WMediaPlayer(")
+      ss.append("new Wt4_8_1.WMediaPlayer(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())
@@ -1048,7 +1048,7 @@ public class WMediaPlayer extends WCompositeWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WMediaPlayer",
-        "function(f,b){function d(){var c=$(b).find(\".jp-jplayer\").data(\"jPlayer\"),a=c.status;return c.options.volume+\";\"+a.currentTime+\";\"+a.duration+\";\"+(a.paused?1:0)+\";\"+(a.ended?1:0)+\";\"+a.readyState+\";\"+(a.playbackRate?a.playbackRate:1)+\";\"+a.seekPercent}function e(c){var a=this;if(a=a.htmlElement.video||a.htmlElement.audio)a.playbackRate=c;return this}b.wtObj=this;b.wtEncodeValue=d;$(b).find(\".jp-jplayer\").data(\"jPlayer\").wtPlaybackRate=e}");
+        "(function(a,t){t.wtObj=this;a.WT;t.wtEncodeValue=function(){var a=$(t).find(\".jp-jplayer\").data(\"jPlayer\"),e=a.status;return a.options.volume+\";\"+e.currentTime+\";\"+e.duration+\";\"+(e.paused?1:0)+\";\"+(e.ended?1:0)+\";\"+e.readyState+\";\"+(e.playbackRate?e.playbackRate:1)+\";\"+e.seekPercent};$(t).find(\".jp-jplayer\").data(\"jPlayer\").wtPlaybackRate=function(a){var t=this.htmlElement.video||this.htmlElement.audio;t&&(t.playbackRate=a);return this}})");
   }
 
   static MediaReadyState intToReadyState(int i) {

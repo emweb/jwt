@@ -84,7 +84,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
     }
     this.addedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_8_0.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_8_1.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
     StringBuilder js = new StringBuilder();
@@ -155,7 +155,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_8_0.FlexLayout(")
+    js.append("layout=new Wt4_8_1.FlexLayout(")
         .append(app.getJavaScriptClass())
         .append(",'")
         .append(this.elId_)
@@ -441,6 +441,6 @@ class FlexLayoutImpl extends StdLayoutImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "FlexLayout",
-        "function(i,h){function j(){var b=f.getElement(h);if(b){b=b.childNodes;for(var g=0;g<b.length;++g){var e=b[g];if(!(e.style.display==\"none\"||$(e).hasClass(\"out\")||e.className==\"resize-sensor\")){var c=f.css(e,\"overflow\");if(c===\"visible\"||c===\"\")e.style.overflow=\"hidden\"}}}}var f=i.WT;setTimeout(j,0);this.adjust=function(){setTimeout(function(){var b=f.getElement(h);if(b){b=b.childNodes;for(var g=0,e=f.styleAttribute(\"flex-grow\"),c=0;c<b.length;++c){var a= b[c];if(!(a.style.display==\"none\"||$(a).hasClass(\"out\")||a.className==\"resize-sensor\")){var d=a.getAttribute(\"flg\");if(d!==\"0\"){d=f.css(a,e);g+=parseFloat(d)}}}for(c=0;c<b.length;++c){a=b[c];if(!(a.style.display==\"none\"||$(a).hasClass(\"out\")||a.className==\"resize-sensor\")){a.resizeSensor&&a.resizeSensor.trigger();if(g===0)d=1;else{d=a.getAttribute(\"flg\");if(d===\"0\")d=0;else d=d=f.css(a,e)}a.style[e]=d}}}},0)}}");
+        "(function(e,s){var t=e.WT;setTimeout((function(){var e=t.getElement(s);if(e)for(var r=e.childNodes,i=0;i<r.length;++i){var l=r[i];if(\"none\"!=l.style.display&&!$(l).hasClass(\"out\")&&\"resize-sensor\"!=l.className){var a=t.css(l,\"overflow\");\"visible\"!==a&&\"\"!==a||(l.style.overflow=\"hidden\")}}}),0);this.adjust=function(e){setTimeout((function(){var e=t.getElement(s);if(e){for(var r=e.childNodes,i=0,l=t.styleAttribute(\"flex-grow\"),a=0;a<r.length;++a){if(\"none\"!=(n=r[a]).style.display&&!$(n).hasClass(\"out\")&&\"resize-sensor\"!=n.className){if(\"0\"!==n.getAttribute(\"flg\")){var o=t.css(n,l);i+=parseFloat(o)}}}for(a=0;a<r.length;++a){var n;if(\"none\"!=(n=r[a]).style.display&&!$(n).hasClass(\"out\")&&\"resize-sensor\"!=n.className){n.resizeSensor&&n.resizeSensor.trigger();var f;if(0===i)f=1;else{if(\"0\"===n.getAttribute(\"flg\"))f=0;else{f=o=t.css(n,l)}}n.style[l]=f}}}}),0)}})");
   }
 }

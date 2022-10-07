@@ -264,7 +264,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (this.mediaId_.length() == 0) {
       return "null";
     } else {
-      return "Wt4_8_0.getElement('" + this.mediaId_ + "')";
+      return "Wt4_8_1.getElement('" + this.mediaId_ + "')";
     }
   }
 
@@ -275,7 +275,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
       if (this.sourcesChanged_) {
         for (int i = 0; i < this.sourcesRendered_; ++i) {
           media.callJavaScript(
-              "Wt4_8_0.remove('" + this.mediaId_ + "s" + String.valueOf(i) + "');", true);
+              "Wt4_8_1.remove('" + this.mediaId_ + "s" + String.valueOf(i) + "');", true);
         }
         this.sourcesRendered_ = 0;
         for (int i = 0; i < this.sources_.size(); ++i) {
@@ -376,7 +376,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (all && this.alternative_ != null) {
       element.setAttribute(
           "onerror",
-          "if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt4_8_0.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
+          "if(event.target.error && event.target.error.code==event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED){while (this.hasChildNodes())if (Wt4_8_1.hasTag(this.firstChild,'SOURCE')){this.removeChild(this.firstChild);}else{this.parentNode.insertBefore(this.firstChild, this);}this.style.display= 'none';}");
     }
     if (all || this.flagsChanged_) {
       if (!all || this.flags_.contains(PlayerOption.Controls)) {
@@ -502,7 +502,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (isLast && this.alternative_ != null) {
       element.setAttribute(
           "onerror",
-          "var media = this.parentNode;if(media){while (media && media.children.length)if (Wt4_8_0.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
+          "var media = this.parentNode;if(media){while (media && media.children.length)if (Wt4_8_1.hasTag(media.firstChild,'SOURCE')){media.removeChild(media.firstChild);}else{media.parentNode.insertBefore(media.firstChild, media);}media.style.display= 'none';}");
     } else {
       element.setAttribute("onerror", "");
     }
@@ -535,7 +535,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
       app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
       this.setJavaScriptMember(
           " WAbstractMedia",
-          "new Wt4_8_0.WAbstractMedia(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_8_1.WAbstractMedia(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     }
   }
 
@@ -544,7 +544,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WAbstractMedia",
-        "function(d,b){function c(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a)return\"\"+a.volume+\";\"+a.currentTime+\";\"+(a.readyState>=1?a.duration:0)+\";\"+(a.paused?\"1\":\"0\")+\";\"+(a.ended?\" 1\":\"0\")+\";\"+a.readyState}return null}b.wtObj=this;this.play=function(){if(b.mediaId){var a=$(\"#\"+b.mediaId).get(0);if(a){a.play();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPlay()};this.pause=function(){if(b.mediaId){var a= $(\"#\"+b.mediaId).get(0);if(a){a.pause();return}}if(b.alternativeId)(a=$(\"#\"+b.alternativeId).get(0))&&a.WtPlay&&a.WtPause()};b.wtEncodeValue=c}");
+        "(function(t,e){e.wtObj=this;t.WT;this.play=function(){if(e.mediaId){var t=$(\"#\"+e.mediaId).get(0);if(t){t.play();return}}if(e.alternativeId){var a=$(\"#\"+e.alternativeId).get(0);a&&a.WtPlay&&a.WtPlay()}};this.pause=function(){if(e.mediaId){var t=$(\"#\"+e.mediaId).get(0);if(t){t.pause();return}}if(e.alternativeId){var a=$(\"#\"+e.alternativeId).get(0);a&&a.WtPlay&&a.WtPause()}};e.wtEncodeValue=function(){if(e.mediaId){var t=$(\"#\"+e.mediaId).get(0);if(t)return t.volume+\";\"+t.currentTime+\";\"+(t.readyState>=1?t.duration:0)+\";\"+(t.paused?\"1\":\"0\")+\";\"+(t.ended?\" 1\":\"0\")+\";\"+t.readyState}return null}})");
   }
 
   static MediaReadyState intToReadyState(int i) {

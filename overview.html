@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.8.0</title>
+<title>JWt 4.8.1</title>
 </head>
 <body>
 
@@ -24,6 +24,16 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.8.1 (September 22, 2022)</h2>
+
+<p>
+  JWt 4.8.1 is a simple patch release that addresses
+  <a href="https://redmine.webtoolkit.eu/issues/10825" target="_blank">issue #10825</a>.
+  Some left over JavaScript code in
+  <a href="eu/webtoolkit/jwt/WGoogleMap.html#setMapTypeControl(eu.webtoolkit.jwt.MapTypeControl)">WGoogleMap#setMapTypeControl</a>
+  targeting the v2 API would cause a JavaScript error.
+</p>
 
 <h2>Release 4.8.0 (July 8, 2022)</h2>
 
