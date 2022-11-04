@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.8.1</title>
+<title>JWt 4.8.2</title>
 </head>
 <body>
 
@@ -24,6 +24,15 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.8.2 (November 4, 2022)</h2>
+
+<p>
+  JWt 4.8.2 is a simple patch release that fixes
+  <a href="https://redmine.webtoolkit.eu/issues/10976" target="_blank">issue #10976</a>:
+  <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setHeaderAlignment(int,java.util.EnumSet)">WAbstractItemView#setHeaderAlignment</a>
+  would not properly update vertical alignment.
+</p>
 
 <h2>Release 4.8.1 (September 22, 2022)</h2>
 
