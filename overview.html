@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.8.1</title>
+<title>JWt 4.9.0</title>
 </head>
 <body>
 
@@ -24,6 +24,200 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.9.0 (December 2022)</h2>
+
+<p>
+  JWt 4.9.0 features a lot of changes under the covers: we have painstakingly removed jQuery from JWt,
+  modernized the JavaScript, and added a linter, formatter, and a new minifier in the process.
+</p>
+
+<p>
+  Also, now that we added some tooling to customize WBootstrap5Theme, the
+  <a href="http://jwt.emweb.be/jwt-gallery/gallery" target="_blank">widget gallery</a>'s
+  primary color was updated to be more in line with JWt's website.
+</p>
+
+<h3>Backwards incompatible changes</h3>
+
+<h4>JWt now requires Java 11</h4>
+
+<p>
+  JWt 4.9.0 bumps the minimum required Java version up to 11. We changed all of the
+  <code>build.xml</code> files to use <code>release="11"</code> instead of the old
+  <code>source</code> and <code>target</code> options.
+</p>
+
+<h4>Removal of jQuery</h4>
+
+<p>
+  We removed every use of jQuery from JWt, and jQuery is now no longer automatically loaded.
+  This means that if you relied on the included jQuery version (for example, the <code>$</code> object or function),
+  you will have to make some changes to make it work with JWt 4.9.0. There are several options:
+</p>
+
+<ul>
+  <li>
+    <p>
+      Replace your uses of jQuery with vanilla JavaScript, which is what we did.
+    </p>
+    <p>
+      For example, the <code>$</code> function can often be replaced with
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector" target="_blank">querySelector</a> or
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll" target="_blank">querySelectorAll</a>.
+    </p>
+  </li>
+  <li>
+    <p>
+      Load jQuery yourself using
+      <a href="eu/webtoolkit/jwt/WApplication.html#require(java.lang.String,java.lang.String)">WApplication#require()</a>.
+      <a href="eu/webtoolkit/jwt/WApplication.html#requireJQuery(java.lang.String)">WApplication#requireJQuery()</a>
+      has been marked as deprecated.
+    </p>
+    <p>
+      For example:
+      <code>application.require("https://code.jquery.com/jquery-3.6.1.slim.min.js", "$");</code>.
+    </p>
+  </li>
+</ul>
+
+<h4>Changes to WBootstrap5Theme</h4>
+
+<dl>
+  <dt>Collapsible panels</dt>
+  <dd>
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>
+    has used an
+    <a href="https://getbootstrap.com/docs/5.2/components/accordion/" target="_blank">accordion</a>
+    instead of a
+    <a href="https://getbootstrap.com/docs/5.2/components/card/" target="_blank">card</a>
+    for collapsible panels since its introduction in JWt 4.6.0.
+    Now, <a href="eu/webtoolkit/jwt/WPanel.html">WPanel</a> always uses a
+    <a href="https://getbootstrap.com/docs/5.2/components/card/" target="_blank">card</a>.
+    This allows all panels to have a consistent appearance, regardless of whether they can be collapsed or not.
+    Additionally, the
+    <a href="eu/webtoolkit/jwt/WPanel.html#collapse()">WPanel#collapse()</a> and
+    <a href="eu/webtoolkit/jwt/WPanel.html#expand()">WPanel#expand()</a> functions will now work
+    as expected with
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>.
+    This change resolves <a href="https://redmine.webtoolkit.eu/issues/10364" target="_blank">issue #10364</a>.
+  </dd>
+  <dt>Bootstrap 5 theme customization</dt>
+  <dd>
+    We've made it easier to customize the Bootstrap 5 theme.
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a> now loads
+    a single CSS file that is built from
+    <a href="https://sass-lang.com/" target="_blank">Sass</a> source files.
+    The
+    <a href="http://jwt.emweb.be/jwt-gallery/gallery" target="_blank">widget gallery</a>
+    makes use of this by changing the primary color from Bootstrap's blue to the orange
+    used in JWt's logo and homepage.
+    This change resolves <a href="https://redmine.webtoolkit.eu/issues/9350" target="_blank">issue #9350</a>.
+  </dd>
+</dl>
+
+<h3>New features</h3>
+
+<ul>
+  <li>
+    Added
+    <a href="eu/webtoolkit/jwt/WProgressBar.html#setValueStyleClass(java.lang.String)">WProgressBar#setValueStyleClass()</a>
+    (<a href="https://github.com/emweb/wt/pull/131" target="_blank">PR #131</a>
+    by maximiliank on GitHub).
+  </li>
+  <li>
+    Added <a href="eu/webtoolkit/jwt/Utils.html#htmlAttributeValue(java.lang.String)">Utils#htmlAttributeValue()</a>
+    to escape values if they are put into the value of an HTML tag.
+  </li>
+</ul>
+
+<h3>Other improvements</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11067" target="_blank">Issue #11067</a>:
+    <a href="eu/webtoolkit/jwt/WWidget.html#animateShow(eu.webtoolkit.jwt.WAnimation)">animateShow()</a> and
+    <a href="eu/webtoolkit/jwt/WWidget.html#animateHide(eu.webtoolkit.jwt.WAnimation)">animateHide()</a> were
+    overhauled to use the
+    <a
+      href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API"
+      target="_blank">Web Animations API</a>. This fixes issues with choppy animations.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8629" target="_blank">Issue #8629</a>:
+    In order to ease maintenance, and make contributing to (J)Wt easier, we changed the JavaScript
+    minifier from the old version of Google Closure compiler we were using to
+    <a href="https://terser.org/" target="_blank">terser</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10966" target="_blank">Issue #10966</a>:
+    Added a JavaScript formatter to format (J)Wt's JavaScript code.
+    Its usage is detailed in the Wt source tree at
+    <a
+      href="https://github.com/emweb/wt/blob/master/doc/development/javascript.md"
+      target="_blank"><code>doc/development/javascript.md</code></a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10395" target="_blank">Issue #10395</a>:
+    <a href="eu/webtoolkit/jwt/WPanel.html#setTitleBar(boolean)">WPanel#setTitleBar(false)</a>
+    now automatically calls
+    <a href="eu/webtoolkit/jwt/WPanel.html#setCollapsible(boolean)">WPanel#setCollapsible(false)</a>.
+  </li>
+</ul>
+
+<h3>Bug fixes</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/9076" target="_blank">Issue #9076</a>:
+    <a href="eu/webtoolkit/jwt/WDateEdit.html">WDateEdit</a>
+    gave a javascript error when opening the calendar popup if the
+    application was rendered in
+    <a href="eu/webtoolkit/jwt/EntryPointType.html#WidgetSet">WidgetSet</a>
+    mode.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11138" target="_blank">Issue #11138</a>:
+    Fixed an issue in the widget gallery where images would not be loaded correctly if the path of the servlet
+    context is non-empty.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10488" target="_blank">Issue #10488</a>:
+    Long polling requests interrupted on the server side now no longer prevent keep alive requests from being sent,
+    and thus the session from timing out. This was possible when JWt is deployed behind a reverse proxy that has
+    a shorter request timeout than the
+    <a href="eu/webtoolkit/jwt/Configuration.html#getServerPushTimeout()">server push timeout</a>.
+  </li>
+</ul>
+
+<h2>Release 4.8.3 (December 22, 2022)</h2>
+
+<p>
+  JWt 4.8.3 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10995" target="_blank">Issue #10995</a>:
+    fixed an issue with <a href="eu/webtoolkit/jwt/WContainerWidget.html">WContainerWidget</a>
+    where a session could terminate with the text "WContainerWidget: error parsing: undefined".
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8093" target="_blank">Issue #8093</a>:
+    fixed an issue where the bottom axis could be clipped off of a tall
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html">WCartesianChart</a>
+    (<a href="https://github.com/emweb/wt/pull/178" target="_blank">PR #178</a> by Apivan Tuntakurn).
+  </li>
+</ul>
+
+<h2>Release 4.8.2 (November 4, 2022)</h2>
+
+<p>
+  JWt 4.8.2 is a simple patch release that fixes
+  <a href="https://redmine.webtoolkit.eu/issues/10976" target="_blank">issue #10976</a>:
+  <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setHeaderAlignment(int,java.util.EnumSet)">WAbstractItemView#setHeaderAlignment</a>
+  would not properly update vertical alignment.
+</p>
 
 <h2>Release 4.8.1 (September 22, 2022)</h2>
 

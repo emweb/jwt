@@ -394,7 +394,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt4_8_1.Resizable(Wt4_8_1,"
+            "(new Wt4_9_0.Resizable(Wt4_9_0,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -694,7 +694,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt4_8_1.WDialog("
+          "new Wt4_9_0.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()
@@ -719,14 +719,12 @@ public class WDialog extends WPopupWidget {
       }
       this.delayedJs_.clear();
       if (!app.getEnvironment().agentIsIElt(9) && !app.getEnvironment().hasAjax()) {
-        String js = WString.tr("Wt.WDialog.CenterJS").toString();
+        String js = WString.tr("Wt.WDialog.CenterJS").toXhtml();
         StringUtils.replace(js, "$el", "'" + this.getId() + "'");
         StringUtils.replace(js, "$centerX", centerX ? "1" : "0");
         StringUtils.replace(js, "$centerY", centerY ? "1" : "0");
         this.impl_.bindString(
-            "center-script",
-            "<script>" + Utils.htmlEncode(js) + "</script>",
-            TextFormat.UnsafeXHTML);
+            "center-script", "<script>" + js + "</script>", TextFormat.UnsafeXHTML);
       } else {
         this.impl_.bindEmpty("center-script");
       }
@@ -913,6 +911,6 @@ public class WDialog extends WPopupWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WDialog",
-        "(function(t,e,i,s,o,l,n,a,r){e.wtObj=this;var y,f,h=this,d=$(e).find(\".dialog-layout\").get(0),p=t.WT,u=-1,x=-1,c=-1,w=-1,g=!1,m=-1,v=-1,z=-1,b=-1;function P(){if(n){var i=p.pxself(e,\"left\"),s=p.pxself(e,\"top\");if(i!=u||s!=x){u=i;x=s;t.emit(e,n,u,x)}}}function S(i,s){if(!g&&(i!=c||s!=w)){c=i;w=s;a&&t.emit(e,a,c,w)}}function M(t){var i=t||window.event,s=p.pageCoordinates(i),n=p.windowCoordinates(i),a=p.windowSize();if(n.x>0&&n.x<a.x&&n.y>0&&n.y<a.y){o=l=!1;if(\"auto\"===e.style.right||\"\"===e.style.right){e.style.left=p.px(e,\"left\")+s.x-y+\"px\";e.style.right=\"\"}else{e.style.right=p.px(e,\"right\")+y-s.x+\"px\";e.style.left=\"auto\"}if(\"auto\"===e.style.bottom||\"\"===e.style.bottom){e.style.top=p.px(e,\"top\")+s.y-f+\"px\";e.style.bottom=\"\"}else{e.style.bottom=p.px(e,\"bottom\")+f-s.y+\"px\";e.style.top=\"auto\"}y=s.x;f=s.y}}if(i&&s){i.onmousedown=function(t){var e=t||window.event;p.capture(i);var s=p.pageCoordinates(e);y=s.x;f=s.y;i.onmousemove=M};i.onmouseup=function(t){i.onmousemove=null;P();p.capture(null)}}this.centerDialog=function(){var t=p.parsePct(p.css(e,\"max-width\"),0),s=p.parsePct(p.css(e,\"max-height\"),0);if(0!==t){var n=p.windowSize(),a=d.firstChild.wtLayout;a&&a.setMaxSize&&a.setMaxSize(n.x*t/100,n.y*s/100)}if(null!=e.parentNode){if(\"none\"!=e.style.display){n=p.windowSize();var r=e.offsetWidth,y=e.offsetHeight;-1!=m&&(o=!0);-1!=v&&(l=!0);if(o){e.style.left=Math.round((n.x-r)/2+(p.isIE6?document.documentElement.scrollLeft:0))+\"px\";e.style.marginLeft=\"0px\"}if(l){e.style.top=Math.round((n.y-y)/2+(p.isIE6?document.documentElement.scrollTop:0))+\"px\";e.style.marginTop=\"0px\"}\"\"!=e.style.position&&(e.style.visibility=\"visible\");P()}}else e=i=null};function W(){return p.windowSize().x*m/100}function E(){return p.windowSize().y*v/100}this.bringToFront=function(){var i=p.maxZIndex();if(i>e.style.zIndex){var s=i+1;e.style.zIndex=s;t.emit(e,r,s)}};this.onresize=function(i,s,n){o=l=!1;g=!n;!function(t,i,s,o){if(o){i>0&&(d.style.width=i+p.parsePx($(d).css(\"borderLeftWidth\"))+p.parsePx($(d).css(\"borderRightWidth\"))+\"px\");s>0&&(d.style.height=s+p.parsePx($(d).css(\"borderTopWidth\"))+p.parsePx($(d).css(\"borderBottomWidth\"))+\"px\")}h.centerDialog();e.wtResize&&e.wtResize(e,i,s,!0)}(0,i,s,!0);var a=d.firstChild.wtLayout;a&&a.setMaxSize&&a.setMaxSize(0,0);t.layouts2&&t.layouts2.scheduleAdjust();n&&S(i,s)};d.wtResize=function(t,i,s,o){\"\"==e.style.position&&(e.style.position=p.isIE6?\"absolute\":\"fixed\");e.style.visibility=\"visible\";p.windowSize();v=p.parsePct(e.style.height,v);m=p.parsePct(e.style.width,m);if(o){e.style.height=Math.max(0,s)+\"px\";e.style.width=Math.max(0,i)+\"px\"}S(i,s);h.centerDialog();var l=-1!=m,n=-1!=v;if(l&&n){z=W();b=E();h.onresize(z,b,!0)}else if(l){z=W();h.onresize(z,s,!0)}else if(n){b=E();h.onresize(i,b,!0)}};e.wtPosition=function(){h.centerDialog();t.layouts2&&t.layouts2.adjust()};\"\"!=e.style.width&&(p.parsePx(e.style.width)>0?d.style.width=e.style.width:d.style.width=e.offsetWidth+\"px\");\"\"!=e.style.height&&(p.parsePx(e.style.height)>0?d.style.height=e.style.height:d.style.height=e.offsetHeight+\"px\");h.centerDialog()})");
+        "(function(t,e,i,o,s,n,l,y,f){e.wtObj=this;const r=this,h=e.querySelector(\".dialog-layout\"),a=t.WT;let c,u,d=-1,p=-1,x=-1,w=-1,g=!1,m=-1,z=-1,b=-1,S=-1;function M(){if(l){const i=a.pxself(e,\"left\"),o=a.pxself(e,\"top\");if(i!==d||o!==p){d=i;p=o;t.emit(e,l,d,p)}}}function v(i,o){if(!g&&(i!==x||o!==w)){x=i;w=o;y&&t.emit(e,y,x,w)}}function E(t){const i=t||window.event,o=a.pageCoordinates(i),l=a.windowCoordinates(i),y=a.windowSize();if(l.x>0&&l.x<y.x&&l.y>0&&l.y<y.y){s=n=!1;if(\"auto\"===e.style.right||\"\"===e.style.right){e.style.left=a.px(e,\"left\")+o.x-c+\"px\";e.style.right=\"\"}else{e.style.right=a.px(e,\"right\")+c-o.x+\"px\";e.style.left=\"auto\"}if(\"auto\"===e.style.bottom||\"\"===e.style.bottom){e.style.top=a.px(e,\"top\")+o.y-u+\"px\";e.style.bottom=\"\"}else{e.style.bottom=a.px(e,\"bottom\")+u-o.y+\"px\";e.style.top=\"auto\"}c=o.x;u=o.y}}if(i&&o){i.onmousedown=function(t){const e=t||window.event;a.capture(i);const o=a.pageCoordinates(e);c=o.x;u=o.y;i.onmousemove=E};i.onmouseup=function(t){i.onmousemove=null;M();a.capture(null)}}this.centerDialog=function(){const t=a.parsePct(a.css(e,\"max-width\"),0),o=a.parsePct(a.css(e,\"max-height\"),0);if(0!==t){const e=a.windowSize(),i=h.firstChild.wtLayout;i&&i.setMaxSize&&i.setMaxSize(e.x*t/100,e.y*o/100)}if(null!==e.parentNode){if(\"none\"!==e.style.display){const t=a.windowSize(),i=e.offsetWidth,o=e.offsetHeight;-1!==m&&(s=!0);-1!==z&&(n=!0);if(s){e.style.left=Math.round((t.x-i)/2+(a.isIE6?document.documentElement.scrollLeft:0))+\"px\";e.style.marginLeft=\"0px\"}if(n){e.style.top=Math.round((t.y-o)/2+(a.isIE6?document.documentElement.scrollTop:0))+\"px\";e.style.marginTop=\"0px\"}\"\"!==e.style.position&&(e.style.visibility=\"visible\");M()}}else e=i=null};function C(){return a.windowSize().x*m/100}function D(){return a.windowSize().y*z/100}this.bringToFront=function(){const i=a.maxZIndex();if(i>e.style.zIndex){const o=i+1;e.style.zIndex=o;t.emit(e,f,o)}};this.onresize=function(i,o,l){s=n=!1;g=!l;!function(t,i,o,s){if(s){if(i>0){const t=a.px(h,\"border-left-width\"),e=a.px(h,\"border-right-width\");h.style.width=`${i+e+t}px`}if(o>0){const t=a.px(h,\"border-top-width\"),e=a.px(h,\"border-bottom-width\");h.style.height=`${o+t+e}px`}}r.centerDialog();e.wtResize&&e.wtResize(e,i,o,!0)}(0,i,o,!0);const y=h.firstChild.wtLayout;y&&y.setMaxSize&&y.setMaxSize(0,0);t.layouts2&&t.layouts2.scheduleAdjust();l&&v(i,o)};h.wtResize=function(t,i,o,s){\"\"===e.style.position&&(e.style.position=a.isIE6?\"absolute\":\"fixed\");e.style.visibility=\"visible\";z=a.parsePct(e.style.height,z);m=a.parsePct(e.style.width,m);if(s){e.style.height=Math.max(0,o)+\"px\";e.style.width=Math.max(0,i)+\"px\"}v(i,o);r.centerDialog();const n=-1!==m,l=-1!==z;if(n&&l){b=C();S=D();r.onresize(b,S,!0)}else if(n){b=C();r.onresize(b,o,!0)}else if(l){S=D();r.onresize(i,S,!0)}};e.wtPosition=function(){r.centerDialog();t.layouts2&&t.layouts2.adjust()};\"\"!==e.style.width&&(a.parsePx(e.style.width)>0?h.style.width=e.style.width:h.style.width=e.offsetWidth+\"px\");\"\"!==e.style.height&&(a.parsePx(e.style.height)>0?h.style.height=e.style.height:h.style.height=e.offsetHeight+\"px\");r.centerDialog()})");
   }
 }

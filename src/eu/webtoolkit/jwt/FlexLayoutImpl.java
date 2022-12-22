@@ -84,12 +84,10 @@ class FlexLayoutImpl extends StdLayoutImpl {
     }
     this.addedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_8_1.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_9_0.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
-    StringBuilder js = new StringBuilder();
-    js.append("layout.adjust(").append(this.grid_.horizontalSpacing_).append(")");
-    div.callMethod(js.toString());
+    div.callMethod("layout.adjust()");
     parent.addChild(div);
   }
 
@@ -155,7 +153,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_8_1.FlexLayout(")
+    js.append("layout=new Wt4_9_0.FlexLayout(")
         .append(app.getJavaScriptClass())
         .append(",'")
         .append(this.elId_)
@@ -441,6 +439,6 @@ class FlexLayoutImpl extends StdLayoutImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "FlexLayout",
-        "(function(e,s){var t=e.WT;setTimeout((function(){var e=t.getElement(s);if(e)for(var r=e.childNodes,i=0;i<r.length;++i){var l=r[i];if(\"none\"!=l.style.display&&!$(l).hasClass(\"out\")&&\"resize-sensor\"!=l.className){var a=t.css(l,\"overflow\");\"visible\"!==a&&\"\"!==a||(l.style.overflow=\"hidden\")}}}),0);this.adjust=function(e){setTimeout((function(){var e=t.getElement(s);if(e){for(var r=e.childNodes,i=0,l=t.styleAttribute(\"flex-grow\"),a=0;a<r.length;++a){if(\"none\"!=(n=r[a]).style.display&&!$(n).hasClass(\"out\")&&\"resize-sensor\"!=n.className){if(\"0\"!==n.getAttribute(\"flg\")){var o=t.css(n,l);i+=parseFloat(o)}}}for(a=0;a<r.length;++a){var n;if(\"none\"!=(n=r[a]).style.display&&!$(n).hasClass(\"out\")&&\"resize-sensor\"!=n.className){n.resizeSensor&&n.resizeSensor.trigger();var f;if(0===i)f=1;else{if(\"0\"===n.getAttribute(\"flg\"))f=0;else{f=o=t.css(n,l)}}n.style[l]=f}}}}),0)}})");
+        "(function(s,e){const t=s.WT;setTimeout((function(){const s=t.getElement(e);if(s)for(const e of s.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||\"resize-sensor\"===e.className)continue;const s=t.css(e,\"overflow\");\"visible\"!==s&&\"\"!==s||(e.style.overflow=\"hidden\")}}),0);this.adjust=function(){setTimeout((function(){const s=t.getElement(e);if(!s)return;const o=s.childNodes;let n=0;for(const s of o){if(\"none\"===s.style.display||s.classList.contains(\"out\")||\"resize-sensor\"===s.className)continue;if(\"0\"===s.getAttribute(\"flg\"))continue;const e=t.css(s,\"flex-grow\");n+=parseFloat(e)}for(const s of o){if(\"none\"===s.style.display||s.classList.contains(\"out\")||\"resize-sensor\"===s.className)continue;s.resizeSensor&&s.resizeSensor.trigger();let e;if(0===n)e=1;else{if(\"0\"===s.getAttribute(\"flg\"))e=0;else{e=t.css(s,\"flex-grow\")}}s.style.flexGrow=e}}),0)}})");
   }
 }

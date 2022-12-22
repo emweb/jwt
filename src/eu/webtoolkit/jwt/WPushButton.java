@@ -142,7 +142,7 @@ public class WPushButton extends WFormWidget {
   public void setCheckable(boolean checkable) {
     this.flags_.set(BIT_IS_CHECKABLE, checkable);
     if (checkable) {
-      this.clicked().addListener("function(o,e) { $(o).toggleClass('active'); }");
+      this.clicked().addListener("function(o,e) { o.classList.toggle('active'); }");
       this.clicked()
           .addListener(
               this,

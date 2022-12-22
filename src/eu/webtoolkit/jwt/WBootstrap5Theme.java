@@ -38,6 +38,18 @@ import org.slf4j.LoggerFactory;
  * classes. For this we refer to Bootstrap&apos;s documentation at <a
  * href="https://getbootstrap.com">https://getbootstrap.com</a>.
  *
+ * <p>Custom Sass files can be used to make your own derived theme.
+ *
+ * <p>If JWt is installed into <code>PREFIX</code> (and the CMake option <code>INSTALL_THEMES</code>
+ * is set to <code>ON</code>), then you can find the source files in <code>
+ * PREFIX/share/Wt/themes/bootstrap/5</code>.
+ *
+ * <p>Apart from the variables that Bootstrap defines, JWt also provides variables, defined in
+ * <code>wt/_variables.scss</code>. All of JWt&apos;s variables start with a <code>wt-</code>
+ * prefix.
+ *
+ * <p>Refer to the example in <code>examples/custom-bs-theme</code> for more information.
+ *
  * <p>
  *
  * @see WApplication#setTheme(WTheme theme)
@@ -53,7 +65,7 @@ public class WBootstrap5Theme extends WTheme {
   public void init(WApplication app) {
     app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.BootstrapTheme_xml);
     app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Bootstrap5Theme_xml);
-    app.require(this.getResourcesUrl() + "js/bootstrap.bundle.min.js");
+    app.require(this.getResourcesUrl() + "bootstrap.bundle.min.js");
     app.loadJavaScript("js/Bootstrap5Theme.js", wtjs3());
     WString v = app.metaHeader(MetaHeaderType.Meta, "viewport");
     if ((v.length() == 0)) {
@@ -72,8 +84,7 @@ public class WBootstrap5Theme extends WTheme {
   public List<WLinkedCssStyleSheet> getStyleSheets() {
     List<WLinkedCssStyleSheet> result = new ArrayList<WLinkedCssStyleSheet>();
     final String themeDir = this.getResourcesUrl();
-    result.add(new WLinkedCssStyleSheet(new WLink(themeDir + "css/bootstrap.min.css")));
-    result.add(new WLinkedCssStyleSheet(new WLink(themeDir + "wt.css")));
+    result.add(new WLinkedCssStyleSheet(new WLink(themeDir + "main.css")));
     return result;
   }
 
@@ -90,7 +101,7 @@ public class WBootstrap5Theme extends WTheme {
         ((WFormWidget) child).getLabel().addStyleClass("form-checkbox");
         break;
       case WidgetThemeRole.MenuItemClose:
-        child.addStyleClass("close");
+        child.addStyleClass("Wt-close-icon");
         ((WText) child).setText("&times;");
         break;
       case WidgetThemeRole.DialogContent:
@@ -134,49 +145,21 @@ public class WBootstrap5Theme extends WTheme {
       case WidgetThemeRole.TimePickerPopup:
         child.addStyleClass("Wt-timepicker");
         break;
-      case WidgetThemeRole.PanelTitle:
-        {
-          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
-          if (panel != null && panel.isCollapsible()) {
-            child.addStyleClass("accordion-item");
-          }
-          break;
-        }
       case WidgetThemeRole.PanelTitleBar:
-        {
-          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
-          if (panel != null && panel.isCollapsible()) {
-            child.addStyleClass("accordion-header");
-            child.removeStyleClass("card-header");
-          } else {
-            child.addStyleClass("card-header");
-          }
-          break;
-        }
+        child.addStyleClass("card-header");
+        break;
+      case WidgetThemeRole.PanelBody:
+        child.addStyleClass("card-body");
+        break;
       case WidgetThemeRole.PanelCollapseButton:
         {
-          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
-          if (panel != null && panel.isCollapsible()) {
-            child.addStyleClass("accordion-button");
-          }
-          break;
-        }
-      case WidgetThemeRole.PanelBody:
-        {
-          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
-          if (panel != null && panel.isCollapsible()) {
-            child.addStyleClass("accordion-collapse collapse show");
-          } else {
-            child.addStyleClass("card-body");
-          }
-          break;
-        }
-      case WidgetThemeRole.PanelBodyContent:
-        {
-          WPanel panel = ObjectUtils.cast(widget, WPanel.class);
-          if (panel != null && panel.isCollapsible()) {
-            child.addStyleClass("accordion-body");
-          }
+          WApplication app = WApplication.getInstance();
+          WIconPair iconPair = ObjectUtils.cast(child, WIconPair.class);
+          iconPair.getIcon1().setInline(false);
+          iconPair.getIcon1().setImageLink(new WLink(app.getOnePixelGifUrl()));
+          iconPair.getIcon2().setInline(false);
+          iconPair.getIcon2().setImageLink(new WLink(app.getOnePixelGifUrl()));
+          iconPair.addStyleClass("Wt-collapse-button");
           break;
         }
       case WidgetThemeRole.InPlaceEditing:
@@ -238,7 +221,12 @@ public class WBootstrap5Theme extends WTheme {
           }
           WMenuItem item = ObjectUtils.cast(widget.getParent(), WMenuItem.class);
           if (item != null) {
-            element.addPropertyWord(Property.Class, "nav-link");
+            WPopupMenu popupMenu = ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class);
+            if (popupMenu != null) {
+              element.addPropertyWord(Property.Class, "dropdown-item");
+            } else {
+              element.addPropertyWord(Property.Class, "nav-link");
+            }
           }
           if (element.getAttribute("href").length() == 0
               && element.getProperty(Property.Class).length() == 0) {
@@ -271,16 +259,12 @@ public class WBootstrap5Theme extends WTheme {
         {
           WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
-            element.addPropertyWord(Property.Class, "modal-dialog Wt-dialog");
+            element.addPropertyWord(Property.Class, "modal d-block Wt-dialog");
             return;
           }
           WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null) {
-            if (panel.isCollapsible()) {
-              element.addPropertyWord(Property.Class, "accordion-item");
-            } else {
-              element.addPropertyWord(Property.Class, "card");
-            }
+            element.addPropertyWord(Property.Class, "card Wt-panel");
             return;
           }
           WProgressBar bar = ObjectUtils.cast(widget, WProgressBar.class);
@@ -345,7 +329,10 @@ public class WBootstrap5Theme extends WTheme {
               element.addPropertyWord(Property.Class, "dropdown-divider");
             }
             if (!separator && !sectionHeader) {
-              element.addPropertyWord(Property.Class, "nav-item");
+              WPopupMenu popupMenu = ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class);
+              if (!(popupMenu != null)) {
+                element.addPropertyWord(Property.Class, "nav-item");
+              }
             }
             if (item.getMenu() != null) {
               if (ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class) != null) {
@@ -359,6 +346,7 @@ public class WBootstrap5Theme extends WTheme {
         {
           if (elementRole == ElementThemeRole.ToggleButtonInput) {
             element.addPropertyWord(Property.Class, "form-check-input");
+            element.addPropertyWord(Property.Class, "Wt-chkbox");
             break;
           } else {
             if (elementRole == ElementThemeRole.FileUploadInput) {
@@ -375,7 +363,7 @@ public class WBootstrap5Theme extends WTheme {
             if (sl != null) {
               element.addPropertyWord(Property.Class, "form-range");
               if (sl.getOrientation() == Orientation.Vertical) {
-                element.addPropertyWord(Property.Class, "vertical-slider");
+                element.addPropertyWord(Property.Class, "Wt-native-vertical-slider");
               }
             }
           }
@@ -466,11 +454,6 @@ public class WBootstrap5Theme extends WTheme {
     }
   }
 
-  public void setDataTarget(WWidget widget, WWidget target) {
-    widget.setAttributeValue("data-bs-toggle", "collapse");
-    widget.setAttributeValue("data-bs-target", new WString("#{1}").arg(target.getId()).toString());
-  }
-
   public String getDisabledClass() {
     return "disabled";
   }
@@ -484,7 +467,7 @@ public class WBootstrap5Theme extends WTheme {
       case UtilityCssClassRole.ToolTipInner:
         return "tooltip-inner";
       case UtilityCssClassRole.ToolTipOuter:
-        return "tooltip fade top in";
+        return "tooltip fade top in position-absolute";
       default:
         return "";
     }
@@ -501,10 +484,10 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_8_1.setValidationState(")
+      js.append("Wt4_9_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
-          .append(validation.getState() == ValidationState.Valid ? 1 : 0)
+          .append(validation.getState() == ValidationState.Valid)
           .append(",")
           .append(WString.toWString(validation.getMessage()).getJsStringLiteral())
           .append(",")
@@ -528,6 +511,10 @@ public class WBootstrap5Theme extends WTheme {
     return true;
   }
 
+  public Side getPanelCollapseIconSide() {
+    return Side.Right;
+  }
+
   private static String classBtn(WWidget widget) {
     WPushButton button = ObjectUtils.cast(widget, WPushButton.class);
     return hasButtonStyleClass(widget) || button != null && button.isDefault()
@@ -539,6 +526,14 @@ public class WBootstrap5Theme extends WTheme {
     int size = btnClasses.length;
     for (int i = 0; i < size; ++i) {
       if (widget.hasStyleClass(btnClasses[i])) {
+        return true;
+      }
+    }
+    String classesStr = widget.getStyleClass();
+    List<String> classes = new ArrayList<String>();
+    classes = new ArrayList<String>(Arrays.asList(classesStr.split(" ")));
+    for (String c : classes) {
+      if (c.startsWith("btn-")) {
         return true;
       }
     }
@@ -562,7 +557,7 @@ public class WBootstrap5Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "(function(t){var e;e=t.options?null==t.options.item(t.selectedIndex)?\"\":t.options.item(t.selectedIndex).text:\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
+        "(function(t){let e;if(t.options){const s=t.options.item(t.selectedIndex);e=null===s?\"\":s.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -570,7 +565,7 @@ public class WBootstrap5Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "setValidationState",
-        "(function(t,e,a,i){var l,s,o,n=1==e&&0!=(2&i),d=1!=e&&0!=(1&i),c=$(t),u=\"Wt-valid\",g=\"Wt-invalid\",r=this.theme;if(\"object\"==typeof r){u=r.classes.valid;g=r.classes.invalid}c.toggleClass(u,n).toggleClass(g,d);if((l=c.closest(\".control-group\")).length>0){s=\"success\";o=\"error\"}else if((l=c.closest(\".form-group\")).length>0){s=\"has-success\";o=\"has-error\"}if(l.length>0){var f=l.find(\".Wt-validation-message\");f&&(e?f.text(t.defaultTT):f.text(a));l.toggleClass(s,n).toggleClass(o,d)}void 0===t.defaultTT&&(t.defaultTT=t.getAttribute(\"title\")||\"\");e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",a)})");
+        "(function(t,e,s,l){const i=e&&0!=(2&l),o=!e&&0!=(1&l);let a=\"Wt-valid\",c=\"Wt-invalid\";const n=this.theme;if(\"object\"==typeof n){a=n.classes.valid;c=n.classes.invalid}t.classList.toggle(a,i);t.classList.toggle(c,o);let u,r,f;u=t.closest(\".control-group\");if(u){r=\"success\";f=\"error\"}else{u=t.closest(\".form-group\");if(u){r=\"has-success\";f=\"has-error\"}}if(u){const l=u.querySelectorAll(\".Wt-validation-message\");for(const i of l)i.textContent=e?t.defaultTT:s;u.classList.toggle(r,i);u.classList.toggle(f,o)}e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",s)})");
   }
 
   static WJavaScriptPreamble wtjs3() {
@@ -581,26 +576,5 @@ public class WBootstrap5Theme extends WTheme {
         "{classes:{valid:\"is-valid\",invalid:\"is-invalid\"},type:\"bootstrap\",version:5}");
   }
 
-  private static String[] btnClasses = {
-    "btn-primary",
-    "btn-secondary",
-    "btn-success",
-    "btn-danger",
-    "btn-warning",
-    "btn-info",
-    "btn-light",
-    "btn-dark",
-    "btn-link",
-    "btn-outline-primary",
-    "btn-outline-secondary",
-    "btn-outline-success",
-    "btn-outline-danger",
-    "btn-outline-warning",
-    "btn-outline-info",
-    "btn-outline-light",
-    "btn-outline-dark",
-    "btn-close",
-    "navbar-toggler",
-    "accordion-button"
-  };
+  private static String[] btnClasses = {"navbar-toggler", "accordion-button"};
 }

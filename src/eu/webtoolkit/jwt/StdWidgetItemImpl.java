@@ -29,25 +29,25 @@ class StdWidgetItemImpl extends StdLayoutItemImpl implements WWidgetItemImpl {
   public static String getChildrenResizeJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs10());
-    return "Wt4_8_1.ChildrenResize";
+    return "Wt4_9_0.ChildrenResize";
   }
 
   public static String getChildrenGetPSJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs11());
-    return "Wt4_8_1.ChildrenGetPS";
+    return "Wt4_9_0.ChildrenGetPS";
   }
 
   public static String getSecondResizeJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs12());
-    return "Wt4_8_1.LastResize";
+    return "Wt4_9_0.LastResize";
   }
 
   public static String getSecondGetPSJS() {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WtResize.js", wtjs13());
-    return "Wt4_8_1.LastGetPS";
+    return "Wt4_9_0.LastGetPS";
   }
 
   public String getId() {
@@ -103,7 +103,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl implements WWidgetItemImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "ChildrenResize",
-        "(function(e,i,t,o){var s,r,h,p=this,n=t>=0;if(o)if(n){e.style.height=t+\"px\";e.lh=!0}else{e.style.height=\"\";e.lh=!1}else e.lh=!1;if(p.boxSizing(e)){t-=p.px(e,\"marginTop\");t-=p.px(e,\"marginBottom\");t-=p.px(e,\"borderTopWidth\");t-=p.px(e,\"borderBottomWidth\");t-=p.px(e,\"paddingTop\");t-=p.px(e,\"paddingBottom\");i-=p.px(e,\"marginLeft\");i-=p.px(e,\"marginRight\");i-=p.px(e,\"borderLeftWidth\");i-=p.px(e,\"borderRightWidth\");i-=p.px(e,\"paddingLeft\");i-=p.px(e,\"paddingRight\")}function a(e){var i=p.px(e,\"marginTop\");i+=p.px(e,\"marginBottom\");if(!p.boxSizing(e)){i+=p.px(e,\"borderTopWidth\");i+=p.px(e,\"borderBottomWidth\");i+=p.px(e,\"paddingTop\");i+=p.px(e,\"paddingBottom\")}return i}for(s=0,r=e.childNodes.length;s<r;++s)if(1==(h=e.childNodes[s]).nodeType&&!$(h).hasClass(\"wt-reparented\"))if(n){var l=t-a(h);if(l>0){if(h.offsetTop>0){var d=p.css(h,\"overflow\");\"visible\"!==d&&\"\"!==d||(h.style.overflow=\"auto\")}if(h.wtResize)h.wtResize(h,i,l,!0);else{var f=l+\"px\";if(h.style.height!=f){h.style.height=f;h.lh=!0}}}}else if(h.wtResize)h.wtResize(h,i,-1,!0);else{h.style.height=\"\";h.lh=!1}})");
+        "(function(t,i,e,o){const s=this,n=e>=0;if(o)if(n){t.style.height=e+\"px\";t.lh=!0}else{t.style.height=\"\";t.lh=!1}else t.lh=!1;if(s.boxSizing(t)){e-=s.px(t,\"marginTop\");e-=s.px(t,\"marginBottom\");e-=s.px(t,\"borderTopWidth\");e-=s.px(t,\"borderBottomWidth\");e-=s.px(t,\"paddingTop\");e-=s.px(t,\"paddingBottom\");i-=s.px(t,\"marginLeft\");i-=s.px(t,\"marginRight\");i-=s.px(t,\"borderLeftWidth\");i-=s.px(t,\"borderRightWidth\");i-=s.px(t,\"paddingLeft\");i-=s.px(t,\"paddingRight\")}function p(t){let i=s.px(t,\"marginTop\");i+=s.px(t,\"marginBottom\");if(!s.boxSizing(t)){i+=s.px(t,\"borderTopWidth\");i+=s.px(t,\"borderBottomWidth\");i+=s.px(t,\"paddingTop\");i+=s.px(t,\"paddingBottom\")}return i}for(const o of t.childNodes)if(1===o.nodeType&&!o.classList.contains(\"wt-reparented\"))if(n){const t=e-p(o);if(t>0){if(o.offsetTop>0){const t=s.css(o,\"overflow\");\"visible\"!==t&&\"\"!==t||(o.style.overflow=\"auto\")}if(o.wtResize)o.wtResize(o,i,t,!0);else{const i=t+\"px\";if(o.style.height!==i){o.style.height=i;o.lh=!0}}}}else if(o.wtResize)o.wtResize(o,i,-1,!0);else{o.style.height=\"\";o.lh=!1}})");
   }
 
   static WJavaScriptPreamble wtjs11() {
@@ -111,7 +111,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl implements WWidgetItemImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "ChildrenGetPS",
-        "(function(e,i,t,o){return o})");
+        "(function(t,i,e,o){return o})");
   }
 
   static WJavaScriptPreamble wtjs12() {
@@ -119,7 +119,7 @@ class StdWidgetItemImpl extends StdLayoutItemImpl implements WWidgetItemImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "LastResize",
-        "(function(e,i,t,o){var s=t>=0;if(o)if(s){e.style.height=t+\"px\";e.lh=!0}else{e.style.height=\"\";e.lh=!1}else e.lh=!1;for(var r=e.lastChild;r&&1==r.nodeType&&($(r).hasClass(\"wt-reparented\")||$(r).hasClass(\"resize-sensor\"));)r=r.previousSibling;if(r){var h=r.previousSibling;if(s){if((t-=h.offsetHeight+this.px(h,\"marginTop\")+this.px(h,\"marginBottom\"))>0)if(r.wtResize)r.wtResize(r,i,t,!0);else{r.style.height=t+\"px\";r.lh=!0}}else if(r.wtResize)r.wtResize(r,-1,-1,!0);else{r.style.height=\"\";r.lh=!1}}})");
+        "(function(t,i,e,o){const s=this,n=e>=0;if(o)if(n){t.style.height=e+\"px\";t.lh=!0}else{t.style.height=\"\";t.lh=!1}else t.lh=!1;let p=t.lastChild;for(;p&&1===p.nodeType&&(p.classList.contains(\"wt-reparented\")||p.classList.contains(\"resize-sensor\"));)p=p.previousSibling;if(!p)return;const h=p.previousSibling;if(n){if((e-=h.offsetHeight+s.px(h,\"marginTop\")+s.px(h,\"marginBottom\"))>0)if(p.wtResize)p.wtResize(p,i,e,!0);else{p.style.height=e+\"px\";p.lh=!0}}else if(p.wtResize)p.wtResize(p,-1,-1,!0);else{p.style.height=\"\";p.lh=!1}})");
   }
 
   static WJavaScriptPreamble wtjs13() {
@@ -127,6 +127,6 @@ class StdWidgetItemImpl extends StdLayoutItemImpl implements WWidgetItemImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "LastGetPS",
-        "(function(e,i,t,o){var s,r,h=this;for(s=0,r=e.childNodes.length;s<r;++s){var p=e.childNodes[s];if(p!=i){var n=h.css(p,\"position\");\"absolute\"!=n&&\"fixed\"!=n&&(0===t?o=Math.max(o,p.offsetWidth):o+=p.offsetHeight+h.px(p,\"marginTop\")+h.px(p,\"marginBottom\"))}}return o})");
+        "(function(t,i,e,o){const s=this;for(const n of t.childNodes)if(n!==i){const t=s.css(n,\"position\");\"absolute\"!==t&&\"fixed\"!==t&&(0===e?o=Math.max(o,n.offsetWidth):o+=n.offsetHeight+s.px(n,\"marginTop\")+s.px(n,\"marginBottom\"))}return o})");
   }
 }

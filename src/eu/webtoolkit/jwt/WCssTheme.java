@@ -222,6 +222,9 @@ public class WCssTheme extends WTheme {
       case WidgetThemeRole.PanelBody:
         child.addStyleClass("body");
         break;
+      case WidgetThemeRole.PanelCollapseButton:
+        child.setFloatSide(Side.Left);
+        break;
       case WidgetThemeRole.AuthWidgets:
         WApplication app = WApplication.getInstance();
         app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "form.css"));
@@ -379,10 +382,10 @@ public class WCssTheme extends WTheme {
     app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_8_1.setValidationState(")
+      js.append("Wt4_9_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
-          .append(validation.getState() == ValidationState.Valid ? 1 : 0)
+          .append(validation.getState() == ValidationState.Valid)
           .append(",")
           .append(WString.toWString(validation.getMessage()).getJsStringLiteral())
           .append(",")
@@ -412,7 +415,7 @@ public class WCssTheme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "(function(t){var e;e=t.options?t.options.item(t.selectedIndex).text:\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
+        "(function(t){let e;if(t.options){const i=t.options.item(t.selectedIndex);e=null===i?\"\":i.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -420,6 +423,6 @@ public class WCssTheme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "setValidationState",
-        "(function(t,e,a,i){var l=1==e&&0!=(2&i),o=1!=e&&0!=(1&i);$(t).toggleClass(\"Wt-valid\",l).toggleClass(\"Wt-invalid\",o);void 0===t.defaultTT&&(t.defaultTT=t.getAttribute(\"title\")||\"\");e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",a)})");
+        "(function(t,e,i,a){const l=e&&0!=(2&a),n=!e&&0!=(1&a);t.classList.toggle(\"Wt-valid\",l);t.classList.toggle(\"Wt-invalid\",n);void 0===t.defaultTT&&(t.defaultTT=t.getAttribute(\"title\")||\"\");e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",i)})");
   }
 }

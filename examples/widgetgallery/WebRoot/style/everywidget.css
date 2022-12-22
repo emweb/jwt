@@ -1,18 +1,6 @@
-tt {
-    font-family: "Ludica Console", Courier, monospace;
-    color: #6c757d;
-    font-size: 97%;
-}
-
 .wmediaplayer li {
     margin: 0px;
     line-height: 100%;
-}
-
-.contents h1,
-.contents h2,
-.contents h3 {
-    color: #007bff;
 }
 
 .submenu {

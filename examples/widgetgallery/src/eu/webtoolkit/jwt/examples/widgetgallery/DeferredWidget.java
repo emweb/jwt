@@ -14,7 +14,9 @@ class DeferredWidget extends WContainerWidget {
 	
 	@Override
 	public void load() {
-		addWidget(creator.create());
+		WWidget widget = creator.create();
+		widget.addStyleClass("contents");
+		addWidget(widget);
 		super.load();
 	}
 	

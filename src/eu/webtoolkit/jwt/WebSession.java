@@ -380,18 +380,16 @@ class WebSession {
           if (!(sidE != null) || !sidE.equals(String.valueOf(this.renderer_.getScriptId()))) {
             throw new WException("Script id mismatch");
           }
-          if (!(request.getParameter("skeleton") != null)) {
-            if (!this.env_.hasAjax()) {
-              this.env_.enableAjax(request);
-              this.app_.enableAjax();
-              if (this.env_.getInternalPath().length() > 1) {
-                this.changeInternalPath(this.env_.getInternalPath(), handler.getResponse());
-              }
-            } else {
-              String hashE = request.getParameter("_");
-              if (hashE != null) {
-                this.changeInternalPath(hashE, handler.getResponse());
-              }
+          if (!this.env_.hasAjax()) {
+            this.env_.enableAjax(request);
+            this.app_.enableAjax();
+            if (this.env_.getInternalPath().length() > 1) {
+              this.changeInternalPath(this.env_.getInternalPath(), handler.getResponse());
+            }
+          } else {
+            String hashE = request.getParameter("_");
+            if (hashE != null) {
+              this.changeInternalPath(hashE, handler.getResponse());
             }
           }
           this.render(handler);
@@ -1578,14 +1576,9 @@ class WebSession {
                 if (!(this.app_ != null)) {
                   String resourceE = request.getParameter("resource");
                   if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
-                    if (!(request.getParameter("skeleton") != null)) {
-                      this.env_.enableAjax(request);
-                      if (!this.start(handler.getResponse())) {
-                        throw new WException("Could not start application.");
-                      }
-                    } else {
-                      this.serveResponse(handler);
-                      return;
+                    this.env_.enableAjax(request);
+                    if (!this.start(handler.getResponse())) {
+                      throw new WException("Could not start application.");
                     }
                   } else {
                     if (requestForResource && resourceE != null && resourceE.equals("blank")) {
@@ -1709,7 +1702,7 @@ class WebSession {
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
     if (wasSuspended) {
       if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
-        this.app_.doJavaScript("Wt4_8_1.history.removeSessionId()");
+        this.app_.doJavaScript("Wt4_9_0.history.removeSessionId()");
         this.sessionIdInUrl_ = false;
       }
       this.app_.unsuspended().trigger();
@@ -1974,8 +1967,7 @@ class WebSession {
       }
     }
     if (!handler.getRequest().isWebSocketMessage()) {
-      if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script
-          && !(handler.getRequest().getParameter("skeleton") != null)) {
+      if (handler.getResponse().getResponseType() == WebRequest.ResponseType.Script) {
         this.mutex_.unlock();
         try {
           ThreadUtils.sleep(Duration.ofMillis(1));
@@ -2106,7 +2098,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt4_8_1.scrollHistory();");
+                this.app_.doJavaScript("Wt4_9_0.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }

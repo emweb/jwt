@@ -45,7 +45,6 @@ public class WPanel extends WCompositeWidget {
     this.expanded_ = new Signal();
     this.collapsedSS_ = new Signal1<Boolean>();
     this.expandedSS_ = new Signal1<Boolean>();
-    this.isCollapsible_ = false;
     String TEMPLATE = "${titlebar}${contents}";
     this.impl_ = new WTemplate(new WString(TEMPLATE), (WContainerWidget) null);
     this.setImplementation(this.impl_);
@@ -56,7 +55,7 @@ public class WPanel extends WCompositeWidget {
     this.impl_.bindWidget("contents", centralArea);
     this.setJavaScriptMember(
         WT_RESIZE_JS,
-        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_8_1.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_8_1.boxSizing(self)) {h -= Wt4_8_1.px(self, 'borderTopWidth') + Wt4_8_1.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';$(c).children().each(function() { var self = $(this), padding = self.outerHeight() - self.height();self.height(h - padding);this.lh = true;});} else {c.style.height = '';c.lh = false;$(c).children().each(function() { this.style.height = '';this.lh = false;});}};");
+        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_9_0.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_9_0.boxSizing(self)) {h -= Wt4_9_0.px(self, 'borderTopWidth') + Wt4_9_0.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';c.querySelectorAll(':scope > *').forEach(function(self) { let padding = self.getBoundingClientRect().height - Wt4_9_0.px(self, 'height');self.style.height = (h - padding) + 'px';self.lh = true;});} else {c.style.height = '';c.lh = false;for (const child of c.children) {child.style.height = '';child.lh = false;}}};");
     this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl.getSecondGetPSJS());
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -128,19 +127,24 @@ public class WPanel extends WCompositeWidget {
    * <p>The default value is <code>false:</code> the title bar is not shown unless a title is set or
    * the panel is made collapsible.
    *
+   * <p>If the title bar is hidden, the panel is automatically made non-collapsible, and expands if
+   * it was collapsed.
+   *
    * <p>
    *
    * @see WPanel#setTitle(CharSequence title)
    * @see WPanel#setCollapsible(boolean on)
    */
   public void setTitleBar(boolean enable) {
-    if (enable && !(this.getTitleBarWidget() != null)) {
+    if (enable && !this.isTitleBar()) {
       this.impl_.bindWidget("titlebar", new WContainerWidget());
     } else {
       if (!enable && this.isTitleBar()) {
+        if (this.isCollapsible()) {
+          this.setCollapsible(false);
+        }
         this.impl_.bindEmpty("titlebar");
         this.title_ = null;
-        this.collapseIcon_ = null;
       }
     }
   }
@@ -178,6 +182,8 @@ public class WPanel extends WCompositeWidget {
    * <p>When <code>on</code> is <code>true</code>, a collapse/expand icon is added to the title bar.
    * This also calls setTitleBar(true) to enable the title bar.
    *
+   * <p>Additionally, the Wt-collapsible class is added to the panel.
+   *
    * <p>The default value is <code>false</code>.
    *
    * <p>
@@ -185,54 +191,53 @@ public class WPanel extends WCompositeWidget {
    * @see WPanel#setTitleBar(boolean enable)
    * @see WPanel#setCollapsed(boolean on)
    * @see WPanel#isCollapsed()
-   *     <p><i><b>Note: </b>It is possible to make a {@link WPanel} collapsible with {@link
-   *     WBootstrap5Theme}, but collapsing and expanding from C++, and the accompanying signals is
-   *     not supported. </i>
    */
   public void setCollapsible(boolean on) {
-    WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
-    if (!(bs5Theme != null)) {
-      if (on && !this.isCollapsible()) {
-        this.isCollapsible_ = on;
-        String resources = WApplication.getRelativeResourcesUrl();
-        this.setTitleBar(true);
-        WIconPair icon =
-            this.collapseIcon_ =
-                new WIconPair(resources + "collapse.gif", resources + "expand.gif");
-        this.collapseIcon_.setFloatSide(Side.Left);
+    this.toggleStyleClass("Wt-collapsible", on);
+    if (on && !this.isCollapsible()) {
+      String resources = WApplication.getRelativeResourcesUrl();
+      this.setTitleBar(true);
+      WApplication app = WApplication.getInstance();
+      WIconPair icon = new WIconPair(resources + "collapse.gif", resources + "expand.gif");
+      this.collapseIcon_ = icon;
+      if (app.getTheme().getPanelCollapseIconSide() == Side.Left) {
         this.getTitleBarWidget().insertWidget(0, icon);
-        this.collapseIcon_
-            .icon1Clicked()
-            .addListener(
-                this,
-                (WMouseEvent e1) -> {
-                  WPanel.this.doCollapse();
-                });
-        this.collapseIcon_
-            .icon1Clicked()
-            .addListener(
-                this,
-                (WMouseEvent e1) -> {
-                  WPanel.this.onCollapse();
-                });
-        this.collapseIcon_.icon1Clicked().preventPropagation();
-        this.collapseIcon_
-            .icon2Clicked()
-            .addListener(
-                this,
-                (WMouseEvent e1) -> {
-                  WPanel.this.doExpand();
-                });
-        this.collapseIcon_
-            .icon2Clicked()
-            .addListener(
-                this,
-                (WMouseEvent e1) -> {
-                  WPanel.this.onExpand();
-                });
-        this.collapseIcon_.icon2Clicked().preventPropagation();
-        this.collapseIcon_.setState(this.isCollapsed() ? 1 : 0);
+      } else {
+        this.getTitleBarWidget().addWidget(icon);
+      }
+      this.collapseIcon_
+          .icon1Clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WPanel.this.doCollapse();
+              });
+      this.collapseIcon_
+          .icon1Clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WPanel.this.onCollapse();
+              });
+      this.collapseIcon_.icon1Clicked().preventPropagation();
+      this.collapseIcon_
+          .icon2Clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WPanel.this.doExpand();
+              });
+      this.collapseIcon_
+          .icon2Clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WPanel.this.onExpand();
+              });
+      this.collapseIcon_.icon2Clicked().preventPropagation();
+      this.collapseIcon_.setState(this.isCollapsed() ? 1 : 0);
+      app.getTheme().apply(this, this.collapseIcon_, WidgetThemeRole.PanelCollapseButton);
+      if (app.getEnvironment().hasAjax()) {
         this.getTitleBarWidget()
             .clicked()
             .addListener(
@@ -240,38 +245,18 @@ public class WPanel extends WCompositeWidget {
                 (WMouseEvent e1) -> {
                   WPanel.this.toggleCollapse();
                 });
-        app.getTheme().apply(this, this.collapseIcon_, WidgetThemeRole.PanelCollapseButton);
-      } else {
-        if (!on && this.collapseIcon_ != null) {
-          this.isCollapsible_ = on;
-          {
-            WWidget toRemove = WidgetUtils.remove(this.getTitleBarWidget(), this.collapseIcon_);
-            if (toRemove != null) toRemove.remove();
-          }
-
-          this.collapseIcon_ = null;
-        }
       }
     } else {
-      if (on && !this.isCollapsible()) {
-        this.isCollapsible_ = on;
-        this.setTitleBar(true);
-        if (this.title_ != null) {
-          final WString currentText = (ObjectUtils.cast(this.title_, WText.class)).getText();
-          {
-            WWidget toRemove = this.getTitleBarWidget().removeWidget(this.title_);
-            if (toRemove != null) toRemove.remove();
-          }
-
-          this.title_ = new WPushButton();
-          this.getTitleBarWidget().addWidget(this.title_);
-          (ObjectUtils.cast(this.title_, WPushButton.class)).setText(currentText);
-          app.getTheme().apply(this, this.title_, WidgetThemeRole.PanelCollapseButton);
-          app.getTheme().apply(this, this.getTitleBarWidget(), WidgetThemeRole.PanelTitleBar);
-          app.getTheme().setDataTarget(this.title_, this.getCentralArea());
+      if (!on && this.isCollapsible()) {
+        if (this.isCollapsed()) {
+          this.setCollapsed(false);
         }
-      } else {
-        this.isCollapsible_ = on;
+        {
+          WWidget toRemove = WidgetUtils.remove(this.getTitleBarWidget(), this.collapseIcon_);
+          if (toRemove != null) toRemove.remove();
+        }
+
+        this.collapseIcon_ = null;
       }
     }
   }
@@ -283,7 +268,7 @@ public class WPanel extends WCompositeWidget {
    * @see WPanel#setCollapsible(boolean on)
    */
   public boolean isCollapsible() {
-    return this.isCollapsible_;
+    return this.collapseIcon_ != null;
   }
   /**
    * Sets the panel expanded or collapsed.
@@ -292,6 +277,8 @@ public class WPanel extends WCompositeWidget {
    * collapse()}, otherwise to {@link WPanel#expand() expand()}.
    *
    * <p>The default value is <code>false</code>.
+   *
+   * <p>If the panel is collapsed, the Wt-collapsed style class is added.
    *
    * <p>
    *
@@ -337,7 +324,7 @@ public class WPanel extends WCompositeWidget {
    *     not supported. </i>
    */
   public void collapse() {
-    if (this.isCollapsible() && this.collapseIcon_ != null) {
+    if (this.isCollapsible()) {
       this.collapseIcon_.showIcon2();
       this.doCollapse();
     }
@@ -357,7 +344,7 @@ public class WPanel extends WCompositeWidget {
    *     not supported. </i>
    */
   public void expand() {
-    if (this.isCollapsible() && this.collapseIcon_ != null) {
+    if (this.isCollapsible()) {
       this.collapseIcon_.showIcon1();
       this.doExpand();
     }
@@ -373,11 +360,6 @@ public class WPanel extends WCompositeWidget {
    * WBootstrap5Theme}, but it&apos;s not possible to set the animation. </i>
    */
   public void setAnimation(final WAnimation transition) {
-    WBootstrap5Theme bs5Theme =
-        ObjectUtils.cast(WApplication.getInstance().getTheme(), WBootstrap5Theme.class);
-    if (bs5Theme != null) {
-      return;
-    }
     this.animation_ = transition;
     if (!this.animation_.isEmpty()) {
       this.addStyleClass("Wt-animated");
@@ -464,6 +446,19 @@ public class WPanel extends WCompositeWidget {
     return this.collapseIcon_;
   }
 
+  protected void enableAjax() {
+    super.enableAjax();
+    if (this.isCollapsible()) {
+      this.getTitleBarWidget()
+          .clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WPanel.this.toggleCollapse();
+              });
+    }
+  }
+
   private WIconPair collapseIcon_;
   private WWidget title_;
   private WTemplate impl_;
@@ -474,8 +469,7 @@ public class WPanel extends WCompositeWidget {
   private Signal1<Boolean> collapsedSS_;
   private Signal1<Boolean> expandedSS_;
   private boolean wasCollapsed_;
-  private boolean isCollapsible_;
-  // private void setJsSize() ;
+
   private void toggleCollapse() {
     this.setCollapsed(!this.isCollapsed());
     if (this.isCollapsed()) {
@@ -487,12 +481,14 @@ public class WPanel extends WCompositeWidget {
 
   private void doExpand() {
     this.wasCollapsed_ = this.isCollapsed();
+    this.removeStyleClass("Wt-collapsed", true);
     this.getCentralArea().animateShow(this.animation_);
     this.expandedSS_.trigger(true);
   }
 
   private void doCollapse() {
     this.wasCollapsed_ = this.isCollapsed();
+    this.addStyleClass("Wt-collapsed", true);
     this.getCentralArea().animateHide(this.animation_);
     this.collapsedSS_.trigger(true);
   }

@@ -19,11 +19,11 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WidgetGallery extends WTemplate {
+class WidgetGallery extends BaseTemplate {
   private static Logger logger = LoggerFactory.getLogger(WidgetGallery.class);
 
   public WidgetGallery(WContainerWidget parentContainer) {
-    super(tr("tpl:widget-gallery"), (WContainerWidget) null);
+    super("tpl:widget-gallery", (WContainerWidget) null);
     this.openMenuButton_ = null;
     this.menuOpen_ = false;
     this.contentsStack_ = (WStackedWidget) this.bindWidget("contents", new WStackedWidget());

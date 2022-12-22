@@ -543,10 +543,10 @@ public abstract class WtServlet extends HttpServlet {
 		return FileUtils.resourceToString(fileName);
 	}
 
-	String computeRedirectHash(String url) {
+	static String computeRedirectHash(String secret, String url) {
 		try {
 			MessageDigest d = MessageDigest.getInstance("MD5");
-			d.update(redirectSecret_.getBytes("UTF-8"));
+			d.update(secret.getBytes("UTF-8"));
 			d.update(url.getBytes("UTF-8"));
 			return StringUtils.encodeBase64(d.digest());
 		} catch (NoSuchAlgorithmException e) {
@@ -557,6 +557,10 @@ public abstract class WtServlet extends HttpServlet {
 
 		return "";
 	}
+
+    String getRedirectSecret(final WebRequest request) {
+      return redirectSecret_;
+    }
 
 	/**
 	 * Binds a resource to a fixed path.

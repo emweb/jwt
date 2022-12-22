@@ -175,6 +175,7 @@ public class Configuration {
 	private int indicatorTimeout = 500;
 	private int doubleClickTimeout = 200;
 	private int bootstrapTimeout = 10;
+	private int serverPushTimeout = 50;
 	private String uaCompatible = "";
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
 	private List<HeadMatter> headMatter = new ArrayList<HeadMatter>();
@@ -443,8 +444,40 @@ public class Configuration {
 		return errorReporting == ErrorReporting.NoErrors;
 	}
 
-	int getServerPushTimeout() {
-		return 50;
+	/**
+	 * Returns the server push timeout (seconds).
+	 * <p>
+	 * When using server-initiated updates, the client uses
+	 * long-polling requests. Proxies (including reverse
+	 * proxies) are notorious for silently closing idle
+	 * requests; the client therefore cancels the request
+	 * periodically and issues a new one. This timeout sets
+	 * the frequency.
+	 * <p>
+	 * The default timeout is 50 seconds.
+	 *
+	 * @see #setServerPushTimeout(int)
+	 */
+	public int getServerPushTimeout() {
+		return serverPushTimeout;
+	}
+
+	/**
+	 * Sets the server push timeout (seconds).
+	 * <p>
+	 * When using server-initiated updates, the client uses
+	 * long-polling requests. Proxies (including reverse
+	 * proxies) are notorious for silently closing idle
+	 * requests; the client therefore cancels the request
+	 * periodically and issues a new one. This timeout sets
+	 * the frequency.
+	 * <p>
+	 * The default timeout is 50 seconds.
+	 *
+	 * @see #getServerPushTimeout()
+	 */
+	public void setServerPushTimeout(int timeout) {
+		serverPushTimeout = timeout;
 	}
 
 	/**

@@ -44,9 +44,10 @@ class ToggleButtonConfig {
     }
     js.append("), i, il;for (i=0; i<")
         .append(String.valueOf(this.states_.size()))
-        .append("; ++i) {if ($(s).hasClass(states[i])) {")
+        .append("; ++i) {if (s.classList.contains(states[i])) {")
         .append(app.getJavaScriptClass())
-        .append(".emit(s, 't-'+states[i]);$(s).removeClass(states[i]).addClass(states[(i+1) % ")
+        .append(
+            ".emit(s, 't-'+states[i]);s.classList.remove(states[i]);s.classList.add(states[(i+1) % ")
         .append(String.valueOf(this.states_.size()))
         .append("]);break;}}}");
     this.toggleJS_.setJavaScript(js.toString());

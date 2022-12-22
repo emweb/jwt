@@ -250,7 +250,7 @@ public class WIntValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_8_1.WIntValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_9_0.WIntValidator(").append(this.isMandatory()).append(',');
     if (this.bottom_ != Integer.MIN_VALUE) {
       js.append(this.bottom_);
     } else {
@@ -298,6 +298,6 @@ public class WIntValidator extends WValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WIntValidator",
-        "(function(a,e,i,l,t,n,r,s){this.validate=function(d){if(0==(d=String(d)).length)return a?{valid:!1,message:t}:{valid:!0};\"\"!=l&&(d=d.replace(l,\"\",\"g\"));var u=Number(d);return isNaN(u)||Math.round(u)!=u?{valid:!1,message:n}:null!==e&&u<e?{valid:!1,message:r}:null!==i&&u>i?{valid:!1,message:s}:{valid:!0}}})");
+        "(function(a,l,e,i,t,n,r,s){this.validate=function(d){if(0===(d=String(d)).length)return a?{valid:!1,message:t}:{valid:!0};\"\"!==i&&(d=d.replaceAll(i,\"\"));const u=Number(d);return isNaN(u)||Math.round(u)!==u?{valid:!1,message:n}:null!==l&&u<l?{valid:!1,message:r}:null!==e&&u>e?{valid:!1,message:s}:{valid:!0}}})");
   }
 }

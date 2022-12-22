@@ -304,7 +304,7 @@ public class WDateValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_8_1.WDateValidator(").append(this.isMandatory()).append(",[");
+    js.append("new Wt4_9_0.WDateValidator(").append(this.isMandatory()).append(",[");
     for (int i = 0; i < this.formats_.size(); ++i) {
       WDate.RegExpInfo r = WDate.formatToRegExp(this.formats_.get(i));
       if (i != 0) {
@@ -377,6 +377,6 @@ public class WDateValidator extends WValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WDateValidator",
-        "(function(e,a,t,i,g,r,l,n){this.validate=function(s){if(0==s.length)return e?{valid:!1,message:g}:{valid:!0};for(var v,u=-1,d=-1,m=-1,o=0,f=a.length;o<f;++o){var T=a[o];if(null!=(v=new RegExp(\"^\"+T.regexp+\"$\").exec(s))){u=T.getMonth(v);d=T.getDay(v);m=T.getYear(v);break}}if(null==v)return{valid:!1,message:r};if(d<=0||d>31||u<=0||u>12)return{valid:!1,message:r};var c=new Date(m,u-1,d);return c.getDate()!=d||c.getMonth()!=u-1||c.getFullYear()!=m||c.getFullYear()<1400?{valid:!1,message:r}:t&&c.getTime()<t.getTime()?{valid:!1,message:l}:i&&c.getTime()>i.getTime()?{valid:!1,message:n}:{valid:!0}}})");
+        "(function(e,t,a,i,l,g,n,r){this.validate=function(s){if(0===s.length)return e?{valid:!1,message:l}:{valid:!0};let u=null,o=-1,d=-1,m=-1;for(const e of t){u=new RegExp(\"^\"+e.regexp+\"$\").exec(s);if(null!==u){o=e.getMonth(u);d=e.getDay(u);m=e.getYear(u);break}}if(null===u)return{valid:!1,message:g};if(d<=0||d>31||o<=0||o>12)return{valid:!1,message:g};const v=new Date(m,o-1,d);return v.getDate()!==d||v.getMonth()!==o-1||v.getFullYear()!==m||v.getFullYear()<1400?{valid:!1,message:g}:a&&v.getTime()<a.getTime()?{valid:!1,message:n}:i&&v.getTime()>i.getTime()?{valid:!1,message:r}:{valid:!0}}})");
   }
 }

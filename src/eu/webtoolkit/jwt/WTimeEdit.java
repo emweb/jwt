@@ -277,7 +277,7 @@ public class WTimeEdit extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WTimeEdit.js", wtjs1());
     String jsObj =
-        "new Wt4_8_1.WTimeEdit("
+        "new Wt4_9_0.WTimeEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -308,6 +308,6 @@ public class WTimeEdit extends WLineEdit {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WTimeEdit",
-        "(function(t,s,e){var o=\"hover\",i=\"active\",n=\"unselectable\";s.wtDObj=this;var a=t.WT,d=$(s);function r(){return s.readOnly}function u(){d.removeClass(i)}function f(){var t=$(\"#\"+e).get(0).wtPopup;t.bindHide(u);t.show(s,a.Vertical)}this.mouseOut=function(t,s){d.removeClass(o)};this.mouseMove=function(t,e){if(!r()){a.widgetCoordinates(s,e).x>s.offsetWidth-40?d.addClass(o):d.hasClass(o)&&d.removeClass(o)}};this.mouseDown=function(t,e){if(!r()){a.widgetCoordinates(s,e).x>s.offsetWidth-40&&d.addClass(n).addClass(i)}};this.mouseUp=function(t,e){d.removeClass(n);a.widgetCoordinates(s,e).x>s.offsetWidth-40&&f()}})");
+        "(function(t,s,i){const o=\"hover\",e=\"active\",n=\"unselectable\";s.wtDObj=this;const c=t.WT;function u(){return s.readOnly}function r(){s.classList.remove(e)}function a(){const t=c.$(i).wtPopup;t.bindHide(r);t.show(s,c.Vertical)}this.mouseOut=function(t,i){s.classList.remove(o)};this.mouseMove=function(t,i){if(u())return;const e=c.widgetCoordinates(s,i).x>s.offsetWidth-40;s.classList.toggle(o,e)};this.mouseDown=function(t,i){if(u())return;if(c.widgetCoordinates(s,i).x>s.offsetWidth-40){s.classList.add(n);s.classList.add(e)}};this.mouseUp=function(t,i){s.classList.remove(n);c.widgetCoordinates(s,i).x>s.offsetWidth-40&&a()}})");
   }
 }

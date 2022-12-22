@@ -19,15 +19,11 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class TopicTemplate extends WTemplate {
+class TopicTemplate extends BaseTemplate {
   private static Logger logger = LoggerFactory.getLogger(TopicTemplate.class);
 
   public TopicTemplate(String trKey, WContainerWidget parentContainer) {
-    super(tr(trKey), (WContainerWidget) null);
-    this.setInternalPathEncoding(true);
-    this.addFunction("tr", Functions.tr);
-    this.setCondition("if:cpp", false);
-    this.setCondition("if:java", true);
+    super(trKey, (WContainerWidget) null);
     this.bindString("doc-url", "//www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
     if (parentContainer != null) parentContainer.addWidget(this);
   }

@@ -1283,7 +1283,7 @@ public abstract class WWebWidget extends WWidget {
             app.addAutoJavaScript(
                 "{var w = "
                     + this.getJsRef()
-                    + ";if (w && !Wt4_8_1.isHidden(w)) {var i = Wt4_8_1.getElement('"
+                    + ";if (w && !Wt4_9_0.isHidden(w)) {var i = Wt4_9_0.getElement('"
                     + i.getId()
                     + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
             element.addChild(i);
@@ -1480,7 +1480,7 @@ public abstract class WWebWidget extends WWidget {
             }
             String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true" : "false";
             element.callJavaScript(
-                "Wt4_8_1.toolTip("
+                "Wt4_9_0.toolTip("
                     + app.getJavaScriptClass()
                     + ","
                     + jsStringLiteral(this.getId())
@@ -1523,17 +1523,17 @@ public abstract class WWebWidget extends WWidget {
     if (!all && this.transientImpl_ != null) {
       for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "$('#"
+            "Wt4_9_0.$('"
                 + this.getId()
-                + "').addClass('"
+                + "').classList.add('"
                 + this.transientImpl_.addedStyleClasses_.get(i)
                 + "');");
       }
       for (int i = 0; i < this.transientImpl_.removedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "$('#"
+            "Wt4_9_0.$('"
                 + this.getId()
-                + "').removeClass('"
+                + "').classList.remove('"
                 + this.transientImpl_.removedStyleClasses_.get(i)
                 + "');");
       }
@@ -1543,7 +1543,7 @@ public abstract class WWebWidget extends WWidget {
           for (int i = 0; i < this.transientImpl_.childRemoveChanges_.size(); ++i) {
             final String js = this.transientImpl_.childRemoveChanges_.get(i);
             if (js.charAt(0) == '_') {
-              element.callJavaScript("Wt4_8_1.remove('" + js.substring(1) + "');", true);
+              element.callJavaScript("Wt4_9_0.remove('" + js.substring(1) + "');", true);
             } else {
               element.callJavaScript(js, true);
             }
@@ -1638,7 +1638,7 @@ public abstract class WWebWidget extends WWidget {
     if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
       if (this.flags_.get(BIT_HIDDEN_CHANGED) || all && this.flags_.get(BIT_HIDDEN)) {
         if (this.flags_.get(BIT_HIDDEN)) {
-          element.callJavaScript("$('#" + this.getId() + "').addClass('Wt-hidden');");
+          element.callJavaScript("Wt4_9_0.$('" + this.getId() + "').classList.add('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "hidden");
           if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
             element.setProperty(Property.StylePosition, "absolute");
@@ -1678,7 +1678,8 @@ public abstract class WWebWidget extends WWidget {
               element.setProperty(Property.StyleLeft, "");
             }
           }
-          element.callJavaScript("$('#" + this.getId() + "').removeClass('Wt-hidden');");
+          element.callJavaScript(
+              "Wt4_9_0.$('" + this.getId() + "').classList.remove('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "visible");
         }
       }
@@ -1693,7 +1694,7 @@ public abstract class WWebWidget extends WWidget {
         app.loadJavaScript(THIS_JS, wtjs2());
         if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_8_1")
+          ss.append("Wt4_9_0")
               .append(".animateDisplay(")
               .append(app.getJavaScriptClass())
               .append(",'")
@@ -1715,7 +1716,7 @@ public abstract class WWebWidget extends WWidget {
           }
         } else {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_8_1")
+          ss.append("Wt4_9_0")
               .append(".animateVisible('")
               .append(this.getId())
               .append("',")
@@ -1757,7 +1758,7 @@ public abstract class WWebWidget extends WWidget {
       element.callJavaScript(
           "setTimeout(function() {var o = "
               + this.getJsRef()
-              + ";if (o) {if (!$(o).hasClass('"
+              + ";if (o) {if (!o.classList.contains('"
               + app.getTheme().getDisabledClass()
               + "')) {try { o.focus();} catch (e) {}}}}, "
               + (env.agentIsIElt(9) ? "500" : "10")
@@ -1782,13 +1783,13 @@ public abstract class WWebWidget extends WWidget {
       if (!app.isJavaScriptLoaded(SCROLL_JS) && this.isScrollVisibilityEnabled()) {
         app.loadJavaScript(SCROLL_JS, wtjs3());
         StringBuilder ss = new StringBuilder();
-        ss.append("if (!Wt4_8_1.scrollVisibility) {Wt4_8_1.scrollVisibility = new ");
-        ss.append("Wt4_8_1.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
+        ss.append("if (!Wt4_9_0.scrollVisibility) {Wt4_9_0.scrollVisibility = new ");
+        ss.append("Wt4_9_0.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
         element.callJavaScript(ss.toString());
       }
       if (this.isScrollVisibilityEnabled()) {
         StringBuilder ss = new StringBuilder();
-        ss.append("Wt4_8_1.scrollVisibility.add({");
+        ss.append("Wt4_9_0.scrollVisibility.add({");
         ss.append("el:").append(this.getJsRef()).append(',');
         ss.append("margin:").append(this.getScrollVisibilityMargin()).append(',');
         ss.append("visible:").append(this.isScrollVisible());
@@ -1798,7 +1799,7 @@ public abstract class WWebWidget extends WWidget {
       } else {
         if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
           element.callJavaScript(
-              "Wt4_8_1.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
+              "Wt4_9_0.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
           this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
         }
       }
@@ -1862,7 +1863,7 @@ public abstract class WWebWidget extends WWidget {
     final StringBuilder result = new StringBuilder();
     if (this.isRendered() && this.isScrollVisibilityEnabled()) {
       result
-          .append("Wt4_8_1.scrollVisibility.remove(")
+          .append("Wt4_9_0.scrollVisibility.remove(")
           .append(jsStringLiteral(this.getId()))
           .append(");");
       this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
@@ -1876,7 +1877,7 @@ public abstract class WWebWidget extends WWidget {
       if ((result.length() == 0)) {
         result.append("_").append(this.getId());
       } else {
-        result.append("Wt4_8_1.remove('").append(this.getId()).append("');");
+        result.append("Wt4_9_0.remove('").append(this.getId()).append("');");
       }
     }
     return result.toString();
@@ -2666,7 +2667,7 @@ public abstract class WWebWidget extends WWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "animateDisplay",
-        "(function(t,i,e,n,a,s){var o=t.WT,r=function(i,e,n,a,s){var l=256,d=o.vendorPrefix(o.styleAttribute(\"animation\")),c=o.vendorPrefix(o.styleAttribute(\"transition\")),f=o.vendorPrefix(o.styleAttribute(\"transform\")),u=$(\"#\"+i),p=u.get(0),h=\"Webkit\"==d?\"webkitAnimationEnd\":\"animationend\",m=\"Webkit\"==c?\"webkitTransitionEnd\":\"transitionend\";if(u.css(\"display\")!==s){var v=p.parentNode;if(v.wtAnimateChild){v.wtAnimateChild(o,u.get(0),e,n,a,{display:s});return}if(u.hasClass(\"animating\")){$(p).one(m,(function(){r(i,e,n,a,s)}));return}u.addClass(\"animating\");var y=255&e,g=\"none\"===s,b=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"][g?[0,1,3,2,4,5][n]:n],w={};function x(t,i,e){var n;for(n in i){var a=n;\"animationDuration\"==a&&\"\"!=d?a=d+a.substring(0,1).toUpperCase()+a.substring(1):\"transform\"==a&&\"\"!=f?a=f+a.substring(0,1).toUpperCase()+a.substring(1):\"transition\"==a&&\"\"!=c&&(a=c+a.substring(0,1).toUpperCase()+a.substring(1));e&&void 0===e[a]&&(e[a]=t.style[a]);t.style[a]=i[n]}}var C=x;function T(){p.wtAnimatedHidden&&p.wtAnimatedHidden(g);u.removeClass(\"animating\");t.layouts2&&t.layouts2.setElementDirty(p)}function E(){p.style.display=s;p.wtPosition&&p.wtPosition();window.onshow&&window.onshow()}function k(t,i,n,r){g||E();var d,c=o.px(p,t),f=(o.px(p,i)+c)*(n?-1:1);if(g){x(p,{transform:\"translate\"+r+\"(0px)\"},w);d=f}else{x(p,{transform:\"translate\"+r+\"(\"+f+\"px)\"},w);d=0}e&l&&x(p,{opacity:g?1:0},w);setTimeout((function(){x(p,{transition:\"all \"+a+\"ms \"+b,transform:\"translate\"+r+\"(\"+d+\"px)\"},w);e&l&&x(p,{opacity:g?0:1});u.one(m,(function(){g&&(p.style.display=s);C(p,w);T()}))}),50)}function A(){x(p,{animationDuration:a+\"ms\"},w);g&&u.removeClass(\"in\");var t;switch(y){case 5:t=\"pop\";break;case 1:t=g?\"slide\":\"slide reverse\";break;case 2:t=g?\"slide reverse\":\"slide\"}t+=g?\" out\":\" in\";e&l&&(t+=\" fade\");g||E();u.addClass(t);u.one(h,(function(){g||(t=t.replace(\" in\",\"\"));u.removeClass(t);g&&(p.style.display=s);C(p,w);T()}))}setTimeout((function(){var t=u.css(\"position\"),i=\"absolute\"===t||\"fixed\"===t;switch(y){case 4:case 3:i?k(\"height\",4==y?\"top\":\"bottom\",4==y,\"Y\"):function(){var t,i,n={};if(g){c=u.height()+\"px\";x(p,{height:c,overflow:\"hidden\"},w);if(4==y&&1==p.childNodes.length){x(i=p.firstChild,{transform:\"translateY(0)\"},n);o.hasTag(i,\"TABLE\")||x(i,{display:\"block\"},n)}t=\"0px\"}else{var r=$(v),d={};x(v,{height:r.height()+\"px\",overflow:\"hidden\"},d);E();0==u.height()&&(p.style.height=\"auto\");t=u.height()+\"px\";x(p,{height:\"0px\",overflow:\"hidden\"},w);C(v,d);if(4==y){x(p,{WebkitBackfaceVisibility:\"visible\"},w);p.scrollTop=1e3}}e&l&&x(p,{opacity:g?1:0},w);var c=p.clientHeight;setTimeout((function(){x(p,{transition:\"all \"+a+\"ms \"+b,height:t},w);e&l&&x(p,{opacity:g?0:1});i&&x(i,{transition:\"all \"+a+\"ms \"+b,transform:\"translateY(-\"+c+\")\"},n);u.one(m,(function(){g&&(p.style.display=s);C(p,w);if(4==y){p.scrollTop=0;i&&C(i,n)}T()}))}),0)}();break;case 1:case 2:i?k(\"width\",1==y?\"left\":\"right\",1==y,\"X\"):A();break;case 0:case 5:A()}}),0)}};r(i,e,n,a,s)})");
+        "(function(t,n,i,s,e,o){const a=t.WT;!function n(i,s,e,o,r){const c=0,d=1,l=2,p=3,f=4,m=5,h=256,u=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],y=[0,1,3,2,4,5],g=document.getElementById(i),w=1===g.childElementCount?g.firstElementChild:null;function b(t,n,i){for(const s of Object.keys(n)){i&&void 0===i[s]&&(i[s]=t.style[s]);t.style[s]=n[s]}}const x=b;if((()=>{const t={},n=a.css(g,\"display\");b(g,{display:r},t);const i=a.css(g,\"display\");x(g,t);return n!==i})()){const A=g.parentNode;if(A.wtAnimateChild){A.wtAnimateChild(a,g,s,e,o,{display:r});return}if(g.classList.contains(\"animating\")){Promise.all(g.getAnimations().map((t=>t.finished))).then((()=>{n(i,s,e,o,r)}));return}g.classList.add(\"animating\");const C=255&s,v=\"none\"===r,R={},$={},_={duration:o,iterations:1,easing:u[v?y[e]:e]};function E(){g.wtAnimatedHidden&&g.wtAnimatedHidden(v);0===g.getAnimations().length&&g.classList.remove(\"animating\");t.layouts2&&t.layouts2.setElementDirty(g)}function B(){g.style.display=r;g.wtPosition&&g.wtPosition();window.onshow&&window.onshow()}function T(t,n,i,e){v||B();const o=a.px(g,t),c={transform:`translate${e}(${(a.px(g,n)+o)*(i?-1:1)}px)`},d={transform:`translate${e}(0px)`};if(s&h){c.opacity=0;d.opacity=1}const l=v?[d,c]:[c,d];g.animate(l,_).finished.then((()=>{v&&(g.style.display=r);E()}))}function W(){v||B();const t={},n={};switch(C){case m:b(g,{transformOrigin:\"50% 50%\"},R);t.transform=\"scale(.2)\";n.transform=\"scale(1)\";break;case l:t.transform=\"translateX(100%)\";n.transform=\"translateX(0)\";break;case d:t.transform=\"translateX(-100%)\";n.transform=\"translateX(0)\"}if(s&h){t.opacity=0;n.opacity=a.css(g,\"opacity\")}const i=v?[n,t]:[t,n];g.animate(i,_).finished.then((()=>{v&&(g.style.display=r);x(g,R);E()}))}const k=[\"absolute\",\"fixed\"].includes(a.css(g,\"position\"));switch(C){case f:case p:k?T(\"height\",C===f?\"top\":\"bottom\",C===f,\"Y\"):function(){v||B();b(g,{overflow:\"hidden\"},R);const t=[],n=(()=>{if(!w)return null;const t=g.getBoundingClientRect(),n=w.getBoundingClientRect();return{left:n.x-t.x-a.px(g,\"border-left-width\"),top:n.y-t.y-a.px(g,\"border-top-width\")}})();if(w&&C===f){const n={transform:\"translateY(0px)\"},i={transform:`translateY(-${g.clientHeight}px)`},s=v?[n,i]:[i,n];t.push(w.animate(s,_))}{const n={height:\"0px\",paddingTop:\"0px\",paddingBottom:\"0px\",borderTopWidth:\"0px\",borderBottomWidth:\"0px\"},i={height:a.css(g,\"height\"),paddingTop:a.css(g,\"padding-top\"),paddingBottom:a.css(g,\"padding-bottom\"),borderTopWidth:a.css(g,\"border-top-width\"),borderBottomWidth:a.css(g,\"border-bottom-width\")};if(s&h){n.opacity=0;i.opacity=1}const e=v?[i,n]:[n,i];t.push(g.animate(e,_))}if(w){b(g,{position:\"relative\"},R);const t={position:\"absolute\",left:`${n.left}px`,top:`${n.top}px`};b(w,t,$)}Promise.all(t.map((t=>t.finished))).then((()=>{v&&(g.style.display=r);x(g,R);x(w,$);E()}))}();break;case d:case l:k?T(\"width\",C===d?\"left\":\"right\",C===d,\"X\"):W();break;case c:case m:W()}}}(n,i,s,e,o)})");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -2674,7 +2675,7 @@ public abstract class WWebWidget extends WWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "animateVisible",
-        "(function(t,i,e,n,a,s,o,r){})");
+        "(function(t,n,i,s,e,o,a,r){})");
   }
 
   static WJavaScriptPreamble wtjs10() {
@@ -2682,7 +2683,7 @@ public abstract class WWebWidget extends WWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "toolTip",
-        "(function(e,t,o,n,i,l){var a=document.getElementById(t),u=e.WT,r=a.toolTip;r||(a.toolTip=new function(){var r=null,s=null,c=null,v=null,d=!1,m=o,T=!1;this.setToolTipText=function(e){m=e;if(d){this.showToolTip();clearTimeout(r);d=!1}};this.showToolTip=function(){!n||m||d||function(){d=!0;e.emit(a,\"Wt-loadToolTip\")}();if(m){(v=document.createElement(\"div\")).className=i;v.innerHTML=m;outerDiv=document.createElement(\"div\");outerDiv.className=l;document.body.appendChild(outerDiv);outerDiv.appendChild(v);var o=c.x,r=c.y;u.fitToWindow(outerDiv,o+10,r+10,o-10,r-10);var p=0,h=parseInt(u.css(outerDiv,\"zIndex\"),10);$(\".Wt-dialog, .modal, .modal-dialog\").each((function(e,t){if((p=Math.max(p,parseInt(u.css(t,\"zIndex\"),10)))>h){var o=p+1e3;outerDiv.style.zIndex=o}}));$(v).mouseenter((function(){T=!0}));$(v).mouseleave((function(){T=!1}))}clearInterval(s);s=null;s=setInterval((function(){$(\"#\"+t+\":hover\").length||f()}),200)};function f(){clearTimeout(r);setTimeout((function(){if(!T&&v){$(v).parent().remove();v=null;clearInterval(s);s=null}}),200)}function p(e){clearTimeout(r);c=u.pageCoordinates(e);v||(r=setTimeout((function(){a.toolTip.showToolTip()}),500))}if(a.addEventListener){a.addEventListener(\"mouseenter\",p);a.addEventListener(\"mousemove\",p);a.addEventListener(\"mouseleave\",f)}else{a.attachEvent(\"mouseenter\",p);a.attachEvent(\"mousemove\",p);a.attachEvent(\"mouseleave\",f)}});r&&r.setToolTipText(o)})");
+        "(function(e,t,n,o,l,i){const c=document.getElementById(t),u=e.WT,a=c.toolTip;a||(c.toolTip=new function(){let a=null,s=null,d=null,r=null;let m=!1,T=n,f=!1;this.setToolTipText=function(e){T=e;if(m){this.showToolTip();clearTimeout(a);m=!1}};this.showToolTip=function(){!o||T||m||function(){m=!0;e.emit(c,\"Wt-loadToolTip\")}();if(T){r=document.createElement(\"div\");r.className=l;r.innerHTML=T;const e=document.createElement(\"div\");e.className=i;document.body.appendChild(e);e.appendChild(r);const t=d.x,n=d.y;u.fitToWindow(e,t+10,n+10,t-10,n-10);let o=0;const c=parseInt(u.css(e,\"zIndex\"),10);document.querySelectorAll(\".Wt-dialog, .modal, .modal-dialog\").forEach((function(t){o=Math.max(o,parseInt(u.css(t,\"zIndex\"),10));if(o>c){const t=o+1e3;e.style.zIndex=t}}));r.addEventListener(\"mouseenter\",(function(){f=!0}));r.addEventListener(\"mouseleave\",(function(){f=!1}))}clearInterval(s);s=null;s=setInterval((function(){document.querySelectorAll(`#${t}:hover`).length||p()}),200)};function p(){clearTimeout(a);setTimeout((function(){if(!f&&r){r.parentElement.remove();r=null;clearInterval(s);s=null}}),200)}function v(e){clearTimeout(a);d=u.pageCoordinates(e);r||(a=setTimeout((function(){c.toolTip.showToolTip()}),500))}c.addEventListener(\"mouseenter\",v);c.addEventListener(\"mousemove\",v);c.addEventListener(\"mouseleave\",p)});a&&a.setToolTipText(n)})");
   }
 
   static WJavaScriptPreamble wtjs3() {
@@ -2690,7 +2691,7 @@ public abstract class WWebWidget extends WWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "ScrollVisibility",
-        "(function(e){var i=e.WT;function t(e){return\"hidden\"!=e.style.visibility&&\"none\"!=e.style.display&&!$(e).hasClass(\"out\")&&(!((e=e.parentNode)&&!i.hasTag(e,\"BODY\"))||t(e))}var n=0,r={},o=!1;function l(e,n){if(!t(e))return!1;var r=i.widgetPageCoordinates(e),o=r.x-document.body.scrollLeft-document.documentElement.scrollLeft,l=r.y-document.body.scrollTop-document.documentElement.scrollTop,s=i.windowSize(),a=o,c=e.offsetWidth,d=l,u=e.offsetHeight,v=-n,f=s.x+2*n,m=-n,w=s.y+2*n;return a+c>=v&&v+f>=a&&d+u>=m&&m+w>=d}function s(){for(var i in r)if(r.hasOwnProperty(i)){var t;if((t=l(r[i].el,r[i].margin))!==r[i].visible){r[i].visible=t;e.emit(r[i].el,\"scrollVisibilityChanged\",t)}}}var a=null,c=null;window.hasOwnProperty(\"MutationObserver\")&&(a=new MutationObserver(s));this.add=function(i){0===n&&function(){if(a){a.observe(document,{childList:!0,attributes:!0,subtree:!0,characterData:!0});window.addEventListener(\"resize\",s,!0);window.addEventListener(\"scroll\",s,!0)}else c=setInterval(s,100)}();var t=i.el.id,d=t in r;o;var u=l(i.el,i.margin);if(i.visible!==u){i.visible=u;e.emit(i.el,\"scrollVisibilityChanged\",u)}r[t]=i;d||++n};this.remove=function(e){if(0!==n){if(e in r){o;delete r[e];--n}0===n&&function(){if(a){a.disconnect();window.removeEventListener(\"resize\",s,{capture:!0});window.removeEventListener(\"scroll\",s,{capture:!0})}else if(c){clearInterval(c);c=null}}()}}})");
+        "(function(e){const t=e.WT;function i(e){return\"hidden\"!==e.style.visibility&&\"none\"!==e.style.display&&!e.classList.contains(\"out\")&&(!((e=e.parentNode)&&!t.hasTag(e,\"BODY\"))||i(e))}let n=0;const o={},s=!1;function c(e,n){if(!i(e))return!1;const o=t.widgetPageCoordinates(e),s=o.x-document.body.scrollLeft-document.documentElement.scrollLeft,c=o.y-document.body.scrollTop-document.documentElement.scrollTop,r=t.windowSize(),l=s,d=e.offsetWidth,a=c,u=e.offsetHeight,f=-n,m=r.x+2*n,v=-n,b=r.y+2*n;return l+d>=f&&f+m>=l&&a+u>=v&&v+b>=a}function r(){for(const t of o){const i=c(o[t].el,o[t].margin);if(i!==o[t].visible){o[t].visible=i;e.emit(o[t].el,\"scrollVisibilityChanged\",i)}}}const l=new MutationObserver(r);this.add=function(t){0===n&&function(){l.observe(document,{childList:!0,attributes:!0,subtree:!0,characterData:!0});window.addEventListener(\"resize\",r,!0);window.addEventListener(\"scroll\",r,!0)}();const i=t.el.id,d=i in o;s;const a=c(t.el,t.margin);if(t.visible!==a){t.visible=a;e.emit(t.el,\"scrollVisibilityChanged\",a)}o[i]=t;s;d||++n};this.remove=function(e){if(0!==n){if(e in o){s;delete o[e];--n}0===n&&function(){l.disconnect();window.removeEventListener(\"resize\",r,{capture:!0});window.removeEventListener(\"scroll\",r,{capture:!0})}()}}})");
   }
 
   static WLength nonNegative(final WLength w) {

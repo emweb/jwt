@@ -1652,10 +1652,6 @@ public class WApplication extends WObject {
    * until the library is loaded, except for JavaScript that was defined to load before, passing
    * <code>false</code> as second parameter to {@link WApplication#doJavaScript(String javascript,
    * boolean afterLoaded) doJavaScript()}.
-   *
-   * <p>Although JWt includes an off-the-shelf JQuery version (which can also be used by your own
-   * JavaScript code), you can override the one used by JWt and load another JQuery version instead,
-   * but this needs to be done using {@link WApplication#requireJQuery(String uri) requireJQuery()}.
    */
   public boolean require(final String uri, final String symbol) {
     WApplication.ScriptLibrary sl = new WApplication.ScriptLibrary(uri, symbol);
@@ -1678,33 +1674,12 @@ public class WApplication extends WObject {
   public final boolean require(final String uri) {
     return require(uri, "");
   }
-  /**
-   * Loads a custom JQuery library.
-   *
-   * <p>Wt ships with a rather old version of JQuery (1.4.1) which is sufficient for its needs and
-   * is many times smaller than more recent JQuery releases (about 50% smaller).
-   *
-   * <p>Using this function, you can replace JWt&apos;s JQuery version with another version of
-   * JQuery.
-   *
-   * <p>
-   *
-   * <pre>{@code
-   * requireJQuery("jquery/jquery-1.7.2.min.js");
-   *
-   * }</pre>
-   */
+
   public boolean requireJQuery(final String uri) {
     this.customJQuery_ = true;
-    return this.require(uri);
+    return this.require(uri, "$");
   }
-  /**
-   * Returns whether a custom JQuery library is used.
-   *
-   * <p>
-   *
-   * @see WApplication#requireJQuery(String uri)
-   */
+
   public boolean isCustomJQuery() {
     return this.customJQuery_;
   }
@@ -2136,9 +2111,9 @@ public class WApplication extends WObject {
     if (this.loadingIndicator_ != null) {
       this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt4_8_1.inline('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_9_0.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt4_8_1.hide('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_9_0.hide('" + this.loadingIndicator_.getId() + "');}");
       this.loadingIndicator_.hide();
     }
   }
@@ -2393,11 +2368,11 @@ public class WApplication extends WObject {
     boolean needRedirect =
         (url.indexOf("://") != -1 || url.startsWith("//")) && this.session_.hasSessionIdInUrl();
     if (needRedirect) {
-      WtServlet c = this.session_.getController();
       return "?request=redirect&url="
           + Utils.urlEncode(url)
           + "&hash="
-          + Utils.urlEncode(c.computeRedirectHash(url));
+          + Utils.urlEncode(
+              WtServlet.computeRedirectHash(this.getEnvironment().redirectSecret_, url));
     } else {
       return url;
     }
@@ -2544,7 +2519,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt4_8_1.ajaxInternalPaths("
+        "Wt4_9_0.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2910,7 +2885,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt4_8_1";
+              : "Wt4_9_0";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')

@@ -92,14 +92,6 @@ public abstract class WTheme extends WObject {
    * further customized to reflect the theme.
    */
   public abstract void apply(WWidget widget, final DomElement element, int elementRole);
-  /**
-   * Sets the data target for a widget.
-   *
-   * <p>The <code>widget</code> is a bootstrap element that requires a data-bs-target attribute to
-   * function (with Bootstrap JS). The <code>target</code> is the element that is targeted by the
-   * <code>widget</code>.
-   */
-  public void setDataTarget(WWidget widget, WWidget target) {}
   /** Returns a generic CSS class name for a disabled element. */
   public abstract String getDisabledClass();
   /** Returns a generic CSS class name for an active element. */
@@ -126,4 +118,13 @@ public abstract class WTheme extends WObject {
   }
 
   public abstract boolean canBorderBoxElement(final DomElement element);
+  /**
+   * Returns which side the {@link WPanel} collapse icon should be added on.
+   *
+   * <p>Side is assumed to be {@link Side#Left} or {@link Side#Right}, other sides are not
+   * supported.
+   */
+  public Side getPanelCollapseIconSide() {
+    return Side.Left;
+  }
 }

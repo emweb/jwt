@@ -252,7 +252,7 @@ public class WDoubleValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_8_1.WDoubleValidator(")
+    js.append("new Wt4_9_0.WDoubleValidator(")
         .append(this.isMandatory())
         .append(',')
         .append(this.ignoreTrailingSpaces_)
@@ -303,6 +303,6 @@ public class WDoubleValidator extends WValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WDoubleValidator",
-        "(function(e,a,i,l,r,n,t,s,g,d){this.validate=function(u){u=String(u);a&&(u=u.trim());if(0==u.length)return e?{valid:!1,message:t}:{valid:!0};\"\"!=n&&(u=u.replace(new RegExp(n.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\"),\"g\"),\"\"));\".\"!=r&&(u=u.replace(r,\".\"));if(u.indexOf(\" \")>=0&&!a)return{valid:!1,message:s};var v=Number(u);return isNaN(v)?{valid:!1,message:s}:null!==i&&v<i?{valid:!1,message:g}:null!==l&&v>l?{valid:!1,message:d}:{valid:!0}}})");
+        "(function(e,a,i,l,n,r,t,s,g,d){this.validate=function(u){u=String(u);a&&(u=u.trim());if(0===u.length)return e?{valid:!1,message:t}:{valid:!0};\"\"!==r&&(u=u.replace(new RegExp(r.replace(new RegExp(\"([\\\\^\\\\\\\\\\\\][\\\\-.$*+?()|{}])\",\"g\"),\"\\\\$1\"),\"g\"),\"\"));\".\"!==n&&(u=u.replace(n,\".\"));if(u.indexOf(\" \")>=0&&!a)return{valid:!1,message:s};const v=Number(u);return isNaN(v)?{valid:!1,message:s}:null!==i&&v<i?{valid:!1,message:g}:null!==l&&v>l?{valid:!1,message:d}:{valid:!0}}})");
   }
 }

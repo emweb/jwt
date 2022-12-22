@@ -233,6 +233,26 @@ public class Utils {
 		return htmlEncode(value, EnumSet.of(flag, flags));
 	}
 
+	/**
+	 * Escape the given text for inclusion in an HTML attribute
+	 * <p>
+	 * This utility function escapes characters so that the \p text can
+	 * be used as the value of an HTML attribute between double quotes.
+	 * <p>
+	 * The double quotes are <strong>not</strong> included in the output.
+	 * <p>
+	 * Example usage:
+	 * <p>
+	 * <pre>{@code
+	 * String attribute = "name=\"" + htmlAttributeValue(value) + "\"";
+	 * }</pre>
+	 */
+	public static String htmlAttributeValue(String text) {
+		StringBuilder sb = new StringBuilder();
+		DomElement.htmlAttributeValue(sb, text);
+		return sb.toString();
+	}
+
 	/** Remove tags/attributes from text that are not passive.
 	 *
 	 * This removes tags and attributes from XHTML-formatted text that do

@@ -276,12 +276,12 @@ class GraphicsWidgets extends Topic {
   }
 
   WWidget Paintbrush() {
-    final WColor blue = new WColor(0, 110, 204);
-    final WColor red = new WColor(218, 81, 76);
-    final WColor green = new WColor(59, 195, 95);
-    final WColor orange = new WColor(250, 168, 52);
+    final WColor blue = new WColor("#0d6efd");
+    final WColor red = new WColor("#dc3545");
+    final WColor green = new WColor("#198754");
+    final WColor yellow = new WColor("#ffc107");
     final WColor black = new WColor(StandardColor.Black);
-    final WColor gray = new WColor(210, 210, 210);
+    final WColor gray = new WColor("#6c757d");
     WContainerWidget result = new WContainerWidget();
     PaintBrush canvas = new PaintBrush(710, 400);
     final PaintBrush canvas_ = canvas;
@@ -290,12 +290,12 @@ class GraphicsWidgets extends Topic {
         .getDecorationStyle()
         .setBorder(new WBorder(BorderStyle.Solid, BorderWidth.Medium, black));
     List<WPushButton> colorButtons = new ArrayList<WPushButton>();
-    colorButtons.add(createColorToggle("btn-primary", blue, canvas));
+    colorButtons.add(createColorToggle("btn-blue", blue, canvas));
     colorButtons.add(createColorToggle("btn-danger", red, canvas));
     colorButtons.add(createColorToggle("btn-success", green, canvas));
-    colorButtons.add(createColorToggle("btn-warning", orange, canvas));
-    colorButtons.add(createColorToggle("btn-inverse", black, canvas));
-    colorButtons.add(createColorToggle("", gray, canvas));
+    colorButtons.add(createColorToggle("btn-warning", yellow, canvas));
+    colorButtons.add(createColorToggle("btn-black", black, canvas));
+    colorButtons.add(createColorToggle("btn-secondary", gray, canvas));
     WToolBar toolBar = new WToolBar();
     for (int i = 0; i < colorButtons.size(); ++i) {
       WPushButton button = colorButtons.get(i);

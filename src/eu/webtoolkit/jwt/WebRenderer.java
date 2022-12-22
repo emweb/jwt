@@ -133,7 +133,7 @@ class WebRenderer implements SlotLearnerInterface {
   public void letReloadJS(final WebResponse response, boolean newSession, boolean embedded)
       throws IOException {
     if (!embedded) {
-      this.setCaching(response, false);
+      this.addNoCacheHeaders(response);
       this.setHeaders(response, "text/javascript; charset=UTF-8");
     }
     response.out().append("if (window.Wt) window.Wt._p_.quit(null); window.location.reload(true);");
@@ -144,7 +144,7 @@ class WebRenderer implements SlotLearnerInterface {
   }
 
   public void letReloadHTML(final WebResponse response, boolean newSession) throws IOException {
-    this.setCaching(response, false);
+    this.addNoCacheHeaders(response);
     this.setHeaders(response, "text/html; charset=UTF-8");
     response.out().append("<html><script type=\"text/javascript\">");
     this.letReloadJS(response, newSession, true);
@@ -493,19 +493,15 @@ class WebRenderer implements SlotLearnerInterface {
     response.setContentType(mimeType);
   }
 
-  private void setCaching(final WebResponse response, boolean allowCache) {
-    if (allowCache) {
-      response.addHeader("Cache-Control", "max-age=2592000,private");
-    } else {
-      response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      response.addHeader("Pragma", "no-cache");
-      response.addHeader("Expires", "0");
-    }
+  private void addNoCacheHeaders(final WebResponse response) {
+    response.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.addHeader("Pragma", "no-cache");
+    response.addHeader("Expires", "0");
   }
 
   private void serveJavaScriptUpdate(final WebResponse response) throws IOException {
     if (!response.isWebSocketMessage()) {
-      this.setCaching(response, false);
+      this.addNoCacheHeaders(response);
       this.setHeaders(response, "text/javascript; charset=UTF-8");
     }
     if (this.session_.sessionIdChanged_) {
@@ -545,10 +541,8 @@ class WebRenderer implements SlotLearnerInterface {
   private void serveMainscript(final WebResponse response) throws IOException {
     final Configuration conf = this.session_.getController().getConfiguration();
     boolean widgetset = this.session_.getType() == EntryPointType.WidgetSet;
-    boolean serveSkeletons = !conf.splitScript() || response.getParameter("skeleton") != null;
-    boolean serveRest = !conf.splitScript() || !serveSkeletons;
     this.session_.sessionIdChanged_ = false;
-    this.setCaching(response, conf.splitScript() && serveSkeletons);
+    this.addNoCacheHeaders(response);
     this.setHeaders(response, "text/javascript; charset=UTF-8");
     StringBuilder out = new StringBuilder();
     if (!widgetset) {
@@ -564,75 +558,62 @@ class WebRenderer implements SlotLearnerInterface {
     }
     WApplication app = this.session_.getApp();
     final boolean innerHtml = true;
-    if (serveSkeletons) {
-      boolean haveJQuery = app.isCustomJQuery();
-      if (!haveJQuery) {
-        out.append("if (typeof window.$ === 'undefined') {");
-        out.append(WtServlet.JQuery_js);
-        out.append('}');
-      }
-      FileServe script = new FileServe(WtServlet.Wt_js);
-      script.setCondition(
-          "CATCH_ERROR", conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
-      script.setCondition(
-          "SHOW_ERROR", conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
-      script.setCondition("UGLY_INTERNAL_PATHS", this.session_.isUseUglyInternalPaths());
-      script.setCondition("DYNAMIC_JS", false);
-      script.setVar("WT_CLASS", "Wt4_8_1");
-      script.setVar("APP_CLASS", app.getJavaScriptClass());
-      script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf.serializedEvents());
-      script.setCondition("WEB_SOCKETS", conf.webSockets());
-      script.setVar("INNER_HTML", innerHtml);
-      script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
-      script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this.getSessionUrl()));
-      script.setVar(
-          "QUITTED_STR", WString.toWString(WString.tr("Wt.QuittedMessage")).getJsStringLiteral());
-      script.setVar("MAX_FORMDATA_SIZE", conf.getMaxFormDataSize());
-      script.setVar("MAX_PENDING_EVENTS", conf.getMaxPendingEvents());
-      String deployPath = this.session_.getEnv().publicDeploymentPath_;
-      if (deployPath.length() == 0) {
-        deployPath = this.session_.getDeploymentPath();
-      }
-      script.setVar("DEPLOY_PATH", WWebWidget.jsStringLiteral(deployPath));
-      script.setVar(
-          "WS_PATH",
-          WWebWidget.jsStringLiteral(this.session_.getController().getContextPath() + "/ws"));
-      script.setVar(
-          "WS_ID",
-          WWebWidget.jsStringLiteral(
-              String.valueOf(this.session_.getController().getIdForWebSocket())));
-      script.setVar("KEEP_ALIVE", String.valueOf(conf.getKeepAlive()));
-      script.setVar(
-          "IDLE_TIMEOUT",
-          conf.getIdleTimeout() != -1 ? String.valueOf(conf.getIdleTimeout()) : "null");
-      script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
-      script.setVar("SERVER_PUSH_TIMEOUT", conf.getServerPushTimeout() * 1000);
-      script.setVar("CLOSE_CONNECTION", false);
-      String params = "";
-      if (this.session_.getType() == EntryPointType.WidgetSet) {
-        Map<String, String[]> m = this.session_.getEnv().getParameterMap();
-        String[] it = m.get("Wt-params");
-        Map<String, String[]> wtParams = new HashMap<String, String[]>();
-        if (it != null) {
-          Utils.parseFormUrlEncoded(it[0], wtParams);
-          m = wtParams;
-        }
-        for (Iterator<Map.Entry<String, String[]>> i_it = m.entrySet().iterator();
-            i_it.hasNext(); ) {
-          Map.Entry<String, String[]> i = i_it.next();
-          if (params.length() != 0) {
-            params += '&';
-          }
-          params += Utils.urlEncode(i.getKey()) + '=' + Utils.urlEncode(i.getValue()[0]);
-        }
-      }
-      script.setVar("PARAMS", params);
-      script.stream(out);
+    FileServe script = new FileServe(WtServlet.Wt_js);
+    script.setCondition(
+        "CATCH_ERROR", conf.getErrorReporting() != Configuration.ErrorReporting.NoErrors);
+    script.setCondition(
+        "SHOW_ERROR", conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
+    script.setCondition("UGLY_INTERNAL_PATHS", this.session_.isUseUglyInternalPaths());
+    script.setCondition("DYNAMIC_JS", false);
+    script.setVar("WT_CLASS", "Wt4_9_0");
+    script.setVar("APP_CLASS", app.getJavaScriptClass());
+    script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf.serializedEvents());
+    script.setCondition("WEB_SOCKETS", conf.webSockets());
+    script.setVar("INNER_HTML", innerHtml);
+    script.setVar("ACK_UPDATE_ID", this.expectedAckId_);
+    script.setVar("SESSION_URL", WWebWidget.jsStringLiteral(this.getSessionUrl()));
+    script.setVar(
+        "QUITTED_STR", WString.toWString(WString.tr("Wt.QuittedMessage")).getJsStringLiteral());
+    script.setVar("MAX_FORMDATA_SIZE", conf.getMaxFormDataSize());
+    script.setVar("MAX_PENDING_EVENTS", conf.getMaxPendingEvents());
+    String deployPath = this.session_.getEnv().publicDeploymentPath_;
+    if (deployPath.length() == 0) {
+      deployPath = this.session_.getDeploymentPath();
     }
-    if (!serveRest) {
-      response.out().append(out.toString());
-      return;
+    script.setVar("DEPLOY_PATH", WWebWidget.jsStringLiteral(deployPath));
+    script.setVar(
+        "WS_PATH",
+        WWebWidget.jsStringLiteral(this.session_.getController().getContextPath() + "/ws"));
+    script.setVar(
+        "WS_ID",
+        WWebWidget.jsStringLiteral(
+            String.valueOf(this.session_.getController().getIdForWebSocket())));
+    script.setVar("KEEP_ALIVE", String.valueOf(conf.getKeepAlive()));
+    script.setVar(
+        "IDLE_TIMEOUT",
+        conf.getIdleTimeout() != -1 ? String.valueOf(conf.getIdleTimeout()) : "null");
+    script.setVar("INDICATOR_TIMEOUT", conf.getIndicatorTimeout());
+    script.setVar("SERVER_PUSH_TIMEOUT", conf.getServerPushTimeout() * 1000);
+    script.setVar("CLOSE_CONNECTION", false);
+    String params = "";
+    if (this.session_.getType() == EntryPointType.WidgetSet) {
+      Map<String, String[]> m = this.session_.getEnv().getParameterMap();
+      String[] it = m.get("Wt-params");
+      Map<String, String[]> wtParams = new HashMap<String, String[]>();
+      if (it != null) {
+        Utils.parseFormUrlEncoded(it[0], wtParams);
+        m = wtParams;
+      }
+      for (Iterator<Map.Entry<String, String[]>> i_it = m.entrySet().iterator(); i_it.hasNext(); ) {
+        Map.Entry<String, String[]> i = i_it.next();
+        if (params.length() != 0) {
+          params += '&';
+        }
+        params += Utils.urlEncode(i.getKey()) + '=' + Utils.urlEncode(i.getValue()[0]);
+      }
     }
+    script.setVar("PARAMS", params);
+    script.stream(out);
     out.append(app.getJavaScriptClass()).append("._p_.setPage(").append(this.pageId_).append(");");
     this.formObjectsChanged_ = true;
     app.autoJavaScriptChanged_ = true;
@@ -645,18 +626,18 @@ class WebRenderer implements SlotLearnerInterface {
         boolean enabledAjax = app.enableAjax_;
         if (app.enableAjax_) {
           this.collectedJS1_
-              .append("var form = Wt4_8_1.getElement('Wt-form'); if (form) {")
+              .append("var form = Wt4_9_0.getElement('Wt-form'); if (form) {")
               .append(this.beforeLoadJS_.toString());
           this.beforeLoadJS_.setLength(0);
           this.collectedJS1_
               .append("var domRoot=")
               .append(app.domRoot_.getJsRef())
               .append(';')
-              .append("Wt4_8_1.progressed(domRoot);");
+              .append("Wt4_9_0.progressed(domRoot);");
           int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
           app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
           this.collectedJS2_
-              .append("Wt4_8_1.resolveRelativeAnchors();")
+              .append("Wt4_9_0.resolveRelativeAnchors();")
               .append("domRoot.style.visibility = 'visible';")
               .append(app.getJavaScriptClass())
               .append("._p_.doAutoJavaScript();");
@@ -709,7 +690,7 @@ class WebRenderer implements SlotLearnerInterface {
               .append("}, 400);")
               .append("else ");
         }
-        out.append("$(document).ready(function() { ")
+        out.append("Wt4_9_0.ready(function() { ")
             .append(app.getJavaScriptClass())
             .append("._p_.load(true);});\n");
       }
@@ -740,7 +721,7 @@ class WebRenderer implements SlotLearnerInterface {
             + "&request=style&page="
             + String.valueOf(this.pageId_));
     boot.setVar("BOOT_STYLE_URL", bootStyleUrl.toString());
-    this.setCaching(response, false);
+    this.addNoCacheHeaders(response);
     response.addHeader("X-Frame-Options", "SAMEORIGIN");
     String contentType = "text/html; charset=UTF-8";
     this.setHeaders(response, contentType);
@@ -826,7 +807,7 @@ class WebRenderer implements SlotLearnerInterface {
     page.setVar("TITLE", WWebWidget.escapeText(app.getTitle()).toString());
     app.titleChanged_ = false;
     String contentType = "text/html; charset=UTF-8";
-    this.setCaching(response, false);
+    this.addNoCacheHeaders(response);
     response.addHeader("X-Frame-Options", "SAMEORIGIN");
     this.setHeaders(response, contentType);
     this.currentFormObjectsList_ = this.createFormObjectsList(app);
@@ -971,7 +952,7 @@ class WebRenderer implements SlotLearnerInterface {
     if (widgetset) {
       String historyE = app.getEnvironment().getParameter("Wt-history");
       if (historyE != null) {
-        out.append("Wt4_8_1")
+        out.append("Wt4_9_0")
             .append(".history.initialize('")
             .append(historyE.charAt(0))
             .append("-field', '")
@@ -989,7 +970,7 @@ class WebRenderer implements SlotLearnerInterface {
       out.append("};\n");
     }
     this.renderSetServerPush(out);
-    out.append("$(document).ready(function() { ")
+    out.append("Wt4_9_0.ready(function() { ")
         .append(app.getJavaScriptClass())
         .append("._p_.load(")
         .append(!widgetset)
@@ -1187,7 +1168,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void loadStyleSheet(
       final StringBuilder out, WApplication app, final WLinkedCssStyleSheet sheet) {
-    out.append("Wt4_8_1")
+    out.append("Wt4_9_0")
         .append(".addStyleSheet('")
         .append(sheet.getLink().resolveUrl(app))
         .append("', '")
@@ -1206,7 +1187,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void removeStyleSheets(final StringBuilder out, WApplication app) {
     for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
-      out.append("Wt4_8_1")
+      out.append("Wt4_9_0")
           .append(".removeStyleSheet('")
           .append(app.styleSheetsToRemove_.get(i).getLink().resolveUrl(app))
           .append("');\n ");
@@ -1457,7 +1438,6 @@ class WebRenderer implements SlotLearnerInterface {
       bootJs.setVar("APP_CLASS", "Wt");
       bootJs.setVar("PATH_INFO", this.safeJsStringLiteral(this.session_.pagePathInfo_));
       bootJs.setCondition("COOKIE_CHECKS", conf.isCookieChecks());
-      bootJs.setCondition("SPLIT_SCRIPT", conf.splitScript());
       bootJs.setCondition("HYBRID", hybrid);
       bootJs.setCondition("PROGRESS", hybrid && !this.session_.getEnv().hasAjax());
       bootJs.setCondition("DEFER_SCRIPT", true);

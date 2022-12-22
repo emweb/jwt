@@ -180,6 +180,7 @@ public class WBootstrap3Theme extends WTheme {
         child.addStyleClass("panel-heading");
         break;
       case WidgetThemeRole.PanelCollapseButton:
+        child.setFloatSide(Side.Left);
       case WidgetThemeRole.PanelTitle:
         child.addStyleClass("accordion-toggle");
         break;
@@ -476,10 +477,10 @@ public class WBootstrap3Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_8_1.setValidationState(")
+      js.append("Wt4_9_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
-          .append(validation.getState() == ValidationState.Valid ? 1 : 0)
+          .append(validation.getState() == ValidationState.Valid)
           .append(",")
           .append(WString.toWString(validation.getMessage()).getJsStringLiteral())
           .append(",")
@@ -527,7 +528,7 @@ public class WBootstrap3Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "(function(t){var e;e=t.options?null==t.options.item(t.selectedIndex)?\"\":t.options.item(t.selectedIndex).text:\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
+        "(function(t){let e;if(t.options){const s=t.options.item(t.selectedIndex);e=null===s?\"\":s.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -535,7 +536,7 @@ public class WBootstrap3Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "setValidationState",
-        "(function(t,e,a,i){var l,s,o,n=1==e&&0!=(2&i),d=1!=e&&0!=(1&i),c=$(t),u=\"Wt-valid\",g=\"Wt-invalid\",r=this.theme;if(\"object\"==typeof r){u=r.classes.valid;g=r.classes.invalid}c.toggleClass(u,n).toggleClass(g,d);if((l=c.closest(\".control-group\")).length>0){s=\"success\";o=\"error\"}else if((l=c.closest(\".form-group\")).length>0){s=\"has-success\";o=\"has-error\"}if(l.length>0){var f=l.find(\".Wt-validation-message\");f&&(e?f.text(t.defaultTT):f.text(a));l.toggleClass(s,n).toggleClass(o,d)}void 0===t.defaultTT&&(t.defaultTT=t.getAttribute(\"title\")||\"\");e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",a)})");
+        "(function(t,e,s,l){const i=e&&0!=(2&l),o=!e&&0!=(1&l);let a=\"Wt-valid\",c=\"Wt-invalid\";const n=this.theme;if(\"object\"==typeof n){a=n.classes.valid;c=n.classes.invalid}t.classList.toggle(a,i);t.classList.toggle(c,o);let u,r,f;u=t.closest(\".control-group\");if(u){r=\"success\";f=\"error\"}else{u=t.closest(\".form-group\");if(u){r=\"has-success\";f=\"has-error\"}}if(u){const l=u.querySelectorAll(\".Wt-validation-message\");for(const i of l)i.textContent=e?t.defaultTT:s;u.classList.toggle(r,i);u.classList.toggle(f,o)}e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",s)})");
   }
 
   private static String[] btnClasses = {

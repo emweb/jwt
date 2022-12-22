@@ -46,6 +46,7 @@ public class WProgressBar extends WInteractWidget {
     this.value_ = 0;
     this.format_ = new WString();
     this.changed_ = false;
+    this.valueStyleClassChanged_ = false;
     this.valueStyleClass_ = "";
     this.valueChanged_ = new Signal1<Double>();
     this.progressCompleted_ = new Signal();
@@ -203,9 +204,16 @@ public class WProgressBar extends WInteractWidget {
       this.setAttributeValue("style", "line-height: " + height.getCssText());
     }
   }
-
+  /**
+   * Updates the style class of the bar part of the {@link WProgressBar}.
+   *
+   * <p>This can be used to style the bar part of the {@link WProgressBar}, e.g.
+   * &quot;progress-bar-success&quot; or &quot;progress-bar-danger&quot;.
+   */
   public void setValueStyleClass(final String valueStyleClass) {
     this.valueStyleClass_ = valueStyleClass;
+    this.valueStyleClassChanged_ = true;
+    this.repaint();
   }
 
   public void setState(double minimum, double maximum, double value) {
@@ -267,6 +275,14 @@ public class WProgressBar extends WInteractWidget {
       label.setProperty(Property.InnerHTML, s.toString());
       this.changed_ = false;
     }
+    if (this.valueStyleClassChanged_) {
+      if (!(bar != null)) {
+        bar = DomElement.getForUpdate("bar" + this.getId(), DomElementType.DIV);
+      }
+      bar.setProperty(Property.Class, this.valueStyleClass_);
+      WApplication.getInstance().getTheme().apply(this, bar, ElementThemeRole.ProgressBarBar);
+      this.valueStyleClassChanged_ = false;
+    }
     if (bar != null) {
       element.addChild(bar);
     }
@@ -290,6 +306,7 @@ public class WProgressBar extends WInteractWidget {
   private double value_;
   private WString format_;
   private boolean changed_;
+  private boolean valueStyleClassChanged_;
   private String valueStyleClass_;
   // private void onChange() ;
   private Signal1<Double> valueChanged_;
