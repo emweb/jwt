@@ -671,6 +671,7 @@ public class WEnvironment {
   String pathInfo_;
   String internalPath_;
   String publicDeploymentPath_;
+  protected String redirectSecret_;
 
   WEnvironment() {
     this.session_ = null;
@@ -699,6 +700,7 @@ public class WEnvironment {
     this.pathInfo_ = "";
     this.internalPath_ = "";
     this.publicDeploymentPath_ = "";
+    this.redirectSecret_ = "";
   }
 
   void setUserAgent(final String userAgent) {
@@ -922,6 +924,7 @@ public class WEnvironment {
     this.pathInfo_ = "";
     this.internalPath_ = "";
     this.publicDeploymentPath_ = "";
+    this.redirectSecret_ = "";
   }
 
   void init(final WebRequest request) {
@@ -935,6 +938,7 @@ public class WEnvironment {
     this.serverSoftware_ = str("");
     this.serverAdmin_ = str("");
     this.pathInfo_ = request.getPathInfo();
+    this.redirectSecret_ = this.session_.getController().getRedirectSecret(request);
     this.setUserAgent(str(request.getHeaderValue("User-Agent")));
     this.updateUrlScheme(request);
     logger.info(new StringWriter().append("UserAgent: ").append(this.userAgent_).toString());

@@ -867,16 +867,8 @@ public class WContainerWidget extends WInteractWidget {
       element.setProperty(Property.StyleOverflowX, cssText[(int) this.overflow_[0].getValue()]);
       element.setProperty(Property.StyleOverflowY, cssText[(int) this.overflow_[1].getValue()]);
       this.setFormObject(true);
-      this.doJavaScript(
-          this.getJsRef()
-              + ".wtEncodeValue = function() {"
-              + "return "
-              + this.getJsRef()
-              + ".scrollTop"
-              + " + ';' + "
-              + this.getJsRef()
-              + ".scrollLeft;"
-              + "};");
+      this.setJavaScriptMember(
+          "wtEncodeValue", "(self) => {return `${self.scrollTop};${self.scrollLeft}`;}");
       this.flags_.clear(BIT_OVERFLOW_CHANGED);
       WApplication app = WApplication.getInstance();
       if (app.getEnvironment().agentIsIE()
@@ -919,11 +911,25 @@ public class WContainerWidget extends WInteractWidget {
           this.scrollTop_ = (int) Double.parseDouble(attributes.get(0));
           this.scrollLeft_ = (int) Double.parseDouble(attributes.get(1));
         } catch (final RuntimeException e) {
-          throw new WException(
-              "WContainerWidget: error parsing: " + formData.values[0] + ": " + e.toString());
+          logger.error(
+              new StringWriter()
+                  .append("WContainerWidget ")
+                  .append(this.getId())
+                  .append(": error parsing form data: '")
+                  .append(formData.values[0])
+                  .append("', ignoring value, details: ")
+                  .append(e.toString())
+                  .toString());
         }
       } else {
-        throw new WException("WContainerWidget: error parsing: " + formData.values[0]);
+        logger.error(
+            new StringWriter()
+                .append("WContainerWidget ")
+                .append(this.getId())
+                .append(": error parsing form data: '")
+                .append(formData.values[0])
+                .append("', ignoring value")
+                .toString());
       }
     }
   }

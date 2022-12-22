@@ -2393,11 +2393,11 @@ public class WApplication extends WObject {
     boolean needRedirect =
         (url.indexOf("://") != -1 || url.startsWith("//")) && this.session_.hasSessionIdInUrl();
     if (needRedirect) {
-      WtServlet c = this.session_.getController();
       return "?request=redirect&url="
           + Utils.urlEncode(url)
           + "&hash="
-          + Utils.urlEncode(c.computeRedirectHash(url));
+          + Utils.urlEncode(
+              WtServlet.computeRedirectHash(this.getEnvironment().redirectSecret_, url));
     } else {
       return url;
     }

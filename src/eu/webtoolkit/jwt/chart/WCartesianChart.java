@@ -4349,7 +4349,7 @@ public class WCartesianChart extends WAbstractChart {
         } else {
           clipRect =
               new WRectF(
-                  area.getLeft(), 0.0, area.getWidth(), isYAxis ? this.height_ : this.width_);
+                  area.getLeft(), 0.0, area.getWidth(), isYAxis ? this.width_ : this.height_);
         }
       }
       if (properties.equals(AxisProperty.Labels)) {
