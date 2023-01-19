@@ -2104,7 +2104,7 @@ public class WTreeView extends WAbstractItemView {
       if (!(index == this.getRootIndex() || (index != null && index.equals(this.getRootIndex())))) {
         return this.isExpanded(index.getParent());
       } else {
-        return false;
+        return true;
       }
     } else {
       return false;

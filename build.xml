@@ -46,11 +46,11 @@
   </target>
 
   <target name="run">
-    <java jar="lib/antlr-4.7.2-complete.jar" fork="true">
-      <arg line="-no-listener -visitor -package eu.webtoolkit.jwt src/eu/webtoolkit/jwt/PluralExpression.g4" />
+    <java jar="lib/antlr-4.7.2-complete.jar" fork="true" dir="src/eu/webtoolkit/jwt">
+      <arg line="-no-listener -visitor -package eu.webtoolkit.jwt PluralExpression.g4" />
     </java>
-    <java jar="lib/antlr-4.7.2-complete.jar" fork="true">
-      <arg line="-listener -no-visitor -package eu.webtoolkit.jwt.render src/eu/webtoolkit/jwt/render/Css22.g4" />
+    <java jar="lib/antlr-4.7.2-complete.jar" fork="true" dir="src/eu/webtoolkit/jwt/render">
+      <arg line="-listener -no-visitor -package eu.webtoolkit.jwt.render Css22.g4" />
     </java>
   </target>
 

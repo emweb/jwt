@@ -259,7 +259,7 @@ public class WBootstrap5Theme extends WTheme {
         {
           WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
-            element.addPropertyWord(Property.Class, "modal d-block Wt-dialog");
+            element.addPropertyWord(Property.Class, "modal Wt-dialog");
             return;
           }
           WPanel panel = ObjectUtils.cast(widget, WPanel.class);

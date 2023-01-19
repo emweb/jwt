@@ -576,6 +576,7 @@ class WebSession {
             if (handler.getResponse() != null
                 && handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
                 && (!this.env_.hasAjax()
+                    || this.isSuspended()
                     || !this.controller_.getConfiguration().reloadIsNewSession())) {
               this.app_.getDomRoot().setRendered(false);
               this.env_.parameters_ = handler.getRequest().getParameterMap();
