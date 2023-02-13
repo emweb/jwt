@@ -74,10 +74,9 @@ import org.slf4j.LoggerFactory;
  *       browser window, or multiple top-level widgets using {@link WApplication#bindWidget(WWidget
  *       widget, String domId) bindWidget()} when deployed in {@link EntryPointType#WidgetSet} mode
  *       to manage a number of widgets within a 3rd party page.
- *   <li>definition of cookies using {@link WApplication#setCookie(String name, String value, int
- *       maxAge, String domain, String path, boolean secure) setCookie()} to persist information
- *       across sessions, which may be read using {@link WEnvironment#getCookie(String cookieName)
- *       WEnvironment#getCookie()} in a future session.
+ *   <li>definition of cookies using {@link WApplication#setCookie(javax.servlet.http.Cookie cookie)
+ *       setCookie()} to persist information across sessions, which may be read using {@link
+ *       WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in a future session.
  *   <li>management of the internal path (that enables browser history and bookmarks) using {@link
  *       WApplication#setInternalPath(String path, boolean emitChange) setInternalPath()} and
  *       related methods.
@@ -1810,6 +1809,24 @@ public class WApplication extends WObject {
    * WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()}. You cannot use a cookie to
    * store information in the current session.
    *
+   * <p>For more information on how to configure cookies, see the Http::Cookie class.
+   *
+   * <p>
+   *
+   * @see WEnvironment#supportsCookies()
+   * @see WEnvironment#getCookie(String cookieName)
+   */
+  public void setCookie(final javax.servlet.http.Cookie cookie) {
+    this.session_.getRenderer().setCookie(cookie);
+  }
+  /**
+   * Sets a new cookie.
+   *
+   * <p>Use cookies to transfer information across different sessions (e.g. a user name). In a
+   * subsequent session you will be able to read this cookie using {@link
+   * WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()}. You cannot use a cookie to
+   * store information in the current session.
+   *
    * <p>The name must be a valid cookie name (of type &apos;token&apos;: no special characters or
    * separators, see RFC2616 page 16). The value may be anything. Specify the maximum age (in
    * seconds) after which the client must discard the cookie. To delete a cookie, use a value of
@@ -1823,6 +1840,8 @@ public class WApplication extends WObject {
    *
    * @see WEnvironment#supportsCookies()
    * @see WEnvironment#getCookie(String cookieName)
+   * @deprecated Use {@link WApplication#setCookie(javax.servlet.http.Cookie cookie) setCookie()}
+   *     instead.
    */
   public void setCookie(
       final String name,
@@ -1831,9 +1850,12 @@ public class WApplication extends WObject {
       final String domain,
       final String path,
       boolean secure) {
-    WDate expires = WDate.getCurrentServerDate();
-    expires = expires.addSeconds(maxAge);
-    this.session_.getRenderer().setCookie(name, value, expires, domain, path, secure);
+    javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(name, value);
+    cookie.setMaxAge(maxAge);
+    cookie.setDomain(domain);
+    cookie.setPath(path);
+    cookie.setSecure(secure);
+    this.session_.getRenderer().setCookie(cookie);
   }
   /**
    * Sets a new cookie.
@@ -1867,13 +1889,30 @@ public class WApplication extends WObject {
   /**
    * Removes a cookie.
    *
+   * <p>The cookie will be removed if it has the same name, domain and path as the original cookie
+   * (RFC-6265, section 5.3.11).
+   *
    * <p>
    *
-   * @see WApplication#setCookie(String name, String value, int maxAge, String domain, String path,
-   *     boolean secure)
+   * @see WApplication#setCookie(javax.servlet.http.Cookie cookie)
+   */
+  public void removeCookie(final javax.servlet.http.Cookie cookie) {
+    this.session_.getRenderer().removeCookie(cookie);
+  }
+  /**
+   * Removes a cookie.
+   *
+   * <p>
+   *
+   * @see WApplication#setCookie(javax.servlet.http.Cookie cookie)
+   * @deprecated Use {@link WApplication#removeCookie(javax.servlet.http.Cookie cookie)
+   *     removeCookie()} instead.
    */
   public void removeCookie(final String name, final String domain, final String path) {
-    this.session_.getRenderer().setCookie(name, "", new WDate(1970, 1, 1), domain, path, false);
+    javax.servlet.http.Cookie rmCookie = new javax.servlet.http.Cookie(name, "");
+    rmCookie.setDomain(domain);
+    rmCookie.setPath(path);
+    this.session_.getRenderer().removeCookie(rmCookie);
   }
   /**
    * Removes a cookie.
@@ -2111,9 +2150,9 @@ public class WApplication extends WObject {
     if (this.loadingIndicator_ != null) {
       this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt4_9_0.inline('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_9_1.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt4_9_0.hide('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_9_1.hide('" + this.loadingIndicator_.getId() + "');}");
       this.loadingIndicator_.hide();
     }
   }
@@ -2519,7 +2558,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt4_9_0.ajaxInternalPaths("
+        "Wt4_9_1.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2885,7 +2924,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt4_9_0";
+              : "Wt4_9_1";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')

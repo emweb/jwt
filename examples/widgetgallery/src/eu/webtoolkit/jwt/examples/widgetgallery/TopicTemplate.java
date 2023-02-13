@@ -24,7 +24,10 @@ class TopicTemplate extends BaseTemplate {
 
   public TopicTemplate(String trKey, WContainerWidget parentContainer) {
     super(trKey, (WContainerWidget) null);
+    this.namespaceToPackage = new HashMap<String, String>();
     this.bindString("doc-url", "//www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
+    this.namespaceToPackage.put("Chart", "chart");
+    this.namespaceToPackage.put("Render", "render");
     if (parentContainer != null) parentContainer.addWidget(this);
   }
 
@@ -36,10 +39,38 @@ class TopicTemplate extends BaseTemplate {
       throws IOException {
     if (varName.equals("doc-link")) {
       String className = args.get(0).toString();
-      className = StringUtils.replaceAll(className, "Render-", "render.");
-      result.append("<a href=\"").append(this.docUrl(className)).append("\" target=\"_blank\">");
-      className = StringUtils.replaceAll(className, "render.", "");
-      result.append(className).append("</a>");
+      String type = "class";
+      String title = "";
+      for (int i = 1; i < args.size(); ++i) {
+        String arg = args.get(i).toString();
+        if (arg.startsWith("type=")) {
+          type = arg.substring(5);
+        } else {
+          if (arg.startsWith("title=")) {
+            title = arg.substring(6);
+          }
+        }
+      }
+      for (Iterator<Map.Entry<String, String>> it_it =
+              this.namespaceToPackage.entrySet().iterator();
+          it_it.hasNext(); ) {
+        Map.Entry<String, String> it = it_it.next();
+        className = StringUtils.replaceAll(className, it.getKey() + "-", it.getValue() + ".");
+      }
+      result
+          .append("<a href=\"")
+          .append(this.docUrl(type, className))
+          .append("\" target=\"_blank\">");
+      if (title.length() == 0) {
+        title = className;
+        for (Iterator<Map.Entry<String, String>> it_it =
+                this.namespaceToPackage.entrySet().iterator();
+            it_it.hasNext(); ) {
+          Map.Entry<String, String> it = it_it.next();
+          title = StringUtils.replaceAll(title, it.getValue() + ".", "");
+        }
+      }
+      result.append(Utils.htmlEncode(title)).append("</a>");
     } else {
       if (varName.equals("src")) {
         String exampleName = args.get(0).toString();
@@ -54,11 +85,17 @@ class TopicTemplate extends BaseTemplate {
     }
   }
 
-  private String docUrl(final String className) {
+  private String docUrl(final String type, final String className) {
     StringBuilder ss = new StringBuilder();
-    String cn = className;
-    cn = StringUtils.replaceAll(cn, ".", "/");
-    ss.append(this.getString("doc-url")).append(cn).append(".html");
+    if (type.equals("namespace")) {
+      ss.append(this.getString("doc-url"))
+          .append(this.namespaceToPackage.get(className))
+          .append("/package-summary.html");
+    } else {
+      String cn = className;
+      cn = StringUtils.replaceAll(cn, ".", "/");
+      ss.append(this.getString("doc-url")).append(cn).append(".html");
+    }
     return ss.toString();
   }
 
@@ -85,4 +122,6 @@ class TopicTemplate extends BaseTemplate {
     }
     return ss.toString();
   }
+
+  private Map<String, String> namespaceToPackage;
 }

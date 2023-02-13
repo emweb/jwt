@@ -259,7 +259,7 @@ public class WBootstrap5Theme extends WTheme {
         {
           WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
-            element.addPropertyWord(Property.Class, "modal d-block Wt-dialog");
+            element.addPropertyWord(Property.Class, "modal Wt-dialog");
             return;
           }
           WPanel panel = ObjectUtils.cast(widget, WPanel.class);
@@ -484,7 +484,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_9_0.setValidationState(")
+      js.append("Wt4_9_1.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)

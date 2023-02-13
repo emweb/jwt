@@ -565,7 +565,7 @@ public class WTreeView extends WAbstractItemView {
       if (useStyleLeft) {
         boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
         this.tieRowsScrollJS_.setJavaScript(
-            "function(obj, event) {Wt4_9_0.getCssRule('#"
+            "function(obj, event) {Wt4_9_1.getCssRule('#"
                 + this.getId()
                 + " .Wt-tv-rowc').style.left= -obj.scrollLeft "
                 + (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)" : "")
@@ -863,7 +863,7 @@ public class WTreeView extends WAbstractItemView {
     app.loadJavaScript("js/WTreeView.js", wtjs1());
     this.setJavaScriptMember(
         " WTreeView",
-        "new Wt4_9_0.WTreeView("
+        "new Wt4_9_1.WTreeView("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -2104,7 +2104,7 @@ public class WTreeView extends WAbstractItemView {
       if (!(index == this.getRootIndex() || (index != null && index.equals(this.getRootIndex())))) {
         return this.isExpanded(index.getParent());
       } else {
-        return false;
+        return true;
       }
     } else {
       return false;

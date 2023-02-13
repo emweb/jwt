@@ -107,14 +107,11 @@ class WebSession {
     if (this.controller_.getConfiguration().sessionIdCookie()) {
       this.sessionIdCookie_ = MathUtils.randomId();
       this.sessionIdCookieChanged_ = true;
-      this.getRenderer()
-          .setCookie(
-              "Wt" + this.sessionIdCookie_,
-              "1",
-              null,
-              "",
-              "",
-              this.env_.getUrlScheme().equals("https"));
+      javax.servlet.http.Cookie cookie =
+          new javax.servlet.http.Cookie("Wt" + this.sessionIdCookie_, "1");
+      cookie.setSecure(this.env_.getUrlScheme().equals("https"));
+      cookie.setHttpOnly(true);
+      this.getRenderer().setCookie(cookie);
     }
   }
 
@@ -576,6 +573,7 @@ class WebSession {
             if (handler.getResponse() != null
                 && handler.getResponse().getResponseType() == WebRequest.ResponseType.Page
                 && (!this.env_.hasAjax()
+                    || this.isSuspended()
                     || !this.controller_.getConfiguration().reloadIsNewSession())) {
               this.app_.getDomRoot().setRendered(false);
               this.env_.parameters_ = handler.getRequest().getParameterMap();
@@ -1702,7 +1700,7 @@ class WebSession {
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
     if (wasSuspended) {
       if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
-        this.app_.doJavaScript("Wt4_9_0.history.removeSessionId()");
+        this.app_.doJavaScript("Wt4_9_1.history.removeSessionId()");
         this.sessionIdInUrl_ = false;
       }
       this.app_.unsuspended().trigger();
@@ -2098,7 +2096,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt4_9_0.scrollHistory();");
+                this.app_.doJavaScript("Wt4_9_1.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }

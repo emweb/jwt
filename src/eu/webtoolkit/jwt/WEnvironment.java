@@ -50,7 +50,7 @@ public class WEnvironment {
 
   /** Wt&apos;s JavaScript scope. */
   public static String getJavaScriptWtScope() {
-    return "Wt4_9_0";
+    return "Wt4_9_1";
   }
   /**
    * Parameters passed to the application.
@@ -110,8 +110,8 @@ public class WEnvironment {
    * Returns the cookies from the environment.
    *
    * <p>This returns all cookies that were present in initial request for the application. Cookies
-   * set with {@link WApplication#setCookie(String name, String value, int maxAge, String domain,
-   * String path, boolean secure) WApplication#setCookie()} are not taken into consideration.
+   * set with {@link WApplication#setCookie(javax.servlet.http.Cookie cookie)
+   * WApplication#setCookie()} are not taken into consideration.
    *
    * <p>Cookies allow you to persist information across sessions, but note that not all clients may
    * support cookies or may some clients may be configured to block cookies.
@@ -447,7 +447,7 @@ public class WEnvironment {
    * <p>Example: <code>&quot;1.99.2&quot;</code>
    */
   public static String getLibraryVersion() {
-    return "4.9.0";
+    return "4.9.1";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int
   // major, final bad java simple ref int minor) ;

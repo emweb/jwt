@@ -283,6 +283,18 @@ public class WTestEnvironment extends WEnvironment {
     super.setInternalPath(internalPath);
   }
   /**
+   * Sets the deployment path.
+   *
+   * <p>The default value is &quot;&quot;.
+   *
+   * <p>
+   *
+   * @see WEnvironment#getDeploymentPath()
+   */
+  public void setDeploymentPath(final String deployPath) {
+    this.publicDeploymentPath_ = deployPath;
+  }
+  /**
    * Signal used to test a dialog/messagebox reentrant event loop.
    *
    * <p>This signal is emitted when a dialog or message box is being executed using {@link

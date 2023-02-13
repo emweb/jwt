@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.9.0</title>
+<title>JWt 4.9.1</title>
 </head>
 <body>
 
@@ -24,6 +24,67 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.9.1 (January 20, 2023)</h2>
+
+<p>
+  JWt 4.9.1 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11230" target="_blank">Issue #11230</a>:
+    fixed an issue with
+    <a href="eu/webtoolkit/jwt/WApplication.html#suspend(java.time.Duration)">WApplication#suspend()</a>
+    where widgets would incorrectly believe they were still
+    <a href="eu/webtoolkit/jwt/WWidget.html#isRendered()">rendered</a> when unsuspending.
+    This would cause problems with e.g. <a href="eu/webtoolkit/jwt/WTextEdit.html">WTextEdit</a>
+    inside of a
+    <a href="eu/webtoolkit/jwt/WTemplate.html">WTemplate</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11240" target="_blank">Issue #11240</a>:
+    fixed an issue where the lazy loading logic breaks when removing and inserting a large
+    number of rows in a <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a>
+    (<a href="https://github.com/emweb/wt/pull/199" target="_blank">PR #199</a> by John Stark).
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11180" target="_blank">Issue #11180</a>:
+    fixes a regression in JWt 4.9.0 where
+    <a href="eu/webtoolkit/jwt/EntryPointType.html#WidgetSet">WidgetSet</a> mode
+    failed with a "classList is undefined" error.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11207" target="_blank">Issue #11207</a>:
+    fixes a regression in JWt 4.9.0 where
+    <a href="eu/webtoolkit/jwt/WWidget.html#setScrollVisibilityEnabled(boolean)">scroll visibility</a>
+    didn't work anymore.
+  </li>
+  <li>
+    Fixed a couple of <a href="eu/webtoolkit/jwt/WDialog.html">WDialog</a>-related
+    regressions when using
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>:
+    <ul>
+      <li>
+        <a href="https://redmine.webtoolkit.eu/issues/11233" target="_blank">Issue #11233</a>:
+        hidden <a href="eu/webtoolkit/jwt/WDialog.html">WDialog</a>s would remain visible.
+      </li>
+      <li>
+        <a href="https://redmine.webtoolkit.eu/issues/11248" target="_blank">Issue #11248</a>:
+        contents of a dialog could be cut off when
+        <a href="eu/webtoolkit/jwt/WWidget.html#setWidth(eu.webtoolkit.jwt.WLength)">setting the width</a>,
+        and
+        <a href="eu/webtoolkit/jwt/WDialog.html#setResizable(boolean)">resizing of dialogs</a>
+        didn't work.
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10138" target="_blank">Issue #10138</a>:
+    fixed ant build on Windows caused by ANTLR putting its output in a different location
+    depending on the operating system.
+  </li>
+</ul>
 
 <h2>Release 4.9.0 (December 22, 2022)</h2>
 
