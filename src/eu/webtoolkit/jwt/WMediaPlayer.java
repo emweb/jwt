@@ -607,7 +607,7 @@ public class WMediaPlayer extends WCompositeWidget {
   protected void setFormData(final WObject.FormData formData) {
     if (!(formData.values.length == 0)) {
       List<String> attributes = new ArrayList<String>();
-      attributes = new ArrayList<String>(Arrays.asList(formData.values[0].split(";")));
+      StringUtils.split(attributes, formData.values[0], ";", false);
       if (attributes.size() == 8) {
         try {
           this.status_.volume = Double.parseDouble(attributes.get(0));
@@ -767,7 +767,7 @@ public class WMediaPlayer extends WCompositeWidget {
         first = false;
       }
       ss.append('}').append("});");
-      ss.append("new Wt4_9_1.WMediaPlayer(")
+      ss.append("new Wt4_9_2.WMediaPlayer(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())

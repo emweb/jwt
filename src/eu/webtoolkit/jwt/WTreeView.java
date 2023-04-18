@@ -565,7 +565,7 @@ public class WTreeView extends WAbstractItemView {
       if (useStyleLeft) {
         boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
         this.tieRowsScrollJS_.setJavaScript(
-            "function(obj, event) {Wt4_9_1.getCssRule('#"
+            "function(obj, event) {Wt4_9_2.getCssRule('#"
                 + this.getId()
                 + " .Wt-tv-rowc').style.left= -obj.scrollLeft "
                 + (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)" : "")
@@ -863,7 +863,7 @@ public class WTreeView extends WAbstractItemView {
     app.loadJavaScript("js/WTreeView.js", wtjs1());
     this.setJavaScriptMember(
         " WTreeView",
-        "new Wt4_9_1.WTreeView("
+        "new Wt4_9_2.WTreeView("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -1458,7 +1458,7 @@ public class WTreeView extends WAbstractItemView {
 
   private WModelIndex calculateModelIndex(String nodeAndColumnId) {
     List<String> nodeAndColumnSplit = new ArrayList<String>();
-    nodeAndColumnSplit = new ArrayList<String>(Arrays.asList(nodeAndColumnId.split(":")));
+    StringUtils.split(nodeAndColumnSplit, nodeAndColumnId, ":", false);
     WModelIndex index = null;
     if (nodeAndColumnSplit.size() == 2) {
       String nodeId = nodeAndColumnSplit.get(0);

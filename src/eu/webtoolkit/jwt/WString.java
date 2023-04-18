@@ -26,7 +26,7 @@ import java.util.Locale;
  * @see WApplication#getLocalizedStrings()
  * @see WApplication#getLocale()
  */
-public class WString implements Comparable<WString>, CharSequence {
+public class WString implements Comparable<WString>, CharSequence, Cloneable {
 	/**
 	 * Empty WString object.
 	 */
@@ -95,6 +95,22 @@ public class WString implements Comparable<WString>, CharSequence {
 	 */
 	public WString(char[] buf) {
 		this(new String(buf));
+	}
+
+	@Override
+	public WString clone() {
+		try {
+			WString result = (WString)super.clone();
+			if (arguments != null) {
+				result.arguments = new ArrayList<WString>();
+				for (final WString arg : arguments) {
+					result.arguments.add(arg.clone());
+				}
+			}
+			return result;
+		} catch (CloneNotSupportedException ignored) {
+			throw new AssertionError();
+		}
 	}
 
 	@Override

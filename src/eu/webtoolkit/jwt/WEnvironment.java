@@ -50,7 +50,7 @@ public class WEnvironment {
 
   /** Wt&apos;s JavaScript scope. */
   public static String getJavaScriptWtScope() {
-    return "Wt4_9_1";
+    return "Wt4_9_2";
   }
   /**
    * Parameters passed to the application.
@@ -447,7 +447,7 @@ public class WEnvironment {
    * <p>Example: <code>&quot;1.99.2&quot;</code>
    */
   public static String getLibraryVersion() {
-    return "4.9.1";
+    return "4.9.2";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int
   // major, final bad java simple ref int minor) ;
@@ -1039,7 +1039,7 @@ public class WEnvironment {
   private static void parseCookies(final String cookie, final Map<String, String> result) {
     try {
       List<String> list = new ArrayList<String>();
-      list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
+      StringUtils.split(list, cookie, ";", false);
       for (int i = 0; i < list.size(); ++i) {
         int e = list.get(i).indexOf('=');
         if (e == -1) {

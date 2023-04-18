@@ -484,7 +484,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_9_1.setValidationState(")
+      js.append("Wt4_9_2.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -531,7 +531,7 @@ public class WBootstrap5Theme extends WTheme {
     }
     String classesStr = widget.getStyleClass();
     List<String> classes = new ArrayList<String>();
-    classes = new ArrayList<String>(Arrays.asList(classesStr.split(" ")));
+    StringUtils.split(classes, classesStr, " ", false);
     for (String c : classes) {
       if (c.startsWith("btn-")) {
         return true;
@@ -543,7 +543,7 @@ public class WBootstrap5Theme extends WTheme {
   private static boolean hasNavbarExpandClass(WNavigationBar navigationBar) {
     String classesStr = navigationBar.getStyleClass();
     List<String> classes = new ArrayList<String>();
-    classes = new ArrayList<String>(Arrays.asList(classesStr.split(" ")));
+    StringUtils.split(classes, classesStr, " ", false);
     for (String c : classes) {
       if (c.startsWith("navbar-expand-")) {
         return true;

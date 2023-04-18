@@ -134,7 +134,7 @@ class DialogCover extends WContainerWidget {
   private String userCoverClasses(WWidget w) {
     String c = w.getStyleClass();
     List<String> classes = new ArrayList<String>();
-    classes = new ArrayList<String>(Arrays.asList(c.split(" ")));
+    StringUtils.split(classes, c, " ", false);
     String result = "";
     for (int i = 0; i < classes.size(); ++i) {
       if (classes.get(i).length() != 0 && !classes.get(i).startsWith("Wt-")) {

@@ -31,7 +31,7 @@ class Topic extends WObject {
   public static WString reindent(final CharSequence text) {
     List<String> lines = new ArrayList<String>();
     String s = text.toString();
-    lines = new ArrayList<String>(Arrays.asList(s.split("\n")));
+    StringUtils.split(lines, s, "\n", false);
     String result = "";
     int indent = -1;
     int newlines = 0;

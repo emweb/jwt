@@ -137,7 +137,7 @@ public class OAuthProcess extends WObject {
         && this.service_.isPopupEnabled()) {
       StringBuilder js = new StringBuilder();
       js.append("function(object, event) {")
-          .append("Wt4_9_1.PopupWindow(Wt4_9_1")
+          .append("Wt4_9_2.PopupWindow(Wt4_9_2")
           .append(",")
           .append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
           .append(", ")
@@ -297,7 +297,7 @@ public class OAuthProcess extends WObject {
       if (contenttype != null) {
         String mimetype = contenttype.trim();
         List<String> tokens = new ArrayList<String>();
-        tokens = new ArrayList<String>(Arrays.asList(mimetype.split(";")));
+        StringUtils.split(tokens, mimetype, ";", false);
         String combinedType = "";
         String params = "";
         if (tokens.size() > 0) {

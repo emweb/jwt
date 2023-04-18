@@ -412,7 +412,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
       this.setLayoutSizeAware(true);
       this.setJavaScriptMember(
           WT_RESIZE_JS,
-          "function(self, w, h) {let u = self.querySelector('canvas, img');if (w >= 0) u.style.width = `${w}px`;else u.style.width = 'auto';if (h >= 0) u.style.height = `${h}px`;else u.style.height = 'auto';}");
+          "function(self, w, h) {let u = self.querySelector('canvas, img');if (u === null) return;if (w >= 0) u.style.width = `${w}px`;else u.style.width = 'auto';if (h >= 0) u.style.height = `${h}px`;else u.style.height = 'auto';}");
     }
     this.isCreatePainter();
     DomElement result = DomElement.createNew(this.getDomElementType());

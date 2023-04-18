@@ -134,7 +134,7 @@ public class OidcProcess extends OAuthProcess {
 
   private Identity parseIdToken(final String idToken) {
     List<String> parts = new ArrayList<String>();
-    parts = new ArrayList<String>(Arrays.asList(idToken.split(".")));
+    StringUtils.split(parts, idToken, ".", false);
     if (parts.size() != 3) {
       logger.error(
           new StringWriter()

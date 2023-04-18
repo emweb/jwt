@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -321,13 +322,29 @@ public class StringUtils {
 		    	  sout.append(0xFFFD);
 		}
 	}
-	
-	static void split(Set<String> tokens, String in, String sep, boolean compress_adjacent_tokens) {
-		for (String token : in.split(sep)) {
-			tokens.add(token);
-		}
+
+	public static void split(Collection<String> tokens, String in, char sep, boolean compressAdjacentSeparators) {
+		split(tokens, in, String.valueOf(sep), compressAdjacentSeparators);
 	}
-	
+
+	public static void split(Collection<String> tokens, String in, String separators, boolean compressAdjacentSeparators) {
+		var stringBuilder = new StringBuilder();
+		int parts = 0;
+		for (int index = 0; index < in.length(); ++index) {
+			final var c = in.charAt(index);
+			if (separators.indexOf(c) != -1) {
+				if (!compressAdjacentSeparators || stringBuilder.length() > 0 || parts == 0) {
+					tokens.add(stringBuilder.toString());
+					++parts;
+					stringBuilder = new StringBuilder();
+				}
+			} else {
+				stringBuilder.append(c);
+			}
+		}
+		tokens.add(stringBuilder.toString());
+	}
+
 	static List<String> expandLocales(String bundleName, String locale) {
 		List<String> expanded = new ArrayList<String>();
 

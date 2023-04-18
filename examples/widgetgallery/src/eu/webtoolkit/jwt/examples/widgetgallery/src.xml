@@ -811,6 +811,56 @@
   <span class="p">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-EmailEdit"><![CDATA[
+<div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">EmailEdit</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">WTemplate</span> <span class="n">result</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="p">(</span><span class="n">WString</span><span class="p">.</span><span class="na">tr</span><span class="p">(</span><span class="s">&quot;emailEdit-template&quot;</span><span class="p">));</span>
+    <span class="kd">final</span> <span class="n">WTemplate</span> <span class="n">tpl</span> <span class="o">=</span> <span class="n">result</span><span class="p">;</span>
+    <span class="n">tpl</span><span class="p">.</span><span class="na">addFunction</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">WTemplate</span><span class="p">.</span><span class="na">Functions</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
+    <span class="n">tpl</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;label&quot;</span><span class="p">,</span> <span class="s">&quot;Email address: &quot;</span><span class="p">,</span> <span class="n">TextFormat</span><span class="p">.</span><span class="na">Plain</span><span class="p">);</span>
+    <span class="kd">final</span> <span class="n">WEmailEdit</span> <span class="n">edit</span> <span class="o">=</span> <span class="p">(</span><span class="n">WEmailEdit</span><span class="p">)</span> <span class="n">tpl</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;edit&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">WEmailEdit</span><span class="p">());</span>
+    <span class="n">WPushButton</span> <span class="n">submit</span> <span class="o">=</span> <span class="p">(</span><span class="n">WPushButton</span><span class="p">)</span> <span class="n">tpl</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;submit&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="p">(</span><span class="s">&quot;Submit&quot;</span><span class="p">));</span>
+    <span class="kd">final</span> <span class="n">WCheckBox</span> <span class="n">multiple</span> <span class="o">=</span>
+        <span class="p">(</span><span class="n">WCheckBox</span><span class="p">)</span> <span class="n">tpl</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;multiple&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="p">(</span><span class="s">&quot;Allow multiple&quot;</span><span class="p">));</span>
+    <span class="n">multiple</span>
+        <span class="p">.</span><span class="na">changed</span><span class="p">()</span>
+        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
+            <span class="k">this</span><span class="p">,</span>
+            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
+              <span class="n">edit</span><span class="p">.</span><span class="na">setMultiple</span><span class="p">(</span><span class="n">multiple</span><span class="p">.</span><span class="na">isChecked</span><span class="p">());</span>
+            <span class="p">});</span>
+    <span class="kd">final</span> <span class="n">WCheckBox</span> <span class="n">pattern</span> <span class="o">=</span>
+        <span class="p">(</span><span class="n">WCheckBox</span><span class="p">)</span> <span class="n">tpl</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;pattern&quot;</span><span class="p">,</span> <span class="k">new</span> <span class="n">WCheckBox</span><span class="p">(</span><span class="s">&quot;Use pattern &#39;.*@example[.]com&#39;&quot;</span><span class="p">));</span>
+    <span class="n">pattern</span>
+        <span class="p">.</span><span class="na">changed</span><span class="p">()</span>
+        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
+            <span class="k">this</span><span class="p">,</span>
+            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
+              <span class="n">edit</span><span class="p">.</span><span class="na">setPattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">.</span><span class="na">isChecked</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;.*@example[.]com&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+            <span class="p">});</span>
+    <span class="n">tpl</span><span class="p">.</span><span class="na">bindEmpty</span><span class="p">(</span><span class="s">&quot;edit-info&quot;</span><span class="p">);</span>
+    <span class="n">edit</span><span class="p">.</span><span class="na">validated</span><span class="p">()</span>
+        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
+            <span class="k">this</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">WValidator</span><span class="p">.</span><span class="na">Result</span> <span class="n">validationResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span>
+              <span class="n">tpl</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;edit-info&quot;</span><span class="p">,</span> <span class="n">validationResult</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+            <span class="p">});</span>
+    <span class="n">submit</span>
+        <span class="p">.</span><span class="na">clicked</span><span class="p">()</span>
+        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
+            <span class="k">this</span><span class="p">,</span>
+            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
+              <span class="n">edit</span><span class="p">.</span><span class="na">setMultiple</span><span class="p">(</span><span class="n">multiple</span><span class="p">.</span><span class="na">isChecked</span><span class="p">());</span>
+              <span class="n">edit</span><span class="p">.</span><span class="na">setPattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">.</span><span class="na">isChecked</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;.*@example[.]com&quot;</span> <span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+              <span class="n">edit</span><span class="p">.</span><span class="na">validate</span><span class="p">();</span>
+              <span class="n">tpl</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span>
+                  <span class="s">&quot;output&quot;</span><span class="p">,</span>
+                  <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;Entered email address: {1}&quot;</span><span class="p">).</span><span class="na">arg</span><span class="p">(</span><span class="n">edit</span><span class="p">.</span><span class="na">getValueText</span><span class="p">()),</span>
+                  <span class="n">TextFormat</span><span class="p">.</span><span class="na">Plain</span><span class="p">);</span>
+            <span class="p">});</span>
+    <span class="n">tpl</span><span class="p">.</span><span class="na">bindEmpty</span><span class="p">(</span><span class="s">&quot;output&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-FileDrop"><![CDATA[
 <div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">FileDrop</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">WFileDropWidget</span> <span class="n">dropWidgetPtr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WFileDropWidget</span><span class="p">();</span>

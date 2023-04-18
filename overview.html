@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.9.1</title>
+<title>JWt 4.9.2</title>
 </head>
 <body>
 
@@ -24,6 +24,50 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.9.2 (April 18, 2023)</h2>
+
+<p>
+  Wt 4.9.2 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11307" target="_blank">Issue #11307</a>:
+    fixed an issue with multiple validators where custom error messages would not be copied
+    before assigning arguments, causing more arguments to be appended every time the getter was used.
+    To fix this, we made <a href="eu/webtoolkit/jwt/WString.html">WString</a> cloneable, and made sure
+    the copy construction in the original C++ code is
+    translated to a call to <a href="eu/webtoolkit/jwt/WString.html#clone()">WString#clone()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11321" target="_blank">Issue #11321</a>:
+    fixed JWt's string splitting behavior to match Wt.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11424" target="_blank">Issue #11424</a>:
+    fixed redundant calls of
+    <a href="eu/webtoolkit/jwt/WDialog.html#setClosable(boolean)">WDialog#setClosable(false)</a>
+    causing a "widget not in container" error to be logged.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10908" target="_blank">Issue #10908</a>:
+    fixed an issue with
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>
+    where the selection of a
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a>
+    was not updated when using the arrow keys. We also made sure to scroll the currently
+    selected option into view when selected using the arrow keys.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11433" target="_blank">Issue #11433</a>:
+    fixed a regression in the treeview-dragdrop example where dropping a file on the folder view was not working anymore.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11379" target="_blank">Issue #11379</a>:
+    fixed a JavaScript error in <a href="eu/webtoolkit/jwt/WPaintedWidget.html">WPaintedWidget</a>.
+  </li>
+</ul>
 
 <h2>Release 4.9.1 (January 20, 2023)</h2>
 

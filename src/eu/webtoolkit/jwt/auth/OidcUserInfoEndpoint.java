@@ -97,7 +97,7 @@ public class OidcUserInfoEndpoint extends WResource {
     User user = accessToken.getUser();
     String scope = accessToken.getScope();
     Set<String> scopeSet = new HashSet<String>();
-    scopeSet = new HashSet<String>(Arrays.asList(scope.split(" ")));
+    StringUtils.split(scopeSet, scope, " ", false);
     try {
       response.out().append(this.generateUserInfo(user, scopeSet).toString()).append('\n');
       logger.info(
