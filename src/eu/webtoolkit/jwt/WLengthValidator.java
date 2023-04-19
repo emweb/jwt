@@ -142,9 +142,7 @@ public class WLengthValidator extends WValidator {
    */
   public WString getInvalidTooShortText() {
     if (!(this.tooShortText_.length() == 0)) {
-      WString s = this.tooShortText_;
-      s.arg(this.minLength_).arg(this.maxLength_);
-      return s;
+      return this.tooShortText_.clone().arg(this.minLength_).arg(this.maxLength_);
     } else {
       if (this.minLength_ == 0) {
         return new WString();
@@ -179,9 +177,7 @@ public class WLengthValidator extends WValidator {
    */
   public WString getInvalidTooLongText() {
     if (!(this.tooLongText_.length() == 0)) {
-      WString s = this.tooLongText_;
-      s.arg(this.minLength_).arg(this.maxLength_);
-      return s;
+      return this.tooLongText_.clone().arg(this.minLength_).arg(this.maxLength_);
     } else {
       if (this.maxLength_ == Integer.MAX_VALUE) {
         return new WString();

@@ -175,9 +175,7 @@ public class WDoubleValidator extends WValidator {
    */
   public WString getInvalidTooSmallText() {
     if (!(this.tooSmallText_.length() == 0)) {
-      WString s = this.tooSmallText_;
-      s.arg(this.bottom_).arg(this.top_);
-      return s;
+      return this.tooSmallText_.clone().arg(this.bottom_).arg(this.top_);
     } else {
       if (this.bottom_ == -Double.MAX_VALUE) {
         return new WString();
@@ -210,9 +208,7 @@ public class WDoubleValidator extends WValidator {
    */
   public WString getInvalidTooLargeText() {
     if (!(this.tooLargeText_.length() == 0)) {
-      WString s = this.tooLargeText_;
-      s.arg(this.bottom_).arg(this.top_);
-      return s;
+      return this.tooLargeText_.clone().arg(this.bottom_).arg(this.top_);
     } else {
       if (this.top_ == Double.MAX_VALUE) {
         return new WString();

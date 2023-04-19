@@ -216,9 +216,7 @@ public class WDateValidator extends WValidator {
    */
   public WString getInvalidNotADateText() {
     if (!(this.notADateText_.length() == 0)) {
-      WString s = this.notADateText_;
-      s.arg(this.formats_.get(0));
-      return s;
+      return this.notADateText_.clone().arg(this.formats_.get(0));
     } else {
       return WString.tr("Wt.WDateValidator.WrongFormat").arg(this.formats_.get(0));
     }
@@ -242,10 +240,10 @@ public class WDateValidator extends WValidator {
    */
   public WString getInvalidTooEarlyText() {
     if (!(this.tooEarlyText_.length() == 0)) {
-      WString s = this.tooEarlyText_;
-      s.arg(this.bottom_.toString(this.formats_.get(0)))
+      return this.tooEarlyText_
+          .clone()
+          .arg(this.bottom_.toString(this.formats_.get(0)))
           .arg(this.top_.toString(this.formats_.get(0)));
-      return s;
     } else {
       if ((this.bottom_ == null)) {
         return new WString();
@@ -281,10 +279,10 @@ public class WDateValidator extends WValidator {
    */
   public WString getInvalidTooLateText() {
     if (!(this.tooLateText_.length() == 0)) {
-      WString s = this.tooLateText_;
-      s.arg(this.bottom_.toString(this.formats_.get(0)))
+      return this.tooLateText_
+          .clone()
+          .arg(this.bottom_.toString(this.formats_.get(0)))
           .arg(this.top_.toString(this.formats_.get(0)));
-      return s;
     } else {
       if ((this.top_ == null)) {
         return new WString();

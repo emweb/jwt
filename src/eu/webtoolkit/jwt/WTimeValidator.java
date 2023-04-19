@@ -125,9 +125,7 @@ public class WTimeValidator extends WRegExpValidator {
   /** Returns the message displayed when the input is not a time. */
   public WString getInvalidNotATimeText() {
     if (!(this.notATimeText_.length() == 0)) {
-      WString s = this.notATimeText_;
-      s.arg(this.formats_.get(0));
-      return s;
+      return this.notATimeText_.clone().arg(this.formats_.get(0));
     } else {
       return WString.tr("Wt.WTimeValidator.WrongFormat").arg(this.formats_.get(0));
     }
@@ -140,10 +138,10 @@ public class WTimeValidator extends WRegExpValidator {
   /** Returns the message displayed when time is too early. */
   public WString getInvalidTooEarlyText() {
     if (!(this.tooEarlyText_.length() == 0)) {
-      WString s = this.tooEarlyText_;
-      s.arg(this.bottom_.toString(this.formats_.get(0)))
+      return this.tooEarlyText_
+          .clone()
+          .arg(this.bottom_.toString(this.formats_.get(0)))
           .arg(this.top_.toString(this.formats_.get(0)));
-      return s;
     } else {
       if ((this.bottom_ == null)) {
         return new WString();
@@ -167,10 +165,10 @@ public class WTimeValidator extends WRegExpValidator {
   /** Returns the message displayed when time is too late. */
   public WString getInvalidTooLateText() {
     if (!(this.tooLateText_.length() == 0)) {
-      WString s = this.tooLateText_;
-      s.arg(this.bottom_.toString(this.formats_.get(0)))
+      return this.tooLateText_
+          .clone()
+          .arg(this.bottom_.toString(this.formats_.get(0)))
           .arg(this.top_.toString(this.formats_.get(0)));
-      return s;
     } else {
       if ((this.top_ == null)) {
         return new WString();

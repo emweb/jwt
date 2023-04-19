@@ -101,7 +101,6 @@ public abstract class WtServlet extends HttpServlet {
 	static final String Wt_js;
 	static final String Boot_js;
 	static final String Hybrid_html;
-	static final String JQuery_js;
 	static final String Wt_xml = "/eu/webtoolkit/jwt/wt";
 	public static final String AuthStrings_xml = "/eu/webtoolkit/jwt/auth/auth_strings";
 	static final String AuthCssTheme_xml = "/eu/webtoolkit/jwt/auth/auth_css_theme";
@@ -118,7 +117,6 @@ public abstract class WtServlet extends HttpServlet {
 		Hybrid_html = readFile("/eu/webtoolkit/jwt/skeletons/Hybrid.html");
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
 		Boot_js = readFile("/eu/webtoolkit/jwt/skeletons/Boot.min.js");
-		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
 
 		String[][] mimeTypes = {
 				{ "css", "text/css" },
