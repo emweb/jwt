@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -80,6 +81,15 @@ public class WebResponse extends HttpServletResponseWrapper {
 			@Override
 			public void write(int arg0) throws IOException {
 				out.write(arg0);
+			}
+
+			@Override
+			public boolean isReady() {
+				return true;
+			}
+
+			@Override
+			public void setWriteListener(WriteListener arg0) {
 			}
 		}, logger);
 

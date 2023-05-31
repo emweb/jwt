@@ -382,7 +382,7 @@ public class WCssTheme extends WTheme {
     app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_9_1.setValidationState(")
+      js.append("Wt4_10_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -415,7 +415,7 @@ public class WCssTheme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "(function(t){let e;if(t.options){const i=t.options.item(t.selectedIndex);e=null===i?\"\":i.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
+        "(function(t){let e;if(t.options){const i=t.options.item(t.selectedIndex);e=null===i?\"\":i.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():\"function\"==typeof t.wtEncodeValue?t.wtEncodeValue(t):t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
   }
 
   static WJavaScriptPreamble wtjs2() {

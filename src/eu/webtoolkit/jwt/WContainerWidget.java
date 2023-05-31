@@ -905,7 +905,7 @@ public class WContainerWidget extends WInteractWidget {
   protected void setFormData(final WObject.FormData formData) {
     if (!(formData.values.length == 0)) {
       List<String> attributes = new ArrayList<String>();
-      attributes = new ArrayList<String>(Arrays.asList(formData.values[0].split(";")));
+      StringUtils.split(attributes, formData.values[0], ";", false);
       if (attributes.size() == 2) {
         try {
           this.scrollTop_ = (int) Double.parseDouble(attributes.get(0));

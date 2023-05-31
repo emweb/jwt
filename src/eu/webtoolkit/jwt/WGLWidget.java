@@ -564,7 +564,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt4_9_1.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_9_1.glMatrix.mat4.create())";
+          "Wt4_10_0.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_10_0.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
       return copy;
     }
@@ -575,7 +575,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt4_9_1.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_9_1.glMatrix.mat4.create())";
+          "Wt4_10_0.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_10_0.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
       return copy;
     }
@@ -586,10 +586,10 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       StringWriter ss = new StringWriter();
-      ss.append("Wt4_9_1.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
+      ss.append("Wt4_10_0.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
       javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
       WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
-      ss.append(", Wt4_9_1.glMatrix.mat4.create())");
+      ss.append(", Wt4_10_0.glMatrix.mat4.create())");
       copy.jsRef_ = ss.toString();
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
       copy.matrices_.add(m);
@@ -3096,13 +3096,13 @@ public class WGLWidget extends WInteractWidget {
       return;
     }
     List<String> matrices = new ArrayList<String>();
-    matrices = new ArrayList<String>(Arrays.asList(parVals[0].split(";")));
+    StringUtils.split(matrices, parVals[0], ";", false);
     for (int i = 0; i < matrices.size(); i++) {
       if (matrices.get(i).equals("")) {
         break;
       }
       List<String> idAndData = new ArrayList<String>();
-      idAndData = new ArrayList<String>(Arrays.asList(matrices.get(i).split(":")));
+      StringUtils.split(idAndData, matrices.get(i), ":", false);
       int id = (int) StringUtils.asNumber(idAndData.get(0));
       int j = 0;
       for (j = 0; j < this.jsMatrixList_.size(); j++) {
@@ -3118,7 +3118,7 @@ public class WGLWidget extends WInteractWidget {
         }
         final List<Float> vec = this.jsVectorList_.get(j).serverSideCopy;
         List<String> mData = new ArrayList<String>();
-        mData = new ArrayList<String>(Arrays.asList(idAndData.get(1).split(",")));
+        StringUtils.split(mData, idAndData.get(1), ",", false);
         for (int i1 = 0; i1 < vec.size(); i1++) {
           if (mData.get(i1).equals("Infinity")) {
             vec.set(i1, Float.POSITIVE_INFINITY);
@@ -3133,7 +3133,7 @@ public class WGLWidget extends WInteractWidget {
       } else {
         final javax.vecmath.Matrix4f mat = this.jsMatrixList_.get(j).serverSideCopy;
         List<String> mData = new ArrayList<String>();
-        mData = new ArrayList<String>(Arrays.asList(idAndData.get(1).split(",")));
+        StringUtils.split(mData, idAndData.get(1), ",", false);
         for (int i1 = 0; i1 < 4; i1++) {
           for (int i2 = 0; i2 < 4; i2++) {
             mat.setElement(i2, i1, Float.parseFloat(mData.get(i1 * 4 + i2)));

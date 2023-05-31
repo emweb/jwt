@@ -12,7 +12,6 @@
 	<classpathentry kind="lib" path="lib/http/httpclient-4.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/http/httpcore-4.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jpa/geronimo-jpa_2.0_spec-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api/servlet-api-3.0.jar"/>
 	<classpathentry kind="lib" path="lib/vt-password/bcprov-jdk15-1.45.jar"/>
 	<classpathentry kind="lib" path="lib/vt-password/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/vt-password/commons-logging-1.1.1.jar"/>
@@ -28,6 +27,7 @@
 	<classpathentry kind="lib" path="lib/jogl/jogl-all.jar"/>
 	<classpathentry kind="lib" path="lib/jogl/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-runtime-4.7.2.jar"/>
-	<classpathentry kind="lib" path="lib/servlet-api/javax.websocket-api-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api/jakarta.servlet-api-4.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/servlet-api/jakarta.websocket-api-1.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

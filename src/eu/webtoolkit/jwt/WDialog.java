@@ -394,7 +394,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt4_9_1.Resizable(Wt4_9_1,"
+            "(new Wt4_10_0.Resizable(Wt4_10_0,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -440,24 +440,25 @@ public class WDialog extends WPopupWidget {
    * dialog.
    */
   public void setClosable(boolean closable) {
+    if (closable == this.isClosable()) {
+      return;
+    }
     if (closable) {
-      if (!(this.closeIcon_ != null)) {
-        WTheme theme = WApplication.getInstance().getTheme();
-        if (ObjectUtils.cast(theme, WBootstrap5Theme.class) != null) {
-          this.closeIcon_ = new WPushButton((WContainerWidget) this.titleBar_);
-        } else {
-          this.closeIcon_ = new WText();
-          this.titleBar_.insertWidget(0, this.closeIcon_);
-        }
-        theme.apply(this, this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
-        this.closeIcon_
-            .clicked()
-            .addListener(
-                this,
-                (WMouseEvent e1) -> {
-                  WDialog.this.reject();
-                });
+      WTheme theme = WApplication.getInstance().getTheme();
+      if (ObjectUtils.cast(theme, WBootstrap5Theme.class) != null) {
+        this.closeIcon_ = new WPushButton((WContainerWidget) this.titleBar_);
+      } else {
+        this.closeIcon_ = new WText();
+        this.titleBar_.insertWidget(0, this.closeIcon_);
       }
+      theme.apply(this, this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
+      this.closeIcon_
+          .clicked()
+          .addListener(
+              this,
+              (WMouseEvent e1) -> {
+                WDialog.this.reject();
+              });
     } else {
       {
         WWidget toRemove = WidgetUtils.remove(this.titleBar_, this.closeIcon_);
@@ -694,7 +695,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt4_9_1.WDialog("
+          "new Wt4_10_0.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()

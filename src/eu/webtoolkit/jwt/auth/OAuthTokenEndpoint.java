@@ -91,7 +91,7 @@ public class OAuthTokenEndpoint extends WResource {
       if (authHeader.length() > AUTH_TYPE.length() + 1) {
         headerSecret = Utils.base64DecodeS(authHeader.substring(AUTH_TYPE.length() + 1));
         List<String> tokens = new ArrayList<String>();
-        tokens = new ArrayList<String>(Arrays.asList(headerSecret.split(":")));
+        StringUtils.split(tokens, headerSecret, ":", false);
         if (tokens.size() == 2) {
           clientId = java.net.URLDecoder.decode(tokens.get(0), "UTF-8");
           ;

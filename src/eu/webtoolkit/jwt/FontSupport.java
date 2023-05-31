@@ -196,7 +196,7 @@ class FontSupport {
     }
     List<String> fontNames = new ArrayList<String>();
     String families = font.getSpecificFamilies().toString();
-    fontNames = new ArrayList<String>(Arrays.asList(families.split(",")));
+    StringUtils.split(fontNames, families, ",", false);
     for (int i = 0; i < fontNames.size(); ++i) {
       String s = fontNames.get(i).toLowerCase();
       s = Utils.strip(s, "\"'");

@@ -141,6 +141,9 @@ class FormWidgets extends Topic {
     result.bindWidget("SpinBox", SpinBox());
     result.bindWidget("TextSide", TextSide());
     result.bindWidget("InputMask", InputMask());
+    result.bindWidget("EmailEdit", EmailEdit());
+    result.bindString(
+        "emailEdit-template", reindent(WString.tr("emailEdit-template")), TextFormat.Plain);
     result.bindString(
         "lineEdit-template", reindent(WString.tr("lineEdit-template")), TextFormat.Plain);
     result.bindString(
@@ -445,6 +448,55 @@ class FormWidgets extends Topic {
     edit = new WLineEdit();
     edit.setStyleClass("span2");
     result.bindWidget("amount2", edit);
+    return result;
+  }
+
+  WWidget EmailEdit() {
+    WTemplate result = new WTemplate(WString.tr("emailEdit-template"));
+    final WTemplate tpl = result;
+    tpl.addFunction("id", WTemplate.Functions.id);
+    tpl.bindString("label", "Email address: ", TextFormat.Plain);
+    final WEmailEdit edit = (WEmailEdit) tpl.bindWidget("edit", new WEmailEdit());
+    WPushButton submit = (WPushButton) tpl.bindWidget("submit", new WPushButton("Submit"));
+    final WCheckBox multiple =
+        (WCheckBox) tpl.bindWidget("multiple", new WCheckBox("Allow multiple"));
+    multiple
+        .changed()
+        .addListener(
+            this,
+            () -> {
+              edit.setMultiple(multiple.isChecked());
+            });
+    final WCheckBox pattern =
+        (WCheckBox) tpl.bindWidget("pattern", new WCheckBox("Use pattern '.*@example[.]com'"));
+    pattern
+        .changed()
+        .addListener(
+            this,
+            () -> {
+              edit.setPattern(pattern.isChecked() ? ".*@example[.]com" : "");
+            });
+    tpl.bindEmpty("edit-info");
+    edit.validated()
+        .addListener(
+            this,
+            (WValidator.Result validationResult) -> {
+              tpl.bindString("edit-info", validationResult.getMessage());
+            });
+    submit
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              edit.setMultiple(multiple.isChecked());
+              edit.setPattern(pattern.isChecked() ? ".*@example[.]com" : "");
+              edit.validate();
+              tpl.bindString(
+                  "output",
+                  new WString("Entered email address: {1}").arg(edit.getValueText()),
+                  TextFormat.Plain);
+            });
+    tpl.bindEmpty("output");
     return result;
   }
 

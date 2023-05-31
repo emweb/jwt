@@ -104,7 +104,14 @@ public class AuthModel extends FormBaseModel {
         this.getUsers().findWithIdentity(Identity.LoginName, this.valueText(LoginNameField));
     if (field == LoginNameField) {
       if (user.isValid()) {
-        this.setValid(LoginNameField);
+        if (this.getBaseAuth().isEmailVerificationRequired() && user.getEmail().length() == 0) {
+          this.setValidation(
+              LoginNameField,
+              new WValidator.Result(
+                  ValidationState.Invalid, WString.tr("Wt.Auth.email-unverified")));
+        } else {
+          this.setValid(LoginNameField);
+        }
       } else {
         this.setValidation(
             LoginNameField,
@@ -188,7 +195,7 @@ public class AuthModel extends FormBaseModel {
       app.loadJavaScript("js/AuthModel.js", wtjs1());
       button.setJavaScriptMember(
           " AuthThrottle",
-          "new Wt4_9_1.AuthThrottle(Wt4_9_1,"
+          "new Wt4_10_0.AuthThrottle(Wt4_10_0,"
               + button.getJsRef()
               + ","
               + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()
@@ -326,6 +333,20 @@ public class AuthModel extends FormBaseModel {
       }
     }
     return new User();
+  }
+  /**
+   * Returns whether to allow resending the email verification.
+   *
+   * <p>Returns true when email verification is required and the user was not yet verified. In this
+   * case, a user would be stuck if the verification email was lost.
+   */
+  public boolean isShowResendEmailVerification() {
+    if (!this.getBaseAuth().isEmailVerificationRequired()) {
+      return false;
+    }
+    User user =
+        this.getUsers().findWithIdentity(Identity.LoginName, this.valueText(LoginNameField));
+    return user.isValid() && user.getEmail().length() == 0;
   }
 
   private int throttlingDelay_;

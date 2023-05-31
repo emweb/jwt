@@ -1700,7 +1700,7 @@ class WebSession {
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
     if (wasSuspended) {
       if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
-        this.app_.doJavaScript("Wt4_9_1.history.removeSessionId()");
+        this.app_.doJavaScript("Wt4_10_0.history.removeSessionId()");
         this.sessionIdInUrl_ = false;
       }
       this.app_.unsuspended().trigger();
@@ -2096,7 +2096,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt4_9_1.scrollHistory();");
+                this.app_.doJavaScript("Wt4_10_0.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }
@@ -2229,12 +2229,13 @@ class WebSession {
       this.applicationUrl_ = this.absoluteBaseUrl_ + this.applicationName_;
       this.bookmarkUrl_ = this.applicationUrl_;
     }
-    String path = request.getPathInfo();
+    String extraPathInfo = request.getPathInfo();
+    String path = extraPathInfo;
     if (path.length() == 0 && hashE != null) {
       path = hashE;
     }
     this.env_.setInternalPath(path);
-    this.pagePathInfo_ = request.getPathInfo();
+    this.pagePathInfo_ = extraPathInfo;
     this.docRoot_ = this.getCgiValue("DOCUMENT_ROOT");
   }
 

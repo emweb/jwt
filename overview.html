@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.9.1</title>
+<title>JWt 4.10.0</title>
 </head>
 <body>
 
@@ -24,6 +24,91 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.10.0 (May 30, 2023)</h2>
+
+<p>
+  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement. 
+</p>
+
+<h3>New features</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11627" target="_blank">Issue #11627</a>:
+    The included Servlet API JAR was updated to version 4.0.4, the last version that still
+    uses the <code>javax</code> namespace, and the Servlet 2.5 support was removed. Now
+    <a href="eu/webtoolkit/jwt/ServletInit.html">ServletInit</a> will set the default
+    request encoding of the
+    <a href="https://jakarta.ee/specifications/servlet/4.0/apidocs/javax/servlet/servletcontext"
+      target="_blank">ServletContext</a> to UTF-8.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7279">Issue #7279</a>:
+    added <a href="eu/webtoolkit/jwt/WEmailEdit.html">WEmailEdit</a> and
+    <a href="eu/webtoolkit/jwt/WEmailValidator.html">WEmailValidator</a>, implementing
+    a <code>&lt;input type="email"&gt;</code>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/8760" target="_blank">Issue #8760</a>:
+    extended <a href="eu/webtoolkit/jwt/auth/AuthWidget.html">Auth.AuthWidget</a> with the option to resend verificiation emails. When email verification is configured to be required and the email somehow got lost, the user would be stuck not being able to log in.
+    When the user tries to log in now, an info message will be shown saying they need to verify their email first along with a new button to resend the verification email. The user must then enter the email address again in a dialog before the email is sent.<br/>
+    The virtual methods <a href="eu/webtoolkit/jwt/auth/AuthWidget.html#letResendEmailVerification()">AuthWidget.letResendEmailVerification()</a> and <a href="eu/webtoolkit/jwt/auth/AuthWidget.html#getCreateResendEmailVerificationView()">AuthWidget.getCreateResendEmailVerificationView()</a> can be used to customize the UI.
+  </li>
+</ul>
+
+<h3>Other improvements</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11412" target="_blank">Issue #11412</a>:
+    shift-click to open a new window did not work for links to internal paths. Shift-click is now handled by the browser, like ctrl- and meta-click.
+  </li>
+</ul>
+
+<h2>Release 4.9.2 (April 18, 2023)</h2>
+
+<p>
+  Wt 4.9.2 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11307" target="_blank">Issue #11307</a>:
+    fixed an issue with multiple validators where custom error messages would not be copied
+    before assigning arguments, causing more arguments to be appended every time the getter was used.
+    To fix this, we made <a href="eu/webtoolkit/jwt/WString.html">WString</a> cloneable, and made sure
+    the copy construction in the original C++ code is
+    translated to a call to <a href="eu/webtoolkit/jwt/WString.html#clone()">WString#clone()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11321" target="_blank">Issue #11321</a>:
+    fixed JWt's string splitting behavior to match Wt.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11424" target="_blank">Issue #11424</a>:
+    fixed redundant calls of
+    <a href="eu/webtoolkit/jwt/WDialog.html#setClosable(boolean)">WDialog#setClosable(false)</a>
+    causing a "widget not in container" error to be logged.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10908" target="_blank">Issue #10908</a>:
+    fixed an issue with
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>
+    where the selection of a
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html">WSuggestionPopup</a>
+    was not updated when using the arrow keys. We also made sure to scroll the currently
+    selected option into view when selected using the arrow keys.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11433" target="_blank">Issue #11433</a>:
+    fixed a regression in the treeview-dragdrop example where dropping a file on the folder view was not working anymore.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11379" target="_blank">Issue #11379</a>:
+    fixed a JavaScript error in <a href="eu/webtoolkit/jwt/WPaintedWidget.html">WPaintedWidget</a>.
+  </li>
+</ul>
 
 <h2>Release 4.9.1 (January 20, 2023)</h2>
 

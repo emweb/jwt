@@ -369,6 +369,40 @@ public class AuthWidget extends WTemplateFormView {
     return w;
   }
   /**
+   * Lets the user resend the verification email.
+   *
+   * <p>This creates a view to let the user resend the email to verify their email address.
+   *
+   * <p>The default implementation creates a new view using {@link
+   * AuthWidget#getCreateResendEmailVerificationView() getCreateResendEmailVerificationView()} and
+   * shows it in a dialog using {@link AuthWidget#showDialog(CharSequence title, WWidget contents)
+   * showDialog()}.
+   */
+  public void letResendEmailVerification() {
+    this.showDialog(
+        tr("Wt.Auth.resend-verification-title"), this.getCreateResendEmailVerificationView());
+  }
+  /**
+   * Creates a view to resend the email verification email.
+   *
+   * <p>If {@link AuthService#isEmailVerificationRequired()} is <code>true</code>, a button will be
+   * shown next to the user name field to resend the verification email (if the email was not yet
+   * verified). This button will show a dialog containing the widget returned by this method. The
+   * default implementation instantiates a {@link ResendEmailVerificationWidget}.
+   *
+   * <p>This creates the widget used to let the user chose a new password. The default
+   * implementation instantiates an {@link UpdatePasswordWidget}.
+   *
+   * <p>Note that if email verification is optional, the application should provide its own
+   * mechanism to resend the verification email (e.g. in a user settings widget).
+   */
+  public WWidget getCreateResendEmailVerificationView() {
+    String loginName = this.model_.valueText(AuthModel.LoginNameField);
+    User user = this.model_.getUsers().findWithIdentity(Identity.LoginName, loginName);
+    return new ResendEmailVerificationWidget(
+        user, this.model_.getBaseAuth(), (WContainerWidget) null);
+  }
+  /**
    * Creates a view to update a user&apos;s password.
    *
    * <p>If <code>promptPassword</code> is <code>true</code>, the user has to enter his current
@@ -822,6 +856,19 @@ public class AuthWidget extends WTemplateFormView {
         } else {
           this.bindEmpty("sep");
         }
+      }
+      if (this.model_.isShowResendEmailVerification()) {
+        WAnchor resendAnchor = (WAnchor) this.bindWidget("user-confirm-email", new WAnchor());
+        resendAnchor.setText(WString.tr("Wt.Auth.resend-email-verification"));
+        resendAnchor
+            .clicked()
+            .addListener(
+                this,
+                (WMouseEvent e1) -> {
+                  AuthWidget.this.letResendEmailVerification();
+                });
+      } else {
+        this.bindEmpty("user-confirm-email");
       }
       this.model_.updateThrottling(login);
     } else {

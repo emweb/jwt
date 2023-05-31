@@ -111,7 +111,7 @@ class ColorUtils {
             n.substring(
                 start_bracket + 1, start_bracket + 1 + n.length() - 1 - (start_bracket + 1));
         List<String> arguments = new ArrayList<String>();
-        arguments = new ArrayList<String>(Arrays.asList(argumentsStr.split(",")));
+        StringUtils.split(arguments, argumentsStr, ",", false);
         if (!has_alpha && arguments.size() != 3) {
           logger.error(
               new StringWriter().append("could not parse rgb format: ").append(n).toString());

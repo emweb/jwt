@@ -37,8 +37,6 @@ final class WFileUploadResource extends WResource {
       }
     }
     response.setContentType("text/html; charset=utf-8");
-    response.addHeader("Expires", "Sun, 14 Jun 2020 00:00:00 GMT");
-    response.addHeader("Cache-Control", "max-age=315360000");
     Writer o = response.out();
     o.append("<!DOCTYPE html><html>\n<head><script type=\"text/javascript\">\nfunction load() { ");
     if (triggerUpdate || 0 != 0) {

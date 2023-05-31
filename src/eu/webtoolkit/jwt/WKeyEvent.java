@@ -166,7 +166,7 @@ public class WKeyEvent implements WAbstractEvent {
       return;
     }
     List<String> s = new ArrayList<String>();
-    s = new ArrayList<String>(Arrays.asList(str.split(";")));
+    StringUtils.split(s, str, ";", false);
     if (s.size() % 9 != 0) {
       logger.error(
           new StringWriter()

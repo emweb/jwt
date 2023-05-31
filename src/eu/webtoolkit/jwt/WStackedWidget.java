@@ -129,7 +129,8 @@ public class WStackedWidget extends WContainerWidget {
    * WStackedWidget#setTransitionAnimation(WAnimation animation, boolean autoReverse)
    * setTransitionAnimation()}.
    *
-   * <p>The default value for current index is 0 (provided thath
+   * <p>The default value for current index is 0 if there are child widgets, if no child widgets
+   * were added this returns -1.
    *
    * <p>
    *
@@ -295,7 +296,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt4_9_1.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_10_0.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {

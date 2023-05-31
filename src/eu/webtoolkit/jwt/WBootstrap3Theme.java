@@ -477,7 +477,7 @@ public class WBootstrap3Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_9_1.setValidationState(")
+      js.append("Wt4_10_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -528,7 +528,7 @@ public class WBootstrap3Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "validate",
-        "(function(t){let e;if(t.options){const s=t.options.item(t.selectedIndex);e=null===s?\"\":s.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
+        "(function(t){let e;if(t.options){const s=t.options.item(t.selectedIndex);e=null===s?\"\":s.text}else e=\"object\"==typeof t.wtLObj&&\"function\"==typeof t.wtLObj.getValue?t.wtLObj.getValue():\"function\"==typeof t.wtEncodeValue?t.wtEncodeValue(t):t.value;e=t.wtValidate.validate(e);this.setValidationState(t,e.valid,e.message,1)})");
   }
 
   static WJavaScriptPreamble wtjs2() {
@@ -536,7 +536,7 @@ public class WBootstrap3Theme extends WTheme {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "setValidationState",
-        "(function(t,e,s,l){const i=e&&0!=(2&l),o=!e&&0!=(1&l);let a=\"Wt-valid\",c=\"Wt-invalid\";const n=this.theme;if(\"object\"==typeof n){a=n.classes.valid;c=n.classes.invalid}t.classList.toggle(a,i);t.classList.toggle(c,o);let u,r,f;u=t.closest(\".control-group\");if(u){r=\"success\";f=\"error\"}else{u=t.closest(\".form-group\");if(u){r=\"has-success\";f=\"has-error\"}}if(u){const l=u.querySelectorAll(\".Wt-validation-message\");for(const i of l)i.textContent=e?t.defaultTT:s;u.classList.toggle(r,i);u.classList.toggle(f,o)}e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",s)})");
+        "(function(t,e,s,l){const o=e&&0!=(2&l),i=!e&&0!=(1&l);let a=\"Wt-valid\",c=\"Wt-invalid\";const n=this.theme;if(\"object\"==typeof n){a=n.classes.valid;c=n.classes.invalid}t.classList.toggle(a,o);t.classList.toggle(c,i);let u,f,d;u=t.closest(\".control-group\");if(u){f=\"success\";d=\"error\"}else{u=t.closest(\".form-group\");if(u){f=\"has-success\";d=\"has-error\"}}if(u){const l=u.querySelectorAll(\".Wt-validation-message\");for(const o of l)o.textContent=e?t.defaultTT:s;u.classList.toggle(f,o);u.classList.toggle(d,i)}e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",s)})");
   }
 
   private static String[] btnClasses = {

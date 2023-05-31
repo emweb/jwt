@@ -50,7 +50,7 @@ class Block {
           this.type_ = DomElementType.DIV;
         }
         String s = this.attributeValue("class");
-        this.classes_ = new ArrayList<String>(Arrays.asList(s.split(" ")));
+        StringUtils.split(this.classes_, s, " ", false);
       }
       RenderUtils.fetchBlockChildren(node, this, this.children_);
     }
@@ -952,10 +952,10 @@ class Block {
       return;
     }
     List<String> values = new ArrayList<String>();
-    values = new ArrayList<String>(Arrays.asList(style.split(";")));
+    StringUtils.split(values, style, ";", false);
     for (int i = 0; i < values.size(); ++i) {
       List<String> namevalue = new ArrayList<String>();
-      namevalue = new ArrayList<String>(Arrays.asList(values.get(i).split(":")));
+      StringUtils.split(namevalue, values.get(i), ":", false);
       if (namevalue.size() == 2) {
         String n = namevalue.get(0);
         String v = namevalue.get(1);
@@ -964,7 +964,7 @@ class Block {
         this.updateAggregateProperty(n, "", specificity, v);
         if (isAggregate(n)) {
           List<String> allvalues = new ArrayList<String>();
-          allvalues = new ArrayList<String>(Arrays.asList(v.split(" ")));
+          StringUtils.split(allvalues, v, " ", false);
           int count = 0;
           for (int j = 0; j < allvalues.size(); ++j) {
             String vj = allvalues.get(j);
@@ -1222,7 +1222,7 @@ class Block {
     String borderWidthStr = "";
     if (borderStr.length() != 0) {
       List<String> values = new ArrayList<String>();
-      values = new ArrayList<String>(Arrays.asList(borderStr.split(" ")));
+      StringUtils.split(values, borderStr, " ", false);
       if (values.size() > 1 && values.get(1).equals("hidden")) {
         if (indicateHidden) {
           return -1;
@@ -1297,7 +1297,7 @@ class Block {
     String borderColorStr = "";
     if (borderStr.length() != 0) {
       List<String> values = new ArrayList<String>();
-      values = new ArrayList<String>(Arrays.asList(borderStr.split(" ")));
+      StringUtils.split(values, borderStr, " ", false);
       if (values.size() > 2) {
         borderColorStr = values.get(2);
       }
@@ -1578,7 +1578,7 @@ class Block {
     String family = this.inheritedCssProperty(Property.StyleFontFamily);
     if (family.length() != 0) {
       List<String> values = new ArrayList<String>();
-      values = new ArrayList<String>(Arrays.asList(family.split(",")));
+      StringUtils.split(values, family, ",", false);
       for (int i = 0; i < values.size(); ++i) {
         String name = values.get(i);
         name = name.trim();

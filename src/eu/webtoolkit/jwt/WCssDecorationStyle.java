@@ -54,14 +54,22 @@ public class WCssDecorationStyle extends WObject {
   public WCssDecorationStyle(final WCssDecorationStyle other) {
     super();
     this.widget_ = null;
+    this.cursor_ = Cursor.Auto;
     this.cursorImage_ = "";
     this.backgroundColor_ = new WColor();
     this.foregroundColor_ = new WColor();
     this.backgroundImage_ = new WLink();
-    this.backgroundImageRepeat_ = EnumSet.noneOf(Orientation.class);
+    this.backgroundImageRepeat_ = EnumSet.of(Orientation.Horizontal, Orientation.Vertical);
     this.backgroundImageLocation_ = EnumSet.noneOf(Side.class);
     this.font_ = new WFont();
     this.textDecoration_ = EnumSet.noneOf(TextDecoration.class);
+    this.cursorChanged_ = false;
+    this.borderChanged_ = false;
+    this.foregroundColorChanged_ = false;
+    this.backgroundColorChanged_ = false;
+    this.backgroundImageChanged_ = false;
+    this.fontChanged_ = false;
+    this.textDecorationChanged_ = false;
     this.copy(other);
   }
   /** Sets the cursor style. */

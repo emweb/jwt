@@ -205,8 +205,6 @@ public class WValidator {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The signature and contract changed changed in JWt 3.1.9.</i>
-   *
    * @see WValidator#getInputFilter()
    */
   public String getJavaScriptValidate() {

@@ -173,9 +173,7 @@ public class WIntValidator extends WValidator {
    */
   public WString getInvalidTooSmallText() {
     if (!(this.tooSmallText_.length() == 0)) {
-      WString s = this.tooSmallText_;
-      s.arg(this.bottom_).arg(this.top_);
-      return s;
+      return this.tooSmallText_.clone().arg(this.bottom_).arg(this.top_);
     } else {
       if (this.bottom_ == Integer.MIN_VALUE) {
         return new WString();
@@ -208,9 +206,7 @@ public class WIntValidator extends WValidator {
    */
   public WString getInvalidTooLargeText() {
     if (!(this.tooLargeText_.length() == 0)) {
-      WString s = this.tooLargeText_;
-      s.arg(this.bottom_).arg(this.top_);
-      return s;
+      return this.tooLargeText_.clone().arg(this.bottom_).arg(this.top_);
     } else {
       if (this.top_ == Integer.MAX_VALUE) {
         return new WString();
@@ -250,7 +246,7 @@ public class WIntValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_9_1.WIntValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_10_0.WIntValidator(").append(this.isMandatory()).append(',');
     if (this.bottom_ != Integer.MIN_VALUE) {
       js.append(this.bottom_);
     } else {

@@ -1678,7 +1678,7 @@ public class WPainter {
   static List<WString> splitLabel(CharSequence text) {
     String s = text.toString();
     List<String> splitText = new ArrayList<String>();
-    splitText = new ArrayList<String>(Arrays.asList(s.split("\n")));
+    StringUtils.split(splitText, s, "\n", false);
     List<WString> result = new ArrayList<WString>();
     for (int i = 0; i < splitText.size(); ++i) {
       result.add(new WString(splitText.get(i)));

@@ -50,7 +50,7 @@ public class WEnvironment {
 
   /** Wt&apos;s JavaScript scope. */
   public static String getJavaScriptWtScope() {
-    return "Wt4_9_1";
+    return "Wt4_10_0";
   }
   /**
    * Parameters passed to the application.
@@ -407,12 +407,10 @@ public class WEnvironment {
    *
    * <p>This is the internal path with which the application was started.
    *
-   * <p>For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>, the following two
-   * URLs are considered equivalent, and indicate an internal path <code>&quot;/this/there&quot;
-   * </code>:
+   * <p>For an application deployed at <code>&quot;/stuff/app.wt&quot;</code>, the following URL
+   * indicates an internal path <code>&quot;/this/there&quot;</code>:
    *
    * <pre>{@code
-   * http://www.mydomain.com/stuff/app.wt/this/there
    * http://www.mydomain.com/stuff/app.wt/this/there
    *
    * }</pre>
@@ -447,7 +445,7 @@ public class WEnvironment {
    * <p>Example: <code>&quot;1.99.2&quot;</code>
    */
   public static String getLibraryVersion() {
-    return "4.9.1";
+    return "4.10.0";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int
   // major, final bad java simple ref int minor) ;
@@ -668,7 +666,6 @@ public class WEnvironment {
   String serverSoftware_;
   String serverAdmin_;
   String clientAddress_;
-  String pathInfo_;
   String internalPath_;
   String publicDeploymentPath_;
   protected String redirectSecret_;
@@ -697,7 +694,6 @@ public class WEnvironment {
     this.serverSoftware_ = "";
     this.serverAdmin_ = "";
     this.clientAddress_ = "";
-    this.pathInfo_ = "";
     this.internalPath_ = "";
     this.publicDeploymentPath_ = "";
     this.redirectSecret_ = "";
@@ -921,7 +917,6 @@ public class WEnvironment {
     this.serverSoftware_ = "";
     this.serverAdmin_ = "";
     this.clientAddress_ = "";
-    this.pathInfo_ = "";
     this.internalPath_ = "";
     this.publicDeploymentPath_ = "";
     this.redirectSecret_ = "";
@@ -937,7 +932,6 @@ public class WEnvironment {
     this.serverSignature_ = str("");
     this.serverSoftware_ = str("");
     this.serverAdmin_ = str("");
-    this.pathInfo_ = request.getPathInfo();
     this.redirectSecret_ = this.session_.getController().getRedirectSecret(request);
     this.setUserAgent(str(request.getHeaderValue("User-Agent")));
     this.updateUrlScheme(request);
@@ -1039,7 +1033,7 @@ public class WEnvironment {
   private static void parseCookies(final String cookie, final Map<String, String> result) {
     try {
       List<String> list = new ArrayList<String>();
-      list = new ArrayList<String>(Arrays.asList(cookie.split(";")));
+      StringUtils.split(list, cookie, ";", false);
       for (int i = 0; i < list.size(); ++i) {
         int e = list.get(i).indexOf('=');
         if (e == -1) {

@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 import org.slf4j.Logger;
 
@@ -149,6 +150,23 @@ public class StreamUtils {
 							"enable debug logging for more details", e.getMessage());
 				}
 				valid = false;
+			}
+		}
+
+		@Override
+		public boolean isReady() {
+			if (!valid) {
+				// If not valid, we will just discard everything that is written,
+				// so we say we're "ready"
+				return true;
+			}
+			return stream.isReady();
+		}
+
+		@Override
+		public void setWriteListener(WriteListener writeListener) {
+			if (stream != null) {
+				stream.setWriteListener(writeListener);
 			}
 		}
 
