@@ -472,7 +472,7 @@ public class WTreeView extends WAbstractItemView {
    * <p>
    *
    * <p><i><b>Note: </b>The actual space occupied by each column is the column width augmented by 7
-   * pixels for internal padding and a border.</i>
+   * pixels for internal padding and a border. </i>
    *
    * @see WTreeView#setRowHeight(WLength rowHeight)
    */
@@ -565,7 +565,7 @@ public class WTreeView extends WAbstractItemView {
       if (useStyleLeft) {
         boolean rtl = app.getLayoutDirection() == LayoutDirection.RightToLeft;
         this.tieRowsScrollJS_.setJavaScript(
-            "function(obj, event) {Wt4_10_0.getCssRule('#"
+            "function(obj, event) {Wt4_10_1.getCssRule('#"
                 + this.getId()
                 + " .Wt-tv-rowc').style.left= -obj.scrollLeft "
                 + (rtl ? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)" : "")
@@ -863,7 +863,7 @@ public class WTreeView extends WAbstractItemView {
     app.loadJavaScript("js/WTreeView.js", wtjs1());
     this.setJavaScriptMember(
         " WTreeView",
-        "new Wt4_10_0.WTreeView("
+        "new Wt4_10_1.WTreeView("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

@@ -66,10 +66,6 @@ class WChart3DImplementation implements WAbstractChartImplementation {
     }
   }
 
-  public final int numberOfCategories() {
-    return numberOfCategories(Axis.X);
-  }
-
   public WString categoryLabel(int u, Axis axis) {
     if (this.chart_.getDataSeries().size() == 0) {
       return new WString(String.valueOf(u));
@@ -147,11 +143,6 @@ class WChart3DImplementation implements WAbstractChartImplementation {
       default:
         throw new WException("WChart3DImplementation: don't know this axis-type");
     }
-  }
-
-  public final WAbstractChartImplementation.RenderRange computeRenderRange(
-      Axis axis, int xAxis, int yAxis) {
-    return computeRenderRange(axis, xAxis, yAxis, AxisScale.Linear);
   }
 
   public boolean isOnDemandLoadingEnabled() {

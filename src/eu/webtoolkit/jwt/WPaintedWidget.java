@@ -27,13 +27,34 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <table border="1" cellspacing="3" cellpadding="3">
- * <tr><td><b>Browser</b></td><td><b>Methods</b> </td><td><b>Default method</b> </td></tr>
- * <tr><td>Firefox 1.5+</td><td>HtmlCanvas, InlineSVG, PngImage </td><td>HtmlCanvas </td></tr>
- * <tr><td>Internet Explorer 6.0+</td><td>InlineVML, PngImage </td><td>InlineVML </td></tr>
- * <tr><td>Internet Explorer 9+</td><td>HtmlCanvas, InlineSVG, PngImage </td><td>HtmlCanvas </td></tr>
- * <tr><td>Safari</td><td>HtmlCanvas, InlineSVG, PngImage </td><td>HtmlCanvas </td></tr>
- * <tr><td>Opera</td><td>InlineSVG, HtmlCanvas*, PngImage </td><td>InlineSVG </td></tr>
- * <tr><td>other</td><td>?</td><td>HtmlCanvas, PngImage </td></tr>
+ * <tr><td><b>Browser</b>
+ * </td><td><b>Methods</b>
+ * </td><td><b>Default method</b>
+ * </td></tr>
+ * <tr><td>Firefox 1.5+
+ * </td><td>HtmlCanvas, InlineSVG, PngImage
+ * </td><td>HtmlCanvas
+ * </td></tr>
+ * <tr><td>Internet Explorer 6.0+
+ * </td><td>InlineVML, PngImage
+ * </td><td>InlineVML
+ * </td></tr>
+ * <tr><td>Internet Explorer 9+
+ * </td><td>HtmlCanvas, InlineSVG, PngImage
+ * </td><td>HtmlCanvas
+ * </td></tr>
+ * <tr><td>Safari
+ * </td><td>HtmlCanvas, InlineSVG, PngImage
+ * </td><td>HtmlCanvas
+ * </td></tr>
+ * <tr><td>Opera
+ * </td><td>InlineSVG, HtmlCanvas*, PngImage
+ * </td><td>InlineSVG
+ * </td></tr>
+ * <tr><td>other
+ * </td><td>?
+ * </td><td>HtmlCanvas, PngImage
+ * </td></tr>
  * </table>
  *
  * <p><i>* HtmlCanvas occasionally suffers from rendering artefacts in Opera.</i>
@@ -67,7 +88,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <p><i><b>Note: </b>A WPaintedWidget requires that it is given a size using {@link
- * WPaintedWidget#resize(WLength width, WLength height) resize()} or by a layout manager.</i>
+ * WPaintedWidget#resize(WLength width, WLength height) resize()} or by a layout manager. </i>
  *
  * <h3>Client side interaction and repainting</h3>
  *
@@ -191,7 +212,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * <p><i><b>Note: </b>When defining at least one area, no more events will propagate to the widget
    * itself. As a work-around, you can emulate this by listening for events on a {@link WRectArea}
    * that corresponds to the whole widget, and which is added as the last area (catching all events
-   * that were not caught by preceding areas).</i>
+   * that were not caught by preceding areas). </i>
    */
   public void addArea(WAbstractArea area) {
     this.createAreaImage();
@@ -209,7 +230,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * <p><i><b>Note: </b>When defining at least one area, no more events will propagate to the widget
    * itself. As a work-around, you can emulate this by listening for events on a {@link WRectArea}
    * that corresponds to the whole widget, and which is added as the last area (catching all events
-   * that were not caught by preceding areas).</i>
+   * that were not caught by preceding areas). </i>
    */
   public void insertArea(int index, WAbstractArea area) {
     this.createAreaImage();
@@ -259,7 +280,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * <p><i><b>Note: </b>This feature is currently only supported if the {@link
    * WPaintedWidget#getMethod() method} is HtmlCanvas. This will not cause a server roundtrip.
    * Instead, the resulting JavaScript of {@link WPaintedWidget#paintEvent(WPaintDevice paintDevice)
-   * paintEvent()} will be re-executed on the client side.</i>
+   * paintEvent()} will be re-executed on the client side. </i>
    *
    * @see WPaintedWidget#getObjJsRef()
    */

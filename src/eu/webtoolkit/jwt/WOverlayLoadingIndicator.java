@@ -30,8 +30,10 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>The overlay loading indicator</strong> </div>
  *
+ * <p>
+ *
  * <p><i><b>Note: </b>For this loading indicator to render properly in IE, you need to reset the
- * &quot;body&quot; margin to 0. Using the inline stylesheet, this could be done using:</i>
+ * &quot;body&quot; margin to 0. Using the inline stylesheet, this could be done using: </i>
  *
  * <h3>CSS</h3>
  *

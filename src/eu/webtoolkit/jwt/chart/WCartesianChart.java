@@ -88,7 +88,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Note: </b>Client side interaction is only available if the chart is drawn on an HTML
  * canvas. This is the default rendering method on modern browsers, see {@link
- * WPaintedWidget#setPreferredMethod(RenderMethod method) WPaintedWidget#setPreferredMethod()}</i>
+ * WPaintedWidget#setPreferredMethod(RenderMethod method) WPaintedWidget#setPreferredMethod()} </i>
  *
  * <p><i><b>Note: </b>Some features are currently not supported in interactive mode:
  *
@@ -568,7 +568,7 @@ public class WCartesianChart extends WAbstractChart {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>This transfers ownership of the given {@link WAxis} to this chart.</i>
+   * <p><i><b>Note: </b>This transfers ownership of the given {@link WAxis} to this chart. </i>
    *
    * <p><i><b>Note: </b>Precondition: waxis is not null </i>
    */
@@ -593,7 +593,7 @@ public class WCartesianChart extends WAbstractChart {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>This transfers ownership of the given {@link WAxis} to this chart.</i>
+   * <p><i><b>Note: </b>This transfers ownership of the given {@link WAxis} to this chart. </i>
    *
    * <p><i><b>Note: </b>Precondition: waxis is not null </i>
    */
@@ -813,8 +813,8 @@ public class WCartesianChart extends WAbstractChart {
    * <p>This configures the font, border and background for the legend.
    *
    * <p>The default font is a 10pt sans serif font (the same as the default axis label font), the
-   * default <code>border</code> is {@link PenStyle#None} and the default <code>background</code> is
-   * {@link BrushStyle#None}.
+   * default <code>border</code> is PenStyle::None and the default <code>background</code> is
+   * BrushStyle::None.
    *
    * <p>
    *
@@ -1760,7 +1760,7 @@ public class WCartesianChart extends WAbstractChart {
   /**
    * Returns the pen used to draw the border around the chart area.
    *
-   * <p>Defaults to {@link PenStyle#None}.
+   * <p>Defaults to PenStyle::None.
    *
    * <p>
    *
@@ -2024,7 +2024,7 @@ public class WCartesianChart extends WAbstractChart {
    * <p>
    *
    * <p><i><b>Note: </b>The follow curve functionality requires that the X axis values of the data
-   * series are monotonically increasing or decreasing.</i>
+   * series are monotonically increasing or decreasing. </i>
    *
    * @deprecated Use {@link WCartesianChart#setFollowCurve(WDataSeries series) setFollowCurve()}
    *     instead
@@ -2297,13 +2297,13 @@ public class WCartesianChart extends WAbstractChart {
    *
    * <p><i><b>Note: </b>On-demand loading requires that the X axis data for all data series is
    * sorted in ascending order. This feature is optimized for equidistant X axis data, but
-   * that&apos;s not a requirement.</i>
+   * that&apos;s not a requirement. </i>
    *
    * <p><i><b>Note: </b>If no minimum or maximum are set on the Y axis (or axes), then the chart
    * will still have to scan all data of its data series to automatically determine the minimum and
    * maximum Y axis values. If this performance hit is undesirable and the Y axis range is known or
    * guaranteed to be within a certain range, make sure to {@link WAxis#setRange(double minimum,
-   * double maximum) set a range} on the Y axis (or axes).</i>
+   * double maximum) set a range} on the Y axis (or axes). </i>
    *
    * @see WCartesianChart#isOnDemandLoadingEnabled()
    */
@@ -3079,7 +3079,7 @@ public class WCartesianChart extends WAbstractChart {
       int selectedCurve =
           this.selectedSeries_ != null ? this.getSeriesIndexOf(this.selectedSeries_) : -1;
       int followCurve = this.followCurve_ != null ? this.getSeriesIndexOf(this.followCurve_) : -1;
-      ss.append("new Wt4_10_0.WCartesianChart(")
+      ss.append("new Wt4_10_1.WCartesianChart(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.getJsRef())
@@ -5864,8 +5864,8 @@ public class WCartesianChart extends WAbstractChart {
     if (app != null && (this.isInteractive() || this.hasDeferredToolTips_)) {
       app.loadJavaScript("js/ChartCommon.js", wtjs2());
       app.doJavaScript(
-          "if (!Wt4_10_0.chartCommon) {Wt4_10_0.chartCommon = new "
-              + "Wt4_10_0.ChartCommon("
+          "if (!Wt4_10_1.chartCommon) {Wt4_10_1.chartCommon = new "
+              + "Wt4_10_1.ChartCommon("
               + app.getJavaScriptClass()
               + "); }",
           false);

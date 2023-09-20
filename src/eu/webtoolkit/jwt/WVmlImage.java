@@ -74,10 +74,6 @@ public class WVmlImage implements WVectorImage {
     }
   }
 
-  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
-    setChanged(EnumSet.of(flag, flags));
-  }
-
   public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
     this.getPainter().save();
     this.getPainter().translate(rect.getCenter().getX(), rect.getCenter().getY());
@@ -418,14 +414,6 @@ public class WVmlImage implements WVectorImage {
       this.fontMetrics_ = new ServerSideFontMetrics();
     }
     return this.fontMetrics_.measureText(this.getPainter().getFont(), text, maxWidth, wordWrap);
-  }
-
-  public final WTextItem measureText(final CharSequence text) {
-    return measureText(text, -1, false);
-  }
-
-  public final WTextItem measureText(final CharSequence text, double maxWidth) {
-    return measureText(text, maxWidth, false);
   }
 
   public WFontMetrics getFontMetrics() {

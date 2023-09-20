@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.10.0</title>
+<title>JWt 4.10.1</title>
 </head>
 <body>
 
@@ -25,10 +25,40 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.10.1 (September 20, 2023)</h2>
+
+<p>
+  Wt 4.10.1 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11804">Issue #11804</a>:
+    the <a href="classWt_1_1WEmailValidator.html">WEmailValidator</a> was corrected. There was a missing case in the client side regex that did not allow a hyphen in the domain of an email address.
+    The server side regex was correct, but nevertheless the case has been added to the tests.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10512">Issue #10512</a>:
+    ensures that the disabled state of any <a href="classWt_1_1WWebWidget.html">WWebWidget</a> or <a href="classWt_1_1WCompositeWidget.html">WCompositeWidget</a> is correctly propagated to its children.
+    Before, if a user set a widget as disabled that contained children like a <a href="classWt_1_1WMenu.html">WMenu</a>, a new <a href="classWt_1_1WMenuItem.html">WMenuItem</a> could be added, that was enabled.
+    For some of the affected widgets, this meant that the new item could not be selected, since the signal was not exposed, but in some cases, like with a <code>WMenu</code> this was still possible.
+    The disabled state of a widget now propagates to its children so that a disabled state can be set consistently for a parent. This doesn't actually set <a href="classWt_1_1WCompositeWidget.html#af0186120a0adf80edbc11bc600913ce0">setDisabled()</a> of the children.
+    This state can be set separately to manage the child's disabled state without regard to its parent.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11741">Issue #11741</a>:
+    this corrects a small issue where a compiler directive cause a Java function to be empty, not allowing the release of a lock.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11848">Issue #11848</a>:
+    this corrects an edge-case in <a href="classWt_1_1WSuggestionPopup.html">WSuggestionPopup</a> where forcibly displaying the pop-up via Java code would cause it to be unfiltered.
+  </li>
+</ul>
+
 <h2>Release 4.10.0 (May 30, 2023)</h2>
 
 <p>
-  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement. 
+  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement.
 </p>
 
 <h3>New features</h3>
@@ -63,6 +93,15 @@ behaviour. It also indicates the main changes from version to verison.
   <li>
     <a href="https://redmine.webtoolkit.eu/issues/11412" target="_blank">Issue #11412</a>:
     shift-click to open a new window did not work for links to internal paths. Shift-click is now handled by the browser, like ctrl- and meta-click.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11562" target="_blank">Issue #11562</a>:
+    The
+    <a href="https://www.webtoolkit.eu/jwt/latest/doc/userguide/userguide.html"
+      target="_blank">user guide</a>
+    was updated to be built with Asciidoctor instead of the legacy Python implementation,
+    its style was updated to match the JWt website style, and the text was brought up to
+    date a bit.
   </li>
 </ul>
 

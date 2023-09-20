@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>Horizontal slider with ticks on both sides.</strong> </div>
  *
+ * <p>
+ *
  * <h3>CSS</h3>
  *
  * <p>The non-native slider (HTML4, see {@link WSlider#setNativeControl(boolean nativeControl)

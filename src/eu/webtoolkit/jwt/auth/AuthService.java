@@ -539,7 +539,7 @@ public class AuthService {
    * <p><i><b>Note: </b>Since JWt 4.3.0, the behavior of this function changed. The lost password
    * token is no longer removed by {@link AuthService#processEmailToken(String token,
    * AbstractUserDatabase users) processEmailToken()}. Instead, it is now removed in {@link
-   * User#setPassword(PasswordHash password) User#setPassword()}.</i>
+   * User#setPassword(PasswordHash password) User#setPassword()}. </i>
    *
    * @see AuthService#verifyEmailAddress(User user, String address)
    * @see AuthService#lostPassword(String emailAddress, AbstractUserDatabase users)

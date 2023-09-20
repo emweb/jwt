@@ -86,7 +86,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Warning: </b>A WPainterPath that is JavaScript exposed should be modified only through
  * its {@link WJavaScriptHandle handle}. Any attempt at modifying it will cause an exception to be
- * thrown.</i>
+ * thrown. </i>
  *
  * @see WPainter#drawPath(WPainterPath path)
  * @see WPaintedWidget#createJSPainterPath()
@@ -417,7 +417,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Some renderers only support circles (width == height)</i>
+   * <p><i><b>Note: </b>Some renderers only support circles (width == height) </i>
    *
    * @exception {@link WException} if the path {@link WJavaScriptExposableObject#isJavaScriptBound()
    *     is JavaScript bound}
@@ -729,7 +729,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
   public WPainterPath getCrisp() {
     WPainterPath result = new WPainterPath();
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt4_10_0.gfxUtils.path_crisp(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt4_10_1.gfxUtils.path_crisp(" + this.getJsRef() + ')');
     }
     for (int i = 0; i < this.segments_.size(); ++i) {
       final WPainterPath.Segment segment = this.segments_.get(i);

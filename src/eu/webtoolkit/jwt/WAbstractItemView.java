@@ -752,15 +752,13 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * hoverStyleClass) WWidget#acceptDrops()}), and the target item has drop enabled (which is
    * controlled by the item&apos;s {@link ItemFlag#DropEnabled} flag).
    *
-   * <p>Drop events must be handled in {@link WAbstractItemView#dropEvent(WDropEvent e, WModelIndex
-   * index) dropEvent()}.
+   * <p>Drop events must be handled in dropEvent().
    *
    * <p>
    *
    * <p>
    *
    * @see WAbstractItemView#setDragEnabled(boolean enable)
-   * @see WAbstractItemView#dropEvent(WDropEvent e, WModelIndex index)
    * @deprecated Use {@link WAbstractItemView#setEnabledDropLocations(EnumSet dropLocations)
    *     setEnabledDropLocations()} instead. This method now enables {@link DropLocation#OnItem}.
    */
@@ -786,8 +784,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * DropLocation#OnItem} and {@link DropLocation#BetweenRows} are both enabled, the drop indication
    * differs depending on whether {@link ItemFlag#DropEnabled} is set on the item.
    *
-   * <p>Drop events must be handled in {@link WAbstractItemView#dropEvent(WDropEvent e, WModelIndex
-   * index) dropEvent()}.
+   * <p>Drop events must be handled in dropEvent().
    */
   public void setEnabledDropLocations(EnumSet<DropLocation> dropLocations) {
     if (this.enabledDropLocations_.equals(dropLocations)) {
@@ -820,7 +817,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The height must be specified in {@link LengthUnit#Pixel} units.</i>
+   * <p><i><b>Note: </b>The height must be specified in {@link LengthUnit#Pixel} units. </i>
    *
    * @see WAbstractItemView#setColumnWidth(int column, WLength width)
    */
@@ -838,7 +835,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The width must be specified in {@link LengthUnit#Pixel} units.</i>
+   * <p><i><b>Note: </b>The width must be specified in {@link LengthUnit#Pixel} units. </i>
    *
    * <p><i><b>Note: </b>The actual space occupied by each column is the column width augmented by 7
    * pixels for internal padding and a border. </i>
@@ -1956,6 +1953,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     i.setInline(false);
     i.addStyleClass("Wt-label");
     contents.addWidget(i);
+    if (this.isDisabled()) {
+      contents.addStyleClass("Wt-disabled");
+      for (WWidget child : contents.getChildren()) {
+        child.addStyleClass("Wt-disabled");
+      }
+    }
     int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
     contents.setMargin(
         new WLength(headerLevel * this.headerLineHeight_.toPixels()), EnumSet.of(Side.Top));
@@ -2033,6 +2036,12 @@ public abstract class WAbstractItemView extends WCompositeWidget {
               WAbstractItemView.this.handleHeaderDblClicked(info.id, event);
             });
     result.addWidget(main);
+    if (this.isDisabled()) {
+      result.addStyleClass("Wt-disabled");
+      for (WWidget child : result.getChildren()) {
+        child.addStyleClass("Wt-disabled");
+      }
+    }
     String sc = StringUtils.asString(index.getData(ItemDataRole.StyleClass)).toString();
     if (sc.length() != 0) {
       result.addStyleClass(sc);

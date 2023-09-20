@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  *
- * <p><i><b>Note: </b>First consider if you can achieve your layout using CSS !</i>
+ * <p><i><b>Note: </b>First consider if you can achieve your layout using CSS ! </i>
  *
  * @see WHBoxLayout
  */

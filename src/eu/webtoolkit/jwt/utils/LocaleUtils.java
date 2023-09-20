@@ -23,6 +23,10 @@ public class LocaleUtils {
 		return "yyyy-MM-dd";
 	}
 	
+	public static String getDateTimeFormat(Locale locale) {
+		return "yyyy-MM-dd HH:mm:ss";
+	}
+
 	public static double toDouble(Locale locale, String value) {
 		value = value.trim();
 		ParsePosition pos = new ParsePosition(0);

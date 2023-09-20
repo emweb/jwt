@@ -51,6 +51,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>An example WTreeTable (polished)</strong> </div>
  *
+ * <p>
+ *
  * @see WTreeTableNode
  * @see WTreeView
  */
@@ -229,6 +231,13 @@ public class WTreeTable extends WCompositeWidget {
     return this.headers_;
   }
 
+  public void setDisabled(boolean isDisabled) {
+    if (this.tree_ != null) {
+      this.tree_.setDisabled(isDisabled);
+    }
+    super.setDisabled(isDisabled);
+  }
+
   protected void render(EnumSet<RenderFlag> flags) {
     if (flags.contains(RenderFlag.Full)) {
       this.defineJavaScript();
@@ -254,7 +263,7 @@ public class WTreeTable extends WCompositeWidget {
     app.loadJavaScript("js/WTreeTable.js", wtjs1());
     this.setJavaScriptMember(
         " WTreeTable",
-        "new Wt4_10_0.WTreeTable(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_10_1.WTreeTable(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
   }
 
   static WJavaScriptPreamble wtjs1() {

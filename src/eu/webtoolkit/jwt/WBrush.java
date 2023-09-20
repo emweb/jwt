@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Warning: </b>A WBrush that is JavaScript exposed should be modified only through its
  * {@link WJavaScriptHandle handle}. Any attempt at modifying it will cause an exception to be
- * thrown.</i>
+ * thrown. </i>
  *
  * @see WPainter#setBrush(WBrush b)
  * @see WPen
@@ -57,7 +57,7 @@ public class WBrush extends WJavaScriptExposableObject {
   /**
    * Creates a brush.
    *
-   * <p>Creates a brush with a {@link BrushStyle#None} fill style.
+   * <p>Creates a brush with a BrushStyle::None fill style.
    */
   public WBrush() {
     super();
@@ -153,7 +153,7 @@ public class WBrush extends WJavaScriptExposableObject {
   /**
    * Sets the brush color.
    *
-   * <p>If the current style is a gradient style, then it is reset to {@link BrushStyle#Solid}.
+   * <p>If the current style is a gradient style, then it is reset to BrushStyle::Solid.
    *
    * <p>
    *
@@ -181,7 +181,7 @@ public class WBrush extends WJavaScriptExposableObject {
   /**
    * Sets the brush gradient.
    *
-   * <p>This also sets the style to {@link BrushStyle#Gradient}.
+   * <p>This also sets the style to BrushStyle::Gradient.
    *
    * <p>
    *

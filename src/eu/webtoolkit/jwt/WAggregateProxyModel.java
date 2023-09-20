@@ -36,6 +36,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>A WTreeView using a WAggregateProxyModel</strong> </div>
  *
+ * <p>
+ *
  * <p><i><b>Note: </b>This model does not support dynamic changes to the column definition of the
  * source model (i.e. insertions or deletions of source model columns). </i>
  */

@@ -141,11 +141,11 @@ public class WVirtualImage extends WCompositeWidget {
     this.impl_
         .mouseWentDown()
         .addListener(
-            "function(obj, event) {  var pc = Wt4_10_0.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+            "function(obj, event) {  var pc = Wt4_10_1.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
     this.impl_
         .mouseMoved()
         .addListener(
-            "function(obj, event) {var WT= Wt4_10_0;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
+            "function(obj, event) {var WT= Wt4_10_1;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = "
                 + this.contents_.getJsRef()
                 + ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
     this.impl_
@@ -309,14 +309,11 @@ public class WVirtualImage extends WCompositeWidget {
    * <p>Width and height will not necesarilly equal {@link WVirtualImage#getGridImageSize()
    * getGridImageSize()}, if the the image is not infinite sized.
    *
-   * <p>The default implementation calls {@link WVirtualImage#render(long x, long y, int width, int
-   * height) render()} and creates an image for the resource returned.
+   * <p>The default implementation calls render() and creates an image for the resource returned.
    *
    * <p>You should override this method if you wish to serve for example static image content.
    *
    * <p>
-   *
-   * @see WVirtualImage#render(long x, long y, int width, int height)
    */
   protected WImage createImage(long x, long y, int width, int height) {
     WResource r = this.render(x, y, width, height);

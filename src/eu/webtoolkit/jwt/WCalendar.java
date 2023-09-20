@@ -47,11 +47,13 @@ import org.slf4j.LoggerFactory;
  * <strong>WCalendar with default look</strong></p>
  * </div>
  *
+ *
  * </td><td><div align="center">
  * <img src="doc-files/WCalendar-polished-1.png">
  * <p>
  * <strong>WCalendar with polished look</strong></p>
  * </div>
+ *
  *
  * </td></tr>
  * </table>

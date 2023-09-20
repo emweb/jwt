@@ -33,12 +33,10 @@ import org.slf4j.LoggerFactory;
  * WStandardItemModel#WStandardItemModel(int rows, int columns) WStandardItemModel()} to set the
  * initial table size, and use the {@link WStandardItemModel#getItem(int row, int column) getItem()}
  * and {@link WStandardItemModel#setItem(int row, int column, WStandardItem item) setItem()} methods
- * to set data. You can change the geometry by inserting rows ({@link
- * WStandardItemModel#insertRow(int row, List items) insertRow()}) or columns ({@link
- * WStandardItemModel#insertColumn(int column, List items) insertColumn()}) or removing rows ({@link
- * WAbstractItemModel#removeRow(int row, WModelIndex parent) WAbstractItemModel#removeRow()}) or
- * columns ({@link WAbstractItemModel#removeColumn(int column, WModelIndex parent)
- * WAbstractItemModel#removeColumn()}).
+ * to set data. You can change the geometry by inserting rows (insertRow()) or columns
+ * (insertColumn()) or removing rows ({@link WAbstractItemModel#removeRow(int row, WModelIndex
+ * parent) WAbstractItemModel#removeRow()}) or columns ({@link WAbstractItemModel#removeColumn(int
+ * column, WModelIndex parent) WAbstractItemModel#removeColumn()}).
  *
  * <p>If you want to use the model as a tree (or tree table), then you can use the default
  * constructor to start with an empty tree, and use the {@link WStandardItem} API on {@link
@@ -158,7 +156,6 @@ public class WStandardItemModel extends WAbstractItemModel {
    *
    * <p>
    *
-   * @see WStandardItemModel#insertColumn(int column, List items)
    * @see WStandardItemModel#appendRow(List items)
    */
   public void appendColumn(List<WStandardItem> items) {
@@ -199,7 +196,6 @@ public class WStandardItemModel extends WAbstractItemModel {
    *
    * <p>
    *
-   * @see WStandardItemModel#insertRow(int row, List items)
    * @see WStandardItemModel#appendColumn(List items)
    */
   public void appendRow(List<WStandardItem> items) {

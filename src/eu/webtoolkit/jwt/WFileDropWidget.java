@@ -251,7 +251,7 @@ public class WFileDropWidget extends WContainerWidget {
    * <p>
    *
    * <p><i><b>Remark: </b>Since version 4.7.0, this method returns a copy of the vector because we
-   * changed the internal vector to hold values of type std::unique_ptr.</i>
+   * changed the internal vector to hold values of type std::unique_ptr. </i>
    *
    * @see WFileDropWidget#getCurrentIndex()
    */
@@ -467,7 +467,7 @@ public class WFileDropWidget extends WContainerWidget {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".destructor();";
       if (!recursive) {
-        result += "Wt4_10_0.remove('" + this.getId() + "');";
+        result += "Wt4_10_1.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -529,7 +529,7 @@ public class WFileDropWidget extends WContainerWidget {
     String maxFileSize = String.valueOf(WApplication.getInstance().getMaximumRequestSize());
     this.setJavaScriptMember(
         " WFileDropWidget",
-        "new Wt4_10_0.WFileDropWidget("
+        "new Wt4_10_1.WFileDropWidget("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

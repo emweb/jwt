@@ -73,9 +73,8 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    *
    * <p>Note that the source model&apos;s signals are not forwarded to the proxy model by default,
    * but some specializations, like {@link WBatchEditProxyModel} and {@link WSortFilterProxyModel}
-   * do. If you want to reimplement {@link WAbstractProxyModel#getData(WModelIndex index,
-   * ItemDataRole role) getData()} with no changes to row or column indices, consider the use of
-   * {@link WIdentityProxyModel}.
+   * do. If you want to reimplement data() with no changes to row or column indices, consider the
+   * use of {@link WIdentityProxyModel}.
    */
   public void setSourceModel(final WAbstractItemModel sourceModel) {
     this.sourceModel_ = sourceModel;
@@ -94,8 +93,7 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
    * Returns the data at a specific model index.
    *
    * <p>The default proxy implementation translates the index to the source model, and calls {@link
-   * WAbstractProxyModel#getSourceModel() getSourceModel()}.{@link
-   * WAbstractProxyModel#getData(WModelIndex index, ItemDataRole role) getData()} with this index.
+   * WAbstractProxyModel#getSourceModel() getSourceModel()}.data() with this index.
    */
   public Object getData(final WModelIndex index, ItemDataRole role) {
     return this.sourceModel_.getData(this.mapToSource(index), role);

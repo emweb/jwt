@@ -242,6 +242,9 @@ public class WCompositeWidget extends WWidget {
   }
 
   public boolean isDisabled() {
+    if (!(this.impl_ != null)) {
+      return false;
+    }
     return this.impl_.isDisabled();
   }
 

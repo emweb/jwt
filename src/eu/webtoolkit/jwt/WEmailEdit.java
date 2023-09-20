@@ -51,12 +51,12 @@ import org.slf4j.LoggerFactory;
  * <p><i><b>Note: </b>At the time of writing, Firefox does not do sanitization: <a
  * href="https://bugzilla.mozilla.org/show_bug.cgi?id=1518162">https://bugzilla.mozilla.org/show_bug.cgi?id=1518162</a>.
  * This may cause the browser to add the <code>:invalid</code> pseudo tag to inputs that are deemed
- * valid by Wt.</i>
+ * valid by JWt. </i>
  *
  * <p><i><b>Note: </b>Wt does not do any Punycode encoding or decoding. At the time of writing, if
  * you put an internationalized email address into a {@link WEmailEdit} on Blink-based browsers like
  * Google Chrome, it will be converted to Punycode by the browser. Firefox and Safari do not do this
- * encoding, so these email addresses will be deemed invalid by the {@link WEmailValidator}.</i>
+ * encoding, so these email addresses will be deemed invalid by the {@link WEmailValidator}. </i>
  */
 public class WEmailEdit extends WFormWidget {
   private static Logger logger = LoggerFactory.getLogger(WEmailEdit.class);
@@ -265,7 +265,7 @@ public class WEmailEdit extends WFormWidget {
     super.render(flags);
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WEmailEdit.js", wtjs1());
-    super.setJavaScriptMember("wtEncodeValue", "Wt4_10_0.encodeEmailValue");
+    super.setJavaScriptMember("wtEncodeValue", "Wt4_10_1.encodeEmailValue");
   }
 
   void updateDom(final DomElement element, boolean all) {

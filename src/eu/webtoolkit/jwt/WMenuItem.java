@@ -341,7 +341,7 @@ public class WMenuItem extends WContainerWidget {
    * <p>
    *
    * <p><i><b>Note: </b>If the {@link WMenuItem#getParentMenu() parent menu} is a {@link
-   * WPopupMenu}, the submenu should also be a {@link WPopupMenu}.</i>
+   * WPopupMenu}, the submenu should also be a {@link WPopupMenu}. </i>
    *
    * @see WMenuItem#setSelectable(boolean selectable)
    */
@@ -702,7 +702,7 @@ public class WMenuItem extends WContainerWidget {
   public void setHidden(boolean hidden, final WAnimation animation) {
     super.setHidden(hidden, animation);
     if (hidden) {
-      if (this.menu_ != null) {
+      if (this.menu_ != null && !this.menu_.isHidden()) {
         this.menu_.onItemHidden(this.menu_.indexOf(this), true);
       }
     }
@@ -711,7 +711,7 @@ public class WMenuItem extends WContainerWidget {
   public void setDisabled(boolean disabled) {
     super.setDisabled(disabled);
     if (disabled) {
-      if (this.menu_ != null) {
+      if (this.menu_ != null && !this.menu_.isDisabled()) {
         this.menu_.onItemHidden(this.menu_.indexOf(this), true);
       }
     }

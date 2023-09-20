@@ -37,22 +37,6 @@ import org.slf4j.LoggerFactory;
  * layout you are recommended to use {@link WTemplate} in conjunction with Bootstrap&apos;s CSS
  * classes. For this we refer to Bootstrap&apos;s documentation at <a
  * href="https://getbootstrap.com">https://getbootstrap.com</a>.
- *
- * <p>Custom Sass files can be used to make your own derived theme.
- *
- * <p>If JWt is installed into <code>PREFIX</code> (and the CMake option <code>INSTALL_THEMES</code>
- * is set to <code>ON</code>), then you can find the source files in <code>
- * PREFIX/share/Wt/themes/bootstrap/5</code>.
- *
- * <p>Apart from the variables that Bootstrap defines, JWt also provides variables, defined in
- * <code>wt/_variables.scss</code>. All of JWt&apos;s variables start with a <code>wt-</code>
- * prefix.
- *
- * <p>Refer to the example in <code>examples/custom-bs-theme</code> for more information.
- *
- * <p>
- *
- * @see WApplication#setTheme(WTheme theme)
  */
 public class WBootstrap5Theme extends WTheme {
   private static Logger logger = LoggerFactory.getLogger(WBootstrap5Theme.class);
@@ -484,7 +468,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_10_0.setValidationState(")
+      js.append("Wt4_10_1.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)

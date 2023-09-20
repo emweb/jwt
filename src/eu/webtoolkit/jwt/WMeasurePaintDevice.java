@@ -58,10 +58,6 @@ public class WMeasurePaintDevice implements WPaintDevice {
     this.device_.setChanged(flags);
   }
 
-  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
-    setChanged(EnumSet.of(flag, flags));
-  }
-
   public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
     WPainterPath p = new WPainterPath();
     double r = Math.max(rect.getWidth(), rect.getHeight()) / 2;
@@ -162,14 +158,6 @@ public class WMeasurePaintDevice implements WPaintDevice {
 
   public WTextItem measureText(final CharSequence text, double maxWidth, boolean wordWrap) {
     return this.device_.measureText(text, maxWidth, wordWrap);
-  }
-
-  public final WTextItem measureText(final CharSequence text) {
-    return measureText(text, -1, false);
-  }
-
-  public final WTextItem measureText(final CharSequence text, double maxWidth) {
-    return measureText(text, maxWidth, false);
   }
 
   public WFontMetrics getFontMetrics() {

@@ -43,11 +43,13 @@ import org.slf4j.LoggerFactory;
  * <strong>An example WTree (default)</strong></p>
  * </div>
  *
+ *
  * </td><td><div align="center">
  * <img src="doc-files/WTree-polished-1.png">
  * <p>
  * <strong>An example WTree (polished)</strong></p>
  * </div>
+ *
  *
  * </td></tr>
  * </table>

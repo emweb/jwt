@@ -46,7 +46,7 @@ public enum EntryPointType {
    * <p>
    *
    * <p><i><b>Note: </b>A {@link EntryPointType#WidgetSet WidgetSet} application requires JavaScript
-   * support</i>
+   * support </i>
    *
    * @see WApplication#bindWidget(WWidget widget, String domId)
    */

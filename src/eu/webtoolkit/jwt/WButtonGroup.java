@@ -63,7 +63,7 @@ public class WButtonGroup extends WObject {
    * <p>
    *
    * <p><i><b>Note: </b>{@link WButtonGroup} should be owned by a shared_ptr before addButton is
-   * called on it!</i>
+   * called on it! </i>
    *
    * @see WButtonGroup#removeButton(WRadioButton button)
    */

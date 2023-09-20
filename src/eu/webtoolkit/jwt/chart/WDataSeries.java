@@ -891,7 +891,7 @@ public class WDataSeries extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>This is only supported for axes with linear scale.</i>
+   * <p><i><b>Note: </b>This is only supported for axes with linear scale. </i>
    *
    * @see WDataSeries#setScale(double scale)
    * @see WCartesianChart#setCurveManipulationEnabled(boolean enabled)
@@ -924,7 +924,7 @@ public class WDataSeries extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>This is only supported for axes with linear scale.</i>
+   * <p><i><b>Note: </b>This is only supported for axes with linear scale. </i>
    *
    * @see WDataSeries#setOffset(double offset)
    * @see WCartesianChart#setCurveManipulationEnabled(boolean enabled)
@@ -954,7 +954,7 @@ public class WDataSeries extends WObject {
    * <p>
    *
    * <p><i><b>Note: </b>Individual models per data series are only supported for {@link
-   * ChartType#Scatter} type charts.</i>
+   * ChartType#Scatter} type charts. </i>
    *
    * @see WAbstractChart#setModel(WAbstractItemModel model)
    */

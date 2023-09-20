@@ -228,7 +228,7 @@ public class OidcService extends OAuthService {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>The returned process will be an instance of {@link OidcService}</i>
+   * <p><i><b>Note: </b>The returned process will be an instance of {@link OidcService} </i>
    *
    * @see OidcService#getAuthenticationScope()
    */

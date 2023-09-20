@@ -60,11 +60,13 @@ import org.slf4j.LoggerFactory;
  * <strong>An example WTabWidget (default)</strong></p>
  * </div>
  *
+ *
  * </td><td><div align="center">
  * <img src="doc-files/WTabWidget-polished-1.png">
  * <p>
  * <strong>An example WTabWidget (polished)</strong></p>
  * </div>
+ *
  *
  * </td></tr>
  * </table>

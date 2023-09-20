@@ -89,10 +89,6 @@ public class WSvgImage extends WResource implements WVectorImage {
     this.changeFlags_.addAll(flags);
   }
 
-  public final void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
-    setChanged(EnumSet.of(flag, flags));
-  }
-
   public void drawArc(final WRectF rect, double startAngle, double spanAngle) {
     char[] buf = new char[30];
     if (Math.abs(spanAngle - 360.0) < 0.01 || spanAngle > 360.0) {
@@ -329,14 +325,6 @@ public class WSvgImage extends WResource implements WVectorImage {
       this.fontMetrics_ = new ServerSideFontMetrics();
     }
     return this.fontMetrics_.measureText(this.getPainter().getFont(), text, maxWidth, wordWrap);
-  }
-
-  public final WTextItem measureText(final CharSequence text) {
-    return measureText(text, -1, false);
-  }
-
-  public final WTextItem measureText(final CharSequence text, double maxWidth) {
-    return measureText(text, maxWidth, false);
   }
 
   public WFontMetrics getFontMetrics() {

@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Warning: </b>A WPen that is JavaScript exposed should be modified only through its
  * {@link WJavaScriptHandle handle}. Any attempt at modifying it will cause an exception to be
- * thrown.</i>
+ * thrown. </i>
  *
  * @see WPainter#setPen(WPen p)
  * @see WBrush
@@ -60,8 +60,8 @@ public class WPen extends WJavaScriptExposableObject {
   /**
    * Creates a black cosmetic pen.
    *
-   * <p>Constructs a black solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
+   * <p>Constructs a black solid pen of 0 width (i.e. cosmetic single pixel width), with
+   * PenCapStyle::Square line ends and PenJoinStyle::Bevel line join style.
    */
   public WPen() {
     super();
@@ -75,8 +75,8 @@ public class WPen extends WJavaScriptExposableObject {
   /**
    * Creates a black pen with a particular style.
    *
-   * <p>Constructs a black pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
+   * <p>Constructs a black pen of 0 width (i.e. cosmetic single pixel width), with
+   * PenCapStyle::Square line ends and PenJoinStyle::Bevel line join style.
    *
    * <p>The line style is set to <code>style</code>.
    */
@@ -92,8 +92,8 @@ public class WPen extends WJavaScriptExposableObject {
   /**
    * Creates a solid pen of a particular color.
    *
-   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
+   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with
+   * PenCapStyle::Square line ends and PenJoinStyle::Bevel line join style.
    *
    * <p>The pen color is set to <code>color</code>.
    */
@@ -109,8 +109,8 @@ public class WPen extends WJavaScriptExposableObject {
   /**
    * Creates a solid pen of a standard color.
    *
-   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
+   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with
+   * PenCapStyle::Square line ends and PenJoinStyle::Bevel line join style.
    *
    * <p>The pen color is set to <code>color</code>.
    */
@@ -126,8 +126,8 @@ public class WPen extends WJavaScriptExposableObject {
   /**
    * Creates a solid pen with a gradient color.
    *
-   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with {@link
-   * PenCapStyle#Square} line ends and {@link PenJoinStyle#Bevel} line join style.
+   * <p>Constructs a solid pen of 0 width (i.e. cosmetic single pixel width), with
+   * PenCapStyle::Square line ends and PenJoinStyle::Bevel line join style.
    *
    * <p>The pen&apos;s color is defined by the gradient <code>color</code>.
    */

@@ -35,10 +35,8 @@ public class HelloApplication extends WApplication {
 
         final WText greeting = new WText(getRoot());
 
-        button.clicked().addListener(this, new Signal.Listener() {
-            public void trigger() {
-                greeting.setText("Hello there, " + nameEdit.getText());
-            }
+        button.clicked().addListener(this, () -> {
+            greeting.setText("Hello there, " + nameEdit.getText());
         });
     }
 }

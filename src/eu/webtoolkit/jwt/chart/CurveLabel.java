@@ -102,7 +102,7 @@ public class CurveLabel {
    * WCartesianChart#mapToDevice(Object xValue, Object yValue, Axis axis, int xSegment, int
    * ySegment) WCartesianChart#mapToDevice()} uses, depending on the scale of the axis. {@link
    * CurveLabel#getX() getX()} and {@link CurveLabel#getY() getY()} will perform no conversion, so
-   * they may be safer to use.</i>
+   * they may be safer to use. </i>
    *
    * @see CurveLabel#setPoint(WPointF point)
    */

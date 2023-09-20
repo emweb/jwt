@@ -65,7 +65,9 @@ public interface WPaintDevice {
    *
    * <p>Calls {@link #setChanged(EnumSet flags) setChanged(EnumSet.of(flag, flags))}
    */
-  public void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags);
+  public default void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
+    setChanged(EnumSet.of(flag, flags));
+  }
   /**
    * Draws an arc.
    *
@@ -144,14 +146,18 @@ public interface WPaintDevice {
    * <p>Returns {@link #measureText(CharSequence text, double maxWidth, boolean wordWrap)
    * measureText(text, - 1, false)}
    */
-  public WTextItem measureText(final CharSequence text);
+  public default WTextItem measureText(final CharSequence text) {
+    return measureText(text, -1, false);
+  }
   /**
    * Measures rendered text size.
    *
    * <p>Returns {@link #measureText(CharSequence text, double maxWidth, boolean wordWrap)
    * measureText(text, maxWidth, false)}
    */
-  public WTextItem measureText(final CharSequence text, double maxWidth);
+  public default WTextItem measureText(final CharSequence text, double maxWidth) {
+    return measureText(text, maxWidth, false);
+  }
   /**
    * Returns font metrics.
    *

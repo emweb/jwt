@@ -34,12 +34,23 @@ interface WAbstractChartImplementation {
 
   public int numberOfCategories(Axis axis);
 
-  public int numberOfCategories();
+  public default int numberOfCategories() {
+    return numberOfCategories(Axis.X);
+  }
 
   public WString categoryLabel(int u, Axis axis);
 
+  public default WString categoryLabel(int u) {
+    return categoryLabel(u, Axis.X);
+  }
+
   public WAbstractChartImplementation.RenderRange computeRenderRange(
       Axis axis, int xAxis, int yAxis, AxisScale scale);
+
+  public default WAbstractChartImplementation.RenderRange computeRenderRange(
+      Axis axis, int xAxis, int yAxis) {
+    return computeRenderRange(axis, xAxis, yAxis, AxisScale.Linear);
+  }
 
   public boolean isOnDemandLoadingEnabled();
 

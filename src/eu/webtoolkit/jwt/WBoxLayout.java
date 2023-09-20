@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <p><i><b>Note: </b>When JavaScript support is not available, not all functionality of the layout
- * is available. In particular, vertical size management is not available.</i>
+ * is available. In particular, vertical size management is not available. </i>
  *
  * <p><i><b>Note: </b>When a layout is used on a first page with progressive bootstrap, then the
  * layout will progress only in a limited way to a full JavaScript-based layout. You can thus not
@@ -161,7 +161,7 @@ public class WBoxLayout extends WLayout {
    * <p>
    *
    * <p><i><b>Note: </b>Changing the layout direction after something (a widget or nested layout)
-   * has been added is not supported.</i>
+   * has been added is not supported. </i>
    *
    * @see WBoxLayout#getDirection()
    */

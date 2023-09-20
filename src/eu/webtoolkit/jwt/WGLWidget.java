@@ -564,7 +564,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt4_10_0.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_10_0.glMatrix.mat4.create())";
+          "Wt4_10_1.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_10_1.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
       return copy;
     }
@@ -575,7 +575,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt4_10_0.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_10_0.glMatrix.mat4.create())";
+          "Wt4_10_1.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_10_1.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
       return copy;
     }
@@ -586,10 +586,10 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       StringWriter ss = new StringWriter();
-      ss.append("Wt4_10_0.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
+      ss.append("Wt4_10_1.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
       javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
       WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
-      ss.append(", Wt4_10_0.glMatrix.mat4.create())");
+      ss.append(", Wt4_10_1.glMatrix.mat4.create())");
       copy.jsRef_ = ss.toString();
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
       copy.matrices_.add(m);
@@ -1510,6 +1510,14 @@ public class WGLWidget extends WInteractWidget {
    */
   public void clear(EnumSet<WGLWidget.GLenum> mask) {
     this.pImpl_.clear(mask);
+  }
+  /**
+   * GL function that clears the given buffers.
+   *
+   * <p>Calls {@link #clear(EnumSet mask) clear(EnumSet.of(mas, mask))}
+   */
+  public final void clear(WGLWidget.GLenum mas, WGLWidget.GLenum... mask) {
+    clear(EnumSet.of(mas, mask));
   }
   /**
    * GL function that sets the clear color of the color buffer.
@@ -2814,8 +2822,8 @@ public class WGLWidget extends WInteractWidget {
    *       </code> is the <code>TouchEvent</code>.
    * </ul>
    *
-   * <p>For example, if we wanted to scale some object when we scroll, we could create a
-   * JavaScriptMatrix4x4 called \p transform_:
+   * <p>For example, if we wanted to scale some object when we scroll, we could create a {@link
+   * JavaScriptMatrix4x4} called <code>transform_:</code>
    *
    * <p>
    *

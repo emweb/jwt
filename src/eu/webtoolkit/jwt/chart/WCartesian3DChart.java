@@ -878,8 +878,8 @@ public class WCartesian3DChart extends WGLWidget {
    * <p>This configures the font, border and background for the legend.
    *
    * <p>The default font is a 10pt sans serif font (the same as the default axis label font), the
-   * default <code>border</code> is {@link PenStyle#None} and the default <code>background</code> is
-   * {@link BrushStyle#None}.
+   * default <code>border</code> is PenStyle::None and the default <code>background</code> is
+   * BrushStyle::None.
    *
    * <p>
    *

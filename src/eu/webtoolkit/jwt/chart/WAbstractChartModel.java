@@ -77,12 +77,12 @@ public abstract class WAbstractChartModel extends WObject {
    * <p>
    *
    * <p><i><b>Note: </b>An XHTML text tooltip will be forced to be deferred. Non-deferred XHTML
-   * tooltips are not supported.</i>
+   * tooltips are not supported. </i>
    *
    * <p><i><b>Note: </b>When not using deferred tooltips, the HTML &lt;area&gt; tag will be used. If
    * there are many tooltips and the chart is interactive this may cause client-side performance
    * issues. If deferred tooltips are used, this will cause some load on the server, as it
-   * calculates server-side what marker or bar the user is hovering over.</i>
+   * calculates server-side what marker or bar the user is hovering over. </i>
    *
    * <p><i><b>Note: </b>If the chart is interactive, and tooltips are not deferred, they will be
    * scaled according to the first Y axis, and thus multiple Y axes will not be supported in

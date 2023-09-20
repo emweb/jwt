@@ -58,6 +58,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>WGroupBox example</strong> </div>
  *
+ * <p>
+ *
  * <h3>CSS</h3>
  *
  * <p>The widget corresponds to the HTML <code>&lt;fieldset&gt;</code> tag, and the title in a

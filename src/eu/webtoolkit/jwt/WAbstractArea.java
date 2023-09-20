@@ -197,9 +197,27 @@ public abstract class WAbstractArea extends WObject {
   public void addStyleClass(final String styleClass, boolean force) {
     this.widget_.addStyleClass(styleClass, force);
   }
+  /**
+   * Adds a style class.
+   *
+   * <p>Calls {@link #addStyleClass(String styleClass, boolean force) addStyleClass(styleClass,
+   * false)}
+   */
+  public final void addStyleClass(final String styleClass) {
+    addStyleClass(styleClass, false);
+  }
   /** Removes a style class. */
   public void removeStyleClass(final String styleClass, boolean force) {
     this.widget_.removeStyleClass(styleClass, force);
+  }
+  /**
+   * Removes a style class.
+   *
+   * <p>Calls {@link #removeStyleClass(String styleClass, boolean force)
+   * removeStyleClass(styleClass, false)}
+   */
+  public final void removeStyleClass(final String styleClass) {
+    removeStyleClass(styleClass, false);
   }
   /**
    * Sets the cursor.

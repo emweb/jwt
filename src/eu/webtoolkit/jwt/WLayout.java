@@ -64,15 +64,9 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    * LayoutImplementation#JavaScript} is used.
    *
    * <p>Because there are cases where {@link LayoutImplementation#Flex} does not work properly, this
-   * method can be used to set the global preferred implementation to {@link
-   * LayoutImplementation#JavaScript} instead.
-   *
-   * <p>Since this is a system-wide setting, and not a per-session setting, you should call this
-   * function before any session is created, e.g. in main() before calling WRun().
-   *
-   * <p>
-   *
-   * @see WLayout#setPreferredImplementation(LayoutImplementation implementation)
+   * method can be used to set the global preferred implementation to instead. Since this is a
+   * system-wide setting, and not a per-session setting, you should call this function before any
+   * session is created, e.g. in main() before calling WRun(). setPreferredImplementation()
    */
   public static void setDefaultImplementation(LayoutImplementation implementation) {
     defaultImplementation_ = implementation;
@@ -221,8 +215,8 @@ public abstract class WLayout extends WObject implements WLayoutItem {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Only used when the layout manager is applied to a {@link
-   * WContainerWidget}.</i>
+   * <p><i><b>Note: </b>Only used when the layout manager is applied to a {@link WContainerWidget}.
+   * </i>
    *
    * @see WLayout#setContentsMargins(int left, int top, int right, int bottom)
    */

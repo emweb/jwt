@@ -46,10 +46,6 @@ class WChart2DImplementation implements WAbstractChartImplementation {
     }
   }
 
-  public final int numberOfCategories() {
-    return numberOfCategories(Axis.X);
-  }
-
   public WString categoryLabel(int u, Axis axis) {
     if (this.chart_.XSeriesColumn() != -1) {
       if (u < this.chart_.getModel().getRowCount()) {
@@ -60,10 +56,6 @@ class WChart2DImplementation implements WAbstractChartImplementation {
     } else {
       return new WString();
     }
-  }
-
-  public final WString categoryLabel(int u) {
-    return categoryLabel(u, Axis.X);
   }
 
   public WAbstractChartImplementation.RenderRange computeRenderRange(

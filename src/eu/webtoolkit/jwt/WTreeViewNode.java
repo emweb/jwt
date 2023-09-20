@@ -602,6 +602,29 @@ class WTreeViewNode extends WContainerWidget {
     }
   }
 
+  void updateDom(final DomElement element, boolean all) {
+    if (this.view_.isDisabled()) {
+      this.addStyleClass("Wt-disabled");
+      this.nodeWidget_.addStyleClass("Wt-disabled");
+      WWidget widget = this.nodeWidget_.resolveWidget("cols-row");
+      if (widget != null) {
+        widget.addStyleClass("Wt-disabled");
+      }
+      widget = this.nodeWidget_.resolveWidget("expand");
+      if (widget != null) {
+        widget.addStyleClass("Wt-disabled");
+      }
+      widget = this.nodeWidget_.resolveWidget("no-expand");
+      if (widget != null) {
+        widget.addStyleClass("Wt-disabled");
+      }
+      widget = this.nodeWidget_.resolveWidget("col0");
+      if (widget != null) {
+        widget.addStyleClass("Wt-disabled");
+      }
+    }
+  }
+
   private WTreeView view_;
   private WTemplate nodeWidget_;
   private WContainerWidget childContainer_;

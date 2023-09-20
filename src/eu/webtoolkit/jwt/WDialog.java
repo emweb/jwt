@@ -72,11 +72,13 @@ import org.slf4j.LoggerFactory;
  * <strong>A simple custom dialog (default)</strong></p>
  * </div>
  *
+ *
  * </td><td><div align="center">
  * <img src="doc-files/WDialog-polished-1.png">
  * <p>
  * <strong>A simple custom dialog (polished)</strong></p>
  * </div>
+ *
  *
  * </td></tr>
  * </table>
@@ -394,7 +396,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt4_10_0.Resizable(Wt4_10_0,"
+            "(new Wt4_10_1.Resizable(Wt4_10_1,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -695,7 +697,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt4_10_0.WDialog("
+          "new Wt4_10_1.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()

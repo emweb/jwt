@@ -336,7 +336,7 @@ public class WLineEdit extends WFormWidget {
     String s = String.valueOf(start);
     String e = String.valueOf(start + length);
     this.doJavaScript(
-        "Wt4_10_0.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
+        "Wt4_10_1.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
   }
   /**
    * Returns the current cursor position.
@@ -385,22 +385,54 @@ public class WLineEdit extends WFormWidget {
    * <p>The following characters can be used in the input mask:
    *
    * <table border="1" cellspacing="3" cellpadding="3">
-   * <tr><th>Character </th><th>Description </th></tr>
-   * <tr><td>A </td><td>ASCII alphabetic character: A-Z, a-z (required) </td></tr>
-   * <tr><td>a </td><td>ASCII alphabetic character: A-Z, a-z (optional) </td></tr>
-   * <tr><td>N </td><td>ASCII alphanumeric character: A-Z, a-z, 0-9 (required) </td></tr>
-   * <tr><td>n </td><td>ASCII alphanumeric character: A-Z, a-z, 0-9 (optional) </td></tr>
-   * <tr><td>X</td><td>Any character (required) </td></tr>
-   * <tr><td>x</td><td>Any character (optional) </td></tr>
-   * <tr><td>9</td><td>Digit: 0-9 (required) </td></tr>
-   * <tr><td>0</td><td>Digit: 0-9 (optional) </td></tr>
-   * <tr><td>D</td><td>Nonzero digit: 1-9 (required) </td></tr>
-   * <tr><td>d</td><td>Nonzero digit: 1-9 (optional) </td></tr>
-   * <tr><td>#</td><td>Digit or sign: 0-9, -, + (required) </td></tr>
-   * <tr><td>H </td><td>Hexadecimal character: A-F, a-f, 0-9 (required) </td></tr>
-   * <tr><td>h </td><td>Hexadecimal character: A-F, a-f, 0-9 (optional) </td></tr>
-   * <tr><td>B</td><td>Binary digit: 0-1 (required) </td></tr>
-   * <tr><td>b</td><td>Binary digit: 0-1 (optional) </td></tr>
+   * <tr><th>Character
+   * </th><th>Description
+   * </th></tr>
+   * <tr><td>A
+   * </td><td>ASCII alphabetic character: A-Z, a-z (required)
+   * </td></tr>
+   * <tr><td>a
+   * </td><td>ASCII alphabetic character: A-Z, a-z (optional)
+   * </td></tr>
+   * <tr><td>N
+   * </td><td>ASCII alphanumeric character: A-Z, a-z, 0-9 (required)
+   * </td></tr>
+   * <tr><td>n
+   * </td><td>ASCII alphanumeric character: A-Z, a-z, 0-9 (optional)
+   * </td></tr>
+   * <tr><td>X
+   * </td><td>Any character (required)
+   * </td></tr>
+   * <tr><td>x
+   * </td><td>Any character (optional)
+   * </td></tr>
+   * <tr><td>9
+   * </td><td>Digit: 0-9 (required)
+   * </td></tr>
+   * <tr><td>0
+   * </td><td>Digit: 0-9 (optional)
+   * </td></tr>
+   * <tr><td>D
+   * </td><td>Nonzero digit: 1-9 (required)
+   * </td></tr>
+   * <tr><td>d
+   * </td><td>Nonzero digit: 1-9 (optional)
+   * </td></tr>
+   * <tr><td>#
+   * </td><td>Digit or sign: 0-9, -, + (required)
+   * </td></tr>
+   * <tr><td>H
+   * </td><td>Hexadecimal character: A-F, a-f, 0-9 (required)
+   * </td></tr>
+   * <tr><td>h
+   * </td><td>Hexadecimal character: A-F, a-f, 0-9 (optional)
+   * </td></tr>
+   * <tr><td>B
+   * </td><td>Binary digit: 0-1 (required)
+   * </td></tr>
+   * <tr><td>b
+   * </td><td>Binary digit: 0-1 (optional)
+   * </td></tr>
    * </table>
    *
    * The distinction between required and optional characters won&apos;t be apparent on the client
@@ -410,10 +442,18 @@ public class WLineEdit extends WFormWidget {
    * value in some way:
    *
    * <table border="1" cellspacing="3" cellpadding="3">
-   * <tr><th>Character</th><th>Description </th></tr>
-   * <tr><td>&gt;</td><td>The following characters are uppercased </td></tr>
-   * <tr><td>&lt;</td><td>The following characters are lowercased </td></tr>
-   * <tr><td>! </td><td>The casing of the following characters remains the same </td></tr>
+   * <tr><th>Character
+   * </th><th>Description
+   * </th></tr>
+   * <tr><td>&gt;
+   * </td><td>The following characters are uppercased
+   * </td></tr>
+   * <tr><td>&lt;
+   * </td><td>The following characters are lowercased
+   * </td></tr>
+   * <tr><td>!
+   * </td><td>The casing of the following characters remains the same
+   * </td></tr>
    * </table>
    *
    * A backslash (&apos;\&apos;) can be used to escape any of the mask characters or modifiers, so
@@ -426,10 +466,18 @@ public class WLineEdit extends WFormWidget {
    * <p>Examples:
    *
    * <table border="1" cellspacing="3" cellpadding="3">
-   * <tr><th>Input mask</th><th>Notes </th></tr>
-   * <tr><td><pre>009.009.009.009;_</pre> </td><td>IP address. Spaces are denoted by &apos;_&apos;. Will validate if there is at least one digit per segment. </td></tr>
-   * <tr><td><pre>9999-99-99</pre> </td><td>Date, in yyyy-MM-dd notation. Spaces are denoted by &apos; &apos;. Will validate if all digits are filled in. </td></tr>
-   * <tr><td><pre>&gt;HH:HH:HH:HH:HH:HH;_</pre> </td><td>MAC address. Spaces are denoted by &apos;_&apos;. Will validate if all hexadecimal characters are filled in. All characters will be formatted in uppercase. </td></tr>
+   * <tr><th>Input mask
+   * </th><th>Notes
+   * </th></tr>
+   * <tr><td><pre>009.009.009.009;_</pre>
+   * </td><td>IP address. Spaces are denoted by &apos;_&apos;. Will validate if there is at least one digit per segment.
+   * </td></tr>
+   * <tr><td><pre>9999-99-99</pre>
+   * </td><td>Date, in yyyy-MM-dd notation. Spaces are denoted by &apos; &apos;. Will validate if all digits are filled in.
+   * </td></tr>
+   * <tr><td><pre>&gt;HH:HH:HH:HH:HH:HH;_</pre>
+   * </td><td>MAC address. Spaces are denoted by &apos;_&apos;. Will validate if all hexadecimal characters are filled in. All characters will be formatted in uppercase.
+   * </td></tr>
    * </table>
    *
    * <p>Input masks are enforced by JavaScript on the client side. Without JavaScript or using
@@ -697,7 +745,7 @@ public class WLineEdit extends WFormWidget {
     String space = "";
     space += this.spaceChar_;
     String jsObj =
-        "new Wt4_10_0.WLineEdit("
+        "new Wt4_10_1.WLineEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

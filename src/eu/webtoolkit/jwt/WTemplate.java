@@ -84,7 +84,7 @@ import org.slf4j.LoggerFactory;
  * <p><i><b>Note: </b>The use of XML comments (<code>&lt;!-- ... -.</code>) around variables that
  * are bound to widgets will result in bad behaviour since the template parser is ignorant about
  * these comments and the corresponding widgets will believe that they are rendered but aren&apos;t
- * actually.</i>
+ * actually. </i>
  *
  * <h3>B. Functions</h3>
  *
@@ -99,30 +99,17 @@ import org.slf4j.LoggerFactory;
  * currently three functions that are generally useful:
  *
  * <ul>
- *   <li>{@link WTemplate.Functions#tr Functions#tr} : resolves a localized strings, this is
- *       convenient to create a language neutral template, which contains translated strings
- *   <li>{@link WTemplate.Functions#id Functions#id} : resolves the id of a bound widget, this is
- *       convenient to bind &lt;label&gt; elements to a form widget using its for attribute.
- *   <li>{@link WTemplate.Functions#block Functions#block} : recursively renders another string as
- *       macro block optional arguments substituted before processing template substitution.
+ *   <li>: resolves a localized strings, this is convenient to create a language neutral template,
+ *       which contains translated strings Functions::id : resolves the id of a bound widget, this
+ *       is convenient to bind &lt;label&gt; elements to a form widget using its for attribute.
+ *   <li>: recursively renders another string as macro block optional arguments substituted before
+ *       processing template substitution. For example, the following template uses the
+ *       &quot;tr&quot; function to translate the age-label using the &quot;age-label&quot;
+ *       internationalized key. WTemplate t = new WTemplate(); t.setTemplateText(&quot;&lt;div&gt;
+ *       ${tr:age-label} ${age-input} &lt;/div&gt;&quot;); t.addFunction(&quot;tr&quot;,
+ *       WTemplate.Functions.tr); t.bindWidget(&quot;age-input&quot;, ageEdit = new WLineEdit()); C.
+ *       Conditional blocks
  * </ul>
- *
- * <p>For example, the following template uses the &quot;tr&quot; function to translate the
- * age-label using the &quot;age-label&quot; internationalized key.
- *
- * <p>
- *
- * <pre>{@code
- * WTemplate t = new WTemplate();
- * t.setTemplateText("<div> ${tr:age-label} ${age-input} </div>");
- * t.addFunction("tr", WTemplate.Functions.tr);
- * t.bindWidget("age-input", ageEdit = new WLineEdit());
- *
- * }</pre>
- *
- * <p>
- *
- * <h3>C. Conditional blocks</h3>
  *
  * <p><code>${&lt;cond&gt;}</code> starts a conditional block with a condition name
  * &quot;cond&quot;, and must be closed by a balanced <code>${&lt;/cond&gt;}</code>.
@@ -528,7 +515,7 @@ public class WTemplate extends WInteractWidget {
    *
    * <p><i><b>Note: </b>Depending on the <code>textFormat</code>, the <code>value</code> is
    * validated according as for a {@link WText}. The default ({@link TextFormat#XHTML}) filters
-   * &quot;active&quot; content, to avoid XSS-based security risks.</i>
+   * &quot;active&quot; content, to avoid XSS-based security risks. </i>
    *
    * @see WTemplate#bindWidget(String varName, WWidget widget)
    * @see WTemplate#bindInt(String varName, int value)
@@ -771,7 +758,7 @@ public class WTemplate extends WInteractWidget {
    * <p><i><b>Warning: </b>When specializing this class, you need to make sure that you append
    * proper XHTML to the <code>result</code>, without unsafe active contents. The {@link
    * WTemplate#format(Writer result, String s, TextFormat textFormat) format()} methods may be used
-   * for this purpose.</i>
+   * for this purpose. </i>
    *
    * @see WTemplate#renderTemplate(Writer result)
    */
@@ -814,7 +801,7 @@ public class WTemplate extends WInteractWidget {
    * <p><i><b>Warning: </b>When specializing this class, you need to make sure that you append
    * proper XHTML to the <code>result</code>, without unsafe active contents. The {@link
    * WTemplate#format(Writer result, String s, TextFormat textFormat) format()} methods may be used
-   * for this purpose.</i>
+   * for this purpose. </i>
    *
    * @see WTemplate#resolveString(String varName, List args, Writer result)
    */
@@ -1440,7 +1427,7 @@ public class WTemplate extends WInteractWidget {
   private void unrenderWidget(WWidget w, final DomElement el) {
     String removeJs = w.renderRemoveJs(false);
     if (removeJs.charAt(0) == '_') {
-      el.callJavaScript("Wt4_10_0.remove('" + removeJs.substring(1) + "');", true);
+      el.callJavaScript("Wt4_10_1.remove('" + removeJs.substring(1) + "');", true);
     } else {
       el.callJavaScript(removeJs, true);
     }

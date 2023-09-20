@@ -211,7 +211,7 @@ public class WEmailValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_10_0.WEmailValidator(")
+    js.append("new Wt4_10_1.WEmailValidator(")
         .append(this.isMandatory())
         .append(',')
         .append(this.isMultiple())
@@ -255,6 +255,6 @@ public class WEmailValidator extends WValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WEmailValidator",
-        "(function(t,e,a,n,i,l){const r=(()=>{const t=\"[a-zA-Z0-9]\",e=t+\"(?:[a-zA-Z0-9]{0,61}\"+t+\")?\";return new RegExp(\"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@\"+e+\"(?:\\\\.\"+e+\")*$\",\"u\")})(),s=a?new RegExp(\"^(?:\"+a+\")$\",\"u\"):null;function u(t){return r.test(t)&&(!s||s.test(t))}this.validate=function(a){if(0===a.length)return t?{valid:!1,message:n}:{valid:!0};let r;r=e?a.split(\",\").every(u):u(a);return r?{valid:!0}:s?{valid:!1,message:l}:{valid:!1,message:i}}})");
+        "(function(t,e,a,n,i,l){const r=(()=>{const t=\"[a-zA-Z0-9]\",e=t+\"(?:[a-zA-Z0-9-]{0,61}\"+t+\")?\";return new RegExp(\"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@\"+e+\"(?:\\\\.\"+e+\")*$\",\"u\")})(),s=a?new RegExp(\"^(?:\"+a+\")$\",\"u\"):null;function u(t){return r.test(t)&&(!s||s.test(t))}this.validate=function(a){if(0===a.length)return t?{valid:!1,message:n}:{valid:!0};let r;r=e?a.split(\",\").every(u):u(a);return r?{valid:!0}:s?{valid:!1,message:l}:{valid:!1,message:i}}})");
   }
 }

@@ -1249,7 +1249,7 @@ public class WAxis {
    * <p>
    *
    * <p><i><b>Note: </b>If the pan position has been changed on the client side, this may not
-   * reflect the actual pan position.</i>
+   * reflect the actual pan position. </i>
    *
    * @deprecated Use {@link WAxis#setZoomRange(double minimum, double maximum) setZoomRange()}
    *     instead.
@@ -1352,13 +1352,15 @@ public class WAxis {
    * <strong>Soft clipping enabled (slower).</strong></p>
    * </div>
    *
-   * This is the default for {@link eu.webtoolkit.jwt.chart.WCartesianChart}. The tick for 0 is visible, and the 0 is shown completely. The tick for 01/01/86 is not visible, so its label is not shown. </td><td><div align="center">
+   * This is the default for {@link eu.webtoolkit.jwt.chart.WCartesianChart}. The tick for 0 is visible, and the 0 is shown completely. The tick for 01/01/86 is not visible, so its label is not shown.
+   * </td><td><div align="center">
    * <img src="doc-files/WAxis-partialLabelClipping-enabled.png">
    * <p>
    * <strong>Soft clipping disabled (faster).</strong></p>
    * </div>
    *
-   * The tick of the 0 is visible, but the 0 is shown partially. Also, the tick of 01/01/86 is not visible, but the label is partially shown.  </td></tr>
+   * The tick of the 0 is visible, but the 0 is shown partially. Also, the tick of 01/01/86 is not visible, but the label is partially shown.
+   * </td></tr>
    * </table>
    */
   public void setSoftLabelClipping(boolean enabled) {

@@ -838,6 +838,17 @@ public class WTreeNode extends WCompositeWidget {
         this.childCountLabel_.setText(new WString());
       }
     }
+    if (this.getTree() != null
+        && this.getTree().isDisabled()
+        && this.getTree().getTreeRoot() != null) {
+      WTreeNode root = this.getTree().getTreeRoot();
+      for (WTreeNode node : root.getChildNodes()) {
+        if (!node.hasStyleClass("Wt-disabled")) {
+          node.addStyleClass("Wt-disabled");
+          node.getLabel().addStyleClass("Wt-disabled");
+        }
+      }
+    }
   }
 
   private boolean isLastChildNode() {

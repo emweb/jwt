@@ -29,8 +29,7 @@ import org.slf4j.LoggerFactory;
  * <p>All editing operations are supported:
  *
  * <ul>
- *   <li>changing data ({@link WBatchEditProxyModel#setData(WModelIndex index, Object value,
- *       ItemDataRole role) setData()})
+ *   <li>changing data (setData())
  *   <li>inserting and removing rows ({@link WBatchEditProxyModel#insertRows(int row, int count,
  *       WModelIndex parent) insertRows()} and {@link WBatchEditProxyModel#removeRows(int row, int
  *       count, WModelIndex parent) removeRows()})
@@ -214,10 +213,9 @@ public class WBatchEditProxyModel extends WAbstractProxyModel {
   /**
    * Configures data used to indicate a modified item.
    *
-   * <p>This sets <code>data</code> for item data role <code>role</code> to be returned by {@link
-   * WBatchEditProxyModel#getData(WModelIndex index, ItemDataRole role) getData()} for an item that
-   * is dirty (e.g. because it belongs to a newly inserted row/column, or because new data has been
-   * set for it.
+   * <p>This sets <code>data</code> for item data role <code>role</code> to be returned by data()
+   * for an item that is dirty (e.g. because it belongs to a newly inserted row/column, or because
+   * new data has been set for it.
    *
    * <p>When <code>role</code> is {@link ItemDataRole#StyleClass}, the style class is appended to
    * any style already returned by the source model or set by {@link

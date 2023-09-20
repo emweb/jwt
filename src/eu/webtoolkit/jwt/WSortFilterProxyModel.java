@@ -373,7 +373,7 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    *
    * <p><i><b>Note: </b>This may be ackward when editing through the proxy model, since changing
    * some data may rearrange the model and thus invalidate model indexes. Therefore it is usually
-   * less complicated to manipulate directly the source model instead.</i>
+   * less complicated to manipulate directly the source model instead. </i>
    */
   public void setDynamicSortFilter(boolean enable) {
     this.dynamic_ = enable;

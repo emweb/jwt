@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  *
- * <p><i><b>Note: </b>Currently this class cannot be shared between multiple views.</i>
+ * <p><i><b>Note: </b>Currently this class cannot be shared between multiple views. </i>
  *
  * @see WTreeView
  * @see WTableView

@@ -32,15 +32,51 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <table border="1" cellspacing="3" cellpadding="3">
- * <tr><td><b>Neutral</b> </td><td><b>Bold</b> </td><td><b>Muted</b> </td><td><b>GrayScale</b>  </td></tr>
- * <tr><td>Gmail blue </td><td>Mozilla red </td><td>Ruby on Rails red </td><td>Gray #1  </td></tr>
- * <tr><td>Shiny silver </td><td>Flock blue </td><td>Mozilla blue </td><td>Gray #2  </td></tr>
- * <tr><td>Interactive action yellow </td><td>RSS orange </td><td>Etsy vermillion </td><td>Gray #3  </td></tr>
- * <tr><td>Qoop mint </td><td>Techcrunch green </td><td>Digg blue </td><td>Gray #4  </td></tr>
- * <tr><td>Digg blue </td><td>Flickr pink </td><td>43 Things gold </td><td>Gray #5  </td></tr>
- * <tr><td>Shadows grey </td><td>Newsvine green </td><td>Writely olive </td><td>Gray #6  </td></tr>
- * <tr><td>Magnolia Mag.nolia </td><td>Magnolia Mag.nolia </td><td>Last.fm crimson </td><td>Gray #7  </td></tr>
- * <tr><td>RSS orange </td><td>Rollyo red </td><td>Basecamp green </td><td>Gray #8  </td></tr>
+ * <tr><td><b>Neutral</b>
+ * </td><td><b>Bold</b>
+ * </td><td><b>Muted</b>
+ * </td><td><b>GrayScale</b>
+ * </td></tr>
+ * <tr><td>Gmail blue
+ * </td><td>Mozilla red
+ * </td><td>Ruby on Rails red
+ * </td><td>Gray #1
+ * </td></tr>
+ * <tr><td>Shiny silver
+ * </td><td>Flock blue
+ * </td><td>Mozilla blue
+ * </td><td>Gray #2
+ * </td></tr>
+ * <tr><td>Interactive action yellow
+ * </td><td>RSS orange
+ * </td><td>Etsy vermillion
+ * </td><td>Gray #3
+ * </td></tr>
+ * <tr><td>Qoop mint
+ * </td><td>Techcrunch green
+ * </td><td>Digg blue
+ * </td><td>Gray #4
+ * </td></tr>
+ * <tr><td>Digg blue
+ * </td><td>Flickr pink
+ * </td><td>43 Things gold
+ * </td><td>Gray #5
+ * </td></tr>
+ * <tr><td>Shadows grey
+ * </td><td>Newsvine green
+ * </td><td>Writely olive
+ * </td><td>Gray #6
+ * </td></tr>
+ * <tr><td>Magnolia Mag.nolia
+ * </td><td>Magnolia Mag.nolia
+ * </td><td>Last.fm crimson
+ * </td><td>Gray #7
+ * </td></tr>
+ * <tr><td>RSS orange
+ * </td><td>Rollyo red
+ * </td><td>Basecamp green
+ * </td><td>Gray #8
+ * </td></tr>
  * </table>
  *
  * <p>The border pen is in all cases a gray pen of 0 width, while the stroke pen is a line of width

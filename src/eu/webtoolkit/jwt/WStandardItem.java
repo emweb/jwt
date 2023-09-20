@@ -548,7 +548,7 @@ public class WStandardItem {
    * <p>
    *
    * <p><i><b>Note: </b>If <code>rows</code> &gt; 0, and {@link WStandardItem#getColumnCount()
-   * getColumnCount()} == 0, columnCount is first increased to 1 using setColumnCount(1).</i>
+   * getColumnCount()} == 0, columnCount is first increased to 1 using setColumnCount(1). </i>
    *
    * @see WStandardItem#setColumnCount(int columns)
    * @see WStandardItem#getRowCount()

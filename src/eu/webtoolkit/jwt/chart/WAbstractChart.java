@@ -64,7 +64,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
    * <p>
    *
    * <p><i><b>Note: </b>Setting a new model on a {@link eu.webtoolkit.jwt.chart.WCartesianChart}
-   * causes the {@link WCartesianChart#XSeriesColumn()} and all series to be cleared</i>
+   * causes the {@link WCartesianChart#XSeriesColumn()} and all series to be cleared </i>
    *
    * @see WAbstractChart#getModel()
    */
@@ -81,7 +81,7 @@ public abstract class WAbstractChart extends WPaintedWidget {
    * <p>
    *
    * <p><i><b>Note: </b>Setting a new model on a {@link eu.webtoolkit.jwt.chart.WCartesianChart}
-   * causes the {@link WCartesianChart#XSeriesColumn()} and all series to be cleared</i>
+   * causes the {@link WCartesianChart#XSeriesColumn()} and all series to be cleared </i>
    *
    * @see WAbstractChart#getModel()
    */

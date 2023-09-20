@@ -428,11 +428,11 @@ public abstract class WWidget extends WObject {
     }
     String side = orientation == Orientation.Horizontal ? ".Horizontal" : ".Vertical";
     this.doJavaScript(
-        "Wt4_10_0.positionAtWidget('"
+        "Wt4_10_1.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_10_0"
+            + "',Wt4_10_1"
             + side
             + ");");
   }
@@ -583,7 +583,7 @@ public abstract class WWidget extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Currently you can only set this before initial rendering.</i>
+   * <p><i><b>Note: </b>Currently you can only set this before initial rendering. </i>
    *
    * @see WWidget#setHidden(boolean hidden, WAnimation animation)
    */
@@ -944,7 +944,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_10_0.$('" + this.getId() + "')";
+    return "Wt4_10_1.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.
@@ -1165,14 +1165,14 @@ public abstract class WWidget extends WObject {
    *
    * <p><i><b>Note: </b>An id must start with a letter ([A-Za-z]), followed by one or more letters,
    * digits ([0-9]), hyphens (&quot;-&quot;), underscores (&quot;_&quot;), colons (&quot;:&quot;),
-   * and periods (&quot;.&quot;).</i>
+   * and periods (&quot;.&quot;). </i>
    *
    * <p><i><b>Warning: </b>We recommend that you leave the id of a widget unchanged. JWt uses the id
    * to identify widgets in the JavaScript it generates, and this can often leads to bugs. If you do
    * change the id, <b>only</b> change the id right after widget construction. However, usually
    * there&apos;s a more preferable alternative, like setting the object name ({@link
    * WObject#setObjectName(String name) WObject#setObjectName()}), or adding style classes ({@link
-   * WWidget#addStyleClass(String styleClass, boolean force) addStyleClass()}).</i>
+   * WWidget#addStyleClass(String styleClass, boolean force) addStyleClass()}). </i>
    *
    * @see WObject#getId()
    */

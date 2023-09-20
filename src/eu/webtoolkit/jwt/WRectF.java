@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Warning: </b>A WRectF that is JavaScript exposed should be modified only through its
  * {@link WJavaScriptHandle handle}. Any attempt at modifying it will cause an exception to be
- * thrown.</i>
+ * thrown. </i>
  *
  * @see WPaintedWidget#createJSRect()
  */
@@ -420,7 +420,7 @@ public class WRectF extends WJavaScriptExposableObject {
     }
     WRectF result = new WRectF(x, y, w, h);
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt4_10_0.gfxUtils.rect_normalized(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt4_10_1.gfxUtils.rect_normalized(" + this.getJsRef() + ')');
     }
     return result;
   }

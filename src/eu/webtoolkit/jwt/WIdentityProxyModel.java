@@ -23,8 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>A {@link WIdentityProxyModel} simply forwards the structure of the source model, without any
  * transformation. {@link WIdentityProxyModel} can be used as a base class for implementing proxy
- * models that reimplement {@link WAbstractProxyModel#getData(WModelIndex index, ItemDataRole role)
- * WAbstractProxyModel#getData()}, but retain all other characteristics of the source model.
+ * models that reimplement data(), but retain all other characteristics of the source model.
  */
 public class WIdentityProxyModel extends WAbstractProxyModel {
   private static Logger logger = LoggerFactory.getLogger(WIdentityProxyModel.class);

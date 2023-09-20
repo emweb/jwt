@@ -47,11 +47,13 @@ import org.slf4j.LoggerFactory;
  * <strong>Example of a WMessageBox (default)</strong></p>
  * </div>
  *
+ *
  * </td><td><div align="center">
  * <img src="doc-files/WMessageBox-polished-1.png">
  * <p>
  * <strong>Example of a WMessageBox (polished)</strong></p>
  * </div>
+ *
  *
  * </td></tr>
  * </table>

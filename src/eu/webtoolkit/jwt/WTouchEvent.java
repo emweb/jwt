@@ -35,18 +35,15 @@ public class WTouchEvent implements WAbstractEvent {
     super();
     this.jsEvent_ = new JavaScriptEvent();
   }
-  /** Returns a list of {@link Touch} objects for every finger currently touching the screen. */
+  /** Returns a list of objects for every finger currently touching the screen. */
   public List<Touch> getTouches() {
     return this.jsEvent_.touches;
   }
-  /**
-   * Returns a list of {@link Touch} objects for finger touches that started out within the same
-   * widget.
-   */
+  /** Returns a list of objects for finger touches that started out within the same widget. */
   public List<Touch> getTargetTouches() {
     return this.jsEvent_.targetTouches;
   }
-  /** Returns a list of {@link Touch} objects for every finger involved in the event. */
+  /** Returns a list of objects for every finger involved in the event. */
   public List<Touch> getChangedTouches() {
     return this.jsEvent_.changedTouches;
   }

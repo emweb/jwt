@@ -374,7 +374,7 @@ public class WLeafletMap extends WCompositeWidget {
    * <p><i><b>Note: </b>This fully rerenders the map, because it creates a new Leaflet map, so any
    * custom JavaScript modifying the map with e.g. {@link WCompositeWidget#doJavaScript(String js)
    * WCompositeWidget#doJavaScript()} is undone, much like reloading the page when <code>
-   * reload-is-new-session</code> is set to false.</i> See <a
+   * reload-is-new-session</code> is set to false. </i> See <a
    * href="https://leafletjs.com/reference.html#map">https://leafletjs.com/reference.html#map</a>
    * for a list of options.
    */
@@ -665,7 +665,7 @@ public class WLeafletMap extends WCompositeWidget {
     String optionsStr = this.options_.toString();
     StringBuilder ss = new StringBuilder();
     EscapeOStream es = new EscapeOStream(ss);
-    es.append("new Wt4_10_0.WLeafletMap(")
+    es.append("new Wt4_10_1.WLeafletMap(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())

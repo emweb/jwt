@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Warning: </b>A WPointF that is JavaScript exposed should be modified only through its
  * {@link WJavaScriptHandle handle}. Any attempt at modifying it will cause an exception to be
- * thrown.</i>
+ * thrown. </i>
  *
  * @see WPaintedWidget#createJSPoint()
  */

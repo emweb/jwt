@@ -225,10 +225,10 @@ public class WStackedWidget extends WContainerWidget {
    * you should set it before it is first rendered. Otherwise, transition animations caused by
    * {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()} may not be correctly
    * performed. If you do want to force this change you can use {@link WApplication#processEvents()}
-   * before calling {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()}.</i>
+   * before calling {@link WStackedWidget#setCurrentIndex(int index) setCurrentIndex()}. </i>
    *
    * <p><i><b>Note: </b>It is also not supported to use a {@link AnimationEffect#Pop} animation on a
-   * {@link WStackedWidget}.</i>
+   * {@link WStackedWidget}. </i>
    *
    * @see WStackedWidget#setCurrentIndex(int index)
    */
@@ -296,7 +296,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt4_10_0.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_10_1.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {

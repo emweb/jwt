@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
  *
  * <p><strong>WInPlaceEdit edit mode</strong> </div>
  *
+ * <p>
+ *
  * <h3>CSS</h3>
  *
  * <p>A {@link WInPlaceEdit} widget renders as a <code>&lt;span&gt;</code> containing a {@link

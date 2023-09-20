@@ -777,8 +777,8 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Currently, only row selections are handled by the default
-   * implementation.</i>
+   * <p><i><b>Note: </b>Currently, only row selections are handled by the default implementation.
+   * </i>
    *
    * @see WAbstractItemModel#getMimeType()
    * @see WItemSelectionModel
@@ -839,8 +839,8 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * <p><i><b>Note: </b>Currently, only row selections are handled by the default
-   * implementation.</i>
+   * <p><i><b>Note: </b>Currently, only row selections are handled by the default implementation.
+   * </i>
    *
    * @see WAbstractItemModel#getMimeType()
    * @see WItemSelectionModel

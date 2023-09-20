@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>
  *
- * <p><i><b>Note: </b>{@link WNavigationBar} is currently only styled in the Bootstrap themes.</i>
+ * <p><i><b>Note: </b>{@link WNavigationBar} is currently only styled in the Bootstrap themes. </i>
  *
  * <p><i><b>Note: </b>When using {@link WBootstrap5Theme}, no color schemes are applied by default.
  * You will have to add a &quot;bg-&quot; style class, and &quot;navbar-light&quot; or

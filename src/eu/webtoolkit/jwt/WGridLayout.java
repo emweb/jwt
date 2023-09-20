@@ -92,7 +92,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <p><i><b>Note: </b>When JavaScript support is not available, not all functionality of the layout
- * is available. In particular, vertical size management is not available.</i>
+ * is available. In particular, vertical size management is not available. </i>
  *
  * <p><i><b>Note: </b>When a layout is used on a first page with progressive bootstrap, then the
  * layout will progress only in a limited way to a full JavaScript-based layout. You can thus not

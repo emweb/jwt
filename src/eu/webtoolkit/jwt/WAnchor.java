@@ -359,7 +359,11 @@ public class WAnchor extends WContainerWidget {
       WInteractWidget widget, final WAnchor.LinkState linkState, final DomElement element) {
     WApplication app = WApplication.getInstance();
     if (linkState.link.isNull() || widget.isDisabled()) {
-      element.removeAttribute("href");
+      if (app.getEnvironment().hasJavaScript()) {
+        element.setAttribute("href", "javascript:void(0);");
+      } else {
+        element.removeAttribute("href");
+      }
     } else {
       String url = linkState.link.resolveUrl(app);
       if (linkState.link.getTarget() == LinkTarget.Self) {
@@ -403,7 +407,7 @@ public class WAnchor extends WContainerWidget {
     if (all) {
       element.setProperty(Property.Class, StringUtils.addWord(widget.getStyleClass(), "Wt-rr"));
     } else {
-      element.callJavaScript("Wt4_10_0.$('" + widget.getId() + "').classList.add('Wt-rr');");
+      element.callJavaScript("Wt4_10_1.$('" + widget.getId() + "').classList.add('Wt-rr');");
     }
   }
 
