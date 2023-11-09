@@ -173,12 +173,13 @@ public class WStringListModel extends WAbstractListModel {
     }
     if (role.equals(ItemDataRole.Display)) {
       this.displayData_.set(index.getRow(), StringUtils.asString(value));
+      if (!(this.otherData_ != null)) {
+        this.createOtherDataMap();
+      }
+      this.otherData_.get(index.getRow()).put(ItemDataRole.Edit, value);
     } else {
       if (!(this.otherData_ != null)) {
-        this.otherData_ = new ArrayList<SortedMap<ItemDataRole, Object>>();
-        for (int i = 0; i < this.displayData_.size(); ++i) {
-          this.otherData_.add(new TreeMap<ItemDataRole, Object>());
-        }
+        this.createOtherDataMap();
       }
       this.otherData_.get(index.getRow()).put(role, value);
     }
@@ -298,4 +299,11 @@ public class WStringListModel extends WAbstractListModel {
   private List<WString> displayData_;
   private List<SortedMap<ItemDataRole, Object>> otherData_;
   private List<EnumSet<ItemFlag>> flags_;
+
+  private void createOtherDataMap() {
+    this.otherData_ = new ArrayList<SortedMap<ItemDataRole, Object>>();
+    for (int i = 0; i < this.displayData_.size(); ++i) {
+      this.otherData_.add(new TreeMap<ItemDataRole, Object>());
+    }
+  }
 }

@@ -166,11 +166,6 @@ public class WPopupWidget extends WCompositeWidget {
     if (!hidden && this.anchorWidget_ != null) {
       this.positionAt(this.anchorWidget_, this.orientation_);
     }
-    if (hidden) {
-      this.hidden().trigger();
-    } else {
-      this.shown().trigger();
-    }
     if (!WWebWidget.canOptimizeUpdates() || this.isRendered()) {
       if (hidden) {
         this.doJavaScript(
@@ -178,6 +173,11 @@ public class WPopupWidget extends WCompositeWidget {
       } else {
         this.doJavaScript("var o = " + this.getJsRef() + ";if (o && o.wtPopup) o.wtPopup.shown();");
       }
+    }
+    if (hidden) {
+      this.hidden().trigger();
+    } else {
+      this.shown().trigger();
     }
   }
   /**
@@ -226,7 +226,7 @@ public class WPopupWidget extends WCompositeWidget {
     app.loadJavaScript("js/WPopupWidget.js", wtjs1());
     StringBuilder jsObj = new StringBuilder();
     jsObj
-        .append("new Wt4_10_1.WPopupWidget(")
+        .append("new Wt4_10_2.WPopupWidget(")
         .append(app.getJavaScriptClass())
         .append(',')
         .append(this.getJsRef())
