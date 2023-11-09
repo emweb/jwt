@@ -516,9 +516,9 @@ public class RegistrationModel extends FormBaseModel {
                 + info2.getJsRef()
                 + ",o1="
                 + password.getJsRef()
-                + ";if (!o1.classList.contains('Wt-invalid')) {if (o.value == o1.value) {o.classList.remove('Wt-invalid');Wt4_10_1.setHtml(i,"
+                + ";if (!o1.classList.contains('Wt-invalid')) {if (o.value == o1.value) {o.classList.remove('Wt-invalid');Wt4_10_2.setHtml(i,"
                 + WString.toWString(WString.tr("Wt.Auth.valid")).getJsStringLiteral()
-                + ");} else {o.classList.remove('Wt-valid');Wt4_10_1.setHtml(i,"
+                + ");} else {o.classList.remove('Wt-valid');Wt4_10_2.setHtml(i,"
                 + WString.toWString(WString.tr("Wt.Auth.repeat-password-info")).getJsStringLiteral()
                 + ");}}}");
   }

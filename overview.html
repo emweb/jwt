@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.10.1</title>
+<title>JWt 4.10.0</title>
 </head>
 <body>
 
@@ -25,40 +25,59 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
-<h2>Release 4.10.1 (September 20, 2023)</h2>
+<h2>Release 4.11.0 (TBD)</h2>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11562" target="_blank">Issue #11562</a>:
+    The
+    <a href="https://www.webtoolkit.eu/jwt/latest/doc/userguide/userguide.html"
+      target="_blank">user guide</a>
+    was updated to be built with Asciidoctor instead of the legacy Python implementation,
+    its style was updated to match the JWt website style, and the text was brought up to
+    date a bit.
+  </li>
+</ul>
+
+<h2>Release 4.10.2 (November 8, 2023)</h2>
 
 <p>
-  Wt 4.10.1 is a patch release that addresses the following issues:
+  Wt 4.10.2 is a patch release that addresses the following issues:
 </p>
 
 <ul>
   <li>
-    <a href="https://redmine.webtoolkit.eu/issues/11804">Issue #11804</a>:
-    the <a href="classWt_1_1WEmailValidator.html">WEmailValidator</a> was corrected. There was a missing case in the client side regex that did not allow a hyphen in the domain of an email address.
-    The server side regex was correct, but nevertheless the case has been added to the tests.
+    <a href="https://redmine.webtoolkit.eu/issues/11932">Issue #11932</a>:
+    when calling <a href="eu/webtoolkit/jwt/WPushButton.html#setMenu(eu.webtoolkit.jwt.WPopupMenu)">WPushButton::setMenu</a> after a <a href="eu/webtoolkit/jwt/WPopupMenu.html">WPopupMenu</a> had already been added,
+    the second menu wasn't added to the button, and both <code>WPopupMenu</code>s were removed. Now, the new <code>WPopupMenu</code> is correctly added to the button.
   </li>
   <li>
-    <a href="https://redmine.webtoolkit.eu/issues/10512">Issue #10512</a>:
-    ensures that the disabled state of any <a href="classWt_1_1WWebWidget.html">WWebWidget</a> or <a href="classWt_1_1WCompositeWidget.html">WCompositeWidget</a> is correctly propagated to its children.
-    Before, if a user set a widget as disabled that contained children like a <a href="classWt_1_1WMenu.html">WMenu</a>, a new <a href="classWt_1_1WMenuItem.html">WMenuItem</a> could be added, that was enabled.
-    For some of the affected widgets, this meant that the new item could not be selected, since the signal was not exposed, but in some cases, like with a <code>WMenu</code> this was still possible.
-    The disabled state of a widget now propagates to its children so that a disabled state can be set consistently for a parent. This doesn't actually set <a href="classWt_1_1WCompositeWidget.html#af0186120a0adf80edbc11bc600913ce0">setDisabled()</a> of the children.
-    This state can be set separately to manage the child's disabled state without regard to its parent.
+    <a href="https://redmine.webtoolkit.eu/issues/11984">Issue #11984</a>:
+    corrected <a href="eu/webtoolkit/jwt/WTableView.html">WTableView</a>'s drag &amp; drop functionality. When a <a href="eu/webtoolkit/jwt/WAbstractItemModel.html">WAbstractItemModel</a>'s items have the flags for drag &amp; drop enabled (found in <a href="eu/webtoolkit/jwt/ItemFlag.html">ItemFlag</a>), the <a href="eu/webtoolkit/jwt/WAbstractItemView.html">WAbstractItemView</a> has <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setDragEnabled(boolean)">setDragEnabled(true)</a> and <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setEnabledDropLocations(eu.webtoolkit.jwt.DropLocation,eu.webtoolkit.jwt.DropLocation...)">setEnabledDropLocations()</a> set to <a href="eu/webtoolkit/jwt/DropLocation.html">DropLocation::BetweenRows</a>, the view will now correctly drop the items at the location indicated by the cursor, and will no longer cause an issue when moving the cursor out of the table when dragging.
   </li>
   <li>
-    <a href="https://redmine.webtoolkit.eu/issues/11741">Issue #11741</a>:
-    this corrects a small issue where a compiler directive cause a Java function to be empty, not allowing the release of a lock.
+    <a href="https://redmine.webtoolkit.eu/issues/11985">Issue #11985</a>:
+    ensures that if a <a href="eu/webtoolkit/jwt/WStringListModel.html">WStringListModel</a> is used in a <a href="eu/webtoolkit/jwt/WTableView.html">WTableView</a> that allows drag &amp; drop, the content of the
+    model is correctly updated.
   </li>
   <li>
-    <a href="https://redmine.webtoolkit.eu/issues/11848">Issue #11848</a>:
-    this corrects an edge-case in <a href="classWt_1_1WSuggestionPopup.html">WSuggestionPopup</a> where forcibly displaying the pop-up via Java code would cause it to be unfiltered.
+    <a href="https://redmine.emweb.be/issues/12012">Issue #12012</a>:
+    due to an oversight in <a href="https://redmine.webtoolkit.eu/issues/10512">Issue #10512</a>, the keyboard and mouse events for a <a href="eu/webtoolkit/jwt/WTreeView.html">WTreeView</a>'s node were missing.
+  </li>
+    <a href="https://redmine.emweb.be/issues/11882">Issue #11882</a>:
+    the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset">fieldset</a> element, used by <a href="eu/webtoolkit/jwt/WGroupBox.html">WGroupBox</a> has been corrected when using Bootstrap 5.
+    A default HTML value was used here, which caused the content to not be rendered correctly.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/12006">Issue #12006</a>
+    a JavaScript error could occur if no semicolon was added to the JS code when called by <a href="eu/webtoolkit/jwt/WWidget.html#setJavaScriptMember(java.lang.String,java.lang.String)">setJavaScriptMember</a> or <a href="eu/webtoolkit/jwt/DomElement.html#callJavaScript(java.lang.String)">callJavaScript</a>.
   </li>
 </ul>
 
 <h2>Release 4.10.0 (May 30, 2023)</h2>
 
 <p>
-  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement.
+  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement. 
 </p>
 
 <h3>New features</h3>
@@ -93,15 +112,6 @@ behaviour. It also indicates the main changes from version to verison.
   <li>
     <a href="https://redmine.webtoolkit.eu/issues/11412" target="_blank">Issue #11412</a>:
     shift-click to open a new window did not work for links to internal paths. Shift-click is now handled by the browser, like ctrl- and meta-click.
-  </li>
-  <li>
-    <a href="https://redmine.webtoolkit.eu/issues/11562" target="_blank">Issue #11562</a>:
-    The
-    <a href="https://www.webtoolkit.eu/jwt/latest/doc/userguide/userguide.html"
-      target="_blank">user guide</a>
-    was updated to be built with Asciidoctor instead of the legacy Python implementation,
-    its style was updated to match the JWt website style, and the text was brought up to
-    date a bit.
   </li>
 </ul>
 

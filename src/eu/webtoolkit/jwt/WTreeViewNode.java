@@ -623,6 +623,7 @@ class WTreeViewNode extends WContainerWidget {
         widget.addStyleClass("Wt-disabled");
       }
     }
+    super.updateDom(element, all);
   }
 
   private WTreeView view_;

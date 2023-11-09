@@ -109,6 +109,7 @@ public enum Property {
   StyleDisplay,
   StyleBoxSizing,
   StyleFlex,
+  StyleFlexDirection,
   StyleFlexFlow,
   StyleAlignSelf,
   StyleJustifyContent,
