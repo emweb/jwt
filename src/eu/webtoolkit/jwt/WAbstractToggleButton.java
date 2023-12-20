@@ -458,6 +458,28 @@ public abstract class WAbstractToggleButton extends WFormWidget {
         element.addChild(span);
       }
     }
+    String currentClasses = element.getProperty(Property.Class);
+    String previousClasses = this.getStyleClass();
+    List<String> previousClassesVec = new ArrayList<String>();
+    StringUtils.split(previousClassesVec, previousClasses, " ", false);
+    List<String> currentClassesVec = new ArrayList<String>();
+    StringUtils.split(currentClassesVec, currentClasses, " ", false);
+    List<String> missingClasses = new ArrayList<String>();
+    for (String styleClass : previousClassesVec) {
+      boolean alreadyHasClass = false;
+      for (String currentStyleClass : currentClassesVec) {
+        if (currentStyleClass.equals(styleClass)) {
+          alreadyHasClass = true;
+          break;
+        }
+      }
+      if (!alreadyHasClass) {
+        missingClasses.add(styleClass);
+      }
+    }
+    for (String styleClass : missingClasses) {
+      element.addPropertyWord(Property.Class, styleClass);
+    }
   }
 
   void getFormObjects(final Map<String, WObject> formObjects) {

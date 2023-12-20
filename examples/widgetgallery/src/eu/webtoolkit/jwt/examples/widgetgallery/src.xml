@@ -4469,6 +4469,29 @@
   <span class="p">}</span>
 </pre></div>
   ]]></message>
+  <message id="src-SliderSteps"><![CDATA[
+<div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">SliderSteps</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="p">();</span>
+    <span class="k">new</span> <span class="n">WText</span><span class="p">(</span><span class="s">&quot;Try to select &#39;7&#39;. I bet you can&#39;t.&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">WContainerWidget</span><span class="p">)</span> <span class="n">container</span><span class="p">);</span>
+    <span class="k">new</span> <span class="n">WBreak</span><span class="p">((</span><span class="n">WContainerWidget</span><span class="p">)</span> <span class="n">container</span><span class="p">);</span>
+    <span class="kd">final</span> <span class="n">WSlider</span> <span class="n">slider</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WSlider</span><span class="p">((</span><span class="n">WContainerWidget</span><span class="p">)</span> <span class="n">container</span><span class="p">);</span>
+    <span class="n">slider</span><span class="p">.</span><span class="na">resize</span><span class="p">(</span><span class="k">new</span> <span class="n">WLength</span><span class="p">(</span><span class="mi">300</span><span class="p">),</span> <span class="k">new</span> <span class="n">WLength</span><span class="p">(</span><span class="mi">50</span><span class="p">));</span>
+    <span class="n">slider</span><span class="p">.</span><span class="na">setTickPosition</span><span class="p">(</span><span class="n">WSlider</span><span class="p">.</span><span class="na">TicksBothSides</span><span class="p">);</span>
+    <span class="n">slider</span><span class="p">.</span><span class="na">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+    <span class="n">slider</span><span class="p">.</span><span class="na">setStep</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="k">new</span> <span class="n">WBreak</span><span class="p">((</span><span class="n">WContainerWidget</span><span class="p">)</span> <span class="n">container</span><span class="p">);</span>
+    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="p">((</span><span class="n">WContainerWidget</span><span class="p">)</span> <span class="n">container</span><span class="p">);</span>
+    <span class="n">out</span><span class="p">.</span><span class="na">setMargin</span><span class="p">(</span><span class="k">new</span> <span class="n">WLength</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">EnumSet</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">Side</span><span class="p">.</span><span class="na">Left</span><span class="p">));</span>
+    <span class="n">slider</span>
+        <span class="p">.</span><span class="na">valueChanged</span><span class="p">()</span>
+        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
+            <span class="k">this</span><span class="p">,</span>
+            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
+              <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;That&#39;s a failure, you selected: &#39;&quot;</span> <span class="o">+</span> <span class="n">slider</span><span class="p">.</span><span class="na">getValueText</span><span class="p">()</span> <span class="o">+</span> <span class="s">&quot;&#39;!&quot;</span><span class="p">);</span>
+            <span class="p">});</span>
+  <span class="p">}</span>
+</pre></div>
+  ]]></message>
   <message id="src-SliderVertical"><![CDATA[
 <div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">SliderVertical</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">WContainerWidget</span> <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WContainerWidget</span><span class="p">();</span>

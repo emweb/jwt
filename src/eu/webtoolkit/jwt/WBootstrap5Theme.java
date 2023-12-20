@@ -81,7 +81,7 @@ public class WBootstrap5Theme extends WTheme {
         child.addStyleClass("Wt-icon");
         break;
       case WidgetThemeRole.MenuItemCheckBox:
-        child.setStyleClass("Wt-chkbox");
+        child.addStyleClass("Wt-chkbox");
         ((WFormWidget) child).getLabel().addStyleClass("form-checkbox");
         break;
       case WidgetThemeRole.MenuItemClose:
@@ -344,7 +344,7 @@ public class WBootstrap5Theme extends WTheme {
           if (!(tb != null || sl != null || fu != null)) {
             element.addPropertyWord(Property.Class, "form-control");
           } else {
-            if (sl != null) {
+            if (sl != null && !sl.isNativeControl()) {
               element.addPropertyWord(Property.Class, "form-range");
               if (sl.getOrientation() == Orientation.Vertical) {
                 element.addPropertyWord(Property.Class, "Wt-native-vertical-slider");
@@ -468,7 +468,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_10_2.setValidationState(")
+      js.append("Wt4_10_3.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)

@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.10.0</title>
+<title>JWt 4.10.3</title>
 </head>
 <body>
 
@@ -25,17 +25,34 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
-<h2>Release 4.11.0 (TBD)</h2>
+<h2>Release 4.10.3 (December 20, 2023)</h2>
+
+<p>
+  Wt 4.10.3 is a patch release that addresses the following issues:
+</p>
 
 <ul>
   <li>
-    <a href="https://redmine.webtoolkit.eu/issues/11562" target="_blank">Issue #11562</a>:
-    The
-    <a href="https://www.webtoolkit.eu/jwt/latest/doc/userguide/userguide.html"
-      target="_blank">user guide</a>
-    was updated to be built with Asciidoctor instead of the legacy Python implementation,
-    its style was updated to match the JWt website style, and the text was brought up to
-    date a bit.
+    <a href="https://redmine.webtoolkit.eu/issues/11934">Issue #11934</a>:
+    this corrects the rendering of a vertical <a href="eu/webtoolkit/jwt/WSlider.html">WSlider</a> for all themes. Additionally an improvement was made that introduces <a href="eu/webtoolkit/jwt/WSlider.html#setTickLength(eu.webtoolkit.jwt.WLength)">WSlider::setTickLength</a>, that allows users to set the length (width or height of the line, depending on whether the <code>WSlider</code> is <code>Orientation::Horizontal</code> or <code>Orientation::Vertical</code>) of the ticks.
+    For the native slider, ticks have also been enabled. Although both the positioning (the side on which ticks are placed) and their length cannot be changed. Only their interval can be manipulated through <a href="eu/webtoolkit/jwt/WSlider.html#setTickInterval(int)">WSlider::setTickInterval</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/12005">Issues #12005</a>:
+    a step value can now be set on a <a href="eu/webtoolkit/jwt/WSlider.html">WSlider</a>, using <a href="eu/webtoolkit/jwt/WSlider.html#setStep(int)">WSlider::setStep</a>.
+    This functions for both the native and non-native sliders. By default the step value is set to 1.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12148">Issue #12148</a>:
+    attributes on the main page's &lt;html&gt; and &lt;body&gt; tags can now be specified. The new functions are:
+    <ul>
+      <li><a href="eu/webtoolkit/jwt/WApplication.html#setHtmlAttribute(java.lang.String,java.lang.String)">WApplication::setHtmlAttribute</a></li>
+      <li><a href="eu/webtoolkit/jwt/WApplication.html#setBodyAttribute(java.lang.String,java.lang.String)">WApplication::setBodyAttribute</a></li>
+    </ul>
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12036">Issue #12036</a>:
+    ensures that if a <a href="eu/webtoolkit/jwt/WCheckBox.html">WCheckBox</a> and <a href="eu/webtoolkit/jwt/WRadioButton.html">WRadioButton</a> have a custom style class, it remains in place after applying the <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html">WBootstrap5Theme</a>.
   </li>
 </ul>
 

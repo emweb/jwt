@@ -72,6 +72,7 @@ public class WSlider extends WFormWidget {
     this.orientation_ = Orientation.Horizontal;
     this.tickInterval_ = 0;
     this.tickPosition_ = EnumSet.noneOf(WSlider.TickPosition.class);
+    this.tickLength_ = new WLength();
     this.preferNative_ = false;
     this.changed_ = false;
     this.changedConnected_ = false;
@@ -79,9 +80,11 @@ public class WSlider extends WFormWidget {
     this.minimum_ = 0;
     this.maximum_ = 99;
     this.value_ = 0;
+    this.step_ = 1;
     this.valueChanged_ = new Signal1<Integer>();
     this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {};
     this.paintedSlider_ = null;
+    this.tickList_ = null;
     this.resize(new WLength(150), new WLength(50));
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -106,6 +109,7 @@ public class WSlider extends WFormWidget {
     this.orientation_ = orientation;
     this.tickInterval_ = 0;
     this.tickPosition_ = EnumSet.noneOf(WSlider.TickPosition.class);
+    this.tickLength_ = new WLength();
     this.preferNative_ = false;
     this.changed_ = false;
     this.changedConnected_ = false;
@@ -113,9 +117,11 @@ public class WSlider extends WFormWidget {
     this.minimum_ = 0;
     this.maximum_ = 99;
     this.value_ = 0;
+    this.step_ = 1;
     this.valueChanged_ = new Signal1<Integer>();
     this.sliderMoved_ = new JSignal1<Integer>(this, "moved", true) {};
     this.paintedSlider_ = null;
+    this.tickList_ = null;
     if (orientation == Orientation.Horizontal) {
       this.resize(new WLength(150), new WLength(50));
     } else {
@@ -139,6 +145,14 @@ public class WSlider extends WFormWidget {
       this.paintedSlider_ = null;
       {
         WWidget toRemove = this.manageWidget(oldWidget, this.paintedSlider_);
+        if (toRemove != null) toRemove.remove();
+      }
+    }
+    {
+      WWidget oldWidget = this.tickList_;
+      this.tickList_ = null;
+      {
+        WWidget toRemove = this.manageWidget(oldWidget, this.tickList_);
         if (toRemove != null) toRemove.remove();
       }
     }
@@ -168,20 +182,7 @@ public class WSlider extends WFormWidget {
    * whether a native control is actually being used.
    */
   public boolean isNativeControl() {
-    if (this.preferNative_) {
-      final WEnvironment env = WApplication.getInstance().getEnvironment();
-      if (env.agentIsChrome()
-              && (int) env.getAgent().getValue() >= (int) UserAgent.Chrome5.getValue()
-          || env.agentIsSafari()
-              && (int) env.getAgent().getValue() >= (int) UserAgent.Safari4.getValue()
-          || env.agentIsOpera()
-              && (int) env.getAgent().getValue() >= (int) UserAgent.Opera10.getValue()
-          || env.agentIsGecko()
-              && (int) env.getAgent().getValue() >= (int) UserAgent.Firefox5_0.getValue()) {
-        return true;
-      }
-    }
-    return false;
+    return this.preferNative_;
   }
   /**
    * Sets the slider orientation.
@@ -239,12 +240,21 @@ public class WSlider extends WFormWidget {
    *
    * <p>The tick position indicates if and where ticks are placed around the slider groove.
    *
+   * <p>This function has no effect if the native widget is used.
+   *
    * <p>
    *
    * @see WSlider#getTickPosition()
    * @see WSlider#setTickInterval(int tickInterval)
    */
   public void setTickPosition(EnumSet<WSlider.TickPosition> tickPosition) {
+    if (this.isNativeControl()) {
+      logger.warn(
+          new StringWriter()
+              .append("setTickLength(): Cannot set the tick length of a native widget.")
+              .toString());
+      return;
+    }
     this.tickPosition_ = EnumSet.copyOf(tickPosition);
     if (this.paintedSlider_ != null) {
       this.paintedSlider_.updateState();
@@ -270,6 +280,41 @@ public class WSlider extends WFormWidget {
    */
   public EnumSet<WSlider.TickPosition> getTickPosition() {
     return this.tickPosition_;
+  }
+  /**
+   * Sets the length of the ticks to be drawn.
+   *
+   * <p>This length will be either the width or height when the slider is oriented vertically or
+   * horizontally respectively.
+   *
+   * <p>This function has no effect if the native widget is used.
+   *
+   * <p>
+   *
+   * @see WSlider#getTickLength()
+   */
+  public void setTickLength(final WLength length) {
+    if (this.isNativeControl()) {
+      logger.warn(
+          new StringWriter()
+              .append("setTickLength(): Cannot set the tick length of a native widget.")
+              .toString());
+      return;
+    }
+    this.tickLength_ = length;
+    if (this.paintedSlider_ != null) {
+      this.paintedSlider_.updateState();
+    }
+  }
+  /**
+   * Returns the tick length.
+   *
+   * <p>
+   *
+   * @see WSlider#setTickLength(WLength length)
+   */
+  public WLength getTickLength() {
+    return this.tickLength_;
   }
   /**
    * Sets the slider value.
@@ -371,6 +416,45 @@ public class WSlider extends WFormWidget {
     this.update();
   }
   /**
+   * Return the step value.
+   *
+   * <p>The default value of the step is <code>1</code>.
+   *
+   * <p>
+   *
+   * @see WSlider#setStep(int step)
+   */
+  public int getStep() {
+    return this.step_;
+  }
+  /**
+   * Sets the step value.
+   *
+   * <p>This is a positive integer value that indicates by which step the slider moves between the
+   * minimum and maximum.
+   *
+   * <p>It is not necessary that the slider&apos;s range can be neatly divided by the step value.
+   * Meaning a range of 50 (0 - 50), with a step of 7, is possible, but will never reach the maximum
+   * value.
+   *
+   * <p>
+   *
+   * @see WSlider#getStep()
+   */
+  public void setStep(int step) {
+    if (step <= 0) {
+      logger.warn(
+          new StringWriter()
+              .append("setStep() is called with a bad step value. This must be greater than 0.")
+              .toString());
+      return;
+    }
+    this.step_ = step;
+    this.value_ = this.getClosestNumberByStep(this.getValue(), step);
+    this.update();
+    this.onChange();
+  }
+  /**
    * Signal emitted when the user has changed the value of the slider.
    *
    * <p>The new value is passed as the argument.
@@ -435,18 +519,7 @@ public class WSlider extends WFormWidget {
   }
 
   public void resize(final WLength width, final WLength height) {
-    if (this.getOrientation() == Orientation.Vertical) {
-      WApplication app = WApplication.getInstance();
-      WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
-      if (bs5Theme != null) {
-        WLength w = width;
-        WLength h = height;
-        WLength size = new WLength(Math.max(w.toPixels(), h.toPixels()));
-        super.resize(size, size);
-      }
-    } else {
-      super.resize(width, height);
-    }
+    super.resize(width, height);
     if (this.paintedSlider_ != null) {
       this.paintedSlider_.sliderResized(width, height);
     }
@@ -495,6 +568,10 @@ public class WSlider extends WFormWidget {
       int y2 = h / 2 - 4;
       int y3 = h / 2 + 4;
       int y4 = h - h / 4;
+      if (!this.getTickLength().isAuto()) {
+        y1 = y2 - (int) this.getTickLength().toPixels();
+        y4 = y3 + (int) this.getTickLength().toPixels();
+      }
       switch (this.orientation_) {
         case Horizontal:
           if (this.tickPosition_.contains(WSlider.TickPosition.TicksAbove)) {
@@ -553,6 +630,16 @@ public class WSlider extends WFormWidget {
           }
           this.paintedSlider_.sliderResized(this.getWidth(), this.getHeight());
         }
+      } else {
+        TickList tickList = new TickList(this);
+        {
+          WWidget oldWidget = this.tickList_;
+          this.tickList_ = tickList;
+          {
+            WWidget toRemove = this.manageWidget(oldWidget, this.tickList_);
+            if (toRemove != null) toRemove.remove();
+          }
+        }
       }
       this.setLayoutSizeAware(!useNative);
       this.setFormObject(useNative);
@@ -561,6 +648,21 @@ public class WSlider extends WFormWidget {
   }
 
   void updateDom(final DomElement element, boolean all) {
+    if (this.preferNative_) {
+      if (this.getOrientation() == Orientation.Horizontal) {
+        element.removeProperty(Property.Orient);
+        element.removeProperty(Property.StyleWebkitAppearance);
+      } else {
+        element.setProperty(Property.Orient, "vertical");
+        element.setProperty(Property.StyleWebkitAppearance, "slider-vertical");
+      }
+      if (this.tickList_ != null) {
+        this.tickList_.doUpdateDom(element, all);
+        element.setAttribute("list", this.getId() + "dl");
+      }
+      element.setAttribute("step", String.valueOf(this.getStep()));
+      element.setAttribute("value", String.valueOf(this.getValue()));
+    }
     if (this.paintedSlider_ != null) {
       this.paintedSlider_.doUpdateDom(element, all);
     } else {
@@ -616,6 +718,7 @@ public class WSlider extends WFormWidget {
   private Orientation orientation_;
   private int tickInterval_;
   private EnumSet<WSlider.TickPosition> tickPosition_;
+  private WLength tickLength_;
   private boolean preferNative_;
   private boolean changed_;
   private boolean changedConnected_;
@@ -624,9 +727,11 @@ public class WSlider extends WFormWidget {
   private int minimum_;
   private int maximum_;
   private int value_;
+  private int step_;
   private Signal1<Integer> valueChanged_;
   private JSignal1<Integer> sliderMoved_;
   private PaintedSlider paintedSlider_;
+  private TickList tickList_;
 
   private void update() {
     if (this.paintedSlider_ != null) {
@@ -638,7 +743,26 @@ public class WSlider extends WFormWidget {
   }
 
   private void onChange() {
+    this.updateSliderProperties();
     this.valueChanged_.trigger(this.value_);
     this.sliderMoved_.trigger(this.value_);
+  }
+
+  private void updateSliderProperties() {
+    if (this.preferNative_) {
+      this.scheduleRender();
+    }
+  }
+
+  private int getClosestNumberByStep(int value, int step) {
+    int absValue = Math.abs(value);
+    int sign = value < 0 ? -1 : 1;
+    int lowDelta = absValue - absValue % step;
+    int highDelta = lowDelta + step;
+    if (absValue - lowDelta < highDelta - absValue) {
+      return lowDelta * sign;
+    } else {
+      return highDelta * sign;
+    }
   }
 }

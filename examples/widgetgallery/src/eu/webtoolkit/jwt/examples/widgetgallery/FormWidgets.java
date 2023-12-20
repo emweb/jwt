@@ -208,6 +208,7 @@ class FormWidgets extends Topic {
     TopicTemplate result = new TopicTemplate("forms-slider");
     result.bindWidget("Slider", Slider());
     result.bindWidget("SliderVertical", SliderVertical());
+    result.bindWidget("SliderSteps", SliderSteps());
     return result;
   }
 
@@ -960,6 +961,28 @@ class FormWidgets extends Topic {
             () -> {
               out.setText(
                   "Currenly, my efficiency increased " + verticalSlider.getValueText() + "%!");
+            });
+    return container;
+  }
+
+  WWidget SliderSteps() {
+    WContainerWidget container = new WContainerWidget();
+    new WText("Try to select '7'. I bet you can't.", (WContainerWidget) container);
+    new WBreak((WContainerWidget) container);
+    final WSlider slider = new WSlider((WContainerWidget) container);
+    slider.resize(new WLength(300), new WLength(50));
+    slider.setTickPosition(WSlider.TicksBothSides);
+    slider.setRange(0, 10);
+    slider.setStep(3);
+    new WBreak((WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
+    out.setMargin(new WLength(10), EnumSet.of(Side.Left));
+    slider
+        .valueChanged()
+        .addListener(
+            this,
+            () -> {
+              out.setText("That's a failure, you selected: '" + slider.getValueText() + "'!");
             });
     return container;
   }
