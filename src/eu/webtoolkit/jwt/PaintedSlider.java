@@ -110,12 +110,20 @@ final class PaintedSlider extends WPaintedWidget {
   public void updateState() {
     boolean rtl = WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft;
     Orientation o = this.slider_.getOrientation();
+    final int handleOffset = 5;
+    final int widgetLength = o == Orientation.Horizontal ? (int) this.getH() : (int) this.getW();
+    int calculatedOffset = -(widgetLength / 2) + this.slider_.getHandleWidth() + handleOffset;
+    WTheme theme = WApplication.getInstance().getTheme();
+    WCssTheme cssTheme = ObjectUtils.cast(theme, WCssTheme.class);
+    if (cssTheme != null && cssTheme.getName().equals("polished")) {
+      calculatedOffset = 0;
+    }
     if (o == Orientation.Horizontal) {
       this.handle_.resize(new WLength(this.slider_.getHandleWidth()), new WLength(this.getH()));
-      this.handle_.setOffsets(new WLength(0), EnumSet.of(Side.Top));
+      this.handle_.setOffsets(new WLength(calculatedOffset), EnumSet.of(Side.Top));
     } else {
       this.handle_.resize(new WLength(this.getW()), new WLength(this.slider_.getHandleWidth()));
-      this.handle_.setOffsets(new WLength(0), EnumSet.of(Side.Left));
+      this.handle_.setOffsets(new WLength(calculatedOffset), EnumSet.of(Side.Left));
     }
     double l = o == Orientation.Horizontal ? this.getW() : this.getH();
     double pixelsPerUnit = (l - this.slider_.getHandleWidth()) / this.getRange();
@@ -134,7 +142,7 @@ final class PaintedSlider extends WPaintedWidget {
     char[] buf = new char[30];
     StringBuilder mouseDownJS = new StringBuilder();
     mouseDownJS
-        .append("obj.setAttribute('down', Wt4_10_2")
+        .append("obj.setAttribute('down', Wt4_10_3")
         .append(".widgetCoordinates(obj, event).")
         .append(u)
         .append(");");
@@ -148,6 +156,15 @@ final class PaintedSlider extends WPaintedWidget {
         .append(",")
         .append("objb = ")
         .append(this.slider_.getJsRef())
+        .append(",")
+        .append("minVal = ")
+        .append(this.slider_.getMinimum())
+        .append(",")
+        .append("maxVal = ")
+        .append(this.slider_.getMaximum())
+        .append(",")
+        .append("stepVal = ")
+        .append(this.slider_.getStep())
         .append(",")
         .append("page_u = WT.pageCoordinates(event).")
         .append(u)
@@ -165,10 +182,23 @@ final class PaintedSlider extends WPaintedWidget {
         .append("if (rtl && horizontal)");
     computeD.append("pos = ").append(MathUtils.roundJs(l, 3)).append(" - pos;");
     computeD.append("var d = pos - down;");
+    computeD.append("let sliderV = Math.abs(maxVal - minVal);");
+    computeD.append("let scaleFactor = ").append(MathUtils.roundJs(max, 3)).append(" / sliderV;");
+    computeD.append("let scaledD = d / scaleFactor;");
+    computeD.append("let absD = Math.abs(scaledD);");
+    computeD.append("let signD = scaledD < 0 ? -1 : 1;");
+    computeD.append("let lowDelta = absD - (absD % stepVal);");
+    computeD.append("let highDelta = lowDelta + stepVal;");
+    computeD.append("if (absD- lowDelta < highDelta - absD) {");
+    computeD.append("d = lowDelta * signD;");
+    computeD.append("} else {");
+    computeD.append("d = highDelta *signD;");
+    computeD.append("}");
+    computeD.append("d = d * scaleFactor;");
     StringBuilder mouseMovedJS = new StringBuilder();
     mouseMovedJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt4_10_2;")
+        .append("var WT = Wt4_10_3;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString());
     mouseMovedJS
@@ -212,7 +242,7 @@ final class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseUpJS = new StringBuilder();
     mouseUpJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt4_10_2;")
+        .append("var WT = Wt4_10_3;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString())
         .append("d += ")
@@ -363,9 +393,22 @@ final class PaintedSlider extends WPaintedWidget {
             Math.min(
                 this.slider_.getMaximum(),
                 this.slider_.getMinimum() + (int) ((double) u / pixelsPerUnit + 0.5)));
+    v = this.getClosestNumberByStep((int) v, this.slider_.getStep());
     this.slider_.sliderMoved().trigger((int) v);
     this.slider_.setValue((int) v);
     this.slider_.valueChanged().trigger(this.slider_.getValue());
     this.updateSliderPosition();
+  }
+
+  private int getClosestNumberByStep(int value, int step) {
+    int absValue = Math.abs(value);
+    int sign = value < 0 ? -1 : 1;
+    int lowDelta = absValue - absValue % step;
+    int highDelta = lowDelta + step;
+    if (absValue - lowDelta < highDelta - absValue) {
+      return lowDelta * sign;
+    } else {
+      return highDelta * sign;
+    }
   }
 }

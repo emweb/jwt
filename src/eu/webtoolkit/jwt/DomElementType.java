@@ -72,6 +72,7 @@ public enum DomElementType {
   EM,
   I,
   HR,
+  DATALIST,
   UNKNOWN,
   OTHER;
 

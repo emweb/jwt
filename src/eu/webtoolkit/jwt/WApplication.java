@@ -134,6 +134,10 @@ public class WApplication extends WObject {
     this.selectionStart_ = -1;
     this.selectionEnd_ = -1;
     this.layoutDirection_ = LayoutDirection.LeftToRight;
+    this.htmlAttributes_ = new HashMap<String, String>();
+    this.bodyAttributes_ = new HashMap<String, String>();
+    this.htmlAttributeChanged_ = true;
+    this.bodyAttributeChanged_ = true;
     this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
     this.scriptLibrariesAdded_ = 0;
     this.theme_ = (WTheme) null;
@@ -701,6 +705,90 @@ public class WApplication extends WObject {
    */
   public String getHtmlClass() {
     return this.htmlClass_;
+  }
+  /**
+   * Sets an attribute for the entire page &lt;html&gt; element.
+   *
+   * <p>This allows you to set any of the global attributes (see: <a
+   * href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes">https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes</a>)
+   * on the &lt;html&gt; tag. As well as any tags specific to that tag (see: <a
+   * href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/html</a>).
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>If the <code>value</code> contains more complex JavaScript, make sure that
+   * <code>"</code> and <code>&apos;</code> are properly escaped. Otherwise you may encounter
+   * JavaScript errors. </i>
+   *
+   * <p><i><b>Note: </b>This can control the &lt;html&gt;&apos;s <code>class</code>, <code>dir
+   * </code>, and <code>lang</code> as well, but this should generally be avoided, since the
+   * application manages that separately. </i>
+   *
+   * @see WApplication#getHtmlAttribute(String name)
+   * @see WApplication#setBodyAttribute(String name, String value)
+   */
+  public void setHtmlAttribute(final String name, final String value) {
+    String i = this.htmlAttributes_.get(name);
+    if (i != null && i.equals(value)) {
+      return;
+    }
+    this.htmlAttributes_.put(name, value);
+    this.htmlAttributeChanged_ = true;
+  }
+  /**
+   * Returns the current &lt;html&gt; element attribute value of the specified <code>name</code>.
+   *
+   * <p>
+   *
+   * @see WApplication#setHtmlAttribute(String name, String value)
+   * @see WApplication#getBodyAttribute(String name)
+   */
+  public WString getHtmlAttribute(final String name) {
+    String i = this.htmlAttributes_.get(name);
+    if (i != null) {
+      return new WString(i);
+    }
+    return new WString();
+  }
+  /**
+   * Sets an attribute for the entire page &lt;body&gt; element.
+   *
+   * <p>This allows you to set any of the global attributes (see: <a
+   * href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes">https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes</a>)
+   * on the &lt;body&gt; tag. As well as any tags specific to that tag (see: <a
+   * href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body">https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body</a>).
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>If the <code>value</code> contains more complex JavaScript, make sure that
+   * <code>"</code> and <code>&apos;</code> are properly escaped. Otherwise you may encounter
+   * JavaScript errors. </i>
+   *
+   * @see WApplication#getBodyAttribute(String name)
+   * @see WApplication#setHtmlAttribute(String name, String value)
+   */
+  public void setBodyAttribute(final String name, final String value) {
+    String i = this.bodyAttributes_.get(name);
+    if (i != null && i.equals(value)) {
+      return;
+    }
+    this.bodyAttributes_.put(name, value);
+    this.bodyAttributeChanged_ = true;
+  }
+  /**
+   * Returns the current &lt;body&gt; element attribute value of the specified <code>name</code>.
+   *
+   * <p>
+   *
+   * @see WApplication#setBodyAttribute(String name, String value)
+   * @see WApplication#getHtmlAttribute(String name)
+   */
+  public WString getBodyAttribute(final String name) {
+    String i = this.bodyAttributes_.get(name);
+    if (i != null) {
+      return new WString(i);
+    }
+    return new WString();
   }
   /**
    * Sets the window title.
@@ -2171,9 +2259,9 @@ public class WApplication extends WObject {
     if (this.loadingIndicator_ != null) {
       this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt4_10_2.inline('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_10_3.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt4_10_2.hide('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_10_3.hide('" + this.loadingIndicator_.getId() + "');}");
       this.loadingIndicator_.hide();
     }
   }
@@ -2579,7 +2667,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt4_10_2.ajaxInternalPaths("
+        "Wt4_10_3.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2753,6 +2841,10 @@ public class WApplication extends WObject {
   private int selectionStart_;
   private int selectionEnd_;
   private LayoutDirection layoutDirection_;
+  private HashMap<String, String> htmlAttributes_;
+  private HashMap<String, String> bodyAttributes_;
+  boolean htmlAttributeChanged_;
+  boolean bodyAttributeChanged_;
   List<WApplication.ScriptLibrary> scriptLibraries_;
   int scriptLibrariesAdded_;
   private WTheme theme_;
@@ -2786,6 +2878,14 @@ public class WApplication extends WObject {
 
   WEnvironment getEnv() {
     return this.session_.getEnv();
+  }
+
+  HashMap<String, String> getHtmlAttributes() {
+    return this.htmlAttributes_;
+  }
+
+  HashMap<String, String> getBodyAttributes() {
+    return this.bodyAttributes_;
   }
 
   void addExposedSignal(AbstractEventSignal signal) {
@@ -2945,7 +3045,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt4_10_2";
+              : "Wt4_10_3";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')
