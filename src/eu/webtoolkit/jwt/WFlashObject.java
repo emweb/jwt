@@ -144,7 +144,7 @@ public class WFlashObject extends WWebWidget {
    * for example on IE when flash is not installed.
    */
   public String getJsFlashRef() {
-    return "Wt4_10_3.getElement('" + this.getId() + "_flash')";
+    return "Wt4_10_4.getElement('" + this.getId() + "_flash')";
   }
   /**
    * Sets content to be displayed if Flash is not available.

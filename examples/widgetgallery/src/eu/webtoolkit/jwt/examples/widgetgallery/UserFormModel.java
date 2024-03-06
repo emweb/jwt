@@ -44,10 +44,10 @@ class UserFormModel extends WFormModel {
     this.addField(RemarksField);
     this.setValidator(FirstNameField, this.createNameValidator(FirstNameField));
     this.setValidator(LastNameField, this.createNameValidator(LastNameField));
-    this.setValidator(CountryField, this.getCreateCountryValidator());
-    this.setValidator(CityField, this.getCreateCityValidator());
-    this.setValidator(BirthField, this.getCreateBirthValidator());
-    this.setValidator(ChildrenField, this.getCreateChildrenValidator());
+    this.setValidator(CountryField, this.createCountryValidator());
+    this.setValidator(CityField, this.createCityValidator());
+    this.setValidator(BirthField, this.createBirthValidator());
+    this.setValidator(ChildrenField, this.createChildrenValidator());
     this.setValue(BirthField, null);
     this.setValue(CountryField, "");
   }
@@ -137,19 +137,19 @@ class UserFormModel extends WFormModel {
     return v;
   }
 
-  private WValidator getCreateCountryValidator() {
+  private WValidator createCountryValidator() {
     WLengthValidator v = new WLengthValidator();
     v.setMandatory(true);
     return v;
   }
 
-  private WValidator getCreateCityValidator() {
+  private WValidator createCityValidator() {
     WLengthValidator v = new WLengthValidator();
     v.setMandatory(true);
     return v;
   }
 
-  private WValidator getCreateBirthValidator() {
+  private WValidator createBirthValidator() {
     WDateValidator v = new WDateValidator();
     v.setBottom(new WDate(1900, 1, 1));
     v.setTop(WDate.getCurrentDate());
@@ -158,7 +158,7 @@ class UserFormModel extends WFormModel {
     return v;
   }
 
-  private WValidator getCreateChildrenValidator() {
+  private WValidator createChildrenValidator() {
     WIntValidator v = new WIntValidator(0, MAX_CHILDREN);
     v.setMandatory(true);
     return v;

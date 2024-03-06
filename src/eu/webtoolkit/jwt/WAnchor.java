@@ -407,7 +407,7 @@ public class WAnchor extends WContainerWidget {
     if (all) {
       element.setProperty(Property.Class, StringUtils.addWord(widget.getStyleClass(), "Wt-rr"));
     } else {
-      element.callJavaScript("Wt4_10_3.$('" + widget.getId() + "').classList.add('Wt-rr');");
+      element.callJavaScript("Wt4_10_4.$('" + widget.getId() + "').classList.add('Wt-rr');");
     }
   }
 

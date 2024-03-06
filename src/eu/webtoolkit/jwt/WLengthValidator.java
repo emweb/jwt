@@ -196,7 +196,7 @@ public class WLengthValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_10_3.WLengthValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_10_4.WLengthValidator(").append(this.isMandatory()).append(',');
     if (this.minLength_ != 0) {
       js.append(this.minLength_);
     } else {

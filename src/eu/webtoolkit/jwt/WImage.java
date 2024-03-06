@@ -381,7 +381,7 @@ public class WImage extends WInteractWidget {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WImage.js", wtjs1());
     StringBuilder ss = new StringBuilder();
-    ss.append("new Wt4_10_3.WImage(")
+    ss.append("new Wt4_10_4.WImage(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())

@@ -329,7 +329,7 @@ public class DomElement {
       js.append("o=this;");
       if (anchorClick) {
         js.append(
-            "if(e.ctrlKey||e.metaKey||e.shiftKey||(Wt4_10_3.button(e) > 1))return true;else{");
+            "if(e.ctrlKey||e.metaKey||e.shiftKey||(Wt4_10_4.button(e) > 1))return true;else{");
       }
       js.append(jsCode);
       if (isExposed) {
@@ -436,7 +436,7 @@ public class DomElement {
   public void callMethod(final String method) {
     ++this.numManipulations_;
     if (this.var_.length() == 0) {
-      this.javaScript_.append("Wt4_10_3").append(".$('").append(this.id_).append("').");
+      this.javaScript_.append("Wt4_10_4").append(".$('").append(this.id_).append("').");
     } else {
       this.javaScript_.append(this.var_).append('.');
     }
@@ -445,6 +445,9 @@ public class DomElement {
   /** Calls JavaScript (related to the DOM element). */
   public void callJavaScript(final String jsCode, boolean evenWhenDeleted) {
     ++this.numManipulations_;
+    if (jsCode.length() == 0) {
+      return;
+    }
     String terminatedJsCode = jsCode;
     if (jsCode.charAt(jsCode.length() - 1) != ';') {
       terminatedJsCode += ";";
@@ -488,7 +491,7 @@ public class DomElement {
   }
   /** Removes the element. */
   public void removeFromParent() {
-    this.callJavaScript("Wt4_10_3.remove('" + this.getId() + "');", true);
+    this.callJavaScript("Wt4_10_4.remove('" + this.getId() + "');", true);
   }
   /** Replaces the element by another element. */
   public void replaceWith(DomElement newElement) {
@@ -577,7 +580,7 @@ public class DomElement {
           if (this.removeAllChildren_ >= 0) {
             this.declare(out);
             if (this.removeAllChildren_ == 0) {
-              out.append("Wt4_10_3").append(".setHtml(").append(this.var_).append(", '');\n");
+              out.append("Wt4_10_4").append(".setHtml(").append(this.var_).append(", '');\n");
             } else {
               out.append("(Array.from(")
                   .append(this.var_)
@@ -610,18 +613,18 @@ public class DomElement {
             if (this.properties_.get(Property.StyleDisplay) != null) {
               String style = this.properties_.get(Property.StyleDisplay);
               if (style.equals("none")) {
-                out.append("Wt4_10_3.hide('").append(this.id_).append("');\n");
+                out.append("Wt4_10_4.hide('").append(this.id_).append("');\n");
                 return this.var_;
               } else {
                 if (style.equals("inline")) {
-                  out.append("Wt4_10_3.inline('" + this.id_ + "');\n");
+                  out.append("Wt4_10_4.inline('" + this.id_ + "');\n");
                   return this.var_;
                 } else {
                   if (style.equals("block")) {
-                    out.append("Wt4_10_3.block('" + this.id_ + "');\n");
+                    out.append("Wt4_10_4.block('" + this.id_ + "');\n");
                     return this.var_;
                   } else {
-                    out.append("Wt4_10_3.show('")
+                    out.append("Wt4_10_4.show('")
                         .append(this.id_)
                         .append("', '")
                         .append(style)
@@ -638,7 +641,7 @@ public class DomElement {
             }
           }
           if (this.unwrapped_) {
-            out.append("Wt4_10_3.unwrap('").append(this.id_).append("');\n");
+            out.append("Wt4_10_4.unwrap('").append(this.id_).append("');\n");
           }
           this.processEvents(app);
           this.processProperties(app);
@@ -655,7 +658,7 @@ public class DomElement {
                 .append(");\n");
             this.replaced_.createElement(out, app, insertJs.toString());
             if (this.unstubbed_) {
-              out.append("Wt4_10_3.unstub(")
+              out.append("Wt4_10_4.unstub(")
                   .append(this.var_)
                   .append(',')
                   .append(varr)
@@ -681,14 +684,14 @@ public class DomElement {
           }
           if (!this.childrenToSave_.isEmpty()) {
             this.declare(out);
-            out.append("Wt4_10_3").append(".saveReparented(").append(this.var_).append(");");
+            out.append("Wt4_10_4").append(".saveReparented(").append(this.var_).append(");");
           }
           for (int i = 0; i < this.childrenToSave_.size(); ++i) {
             out.append("var c")
                 .append(this.var_)
                 .append((int) i)
                 .append('=')
-                .append("Wt4_10_3.$('")
+                .append("Wt4_10_4.$('")
                 .append(this.childrenToSave_.get(i))
                 .append("')");
             if (app.getEnvironment().agentIsIE()) {
@@ -710,7 +713,7 @@ public class DomElement {
           }
           this.renderInnerHtmlJS(out, app);
           for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-            out.append("Wt4_10_3.replaceWith('")
+            out.append("Wt4_10_4.replaceWith('")
                 .append(this.childrenToSave_.get(i))
                 .append("',c")
                 .append(this.var_)
@@ -1101,7 +1104,7 @@ public class DomElement {
     if (this.var_.length() == 0) {
       out.append("var ")
           .append(this.getCreateVar())
-          .append("=Wt4_10_3.$('")
+          .append("=Wt4_10_4.$('")
           .append(this.id_)
           .append("');\n");
     }
@@ -1123,11 +1126,7 @@ public class DomElement {
         if (p >= (int) Property.StylePosition.getValue()
             && p < (int) Property.LastPlusOne.getValue()) {
           if (j.getValue().length() != 0) {
-            style
-                .append(cssNames_[p - (int) Property.StylePosition.getValue()])
-                .append(':')
-                .append(j.getValue())
-                .append(';');
+            style.append(cssName(j.getKey())).append(':').append(j.getValue()).append(';');
             if (p >= (int) Property.StyleBoxSizing.getValue()) {
               WApplication app = WApplication.getInstance();
               if (app != null) {
@@ -1139,11 +1138,7 @@ public class DomElement {
                   }
                 }
               }
-              style
-                  .append(cssNames_[p - (int) Property.StylePosition.getValue()])
-                  .append(':')
-                  .append(j.getValue())
-                  .append(';');
+              style.append(cssName(j.getKey())).append(':').append(j.getValue()).append(';');
             }
           }
         } else {
@@ -1237,7 +1232,27 @@ public class DomElement {
   }
   /** Returns the name for a CSS property, as a string. */
   public static String cssName(Property property) {
-    return cssNames_[(int) property.getValue() - (int) Property.StylePosition.getValue()];
+    try {
+      return MapUtils.access(cssNamesMap_, property, DomElement.EventHandler.class);
+    } catch (final RuntimeException exc) {
+      logger.warn(
+          new StringWriter()
+              .append("DomElement::cssName(): the name cannot be retrieved.")
+              .toString());
+      return "";
+    }
+  }
+  /** Returns the name for a JavaScript DOM style property, as a string. */
+  public static String cssJavaScriptName(Property property) {
+    try {
+      return MapUtils.access(cssCamelNamesMap_, property, DomElement.EventHandler.class);
+    } catch (final RuntimeException exc) {
+      logger.warn(
+          new StringWriter()
+              .append("DomElement::cssJavaScriptName(): the name cannot be retrieved.")
+              .toString());
+      return "";
+    }
   }
   /** Returns whether a paritcular element is by default inline. */
   public static boolean isDefaultInline(DomElementType type) {
@@ -1314,14 +1329,15 @@ public class DomElement {
 
   private boolean canWriteInnerHTML(WApplication app) {
     if ((app.getEnvironment().agentIsIE() || app.getEnvironment().getAgent() == UserAgent.Konqueror)
-        && (this.type_ == DomElementType.TBODY
-            || this.type_ == DomElementType.THEAD
-            || this.type_ == DomElementType.TABLE
-            || this.type_ == DomElementType.COLGROUP
-            || this.type_ == DomElementType.TR
-            || this.type_ == DomElementType.SELECT
-            || this.type_ == DomElementType.TD
-            || this.type_ == DomElementType.OPTGROUP)) {
+            && (this.type_ == DomElementType.TBODY
+                || this.type_ == DomElementType.THEAD
+                || this.type_ == DomElementType.TABLE
+                || this.type_ == DomElementType.COLGROUP
+                || this.type_ == DomElementType.TR
+                || this.type_ == DomElementType.SELECT
+                || this.type_ == DomElementType.TD
+                || this.type_ == DomElementType.OPTGROUP)
+        || this.mode_ == DomElement.Mode.Update) {
       return false;
     }
     return true;
@@ -1333,7 +1349,7 @@ public class DomElement {
     DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
     if (keypress != null && keypress.jsCode.length() != 0) {
       MapUtils.access(self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode =
-          "if (Wt4_10_3.isKeyPress(event)){"
+          "if (Wt4_10_4.isKeyPress(event)){"
               + MapUtils.access(self.eventHandlers_, S_keypress, DomElement.EventHandler.class)
                   .jsCode
               + '}';
@@ -1349,7 +1365,7 @@ public class DomElement {
       if (minw != null || maxw != null) {
         if (w == null) {
           StringBuilder expr = new StringBuilder();
-          expr.append("Wt4_10_3.IEwidth(this,");
+          expr.append("Wt4_10_4.IEwidth(this,");
           if (minw != null) {
             expr.append('\'').append(minw).append('\'');
             self.properties_.remove(Property.StyleMinWidth);
@@ -1388,7 +1404,7 @@ public class DomElement {
           if (this.willRenderInnerHtmlJS(app)) {
             break;
           }
-          out.append("Wt4_10_3.setHtml(").append(this.var_).append(',');
+          out.append("Wt4_10_4.setHtml(").append(this.var_).append(',');
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
             pushed = true;
@@ -1510,14 +1526,14 @@ public class DomElement {
               if (app.getEnvironment().getAgent() == UserAgent.IE6) {
                 out.append(this.var_)
                     .append(".style['")
-                    .append(cssNames_[p - (int) Property.StylePosition.getValue()])
+                    .append(cssName(i.getKey()))
                     .append("']='")
                     .append(i.getValue())
                     .append("';");
               } else {
                 out.append(this.var_)
                     .append(".style.")
-                    .append(cssCamelNames_[p - (int) Property.Style.getValue()])
+                    .append(cssJavaScriptName(i.getKey()))
                     .append("='")
                     .append(i.getValue())
                     .append("';");
@@ -1627,7 +1643,7 @@ public class DomElement {
       StringBuilder insertJS = new StringBuilder();
       if (pos != -1) {
         insertJS
-            .append("Wt4_10_3.insertAt(")
+            .append("Wt4_10_4.insertAt(")
             .append(parentVar)
             .append(",")
             .append(this.var_)
@@ -1661,7 +1677,7 @@ public class DomElement {
           || !this.childrenHtml_.isEmpty()
           || innerHTML.length() != 0) {
         this.declare(out);
-        out.append("Wt4_10_3.setHtml(").append(this.var_).append(",'");
+        out.append("Wt4_10_4.setHtml(").append(this.var_).append(",'");
         out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
         List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
         EscapeOStream js = new EscapeOStream();
@@ -1826,153 +1842,164 @@ public class DomElement {
     false, false, false, true, true, false, false, true, false, true, true, false, false, false,
     false, false, true, true, true, true, false, false
   };
-  private static String[] cssNames_ = {
-    "position",
-    "z-index",
-    "float",
-    "clear",
-    "width",
-    "height",
-    "line-height",
-    "min-width",
-    "min-height",
-    "max-width",
-    "max-height",
-    "left",
-    "right",
-    "top",
-    "bottom",
-    "vertical-align",
-    "text-align",
-    "padding",
-    "padding-top",
-    "padding-right",
-    "padding-bottom",
-    "padding-left",
-    "margin",
-    "margin-top",
-    "margin-right",
-    "margin-bottom",
-    "margin-left",
-    "cursor",
-    "border-top",
-    "border-right",
-    "border-bottom",
-    "border-left",
-    "border-color-top",
-    "border-color-right",
-    "border-color-bottom",
-    "border-color-left",
-    "border-width-top",
-    "border-width-right",
-    "border-width-bottom",
-    "border-width-left",
-    "color",
-    "overflow-x",
-    "overflow-y",
-    "opacity",
-    "font-family",
-    "font-style",
-    "font-variant",
-    "font-weight",
-    "font-size",
-    "background-color",
-    "background-image",
-    "background-repeat",
-    "background-attachment",
-    "background-position",
-    "text-decoration",
-    "white-space",
-    "table-layout",
-    "border-spacing",
-    "border-collapse",
-    "page-break-before",
-    "page-break-after",
-    "zoom",
-    "visibility",
-    "display",
-    "-webkit-appearance",
-    "box-sizing",
-    "flex",
-    "flex-direction",
-    "flex-flow",
-    "align-self",
-    "justify-content"
-  };
-  private static String[] cssCamelNames_ = {
-    "cssText",
-    "width",
-    "position",
-    "zIndex",
-    "cssFloat",
-    "clear",
-    "width",
-    "height",
-    "lineHeight",
-    "minWidth",
-    "minHeight",
-    "maxWidth",
-    "maxHeight",
-    "left",
-    "right",
-    "top",
-    "bottom",
-    "verticalAlign",
-    "textAlign",
-    "padding",
-    "paddingTop",
-    "paddingRight",
-    "paddingBottom",
-    "paddingLeft",
-    "margin",
-    "marginTop",
-    "marginRight",
-    "marginBottom",
-    "marginLeft",
-    "cursor",
-    "borderTop",
-    "borderRight",
-    "borderBottom",
-    "borderLeft",
-    "borderColorTop",
-    "borderColorRight",
-    "borderColorBottom",
-    "borderColorLeft",
-    "borderWidthTop",
-    "borderWidthRight",
-    "borderWidthBottom",
-    "borderWidthLeft",
-    "color",
-    "overflowX",
-    "overflowY",
-    "opacity",
-    "fontFamily",
-    "fontStyle",
-    "fontVariant",
-    "fontWeight",
-    "fontSize",
-    "backgroundColor",
-    "backgroundImage",
-    "backgroundRepeat",
-    "backgroundAttachment",
-    "backgroundPosition",
-    "textDecoration",
-    "whiteSpace",
-    "tableLayout",
-    "borderSpacing",
-    "border-collapse",
-    "pageBreakBefore",
-    "pageBreakAfter",
-    "zoom",
-    "visibility",
-    "display",
-    "webKitAppearance",
-    "boxSizing",
-    "flex",
-    "flexFlow",
-    "alignSelf",
-    "justifyContent"
-  };
+
+  static HashMap<Property, String> createCssNamesMap() {
+    HashMap<Property, String> cssNames = new HashMap<Property, String>();
+    cssNames.put(Property.StylePosition, "position");
+    cssNames.put(Property.StyleZIndex, "z-index");
+    cssNames.put(Property.StyleFloat, "float");
+    cssNames.put(Property.StyleClear, "clear");
+    cssNames.put(Property.StyleWidth, "width");
+    cssNames.put(Property.StyleHeight, "height");
+    cssNames.put(Property.StyleLineHeight, "line-height");
+    cssNames.put(Property.StyleMinWidth, "min-width");
+    cssNames.put(Property.StyleMinHeight, "min-height");
+    cssNames.put(Property.StyleMaxWidth, "max-width");
+    cssNames.put(Property.StyleMaxHeight, "max-height");
+    cssNames.put(Property.StyleLeft, "left");
+    cssNames.put(Property.StyleRight, "right");
+    cssNames.put(Property.StyleTop, "top");
+    cssNames.put(Property.StyleBottom, "bottom");
+    cssNames.put(Property.StyleVerticalAlign, "vertical-align");
+    cssNames.put(Property.StyleTextAlign, "text-align");
+    cssNames.put(Property.StylePadding, "padding");
+    cssNames.put(Property.StylePaddingTop, "padding-top");
+    cssNames.put(Property.StylePaddingRight, "padding-right");
+    cssNames.put(Property.StylePaddingBottom, "padding-bottom");
+    cssNames.put(Property.StylePaddingLeft, "padding-left");
+    cssNames.put(Property.StyleMargin, "margin");
+    cssNames.put(Property.StyleMarginTop, "margin-top");
+    cssNames.put(Property.StyleMarginRight, "margin-right");
+    cssNames.put(Property.StyleMarginBottom, "margin-bottom");
+    cssNames.put(Property.StyleMarginLeft, "margin-left");
+    cssNames.put(Property.StyleCursor, "cursor");
+    cssNames.put(Property.StyleBorderTop, "border-top");
+    cssNames.put(Property.StyleBorderRight, "border-right");
+    cssNames.put(Property.StyleBorderBottom, "border-bottom");
+    cssNames.put(Property.StyleBorderLeft, "border-left");
+    cssNames.put(Property.StyleBorderColorTop, "border-color-top");
+    cssNames.put(Property.StyleBorderColorRight, "border-color-right");
+    cssNames.put(Property.StyleBorderColorBottom, "border-color-bottom");
+    cssNames.put(Property.StyleBorderColorLeft, "border-color-left");
+    cssNames.put(Property.StyleBorderWidthTop, "border-width-top");
+    cssNames.put(Property.StyleBorderWidthRight, "border-width-right");
+    cssNames.put(Property.StyleBorderWidthBottom, "border-width-bottom");
+    cssNames.put(Property.StyleBorderWidthLeft, "border-width-left");
+    cssNames.put(Property.StyleColor, "color");
+    cssNames.put(Property.StyleOverflowX, "overflow-x");
+    cssNames.put(Property.StyleOverflowY, "overflow-y");
+    cssNames.put(Property.StyleOpacity, "opacity");
+    cssNames.put(Property.StyleFontFamily, "font-family");
+    cssNames.put(Property.StyleFontStyle, "font-style");
+    cssNames.put(Property.StyleFontVariant, "font-variant");
+    cssNames.put(Property.StyleFontWeight, "font-weight");
+    cssNames.put(Property.StyleFontSize, "font-size");
+    cssNames.put(Property.StyleBackgroundColor, "background-color");
+    cssNames.put(Property.StyleBackgroundImage, "background-image");
+    cssNames.put(Property.StyleBackgroundRepeat, "background-repeat");
+    cssNames.put(Property.StyleBackgroundAttachment, "background-attachment");
+    cssNames.put(Property.StyleBackgroundPosition, "background-position");
+    cssNames.put(Property.StyleTextDecoration, "text-decoration");
+    cssNames.put(Property.StyleWhiteSpace, "white-space");
+    cssNames.put(Property.StyleTableLayout, "table-layout");
+    cssNames.put(Property.StyleBorderSpacing, "border-spacing");
+    cssNames.put(Property.StyleBorderCollapse, "border-collapse");
+    cssNames.put(Property.StylePageBreakBefore, "page-break-before");
+    cssNames.put(Property.StylePageBreakAfter, "page-break-after");
+    cssNames.put(Property.StyleZoom, "zoom");
+    cssNames.put(Property.StyleVisibility, "visibility");
+    cssNames.put(Property.StyleDisplay, "display");
+    cssNames.put(Property.StyleWebkitAppearance, "-webkit-appearance");
+    cssNames.put(Property.StyleBoxSizing, "box-sizing");
+    cssNames.put(Property.StyleFlex, "flex");
+    cssNames.put(Property.StyleFlexDirection, "flex-direction");
+    cssNames.put(Property.StyleFlexFlow, "flex-flow");
+    cssNames.put(Property.StyleAlignSelf, "align-self");
+    cssNames.put(Property.StyleJustifyContent, "justify-content");
+    return cssNames;
+  }
+
+  private static HashMap<Property, String> cssNamesMap_ = createCssNamesMap();
+
+  static HashMap<Property, String> createCssCamelNamesMap() {
+    HashMap<Property, String> cssCamelNames = new HashMap<Property, String>();
+    cssCamelNames.put(Property.Style, "cssText");
+    cssCamelNames.put(Property.Style, "width");
+    cssCamelNames.put(Property.StylePosition, "position");
+    cssCamelNames.put(Property.StyleZIndex, "zIndex");
+    cssCamelNames.put(Property.StyleFloat, "cssFloat");
+    cssCamelNames.put(Property.StyleClear, "clear");
+    cssCamelNames.put(Property.StyleWidth, "width");
+    cssCamelNames.put(Property.StyleHeight, "height");
+    cssCamelNames.put(Property.StyleLineHeight, "lineHeight");
+    cssCamelNames.put(Property.StyleMinWidth, "minWidth");
+    cssCamelNames.put(Property.StyleMinHeight, "minHeight");
+    cssCamelNames.put(Property.StyleMaxWidth, "maxWidth");
+    cssCamelNames.put(Property.StyleMaxHeight, "maxHeight");
+    cssCamelNames.put(Property.StyleLeft, "left");
+    cssCamelNames.put(Property.StyleRight, "right");
+    cssCamelNames.put(Property.StyleTop, "top");
+    cssCamelNames.put(Property.StyleBottom, "bottom");
+    cssCamelNames.put(Property.StyleVerticalAlign, "verticalAlign");
+    cssCamelNames.put(Property.StyleTextAlign, "textAlign");
+    cssCamelNames.put(Property.StylePadding, "padding");
+    cssCamelNames.put(Property.StylePaddingTop, "paddingTop");
+    cssCamelNames.put(Property.StylePaddingRight, "paddingRight");
+    cssCamelNames.put(Property.StylePaddingBottom, "paddingBottom");
+    cssCamelNames.put(Property.StylePaddingLeft, "paddingLeft");
+    cssCamelNames.put(Property.StyleMargin, "margin");
+    cssCamelNames.put(Property.StyleMarginTop, "marginTop");
+    cssCamelNames.put(Property.StyleMarginRight, "marginRight");
+    cssCamelNames.put(Property.StyleMarginBottom, "marginBottom");
+    cssCamelNames.put(Property.StyleMarginLeft, "marginLeft");
+    cssCamelNames.put(Property.StyleCursor, "cursor");
+    cssCamelNames.put(Property.StyleBorderTop, "borderTop");
+    cssCamelNames.put(Property.StyleBorderRight, "borderRight");
+    cssCamelNames.put(Property.StyleBorderBottom, "borderBottom");
+    cssCamelNames.put(Property.StyleBorderLeft, "borderLeft");
+    cssCamelNames.put(Property.StyleBorderColorTop, "borderColorTop");
+    cssCamelNames.put(Property.StyleBorderColorRight, "borderColorRight");
+    cssCamelNames.put(Property.StyleBorderColorBottom, "borderColorBottom");
+    cssCamelNames.put(Property.StyleBorderColorLeft, "borderColorLeft");
+    cssCamelNames.put(Property.StyleBorderWidthTop, "borderWidthTop");
+    cssCamelNames.put(Property.StyleBorderWidthRight, "borderWidthRight");
+    cssCamelNames.put(Property.StyleBorderWidthBottom, "borderWidthBottom");
+    cssCamelNames.put(Property.StyleBorderWidthLeft, "borderWidthLeft");
+    cssCamelNames.put(Property.StyleColor, "color");
+    cssCamelNames.put(Property.StyleOverflowX, "overflowX");
+    cssCamelNames.put(Property.StyleOverflowY, "overflowY");
+    cssCamelNames.put(Property.StyleOpacity, "opacity");
+    cssCamelNames.put(Property.StyleFontFamily, "fontFamily");
+    cssCamelNames.put(Property.StyleFontStyle, "fontStyle");
+    cssCamelNames.put(Property.StyleFontVariant, "fontVariant");
+    cssCamelNames.put(Property.StyleFontWeight, "fontWeight");
+    cssCamelNames.put(Property.StyleFontSize, "fontSize");
+    cssCamelNames.put(Property.StyleBackgroundColor, "backgroundColor");
+    cssCamelNames.put(Property.StyleBackgroundImage, "backgroundImage");
+    cssCamelNames.put(Property.StyleBackgroundRepeat, "backgroundRepeat");
+    cssCamelNames.put(Property.StyleBackgroundAttachment, "backgroundAttachment");
+    cssCamelNames.put(Property.StyleBackgroundPosition, "backgroundPosition");
+    cssCamelNames.put(Property.StyleTextDecoration, "textDecoration");
+    cssCamelNames.put(Property.StyleWhiteSpace, "whiteSpace");
+    cssCamelNames.put(Property.StyleTableLayout, "tableLayout");
+    cssCamelNames.put(Property.StyleBorderSpacing, "borderSpacing");
+    cssCamelNames.put(Property.StyleBorderCollapse, "border-collapse");
+    cssCamelNames.put(Property.StylePageBreakBefore, "pageBreakBefore");
+    cssCamelNames.put(Property.StylePageBreakAfter, "pageBreakAfter");
+    cssCamelNames.put(Property.StyleZoom, "zoom");
+    cssCamelNames.put(Property.StyleVisibility, "visibility");
+    cssCamelNames.put(Property.StyleDisplay, "display");
+    cssCamelNames.put(Property.StyleWebkitAppearance, "webKitAppearance");
+    cssCamelNames.put(Property.StyleBoxSizing, "boxSizing");
+    cssCamelNames.put(Property.StyleFlex, "flex");
+    cssCamelNames.put(Property.StyleFlexDirection, "flexDirection");
+    cssCamelNames.put(Property.StyleFlexFlow, "flexFlow");
+    cssCamelNames.put(Property.StyleAlignSelf, "alignSelf");
+    cssCamelNames.put(Property.StyleJustifyContent, "justifyContent");
+    return cssCamelNames;
+  }
+
+  private static HashMap<Property, String> cssCamelNamesMap_ = createCssCamelNamesMap();
   private static final String unsafeChars_ = " $&+,:;=?@'\"<>#%{}|\\^~[]`/";
 
   static char hexLookup(int n) {

@@ -742,243 +742,6 @@
   <span class="p">}</span>
 </pre></div>
   ]]></message>
-  <message id="src-DateEditNative"><![CDATA[
-<div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">DateEditNative</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">WTemplate</span> <span class="n">form</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="p">(</span><span class="n">WString</span><span class="p">.</span><span class="na">tr</span><span class="p">(</span><span class="s">&quot;dateEdit-template&quot;</span><span class="p">));</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">addFunction</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">WTemplate</span><span class="p">.</span><span class="na">Functions</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WDateEdit</span> <span class="n">de1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">,</span> <span class="n">de1</span><span class="p">);</span>
-    <span class="n">de1</span><span class="p">.</span><span class="na">setDate</span><span class="p">(</span><span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
-    <span class="n">de1</span><span class="p">.</span><span class="na">setNativeControl</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WDateEdit</span> <span class="n">de2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;to&quot;</span><span class="p">,</span> <span class="n">de2</span><span class="p">);</span>
-    <span class="n">de2</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;dd MM yyyy&quot;</span><span class="p">);</span>
-    <span class="n">de2</span><span class="p">.</span><span class="na">getCalendar</span><span class="p">().</span><span class="na">setHorizontalHeaderFormat</span><span class="p">(</span><span class="n">CalendarHeaderFormat</span><span class="p">.</span><span class="na">SingleLetterDayNames</span><span class="p">);</span>
-    <span class="n">de2</span><span class="p">.</span><span class="na">setBottom</span><span class="p">(</span><span class="n">de1</span><span class="p">.</span><span class="na">getDate</span><span class="p">());</span>
-    <span class="n">de2</span><span class="p">.</span><span class="na">setNativeControl</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-    <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="p">(</span><span class="s">&quot;Save&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;save&quot;</span><span class="p">,</span> <span class="n">button</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
-    <span class="n">de1</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">de1</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">de2</span><span class="p">.</span><span class="na">setBottom</span><span class="p">(</span><span class="n">de1</span><span class="p">.</span><span class="na">getDate</span><span class="p">());</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Date picker 1 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">de2</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">de1</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">de1</span><span class="p">.</span><span class="na">setTop</span><span class="p">(</span><span class="n">de2</span><span class="p">.</span><span class="na">getDate</span><span class="p">());</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Date picker 2 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">button</span>
-        <span class="p">.</span><span class="na">clicked</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">de1</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">de2</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;You should enter two dates!&quot;</span><span class="p">);</span>
-              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="kt">int</span> <span class="n">days</span> <span class="o">=</span> <span class="n">de1</span><span class="p">.</span><span class="na">getDate</span><span class="p">().</span><span class="na">getDaysTo</span><span class="p">(</span><span class="n">de2</span><span class="p">.</span><span class="na">getDate</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">days</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;It&#39;s fine to take holiday just for one day!&quot;</span><span class="p">);</span>
-                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                  <span class="k">if</span> <span class="p">(</span><span class="n">days</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                        <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want to take holiday for a period of {1} days?&quot;</span><span class="p">)</span>
-                            <span class="p">.</span><span class="na">arg</span><span class="p">(</span><span class="n">days</span><span class="p">));</span>
-                  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                    <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Invalid period!&quot;</span><span class="p">);</span>
-                  <span class="p">}</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-  <span class="p">}</span>
-</pre></div>
-  ]]></message>
-  <message id="src-DateTimeEdit"><![CDATA[
-<div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">DateTimeEdit</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">WTemplate</span> <span class="n">form</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="p">(</span><span class="n">WString</span><span class="p">.</span><span class="na">tr</span><span class="p">(</span><span class="s">&quot;dateTimeEdit-template&quot;</span><span class="p">));</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">addFunction</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">WTemplate</span><span class="p">.</span><span class="na">Functions</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WDateTimeEdit</span> <span class="n">dte1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateTimeEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">,</span> <span class="n">dte1</span><span class="p">);</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">setDateTime</span><span class="p">(</span>
-        <span class="k">new</span> <span class="n">WDate</span><span class="p">(</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">getYear</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">getMonth</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">getDay</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getHour</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMinute</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getSecond</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMsec</span><span class="p">()));</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;yyyy-MM-dd HH:mm&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;from-format&quot;</span><span class="p">,</span> <span class="n">dte1</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
-    <span class="kd">final</span> <span class="n">WDateTimeEdit</span> <span class="n">dte2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateTimeEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;to&quot;</span><span class="p">,</span> <span class="n">dte2</span><span class="p">);</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setDateTime</span><span class="p">(</span>
-        <span class="k">new</span> <span class="n">WDate</span><span class="p">(</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">getYear</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">getMonth</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">getDay</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getHour</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMinute</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getSecond</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMsec</span><span class="p">()));</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;dd MM yyyy hh:mm:ss.SSS a&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;to-format&quot;</span><span class="p">,</span> <span class="n">dte2</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setBottom</span><span class="p">(</span><span class="n">dte1</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">());</span>
-    <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="p">(</span><span class="s">&quot;Save&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;save&quot;</span><span class="p">,</span> <span class="n">button</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">dte1</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;DateTime 1 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">dte2</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;DateTime 2 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">button</span>
-        <span class="p">.</span><span class="na">clicked</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">dte1</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">dte2</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;You should enter two dates and times!&quot;</span><span class="p">);</span>
-              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="kt">long</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">dte1</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">().</span><span class="na">getTime</span><span class="p">().</span><span class="na">secsTo</span><span class="p">(</span><span class="n">dte2</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">().</span><span class="na">getTime</span><span class="p">());</span>
-                <span class="kt">int</span> <span class="n">days</span> <span class="o">=</span> <span class="n">dte1</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">().</span><span class="na">getDaysTo</span><span class="p">(</span><span class="n">dte2</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">());</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">days</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">secs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;You cannot rent a car for a negative amount of time.&quot;</span><span class="p">));</span>
-                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                  <span class="k">if</span> <span class="p">(</span><span class="n">days</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                        <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want to rent a car for {1} day(s)?&quot;</span><span class="p">).</span><span class="na">arg</span><span class="p">(</span><span class="n">days</span><span class="p">));</span>
-                  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">secs</span> <span class="o">&gt;</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span>
-                      <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                          <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want you want to rent a car for {1} hour(s)?&quot;</span><span class="p">)</span>
-                              <span class="p">.</span><span class="na">arg</span><span class="p">(</span><span class="n">secs</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)));</span>
-                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                      <span class="k">if</span> <span class="p">(</span><span class="n">secs</span> <span class="o">==</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want to rent a car for a hour?&quot;</span><span class="p">));</span>
-                      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                        <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                            <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;Sorry, you can&#39;t rent a car for less than a hour.&quot;</span><span class="p">));</span>
-                      <span class="p">}</span>
-                    <span class="p">}</span>
-                  <span class="p">}</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-  <span class="p">}</span>
-</pre></div>
-  ]]></message>
-  <message id="src-DateTimeNativeEdit"><![CDATA[
-<div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">DateTimeNativeEdit</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">WTemplate</span> <span class="n">form</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="p">(</span><span class="n">WString</span><span class="p">.</span><span class="na">tr</span><span class="p">(</span><span class="s">&quot;dateTimeEdit-template&quot;</span><span class="p">));</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">addFunction</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">WTemplate</span><span class="p">.</span><span class="na">Functions</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WDateTimeEdit</span> <span class="n">dte1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateTimeEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">,</span> <span class="n">dte1</span><span class="p">);</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">setDateTime</span><span class="p">(</span>
-        <span class="k">new</span> <span class="n">WDate</span><span class="p">(</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">getYear</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">getMonth</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">addDays</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="na">getDay</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getHour</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMinute</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getSecond</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMsec</span><span class="p">()));</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;yyyy-MM-dd HH:mm&quot;</span><span class="p">);</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">setNativeControl</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;from-format&quot;</span><span class="p">,</span> <span class="n">dte1</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
-    <span class="kd">final</span> <span class="n">WDateTimeEdit</span> <span class="n">dte2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateTimeEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;to&quot;</span><span class="p">,</span> <span class="n">dte2</span><span class="p">);</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setDateTime</span><span class="p">(</span>
-        <span class="k">new</span> <span class="n">WDate</span><span class="p">(</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">getYear</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">getMonth</span><span class="p">(),</span>
-            <span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentServerDate</span><span class="p">().</span><span class="na">getDay</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getHour</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMinute</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getSecond</span><span class="p">(),</span>
-            <span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">getMsec</span><span class="p">()));</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setNativeControl</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;dd MM yyyy hh:mm:ss.SSS a&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;to-format&quot;</span><span class="p">,</span> <span class="n">dte2</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">setBottom</span><span class="p">(</span><span class="n">dte1</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">());</span>
-    <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="p">(</span><span class="s">&quot;Save&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;save&quot;</span><span class="p">,</span> <span class="n">button</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
-    <span class="n">dte1</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">dte1</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;DateTime 1 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">dte2</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">dte2</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;DateTime 2 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">button</span>
-        <span class="p">.</span><span class="na">clicked</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">dte1</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">dte2</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;You should enter two dates and times!&quot;</span><span class="p">);</span>
-              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="kt">long</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">dte1</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">().</span><span class="na">getTime</span><span class="p">().</span><span class="na">secsTo</span><span class="p">(</span><span class="n">dte2</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">().</span><span class="na">getTime</span><span class="p">());</span>
-                <span class="kt">int</span> <span class="n">days</span> <span class="o">=</span> <span class="n">dte1</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">().</span><span class="na">getDaysTo</span><span class="p">(</span><span class="n">dte2</span><span class="p">.</span><span class="na">getDateTime</span><span class="p">());</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">days</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">days</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">secs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;You cannot rent a car for a negative amount of time.&quot;</span><span class="p">));</span>
-                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                  <span class="k">if</span> <span class="p">(</span><span class="n">days</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                        <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want to rent a car for {1} day(s)?&quot;</span><span class="p">).</span><span class="na">arg</span><span class="p">(</span><span class="n">days</span><span class="p">));</span>
-                  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">secs</span> <span class="o">&gt;</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span>
-                      <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                          <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want you want to rent a car for {1} hour(s)?&quot;</span><span class="p">)</span>
-                              <span class="p">.</span><span class="na">arg</span><span class="p">(</span><span class="n">secs</span> <span class="o">/</span> <span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)));</span>
-                    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                      <span class="k">if</span> <span class="p">(</span><span class="n">secs</span> <span class="o">==</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want to rent a car for a hour?&quot;</span><span class="p">));</span>
-                      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                        <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                            <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;Sorry, you can&#39;t rent a car for less than a hour.&quot;</span><span class="p">));</span>
-                      <span class="p">}</span>
-                    <span class="p">}</span>
-                  <span class="p">}</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-  <span class="p">}</span>
-</pre></div>
-  ]]></message>
   <message id="src-Dialog"><![CDATA[
 <div class="highlight"><pre><span></span>  <span class="kd">final</span> <span class="kt">void</span> <span class="nf">showDialog</span><span class="p">(</span><span class="n">WObject</span> <span class="n">owner</span><span class="p">,</span> <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">final</span> <span class="n">WDialog</span> <span class="n">dialog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDialog</span><span class="p">(</span><span class="s">&quot;Go to cell&quot;</span><span class="p">);</span>
@@ -1248,10 +1011,10 @@
       <span class="k">this</span><span class="p">.</span><span class="na">addField</span><span class="p">(</span><span class="n">RemarksField</span><span class="p">);</span>
       <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">FirstNameField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">createNameValidator</span><span class="p">(</span><span class="n">FirstNameField</span><span class="p">));</span>
       <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">LastNameField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">createNameValidator</span><span class="p">(</span><span class="n">LastNameField</span><span class="p">));</span>
-      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">CountryField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">getCreateCountryValidator</span><span class="p">());</span>
-      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">CityField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">getCreateCityValidator</span><span class="p">());</span>
-      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">BirthField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">getCreateBirthValidator</span><span class="p">());</span>
-      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">ChildrenField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">getCreateChildrenValidator</span><span class="p">());</span>
+      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">CountryField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">createCountryValidator</span><span class="p">());</span>
+      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">CityField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">createCityValidator</span><span class="p">());</span>
+      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">BirthField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">createBirthValidator</span><span class="p">());</span>
+      <span class="k">this</span><span class="p">.</span><span class="na">setValidator</span><span class="p">(</span><span class="n">ChildrenField</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="na">createChildrenValidator</span><span class="p">());</span>
       <span class="k">this</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="n">BirthField</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
       <span class="k">this</span><span class="p">.</span><span class="na">setValue</span><span class="p">(</span><span class="n">CountryField</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
     <span class="p">}</span>
@@ -1341,19 +1104,19 @@
       <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="n">WValidator</span> <span class="nf">getCreateCountryValidator</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">WValidator</span> <span class="nf">createCountryValidator</span><span class="p">()</span> <span class="p">{</span>
       <span class="n">WLengthValidator</span> <span class="n">v</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLengthValidator</span><span class="p">();</span>
       <span class="n">v</span><span class="p">.</span><span class="na">setMandatory</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
       <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="n">WValidator</span> <span class="nf">getCreateCityValidator</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">WValidator</span> <span class="nf">createCityValidator</span><span class="p">()</span> <span class="p">{</span>
       <span class="n">WLengthValidator</span> <span class="n">v</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WLengthValidator</span><span class="p">();</span>
       <span class="n">v</span><span class="p">.</span><span class="na">setMandatory</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
       <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="n">WValidator</span> <span class="nf">getCreateBirthValidator</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">WValidator</span> <span class="nf">createBirthValidator</span><span class="p">()</span> <span class="p">{</span>
       <span class="n">WDateValidator</span> <span class="n">v</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WDateValidator</span><span class="p">();</span>
       <span class="n">v</span><span class="p">.</span><span class="na">setBottom</span><span class="p">(</span><span class="k">new</span> <span class="n">WDate</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>
       <span class="n">v</span><span class="p">.</span><span class="na">setTop</span><span class="p">(</span><span class="n">WDate</span><span class="p">.</span><span class="na">getCurrentDate</span><span class="p">());</span>
@@ -1362,7 +1125,7 @@
       <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="n">WValidator</span> <span class="nf">getCreateChildrenValidator</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">WValidator</span> <span class="nf">createChildrenValidator</span><span class="p">()</span> <span class="p">{</span>
       <span class="n">WIntValidator</span> <span class="n">v</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WIntValidator</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_CHILDREN</span><span class="p">);</span>
       <span class="n">v</span><span class="p">.</span><span class="na">setMandatory</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
       <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
@@ -4932,63 +4695,6 @@
     <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;to&quot;</span><span class="p">,</span> <span class="n">te2</span><span class="p">);</span>
     <span class="n">te2</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;h:mm:ss.SSS a&quot;</span><span class="p">);</span>
     <span class="n">te2</span><span class="p">.</span><span class="na">setTime</span><span class="p">(</span><span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">addSecs</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">));</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;to-format&quot;</span><span class="p">,</span> <span class="n">te2</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
-    <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="p">(</span><span class="s">&quot;Save&quot;</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;save&quot;</span><span class="p">,</span> <span class="n">button</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WText</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WText</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;out&quot;</span><span class="p">,</span> <span class="n">out</span><span class="p">);</span>
-    <span class="n">te1</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">te1</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Time picker 1 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">te2</span><span class="p">.</span><span class="na">changed</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">te2</span><span class="p">.</span><span class="na">validate</span><span class="p">()</span> <span class="o">==</span> <span class="n">ValidationState</span><span class="p">.</span><span class="na">Valid</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;Time picker 2 is changed.&quot;</span><span class="p">);</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-    <span class="n">button</span>
-        <span class="p">.</span><span class="na">clicked</span><span class="p">()</span>
-        <span class="p">.</span><span class="na">addListener</span><span class="p">(</span>
-            <span class="k">this</span><span class="p">,</span>
-            <span class="p">()</span> <span class="o">-&gt;</span> <span class="p">{</span>
-              <span class="k">if</span> <span class="p">(</span><span class="n">te1</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">te2</span><span class="p">.</span><span class="na">getText</span><span class="p">().</span><span class="na">length</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;You should enter two times!&quot;</span><span class="p">);</span>
-              <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                <span class="kt">long</span> <span class="n">secs</span> <span class="o">=</span> <span class="n">te1</span><span class="p">.</span><span class="na">getTime</span><span class="p">().</span><span class="na">secsTo</span><span class="p">(</span><span class="n">te2</span><span class="p">.</span><span class="na">getTime</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">secs</span> <span class="o">&lt;=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
-                  <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span><span class="s">&quot;This is a really small range of time&quot;</span><span class="p">);</span>
-                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-                  <span class="n">out</span><span class="p">.</span><span class="na">setText</span><span class="p">(</span>
-                      <span class="k">new</span> <span class="n">WString</span><span class="p">(</span><span class="s">&quot;So, you want your package to be delivered between {1} and {2}?&quot;</span><span class="p">)</span>
-                          <span class="p">.</span><span class="na">arg</span><span class="p">(</span><span class="n">te1</span><span class="p">.</span><span class="na">getTime</span><span class="p">().</span><span class="na">toString</span><span class="p">())</span>
-                          <span class="p">.</span><span class="na">arg</span><span class="p">(</span><span class="n">te2</span><span class="p">.</span><span class="na">getTime</span><span class="p">().</span><span class="na">toString</span><span class="p">()));</span>
-                <span class="p">}</span>
-              <span class="p">}</span>
-            <span class="p">});</span>
-  <span class="p">}</span>
-</pre></div>
-  ]]></message>
-  <message id="src-TimeEditNative"><![CDATA[
-<div class="highlight"><pre><span></span>  <span class="kt">void</span> <span class="nf">TimeEditNative</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">WTemplate</span> <span class="n">form</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTemplate</span><span class="p">(</span><span class="n">WString</span><span class="p">.</span><span class="na">tr</span><span class="p">(</span><span class="s">&quot;timeEdit-template&quot;</span><span class="p">));</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">addFunction</span><span class="p">(</span><span class="s">&quot;id&quot;</span><span class="p">,</span> <span class="n">WTemplate</span><span class="p">.</span><span class="na">Functions</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WTimeEdit</span> <span class="n">te1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTimeEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;from&quot;</span><span class="p">,</span> <span class="n">te1</span><span class="p">);</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;from-format&quot;</span><span class="p">,</span> <span class="n">te1</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
-    <span class="n">te1</span><span class="p">.</span><span class="na">setTime</span><span class="p">(</span><span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">());</span>
-    <span class="n">te1</span><span class="p">.</span><span class="na">setNativeControl</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-    <span class="kd">final</span> <span class="n">WTimeEdit</span> <span class="n">te2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WTimeEdit</span><span class="p">();</span>
-    <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;to&quot;</span><span class="p">,</span> <span class="n">te2</span><span class="p">);</span>
-    <span class="n">te2</span><span class="p">.</span><span class="na">setFormat</span><span class="p">(</span><span class="s">&quot;h:mm:ss.SSS a&quot;</span><span class="p">);</span>
-    <span class="n">te2</span><span class="p">.</span><span class="na">setTime</span><span class="p">(</span><span class="n">WTime</span><span class="p">.</span><span class="na">getCurrentTime</span><span class="p">().</span><span class="na">addSecs</span><span class="p">(</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">15</span><span class="p">));</span>
-    <span class="n">te2</span><span class="p">.</span><span class="na">setNativeControl</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
     <span class="n">form</span><span class="p">.</span><span class="na">bindString</span><span class="p">(</span><span class="s">&quot;to-format&quot;</span><span class="p">,</span> <span class="n">te2</span><span class="p">.</span><span class="na">getFormat</span><span class="p">());</span>
     <span class="n">WPushButton</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WPushButton</span><span class="p">(</span><span class="s">&quot;Save&quot;</span><span class="p">);</span>
     <span class="n">form</span><span class="p">.</span><span class="na">bindWidget</span><span class="p">(</span><span class="s">&quot;save&quot;</span><span class="p">,</span> <span class="n">button</span><span class="p">);</span>

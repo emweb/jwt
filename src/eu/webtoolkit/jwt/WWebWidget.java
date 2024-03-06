@@ -1292,7 +1292,7 @@ public abstract class WWebWidget extends WWidget {
             app.addAutoJavaScript(
                 "{var w = "
                     + this.getJsRef()
-                    + ";if (w && !Wt4_10_3.isHidden(w)) {var i = Wt4_10_3.getElement('"
+                    + ";if (w && !Wt4_10_4.isHidden(w)) {var i = Wt4_10_4.getElement('"
                     + i.getId()
                     + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
             element.addChild(i);
@@ -1489,7 +1489,7 @@ public abstract class WWebWidget extends WWidget {
             }
             String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true" : "false";
             element.callJavaScript(
-                "Wt4_10_3.toolTip("
+                "Wt4_10_4.toolTip("
                     + app.getJavaScriptClass()
                     + ","
                     + jsStringLiteral(this.getId())
@@ -1532,7 +1532,7 @@ public abstract class WWebWidget extends WWidget {
     if (!all && this.transientImpl_ != null) {
       for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "Wt4_10_3.$('"
+            "Wt4_10_4.$('"
                 + this.getId()
                 + "').classList.add('"
                 + this.transientImpl_.addedStyleClasses_.get(i)
@@ -1540,7 +1540,7 @@ public abstract class WWebWidget extends WWidget {
       }
       for (int i = 0; i < this.transientImpl_.removedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "Wt4_10_3.$('"
+            "Wt4_10_4.$('"
                 + this.getId()
                 + "').classList.remove('"
                 + this.transientImpl_.removedStyleClasses_.get(i)
@@ -1552,7 +1552,7 @@ public abstract class WWebWidget extends WWidget {
           for (int i = 0; i < this.transientImpl_.childRemoveChanges_.size(); ++i) {
             final String js = this.transientImpl_.childRemoveChanges_.get(i);
             if (js.charAt(0) == '_') {
-              element.callJavaScript("Wt4_10_3.remove('" + js.substring(1) + "');", true);
+              element.callJavaScript("Wt4_10_4.remove('" + js.substring(1) + "');", true);
             } else {
               element.callJavaScript(js, true);
             }
@@ -1652,7 +1652,7 @@ public abstract class WWebWidget extends WWidget {
     if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
       if (this.flags_.get(BIT_HIDDEN_CHANGED) || all && this.flags_.get(BIT_HIDDEN)) {
         if (this.flags_.get(BIT_HIDDEN)) {
-          element.callJavaScript("Wt4_10_3.$('" + this.getId() + "').classList.add('Wt-hidden');");
+          element.callJavaScript("Wt4_10_4.$('" + this.getId() + "').classList.add('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "hidden");
           if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
             element.setProperty(Property.StylePosition, "absolute");
@@ -1693,7 +1693,7 @@ public abstract class WWebWidget extends WWidget {
             }
           }
           element.callJavaScript(
-              "Wt4_10_3.$('" + this.getId() + "').classList.remove('Wt-hidden');");
+              "Wt4_10_4.$('" + this.getId() + "').classList.remove('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "visible");
         }
       }
@@ -1708,7 +1708,7 @@ public abstract class WWebWidget extends WWidget {
         app.loadJavaScript(THIS_JS, wtjs2());
         if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_10_3")
+          ss.append("Wt4_10_4")
               .append(".animateDisplay(")
               .append(app.getJavaScriptClass())
               .append(",'")
@@ -1730,7 +1730,7 @@ public abstract class WWebWidget extends WWidget {
           }
         } else {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_10_3")
+          ss.append("Wt4_10_4")
               .append(".animateVisible('")
               .append(this.getId())
               .append("',")
@@ -1797,13 +1797,13 @@ public abstract class WWebWidget extends WWidget {
       if (!app.isJavaScriptLoaded(SCROLL_JS) && this.isScrollVisibilityEnabled()) {
         app.loadJavaScript(SCROLL_JS, wtjs3());
         StringBuilder ss = new StringBuilder();
-        ss.append("if (!Wt4_10_3.scrollVisibility) {Wt4_10_3.scrollVisibility = new ");
-        ss.append("Wt4_10_3.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
+        ss.append("if (!Wt4_10_4.scrollVisibility) {Wt4_10_4.scrollVisibility = new ");
+        ss.append("Wt4_10_4.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
         element.callJavaScript(ss.toString());
       }
       if (this.isScrollVisibilityEnabled()) {
         StringBuilder ss = new StringBuilder();
-        ss.append("Wt4_10_3.scrollVisibility.add({");
+        ss.append("Wt4_10_4.scrollVisibility.add({");
         ss.append("el:").append(this.getJsRef()).append(',');
         ss.append("margin:").append(this.getScrollVisibilityMargin()).append(',');
         ss.append("visible:").append(this.isScrollVisible());
@@ -1813,7 +1813,7 @@ public abstract class WWebWidget extends WWidget {
       } else {
         if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
           element.callJavaScript(
-              "Wt4_10_3.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
+              "Wt4_10_4.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
           this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
         }
       }
@@ -1877,7 +1877,7 @@ public abstract class WWebWidget extends WWidget {
     final StringBuilder result = new StringBuilder();
     if (this.isRendered() && this.isScrollVisibilityEnabled()) {
       result
-          .append("Wt4_10_3.scrollVisibility.remove(")
+          .append("Wt4_10_4.scrollVisibility.remove(")
           .append(jsStringLiteral(this.getId()))
           .append(");");
       this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
@@ -1891,7 +1891,7 @@ public abstract class WWebWidget extends WWidget {
       if ((result.length() == 0)) {
         result.append("_").append(this.getId());
       } else {
-        result.append("Wt4_10_3.remove('").append(this.getId()).append("');");
+        result.append("Wt4_10_4.remove('").append(this.getId()).append("');");
       }
     }
     return result.toString();

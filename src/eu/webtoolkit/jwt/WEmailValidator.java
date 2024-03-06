@@ -211,7 +211,7 @@ public class WEmailValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_10_3.WEmailValidator(")
+    js.append("new Wt4_10_4.WEmailValidator(")
         .append(this.isMandatory())
         .append(',')
         .append(this.isMultiple())

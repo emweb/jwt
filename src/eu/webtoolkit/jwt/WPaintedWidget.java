@@ -404,7 +404,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
    * this function to customize or specialize the device used for painting the widget.
    */
   protected WPaintDevice getCreatePaintDevice() {
-    (this).isCreatePainter();
+    (this).createPainter();
     if (this.painter_ != null) {
       return this.painter_.createPaintDevice(true);
     } else {
@@ -435,7 +435,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
           WT_RESIZE_JS,
           "function(self, w, h) {let u = self.querySelector('canvas, img');if (u === null) return;if (w >= 0) u.style.width = `${w}px`;else u.style.width = 'auto';if (h >= 0) u.style.height = `${h}px`;else u.style.height = 'auto';}");
     }
-    this.isCreatePainter();
+    this.createPainter();
     DomElement result = DomElement.createNew(this.getDomElementType());
     this.setId(result, app);
     DomElement wrap = result;
@@ -476,7 +476,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
     DomElement e = DomElement.getForUpdate(this, DomElementType.DIV);
     this.updateDom(e, false);
     result.add(e);
-    boolean createdNew = this.isCreatePainter();
+    boolean createdNew = this.createPainter();
     if (this.needRepaint_) {
       WPaintDevice device =
           this.painter_.getPaintDevice(
@@ -595,7 +595,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
     this.update();
   }
 
-  private boolean isCreatePainter() {
+  private boolean createPainter() {
     if (this.painter_ != null) {
       return false;
     }
