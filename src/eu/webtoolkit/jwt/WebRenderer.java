@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -506,7 +508,7 @@ class WebRenderer implements SlotLearnerInterface {
         "SHOW_ERROR", conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
     script.setCondition("UGLY_INTERNAL_PATHS", this.session_.isUseUglyInternalPaths());
     script.setCondition("DYNAMIC_JS", false);
-    script.setVar("WT_CLASS", "Wt4_10_4");
+    script.setVar("WT_CLASS", "Wt4_11_0");
     script.setVar("APP_CLASS", app.getJavaScriptClass());
     script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf.serializedEvents());
     script.setCondition("WEB_SOCKETS", conf.webSockets());
@@ -567,18 +569,18 @@ class WebRenderer implements SlotLearnerInterface {
         boolean enabledAjax = app.enableAjax_;
         if (app.enableAjax_) {
           this.collectedJS1_
-              .append("var form = Wt4_10_4.getElement('Wt-form'); if (form) {")
+              .append("var form = Wt4_11_0.getElement('Wt-form'); if (form) {")
               .append(this.beforeLoadJS_.toString());
           this.beforeLoadJS_.setLength(0);
           this.collectedJS1_
               .append("var domRoot=")
               .append(app.domRoot_.getJsRef())
               .append(';')
-              .append("Wt4_10_4.progressed(domRoot);");
+              .append("Wt4_11_0.progressed(domRoot);");
           int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
           app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
           this.collectedJS2_
-              .append("Wt4_10_4.resolveRelativeAnchors();")
+              .append("Wt4_11_0.resolveRelativeAnchors();")
               .append("domRoot.style.visibility = 'visible';")
               .append(app.getJavaScriptClass())
               .append("._p_.doAutoJavaScript();");
@@ -631,7 +633,7 @@ class WebRenderer implements SlotLearnerInterface {
               .append("}, 400);")
               .append("else ");
         }
-        out.append("Wt4_10_4.ready(function() { ")
+        out.append("Wt4_11_0.ready(function() { ")
             .append(app.getJavaScriptClass())
             .append("._p_.load(true);});\n");
       }
@@ -917,7 +919,7 @@ class WebRenderer implements SlotLearnerInterface {
     if (widgetset) {
       String historyE = app.getEnvironment().getParameter("Wt-history");
       if (historyE != null) {
-        out.append("Wt4_10_4")
+        out.append("Wt4_11_0")
             .append(".history.initialize('")
             .append(historyE.charAt(0))
             .append("-field', '")
@@ -935,7 +937,7 @@ class WebRenderer implements SlotLearnerInterface {
       out.append("};\n");
     }
     this.renderSetServerPush(out);
-    out.append("Wt4_10_4.ready(function() { ")
+    out.append("Wt4_11_0.ready(function() { ")
         .append(app.getJavaScriptClass())
         .append("._p_.load(")
         .append(!widgetset)
@@ -1167,7 +1169,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void loadStyleSheet(
       final StringBuilder out, WApplication app, final WLinkedCssStyleSheet sheet) {
-    out.append("Wt4_10_4")
+    out.append("Wt4_11_0")
         .append(".addStyleSheet('")
         .append(sheet.getLink().resolveUrl(app))
         .append("', '")
@@ -1186,7 +1188,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void removeStyleSheets(final StringBuilder out, WApplication app) {
     for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
-      out.append("Wt4_10_4")
+      out.append("Wt4_11_0")
           .append(".removeStyleSheet('")
           .append(app.styleSheetsToRemove_.get(i).getLink().resolveUrl(app))
           .append("');\n ");

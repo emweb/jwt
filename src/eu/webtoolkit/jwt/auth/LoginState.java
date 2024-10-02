@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -47,7 +48,17 @@ public enum LoginState {
    */
   Weak,
   /** A user is strongly authenticated. */
-  Strong;
+  Strong,
+  /**
+   * Requires multiple factors in the authentication process.
+   *
+   * <p>After logging in through a primary method, like password, or if the authentication was
+   * remembered through a cookie, the user will be prompted with an additional authentication
+   * request.
+   *
+   * <p>Using JWt&apos;s default implementation, this will ask for the TOTP code.
+   */
+  RequiresMfa;
 
   /** Returns the numerical representation of this enum. */
   public int getValue() {

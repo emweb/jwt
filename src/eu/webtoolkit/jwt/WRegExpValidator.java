@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -159,7 +161,7 @@ public class WRegExpValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_10_4.WRegExpValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_11_0.WRegExpValidator(").append(this.isMandatory()).append(',');
     js.append(WWebWidget.jsStringLiteral(this.pattern_)).append(",'");
     if ((this.regex_.flags() & Pattern.CASE_INSENSITIVE) != 0) {
       js.append('i');

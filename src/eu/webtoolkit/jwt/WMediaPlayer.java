@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -767,7 +769,7 @@ public class WMediaPlayer extends WCompositeWidget {
         first = false;
       }
       ss.append('}').append("});");
-      ss.append("new Wt4_10_4.WMediaPlayer(")
+      ss.append("new Wt4_11_0.WMediaPlayer(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())

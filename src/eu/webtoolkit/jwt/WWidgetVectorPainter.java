@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -54,7 +56,7 @@ class WWidgetVectorPainter extends WWidgetPainter {
     if (this.widget_.repaintFlags_.contains(PaintFlag.Update)) {
       DomElement painter =
           DomElement.updateGiven(
-              "Wt4_10_4.getElement('p" + this.widget_.getId() + "').firstChild",
+              "Wt4_11_0.getElement('p" + this.widget_.getId() + "').firstChild",
               DomElementType.DIV);
       painter.setProperty(Property.AddedInnerHTML, vectorDevice.getRendered());
       WApplication app = WApplication.getInstance();

@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
@@ -456,7 +458,6 @@ public abstract class WAbstractGridData extends WAbstractDataSeries3D {
     invTransform.invert();
     javax.vecmath.GVector camera = new javax.vecmath.GVector(new double[] {0.0, 0.0, 0.0, 1.0});
     camera = WebGLUtils.multiply(invTransform, camera);
-    javax.vecmath.GVector camera3 = new javax.vecmath.GVector(camera);
     int Nx = this.getNbXPoints();
     int Ny = this.getNbYPoints();
     int cnt = Nx * Ny;

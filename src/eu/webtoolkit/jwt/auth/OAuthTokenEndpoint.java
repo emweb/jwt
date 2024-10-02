@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * AbstractUserDatabase#idpVerifySecret(OAuthClient client, String secret)
  * AbstractUserDatabase#idpVerifySecret()}, {@link AbstractUserDatabase#idpClientId(OAuthClient
  * client) AbstractUserDatabase#idpClientId()}, {@link
- * AbstractUserDatabase#idpTokenFindWithValue(String purpose, String value)
+ * AbstractUserDatabase#idpTokenFindWithValue(String purpose, String scope)
  * AbstractUserDatabase#idpTokenFindWithValue()}, {@link AbstractUserDatabase#idpTokenAdd(String
  * value, WDate expirationTime, String purpose, String scope, String redirectUri, User user,
  * OAuthClient authClient) AbstractUserDatabase#idpTokenAdd()}, {@link
@@ -269,12 +270,12 @@ public class OAuthTokenEndpoint extends WResource {
     root.add(
         "exp",
         (new com.google.gson.JsonPrimitive(
-            (long) curTime.addSeconds(this.idExpSecs_).getDate().getTime())));
-    root.add("iat", (new com.google.gson.JsonPrimitive((long) curTime.getDate().getTime())));
+            (long) curTime.addSeconds(this.idExpSecs_).getDate().getTime() / 1000)));
+    root.add("iat", (new com.google.gson.JsonPrimitive((long) curTime.getDate().getTime() / 1000)));
     root.add(
         "auth_time",
         (new com.google.gson.JsonPrimitive(
-            String.valueOf(user.getLastLoginAttempt().getDate().getTime()))));
+            String.valueOf(user.getLastLoginAttempt().getDate().getTime() / 1000))));
     return root.toString();
   }
 

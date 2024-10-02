@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -250,10 +252,6 @@ class TreesTables extends Topic {
     return treeTable;
   }
 
-  WWidget getVirtualModel() {
-    return null;
-  }
-
   WWidget SmallTableView() {
     WTableView tableView = new WTableView();
     tableView.setModel(CsvUtil.csvToModel("" + "table.csv"));
@@ -322,14 +320,10 @@ class TreesTables extends Topic {
     return table;
   }
 
-  WWidget getGitModel() {
-    return null;
-  }
-
   WWidget TreeView() {
     WTreeView treeView = new WTreeView();
     treeView.resize(new WLength(600), new WLength(400));
-    GitModel model = new GitModel("/home/koen/git/jwt");
+    GitModel model = new GitModel("/home/jwt/jwt/.git");
     treeView.setModel(model);
     treeView.setRowHeight(new WLength(24));
     treeView.setHeaderHeight(new WLength(24));

@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -196,7 +198,7 @@ public class WLengthValidator extends WValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_10_4.WLengthValidator(").append(this.isMandatory()).append(',');
+    js.append("new Wt4_11_0.WLengthValidator(").append(this.isMandatory()).append(',');
     if (this.minLength_ != 0) {
       js.append(this.minLength_);
     } else {

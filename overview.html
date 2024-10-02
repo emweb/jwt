@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.10.3</title>
+<title>JWt 4.11.0</title>
 </head>
 <body>
 
@@ -24,6 +24,68 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.11.0 (October 1, 2024)</h2>
+
+<p>
+  Wt 4.11.0 is a major release that includes the ability to enable MFA for authentication.
+
+  JWt is now able to support MFA in its authentication system. It is easily enabled with a single call to <a href="eu/webtoolkit/jwt/auth/AuthService.html#setMfaProvider(java.lang.String)" target="_blank">AuthService::setMfaProvider()</a>. By default an implementation for TOTP is included. This offers a way to enable an additional layer of security for your applications. Instead of remembering a single password, users can be made to enter a short code that changes often, as an additional authentication step.
+  Developers are also able to implement this feature in any way they see fit via the interface <a href="eu/webtoolkit/jwt/auth/mfa/AbstractMfaProcess.html" target="_blank">AbstractMfaProcess</a>.
+</p>
+
+<h3>New features</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11705">Issue #11705</a>:
+    MFA (Multi-Factor Authentication) is now supported by means of a default implementation of TOTP (Time-Based One-Time Password). This feature can be enabled by <a href="eu/webtoolkit/jwt/auth/AuthService.html#setMfaProvider(java.lang.String)" target="_blank">AuthService::setMfaProvider()</a>, and the length of the expected code can be managed via <a href="eu/webtoolkit/jwt/auth/AuthService.html#setMfaCodeLength(int)" target="_blank">AuthService::setMFACodeLength()</a>.
+    Once enabled, users are allowed (but not forced) to use MFA. A developer will have to create a way that allows users to set their secret key, or override the functionality that decides whether the MFA step ought to be shown to the user during the log     in process (<a href="eu/webtoolkit/jwt/auth/AuthModel.html#hasMfaStep(eu.webtoolkit.jwt.auth.User)" target="_blank">AuthModel::hasMfaStep()</a>). Alternatively, they can also set <a href="eu/webtoolkit/jwt/auth/AuthService.html#setMfaRequired(boolean)" target="_blank">AuthService::setMFARequired()</a> to <code>true</code>, which will force all users to have MFA enabled.
+    If enabled and required, a user will see the <a href="eu/webtoolkit/jwt/auth/mfa/TotpProcess.html" target="_blank">TotpProcess</a> when they pass the regular login. This will happen after password login. Developers can use this process to enable MFA on a per-user manner, without globally enforcing it.
+    This widget shows them a QR code and a secret key initially for them to store in an authenticator app or browser extension. Once stored, it will no longer show them this code or key, unless invalidated (by means of <a href="eu/webtoolkit/jwt/auth/User.html#removeIdentity(java.lang.String)" target="_blank">User::removeIdentity()</a>, which will take the same name as the <code>setMfaProvider()</code>).
+
+    <p>The above approach will be the default flow that Wt uses if MFA is enabled (and/or required). Developers are able to provide a custom implementation as well, using the <a href="eu/webtoolkit/jwt/auth/mfa/AbstractMfaProcess.html" target="_blank">AbstractMfaProcess</a> class. It is encouraged to look at the examples under <code>examples/authentication/mfa</code> in the source code, to have a concrete idea on how to use the class correctly.</p>
+  </li>
+</ul>
+
+<h3>Other improvements</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/10382" target="_blank">Issue #10382</a>:
+    Added customization support for the upload mechanism of
+    <a href="eu/webtoolkit/jwt/WFileDropWidget.html" target="_blank">WFileDropWidget</a>.
+    It is now possible to customize the server-side upload mechanism by returning a custom WResource from
+    <a href="eu/webtoolkit/jwt/WFileDropWidget.html#getUploadResource()" target="_blank">WFileDropWidget::getUploadResource()</a>
+    to be uploaded to.
+    At the client side, uploading can be modified by setting <code>wtUseCustomSend</code> and defining <code>wtCustomSend()</code>.
+  </li>
+</ul>
+
+<h3>Bug fixes</h3>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12367" target="_blank">Issue #12367</a>:
+    Fix a bug where the checkbox in a
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a> would not be checked if a
+    <a href="eu/webtoolkit/jwt/WMenuItem.html" target="_blank">WMenuItem</a> was clicked, and not the
+    <a href="eu/webtoolkit/jwt/WCheckBox.html" target="_blank">WCheckBox</a> or its label. Also fixes a bug where the signal of a <code>WMenuItem</code> checkbox would not be emitted after switching between the item being checkable or not.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/12323" target="_blank">Issue #12323</a>:
+    does no longer cause an issue when a <a href="eu/webtoolkit/jwt/WMenu.html#addSeparator()" target="_blank">WMenu::addSeparator()</a> was added, together with using <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12366" target="_blank">Issue #12366</a>:
+    Fixed a bug where some
+    <a href="eu/webtoolkit/jwt/WContainerWidget.html" target="_blank">WContainerWidget</a> would send undefined information when TwoPhaseRenderingThreshold was not set to 0.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/9284">Issue #9284</a>:
+    a <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> will now render more correctly in layouts. A combination of various layouts could lead to the table not setting its size correctly, or even not having a consistent size (apparently randomly deciding to fill in all available space, or to shrink to fit its content). This led to the issue where scrollbars were sometimes not visible, or were placed in a wrong location. By default, a table will now size correctly, and place the scrollbars accordingly, namely at the edges of its container.
+  </li>
+</ul>
 
 <h2>Release 4.10.4 (March 6, 2024)</h2>
 

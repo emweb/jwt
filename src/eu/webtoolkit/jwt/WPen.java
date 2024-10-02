@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -141,6 +143,20 @@ public class WPen extends WJavaScriptExposableObject {
     this.gradient_ = new WGradient();
     this.gradient_ = gradient;
   }
+  /** Copy constructor. */
+  public WPen(final WPen other) {
+    super(other);
+    this.penStyle_ = other.penStyle_;
+    this.penCapStyle_ = other.penCapStyle_;
+    this.penJoinStyle_ = other.penJoinStyle_;
+    this.width_ = other.width_;
+    this.color_ = other.color_;
+    this.gradient_ = new WGradient();
+    if (other.isJavaScriptBound()) {
+      this.assignBinding(other);
+    }
+  }
+  // public void  destroy() ;
   /**
    * Clone method.
    *

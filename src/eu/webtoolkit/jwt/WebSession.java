@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -1034,7 +1036,6 @@ class WebSession {
     if (event.impl_.renderOnly || !(handler.getRequest() != null)) {
       return EventType.Other;
     }
-    String requestE = request.getParameter("request");
     String pageIdE = handler.getRequest().getParameter("pageId");
     if (pageIdE != null && !pageIdE.equals(String.valueOf(this.renderer_.getPageId()))) {
       return EventType.Other;
@@ -1704,7 +1705,7 @@ class WebSession {
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
     if (wasSuspended) {
       if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
-        this.app_.doJavaScript("Wt4_10_4.history.removeSessionId()");
+        this.app_.doJavaScript("Wt4_11_0.history.removeSessionId()");
         this.sessionIdInUrl_ = false;
       }
       this.app_.unsuspended().trigger();
@@ -2100,7 +2101,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt4_10_4.scrollHistory();");
+                this.app_.doJavaScript("Wt4_11_0.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }

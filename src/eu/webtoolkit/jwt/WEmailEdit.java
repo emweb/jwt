@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -265,7 +267,7 @@ public class WEmailEdit extends WFormWidget {
     super.render(flags);
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WEmailEdit.js", wtjs1());
-    super.setJavaScriptMember("wtEncodeValue", "Wt4_10_4.encodeEmailValue");
+    super.setJavaScriptMember("wtEncodeValue", "Wt4_11_0.encodeEmailValue");
   }
 
   void updateDom(final DomElement element, boolean all) {

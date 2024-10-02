@@ -158,6 +158,7 @@ public class UserDatabase extends AbstractUserDatabase {
 
 	@Override
 	public void addIdentity(User user, String provider, String identity) {
+		Transaction t = startTransaction();
 		User u = findWithIdentity(provider, identity);
 
 		if (u.isValid()) {
@@ -170,6 +171,7 @@ public class UserDatabase extends AbstractUserDatabase {
 			a_id.setAuthInfo(ai);
 			entityManager_.persist(ai);
 		}
+    t.commit();
 	}
 
 	@Override

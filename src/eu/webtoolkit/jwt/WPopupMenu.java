@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -169,7 +171,7 @@ public class WPopupMenu extends WMenu {
     this.setOffsets(new WLength(42), EnumSet.of(Side.Left, Side.Top));
     this.setOffsets(new WLength(-10000), EnumSet.of(Side.Left, Side.Top));
     this.doJavaScript(
-        "Wt4_10_4.positionXY('"
+        "Wt4_11_0.positionXY('"
             + this.getId()
             + "',"
             + String.valueOf(p.getX())
@@ -419,7 +421,7 @@ public class WPopupMenu extends WMenu {
 
   String renderRemoveJs(boolean recursive) {
     String result = super.renderRemoveJs(true);
-    result += "Wt4_10_4.remove('" + this.getId() + "');";
+    result += "Wt4_11_0.remove('" + this.getId() + "');";
     return result;
   }
 
@@ -498,7 +500,7 @@ public class WPopupMenu extends WMenu {
     if (!this.cancel_.isConnected()) {
       app.loadJavaScript("js/WPopupMenu.js", wtjs1());
       StringBuilder s = new StringBuilder();
-      s.append("new Wt4_10_4.WPopupMenu(")
+      s.append("new Wt4_11_0.WPopupMenu(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())

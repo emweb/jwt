@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
@@ -1746,8 +1748,8 @@ public class WAxis {
               s.renderMaximum = max.toJulianDay();
             } else {
               if (this.scale_ == AxisScale.DateTime) {
-                s.renderMinimum = min.getDate().getTime();
-                s.renderMaximum = max.getDate().getTime();
+                s.renderMinimum = min.getDate().getTime() / 1000;
+                s.renderMaximum = max.getDate().getTime() / 1000;
               }
             }
           }
@@ -2464,7 +2466,7 @@ public class WAxis {
                             (long)
                                 (long)
                                     this.getLabelTransform(config.side)
-                                        .apply((double) dt.getDate().getTime())));
+                                        .apply((double) dt.getDate().getTime() / 1000)));
               }
               text = new WString(transformedDt.toString(format.toString()));
             }
@@ -2616,6 +2618,7 @@ public class WAxis {
       this.dateTimeRenderUnit = other.dateTimeRenderUnit;
       this.dateTimeRenderInterval = other.dateTimeRenderInterval;
     }
+    // public void  destroy() ;
   }
 
   List<WAxis.Segment> segments_;
@@ -2808,7 +2811,7 @@ public class WAxis {
           WDate d = ((WDate) v);
           WDate dt = null;
           dt = d;
-          return (double) dt.getDate().getTime();
+          return (double) dt.getDate().getTime() / 1000;
         } else {
           if (v.getClass().equals(Double.class)) {
             return ((Double) v);
@@ -2972,7 +2975,7 @@ public class WAxis {
       case Date:
         return (long) dt.toJulianDay();
       case DateTime:
-        return (long) dt.getDate().getTime();
+        return (long) dt.getDate().getTime() / 1000;
       default:
         return 1;
     }

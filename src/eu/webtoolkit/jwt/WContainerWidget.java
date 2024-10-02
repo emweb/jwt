@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -859,7 +861,6 @@ public class WContainerWidget extends WInteractWidget {
       }
       this.flags_.clear(BIT_PADDINGS_CHANGED);
     }
-    super.updateDom(element, all);
     if (this.flags_.get(BIT_OVERFLOW_CHANGED)
         || all
             && this.overflow_ != null
@@ -878,6 +879,7 @@ public class WContainerWidget extends WInteractWidget {
         }
       }
     }
+    super.updateDom(element, all);
   }
 
   void propagateRenderOk(boolean deep) {

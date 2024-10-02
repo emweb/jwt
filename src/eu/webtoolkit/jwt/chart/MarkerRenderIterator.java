@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
@@ -35,7 +37,7 @@ final class MarkerRenderIterator extends SeriesIterator {
   }
 
   public boolean startSeries(
-      final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
+      final WDataSeries series, double groupWidth, int newBarGroups, int currentBarGroup) {
     this.marker_.assign(new WPainterPath());
     if (series.getMarker() != MarkerType.None) {
       this.chart_.drawMarker(series, this.marker_);

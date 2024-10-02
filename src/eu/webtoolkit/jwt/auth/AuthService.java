@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -57,6 +58,13 @@ import org.slf4j.LoggerFactory;
  *         <li>{@link AuthService#processEmailToken(String token, AbstractUserDatabase users)
  *             processEmailToken()}
  *       </ul>
+ *   <li>MFA tokens, used by multi-factor authentication functionality:
+ *       <ul>
+ *         <li>{@link AuthService#setMfaTokenCookieName(String name) setMfaTokenCookieName()}
+ *         <li>{@link AuthService#setMfaTokenValidity(int validity) setMfaTokenValidity()}
+ *         <li>{@link AuthService#processAuthToken(String token, AbstractUserDatabase users)
+ *             processAuthToken()}
+ *       </ul>
  * </ul>
  */
 public class AuthService {
@@ -76,6 +84,13 @@ public class AuthService {
     this.authTokenValidity_ = 14 * 24 * 60;
     this.authTokenCookieName_ = "";
     this.authTokenCookieDomain_ = "";
+    this.mfaProvider_ = "";
+    this.mfaRequired_ = false;
+    this.mfaCodeLength_ = 6;
+    this.mfaTokenValidity_ = 90 * 24 * 60;
+    this.mfaTokenCookieName_ = "";
+    this.mfaTokenCookieDomain_ = "";
+    this.mfaThrottleEnabled_ = false;
     this.redirectInternalPath_ = "/auth/mail/";
   }
   /**
@@ -177,6 +192,10 @@ public class AuthService {
    *
    * <p>Authentication tokens are disabled by default.
    *
+   * <p>The default name for these cookies is <code>wtauth</code>, and if MFA is enabled, their
+   * corresponding name will be <code>wtauth-mfa</code>. The name of these tokens can be changed
+   * ({@link AuthService#setMfaTokenCookieName(String name) setMfaTokenCookieName()}).
+   *
    * <p>
    *
    * @see AuthService#setTokenHashFunction(HashFunction function)
@@ -187,6 +206,8 @@ public class AuthService {
     this.authTokens_ = enabled;
     this.authTokenCookieName_ = cookieName;
     this.authTokenCookieDomain_ = cookieDomain;
+    this.setMfaTokenCookieName(cookieName + "-mfa");
+    this.setMfaTokenCookieDomain(cookieDomain);
   }
   /**
    * Configures authentication token support.
@@ -230,10 +251,13 @@ public class AuthService {
    * the new cookie, the user will be logged out, unless the {@link AbstractUserDatabase}
    * implementation takes this into account (e.g. keeps the old token valid for a little bit longer)
    *
-   * <p>The default Dbo UserDatabase does not handle concurrent token updates well, so disable this
+   * <p>The default Dbo::UserDatabase does not handle concurrent token updates well, so disable this
    * option if you want to prevent that issue.
    *
    * <p>
+   *
+   * <p><i><b>Note: </b>If using MFA, {@link AuthService#processAuthToken(String token,
+   * AbstractUserDatabase users) processAuthToken()} will also use this functionality. </i>
    *
    * @see AuthService#processAuthToken(String token, AbstractUserDatabase users)
    * @see AuthService#isAuthTokenUpdateEnabled()
@@ -333,12 +357,16 @@ public class AuthService {
    * Processes an authentication token.
    *
    * <p>This verifies an authentication token, and considers whether it matches with a token hash
-   * value stored in database. If it matches and auth token update is enabled, the token is updated
-   * with a new hash.
+   * value stored in database. This indicates that the cookie a {@link User} has in their browser is
+   * still valid, and can be used to uniquely identify them.
+   *
+   * <p>If it matches and auth token update is enabled ({@link
+   * AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token
+   * is updated with a new hash.
    *
    * <p>
    *
-   * @see AuthService#setAuthTokenUpdateEnabled(boolean enabled)
+   * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
    * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash)
    */
   public AuthTokenResult processAuthToken(final String token, final AbstractUserDatabase users) {
@@ -643,6 +671,247 @@ public class AuthService {
     MailUtils.sendMail(m);
   }
   /**
+   * Sets whether multiple factors are enabled when logging in.
+   *
+   * <p>If this is set to any value that isn&apos;t <code>empty</code>, a second factor (currently
+   * only TOTP as a default implementation) will be enabled. Instead of logging the {@link User} in
+   * with the {@link LoginState#Strong} (when authenticating with a password), the state will be set
+   * to {@link LoginState#RequiresMfa}.
+   *
+   * <p>This indicates that the user is still required to provide an additional login step. This
+   * applied to the regular login only. {@link Login} via OAuth does not make use of MFA. The
+   * authenticator should be sufficiently secure in itself, and should be trusted.
+   *
+   * <p>By default JWt offers TOTP (Time-based One-time password) as a second factor. This is a code
+   * that any authenticator app/extension can generate.
+   *
+   * <p>By default this feature is disabled.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>If a value for a <code>provider</code> is set here, MFA will be enabled.
+   * This will use TOTP by default. Any custom implementation (using {@link AbstractMfaProcess})
+   * will require more changes. </i>
+   *
+   * @see AuthWidget#createMfaProcess()
+   * @see AuthWidget#createMfaView()
+   * @see AuthModel#hasMfaStep(User user)
+   * @see AuthService#setMfaRequired(boolean require)
+   * @see AuthService#setMfaCodeLength(int length)
+   * @see AuthService#setMfaTokenValidity(int validity)
+   */
+  public void setMfaProvider(final String provider) {
+    this.mfaProvider_ = provider;
+  }
+  /**
+   * Returns the provider that manages the MFA step.
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaProvider(String provider)
+   */
+  public String getMfaProvider() {
+    return this.mfaProvider_;
+  }
+  /**
+   * Returns whether a second factor is enabled when logging in.
+   *
+   * <p>This marks that users can enable the MFA feature. This can be any implemenation of the
+   * {@link AbstractMfaProcess} interface. JWt supplies a single default implementation, namely
+   * {@link TotpProcess}.
+   *
+   * <p>For the default JWt implementation, this means that developers can generate a TOTP secret
+   * key (Mfa::generateSecretKey()) which can be used for MFA, by means of the {@link TotpProcess}.
+   *
+   * <p>
+   *
+   * @see AuthService#isMfaRequired()
+   * @see AuthService#getMfaCodeLength()
+   */
+  public boolean isMfaEnabled() {
+    return this.mfaProvider_.length() != 0;
+  }
+  /**
+   * Sets whether multiple factors are required when logging in.
+   *
+   * <p>If this is set to <code>true</code>, a second factor (defaulting to TOTP) will be required
+   * on login. Instead of logging the {@link User} in with the {@link LoginState#Strong} (when
+   * authenticating with a password), the state will be set to {@link LoginState#RequiresMfa}.
+   *
+   * <p>This will only take effect is {@link AuthService#isMfaEnabled() isMfaEnabled()} is <code>
+   * true</code> as well (and thus if an MFA provider has been configured ({@link
+   * AuthService#setMfaProvider(String provider) setMfaProvider()}). If this is the case, all users
+   * will be enforced to verify their login with an extra step, for more security.
+   *
+   * <p>By JWt&apos;s default implementation this will boil down to providing a TOTP code. Either
+   * this will be the first time they do this. In which case they will be given the secret key both
+   * in QR code format (using Mfa::AbstractMfaWidgget::createSetupView()), and as a string. When
+   * they enter a correct generated code, the secret will be attached to the {@link User} record as
+   * an {@link Identity}, and will be used for subsequent login attempts (using {@link
+   * AbstractMfaProcess#createInputView()}).
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaProvider(String provider)
+   * @see AuthService#setMfaCodeLength(int length)
+   * @see AuthService#setMfaTokenValidity(int validity)
+   */
+  public void setMfaRequired(boolean require) {
+    this.mfaRequired_ = require;
+  }
+  /**
+   * Returns whether multiple factors are required when logging in.
+   *
+   * <p>This marks that the MFA feature is enforced for all users.
+   *
+   * <p>For JWt&apos;s default implementation this means that upon logging in they will have to
+   * provide a TOTP code for verification.
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaRequired(boolean require)
+   */
+  public boolean isMfaRequired() {
+    return this.mfaRequired_;
+  }
+  /**
+   * Sets the length of the code that is expected for MFA.
+   *
+   * <p>This function does not make sense for all implementations of MFA.
+   *
+   * <p>Currently JWt ships with a TOTP implementation, in which case the code can be any length in
+   * the range [6-16]. Of course longer is &quot;better&quot; generally speaking.
+   *
+   * <p>By default the length is <code>6</code>.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>Due to the TOTP algorithm a longer code may not always make too much sense,
+   * as the code can start with a lot of leading zeroes. Generally a length of <code>6</code> is
+   * most often seen. </i>
+   *
+   * @see AuthService#setMfaProvider(String provider)
+   * @see AuthService#setMfaRequired(boolean require)
+   */
+  public void setMfaCodeLength(int length) {
+    this.mfaCodeLength_ = length;
+  }
+  /**
+   * Returns the length of the expected MFA codes.
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaCodeLength(int length)
+   */
+  public int getMfaCodeLength() {
+    return this.mfaCodeLength_;
+  }
+  /**
+   * Sets the name of the cookie used for MFA &quot;remember-me&quot;.
+   *
+   * <p>This name can be changed to any name the developer desires, that is a valid name for a
+   * cookie. By default this name is the same name as {@link AuthService#getAuthTokenCookieName()
+   * getAuthTokenCookieName()} with &quot;-mfa&quot; appended. If this name is not changed from the
+   * default, this will result in the &quot;wtauth-mfa&quot; name.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>No check is performed for clashing names, so this can potentially override
+   * existing cookies. </i>
+   *
+   * @see AuthService#setMfaTokenValidity(int validity)
+   * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+   */
+  public void setMfaTokenCookieName(final String name) {
+    this.mfaTokenCookieName_ = name;
+  }
+  /**
+   * Returns the name of the MFA &quot;remember-me&quot; cookie.
+   *
+   * <p>This can be configured by the developer, or otherwise uses the same name as {@link
+   * AuthService#getAuthTokenCookieName() getAuthTokenCookieName()} with the &quot;-mfa&quot;
+   * suffix. If nothing is changed, the default is &quot;wtauth-mfa&quot;.
+   */
+  public String getMfaTokenCookieName() {
+    return this.mfaTokenCookieName_;
+  }
+  /**
+   * Returns the domain of the MFA &quot;remember-me&quot; cookie.
+   *
+   * <p>This can be configured by the developer, or otherwise uses the same name as {@link
+   * AuthService#getAuthTokenCookieDomain() getAuthTokenCookieDomain()}. If nothing is changed, the
+   * default is an empty string.
+   *
+   * <p>This should best be used if multiple applications are living on the same
+   */
+  public void setMfaTokenCookieDomain(final String domain) {
+    this.mfaTokenCookieDomain_ = domain;
+  }
+  /**
+   * Returns the MFA token cookie domain.
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaTokenCookieDomain(String domain)
+   */
+  public String getMfaTokenCookieDomain() {
+    return this.mfaTokenCookieDomain_;
+  }
+  /**
+   * Sets the validity duration of the MFA &quot;remember-me&quot; cookie.
+   *
+   * <p>The duration is specified in minutes. So a validity of 1440 will keep the cookie valid for a
+   * whole day. This ensures that there is a limit on how long the {@link User}&apos;s MFA
+   * verification can be bypassed.
+   *
+   * <p>From a security aspect, this value should be kept on the lower side so that a user will be
+   * required to demonstrate a TOTP code often to the application, by which they validate their
+   * identity.
+   *
+   * <p>
+   *
+   * @see AbstractMfaProcess
+   *     <p>The default duration is 90 days.
+   *     <p>
+   *     <p><i><b>Note: </b>There are limits on the validity of a cookie in some browsers, so it
+   *     cannot be guaranteed that &quot;forever&quot; is actually applicable. </i>
+   */
+  public void setMfaTokenValidity(int validity) {
+    this.mfaTokenValidity_ = validity;
+  }
+  /**
+   * Returns the validity span of the MFA &quot;remember-me&quot; cookie.
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaTokenValidity(int validity)
+   */
+  public int getMfaTokenValidity() {
+    return this.mfaTokenValidity_;
+  }
+  /**
+   * Sets whether throttling is enabled during the MFA process.
+   *
+   * <p>By default this is not enabled.
+   *
+   * <p>
+   *
+   * @see AuthService#isMfaThrottleEnabled()
+   */
+  public void setMfaThrottleEnabled(boolean enabled) {
+    this.mfaThrottleEnabled_ = enabled;
+  }
+  /**
+   * Returns if throttling is enabled during the MFA process.
+   *
+   * <p>
+   *
+   * @see AuthService#setMfaThrottleEnabled(boolean enabled)
+   */
+  public boolean isMfaThrottleEnabled() {
+    return this.mfaThrottleEnabled_;
+  }
+  /**
    * Sends a confirmation email to the user to verify his email address.
    *
    * <p>Sends a confirmation email to the given address.
@@ -739,4 +1008,12 @@ public class AuthService {
   private int authTokenValidity_;
   private String authTokenCookieName_;
   private String authTokenCookieDomain_;
+  private String mfaProvider_;
+  private boolean mfaRequired_;
+  private int mfaCodeLength_;
+  private boolean mfaTokens_;
+  private int mfaTokenValidity_;
+  private String mfaTokenCookieName_;
+  private String mfaTokenCookieDomain_;
+  private boolean mfaThrottleEnabled_;
 }

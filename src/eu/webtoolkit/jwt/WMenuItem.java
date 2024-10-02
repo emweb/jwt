@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -214,6 +216,8 @@ public class WMenuItem extends WContainerWidget {
         this.text_.setBuddy(this.checkBox_);
         WApplication app = WApplication.getInstance();
         app.getTheme().apply(this, this.checkBox_, WidgetThemeRole.MenuItemCheckBox);
+        this.signalsConnected_ = false;
+        this.repaint();
       } else {
         {
           WWidget toRemove = WidgetUtils.remove(this.getAnchor(), this.checkBox_);
@@ -672,7 +676,9 @@ public class WMenuItem extends WContainerWidget {
     } else {
       if (bs5Theme != null) {
         WAnchor a = this.getAnchor();
-        a.toggleStyleClass(active, selected, true);
+        if (a != null) {
+          a.toggleStyleClass(active, selected, true);
+        }
       }
       this.toggleStyleClass(active, selected, true);
     }
@@ -758,6 +764,8 @@ public class WMenuItem extends WContainerWidget {
   private boolean selectable_;
   private boolean signalsConnected_;
   private boolean customLink_;
+  private boolean selectConnected_;
+  private boolean menuItemCheckedConnected_;
   private Signal1<WMenuItem> triggered_;
   private String pathComponent_;
   private boolean customPathComponent_;
@@ -772,6 +780,8 @@ public class WMenuItem extends WContainerWidget {
     this.internalPathEnabled_ = true;
     this.closeable_ = false;
     this.selectable_ = true;
+    this.selectConnected_ = false;
+    this.menuItemCheckedConnected_ = false;
     this.text_ = null;
     this.icon_ = null;
     this.checkBox_ = null;
@@ -896,17 +906,30 @@ public class WMenuItem extends WContainerWidget {
                 WMenuItem.this.selectNotLoaded();
               });
         } else {
-          as.addListener(
-              this,
-              () -> {
-                WMenuItem.this.selectVisual();
-              });
-          if (!selectFromCheckbox) {
+          if (!this.menuItemCheckedConnected_ && !this.selectConnected_) {
+            as.addListener(
+                this,
+                () -> {
+                  WMenuItem.this.selectVisual();
+                });
+          }
+          if (!selectFromCheckbox && !this.selectConnected_) {
             as.addListener(
                 this,
                 () -> {
                   WMenuItem.this.select();
                 });
+            this.selectConnected_ = true;
+          } else {
+            if (selectFromCheckbox && !this.menuItemCheckedConnected_) {
+              a.clicked()
+                  .addListener(
+                      this,
+                      (WMouseEvent e1) -> {
+                        WMenuItem.this.menuItemCheckedPropagate();
+                      });
+              this.menuItemCheckedConnected_ = true;
+            }
           }
         }
       }
@@ -930,6 +953,16 @@ public class WMenuItem extends WContainerWidget {
   private void setUnCheckBox() {
     this.setChecked(false);
     this.select();
+  }
+
+  private void menuItemCheckedPropagate() {
+    if (this.isCheckable()) {
+      if (this.isChecked()) {
+        this.checkBox_.unChecked().trigger();
+      } else {
+        this.checkBox_.checked().trigger();
+      }
+    }
   }
 
   WWidget takeContentsForStack() {

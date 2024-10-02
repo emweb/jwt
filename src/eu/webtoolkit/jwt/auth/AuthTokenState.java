@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -19,9 +20,9 @@ import javax.servlet.http.*;
 
 /** Enumeration that describes an auth token validation state. */
 public enum AuthTokenState {
-  /** The presented auth token could be used to identify a user. */
-  Invalid,
   /** The presented auth token was invalid. */
+  Invalid,
+  /** The presented auth token could be used to identify a user. */
   Valid;
 
   /** Returns the numerical representation of this enum. */

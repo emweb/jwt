@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -1133,7 +1135,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
   /**
    * Validates the editor for the given index.
    *
-   * <p>Validation is done by invoking {@link WAbstractItemDelegate#validate(WModelIndex index,
+   * <p>Validation is done by invoking {@link WAbstractItemDelegate#validate(WModelIndex anon1,
    * Object editState) WAbstractItemDelegate#validate()}.
    */
   public ValidationState validateEditor(final WModelIndex index) {

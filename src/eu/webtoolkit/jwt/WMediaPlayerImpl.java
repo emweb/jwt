@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -31,7 +33,7 @@ final class WMediaPlayerImpl extends WTemplate {
     if (this.isRendered()) {
       String result = this.player_.getJsPlayerRef() + ".jPlayer('destroy');";
       if (!recursive) {
-        result += "Wt4_10_4.remove('" + this.getId() + "');";
+        result += "Wt4_11_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {

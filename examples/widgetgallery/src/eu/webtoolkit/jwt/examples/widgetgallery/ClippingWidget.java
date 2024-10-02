@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -57,7 +59,7 @@ class ClippingWidget extends WPaintedWidget {
 
   private void drawStars(final WPainter painter) {
     Random random = new Random();
-    random.setSeed(WDate.getCurrentServerDate().getDate().getTime());
+    random.setSeed(WDate.getCurrentServerDate().getDate().getTime() / 1000);
     painter.save();
     painter.translate(75, 75);
     for (int star = 1; star < 50; star++) {
