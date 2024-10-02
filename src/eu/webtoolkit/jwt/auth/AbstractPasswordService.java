@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -142,13 +143,20 @@ public interface AbstractPasswordService {
   public AuthService getBaseAuth();
   /** Returns whether password attempt throttling is enabled. */
   public boolean isAttemptThrottlingEnabled();
+  /**
+   * Returns the class instance managing the delaying.
+   *
+   * <p>
+   *
+   * @see AbstractPasswordService#isAttemptThrottlingEnabled()
+   */
+  public AuthThrottle getPasswordThrottle();
   /** Returns a validator which checks that a password is strong enough. */
   public AbstractPasswordService.AbstractStrengthValidator getStrengthValidator();
   /**
    * Returns the delay for this user for a next authentication attempt.
    *
-   * <p>If password attempt throttling is enabled, then this returns the number of seconds this user
-   * must wait for a new authentication attempt, presumably because of a number of failed attempts.
+   * <p>The implementation of this functionality is managed by {@link AuthThrottle}.
    *
    * <p>
    *

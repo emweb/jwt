@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -382,7 +384,7 @@ class Media extends Topic {
     MyResource textResource = new MyResource();
     WLink link = new WLink(textResource);
     link.setTarget(LinkTarget.NewWindow);
-    WAnchor anchor = new WAnchor(link, "Download file", (WContainerWidget) container);
+    new WAnchor(link, "Download file", (WContainerWidget) container);
     return container;
   }
 

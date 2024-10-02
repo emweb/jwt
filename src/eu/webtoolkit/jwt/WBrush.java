@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -100,6 +102,17 @@ public class WBrush extends WJavaScriptExposableObject {
     this.style_ = BrushStyle.Gradient;
     this.color_ = new WColor();
     this.gradient_ = gradient;
+  }
+  // public void  destroy() ;
+  /** Copy constructor. */
+  public WBrush(final WBrush other) {
+    super(other);
+    this.style_ = other.style_;
+    this.color_ = other.color_;
+    this.gradient_ = other.gradient_;
+    if (other.isJavaScriptBound()) {
+      this.assignBinding(other);
+    }
   }
   /**
    * Clone method.

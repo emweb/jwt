@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -26,6 +27,13 @@ import org.slf4j.LoggerFactory;
  * authentication token is generated, it is a good practice to hash it using a cryptographic hash
  * function, and only save this hash in the session or database for later verification. This avoids
  * that a compromised database would leak all the authentication tokens.
+ *
+ * <p>The token can be used for multiple purposes, denoted by the token&apos;s name in the browser.
+ * In both cases it is used for &quot;remember-me&quot; functionality. For regular authentication
+ * this is for the normal username/password combination login. For MFA authentication this is used
+ * in a similar fashion to remember the MFA verification. That means a {@link User} will not have to
+ * submit a TOTP code each time they log in. But only as often as the developer desires (managed by
+ * {@link AuthService#setMfaTokenValidity(int validity) AuthService#setMfaTokenValidity()}).
  *
  * <p>
  *

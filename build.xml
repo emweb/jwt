@@ -1,7 +1,7 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="4.10.4"/>
+  <property name="proj.version" value="4.11.0"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
@@ -13,6 +13,7 @@
   <property name="mvn.dir" value="mvn"/>
   <property name="javadoc.jwt.dir" value="doc/javadoc"/>
   <property name="javadoc.jwt-auth.dir" value="doc/auth/javadoc"/>
+  <property name="javadoc.thirdparty.dir" value="doc/thirdparty/javadoc"/>
   <property name="userguide.dir" value="doc/userguide"/>
 
   <!-- Javadoc classpath declaration -->
@@ -103,8 +104,10 @@
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+  <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/whatwg/*.java"/>
+  <include name="eu/webtoolkit/jwt/thirdparty/qrcodegen/*.java"/>
       </fileset>
     </copy>
   </target>
@@ -141,16 +144,18 @@
        additionalparam="-Xdoclint:none"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
-	<include name="eu/webtoolkit/jwt/chart/*.java"/>
-	<include name="eu/webtoolkit/jwt/render/*.java"/>
-	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
-	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
-	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
-	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
-	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/*.java"/>
+        <include name="eu/webtoolkit/jwt/servlet/*.java"/>
+        <include name="eu/webtoolkit/jwt/chart/*.java"/>
+        <include name="eu/webtoolkit/jwt/render/*.java"/>
+        <include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
+        <exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
+        <exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
+        <exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
+        <include name="eu/webtoolkit/jwt/auth/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
+        <include name="eu/webtoolkit/jwt/thirdparty/qrcodegen/*.java"/>
       </fileset>
     </javadoc>
     <copy todir="${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
@@ -204,8 +209,9 @@
        link="../jwt/"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
       </fileset>
     </javadoc>
   </target>
@@ -227,14 +233,26 @@
     <mkdir dir="${dist.dir}"/>
     <jar  destfile="dist/jwt-${proj.version}.jar" 
           basedir="${build.dir}" 
-          defaultexcludes="yes" 
-    includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/render/* eu/webtoolkit/jwt/utils/* eu/webtoolkit/jwt/utils/whatwg/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/* eu/webtoolkit/jwt/wt-resources/**/*">
+          defaultexcludes="yes"
+          includes="eu/webtoolkit/jwt/*
+                    eu/webtoolkit/jwt/servlet/*
+                    eu/webtoolkit/jwt/chart/*
+                    eu/webtoolkit/jwt/render/*
+                    eu/webtoolkit/jwt/utils/*
+                    eu/webtoolkit/jwt/utils/whatwg/*
+                    net/n3/nanoxml/*
+                    eu/webtoolkit/jwt/skeletons/*
+                    eu/webtoolkit/jwt/wt-resources/**/*">
       <metainf dir="${build.dir}" includes="resources/wt-resources/**/*"/>
     </jar>
     <jar  destfile="dist/jwt-auth-${proj.version}.jar" 
           basedir="${build.dir}" 
           defaultexcludes="yes" 
-          includes="eu/webtoolkit/jwt/auth/* eu/webtoolkit/jwt/auth/jpa/*" />
+          includes="eu/webtoolkit/jwt/auth/*
+                    eu/webtoolkit/jwt/auth/jpa/*
+                    eu/webtoolkit/jwt/auth/mfa/*
+                    eu/webtoolkit/jwt/thirdparty/*
+                    eu/webtoolkit/jwt/thirdparty/qrcodegen/*" />
   </target>
 
   <target name="mvn" depends="mvn-javadoc">
@@ -247,20 +265,22 @@
 
     <jar jarfile="dist/jwt-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/*.xml"/>
-	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
-	<include name="eu/webtoolkit/jwt/chart/*.java"/>
-	<include name="eu/webtoolkit/jwt/render/*.java"/>
-	<include name="eu/webtoolkit/jwt/utils/*.java"/>
-	<include name="eu/webtoolkit/jwt/utils/whatwg/*.java"/>
+        <include name="eu/webtoolkit/jwt/*.java"/>
+        <include name="eu/webtoolkit/jwt/*.xml"/>
+        <include name="eu/webtoolkit/jwt/servlet/*.java"/>
+        <include name="eu/webtoolkit/jwt/chart/*.java"/>
+        <include name="eu/webtoolkit/jwt/render/*.java"/>
+        <include name="eu/webtoolkit/jwt/utils/*.java"/>
+        <include name="eu/webtoolkit/jwt/utils/whatwg/*.java"/>
       </fileset>
     </jar>
     <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
+        <include name="eu/webtoolkit/jwt/auth/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/*.xml"/>
+        <include name="eu/webtoolkit/jwt/thirdparty/qrcodegen/*.java"/>
       </fileset>
     </jar>
   </target>

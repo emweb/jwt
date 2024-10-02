@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -185,7 +187,7 @@ public class WToolBar extends WCompositeWidget {
    * added by {@link WToolBar#addWidget(WWidget widget, AlignmentFlag alignmentFlag) addWidget()}.
    */
   public WWidget widget(int index) {
-    if (index < this.widgets_.size()) {
+    if (index < (int) this.widgets_.size()) {
       return this.widgets_.get(index);
     } else {
       return null;

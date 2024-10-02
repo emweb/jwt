@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -131,6 +132,21 @@ public class Identity {
    * password-based authentication.
    */
   public static final String LoginName = "loginname";
+  /**
+   * The default multi-factor identity.
+   *
+   * <p>This is the name used for the default implementation of JWt for MFA. While the actual
+   * implementation of any additional factor can be changed, the default implementation (using
+   * TOTP), will use this identity name.
+   *
+   * <p>It will dictate what the identity entry in the database will be called. Which stores the
+   * TOTP secret key in the database.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>This entry is not encrypted or obfuscated in any way. </i>
+   */
+  public static final String MultiFactor = "multifactor";
 
   private String provider_;
   private String id_;

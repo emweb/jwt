@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -38,11 +40,11 @@ public abstract class WAbstractTableModel extends WAbstractItemModel {
     super();
   }
 
-  public WModelIndex getParent(final WModelIndex index) {
+  public WModelIndex getParent(final WModelIndex parent) {
     return null;
   }
 
-  public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
+  public WModelIndex getIndex(int row, int column, final WModelIndex index) {
     return this.createIndex(row, column, null);
   }
 }

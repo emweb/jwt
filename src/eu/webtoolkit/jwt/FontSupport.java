@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -71,10 +73,10 @@ class FontSupport {
   public FontSupport(WPaintDevice device, FontSupport.EnabledFontFormats anon2) {
     this.device_ = device;
     this.fontCollections_ = new ArrayList<FontSupport.FontCollection>();
-    this.cache_ = new LinkedList<FontSupport.Matched>();
+    this.lruCache_ = new LinkedList<FontSupport.Matched>();
     this.font_ = null;
     for (int i = 0; i < 5; ++i) {
-      this.cache_.addLast(new FontSupport.Matched());
+      this.lruCache_.addLast(new FontSupport.Matched());
     }
   }
 
@@ -87,14 +89,14 @@ class FontSupport {
   }
 
   public FontMatch matchFont(final WFont font) {
-    for (Iterator<FontSupport.Matched> i_it = this.cache_.iterator(); i_it.hasNext(); ) {
+    for (Iterator<FontSupport.Matched> i_it = this.lruCache_.iterator(); i_it.hasNext(); ) {
       FontSupport.Matched i = i_it.next();
       if (i.font.getGenericFamily() == font.getGenericFamily()
           && (i.font.getSpecificFamilies().toString().equals(font.getSpecificFamilies().toString()))
           && i.font.getWeight() == font.getWeight()
           && i.font.getStyle() == font.getStyle()) {
-        CollectionUtils.splice(this.cache_, this.cache_.iterator(), this.cache_, i);
-        return this.cache_.getFirst().match;
+        CollectionUtils.splice(this.lruCache_, this.lruCache_.iterator(), this.lruCache_, i);
+        return this.lruCache_.getFirst().match;
       }
     }
     FontMatch match = new FontMatch();
@@ -106,10 +108,12 @@ class FontSupport {
         Utils.assignFontMatch(match, m);
       }
     }
-    this.cache_.removeLast();
-    this.cache_.addFirst(new FontSupport.Matched());
-    this.cache_.getFirst().font = font;
-    Utils.assignFontMatch(this.cache_.getFirst().match, match);
+    if (this.lruCache_.size() >= FONT_CACHE_MAX_SIZE) {
+      this.lruCache_.removeLast();
+    }
+    this.lruCache_.addFirst(new FontSupport.Matched());
+    this.lruCache_.getFirst().font = font;
+    Utils.assignFontMatch(this.lruCache_.getFirst().match, match);
     return match;
   }
 
@@ -159,6 +163,7 @@ class FontSupport {
   }
 
   private WPaintDevice device_;
+  private static final int FONT_CACHE_MAX_SIZE = 10;
 
   static class FontCollection {
     private static Logger logger = LoggerFactory.getLogger(FontCollection.class);
@@ -181,7 +186,7 @@ class FontSupport {
     }
   }
 
-  private LinkedList<FontSupport.Matched> cache_;
+  private LinkedList<FontSupport.Matched> lruCache_;
   private WFont font_;
 
   private FontMatch matchFont(final WFont font, final String directory, boolean recursive) {

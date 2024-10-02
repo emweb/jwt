@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -142,14 +143,6 @@ public class AuthModel extends FormBaseModel {
                       ValidationState.Invalid, WString.tr("Wt.Auth.password-info")));
               this.setValidated(PasswordField, false);
               this.throttlingDelay_ = this.getPasswordAuth().delayForNextAttempt(user);
-              logger.warn(
-                  new StringWriter()
-                      .append("secure:")
-                      .append("throttling: ")
-                      .append(String.valueOf(this.throttlingDelay_))
-                      .append(" seconds for ")
-                      .append(user.getIdentity(Identity.LoginName))
-                      .toString());
               return false;
             case PasswordValid:
               this.setValid(PasswordField);
@@ -191,15 +184,7 @@ public class AuthModel extends FormBaseModel {
    */
   public void configureThrottling(WInteractWidget button) {
     if (this.getPasswordAuth() != null && this.getPasswordAuth().isAttemptThrottlingEnabled()) {
-      WApplication app = WApplication.getInstance();
-      app.loadJavaScript("js/AuthModel.js", wtjs1());
-      button.setJavaScriptMember(
-          " AuthThrottle",
-          "new Wt4_10_4.AuthThrottle(Wt4_10_4,"
-              + button.getJsRef()
-              + ","
-              + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()
-              + ");");
+      this.getPasswordAuth().getPasswordThrottle().initializeThrottlingMessage(button);
     }
   }
   /**
@@ -213,12 +198,9 @@ public class AuthModel extends FormBaseModel {
    */
   public void updateThrottling(WInteractWidget button) {
     if (this.getPasswordAuth() != null && this.getPasswordAuth().isAttemptThrottlingEnabled()) {
-      StringBuilder s = new StringBuilder();
-      s.append(button.getJsRef())
-          .append(".wtThrottle.reset(")
-          .append(this.throttlingDelay_)
-          .append(");");
-      button.doJavaScript(s.toString());
+      this.getPasswordAuth()
+          .getPasswordThrottle()
+          .updateThrottlingMessage(button, this.throttlingDelay_);
     }
   }
   /**
@@ -229,6 +211,10 @@ public class AuthModel extends FormBaseModel {
    * AuthModel#validate() validate()}.
    *
    * <p>Returns whether the user could be logged in.
+   *
+   * <p>By default the user will be logged into a {@link LoginState#Strong} state, but if a second
+   * factor is required, the state will be {@link LoginState#RequiresMfa}. This indicates additional
+   * authentication is required.
    */
   public boolean login(final Login login) {
     if (this.isValid()) {
@@ -236,7 +222,15 @@ public class AuthModel extends FormBaseModel {
       User user =
           this.getUsers().findWithIdentity(Identity.LoginName, this.valueText(LoginNameField));
       Object v = this.getValue(RememberMeField);
-      if (this.loginUser(login, user)) {
+      LoginState state = LoginState.Strong;
+      WString totpSecretKey = new WString();
+      if (user.isValid()) {
+        totpSecretKey = new WString(user.getIdentity(this.getBaseAuth().getMfaProvider()));
+      }
+      if (this.hasMfaStep(user)) {
+        state = LoginState.RequiresMfa;
+      }
+      if (this.loginUser(login, user, state)) {
         this.reset();
         if ((v != null) && ((Boolean) v) == true) {
           this.setRememberMeCookie(user);
@@ -348,14 +342,51 @@ public class AuthModel extends FormBaseModel {
         this.getUsers().findWithIdentity(Identity.LoginName, this.valueText(LoginNameField));
     return user.isValid() && user.getEmail().length() == 0;
   }
+  /**
+   * Determines whether the MFA step is necessary for the <code>user</code>.
+   *
+   * <p>After the user has logged in, and the MFA step would be shown, this functionality can be
+   * changed to determine whether the MFA step is to be shown. If so, {@link LoginState#RequiresMfa}
+   * will be set to indicate this to the framework.
+   *
+   * <p>If this state is set, the {@link AuthWidget#createMfaView()} will be called, which
+   * constructs the MFA widget with {@link AuthWidget#createMfaProcess()}. If the created widget
+   * implements the {@link AbstractMfaProcess} interface, the default flow of showing the
+   * setup/input views is taken.
+   *
+   * <p>If it does not adhere to the interface, and features a completely custom implementation,
+   * developers should override {@link AuthWidget#createMfaProcess()} and {@link
+   * AuthWidget#createMfaView()}.
+   *
+   * <p>By default this will return <code>true</code> iff:
+   *
+   * <ul>
+   *   <li>the MFA step is both enabled ({@link AuthService#isMfaEnabled()}), and also required
+   *       ({@link AuthService#isMfaRequired()}).
+   *   <li>MFA is enabled ({@link AuthService#isMfaEnabled()}) and the <code>user&apos;s</code> MFA
+   *       identity will be checked. If an identity is found for the provider the widget in {@link
+   *       AuthWidget#createMfaProcess()} specifies, JWt will interpret this as a valid MFA
+   *       configuration, and show the MFA step to the user.
+   * </ul>
+   */
+  public boolean hasMfaStep(final User user) {
+    WString totpSecretKey = new WString();
+    if (user.isValid()) {
+      totpSecretKey = new WString(user.getIdentity(this.getBaseAuth().getMfaProvider()));
+    }
+    if (this.getBaseAuth().isMfaEnabled()
+        && !this.getBaseAuth().isMfaRequired()
+        && (totpSecretKey.length() == 0)) {
+      logger.warn(
+          new StringWriter()
+              .append(
+                  "hasMfaStep(): MFA is enabled (but not required), and no valid identity was found. The MFA step is skipped for user: ")
+              .append(user.getId())
+              .toString());
+    }
+    return this.getBaseAuth().isMfaEnabled() && !(totpSecretKey.length() == 0)
+        || this.getBaseAuth().isMfaEnabled() && this.getBaseAuth().isMfaRequired();
+  }
 
   private int throttlingDelay_;
-
-  static WJavaScriptPreamble wtjs1() {
-    return new WJavaScriptPreamble(
-        JavaScriptScope.WtClassScope,
-        JavaScriptObjectType.JavaScriptConstructor,
-        "AuthThrottle",
-        "(function(t,l,e){l.wtThrottle=this;let n=null,i=null,r=0;function s(){clearInterval(n);n=null;t.setHtml(l,i);l.disabled=!1;i=null}function u(){if(0===r)s();else{t.setHtml(l,e.replace(\"{1}\",r));--r}}this.reset=function(t){n&&s();i=l.innerHTML;r=t;if(r){n=setInterval(u,1e3);l.disabled=!0;u()}}})");
-  }
 }

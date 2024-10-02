@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
@@ -3079,7 +3081,7 @@ public class WCartesianChart extends WAbstractChart {
       int selectedCurve =
           this.selectedSeries_ != null ? this.getSeriesIndexOf(this.selectedSeries_) : -1;
       int followCurve = this.followCurve_ != null ? this.getSeriesIndexOf(this.followCurve_) : -1;
-      ss.append("new Wt4_10_4.WCartesianChart(")
+      ss.append("new Wt4_11_0.WCartesianChart(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.getJsRef())
@@ -4231,6 +4233,8 @@ public class WCartesianChart extends WAbstractChart {
               xOffset += 5;
             }
             break;
+          default:
+            break;
         }
       } else {
         switch (this.getLegendSide()) {
@@ -4245,6 +4249,8 @@ public class WCartesianChart extends WAbstractChart {
             break;
           case Right:
             xOffset = -5;
+            break;
+          default:
             break;
         }
       }
@@ -5864,8 +5870,8 @@ public class WCartesianChart extends WAbstractChart {
     if (app != null && (this.isInteractive() || this.hasDeferredToolTips_)) {
       app.loadJavaScript("js/ChartCommon.js", wtjs2());
       app.doJavaScript(
-          "if (!Wt4_10_4.chartCommon) {Wt4_10_4.chartCommon = new "
-              + "Wt4_10_4.ChartCommon("
+          "if (!Wt4_11_0.chartCommon) {Wt4_11_0.chartCommon = new "
+              + "Wt4_11_0.ChartCommon("
               + app.getJavaScriptClass()
               + "); }",
           false);

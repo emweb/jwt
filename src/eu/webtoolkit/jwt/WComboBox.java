@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -464,7 +466,7 @@ public class WComboBox extends WFormWidget {
     }
   }
 
-  private void rowsInserted(final WModelIndex index, int from, int to) {
+  private void rowsInserted(final WModelIndex anon1, int from, int to) {
     this.itemsChanged_ = true;
     this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     int count = to - from + 1;
@@ -477,7 +479,7 @@ public class WComboBox extends WFormWidget {
     }
   }
 
-  private void rowsRemoved(final WModelIndex index, int from, int to) {
+  private void rowsRemoved(final WModelIndex anon1, int from, int to) {
     this.itemsChanged_ = true;
     this.repaint(EnumSet.of(RepaintFlag.SizeAffected));
     if (this.currentIndex_ < from) {

@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -451,7 +453,7 @@ public class WFont {
     return "";
   }
 
-  private String cssFamily(boolean all) {
+  private String cssFamily(boolean anon1) {
     String family = this.specificFamilies_.toString();
     if (family.length() != 0 && this.genericFamily_ != FontFamily.Default) {
       family += ',';

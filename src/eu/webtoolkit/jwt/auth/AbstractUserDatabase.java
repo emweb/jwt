@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -354,8 +355,27 @@ public abstract class AbstractUserDatabase {
   /**
    * Adds an authentication token to a user.
    *
-   * <p>Unless you want a user to only have remember-me support from a single computer at a time,
-   * you should support multiple authentication tokens per user.
+   * <p>An authentication token enables a user to not always type out their full username/password
+   * (see {@link AuthWidget}) or enter their MFA code (see TotpProcess). An authentication token
+   * will remember the user by placing a cookie in their browser and tracking the user&apos;s token
+   * in a local table in the database (by default called &quot;auth_token&quot;).
+   *
+   * <p>The token itself is not aware of which use-case it serves. That being either for the regular
+   * username/password login, or for MFA. However, in the browser this cookie is given a name, based
+   * on the name set by {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName,
+   * String cookieDomain) AuthService#setAuthTokensEnabled()} or {@link
+   * AuthService#setMfaTokenCookieName(String name) AuthService#setMfaTokenCookieName()}. This name
+   * can be used to match to the correct type.
+   *
+   * <p>Enabling either of these (by calling {@link AuthService#setAuthTokensEnabled(boolean
+   * enabled, String cookieName, String cookieDomain) AuthService#setAuthTokensEnabled()}) will also
+   * enable the other, but their name and validity can be set separately.
+   *
+   * <p>
+   *
+   * @see AbstractUserDatabase#findWithAuthToken(String hash)
+   *     <p><i><b>Note: </b>Unless you want a user to only have remember-me support from a single
+   *     browser at a time, you should support multiple authentication tokens per user. </i>
    */
   public void addAuthToken(final User user, final Token token) {
     logger.error(
@@ -365,7 +385,13 @@ public abstract class AbstractUserDatabase {
    * Deletes an authentication token.
    *
    * <p>Deletes an authentication token previously added with {@link
-   * AbstractUserDatabase#addAuthToken(User user, Token token) addAuthToken()}
+   * AbstractUserDatabase#addAuthToken(User user, Token token) addAuthToken()}.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>This deletes the local entry in the database (in table
+   * &quot;auth_token&quot;). It will not remove the cookie from the {@link User}&apos;s browser.
+   * </i>
    */
   public void removeAuthToken(final User user, final String hash) {
     logger.error(
@@ -380,6 +406,26 @@ public abstract class AbstractUserDatabase {
    *
    * <p>This should find the user associated with a particular token hash, or return an invalid user
    * if no user with that token hash exists.
+   *
+   * <p>The authentication token can be used for two means:
+   *
+   * <ul>
+   *   <li>used for the normal authentication, denoting a regular username/password login. If the
+   *       &quot;remember-me&quot; functionality is enabled for it, and selected, a token will be
+   *       produced, named according to {@link AuthService#getAuthTokenCookieName()}, and valid for
+   *       {@link AuthService#getAuthTokenValidity()} (in minutes). Both can be set by enabling
+   *       authentication tokens with {@link AuthService#setAuthTokensEnabled(boolean enabled,
+   *       String cookieName, String cookieDomain) AuthService#setAuthTokensEnabled()}. By default
+   *       the cookie will be called &quot;wtauth&quot; and will be valid for two weeks.
+   *   <li>used for the multi-factor verification, currently this is to be implemented by the
+   *       developer if they want anything other than JWt&apos;s default of TOTP (see {@link
+   *       TotpProcess}). This functions identical to the other authentication token, and is enabled
+   *       the same way. The name can be changed by {@link AuthService#setMfaTokenCookieName(String
+   *       name) AuthService#setMfaTokenCookieName()}, and its duration by {@link
+   *       AuthService#setMfaTokenValidity(int validity) AuthService#setMfaTokenValidity()} (in
+   *       minutes). By default the cookie will be called &quot;wtauth-mfa&quot; and it will be
+   *       valid indefinitely.
+   * </ul>
    */
   public User findWithAuthToken(final String hash) {
     logger.error(
@@ -436,7 +482,7 @@ public abstract class AbstractUserDatabase {
    *
    * <p>This sets the time at which the user attempted to login.
    */
-  public void setLastLoginAttempt(final User user, final WDate t) {
+  public void setLastLoginAttempt(final User user, final WDate timestamp) {
     logger.error(
         new StringWriter()
             .append(new Require("setLastLoginAttempt()", THROTTLING).toString())
@@ -447,7 +493,7 @@ public abstract class AbstractUserDatabase {
    *
    * <p>
    *
-   * @see AbstractUserDatabase#setLastLoginAttempt(User user, WDate t)
+   * @see AbstractUserDatabase#setLastLoginAttempt(User user, WDate timestamp)
    */
   public WDate getLastLoginAttempt(final User user) {
     logger.error(
@@ -487,7 +533,7 @@ public abstract class AbstractUserDatabase {
             .toString());
   }
   /** Finds a token in the database with a given value. */
-  public IssuedToken idpTokenFindWithValue(final String purpose, final String value) {
+  public IssuedToken idpTokenFindWithValue(final String purpose, final String scope) {
     logger.error(
         new StringWriter()
             .append(new Require("idpTokenFindWithValue()", IDP_SUPPORT).toString())

@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -86,6 +87,7 @@ public class AuthWidget extends WTemplateFormView {
     this.basePath_ = "";
     this.dialog_ = null;
     this.messageBox_ = null;
+    this.mfaWidget_ = null;
     this.init();
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -118,6 +120,7 @@ public class AuthWidget extends WTemplateFormView {
     this.basePath_ = "";
     this.dialog_ = null;
     this.messageBox_ = null;
+    this.mfaWidget_ = null;
     this.init();
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -243,7 +246,13 @@ public class AuthWidget extends WTemplateFormView {
    *       &quot;weak&quot; (since a user may have inadvertently forgotten to logout from a public
    *       computer). You should let the user authenticate using another, primary method before
    *       doing sensitive operations. The {@link AuthWidget#createPasswordPromptDialog(Login login)
-   *       createPasswordPromptDialog()} method may be useful for this.
+   *       createPasswordPromptDialog()} method may be useful for this. This token denotes a regular
+   *       username/password login. If the &quot;remember-me&quot; functionality is enabled for it,
+   *       and selected, a token will be produced, named according to {@link
+   *       AuthService#getAuthTokenCookieName()}, and valid for {@link
+   *       AuthService#getAuthTokenValidity()} (in minutes). Both can be set by enabling
+   *       authentication tokens with AuthService::setAuthTokenaEnabled(). By default the cookie
+   *       will be called &quot;wtauth&quot; and will be valid for two weeks.
    * </ul>
    *
    * <p>
@@ -273,7 +282,11 @@ public class AuthWidget extends WTemplateFormView {
         case EmailConfirmed:
           this.displayInfo(tr("Wt.Auth.info-email-confirmed"));
           User user = result.getUser();
-          this.model_.loginUser(this.login_, user);
+          LoginState state = LoginState.Strong;
+          if (this.model_.hasMfaStep(user)) {
+            state = LoginState.RequiresMfa;
+          }
+          this.model_.loginUser(this.login_, user, state);
       }
       if (WApplication.getInstance().getEnvironment().hasAjax()) {
         WApplication.getInstance().setInternalPath("/");
@@ -281,7 +294,11 @@ public class AuthWidget extends WTemplateFormView {
       return;
     }
     User user = this.model_.processAuthToken();
-    this.model_.loginUser(this.login_, user, LoginState.Weak);
+    LoginState state = LoginState.Weak;
+    if (this.model_.hasMfaStep(user)) {
+      state = LoginState.RequiresMfa;
+    }
+    this.model_.loginUser(this.login_, user, state);
   }
   /**
    * Lets the user update his password.
@@ -433,6 +450,53 @@ public class AuthWidget extends WTemplateFormView {
   public WDialog createPasswordPromptDialog(final Login login) {
     return new PasswordPromptDialog(login, this.model_);
   }
+  /**
+   * Create the MFA process.
+   *
+   * <p>When MFA is enabled ({@link AuthService#setMfaProvider(String provider)
+   * AuthService#setMfaProvider()} is set), this will be called to create a specific MFA process.
+   * This can be used by developers to provide their own implementation, and ensure that the right
+   * widgets are shown to the user.
+   *
+   * <p>By default this will generate a {@link TotpProcess}.
+   */
+  public AbstractMfaProcess createMfaProcess() {
+    TotpProcess mfaProcess =
+        new TotpProcess(this.getModel().getBaseAuth(), this.getModel().getUsers(), this.getLogin());
+    if (this.getModel().getBaseAuth().isMfaThrottleEnabled()) {
+      mfaProcess.setMfaThrottle(new AuthThrottle());
+    }
+    return mfaProcess;
+  }
+  /**
+   * Shows the MFA process in the UI.
+   *
+   * <p>This functionality manages how the MFA step is shown to the user. Developers can override
+   * this to show the step in any way they see fit. This can be shown as part of the main view, as a
+   * pop-up, ...
+   *
+   * <p>It will also need to decide whether the setup view ({@link
+   * AbstractMfaProcess#createSetupView()}) or input view ({@link
+   * AbstractMfaProcess#createInputView()}) is shown to the user.
+   *
+   * <p>By default this will show the process in the main view, replacing the normal login widget
+   * with the right view on the MFA process.
+   */
+  public void createMfaView() {
+    this.setTemplateText("<div>${mfa}</div>");
+    this.mfaWidget_ = this.createMfaProcess();
+    AbstractMfaProcess defaultMfaWidget = (AbstractMfaProcess) this.mfaWidget_;
+    if (defaultMfaWidget != null) {
+      final User user = this.login_.getUser();
+      final WString mfaSecretKey = new WString(user.getIdentity(defaultMfaWidget.getProvider()));
+      if ((mfaSecretKey.length() == 0)) {
+        this.bindWidget("mfa", defaultMfaWidget.createSetupView());
+      } else {
+        defaultMfaWidget.processEnvironment();
+        this.bindWidget("mfa", defaultMfaWidget.createInputView());
+      }
+    }
+  }
 
   void attemptPasswordLogin() {
     this.updateModel(this.model_);
@@ -486,6 +550,10 @@ public class AuthWidget extends WTemplateFormView {
    * <p>The default implementation calls {@link AuthWidget#createLoginView() createLoginView()} or
    * {@link AuthWidget#createLoggedInView() createLoggedInView()} depending on whether a user is
    * currently logged in.
+   *
+   * <p>If MFA is enabled ({@link AuthService#isMfaEnabled()}), this may call {@link
+   * AuthWidget#createMfaView() createMfaView()}. This will be called if the user that is logging in
+   * has this step enabled ({@link AuthModel#hasMfaStep(User user) AuthModel#hasMfaStep()}).
    */
   protected void create() {
     if (this.created_) {
@@ -671,6 +739,7 @@ public class AuthWidget extends WTemplateFormView {
   private boolean created_;
   private WDialog dialog_;
   private WMessageBox messageBox_;
+  private AbstractMfaProcess mfaWidget_;
 
   private void init() {
     this.setWidgetIdMode(TemplateWidgetIdMode.SetObjectName);
@@ -728,9 +797,12 @@ public class AuthWidget extends WTemplateFormView {
     if (!(this.isRendered() || this.created_)) {
       return;
     }
-    this.clear();
     if (this.login_.isLoggedIn()) {
-      this.createLoggedInView();
+      if (this.login_.getState() == LoginState.RequiresMfa) {
+        this.createMfaView();
+      } else {
+        this.createLoggedInView();
+      }
     } else {
       if (this.login_.getState() != LoginState.Disabled) {
         if (this.model_.getBaseAuth().isAuthTokensEnabled()) {

@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.render;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -2940,7 +2942,6 @@ class Block {
         } else {
           double x = rect.getLeft();
           int wordStart = 0;
-          double wordTotal = 0;
           for (int j = 0; j <= ib.utf8Count; ++j) {
             if (j == ib.utf8Count || isWhitespace(text.charAt(ib.utf8Pos + j))) {
               if (j > wordStart) {
@@ -2949,7 +2950,6 @@ class Block {
                         text.substring(
                             ib.utf8Pos + wordStart, ib.utf8Pos + wordStart + j - wordStart));
                 double wordWidth = device.measureText(word).getWidth();
-                wordTotal += wordWidth;
                 painter.drawText(
                     new WRectF(x, rect.getTop(), wordWidth, rect.getHeight()),
                     EnumSet.of(AlignmentFlag.Left, AlignmentFlag.Top),

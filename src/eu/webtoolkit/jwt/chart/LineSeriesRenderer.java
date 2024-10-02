@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
@@ -38,7 +40,7 @@ final class LineSeriesRenderer extends SeriesRenderer {
   }
 
   public void addValue(
-      double x, double y, double stacky, int xRow, int xColumn, int yRow, int yColumn) {
+      double x, double y, double stackY, int xRow, int xColumn, int yRow, int yColumn) {
     WPointF p =
         this.chart_.map(
             x,

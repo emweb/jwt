@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -85,7 +86,7 @@ public class PasswordService implements AbstractPasswordService {
     this.baseAuth_ = baseAuth;
     this.verifier_ = null;
     this.validator_ = null;
-    this.attemptThrottling_ = false;
+    this.passwordThrottle_ = null;
   }
 
   public AuthService getBaseAuth() {
@@ -137,16 +138,36 @@ public class PasswordService implements AbstractPasswordService {
     return this.validator_;
   }
   /**
+   * Sets the class instance managing the throttling delay.
+   *
+   * <p>
+   *
+   * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
+   * @see AuthThrottle
+   */
+  public void setPasswordThrottle(AuthThrottle delayer) {
+    this.passwordThrottle_ = delayer;
+  }
+  /** Returns the class instance managing the throttling delay. */
+  public AuthThrottle getPasswordThrottle() {
+    return this.passwordThrottle_;
+  }
+  /**
    * Configures password attempt throttling.
    *
    * <p>When password throttling is enabled, new password verification attempts will be refused when
    * the user has had too many unsuccessful authentication attempts in a row.
    *
    * <p>The exact back-off schema can be customized by specializing {@link
-   * PasswordService#getPasswordThrottle(int failedAttempts) getPasswordThrottle()}.
+   * AuthThrottle#getAuthenticationThrottle(int failedAttempts)
+   * AuthThrottle#getAuthenticationThrottle()}.
    */
   public void setAttemptThrottlingEnabled(boolean enabled) {
-    this.attemptThrottling_ = enabled;
+    if (enabled) {
+      this.passwordThrottle_ = new AuthThrottle();
+    } else {
+      this.passwordThrottle_ = (AuthThrottle) null;
+    }
   }
   /**
    * Returns whether password attempt throttling is enabled.
@@ -156,37 +177,24 @@ public class PasswordService implements AbstractPasswordService {
    * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
    */
   public boolean isAttemptThrottlingEnabled() {
-    return this.attemptThrottling_;
+    return this.getPasswordThrottle() != null;
   }
   /**
    * Returns the delay for this user for a next authentication attempt.
    *
-   * <p>If password attempt throttling is enabled, then this returns the number of seconds this user
-   * must wait for a new authentication attempt, presumably because of a number of failed attempts.
+   * <p>The implementation of this functionality is managed by {@link AuthThrottle}.
    *
    * <p>
    *
    * @see PasswordService#isAttemptThrottlingEnabled()
    * @see PasswordService#setAttemptThrottlingEnabled(boolean enabled)
-   * @see PasswordService#getPasswordThrottle(int failedAttempts)
+   * @see PasswordService#getAuthenticationThrottle(int failedAttempts)
    */
   public int delayForNextAttempt(final User user) {
-    if (this.attemptThrottling_) {
-      int throttlingNeeded = this.getPasswordThrottle(user.getFailedLoginAttempts());
-      if (throttlingNeeded != 0) {
-        WDate t = user.getLastLoginAttempt();
-        int diff = t.getSecondsTo(WDate.getCurrentServerDate());
-        if (diff < throttlingNeeded) {
-          return throttlingNeeded - diff;
-        } else {
-          return 0;
-        }
-      } else {
-        return 0;
-      }
-    } else {
-      return 0;
+    if (this.getPasswordThrottle() != null) {
+      return this.getPasswordThrottle().delayForNextAttempt(user);
     }
+    return 0;
   }
   /**
    * Verifies a password for a given user.
@@ -208,7 +216,7 @@ public class PasswordService implements AbstractPasswordService {
         return PasswordResult.LoginThrottling;
       }
       boolean valid = this.verifier_.verify(password, user.getPassword());
-      if (this.attemptThrottling_) {
+      if (this.getPasswordThrottle() != null) {
         user.setAuthenticated(valid);
       }
       if (valid) {
@@ -240,35 +248,19 @@ public class PasswordService implements AbstractPasswordService {
    * Returns how much throttle should be given considering a number of failed authentication
    * attempts.
    *
-   * <p>The returned value is in seconds.
+   * <p>
    *
-   * <p>The default implementation returns the following:
-   *
-   * <ul>
-   *   <li>failedAttempts == 0: 0
-   *   <li>failedAttempts == 1: 1
-   *   <li>failedAttempts == 2: 5
-   *   <li>failedAttempts == 3: 10
-   *   <li>failedAttempts &gt; 3: 25
-   * </ul>
+   * @see AuthThrottle#getAuthenticationThrottle(int failedAttempts)
    */
-  protected int getPasswordThrottle(int failedAttempts) {
-    switch (failedAttempts) {
-      case 0:
-        return 0;
-      case 1:
-        return 1;
-      case 2:
-        return 5;
-      case 3:
-        return 10;
-      default:
-        return 25;
+  protected int getAuthenticationThrottle(int failedAttempts) {
+    if (this.getPasswordThrottle() != null) {
+      return this.getPasswordThrottle().getAuthenticationThrottle(failedAttempts);
     }
+    return 0;
   }
   // private  PasswordService(final PasswordService anon1) ;
   private final AuthService baseAuth_;
   private PasswordService.AbstractVerifier verifier_;
   private AbstractPasswordService.AbstractStrengthValidator validator_;
-  private boolean attemptThrottling_;
+  private AuthThrottle passwordThrottle_;
 }

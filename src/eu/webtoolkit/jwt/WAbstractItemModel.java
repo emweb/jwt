@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -78,10 +80,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * <ul>
- *   <li>{@link WAbstractItemModel#insertRows(int row, int count, WModelIndex parent) insertRows()}
+ *   <li>{@link WAbstractItemModel#insertRows(int column, int count, WModelIndex parent)
+ *       insertRows()}
  *   <li>{@link WAbstractItemModel#insertColumns(int column, int count, WModelIndex parent)
  *       insertColumns()}
- *   <li>{@link WAbstractItemModel#removeRows(int row, int count, WModelIndex parent) removeRows()}
+ *   <li>{@link WAbstractItemModel#removeRows(int column, int count, WModelIndex parent)
+ *       removeRows()}
  *   <li>{@link WAbstractItemModel#removeColumns(int column, int count, WModelIndex parent)
  *       removeColumns()}
  * </ul>
@@ -444,7 +448,7 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#insertRows(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#removeColumns(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#beginInsertColumns(WModelIndex parent, int first, int last)
    * @see WAbstractItemModel#endInsertColumns()
@@ -480,21 +484,21 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>
    *
    * @see WAbstractItemModel#insertColumns(int column, int count, WModelIndex parent)
-   * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#removeRows(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#beginInsertRows(WModelIndex parent, int first, int last)
    * @see WAbstractItemModel#endInsertRows()
    */
-  public boolean insertRows(int row, int count, final WModelIndex parent) {
+  public boolean insertRows(int column, int count, final WModelIndex parent) {
     return false;
   }
   /**
    * Inserts one or more rows.
    *
-   * <p>Returns {@link #insertRows(int row, int count, WModelIndex parent) insertRows(row, count,
-   * null)}
+   * <p>Returns {@link #insertRows(int column, int count, WModelIndex parent) insertRows(column,
+   * count, null)}
    */
-  public final boolean insertRows(int row, int count) {
-    return insertRows(row, count, null);
+  public final boolean insertRows(int column, int count) {
+    return insertRows(column, count, null);
   }
   /**
    * Removes columns.
@@ -511,7 +515,7 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#removeRows(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#insertColumns(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#beginRemoveColumns(WModelIndex parent, int first, int last)
    * @see WAbstractItemModel#endRemoveColumns()
@@ -543,21 +547,21 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>
    *
    * @see WAbstractItemModel#removeColumns(int column, int count, WModelIndex parent)
-   * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#insertRows(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#beginRemoveRows(WModelIndex parent, int first, int last)
    * @see WAbstractItemModel#endRemoveRows()
    */
-  public boolean removeRows(int row, int count, final WModelIndex parent) {
+  public boolean removeRows(int column, int count, final WModelIndex parent) {
     return false;
   }
   /**
    * Removes rows.
    *
-   * <p>Returns {@link #removeRows(int row, int count, WModelIndex parent) removeRows(row, count,
-   * null)}
+   * <p>Returns {@link #removeRows(int column, int count, WModelIndex parent) removeRows(column,
+   * count, null)}
    */
-  public final boolean removeRows(int row, int count) {
-    return removeRows(row, count, null);
+  public final boolean removeRows(int column, int count) {
+    return removeRows(column, count, null);
   }
   /**
    * Sets data at the given model index.
@@ -927,7 +931,7 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#insertRows(int column, int count, WModelIndex parent)
    */
   public boolean insertRow(int row, final WModelIndex parent) {
     return this.insertRows(row, 1, parent);
@@ -981,7 +985,7 @@ public abstract class WAbstractItemModel extends WObject {
    *
    * <p>
    *
-   * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#removeRows(int column, int count, WModelIndex parent)
    */
   public boolean removeRow(int row, final WModelIndex parent) {
     return this.removeRows(row, 1, parent);
@@ -1286,7 +1290,7 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>
    *
    * @see WAbstractItemModel#endInsertRows()
-   * @see WAbstractItemModel#insertRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#insertRows(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#rowsAboutToBeInserted()
    */
   protected void beginInsertRows(final WModelIndex parent, int first, int last) {
@@ -1325,7 +1329,7 @@ public abstract class WAbstractItemModel extends WObject {
    * <p>
    *
    * @see WAbstractItemModel#endRemoveRows()
-   * @see WAbstractItemModel#removeRows(int row, int count, WModelIndex parent)
+   * @see WAbstractItemModel#removeRows(int column, int count, WModelIndex parent)
    * @see WAbstractItemModel#rowsAboutToBeRemoved()
    */
   protected void beginRemoveRows(final WModelIndex parent, int first, int last) {

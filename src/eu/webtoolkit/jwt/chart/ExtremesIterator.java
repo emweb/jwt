@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.chart;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
@@ -41,7 +43,7 @@ final class ExtremesIterator extends SeriesIterator {
   }
 
   public void newValue(
-      final WDataSeries series,
+      final WDataSeries anon1,
       double x,
       double y,
       double stackY,

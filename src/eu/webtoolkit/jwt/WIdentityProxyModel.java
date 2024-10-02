@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -283,11 +285,11 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
     this.beginRemoveColumns(this.mapFromSource(parent), start, end);
   }
 
-  private void sourceColumnsInserted(final WModelIndex parent, int start, int end) {
+  private void sourceColumnsInserted(final WModelIndex anon1, int start, int end) {
     this.endInsertColumns();
   }
 
-  private void sourceColumnsRemoved(final WModelIndex parent, int start, int end) {
+  private void sourceColumnsRemoved(final WModelIndex anon1, int start, int end) {
     this.endRemoveColumns();
   }
 
@@ -299,11 +301,11 @@ public class WIdentityProxyModel extends WAbstractProxyModel {
     this.beginRemoveRows(this.mapFromSource(parent), start, end);
   }
 
-  private void sourceRowsInserted(final WModelIndex parent, int start, int end) {
+  private void sourceRowsInserted(final WModelIndex anon1, int start, int end) {
     this.endInsertRows();
   }
 
-  private void sourceRowsRemoved(final WModelIndex parent, int start, int end) {
+  private void sourceRowsRemoved(final WModelIndex anon1, int start, int end) {
     this.endRemoveRows();
   }
 

@@ -6,6 +6,7 @@
 package eu.webtoolkit.jwt.auth;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * <p>This class relies on the implementation of several functions in the {@link
  * AbstractUserDatabase}. Namely {@link AbstractUserDatabase#idpJsonClaim(User user, String claim)
  * AbstractUserDatabase#idpJsonClaim()}, {@link AbstractUserDatabase#idpTokenFindWithValue(String
- * purpose, String value) AbstractUserDatabase#idpTokenFindWithValue()}, {@link
+ * purpose, String scope) AbstractUserDatabase#idpTokenFindWithValue()}, {@link
  * AbstractUserDatabase#idpTokenUser(IssuedToken token) AbstractUserDatabase#idpTokenUser()}, and
  * {@link AbstractUserDatabase#idpTokenScope(IssuedToken token)
  * AbstractUserDatabase#idpTokenScope()}.

@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -428,11 +430,11 @@ public abstract class WWidget extends WObject {
     }
     String side = orientation == Orientation.Horizontal ? ".Horizontal" : ".Vertical";
     this.doJavaScript(
-        "Wt4_10_4.positionAtWidget('"
+        "Wt4_11_0.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_10_4"
+            + "',Wt4_11_0"
             + side
             + ");");
   }
@@ -944,7 +946,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_10_4.$('" + this.getId() + "')";
+    return "Wt4_11_0.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.

@@ -6,6 +6,8 @@
 package eu.webtoolkit.jwt.examples.widgetgallery;
 
 import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -263,6 +265,4 @@ class GitModel extends WAbstractItemModel {
   private boolean topLevel(final WModelIndex index) {
     return !(this.getParent(index) != null);
   }
-
-  static void gitModel() {}
 }

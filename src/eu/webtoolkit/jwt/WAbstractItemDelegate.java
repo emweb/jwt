@@ -5,6 +5,8 @@
  */
 package eu.webtoolkit.jwt;
 
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
@@ -32,10 +34,10 @@ import org.slf4j.LoggerFactory;
  * <p>A delegate may provide editing support by instantiating an editor when {@link
  * WAbstractItemDelegate#update(WWidget widget, WModelIndex index, EnumSet flags) update()} is
  * called with the {@link ViewItemRenderFlag#Editing} flag. In that case, you will also need to
- * implement {@link WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex index)
- * getEditState()} and {@link WAbstractItemDelegate#setEditState(WWidget widget, WModelIndex index,
+ * implement {@link WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex anon2)
+ * getEditState()} and {@link WAbstractItemDelegate#setEditState(WWidget widget, WModelIndex anon2,
  * Object value) setEditState()} to support virtual scrolling and {@link
- * WAbstractItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex index)
+ * WAbstractItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex anon3)
  * setModelData()} to save the edited value to the model. For an example, see the {@link
  * WItemDelegate}.
  *
@@ -101,7 +103,7 @@ public abstract class WAbstractItemDelegate extends WObject {
    *
    * <p>The default implementation does nothing.
    */
-  public void updateModelIndex(WWidget widget, final WModelIndex index) {}
+  public void updateModelIndex(WWidget widget, final WModelIndex anon2) {}
   /**
    * Returns the current edit state.
    *
@@ -111,35 +113,35 @@ public abstract class WAbstractItemDelegate extends WObject {
    * state in a boost::any.
    *
    * <p>When the view decides to close an editor and save its value back to the model, he will first
-   * call {@link WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex index)
+   * call {@link WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex anon2)
    * getEditState()} and then {@link WAbstractItemDelegate#setModelData(Object editState,
-   * WAbstractItemModel model, WModelIndex index) setModelData()}.
+   * WAbstractItemModel model, WModelIndex anon3) setModelData()}.
    *
    * <p>The default implementation assumes a read-only delegate, and returns a boost::any().
    *
    * <p>
    *
-   * @see WAbstractItemDelegate#setEditState(WWidget widget, WModelIndex index, Object value)
+   * @see WAbstractItemDelegate#setEditState(WWidget widget, WModelIndex anon2, Object value)
    * @see WAbstractItemDelegate#setModelData(Object editState, WAbstractItemModel model, WModelIndex
-   *     index)
+   *     anon3)
    */
-  public Object getEditState(WWidget widget, final WModelIndex index) {
+  public Object getEditState(WWidget widget, final WModelIndex anon2) {
     return null;
   }
   /**
    * Sets the editor data from the editor state.
    *
    * <p>When the View scrolls back into view an item that was being edited, he will use {@link
-   * WAbstractItemDelegate#setEditState(WWidget widget, WModelIndex index, Object value)
+   * WAbstractItemDelegate#setEditState(WWidget widget, WModelIndex anon2, Object value)
    * setEditState()} to allow the editor to restore its current editor state.
    *
    * <p>The default implementation assumes a read-only delegate and does nothing.
    *
    * <p>
    *
-   * @see WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex index)
+   * @see WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex anon2)
    */
-  public void setEditState(WWidget widget, final WModelIndex index, final Object value) {}
+  public void setEditState(WWidget widget, final WModelIndex anon2, final Object value) {}
   /**
    * Returns whether the edited value is valid.
    *
@@ -149,7 +151,7 @@ public abstract class WAbstractItemDelegate extends WObject {
    *
    * @see WValidator#validate(String input)
    */
-  public ValidationState validate(final WModelIndex index, final Object editState) {
+  public ValidationState validate(final WModelIndex anon1, final Object editState) {
     return ValidationState.Valid;
   }
   /**
@@ -157,12 +159,12 @@ public abstract class WAbstractItemDelegate extends WObject {
    *
    * <p>The View will use this method to save the edited value to the model. The <code>editState
    * </code> is first fetched from the editor using {@link
-   * WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex index) getEditState()}.
+   * WAbstractItemDelegate#getEditState(WWidget widget, WModelIndex anon2) getEditState()}.
    *
    * <p>The default implementation assumes a read-only delegate does nothing.
    */
   public void setModelData(
-      final Object editState, WAbstractItemModel model, final WModelIndex index) {}
+      final Object editState, WAbstractItemModel model, final WModelIndex anon3) {}
   /**
    * Signal which indicates that an editor needs to be closed.
    *
