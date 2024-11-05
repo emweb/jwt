@@ -211,6 +211,7 @@ class FormWidgets extends Topic {
     result.bindWidget("Slider", Slider());
     result.bindWidget("SliderVertical", SliderVertical());
     result.bindWidget("SliderSteps", SliderSteps());
+    result.bindWidget("SliderNative", SliderNative());
     return result;
   }
 
@@ -985,6 +986,29 @@ class FormWidgets extends Topic {
             this,
             () -> {
               out.setText("That's a failure, you selected: '" + slider.getValueText() + "'!");
+            });
+    return container;
+  }
+
+  WWidget SliderNative() {
+    WContainerWidget container = new WContainerWidget();
+    new WText("What is your favorite odd number?", (WContainerWidget) container);
+    new WBreak((WContainerWidget) container);
+    final WSlider slider = new WSlider((WContainerWidget) container);
+    slider.resize(new WLength(300), new WLength(50));
+    slider.setNativeControl(true);
+    slider.setTickInterval(10);
+    slider.setRange(1, 99);
+    slider.setStep(2);
+    new WBreak((WContainerWidget) container);
+    final WText out = new WText((WContainerWidget) container);
+    out.setMargin(new WLength(10), EnumSet.of(Side.Left));
+    slider
+        .valueChanged()
+        .addListener(
+            this,
+            () -> {
+              out.setText("So your favorite odd number is " + slider.getValueText() + " !");
             });
     return container;
   }

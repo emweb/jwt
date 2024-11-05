@@ -86,7 +86,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
     }
     this.addedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_11_0.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_11_1.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
     div.callMethod("layout.adjust()");
@@ -118,11 +118,11 @@ class FlexLayoutImpl extends StdLayoutImpl {
       margin[2] = this.getLayout().getContentsMargin(Side.Bottom);
       Orientation orientation = this.getOrientation();
       if (orientation == Orientation.Horizontal) {
-        margin[3] = Math.max(0, margin[3] - this.grid_.horizontalSpacing_ / 2);
-        margin[1] = Math.max(0, margin[1] - (this.grid_.horizontalSpacing_ + 1) / 2);
+        margin[3] = Math.max(0, margin[3]);
+        margin[1] = Math.max(0, margin[1]);
       } else {
-        margin[0] = Math.max(0, margin[0] - this.grid_.verticalSpacing_ / 2);
-        margin[2] = Math.max(0, margin[2] - (this.grid_.horizontalSpacing_ + 1) / 2);
+        margin[0] = Math.max(0, margin[0]);
+        margin[2] = Math.max(0, margin[2]);
       }
       ResizeSensor.applyIfNeeded(this.getContainer());
       result = parent;
@@ -155,7 +155,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_11_0.FlexLayout(")
+    js.append("layout=new Wt4_11_1.FlexLayout(")
         .append(app.getJavaScriptClass())
         .append(",'")
         .append(this.elId_)
@@ -322,20 +322,36 @@ class FlexLayoutImpl extends StdLayoutImpl {
     }
     switch (this.getDirection()) {
       case LeftToRight:
-        m[3] += (this.grid_.horizontalSpacing_ + 1) / 2;
-        m[1] += this.grid_.horizontalSpacing_ / 2;
+        if (index != 0) {
+          m[3] += (this.grid_.horizontalSpacing_ + 1) / 2;
+        }
+        if (index != this.count(orientation) - 1) {
+          m[1] += this.grid_.horizontalSpacing_ / 2;
+        }
         break;
       case RightToLeft:
-        m[1] += (this.grid_.horizontalSpacing_ + 1) / 2;
-        m[3] += this.grid_.horizontalSpacing_ / 2;
+        if (index != 0) {
+          m[1] += (this.grid_.horizontalSpacing_ + 1) / 2;
+        }
+        if (index != this.count(orientation) - 1) {
+          m[3] += this.grid_.horizontalSpacing_ / 2;
+        }
         break;
       case TopToBottom:
-        m[0] += (this.grid_.horizontalSpacing_ + 1) / 2;
-        m[2] += this.grid_.horizontalSpacing_ / 2;
+        if (index != 0) {
+          m[0] += (this.grid_.horizontalSpacing_ + 1) / 2;
+        }
+        if (index != this.count(orientation) - 1) {
+          m[2] += this.grid_.horizontalSpacing_ / 2;
+        }
         break;
       case BottomToTop:
-        m[2] += (this.grid_.horizontalSpacing_ + 1) / 2;
-        m[0] += this.grid_.horizontalSpacing_ / 2;
+        if (index != 0) {
+          m[2] += (this.grid_.horizontalSpacing_ + 1) / 2;
+        }
+        if (index != this.count(orientation) - 1) {
+          m[0] += this.grid_.horizontalSpacing_ / 2;
+        }
         break;
     }
     if (m[0] != 0 || m[1] != 0 || m[2] != 0 || m[3] != 0) {

@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.11.0</title>
+<title>JWt 4.11.1</title>
 </head>
 <body>
 
@@ -25,10 +25,62 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.11.1 (November 5, 2024)</h2>
+
+<p>JWt 4.11.1 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/13041" target="_blank">Issue #13041</a>:
+    Increase the default number of iteration of <a href="eu/webtoolkit/jwt/auth/BCryptHashFunction.html" target="_blank">Auth::BCryptHashFunction</a> to <code>12</code>. A warning message will also be logged when using Auth::BCryptHashFunction with less than the minumum of 10 iterations that ASVS recommends.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/11868" target="_blank">Issue #11868</a>:
+    Added the <a href="eu/webtoolkit/jwt/WStackedWidget.html#currentWidgetChanged()" target="_blank">WStackedWidget::currentWidgetChanged()</a> signal that is emitted when the <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a> changes the element that it shows.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/13106" target="_blank">Issue #13106</a>:
+    ensure that the correct <code>disabled</code> class is used on a per-theme basis. This wrongly affected all Bootstrap themes.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/13104" target="_blank">Issue #13104</a>:
+    a Bootstrap 5 <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> is now correctly raised to the front when <a href="eu/webtoolkit/jwt/WDialog.html#raiseToFront()" target="_blank">WDialog::raiseToFront()</a> is called.
+  </li>
+   <li>
+    <a href="https://redmine.emweb.be/issues/12813" target="_blank">Issue #12813</a>:
+    Added the possibility for each column of
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html" target="_blank">WAbstractItemView</a> to be set resizable or not independently using the
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setColumnResizeEnabled(boolean)" target="_blank">WAbstractItemView::setColumnResizeEnabled()</a>, and <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setColumnResizeEnabled(boolean,int)" target="_blank">WAbstractItemView::setColumnResizeEnabled()</a> functions.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11855" target="_blank">Issue #11855</a>:
+    the loading indicator should now be shown directly when the indicator-timeout is set to 0 instead of having a few millisecond delay.
+    This can be set by the <code>&lt;application-settings&gt;&lt;indicator-timeout&gt;0&lt;/indicator-timeout&gt;&lt;/application-settings&gt;</code> property in the <code>wt_config.xml</code>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/7856" target="_blank">Issue #7856</a>:
+    Fix a bug where <code>change()</code> and <code>input()</code> signals would sometimes not be emitted by a
+    <a href="eu/webtoolkit/jwt/WSlider.html" target="_blank">WSlider</a> with native control if progressive bootstrap was enabled.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11001" target="_blank">Issue #11001</a>:
+    Delete the extra space that was sometimes added before the first and after last element of a
+    <a href="eu/webtoolkit/jwt/WBoxLayout.html">WBoxLayout</a> if the spacing was more than twice as big as the margin.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11008" target="_blank">Issue #11008</a>:
+    ensure that a JavaScript variable that retrieves the index of an item in a layout is called correctly.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13115" target="_blank">Issue #13115</a>:
+    Fix a bug where a widget removed from a disabled parent widget and added to a different enabled parent widget would still appear disabled.
+  </li>
+</ul>
+
 <h2>Release 4.11.0 (October 1, 2024)</h2>
 
 <p>
-  Wt 4.11.0 is a major release that includes the ability to enable MFA for authentication.
+  JWt 4.11.0 is a major release that includes the ability to enable MFA for authentication.
 
   JWt is now able to support MFA in its authentication system. It is easily enabled with a single call to <a href="eu/webtoolkit/jwt/auth/AuthService.html#setMfaProvider(java.lang.String)" target="_blank">AuthService::setMfaProvider()</a>. By default an implementation for TOTP is included. This offers a way to enable an additional layer of security for your applications. Instead of remembering a single password, users can be made to enter a short code that changes often, as an additional authentication step.
   Developers are also able to implement this feature in any way they see fit via the interface <a href="eu/webtoolkit/jwt/auth/mfa/AbstractMfaProcess.html" target="_blank">AbstractMfaProcess</a>.
@@ -90,7 +142,7 @@ behaviour. It also indicates the main changes from version to verison.
 <h2>Release 4.10.4 (March 6, 2024)</h2>
 
 <p>
-  Wt 4.10.4 is a (smaller) patch release that addresses the following issues.
+  JWt 4.10.4 is a (smaller) patch release that addresses the following issues.
   This release is somewhat smaller due to bigger features being in the works.
   Developers can expect some bigger new features in the authentication framework soon!
 </p>
@@ -113,7 +165,7 @@ behaviour. It also indicates the main changes from version to verison.
 <h2>Release 4.10.3 (December 20, 2023)</h2>
 
 <p>
-  Wt 4.10.3 is a patch release that addresses the following issues:
+  JWt 4.10.3 is a patch release that addresses the following issues:
 </p>
 
 <ul>
@@ -144,7 +196,7 @@ behaviour. It also indicates the main changes from version to verison.
 <h2>Release 4.10.2 (November 8, 2023)</h2>
 
 <p>
-  Wt 4.10.2 is a patch release that addresses the following issues:
+  JWt 4.10.2 is a patch release that addresses the following issues:
 </p>
 
 <ul>
@@ -220,7 +272,7 @@ behaviour. It also indicates the main changes from version to verison.
 <h2>Release 4.9.2 (April 18, 2023)</h2>
 
 <p>
-  Wt 4.9.2 is a patch release that addresses the following issues:
+  JWt 4.9.2 is a patch release that addresses the following issues:
 </p>
 
 <ul>

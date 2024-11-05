@@ -2244,8 +2244,10 @@ if (!window._$_WT_CLASS_$_) {
 
     this.maxZIndex = function() {
       let maxz = 0;
+      let tempMax = 0;
       document.querySelectorAll(".Wt-dialog, .modal, .modal-dialog").forEach(function(elem) {
-        maxz = Math.max(maxz, WT.css(elem, "z-index"));
+        tempMax = Math.max(maxz, WT.css(elem, "z-index"));
+        maxz = isNaN(tempMax) ? maxz : tempMax;
       });
 
       return maxz;
@@ -3559,9 +3561,17 @@ window._$_APP_CLASS_$_ = new (function() {
       }
 
       const eventsData = encodePendingEvents(maxEventsSize);
-      tm = eventsData.feedback ?
-        setTimeout(useWebSockets ? wsWaitFeedback : waitFeedback, _$_INDICATOR_TIMEOUT_$_) :
-        null;
+
+      if (eventsData.feedback && _$_INDICATOR_TIMEOUT_$_ === 0) {
+        if (!useWebSockets) {
+          waitFeedback();
+        }
+        tm = Date.now(); // we need a unique id for when we use websocket
+      } else {
+        tm = eventsData.feedback ?
+          setTimeout(useWebSockets ? wsWaitFeedback : waitFeedback, _$_INDICATOR_TIMEOUT_$_) :
+          null;
+      }
       data += eventsData.result;
       poll = false;
     } else {
@@ -3579,6 +3589,10 @@ window._$_APP_CLASS_$_ = new (function() {
           pendingWsRequests[wsRqId] = { time: Date.now(), tm: tm };
           ++nextWsRqId;
           data += "&wsRqId=" + wsRqId;
+
+          if (_$_INDICATOR_TIMEOUT_$_ === 0) {
+            wsWaitFeedback();
+          }
         }
 
         websocket.socket.send(data);

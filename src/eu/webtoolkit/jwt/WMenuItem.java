@@ -749,7 +749,7 @@ public class WMenuItem extends WContainerWidget {
     }
   }
 
-  private ContentLoading loadPolicy_;
+  ContentLoading loadPolicy_;
   private WWidget uContents_;
   private WWidget oContents_;
   private WContainerWidget uContentsContainer_;
@@ -821,7 +821,7 @@ public class WMenuItem extends WContainerWidget {
     }
   }
 
-  private boolean isContentsLoaded() {
+  boolean isContentsLoaded() {
     return this.oContents_ != null && !(this.uContents_ != null);
   }
 

@@ -527,13 +527,33 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    * @see WAbstractItemView#setColumnResizeEnabled(boolean enabled)
    */
   public void setColumnResizeEnabled(boolean enabled) {
-    if (enabled != this.columnResize_) {
-      this.columnResize_ = enabled;
+    this.columnResize_ = enabled;
+    for (int i = 0; i < (int) this.columns_.size(); i++) {
+      this.columnInfo(i).resizable = enabled;
+    }
+    this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
+  }
+  /**
+   * Enables interactive column resizing.
+   *
+   * <p>Enable or disable column resize handles for interactive resizing of a single column. The
+   * <code>column</code> that is passed indicated the column index in the view. The indices start
+   * from 0.
+   *
+   * <p>Column resizing is enabled by default when JavaScript is available.
+   *
+   * <p>
+   *
+   * @see WAbstractItemView#setColumnResizeEnabled(boolean enabled)
+   */
+  public void setColumnResizeEnabled(boolean enabled, int column) {
+    if (enabled != this.columnInfo(column).resizable) {
+      this.columnInfo(column).resizable = enabled;
       this.scheduleRerender(WAbstractItemView.RenderState.NeedRerenderHeader);
     }
   }
   /**
-   * Returns whether column resizing is enabled.
+   * Returns whether column resizing is enabled for new columns.
    *
    * <p>
    *
@@ -541,6 +561,19 @@ public abstract class WAbstractItemView extends WCompositeWidget {
    */
   public boolean isColumnResizeEnabled() {
     return this.columnResize_;
+  }
+  /**
+   * Returns whether column resizing is enabled for a single column.
+   *
+   * <p>The <code>column</code> that is passed indicated the column index in the view. The indices
+   * start from 0.
+   *
+   * <p>
+   *
+   * @see WAbstractItemView#setColumnResizeEnabled(boolean enabled)
+   */
+  public boolean isColumnResizeEnabled(int column) {
+    return this.columnInfo(column).resizable;
   }
   /**
    * Changes the selection behaviour.
@@ -1686,6 +1719,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     public WWidget extraHeaderWidget;
     public boolean sorting;
     public boolean hidden;
+    public boolean resizable;
     public WAbstractItemDelegate itemDelegate_;
 
     public String getStyleClass() {
@@ -1704,6 +1738,7 @@ public abstract class WAbstractItemView extends WCompositeWidget {
       this.extraHeaderWidget = (WWidget) null;
       this.sorting = view.sorting_;
       this.hidden = false;
+      this.resizable = view.columnResize_;
       this.itemDelegate_ = (WAbstractItemDelegate) null;
       this.width = new WLength(150);
       WCssTemplateRule r = new WCssTemplateRule("#" + view.getId() + " ." + this.getStyleClass());
@@ -1956,9 +1991,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
     i.addStyleClass("Wt-label");
     contents.addWidget(i);
     if (this.isDisabled()) {
-      contents.addStyleClass("Wt-disabled");
+      WApplication app = WApplication.getInstance();
+      String themedDisabledClass = app != null ? app.getTheme().getDisabledClass() : "";
+      contents.addStyleClass(themedDisabledClass);
       for (WWidget child : contents.getChildren()) {
-        child.addStyleClass("Wt-disabled");
+        child.addStyleClass(themedDisabledClass);
       }
     }
     int headerLevel = this.model_ != null ? this.headerLevel(column) : 0;
@@ -1982,11 +2019,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
         }
       }
     }
-    boolean activeRH = this.columnResize_;
+    boolean hasResizeHandle = info.resizable;
     WContainerWidget resizeHandle = new WContainerWidget();
     resizeHandle.setStyleClass(
-        "Wt-tv-rh" + (activeRH ? "" : " Wt-tv-no-rh") + " Wt-tv-br headerrh");
-    if (activeRH) {
+        "Wt-tv-rh" + (hasResizeHandle ? "" : " Wt-tv-no-rh") + " Wt-tv-br headerrh");
+    if (hasResizeHandle) {
       resizeHandle.mouseWentDown().addListener(this.resizeHandleMDownJS_);
     }
     resizeHandle.setMargin(
@@ -2039,9 +2076,11 @@ public abstract class WAbstractItemView extends WCompositeWidget {
             });
     result.addWidget(main);
     if (this.isDisabled()) {
-      result.addStyleClass("Wt-disabled");
+      WApplication app = WApplication.getInstance();
+      String themedDisabledClass = app != null ? app.getTheme().getDisabledClass() : "";
+      result.addStyleClass(themedDisabledClass);
       for (WWidget child : result.getChildren()) {
-        child.addStyleClass("Wt-disabled");
+        child.addStyleClass(themedDisabledClass);
       }
     }
     String sc = StringUtils.asString(index.getData(ItemDataRole.StyleClass)).toString();

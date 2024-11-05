@@ -31,6 +31,11 @@ import org.slf4j.LoggerFactory;
  * stack. The contents stack may contain other items, and could be shared with other {@link WMenu}
  * instances.
  *
+ * <p>When using nested menus, you can use the currentWidgetChanged() signal to react to the change
+ * of widget selected while knowing what widget was selected as the {@link WMenu#itemSelected()
+ * itemSelected()} signal from the sub-menu is only emited when the widget selected by the submenu
+ * is changed.
+ *
  * <p>When used without a contents stack, you can react to menu item selection using the {@link
  * WMenu#itemSelected() itemSelected()} signal, to implement some custom handling of item selection.
  *
@@ -48,6 +53,17 @@ import org.slf4j.LoggerFactory;
  * menu.addItem("Download", new WText("Not yet available"));
  * menu.addItem("Demo", new DemoWidget());
  * menu.addItem(new WMenuItem("Demo2", new DemoWidget()));
+ *
+ * // bind the function to call when a new item is selected
+ * contents.currentWidgetChanged().connect((newSelection) . {
+ * if (newSelection instanceof Wt.WText){
+ * logger.info(new StringWriter().append("Text selected: ").append((WText)newSelection).text());
+ * }
+ * else if (newSelection instanceof DemoWidget){
+ * logger.info(new StringWriter().append("Testing a demo");
+ * }
+ * }
+ * );
  *
  * }</pre>
  *
@@ -397,6 +413,14 @@ public class WMenu extends WCompositeWidget {
    * <p>Inserts a menu item. Use this form to insert specialized {@link WMenuItem} implementations.
    *
    * <p>
+   *
+   * <p><i><b>Note: </b>When using the {@link WMenu} with a {@link WStackedWidget}, the first {@link
+   * WMenuItem} added will be automatically selected. This implies that this function can trigger
+   * the {@link WMenu#itemSelectRendered() itemSelectRendered()} and {@link WMenu#itemSelected()
+   * itemSelected()} signals. </i>
+   *
+   * @see WMenu#itemSelected()
+   * @see WMenu#itemSelectRendered()
    */
   public WMenuItem insertItem(int index, WMenuItem item) {
     item.setParentMenu(this);
@@ -407,13 +431,9 @@ public class WMenu extends WCompositeWidget {
       if (contentsPtr != null) {
         WWidget contents = contentsPtr;
         this.contentsStack_.addWidget(contentsPtr);
+        this.contentsStack_.setLoadPolicy(this.contentsStack_.getCount() - 1, result.loadPolicy_);
         if (this.contentsStack_.getCount() == 1) {
-          this.setCurrent(0);
-          if (this.isLoaded()) {
-            this.getCurrentItem().loadContents();
-          }
-          this.contentsStack_.setCurrentWidget(contents);
-          this.renderSelected(result, true);
+          this.select(0, false);
         } else {
           this.renderSelected(result, false);
         }
@@ -941,11 +961,21 @@ public class WMenu extends WCompositeWidget {
     int last = this.current_;
     this.setCurrent(index);
     this.selectVisual(this.current_, changePath, true);
+    WMenuItem item;
     if (index != -1) {
-      WMenuItem item = this.itemAt(index);
+      item = this.itemAt(index);
       item.show();
       if (this.isLoaded()) {
+        boolean itemLoaded = item.isContentsLoaded();
         item.loadContents();
+        if (!itemLoaded
+            && this.contentsStack_ != null
+            && this.contentsStack_.loadPolicies_.get(this.contentsStack_.currentIndex_)
+                == ContentLoading.Lazy) {
+          WContainerWidget container =
+              ObjectUtils.cast(this.contentsStack_.getCurrentWidget(), WContainerWidget.class);
+          this.contentsStack_.currentWidgetChanged().trigger(container.getWidget(0));
+        }
       }
       WMenu self = this;
       if (changePath && this.emitPathChange_) {
