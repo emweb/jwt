@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Emweb bvba, Herent, Belgium.
+ * Copyright (C) 2015 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -19,16 +19,16 @@ import eu.webtoolkit.jwt.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 class WJavaScriptObjectStorage {
 	private static Logger logger = LoggerFactory.getLogger(WJavaScriptObjectStorage.class);
 
-	public WJavaScriptObjectStorage(String jsRef) {
-		this.jsRef = jsRef;
+	public WJavaScriptObjectStorage(WWidget widget) {
+		this.widget = widget;
 	}
 
 	public <T extends WJavaScriptExposableObject> WJavaScriptHandle<T> addObject(T o) {
@@ -36,14 +36,15 @@ class WJavaScriptObjectStorage {
 		jsValues.add(o);
 		dirty.set(index, true);
 		o.clientBinding_ = new WJavaScriptExposableObject.JSInfo(
-				this, jsRef + ".jsValues[" + index + "]");
+				this, getJsRef() + ".jsValues[" + index + "]");
 		return new WJavaScriptHandle<T>(index, o);
 	}
 
-	public void updateJs(StringBuilder js) {
+	public void updateJs(StringBuilder js, boolean all) {
 		for (int i = 0; i < jsValues.size(); ++i) {
-			if (dirty.get(i)) {
-				js.append(jsValues.get(i).getJsRef()).append("=").append(jsValues.get(i).getJsValue()).append(";");
+			if (dirty.get(i) || all) {
+				js.append(getJsRef()).append(".setJsValue(").append(i).append(",");
+				js.append(jsValues.get(i).getJsValue()).append(");");
 				dirty.set(i, false);
 			}
 		}
@@ -56,23 +57,33 @@ class WJavaScriptObjectStorage {
 	public void assignFromJSON(String json) {
 		try {
 			JsonElement result = new JsonParser().parse(json);
-			JsonArray ar = result.getAsJsonArray();
+			JsonObject o = result.getAsJsonObject();
 
-			if (jsValues.size() != ar.size())
-				throw new IllegalStateException("JSON array length is incompatible with number of jsValues");
+			if (jsValues.size() < o.entrySet().size())
+				throw new IllegalStateException("JSON array length is larger than number of jsValues");
 
-			for (int i = 0; i < jsValues.size(); ++i) {
-				if (!dirty.get(i))
-					jsValues.get(i).assignFromJSON(ar.get(i));
+			for (Map.Entry<String,JsonElement> i : o.entrySet()) {
+				int idx = Integer.parseInt(i.getKey(), 10);
+				JsonElement value = i.getValue();
+				if (idx >= jsValues.size())
+					throw new IllegalStateException("JSON value index is outside of bounds");
+				if (!dirty.get(idx))
+					jsValues.get(idx).assignFromJSON(value);
 			}
 		} catch (JsonParseException e) {
 			logger.error("Failed to parse JSON", e);
 		} catch (IllegalStateException e) {
 			logger.error("Failed to assign value from JSON", e);
+		} catch (NumberFormatException e) {
+			logger.error("Failed to assign value from JSON, couldn't cast index", e);
 		}
+	}
+
+	public String getJsRef() {
+		return widget.getJsRef() + ".wtJSObj";
 	}
 
 	final List<WJavaScriptExposableObject> jsValues = new ArrayList<WJavaScriptExposableObject>();
 	final BitSet dirty = new BitSet();
-	private final String jsRef;
+	private final WWidget widget;
 }

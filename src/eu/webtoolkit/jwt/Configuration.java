@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,8 +7,15 @@ package eu.webtoolkit.jwt;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +39,7 @@ public class Configuration {
 	private static Logger logger = LoggerFactory.getLogger(AbstractJSignal.class);
 
 	public enum SessionTracking {
-		CookiesURL, Auto
+		CookiesURL, Auto, Combined
 	}
 
 	/**
@@ -57,6 +64,99 @@ public class Configuration {
 		ErrorMessageWithStack
 	}
 
+	/**
+	 * A class describing an IPv4 or IPv6 network
+	 */
+	public static class Network {
+		/**
+		 * Constructor
+		 *
+		 * @throws IllegalArgumentException if the prefix length is not valid for the type of IP address
+		 */
+		public Network(InetAddress address,
+					   int prefixLength)
+		{
+		    checkValidPrefixLengthForAddress(address, prefixLength);
+			this.address = address;
+			this.prefixLength = prefixLength;
+		}
+
+		private static void checkValidPrefixLengthForAddress(InetAddress address,
+													  int prefixLength)
+		{
+			final boolean isIPv4 = address instanceof Inet4Address;
+			final boolean isIPv6 = address instanceof Inet6Address;
+			if (prefixLength < 0 ||
+					(isIPv4 && prefixLength > 32) ||
+					(isIPv6 && prefixLength > 128)) {
+				throw new IllegalArgumentException("Invalid prefix length " + prefixLength + " for IPv" +
+						(isIPv4 ? "4" : "6") + " address");
+			}
+		}
+
+		/**
+		 * Creates a network from CIDR notation
+		 * <p>
+		 * This parses either an IPv4 or IPv6 network in CIDR notation, e.g. 192.168.0.0/16 or fe80::/10,
+		 * or if the slash is omitted, it is treated as the subnetwork that only contains that specific address,
+		 * e.g. 192.168.1.1 is interpreted as 192.168.1.1/32.
+		 *
+		 * @param s the network in CIDR notation e.g. 192.168.0.0/16, or fe80::/10
+		 * @throws IllegalArgumentException if the address can not be parsed or the prefix length is not valid for the type of IP address
+		 */
+		public static Network fromString(String s) {
+			final int slashPos = s.indexOf("/");
+			if (slashPos == -1) {
+				try {
+					final InetAddress address = InetAddress.getByName(s);
+					final int prefixLength = (address instanceof Inet6Address ? 128 : 32);
+					return new Network(address, prefixLength);
+				} catch (UnknownHostException e) {
+					throw new IllegalArgumentException("'" + s + "' is not a valid IP address", e);
+				}
+			} else {
+				try {
+					final InetAddress address = InetAddress.getByName(s.substring(0, slashPos));
+					final int prefixLength = Integer.parseInt(s.substring(slashPos + 1), 10);
+					return new Network(address, prefixLength);
+				} catch (UnknownHostException e) {
+					throw new IllegalArgumentException("'" + s.substring(0, slashPos) + "' is not a valid IP address", e);
+				} catch (NumberFormatException e) {
+					throw new IllegalArgumentException("Prefix length string '" + s.substring(slashPos + 1) + "' could not be parsed", e);
+				}
+			}
+		}
+
+		/**
+		 * Checks whether this network contains the given address
+		 */
+		public boolean contains(InetAddress address) {
+			final byte[] networkBytes = this.address.getAddress();
+			final byte[] addressBytes = address.getAddress();
+			if (networkBytes.length != addressBytes.length) {
+				return false;
+			}
+			return prefixMatches(networkBytes, addressBytes, prefixLength);
+		}
+
+		private boolean prefixMatches(byte[] network, byte[] address, int prefixLength) {
+			for (int i = 0; i < network.length; ++i) {
+				if ((i + 1) * 8 < prefixLength) {
+					if (network[i] != address[i]) {
+						return false;
+					}
+				} else {
+					int shift = (i + 1) * 8 - prefixLength;
+					return (network[i] >> shift) == (address[i] >> shift);
+				}
+			}
+			return true;
+		}
+
+		public final InetAddress address;
+		public final int prefixLength;
+	}
+
 	private HashMap<String, String> properties_ = new HashMap<String, String>();
 	private String redirectMessage_ = "Plain HTML version";
 	private boolean sendXHTMLMimeType = false;
@@ -71,14 +171,25 @@ public class Configuration {
 	private boolean progressiveBootstrap = false;
 	
 	private int sessionTimeout = 600;
+	private int idleTimeout = -1;
 	private int indicatorTimeout = 500;
 	private int doubleClickTimeout = 200;
 	private int bootstrapTimeout = 10;
+	private int serverPushTimeout = 50;
 	private String uaCompatible = "";
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
+	private List<HeadMatter> headMatter = new ArrayList<HeadMatter>();
 	private int internalDeploymentSize = 0;
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
+	private long maxFormDataSize = 1024*1024; // 1 Megabyte
+	private int maxPendingEvents = 1000;
 	private boolean behindReverseProxy = false;
+	private String originalIPHeader = "X-Forwarded-For";
+	private List<Network> trustedProxies = Collections.emptyList();
+	private boolean webSocketsEnabled = false;
+	private long asyncContextTimeout = 90000;
+
+	private Collection<String> allowedOrigins_ = Collections.<String>emptySet();
 
 	/**
 	 * Creates a default configuration.
@@ -157,9 +268,9 @@ public class Configuration {
 						setInlineCss(parseBoolean(errorMessage, node));
 					} else if (node.getNodeName().equalsIgnoreCase("favicon")) {
 						setFavicon(node.getTextContent().trim());
-					} else if (node.getNodeName().equalsIgnoreCase("lis")) {
+					} else if (node.getNodeName().equalsIgnoreCase("user-agents")) {
 						if (node.getAttributes().getNamedItem("type") == null) {
-							throw new RuntimeException(errorMessage + "li elements require  a type specification");
+							throw new RuntimeException(errorMessage + "user-agent elements require  a type specification");
 						} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("ajax")) {
 							String mode = node.getAttributes().getNamedItem("mode").getTextContent().trim();
 
@@ -174,6 +285,16 @@ public class Configuration {
 						} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("bot")) {
 							parseUserAgents(errorMessage, node, botList);
 						}
+					} else if (node.getNodeName().equalsIgnoreCase("allowed-origins")) {
+						String origins = node.getTextContent().trim();
+						for (String origin : origins.split(",")) {
+							origin = origin.trim();
+							if (origin.isEmpty())
+								continue;
+							if (this.allowedOrigins_.isEmpty())
+								this.allowedOrigins_ = new HashSet<String>();
+							this.allowedOrigins_.add(origin);
+						}
 					}
 				}
 			}
@@ -185,7 +306,7 @@ public class Configuration {
 		Node n;
 		for (int i = 0; i < userAgents.getLength(); i++) {
 			n = userAgents.item(i);
-			if (n.getNodeName().equals("li")) {
+			if (n.getNodeName().equals("user-agent")) {
 				list.add(node.getTextContent().trim());
 			}
 		}
@@ -323,8 +444,40 @@ public class Configuration {
 		return errorReporting == ErrorReporting.NoErrors;
 	}
 
-	int getServerPushTimeout() {
-		return 50;
+	/**
+	 * Returns the server push timeout (seconds).
+	 * <p>
+	 * When using server-initiated updates, the client uses
+	 * long-polling requests. Proxies (including reverse
+	 * proxies) are notorious for silently closing idle
+	 * requests; the client therefore cancels the request
+	 * periodically and issues a new one. This timeout sets
+	 * the frequency.
+	 * <p>
+	 * The default timeout is 50 seconds.
+	 *
+	 * @see #setServerPushTimeout(int)
+	 */
+	public int getServerPushTimeout() {
+		return serverPushTimeout;
+	}
+
+	/**
+	 * Sets the server push timeout (seconds).
+	 * <p>
+	 * When using server-initiated updates, the client uses
+	 * long-polling requests. Proxies (including reverse
+	 * proxies) are notorious for silently closing idle
+	 * requests; the client therefore cancels the request
+	 * periodically and issues a new one. This timeout sets
+	 * the frequency.
+	 * <p>
+	 * The default timeout is 50 seconds.
+	 *
+	 * @see #getServerPushTimeout()
+	 */
+	public void setServerPushTimeout(int timeout) {
+		serverPushTimeout = timeout;
 	}
 
 	/**
@@ -567,6 +720,14 @@ public class Configuration {
 	public boolean progressiveBootstrap(String internalPath) {
 		return this.progressiveBootstrap ;
 	}
+
+	public int getKeepAlive() {
+		return getSessionTimeout() / 2;
+	}
+
+	public int getMultiSessionCookieTimeout() {
+		return getSessionTimeout() * 2;
+	}
 	
 	/**
 	 * Returns the session timeout.
@@ -575,6 +736,32 @@ public class Configuration {
 	 */
 	public int getSessionTimeout() {
 		return sessionTimeout;
+	}
+
+	/**
+	 * Returns the idle timeout (in seconds).
+	 *
+	 * @return the idle timeout.
+	 */
+	public int getIdleTimeout() {
+		return idleTimeout;
+	}
+
+	/**
+	 * Sets the idle timeout.
+	 *
+	 * When the user does not interact with the application for the set number of seconds,
+	 * WApplication#idleTimeout() is called. By default, this method quits the application
+	 * immediately, but it can be overridden if different behaviour is desired.
+	 *
+	 * This feature can be used to prevent others from taking over a session
+	 * when the device that the Wt application is being used from is left behind,
+	 * and is most effective in combination with a fairly short session timeout.
+	 *
+	 * The default is -1 (disabled)
+	 */
+	public void setIdleTimeout(int timeout) {
+		this.idleTimeout = timeout;
 	}
 	
 	/**
@@ -689,12 +876,20 @@ public class Configuration {
 		this.properties_.put("tinyMCEVersion", "" + version);
 	}
 
+	/**
+	 * Enables or disables the use of web sockets
+	 */
+	public void setWebSocketsEnabled(boolean enabled) {
+		this.webSocketsEnabled = enabled;
+	}
+	
+	boolean webSockets() {
+		return webSocketsEnabled;
+	}
+
 	/*
 	 * The following are not yet enabled for JWt
 	 */
-	boolean webSockets() {
-		return false;
-	}
 
 	boolean splitScript() {
 		return false;
@@ -714,6 +909,24 @@ public class Configuration {
 		return maxRequestSize;
 	}
 
+	/** Returns the maximum request size.
+	 */
+	public long getMaxFormDataSize() {
+		return maxFormDataSize;
+	}
+
+	/** Returns the maximum amount of pending events.
+	*/
+	public int getMaxPendingEvents() {
+		return maxPendingEvents;
+	}
+
+	/** Sets the maximum amount of pending events.
+	 */
+	public void setMaxPendingEvents(int maxPendingEvents) {
+		this.maxPendingEvents = maxPendingEvents;
+	}
+
 	SessionTracking getSessionTracking() {
 		return SessionTracking.Auto;
 	}
@@ -724,9 +937,14 @@ public class Configuration {
 
 	/**
 	 * Configures whether the application is hosted behind a reverse proxy.
-	 * 
+	 *
 	 * @see #isBehindReverseProxy()
+	 *
+	 * @deprecated
+	 * Use {@link #setTrustedProxies(List)} instead. If set to true, the old behavior is used and the upstream server
+	 * is trusted as being a reverse proxy.
 	 */
+	@Deprecated
 	public void setBehindReverseProxy(boolean enabled) {
 		this.behindReverseProxy = enabled;
 	}
@@ -737,9 +955,74 @@ public class Configuration {
 	 * by the reverse proxy are interpreted correctly:
 	 *  - X-Forwarded-Host
 	 *  - X-Forwarded-Proto
+	 *
+	 * @see #setBehindReverseProxy(boolean)
+	 *
+	 * @deprecated
+	 * Use {@link #setTrustedProxies(List)} and {@link #getTrustedProxies()} instead.
 	 */
+	@Deprecated
 	public boolean isBehindReverseProxy() {
 		return this.behindReverseProxy;
+	}
+
+	/**
+	 * Sets the header to be considered to derive the client address when behind a reverse proxy. This is X-Forwarded-For by default.
+	 *
+	 * @see #getOriginalIPHeader()
+	 * @see #setTrustedProxies(List)
+	 */
+	public void setOriginalIPHeader(String originalIPHeader) {
+		this.originalIPHeader = originalIPHeader;
+	}
+
+	/**
+	 * Gets the header to be considered to derive the client address when behind a reverse proxy. This is X-Forwarded-For by default.
+	 *
+	 * @see #setOriginalIPHeader(String)
+	 */
+	public String getOriginalIPHeader() {
+		return this.originalIPHeader;
+	}
+
+	/**
+	 * Set the proxy servers or networks that are trusted.
+	 * <p>
+	 * JWt will only trust proxy headers like X-Forwarded-* headers if the proxy server
+	 * is in the list of trusted proxies.
+	 *
+	 * @see #setOriginalIPHeader(String)
+	 */
+	public void setTrustedProxies(List<Network> trustedProxies) {
+		this.trustedProxies = trustedProxies;
+	}
+
+	/**
+	 * Gets the proxy servers or networks that are trusted.
+     *
+	 * @see #setTrustedProxies(List)
+	 */
+	public List<Network> getTrustedProxies() {
+		return this.trustedProxies;
+	}
+
+	/**
+	 * Checks whether the given IP address string is a trusted proxy server.
+	 *
+	 * @see #setTrustedProxies(List)
+	 */
+	public boolean isTrustedProxy(String addressStr) {
+		try {
+			final InetAddress address = InetAddress.getByName(addressStr);
+			for (Network trustedProxy : trustedProxies) {
+				if (trustedProxy.contains(address)) {
+					return true;
+				}
+			}
+			return false;
+		} catch (UnknownHostException e) {
+			return false;
+		}
 	}
 
 	public boolean isCookieChecks() {
@@ -766,11 +1049,59 @@ public class Configuration {
 	}
 
 	/**
+	 * Returns configured head matter.
+	 * Like meta headers, but also supports e.g. &lt;link&gt; tags.
+	 */
+	public List<HeadMatter> getHeadMatter() {
+		return headMatter;
+	}
+
+	/**
 	 * Sets (static) meta headers. This is an alternative to using
 	 * {@link WApplication#addMetaHeader(String, CharSequence)}, but having the
 	 * benefit that they are added to all sessions.
 	 */
 	public void setMetaHeaders(List<MetaHeader> headers) {
 		this.metaHeaders = headers;
+	}
+
+	/**
+	 * Sets (static) head matter.
+	 * Like meta headers, but also supports e.g. &lt;link&gt; tags.
+	 */
+	public void setHeadMatter(List<HeadMatter> headMatter) {
+		this.headMatter = headMatter;
+	}
+
+	public boolean isAllowedOrigin(String origin) {
+		if (this.allowedOrigins_.size() == 1 &&
+			"*".equals(this.allowedOrigins_.iterator().next()))
+			return true;
+		else
+			return this.allowedOrigins_.contains(origin);
+	}
+
+	/**
+	 * Sets the list of origins that are allowed for CORS
+	 * (only supported for WidgetSet entry points)
+	 * 
+	 * The default is empty (no origins are allowed).
+	 */
+	public void setAllowedOrigins(Collection<String> origins) {
+		this.allowedOrigins_ = origins;
+	}
+
+	/**
+	 * Get async context timeout for WtServlet requests
+	 */
+	public long getAsyncContextTimeout() {
+		return asyncContextTimeout;
+	}
+
+	/**
+	 * Set async context timeout for WtServlet requests
+	 */
+	public void setAsyncContextTimeout(long asyncContextTimeout) {
+		this.asyncContextTimeout = asyncContextTimeout;
 	}
 }

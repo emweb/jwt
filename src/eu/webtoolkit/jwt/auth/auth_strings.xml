@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messages xmlns:if="Wt.WTemplate.conditions">
+<messages xmlns:if="Wt.WTemplate.conditions"
+          nplurals="2"
+          plural="n == 1 ? 0 : 1">
 
   <!-- BaseAuth, PasswordAuth and OAuth models -->
 
@@ -46,7 +48,7 @@
     <p>Sorry, could not login using your Google account.</p>
     <small>
       <p>Google's identification server generated an unexpected
-	response.</p>
+        response.</p>
     </small>
   </message>
 
@@ -54,10 +56,10 @@
     <p>Sorry, could not login using your Facebook account.</p>
     <small>
       <p>Facebook's identification server generated an unexpected
-	response.</p>
+        response.</p>
     </small>
   </message>
-  
+
   <!-- LoginWidget -->
 
   <message id="Wt.Auth.login-form-title">Login</message>
@@ -74,15 +76,25 @@
   <message id="Wt.Auth.password-info">Enter your password</message>
   <message id="Wt.Auth.remember-me">Remember me</message>
   <message id="Wt.Auth.remember-me-info.days">
-    Keeps login for {1} days
+    <plural case="0">Keeps login for one day</plural>
+    <plural case="1">Keeps login for {1} days</plural>
   </message>
   <message id="Wt.Auth.remember-me-info.weeks">
-    Keeps login for {1} weeks
+    <plural case="0">Keeps login for one week</plural>
+    <plural case="1">Keeps login for {1} weeks</plural>
   </message>
+  <message id="Wt.Auth.remember-me-info.dynamic">Keeps login for {1}</message>
   <message id="Wt.Auth.lost-password">Lost password</message>
   <message id="Wt.Auth.login">Login</message>
   <message id="Wt.Auth.logout">Logout</message>
   <message id="Wt.Auth.throttle-retry">Retry in {1}s</message>
+
+  <message id="Wt.Auth.resend-email-verification">Resend?</message>
+  <message id="Wt.Auth.resend-verification-title">Resend Email Verification</message>
+  <message id="Wt.Auth.resend-verification-msg">Please enter your email address again below to resend the verification email. Make sure to check your spam folder in case the email does not show up in your inbox.</message>
+  <message id="Wt.Auth.resend-email-error">Email address does not match this user</message>
+  <message id="Wt.Auth.verification-sent-title">Email verification</message>
+
 
   <!-- RegistrationWidget -->
 
@@ -131,7 +143,7 @@
 
   <!-- LostPasswordDialog -->
 
-  <message id="Wt.Auth.lostpassword">Password forgotten? No sweat!</message>
+  <message id="Wt.Auth.lostpassword">Forgot your password? No sweat!</message>
   <message id="Wt.Auth.lost-password-form-title">Recover your password</message>
   <message id="Wt.Auth.lost-password-form-info">Please enter below the
   email address which you used during registration. A mail will be
@@ -154,7 +166,7 @@ Thank you for joining!
 
 To complete your registration, please finally confirm your account by
 clicking on the following link or copying the URL into your browser.
- 
+
 Please click here to confirm your registration or copy and paste the
 following URL into your browser: (Note: be sure to copy the entire
 URL, including any part of it which goes onto a second line.)
@@ -178,12 +190,12 @@ The Wt team.
     <p>To complete your registration, please finally confirm your
     account by clicking on the following link or copying the URL into
     your browser.</p>
- 
+
     <p>Please <a href="{3}">click here to confirm</a> your
     registration or copy and paste the following URL into your
     browser: <i>(Note: be sure to copy the entire URL, including any
     part of it which goes onto a second line.)</i></p>
-    
+
     <b>{3}</b>
 
     <p>
@@ -212,12 +224,12 @@ password escapes his mind.
 If you requested this, then choose a new password by clicking on the
 following link or copying the URL into your browser. If you didn't
 request this, you can safely ignore and discard this email.
- 
+
 Please copy and paste the following URL into your browser: (Note: be
 sure to copy the entire URL, including any part of it which goes onto
 a second line.)
- 
-{3} 
+
+{3}
 
 This text is resolved from the "Wt.Auth.lostpasswordmail.subject",
 "Wt.Auth.lostpasswordmail.body", and "Wt.Auth.lostpasswordmail.htmlbody"
@@ -239,12 +251,12 @@ The Wt team.
     on the following link or copying the URL into your browser. If you
     didn't request this, you can safely ignore and discard this
     email.</p>
- 
+
     <p>Please <a href="{3}">click here to choose a new password</a> or
     copy and paste the following URL into your browser: <i>(Note: be
     sure to copy the entire URL, including any part of it which goes
     onto a second line.)</i></p>
-    
+
     <b>{3}</b>
 
     <p>
@@ -262,4 +274,11 @@ The Wt team.
     <p>The Wt team.</p>
   </message>
 
+  <message id="Wt.Auth.totp-title">TOTP Verification</message>
+  <message id="Wt.Auth.totp-info">Use your authenticator app/extension to generate a TOTP code.</message>
+  <message id="Wt.Auth.totp-qr-code-explanation">This QR code can be scanned by an authenticator app. It will allow you to generate TOTP codes. This will serve as an additional layer of security.</message>
+  <message id="Wt.Auth.totp-code">Code</message>
+  <message id="Wt.Auth.totp-code-info">Enter the TOTP code</message>
+  <message id="Wt.Auth.totp-code-info-invalid">Invalid TOTP code</message>
+  <message id="Wt.Auth.totp-code-info-throttle">Throtteling TOTP validation attempts</message>
 </messages>

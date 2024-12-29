@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -17,24 +17,24 @@ public class MatchOptions {
 	/**
 	 * The default match options, MatchStartsWith and MatchWrap.
 	 */
-	public static MatchOptions defaultMatchOptions = new MatchOptions(MatchType.MatchStartsWith, MatchFlag.MatchWrap);
+	public static MatchOptions defaultMatchOptions = new MatchOptions(MatchType.StartsWith, MatchFlag.Wrap);
 	
 	/**
 	 * Match type enumeration.
 	 */
 	public enum MatchType {
 		/** Same type and value */
-		MatchExactly, 
+		Exactly, 
 		/** Lexical match */
-		MatchStringExactly,
+		StringExactly,
 		/** Match start with query */
-		MatchStartsWith,
+		StartsWith,
 		/** Match end with query */
-		MatchEndsWith,
+		EndsWith,
 		/** Regular expression match */
-		MatchRegExp, 
+		RegExp, 
 		/** Wildcard match */
-		MatchWildCard 
+		WildCard 
 	}
 	
 	/**
@@ -42,9 +42,9 @@ public class MatchOptions {
 	 */
 	public enum MatchFlag {
 		/** Case sensitive */
-	    MatchCaseSensitive,
+	    CaseSensitive,
 	    /** Wrap around whole model */
-	    MatchWrap 
+	    Wrap 
 	}
 	
 	private MatchType type;

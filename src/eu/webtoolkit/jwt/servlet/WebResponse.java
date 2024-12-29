@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -19,6 +20,10 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;
 import eu.webtoolkit.jwt.servlet.WebRequest.ResponseType;
+import eu.webtoolkit.jwt.utils.StreamUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WebResponse which wraps the HttpServletResponse to support testing.
@@ -32,6 +37,8 @@ import eu.webtoolkit.jwt.servlet.WebRequest.ResponseType;
  * @see WebResponse
  */
 public class WebResponse extends HttpServletResponseWrapper {
+	private static Logger logger = LoggerFactory.getLogger(WebResponse.class);
+
 	private OutputStreamWriter outWriter;
 	private HttpServletRequest request;
 	private int id;
@@ -53,9 +60,9 @@ public class WebResponse extends HttpServletResponseWrapper {
 		this.request = request;
 
 		try {
-			outWriter = new OutputStreamWriter(getOutputStream(), "UTF-8");
+			this.outWriter = new OutputStreamWriter(getOutputStream(), "UTF-8");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in webresponse", e);
 		}
 	}
 
@@ -70,18 +77,34 @@ public class WebResponse extends HttpServletResponseWrapper {
 	public WebResponse(final OutputStream out) {
 		super(WtServlet.getServletApi().getMockupHttpServletResponse());
 
-		this.outputStream = new ServletOutputStream() {
+		this.outputStream = new StreamUtils.ErrorSuppressingOutputStream(new ServletOutputStream() {
 			@Override
 			public void write(int arg0) throws IOException {
 				out.write(arg0);
 			}
-		};
+
+			@Override
+			public boolean isReady() {
+				return true;
+			}
+
+			@Override
+			public void setWriteListener(WriteListener arg0) {
+			}
+		}, logger);
 
 		try {
 			outWriter = new OutputStreamWriter(outputStream, "UTF-8");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in webresponse", e);
 		}
+	}
+	
+	/**
+	 * Create a response with no real ServletOutputStream. Used to set up a web socket response
+	 */
+	public WebResponse() {
+		super(WtServlet.getServletApi().getMockupHttpServletResponse());
 	}
 
 	/**
@@ -94,11 +117,15 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * {@link #getWriter()} for text output.
 	 */
 	@Override
-	public ServletOutputStream getOutputStream() throws IOException {
-		if (outputStream == null)
-			return super.getOutputStream();
-		else
+	public ServletOutputStream getOutputStream() {
+		try {
+			if (outputStream == null)
+				outputStream = new StreamUtils.ErrorSuppressingOutputStream(super.getOutputStream(), logger);
 			return outputStream;
+		} catch (IOException e) {
+			logger.error("Failed to retrieve ServletOutputStream: {}", e.getMessage());
+			return new StreamUtils.ErrorSuppressingOutputStream();
+		}
 	}
 
 	/**
@@ -143,12 +170,13 @@ public class WebResponse extends HttpServletResponseWrapper {
 			outWriter.flush();
 			getOutputStream().flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException in flush", e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("Exception in flush", e);
 		} finally {
-			if (request != null)
+			if (request != null) {
 				WtServlet.getServletApi().completeAsyncContext(request);
+			}
 		}
 	}
 

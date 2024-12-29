@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -30,6 +30,10 @@ class FileServe {
 	}
 
 	public void setVar(String name, int i) {
+		setVar(name, String.valueOf(i));
+	}
+
+	public void setVar(String name, long i) {
 		setVar(name, String.valueOf(i));
 	}
 

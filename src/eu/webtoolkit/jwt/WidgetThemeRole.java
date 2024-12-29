@@ -1,55 +1,62 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.time.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
 /**
- * Enumeration for the role of a subwidget (for theme support).
+ * Enumeration for the role of a subwidget (for theme support)
+ *
  * <p>
- * 
+ *
  * @see WTheme#apply(WWidget widget, WWidget child, int widgetRole)
  */
 public class WidgetThemeRole {
-	public final static int MenuItemIconRole = 100;
-	public final static int MenuItemCheckBoxRole = 101;
-	public final static int MenuItemCloseRole = 102;
-	public final static int DialogCoverRole = 200;
-	public final static int DialogTitleBarRole = 201;
-	public final static int DialogBodyRole = 202;
-	public final static int DialogFooterRole = 203;
-	public final static int DialogCloseIconRole = 204;
-	public final static int DialogContent = 205;
-	public final static int TableViewRowContainerRole = 300;
-	public final static int DatePickerPopupRole = 400;
-	public final static int TimePickerPopupRole = 410;
-	public final static int PanelTitleBarRole = 500;
-	public final static int PanelCollapseButtonRole = 501;
-	public final static int PanelTitleRole = 502;
-	public final static int PanelBodyRole = 503;
-	public final static int AuthWidgets = 600;
-	public final static int InPlaceEditingRole = 700;
-	public final static int NavbarRole = 800;
-	public final static int NavCollapseRole = 801;
-	public final static int NavBrandRole = 802;
-	public final static int NavbarSearchRole = 803;
-	public final static int NavbarMenuRole = 804;
-	public final static int NavbarBtn = 805;
-	public final static int NavbarAlignLeftRole = 806;
-	public final static int NavbarAlignRightRole = 807;
+  public static final int MenuItemIcon = 100;
+  public static final int MenuItemCheckBox = 101;
+  public static final int MenuItemClose = 102;
+  public static final int DialogCoverWidget = 200;
+  public static final int DialogTitleBar = 201;
+  public static final int DialogBody = 202;
+  public static final int DialogFooter = 203;
+  public static final int DialogCloseIcon = 204;
+  public static final int DialogContent = 205;
+  public static final int TableViewRowContainer = 300;
+  public static final int DatePickerPopup = 400;
+  public static final int DatePickerIcon = 401;
+  public static final int TimePickerPopup = 410;
+  public static final int TimePickerPopupContent = 411;
+  public static final int PanelTitleBar = 500;
+  public static final int PanelCollapseButton = 501;
+  public static final int PanelTitle = 502;
+  public static final int PanelBody = 503;
+  public static final int PanelBodyContent = 504;
+  public static final int AuthWidgets = 600;
+  public static final int InPlaceEditing = 700;
+  public static final int InPlaceEditingButtonsContainer = 701;
+  public static final int InPlaceEditingButton = 702;
+  public static final int Navbar = 800;
+  public static final int NavCollapse = 801;
+  public static final int NavBrand = 802;
+  public static final int NavbarForm = 803;
+  public static final int NavbarSearchForm = 804;
+  public static final int NavbarSearchInput = 805;
+  public static final int NavbarMenu = 806;
+  public static final int NavbarBtn = 807;
+  public static final int NavbarAlignLeft = 808;
+  public static final int NavbarAlignRight = 809;
 }

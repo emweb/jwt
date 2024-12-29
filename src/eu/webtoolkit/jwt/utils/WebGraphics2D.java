@@ -34,9 +34,15 @@ import java.util.List;
 import java.util.Map;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.FontFamily;
+import eu.webtoolkit.jwt.FontSize;
+import eu.webtoolkit.jwt.FontStyle;
+import eu.webtoolkit.jwt.FontWeight;
+import eu.webtoolkit.jwt.LengthUnit;
 import eu.webtoolkit.jwt.PenCapStyle;
 import eu.webtoolkit.jwt.PenJoinStyle;
 import eu.webtoolkit.jwt.PenStyle;
+import eu.webtoolkit.jwt.RenderHint;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.BrushStyle;
 import eu.webtoolkit.jwt.WColor;
@@ -49,12 +55,6 @@ import eu.webtoolkit.jwt.WPointF;
 import eu.webtoolkit.jwt.WRasterPaintDevice;
 import eu.webtoolkit.jwt.WRectF;
 import eu.webtoolkit.jwt.WTransform;
-import eu.webtoolkit.jwt.WFont.GenericFamily;
-import eu.webtoolkit.jwt.WFont.Size;
-import eu.webtoolkit.jwt.WFont.Style;
-import eu.webtoolkit.jwt.WFont.Weight;
-import eu.webtoolkit.jwt.WLength.Unit;
-import eu.webtoolkit.jwt.WPainter.RenderHint;
 
 /**
  * An implementation of Graphics2D which uses a WPainter.
@@ -148,10 +148,10 @@ public class WebGraphics2D extends Graphics2D {
 
 	private void drawInternalString(String s, float x, float y) {
 		if (s == lastStringMeasured) {
-			EnumSet<AlignmentFlag> flags = EnumSet.of(AlignmentFlag.AlignRight, AlignmentFlag.AlignTop);
+			EnumSet<AlignmentFlag> flags = EnumSet.of(AlignmentFlag.Right, AlignmentFlag.Top);
 			painter.drawText(x + lastStringWidth - 1000, y - getFontMetrics().getAscent(), 1000, 1000, flags, s);
 		} else {
-			EnumSet<AlignmentFlag> flags = EnumSet.of(AlignmentFlag.AlignLeft, AlignmentFlag.AlignTop);
+			EnumSet<AlignmentFlag> flags = EnumSet.of(AlignmentFlag.Left, AlignmentFlag.Top);
 			painter.drawText(x, y - getFontMetrics().getAscent(), 1000, 1000, flags, s);			
 		}
 	}
@@ -294,25 +294,25 @@ public class WebGraphics2D extends Graphics2D {
 	public void setStroke(Stroke stroke) {
 		BasicStroke basicStroke = (BasicStroke) stroke;
 
-		PenCapStyle capStyle = PenCapStyle.FlatCap;
+		PenCapStyle capStyle = PenCapStyle.Flat;
 		switch (basicStroke.getEndCap()) {
-		case BasicStroke.CAP_BUTT:		capStyle = PenCapStyle.FlatCap; break;
-		case BasicStroke.CAP_ROUND:		capStyle = PenCapStyle.RoundCap; break;
-		case BasicStroke.CAP_SQUARE:	capStyle = PenCapStyle.SquareCap; break;
+		case BasicStroke.CAP_BUTT:		capStyle = PenCapStyle.Flat; break;
+		case BasicStroke.CAP_ROUND:		capStyle = PenCapStyle.Round; break;
+		case BasicStroke.CAP_SQUARE:	capStyle = PenCapStyle.Square; break;
 		}
 		
-		PenJoinStyle joinStyle = PenJoinStyle.BevelJoin;
+		PenJoinStyle joinStyle = PenJoinStyle.Bevel;
 		switch (basicStroke.getLineJoin()) {
-		case BasicStroke.JOIN_BEVEL:	joinStyle = PenJoinStyle.BevelJoin; break;
-		case BasicStroke.JOIN_MITER:	joinStyle = PenJoinStyle.MiterJoin; break;
-		case BasicStroke.JOIN_ROUND:	joinStyle = PenJoinStyle.RoundJoin; break;
+		case BasicStroke.JOIN_BEVEL:	joinStyle = PenJoinStyle.Bevel; break;
+		case BasicStroke.JOIN_MITER:	joinStyle = PenJoinStyle.Miter; break;
+		case BasicStroke.JOIN_ROUND:	joinStyle = PenJoinStyle.Round; break;
 		}
 
 		WPen pen = painter.getPen().clone();
 		pen.setCapStyle(capStyle);
 		pen.setJoinStyle(joinStyle);
 
-		currentPenStyle = PenStyle.NoPen;
+		currentPenStyle = PenStyle.None;
 		if (basicStroke.getLineWidth() > 0) {
 			float[] dashArray = basicStroke.getDashArray();
 			if (dashArray != null) {
@@ -408,7 +408,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(BrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.None));
 		painter.drawArc(x, y, width, height, startAngle * 16, arcAngle * 16);
 		painter.setBrush(oldBrush);
 	}
@@ -458,7 +458,7 @@ public class WebGraphics2D extends Graphics2D {
 	public void drawOval(int x, int y, int width, int height) {
 		//TODO an eclipse is not the same as an oval
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(BrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.None));
 		painter.drawEllipse(x, y, width, height);
 		painter.setBrush(oldBrush);
 	}
@@ -466,7 +466,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(BrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.None));
 		WPointF points[] = toPoints(xPoints, yPoints, nPoints);
 		painter.drawPolygon(points, nPoints);
 		painter.setBrush(oldBrush);
@@ -482,7 +482,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
 		WBrush oldBrush = painter.getBrush();
-		painter.setBrush(new WBrush(BrushStyle.NoBrush));
+		painter.setBrush(new WBrush(BrushStyle.None));
 		WPointF points[] = toPoints(xPoints, yPoints, nPoints);
 		painter.drawPolyline(points, nPoints);
 		painter.setBrush(oldBrush);
@@ -499,7 +499,7 @@ public class WebGraphics2D extends Graphics2D {
 	public void fillArc(int x, int y, int width, int height, int startAngle,
 			int arcAngle) {
 		WPen oldPen = painter.getPen();
-		painter.setPen(new WPen(PenStyle.NoPen));
+		painter.setPen(new WPen(PenStyle.None));
 		painter.drawArc(x, y, width, height, startAngle * 16, arcAngle * 16);
 		painter.setPen(oldPen);
 	}
@@ -508,7 +508,7 @@ public class WebGraphics2D extends Graphics2D {
 	public void fillOval(int x, int y, int width, int height) {
 		//TODO an eclipse is not the same as an oval
 		WPen oldPen = painter.getPen();
-		painter.setPen(new WPen(PenStyle.NoPen));
+		painter.setPen(new WPen(PenStyle.None));
 		painter.drawEllipse(x, y, width, height);
 		painter.setPen(oldPen);
 	}
@@ -516,7 +516,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
 		WPen oldPen = painter.getPen();
-		painter.setPen(new WPen(PenStyle.NoPen));
+		painter.setPen(new WPen(PenStyle.None));
 		WPointF points[] = toPoints(xPoints, yPoints, nPoints);
 		painter.drawPolyline(points, nPoints);
 		painter.setPen(oldPen);
@@ -525,7 +525,7 @@ public class WebGraphics2D extends Graphics2D {
 	@Override
 	public void fillRect(int x, int y, int width, int height) {
 		WPen oldPen = painter.getPen();
-		painter.setPen(new WPen(PenStyle.NoPen));
+		painter.setPen(new WPen(PenStyle.None));
 		painter.drawRect(x, y, width, height);
 		painter.setPen(oldPen);
 	}
@@ -789,7 +789,7 @@ public class WebGraphics2D extends Graphics2D {
 		if (color == null) {
 			painter.setBrush(new WBrush());
 			WPen pen = painter.getPen().clone();
-			pen.setStyle(PenStyle.NoPen);
+			pen.setStyle(PenStyle.None);
 			painter.setPen(pen);
 		} else {
 			WColor c = toWColor(color);
@@ -811,18 +811,18 @@ public class WebGraphics2D extends Graphics2D {
 
 			WFont f = new WFont();
 			if (font.getFamily().equalsIgnoreCase("serif"))
-				f.setFamily(GenericFamily.Serif);
+				f.setFamily(FontFamily.Serif);
 			else if (font.getFamily().equalsIgnoreCase("sansserif"))
-				f.setFamily(GenericFamily.SansSerif);
+				f.setFamily(FontFamily.SansSerif);
 			else if (font.getFamily().equalsIgnoreCase("monospaced"))
-				f.setFamily(GenericFamily.Monospace);
+				f.setFamily(FontFamily.Monospace);
 
 			if (font.isBold())
-				f.setWeight(Weight.Bold);
+				f.setWeight(FontWeight.Bold);
 			if (font.isItalic())
-				f.setStyle(Style.Italic);
+				f.setStyle(FontStyle.Italic);
 
-			f.setSize(Size.FixedSize, new WLength(font.getSize(), Unit.Point));
+			f.setSize(new WLength(font.getSize(), LengthUnit.Point));
 
 			painter.setFont(f);
 		}

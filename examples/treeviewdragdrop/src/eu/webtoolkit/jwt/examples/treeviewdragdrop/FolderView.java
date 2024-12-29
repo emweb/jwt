@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -80,10 +80,10 @@ public class FolderView extends WTreeView {
                  * WSortFilterProxyModel that filters on folder, this will also
                  * result in the removal of the file from the current view.
                  */
-                SortedMap<Integer, Object> data = getModel()
+                SortedMap<ItemDataRole,Object> data = getModel()
                         .getItemData(target);
-                data.put(ItemDataRole.DecorationRole, index
-                        .getData(ItemDataRole.DecorationRole));
+                data.put(ItemDataRole.Decoration, index
+                        .getData(ItemDataRole.Decoration));
                 sourceModel.setItemData(index, data);
             }
         }

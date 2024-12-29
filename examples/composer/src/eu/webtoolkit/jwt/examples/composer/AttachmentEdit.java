@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.FontSize;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -24,7 +25,6 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WProgressBar;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
-import eu.webtoolkit.jwt.WFont.Size;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
 /**
@@ -57,15 +57,15 @@ public class AttachmentEdit extends WContainerWidget {
 		 */
 		WProgressBar progress = new WProgressBar();
 		progress.setFormat(WString.Empty);
-		progress.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+		progress.setVerticalAlignment(AlignmentFlag.Middle);
 		upload_.setProgressBar(progress);
 
 		/*
 		 * The 'remove' option.
 		 */
 		remove_ = new Option(tr("msg.remove"), this);
-		upload_.getDecorationStyle().getFont().setSize(Size.Smaller);
-		upload_.setVerticalAlignment(AlignmentFlag.AlignMiddle);
+		upload_.getDecorationStyle().getFont().setSize(FontSize.Smaller);
+		upload_.setVerticalAlignment(AlignmentFlag.Middle);
 		remove_.setMargin(5, Side.Left);
 
 		remove_.getItem().clicked()
@@ -212,8 +212,7 @@ public class AttachmentEdit extends WContainerWidget {
 
 			String fn = info_.getClientFileName();
 
-            WFileResource res = new WFileResource(info_.getContentType(),
-                    info_.getSpoolFileName(), this);
+            WFileResource res = new WFileResource(info_.getContentType(), info_.getSpoolFileName());
             res.suggestFileName(info_.getClientFileName());
 
             new WAnchor(new WLink(res), fn + " (<i>" + info_.getContentType() + "</i>) " + size, this);

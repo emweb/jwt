@@ -7,7 +7,7 @@
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="lib.dir" value="lib"/>
-  <property name="jwt-lib.dir" value="lib/jwt-lib"/>
+  <property name="jwt-lib.dir" value="WebRoot/WEB-INF/lib"/>
   <property name="bin.dir" value="bin"/>
 
   <property name="jwt.dir" value="../../"/>
@@ -49,8 +49,7 @@
        srcdir="${src.dir}"
        destdir="${build.dir}"
        debug="on"
-       source="1.5"
-       target="1.5">
+       release="11">
       <classpath refid="project.classpath"/>
     </javac>
   </target>
@@ -64,7 +63,8 @@
     </copy>
 
     <war destfile="${dist.dir}/${proj.name}.war" 
-	 webxml="WebRoot/WEB-INF/web.xml">
+	 webxml="WebRoot/WEB-INF/web.xml"
+	 duplicate="preserve">
       <fileset dir="WebRoot"/>
       <lib dir="${jwt-lib.dir}" 
 	   includes="**/*.jar" 

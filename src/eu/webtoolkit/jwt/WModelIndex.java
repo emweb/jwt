@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,6 +7,8 @@ package eu.webtoolkit.jwt;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -106,17 +108,17 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	 * 
 	 * @return the data, or <code>null</code> if no data was available for this role.
 	 */
-	public Object getData(int role) {
+	public Object getData(ItemDataRole role) {
 		return model.getData(this, role);
 	}
 
 	/**
 	 * Returns the data in the model associated at this index.
 	 * 
-	 * Calls {@link #getData(int) getData(ItemDataRole.DisplayRole)}.
+	 * Calls {@link #getData(int) getData(ItemDataRole.Display)}.
 	 */
 	public Object getData() {
-		return getData(ItemDataRole.DisplayRole);
+		return getData(ItemDataRole.Display);
 	}
 
 	/**
@@ -266,7 +268,7 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	 * 
 	 * @see #encodeAsRawIndex()
 	 */
-	public static void encodeAsRawIndexes(SortedSet<WModelIndex> indexes) {
+	public static void encodeAsRawIndexes(Set<WModelIndex> indexes) {
 	    	for (WModelIndex i : indexes)
 			i.encodeAsRawIndex();
 	}
@@ -278,6 +280,23 @@ public class WModelIndex implements Comparable<WModelIndex> {
 	 */
 	public static SortedSet<WModelIndex> decodeFromRawIndexes(SortedSet<WModelIndex> encodedIndexes) {
 		SortedSet<WModelIndex> result = new TreeSet<WModelIndex>();
+
+		for (WModelIndex i : encodedIndexes) {
+			WModelIndex n = i.decodeFromRawIndex();
+			if (n != null)
+				result.add(n);
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * Utility method to decode an entire set of raw indexes.
+	 *
+	 * @see #decodeFromRawIndex()
+	 */
+	public static HashSet<WModelIndex> decodeFromRawIndexes(HashSet<WModelIndex> encodedIndexes) {
+		HashSet<WModelIndex> result = new HashSet<WModelIndex>();
 
 		for (WModelIndex i : encodedIndexes) {
 			WModelIndex n = i.decodeFromRawIndex();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Emweb bvba, Herent, Belgium.
+ * Copyright (C) 2014 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -8,6 +8,7 @@ package eu.webtoolkit.jwt.examples.chart3D;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.webtoolkit.jwt.GLRenderOption;
 import eu.webtoolkit.jwt.ItemDataRole;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -24,7 +25,6 @@ import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WStandardItemModel;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
-import eu.webtoolkit.jwt.WGLWidget.RenderOption;
 import eu.webtoolkit.jwt.chart.Axis;
 import eu.webtoolkit.jwt.chart.ChartType;
 import eu.webtoolkit.jwt.chart.Plane;
@@ -44,7 +44,7 @@ public class ChartApplication extends WApplication {
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/chart3D/template");
 		setLocalizedStrings(resourceBundle);
 		
-		setTheme(new WBootstrapTheme(this));
+		setTheme(new WBootstrapTheme());
 
 		useStyleSheet(new WLink("style.css"));
 		require("mouseHandlers.js");
@@ -68,18 +68,17 @@ public class ChartApplication extends WApplication {
 
 		final WCartesian3DChart chart2 = new WCartesian3DChart(getRoot());
 		// Disabling server side rendering for JWt website.
-		chart2.setRenderOptions(RenderOption.ClientSideRendering, RenderOption.AntiAliasing);
+		chart2.setRenderOptions(GLRenderOption.ClientSide, GLRenderOption.AntiAliasing);
 		
-		chart2.setType(ChartType.ScatterPlot);
+		chart2.setType(ChartType.Scatter);
 
 		chart2.resize(600, 600);
 
-		chart2.axis(Axis.XAxis_3D).setTitle("X");
-		chart2.axis(Axis.YAxis_3D).setTitle("Y");
-		chart2.axis(Axis.ZAxis_3D).setTitle("Z");
+		chart2.axis(Axis.X3D).setTitle("X");
+		chart2.axis(Axis.Y3D).setTitle("Y");
+		chart2.axis(Axis.Z3D).setTitle("Z");
 
-		final WStandardItemModel myModel = new WStandardItemModel(6, 3,
-				getRoot());
+		final WStandardItemModel myModel = new WStandardItemModel(6, 3);
 		myModel.setData(0, 0, 1f);
 		myModel.setData(0, 1, 1f);
 		myModel.setData(0, 2, 1f);
@@ -104,8 +103,7 @@ public class ChartApplication extends WApplication {
 		ff.setDrawLines(true);
 		chart2.addDataSeries(ff);
 
-		final WStandardItemModel myModel2 = new WStandardItemModel(6, 3,
-				getRoot());
+		final WStandardItemModel myModel2 = new WStandardItemModel(6, 3);
 		myModel2.setData(0, 0, 0f);
 		myModel2.setData(0, 1, 0f);
 		myModel2.setData(0, 2, 0f);
@@ -124,8 +122,7 @@ public class ChartApplication extends WApplication {
 		myModel2.setData(5, 0, 0f);
 		myModel2.setData(5, 1, -5f);
 		myModel2.setData(5, 2, 5f);
-		final WStandardItemModel myModel3 = new WStandardItemModel(9, 1,
-				getRoot());
+		final WStandardItemModel myModel3 = new WStandardItemModel(9, 1);
 		myModel3.setData(0, 0, 0);
 		myModel3.setData(1, 0, 1);
 		myModel3.setData(2, 0, 2);
@@ -214,14 +211,14 @@ public class ChartApplication extends WApplication {
 
 		WCartesian3DChart barChart = new WCartesian3DChart(container);
 		// Disabling server side rendering for JWt website.
-		barChart.setRenderOptions(RenderOption.ClientSideRendering, RenderOption.AntiAliasing);
-		barChart.setType(ChartType.CategoryChart);
+		barChart.setRenderOptions(GLRenderOption.ClientSide, GLRenderOption.AntiAliasing);
+		barChart.setType(ChartType.Category);
 		barChart.resize(800, 600);
-		barChart.axis(Axis.ZAxis_3D).setTitle("Z");
-		barChart.setGridEnabled(Plane.XZ_Plane, Axis.ZAxis_3D, true);
-		barChart.setGridEnabled(Plane.YZ_Plane, Axis.ZAxis_3D, true);
+		barChart.axis(Axis.Z3D).setTitle("Z");
+		barChart.setGridEnabled(Plane.XZ, Axis.Z3D, true);
+		barChart.setGridEnabled(Plane.YZ, Axis.Z3D, true);
 
-		WStandardItemModel barModel = new WStandardItemModel(3, 3, container);
+		WStandardItemModel barModel = new WStandardItemModel(3, 3);
 		barModel.setData(0, 0, 0);
 		barModel.setData(0, 1, "A");
 		barModel.setData(0, 2, "B");
@@ -233,10 +230,10 @@ public class ChartApplication extends WApplication {
 		barModel.setData(2, 2, 8);
 		isotopeses_.add(new WGridData(barModel));
 		isotopeses_.get(isotopeses_.size() - 1).setType(
-				Series3DType.BarSeries3D);
+				Series3DType.Bar);
 		barChart.addDataSeries(isotopeses_.get(isotopeses_.size() - 1));
 
-		WStandardItemModel barModel2 = new WStandardItemModel(3, 3, container);
+		WStandardItemModel barModel2 = new WStandardItemModel(3, 3);
 		barModel2.setData(0, 0, 0);
 		barModel2.setData(0, 1, "A");
 		barModel2.setData(0, 2, "B");
@@ -248,10 +245,10 @@ public class ChartApplication extends WApplication {
 		barModel2.setData(2, 2, 13);
 		isotopeses_.add(new WGridData(barModel2));
 		isotopeses_.get(isotopeses_.size() - 1).setType(
-				Series3DType.BarSeries3D);
+				Series3DType.Bar);
 		barChart.addDataSeries(isotopeses_.get(isotopeses_.size() - 1));
 
-		WStandardItemModel barModel3 = new WStandardItemModel(3, 3, container);
+		WStandardItemModel barModel3 = new WStandardItemModel(3, 3);
 		barModel3.setData(0, 0, 0);
 		barModel3.setData(0, 1, "A");
 		barModel3.setData(0, 2, "B");
@@ -262,8 +259,7 @@ public class ChartApplication extends WApplication {
 		barModel3.setData(2, 1, 6);
 		barModel3.setData(2, 2, 2);
 		isotopeses_.add(new WGridData(barModel3));
-		isotopeses_.get(isotopeses_.size() - 1).setType(
-				Series3DType.BarSeries3D);
+		isotopeses_.get(isotopeses_.size() - 1).setType(Series3DType.Bar);
 		barChart.addDataSeries(isotopeses_.get(isotopeses_.size() - 1));
 
 		barChart.clicked().addListener(this,
@@ -278,7 +274,7 @@ public class ChartApplication extends WApplication {
 							for (int x = 1; x <= isotopes.getNbXPoints(); x++) {
 								for (int y = 1; y <= isotopes.getNbYPoints(); y++) {
 									isotopes.getModel().setData(x, y, null,
-											ItemDataRole.MarkerBrushColorRole);
+											ItemDataRole.MarkerBrushColor);
 								}
 							}
 							WBarSelection res = isotopes.pickBar(
@@ -292,13 +288,13 @@ public class ChartApplication extends WApplication {
 						if (closest.index != null) {
 							closestBar.getModel().setData(closest.index,
 									WColor.darkCyan,
-									ItemDataRole.MarkerBrushColorRole);
+									ItemDataRole.MarkerBrushColor);
 						}
 					}
 				});
 		barChart.setAttributeValue("oncontextmenu",
 				"Wt.WT.cancelEvent(event);");
 
-		barChart.axis(Axis.ZAxis_3D).setMaximum(WAxis.AUTO_MAXIMUM);
+		barChart.axis(Axis.Z3D).setMaximum(WAxis.AUTO_MAXIMUM);
 	}
 }

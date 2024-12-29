@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -21,10 +21,10 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * Java to obtain introspection in the types of the arguments, and provide suitable marshaling
  * of data from JavaScript to Java. The easiest way to instantiate an object of this class is:
  * 
- * <code>
- *   JSignal4<String, Integer, Double, Integer> pingSignal
- *      = new JSignal4<String, Integer, Double, Integer>(this, "pingSignal") { };
- * </code>
+ * <pre>
+ *   JSignal4&lt;String, Integer, Double, Integer&gt; pingSignal
+ *      = new JSignal4&lt;String, Integer, Double, Integer&gt;(this, "pingSignal") { };
+ * </pre>
  * 
  * For a usage example take a look the documentation of {@link JSignal2}.
  */

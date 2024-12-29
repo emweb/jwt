@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,7 +7,9 @@ package eu.webtoolkit.jwt.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +24,8 @@ import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.WResource;
@@ -40,6 +44,8 @@ import eu.webtoolkit.jwt.Utils;
  * @see WebResponse
  */
 public class WebRequest extends HttpServletRequestWrapper {
+	private static final Logger logger = LoggerFactory.getLogger(WebRequest.class);
+	
 	private HttpServletRequest httpRequest;
 	
 	/**
@@ -197,7 +203,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		try {
 			parse(progressListener);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IO Exception parsing request", e);
 		}
 	}
 
@@ -307,9 +313,9 @@ public class WebRequest extends HttpServletRequestWrapper {
 							fi.write(f);
 							fi.delete();
 						} catch (IOException e) {
-							e.printStackTrace();
+							logger.error("IOException creating temp file {}", f.getAbsolutePath(), e);
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error("Exception creating temp file {}", f.getAbsolutePath(), e);
 						}
 
 						List<UploadedFile> files = files_.get(fi.getFieldName());
@@ -333,7 +339,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 					}
 				}
 			} catch (FileUploadException e) {
-				e.printStackTrace();
+				logger.info("FileUploadException", e);
 			}
 		} else
 			parseParameters();
@@ -350,16 +356,27 @@ public class WebRequest extends HttpServletRequestWrapper {
 		if (paramContentType != null && paramContentType[0].equals("x-www-form-urlencoded") && this.getContentType() == null) {
 			byte[] buf = new byte[this.getContentLength()];
 			this.getInputStream().read(buf);
+			readParameters(buf);
+		}
+	}
+	
+	/**
+	 * Read and store query parameters
+	 * @param buf UTF-8 encoded byte array with the URI query part
+	 */
+	protected void readParameters(byte[] buf) {
+		try {
 			String[] pairs = new String(buf, "UTF-8").split("\\&");
-
 			for (int i = 0; i < pairs.length; i++) {
-		      String[] fields = {"", ""};
-		      String[] pair = pairs[i].split("=");
-		      for (int j = 0; j < pair.length && j < 2; j++)
-		    	  fields[j] = URLDecoder.decode(pair[j], "UTF-8");
-		      if (!fields[0].equals(""))
-		    	  parameters_.put(fields[0], new String [] { fields[1] });
-		    }
+				String[] fields = { "", "" };
+				String[] pair = pairs[i].split("=");
+				for (int j = 0; j < pair.length && j < 2; j++)
+					fields[j] = URLDecoder.decode(pair[j], "UTF-8");
+				if (!fields[0].equals(""))
+					parameters_.put(fields[0], new String[] { fields[1] });
+			}
+		} catch (UnsupportedEncodingException e) {
+			logger.error("Error decoding url {}", buf, e);
 		}
 
 		String[] wtParamsAr = parameters_.get("Wt-params");
@@ -415,7 +432,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 			try {
 				parseParameters();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("IOException while parsing parameters to get {}", name);
 			}
 
 		if (parameters_.containsKey(name)) {
@@ -433,7 +450,10 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketRequest() {
-		return false;
+		String connectionHeader = getHeader("Connection");
+		String upgradeHeader = getHeader("Upgrade");
+		return connectionHeader != null && upgradeHeader != null &&
+			   connectionHeader.equalsIgnoreCase("Upgrade") && upgradeHeader.equalsIgnoreCase("WebSocket");
 	}
 
 	/**
@@ -443,5 +463,96 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 */
 	public boolean isWebSocketMessage() {
 		return false;
+	}
+
+	public String getClientAddress(final Configuration conf) {
+		final String remoteAddr = getRemoteAddr();
+		if (conf.isBehindReverseProxy()) {
+			String clientIP = str(getHeaderValue("Client-IP"));
+			clientIP = clientIP.trim();
+			List<String> ips = new ArrayList<String>();
+			if (clientIP.length() != 0) {
+				ips = new ArrayList<String>(Arrays.asList(clientIP.split(",")));
+			}
+			String forwardedFor = str(getHeaderValue("X-Forwarded-For"));
+			forwardedFor = forwardedFor.trim();
+			List<String> forwardedIPs = new ArrayList<String>();
+			if (forwardedFor.length() != 0) {
+				forwardedIPs = new ArrayList<String>(Arrays.asList(forwardedFor.split(",")));
+			}
+			ips.addAll(forwardedIPs);
+			for (int i = 0; i < ips.size(); ++i) {
+				String ip = ips.get(i);
+				ip = ip.trim();
+				if (ip.length() != 0 && !isPrivateIP(ip)) {
+					return ip;
+				}
+			}
+		} else if (conf.isTrustedProxy(remoteAddr)) {
+			String originalIP = str(getHeaderValue(conf.getOriginalIPHeader()));
+			originalIP = originalIP.trim();
+			String[] forwardedIPs = originalIP.split("[,]");
+			for (int i = forwardedIPs.length - 1; i >= 0; --i) {
+				final String currentIP = forwardedIPs[i].trim();
+				if (!currentIP.isEmpty() && !conf.isTrustedProxy(currentIP)) {
+					return currentIP;
+				}
+			}
+		}
+		return remoteAddr;
+	}
+
+	public String getHostName(final Configuration conf) {
+		String host = str(getHeaderValue("Host"));
+
+		if (conf.isBehindReverseProxy() ||
+			conf.isTrustedProxy(getRemoteAddr())) {
+			final String forwardedHost = str(getHeaderValue("X-Forwarded-Host"));
+
+			if (!forwardedHost.isEmpty()) {
+				int i = forwardedHost.lastIndexOf(',');
+				if (i == -1) {
+					host = forwardedHost;
+				} else {
+					host = forwardedHost.substring(i + 1);
+				}
+			}
+		}
+
+		return host;
+	}
+
+	public String getUrlScheme(final Configuration conf) {
+		if (conf.isBehindReverseProxy() ||
+			conf.isTrustedProxy(getRemoteAddr())) {
+			final String forwardedProto = str(getHeaderValue("X-Forwarded-Proto"));
+
+			if (!forwardedProto.isEmpty()) {
+				int i = forwardedProto.lastIndexOf(',');
+				if (i == -1) {
+					return forwardedProto;
+				} else {
+					return forwardedProto.substring(i + 1);
+				}
+			}
+		}
+
+		return getScheme();
+	}
+
+	private static String str(String s) {
+		return s != null ? s : "";
+	}
+
+	static boolean isPrivateIP(final String s) {
+		return s.startsWith("127.")
+			|| s.startsWith("10.")
+			|| s.startsWith("192.168.")
+			|| s.length() >= 7
+				&& s.startsWith("172.")
+				&& s.charAt(6) == '.'
+				&& (s.charAt(4) == '1' && s.charAt(5) >= '6' && s.charAt(5) <= '9'
+					|| s.charAt(4) == '2' && s.charAt(5) >= '0' && s.charAt(5) <= '9'
+					|| s.charAt(4) == '3' && s.charAt(5) >= '0' && s.charAt(5) <= '1');
 	}
 }

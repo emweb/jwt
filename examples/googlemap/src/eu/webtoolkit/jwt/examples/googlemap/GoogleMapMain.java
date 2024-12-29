@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -10,7 +10,9 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class GoogleMapMain extends WtServlet {
-    public GoogleMapMain() {
+	private static final long serialVersionUID = 1L;
+
+	public GoogleMapMain() {
         super();
     }
 

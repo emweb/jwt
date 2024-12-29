@@ -1,11 +1,12 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt.examples.painting;
 
 import eu.webtoolkit.jwt.PenStyle;
+import eu.webtoolkit.jwt.RenderHint;
 import eu.webtoolkit.jwt.WBrush;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
@@ -55,7 +56,7 @@ public class ShapesWidget extends WPaintedWidget {
 
     protected void paintEvent(WPaintDevice paintDevice) {
         WPainter painter = new WPainter(paintDevice);
-        painter.setRenderHint(WPainter.RenderHint.Antialiasing);
+        painter.setRenderHint(RenderHint.Antialiasing);
         painter.setShadow(new WShadow(10, 10, new WColor(0, 0, 0, 50), 10));
         painter.translate(this.getWidth().getValue() / 2, this.getHeight()
                 .getValue() / 2);
@@ -71,7 +72,7 @@ public class ShapesWidget extends WPaintedWidget {
 
     private void drawEmwebLogo(WPainter painter) {
         painter.save();
-        painter.setPen(new WPen(PenStyle.NoPen));
+        painter.setPen(new WPen(PenStyle.None));
         painter.setBrush(new WBrush(WColor.black));
         this.drawEmwebE(painter);
         painter.save();

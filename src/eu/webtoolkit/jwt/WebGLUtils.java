@@ -9,12 +9,18 @@ import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.vecmath.GVector;
 import javax.vecmath.GMatrix;
 
 import eu.webtoolkit.jwt.utils.MathUtils;
 
 public class WebGLUtils {
+	private static final Logger logger = LoggerFactory.getLogger(WebGLUtils.class);
+	
 	static String makeFloat(double d) {
 		return MathUtils.roundJs(d, 6);
 	}
@@ -133,7 +139,7 @@ public class WebGLUtils {
     	try {
     		rpd.write(data);
     	} catch (IOException e) {
-    		e.printStackTrace();
+    		logger.error("rpdToMemResource: unexpected IOException", e);
     	}
     	WMemoryResource mr = new WMemoryResource("image/png");
     	mr.setData(data.toByteArray());

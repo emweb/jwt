@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -30,9 +30,16 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 		return name;
 	}
 
+	private String senderId(WObject sender) {
+		if (sender == WApplication.getInstance())
+			return "app";
+		else
+			return sender.getId();
+	}
+
 	@Override
 	String encodeCmd() {
-		return getSender().getId() + "." + name;
+		return senderId(getSender()) + "." + name;
 	}
 
 	protected String createUserEventCall(String jsObject, String jsEvent, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6) {
@@ -65,6 +72,8 @@ public abstract class AbstractJSignal extends AbstractEventSignal {
 				return !jse.userEventArgs.get(index).equals("0");
 			else if (toClass == WMouseEvent.class)
 				return new WMouseEvent(jse);
+			else if (toClass == WTouchEvent.class)
+				return new WTouchEvent(jse);
 			else if (toClass == WKeyEvent.class)
 				return new WKeyEvent(jse);
 			else if (toClass == WGoogleMap.Coordinate.class) {

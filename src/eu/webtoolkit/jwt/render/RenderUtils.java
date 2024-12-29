@@ -2,6 +2,9 @@ package eu.webtoolkit.jwt.render;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.IXMLParser;
 import net.n3.nanoxml.IXMLReader;
@@ -12,6 +15,8 @@ import net.n3.nanoxml.XMLParserFactory;
 import eu.webtoolkit.jwt.XHtmlFilter;
 
 public class RenderUtils {
+	private static final Logger logger = LoggerFactory.getLogger(RenderUtils.class);
+	
 	static boolean isXmlElement(XMLElement node) {
 		return node.getName() != null;
 	}
@@ -100,14 +105,18 @@ public class RenderUtils {
 						
 			return xml;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.info("Exception while parsing xhtml", e);
+			logger.trace("xhtml was: {}", xhtml);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			logger.info("Exception while parsing xhtml", e);
+			logger.trace("xhtml was: {}", xhtml);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.info("Exception while parsing xhtml", e);
+			logger.trace("xhtml was: {}", xhtml);
 		} catch (XMLException e) {
-			e.printStackTrace();
-		} 
+			logger.info("Exception while parsing xhtml: {}", e.toString(), e);
+			logger.trace("xhtml was: {}", xhtml);
+		}
 		return null;
 	}
 }

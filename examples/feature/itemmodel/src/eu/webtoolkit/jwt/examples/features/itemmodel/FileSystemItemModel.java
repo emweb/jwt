@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import eu.webtoolkit.jwt.ItemDataRole;
 import eu.webtoolkit.jwt.WItemModel;
@@ -53,14 +54,16 @@ public class FileSystemItemModel extends WItemModel<File> {
 	}
 
 	@Override
-	public Object getData(WModelIndex index, int role) {
-		if (role != ItemDataRole.DisplayRole)
+	public Object getData(WModelIndex index, ItemDataRole role) {
+		if (!Objects.equals(role, ItemDataRole.Display))
 			return null;
 		
 		File f = getItem(index);
 		if (index.getColumn() == 0)
 			return f.getName();
-		else 
-			return f.getTotalSpace();
+		else if (!f.isDirectory())
+			return f.length();
+		else
+			return "";
 	}
 }

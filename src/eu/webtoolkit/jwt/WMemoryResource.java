@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -28,13 +28,7 @@ public class WMemoryResource extends WResource {
 	 * You must call {@link #setMimeType(String)} and {@link #setData(byte[])} before using the resource.
 	 */
 	public WMemoryResource() {
-		this("", (WObject) null);
-	}
-
-	public WMemoryResource(String mimeType, WObject parent) {
-		super(parent);
-		this.data_ = null;
-		this.mimeType_ = mimeType;
+		this("");
 	}
 
 	/**
@@ -43,7 +37,8 @@ public class WMemoryResource extends WResource {
 	 * You must call {@link #setData(byte[])} before using the resource.
 	 */
 	public WMemoryResource(String mimeType) {
-		this(mimeType, (WObject) null);
+		this.data_ = null;
+		this.mimeType_ = mimeType;
 	}
 
 	/**
@@ -88,7 +83,7 @@ public class WMemoryResource extends WResource {
 	}
 
 	private String mimeType_;
-	private byte[] data_;
+	private volatile byte[] data_;
 
 	/**
 	 * Returns the data.
@@ -102,7 +97,8 @@ public class WMemoryResource extends WResource {
 	@Override
 	protected void handleRequest(WebRequest request, WebResponse response) throws IOException {
 		response.setContentType(mimeType_);
-		if (data_ != null)
-			response.getOutputStream().write(data_);
+		byte[] data = data_;
+		if (data != null)
+			response.getOutputStream().write(data);
 	}
 }

@@ -5,13 +5,15 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMediaPlayer;
 import eu.webtoolkit.jwt.WXmlLocalizedStrings;
-import eu.webtoolkit.jwt.WMediaPlayer.Encoding;
-import eu.webtoolkit.jwt.WMediaPlayer.MediaType;
+import eu.webtoolkit.jwt.MediaEncoding;
+import eu.webtoolkit.jwt.MediaType;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class MediaPlayer extends WtServlet {
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		  WApplication app = new WApplication(env);
@@ -35,16 +37,16 @@ public class MediaPlayer extends WtServlet {
 
 		  WMediaPlayer player = new WMediaPlayer(MediaType.Video, app.getRoot());
 
-		  player.addSource(Encoding.M4V, mp4Video);
-		  player.addSource(Encoding.OGV, ogvVideo);
-		  player.addSource(Encoding.PosterImage, poster);
+		  player.addSource(MediaEncoding.M4V, mp4Video);
+		  player.addSource(MediaEncoding.OGV, ogvVideo);
+		  player.addSource(MediaEncoding.PosterImage, poster);
 		  player.setTitle("<a href=\"http://durian.blender.org/\"target=\"_blank\">Sintel</a>, (c) copyright Blender Foundation");
 
 		  new WText(WString.tr("audio"), app.getRoot());
 
 		  player = new WMediaPlayer(MediaType.Audio, app.getRoot());
 
-		  player.addSource(Encoding.MP3, mp3Audio);
+		  player.addSource(MediaEncoding.MP3, mp3Audio);
 		  player.setTitle("La Sera - Never Come Around");
 		  
 		  return app;

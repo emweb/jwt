@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -15,27 +15,27 @@ public enum Axis {
 	/**
 	 * X axis.
 	 */
-	XAxis(0),
+	X(0),
 	/**
-	 * First Y axis (== Y1Axis).
+	 * First Y axis (== Y1).
 	 */
-	YAxis(1),
+	Y(1),
 	/**
 	 * Second Y Axis.
 	 */
-	Y2Axis(2),
+	Y2(2),
 	/**
-	 * Ordinate axis (== Y1Axis for a 2D plot).
+	 * Ordinate axis (== Y1 for a 2D plot).
 	 */
-	OrdinateAxis(Axis.YAxis.getValue()),
+	Ordinate(Axis.Y.getValue()),
 	
-	YAxis_3D(3);
+	Y3D(3);
 	
-	public static Axis XAxis_3D = Axis.XAxis;
+	public static Axis X3D = Axis.X;
 	
-	public static Axis ZAxis_3D = Axis.YAxis;
+	public static Axis Z3D = Axis.Y;
 	
-	static Axis Y1Axis = YAxis;
+	static Axis Y1 = Y;
 	
 
 	private int value;

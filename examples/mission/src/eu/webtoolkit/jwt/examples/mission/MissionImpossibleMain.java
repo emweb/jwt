@@ -1,9 +1,11 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt.examples.mission;
+
+import java.time.Duration;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
@@ -35,7 +37,7 @@ public class MissionImpossibleMain extends WtServlet {
         new WBreak(appl.getRoot());
 
         new WText("This program will quit in ", appl.getRoot());
-        final CountDownWidget countdown = new CountDownWidget(10, 0, 1000, appl
+        final CountDownWidget countdown = new CountDownWidget(10, 0, Duration.ofMillis(1000L), appl
                 .getRoot());
         new WText(" seconds.", appl.getRoot());
 

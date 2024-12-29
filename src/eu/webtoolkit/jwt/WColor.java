@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -107,6 +107,77 @@ public class WColor {
 		this.blue_ = 0;
 		this.alpha_ = 255;
 		this.name_ = new WString();
+	}
+
+	/**
+	 * Construct a color from a StandardColor.
+	 */
+	public WColor(StandardColor c) {
+		this.default_ = true;
+		this.red_ = 0;
+		this.green_ = 0;
+		this.blue_ = 0;
+		this.alpha_ = 255;
+		this.name_ = new WString();
+
+		WColor otherColor = null;
+		switch (c) {
+			case White:
+				otherColor = white;
+				break;
+			case Black:
+				otherColor = black;
+				break;
+			case Red:
+				otherColor = red;
+				break;
+			case DarkRed:
+				otherColor = darkRed;
+				break;
+			case Green:
+				otherColor = green;
+				break;
+			case DarkGreen:
+				otherColor = darkGreen;
+				break;
+			case Blue:
+				otherColor = blue;
+				break;
+			case DarkBlue:
+				otherColor = darkBlue;
+				break;
+			case Cyan:
+				otherColor = cyan;
+				break;
+			case DarkCyan:
+				otherColor = darkCyan;
+				break;
+			case Magenta:
+				otherColor = magenta;
+				break;
+			case DarkMagenta:
+				otherColor = darkMagenta;
+				break;
+			case Yellow:
+				otherColor = yellow;
+				break;
+			case DarkYellow:
+				otherColor = darkYellow;
+				break;
+			case Gray:
+				otherColor = gray;
+				break;
+			case DarkGray:
+				otherColor = darkGray;
+				break;
+			case LightGray:
+				otherColor = lightGray;
+				break;
+			case Transparent:
+				otherColor = transparent;
+				break;
+		}
+		setRgb(otherColor.getRed(), otherColor.getGreen(), otherColor.getBlue(), otherColor.getAlpha());
 	}
 
 	/**
@@ -287,7 +358,7 @@ public class WColor {
 				&& this.name_.equals(other.name_);
 	}
 
-	String getCssText(boolean withAlpha) {
+	public final String getCssText(boolean withAlpha) {
 		if (this.default_) {
 			return "";
 		} else {

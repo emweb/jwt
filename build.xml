@@ -1,17 +1,19 @@
 <project name="jwt" default="all" basedir=".">
   <!-- Name of project and version -->
   <property name="proj.name" value="jwt"/>
-  <property name="proj.version" value="3.3.6"/>
+  <property name="proj.version" value="4.11.1"/>
 
   <!-- Global properties for this build -->
   <property name="src.java.dir" value="src"/>
   <property name="test.java.dir" value="test"/>
+  <property name="report.dir" value="report"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
   <property name="archives.dir" value="archives"/>
   <property name="mvn.dir" value="mvn"/>
   <property name="javadoc.jwt.dir" value="doc/javadoc"/>
   <property name="javadoc.jwt-auth.dir" value="doc/auth/javadoc"/>
+  <property name="javadoc.thirdparty.dir" value="doc/thirdparty/javadoc"/>
   <property name="userguide.dir" value="doc/userguide"/>
 
   <!-- Javadoc classpath declaration -->
@@ -44,16 +46,12 @@
     </delete>
   </target>
 
-  <condition property="jdk6">
-    <not>
-      <contains string="${java.version}" substring="1.5"
-		casesensitive="false" />
-    </not>
-  </condition>
-
   <target name="run">
-    <java jar="lib/antlr-3.5.2-complete.jar" fork="true">
-      <arg line="src/eu/webtoolkit/jwt/render/Css21.g"/>
+    <java jar="lib/antlr-4.7.2-complete.jar" fork="true" dir="src/eu/webtoolkit/jwt">
+      <arg line="-no-listener -visitor -package eu.webtoolkit.jwt PluralExpression.g4" />
+    </java>
+    <java jar="lib/antlr-4.7.2-complete.jar" fork="true" dir="src/eu/webtoolkit/jwt/render">
+      <arg line="-listener -no-visitor -package eu.webtoolkit.jwt.render Css22.g4" />
     </java>
   </target>
 
@@ -64,8 +62,7 @@
        srcdir="${src.java.dir}"
        destdir="${build.dir}"
        debug="on"
-       source="1.5"
-       target="1.5">
+       release="11">
       <src path="${src.java.dir}"/>        
       <src path="${test.java.dir}"/>        
       <classpath >
@@ -88,6 +85,9 @@
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/skeletons"/>
     </copy>
+    <copy todir="${build.dir}/resources/wt-resources">
+      <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/wt-resources"/>
+    </copy>
     <copy todir="${build.dir}/eu/webtoolkit/jwt/wt-resources">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/wt-resources"/>
     </copy>
@@ -96,14 +96,39 @@
 	<include name="eu/webtoolkit/jwt/*.java"/>
 	<include name="eu/webtoolkit/jwt/*.xml"/>
 	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
+	<exclude name="eu/webtoolkit/jwt/servlet/HttpUtils.java"/>
 	<include name="eu/webtoolkit/jwt/chart/*.java"/>
 	<include name="eu/webtoolkit/jwt/render/*.java"/>
+	<exclude name="eu/webtoolkit/jwt/render/CssData.java"/>
+	<exclude name="eu/webtoolkit/jwt/render/CssData_p.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.java"/>
 	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
 	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+  <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
 	<include name="eu/webtoolkit/jwt/utils/*.java"/>
+	<include name="eu/webtoolkit/jwt/utils/whatwg/*.java"/>
+  <include name="eu/webtoolkit/jwt/thirdparty/qrcodegen/*.java"/>
       </fileset>
     </copy>
+  </target>
+
+  <target name="test" depends="build">
+    <mkdir dir="${report.dir}"/>
+    <junit printsummary="yes" haltonfailure="no">
+      <classpath refid="project.classpath" />
+      <classpath location="${build.dir}" />
+      <classpath location="${test.java.dir}" />
+      <classpath location="." />
+
+      <formatter type="plain" />
+      <formatter type="xml" />
+
+      <batchtest fork="yes" todir="${report.dir}">
+	<fileset dir="${test.java.dir}">
+	  <include name="**/*Test*.java" />
+	</fileset>
+      </batchtest>
+    </junit>
   </target>
   
   <target name="javadoc" depends="dist">
@@ -119,16 +144,18 @@
        additionalparam="-Xdoclint:none"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
-	<include name="eu/webtoolkit/jwt/chart/*.java"/>
-	<include name="eu/webtoolkit/jwt/render/*.java"/>
-	<include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
-	<exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
-	<exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
-	<exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
-	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/*.java"/>
+        <include name="eu/webtoolkit/jwt/servlet/*.java"/>
+        <include name="eu/webtoolkit/jwt/chart/*.java"/>
+        <include name="eu/webtoolkit/jwt/render/*.java"/>
+        <include name="eu/webtoolkit/jwt/utils/WebGraphics2D.java"/>
+        <exclude name="eu/webtoolkit/jwt/XSSFilter.java"/>
+        <exclude name="eu/webtoolkit/jwt/ServletApi25.java"/>
+        <exclude name="eu/webtoolkit/jwt/ServletApi3.java"/>
+        <include name="eu/webtoolkit/jwt/auth/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
+        <include name="eu/webtoolkit/jwt/thirdparty/qrcodegen/*.java"/>
       </fileset>
     </javadoc>
     <copy todir="${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
@@ -182,17 +209,23 @@
        link="../jwt/"
        >
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
       </fileset>
     </javadoc>
   </target>
 
   <target name="asciidoc">
-    <exec executable="asciidoc">
-      <arg value="-a toc" />
-      <arg value="-a numbered" />
-      <arg value="${userguide.dir}/userguide.doc" />
+    <exec executable="asciidoctor">
+      <arg value="-a" /><arg value="toc" />
+      <arg value="-a" /><arg value="numbered" />
+      <arg value="-a" /><arg value="icons=font" />
+      <arg value="-a" /><arg value="source-highlighter=highlight.js" />
+      <arg value="-a" /><arg value="linkcss" />
+      <arg value="-a" /><arg value="stylesheet=jwt.css" />
+      <arg value="-o" /><arg value="${userguide.dir}/userguide.html" />
+      <arg value="${userguide.dir}/userguide.adoc" />
     </exec>
   </target>
 
@@ -200,12 +233,26 @@
     <mkdir dir="${dist.dir}"/>
     <jar  destfile="dist/jwt-${proj.version}.jar" 
           basedir="${build.dir}" 
-          defaultexcludes="yes" 
-          includes="eu/webtoolkit/jwt/* eu/webtoolkit/jwt/servlet/* eu/webtoolkit/jwt/chart/* eu/webtoolkit/jwt/render/* eu/webtoolkit/jwt/utils/* net/n3/nanoxml/* eu/webtoolkit/jwt/skeletons/* eu/webtoolkit/jwt/wt-resources/**/*" />
+          defaultexcludes="yes"
+          includes="eu/webtoolkit/jwt/*
+                    eu/webtoolkit/jwt/servlet/*
+                    eu/webtoolkit/jwt/chart/*
+                    eu/webtoolkit/jwt/render/*
+                    eu/webtoolkit/jwt/utils/*
+                    eu/webtoolkit/jwt/utils/whatwg/*
+                    net/n3/nanoxml/*
+                    eu/webtoolkit/jwt/skeletons/*
+                    eu/webtoolkit/jwt/wt-resources/**/*">
+      <metainf dir="${build.dir}" includes="resources/wt-resources/**/*"/>
+    </jar>
     <jar  destfile="dist/jwt-auth-${proj.version}.jar" 
           basedir="${build.dir}" 
           defaultexcludes="yes" 
-          includes="eu/webtoolkit/jwt/auth/* eu/webtoolkit/jwt/auth/jpa/*" />
+          includes="eu/webtoolkit/jwt/auth/*
+                    eu/webtoolkit/jwt/auth/jpa/*
+                    eu/webtoolkit/jwt/auth/mfa/*
+                    eu/webtoolkit/jwt/thirdparty/*
+                    eu/webtoolkit/jwt/thirdparty/qrcodegen/*" />
   </target>
 
   <target name="mvn" depends="mvn-javadoc">
@@ -218,19 +265,22 @@
 
     <jar jarfile="dist/jwt-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/*.java"/>
-	<include name="eu/webtoolkit/jwt/*.xml"/>
-	<include name="eu/webtoolkit/jwt/servlet/*.java"/>
-	<include name="eu/webtoolkit/jwt/chart/*.java"/>
-	<include name="eu/webtoolkit/jwt/render/*.java"/>
-	<include name="eu/webtoolkit/jwt/utils/*.java"/>
+        <include name="eu/webtoolkit/jwt/*.java"/>
+        <include name="eu/webtoolkit/jwt/*.xml"/>
+        <include name="eu/webtoolkit/jwt/servlet/*.java"/>
+        <include name="eu/webtoolkit/jwt/chart/*.java"/>
+        <include name="eu/webtoolkit/jwt/render/*.java"/>
+        <include name="eu/webtoolkit/jwt/utils/*.java"/>
+        <include name="eu/webtoolkit/jwt/utils/whatwg/*.java"/>
       </fileset>
     </jar>
     <jar jarfile="dist/jwt-auth-${proj.version}-sources.jar">
       <fileset dir="${src.java.dir}" defaultexcludes="yes">
-	<include name="eu/webtoolkit/jwt/auth/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
-	<include name="eu/webtoolkit/jwt/auth/*.xml"/>
+        <include name="eu/webtoolkit/jwt/auth/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/jpa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/mfa/*.java"/>
+        <include name="eu/webtoolkit/jwt/auth/*.xml"/>
+        <include name="eu/webtoolkit/jwt/thirdparty/qrcodegen/*.java"/>
       </fileset>
     </jar>
   </target>

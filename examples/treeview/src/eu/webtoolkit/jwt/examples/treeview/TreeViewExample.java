@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.LinkType;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WObject;
 import eu.webtoolkit.jwt.WPanel;
@@ -54,9 +56,9 @@ public class TreeViewExample extends WContainerWidget {
 		this.treeView_.setRowHeight(new WLength(25));
 		this.treeView_.setModel(this.model_);
 		this.treeView_.setColumnWidth(1, new WLength(100));
-		this.treeView_.setColumnAlignment(1, AlignmentFlag.AlignCenter);
+		this.treeView_.setColumnAlignment(1, AlignmentFlag.Center);
 		this.treeView_.setColumnWidth(3, new WLength(100));
-		this.treeView_.setColumnAlignment(3, AlignmentFlag.AlignCenter);
+		this.treeView_.setColumnAlignment(3, AlignmentFlag.Center);
 		this.treeView_.setExpanded(model.getIndex(0, 0), true);
 		this.treeView_.setExpanded(model.getIndex(0, 0, model.getIndex(0, 0)),
 				true);
@@ -98,7 +100,7 @@ public class TreeViewExample extends WContainerWidget {
 
 	public static WStandardItemModel createModel(boolean useInternalPath,
 			WObject parent) {
-		WStandardItemModel result = new WStandardItemModel(0, 4, parent);
+		WStandardItemModel result = new WStandardItemModel(0, 4);
 		result.setHeaderData(0, Orientation.Horizontal, "Places");
 		result.setHeaderData(1, Orientation.Horizontal, "Weather");
 		result.setHeaderData(2, Orientation.Horizontal, "Drink");
@@ -156,7 +158,7 @@ public class TreeViewExample extends WContainerWidget {
 		result.add(item);
 		item = new WStandardItem(drink);
 		if (useInternalPath) {
-			item.setInternalPath("/drinks/" + drink);
+			item.setLink(new WLink(LinkType.InternalPath, "/drinks/" + drink));
 		}
 		result.add(item);
 		item = new WStandardItem();

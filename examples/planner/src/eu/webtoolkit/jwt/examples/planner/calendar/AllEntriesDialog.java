@@ -4,7 +4,6 @@ import java.util.List;
 
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WDialog;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,6 +9,7 @@ import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WText;
 
 /**
@@ -30,7 +31,7 @@ public class DragExample extends WContainerWidget {
         }
 
         WContainerWidget pills = new WContainerWidget(this);
-        pills.setContentAlignment(AlignmentFlag.AlignCenter);
+        pills.setContentAlignment(AlignmentFlag.Center);
 
         createDragImage("icons/blue-pill.jpg", "icons/blue-pill-small.png",
                 "blue-pill", pills);
@@ -52,8 +53,8 @@ public class DragExample extends WContainerWidget {
      */
     private WImage createDragImage(String url, String smallurl,
             String mimeType, WContainerWidget p) {
-        WImage result = new WImage(url, p);
-        WImage dragImage = new WImage(smallurl, p);
+        WImage result = new WImage(new WLink(url), p);
+        WImage dragImage = new WImage(new WLink(smallurl), p);
 
         /*
          * Set the image to be draggable, showing the other image (dragImage) to

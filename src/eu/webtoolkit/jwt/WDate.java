@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -508,7 +509,7 @@ public class WDate implements Comparable<WDate> {
 	 * Returns the default date format.
 	 */
 	public static String getDefaultFormat() {
-		return "ddd MMM d HH:mm:ss yyyy";
+		return "EEE MMM d HH:mm:ss yyyy";
 	}
 
 	/**
@@ -519,10 +520,24 @@ public class WDate implements Comparable<WDate> {
 	 */
 	public static WDate getCurrentDate() {
 		if (WApplication.getInstance() != null) {
-			int timeZoneOffset = WApplication.getInstance().getEnvironment().getTimeZoneOffset();
-			return getCurrentServerDate().addSeconds(60 * timeZoneOffset);
+			java.time.Duration timeZoneOffset = WApplication.getInstance().getEnvironment().getTimeZoneOffset();
+			return getUTCDate().addSeconds((int)timeZoneOffset.getSeconds());
 		} else
 			return getCurrentServerDate();
+	}
+	
+	private static WDate getUTCDate() {
+		// http://stackoverflow.com/a/2528480/1896048
+		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+		//Local time zone
+		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+		
+		Date utcDate = new Date();
+		try { //Time in GMT
+			utcDate = dateFormatLocal.parse(dateFormatGmt.format(new Date()));
+		} catch (ParseException e) {}
+		return new WDate(utcDate);
 	}
 
 	/**
@@ -552,14 +567,14 @@ public class WDate implements Comparable<WDate> {
 	 * 
 	 * @see #getLongDayName(int)
 	 */
-	public static String getShortDayName(int weekday) {
+	public static WString getShortDayName(int weekday) {
 		final String[] shortDayNames = { "Mon", "Tue", "Wed", "Thu",
 			"Fri", "Sat", "Sun" };
 
 		if (WApplication.getInstance() != null)
-			return WString.tr("Wt.WDate.3." + shortDayNames[weekday - 1]).getValue();
+			return WString.tr("Wt.WDate.3." + shortDayNames[weekday - 1]);
 		else
-			return shortDayNames[weekday - 1];
+			return new WString(shortDayNames[weekday - 1]);
 	}
 
 	/**
@@ -584,14 +599,14 @@ public class WDate implements Comparable<WDate> {
 	 * 
 	 * @see #getLongMonthName(int)
 	 */
-	public static String getShortMonthName(int month) {
+	public static WString getShortMonthName(int month) {
 		final String[] shortMonthNames = { "Jan", "Feb", "Mar",
 			"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 		
 		if (WApplication.getInstance() != null)
-			return WString.tr("Wt.WDate." + shortMonthNames[month - 1]).getValue();
+			return WString.tr("Wt.WDate." + shortMonthNames[month - 1]);
 		else
-			return shortMonthNames[month - 1];
+			return new WString(shortMonthNames[month - 1]);
 	}
 
 	/**
@@ -611,14 +626,14 @@ public class WDate implements Comparable<WDate> {
 	 * 
 	 * @see #getShortDayName(int)
 	 */
-	public static String getLongDayName(int weekday) {
+	public static WString getLongDayName(int weekday) {
 		final String[] longDayNames = { "Monday", "Tuesday",
 			"Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 
 		if (WApplication.getInstance() != null)
-			return WString.tr("Wt.WDate." + longDayNames[weekday - 1]).getValue();
+			return WString.tr("Wt.WDate." + longDayNames[weekday - 1]);
 		else
-			return longDayNames[weekday - 1];
+			return new WString(longDayNames[weekday - 1]);
 	}
 
 	/**
@@ -643,15 +658,15 @@ public class WDate implements Comparable<WDate> {
 	 * 
 	 * @see #getShortDayName(int)
 	 */
-	public static String getLongMonthName(int month) {
+	public static WString getLongMonthName(int month) {
 		final String[] longMonthNames = { "January", "February",
 			"March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December" };
 
 		if (WApplication.getInstance() != null)
-			return WString.tr("Wt.WDate." + longMonthNames[month - 1]).getValue();
+			return WString.tr("Wt.WDate." + longMonthNames[month - 1]);
 		else
-			return longMonthNames[month - 1];
+			return new WString(longMonthNames[month - 1]);
 	}
 
 	/**
@@ -755,22 +770,22 @@ public class WDate implements Comparable<WDate> {
 	 * The <i>format</i> is a string interpreted by {@link SimpleDateFormat}.
 	 */
 	public String toString(String format) {
-		SimpleDateFormat formatter = new SimpleDateFormat(format);
-		return formatter.format(this.d);
+		return toString(format, true);
 	}
 	
 	public String toString(String format, boolean localized) {
-		return toString(format);
+		SimpleDateFormat formatter = localized ? new SimpleDateFormat(format) : new SimpleDateFormat(format, Locale.ENGLISH);
+		return formatter.format(this.d);
 	}
 
-	static WDate getPreviousWeekday(WDate d, Day gw) {
+	static WDate getPreviousWeekday(WDate d, int gw) {
 		Calendar c = createCalendar();
 		c.setTime(d.d);
 		
 		// FIXME we shouldn't need a loop here!
 		while (true) {
 			c.add(Calendar.DATE, -1);
-			if (c.get(Calendar.DAY_OF_WEEK) == gw.calendarCode)
+			if (c.get(Calendar.DAY_OF_WEEK) == (gw == 7 ? 1 : gw + 1))
 				break;
 		}
 		

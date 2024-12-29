@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messages>
+<messages nplurals="2"
+          plural="n == 1 ? 0 : 1">
   <message id="Wt.QuittedMessage">
     The application has stopped running, would you like to restart?
   </message>
@@ -56,26 +57,46 @@
   <message id="Wt.WDatePicker.Close">Close</message>
 
   <message id="Wt.WDateTime.LessThanASecond">less than a second</message>
-  <message id="Wt.WDateTime.second">one second</message>
-  <message id="Wt.WDateTime.seconds">{1} seconds</message>
-  <message id="Wt.WDateTime.minute">one minute</message>
-  <message id="Wt.WDateTime.minutes">{1} minutes</message>
-  <message id="Wt.WDateTime.hour">one hour</message>
-  <message id="Wt.WDateTime.hours">{1} hours</message>
-  <message id="Wt.WDateTime.day">one day</message>
-  <message id="Wt.WDateTime.days">{1} days</message>
-  <message id="Wt.WDateTime.week">one week</message>
-  <message id="Wt.WDateTime.weeks">{1} weeks</message>
-  <message id="Wt.WDateTime.month">one month</message>
-  <message id="Wt.WDateTime.months">{1} months</message>
-  <message id="Wt.WDateTime.year">one year</message>
-  <message id="Wt.WDateTime.years">{1} years</message>
+  <message id="Wt.WDateTime.seconds">
+    <plural case="0">one second</plural>
+    <plural case="1">{1} seconds</plural>
+  </message>
+  <message id="Wt.WDateTime.minutes">
+    <plural case="0">one minute</plural>
+    <plural case="1">{1} minutes</plural>
+  </message>
+  <message id="Wt.WDateTime.hours">
+    <plural case="0">one hour</plural>
+    <plural case="1">{1} hours</plural>
+  </message>
+  <message id="Wt.WDateTime.days">
+    <plural case="0">one day</plural>
+    <plural case="1">{1} days</plural>
+  </message>
+  <message id="Wt.WDateTime.weeks">
+    <plural case="0">one week</plural>
+    <plural case="1">{1} weeks</plural>
+  </message>
+  <message id="Wt.WDateTime.months">
+    <plural case="0">one month</plural>
+    <plural case="1">{1} months</plural>
+  </message>
+  <message id="Wt.WDateTime.years">
+    <plural case="0">one year</plural>
+    <plural case="1">{1} years</plural>
+  </message>
   <message id="Wt.WDateTime.null"></message>
 
   <message id="Wt.WDateValidator.DateTooEarly">The date must be after {1}</message>
   <message id="Wt.WDateValidator.DateTooLate">The date must be before {1}</message>
   <message id="Wt.WDateValidator.WrongDateRange">The date must be between {1} and {2}</message>
   <message id="Wt.WDateValidator.WrongFormat">Must be a date in the format '{1}'</message>
+
+  <message id="Wt.WEmailValidator.Invalid">Must be a valid email address</message>
+  <message id="Wt.WEmailValidator.Invalid.Multiple">Must be a comma-separated list of email addresses</message>
+  <message id="Wt.WEmailValidator.NotMatching">Must be an email address matching the pattern '{1}'</message>
+  <message
+    id="Wt.WEmailValidator.NotMatching.Multiple">Must be a comma-separated list of email addresses matching the pattern '{1}'</message>
 
   <message id="Wt.WTimeValidator.TimeTooEarly">The time must be after {1}</message>
   <message id="Wt.WTimeValidator.TimeTooLate">The time must be before {1}</message>
@@ -92,9 +113,8 @@
   <!-- From WDialog-center.js: -->
   <message id="Wt.WDialog.CenterJS">
     /* <![CDATA[ */
-(function(d,e,f){function g(){var a,b;if(typeof window.innerWidth==="number"){a=window.innerWidth;b=window.innerHeight}else{a=document.documentElement.clientWidth;b=document.documentElement.clientHeight}return{x:a,y:b}}function c(){var a=document.getElementById(d);if(a.style.display!="none"&&a.style.visibility!="hidden"){var b=g(),h=a.offsetWidth,i=a.offsetHeight;if(e){a.style.left=Math.round((b.x-h)/2)+"px";a.style.marginLeft="0px"}if(f){a.style.top=Math.round((b.y-i)/2)+"px";a.style.marginTop="0px"}a.style.visibility=
-"visible"}}window.addEventListener?window.addEventListener("DOMContentLoaded",c,false):document.attachEvent("onDOMContentLoaded",c)})($el,$centerX,$centerY);
-  /* ]]> */
+      !function(e,t,n){window.addEventListener("DOMContentLoaded",(function(){const i=document.getElementById(e);if("none"!==i.style.display&&"hidden"!==i.style.visibility){const e=function(){let e,t;if("number"==typeof window.innerWidth){e=window.innerWidth;t=window.innerHeight}else{e=document.documentElement.clientWidth;t=document.documentElement.clientHeight}return{x:e,y:t}}(),o=i.offsetWidth,d=i.offsetHeight;if(t){i.style.left=Math.round((e.x-o)/2)+"px";i.style.marginLeft="0px"}if(n){i.style.top=Math.round((e.y-d)/2)+"px";i.style.marginTop="0px"}i.style.visibility="visible"}}),!1)}($el,$centerX,$centerY);
+    /* ]]> */
   </message>
 
   <message id="Wt.WDoubleValidator.NotANumber">Must be a number</message>
@@ -160,31 +180,31 @@
     </div>
     <div class="jp-interface">
       <div class="jp-progress">
-	${progress-bar}
+        ${progress-bar}
       </div>
       ${current-time}
       ${duration}
       <div class="jp-controls-holder">
-	<ul class="jp-controls">
-	  <li>${play-btn}</li>
-	  <li>${pause-btn}</li>
-	  <li>${stop-btn}</li>
-	  <li>${mute-btn}</li>
-	  <li>${unmute-btn}</li>
-	  <li>${volume-max-btn}</li>
-	</ul>
-	${volume-bar}
-	<ul class="jp-toggles">
-	  <li>${full-screen-btn}</li>
-	  <li>${restore-screen-btn}</li>
-	  <li>${repeat-btn}</li>
-	  <li>${repeat-off-btn}</li>
-	</ul>
+        <ul class="jp-controls">
+          <li>${play-btn}</li>
+          <li>${pause-btn}</li>
+          <li>${stop-btn}</li>
+          <li>${mute-btn}</li>
+          <li>${unmute-btn}</li>
+          <li>${volume-max-btn}</li>
+        </ul>
+        ${volume-bar}
+        <ul class="jp-toggles">
+          <li>${full-screen-btn}</li>
+          <li>${restore-screen-btn}</li>
+          <li>${repeat-btn}</li>
+          <li>${repeat-off-btn}</li>
+        </ul>
       </div>
       <div class="jp-title" style="display: ${title-display}">
-	<ul>
-	  <li>${title}</li>
-	</ul>
+        <ul>
+          <li>${title}</li>
+        </ul>
       </div>
     </div>
   </message>
@@ -192,29 +212,29 @@
   <message id="Wt.WMediaPlayer.defaultgui-audio">
     <div class="jp-interface">
       <ul class="jp-controls">
-	<li>${play-btn}</li>
-	<li>${pause-btn}</li>
-	<li>${stop-btn}</li>
-	<li>${mute-btn}</li>
-	<li>${unmute-btn}</li>
-	<li>${volume-max-btn}</li>
+        <li>${play-btn}</li>
+        <li>${pause-btn}</li>
+        <li>${stop-btn}</li>
+        <li>${mute-btn}</li>
+        <li>${unmute-btn}</li>
+        <li>${volume-max-btn}</li>
       </ul>
       <div class="jp-progress">
-	${progress-bar}
+        ${progress-bar}
       </div>
       ${volume-bar}
       <div class="jp-time-holder">
-	${current-time}
-	${duration}
-	<ul class="jp-toggles">
-	  <li>${repeat-btn}</li>
-	  <li>${repeat-off-btn}</li>
-	</ul>
+        ${current-time}
+        ${duration}
+        <ul class="jp-toggles">
+          <li>${repeat-btn}</li>
+          <li>${repeat-off-btn}</li>
+        </ul>
       </div>
     </div>
     <div class="jp-title" style="display: ${title-display}">
       <ul>
-	<li>${title}</li>
+        <li>${title}</li>
       </ul>
     </div>
   </message>
@@ -222,10 +242,10 @@
   <message id="Wt.WNavigationBar.template">
     <div class="navbar-inner">
       <div class="container">
-	${collapse-button}
-	${expand-button}
-	${title-link}
-	${contents}
+        ${collapse-button}
+        ${expand-button}
+        ${title-link}
+        ${contents}
       </div>
     </div>
   </message>
@@ -246,9 +266,13 @@
 
   <message id="Wt.WTreeNode.template">
     <div class="Wt-item ${trunk-class} ${selected}">
-      ${cols-row}${expand}${label-area}
+      ${cols-row}${expand}${no-expand}${label-area}
     </div>
     <div style="clear: both"></div>
     ${children}
+  </message>
+
+  <message id="Wt.WDialog.titlebar">
+    <h4>${title}</h4>
   </message>
 </messages>

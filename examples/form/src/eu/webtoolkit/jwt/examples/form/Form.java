@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,8 +9,13 @@ import java.util.Date;
 import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.FontSize;
+import eu.webtoolkit.jwt.FontStyle;
+import eu.webtoolkit.jwt.FontWeight;
+import eu.webtoolkit.jwt.LengthUnit;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal;
+import eu.webtoolkit.jwt.ValidationState;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WColor;
@@ -20,7 +25,6 @@ import eu.webtoolkit.jwt.WCssDecorationStyle;
 import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WDatePicker;
 import eu.webtoolkit.jwt.WDateValidator;
-import eu.webtoolkit.jwt.WFont;
 import eu.webtoolkit.jwt.WFormWidget;
 import eu.webtoolkit.jwt.WIntValidator;
 import eu.webtoolkit.jwt.WLabel;
@@ -111,7 +115,7 @@ public class Form extends WTable {
             WApplication.getInstance().quit();
         } else {
             // play a error mp3
-            WSound beep = new WSound("sounds/beep.mp3", this);
+            WSound beep = new WSound("sounds/beep.mp3");
             beep.play();
         }
     }
@@ -123,10 +127,10 @@ public class Form extends WTable {
         // Title
         getElementAt(row, 0).setColumnSpan(3);
         getElementAt(row, 0).setContentAlignment(
-                EnumSet.of(AlignmentFlag.AlignTop, AlignmentFlag.AlignCenter));
+                EnumSet.of(AlignmentFlag.Top, AlignmentFlag.Center));
         getElementAt(row, 0).setPadding(new WLength(10));
         WText title = new WText(tr("example.form"), getElementAt(row, 0));
-        title.getDecorationStyle().getFont().setSize(WFont.Size.XLarge);
+        title.getDecorationStyle().getFont().setSize(FontSize.XLarge);
 
         // error messages
         ++row;
@@ -136,9 +140,9 @@ public class Form extends WTable {
 
         WCssDecorationStyle errorStyle = feedbackMessages_.getDecorationStyle();
         errorStyle.setForegroundColor(WColor.red);
-        errorStyle.getFont().setSize(WFont.Size.Smaller);
-        errorStyle.getFont().setWeight(WFont.Weight.Bold);
-        errorStyle.getFont().setStyle(WFont.Style.Italic);
+        errorStyle.getFont().setSize(FontSize.Smaller);
+        errorStyle.getFont().setWeight(FontWeight.Bold);
+        errorStyle.getFont().setStyle(FontStyle.Italic);
 
         // Name
         ++row;
@@ -219,11 +223,11 @@ public class Form extends WTable {
         });
         submit.setMargin(15, Side.Top);
         getElementAt(row, 0).setColumnSpan(3);
-        getElementAt(row, 0).setContentAlignment(AlignmentFlag.AlignTop,
-                AlignmentFlag.AlignCenter);
+        getElementAt(row, 0).setContentAlignment(AlignmentFlag.Top,
+                AlignmentFlag.Center);
 
         // Set column widths for label and validation icon
-        getElementAt(2, 0).resize(new WLength(30, WLength.Unit.FontEx),
+        getElementAt(2, 0).resize(new WLength(30, LengthUnit.FontEx),
                 WLength.Auto);
         getElementAt(2, 1).resize(new WLength(20), WLength.Auto);
     }
@@ -268,7 +272,7 @@ public class Form extends WTable {
      * on problems.
      */
     private boolean checkValid(WFormWidget edit, WString text) {
-        if (edit.validate() != WValidator.State.Valid) {
+        if (edit.validate() != ValidationState.Valid) {
             feedbackMessages_.addWidget(new WText(text));
             feedbackMessages_.addWidget(new WBreak());
             edit.getLabel().getDecorationStyle().setForegroundColor(WColor.red);

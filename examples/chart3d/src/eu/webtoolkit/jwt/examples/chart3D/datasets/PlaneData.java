@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Emweb bvba, Herent, Belgium.
+ * Copyright (C) 2014 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,18 +7,20 @@ package eu.webtoolkit.jwt.examples.chart3D.datasets;
 
 import eu.webtoolkit.jwt.*;
 
+import java.util.Objects;
+
 public class PlaneData extends WStandardItemModel {
-	public PlaneData(int nbXpts, int nbYpts, WObject parent) {
-		this(nbXpts, nbYpts, parent, false);
+	public PlaneData(int nbXpts, int nbYpts) {
+		this(nbXpts, nbYpts, false);
 	}
 
-	public PlaneData(int nbXpts, int nbYpts, WObject parent, boolean reversedy) {
-		this(nbXpts, nbYpts, parent, false, reversedy);
+	public PlaneData(int nbXpts, int nbYpts, boolean reversedy) {
+		this(nbXpts, nbYpts, false, reversedy);
 	}
 
-	public PlaneData(int nbXpts, int nbYpts, WObject parent, boolean reversedx,
+	public PlaneData(int nbXpts, int nbYpts, boolean reversedx,
 			boolean reversedy) {
-		super(nbXpts + 1, nbYpts + 1, parent);
+		super(nbXpts + 1, nbYpts + 1);
 		this.xStart_ = -10.0;
 		this.xEnd_ = 10.0;
 		this.yStart_ = -10.0;
@@ -27,12 +29,8 @@ public class PlaneData extends WStandardItemModel {
 		this.reversedy_ = reversedy;
 	}
 
-	public PlaneData(int nbXpts, int nbYpts) {
-		this(nbXpts, nbYpts, (WObject) null);
-	}
-
-	public Object getData(final WModelIndex index, int role) {
-		if (role != ItemDataRole.DisplayRole) {
+	public Object getData(final WModelIndex index, ItemDataRole role) {
+		if (!Objects.equals(role, ItemDataRole.Display)) {
 			return super.getData(index, role);
 		}
 		double delta_x = (this.xEnd_ - this.xStart_) / (this.getRowCount() - 2);

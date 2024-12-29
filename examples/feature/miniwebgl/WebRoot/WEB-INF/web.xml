@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+  <listener>
+    <listener-class>eu.webtoolkit.jwt.ServletInit</listener-class>
+  </listener>
+
+  <session-config>
+    <session-timeout>1</session-timeout>
+  </session-config>
+
+  <servlet>
+    <servlet-name>miniwebgl</servlet-name>
+    <servlet-class>eu.webtoolkit.jwt.examples.features.miniwebgl.MiniWebGL</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>miniwebgl</servlet-name>
+    <url-pattern>/miniwebgl/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

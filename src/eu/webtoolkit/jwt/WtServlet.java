@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -27,14 +27,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+import javax.websocket.Endpoint;
+import javax.websocket.WebSocketContainer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
-import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.servlet.WebRequest.ProgressListener;
-import eu.webtoolkit.jwt.utils.JarUtils;
+import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.MathUtils;
 import eu.webtoolkit.jwt.utils.StreamUtils;
 
@@ -93,18 +94,20 @@ public abstract class WtServlet extends HttpServlet {
 	
 	private List<WResource> staticResources = new ArrayList<WResource>();
 
+	private int idForWebSocket = -1;
+
 	static final String Boot_html;
 	static final String Plain_html;
 	static final String Wt_js;
 	static final String Boot_js;
 	static final String Hybrid_html;
-	static final String JQuery_js;
 	static final String Wt_xml = "/eu/webtoolkit/jwt/wt";
 	public static final String AuthStrings_xml = "/eu/webtoolkit/jwt/auth/auth_strings";
 	static final String AuthCssTheme_xml = "/eu/webtoolkit/jwt/auth/auth_css_theme";
 	static final String AuthBootstrapTheme_xml = "/eu/webtoolkit/jwt/auth/auth_bootstrap_theme";
 	static final String BootstrapTheme_xml = "/eu/webtoolkit/jwt/bootstrap_theme";
 	static final String Bootstrap3Theme_xml = "/eu/webtoolkit/jwt/bootstrap3_theme";
+	static final String Bootstrap5Theme_xml = "/eu/webtoolkit/jwt/bootstrap5_theme";
 	
 	private static WtServlet instance;
 
@@ -114,7 +117,6 @@ public abstract class WtServlet extends HttpServlet {
 		Hybrid_html = readFile("/eu/webtoolkit/jwt/skeletons/Hybrid.html");
 		Wt_js = readFile("/eu/webtoolkit/jwt/skeletons/Wt.min.js");
 		Boot_js = readFile("/eu/webtoolkit/jwt/skeletons/Boot.min.js");
-		JQuery_js = readFile("/eu/webtoolkit/jwt/skeletons/jquery.min.js");
 
 		String[][] mimeTypes = {
 				{ "css", "text/css" },
@@ -149,7 +151,7 @@ public abstract class WtServlet extends HttpServlet {
 	 * @see #getConfiguration()
 	 */
 	public WtServlet() {
-		this.progressListener = new ProgressListener() {
+        this.progressListener = new ProgressListener() {
 			public void update(WebRequest request, long pBytesRead, long pContentLength) {
 				requestDataReceived(request, pBytesRead, pContentLength);
 			}
@@ -160,7 +162,7 @@ public abstract class WtServlet extends HttpServlet {
 		redirectSecret_ = MathUtils.randomId(32);
 		
 		if (instance == null)
-			instance = this;
+			instance = this;		
 	}
 	
 	/**
@@ -174,10 +176,17 @@ public abstract class WtServlet extends HttpServlet {
 		super.init(config);
 		
 		String configFile = this.getInitParameter("jwt-config-file");
+		if (configFile == null)
+			this.getServletContext().getInitParameter("jwt-config-file");
 		if (configFile != null)
 			this.configuration = new Configuration(new File(configFile));
 		
 		servletApi = ServletInit.getInstance(config.getServletContext()).getServletApi();
+		
+		if (getConfiguration().webSockets()) {
+			if (this.idForWebSocket < 0)
+				this.idForWebSocket = WebSocketRegistry.getInstance().addServlet(this);
+		}
 	}
 
 	void handleRequest(final HttpServletRequest request, final HttpServletResponse response) {
@@ -196,7 +205,7 @@ public abstract class WtServlet extends HttpServlet {
 			for (WResource staticResource : staticResources) {
 				String staticResourcePath = null;
 				if (!staticResource.getInternalPath().startsWith("/"))
-					staticResourcePath = scriptName + staticResource.getInternalPath();
+					staticResourcePath = StringUtils.append(scriptName, '/') + staticResource.getInternalPath();
 				else
 					staticResourcePath = staticResource.getInternalPath();
 				
@@ -206,7 +215,7 @@ public abstract class WtServlet extends HttpServlet {
 						WebResponse webResponse = new WebResponse(response, webRequest);
 						staticResource.handle(webRequest, webResponse);
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.info("IOException handling {}", pathInfo);
 					}
 					return;
 				}
@@ -241,10 +250,10 @@ public abstract class WtServlet extends HttpServlet {
 				}
 			} catch (FileNotFoundException e) {
 				response.setStatus(404);
-				e.printStackTrace();
+				logger.info("File not found: {}", fileName, e);
 			} catch (IOException e) {
 				response.setStatus(500);
-				e.printStackTrace();
+				logger.info("IOException: {}", fileName, e);
 			}
 
 			return;
@@ -380,7 +389,7 @@ public abstract class WtServlet extends HttpServlet {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.info("doHandleRequest exception: {}", request.getRequestURI(), e);
 		}
 	}
 	
@@ -420,7 +429,7 @@ public abstract class WtServlet extends HttpServlet {
 				WebSession.Handler handler = null;
 				
 				try {
-					handler = new WebSession.Handler(wsession,request, null);
+					handler = new WebSession.Handler(wsession, null, null);
 
 					if (!wsession.isDead() && wsession.getApp() != null) {
 						String requestE = request.getParameter("request");
@@ -465,7 +474,7 @@ public abstract class WtServlet extends HttpServlet {
 	public static boolean isAsyncSupported() {
 		WebSession.Handler handler = WebSession.Handler.getInstance();
 
-		return servletApi.isAsyncSupported(handler != null ? handler.getRequest() : null);
+		return handler == null || handler.getRequest().isAsyncSupported();
 	}
 	
 	/**
@@ -497,7 +506,7 @@ public abstract class WtServlet extends HttpServlet {
 	/**
 	 * Posts a task to be run within the scope of all currently active sessions.
 	 *
-	 * @see post()
+	 * @see post
 	 * @param function the task to be run
 	 */
 	public void postAll(Runnable function) {
@@ -512,7 +521,7 @@ public abstract class WtServlet extends HttpServlet {
 		}
 	}
 
-    public boolean limitPlainHtmlSessions() {
+    boolean limitPlainHtmlSessions() {
     	return false; // FIXME
 	}
 	
@@ -524,28 +533,32 @@ public abstract class WtServlet extends HttpServlet {
 			return result;
 	}
 	
-	private InputStream getResourceStream(final String fileName) throws FileNotFoundException {
-		return this.getClass().getResourceAsStream("/eu/webtoolkit/jwt/" + fileName);
+	private InputStream getResourceStream(final String fileName) throws IOException {
+		return FileUtils.getResourceAsStream("/eu/webtoolkit/jwt/" + fileName);
 	}
 
 	private static String readFile(final String fileName) {
-		return JarUtils.getInstance().readTextFromJar(fileName);
+		return FileUtils.resourceToString(fileName);
 	}
 
-	String computeRedirectHash(String url) {
+	static String computeRedirectHash(String secret, String url) {
 		try {
 			MessageDigest d = MessageDigest.getInstance("MD5");
-			d.update(redirectSecret_.getBytes("UTF-8"));
+			d.update(secret.getBytes("UTF-8"));
 			d.update(url.getBytes("UTF-8"));
 			return StringUtils.encodeBase64(d.digest());
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 
 		return "";
 	}
+
+    String getRedirectSecret(final WebRequest request) {
+      return redirectSecret_;
+    }
 
 	/**
 	 * Binds a resource to a fixed path.
@@ -569,5 +582,17 @@ public abstract class WtServlet extends HttpServlet {
 	
 	public static WtServlet getInstance() {
 		return instance;
+	}
+	
+	WebSession getSession(String name) {
+		return sessions.get(name);
+	}
+	
+	int getIdForWebSocket() {
+		return idForWebSocket;
+	}
+	
+	String getContextPath() {
+		return getServletContext().getContextPath();
 	}
 }

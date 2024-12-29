@@ -5,6 +5,7 @@ import java.util.EnumSet;
 
 import javax.persistence.EntityManager;
 
+import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WApplication;
@@ -90,7 +91,7 @@ public class PlannerApplication extends WApplication {
 
 	private void fatalError(Exception err) {
 		WMessageBox box = new WMessageBox(tr("fatalerror.title"), tr("fatalerror.body").arg(err.getMessage()),
-				null, EnumSet.of(StandardButton.Ok));
+				Icon.None, EnumSet.of(StandardButton.Ok));
 		box.show();
 		
 		err.printStackTrace();

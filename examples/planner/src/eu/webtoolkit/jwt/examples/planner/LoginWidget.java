@@ -2,13 +2,13 @@ package eu.webtoolkit.jwt.examples.planner;
 
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal1;
+import eu.webtoolkit.jwt.ValidationState;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLabel;
 import eu.webtoolkit.jwt.WLineEdit;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WValidator;
-import eu.webtoolkit.jwt.WValidator.State;
 import eu.webtoolkit.jwt.examples.planner.captcha.ShapesCaptchaWidget;
 
 public class LoginWidget extends WContainerWidget {
@@ -40,7 +40,7 @@ public class LoginWidget extends WContainerWidget {
 		 //login when enter is pressed and the text input is not empty
 		 userNameEdit.enterPressed().addListener(this, new Signal.Listener(){
 			public void trigger() {
-				if (userNameEdit.validate() == State.Valid && !loginButton.isHidden())
+				if (userNameEdit.validate() == ValidationState.Valid && !loginButton.isHidden())
 					login();
 			}
 		 });
@@ -52,7 +52,7 @@ public class LoginWidget extends WContainerWidget {
 		 //when clicked and the text input provided is not empty login
 		 loginButton.clicked().addListener(this, new Signal1.Listener<WMouseEvent>(){
 			public void trigger(WMouseEvent arg) {
-				if (userNameEdit.validate() == State.Valid)
+				if (userNameEdit.validate() == ValidationState.Valid)
 					login();
 			}
 		 });
@@ -61,7 +61,7 @@ public class LoginWidget extends WContainerWidget {
 		 captcha = new ShapesCaptchaWidget(150, 70, this);
 		 captcha.completed().addListener(this, new Signal.Listener(){
 			public void trigger() {
-				if (userNameEdit.validate() != State.Valid) {
+				if (userNameEdit.validate() != ValidationState.Valid) {
 					captcha.hide();
 					loginButton.show();
 					userNameEdit.setFocus();

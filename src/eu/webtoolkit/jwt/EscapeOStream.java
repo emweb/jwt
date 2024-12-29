@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -8,9 +8,14 @@ package eu.webtoolkit.jwt;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class EscapeOStream {
+	private static final Logger logger = LoggerFactory.getLogger(EscapeOStream.class);
+	
 	public enum RuleSet {
-		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote, PlainText, PlainTextNewLines
+		HtmlAttribute, JsStringLiteralSQuote, JsStringLiteralDQuote, Plain, PlainTextNewLines
 	};
 
 	public EscapeOStream() {
@@ -61,7 +66,7 @@ public class EscapeOStream {
 					sink_.append(c);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("append({})", c, e);
 		}
 
 		return this;
@@ -80,7 +85,7 @@ public class EscapeOStream {
 			} else
 				put(s, rules);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("append({})", s, e);
 		}
 
 		return this;
@@ -91,7 +96,7 @@ public class EscapeOStream {
 		try {
 			sink_.append(String.valueOf(i));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("append({})", i, e);
 		}
 		return this;
 	}
@@ -101,7 +106,7 @@ public class EscapeOStream {
 		try {
 			sink_.append(repeat ? "true" : "false");
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("append({})", repeat, e);
 		}
 		return this;
 	}
@@ -186,7 +191,7 @@ public class EscapeOStream {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("put({})", s, e);
 		}
 	}
 	

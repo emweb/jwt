@@ -35,6 +35,9 @@ import javax.media.opengl.GLOffscreenAutoDrawable;
 import javax.media.opengl.GLProfile;
 import javax.vecmath.Matrix4f;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
@@ -55,7 +58,8 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.EnumUtils;
 
 public class WServerGLWidget extends WAbstractGLImplementation {
-
+	private static final Logger logger = LoggerFactory.getLogger(WServerGLWidget.class);
+	
 	private class WGLImageResource extends WMemoryResource {
 		public WGLImageResource(final String mimeType) {
 			super(mimeType);
@@ -118,23 +122,20 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public void attachShader(Program program, Shader shader) {
 
 		glCtx_.glAttachShader(program.getId(), shader.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("attachShader: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void bindAttribLocation(Program program, int index, String name) {
 		glCtx_.glBindAttribLocation(program.getId(), index, name);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bindAttribLocation: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void bindBuffer(GLenum target, Buffer buffer) {
 
 		glCtx_.glBindBuffer(serverGLenum(target), buffer.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bindBuffer: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -144,8 +145,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		} else {
 		    glCtx_.glBindFramebuffer(serverGLenum(target), buffer.getId());
 		}
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bindFramebuffer: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -155,45 +155,39 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		} else {
 		    glCtx_.glBindRenderbuffer(serverGLenum(target), buffer.getId());
 		}
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bindRenderbuffer: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void bindTexture(WGLWidget.GLenum target,
 			WGLWidget.Texture texture) {
 		glCtx_.glBindTexture(serverGLenum(target), texture.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bindTexture {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void blendColor(double red, double green, double blue, double alpha) {
 		glCtx_.glBlendColor((float)red, (float)green, (float)blue, (float)alpha);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("blendColor: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void blendEquation(GLenum mode) {
 		glCtx_.glBlendEquation(serverGLenum(mode));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("blendEquation: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void blendEquationSeparate(GLenum modeRGB, GLenum modeAlpha) {
 		glCtx_.glBlendEquationSeparate(serverGLenum(modeRGB), serverGLenum(modeAlpha));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("blendEquationSeparate: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void blendFunc(WGLWidget.GLenum sfactor,
 			WGLWidget.GLenum dfactor) {
 		glCtx_.glBlendFunc(serverGLenum(sfactor), serverGLenum(dfactor));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("blendFunc: {}",glCtx_.glGetError());
 	}
 
 	@Override
@@ -201,8 +195,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			GLenum srcAlpha, GLenum dstAlpha) {
 		glCtx_.glBlendFuncSeparate(serverGLenum(srcRGB), serverGLenum(dstRGB),
 					serverGLenum(srcAlpha), serverGLenum(dstAlpha));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("blendFuncSeparate: {}",glCtx_.glGetError());
 	}
 	
 	@Override
@@ -244,16 +237,14 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	{
 		v.rewind();
 		glCtx_.glBufferData(serverGLenum(target), v.capacity(), v, serverGLenum(usage));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bufferDatafv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void bufferDatafv(GLenum target, FloatBuffer v, GLenum usage) {
 		v.rewind();
 		glCtx_.glBufferData(serverGLenum(target), v.capacity() * 4, v, serverGLenum(usage));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bufferDatafv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -261,8 +252,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			java.nio.ByteBuffer buffer, boolean binary)
 	{
 		glCtx_.glBufferSubData(serverGLenum(target), offset, buffer.capacity(), buffer);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bufferSubDatafv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -270,8 +260,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			java.nio.FloatBuffer buffer)
 	{
 		glCtx_.glBufferSubData(serverGLenum(target), offset, buffer.capacity() * 4, buffer);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bufferSubDatafv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -286,8 +275,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		}
 		sb.rewind();
 		glCtx_.glBufferData(serverGLenum(target), sb.capacity() * 2, sb, serverGLenum(usage));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bufferDataiv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -295,8 +283,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			java.nio.IntBuffer buffer, WGLWidget.GLenum type)
 	{
 		glCtx_.glBufferSubData(serverGLenum(target), offset, buffer.capacity() * 4, buffer);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("bufferSubDataiv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -304,8 +291,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		Iterator<GLenum> it = mask.iterator();
 		while (it.hasNext()) {
 			glCtx_.glClear(serverGLenum(it.next()));
-			if (debug_)
-				System.out.println(glCtx_.glGetError());
+			logger.debug("clear: {}", glCtx_.glGetError());
 		}
 	}
 
@@ -313,62 +299,54 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public void clearColor(double r, double g, double b, double a) {
 
 		glCtx_.glClearColor((float)r, (float)g, (float)b, (float)a);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("clearColor: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void clearStencil(int s) {
 		glCtx_.glClearStencil(s);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("clearStencil: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void colorMask(boolean red, boolean green, boolean blue,
 			boolean alpha) {
 		glCtx_.glColorMask(red, green, blue, alpha);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("colorMask: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void clearDepth(double depth) {
 
 		glCtx_.glClearDepth(depth);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("clearDepth: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void compileShader(Shader shader) {
 		glCtx_.glCompileShader(shader.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("compileShader: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void copyTexImage2D(GLenum target, int level, GLenum internalFormat,
 			int x, int y, int width, int height, int border) {
 		glCtx_.glCopyTexImage2D(serverGLenum(target), level, serverGLenum(internalFormat), x, y, width, height, border);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("copyTexImage2D: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void copyTexSubImage2D(GLenum target, int level, int xoffset,
 			int yoffset, int x, int y, int width, int height) {
 		glCtx_.glCopyTexSubImage2D(serverGLenum(target), level, xoffset, yoffset, x, y, width, height);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("copyTexSubImage2D: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public Buffer getCreateBuffer() {
 		int[] bufferId = new int[1];
 		glCtx_.glGenBuffers(1, bufferId, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getCreateBuffer: {}", glCtx_.glGetError());
 		return new Buffer(bufferId[0]);
 	}
 	
@@ -381,16 +359,14 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public Framebuffer getCreateFramebuffer() {
 		int[] bufferId = new int[1];
 		glCtx_.glGenFramebuffers(1, bufferId, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getCreateFramebuffer: {}", glCtx_.glGetError());
 		return new Framebuffer(bufferId[0]);
 	}
 
 	@Override
 	public Program getCreateProgram() {
 		int programId = glCtx_.glCreateProgram();
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getCreateProgram: {}", glCtx_.glGetError());
 		return new Program(programId);
 	}
 
@@ -398,16 +374,14 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public Renderbuffer getCreateRenderbuffer() {
 		int[] bufferId = new int[1];
 		glCtx_.glGenRenderbuffers(1, bufferId, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getCreateRenderbuffer: {}", glCtx_.glGetError());
 		return new Renderbuffer(bufferId[0]);
 	}
 
 	@Override
 	public Shader createShader(GLenum shader) {
 		int shaderId = glCtx_.glCreateShader(serverGLenum(shader));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("createShader: {}", glCtx_.glGetError());
 		return new Shader(shaderId);
 	}
 
@@ -416,8 +390,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	{
 		int[] textureId = new int[1];
 		glCtx_.glGenTextures(1, textureId, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getCreateTexture: {}", glCtx_.glGetError());
 		return new Texture(textureId[0]);
 	}
 
@@ -425,8 +398,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public WGLWidget.Texture createTextureAndLoad(String url) {
 		int[] textureId = new int[1];
 		glCtx_.glGenTextures(1, textureId, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("createTextureAndLoad: {}", glCtx_.glGetError());
 		Texture tex = new Texture(textureId[0]);
 		tex.setUrl(url);
 		return tex;
@@ -441,8 +413,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	@Override
 	public void cullFace(WGLWidget.GLenum mode) {
 		glCtx_.glCullFace(serverGLenum(mode));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("cullFace: {}", glCtx_.glGetError());
 	}
 	
 
@@ -451,8 +422,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		int[] buffers = new int[1];
 		buffers[0] = buffer.getId();
 		glCtx_.glDeleteBuffers(1, buffers, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("deleteBuffer: {}", glCtx_.glGetError());
 	}
 	
 	@Override
@@ -460,15 +430,13 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		int[] buffers = new int[1];
 		buffers[0] = buffer.getId();
 		glCtx_.glDeleteFramebuffers(1, buffers, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("deleteFramebuffer: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void deleteProgram(Program program) {
 		glCtx_.glDeleteProgram(program.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("deleteProgram: {}", glCtx_.glGetError());
 	}
 	
 	@Override
@@ -476,15 +444,13 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		int[] buffers = new int[1];
 		buffers[0] = buffer.getId();
 		glCtx_.glDeleteRenderbuffers(1, buffers, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("deleteRenderbuffer: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void deleteShader(Shader shader) {
 		glCtx_.glDeleteShader(shader.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("deleteShader: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -492,57 +458,49 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		int[] textures = new int[1];
 		textures[0] = texture.getId();
 		glCtx_.glDeleteTextures(1, textures, 0);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("deleteTexture: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void depthFunc(GLenum func) {
 		glCtx_.glDepthFunc(serverGLenum(func));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("depthFunc: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void depthMask(boolean flag) {
 		glCtx_.glDepthMask(flag);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("depthMask: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void depthRange(double zNear, double zFar) {
 		glCtx_.glDepthRange(zNear, zFar);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("depthRange: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void detachShader(Program program, Shader shader) {
 		glCtx_.glDetachShader(program.getId(), shader.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("detachShader: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void disable(GLenum cap) {
 		glCtx_.glDisable(serverGLenum(cap));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("disable: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void disableVertexAttribArray(WGLWidget.AttribLocation index) {
 		glCtx_.glDisableVertexAttribArray(index.getId());
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("disableVertexAttribArray: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void drawArrays(GLenum mode, int first, int count) {
 		glCtx_.glDrawArrays(serverGLenum(mode), first, count);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("drawArrays: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -550,104 +508,90 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			WGLWidget.GLenum type, int offset)
 	{
 		glCtx_.glDrawElements(serverGLenum(mode), count, serverGLenum(type), offset);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("drawElements: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void enable(WGLWidget.GLenum cap)
 	{
 		glCtx_.glEnable(serverGLenum(cap));
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("enable: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void enableVertexAttribArray(AttribLocation index) {
 		glCtx_.glEnableVertexAttribArray(index.getId());
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("enableVertexAttribArray: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void finish() {
 		glCtx_.glFinish();
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("finish: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void flush() {
 		glCtx_.glFlush();
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("flush: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void framebufferRenderbuffer(GLenum target, GLenum attachment,
 			GLenum renderbuffertarget, Renderbuffer renderbuffer) {
 		glCtx_.glFramebufferRenderbuffer(serverGLenum(target), serverGLenum(attachment), serverGLenum(renderbuffertarget), renderbuffer.getId());
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("framebufferRenderbuffer: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void framebufferTexture2D(GLenum target, GLenum attachment,
 			GLenum textarget, Texture texture, int level) {
 		glCtx_.glFramebufferTexture2D(serverGLenum(target), serverGLenum(attachment), serverGLenum(textarget), texture.getId(), level);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("framebufferTexture2D: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void frontFace(GLenum mode) {
 		glCtx_.glFrontFace(serverGLenum(mode));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("frontFace: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void generateMipmap(WGLWidget.GLenum target) {
 		glCtx_.glGenerateMipmap(serverGLenum(target));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("generateMipmap: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public AttribLocation getAttribLocation(Program program, String attrib) {
 		int attribId = glCtx_.glGetAttribLocation(program.getId(), attrib);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getAttribLocation: {}", glCtx_.glGetError());
 		return new AttribLocation(attribId);
 	}
 
 	@Override
 	public UniformLocation getUniformLocation(Program program, String location) {
 		int uniformId = glCtx_.glGetUniformLocation(program.getId(), location);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("getUniformLocation: {}", glCtx_.glGetError());
 		return new UniformLocation(uniformId);
 	}
 
 	@Override
 	public void hint(GLenum target, GLenum mode) {
 		glCtx_.glHint(serverGLenum(target), serverGLenum(mode));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("hint: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void lineWidth(double width) {
 		glCtx_.glLineWidth((float)width);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("lineWidth: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void linkProgram(Program program) {
 		glCtx_.glLinkProgram(program.getId());
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("linkProgram: {}", glCtx_.glGetError());
 	}
 	
 	@Override
@@ -655,37 +599,32 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		if (pname == GLenum.UNPACK_FLIP_Y_WEBGL || pname == GLenum.UNPACK_PREMULTIPLY_ALPHA_WEBGL || pname == GLenum.UNPACK_COLORSPACE_CONVERSION_WEBGL)
 			return;
 		glCtx_.glPixelStorei(serverGLenum(pname), param);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("pixelStorei: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void polygonOffset(double factor, double units) {
 		glCtx_.glPolygonOffset((float)factor, (float)units);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("polygonOffset: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void renderbufferStorage(GLenum target, GLenum internalformat,
 			int width, int height) {
 		glCtx_.glRenderbufferStorage(serverGLenum(target), serverGLenum(internalformat), width, height);
-		if (debug_)
-			System.out.println(glCtx_.glGetError());
+		logger.debug("renderbufferStorage: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void sampleCoverage(double value, boolean invert) {
 		glCtx_.glSampleCoverage((float)value, invert);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("sampleCoverage: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void scissor(int x, int y, int width, int height) {
 		glCtx_.glScissor(x, y, width, height);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("scissor: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -695,51 +634,44 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    shaderSource[0] = src;
 	    sourceLength[0] = shaderSource[0].length();
 		glCtx_.glShaderSource(shader.getId(), 1, shaderSource, sourceLength, 0);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("shaderSource: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void stencilFunc(GLenum func, int ref, int mask) {
 		glCtx_.glStencilFunc(serverGLenum(func), ref, mask);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("stencilFunc: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void stencilFuncSeparate(GLenum face, GLenum func, int ref, int mask) {
 		glCtx_.glStencilFuncSeparate(serverGLenum(face), serverGLenum(func), ref, mask);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("stencilFuncSeparate: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void stencilMask(int mask) {
 		glCtx_.glStencilMask(mask);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("stencilMask: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void stencilMaskSeparate(GLenum face, int mask) {
 		glCtx_.glStencilMaskSeparate(serverGLenum(face), mask);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("stencilMaskSeparate: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void stencilOp(GLenum fail, GLenum zfail, GLenum zpass) {
 		glCtx_.glStencilOp(serverGLenum(fail), serverGLenum(zfail), serverGLenum(zpass));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("stencilOp: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void stencilOpSeparate(GLenum face, GLenum fail, GLenum zfail,
 			GLenum zpass) {
 		glCtx_.glStencilOpSeparate(serverGLenum(face), serverGLenum(fail), serverGLenum(zfail), serverGLenum(zpass));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("stencilOpSeparate: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -748,8 +680,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			WGLWidget.GLenum format) {
 		glCtx_.glTexImage2D(serverGLenum(target), level, serverGLenum(internalformat), width, height, border, serverGLenum(format),
 				GL2.GL_UNSIGNED_BYTE, null);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("texImage2D: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -774,7 +705,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		try {
 			initialImage = ImageIO.read(new File(texture.getUrl()));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("IOException reading {}", texture.getUrl(), e);
 		}
 		
 		int openGlInternalFormat = serverGLenum(internalformat);
@@ -806,23 +737,20 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	public void texParameteri(WGLWidget.GLenum target,
 			WGLWidget.GLenum pname, WGLWidget.GLenum param) {
 		glCtx_.glTexParameteri(serverGLenum(target), serverGLenum(pname), serverGLenum(param));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("texParameteri: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform1f(WGLWidget.UniformLocation location, double x) {
 		glCtx_.glUniform1f(location.getId(), (float)x);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform1f: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void uniform1fv(WGLWidget.UniformLocation location,
 			float[] value) {
 		glCtx_.glUniform1fv(location.getId(), 1, FloatBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform1fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -831,39 +759,34 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		FloatBuffer buffer = FloatBuffer.allocate(1);
 		buffer.put(0,value.getValue().get(0));
 		glCtx_.glUniform1fv(location.getId(), 1, buffer);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform1fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform1i(WGLWidget.UniformLocation location, int x) {
 		glCtx_.glUniform1i(location.getId(), x);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform1i: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform1iv(WGLWidget.UniformLocation location,
 			int[] value) {
 		glCtx_.glUniform1iv(location.getId(), 1, IntBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform1iv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform2f(WGLWidget.UniformLocation location,
 			double x, double y) {
 		glCtx_.glUniform2f(location.getId(), (float)x, (float)y);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform2f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform2fv(WGLWidget.UniformLocation location,
 			float[] value) {
 		glCtx_.glUniform2fv(location.getId(), 1, FloatBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform2fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -873,40 +796,35 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		buffer.put(0,value.getValue().get(0));
 		buffer.put(1,value.getValue().get(1));
 		glCtx_.glUniform2fv(location.getId(), 1, buffer);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform2fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform2i(WGLWidget.UniformLocation location, int x,
 			int y) {
 		glCtx_.glUniform2i(location.getId(), x, y);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform2i: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform2iv(WGLWidget.UniformLocation location,
 			int[] value) {
 		glCtx_.glUniform2iv(location.getId(), 1, IntBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform2iv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform3f(WGLWidget.UniformLocation location,
 			double x, double y, double z) {
 		glCtx_.glUniform3f(location.getId(), (float)x, (float)y, (float)z);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform3f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform3fv(WGLWidget.UniformLocation location,
 			float[] value) {
 		glCtx_.glUniform3fv(location.getId(), 1, FloatBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform3fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -917,40 +835,35 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		buffer.put(1,value.getValue().get(1));
 		buffer.put(2,value.getValue().get(2));
 		glCtx_.glUniform3fv(location.getId(), 1, buffer);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform3fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform3i(WGLWidget.UniformLocation location, int x,
 			int y, int z) {
 		glCtx_.glUniform3i(location.getId(), x, y, z);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform3i: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform3iv(WGLWidget.UniformLocation location,
 			int[] value) {
 		glCtx_.glUniform3iv(location.getId(), 1, IntBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform3iv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform4f(WGLWidget.UniformLocation location,
 			double x, double y, double z, double w) {
 		glCtx_.glUniform4f(location.getId(), (float)x, (float)y, (float)z, (float)w);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform4f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform4fv(WGLWidget.UniformLocation location,
 			float[] value) {
 		glCtx_.glUniform4fv(location.getId(), 1, FloatBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform4fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -962,24 +875,21 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		buffer.put(2,value.getValue().get(2));
 		buffer.put(3,value.getValue().get(3));
 		glCtx_.glUniform4fv(location.getId(), 1, buffer);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform4fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform4i(WGLWidget.UniformLocation location, int x,
 			int y, int z, int w) {
 		glCtx_.glUniform4i(location.getId(), x, y, z, w);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform4i: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void uniform4iv(WGLWidget.UniformLocation location,
 			int[] value) {
 		glCtx_.glUniform4iv(location.getId(), 1, IntBuffer.wrap(value));
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniform4iv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -990,8 +900,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			mat[i] = (float)value[i];
 		}
 		glCtx_.glUniformMatrix2fv(location.getId(), 1, transpose, mat, 0);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniformMatrix2fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -1004,8 +913,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    	}
 	    }
 	    glCtx_.glUniformMatrix2fv(location.getId(), 1, false, mat, 0);
-	    if (debug_) 
-	    	System.out.println(glCtx_.glGetError());
+	    logger.debug("uniformMatrix2: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -1016,8 +924,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			mat[i] = (float)value[i];
 		}
 		glCtx_.glUniformMatrix3fv(location.getId(), 1, transpose, mat, 0);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniformMatrix3fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -1030,8 +937,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    	}
 	    }
 	    glCtx_.glUniformMatrix3fv(location.getId(), 1, false, mat, 0);
-	    if (debug_) 
-	    	System.out.println(glCtx_.glGetError());
+	    logger.debug("uniformMatrix3: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -1042,8 +948,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			mat[i] = (float)value[i];
 		}
 		glCtx_.glUniformMatrix4fv(location.getId(), 1, transpose, mat, 0);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("uniformMatrix4fv: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -1055,60 +960,52 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    	}
 	    }
 	    glCtx_.glUniformMatrix4fv(location.getId(), 1, false, mat, 0);
-	    if (debug_) 
-	    	System.out.println(glCtx_.glGetError());
+	    logger.debug("uniformMatrix4: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void useProgram(Program program) {
 		glCtx_.glUseProgram(program.getId());
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("useProgram: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void validateProgram(Program program) {
 		glCtx_.glValidateProgram(program.getId());
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("validateProgram: {}", glCtx_.glGetError());
 	}
 	
 	@Override
 	public void vertexAttrib1f(AttribLocation location, double x) {
 		glCtx_.glVertexAttrib1f(location.getId(), (float)x);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("vertexAttrib1f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void vertexAttrib2f(AttribLocation location, double x, double y) {
 		glCtx_.glVertexAttrib2f(location.getId(), (float)x, (float)y);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("vertexAttrib2f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void vertexAttrib3f(AttribLocation location, double x, double y,
 			double z) {
 		glCtx_.glVertexAttrib3f(location.getId(), (float)x, (float)y, (float)z);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("vertexAttrib3f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void vertexAttrib4f(AttribLocation location, double x, double y,
 			double z, double w) {
 		glCtx_.glVertexAttrib4f(location.getId(), (float)x, (float)y, (float)z, (float)w);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("vertexAttrib4f: {}", glCtx_.glGetError());
 	}
 
 	@Override
 	public void vertexAttribPointer(AttribLocation location, int size,
 			GLenum type, boolean normalized, int stride, int offset) {
 		glCtx_.glVertexAttribPointer(location.getId(), size, serverGLenum(type), normalized, stride, offset);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("vertexAttribPointer: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -1119,8 +1016,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 			ctx_ = offscreenDrawable_.getContext();
 		glCtx_ = ctx_.getGL().getGL2();
 		glCtx_.glViewport(x, y, width, height);
-		if (debug_) 
-			System.out.println(glCtx_.glGetError());
+		logger.debug("viewport: {}", glCtx_.glGetError());
 	}
 
 	private String glObjJsRef(String jsRef) {
@@ -1142,7 +1038,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		ctx_.makeCurrent();
 		
 
-		if (!EnumUtils.mask(flags, RenderFlag.RenderFull).isEmpty()) {
+		if (!EnumUtils.mask(flags, RenderFlag.Full).isEmpty()) {
 			if (serverWindow_) {
 				window_.setSize((int)glInterface_.getWidth().getValue(), (int)glInterface_.getHeight().getValue());
 			} else {
@@ -1218,7 +1114,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    try {
 			ImageIO.write(bi, "png", pngData);
 		} catch (IOException e1) {
-			System.out.println("writing of image data failed");
+			logger.error("writing of image data failed", e1);
 		}
 	    
 	    mr_.setData(pngData.toByteArray());
@@ -1900,8 +1796,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    	}
 	    }
 	    glCtx_.glUniformMatrix4fv(location.getId(), 1, false, mat, 0);
-	    if (debug_) 
-	    	System.out.println(glCtx_.glGetError());
+	    logger.debug("uniformMatrix4: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -2004,7 +1899,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		try {
 			initialImage = ImageIO.read(new File(image));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("IOException reading {}", image);
 		}
 		
 		int openGlInternalFormat = serverGLenum(internalformat);
@@ -2031,8 +1926,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
         
         glCtx_.glTexImage2D(GL2.GL_TEXTURE_2D, 0, openGlInternalFormat, initialImage.getWidth(), initialImage.getHeight(),
         					0, openGlImageFormat, GL2.GL_UNSIGNED_BYTE, buffer);
-        if (debug_)
-        	System.out.println(glCtx_.glGetError());
+        logger.debug("texImage2D: {}", glCtx_.glGetError());
 	}
 
 	@Override
@@ -2047,7 +1941,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 	    	try {
 	    		rpd.write(data);
 	    	} catch (IOException e) {
-	    		e.printStackTrace();
+				logger.error("IOException writing image to memory");
 	    	}
 	    	dataIn = new ByteArrayInputStream(data.toByteArray());
 	    	
@@ -2059,7 +1953,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
 		try {
 			initialImage = ImageIO.read(dataIn);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("IOException reading image from memory");
 		}
 		
 		int openGlInternalFormat = serverGLenum(internalformat);
@@ -2086,8 +1980,7 @@ public class WServerGLWidget extends WAbstractGLImplementation {
         
         glCtx_.glTexImage2D(GL2.GL_TEXTURE_2D, 0, openGlInternalFormat, initialImage.getWidth(), initialImage.getHeight(),
         					0, openGlImageFormat, GL2.GL_UNSIGNED_BYTE, buffer);
-        if (debug_)
-        	System.out.println(glCtx_.glGetError());
+        logger.debug("texImage2D: {}", glCtx_.glGetError());
 	}
 
 	@Override

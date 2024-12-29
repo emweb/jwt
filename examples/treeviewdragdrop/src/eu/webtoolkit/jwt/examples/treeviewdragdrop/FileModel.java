@@ -1,11 +1,10 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt.examples.treeviewdragdrop;
 
-import eu.webtoolkit.jwt.WObject;
 import eu.webtoolkit.jwt.WStandardItemModel;
 
 /**
@@ -19,8 +18,8 @@ public class FileModel extends WStandardItemModel {
     /**
      * Constructor.
      */
-    public FileModel(WObject parent) {
-        super(parent);
+    public FileModel() {
+    	super();
     }
 
     @Override

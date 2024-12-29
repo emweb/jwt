@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -35,10 +35,8 @@ public class HelloApplication extends WApplication {
 
         final WText greeting = new WText(getRoot());
 
-        button.clicked().addListener(this, new Signal.Listener() {
-            public void trigger() {
-                greeting.setText("Hello there, " + nameEdit.getText());
-            }
+        button.clicked().addListener(this, () -> {
+            greeting.setText("Hello there, " + nameEdit.getText());
         });
     }
 }

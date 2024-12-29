@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import eu.webtoolkit.jwt.auth.AccountStatus;
 import eu.webtoolkit.jwt.auth.AuthService;
+import eu.webtoolkit.jwt.auth.EmailTokenRole;
 import eu.webtoolkit.jwt.auth.User;
 
 /**
@@ -43,9 +45,9 @@ import eu.webtoolkit.jwt.auth.User;
  */
 public class AuthInfo {
 	public AuthInfo() {
-		status = User.Status.Normal;
+		status = AccountStatus.Normal;
 		failedLoginAttempts = 0;
-		emailTokenRole = User.EmailTokenRole.VerifyEmail;
+		emailTokenRole = EmailTokenRole.VerifyEmail;
 		
 		email = ""; 
 		unverifiedEmail = "";
@@ -160,7 +162,7 @@ public class AuthInfo {
 	 * Sets the email token.
 	 */
 	public void setEmailToken(String hash, Date expires,
-			User.EmailTokenRole role) {
+			EmailTokenRole role) {
 		emailToken = hash;
 		emailTokenExpires = expires;
 		emailTokenRole = role;
@@ -169,7 +171,7 @@ public class AuthInfo {
 	/**
 	 * Returns the email token.
 	 * 
-	 * @see #setEmailToken(String hash, Date expires, User.EmailTokenRole role)
+	 * @see #setEmailToken(String hash, Date expires, EmailTokenRole role)
 	 */
 	public String getEmailToken() {
 		return emailToken;
@@ -182,7 +184,7 @@ public class AuthInfo {
 	/**
 	 * Returns the email token expiration date.
 	 * 
-	 * @see #setEmailToken(String hash, Date expires, User.EmailTokenRole role)
+	 * @see #setEmailToken(String hash, Date expires, EmailTokenRole role)
 	 */
 	public Date getEmailTokenExpires() {
 		return emailTokenExpires;
@@ -195,29 +197,29 @@ public class AuthInfo {
 	/**
 	 * Returns the email token role.
 	 * 
-	 * @see #setEmailToken(String hash, Date expires, User.EmailTokenRole role)
+	 * @see #setEmailToken(String hash, Date expires, EmailTokenRole role)
 	 */
-	public User.EmailTokenRole getEmailTokenRole() {
+	public EmailTokenRole getEmailTokenRole() {
 		return emailTokenRole;
 	}
 	
-	public void setEmailTokenRole(User.EmailTokenRole emailTokenRole) {
+	public void setEmailTokenRole(EmailTokenRole emailTokenRole) {
 		this.emailTokenRole = emailTokenRole;
 	}
 
 	/**
 	 * Sets the status.
 	 */
-	public void setStatus(User.Status status) {
+	public void setStatus(AccountStatus status) {
 		this.status = status;
 	}
 
 	/**
 	 * Returns the status.
 	 * 
-	 * @see #setStatus(User.Status status)
+	 * @see #setStatus(AccountStatus status)
 	 */
-	public User.Status getStatus() {
+	public AccountStatus getStatus() {
 		return status;
 	}
 
@@ -298,7 +300,7 @@ public class AuthInfo {
 	private String passwordMethod;
 	private String passwordSalt;
 
-	private User.Status status;
+	private AccountStatus status;
 
 	private int failedLoginAttempts;
 	private Date lastLoginAttempt;
@@ -307,7 +309,7 @@ public class AuthInfo {
 	private String unverifiedEmail;
 	private String emailToken;
 	private Date emailTokenExpires;
-	private User.EmailTokenRole emailTokenRole;
+	private EmailTokenRole emailTokenRole;
 
 	private AbstractUser user;
 	private List<AuthToken> authTokens = new ArrayList<AuthToken>();

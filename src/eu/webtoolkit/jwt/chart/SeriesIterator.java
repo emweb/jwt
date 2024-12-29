@@ -1,189 +1,230 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt.chart;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.time.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
+import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Abstract base class for iterating over series data in a chart.
- * <p>
- * 
- * This class is specialized for rendering series data.
+ *
+ * <p>This class is specialized for rendering series data.
+ *
  * <p>
  */
 public class SeriesIterator {
-	private static Logger logger = LoggerFactory
-			.getLogger(SeriesIterator.class);
+  private static Logger logger = LoggerFactory.getLogger(SeriesIterator.class);
 
-	/**
-	 * Start handling a new segment.
-	 * <p>
-	 * Because of a &apos;break&apos; specified in an axis, axes may be divided
-	 * in one or two segments (in fact only the API limits this now to two). The
-	 * iterator will iterate all segments seperately, but each time with a
-	 * different clipping region specified in the painter, corresponding to that
-	 * segment.
-	 * <p>
-	 * The <i>currentSegmentArea</i> specifies the clipping area.
-	 */
-	public void startSegment(int currentXSegment, int currentYSegment,
-			final WRectF currentSegmentArea) {
-		this.currentXSegment_ = currentXSegment;
-		this.currentYSegment_ = currentYSegment;
-	}
+  /**
+   * Start handling a new segment.
+   *
+   * <p>Because of a &apos;break&apos; specified in an axis, axes may be divided in one or two
+   * segments (in fact only the API limits this now to two). The iterator will iterate all segments
+   * separately, but each time with a different clipping region specified in the painter,
+   * corresponding to that segment.
+   *
+   * <p>The <i>currentSegmentArea</i> specifies the clipping area.
+   */
+  public void startSegment(
+      int currentXSegment, int currentYSegment, final WRectF currentSegmentArea) {
+    this.currentXSegment_ = currentXSegment;
+    this.currentYSegment_ = currentYSegment;
+  }
+  /**
+   * End handling a particular segment.
+   *
+   * <p>
+   *
+   * @see SeriesIterator#startSegment(int currentXSegment, int currentYSegment, WRectF
+   *     currentSegmentArea)
+   */
+  public void endSegment() {}
+  /**
+   * Start iterating a particular series.
+   *
+   * <p>Returns whether the series values should be iterated. The <i>groupWidth</i> is the width (in
+   * pixels) of a single bar group. The chart contains <i>numBarGroups</i>, and the current series
+   * is in the <i>currentBarGroup</i>&apos;th group.
+   */
+  public boolean startSeries(
+      final WDataSeries series, double groupWidth, int numBarGroups, int currentBarGroup) {
+    return true;
+  }
+  /** End iterating a particular series. */
+  public void endSeries() {}
+  /**
+   * Process a value.
+   *
+   * <p>Processes a value with model coordinates (<i>x</i>, <i>y</i>). The y value may differ from
+   * the model&apos;s y value, because of stacked series. The y value here corresponds to the
+   * location on the chart, after stacking.
+   *
+   * <p>The <i>stackY</i> argument is the y value from the previous series (also after stacking). It
+   * will be 0, unless this series is stacked.
+   */
+  public void newValue(
+      final WDataSeries series,
+      double x,
+      double y,
+      double stackY,
+      int xRow,
+      int xColumn,
+      int yRow,
+      int yColumn) {}
+  /** Returns the current X segment. */
+  public int getCurrentXSegment() {
+    return this.currentXSegment_;
+  }
+  /** Returns the current Y segment. */
+  public int getCurrentYSegment() {
+    return this.currentYSegment_;
+  }
 
-	/**
-	 * End handling a particular segment.
-	 * <p>
-	 * 
-	 * @see SeriesIterator#startSegment(int currentXSegment, int
-	 *      currentYSegment, WRectF currentSegmentArea)
-	 */
-	public void endSegment() {
-	}
+  public static void setPenColor(
+      final WPen pen,
+      final WDataSeries series,
+      int xRow,
+      int xColumn,
+      int yRow,
+      int yColumn,
+      ItemDataRole colorRole) {
+    WColor color = null;
+    if (yRow >= 0 && yColumn >= 0) {
+      if (colorRole.equals(ItemDataRole.MarkerPenColor)) {
+        color = series.getModel().getMarkerPenColor(yRow, yColumn);
+      } else {
+        if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
+          color = series.getModel().getMarkerBrushColor(yRow, yColumn);
+        }
+      }
+    }
+    if (!(color != null) && xRow >= 0 && xColumn >= 0) {
+      if (colorRole.equals(ItemDataRole.MarkerPenColor)) {
+        color = series.getModel().getMarkerPenColor(xRow, xColumn);
+      } else {
+        if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
+          color = series.getModel().getMarkerBrushColor(xRow, xColumn);
+        }
+      }
+    }
+    if (color != null) {
+      pen.setColor(color);
+    }
+  }
 
-	/**
-	 * Start iterating a particular series.
-	 * <p>
-	 * Returns whether the series values should be iterated. The
-	 * <i>groupWidth</i> is the width (in pixels) of a single bar group. The
-	 * chart contains <i>numBarGroups</i>, and the current series is in the
-	 * <i>currentBarGroup</i>&apos;th group.
-	 */
-	public boolean startSeries(final WDataSeries series, double groupWidth,
-			int numBarGroups, int currentBarGroup) {
-		return true;
-	}
+  public static void setBrushColor(
+      final WBrush brush,
+      final WDataSeries series,
+      int xRow,
+      int xColumn,
+      int yRow,
+      int yColumn,
+      ItemDataRole colorRole) {
+    WColor color = null;
+    if (yRow >= 0 && yColumn >= 0) {
+      if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
+        color = series.getModel().getMarkerBrushColor(yRow, yColumn);
+      } else {
+        if (colorRole.equals(ItemDataRole.BarBrushColor)) {
+          color = series.getModel().getBarBrushColor(yRow, yColumn);
+        }
+      }
+    }
+    if (!(color != null) && xRow >= 0 && xColumn >= 0) {
+      if (colorRole.equals(ItemDataRole.MarkerBrushColor)) {
+        color = series.getModel().getMarkerBrushColor(xRow, xColumn);
+      } else {
+        if (colorRole.equals(ItemDataRole.BarBrushColor)) {
+          color = series.getModel().getBarBrushColor(xRow, xColumn);
+        }
+      }
+    }
+    if (color != null) {
+      brush.setColor(color);
+    }
+  }
 
-	/**
-	 * End iterating a particular series.
-	 */
-	public void endSeries() {
-	}
+  private int currentXSegment_;
+  private int currentYSegment_;
 
-	/**
-	 * Process a value.
-	 * <p>
-	 * Processes a value with model coordinates (<i>x</i>, <i>y</i>). The y
-	 * value may differ from the model&apos;s y value, because of stacked
-	 * series. The y value here corresponds to the location on the chart, after
-	 * stacking.
-	 * <p>
-	 * The <i>stackY</i> argument is the y value from the previous series (also
-	 * after stacking). It will be 0, unless this series is stacked.
-	 */
-	public void newValue(final WDataSeries series, double x, double y,
-			double stackY, int xRow, int xColumn, int yRow, int yColumn) {
-	}
+  static WJavaScriptPreamble wtjs2() {
+    return new WJavaScriptPreamble(
+        JavaScriptScope.WtClassScope,
+        JavaScriptObjectType.JavaScriptConstructor,
+        "ChartCommon",
+        "(function(t){const n=t.WT,e=this,r=n.gfxUtils,i=r.rect_top,o=r.rect_bottom,f=r.rect_left,u=r.rect_right,s=r.transform_mult;function l(t,n,e,r){let i=0;r&&(i=1);const o=n.length;function f(t){return e?n[t]:n[o-1-t]}function u(t){for(;2===f(t)[2]||3===f(t)[2];)t--;return t}let s=Math.floor(o/2);s=u(s);let l=0,h=o,c=!1;if(f(0)[i]>t)return e?-1:o;if(f(o-1)[i]<t)return e?o:-1;for(;!c;){let n=s+1;n<o&&(2===f(n)[2]||3===f(n)[2])&&(n+=2);if(f(s)[i]>t){h=s;s=Math.floor((h+l)/2);s=u(s)}else if(f(s)[i]===t)c=!0;else if(n<o&&f(n)[i]>t)c=!0;else if(n<o&&f(n)[i]===t){s=n;c=!0}else{l=s;s=Math.floor((h+l)/2);s=u(s)}}return e?s:o-1-s}function h(t,n){return n[0][t]<n[n.length-1][t]}this.findClosestPoint=function(t,n,e){let r=0;e&&(r=1);const i=h(r,n);let o=l(t,n,i,e);o<0&&(o=0);if(o>=n.length)return[n[n.length-1][0],n[n.length-1][1]];o>=n.length&&(o=n.length-2);if(n[o][r]===t)return[n[o][0],n[o][1]];let f=i?o+1:o-1;i&&2===n[f][2]&&(f+=2);if(!i&&f<0)return[n[o][0],n[o][1]];!i&&f>0&&3===n[f][2]&&(f-=2);return Math.abs(t-n[o][r])<Math.abs(n[f][r]-t)?[n[o][0],n[o][1]]:[n[f][0],n[f][1]]};this.minMaxY=function(t,n){const e=n?0:1;let r=t[0][e],i=t[0][e];for(let n=1;n<t.length;++n)if(2!==t[n][2]&&3!==t[n][2]&&5!==t[n][2]){t[n][e]>i&&(i=t[n][e]);t[n][e]<r&&(r=t[n][e])}return[r,i]};this.projection=function(t,n){const e=Math.cos(t),r=Math.sin(t),i=e*e,o=r*r,f=e*r,u=-n[0]*e-n[1]*r;return[i,f,f,o,e*u+n[0],r*u+n[1]]};this.distanceSquared=function(t,n){const e=[n[0]-t[0],n[1]-t[1]];return e[0]*e[0]+e[1]*e[1]};this.distanceLessThanRadius=function(t,n,r){return r*r>=e.distanceSquared(t,n)};this.toZoomLevel=function(t){return Math.floor(Math.log(t)/Math.LN2+.5)+1};this.isPointInRect=function(t,n){const e=t.x??t[0],r=t.y??t[1];return e>=f(n)&&e<=u(n)&&r>=i(n)&&r<=o(n)};this.toDisplayCoord=function(t,n,e,r,i){let o,f;if(e){o=[(t[0]-i[0])/i[2],(t[1]-i[1])/i[3]];f=[r[0]+o[1]*r[2],r[1]+o[0]*r[3]]}else{o=[(t[0]-i[0])/i[2],1-(t[1]-i[1])/i[3]];f=[r[0]+o[0]*r[2],r[1]+o[1]*r[3]]}return s(n,f)};this.findYRange=function(t,n,r,u,s,c,a,m,g){if(0===t.length)return null;const d=e.toDisplayCoord([r,0],[1,0,0,1,0,0],s,c,a),M=e.toDisplayCoord([u,0],[1,0,0,1,0,0],s,c,a),x=s?1:0,b=s?0:1,y=h(x,t);let C,_,p,R,D,E=l(d[x],t,y,s),L=l(M[x],t,y,s),O=1/0,T=-1/0;const A=E===L&&E===t.length||-1===E&&-1===L;if(!A){if(y)if(E<0)E=0;else{E++;t[E]&&2===t[E][2]&&(E+=2)}else E>=t.length-1&&(E=t.length-2);!y&&L<0&&(L=0);for(C=Math.min(E,L);C<=Math.max(E,L)&&C<t.length;++C)if(2!==t[C][2]&&3!==t[C][2]){t[C][b]<O&&(O=t[C][b]);t[C][b]>T&&(T=t[C][b])}if(y&&E>0||!y&&E<t.length-1){if(y){R=E-1;t[R]&&3===t[R][2]&&(R-=2)}else{R=E+1;t[R]&&2===t[R][2]&&(R+=2)}_=(d[x]-t[R][x])/(t[E][x]-t[R][x]);p=t[R][b]+_*(t[E][b]-t[R][b]);p<O&&(O=p);p>T&&(T=p)}if(y&&L<t.length-1||!y&&L>0){if(y){D=L+1;2===t[D][2]&&(D+=2)}else{D=L-1;3===t[D][2]&&(D-=2)}_=(M[x]-t[L][x])/(t[D][x]-t[L][x]);p=t[L][b]+_*(t[D][b]-t[L][b]);p<O&&(O=p);p>T&&(T=p)}}let P,S;const W=a[2]/(u-r),Y=s?2:3;if(!A){P=c[Y]/(T-O);S=10;P=c[Y]/(c[Y]/P+20);P>g.y[n]&&(P=g.y[n]);P<m.y[n]&&(P=m.y[n])}let Z;Z=s?[d[1]-i(c),A?0:(O+T)/2-c[2]/P/2-f(c)]:[d[0]-f(c),A?0:-((O+T)/2+c[3]/P/2-o(c))];return{xZoom:W,yZoom:P,panPoint:Z}};this.matchXAxis=function(t,n,e,r,s){function l(t){return r[t].side}function h(t){return r[t].width}function c(t){return r[t].minOffset}function a(t){return r[t].maxOffset}if(s){if(n<i(e)||n>o(e))return-1}else if(t<f(e)||t>u(e))return-1;for(let m=0;m<r.length;++m)if(s){if((\"min\"===l(m)||\"both\"===l(m))&&t>=f(e)-c(m)-h(m)&&t<=f(e)-c(m))return m;if((\"max\"===l(m)||\"both\"===l(m))&&t>=u(e)+a(m)&&t<=u(e)+a(m)+h(m))return m}else{if((\"min\"===l(m)||\"both\"===l(m))&&n<=o(e)+c(m)+h(m)&&n>=o(e)+c(m))return m;if((\"max\"===l(m)||\"both\"===l(m))&&n<=i(e)-a(m)&&n>=i(e)-a(m)-h(m))return m}return-1};this.matchYAxis=function(t,n,e,r,s){function l(t){return r[t].side}function h(t){return r[t].width}function c(t){return r[t].minOffset}function a(t){return r[t].maxOffset}if(s){if(t<f(e)||t>u(e))return-1}else if(n<i(e)||n>o(e))return-1;for(let m=0;m<r.length;++m)if(s){if((\"min\"===l(m)||\"both\"===l(m))&&n>=i(e)-c(m)-h(m)&&n<=i(e)-c(m))return m;if((\"max\"===l(m)||\"both\"===l(m))&&n>=o(e)+a(m)&&n<=o(e)+a(m)+h(m))return m}else{if((\"min\"===l(m)||\"both\"===l(m))&&t>=f(e)-c(m)-h(m)&&t<=f(e)-c(m))return m;if((\"max\"===l(m)||\"both\"===l(m))&&t>=u(e)+a(m)&&t<=u(e)+a(m)+h(m))return m}return-1}})");
+  }
 
-	/**
-	 * Returns the current X segment.
-	 */
-	public int getCurrentXSegment() {
-		return this.currentXSegment_;
-	}
+  static WJavaScriptPreamble wtjs1() {
+    return new WJavaScriptPreamble(
+        JavaScriptScope.WtClassScope,
+        JavaScriptObjectType.JavaScriptConstructor,
+        "WCartesianChart",
+        "(function(t,e,n,o){e.wtCObj=this;const i=this,r=t.WT;i.config=o;const l=r.gfxUtils,s=l.transform_mult,u=l.transform_inverted,f=l.transform_assign,c=l.transform_equal,a=l.transform_apply,x=l.rect_top,p=l.rect_bottom,y=l.rect_left,h=l.rect_right,d=l.rect_intersection,m=r.chartCommon,v=m.minMaxY,w=m.findClosestPoint,T=m.projection,M=m.distanceLessThanRadius,g=m.toZoomLevel,b=m.isPointInRect,E=m.findYRange,P=function(t,e){return m.matchXAxis(t,e,L(),o.xAxes,S())},C=function(t,e){return m.matchYAxis(t,e,L(),o.yAxes,S())};function A(t,e){const n=(i=t,o.xModelAreas[i]);var i;const r=function(t){return o.yModelAreas[t]}(e);return S()?[r[0],n[1],r[2],n[3]]:[n[0],r[1],n[2],r[3]]}function O(){return o.followCurve}function D(){return o.crosshair||-1!==O()}function S(){return o.isHorizontal}function j(t){return o.xTransforms[t]}function I(t){return o.yTransforms[t]}function L(){return o.area}function _(){return o.insideArea}function F(t=null){return null===t?o.series:o.series[t]}function U(t){return F(t).transform}function Y(t){return S()?s([0,1,1,0,0,0],s(U(t),[0,1,1,0,0,0])):U(t)}function Z(t){return F(t).curve}function R(t){return F(t).xAxis}function X(t){return F(t).yAxis}function k(){return o.seriesSelection}function W(){return o.sliders}function q(){return o.hasToolTips}function z(){return o.coordinateOverlayPadding}function B(){return o.curveManipulation}function N(t){return o.minZoom.x[t]}function K(t){return o.minZoom.y[t]}function H(t){return o.maxZoom.x[t]}function G(t){return o.maxZoom.y[t]}function J(){return o.pens}function $(){return o.penAlpha}function Q(){return o.selectedCurve}function V(t){t.preventDefault&&t.preventDefault()}function tt(t,n){e.addEventListener(t,n)}function et(t,n){e.removeEventListener(t,n)}function nt(t){return t.length}function ot(){return nt(o.xAxes)}function it(){return nt(o.yAxes)}function rt(){return o.crosshairXAxis}function lt(){return o.crosshairYAxis}let st=!1;const ut=function(t){if(!st){st=!0;requestAnimationFrame((function(){t();st=!1}))}};if(window.MSPointerEvent||window.PointerEvent){e.style.touchAction=\"none\";n.canvas.style.msTouchAction=\"none\";n.canvas.style.touchAction=\"none\"}const ft=.07,ct=.001,at=1.5;let xt=e.wtEObj2;if(!xt){xt={};xt.contextmenuListener=function(t){V(t);et(\"contextmenu\",xt.contextmenuListener)}}e.wtEObj2=xt;const pt={};function yt(t){return 2===t.pointerType||3===t.pointerType||\"pen\"===t.pointerType||\"touch\"===t.pointerType}let ht=!1;(window.MSPointerEvent||window.PointerEvent)&&function(){const t=[];function n(){ht=nt(t)>0}function o(o){if(yt(o)){V(o);t.push(o);n();pt.start(e,{touches:t.slice(0)})}}function i(o){if(ht&&yt(o)){V(o);for(let e=0;e<nt(t);++e)if(t[e].pointerId===o.pointerId){t.splice(e,1);break}n();pt.end(e,{touches:t.slice(0),changedTouches:[]})}}function r(o){if(yt(o)){V(o);for(let e=0;e<nt(t);++e)if(t[e].pointerId===o.pointerId){t[e]=o;break}n();pt.moved(e,{touches:t.slice(0)})}}const l=e.wtEObj;if(l)if(window.PointerEvent){et(\"pointerdown\",l.pointerDown);et(\"pointerup\",l.pointerUp);et(\"pointerout\",l.pointerUp);et(\"pointermove\",l.pointerMove)}else{et(\"MSPointerDown\",l.pointerDown);et(\"MSPointerUp\",l.pointerUp);et(\"MSPointerOut\",l.pointerUp);et(\"MSPointerMove\",l.pointerMove)}e.wtEObj={pointerDown:o,pointerUp:i,pointerMove:r};if(window.PointerEvent){tt(\"pointerdown\",o);tt(\"pointerup\",i);tt(\"pointerout\",i);tt(\"pointermove\",r)}else{tt(\"MSPointerDown\",o);tt(\"MSPointerUp\",i);tt(\"MSPointerOut\",i);tt(\"MSPointerMove\",r)}}();let dt=e.wtOObj??null,mt=null,vt=!0,wt=null,Tt=-1,Mt=-1,gt=[],bt=!1,Et=!1,Pt=null,Ct=null,At=null;const Ot={x:0,y:0};let Dt=null,St=null,jt=e.wtTObj;if(!jt){jt={overTooltip:!1};e.wtTObj=jt}function It(){if(jt){if(jt.tooltipTimeout){clearTimeout(jt.tooltipTimeout);jt.tooltipTimeout=null}if(!jt.overTooltip&&jt.tooltipOuterDiv){document.body.removeChild(jt.tooltipOuterDiv);jt.toolTipEl=null;jt.tooltipOuterDiv=null}}}let Lt=null,_t=!1,Ft=null;const Ut=[];for(let t=0;t<ot();++t){Ut.push([0,0,0,0,0,0]);f(Ut[t],j(t))}const Yt=[];for(let t=0;t<it();++t){Yt.push([0,0,0,0,0,0]);f(Yt[t],I(t))}function Zt(){if(function(){for(let t=0;t<ot();++t)if(o.notifyTransform.x[t])return!0;for(let t=0;t<it();++t)if(o.notifyTransform.y[t])return!0;return!1}()){if(Ft){window.clearTimeout(Ft);Ft=null}Ft=setTimeout((function(){for(let e=0;e<ot();++e)if(o.notifyTransform.x[e]&&!c(Ut[e],j(e))){t.emit(n.widget,\"xTransformChanged\"+e);f(Ut[e],j(e))}for(let e=0;e<it();++e)if(o.notifyTransform.y[e]&&!c(Yt[e],I(e))){t.emit(n.widget,\"yTransformChanged\"+e);f(Yt[e],I(e))}}),250)}}const Rt=function(t,e){f(t,e);Zt()};function Xt(t=0,e=0){if(S()){const n=y(L()),o=x(L());return s([0,1,1,0,n,o],s(j(t),s(I(e),[0,1,1,0,-o,-n])))}{const n=y(L()),o=p(L());return s([1,0,0,-1,n,o],s(j(t),s(I(e),[1,0,0,-1,-n,o])))}}n.combinedTransform=Xt;function kt(t,e){return s(Xt(t,e),_())}function Wt(t,e,n,o=!1){let i,r;i=o?t:s(u(Xt(e,n)),t);r=S()?[(i[1]-L()[1])/L()[3],(i[0]-L()[0])/L()[2]]:[(i[0]-L()[0])/L()[2],1-(i[1]-L()[1])/L()[3]];return[A(e,n)[0]+r[0]*A(e,n)[2],A(e,n)[1]+r[1]*A(e,n)[3]]}function qt(t,e,n,o=!1){return m.toDisplayCoord(t,o?[1,0,0,1,0,0]:Xt(e,n),S(),L(),A(e,n))}function zt(){for(let t=0;t<ot();++t){let e,n;const o=A(t,0);if(S()){e=(Wt([0,x(L())],t,0)[0]-o[0])/o[2];n=(Wt([0,p(L())],t,0)[0]-o[0])/o[2]}else{e=(Wt([y(L()),0],t,0)[0]-o[0])/o[2];n=(Wt([h(L()),0],t,0)[0]-o[0])/o[2]}for(let o=0;o<nt(W());++o){const i=r.$(W()[o]);if(i){const o=i.wtSObj;o&&o.xAxis()===t&&o.changeRange(e,n)}}}}function Bt(){It();q()&&jt.tooltipPosition&&(jt.tooltipTimeout=setTimeout((function(){Ht()}),500));vt&&ut((function(){n.repaint();D()&&Nt()}))}function Nt(){if(!vt)return;const t=dt.getContext(\"2d\");t.clearRect(0,0,dt.width,dt.height);t.save();t.beginPath();t.moveTo(y(L()),x(L()));t.lineTo(h(L()),x(L()));t.lineTo(h(L()),p(L()));t.lineTo(y(L()),p(L()));t.closePath();t.clip();let e,n=s(u(Xt(rt(),lt())),mt),i=mt[0],r=mt[1];if(-1!==O()){n=w(S()?n[1]:n[0],Z(O()),S());const t=s(Xt(R(O()),X(O())),s(Y(O()),n));i=t[0];r=t[1];mt[0]=i;mt[1]=r}e=S()?[(n[1]-L()[1])/L()[3],(n[0]-L()[0])/L()[2]]:[(n[0]-L()[0])/L()[2],1-(n[1]-L()[1])/L()[3]];if(-1!==O()){const t=A(R(O()),X(O()));n=[t[0]+e[0]*t[2],t[1]+e[1]*t[3]]}else{const t=A(rt(),lt());n=[t[0]+e[0]*t[2],t[1]+e[1]*t[3]]}t.fillStyle=t.strokeStyle=o.crosshairColor;t.font=\"16px sans-serif\";t.textAlign=\"right\";t.textBaseline=\"top\";let l=n[0].toFixed(2),f=n[1].toFixed(2);\"-0.00\"===l&&(l=\"0.00\");\"-0.00\"===f&&(f=\"0.00\");t.fillText(\"(\"+l+\",\"+f+\")\",h(L())-z()[0],x(L())+z()[1]);t.setLineDash&&t.setLineDash([1,2]);t.beginPath();t.moveTo(Math.floor(i)+.5,Math.floor(x(L()))+.5);t.lineTo(Math.floor(i)+.5,Math.floor(p(L()))+.5);t.moveTo(Math.floor(y(L()))+.5,Math.floor(r)+.5);t.lineTo(Math.floor(h(L()))+.5,Math.floor(r)+.5);t.stroke();t.restore()}function Kt(t=null){let e;S()&&(1===t?t=2:2===t&&(t=1));for(let n=0;n<ot();++n){let o=kt(n,0);if(S()){if(null===t||2===t){if(j(n)[0]<1){j(n)[0]=1;o=kt(n,0)}if(x(o)>x(_())){e=x(_())-x(o);j(n)[4]=j(n)[4]+e}else if(p(o)<p(_())){e=p(_())-p(o);j(n)[4]=j(n)[4]+e}}}else if(null===t||1===t){if(j(n)[0]<1){j(n)[0]=1;o=kt(n,0)}if(y(o)>y(_())){e=y(_())-y(o);j(n)[4]=j(n)[4]+e}else if(h(o)<h(_())){e=h(_())-h(o);j(n)[4]=j(n)[4]+e}}}for(let n=0;n<it();++n){let o=kt(0,n);if(S()){if(null===t||1===t){if(I(n)[3]<1){I(n)[3]=1;o=kt(0,n)}if(y(o)>y(_())){e=y(_())-y(o);I(n)[5]=I(n)[5]+e}else if(h(o)<h(_())){e=h(_())-h(o);I(n)[5]=I(n)[5]+e}}}else if(null===t||2===t){if(I(n)[3]<1){I(n)[3]=1;o=kt(0,n)}if(x(o)>x(_())){e=x(_())-x(o);I(n)[5]=I(n)[5]-e}else if(p(o)<p(_())){e=p(_())-p(o);I(n)[5]=I(n)[5]-e}}}Zt()}function Ht(){jt.toolTipEl||t.emit(n.widget,\"loadTooltip\",jt.tooltipPosition[0],jt.tooltipPosition[1])}this.updateTooltip=function(t){It();if(t){if(!jt.tooltipPosition)return;jt.toolTipEl=document.createElement(\"div\");jt.toolTipEl.className=o.ToolTipInnerStyle;jt.toolTipEl.innerHTML=t;jt.tooltipOuterDiv=document.createElement(\"div\");jt.tooltipOuterDiv.className=o.ToolTipOuterStyle;document.body.appendChild(jt.tooltipOuterDiv);jt.tooltipOuterDiv.appendChild(jt.toolTipEl);const e=r.widgetPageCoordinates(n.canvas),i=jt.tooltipPosition[0]+e.x,l=jt.tooltipPosition[1]+e.y;r.fitToWindow(jt.tooltipOuterDiv,i+10,l+10,i-10,l-10);jt.toolTipEl.addEventListener(\"mouseenter\",(function(){jt.overTooltip=!0}));jt.toolTipEl.addEventListener(\"mouseleave\",(function(){jt.overTooltip=!1}))}};this.mouseMove=function(t,e){setTimeout((function(){setTimeout(It,200);if(ht)return;const t=r.widgetCoordinates(n.canvas,e);if(b(t,L())){if(q()){jt.tooltipPosition=[t.x,t.y];jt.tooltipTimeout=setTimeout((function(){Ht()}),500)}if(null===wt&&D()&&vt){mt=[t.x,t.y];ut(Nt)}}}),0)};this.mouseOut=function(t,e){setTimeout(It,200)};this.mouseDown=function(t,e){if(ht)return;const o=r.widgetCoordinates(n.canvas,e),i=C(o.x,o.y),l=b(o,L()),s=P(o.x,o.y);if(-1!==i||-1!==s||l){wt=o;Tt=s;Mt=i}};this.mouseUp=function(t,e){if(!ht){wt=null;Tt=-1;Mt=-1}};this.mouseDrag=function(t,e){if(ht)return;if(null===wt){i.mouseDown(t,e);return}const l=r.widgetCoordinates(n.canvas,e);if(1===r.buttons)if(-1===Mt&&-1===Tt&&B()&&F(Q())){const t=Q();let e;e=S()?l.x-wt.x:l.y-wt.y;f(U(t),s([1,0,0,1,0,e/I(X(Q()))[3]],U(t)));Bt()}else o.pan&&ne({x:l.x-wt.x,y:l.y-wt.y},0,Tt,Mt);wt=l};this.clicked=function(e,o){if(ht)return;if(null!==wt)return;if(!k())return;const i=r.widgetCoordinates(n.canvas,o);t.emit(n.widget,\"seriesSelected\",i.x,i.y)};this.mouseWheel=function(t,e){const i=(e.metaKey<<3)+(e.altKey<<2)+(e.ctrlKey<<1)+e.shiftKey,l=o.wheelActions[i];if(void 0===l)return;const u=r.widgetCoordinates(n.canvas,e),c=P(u.x,u.y),x=C(u.x,u.y),p=b(u,L());if(-1===c&&-1===x&&!p)return;const y=r.normalizeWheel(e);if(p&&0===i&&B()){const t=Q(),n=-y.spinY;if(F(t)){const o=Y(t),i=a(o,Z(t)),l=v(i,S()),u=(l[0]+l[1])/2;r.cancelEvent(e);const c=Math.pow(1.2,n);f(U(t),s([1,0,0,c,0,u-c*u],U(t)));Bt();return}}if(4!==l&&5!==l&&6!==l||!o.pan){if(o.zoom){r.cancelEvent(e);let t=-y.spinY;0===t&&(t=-y.spinX);1===l?oe(u,0,t,c,x):0===l?oe(u,t,0,c,x):2===l?oe(u,t,t,c,x):3===l&&(0!==y.pixelX?oe(u,t,0,c,x):oe(u,0,t,c,x))}}else{const t=[];for(let e=0;e<ot();++e)t.push(j(e)[4]);const n=[];for(let t=0;t<it();++t)n.push(I(t)[5]);6===l?ne({x:-y.pixelX,y:-y.pixelY},0,c,x):5===l?ne({x:0,y:-y.pixelX-y.pixelY},0,c,x):4===l&&ne({x:-y.pixelX-y.pixelY,y:0},0,c,x);for(let n=0;n<ot();++n)t[n]!==j(n)[4]&&r.cancelEvent(e);for(let t=0;t<it();++t)n[t]!==I(t)[5]&&r.cancelEvent(e)}};const Gt=function(){k()&&t.emit(n.widget,\"seriesSelected\",wt.x,wt.y)};function Jt(){return dt||n.canvas}pt.start=function(t,e,i){bt=1===nt(e.touches);Et=2===nt(e.touches);if(bt){_t=!1;const t=r.widgetCoordinates(n.canvas,e.touches[0]),o=C(t.x,t.y),l=b(t,L()),s=P(t.x,t.y);if(-1===o&&-1===s&&!l)return;Lt=-1===o&&-1===s&&D()&&M(mt,[t.x,t.y],30)?1:0;St=Date.now();wt=t;Mt=o;Tt=s;if(1!==Lt){!i&&l&&(Dt=window.setTimeout(Gt,200));tt(\"contextmenu\",xt.contextmenuListener)}r.capture(null);r.capture(Jt())}else{if(!Et||!o.zoom&&!B())return;{if(Dt){window.clearTimeout(Dt);Dt=null}_t=!1;gt=[r.widgetCoordinates(n.canvas,e.touches[0]),r.widgetCoordinates(n.canvas,e.touches[1])].map((function(t){return[t.x,t.y]}));let t=-1,o=-1;if(!gt.every((function(t){return b(t,L())}))){t=P(gt[0][0],gt[0][1]);if(-1!==t){if(t!==P(gt[1][0],gt[1][1])){Et=null;return}}else{o=C(gt[0][0],gt[0][1]);if(1===o){Et=null;return}if(o!==C(gt[1][0],gt[1][1])){Et=null;return}}}r.capture(null);r.capture(Jt());Pt=Math.atan2(gt[1][1]-gt[0][1],gt[1][0]-gt[0][0]);Ct=[(gt[0][0]+gt[1][0])/2,(gt[0][1]+gt[1][1])/2];const i=Math.abs(Math.sin(Pt)),l=Math.abs(Math.cos(Pt));Pt=i<Math.sin(.125*Math.PI)?0:l<Math.cos(.375*Math.PI)?Math.PI/2:Math.tan(Pt)>0?Math.PI/4:-Math.PI/4;At=T(Pt,Ct);Tt=t;Mt=o}}V(e)};function $t(t,e=null){if(!_t)return;const n=Date.now();e=e??n-St;const o={x:0,y:0};let i;if(-1!==Tt)i=kt(Tt,0);else if(-1===Mt){i=kt(0,0);for(let t=1;t<ot();++t)i=d(i,kt(t,0));for(let t=1;t<it();++t)i=d(i,kt(0,t))}else i=kt(0,Mt);const r=2e-4;if(e>34){vt=!1;const n=Math.floor(e/17-1);for(let e=0;e<n;++e){$t(t,17);if(!_t){vt=!0;Bt();return}}e-=17*n;vt=!0}Ot.x!==1/0&&Ot.x!==-1/0||(Ot.x>0?Ot.x=at:Ot.x=-1.5);if(isFinite(Ot.x)){Ot.x=Ot.x/(1+.003*e);i[0]+=Ot.x*e;if(y(i)>y(_())){Ot.x=Ot.x+-r*(y(i)-y(_()))*e;Ot.x*=.7}else if(h(i)<h(_())){Ot.x=Ot.x+-r*(h(i)-h(_()))*e;Ot.x*=.7}Math.abs(Ot.x)<ct&&(y(i)>y(_())?Ot.x=ct:h(i)<h(_())&&(Ot.x=-.001));Math.abs(Ot.x)>at&&(Ot.x=(Ot.x>0?1:-1)*at);o.x=Ot.x*e}Ot.y!==1/0&&Ot.y!==-1/0||(Ot.y>0?Ot.y=at:Ot.y=-1.5);if(isFinite(Ot.y)){Ot.y=Ot.y/(1+.003*e);i[1]+=Ot.y*e;if(x(i)>x(_())){Ot.y=Ot.y+-r*(x(i)-x(_()))*e;Ot.y*=.7}else if(p(i)<p(_())){Ot.y=Ot.y+-r*(p(i)-p(_()))*e;Ot.y*=.7}Math.abs(Ot.y)<.001&&(x(i)>x(_())?Ot.y=.001:p(i)<p(_())&&(Ot.y=-.001));Math.abs(Ot.y)>at&&(Ot.y=(Ot.y>0?1:-1)*at);o.y=Ot.y*e}if(-1!==Tt)i=kt(Tt,0);else if(-1===Mt){i=kt(0,0);for(let t=1;t<ot();++t)i=d(i,kt(t,0));for(let t=1;t<it();++t)i=d(i,kt(0,t))}else i=kt(0,Mt);ne(o,1,Tt,Mt);let l;if(-1!==Tt)l=kt(Tt,0);else if(-1===Mt){l=kt(0,0);for(let t=1;t<ot();++t)l=d(l,kt(t,0));for(let t=1;t<it();++t)l=d(l,kt(0,t))}else l=kt(0,Mt);if(y(i)>y(_())&&y(l)<=y(_())){Ot.x=0;ne({x:-o.x,y:0},1,Tt,Mt);Kt(1)}if(h(i)<h(_())&&h(l)>=h(_())){Ot.x=0;ne({x:-o.x,y:0},1,Tt,Mt);Kt(1)}if(x(i)>x(_())&&x(l)<=x(_())){Ot.y=0;ne({x:0,y:-o.y},1,Tt,Mt);Kt(2)}if(p(i)<p(_())&&p(l)>=p(_())){Ot.y=0;ne({x:0,y:-o.y},1,Tt,Mt);Kt(2)}if(Math.abs(Ot.x)<.02&&Math.abs(Ot.y)<.02&&function(t){return x(t)<=x(_())+3&&p(t)>=p(_())-3&&y(t)<=y(_())+3&&h(t)>=h(_())-3}(l)){Kt();_t=!1;wt=null;Ot.x=0;Ot.y=0;St=null;gt=[]}else{St=n;vt&&requestAnimationFrame($t)}}pt.end=function(t,e){if(Dt){window.clearTimeout(Dt);Dt=null}window.setTimeout((function(){et(\"contextmenu\",xt.contextmenuListener)}),0);let n=Array.prototype.slice.call(e.touches),r=0===nt(n);if(!r)for(let t=0;t<nt(e.changedTouches);++t){const o=e.changedTouches[t].identifier;for(let t=0;t<nt(n);++t)if(n[t].identifier===o){n.splice(t,1);return}}r=0===nt(n);bt=1===nt(n);Et=2===nt(n);if(r){Qt=null;if(0===Lt&&(isFinite(Ot.x)||isFinite(Ot.y))&&o.rubberBand){St=Date.now();_t=!0;requestAnimationFrame($t)}else{1===Lt&&i.mouseUp(null,null);n=[];Pt=null;Ct=null;At=null;St=null}Lt=null}else(bt||Et)&&pt.start(t,e,!0)};let Qt=null,Vt=null,te=null;pt.moved=function(t,e){if((bt||Et)&&(!bt||null!==wt)){V(e);Vt=r.widgetCoordinates(n.canvas,e.touches[0]);nt(e.touches)>1&&(te=r.widgetCoordinates(n.canvas,e.touches[1]));if(-1===Tt&&-1===Mt&&bt&&Dt&&!M([Vt.x,Vt.y],[wt.x,wt.y],3)){window.clearTimeout(Dt);Dt=null}Qt||(Qt=setTimeout((function(){if(-1===Tt&&-1===Mt&&bt&&B()&&F(Q())){const t=Q();if(F(t)){const e=Vt;let n;n=S()?(e.x-wt.x)/I(X(Q()))[3]:(e.y-wt.y)/I(X(Q()))[3];U(t)[5]+=n;wt=e;Bt()}}else if(bt){const t=Vt,e=Date.now(),n={x:t.x-wt.x,y:t.y-wt.y},i=e-St;St=e;if(1===Lt){mt[0]+=n.x;mt[1]+=n.y;D()&&vt&&requestAnimationFrame(Nt)}else if(o.pan){Ot.x=n.x/i;Ot.y=n.y/i;ne(n,o.rubberBand?2:0,Tt,Mt)}wt=t}else if(-1===Tt&&-1===Mt&&Et&&B()&&F(Q())){const t=Q();if(F(t)){const e=S()?0:1,n=[Vt,te].map((function(t){return[t.x,t.y]})),o=Math.abs(gt[1][e]-gt[0][e]),i=Math.abs(n[1][e]-n[0][e]);let r=o>0?i/o:1;i===o&&(r=1);const l=s(u(Xt(R(t),X(t))),[0,(gt[0][e]+gt[1][e])/2])[1],c=s(u(Xt(R(t),X(t))),[0,(n[0][e]+n[1][e])/2])[1];f(U(t),s([1,0,0,r,0,-r*l+c],U(t)));Bt();wt=null;gt=n}}else if(Et&&o.zoom){const t=Wt(mt,rt(),lt());let e=(gt[0][0]+gt[1][0])/2,n=(gt[0][1]+gt[1][1])/2;const o=[Vt,te].map((function(t){return 0===Pt?[t.x,n]:Pt===Math.PI/2?[e,t.y]:s(At,[t.x,t.y])})),i=Math.abs(gt[1][0]-gt[0][0]),r=Math.abs(o[1][0]-o[0][0]);let l=i>0?r/i:1;r!==i&&Pt!==Math.PI/2||(l=1);let u=(o[0][0]+o[1][0])/2;const f=Math.abs(gt[1][1]-gt[0][1]),c=Math.abs(o[1][1]-o[0][1]);let a=f>0?c/f:1;c!==f&&0!==Pt||(a=1);let x=(o[0][1]+o[1][1])/2;if(S()){[l,a]=[a,l];[e,n]=[n,e];[u,x]=[x,u]}const p=[];for(let t=0;t<ot();++t)p.push(l);for(let t=0;t<ot();++t){j(t)[0]*p[t]>H(t)&&(p[t]=H(t)/j(t)[0]);j(t)[0]*p[t]<N(t)&&(p[t]=N(t)/j(t)[0])}const y=[];for(let t=0;t<it();++t)y.push(a);for(let t=0;t<it();++t){I(t)[3]*y[t]>G(t)&&(y[t]=G(t)/I(t)[3]);I(t)[3]*y[t]<K(t)&&(y[t]=K(t)/I(t)[3])}if(-1!==Tt)1!==p[Tt]&&(p[Tt]<1||j(Tt)[0]!==H(Tt))&&Rt(j(Tt),s([p[Tt],0,0,1,-p[Tt]*e+u,0],j(Tt)));else if(-1===Mt){for(let t=0;t<ot();++t)1!==p[t]&&(p[t]<1||j(t)[0]!==H(t))&&Rt(j(t),s([p[t],0,0,1,-p[t]*e+u,0],j(t)));for(let t=0;t<it();++t)1!==y[t]&&(y[t]<1||I(t)[3]!==G(t))&&Rt(I(t),s([1,0,0,y[t],0,-y[t]*n+x],I(t)))}else 1!==y[Mt]&&(y[Mt]<1||I(Mt)[3]!==G(Mt))&&Rt(I(Mt),s([1,0,0,y[Mt],0,-y[Mt]*n+x],I(Mt)));Kt();const h=qt(t,rt(),lt());mt[0]=h[0];mt[1]=h[1];gt=o;ee();Bt();zt()}Qt=null}),1))}};function ee(){for(let t=0;t<nt(J().x);++t){let e=g(j(t)[0])-1;j(t)[0]===H(t)&&(e=nt(J().x[t])-1);e>=nt(J().x[t])&&(e=nt(J().x[t])-1);for(let n=0;n<nt(J().x[t]);++n)if(e===n)for(let e=0;e<nt(J().x[t][n]);++e)J().x[t][n][e].color[3]=$().x[t][e];else for(let e=0;e<nt(J().x[t][n]);++e)J().x[t][n][e].color[3]=0}for(let t=0;t<nt(J().y);++t){let e=g(I(t)[3])-1;I(t)[3]===G(t)&&(e=nt(J().y[t])-1);e>=nt(J().y[t])&&(e=nt(J().y[t])-1);for(let n=0;n<nt(J().y[t]);++n)if(e===n)for(let e=0;e<nt(J().y[t][n]);++e)J().y[t][n][e].color[3]=$().y[t][e];else for(let e=0;e<nt(J().y[t][n]);++e)J().y[t][n][e].color[3]=0}}function ne(t,e=0,n=-1,o=-1){const i=Wt(mt,rt(),lt());S()&&(t={x:t.y,y:-t.x});if(1&e){if(-1!==n)j(n)[4]=j(n)[4]+t.x;else if(-1===o){for(let e=0;e<ot();++e)j(e)[4]=j(e)[4]+t.x;for(let e=0;e<it();++e)I(e)[5]=I(e)[5]-t.y}else I(o)[5]=I(o)[5]-t.y;Zt()}else if(2&e){let e;if(-1!==n)e=kt(n,0);else if(-1===o){e=kt(0,0);for(let t=1;t<ot();++t)e=d(e,kt(t,0));for(let t=1;t<it();++t)e=d(e,kt(0,t))}else e=kt(0,o);y(e)>y(_())?t.x>0&&(t.x=t.x/(1+(y(e)-y(_()))*ft)):h(e)<h(_())&&t.x<0&&(t.x=t.x/(1+(h(_())-h(e))*ft));x(e)>x(_())?t.y>0&&(t.y=t.y/(1+(x(e)-x(_()))*ft)):p(e)<p(_())&&t.y<0&&(t.y=t.y/(1+(p(_())-p(e))*ft));if(-1!==n)j(n)[4]=j(n)[4]+t.x;else if(-1===o){for(let e=0;e<ot();++e)j(e)[4]=j(e)[4]+t.x;for(let e=0;e<it();++e)I(e)[5]=I(e)[5]-t.y}else I(o)[5]=I(o)[5]-t.y;-1===o&&(mt[0]=mt[0]+t.x);-1===n&&(mt[1]=mt[1]+t.y);Zt()}else{if(-1!==n)j(n)[4]=j(n)[4]+t.x;else if(-1===o){for(let e=0;e<ot();++e)j(e)[4]=j(e)[4]+t.x;for(let e=0;e<it();++e)I(e)[5]=I(e)[5]-t.y}else I(o)[5]=I(o)[5]-t.y;-1===o&&(mt[0]=mt[0]+t.x);-1===n&&(mt[1]=mt[1]+t.y);Kt()}const r=qt(i,rt(),lt());mt[0]=r[0];mt[1]=r[1];Bt();zt()}function oe(t,e,n,o=-1,i=-1){const r=Wt(mt,rt(),lt());let l;l=S()?[t.y-x(L()),t.x-y(L())]:s(u([1,0,0,-1,y(L()),p(L())]),[t.x,t.y]);const f=l[0],c=l[1];let a=Math.pow(1.2,S()?n:e),h=Math.pow(1.2,S()?e:n);if(-1!==o){j(o)[0]*a>H(o)&&(a=H(o)/j(o)[0]);(a<1||j(o)[0]!==H(o))&&Rt(j(o),s([a,0,0,1,f-a*f,0],j(o)))}else if(-1===i){for(let t=0;t<ot();++t){let e=a;j(t)[0]*a>H(t)&&(e=H(t)/j(t)[0]);(e<1||j(t)[0]!==H(t))&&Rt(j(t),s([e,0,0,1,f-e*f,0],j(t)))}for(let t=0;t<it();++t){let e=h;I(t)[3]*h>G(t)&&(e=G(t)/I(t)[3]);(e<1||I(t)[3]!==G(t))&&Rt(I(t),s([1,0,0,e,0,c-e*c],I(t)))}}else{I(i)[3]*h>G(i)&&(h=G(i)/I(i)[3]);(h<1||I(i)[3]!==G(i))&&Rt(I(i),s([1,0,0,h,0,c-h*c],I(i)))}Kt();const d=qt(r,rt(),lt());mt[0]=d[0];mt[1]=d[1];ee();Bt();zt()}this.setXRange=function(t,e,n,i){const r=A(R(t),0);e=r[0]+r[2]*e;n=r[0]+r[2]*n;if(y(r)>h(r)){e>y(r)&&(e=y(r));n<h(r)&&(n=h(r))}else{e<y(r)&&(e=y(r));n>h(r)&&(n=h(r))}const l=Z(t),s=E(l,X(t),e,n,S(),L(),A(R(t),X(t)),o.minZoom,o.maxZoom),u=s.xZoom,f=s.yZoom,c=s.panPoint,a=Wt(mt,rt(),lt());j(R(t))[0]=u;f&&i&&(I(X(t))[3]=f);j(R(t))[4]=-c[0]*u;f&&i&&(I(X(t))[5]=-c[1]*f);Zt();const x=qt(a,rt(),lt());mt[0]=x[0];mt[1]=x[1];Kt();ee();Bt();zt()};this.getSeries=function(t){return Z(t)};this.rangeChangedCallbacks=[];this.updateConfig=function(t){for(const[e,n]of Object.entries(t))o[e]=n;!function(){if(!D()||null!==dt&&n.canvas.width===dt.width&&n.canvas.height===dt.height){if(null!==dt&&!D()){dt.parentNode.removeChild(dt);delete e.wtOObj;dt=null}}else{if(dt){dt.parentNode.removeChild(dt);delete e.wtOObj;dt=null}const t=document.createElement(\"canvas\");t.setAttribute(\"width\",n.canvas.width);t.setAttribute(\"height\",n.canvas.height);t.style.position=\"absolute\";t.style.display=\"block\";t.style.left=\"0\";t.style.top=\"0\";if(window.MSPointerEvent||window.PointerEvent){t.style.msTouchAction=\"none\";t.style.touchAction=\"none\"}n.canvas.parentNode.appendChild(t);dt=t;e.wtOObj=dt}mt=[(y(L())+h(L()))/2,(x(L())+p(L()))/2]}();ee();Bt();zt()};this.updateConfig({});if(!window.TouchEvent||window.MSPointerEvent||window.PointerEvent){const t=function(){};i.touchStart=t;i.touchEnd=t;i.touchMoved=t}else{i.touchStart=pt.start;i.touchEnd=pt.end;i.touchMoved=pt.moved}})");
+  }
 
-	/**
-	 * Returns the current Y segment.
-	 */
-	public int getCurrentYSegment() {
-		return this.currentYSegment_;
-	}
+  static String locToJsString(AxisValue loc) {
+    switch (loc) {
+      case Minimum:
+        return "min";
+      case Maximum:
+        return "max";
+      case Zero:
+        return "zero";
+      case Both:
+        return "both";
+    }
+    assert false;
+    return "";
+  }
 
-	public static void setPenColor(final WPen pen, final WDataSeries series,
-			int xRow, int xColumn, int yRow, int yColumn, int colorRole) {
-		WColor color = null;
-		if (yRow >= 0 && yColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerPenColorRole) {
-				color = series.getModel().getMarkerPenColor(yRow, yColumn);
-			} else {
-				if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-					color = series.getModel()
-							.getMarkerBrushColor(yRow, yColumn);
-				}
-			}
-		}
-		if (!(color != null) && xRow >= 0 && xColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerPenColorRole) {
-				color = series.getModel().getMarkerPenColor(xRow, xColumn);
-			} else {
-				if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-					color = series.getModel()
-							.getMarkerBrushColor(xRow, xColumn);
-				}
-			}
-		}
-		if (color != null) {
-			pen.setColor(color);
-		}
-	}
+  static int binarySearchRow(
+      final WAbstractChartModel model, int xColumn, double d, int minRow, int maxRow) {
+    if (minRow == maxRow) {
+      return minRow;
+    }
+    double min = model.getData(minRow, xColumn);
+    double max = model.getData(maxRow, xColumn);
+    if (d <= min) {
+      return minRow;
+    }
+    if (d >= max) {
+      return maxRow;
+    }
+    double start = minRow + (d - min) / (max - min) * (maxRow - minRow);
+    double data = model.getData((int) start, xColumn);
+    if (data < d) {
+      return binarySearchRow(model, xColumn, d, (int) start + 1, maxRow);
+    } else {
+      if (data > d) {
+        return binarySearchRow(model, xColumn, d, minRow, (int) start - 1);
+      } else {
+        return (int) start;
+      }
+    }
+  }
 
-	public static void setBrushColor(final WBrush brush,
-			final WDataSeries series, int xRow, int xColumn, int yRow,
-			int yColumn, int colorRole) {
-		WColor color = null;
-		if (yRow >= 0 && yColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-				color = series.getModel().getMarkerBrushColor(yRow, yColumn);
-			} else {
-				if (colorRole == ItemDataRole.BarBrushColorRole) {
-					color = series.getModel().getBarBrushColor(yRow, yColumn);
-				}
-			}
-		}
-		if (!(color != null) && xRow >= 0 && xColumn >= 0) {
-			if (colorRole == ItemDataRole.MarkerBrushColorRole) {
-				color = series.getModel().getMarkerBrushColor(xRow, xColumn);
-			} else {
-				if (colorRole == ItemDataRole.BarBrushColorRole) {
-					color = series.getModel().getBarBrushColor(xRow, xColumn);
-				}
-			}
-		}
-		if (color != null) {
-			brush.setColor(color);
-		}
-	}
+  private static final int TICK_LENGTH = 5;
+  private static final int CURVE_LABEL_PADDING = 10;
+  private static final int DEFAULT_CURVE_LABEL_WIDTH = 100;
+  private static final int CURVE_SELECTION_DISTANCE_SQUARED = 400;
 
-	private int currentXSegment_;
-	private int currentYSegment_;
-
-	static WJavaScriptPreamble wtjs2() {
-		return new WJavaScriptPreamble(
-				JavaScriptScope.WtClassScope,
-				JavaScriptObjectType.JavaScriptConstructor,
-				"ChartCommon",
-				"function(v){function z(a,b,e,c){function d(f){return e?b[f]:b[l-1-f]}function j(f){for(;d(f)[2]===t||d(f)[2]===w;)f--;return f}var q=h;if(c)q=i;var l=b.length;c=Math.floor(l/2);c=j(c);var x=0,m=l,k=false;if(d(0)[q]>a)return e?-1:l;if(d(l-1)[q]<a)return e?l:-1;for(;!k;){var g=c+1;if(g<l&&(d(g)[2]===t||d(g)[2]===w))g+=2;if(d(c)[q]>a){m=c;c=Math.floor((m+x)/2);c=j(c)}else if(d(c)[q]===a)k=true;else if(g<l&&d(g)[q]>a)k=true;else if(g<l&&d(g)[q]=== a){c=g;k=true}else{x=c;c=Math.floor((m+x)/2);c=j(c)}}return e?c:l-1-c}function C(a,b){return b[0][a]<b[b.length-1][a]}var t=2,w=3,h=0,i=1,A=this;v=v.WT.gfxUtils;var D=v.rect_top,E=v.rect_bottom,B=v.rect_left,F=v.rect_right,G=v.transform_mult;this.findClosestPoint=function(a,b,e){var c=h;if(e)c=i;var d=C(c,b);e=z(a,b,d,e);if(e<0)e=0;if(e>=b.length)return[b[b.length-1][h],b[b.length-1][i]];if(e>=b.length)e=b.length-2;if(b[e][c]===a)return[b[e][h],b[e][i]];var j=d?e+1:e-1;if(d&&b[j][2]==t)j+=2;if(!d&& j<0)return[b[e][h],b[e][i]];if(!d&&j>0&&b[j][2]==w)j-=2;d=Math.abs(a-b[e][c]);a=Math.abs(b[j][c]-a);return d<a?[b[e][h],b[e][i]]:[b[j][h],b[j][i]]};this.minMaxY=function(a,b){b=b?h:i;for(var e=a[0][b],c=a[0][b],d=1;d<a.length;++d)if(a[d][2]!==t&&a[d][2]!==w&&a[d][2]!==5){if(a[d][b]>c)c=a[d][b];if(a[d][b]<e)e=a[d][b]}return[e,c]};this.projection=function(a,b){var e=Math.cos(a);a=Math.sin(a);var c=e*a,d=-b[0]*e-b[1]*a;return[e*e,c,c,a*a,e*d+b[0],a*d+b[1]]};this.distanceSquared=function(a,b){a=[b[h]- a[h],b[i]-a[i]];return a[h]*a[h]+a[i]*a[i]};this.distanceLessThanRadius=function(a,b,e){return e*e>=A.distanceSquared(a,b)};this.toZoomLevel=function(a){return Math.floor(Math.log(a)/Math.LN2+0.5)+1};this.isPointInRect=function(a,b){var e;if(a.x!==undefined){e=a.x;a=a.y}else{e=a[0];a=a[1]}return e>=B(b)&&e<=F(b)&&a>=D(b)&&a<=E(b)};this.toDisplayCoord=function(a,b,e,c,d){if(e){a=[(a[h]-d[0])/d[2],(a[i]-d[1])/d[3]];c=[c[0]+a[i]*c[2],c[1]+a[h]*c[3]]}else{a=[(a[h]-d[0])/d[2],1-(a[i]-d[1])/d[3]];c=[c[0]+ a[h]*c[2],c[1]+a[i]*c[3]]}return G(b,c)};this.findYRange=function(a,b,e,c,d,j,q){if(a.length!==0){var l=A.toDisplayCoord([b,0],[1,0,0,1,0,0],c,d,j),x=A.toDisplayCoord([e,0],[1,0,0,1,0,0],c,d,j),m=c?i:h,k=c?h:i,g=C(m,a),f=z(l[m],a,g,c),n=z(x[m],a,g,c),o,p,r=Infinity,s=-Infinity,y=f===n&&f===a.length||f===-1&&n===-1;if(!y){if(g)if(f<0)f=0;else{f++;if(a[f]&&a[f][2]===t)f+=2}else if(f>=a.length-1)f=a.length-2;if(!g&&n<0)n=0;for(o=Math.min(f,n);o<=Math.max(f,n)&&o<a.length;++o)if(a[o][2]!==t&&a[o][2]!== w){if(a[o][k]<r)r=a[o][k];if(a[o][k]>s)s=a[o][k]}if(g&&f>0||!g&&f<a.length-1){if(g){p=f-1;if(a[p]&&a[p][2]===w)p-=2}else{p=f+1;if(a[p]&&a[p][2]===t)p+=2}o=(l[m]-a[p][m])/(a[f][m]-a[p][m]);f=a[p][k]+o*(a[f][k]-a[p][k]);if(f<r)r=f;if(f>s)s=f}if(g&&n<a.length-1||!g&&n>0){if(g){g=n+1;if(a[g][2]===t)g+=2}else{g=n-1;if(a[g][2]===w)g-=2}o=(x[m]-a[n][m])/(a[g][m]-a[n][m]);f=a[n][k]+o*(a[g][k]-a[n][k]);if(f<r)r=f;if(f>s)s=f}}var u;a=j[2]/(e-b);b=c?2:3;if(!y){u=d[b]/(s-r);u=d[b]/(d[b]/u+20);if(u>q[k])u=q[k]}c= c?[l[i]-D(d),!y?(r+s)/2-d[2]/u/2-B(d):0]:[l[h]-B(d),!y?-((r+s)/2+d[3]/u/2-E(d)):0];return{xZoom:a,yZoom:u,panPoint:c}}}}");
-	}
-
-	static WJavaScriptPreamble wtjs1() {
-		return new WJavaScriptPreamble(
-				JavaScriptScope.WtClassScope,
-				JavaScriptObjectType.JavaScriptConstructor,
-				"WCartesianChart",
-				"function(na,D,u,l){function J(a){return a===undefined}function n(){return l.modelArea}function Fa(){return l.followCurve}function oa(){return l.crosshair||Fa()!==-1}function y(){return l.isHorizontal}function e(a){if(a===g)return l.xTransform;if(a===f)return l.yTransform}function i(){return l.area}function m(){return l.insideArea}function Z(a){return J(a)?l.series:l.series[a]}function T(a){return Z(a).transform}function $a(a){return y()? z([0,1,1,0,0,0],z(T(a),[0,1,1,0,0,0])):T(a)}function Ga(a){return Z(a).curve}function ab(){return l.seriesSelection}function bb(){return l.sliders}function cb(){return l.hasToolTips}function db(){return l.coordinateOverlayPadding}function va(){return l.curveManipulation}function G(){return l.maxZoom}function F(){return l.pens}function ia(){return l.selectedCurve}function pa(a){a.preventDefault&&a.preventDefault()}function U(a,b){D.addEventListener(a,b)}function N(a,b){D.removeEventListener(a,b)}function A(a){return a.length} function Pa(a){return a.pointerType===2||a.pointerType===3||a.pointerType===\"pen\"||a.pointerType===\"touch\"}function Ha(){if(o){if(o.tooltipTimeout){clearTimeout(o.tooltipTimeout);o.tooltipTimeout=null}if(!o.overTooltip)if(o.tooltipOuterDiv){document.body.removeChild(o.tooltipOuterDiv);o.tooltipEl=null;o.tooltipOuterDiv=null}}}function wa(){if(l.notifyTransform.x||l.notifyTransform.y){if(Ia){window.clearTimeout(Ia);Ia=null}Ia=setTimeout(function(){if(l.notifyTransform.x&&!eb(Qa,e(g))){na.emit(u.widget, \"xTransformChanged\");aa(Qa,e(g))}if(l.notifyTransform.y&&!eb(Ra,e(f))){na.emit(u.widget,\"yTransformChanged\");aa(Ra,e(f))}},nb)}}function ba(){var a,b;if(y()){a=p(i());b=t(i());return z([0,1,1,0,a,b],z(e(g),z(e(f),[0,1,1,0,-b,-a])))}else{a=p(i());b=v(i());return z([1,0,0,-1,a,b],z(e(g),z(e(f),[1,0,0,-1,-a,b])))}}function K(){return z(ba(),m())}function ca(a,b){if(J(b))b=false;a=b?a:z(xa(ba()),a);a=y()?[(a[f]-i()[1])/i()[3],(a[g]-i()[0])/i()[2]]:[(a[g]-i()[0])/i()[2],1-(a[f]-i()[1])/i()[3]];return[n()[0]+ a[g]*n()[2],n()[1]+a[f]*n()[3]]}function ya(a,b){if(J(b))b=false;return da.toDisplayCoord(a,b?[1,0,0,1,0,0]:ba(),y(),i(),n())}function za(){var a,b;if(y()){a=(ca([0,t(i())])[0]-n()[0])/n()[2];b=(ca([0,v(i())])[0]-n()[0])/n()[2]}else{a=(ca([p(i()),0])[0]-n()[0])/n()[2];b=(ca([q(i()),0])[0]-n()[0])/n()[2]}var c;for(c=0;c<A(bb());++c){var h=$(\"#\"+bb()[c]);if(h)(h=h.data(\"sobj\"))&&h.changeRange(a,b)}}function O(){Ha();if(cb()&&o.tooltipPosition)o.tooltipTimeout=setTimeout(function(){fb()},gb);ea&&hb(function(){u.repaint(); oa()&&Sa()})}function Sa(){if(ea){var a=E.getContext(\"2d\");a.clearRect(0,0,E.width,E.height);a.save();a.beginPath();a.moveTo(p(i()),t(i()));a.lineTo(q(i()),t(i()));a.lineTo(q(i()),v(i()));a.lineTo(p(i()),v(i()));a.closePath();a.clip();var b=z(xa(ba()),w),c=w[g],h=w[f];if(Fa()!==-1){b=ob(y()?b[f]:b[g],Ga(Fa()),y());h=z(ba(),z($a(Fa()),b));c=h[g];h=h[f];w[g]=c;w[f]=h}b=y()?[(b[f]-i()[1])/i()[3],(b[g]-i()[0])/i()[2]]:[(b[g]-i()[0])/i()[2],1-(b[f]-i()[1])/i()[3]];b=[n()[0]+b[g]*n()[2],n()[1]+b[f]*n()[3]]; a.font=\"16px sans-serif\";a.textAlign=\"right\";a.textBaseline=\"top\";var d=b[0].toFixed(2);b=b[1].toFixed(2);if(d===\"-0.00\")d=\"0.00\";if(b===\"-0.00\")b=\"0.00\";a.fillText(\"(\"+d+\",\"+b+\")\",q(i())-db()[0],t(i())+db()[1]);a.setLineDash&&a.setLineDash([1,2]);a.beginPath();a.moveTo(Math.floor(c)+0.5,Math.floor(t(i()))+0.5);a.lineTo(Math.floor(c)+0.5,Math.floor(v(i()))+0.5);a.moveTo(Math.floor(p(i()))+0.5,Math.floor(h)+0.5);a.lineTo(Math.floor(q(i()))+0.5,Math.floor(h)+0.5);a.stroke();a.restore()}}function pb(a){return t(a)<= t(i())+Ja&&v(a)>=v(i())-Ja&&p(a)<=p(i())+Ja&&q(a)>=q(i())-Ja}function V(a){var b=K();if(y())if(a===qa)a=ra;else if(a===ra)a=qa;if(J(a)||a===qa)if(e(g)[0]<1){e(g)[0]=1;b=K()}if(J(a)||a===ra)if(e(f)[3]<1){e(f)[3]=1;b=K()}if(J(a)||a===qa){if(p(b)>p(m())){b=p(m())-p(b);if(y())e(f)[5]=e(f)[5]+b;else e(g)[4]=e(g)[4]+b;b=K()}if(q(b)<q(m())){b=q(m())-q(b);if(y())e(f)[5]=e(f)[5]+b;else e(g)[4]=e(g)[4]+b;b=K()}}if(J(a)||a===ra){if(t(b)>t(m())){b=t(m())-t(b);if(y())e(g)[4]=e(g)[4]+b;else e(f)[5]=e(f)[5]-b;b= K()}if(v(b)<v(m())){b=v(m())-v(b);if(y())e(g)[4]=e(g)[4]+b;else e(f)[5]=e(f)[5]-b;K()}}wa()}function fb(){na.emit(u.widget,\"loadTooltip\",o.tooltipPosition[g],o.tooltipPosition[f])}function qb(){if(oa()&&(J(E)||u.canvas.width!==E.width||u.canvas.height!==E.height)){if(E){E.parentNode.removeChild(E);jQuery.removeData(D,\"oobj\");E=undefined}var a=document.createElement(\"canvas\");a.setAttribute(\"width\",u.canvas.width);a.setAttribute(\"height\",u.canvas.height);a.style.position=\"absolute\";a.style.display= \"block\";a.style.left=\"0\";a.style.top=\"0\";if(window.MSPointerEvent||window.PointerEvent){a.style.msTouchAction=\"none\";a.style.touchAction=\"none\"}u.canvas.parentNode.appendChild(a);E=a;jQuery.data(D,\"oobj\",E)}else if(!J(E)&&!oa()){E.parentNode.removeChild(E);jQuery.removeData(D,\"oobj\");E=undefined}w||(w=ya([(p(n())+q(n()))/2,(t(n())+v(n()))/2]))}function Ta(a,b){if(sa){var c=Date.now();if(J(b))b=c-W;var h={x:0,y:0},d=K(),k=rb;if(b>2*Aa){ea=false;var r=Math.floor(b/Aa-1),s;for(s=0;s<r;++s){Ta(a,Aa); if(!sa){ea=true;O();return}}b-=r*Aa;ea=true}if(j.x===Infinity||j.x===-Infinity)j.x=j.x>0?fa:-fa;if(isFinite(j.x)){j.x/=1+ib*b;d[0]+=j.x*b;if(p(d)>p(m())){j.x+=-k*(p(d)-p(m()))*b;j.x*=0.7}else if(q(d)<q(m())){j.x+=-k*(q(d)-q(m()))*b;j.x*=0.7}if(Math.abs(j.x)<Ua)if(p(d)>p(m()))j.x=Ua;else if(q(d)<q(m()))j.x=-Ua;if(Math.abs(j.x)>fa)j.x=(j.x>0?1:-1)*fa;h.x=j.x*b}if(j.y===Infinity||j.y===-Infinity)j.y=j.y>0?fa:-fa;if(isFinite(j.y)){j.y/=1+ib*b;d[1]+=j.y*b;if(t(d)>t(m())){j.y+=-k*(t(d)-t(m()))*b;j.y*=0.7}else if(v(d)< v(m())){j.y+=-k*(v(d)-v(m()))*b;j.y*=0.7}if(Math.abs(j.y)<0.001)if(t(d)>t(m()))j.y=0.001;else if(v(d)<v(m()))j.y=-0.001;if(Math.abs(j.y)>fa)j.y=(j.y>0?1:-1)*fa;h.y=j.y*b}d=K();P(h,ta);a=K();if(p(d)>p(m())&&p(a)<=p(m())){j.x=0;P({x:-h.x,y:0},ta);V(qa)}if(q(d)<q(m())&&q(a)>=q(m())){j.x=0;P({x:-h.x,y:0},ta);V(qa)}if(t(d)>t(m())&&t(a)<=t(m())){j.y=0;P({x:0,y:-h.y},ta);V(ra)}if(v(d)<v(m())&&v(a)>=v(m())){j.y=0;P({x:0,y:-h.y},ta);V(ra)}if(Math.abs(j.x)<jb&&Math.abs(j.y)<jb&&pb(a)){V();sa=false;B=null;j.x= 0;j.y=0;W=null;x=[]}else{W=c;ea&&Ka(Ta)}}}function La(){var a,b,c=kb(e(g)[0])-1;if(c>=A(F().x))c=A(F().x)-1;for(a=0;a<A(F().x);++a)if(c===a)for(b=0;b<A(F().x[a]);++b)F().x[a][b].color[3]=l.penAlpha.x[b];else for(b=0;b<A(F().x[a]);++b)F().x[a][b].color[3]=0;c=kb(e(f)[3])-1;if(c>=A(F().y))c=A(F().y)-1;for(a=0;a<A(F().y);++a)if(c===a)for(b=0;b<A(F().y[a]);++b)F().y[a][b].color[3]=l.penAlpha.y[b];else for(b=0;b<A(F().y[a]);++b)F().y[a][b].color[3]=0}function P(a,b){if(J(b))b=0;var c=ca(w);if(y())a={x:a.y, y:-a.x};if(b&ta){e(g)[4]=e(g)[4]+a.x;e(f)[5]=e(f)[5]-a.y;wa()}else if(b&lb){b=K();if(p(b)>p(m())){if(a.x>0)a.x/=1+(p(b)-p(m()))*Ma}else if(q(b)<q(m()))if(a.x<0)a.x/=1+(q(m())-q(b))*Ma;if(t(b)>t(m())){if(a.y>0)a.y/=1+(t(b)-t(m()))*Ma}else if(v(b)<v(m()))if(a.y<0)a.y/=1+(v(m())-v(b))*Ma;e(g)[4]=e(g)[4]+a.x;e(f)[5]=e(f)[5]-a.y;w[g]+=a.x;w[f]+=a.y;wa()}else{e(g)[4]=e(g)[4]+a.x;e(f)[5]=e(f)[5]-a.y;w[g]+=a.x;w[f]+=a.y;V()}a=ya(c);w[g]=a[g];w[f]=a[f];O();za()}function Ba(a,b,c){var h=ca(w),d;d=y()?[a.y- t(i()),a.x-p(i())]:z(xa([1,0,0,-1,p(i()),v(i())]),[a.x,a.y]);a=d[0];d=d[1];var k=Math.pow(1.2,y()?c:b);b=Math.pow(1.2,y()?b:c);if(e(g)[0]*k>G()[g])k=G()[g]/e(g)[0];if(k<1||e(g)[0]!==G()[g])Na(e(g),z([k,0,0,1,a-k*a,0],e(g)));if(e(f)[3]*b>G()[f])b=G()[f]/e(f)[3];if(b<1||e(f)[3]!==G()[f])Na(e(f),z([1,0,0,b,0,d-b*d],e(f)));V();h=ya(h);w[g]=h[g];w[f]=h[f];La();O();za()}jQuery.data(D,\"cobj\",this);var ga=this,C=na.WT;ga.config=l;var H=C.gfxUtils,z=H.transform_mult,xa=H.transform_inverted,aa=H.transform_assign, eb=H.transform_equal,sb=H.transform_apply,t=H.rect_top,v=H.rect_bottom,p=H.rect_left,q=H.rect_right,da=C.chartCommon,tb=da.minMaxY,ob=da.findClosestPoint,ub=da.projection,mb=da.distanceLessThanRadius,kb=da.toZoomLevel,ua=da.isPointInRect,vb=da.findYRange,Aa=17,Ka=function(){return window.requestAnimationFrame||window.webkitRequestAnimationFrame||window.mozRequestAnimationFrame||function(a){window.setTimeout(a,Aa)}}(),Va=false,hb=function(a){if(!Va){Va=true;Ka(function(){a();Va=false})}};if(window.MSPointerEvent|| window.PointerEvent){D.style.touchAction=\"none\";u.canvas.style.msTouchAction=\"none\";u.canvas.style.touchAction=\"none\"}var ta=1,lb=2,qa=1,ra=2,g=0,f=1,nb=250,gb=500,ib=0.003,rb=2.0E-4,Ma=0.07,Ja=3,Ua=0.001,fa=1.5,jb=0.02,ja=jQuery.data(D,\"eobj2\");if(!ja){ja={};ja.contextmenuListener=function(a){pa(a);N(\"contextmenu\",ja.contextmenuListener)}}jQuery.data(D,\"eobj2\",ja);var Q={},ka=false;if(window.MSPointerEvent||window.PointerEvent)(function(){function a(){ka=A(d)>0}function b(r){if(Pa(r)){pa(r);d.push(r); a();Q.start(D,{touches:d.slice(0)})}}function c(r){if(ka)if(Pa(r)){pa(r);var s;for(s=0;s<A(d);++s)if(d[s].pointerId===r.pointerId){d.splice(s,1);break}a();Q.end(D,{touches:d.slice(0),changedTouches:[]})}}function h(r){if(Pa(r)){pa(r);var s;for(s=0;s<A(d);++s)if(d[s].pointerId===r.pointerId){d[s]=r;break}a();Q.moved(D,{touches:d.slice(0)})}}var d=[],k=jQuery.data(D,\"eobj\");if(k)if(window.PointerEvent){N(\"pointerdown\",k.pointerDown);N(\"pointerup\",k.pointerUp);N(\"pointerout\",k.pointerUp);N(\"pointermove\", k.pointerMove)}else{N(\"MSPointerDown\",k.pointerDown);N(\"MSPointerUp\",k.pointerUp);N(\"MSPointerOut\",k.pointerUp);N(\"MSPointerMove\",k.pointerMove)}jQuery.data(D,\"eobj\",{pointerDown:b,pointerUp:c,pointerMove:h});if(window.PointerEvent){U(\"pointerdown\",b);U(\"pointerup\",c);U(\"pointerout\",c);U(\"pointermove\",h)}else{U(\"MSPointerDown\",b);U(\"MSPointerUp\",c);U(\"MSPointerOut\",c);U(\"MSPointerMove\",h)}})();var E=jQuery.data(D,\"oobj\"),w=null,ea=true,B=null,x=[],X=false,ha=false,M=null,Wa=null,Xa=null,j={x:0,y:0}, S=null,W=null,o=jQuery.data(D,\"tobj\");if(!o){o={overTooltip:false};jQuery.data(D,\"tobj\",o)}var Ca=null,sa=false,Ia=null,Qa=[0,0,0,0,0,0];aa(Qa,e(g));var Ra=[0,0,0,0,0,0];aa(Ra,e(f));var Na=function(a,b){aa(a,b);wa()};u.combinedTransform=ba;this.updateTooltip=function(a){Ha();if(a)if(o.tooltipPosition){o.toolTipEl=document.createElement(\"div\");o.toolTipEl.className=l.ToolTipInnerStyle;o.toolTipEl.innerHTML=a;o.tooltipOuterDiv=document.createElement(\"div\");o.tooltipOuterDiv.className=l.ToolTipOuterStyle; document.body.appendChild(o.tooltipOuterDiv);o.tooltipOuterDiv.appendChild(o.toolTipEl);var b=C.widgetPageCoordinates(u.canvas);a=o.tooltipPosition[g]+b.x;b=o.tooltipPosition[f]+b.y;C.fitToWindow(o.tooltipOuterDiv,a+10,b+10,a-10,b-10);$(o.toolTipEl).mouseenter(function(){o.overTooltip=true});$(o.toolTipEl).mouseleave(function(){o.overTooltip=false})}};this.mouseMove=function(a,b){setTimeout(function(){setTimeout(Ha,200);if(!ka){var c=C.widgetCoordinates(u.canvas,b);if(ua(c,i())){if(!o.tooltipEl&& cb()){o.tooltipPosition=[c.x,c.y];o.tooltipTimeout=setTimeout(function(){fb()},gb)}if(oa()&&ea){w=[c.x,c.y];hb(Sa)}}}},0)};this.mouseOut=function(){setTimeout(Ha,200)};this.mouseDown=function(a,b){if(!ka){a=C.widgetCoordinates(u.canvas,b);if(ua(a,i()))B=a}};this.mouseUp=function(){ka||(B=null)};this.mouseDrag=function(a,b){if(!ka)if(B!==null){a=C.widgetCoordinates(u.canvas,b);if(ua(a,i())){if(C.buttons===1)if(va()&&Z(ia())){b=ia();var c;c=y()?a.x-B.x:a.y-B.y;aa(T(b),z([1,0,0,1,0,c/e(f)[3]],T(b))); O()}else l.pan&&P({x:a.x-B.x,y:a.y-B.y});B=a}}};this.clicked=function(a,b){if(!ka)if(B===null)if(ab()){a=C.widgetCoordinates(u.canvas,b);na.emit(u.widget,\"seriesSelected\",a.x,a.y)}};this.mouseWheel=function(a,b){a=(b.metaKey<<3)+(b.altKey<<2)+(b.ctrlKey<<1)+b.shiftKey;var c=l.wheelActions[a];if(!J(c)){var h=C.widgetCoordinates(u.canvas,b);if(ua(h,i())){var d=C.normalizeWheel(b);if(a===0&&va()){a=ia();var k=-d.spinY;if(Z(a)){c=$a(a);c=sb(c,Ga(a));c=tb(c,y());c=(c[0]+c[1])/2;C.cancelEvent(b);b=Math.pow(1.2, k);aa(T(a),z([1,0,0,b,0,c-b*c],T(a)));O();return}}if((c===4||c===5||c===6)&&l.pan){a=e(g)[4];k=e(f)[5];if(c===6)P({x:-d.pixelX,y:-d.pixelY});else if(c===5)P({x:0,y:-d.pixelX-d.pixelY});else c===4&&P({x:-d.pixelX-d.pixelY,y:0});if(a!==e(g)[4]||k!==e(f)[5])C.cancelEvent(b)}else if(l.zoom){C.cancelEvent(b);k=-d.spinY;if(k===0)k=-d.spinX;if(c===1)Ba(h,0,k);else if(c===0)Ba(h,k,0);else if(c===2)Ba(h,k,k);else if(c===3)d.pixelX!==0?Ba(h,k,0):Ba(h,0,k)}}}};var wb=function(){ab()&&na.emit(u.widget,\"seriesSelected\", B.x,B.y)};Q.start=function(a,b,c){X=A(b.touches)===1;ha=A(b.touches)===2;if(X){sa=false;a=C.widgetCoordinates(u.canvas,b.touches[0]);if(!ua(a,i()))return;Ca=oa()&&mb(w,[a.x,a.y],30)?1:0;W=Date.now();B=a;if(Ca!==1){c||(S=window.setTimeout(wb,200));U(\"contextmenu\",ja.contextmenuListener)}C.capture(null);C.capture(u.canvas)}else if(ha&&(l.zoom||va())){if(S){window.clearTimeout(S);S=null}sa=false;x=[C.widgetCoordinates(u.canvas,b.touches[0]),C.widgetCoordinates(u.canvas,b.touches[1])].map(function(h){return[h.x, h.y]});if(!x.every(function(h){return ua(h,i())})){ha=null;return}C.capture(null);C.capture(u.canvas);M=Math.atan2(x[1][1]-x[0][1],x[1][0]-x[0][0]);Wa=[(x[0][0]+x[1][0])/2,(x[0][1]+x[1][1])/2];c=Math.abs(Math.sin(M));a=Math.abs(Math.cos(M));M=c<Math.sin(0.125*Math.PI)?0:a<Math.cos(0.375*Math.PI)?Math.PI/2:Math.tan(M)>0?Math.PI/4:-Math.PI/4;Xa=ub(M,Wa)}else return;pa(b)};Q.end=function(a,b){if(S){window.clearTimeout(S);S=null}window.setTimeout(function(){N(\"contextmenu\",ja.contextmenuListener)},0); var c=Array.prototype.slice.call(b.touches),h=A(c)===0;h||function(){var d;for(d=0;d<A(b.changedTouches);++d)(function(){for(var k=b.changedTouches[d].identifier,r=0;r<A(c);++r)if(c[r].identifier===k){c.splice(r,1);return}})()}();h=A(c)===0;X=A(c)===1;ha=A(c)===2;if(h){Oa=null;if(Ca===0&&(isFinite(j.x)||isFinite(j.y))&&l.rubberBand){W=Date.now();sa=true;Ka(Ta)}else{ga.mouseUp(null,null);c=[];Xa=Wa=M=null;if(W!=null){Date.now();W=null}}Ca=null}else if(X||ha)Q.start(a,b,true)};var Oa=null,la=null,Ya= null;Q.moved=function(a,b){if(X||ha)if(!(X&&B==null)){pa(b);la=C.widgetCoordinates(u.canvas,b.touches[0]);if(A(b.touches)>1)Ya=C.widgetCoordinates(u.canvas,b.touches[1]);if(X&&S&&!mb([la.x,la.y],[B.x,B.y],3)){window.clearTimeout(S);S=null}Oa||(Oa=setTimeout(function(){if(X&&va()&&Z(ia())){var c=ia();if(Z(c)){var h=la,d;d=y()?(h.x-B.x)/e(f)[3]:(h.y-B.y)/e(f)[3];T(c)[5]+=d;B=h;O()}}else if(X){h=la;d=Date.now();c={x:h.x-B.x,y:h.y-B.y};var k=d-W;W=d;if(Ca===1){w[g]+=c.x;w[f]+=c.y;oa()&&ea&&Ka(Sa)}else if(l.pan){j.x= c.x/k;j.y=c.y/k;P(c,l.rubberBand?lb:0)}B=h}else if(ha&&va()&&Z(ia())){var r=y()?g:f;d=[la,Ya].map(function(I){return y()?[I.x,ma]:[Da,I.y]});c=Math.abs(x[1][r]-x[0][r]);k=Math.abs(d[1][r]-d[0][r]);var s=c>0?k/c:1;if(k===c)s=1;var ma=z(xa(ba()),[0,(x[0][r]+x[1][r])/2])[1],Ea=z(xa(ba()),[0,(d[0][r]+d[1][r])/2])[1];c=ia();if(Z(c)){aa(T(c),z([1,0,0,s,0,-s*ma+Ea],T(c)));B=h;O();x=d}}else if(ha&&l.zoom){h=ca(w);var Da=(x[0][0]+x[1][0])/2;ma=(x[0][1]+x[1][1])/2;d=[la,Ya].map(function(I){return M===0?[I.x, ma]:M===Math.PI/2?[Da,I.y]:z(Xa,[I.x,I.y])});c=Math.abs(x[1][0]-x[0][0]);k=Math.abs(d[1][0]-d[0][0]);var Y=c>0?k/c:1;if(k===c||M===Math.PI/2)Y=1;var Za=(d[0][0]+d[1][0])/2;c=Math.abs(x[1][1]-x[0][1]);k=Math.abs(d[1][1]-d[0][1]);s=c>0?k/c:1;if(k===c||M===0)s=1;Ea=(d[0][1]+d[1][1])/2;y()&&function(){var I=Y;Y=s;s=I;I=Za;Za=Ea;Ea=I;I=Da;Da=ma;ma=I}();if(e(g)[0]*Y>G()[g])Y=G()[g]/e(g)[0];if(e(f)[3]*s>G()[f])s=G()[f]/e(f)[3];if(Y!==1&&(Y<1||e(g)[0]!==G()[g]))Na(e(g),z([Y,0,0,1,-Y*Da+Za,0],e(g)));if(s!== 1&&(s<1||e(f)[3]!==G()[f]))Na(e(f),z([1,0,0,s,0,-s*ma+Ea],e(f)));V();h=ya(h);w[g]=h[g];w[f]=h[f];x=d;La();O();za()}Oa=null},1))}};this.setXRange=function(a,b,c,h){b=n()[0]+n()[2]*b;c=n()[0]+n()[2]*c;if(p(n())>q(n())){if(b>p(n()))b=p(n());if(c<q(n()))c=q(n())}else{if(b<p(n()))b=p(n());if(c>q(n()))c=q(n())}a=Ga(a);a=vb(a,b,c,y(),i(),n(),G());b=a.xZoom;c=a.yZoom;a=a.panPoint;var d=ca(w);e(g)[0]=b;if(c&&h)e(f)[3]=c;e(g)[4]=-a[g]*b;if(c&&h)e(f)[5]=-a[f]*c;wa();h=ya(d);w[g]=h[g];w[f]=h[f];V();La();O(); za()};this.getSeries=function(a){return Ga(a)};this.rangeChangedCallbacks=[];this.updateConfig=function(a){for(var b in a)if(a.hasOwnProperty(b))l[b]=a[b];qb();La();O();za()};this.updateConfig({});if(window.TouchEvent&&!window.MSPointerEvent&&!window.PointerEvent){ga.touchStart=Q.start;ga.touchEnd=Q.end;ga.touchMoved=Q.moved}else{H=function(){};ga.touchStart=H;ga.touchEnd=H;ga.touchMoved=H}}");
-	}
-
-	private static final int TICK_LENGTH = 5;
-	private static final int CURVE_LABEL_PADDING = 10;
-	private static final int DEFAULT_CURVE_LABEL_WIDTH = 100;
-
-	static int toZoomLevel(double zoomFactor) {
-		return (int) Math.floor(Math.log(zoomFactor) / Math.log(2.0) + 0.5) + 1;
-	}
+  static int toZoomLevel(double zoomFactor) {
+    return (int) Math.floor(Math.log(zoomFactor) / Math.log(2.0) + 0.5) + 1;
+  }
 }

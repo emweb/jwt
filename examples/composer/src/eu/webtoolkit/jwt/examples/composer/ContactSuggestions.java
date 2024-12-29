@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -35,9 +35,9 @@ public class ContactSuggestions extends WSuggestionPopup {
     /**
      * Create a new ContactSuggestions popup.
      */
-    public ContactSuggestions(WContainerWidget parent) {
+    public ContactSuggestions() {
         super(WSuggestionPopup.generateMatcherJS(contactOptions),
-                WSuggestionPopup.generateReplacerJS(contactOptions), parent);
+              WSuggestionPopup.generateReplacerJS(contactOptions));
     }
 
     /**

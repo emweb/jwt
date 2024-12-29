@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
@@ -22,18 +25,7 @@ import eu.webtoolkit.jwt.utils.StreamUtils;
  * file contents has changed, but not the filename.
  */
 public class WFileResource extends WResource {
-	/**
-	 * Creates a new resource with given mime-type for a file.
-	 * 
-	 * @param mimeType the mime type of the file.
-	 * @param fileName the file name.
-	 * @param parent the resources' parent
-	 */
-	public WFileResource(String mimeType, String fileName, WObject parent) {
-		super(parent);
-		this.mimeType_ = mimeType;
-		this.fileName_ = fileName;
-	}
+	private static final Logger logger = LoggerFactory.getLogger(WFileResource.class);
 	
 	/**
 	 * Creates a new resource with given mime-type for a file.
@@ -42,7 +34,6 @@ public class WFileResource extends WResource {
 	 * @param fileName the file name.
 	 */
 	public WFileResource(String mimeType, String fileName) {
-		super(null);
 		this.mimeType_ = mimeType;
 		this.fileName_ = fileName;
 	}
@@ -108,7 +99,7 @@ public class WFileResource extends WResource {
 				StreamUtils.copy(fis, response.getOutputStream());
 				response.getOutputStream().flush();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.info("IOException, {}", fileName_, e);
 			} finally {
 				StreamUtils.closeQuietly(fis);
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,12 +7,12 @@ package eu.webtoolkit.jwt.examples.style;
 
 import java.util.EnumSet;
 
+import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.PositionScheme;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WCompositeWidget;
 import eu.webtoolkit.jwt.WContainerWidget;
-import eu.webtoolkit.jwt.WCssDecorationStyle;
 import eu.webtoolkit.jwt.WLength;
 
 /**
@@ -93,8 +93,9 @@ public class RoundedWidget extends WCompositeWidget {
                 top_.getDecorationStyle().setBackgroundImage("");
             else
                 top_.getDecorationStyle().setBackgroundImage(
-                        images_[1].getImageRef(),
-                        WCssDecorationStyle.Repeat.NoRepeat, Side.Top,
+                		images_[1].getImageLink(),
+                		EnumSet.noneOf(Orientation.class),
+                		Side.Top,
                         Side.Right);
         }
 
@@ -104,8 +105,9 @@ public class RoundedWidget extends WCompositeWidget {
                 bottom_.getDecorationStyle().setBackgroundImage("");
             else
                 bottom_.getDecorationStyle().setBackgroundImage(
-                        images_[3].getImageRef(),
-                        WCssDecorationStyle.Repeat.NoRepeat, Side.Top,
+                        images_[3].getImageLink(),
+                        EnumSet.noneOf(Orientation.class),
+                        Side.Top,
                         Side.Right);
         }
     }
@@ -243,8 +245,8 @@ public class RoundedWidget extends WCompositeWidget {
         top_.setPositionScheme(PositionScheme.Relative);
         if (images_[1] != null)
             top_.getDecorationStyle().setBackgroundImage(
-                    images_[1].getImageRef(),
-                    WCssDecorationStyle.Repeat.NoRepeat, Side.Top, Side.Right);
+                    images_[1].getImageLink(),
+                    EnumSet.noneOf(Orientation.class), Side.Top, Side.Right);
 
         if (images_[0] != null)
             top_.addWidget(images_[0]);
@@ -259,8 +261,9 @@ public class RoundedWidget extends WCompositeWidget {
         bottom_.resize(new WLength(), new WLength(radius_));
         if (images_[3] != null)
             bottom_.getDecorationStyle().setBackgroundImage(
-                    images_[3].getImageRef(),
-                    WCssDecorationStyle.Repeat.NoRepeat, Side.Bottom,
+                    images_[3].getImageLink(),
+                    EnumSet.noneOf(Orientation.class),
+                    Side.Bottom,
                     Side.Right);
         if (images_[2] != null)
             bottom_.addWidget(images_[2]);
@@ -295,12 +298,12 @@ public class RoundedWidget extends WCompositeWidget {
 
         if (images_[1] != null)
             top_.getDecorationStyle().setBackgroundImage(
-                    images_[1].getImageRef(),
-                    WCssDecorationStyle.Repeat.NoRepeat, Side.Top, Side.Right);
+                    images_[1].getImageLink(),
+                    EnumSet.noneOf(Orientation.class), Side.Top, Side.Right);
         if (images_[3] != null)
             bottom_.getDecorationStyle().setBackgroundImage(
-                    images_[3].getImageRef(),
-                    WCssDecorationStyle.Repeat.NoRepeat, Side.Bottom,
+                    images_[3].getImageLink(),
+                    EnumSet.noneOf(Orientation.class), Side.Bottom,
                     Side.Right);
 
         top_.resize(new WLength(), new WLength(radius_));

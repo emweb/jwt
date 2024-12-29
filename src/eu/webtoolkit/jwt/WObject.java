@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 
@@ -27,14 +28,6 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * @see Signal#addListener(WObject, eu.webtoolkit.jwt.Signal.Listener)
  */
 public class WObject {
-	static class DeletionTracker {
-		DeletionTracker(WObject object) { }
-
-		public boolean isDeleted() {
-			return false;
-		}
-	}
-
 	protected static class FormData {
 		public FormData(String[] parameters, List<UploadedFile> uploadedFiles) {
 			values = parameters;
@@ -45,10 +38,9 @@ public class WObject {
 		List<UploadedFile> files;
 	}
 
-	private WObject parent_;
 	private int id_;
 	private String objectName_;
-	private static int nextObjId_ = 0;
+	private static final AtomicInteger nextObjId_ = new AtomicInteger(0);
 
 	ArrayList<SignalImpl.ListenerSignalPair> listenerSignalsPairs;
 
@@ -56,37 +48,12 @@ public class WObject {
 	 * Default constructor.
 	 */
 	public WObject() {
-		this(null);
-	}
-
-	protected WObject(WObject parent) {
-		id_ = nextObjId_++;
-		parent_ = parent;
+		id_ = nextObjId_.getAndIncrement();
 		objectName_ = "";
 	}
 
 	int getRawUniqueId() {
 		return id_;
-	}
-
-	void setParent(WObject parent) {
-		parent_ = parent;
-	}
-
-	WObject getParent() {
-		return parent_;
-	}
-	
-	boolean hasParent() {
-		return parent_ != null;
-	}
-
-	protected void addChild(WObject child) {
-		child.setParent(this);
-	}
-
-	void removeChild(WObject child) {
-		child.setParent(null);
 	}
 
 	/**
@@ -130,12 +97,7 @@ public class WObject {
 	 * auto-generated id is created by concatenating {@link #getObjectName()} with a unique number.
 	 */
 	public String getId() {
-		String result = getObjectName();
-
-		if (result != "")
-			return result + '_' + getUniqueId();
-		else
-			return getUniqueId();
+		return getUniqueId();
 	}
 
 	protected void setFormData(FormData formData) {
@@ -178,6 +140,6 @@ public class WObject {
 	}
 	
 	static void seedId(int id) {
-	  nextObjId_ = id;
+	  nextObjId_.set(id);
 	}
 }

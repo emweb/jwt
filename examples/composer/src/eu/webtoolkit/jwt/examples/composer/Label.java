@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -22,7 +22,7 @@ public class Label extends WText {
         super(tr(msg), parent);
 
         setStyleClass("label");
-        parent.setContentAlignment(EnumSet.of(AlignmentFlag.AlignRight));
+        parent.setContentAlignment(EnumSet.of(AlignmentFlag.Right));
 
     }
 }

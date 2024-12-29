@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Emweb bvba, Herent, Belgium.
+ * Copyright (C) 2014 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,18 +7,16 @@ package eu.webtoolkit.jwt.examples.chart3D.datasets;
 
 import eu.webtoolkit.jwt.*;
 
+import java.util.Objects;
+
 public class SpiralData extends WStandardItemModel {
 	public SpiralData(int nbPts) {
-		this(nbPts, null);
-	}
-
-	public SpiralData(int nbPts, WObject parent) {
-		super(nbPts, 3, parent);
+		super(nbPts, 3);
 		this.nbPts_ = nbPts;
 	}
 
-	public Object getData(final WModelIndex index, int role) {
-		if (role != ItemDataRole.DisplayRole) {
+	public Object getData(final WModelIndex index, ItemDataRole role) {
+		if (!Objects.equals(role, ItemDataRole.Display)) {
 			return super.getData(index, role);
 		}
 		double XYangle = index.getRow() * (8 * Math.PI / this.nbPts_);

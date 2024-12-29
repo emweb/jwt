@@ -19,28 +19,4 @@
   <message id="error.birthdate">Error: please indicate a valid birth date.</message>
   <message id="error.childcount">Error: number of children must be a number (between 0 and 30)</message>
 
-  <message id="quit">Quit</message>
-
-  <message id="January">January</message>
-  <message id="February">February</message>
-  <message id="March">March</message>
-  <message id="April">April</message>
-  <message id="May">May</message>
-  <message id="June">June</message>
-  <message id="July">July</message>
-  <message id="August">August</message>
-  <message id="September">September</message>
-  <message id="October">October</message>
-  <message id="November">November</message>
-  <message id="December">December</message>
-
-  <message id="Mon">Mon</message>
-  <message id="Tue">Tue</message>
-  <message id="Wed">Wed</message>
-  <message id="Thu">Thu</message>
-  <message id="Fri">Fri</message>
-  <message id="Sat">Sat</message>
-  <message id="Sun">Sun</message>
-
-  <message id="Close">Close Window</message>
 </messages>

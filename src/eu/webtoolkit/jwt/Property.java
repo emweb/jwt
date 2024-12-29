@@ -1,36 +1,126 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt;
 
-import java.util.*;
-import java.util.regex.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.servlet.*;
+import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.http.*;
+import java.time.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.servlet.*;
-import eu.webtoolkit.jwt.*;
-import eu.webtoolkit.jwt.chart.*;
-import eu.webtoolkit.jwt.utils.*;
-import eu.webtoolkit.jwt.servlet.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.servlet.http.*;
 
 /**
  * Enumeration for a DOM property.
- * <p>
- * This is an internal API, subject to change.
+ *
+ * <p>This is an internal API, subject to change.
  */
 public enum Property {
-	PropertyInnerHTML, PropertyAddedInnerHTML, PropertyValue, PropertyDisabled, PropertyChecked, PropertySelected, PropertySelectedIndex, PropertyMultiple, PropertyTarget, PropertyDownload, PropertyIndeterminate, PropertySrc, PropertyColSpan, PropertyRowSpan, PropertyReadOnly, PropertyTabIndex, PropertyLabel, PropertyClass, PropertyPlaceholder, PropertyStyle, PropertyStyleWidthExpression, PropertyStylePosition, PropertyStyleZIndex, PropertyStyleFloat, PropertyStyleClear, PropertyStyleWidth, PropertyStyleHeight, PropertyStyleLineHeight, PropertyStyleMinWidth, PropertyStyleMinHeight, PropertyStyleMaxWidth, PropertyStyleMaxHeight, PropertyStyleLeft, PropertyStyleRight, PropertyStyleTop, PropertyStyleBottom, PropertyStyleVerticalAlign, PropertyStyleTextAlign, PropertyStylePadding, PropertyStylePaddingTop, PropertyStylePaddingRight, PropertyStylePaddingBottom, PropertyStylePaddingLeft, PropertyStyleMarginTop, PropertyStyleMarginRight, PropertyStyleMarginBottom, PropertyStyleMarginLeft, PropertyStyleCursor, PropertyStyleBorderTop, PropertyStyleBorderRight, PropertyStyleBorderBottom, PropertyStyleBorderLeft, PropertyStyleBorderColorTop, PropertyStyleBorderColorRight, PropertyStyleBorderColorBottom, PropertyStyleBorderColorLeft, PropertyStyleBorderWidthTop, PropertyStyleBorderWidthRight, PropertyStyleBorderWidthBottom, PropertyStyleBorderWidthLeft, PropertyStyleColor, PropertyStyleOverflowX, PropertyStyleOverflowY, PropertyStyleOpacity, PropertyStyleFontFamily, PropertyStyleFontStyle, PropertyStyleFontVariant, PropertyStyleFontWeight, PropertyStyleFontSize, PropertyStyleBackgroundColor, PropertyStyleBackgroundImage, PropertyStyleBackgroundRepeat, PropertyStyleBackgroundAttachment, PropertyStyleBackgroundPosition, PropertyStyleTextDecoration, PropertyStyleWhiteSpace, PropertyStyleTableLayout, PropertyStyleBorderSpacing, PropertyStyleBorderCollapse, PropertyStylePageBreakBefore, PropertyStylePageBreakAfter, PropertyStyleZoom, PropertyStyleVisibility, PropertyStyleDisplay, PropertyStyleBoxSizing, PropertyLastPlusOne;
+  InnerHTML,
+  AddedInnerHTML,
+  Value,
+  Disabled,
+  Checked,
+  Selected,
+  SelectedIndex,
+  Multiple,
+  Target,
+  Download,
+  Indeterminate,
+  Src,
+  ColSpan,
+  RowSpan,
+  ReadOnly,
+  TabIndex,
+  Label,
+  Class,
+  Placeholder,
+  Orient,
+  Style,
+  StyleWidthExpression,
+  StylePosition,
+  StyleZIndex,
+  StyleFloat,
+  StyleClear,
+  StyleWidth,
+  StyleHeight,
+  StyleLineHeight,
+  StyleMinWidth,
+  StyleMinHeight,
+  StyleMaxWidth,
+  StyleMaxHeight,
+  StyleLeft,
+  StyleRight,
+  StyleTop,
+  StyleBottom,
+  StyleVerticalAlign,
+  StyleTextAlign,
+  StylePadding,
+  StylePaddingTop,
+  StylePaddingRight,
+  StylePaddingBottom,
+  StylePaddingLeft,
+  StyleMargin,
+  StyleMarginTop,
+  StyleMarginRight,
+  StyleMarginBottom,
+  StyleMarginLeft,
+  StyleCursor,
+  StyleBorderTop,
+  StyleBorderRight,
+  StyleBorderBottom,
+  StyleBorderLeft,
+  StyleBorderColorTop,
+  StyleBorderColorRight,
+  StyleBorderColorBottom,
+  StyleBorderColorLeft,
+  StyleBorderWidthTop,
+  StyleBorderWidthRight,
+  StyleBorderWidthBottom,
+  StyleBorderWidthLeft,
+  StyleColor,
+  StyleOverflowX,
+  StyleOverflowY,
+  StyleOpacity,
+  StyleFontFamily,
+  StyleFontStyle,
+  StyleFontVariant,
+  StyleFontWeight,
+  StyleFontSize,
+  StyleBackgroundColor,
+  StyleBackgroundImage,
+  StyleBackgroundRepeat,
+  StyleBackgroundAttachment,
+  StyleBackgroundPosition,
+  StyleTextDecoration,
+  StyleWhiteSpace,
+  StyleTableLayout,
+  StyleBorderSpacing,
+  StyleBorderCollapse,
+  StylePageBreakBefore,
+  StylePageBreakAfter,
+  StyleZoom,
+  StyleVisibility,
+  StyleDisplay,
+  StyleWebkitAppearance,
+  StyleBoxSizing,
+  StyleFlex,
+  StyleFlexDirection,
+  StyleFlexFlow,
+  StyleAlignSelf,
+  StyleJustifyContent,
+  LastPlusOne;
 
-	/**
-	 * Returns the numerical representation of this enum.
-	 */
-	public int getValue() {
-		return ordinal();
-	}
+  /** Returns the numerical representation of this enum. */
+  public int getValue() {
+    return ordinal();
+  }
 }

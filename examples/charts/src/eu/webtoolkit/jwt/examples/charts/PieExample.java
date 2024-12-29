@@ -1,8 +1,8 @@
 package eu.webtoolkit.jwt.examples.charts;
 
+import eu.webtoolkit.jwt.EditTrigger;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WAbstractItemModel;
-import eu.webtoolkit.jwt.WAbstractItemView;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
@@ -44,10 +44,10 @@ public class PieExample extends WContainerWidget {
 
         if (WApplication.getInstance().getEnvironment().hasAjax()) {
             table.resize(150 + 100 + 14, 20 + 6 * 22);
-            table.setEditTriggers(WAbstractItemView.EditTrigger.SingleClicked);
+            table.setEditTriggers(EditTrigger.SingleClicked);
         } else {
             table.resize(new WLength(150 + 100 + 14), WLength.Auto);
-            table.setEditTriggers(WAbstractItemView.EditTrigger.NoEditTrigger);    
+            table.setEditTriggers(EditTrigger.None);    
         }
 
         /*

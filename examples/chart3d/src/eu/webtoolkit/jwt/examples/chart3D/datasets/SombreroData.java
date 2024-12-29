@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Emweb bvba, Herent, Belgium.
+ * Copyright (C) 2014 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -7,21 +7,17 @@ package eu.webtoolkit.jwt.examples.chart3D.datasets;
 
 import eu.webtoolkit.jwt.*;
 
+import java.util.Objects;
+
 public class SombreroData extends EquidistantGrid {
 	public SombreroData(int nbXPts, int nbYPts, double xStart, double xEnd,
-			double yStart, double yEnd, WObject parent) {
-		super(parent);
+			double yStart, double yEnd) {
 		this.nbXPts_ = nbXPts;
 		this.nbYPts_ = nbYPts;
 		this.xStart_ = xStart;
 		this.xEnd_ = xEnd;
 		this.yStart_ = yStart;
 		this.yEnd_ = yEnd;
-	}
-
-	public SombreroData(int nbXPts, int nbYPts, double xStart, double xEnd,
-			double yStart, double yEnd) {
-		this(nbXPts, nbYPts, xStart, xEnd, yStart, yEnd, (WObject) null);
 	}
 
 	public int getRowCount(final WModelIndex parent) {
@@ -32,13 +28,13 @@ public class SombreroData extends EquidistantGrid {
 		return this.nbYPts_ + 1;
 	}
 
-	public Object getData(int row, int column, int role,
+	public Object getData(int row, int column, ItemDataRole role,
 			final WModelIndex parent) {
 		return this.getData(this.createIndex(row, column, null), role);
 	}
 
-	public Object getData(final WModelIndex index, int role) {
-		if (role != ItemDataRole.DisplayRole) {
+	public Object getData(final WModelIndex index, ItemDataRole role) {
+		if (!Objects.equals(role, ItemDataRole.Display)) {
 			return null;
 		}
 		double delta_y = (this.yEnd_ - this.yStart_) / (this.nbYPts_ - 1);
@@ -63,7 +59,7 @@ public class SombreroData extends EquidistantGrid {
 				/ Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 
-	public Object getHeaderData(int section, Orientation orientation, int role) {
+	public Object getHeaderData(int section, Orientation orientation, ItemDataRole role) {
 		return 0.0;
 	}
 

@@ -2,16 +2,16 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/servlet-api-3.0.jar"/>
-        <classpathentry kind="lib" path="lib/jwt-lib/jwt-3.3.6.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-api-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/slf4j-simple-1.6.4.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/antlr-runtime-3.5-2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jakarta.servlet-api-4.0.4.jar"/>
+        <classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jwt-4.11.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-fileupload-1.3.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-simple-1.7.25.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/antlr-runtime-4.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.2.0.201212191850-r.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/pdfjet-4.75.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/vecmath-1.5.2.jar"/>
-	<classpathentry kind="lib" path="lib/jwt-lib/gson-2.0.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/pdfjet-4.75.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/vecmath-1.5.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/gson-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

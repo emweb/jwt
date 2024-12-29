@@ -1,28 +1,6 @@
-.main-nav {
-    margin-bottom: 0px;
-}
-
-tt {
-    font-family: andale mono;
-    color: #570;
-    font-size: 97%;
-}
-
 .wmediaplayer li {
     margin: 0px;
     line-height: 100%;
-}
-
-.contents h1 {
-    color: #528B12;
-}
-
-.contents h2 {
-    color: #528B12;
-}
-
-.contents h3 {
-    color: #528B12;
 }
 
 .submenu {
@@ -116,12 +94,12 @@ span.doc a:hover {
 span.reactive {
     display: block;
     background-color: #CCCCCC;
-    cursor: pointer;cursor:hand;
+    cursor: pointer;
     margin: 3px 0px;
 }
 
 div.contents {
-    padding: 0px 12px 6px;
+    padding: 0px 0px 3px 12px;
 }
 
 .example-table {
@@ -182,10 +160,10 @@ div.contents {
 }
 
 .example > legend {
-    width: auto;
     border-bottom: 0px;
     padding: 0px 5px;
     margin-bottom: -5px;
+    width: auto !important;
 }
 
 .example > p {

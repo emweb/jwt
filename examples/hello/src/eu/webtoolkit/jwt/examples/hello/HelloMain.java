@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -14,6 +14,8 @@ public class HelloMain extends WtServlet {
 
     public HelloMain() {
         super();
+        // Enable websockets only if the servlet container has support for JSR-356 (Jetty 9, Tomcat 7, ...)
+        //getConfiguration().setWebSocketsEnabled(true);
     }
 
     @Override

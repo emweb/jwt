@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -42,13 +42,13 @@ class XSSFilter extends XHtmlFilter {
 
 			return true;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.error("ClassNotFoundException", e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			logger.error("InstantiationException", e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error("IllegalAccessException", e);
 		} catch (XMLException e) {
-			logger.error("Error reading XHTML string: " + e.getMessage() + ": line " + e.getLineNr() + " in '" + text + "'");
+			logger.error("Error reading XHTML string: " + e.getMessage() + ": line " + e.getLineNr() + " in '" + text + "'", e);
 		}
 
 		return false;

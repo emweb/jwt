@@ -11,7 +11,7 @@ import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 public class ReportResource extends WResource {
 
-	public ReportResource(WObject parent) {
+	public ReportResource() {
 		suggestFileName("report.pdf");
 	}
 	

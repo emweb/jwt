@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -68,7 +68,7 @@ public class CsvUtil {
         }
     }
 
- 	public static WStandardItemModel csvToModel(String resourceName, WObject parent) {
+ 	public static WStandardItemModel csvToModel(String resourceName) {
         InputStream is = CsvUtil.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/widgetgallery/data/" + resourceName);
 
         WStandardItemModel model = new WStandardItemModel();
@@ -76,7 +76,7 @@ public class CsvUtil {
         return model;
 	}
  	
- 	public static WStandardItemModel csvToModel(String resourceName, WObject parent, boolean firstLineIsHeaders) {
+ 	public static WStandardItemModel csvToModel(String resourceName, boolean firstLineIsHeaders) {
         InputStream is = CsvUtil.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/widgetgallery/data/" + resourceName);
 
         WStandardItemModel model = new WStandardItemModel();

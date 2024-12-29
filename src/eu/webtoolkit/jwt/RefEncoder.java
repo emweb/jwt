@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -36,7 +36,7 @@ class RefEncoder extends XHtmlFilter {
 			parser.setBuilder(encoder);
 			parser.setResolver(encoder);
 			IXMLReader reader
-				= StdXMLReader.stringReader("<span>" + wText.getValue() + "</span>");
+				= StdXMLReader.stringReader("<span>" + wText.toXhtml() + "</span>");
 			parser.setReader(reader);
 			parser.parse();
 
@@ -45,11 +45,11 @@ class RefEncoder extends XHtmlFilter {
 			// 6 and 7 correct for respectively <span> and </span>
 			return new WString(filtered.substring(6, filtered.length() - 7));
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			logger.error("ClassNotFoundException", e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			logger.error("InstantiationException", e);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error("IllegalAccessException", e);
 		} catch (XMLException e) {
 			logger.error("Error reading XHTML string: " + e.getMessage());
 		}
@@ -72,7 +72,7 @@ class RefEncoder extends XHtmlFilter {
 
 				if (options.contains(RefEncoderOption.EncodeInternalPaths)
 				    && path.startsWith("#/")) {
-					path = htmlAttributeDecode(path.substring(1));
+					path = htmlEntityDecode(path.substring(1));
 
 					String addClass, url;
 

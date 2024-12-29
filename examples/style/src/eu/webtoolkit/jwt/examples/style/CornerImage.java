@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -18,12 +18,13 @@ import javax.imageio.ImageIO;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMemoryResource;
 
 /**
  * The CornerImage is an image to draw a rounded corner.
  * 
- * The CornerImage is a dynamically generated WImage, which draws an arc of 90°,
+ * The CornerImage is a dynamically generated WImage, which draws an arc of 90 degrees,
  * to represent one of the four corners of a widget.
  * 
  * The CornerImage is part of the JWt style example.
@@ -162,7 +163,7 @@ public class CornerImage extends WImage {
 
         if (resource_ == null) {
             resource_ = new WMemoryResource("image/png");
-            this.setResource(resource_);
+            setImageLink(new WLink(resource_));
         } else {
         	resource_.setChanged();
         }

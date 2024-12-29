@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.webtoolkit.jwt.Signal.Listener;
 
@@ -20,6 +24,8 @@ import eu.webtoolkit.jwt.Signal.Listener;
  * JavaScript implementations.
  */
 public abstract class AbstractEventSignal extends AbstractSignal {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractEventSignal.class);
+	
 	/**
 	 * An abstract base class for a listener with (learned) JavaScript behavior.
 	 * <p>
@@ -186,7 +192,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	private byte flags_;
 	private int id_;
 	private String name_;
-	private static int nextId_ = 0;
+	private static AtomicInteger nextId_ = new AtomicInteger(0);
 	private WObject sender_;
 
 	AbstractEventSignal(String name, WObject sender, boolean autoLearn) {
@@ -194,7 +200,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		name_ = name;
 		learningListeners = null;
 		flags_ = 0;
-		id_ = nextId_++;
+		id_ = nextId_.incrementAndGet();
 		
 		if (name_ == null)
 			flags_ |= BIT_SIGNAL_SERVER_ANYWAY;
@@ -315,7 +321,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		}
 	}
 
-	private final void ownerRepaint() {
+	final void ownerRepaint() {
 		flags_ |= BIT_NEED_UPDATE;
 
 		if (getSender() instanceof WWebWidget)
@@ -323,6 +329,10 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	}
 
 	WObject getSender() {
+		return sender_;
+	}
+
+	WObject getOwner() {
 		return sender_;
 	}
 
@@ -426,7 +436,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 						} catch (IOException e) {
 							// This is kind of impossible since we are writing
 							// to a god damn string
-							e.printStackTrace();
+							logger.info("Ignoring impossible exception", e);
 						}
 						ownerRepaint();
 					}
@@ -448,7 +458,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 						} catch (IOException e) {
 							// This is kind of impossible since we are writing
 							// to a god damn string
-							e.printStackTrace();
+							logger.info("Ignoring impossible exception", e);
 						}
 						changed = true;
 					}

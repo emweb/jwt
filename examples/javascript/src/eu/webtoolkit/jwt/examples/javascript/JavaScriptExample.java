@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -98,12 +98,12 @@ public class JavaScriptExample extends WApplication {
      * The user has confirmed the payment.
      */
     private void confirmed() {
-        new WText("<br/>Just payed $" + promptAmount_.defaultValue() + ".",
+        new WText("<br/>Just paid $" + promptAmount_.defaultValue() + ".",
                 getRoot());
     }
 
     /**
-     * Set the amount to be payed.
+     * Set the amount to be paid.
      */
     private void setAmount(String amount) {
         // Change the confirmation message to include the amount.

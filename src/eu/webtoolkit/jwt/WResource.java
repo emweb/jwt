@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.webtoolkit.jwt.WebSession.Handler;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
@@ -75,22 +76,18 @@ public abstract class WResource extends WObject {
 	private String internalPath_;
 	private boolean trackUploadProgress_;
 	private DispositionType dispositionType_;
-
-	protected WResource(WObject parent) {
-		super(parent);
-
-		suggestedFileName_ = "";
-		internalPath_ = "";
-		dispositionType_ = DispositionType.NoDisposition;
-
-		generateUrl();
-	}
+	private int version_ = 0;
+	private boolean invalidAfterChanged_ = false;
 
 	/**
 	 * Constructor.
 	 */
 	public WResource() {
-		this(null);
+		suggestedFileName_ = "";
+		internalPath_ = "";
+		dispositionType_ = DispositionType.NoDisposition;
+
+		generateUrl();
 	}
 
 	/**
@@ -100,29 +97,26 @@ public abstract class WResource extends WObject {
 	 * can thus be used to refer to a new "version" of the resource, which can
 	 * be indicated by triggering the {@link #dataChanged()} signal.
 	 * 
-	 * The old urls are not invalidated by calling this method.
+	 * The old urls are not invalidated by calling this method, unless
+	 * you enable setInvalidAfterChanged().
 	 * 
 	 * @return the url.
 	 */
 	public String generateUrl() {
-		if (currentUrl_ == null) {
-			WApplication app = WApplication.getInstance();
-			if (app != null)	
-				currentUrl_ = app.addExposedResource(this);
-			else
-				currentUrl_ = "";
-		} else {
-			if (trackUploadProgress_) {
+		WApplication app = WApplication.getInstance();
+		
+		if (app != null) {
+			if (currentUrl_ != null && trackUploadProgress_) {
 				WtServlet c = WebSession.getInstance().getController();
 				c.removeUploadProgressUrl(getUrl());
 			}
-			int randPos = currentUrl_.lastIndexOf('=') + 1;
-			currentUrl_ = currentUrl_.substring(0, randPos)
-				+ (Integer.valueOf(currentUrl_.substring(randPos)) + 1);
+			currentUrl_ = app.addExposedResource(this);
 			if (trackUploadProgress_) {
 				WtServlet c = WebSession.getInstance().getController();
 				c.addUploadProgressUrl(getUrl());
 			}
+		} else {
+			currentUrl_ = internalPath_;
 		}
 		return currentUrl_;
 	}
@@ -149,6 +143,11 @@ public abstract class WResource extends WObject {
 			WebResponse response) throws IOException;
 
 	void handle(WebRequest request, WebResponse response) throws IOException {
+
+		Handler handler = WebSession.Handler.getInstance();
+		if (!takesUpdateLock() && handler != null)
+			WebSession.Handler.getInstance().unlock();
+
 		if (dispositionType_ != DispositionType.NoDisposition
 				|| suggestedFileName_.length() != 0) {
 			String theDisposition;
@@ -308,13 +307,40 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Generates a new URL for this resource and emits the changed signal
+	 *
+	 * @see #setInvalidAfterChanged(boolean)
 	 */
 	public void setChanged() {
 		generateUrl();
 
 		dataChanged_.trigger();
 	}
-	
+
+	/**
+	 * Return "page not found" for prior resource URLs after change
+	 *
+	 * This option invalidates earlier versions of the resource url prior to
+	 * the last call of setChanged() or generateUrl(). The default value is false.
+	 *
+	 * This does not work when the resource is deployed at an internal path using
+	 * setInternalPath().
+	 *
+	 * @see #setChanged()
+	 * @see #generateUrl()
+	 */
+	public void setInvalidAfterChanged(boolean enabled) {
+		invalidAfterChanged_ = enabled;
+	}
+
+	/**
+	 * Should "page not found" be returned for outdated resource URLs
+	 *
+	 * @see #setInvalidAfterChanged()
+	 */
+	public boolean isInvalidAfterChanged() {
+		return invalidAfterChanged_;
+	}
+
 	/**
 	 * Configures the Content-Disposition header
 	 * 
@@ -402,6 +428,42 @@ public abstract class WResource extends WObject {
 		}
 	}
 
+	private boolean takesUpdateLock_ = true;
+
+	/**
+	 * Set whether this resource takes the WApplication's update lock.
+	 * <p>
+	 * By default, WResource takes the WApplication's update lock,
+	 * so handleRequest() is performed in the WApplication's event loop.
+	 * <p>
+	 * If necessary this can be disabled by setting this option to false.
+	 * This will make it so that handleRequest() does not block the WApplication,
+	 * and multiple handleRequest() calls can be performed concurrently.
+	 * <p>
+	 * This option has no effect on static resources, since there is no WApplication
+	 * in that case.
+	 */
+	public void setTakesUpdateLock(boolean enabled) {
+		takesUpdateLock_ = enabled;
+	}
+
+	/**
+	 * Get whether this resource takes the WApplication's update lock
+	 *
+	 * @see setTakesUpdateLock(boolean enabled)
+	 */
+	public boolean takesUpdateLock() {
+		return takesUpdateLock_;
+	}
+
+	public int getVersion() {
+		return version_;
+	}
+
+	public void incrementVersion() {
+		version_++;
+	}
+
 	/**
 	 * Signal emitted when data has been received for this resource.
 	 * 
@@ -418,4 +480,10 @@ public abstract class WResource extends WObject {
 	}
 
 	private Signal2<Long, Long> dataReceived_ = new Signal2<Long, Long>();
+
+	public Signal1<Long> dataExceeded() {
+		return dataExceeded_;
+	}
+
+	private Signal1<Long> dataExceeded_ = new Signal1<Long>();
 }

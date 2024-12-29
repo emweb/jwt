@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -11,15 +11,19 @@ import java.io.InputStreamReader;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.Icon;
 import eu.webtoolkit.jwt.ItemDataRole;
 import eu.webtoolkit.jwt.ItemFlag;
+import eu.webtoolkit.jwt.MouseButton;
 import eu.webtoolkit.jwt.Orientation;
 import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Signal;
 import eu.webtoolkit.jwt.Signal2;
 import eu.webtoolkit.jwt.SortOrder;
+import eu.webtoolkit.jwt.StandardButton;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WDate;
@@ -27,11 +31,14 @@ import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WGridLayout;
 import eu.webtoolkit.jwt.WItemDelegate;
 import eu.webtoolkit.jwt.WLength;
+import eu.webtoolkit.jwt.WMessageBox;
 import eu.webtoolkit.jwt.WModelIndex;
 import eu.webtoolkit.jwt.WMouseEvent;
+import eu.webtoolkit.jwt.WPopupMenu;
 import eu.webtoolkit.jwt.WSortFilterProxyModel;
 import eu.webtoolkit.jwt.WStandardItem;
 import eu.webtoolkit.jwt.WStandardItemModel;
+import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableView;
 import eu.webtoolkit.jwt.WText;
 import eu.webtoolkit.jwt.WTreeView;
@@ -62,17 +69,17 @@ public class TreeViewDragDropApplication extends WApplication {
         /*
          * Create the data models.
          */
-        folderModel_ = new WStandardItemModel(0, 1, this);
+        folderModel_ = new WStandardItemModel(0, 1);
         populateFolders();
 
-        fileModel_ = new FileModel(this);
+        fileModel_ = new FileModel();
         populateFiles();
 
-        fileFilterModel_ = new WSortFilterProxyModel(this);
+        fileFilterModel_ = new WSortFilterProxyModel();
         fileFilterModel_.setSourceModel(fileModel_);
         fileFilterModel_.setDynamicSortFilter(true);
         fileFilterModel_.setFilterKeyColumn(0);
-        fileFilterModel_.setFilterRole(ItemDataRole.UserRole);
+        fileFilterModel_.setFilterRole(ItemDataRole.User);
 
         /*
          * Setup the user interface.
@@ -111,6 +118,16 @@ public class TreeViewDragDropApplication extends WApplication {
     private WTableView fileView_;
 
     /**
+     * The right click menu for the folder view
+     */
+    private WPopupMenu popup_;
+
+    /**
+     * The message box that pops up when a popup menu action is activated
+     */
+    private WMessageBox popupActionBox_;
+
+    /**
      * Setup the user interface.
      */
     private void createUI() {
@@ -137,7 +154,7 @@ public class TreeViewDragDropApplication extends WApplication {
 
         layout.addLayout(vbox, 1, 1);
 
-        layout.addWidget(aboutDisplay(), 2, 0, 1, 2, AlignmentFlag.AlignTop);
+        layout.addWidget(aboutDisplay(), 2, 0, 1, 2, AlignmentFlag.Top);
 
         /*
          * Let row 1 and column 1 take the excess space.
@@ -163,7 +180,7 @@ public class TreeViewDragDropApplication extends WApplication {
      * Creates the folder WTreeView
      */
     private WTreeView folderView() {
-        WTreeView treeView = new FolderView();
+        final WTreeView treeView = new FolderView();
 
         /*
          * To support right-click, we need to disable the built-in browser
@@ -177,17 +194,90 @@ public class TreeViewDragDropApplication extends WApplication {
                         "event.cancelBubble = true; event.returnValue = false; return false;");
         treeView.setModel(folderModel_);
         treeView.resize(new WLength(200), WLength.Auto);
-        treeView.setSelectionMode(SelectionMode.SingleSelection);
+        treeView.setSelectionMode(SelectionMode.Single);
         treeView.expandToDepth(1);
         treeView.selectionChanged().addListener(this, new Signal.Listener() {
             public void trigger() {
                 folderChanged();
             }
         });
+        treeView.mouseWentUp().addListener(this, new Signal2.Listener<WModelIndex, WMouseEvent>() {
+            @Override
+            public void trigger(WModelIndex item, WMouseEvent event) {
+                showPopup(item, event);
+            }
+        });
 
         folderView_ = treeView;
 
         return treeView;
+    }
+
+    /**
+     * Show a popup for a folder item.
+     */
+    private void showPopup(final WModelIndex item, final WMouseEvent event){
+        if (event.getButton() != MouseButton.Right)
+            return;
+
+        if (!folderView_.isSelected(item))
+            folderView_.select(item);
+
+        if (popup_ == null) {
+            popup_ = new WPopupMenu();
+            popup_.addItem("Create a New Folder");
+            popup_.addItem("Rename this Folder").setCheckable(true);
+            popup_.addItem("Delete this Folder");
+            popup_.addSeparator();
+            popup_.addItem("Folder Details");
+            popup_.addSeparator();
+            popup_.addItem("Application Inventory");
+            popup_.addItem("Hardware Inventory");
+            popup_.addSeparator();
+
+            WPopupMenu subMenu = new WPopupMenu();
+            subMenu.addItem("Sub Item 1");
+            subMenu.addItem("Sub Item 2");
+            popup_.addMenu("File Deployments", subMenu);
+
+            popup_.aboutToHide().addListener(this, new Signal.Listener() {
+                @Override
+                public void trigger() { popupAction(); }
+            });
+        }
+
+        if (popup_.isHidden())
+            popup_.popup(event);
+        else
+            popup_.hide();
+    }
+
+    /**
+     * Process the result of the popup menu
+     */
+    private void popupAction() {
+        if (popup_.getResult() != null) {
+            WString text = popup_.getResult().getText();
+            popup_.hide();
+
+            popupActionBox_ = new WMessageBox("Sorry.", "Action '" + text
+                    + "' is not implemented.", Icon.None, EnumSet.of(StandardButton.Ok));
+            popupActionBox_.buttonClicked().addListener(this, new Signal.Listener() {
+                @Override
+                public void trigger() { dialogDone(); }
+            });
+            popupActionBox_.show();
+        } else {
+            popup_.hide();
+        }
+    }
+
+    /**
+     * Process the result of the message box
+     */
+    private  void dialogDone() {
+        popupActionBox_.remove();
+        popupActionBox_ = null;
     }
 
     /**
@@ -201,7 +291,7 @@ public class TreeViewDragDropApplication extends WApplication {
         tableView.setAlternatingRowColors(true);
 
         tableView.setModel(fileFilterModel_);
-        tableView.setSelectionMode(SelectionMode.ExtendedSelection);
+        tableView.setSelectionMode(SelectionMode.Extended);
         tableView.setDragEnabled(true);
 
         tableView.setColumnWidth(0, new WLength(100));
@@ -211,16 +301,16 @@ public class TreeViewDragDropApplication extends WApplication {
         tableView.setColumnWidth(4, new WLength(100));
         tableView.setColumnWidth(5, new WLength(100));
 
-        WItemDelegate delegate = new WItemDelegate(this);
+        WItemDelegate delegate = new WItemDelegate();
         delegate.setTextFormat(FileModel.dateDisplayFormat);
         tableView.setItemDelegateForColumn(4, delegate);
         tableView.setItemDelegateForColumn(5, delegate);
 
-        tableView.setColumnAlignment(3, AlignmentFlag.AlignRight);
-        tableView.setColumnAlignment(4, AlignmentFlag.AlignRight);
-        tableView.setColumnAlignment(5, AlignmentFlag.AlignRight);
+        tableView.setColumnAlignment(3, AlignmentFlag.Right);
+        tableView.setColumnAlignment(4, AlignmentFlag.Right);
+        tableView.setColumnAlignment(5, AlignmentFlag.Right);
 
-        tableView.sortByColumn(1, SortOrder.AscendingOrder);
+        tableView.sortByColumn(1, SortOrder.Ascending);
 
         tableView.doubleClicked().addListener(this,
                 new Signal2.Listener<WModelIndex, WMouseEvent>() {
@@ -277,7 +367,7 @@ public class TreeViewDragDropApplication extends WApplication {
             return;
 
         WModelIndex selected = folderView_.getSelectedIndexes().first();
-        Object d = selected.getData(ItemDataRole.UserRole);
+        Object d = selected.getData(ItemDataRole.User);
         if (d != null) {
             String folder = (String) d;
 
@@ -285,7 +375,7 @@ public class TreeViewDragDropApplication extends WApplication {
             // contain special regexp characters, otherwise these need to be
             // escaped -- or use the \Q \E qutoing escape regular expression
             // syntax (and escape \E)
-            fileFilterModel_.setFilterRegExp(folder);
+            fileFilterModel_.setFilterRegExp(Pattern.compile(folder));
         }
     }
 
@@ -307,13 +397,13 @@ public class TreeViewDragDropApplication extends WApplication {
         for (int i = 0; i < fileModel_.getRowCount(); ++i) {
             WStandardItem item = fileModel_.getItem(i, 0);
             EnumSet<ItemFlag> flags = item.getFlags();
-            flags.add(ItemFlag.ItemIsDragEnabled);
+            flags.add(ItemFlag.DragEnabled);
             item.setFlags(flags);
             item.setIcon("pics/file.gif");
 
             String folderId = item.getText().getValue();
 
-            item.setData(folderId, ItemDataRole.UserRole);
+            item.setData(folderId, ItemDataRole.User);
             item.setText(folderNameMap_.get(folderId));
 
             convertToDate(fileModel_.getItem(i, 4));
@@ -327,7 +417,7 @@ public class TreeViewDragDropApplication extends WApplication {
     private void convertToDate(WStandardItem item) {
         WDate d = WDate.fromString(item.getText().getValue(),
                 FileModel.dateEditFormat);
-        item.setData(d, ItemDataRole.DisplayRole);
+        item.setData(d, ItemDataRole.Display);
     }
 
     /**
@@ -378,11 +468,11 @@ public class TreeViewDragDropApplication extends WApplication {
 
         if (folderId != null) {
             result.setData(folderId);
-            flags.add(ItemFlag.ItemIsDropEnabled);
+            flags.add(ItemFlag.DropEnabled);
             result.setFlags(flags);
             folderNameMap_.put(folderId, location);
         } else {
-            flags.remove(ItemFlag.ItemIsSelectable);
+            flags.remove(ItemFlag.Selectable);
             result.setFlags(flags);
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -14,7 +14,8 @@ import java.util.ArrayList;
  * events generated on the signal. The event may propagate 2 arguments to the listeners.
  * <p>
  * A usage example:
- * <code>
+ * <pre>
+ * {@code
  *  class MyWidget extends WContainerWidget
  *  {
  *    public MyWidget(WContainerWidget parent)
@@ -41,9 +42,11 @@ import java.util.ArrayList;
  *      done.trigger(42, "Totally done"); // trigger the signal
  *    }
  *  };
- * </code> 
+ * }
+ * </pre> 
  *  This widget could then be used form another class:
- * <code> 
+ * <pre> 
+ * {@code
  *  class GUIClass extends WContainerWidget
  *  {
  *    ...
@@ -61,7 +64,8 @@ import java.util.ArrayList;
  *      ...
  *    }
  *  };
- * </code>
+ * }
+ * </pre>
  */
 public class Signal2<A1, A2> extends AbstractSignal {
 	/**

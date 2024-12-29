@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -9,12 +9,12 @@ import java.util.EnumSet;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
 import eu.webtoolkit.jwt.Orientation;
+import eu.webtoolkit.jwt.RenderMethod;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGridLayout;
 import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WPaintedWidget;
 import eu.webtoolkit.jwt.WSlider;
 import eu.webtoolkit.jwt.WText;
 
@@ -48,8 +48,7 @@ public class PaintExample extends WContainerWidget {
         WContainerWidget emweb = new WContainerWidget(this);
         emweb.setMargin(new WLength(), EnumSet.of(Side.Left, Side.Right));
         WGridLayout layout = new WGridLayout();
-        emweb.setLayout(layout, EnumSet.of(AlignmentFlag.AlignCenter,
-                AlignmentFlag.AlignTop));
+        emweb.setLayout(layout);
         WSlider scaleSlider = new WSlider(Orientation.Horizontal);
         scaleSlider.setMinimum(0);
         scaleSlider.setMaximum(20);
@@ -64,7 +63,7 @@ public class PaintExample extends WContainerWidget {
                     }
                 });
         layout.addWidget(scaleSlider, 0, 1, EnumSet.of(
-                AlignmentFlag.AlignCenter, AlignmentFlag.AlignMiddle));
+                AlignmentFlag.Center, AlignmentFlag.Middle));
         WSlider rotateSlider = new WSlider(Orientation.Vertical);
         rotateSlider.setMinimum(-30);
         rotateSlider.setMaximum(30);
@@ -79,13 +78,13 @@ public class PaintExample extends WContainerWidget {
                     }
                 });
         layout.addWidget(rotateSlider, 1, 0, EnumSet.of(
-                AlignmentFlag.AlignCenter, AlignmentFlag.AlignMiddle));
+                AlignmentFlag.Center, AlignmentFlag.Middle));
         this.shapes_ = new ShapesWidget();
         this.shapes_.setAngle(0.0);
         this.shapes_.setRelativeSize(0.5);
-        this.shapes_.setPreferredMethod(WPaintedWidget.Method.HtmlCanvas);
+        this.shapes_.setPreferredMethod(RenderMethod.HtmlCanvas);
         layout.addWidget(this.shapes_, 1, 1, EnumSet.of(
-                AlignmentFlag.AlignCenter, AlignmentFlag.AlignMiddle));
+                AlignmentFlag.Center, AlignmentFlag.Middle));
     }
 
     private ShapesWidget shapes_;
@@ -93,8 +92,8 @@ public class PaintExample extends WContainerWidget {
     private void rotateShape(int v) {
         this.shapes_.setAngle(v / 2.0);
         this.shapes_
-                .setPreferredMethod(v < 0 ? WPaintedWidget.Method.InlineSvgVml
-                        : WPaintedWidget.Method.HtmlCanvas);
+                .setPreferredMethod(v < 0 ? RenderMethod.InlineSvgVml
+                        : RenderMethod.HtmlCanvas);
     }
 
     private void scaleShape(int v) {

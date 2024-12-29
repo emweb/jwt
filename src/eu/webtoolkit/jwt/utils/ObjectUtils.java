@@ -1,15 +1,14 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
 package eu.webtoolkit.jwt.utils;
 
-import eu.webtoolkit.jwt.StringUtils;
 import eu.webtoolkit.jwt.WString;
+import eu.webtoolkit.jwt.StringUtils;
 
 public class ObjectUtils {
-
 	@SuppressWarnings("unchecked")
 	public static int compare(Object d1, Object d2) {
 		if (d1 == null && d2 == null)
@@ -33,4 +32,7 @@ public class ObjectUtils {
 
 	}
 
+    public static <T> T cast(Object object, Class<T> clazz) {
+      return clazz.isInstance(object) ? clazz.cast(object) : null;
+    }
 }

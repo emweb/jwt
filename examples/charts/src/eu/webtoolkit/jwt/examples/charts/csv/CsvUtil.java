@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Emweb bvba, Leuven, Belgium.
+ * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
  * See the LICENSE file for terms of use.
  */
@@ -108,7 +108,7 @@ public class CsvUtil {
 
     public static WAbstractItemModel readCsvFile(String fname,
             WContainerWidget parent) {
-        WStandardItemModel model = new WStandardItemModel(0, 0, parent);
+        WStandardItemModel model = new WStandardItemModel(0, 0);
 
         InputStream is = model.getClass().getResourceAsStream(
                 "/eu/webtoolkit/jwt/examples/charts/data/" + fname);
@@ -118,7 +118,7 @@ public class CsvUtil {
             
             for (int row = 0; row < model.getRowCount(); ++row)
                 for (int col = 0; col < model.getColumnCount(); ++col)
-                  model.getItem(row, col).setFlags(ItemFlag.ItemIsSelectable, ItemFlag.ItemIsEditable);
+                  model.getItem(row, col).setFlags(ItemFlag.Selectable, ItemFlag.Editable);
 
             return model;
         } else {

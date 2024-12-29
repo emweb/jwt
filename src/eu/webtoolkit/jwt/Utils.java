@@ -4,12 +4,24 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base32;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 public class Utils {
+	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
+	
 	/** Computes an MD5 hash.
 	 *
 	 * This utility function computes an MD5 hash, and returns the hash value.
@@ -19,9 +31,9 @@ public class Utils {
 			MessageDigest d = MessageDigest.getInstance("MD5");
 			return d.digest(msg.getBytes("UTF-8"));
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 		return null;
 	}
@@ -31,9 +43,9 @@ public class Utils {
 			MessageDigest mDigest = MessageDigest.getInstance("SHA1");
 			return mDigest.digest(input.getBytes("UTF-8"));
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", e);
 	  	} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 	  	return null;
 	}
@@ -125,10 +137,14 @@ public class Utils {
 	/** Performs Base64-encoding of data.
 	 */
 	public static String base64Encode(String s) {
+		return base64Encode(s, true);
+	}
+	
+	public static String base64Encode(String s, boolean crlf) {
 		try {
-			return base64Encode(s.getBytes("UTF-8"));
+			return base64Encode(s.getBytes("UTF-8"), crlf);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			logger.error("UnsupportedEncodingException", e);
 		}
 		return null;
 	}
@@ -137,6 +153,9 @@ public class Utils {
 	 */
 	public static String base64Encode(byte[] bytes) {
 		return Base64.encodeBytes(bytes);
+	}
+	public static String base64Encode(byte[] bytes, boolean crlf) {
+		return Base64.encodeBytes(bytes, crlf);
 	}
 	
 	/** Performs Base64-decoding of data.
@@ -154,6 +173,51 @@ public class Utils {
 		return "";
 	  }
 	}
+
+  /** Performs Base32-encoding of data.
+   */
+  public static String base32Encode(String s) {
+    return base32Encode(s, true);
+  }
+
+  public static String base32Encode(String s, boolean crlf) {
+    try {
+      return base32Encode(s.getBytes("UTF-8"), crlf);
+    } catch (UnsupportedEncodingException e) {
+      logger.error("UnsupportedEncodingException", e);
+    }
+    return null;
+	}
+
+  /** Performs Base32-encoding of data.
+   */
+  public static String base32Encode(byte[] bytes) {
+    Base32 base32 = new Base32();
+    return base32.encodeAsString(bytes);
+  }
+
+  public static String base32Encode(byte[] bytes, boolean crlf) {
+    Base32 base32 = new Base32(76);
+    return base32.encodeAsString(bytes);
+  }
+
+  /** Performs Base32-decoding of data.
+   *
+   * @throws IOException
+   */
+  public static byte[] base32Decode(String s) throws IOException {
+    Base32 base32 = new Base32();
+    return base32.decode(s.getBytes("UTF-8"));
+  }
+
+  public static String base32DecodeS(String s) {
+    try {
+      Base32 base32 = new Base32();
+      return new String(base32.decode(s.getBytes("US-ASCII")), "US-ASCII");
+    } catch(IOException e) {
+      return "";
+    }
+  }
 
 	/** An enumeration for HTML encoding flags.
 	 */
@@ -215,6 +279,26 @@ public class Utils {
 	 */
 	public static String htmlEncode(String value, HtmlEncodingFlag flag, HtmlEncodingFlag... flags) {
 		return htmlEncode(value, EnumSet.of(flag, flags));
+	}
+
+	/**
+	 * Escape the given text for inclusion in an HTML attribute
+	 * <p>
+	 * This utility function escapes characters so that the \p text can
+	 * be used as the value of an HTML attribute between double quotes.
+	 * <p>
+	 * The double quotes are <strong>not</strong> included in the output.
+	 * <p>
+	 * Example usage:
+	 * <p>
+	 * <pre>{@code
+	 * String attribute = "name=\"" + htmlAttributeValue(value) + "\"";
+	 * }</pre>
+	 */
+	public static String htmlAttributeValue(String text) {
+		StringBuilder sb = new StringBuilder();
+		DomElement.htmlAttributeValue(sb, text);
+		return sb.toString();
 	}
 
 	/** Remove tags/attributes from text that are not passive.
@@ -302,9 +386,87 @@ public class Utils {
 		return Integer.parseInt(s, 16);
 	}
 
+  /**
+   * Converts the long value to a byte array containing the hexstring.
+   * <p>
+   * The hexstring of a long value is simple its hexadecimal representation
+   * in string format. i.e. <strong>12</strong> would be <strong>C</strong>.
+   * The string will always be then converted to be 16 bytes long.
+   * <p>
+   * The string is then converted to an array of bytes.
+   * <p>
+   */
+  public static byte[] hexStrToBytes(long value) {
+    String hex = Long.toHexString(value);
+    while (hex.length() < 16) {
+      hex = "0" + hex;
+    }
+
+    // Prepend 10 to the value, so that the BigInt is forces to contain
+    // an actual 16 byte value. Otherwise, with leading 0's this may be
+    // optimised to a smaller value. This way the resulting byte array is
+    // always of the expected length (8).
+    // This value "10" is later dropped when copying to the result array.
+    byte[] bArray = new BigInteger("10" + hex, 16).toByteArray();
+    byte[] ret = new byte[bArray.length - 1];
+
+    for (int i = 0; i < ret.length; i++)
+      ret[i] = bArray[i+1];
+    return ret;
+  }
+
 	public static String createDataUrl(byte[] data, String mimeType) {
 	  String url = "data:"+mimeType+";base64,";
-	  String datab64 = base64Encode(data);
+	  String datab64 = base64Encode(data, false);
 	  return url+datab64;
 	}
+
+	public static byte[] hmac(String msg, String key, String algo) {
+        byte[] result = null;
+		try {
+			SecretKeySpec key_ = new SecretKeySpec((key).getBytes("UTF-8"), algo);
+			Mac mac = Mac.getInstance(algo);
+			mac.init(key_);
+			result = mac.doFinal(msg.getBytes("ASCII"));
+		} catch (UnsupportedEncodingException e) {
+			logger.error("UnsupportedEncodingException", e);
+		} catch (InvalidKeyException e) {
+			logger.error("InvalidKeyException: {}", key, e);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("NoSuchAlgorithmException", e);
+		}
+        return result;
+	}
+
+  public static String hmacWithEncoding(byte[] msg, byte[] key, String algo) {
+    byte[] result = null;
+    try {
+      SecretKeySpec key_ = new SecretKeySpec(key, algo);
+      Mac mac = Mac.getInstance(algo);
+      mac.init(key_);
+      result = mac.doFinal(msg);
+    } catch (InvalidKeyException e) {
+      logger.error("InvalidKeyException: {}", key, e);
+    } catch (NoSuchAlgorithmException e) {
+      logger.error("NoSuchAlgorithmException", e);
+    }
+    try {
+      return new String(result, "ISO_8859_1");
+    } catch (UnsupportedEncodingException e) {
+      logger.error("NoSuchAlgorithmException", e);
+      return "";
+    }
+  }
+
+	public static byte[] hmac_sha1(String msg, String key) {
+      return hmac(msg,key,"HmacSHA1");
+  }
+
+  public static String hmac_sha1WithEncoding(long msg, byte[] key) {
+    return hmacWithEncoding(hexStrToBytes(msg),key,"HmacSHA1");
+  }
+
+	public static byte[] hmac_md5(String msg, String key) {
+        return hmac(msg,key,"HmacMD5");
+    }
 }

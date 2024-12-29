@@ -5,7 +5,6 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WEnvironment;
-import eu.webtoolkit.jwt.WImage;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTabWidget;
@@ -14,6 +13,8 @@ import eu.webtoolkit.jwt.WTextArea;
 import eu.webtoolkit.jwt.WtServlet;
 
 public class Teapot extends WtServlet {
+	private static final long serialVersionUID = 1L;
+
 	class WebGLDemo extends WApplication
 	{
 		public WebGLDemo(WEnvironment env) {
@@ -49,7 +50,6 @@ public class Teapot extends WtServlet {
 			    fragmentShaderText_ = new WTextArea();
 			    fragmentShaderText_.resize(750, 250);
 			    tabs.addTab(fragmentShaderText_, "Fragment Shader");
-			    WText shaderInfo = new WText(getRoot());
 			    vertexShaderText_ = new WTextArea();
 			    vertexShaderText_.resize(750, 250);
 			    tabs.addTab(vertexShaderText_, "Vertex Shader");
@@ -58,11 +58,13 @@ public class Teapot extends WtServlet {
 		}
 
 		private void updateShaders() {
-			  paintWidget_ = new PaintWidget(glContainer_);
-			  paintWidget_.resize(500, 500);
-			  paintWidget_.setShaders(vertexShaderText_.getText(),
-			    fragmentShaderText_.getText());
-			  /*paintWidget_.setAlternativeContent(new WImage("pics/nowebgl.png"));*/
+			if (paintWidget_ != null)
+				glContainer_.removeWidget(paintWidget_);
+			paintWidget_ = new PaintWidget(glContainer_);
+			paintWidget_.resize(500, 500);
+			paintWidget_.setShaders(vertexShaderText_.getText(),
+			fragmentShaderText_.getText());
+			/*paintWidget_.setAlternativeContent(new WImage("pics/nowebgl.png"));*/
 		}
 		
 		private void resetShaders() {

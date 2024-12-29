@@ -1,15 +1,14 @@
 package eu.webtoolkit.jwt.examples.charts;
 
 import eu.webtoolkit.jwt.AlignmentFlag;
+import eu.webtoolkit.jwt.EditTrigger;
 import eu.webtoolkit.jwt.SelectionMode;
 import eu.webtoolkit.jwt.Side;
 import eu.webtoolkit.jwt.WAbstractItemModel;
-import eu.webtoolkit.jwt.WAbstractItemView;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WColor;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WLength;
-import eu.webtoolkit.jwt.WPaintedWidget.Method;
 import eu.webtoolkit.jwt.WShadow;
 import eu.webtoolkit.jwt.WString;
 import eu.webtoolkit.jwt.WTableView;
@@ -43,20 +42,20 @@ public class CategoryExample extends WContainerWidget {
         table.setModel(model);
         table.setSortingEnabled(true);
         table.setColumnResizeEnabled(true);
-        table.setSelectionMode(SelectionMode.NoSelection);
+        table.setSelectionMode(SelectionMode.None);
         table.setAlternatingRowColors(true);
-        table.setColumnAlignment(0, AlignmentFlag.AlignCenter);
-        table.setHeaderAlignment(0, AlignmentFlag.AlignCenter);
+        table.setColumnAlignment(0, AlignmentFlag.Center);
+        table.setHeaderAlignment(0, AlignmentFlag.Center);
         table.setRowHeight(new WLength(22));
 
         // Editing does not really work without Ajax, it would require an
         // additional button somewhere to confirm the edited value.
         if (WApplication.getInstance().getEnvironment().hasAjax()) {
           table.resize(600, 20 + 5*22);
-          table.setEditTriggers(WAbstractItemView.EditTrigger.SingleClicked);
+          table.setEditTriggers(EditTrigger.SingleClicked);
         } else {
           table.resize(new WLength(600), WLength.Auto);
-          table.setEditTriggers(WAbstractItemView.EditTrigger.NoEditTrigger);
+          table.setEditTriggers(EditTrigger.None);
         }
 
         table.setColumnWidth(0, new WLength(80));
@@ -71,7 +70,7 @@ public class CategoryExample extends WContainerWidget {
         chart.setModel(model); // set the model
         chart.setXSeriesColumn(0); // set the column that holds the categories
         chart.setLegendEnabled(true); // enable the legend
-        chart.getAxis(Axis.YAxis).setLabelFormat("%.0f");
+        chart.getAxis(Axis.Y).setLabelFormat("%.0f");
 
         chart.setAutoLayoutEnabled();
 
@@ -79,7 +78,7 @@ public class CategoryExample extends WContainerWidget {
          * Add all (but first) column as bar series
          */
         for (int i = 1; i < model.getColumnCount(); ++i) {
-            WDataSeries s = new WDataSeries(i, SeriesType.BarSeries);
+            WDataSeries s = new WDataSeries(i, SeriesType.Bar);
             s.setShadow(new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
             chart.addSeries(s);
         }
