@@ -970,6 +970,7 @@ public class WMenu extends WCompositeWidget {
         item.loadContents();
         if (!itemLoaded
             && this.contentsStack_ != null
+            && this.contentsStack_.currentIndex_ >= 0
             && this.contentsStack_.loadPolicies_.get(this.contentsStack_.currentIndex_)
                 == ContentLoading.Lazy) {
           WContainerWidget container =

@@ -60,7 +60,8 @@ public class WToolBar extends WCompositeWidget {
     }
   }
   /** Adds a button. */
-  public void addButton(WPushButton button, AlignmentFlag alignmentFlag) {
+  public WPushButton addButton(WPushButton button, AlignmentFlag alignmentFlag) {
+    WPushButton result = button;
     this.widgets_.add(button);
     if (this.compact_) {
       if (alignmentFlag == AlignmentFlag.Right) {
@@ -73,15 +74,16 @@ public class WToolBar extends WCompositeWidget {
       }
       this.getLastGroup().addWidget(button);
     }
+    return result;
   }
   /**
    * Adds a button.
    *
-   * <p>Calls {@link #addButton(WPushButton button, AlignmentFlag alignmentFlag) addButton(button,
+   * <p>Returns {@link #addButton(WPushButton button, AlignmentFlag alignmentFlag) addButton(button,
    * AlignmentFlag.Left)}
    */
-  public final void addButton(WPushButton button) {
-    addButton(button, AlignmentFlag.Left);
+  public final WPushButton addButton(WPushButton button) {
+    return addButton(button, AlignmentFlag.Left);
   }
   /**
    * Adds a split button.
@@ -93,7 +95,8 @@ public class WToolBar extends WCompositeWidget {
    *
    * @see WToolBar#setCompact(boolean compact)
    */
-  public void addButton(WSplitButton button, AlignmentFlag alignmentFlag) {
+  public WSplitButton addButton(WSplitButton button, AlignmentFlag alignmentFlag) {
+    WSplitButton result = button;
     this.widgets_.add(button);
     this.setCompact(false);
     this.lastGroup_ = null;
@@ -101,15 +104,16 @@ public class WToolBar extends WCompositeWidget {
       button.setAttributeValue("style", "float:right;");
     }
     this.impl_.addWidget(button);
+    return result;
   }
   /**
    * Adds a split button.
    *
-   * <p>Calls {@link #addButton(WSplitButton button, AlignmentFlag alignmentFlag) addButton(button,
-   * AlignmentFlag.Left)}
+   * <p>Returns {@link #addButton(WSplitButton button, AlignmentFlag alignmentFlag)
+   * addButton(button, AlignmentFlag.Left)}
    */
-  public final void addButton(WSplitButton button) {
-    addButton(button, AlignmentFlag.Left);
+  public final WSplitButton addButton(WSplitButton button) {
+    return addButton(button, AlignmentFlag.Left);
   }
   /**
    * Adds a widget.
@@ -134,7 +138,8 @@ public class WToolBar extends WCompositeWidget {
   public final void addWidget(WWidget widget) {
     addWidget(widget, AlignmentFlag.Left);
   }
-
+  // public Widget  addWidget(<Woow... some pseudoinstantiation type!> widget, AlignmentFlag
+  // alignmentFlag) ;
   public WWidget removeWidget(WWidget widget) {
     int idx = this.widgets_.indexOf(widget);
     if (idx != -1) {

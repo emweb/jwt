@@ -196,14 +196,16 @@ public class WStackedWidget extends WContainerWidget {
                 + ");");
       }
     }
-    if (this.loadPolicies_.get(this.currentIndex_) == ContentLoading.Lazy) {
-      WContainerWidget container =
-          ObjectUtils.cast(this.getCurrentWidget(), WContainerWidget.class);
-      if (container.getCount() != 0) {
-        this.currentWidgetChanged().trigger(container.getWidget(0));
+    if (this.currentIndex_ >= 0) {
+      if (this.loadPolicies_.get(this.currentIndex_) == ContentLoading.Lazy) {
+        WContainerWidget container =
+            ObjectUtils.cast(this.getCurrentWidget(), WContainerWidget.class);
+        if (container.getCount() != 0) {
+          this.currentWidgetChanged().trigger(container.getWidget(0));
+        }
+      } else {
+        this.currentWidgetChanged().trigger(this.getCurrentWidget());
       }
-    } else {
-      this.currentWidgetChanged().trigger(this.getCurrentWidget());
     }
   }
   /**
@@ -333,7 +335,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt4_11_2.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_11_3.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {

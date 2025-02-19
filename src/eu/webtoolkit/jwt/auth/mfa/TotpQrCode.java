@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class TotpQrCode extends WPaintedWidget {
   private static Logger logger = LoggerFactory.getLogger(TotpQrCode.class);
 
-  public static final Ecc ErrorLevelCorrection = Ecc.HIGH;
+  public static final Ecc ErrorLevelCorrection = Ecc.LOW;
   public static final double SQUARE_SIZE = 5;
   /**
    * Constructor.

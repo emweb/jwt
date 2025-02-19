@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  *
  * @see AuthService#processAuthToken(String token, AbstractUserDatabase users)
- * @see AuthService#createAuthToken(User user)
+ * @see AuthService#createAuthToken(User user, int authTokenValidity)
  */
 public class AuthTokenResult {
   private static Logger logger = LoggerFactory.getLogger(AuthTokenResult.class);

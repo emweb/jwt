@@ -331,7 +331,7 @@ public class DomElement {
       js.append("o=this;");
       if (anchorClick) {
         js.append(
-            "if(e.ctrlKey||e.metaKey||e.shiftKey||(Wt4_11_2.button(e) > 1))return true;else{");
+            "if(e.ctrlKey||e.metaKey||e.shiftKey||(Wt4_11_3.button(e) > 1))return true;else{");
       }
       js.append(jsCode);
       if (isExposed) {
@@ -438,7 +438,7 @@ public class DomElement {
   public void callMethod(final String method) {
     ++this.numManipulations_;
     if (this.var_.length() == 0) {
-      this.javaScript_.append("Wt4_11_2").append(".$('").append(this.id_).append("').");
+      this.javaScript_.append("Wt4_11_3").append(".$('").append(this.id_).append("').");
     } else {
       this.javaScript_.append(this.var_).append('.');
     }
@@ -493,7 +493,7 @@ public class DomElement {
   }
   /** Removes the element. */
   public void removeFromParent() {
-    this.callJavaScript("Wt4_11_2.remove('" + this.getId() + "');", true);
+    this.callJavaScript("Wt4_11_3.remove('" + this.getId() + "');", true);
   }
   /** Replaces the element by another element. */
   public void replaceWith(DomElement newElement) {
@@ -582,7 +582,7 @@ public class DomElement {
           if (this.removeAllChildren_ >= 0) {
             this.declare(out);
             if (this.removeAllChildren_ == 0) {
-              out.append("Wt4_11_2").append(".setHtml(").append(this.var_).append(", '');\n");
+              out.append("Wt4_11_3").append(".setHtml(").append(this.var_).append(", '');\n");
             } else {
               out.append("(Array.from(")
                   .append(this.var_)
@@ -615,18 +615,18 @@ public class DomElement {
             if (this.properties_.get(Property.StyleDisplay) != null) {
               String style = this.properties_.get(Property.StyleDisplay);
               if (style.equals("none")) {
-                out.append("Wt4_11_2.hide('").append(this.id_).append("');\n");
+                out.append("Wt4_11_3.hide('").append(this.id_).append("');\n");
                 return this.var_;
               } else {
                 if (style.equals("inline")) {
-                  out.append("Wt4_11_2.inline('" + this.id_ + "');\n");
+                  out.append("Wt4_11_3.inline('" + this.id_ + "');\n");
                   return this.var_;
                 } else {
                   if (style.equals("block")) {
-                    out.append("Wt4_11_2.block('" + this.id_ + "');\n");
+                    out.append("Wt4_11_3.block('" + this.id_ + "');\n");
                     return this.var_;
                   } else {
-                    out.append("Wt4_11_2.show('")
+                    out.append("Wt4_11_3.show('")
                         .append(this.id_)
                         .append("', '")
                         .append(style)
@@ -643,7 +643,7 @@ public class DomElement {
             }
           }
           if (this.unwrapped_) {
-            out.append("Wt4_11_2.unwrap('").append(this.id_).append("');\n");
+            out.append("Wt4_11_3.unwrap('").append(this.id_).append("');\n");
           }
           this.processEvents(app);
           this.processProperties(app);
@@ -660,7 +660,7 @@ public class DomElement {
                 .append(");\n");
             this.replaced_.createElement(out, app, insertJs.toString());
             if (this.unstubbed_) {
-              out.append("Wt4_11_2.unstub(")
+              out.append("Wt4_11_3.unstub(")
                   .append(this.var_)
                   .append(',')
                   .append(varr)
@@ -686,14 +686,14 @@ public class DomElement {
           }
           if (!this.childrenToSave_.isEmpty()) {
             this.declare(out);
-            out.append("Wt4_11_2").append(".saveReparented(").append(this.var_).append(");");
+            out.append("Wt4_11_3").append(".saveReparented(").append(this.var_).append(");");
           }
           for (int i = 0; i < this.childrenToSave_.size(); ++i) {
             out.append("var c")
                 .append(this.var_)
                 .append((int) i)
                 .append('=')
-                .append("Wt4_11_2.$('")
+                .append("Wt4_11_3.$('")
                 .append(this.childrenToSave_.get(i))
                 .append("')");
             if (app.getEnvironment().agentIsIE()) {
@@ -715,7 +715,7 @@ public class DomElement {
           }
           this.renderInnerHtmlJS(out, app);
           for (int i = 0; i < this.childrenToSave_.size(); ++i) {
-            out.append("Wt4_11_2.replaceWith('")
+            out.append("Wt4_11_3.replaceWith('")
                 .append(this.childrenToSave_.get(i))
                 .append("',c")
                 .append(this.var_)
@@ -803,7 +803,6 @@ public class DomElement {
       }
     }
     final boolean supportButton = true;
-    boolean needAnchorWrap = false;
     if (!supportButton && this.type_ == DomElementType.BUTTON) {
       renderedType = DomElementType.INPUT;
       DomElement self = this;
@@ -871,16 +870,10 @@ public class DomElement {
         }
       }
     } else {
-      if (needAnchorWrap) {
-        out.append("<a href=\"#\" class=\"Wt-wrap\" onclick=");
-        fastHtmlAttributeValue(out, attributeValues, clickEvent.jsCode);
-        out.append("><").append(elementNames_[(int) renderedType.getValue()]);
+      if (renderedType == DomElementType.OTHER) {
+        out.append('<').append(this.elementTagName_);
       } else {
-        if (renderedType == DomElementType.OTHER) {
-          out.append('<').append(this.elementTagName_);
-        } else {
-          out.append('<').append(elementNames_[(int) renderedType.getValue()]);
-        }
+        out.append('<').append(elementNames_[(int) renderedType.getValue()]);
       }
     }
     if (this.id_.length() != 0) {
@@ -909,8 +902,27 @@ public class DomElement {
                       >= (int) UserAgent.IE9.getValue()) {
             this.setJavaScriptEvent(javaScript, i.getKey(), i.getValue(), app);
           } else {
-            out.append(" on").append(i.getKey()).append('=');
-            fastHtmlAttributeValue(out, attributeValues, i.getValue().jsCode);
+            String elementId = this.getId();
+            if (elementId.length() == 0) {
+              final WObject dummy = new WObject();
+              elementId = dummy.getId();
+              out.append(" id=");
+              fastHtmlAttributeValue(out, attributeValues, elementId);
+            }
+            String eventName = i.getKey();
+            StringBuilder eventJS = new StringBuilder();
+            eventJS
+                .append("Wt4_11_3")
+                .append(".$('")
+                .append(elementId)
+                .append("').on")
+                .append(eventName)
+                .append(" = ")
+                .append("function() {")
+                .append(i.getValue().jsCode)
+                .append(";")
+                .append("};");
+            app.doJavaScript(eventJS.toString());
           }
         }
       }
@@ -1051,10 +1063,6 @@ public class DomElement {
       }
       if (needButtonWrap && supportButton) {
         out.append("</button>");
-      } else {
-        if (needAnchorWrap) {
-          out.append("</a>");
-        }
       }
     }
     javaScript.append(this.javaScriptEvenWhenDeleted_).append(this.javaScript_);
@@ -1107,7 +1115,7 @@ public class DomElement {
     if (this.var_.length() == 0) {
       out.append("var ")
           .append(this.getCreateVar())
-          .append("=Wt4_11_2.$('")
+          .append("=Wt4_11_3.$('")
           .append(this.id_)
           .append("');\n");
     }
@@ -1352,7 +1360,7 @@ public class DomElement {
     DomElement.EventHandler keypress = this.eventHandlers_.get(S_keypress);
     if (keypress != null && keypress.jsCode.length() != 0) {
       MapUtils.access(self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode =
-          "if (Wt4_11_2.isKeyPress(event)){"
+          "if (Wt4_11_3.isKeyPress(event)){"
               + MapUtils.access(self.eventHandlers_, S_keypress, DomElement.EventHandler.class)
                   .jsCode
               + '}';
@@ -1368,7 +1376,7 @@ public class DomElement {
       if (minw != null || maxw != null) {
         if (w == null) {
           StringBuilder expr = new StringBuilder();
-          expr.append("Wt4_11_2.IEwidth(this,");
+          expr.append("Wt4_11_3.IEwidth(this,");
           if (minw != null) {
             expr.append('\'').append(minw).append('\'');
             self.properties_.remove(Property.StyleMinWidth);
@@ -1407,7 +1415,7 @@ public class DomElement {
           if (this.willRenderInnerHtmlJS(app)) {
             break;
           }
-          out.append("Wt4_11_2.setHtml(").append(this.var_).append(',');
+          out.append("Wt4_11_3.setHtml(").append(this.var_).append(',');
           if (!pushed) {
             escaped.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
             pushed = true;
@@ -1667,7 +1675,7 @@ public class DomElement {
       StringBuilder insertJS = new StringBuilder();
       if (pos != -1) {
         insertJS
-            .append("Wt4_11_2.insertAt(")
+            .append("Wt4_11_3.insertAt(")
             .append(parentVar)
             .append(",")
             .append(this.var_)
@@ -1701,7 +1709,7 @@ public class DomElement {
           || !this.childrenHtml_.isEmpty()
           || innerHTML.length() != 0) {
         this.declare(out);
-        out.append("Wt4_11_2.setHtml(").append(this.var_).append(",'");
+        out.append("Wt4_11_3.setHtml(").append(this.var_).append(",'");
         out.pushEscape(EscapeOStream.RuleSet.JsStringLiteralSQuote);
         List<DomElement.TimeoutEvent> timeouts = new ArrayList<DomElement.TimeoutEvent>();
         EscapeOStream js = new EscapeOStream();
@@ -2020,7 +2028,6 @@ public class DomElement {
   static HashMap<Property, String> createCssCamelNamesMap() {
     HashMap<Property, String> cssCamelNames = new HashMap<Property, String>();
     cssCamelNames.put(Property.Style, "cssText");
-    cssCamelNames.put(Property.Style, "width");
     cssCamelNames.put(Property.StylePosition, "position");
     cssCamelNames.put(Property.StyleZIndex, "zIndex");
     cssCamelNames.put(Property.StyleFloat, "cssFloat");

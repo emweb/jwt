@@ -172,7 +172,8 @@ public class WMessageBox extends WDialog {
    *
    * <p>When the button is clicked, the associated result will be returned.
    */
-  public void addButton(WPushButton button, final StandardButton result) {
+  public WPushButton addButton(WPushButton button, final StandardButton result) {
+    WPushButton buttonPtr = button;
     this.buttons_.add(new WMessageBox.Button());
     this.buttons_.get(this.buttons_.size() - 1).button = button;
     this.buttons_.get(this.buttons_.size() - 1).result = result;
@@ -187,6 +188,7 @@ public class WMessageBox extends WDialog {
       this.setDefaultButton(button);
     }
     this.getFooter().addWidget(button);
+    return buttonPtr;
   }
   /**
    * Adds a custom button with given text.

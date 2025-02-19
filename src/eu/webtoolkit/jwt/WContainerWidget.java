@@ -286,6 +286,8 @@ public class WContainerWidget extends WInteractWidget {
    */
   public void clear() {
     this.layout_ = null;
+    this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
+    this.repaint();
     while (!this.children_.isEmpty()) {
       {
         WWidget toRemove = this.removeWidget(this.children_.get(this.children_.size() - 1));
@@ -684,6 +686,8 @@ public class WContainerWidget extends WInteractWidget {
     if (addChildren) {
       this.createDomChildren(result, app);
     }
+    this.flags_.clear(BIT_LAYOUT_NEEDS_RERENDER);
+    this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
     return result;
   }
 

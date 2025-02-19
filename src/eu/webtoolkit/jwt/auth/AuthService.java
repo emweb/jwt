@@ -328,20 +328,29 @@ public class AuthService {
   /**
    * Creates and stores an authentication token for the user.
    *
-   * <p>This creates and stores a new authentication token for the given user.
+   * <p>This creates and stores a new authentication token for the given user. The token will expire
+   * after <code>authTokenValidity</code> minutes if <code>authTokenValidity</code> is positive and
+   * after {@link AuthService#getAuthTokenValidity() getAuthTokenValidity()} minutes otherwise.
    *
    * <p>The returned value is the token that may be used to re-identify the user in {@link
    * AuthService#processAuthToken(String token, AbstractUserDatabase users) processAuthToken()}.
+   *
+   * <p>
+   *
+   * @see AuthService#createAuthToken(User user, AuthTokenType authTokenType)
    */
-  public String createAuthToken(final User user) {
+  public String createAuthToken(final User user, int authTokenValidity) {
     if (!user.isValid()) {
       throw new WException("Auth: createAuthToken(): user invalid");
     }
     try (AbstractUserDatabase.Transaction t = user.getDatabase().startTransaction(); ) {
       String random = MathUtils.randomId(this.tokenLength_);
       String hash = this.getTokenHashFunction().compute(random, "");
+      if (authTokenValidity < 0) {
+        authTokenValidity = this.authTokenValidity_;
+      }
       Token token =
-          new Token(hash, WDate.getCurrentServerDate().addSeconds(this.authTokenValidity_ * 60));
+          new Token(hash, WDate.getCurrentServerDate().addSeconds(authTokenValidity * 60));
       user.addAuthToken(token);
       if (t != null) {
         t.commit();
@@ -354,6 +363,46 @@ public class AuthService {
     }
   }
   /**
+   * Creates and stores an authentication token for the user.
+   *
+   * <p>Returns {@link #createAuthToken(User user, int authTokenValidity) createAuthToken(user, -
+   * 1)}
+   */
+  public final String createAuthToken(final User user) {
+    return createAuthToken(user, -1);
+  }
+  /**
+   * Creates and stores an authentication token for the user.
+   *
+   * <p>This creates and stores a new authentication token for the given user. The token will expire
+   * after the token validity time configured for the tokens of type <code>authTokenType</code>.
+   *
+   * <p>For {@link AuthTokenType#Password} this uses {@link AuthService#getAuthTokenValidity()
+   * getAuthTokenValidity()}, for {@link AuthTokenType#MFA} this will utilize {@link
+   * AuthService#getMfaTokenValidity() getMfaTokenValidity()}.
+   *
+   * <p>The returned value is the token that may be used to re-identify the user in {@link
+   * AuthService#processAuthToken(String token, AbstractUserDatabase users) processAuthToken()}.
+   *
+   * <p>
+   *
+   * @see AuthService#createAuthToken(User user, int authTokenValidity)
+   */
+  public String createAuthToken(final User user, AuthTokenType authTokenType) {
+    int authTokenValidity;
+    switch (authTokenType) {
+      case Password:
+        authTokenValidity = this.authTokenValidity_;
+        break;
+      case MFA:
+        authTokenValidity = this.mfaTokenValidity_;
+        break;
+      default:
+        throw new WException("Auth: createAuthToken(): invalid AuthTokenType");
+    }
+    return this.createAuthToken(user, authTokenValidity);
+  }
+  /**
    * Processes an authentication token.
    *
    * <p>This verifies an authentication token, and considers whether it matches with a token hash
@@ -362,14 +411,44 @@ public class AuthService {
    *
    * <p>If it matches and auth token update is enabled ({@link
    * AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token
-   * is updated with a new hash.
+   * is updated with a new hash. In case {@link AbstractUserDatabase#updateAuthToken(User user,
+   * String hash, String newHash) AbstractUserDatabase#updateAuthToken()} returns -1, a new token
+   * that expires after {@link AuthService#getAuthTokenValidity() getAuthTokenValidity()} minutes
+   * will be stored for the user.
    *
    * <p>
    *
    * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+   * @see AuthService#getAuthTokenValidity()
    * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash)
    */
   public AuthTokenResult processAuthToken(final String token, final AbstractUserDatabase users) {
+    return this.processAuthToken(token, users, -1);
+  }
+  /**
+   * Processes an authentication token.
+   *
+   * <p>This verifies an authentication token, and considers whether it matches with a token hash
+   * value stored in database. This indicates that the cookie a {@link User} has in their browser is
+   * still valid, and can be used to uniquely identify them.
+   *
+   * <p>If it matches and auth token update is enabled ({@link
+   * AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token
+   * is updated with a new hash. In case {@link AbstractUserDatabase#updateAuthToken(User user,
+   * String hash, String newHash) AbstractUserDatabase#updateAuthToken()} returns -1, a new token is
+   * stored that will expire after the token validity time configured for the tokens of type <code>
+   * authTokenType</code>. If <code>authTokenValidity</code> is negative, then the new token will
+   * expire after {@link AuthService#getAuthTokenValidity() getAuthTokenValidity()} minutes.
+   *
+   * <p>
+   *
+   * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+   * @see AuthService#getAuthTokenValidity()
+   * @see AuthService#getMfaTokenValidity()
+   * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash)
+   */
+  public AuthTokenResult processAuthToken(
+      final String token, final AbstractUserDatabase users, int authTokenValidity) {
     try (AbstractUserDatabase.Transaction t = users.startTransaction(); ) {
       String hash = this.getTokenHashFunction().compute(token, "");
       User user = users.findWithAuthToken(hash);
@@ -380,8 +459,11 @@ public class AuthService {
           int validity = user.updateAuthToken(hash, newHash);
           if (validity < 0) {
             user.removeAuthToken(hash);
-            newToken = this.createAuthToken(user);
-            validity = this.authTokenValidity_ * 60;
+            if (authTokenValidity < 0) {
+              authTokenValidity = this.authTokenValidity_;
+            }
+            newToken = this.createAuthToken(user, authTokenValidity);
+            validity = authTokenValidity * 60;
           }
           if (t != null) {
             t.commit();
@@ -401,6 +483,42 @@ public class AuthService {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+  /**
+   * Processes an authentication token.
+   *
+   * <p>This verifies an authentication token, and considers whether it matches with a token hash
+   * value stored in database. This indicates that the cookie a {@link User} has in their browser is
+   * still valid, and can be used to uniquely identify them.
+   *
+   * <p>If it matches and auth token update is enabled ({@link
+   * AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token
+   * is updated with a new hash. In case {@link AbstractUserDatabase#updateAuthToken(User user,
+   * String hash, String newHash) AbstractUserDatabase#updateAuthToken()} returns -1, a new token is
+   * stored that will expire after the token validity time configured for the tokens of type <code>
+   * authTokenType</code>.
+   *
+   * <p>
+   *
+   * @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+   * @see AuthService#getAuthTokenValidity()
+   * @see AuthService#getMfaTokenValidity()
+   * @see AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash)
+   */
+  public AuthTokenResult processAuthToken(
+      final String token, final AbstractUserDatabase users, AuthTokenType authTokenType) {
+    int authTokenValidity;
+    switch (authTokenType) {
+      case Password:
+        authTokenValidity = this.authTokenValidity_;
+        break;
+      case MFA:
+        authTokenValidity = this.mfaTokenValidity_;
+        break;
+      default:
+        throw new WException("Auth: processAuthToken(): invalid AuthTokenType");
+    }
+    return this.processAuthToken(token, users, authTokenValidity);
   }
   /**
    * Configures the duration for an authenticaton to remain valid.

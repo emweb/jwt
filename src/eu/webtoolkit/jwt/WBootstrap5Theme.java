@@ -392,9 +392,11 @@ public class WBootstrap5Theme extends WTheme {
               if (element.getProperty(Property.Class).indexOf("navbar-nav") == -1) {
                 element.addPropertyWord(Property.Class, "nav");
               }
-              WTabWidget tabs = ObjectUtils.cast(menu.getParent().getParent(), WTabWidget.class);
-              if (tabs != null) {
-                element.addPropertyWord(Property.Class, "nav-tabs");
+              if (menu.getParent() != null) {
+                WTabWidget tabs = ObjectUtils.cast(menu.getParent().getParent(), WTabWidget.class);
+                if (tabs != null) {
+                  element.addPropertyWord(Property.Class, "nav-tabs");
+                }
               }
             } else {
               WSuggestionPopup suggestions = ObjectUtils.cast(widget, WSuggestionPopup.class);
@@ -470,7 +472,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_11_2.setValidationState(")
+      js.append("Wt4_11_3.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)

@@ -104,7 +104,8 @@ final class OAuthRedirectEndpoint extends WResource {
           .append(appJs)
           .append(";")
           .append(this.process_.redirected_.createCall())
-          .append(";window.close();}\n}\n</script></head><body onload=\"load();\"></body></html>");
+          .append(
+              ";window.close();}\n}\nwindow.onload = function() { load(); };\n</script></head><body></body></html>");
     }
   }
 

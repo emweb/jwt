@@ -99,17 +99,19 @@ public class TotpProcess extends AbstractMfaProcess {
   public WWidget createSetupView() {
     WTemplate setupView = this.createBaseView();
     this.bindQRCode(setupView);
-    this.bindCodeInput(setupView);
+    this.bindCodeInput(setupView, false);
     this.bindRememberMe(setupView);
-    this.bindLoginButton(setupView);
+    this.bindLoginButton(setupView, false);
+    this.bindLogoutButton(setupView);
     return setupView;
   }
   /** Creates the view to input the TOTP code. */
   public WWidget createInputView() {
     WTemplate inputView = this.createBaseView();
-    this.bindCodeInput(inputView);
+    this.bindCodeInput(inputView, true);
     this.bindRememberMe(inputView);
-    this.bindLoginButton(inputView);
+    this.bindLoginButton(inputView, true);
+    this.bindLogoutButton(inputView);
     return inputView;
   }
   /**
@@ -164,7 +166,7 @@ public class TotpProcess extends AbstractMfaProcess {
     view.bindString("secret-key", this.getCurrentSecretKey());
   }
 
-  private void bindCodeInput(WTemplate view) {
+  private void bindCodeInput(WTemplate view, boolean throttle) {
     this.codeEdit_ = (WLineEdit) view.bindWidget("totp-code", new WLineEdit());
     this.codeEdit_.setFocus(true);
     this.codeEdit_
@@ -172,7 +174,7 @@ public class TotpProcess extends AbstractMfaProcess {
         .addListener(
             this,
             () -> {
-              TotpProcess.this.verifyCode(view);
+              TotpProcess.this.verifyCode(view, throttle);
             });
     view.bindString("totp-code-info", WString.tr("Wt.Auth.totp-code-info"));
     WString totpSecretKey = this.getUserIdentity();
@@ -201,7 +203,7 @@ public class TotpProcess extends AbstractMfaProcess {
     view.bindString("remember-me-info", info);
   }
 
-  private void bindLoginButton(WTemplate view) {
+  private void bindLoginButton(WTemplate view, boolean throttle) {
     WPushButton login =
         (WPushButton) view.bindWidget("login", new WPushButton(WString.tr("Wt.Auth.login")));
     login
@@ -209,14 +211,26 @@ public class TotpProcess extends AbstractMfaProcess {
         .addListener(
             this,
             () -> {
-              TotpProcess.this.verifyCode(view);
+              TotpProcess.this.verifyCode(view, throttle);
             });
-    if (this.getMfaThrottle() != null) {
+    if (this.getMfaThrottle() != null && throttle) {
       this.configureThrottling(login);
     }
   }
 
-  private void verifyCode(WTemplate view) {
+  private void bindLogoutButton(WTemplate view) {
+    WPushButton logout =
+        (WPushButton) view.bindWidget("logout", new WPushButton(WString.tr("Wt.Auth.totp-back")));
+    logout
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              TotpProcess.this.getLogin().logout();
+            });
+  }
+
+  private void verifyCode(WTemplate view, boolean throttle) {
     String code = this.codeEdit_.getText();
     boolean validation =
         Totp.validateCode(
@@ -231,7 +245,7 @@ public class TotpProcess extends AbstractMfaProcess {
             .append(" for user: ")
             .append(this.getLogin().getUser().getId())
             .toString());
-    if (this.getMfaThrottle() != null) {
+    if (this.getMfaThrottle() != null && throttle) {
       this.throttlingDelay_ = this.getMfaThrottle().delayForNextAttempt(this.getLogin().getUser());
       if (this.throttlingDelay_ > 0) {
         validation = false;
@@ -242,13 +256,13 @@ public class TotpProcess extends AbstractMfaProcess {
       t.commit();
       if (!validation) {
         if (this.throttlingDelay_ > 0) {
-          this.update(view);
+          this.update(view, throttle);
           this.authenticated_.trigger(
               new AuthenticationResult(
                   AuthenticationStatus.Failure, WString.tr("Wt.Auth.totp-code-info-throttle")));
           return;
         }
-        this.update(view);
+        this.update(view, throttle);
         this.authenticated_.trigger(
             new AuthenticationResult(
                 AuthenticationStatus.Failure, WString.tr("Wt.Auth.totp-code-info-invalid")));
@@ -267,11 +281,11 @@ public class TotpProcess extends AbstractMfaProcess {
     }
   }
 
-  private void update(WTemplate view) {
+  private void update(WTemplate view, boolean throttle) {
     this.codeEdit_.addStyleClass("is-invalid Wt-invalid");
     view.bindString("totp-code-info", WString.tr("Wt.Auth.totp-code-info-invalid"));
     view.bindString("label", "error has-error");
-    if (this.getMfaThrottle() != null) {
+    if (this.getMfaThrottle() != null && throttle) {
       WInteractWidget login = (WInteractWidget) view.resolveWidget("login");
       this.updateThrottling(login);
     }

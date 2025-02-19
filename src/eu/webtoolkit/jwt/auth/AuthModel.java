@@ -252,7 +252,27 @@ public class AuthModel extends FormBaseModel {
     if (login.isLoggedIn()) {
       if (this.getBaseAuth().isAuthTokensEnabled()) {
         WApplication app = WApplication.getInstance();
-        app.removeCookie(this.getBaseAuth().getAuthTokenCookieName());
+        String token = app.getEnvironment().getCookie(this.getBaseAuth().getAuthTokenCookieName());
+        String addedToken = app.findAddedCookies(this.getBaseAuth().getAuthTokenCookieName());
+        try (AbstractUserDatabase.Transaction t = this.getUsers().startTransaction(); ) {
+          if (token != null) {
+            String hash = this.getBaseAuth().getTokenHashFunction().compute(token, "");
+            this.getUsers().removeAuthToken(login.getUser(), hash);
+          }
+          if (addedToken != null) {
+            String hash = this.getBaseAuth().getTokenHashFunction().compute(addedToken, "");
+            this.getUsers().removeAuthToken(login.getUser(), hash);
+          }
+          if (t != null) {
+            t.commit();
+          }
+          app.removeCookie(
+              new javax.servlet.http.Cookie(this.getBaseAuth().getAuthTokenCookieName(), ""));
+        } catch (RuntimeException e) {
+          throw e;
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
       }
       login.logout();
     }

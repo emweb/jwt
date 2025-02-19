@@ -1021,25 +1021,21 @@ public class WTemplate extends WInteractWidget {
   public boolean renderTemplateText(final Writer result, final CharSequence templateText)
       throws IOException {
     this.errorText_ = "";
-    String text = "";
-    if (this.encodeTemplateText_) {
-      text = this.encode(WString.toWString(templateText).toXhtml());
-    } else {
-      text = WString.toWString(templateText).toXhtml();
-    }
+    String text = WString.toWString(templateText).toXhtml();
     int lastPos = 0;
     List<WString> args = new ArrayList<WString>();
     List<String> conditions = new ArrayList<String>();
     int suppressing = 0;
+    StringWriter output = new StringWriter();
     for (int pos = text.indexOf('$'); pos != -1; pos = text.indexOf('$', pos)) {
       if (!(suppressing != 0)) {
-        result.append(text.substring(lastPos, lastPos + pos - lastPos));
+        output.append(text.substring(lastPos, lastPos + pos - lastPos));
       }
       lastPos = pos;
       if (pos + 1 < text.length()) {
         if (text.charAt(pos + 1) == '$') {
           if (!(suppressing != 0)) {
-            result.append('$');
+            output.append('$');
           }
           lastPos += 2;
         } else {
@@ -1089,34 +1085,39 @@ public class WTemplate extends WInteractWidget {
                   String fname = name.substring(0, 0 + colonPos);
                   String arg0 = name.substring(colonPos + 1);
                   args.add(0, new WString(arg0));
-                  if (this.resolveFunction(fname, args, result)) {
+                  if (this.resolveFunction(fname, args, output)) {
                     handled = true;
                   } else {
                     args.remove(0);
                   }
                 }
                 if (!handled) {
-                  this.resolveString(name, args, result);
+                  this.resolveString(name, args, output);
                 }
               }
             }
             lastPos = endVar + 1;
           } else {
             if (!(suppressing != 0)) {
-              result.append('$');
+              output.append('$');
             }
             lastPos += 1;
           }
         }
       } else {
         if (!(suppressing != 0)) {
-          result.append('$');
+          output.append('$');
         }
         lastPos += 1;
       }
       pos = lastPos;
     }
-    result.append(text.substring(lastPos));
+    output.append(text.substring(lastPos));
+    if (this.encodeTemplateText_) {
+      result.append(this.encode(new WString(output.toString()).toXhtml()));
+    } else {
+      result.append(new WString(output.toString()).toXhtml());
+    }
     return true;
   }
   /**
@@ -1429,7 +1430,7 @@ public class WTemplate extends WInteractWidget {
   private void unrenderWidget(WWidget w, final DomElement el) {
     String removeJs = w.renderRemoveJs(false);
     if (removeJs.charAt(0) == '_') {
-      el.callJavaScript("Wt4_11_2.remove('" + removeJs.substring(1) + "');", true);
+      el.callJavaScript("Wt4_11_3.remove('" + removeJs.substring(1) + "');", true);
     } else {
       el.callJavaScript(removeJs, true);
     }

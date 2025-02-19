@@ -20,7 +20,8 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class Totp {
+/** Utility class containing functions for TOTP functionality. */
+public class Totp {
   private static Logger logger = LoggerFactory.getLogger(Totp.class);
 
   private Totp() {}

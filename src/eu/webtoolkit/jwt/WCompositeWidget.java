@@ -565,5 +565,12 @@ public class WCompositeWidget extends WWidget {
     return this.impl_.renderRemoveJs(recursive);
   }
 
+  protected void setParentWidget(WWidget parent) {
+    if (parent != null && !this.isDisabled()) {
+      this.propagateSetEnabled(parent.isEnabled());
+    }
+    super.setParentWidget(parent);
+  }
+
   private WWidget impl_;
 }

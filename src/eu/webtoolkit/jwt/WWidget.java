@@ -430,11 +430,11 @@ public abstract class WWidget extends WObject {
     }
     String side = orientation == Orientation.Horizontal ? ".Horizontal" : ".Vertical";
     this.doJavaScript(
-        "Wt4_11_2.positionAtWidget('"
+        "Wt4_11_3.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_11_2"
+            + "',Wt4_11_3"
             + side
             + ");");
   }
@@ -646,9 +646,18 @@ public abstract class WWidget extends WObject {
   /**
    * Sets whether the widget is disabled.
    *
-   * <p>Enables or disables the widget (including all its descendant widgets). setDisabled(false)
-   * will enable this widget and all descendant widgets that are not disabled. A widget is only
-   * enabled if it and all its ancestors in the widget tree are disabled.
+   * <p>The widget can be set to being disabled, or enabled. This state will also be propagated to
+   * all its descendants. Those descendants will only be &quot;visually&quot; made disabled, their
+   * actual {@link WWidget#isDisabled() isDisabled()} state will remain unaltered. All descendants
+   * will be assigned the disabled styleclass, which is dependent on the used Theme.
+   *
+   * <p>The {@link WWidget#isDisabled() isDisabled()} check will thus only return <code>true</code>
+   * in case setDisabled(true) has been called on the widget before. If the anscestor of a widget
+   * has been marked setDisabled(true), the widget&apos;s {@link WWidget#isDisabled() isDisabled()}
+   * state will remain <code>false</code>.
+   *
+   * <p>To check if a widget has been passively disabled, by one of its anscestors, use {@link
+   * WWidget#isEnabled() isEnabled()}.
    *
    * <p>Typically, a disabled form widget will not allow changing the value, and disabled widgets
    * will not react to mouse click events.
@@ -662,9 +671,9 @@ public abstract class WWidget extends WObject {
   /**
    * Returns whether the widget is set disabled.
    *
-   * <p>A widget that is not set disabled may still be disabled when one of its ancestor widgets is
-   * set disabled. Use {@link WWidget#isEnabled() isEnabled()} to find out whether a widget is
-   * enabled.
+   * <p>This method will return <code>true</code> if, and only if, it has been marked
+   * setDisabled(true) explicitly. It can still inherit the disabled state from one of its
+   * anscestors.
    *
    * <p>
    *
@@ -946,7 +955,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_11_2.$('" + this.getId() + "')";
+    return "Wt4_11_3.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.

@@ -58,7 +58,6 @@ public class WSvgImage extends WResource implements WVectorImage {
     this.pathTranslation_ = new WPointF();
     this.pathBoundingBox_ = null;
     this.shapes_ = new StringBuilder();
-    this.fontMetrics_ = null;
     this.fillStyle_ = "";
     this.strokeStyle_ = "";
     this.fontStyle_ = "";
@@ -323,17 +322,14 @@ public class WSvgImage extends WResource implements WVectorImage {
   }
 
   public WTextItem measureText(final CharSequence text, double maxWidth, boolean wordWrap) {
-    if (!(this.fontMetrics_ != null)) {
-      this.fontMetrics_ = new ServerSideFontMetrics();
-    }
-    return this.fontMetrics_.measureText(this.getPainter().getFont(), text, maxWidth, wordWrap);
+    WApplication app = WApplication.getInstance();
+    return app.getServerSideFontMetrics()
+        .measureText(this.getPainter().getFont(), text, maxWidth, wordWrap);
   }
 
   public WFontMetrics getFontMetrics() {
-    if (!(this.fontMetrics_ != null)) {
-      this.fontMetrics_ = new ServerSideFontMetrics();
-    }
-    return this.fontMetrics_.fontMetrics(this.getPainter().getFont());
+    WApplication app = WApplication.getInstance();
+    return app.getServerSideFontMetrics().fontMetrics(this.getPainter().getFont());
   }
 
   public void init() {
@@ -411,7 +407,6 @@ public class WSvgImage extends WResource implements WVectorImage {
   private WPointF pathTranslation_;
   private WRectF pathBoundingBox_;
   private StringBuilder shapes_;
-  private ServerSideFontMetrics fontMetrics_;
 
   private void finishPath() {
     if (this.busyWithPath_) {

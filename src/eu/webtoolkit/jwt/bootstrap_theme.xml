@@ -49,6 +49,14 @@
     ]]>
   </message>
 
+  <message id="Wt.Auth.checkbox.field">
+    <![CDATA[
+    ${<if:{1}>}
+    ${block:Wt.Auth.field {1}}
+    ${</if:{1}>}
+    ]]>
+  </message>
+
   <message id="Wt.Auth.template.login">
     <div class="span8 offset2 Wt-auth-login">
       <legend>${tr:Wt.Auth.login-form-title}</legend>
@@ -58,7 +66,7 @@
 	${<if:passwords>}
 	  ${block:Wt.Auth.field3 user-name user-name-label user-confirm-email}
 	  ${block:Wt.Auth.field password}
-	  ${block:Wt.Auth.field remember-me}
+	  ${block:Wt.Auth.checkbox.field remember-me}
 	${</if:passwords>}
 
         ${<if:oauth>}
@@ -70,10 +78,12 @@
           </div>
         ${</if:oauth>}
 
-        <div class="form-actions">
-          <p>${login class="btn-primary"}</p>
-          <p>${lost-password class="btn-link"} ${sep}
-          ${register class="btn-link"}</p>
+        <div class="form-actions form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <p>${login class="btn-primary"}</p>
+            <p>${lost-password class="btn-link"} ${sep}
+            ${register class="btn-link"}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -211,11 +221,11 @@
             </span>
           </div>
         </div>
-	${block:Wt.Auth.field remember-me}
-      </div>
+        ${block:Wt.Auth.checkbox.field remember-me}
 
-      <div class="form-actions">
-        <p>${login class="btn-primary"}</p>
+        <div class="form-actions">
+          <p>${login class="btn-primary"} ${logout class="btn-secondary"}</p>
+        </div>
       </div>
     </div>
   </message>

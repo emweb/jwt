@@ -247,7 +247,8 @@ public abstract class AbstractMfaProcess extends WObject {
                 .append("processMfaToken: Processing auth token for MFA for user: ")
                 .append(this.getLogin().getUser().getId())
                 .toString());
-        AuthTokenResult result = this.getBaseAuth().processAuthToken(token, this.getUsers());
+        AuthTokenResult result =
+            this.getBaseAuth().processAuthToken(token, this.getUsers(), AuthTokenType.MFA);
         switch (result.getState()) {
           case Valid:
             {
@@ -339,7 +340,8 @@ public abstract class AbstractMfaProcess extends WObject {
             .toString());
     javax.servlet.http.Cookie cookie =
         new javax.servlet.http.Cookie(
-            this.getBaseAuth().getMfaTokenCookieName(), this.getBaseAuth().createAuthToken(user));
+            this.getBaseAuth().getMfaTokenCookieName(),
+            this.getBaseAuth().createAuthToken(user, AuthTokenType.MFA));
     cookie.setMaxAge(duration);
     cookie.setDomain(this.getBaseAuth().getMfaTokenCookieDomain());
     cookie.setSecure(app.getEnvironment().getUrlScheme().equals("https"));

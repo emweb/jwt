@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.11.1</title>
+<title>JWt 4.11.3</title>
 </head>
 <body>
 
@@ -24,6 +24,87 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.11.3 (February 19, 2025)</h2>
+
+<p>
+  JWt 4.11.3 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13387" target="_blank">Issue #13387</a>:
+    fixed incorrect expiration date for an MFA authentication token being stored in the database.
+    Additionally, the possibility to give a custom expiration time for authentication tokens was added, for
+    <a href="eu/webtoolkit/jwt/auth/AuthService.html#createAuthToken(eu.webtoolkit.jwt.auth.User)" target="_blank">AuthService.createAuthToken()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13481" target="_blank">Issue #13481</a>:
+    fixed a lingering cookie that <a href="eu/webtoolkit/jwt/auth/AuthModel.html#setRememberMeCookie(eu.webtoolkit.jwt.auth.User)" target="_blank">remembers the login</a>
+    (using "Remember me") was not correctly removed when the user logged out. It was correctly removed from the browser, but server-side a reference to it remained.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13501" target="_blank">Issue #13501</a>:
+    fixed several instances of CSP (Content Security Policy) violations, in case of <code>use-script-nonce</code> being enabled.
+    The generated header <code>Content-Security-Policy: script-src 'nonce-{randomNonce}' 'strict-dynamic' 'unsafe-eval'</code>, does not allow <code>unsafe-inline</code>.
+    All instances of code that still produced inline handlers have been replaced with JavaScript handlers.
+    A nice side-effect is that this makes a lot of the DOM more readable.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13261" target="_blank">Issue #13261</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WContainerWidget.html#clear()" target="_blank">WContainerWidget.clear()</a> not correctly removing content when using layouts with JavaScript implementation.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13466" target="_blank">Issue #13466</a>:
+    fixed <a href="eu/webtoolkit/jwt/WViewWidget.html" target="_blank">WViewWidget</a>,
+    so that it now correctly replaces the old content with the new one when calling
+    <a href="eu/webtoolkit/jwt/WViewWidget.html#update()" target="_blank">WViewWidget.update()</a>,
+    instead of appending the new content to the old content.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13291" target="_blank">Issue #13291</a>:
+    fixed a bug where a nested
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> could lead to a segfault.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13507" target="_blank">Issue #13507</a>:
+    fixed enabled state propagation. In more complex layouts, where widgets would be reparented,
+    the enabled state could be wrongly assigned.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13385" target="_blank">Issue #13385</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/auth/Login.html#isLoggedIn()" target="_blank">Login.isLoggedIn()</a>
+    returning <code>true</code> if the user was logged out or still required MFA authentication.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13517" target="_blank">Issue #13517</a>:
+    fixed a rendering edge-case with <a href="eu/webtoolkit/jwt/WContainerWidget.html" target="_blank">WContainerWidget</a>,
+    which would result in a JavaScript error.
+  </li>
+</ul>
+
+<p>
+  JWt 4.11.3 also comes with the following improvements:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13392" target="_blank">Issue #13392</a>:
+    added a 'Back' button in TOTP setup and input view. This allows the user to logout in case they cannot
+    enter the code.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13390" target="_blank">Issue #13390</a>:
+    disabled throttling during TOTP setup.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13489" target="_blank">Issue #13489</a>:
+    in case server-side rendering is used for some <a href="eu/webtoolkit/jwt/WPaintDevice.html" target="_blank">WPaintDevice</a>s,
+  the font metrics it constructs, are now only constructed once, and not once per <code>WPaintDevice</code>.
+  </li>
+</ul>
 
 <h2>Release 4.11.2 (January 16, 2025)</h2>
 

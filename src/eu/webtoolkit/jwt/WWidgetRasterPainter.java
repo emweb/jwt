@@ -52,12 +52,28 @@ class WWidgetRasterPainter extends WWidgetPainter {
     img.setAttribute("height", hstr);
     img.setAttribute("class", "unselectable");
     img.setAttribute("unselectable", "on");
-    img.setAttribute("onselectstart", "return false;");
-    img.setAttribute("onmousedown", "return false;");
     WResource resource = ObjectUtils.cast(device, WResource.class);
     img.setAttribute("src", resource.generateUrl());
     result.addChild(img);
     this.device_ = device;
+    StringBuilder selectJS = new StringBuilder();
+    selectJS
+        .append("Wt4_11_3")
+        .append(".$('")
+        .append("i")
+        .append(this.widget_.getId())
+        .append("').onselectstart = ")
+        .append("function() { return false; };");
+    WApplication.getInstance().doJavaScript(selectJS.toString());
+    StringBuilder mouseJS = new StringBuilder();
+    mouseJS
+        .append("Wt4_11_3")
+        .append(".$('")
+        .append("i")
+        .append(this.widget_.getId())
+        .append("').onmousedown = ")
+        .append("function() { return false; };");
+    WApplication.getInstance().doJavaScript(mouseJS.toString());
   }
 
   public void updateContents(final List<DomElement> result, WPaintDevice device) {

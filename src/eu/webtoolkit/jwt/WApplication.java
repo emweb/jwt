@@ -166,7 +166,9 @@ public class WApplication extends WObject {
     this.hideLoadingIndicator_ = new EventSignal("hideload", this);
     this.unloaded_ = new JSignal(this, "Wt-unload");
     this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
+    this.addedCookies_ = new HashMap<String, String>();
     this.soundManager_ = null;
+    this.serverSideFontMetrics_ = (ServerSideFontMetrics) null;
     this.showLoadJS = new JSlot();
     this.hideLoadJS = new JSlot();
     this.session_.setApplication(this);
@@ -1972,6 +1974,7 @@ public class WApplication extends WObject {
     cookie.setPath(path);
     cookie.setSecure(secure);
     this.session_.getRenderer().setCookie(cookie);
+    this.addedCookies_.put(name, value);
   }
   /**
    * Sets a new cookie.
@@ -2014,6 +2017,7 @@ public class WApplication extends WObject {
    */
   public void removeCookie(final javax.servlet.http.Cookie cookie) {
     this.session_.getRenderer().removeCookie(cookie);
+    this.removeAddedCookies(cookie.getName());
   }
   /**
    * Removes a cookie.
@@ -2029,6 +2033,7 @@ public class WApplication extends WObject {
     rmCookie.setDomain(domain);
     rmCookie.setPath(path);
     this.session_.getRenderer().removeCookie(rmCookie);
+    this.removeAddedCookies(name);
   }
   /**
    * Removes a cookie.
@@ -2266,9 +2271,9 @@ public class WApplication extends WObject {
     if (this.loadingIndicator_ != null) {
       this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt4_11_2.inline('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_11_3.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt4_11_2.hide('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_11_3.hide('" + this.loadingIndicator_.getId() + "');}");
       this.loadingIndicator_.hide();
     }
   }
@@ -2578,6 +2583,21 @@ public class WApplication extends WObject {
     return this.unsuspended_;
   }
   /**
+   * Returns the font metrics for server-side rendering.
+   *
+   * <p>In case we require the fallback to render things server-side, this will require the
+   * construction of font metrics. The application will construct this object only once, as an
+   * optimization.
+   *
+   * <p>In case the object did not yet exist, a new instance is created.
+   */
+  public ServerSideFontMetrics getServerSideFontMetrics() {
+    if (!(this.serverSideFontMetrics_ != null)) {
+      this.serverSideFontMetrics_ = new ServerSideFontMetrics();
+    }
+    return this.serverSideFontMetrics_;
+  }
+  /**
    * Notifies an event to the application.
    *
    * <p>This method is called by the event loop for propagating an event to the application. It
@@ -2674,7 +2694,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt4_11_2.ajaxInternalPaths("
+        "Wt4_11_3.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2878,6 +2898,20 @@ public class WApplication extends WObject {
   EventSignal hideLoadingIndicator_;
   private JSignal unloaded_;
   private JSignal idleTimeout_;
+  private Map<String, String> addedCookies_;
+
+  public String findAddedCookies(final String name) {
+    String i = this.addedCookies_.get(name);
+    if (i == null) {
+      return null;
+    } else {
+      return i;
+    }
+  }
+
+  private void removeAddedCookies(final String name) {
+    this.addedCookies_.remove(name);
+  }
 
   WContainerWidget getTimerRoot() {
     return this.timerRoot_;
@@ -3052,7 +3086,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt4_11_2";
+              : "Wt4_11_3";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')
@@ -3126,6 +3160,7 @@ public class WApplication extends WObject {
   }
 
   private SoundManager soundManager_;
+  private ServerSideFontMetrics serverSideFontMetrics_;
   static String RESOURCES_URL = "resourcesURL";
   private JSlot showLoadJS;
   private JSlot hideLoadJS;

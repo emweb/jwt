@@ -50,7 +50,6 @@ public class WVmlImage implements WVectorImage {
     this.currentBrush_ = new WBrush();
     this.currentPen_ = new WPen();
     this.currentShadow_ = new WShadow();
-    this.fontMetrics_ = null;
     this.activePaths_ = new ArrayList<WVmlImage.ActivePath>();
     this.rendered_ = new StringWriter();
     this.currentRect_ = null;
@@ -412,17 +411,14 @@ public class WVmlImage implements WVectorImage {
   }
 
   public WTextItem measureText(final CharSequence text, double maxWidth, boolean wordWrap) {
-    if (!(this.fontMetrics_ != null)) {
-      this.fontMetrics_ = new ServerSideFontMetrics();
-    }
-    return this.fontMetrics_.measureText(this.getPainter().getFont(), text, maxWidth, wordWrap);
+    WApplication app = WApplication.getInstance();
+    return app.getServerSideFontMetrics()
+        .measureText(this.getPainter().getFont(), text, maxWidth, wordWrap);
   }
 
   public WFontMetrics getFontMetrics() {
-    if (!(this.fontMetrics_ != null)) {
-      this.fontMetrics_ = new ServerSideFontMetrics();
-    }
-    return this.fontMetrics_.fontMetrics(this.getPainter().getFont());
+    WApplication app = WApplication.getInstance();
+    return app.getServerSideFontMetrics().fontMetrics(this.getPainter().getFont());
   }
 
   public void init() {
@@ -483,7 +479,6 @@ public class WVmlImage implements WVectorImage {
   private WBrush currentBrush_;
   private WPen currentPen_;
   private WShadow currentShadow_;
-  private ServerSideFontMetrics fontMetrics_;
 
   static class ActivePath {
     private static Logger logger = LoggerFactory.getLogger(ActivePath.class);

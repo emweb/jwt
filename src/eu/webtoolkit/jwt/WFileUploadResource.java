@@ -91,7 +91,7 @@ final class WFileUploadResource extends WResource {
     } else {
       logger.debug(new StringWriter().append("Resource handleRequest(): no signal").toString());
     }
-    o.append("}\n</script></head><body onload=\"load();\"></body></html>");
+    o.append("}window.onload=function() { load(); };\n</script></head><body></body></html>");
     if (!(0 != 0) && !files.isEmpty()) {
       this.fileUpload_.setFiles(files);
     }

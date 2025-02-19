@@ -117,15 +117,20 @@ public class Login extends WObject {
   /**
    * Returns whether a user has successfully logged in.
    *
-   * <p>This returns <code>true</code> only if the state is {@link LoginState#Weak} or {@link
-   * LoginState#Strong}.
+   * <p>This returns <code>true</code> only if the user is valid and the state is {@link
+   * LoginState#Weak} or {@link LoginState#Strong}.
+   *
+   * <p>In case the state is {@link LoginState#RequiresMfa}, the user still needs to go through the
+   * MFA process before being logged in.
    *
    * <p>
    *
    * @see Login#getState()
+   * @see User#isValid()
    */
   public boolean isLoggedIn() {
-    return this.user_.isValid() && this.state_ != LoginState.Disabled;
+    return this.user_.isValid()
+        && (this.state_ == LoginState.Strong || this.state_ == LoginState.Weak);
   }
   /**
    * Returns the user currently identified.

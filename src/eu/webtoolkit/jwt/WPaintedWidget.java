@@ -220,6 +220,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
     this.createAreaImage();
     this.areaImage_.addArea(area);
   }
+  // public Area  addArea(<Woow... some pseudoinstantiation type!> area) ;
   /**
    * Inserts an interactive area.
    *

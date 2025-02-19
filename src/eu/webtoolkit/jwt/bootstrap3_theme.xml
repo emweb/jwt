@@ -54,6 +54,58 @@
     ]]>
   </message>
 
+    <message id="Wt.Auth.checkbox.field">
+    <![CDATA[
+    ${<if:{1}>}
+    <div class="form-group">
+      <label for="${id:{1}}" class="control-label col-sm-2">
+        ${tr:Wt.Auth.{1}}
+      </label>
+      <div class="col-sm-10">
+        <div class="checkbox">
+          <label>
+            ${{1}} ${{1}-info}
+          </label>
+        </div>
+      </div>
+    </div>
+    ${</if:{1}>}
+    ]]>
+  </message>
+
+  <message id="Wt.Auth.template.totp">
+    <div class="span8 offset2 Wt-auth-login">
+      <legend>${tr:Wt.Auth.totp-title}</legend>
+      <p>${tr:Wt.Auth.totp-info}</p>
+
+      <div class="form-horizontal">
+        ${<if:no-secret-key>}
+          ${qr-code}
+          ${tr:Wt.Auth.totp-qr-code-explanation}
+          <p> Secret key: ${secret-key}</p>
+        ${</if:no-secret-key>}
+        <div class="form-group ${label}">
+          <label for="${id:totp-code}" class="control-label col-sm-2">
+            ${tr:Wt.Auth.totp-code}
+          </label>
+          <div class="col-sm-5">
+            ${totp-code}
+          </div>
+          <div class="help-block col-sm-5">
+            <span>${totp-code-info}</span>
+          </div>
+        </div>
+        ${block:Wt.Auth.checkbox.field remember-me}
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <p>${login class="btn-primary"}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </message>
+
   <message id="Wt.WNavigationBar.template">
     <div>
       ${collapse-button}

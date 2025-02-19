@@ -149,6 +149,7 @@ public abstract class WViewWidget extends WWebWidget {
         WApplication.getInstance().getSession().getRenderer().setVisibleOnly(false);
         DomElement e = this.contents_.createSDomElement(WApplication.getInstance());
         if (!all) {
+          element.removeAllChildren();
           element.setWasEmpty(true);
         }
         element.addChild(e);

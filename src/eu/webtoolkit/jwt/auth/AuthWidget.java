@@ -797,7 +797,8 @@ public class AuthWidget extends WTemplateFormView {
     if (!(this.isRendered() || this.created_)) {
       return;
     }
-    if (this.login_.isLoggedIn()) {
+    if (this.login_.isLoggedIn()
+        || this.login_.getUser().isValid() && this.login_.getState() == LoginState.RequiresMfa) {
       if (this.login_.getState() == LoginState.RequiresMfa) {
         this.createMfaView();
       } else {
