@@ -30,6 +30,13 @@ class TopicTemplate extends BaseTemplate {
     this.bindString("doc-url", "//www.webtoolkit.eu/jwt/latest/doc/javadoc/eu/webtoolkit/jwt/");
     this.namespaceToPackage.put("Chart", "chart");
     this.namespaceToPackage.put("Render", "render");
+    if (WApplication.getInstance().getTheme().getName().equals("bootstrap2")) {
+      this.bindString("dl-class", "dl-horizontal");
+      this.bindString("row", "row-fluid");
+    } else {
+      this.bindString("dl-class", "row");
+      this.bindString("row", "row");
+    }
     if (parentContainer != null) parentContainer.addWidget(this);
   }
 

@@ -179,14 +179,14 @@ public class WCssStyleSheet {
   public void javaScriptUpdate(WApplication app, final StringBuilder js, boolean all) {
     if (!all) {
       for (int i = 0; i < this.rulesRemoved_.size(); ++i) {
-        js.append("Wt4_11_3.removeCssRule(");
+        js.append("Wt4_11_4.removeCssRule(");
         DomElement.jsStringLiteral(js, this.rulesRemoved_.get(i), '\'');
         js.append(");");
       }
       this.rulesRemoved_.clear();
       for (Iterator<WCssRule> i_it = this.rulesModified_.iterator(); i_it.hasNext(); ) {
         WCssRule i = i_it.next();
-        js.append("{ var d= Wt4_11_3.getCssRule(");
+        js.append("{ var d= Wt4_11_4.getCssRule(");
         DomElement.jsStringLiteral(js, i.getSelector(), '\'');
         js.append(");if(d){");
         DomElement d = DomElement.updateGiven("d", DomElementType.SPAN);
@@ -205,7 +205,7 @@ public class WCssStyleSheet {
         final List<WCssRule> toProcess = this.rules_;
         for (int i = 0; i < toProcess.size(); ++i) {
           WCssRule rule = toProcess.get(i);
-          js.append("Wt4_11_3.addCss('").append(rule.getSelector()).append("',");
+          js.append("Wt4_11_4.addCss('").append(rule.getSelector()).append("',");
           DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
           js.append(");\n");
         }
@@ -213,7 +213,7 @@ public class WCssStyleSheet {
         final List<WCssRule> toProcess = this.rulesAdded_;
         for (int i = 0; i < toProcess.size(); ++i) {
           final WCssRule rule = toProcess.get(i);
-          js.append("Wt4_11_3.addCss('").append(rule.getSelector()).append("',");
+          js.append("Wt4_11_4.addCss('").append(rule.getSelector()).append("',");
           DomElement.jsStringLiteral(js, rule.getDeclarations(), '\'');
           js.append(");\n");
         }
@@ -226,7 +226,7 @@ public class WCssStyleSheet {
       StringBuilder css = new StringBuilder();
       this.cssText(css, all);
       if (!(css.length() == 0)) {
-        js.append("Wt4_11_3.addCssText(");
+        js.append("Wt4_11_4.addCssText(");
         DomElement.jsStringLiteral(js, css.toString(), '\'');
         js.append(");\n");
       }

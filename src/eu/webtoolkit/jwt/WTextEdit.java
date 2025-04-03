@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
  * (font, formatting, color, links, and lists), but additional buttons may be added to the tool bars
  * that add additional formatting options.
  *
- * <p>The implementation is based on <a href="http://tinymce.moxiecode.com/">TinyMCE</a>. The widget
- * may be configured and tailored using the {@link WTextEdit#setConfigurationSetting(String name,
- * Object value) setConfigurationSetting()} and related methods that provide direct access to the
- * underlying TinyMCE component.
+ * <p>The implementation is based on <a href="https://github.com/tinymce/tinymce">TinyMCE</a>. The
+ * widget may be configured and tailored using the {@link WTextEdit#setConfigurationSetting(String
+ * name, Object value) setConfigurationSetting()} and related methods that provide direct access to
+ * the underlying TinyMCE component.
  *
  * <p>You can use this widget with TinyMCE version 3 or version 4.
  *
@@ -230,7 +230,9 @@ public class WTextEdit extends WTextArea {
    * Configure a TinyMCE setting.
    *
    * <p>A list of possible settings can be found at: <a
-   * href="http://tinymce.moxiecode.com/wiki.php/Configuration">http://tinymce.moxiecode.com/wiki.php/Configuration</a>
+   * href="https://www.tiny.cloud/docs/tinymce/5/configure/">https://www.tiny.cloud/docs/tinymce/5/configure/</a>
+   * or for older versions: <a
+   * href="https://github.com/tinymce/tinymce-docs/">https://github.com/tinymce/tinymce-docs/</a>
    *
    * <p>The widget itself will also define a number of configuration settings and these may be
    * overridden using this method.
@@ -296,7 +298,7 @@ public class WTextEdit extends WTextArea {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".ed.remove();";
       if (!recursive) {
-        result += "Wt4_11_3.remove('" + this.getId() + "');";
+        result += "Wt4_11_4.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -397,7 +399,7 @@ public class WTextEdit extends WTextArea {
     this.version_ = getTinyMCEVersion();
     this.setJavaScriptMember(
         " WTextEdit",
-        "new Wt4_11_3.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_11_4.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     this.setJavaScriptMember(
         WT_RESIZE_JS,
         "function(e, w, h, s) { var obj = "

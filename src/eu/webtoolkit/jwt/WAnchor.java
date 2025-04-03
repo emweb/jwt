@@ -362,7 +362,8 @@ public class WAnchor extends WContainerWidget {
     WApplication app = WApplication.getInstance();
     if (linkState.link.isNull() || widget.isDisabled()) {
       if (app.getEnvironment().hasJavaScript()) {
-        element.setAttribute("href", "javascript:void(0);");
+        element.setAttribute("href", "#");
+        element.addPropertyWord(Property.Class, WInteractWidget.noDefault);
       } else {
         element.removeAttribute("href");
       }
@@ -409,7 +410,7 @@ public class WAnchor extends WContainerWidget {
     if (all) {
       element.setProperty(Property.Class, StringUtils.addWord(widget.getStyleClass(), "Wt-rr"));
     } else {
-      element.callJavaScript("Wt4_11_3.$('" + widget.getId() + "').classList.add('Wt-rr');");
+      element.callJavaScript("Wt4_11_4.$('" + widget.getId() + "').classList.add('Wt-rr');");
     }
   }
 

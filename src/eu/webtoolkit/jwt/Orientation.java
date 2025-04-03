@@ -29,4 +29,7 @@ public enum Orientation {
   public int getValue() {
     return ordinal();
   }
+
+  public static final EnumSet<Orientation> AllOrientations =
+      EnumSet.of(Orientation.Horizontal, Orientation.Vertical);
 }

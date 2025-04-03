@@ -398,7 +398,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt4_11_3.Resizable(Wt4_11_3,"
+            "(new Wt4_11_4.Resizable(Wt4_11_4,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -568,12 +568,13 @@ public class WDialog extends WPopupWidget {
     super.setHidden(hidden, animation);
   }
 
-  public void positionAt(WWidget widget, Orientation orientation) {
+  public void positionAt(
+      WWidget widget, Orientation orientation, EnumSet<Orientation> adjustOrientations) {
     this.setPositionScheme(PositionScheme.Absolute);
     if (WApplication.getInstance().getEnvironment().hasJavaScript()) {
       this.setOffsets(new WLength(0), EnumSet.of(Side.Left, Side.Top));
     }
-    super.positionAt(widget, orientation);
+    super.positionAt(widget, orientation, adjustOrientations);
   }
   /** Set the position of the widget at the mouse position. */
   public void positionAt(final WMouseEvent ev) {
@@ -703,7 +704,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt4_11_3.WDialog("
+          "new Wt4_11_4.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()

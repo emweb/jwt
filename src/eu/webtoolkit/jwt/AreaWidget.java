@@ -41,10 +41,11 @@ class AreaWidget extends WInteractWidget {
   void updateDom(final DomElement element, boolean all) {
     boolean needsUrlResolution = this.facade_.updateDom(element, all);
     super.updateDom(element, all);
-    if (element.getProperty(Property.StyleCursor).length() != 0
-        && !WApplication.getInstance().getEnvironment().agentIsGecko()
-        && element.getAttribute("href").length() == 0) {
-      element.setAttribute("href", "javascript:void(0);");
+    if (element.getAttribute("href").length() == 0) {
+      if (!WApplication.getInstance().getEnvironment().agentIsGecko()) {
+        element.setAttribute("href", "#");
+      }
+      element.addPropertyWord(Property.Class, WInteractWidget.noDefault);
     }
     if (needsUrlResolution) {
       WAnchor.renderUrlResolution(this, element, all);

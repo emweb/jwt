@@ -287,6 +287,12 @@ public class AuthWidget extends WTemplateFormView {
             state = LoginState.RequiresMfa;
           }
           this.model_.loginUser(this.login_, user, state);
+          if (this.login_.getState() == LoginState.RequiresMfa) {
+            if (!(this.mfaWidget_ != null)) {
+              this.mfaWidget_ = this.createMfaProcess();
+            }
+            this.mfaWidget_.processEnvironment();
+          }
       }
       if (WApplication.getInstance().getEnvironment().hasAjax()) {
         WApplication.getInstance().setInternalPath("/");
@@ -299,6 +305,12 @@ public class AuthWidget extends WTemplateFormView {
       state = LoginState.RequiresMfa;
     }
     this.model_.loginUser(this.login_, user, state);
+    if (this.login_.getState() == LoginState.RequiresMfa) {
+      if (!(this.mfaWidget_ != null)) {
+        this.mfaWidget_ = this.createMfaProcess();
+      }
+      this.mfaWidget_.processEnvironment();
+    }
   }
   /**
    * Lets the user update his password.
@@ -484,7 +496,9 @@ public class AuthWidget extends WTemplateFormView {
    */
   public void createMfaView() {
     this.setTemplateText("<div>${mfa}</div>");
-    this.mfaWidget_ = this.createMfaProcess();
+    if (!(this.mfaWidget_ != null)) {
+      this.mfaWidget_ = this.createMfaProcess();
+    }
     AbstractMfaProcess defaultMfaWidget = (AbstractMfaProcess) this.mfaWidget_;
     if (defaultMfaWidget != null) {
       final User user = this.login_.getUser();

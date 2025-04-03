@@ -29,6 +29,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
     this.addedItems_ = new ArrayList<WLayoutItem>();
     this.removedItems_ = new ArrayList<String>();
     this.elId_ = "";
+    this.canAdjustLayout_ = false;
     String THIS_JS = "js/FlexLayoutImpl.js";
     WApplication app = WApplication.getInstance();
     if (!app.isJavaScriptLoaded(THIS_JS)) {
@@ -98,7 +99,14 @@ class FlexLayoutImpl extends StdLayoutImpl {
   public void updateDom(final DomElement parent) {
     WApplication app = WApplication.getInstance();
     DomElement div = DomElement.getForUpdate(this.elId_, DomElementType.DIV);
+    boolean skipLayoutAdjust = false;
     Orientation orientation = this.getOrientation();
+    if (this.grid_.items_.size() > 0) {
+      WWidget layoutParentWidget = this.item(orientation, 0).item_.getParentWidget();
+      if (layoutParentWidget != null && !layoutParentWidget.isEnabled()) {
+        skipLayoutAdjust = true;
+      }
+    }
     List<Integer> orderedInserts = new ArrayList<Integer>();
     for (int i = 0; i < this.addedItems_.size(); ++i) {
       orderedInserts.add(this.indexOf(this.addedItems_.get(i), orientation));
@@ -112,18 +120,16 @@ class FlexLayoutImpl extends StdLayoutImpl {
     }
     this.addedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_11_3.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_11_4.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
-    div.callMethod("layout.adjust()");
-    parent.addChild(div);
-  }
-
-  public void update() {
-    WContainerWidget c = this.getContainer();
-    if (c != null) {
-      c.layoutChanged(false);
+    if (this.canAdjustLayout_) {
+      div.callMethod("layout.adjust()");
     }
+    if (!this.canAdjustLayout_ && skipLayoutAdjust) {
+      this.canAdjustLayout_ = true;
+    }
+    parent.addChild(div);
   }
 
   public DomElement createDomElement(
@@ -181,7 +187,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_11_3.FlexLayout(")
+    js.append("layout=new Wt4_11_4.FlexLayout(")
         .append(app.getJavaScriptClass())
         .append(",'")
         .append(this.elId_)
@@ -202,6 +208,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
   private List<WLayoutItem> addedItems_;
   private List<String> removedItems_;
   private String elId_;
+  private boolean canAdjustLayout_;
 
   private int minimumHeightForRow(int row) {
     int minHeight = 0;

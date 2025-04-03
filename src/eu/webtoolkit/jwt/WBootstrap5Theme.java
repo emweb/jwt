@@ -198,12 +198,15 @@ public class WBootstrap5Theme extends WTheme {
     switch (element.getType()) {
       case A:
         {
-          if (creating && ObjectUtils.cast(widget, WPushButton.class) != null) {
-            element.addPropertyWord(Property.Class, classBtn(widget));
-          }
           WPushButton btn = ObjectUtils.cast(widget, WPushButton.class);
-          if (creating && btn != null && btn.isDefault()) {
-            element.addPropertyWord(Property.Class, "btn-primary");
+          if (btn != null) {
+            if (creating) {
+              element.addPropertyWord(Property.Class, classBtn(widget));
+              if (btn.isDefault()) {
+                element.addPropertyWord(Property.Class, "btn-primary");
+              }
+            }
+            break;
           }
           WMenuItem item = ObjectUtils.cast(widget.getParent(), WMenuItem.class);
           if (item != null) {
@@ -472,7 +475,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_11_3.setValidationState(")
+      js.append("Wt4_11_4.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)

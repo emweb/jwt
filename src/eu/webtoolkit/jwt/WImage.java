@@ -383,7 +383,7 @@ public class WImage extends WInteractWidget {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WImage.js", wtjs1());
     StringBuilder ss = new StringBuilder();
-    ss.append("new Wt4_11_3.WImage(")
+    ss.append("new Wt4_11_4.WImage(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())
@@ -410,6 +410,12 @@ public class WImage extends WInteractWidget {
     this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
     this.flags_.clear(BIT_ALT_TEXT_CHANGED);
     super.propagateRenderOk(deep);
+  }
+
+  protected void iterateChildren(final HandleWidgetMethod method) {
+    if (this.map_ != null) {
+      method.handle(this.map_);
+    }
   }
 
   protected String getUpdateAreaCoordsJSON() {

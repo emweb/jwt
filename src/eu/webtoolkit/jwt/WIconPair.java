@@ -271,10 +271,10 @@ public class WIconPair extends WCompositeWidget {
     return this.image_[1];
   }
   /**
-   * Returns the first icon as WIcon.
+   * Returns the first icon as {@link WIcon}.
    *
    * <p>If first icon type is {@link WIconPair.IconType#IconName IconName} returns the first icon as
-   * WIcon, otherwise returns nullptr.
+   * {@link WIcon}, otherwise returns nullptr.
    *
    * <p>
    *
@@ -284,10 +284,10 @@ public class WIconPair extends WCompositeWidget {
     return this.wicon_[0];
   }
   /**
-   * Returns the second icon as WIcon.
+   * Returns the second icon as {@link WIcon}.
    *
    * <p>If second icon type is {@link WIconPair.IconType#IconName IconName} returns the second icon
-   * as WIcon, otherwise returns nullptr.
+   * as {@link WIcon}, otherwise returns nullptr.
    *
    * <p>
    *

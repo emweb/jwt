@@ -208,7 +208,7 @@ public abstract class WWidget extends WObject {
    * the widget following CSS rules.
    *
    * <p>When the widget is not managed by a layout manager, the automatic (natural) size of a widget
-   * depends on whether they widget is a <i>block</i> or <i>inline</i> widget:
+   * depends on whether the widget is a <i>block</i> or <i>inline</i> widget:
    *
    * <ul>
    *   <li>a <i>block</i> widget takes by default the width of the parent, and the height that it
@@ -420,32 +420,73 @@ public abstract class WWidget extends WObject {
    * the right). It is aligned so that the top edges align (or the bottom edges if there is not
    * enough room below).
    *
+   * <p><code>adjustOrientations</code> allows to specify the axes on which the widget can adjust
+   * it&apos;s position if there is not enough room next to the other widget, breaking the previous
+   * rules if necessary. For example, if {@link Orientation#Vertical} flag of <code>
+   * adjustOrientations</code> is set, and part of the widget would be cut off by the top of the
+   * window, the widget would be move downward until the top of the widget is fully visible (or the
+   * widget reaches the bottom of the window). In that case, the widget would not be aligned with
+   * the other widget, in case <code>orientation</code> = {@link Orientation#Horizontal}, or would
+   * be displayed over the other widget, in case <code>orientation</code> = {@link
+   * Orientation#Vertical}.
+   *
    * <p>
    *
    * <p><i><b>Note: </b>This only works if JavaScript is available. </i>
    */
-  public void positionAt(WWidget widget, Orientation orientation) {
+  public void positionAt(
+      WWidget widget, Orientation orientation, EnumSet<Orientation> adjustOrientations) {
     if (this.isHidden()) {
       this.show();
     }
     String side = orientation == Orientation.Horizontal ? ".Horizontal" : ".Vertical";
+    String canAdjustX = adjustOrientations.contains(Orientation.Horizontal) ? "true" : "false";
+    String canAdjustY = adjustOrientations.contains(Orientation.Vertical) ? "true" : "false";
     this.doJavaScript(
-        "Wt4_11_3.positionAtWidget('"
+        "Wt4_11_4.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_11_3"
+            + "',Wt4_11_4"
             + side
+            + ","
+            + "false,"
+            + canAdjustX
+            + ","
+            + canAdjustY
             + ");");
   }
   /**
    * Positions a widget next to another widget.
    *
-   * <p>Calls {@link #positionAt(WWidget widget, Orientation orientation) positionAt(widget,
-   * Orientation.Vertical)}
+   * <p>Calls {@link #positionAt(WWidget widget, Orientation orientation, EnumSet
+   * adjustOrientations) positionAt(widget, orientation, EnumSet.of(adjustOrientation,
+   * adjustOrientations))}
+   */
+  public final void positionAt(
+      WWidget widget,
+      Orientation orientation,
+      Orientation adjustOrientation,
+      Orientation... adjustOrientations) {
+    positionAt(widget, orientation, EnumSet.of(adjustOrientation, adjustOrientations));
+  }
+  /**
+   * Positions a widget next to another widget.
+   *
+   * <p>Calls {@link #positionAt(WWidget widget, Orientation orientation, EnumSet
+   * adjustOrientations) positionAt(widget, Orientation.Vertical, Orientation.AllOrientations)}
    */
   public final void positionAt(WWidget widget) {
-    positionAt(widget, Orientation.Vertical);
+    positionAt(widget, Orientation.Vertical, Orientation.AllOrientations);
+  }
+  /**
+   * Positions a widget next to another widget.
+   *
+   * <p>Calls {@link #positionAt(WWidget widget, Orientation orientation, EnumSet
+   * adjustOrientations) positionAt(widget, orientation, Orientation.AllOrientations)}
+   */
+  public final void positionAt(WWidget widget, Orientation orientation) {
+    positionAt(widget, orientation, Orientation.AllOrientations);
   }
   /** Sets the CSS line height for contained text. */
   public abstract void setLineHeight(final WLength height);
@@ -955,7 +996,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_11_3.$('" + this.getId() + "')";
+    return "Wt4_11_4.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.

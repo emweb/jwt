@@ -9,7 +9,6 @@ import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
-import eu.webtoolkit.jwt.thirdparty.qrcodegen.*;
 import eu.webtoolkit.jwt.utils.*;
 import java.io.*;
 import java.lang.ref.*;
@@ -34,11 +33,9 @@ import org.slf4j.LoggerFactory;
  *
  * @see TotpQrCode#formatKey(String key, String serviceName, String userName, int codeDigits)
  */
-public class TotpQrCode extends WPaintedWidget {
+public class TotpQrCode extends WQrCode {
   private static Logger logger = LoggerFactory.getLogger(TotpQrCode.class);
 
-  public static final Ecc ErrorLevelCorrection = Ecc.LOW;
-  public static final double SQUARE_SIZE = 5;
   /**
    * Constructor.
    *
@@ -58,11 +55,8 @@ public class TotpQrCode extends WPaintedWidget {
       int codeDigits,
       WContainerWidget parentContainer) {
     super();
-    this.code_ =
-        QrCode.encodeText(
-            this.formatKey(key, serviceName, userName, codeDigits), ErrorLevelCorrection);
-    final double size = this.getCode().getSize() * SQUARE_SIZE;
-    this.resize(new WLength(size), new WLength(size));
+    this.setMessage(this.formatKey(key, serviceName, userName, codeDigits));
+    this.setErrorCorrectionLevel(WQrCode.ErrorCorrectionLevel.LOW);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
@@ -75,19 +69,6 @@ public class TotpQrCode extends WPaintedWidget {
   public TotpQrCode(
       final String key, final String serviceName, final String userName, int codeDigits) {
     this(key, serviceName, userName, codeDigits, (WContainerWidget) null);
-  }
-
-  protected void paintEvent(WPaintDevice paintDevice) {
-    WPainter painter = new WPainter(paintDevice);
-    WBrush brush = new WBrush(StandardColor.Black);
-    for (int line = 0; line < this.getCode().getSize(); ++line) {
-      for (int column = 0; column < this.getCode().getSize(); ++column) {
-        if (this.getCode().getModule(column, line)) {
-          painter.fillRect(
-              line * SQUARE_SIZE, column * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, brush);
-        }
-      }
-    }
   }
   /**
    * Format the key and other information to a correct QR code.
@@ -112,7 +93,7 @@ public class TotpQrCode extends WPaintedWidget {
    *   <li>period: the size of the time frame/window
    * </ul>
    */
-  protected String formatKey(
+  public String formatKey(
       final String key, final String serviceName, final String userName, int codeDigits) {
     String path =
         new WString(
@@ -123,11 +104,5 @@ public class TotpQrCode extends WPaintedWidget {
             .arg(codeDigits)
             .toString();
     return path;
-  }
-
-  private QrCode code_;
-
-  private QrCode getCode() {
-    return this.code_;
   }
 }

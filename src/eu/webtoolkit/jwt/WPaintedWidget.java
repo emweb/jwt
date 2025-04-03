@@ -195,6 +195,11 @@ public abstract class WPaintedWidget extends WInteractWidget {
     update(EnumSet.noneOf(PaintFlag.class));
   }
 
+  public void refresh() {
+    this.update();
+    super.refresh();
+  }
+
   public void resize(final WLength width, final WLength height) {
     if (!width.isAuto() && !height.isAuto()) {
       this.setLayoutSizeAware(false);

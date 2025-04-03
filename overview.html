@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.11.3</title>
+<title>JWt 4.11.4</title>
 </head>
 <body>
 
@@ -24,6 +24,133 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.11.4 (April 3, 2025)</h2>
+
+<p>
+  JWt 4.11.4 is a patch release that addresses the following issues:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13600" target="_blank">Issue #13600</a>:
+    fixed CSP (Content Security Policy) violations in case of <a href="eu/webtoolkit/jwt/Configuration.html#setUseScriptNonce(boolean)" target="_blank">Configuration.setUseScriptNonce</a> being enabled, for
+    <a href="eu/webtoolkit/jwt/WAnchor.html" target="_blank">WAnchor</a> and
+    <a href="eu/webtoolkit/jwt/WAbstractArea.html" target="_blank">WAbstractArea</a> without a link. The default browser behavior is now disabled on all events
+    coming from those widgets as long as they have no link, and their href attribute is set to <code>#</code>.
+    Additionally, fixed
+    <a href="eu/webtoolkit/jwt/WAbstractArea.html" target="_blank">WAbstractArea</a> sometimes trying to use it's href to send click event when ajax
+    was available.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13376" target="_blank">Issue #13376</a>:
+    fixed an issue where attempting to hide a
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>
+    would sometimes be display the popup at the bottom of the page instead of actually hiding the popup.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13585" target="_blank">Issue #13585</a>:
+    resolved a segfault when a <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a>
+    would be selected. The selection would happen based on the internal path, with the item having no content, but having a submenu (using
+    <a href="eu/webtoolkit/jwt/WMenu.html#addMenu(java.lang.CharSequence,eu.webtoolkit.jwt.WMenu)" target="_blank">WMenu.addMenu()</a>).
+    Additionally, the <a href="eu/webtoolkit/jwt/WStackedWidget.html#currentWidgetChanged()" target="_blank">currentWidgetChanged()</a>
+    signal now only emits once if the <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a>'s
+    content has changed.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13631" target="_blank">Issue #13631</a>:
+    added the "Logout"/"Back" button from <a href="https://redmine.emweb.be/issues/13392" target="_blank">Issue #13392</a>
+    to the <a href="eu/webtoolkit/jwt/WBootstrap3Theme.html" target="_blank">WBootstrap3Theme</a> as well.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13626" target="_blank">Issue #13626</a>:
+    ensured that <a href="eu/webtoolkit/jwt/auth/AuthWidget.html#processEnvironment()" target="_blank">AuthWidget.processEnvironment()</a> will also process the MFA environment.
+    This results in MFA tokens being processed before the authentication widget is rendered.
+    </a>
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13550" target="_blank">Issue #13550</a>:
+    resolved an issue that would change the href of internal path links in
+    <a href="eu/webtoolkit/jwt/WTemplate.html" target="_blank">WTemplate</a> or
+    <a href="eu/webtoolkit/jwt/WText.html" target="_blank">WText</a> to the current
+    internal path if internal path encoding was enabled.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13511" target="_blank">Issue #13511</a>:
+    fixed a bug where a
+    <a href="eu/webtoolkit/jwt/WPushButton.html" target="_blank">WPushButton</a> rendered as an anchor
+    with the <a href="eu/webtoolkit/jwt/WBootstrap5Theme" target="_blank">WBootstrap5Theme</a>,
+    would sometimes change its class property to a <code>dropdown-item</code> on update.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13373" target="_blank">Issue #13373</a>:
+    resolved an issue where
+    <a href="eu/webtoolkit/jwt/WPaintedWidget.html" target="_blank">WPaintedWidget</a> would not be updated when
+    <a href="eu/webtoolkit/jwt/WApplication.html#refresh()">WApplication.refresh()</a> was called.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12288" target="_blank">Issue #12288</a>:
+    corrected a JavaScript error when using <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>
+    with a disabled ancestor widget.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13685" target="_blank">Issue #13685</a>:
+    limited the possible size calculations in stretchable layouts that could loop infinitely.
+    </a>
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13510" target="_blank">Issue #13510</a>:
+    fixed the crosshair coordinates in
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html" target="_blank">WCartesianGraph</a>
+    showing dates as double.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13648" target="_blank">Issue #13648</a>:
+    made sure that the style request always has a valid content type.
+  </li>
+</ul>
+
+<p>
+  JWt 4.11.4 also comes with the following improvements:
+</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13630" target="_blank">Issue #13630</a>:
+    allow more control over and customization for <a href="eu/webtoolkit/jwt/auth/mfa/TotpProcess.html" target="_blank">TotpProcess</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13125" target="_blank">Issue #13125</a>:
+    added
+    <a href="eu/webtoolkit/jwt/StdLayoutImpl.html" target="_blank">StdLayoutImpl</a> and
+    <a href="eu/webtoolkit/jwt/StdLayoutItemImpl.html" target="_blank">StdLayoutItemImpl</a> to the public API.
+    These classes were already used by Wt to create layout but were not public. Since those classes are necessary to create a custom layout for a
+    <a href="eu/webtoolkit/jwt/WContainerWidget.html" target="_blank">WContainerWidget</a>
+    it has now be made public to allow developers to create their own layouts. An example of a simple layout was also added in <code>examples/feature/custom_layout</code>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13075" target="_blank">Issue #13075</a>:
+    <a href="eu/webtoolkit/jwt/WWidget.html#positionAt(eu.webtoolkit.jwt.WWidget)" target="_blank">WWidget.positionAt()</a>
+    now correctly positions the widget over the given widget when there is not enough place on either
+    side to place the widget. This same issue affecting popups was resolved as well.
+    Since this potentially puts content over other widgets (e.g. when entering information into a
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html" target="_blank">WSuggestionPopup</a>), the options
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html#setAdjust(java.util.EnumSet)">WPopupMenu.setAdjust()</a> and
+    <a href="eu/webtoolkit/jwt/WPopupWidget.html#setAdjust(java.util.EnumSet)">WPopupWidget.setAdjust()</a>
+    were added. This allows the default adjustment behaviour to be overridden, so that content is never
+    placed over the widget it popped up from.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12870" target="_blank">Issue #12870</a>:
+    added the
+    <a href="eu/webtoolkit/jwt/WQrCode.html" target="_blank">WQrCode</a> widget, a widget that can be used to generate QR codes.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12944" target="_blank">Issue #12944</a>:
+    added documentation for the
+    <a href="eu/webtoolkit/jwt/WIcon.html" target="_blank">WIcon</a> class.
+  </li>
+</ul>
 
 <h2>Release 4.11.3 (February 19, 2025)</h2>
 

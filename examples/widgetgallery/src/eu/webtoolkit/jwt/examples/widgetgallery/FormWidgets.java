@@ -1274,12 +1274,12 @@ class FormWidgets extends Topic {
   WWidget PushButtonSize() {
     WTemplate result = new WTemplate(WString.tr("pushButtonSize-template"));
     WPushButton button = new WPushButton("Large");
-    button.setStyleClass("btn-lg");
+    button.setStyleClass("btn-lg btn-large btn-secondary");
     result.bindWidget("button-large", button);
     button = new WPushButton("Default");
     result.bindWidget("button-default", button);
     button = new WPushButton("Small");
-    button.setStyleClass("btn-sm");
+    button.setStyleClass("btn-sm btn-small btn-secondary");
     result.bindWidget("button-small", button);
     return result;
   }

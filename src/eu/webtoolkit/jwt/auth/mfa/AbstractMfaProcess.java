@@ -103,7 +103,7 @@ public abstract class AbstractMfaProcess extends WObject {
   /**
    * Processes the (initial) environment.
    *
-   * <p>This can be called to tell the widget to look through the environment for the relevent
+   * <p>This can be called to tell the widget to look through the environment for the relevant
    * cookies. It will handle the side-effect of finding such a cookie, and it still being valid. The
    * user will be logged in, in a weak state ({@link LoginState#Weak}), and the authenticated()
    * signal will be fired, with an {@link AuthenticationStatus#Success}.
@@ -357,7 +357,8 @@ public abstract class AbstractMfaProcess extends WObject {
    * <p>If throttling is enabled, it may be necessary for a custom implementation to manage this
    * state itself. This is to allow developers the freedom to define their own MFA processes.
    *
-   * <p>Look at TotpProcess::verifyCode() for an example.
+   * <p>Look at {@link TotpProcess#verifyCode(WTemplate view, boolean throttle)
+   * TotpProcess#verifyCode()} for an example.
    *
    * <p>
    *
@@ -380,7 +381,8 @@ public abstract class AbstractMfaProcess extends WObject {
    * <p>If throttling is enabled, it may be necessary for a custom implementation to manage this
    * state itself. This is to allow developers the freedom to define their own MFA processes.
    *
-   * <p>Look at TotpProcess::verifyCode() for an example.
+   * <p>Look at {@link TotpProcess#verifyCode(WTemplate view, boolean throttle)
+   * TotpProcess#verifyCode()} for an example.
    */
   protected void updateThrottling(WInteractWidget button) {
     if (this.getMfaThrottle() != null) {

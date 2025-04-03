@@ -9,6 +9,6 @@ import java.time.Duration;
 
 public class ThreadUtils {
 	public static void sleep(Duration d) throws InterruptedException {
-		Thread.sleep(d.getSeconds() * 1000L, (int)(d.toNanos() % 1000000L));
+		Thread.sleep(d.toMillis(), (int)(d.toNanos() % 1000000L));
 	}
 }

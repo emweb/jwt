@@ -49,6 +49,7 @@ public class WPopupWidget extends WCompositeWidget {
     this.anchorWidget_ = (WWidget) null;
     this.orientation_ = Orientation.Vertical;
     this.transient_ = false;
+    this.adjustFlags_ = Orientation.AllOrientations;
     this.autoHideDelay_ = 0;
     this.hidden_ = new Signal();
     this.shown_ = new Signal();
@@ -166,7 +167,7 @@ public class WPopupWidget extends WCompositeWidget {
     }
     super.setHidden(hidden, animation);
     if (!hidden && this.anchorWidget_ != null) {
-      this.positionAt(this.anchorWidget_, this.orientation_);
+      this.positionAt(this.anchorWidget_, this.orientation_, this.adjustFlags_);
     }
     if (!WWebWidget.canOptimizeUpdates() || this.isRendered()) {
       if (hidden) {
@@ -181,6 +182,38 @@ public class WPopupWidget extends WCompositeWidget {
     } else {
       this.shown().trigger();
     }
+  }
+  /**
+   * Sets in which direction this popup widget can adjust its coordinates on popup.
+   *
+   * <p>This sets in which orientations the popup widget can adjust its position in order to be
+   * fully visible in the window, potentially hiding the widget (or point) from which it popped
+   * up. @see WWidget#positionAt(WWidget widget, Orientation orientation, EnumSet
+   * adjustOrientations)
+   *
+   * <p>By default, it ca adjust in both orientations.
+   */
+  public void setAdjust(EnumSet<Orientation> adjustOrientations) {
+    this.adjustFlags_ = EnumSet.copyOf(adjustOrientations);
+  }
+  /**
+   * Sets in which direction this popup widget can adjust its coordinates on popup.
+   *
+   * <p>Calls {@link #setAdjust(EnumSet adjustOrientations) setAdjust(EnumSet.of(adjustOrientation,
+   * adjustOrientations))}
+   */
+  public final void setAdjust(Orientation adjustOrientation, Orientation... adjustOrientations) {
+    setAdjust(EnumSet.of(adjustOrientation, adjustOrientations));
+  }
+  /**
+   * Returns in which orientations this popup widget can adjust it&apos;s coordinates on popup.
+   *
+   * <p>
+   *
+   * @see WPopupWidget#setAdjust(EnumSet adjustOrientations)
+   */
+  public EnumSet<Orientation> getAdjust() {
+    return this.adjustFlags_;
   }
   /**
    * Signal emitted when the popup is hidden.
@@ -217,6 +250,7 @@ public class WPopupWidget extends WCompositeWidget {
   private WWidget anchorWidget_;
   private Orientation orientation_;
   private boolean transient_;
+  private EnumSet<Orientation> adjustFlags_;
   private int autoHideDelay_;
   private Signal hidden_;
   private Signal shown_;
@@ -228,7 +262,7 @@ public class WPopupWidget extends WCompositeWidget {
     app.loadJavaScript("js/WPopupWidget.js", wtjs1());
     StringBuilder jsObj = new StringBuilder();
     jsObj
-        .append("new Wt4_11_3.WPopupWidget(")
+        .append("new Wt4_11_4.WPopupWidget(")
         .append(app.getJavaScriptClass())
         .append(',')
         .append(this.getJsRef())
@@ -247,6 +281,6 @@ public class WPopupWidget extends WCompositeWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WPopupWidget",
-        "(function(e,t,n,i,o){t.wtPopup=this;const s=this,u=e.WT;let c=null,d=n,l=i,r=null,h=null,a=null;function f(){if(u.isIOS){document.addEventListener(\"touchstart\",p);document.addEventListener(\"touchend\",m)}else document.addEventListener(\"click\",v)}function p(e){const t=e.originalEvent.touches;r=t.length>1?null:{x:t[0].screenX,y:t[0].screenY}}function m(e){if(r){const t=e.originalEvent.changedTouches[0];Math.abs(r.x-t.screenX)<20&&Math.abs(r.y-t.screenY)<20&&v(e)}}function v(e){let n=u.target(e);n===document&&null!==u.WPopupWidget.popupClicked&&(n=u.WPopupWidget.popupClicked);(function(e,t){if(e===t)return!0;for(t=t.parentNode;t;t=t.parentNode)if(e===t)return!0;return!1})(t,n)||s.hide()}this.bindShow=function(e){h=e};this.bindHide=function(e){a=e};this.shown=function(){d&&setTimeout((function(){f()}),0);h&&h()};this.show=function(n,i){if(\"\"!==t.style.display){t.style.display=\"\";n&&u.positionAtWidget(t.id,n.id,i);e.emit(t,\"shown\")}};this.hidden=function(){a&&a();d&&function(){if(u.isIOS){document.removeEventListener(\"touchstart\",p);document.removeEventListener(\"touchend\",m)}else document.removeEventListener(\"click\",v)}()};this.hide=function(){\"none\"!==t.style.display&&(t.style.display=\"none\");e.emit(t,\"hidden\");s.hidden()};this.setTransient=function(e,n){d=e;l=n;d&&\"hidden\"!==t.style.display&&setTimeout((function(){f()}),0)};t.addEventListener(\"mouseleave\",(function(){clearTimeout(c);l>0&&(c=setTimeout((function(){s.hide()}),l))}));t.addEventListener(\"mouseenter\",(function(){clearTimeout(c)}));o&&this.shown()})");
+        "(function(e,n,t,i,o){n.wtPopup=this;const s=this,u=e.WT;let c=null,d=t,l=i,r=null,h=null,a=null;function f(){if(u.isIOS){document.addEventListener(\"touchstart\",p);document.addEventListener(\"touchend\",m)}else document.addEventListener(\"click\",v)}function p(e){const n=e.originalEvent.touches;r=n.length>1?null:{x:n[0].screenX,y:n[0].screenY}}function m(e){if(r){const n=e.originalEvent.changedTouches[0];Math.abs(r.x-n.screenX)<20&&Math.abs(r.y-n.screenY)<20&&v(e)}}function v(e){let t=u.target(e);t===document&&null!==u.WPopupWidget.popupClicked&&(t=u.WPopupWidget.popupClicked);(function(e,n){if(e===n)return!0;for(n=n.parentNode;n;n=n.parentNode)if(e===n)return!0;return!1})(n,t)||s.hide()}this.bindShow=function(e){h=e};this.bindHide=function(e){a=e};this.shown=function(){d&&setTimeout((function(){f()}),0);h&&h()};this.show=function(t,i,o=!0,s=!0){if(\"\"!==n.style.display){n.style.display=\"\";t&&u.positionAtWidget(n.id,t.id,i,!1,o,s);e.emit(n,\"shown\")}};this.hidden=function(){a&&a();d&&function(){if(u.isIOS){document.removeEventListener(\"touchstart\",p);document.removeEventListener(\"touchend\",m)}else document.removeEventListener(\"click\",v)}()};this.hide=function(){\"none\"!==n.style.display&&(n.style.display=\"none\");e.emit(n,\"hidden\");s.hidden()};this.setTransient=function(e,t){d=e;l=t;d&&\"none\"!==n.style.display&&setTimeout((function(){f()}),0)};n.addEventListener(\"mouseleave\",(function(){clearTimeout(c);l>0&&(c=setTimeout((function(){s.hide()}),l))}));n.addEventListener(\"mouseenter\",(function(){clearTimeout(c)}));o&&this.shown()})");
   }
 }

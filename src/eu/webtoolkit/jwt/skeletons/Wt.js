@@ -1769,7 +1769,7 @@ if (!window._$_WT_CLASS_$_) {
      * position right to (x) or left from (rightx) and
      * bottom of (y) or top from (bottomy)
      */
-    this.fitToWindow = function(e, x, y, rightx, bottomy) {
+    this.fitToWindow = function(e, x, y, rightx, bottomy, adjustX = true, adjustY = true) {
       const hsides = ["left", "right"],
         vsides = ["top", "bottom"];
 
@@ -1801,12 +1801,15 @@ if (!window._$_WT_CLASS_$_) {
 
       const offsetParent = WT.widgetPageCoordinates(op);
 
-      if (reserveWidth > windowSize.x) {
-        // wider than window
-        x = windowX;
-        hside = 0;
-      } else if (x + reserveWidth > windowX + windowSize.x) {
+      if (x + reserveWidth > windowX + windowSize.x) {
         // too far right, chose other side
+        if (adjustX && reserveWidth > rightx - windowX) {
+          /*
+           * Too large to be displayed from the left starting from the
+           * current rightx, and can be displayed between x and rightx
+           */
+          rightx = windowX + reserveWidth;
+        }
         let scrollX = op.scrollLeft;
         if (op === document.body) {
           scrollX = op.clientWidth - windowSize.x;
@@ -1824,14 +1827,18 @@ if (!window._$_WT_CLASS_$_) {
         hside = 0;
       }
 
-      if (reserveHeight > windowSize.y) {
-        // taller than window
-        y = windowY;
-        vside = 0;
-      } else if (y + reserveHeight > windowY + windowSize.y) {
+      if (y + reserveHeight > windowY + windowSize.y) {
         // too far below, chose other side
         if (bottomy > windowY + windowSize.y) {
+          // requested bottom edge is already off screen
           bottomy = windowY + windowSize.y;
+        }
+        if (adjustY && reserveHeight > bottomy - windowY) {
+          /*
+           * Too tall to be displayed upwards starting from the current
+           * bottomy, and can be displayed between y and bottomy
+           */
+          bottomy = windowY + reserveHeight;
         }
         let scrollY = op.scrollTop;
         if (op === document.body) {
@@ -1862,19 +1869,19 @@ if (!window._$_WT_CLASS_$_) {
       e.style[vsides[vside]] = y + "px";
     };
 
-    this.positionXY = function(id, x, y) {
+    this.positionXY = function(id, x, y, adjustX = true, adjustY = true) {
       const w = WT.getElement(id);
 
       if (!WT.isHidden(w)) {
         w.style.display = "block";
-        WT.fitToWindow(w, x, y, x, y);
+        WT.fitToWindow(w, x, y, x, y, adjustX, adjustY);
       }
     };
 
     this.Horizontal = 0x1;
     this.Vertical = 0x2;
 
-    this.positionAtWidget = function(id, atId, orientation, delta) {
+    this.positionAtWidget = function(id, atId, orientation, delta, adjustX = true, adjustY = true) {
       const w = WT.getElement(id),
         atw = WT.getElement(atId);
 
@@ -1951,7 +1958,7 @@ if (!window._$_WT_CLASS_$_) {
       p.appendChild(w);
       w.classList.add("wt-reparented");
 
-      WT.fitToWindow(w, x, y, rightx, bottomy);
+      WT.fitToWindow(w, x, y, rightx, bottomy, adjustX, adjustY);
 
       w.style.visibility = "";
     };
@@ -3180,7 +3187,7 @@ window._$_APP_CLASS_$_ = new (function() {
     }
 
     if (comm) {
-      comm.setUrl(url);
+      comm.setUrl(sessionUrl);
     }
   }
 

@@ -28,6 +28,7 @@ class BaseTemplate extends WTemplate {
     super(tr(trKey), (WContainerWidget) null);
     this.setInternalPathEncoding(true);
     this.addFunction("tr", Functions.tr);
+    this.addFunction("block", Functions.block);
     this.setCondition("if:cpp", false);
     this.setCondition("if:java", true);
     if (parentContainer != null) parentContainer.addWidget(this);

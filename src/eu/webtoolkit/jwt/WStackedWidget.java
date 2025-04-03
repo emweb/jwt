@@ -63,6 +63,7 @@ public class WStackedWidget extends WContainerWidget {
     this.loadAnimateJS_ = false;
     this.loadPolicies_ = new ArrayList<ContentLoading>();
     this.currentWidgetChanged_ = new Signal1<WWidget>();
+    this.hasEmittedChanged_ = false;
     this.setOverflow(Overflow.Hidden);
     this.addStyleClass("Wt-stack");
     if (parentContainer != null) parentContainer.addWidget(this);
@@ -164,6 +165,10 @@ public class WStackedWidget extends WContainerWidget {
    * @see WStackedWidget#setCurrentWidget(WWidget widget)
    */
   public void setCurrentIndex(int index, final WAnimation animation, boolean autoReverse) {
+    boolean hasChanged = this.currentIndex_ != index;
+    if (hasChanged) {
+      this.hasEmittedChanged_ = false;
+    }
     if (!animation.isEmpty()
         && WApplication.getInstance().getEnvironment().supportsCss3Animations()
         && (this.isRendered() && this.javaScriptDefined_ || !canOptimizeUpdates())) {
@@ -196,15 +201,17 @@ public class WStackedWidget extends WContainerWidget {
                 + ");");
       }
     }
-    if (this.currentIndex_ >= 0) {
+    if (hasChanged || !this.hasEmittedChanged_) {
       if (this.loadPolicies_.get(this.currentIndex_) == ContentLoading.Lazy) {
         WContainerWidget container =
             ObjectUtils.cast(this.getCurrentWidget(), WContainerWidget.class);
-        if (container.getCount() != 0) {
+        if (container.getCount() > 0) {
           this.currentWidgetChanged().trigger(container.getWidget(0));
+          this.hasEmittedChanged_ = true;
         }
       } else {
         this.currentWidgetChanged().trigger(this.getCurrentWidget());
+        this.hasEmittedChanged_ = true;
       }
     }
   }
@@ -327,6 +334,7 @@ public class WStackedWidget extends WContainerWidget {
   private boolean loadAnimateJS_;
   List<ContentLoading> loadPolicies_;
   private Signal1<WWidget> currentWidgetChanged_;
+  private boolean hasEmittedChanged_;
 
   private void defineJavaScript() {
     if (!this.javaScriptDefined_) {
@@ -335,7 +343,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt4_11_3.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_11_4.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {
