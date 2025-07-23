@@ -153,7 +153,7 @@ public class AuthThrottle {
     app.loadJavaScript("js/AuthThrottle.js", wtjs1());
     button.setJavaScriptMember(
         " AuthThrottle",
-        "new Wt4_11_4.AuthThrottle(Wt4_11_4,"
+        "new Wt4_12_0.AuthThrottle(Wt4_12_0,"
             + button.getJsRef()
             + ","
             + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()

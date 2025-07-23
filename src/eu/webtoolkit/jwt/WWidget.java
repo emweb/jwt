@@ -443,11 +443,11 @@ public abstract class WWidget extends WObject {
     String canAdjustX = adjustOrientations.contains(Orientation.Horizontal) ? "true" : "false";
     String canAdjustY = adjustOrientations.contains(Orientation.Vertical) ? "true" : "false";
     this.doJavaScript(
-        "Wt4_11_4.positionAtWidget('"
+        "Wt4_12_0.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_11_4"
+            + "',Wt4_12_0"
             + side
             + ","
             + "false,"
@@ -996,7 +996,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_11_4.$('" + this.getId() + "')";
+    return "Wt4_12_0.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.

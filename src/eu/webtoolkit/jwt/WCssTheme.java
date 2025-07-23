@@ -410,7 +410,7 @@ public class WCssTheme extends WTheme {
         child.addStyleClass("body");
         break;
       case WidgetThemeRole.PanelCollapseButton:
-        child.setFloatSide(Side.Left);
+        child.addStyleClass("Wt-collapse-button");
         break;
       case WidgetThemeRole.AuthWidgets:
         WApplication app = WApplication.getInstance();
@@ -513,12 +513,12 @@ public class WCssTheme extends WTheme {
             return;
           }
           WDateEdit dateEdit = ObjectUtils.cast(widget, WDateEdit.class);
-          if (dateEdit != null) {
+          if (dateEdit != null && !dateEdit.isNativeControl()) {
             element.addPropertyWord(Property.Class, "Wt-dateedit");
             return;
           }
           WTimeEdit timeEdit = ObjectUtils.cast(widget, WTimeEdit.class);
-          if (timeEdit != null) {
+          if (timeEdit != null && !timeEdit.isNativeControl()) {
             element.addPropertyWord(Property.Class, "Wt-timeedit");
             return;
           }
@@ -569,7 +569,7 @@ public class WCssTheme extends WTheme {
     app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_11_4.setValidationState(")
+      js.append("Wt4_12_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)

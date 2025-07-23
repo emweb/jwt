@@ -174,7 +174,7 @@ public class WPopupMenu extends WMenu {
     String canAdjustX = this.adjustFlags_.contains(Orientation.Horizontal) ? "true" : "false";
     String canAdjustY = this.adjustFlags_.contains(Orientation.Vertical) ? "true" : "false";
     this.doJavaScript(
-        "Wt4_11_4.positionXY('"
+        "Wt4_12_0.positionXY('"
             + this.getId()
             + "',"
             + String.valueOf(p.getX())
@@ -460,7 +460,7 @@ public class WPopupMenu extends WMenu {
 
   String renderRemoveJs(boolean recursive) {
     String result = super.renderRemoveJs(true);
-    result += "Wt4_11_4.remove('" + this.getId() + "');";
+    result += "Wt4_12_0.remove('" + this.getId() + "');";
     return result;
   }
 
@@ -540,7 +540,7 @@ public class WPopupMenu extends WMenu {
     if (!this.cancel_.isConnected()) {
       app.loadJavaScript("js/WPopupMenu.js", wtjs1());
       StringBuilder s = new StringBuilder();
-      s.append("new Wt4_11_4.WPopupMenu(")
+      s.append("new Wt4_12_0.WPopupMenu(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())

@@ -57,8 +57,7 @@ public class PasswordPromptDialog extends WDialog {
     WLineEdit nameEdit = new WLineEdit();
     this.impl_.bindWidget(AuthModel.LoginNameField, nameEdit);
     this.impl_.updateViewField(this.model_, AuthModel.LoginNameField);
-    WLineEdit passwordEdit = new WLineEdit();
-    passwordEdit.setEchoMode(EchoMode.Password);
+    WPasswordEdit passwordEdit = new WPasswordEdit();
     passwordEdit.setFocus(true);
     this.impl_.bindWidget(AuthModel.PasswordField, passwordEdit);
     this.impl_.updateViewField(this.model_, AuthModel.PasswordField);

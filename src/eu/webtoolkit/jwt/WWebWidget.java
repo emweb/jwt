@@ -48,6 +48,7 @@ public abstract class WWebWidget extends WWidget {
     this.otherImpl_ = null;
     this.flags_.set(BIT_INLINE);
     this.flags_.set(BIT_ENABLED);
+    this.flags_.set(BIT_TOOLTIP_SHOW_ON_HOVER);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
@@ -577,6 +578,55 @@ public abstract class WWebWidget extends WWidget {
 
   public WString getToolTip() {
     return this.getStoredToolTip();
+  }
+  /**
+   * Enable/disable whether tooltip is shown on hover.
+   *
+   * <p>Allow to enable or disable whether the tooltip is shown when the {@link WWebWidget} is
+   * hovered over by the mouse.
+   *
+   * <p>
+   *
+   * @see WWebWidget#showToolTip()
+   * @see WWebWidget#hideToolTip()
+   */
+  public void showToolTipOnHover(boolean enable) {
+    if (enable) {
+      this.flags_.set(BIT_TOOLTIP_SHOW_ON_HOVER);
+    } else {
+      this.flags_.clear(BIT_TOOLTIP_SHOW_ON_HOVER);
+      this.flags_.set(BIT_TOOLTIP_CLEAN_FORCE_SHOW);
+    }
+    this.flags_.set(BIT_TOOLTIP_CHANGED);
+    this.repaint();
+  }
+  /**
+   * Force tooltip to show.
+   *
+   * <p>When called, show the tooltip to the user until {@link WWebWidget#hideToolTip()
+   * hideToolTip()} is called.
+   *
+   * <p>
+   *
+   * @see WWebWidget#hideToolTip()
+   */
+  public void showToolTip() {
+    this.flags_.set(BIT_TOOLTIP_FORCE_SHOW);
+    this.flags_.set(BIT_TOOLTIP_CHANGED);
+    this.repaint();
+  }
+  /**
+   * Hide the tooltip.
+   *
+   * <p>
+   *
+   * @see WWebWidget#showToolTip()
+   */
+  public void hideToolTip() {
+    this.flags_.clear(BIT_TOOLTIP_FORCE_SHOW);
+    this.flags_.set(BIT_TOOLTIP_CHANGED);
+    this.flags_.set(BIT_TOOLTIP_CLEAN_FORCE_SHOW);
+    this.repaint();
   }
 
   public void refresh() {
@@ -1296,7 +1346,7 @@ public abstract class WWebWidget extends WWidget {
             app.addAutoJavaScript(
                 "{var w = "
                     + this.getJsRef()
-                    + ";if (w && !Wt4_11_4.isHidden(w)) {var i = Wt4_11_4.getElement('"
+                    + ";if (w && !Wt4_12_0.isHidden(w)) {var i = Wt4_12_0.getElement('"
                     + i.getId()
                     + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
             element.addChild(i);
@@ -1477,7 +1527,9 @@ public abstract class WWebWidget extends WWidget {
             app = WApplication.getInstance();
           }
           if ((this.lookImpl_.toolTipTextFormat_ != TextFormat.Plain
-                  || this.flags_.get(BIT_TOOLTIP_DEFERRED))
+                  || this.flags_.get(BIT_TOOLTIP_DEFERRED)
+                  || this.flags_.get(BIT_TOOLTIP_FORCE_SHOW)
+                  || this.flags_.get(BIT_TOOLTIP_CLEAN_FORCE_SHOW))
               && app.getEnvironment().hasAjax()) {
             app.loadJavaScript("js/ToolTip.js", wtjs10());
             WString tooltipText = new WString(this.lookImpl_.toolTip_.toString());
@@ -1491,16 +1543,26 @@ public abstract class WWebWidget extends WWidget {
                 }
               }
             }
+            boolean jsShowOnHover =
+                this.flags_.get(BIT_TOOLTIP_SHOW_ON_HOVER)
+                    && (this.flags_.get(BIT_TOOLTIP_DEFERRED)
+                        || this.lookImpl_.toolTipTextFormat_ != TextFormat.Plain);
             String deferred = this.flags_.get(BIT_TOOLTIP_DEFERRED) ? "true" : "false";
+            String showOnHover = jsShowOnHover ? "true" : "false";
+            String forceShow = this.flags_.get(BIT_TOOLTIP_FORCE_SHOW) ? "true" : "false";
             element.callJavaScript(
-                "Wt4_11_4.toolTip("
+                "Wt4_12_0.toolTip("
                     + app.getJavaScriptClass()
                     + ","
                     + jsStringLiteral(this.getId())
                     + ","
                     + WString.toWString(tooltipText).getJsStringLiteral()
                     + ", "
+                    + forceShow
+                    + ", "
                     + deferred
+                    + ", "
+                    + showOnHover
                     + ", "
                     + jsStringLiteral(
                         app.getTheme().utilityCssClass(UtilityCssClassRole.ToolTipInner))
@@ -1516,9 +1578,20 @@ public abstract class WWebWidget extends WWidget {
                     WWebWidget.this.loadToolTip();
                   });
             }
-            element.removeAttribute("title");
+            if (this.flags_.get(BIT_TOOLTIP_SHOW_ON_HOVER)
+                && !jsShowOnHover
+                && !this.flags_.get(BIT_TOOLTIP_FORCE_SHOW)) {
+              element.setAttribute("title", this.lookImpl_.toolTip_.toString());
+            } else {
+              element.removeAttribute("title");
+            }
+            this.flags_.clear(BIT_TOOLTIP_CLEAN_FORCE_SHOW);
           } else {
-            element.setAttribute("title", this.lookImpl_.toolTip_.toString());
+            if (this.flags_.get(BIT_TOOLTIP_SHOW_ON_HOVER)) {
+              element.setAttribute("title", this.lookImpl_.toolTip_.toString());
+            } else {
+              element.removeAttribute("title");
+            }
           }
         }
         this.flags_.clear(BIT_TOOLTIP_CHANGED);
@@ -1536,7 +1609,7 @@ public abstract class WWebWidget extends WWidget {
     if (!all && this.transientImpl_ != null) {
       for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "Wt4_11_4.$('"
+            "Wt4_12_0.$('"
                 + this.getId()
                 + "').classList.add('"
                 + this.transientImpl_.addedStyleClasses_.get(i)
@@ -1544,7 +1617,7 @@ public abstract class WWebWidget extends WWidget {
       }
       for (int i = 0; i < this.transientImpl_.removedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "Wt4_11_4.$('"
+            "Wt4_12_0.$('"
                 + this.getId()
                 + "').classList.remove('"
                 + this.transientImpl_.removedStyleClasses_.get(i)
@@ -1556,7 +1629,7 @@ public abstract class WWebWidget extends WWidget {
           for (int i = 0; i < this.transientImpl_.childRemoveChanges_.size(); ++i) {
             final String js = this.transientImpl_.childRemoveChanges_.get(i);
             if (js.charAt(0) == '_') {
-              element.callJavaScript("Wt4_11_4.remove('" + js.substring(1) + "');", true);
+              element.callJavaScript("Wt4_12_0.remove('" + js.substring(1) + "');", true);
             } else {
               element.callJavaScript(js, true);
             }
@@ -1580,7 +1653,7 @@ public abstract class WWebWidget extends WWidget {
         element.setAttribute("unselectable", "on");
         StringBuilder selectJS = new StringBuilder();
         selectJS
-            .append("Wt4_11_4")
+            .append("Wt4_12_0")
             .append(".$('")
             .append(this.getId())
             .append("').onselectstart = ")
@@ -1592,7 +1665,7 @@ public abstract class WWebWidget extends WWidget {
           element.setAttribute("unselectable", "off");
           StringBuilder selectJS = new StringBuilder();
           selectJS
-              .append("Wt4_11_4")
+              .append("Wt4_12_0")
               .append(".$('")
               .append(this.getId())
               .append("').onselectstart = ")
@@ -1670,7 +1743,7 @@ public abstract class WWebWidget extends WWidget {
     if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
       if (this.flags_.get(BIT_HIDDEN_CHANGED) || all && this.flags_.get(BIT_HIDDEN)) {
         if (this.flags_.get(BIT_HIDDEN)) {
-          element.callJavaScript("Wt4_11_4.$('" + this.getId() + "').classList.add('Wt-hidden');");
+          element.callJavaScript("Wt4_12_0.$('" + this.getId() + "').classList.add('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "hidden");
           if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
             element.setProperty(Property.StylePosition, "absolute");
@@ -1711,7 +1784,7 @@ public abstract class WWebWidget extends WWidget {
             }
           }
           element.callJavaScript(
-              "Wt4_11_4.$('" + this.getId() + "').classList.remove('Wt-hidden');");
+              "Wt4_12_0.$('" + this.getId() + "').classList.remove('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "visible");
         }
       }
@@ -1726,7 +1799,7 @@ public abstract class WWebWidget extends WWidget {
         app.loadJavaScript(THIS_JS, wtjs2());
         if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_11_4")
+          ss.append("Wt4_12_0")
               .append(".animateDisplay(")
               .append(app.getJavaScriptClass())
               .append(",'")
@@ -1748,7 +1821,7 @@ public abstract class WWebWidget extends WWidget {
           }
         } else {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_11_4")
+          ss.append("Wt4_12_0")
               .append(".animateVisible('")
               .append(this.getId())
               .append("',")
@@ -1815,13 +1888,13 @@ public abstract class WWebWidget extends WWidget {
       if (!app.isJavaScriptLoaded(SCROLL_JS) && this.isScrollVisibilityEnabled()) {
         app.loadJavaScript(SCROLL_JS, wtjs3());
         StringBuilder ss = new StringBuilder();
-        ss.append("if (!Wt4_11_4.scrollVisibility) {Wt4_11_4.scrollVisibility = new ");
-        ss.append("Wt4_11_4.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
+        ss.append("if (!Wt4_12_0.scrollVisibility) {Wt4_12_0.scrollVisibility = new ");
+        ss.append("Wt4_12_0.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
         element.callJavaScript(ss.toString());
       }
       if (this.isScrollVisibilityEnabled()) {
         StringBuilder ss = new StringBuilder();
-        ss.append("Wt4_11_4.scrollVisibility.add({");
+        ss.append("Wt4_12_0.scrollVisibility.add({");
         ss.append("el:").append(this.getJsRef()).append(',');
         ss.append("margin:").append(this.getScrollVisibilityMargin()).append(',');
         ss.append("visible:").append(this.isScrollVisible());
@@ -1831,7 +1904,7 @@ public abstract class WWebWidget extends WWidget {
       } else {
         if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
           element.callJavaScript(
-              "Wt4_11_4.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
+              "Wt4_12_0.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
           this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
         }
       }
@@ -1896,7 +1969,7 @@ public abstract class WWebWidget extends WWidget {
     final StringBuilder result = new StringBuilder();
     if (this.isRendered() && this.isScrollVisibilityEnabled()) {
       result
-          .append("Wt4_11_4.scrollVisibility.remove(")
+          .append("Wt4_12_0.scrollVisibility.remove(")
           .append(jsStringLiteral(this.getId()))
           .append(");");
       this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
@@ -1910,7 +1983,7 @@ public abstract class WWebWidget extends WWidget {
       if ((result.length() == 0)) {
         result.append("_").append(this.getId());
       } else {
-        result.append("Wt4_11_4.remove('").append(this.getId()).append("');");
+        result.append("Wt4_12_0.remove('").append(this.getId()).append("');");
       }
     }
     return result.toString();
@@ -2070,7 +2143,7 @@ public abstract class WWebWidget extends WWidget {
 
   private static final int BIT_INLINE = 0;
   private static final int BIT_HIDDEN = 1;
-  private static final int BIT_LOADED = 2;
+  static final int BIT_LOADED = 2;
   private static final int BIT_RENDERED = 3;
   private static final int BIT_STUBBED = 4;
   private static final int BIT_FORM_OBJECT = 5;
@@ -2107,6 +2180,9 @@ public abstract class WWebWidget extends WWidget {
   private static final int BIT_THEME_STYLE_DISABLED = 36;
   private static final int BIT_OBJECT_NAME_CHANGED = 37;
   private static final int BIT_PARENT_CHANGED = 38;
+  private static final int BIT_TOOLTIP_FORCE_SHOW = 39;
+  private static final int BIT_TOOLTIP_CLEAN_FORCE_SHOW = 40;
+  private static final int BIT_TOOLTIP_SHOW_ON_HOVER = 41;
   private static String FOCUS_SIGNAL = "focus";
   private static String BLUR_SIGNAL = "blur";
   private static final int DEFAULT_BASE_Z_INDEX = 1100;
@@ -2728,7 +2804,7 @@ public abstract class WWebWidget extends WWidget {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptFunction,
         "toolTip",
-        "(function(e,t,n,o,l,i){const c=document.getElementById(t),u=e.WT,a=c.toolTip;a||(c.toolTip=new function(){let a=null,s=null,d=null,r=null;let m=!1,T=n,f=!1;this.setToolTipText=function(e){T=e;if(m){this.showToolTip();clearTimeout(a);m=!1}};this.showToolTip=function(){!o||T||m||function(){m=!0;e.emit(c,\"Wt-loadToolTip\")}();if(T){r=document.createElement(\"div\");r.className=l;r.innerHTML=T;const e=document.createElement(\"div\");e.className=i;document.body.appendChild(e);e.appendChild(r);const t=d.x,n=d.y;u.fitToWindow(e,t+10,n+10,t-10,n-10);let o=0;const c=parseInt(u.css(e,\"zIndex\"),10);document.querySelectorAll(\".Wt-dialog, .modal, .modal-dialog\").forEach((function(t){o=Math.max(o,parseInt(u.css(t,\"zIndex\"),10));if(o>c){const t=o+1e3;e.style.zIndex=t}}));r.addEventListener(\"mouseenter\",(function(){f=!0}));r.addEventListener(\"mouseleave\",(function(){f=!1}))}clearInterval(s);s=null;s=setInterval((function(){document.querySelectorAll(`#${t}:hover`).length||p()}),200)};function p(){clearTimeout(a);setTimeout((function(){if(!f&&r){r.parentElement.remove();r=null;clearInterval(s);s=null}}),200)}function v(e){clearTimeout(a);d=u.pageCoordinates(e);r||(a=setTimeout((function(){c.toolTip.showToolTip()}),500))}c.addEventListener(\"mouseenter\",v);c.addEventListener(\"mousemove\",v);c.addEventListener(\"mouseleave\",p)});a&&a.setToolTipText(n)})");
+        "(function(e,t,o,n,i,l,s,c){const a=document.getElementById(t),u=e.WT,d=a.toolTip;d||(a.toolTip=new function(){let d=null,f=null,r=null,T=null;const m=10,p=200;let h=!1,v=o,E=n,I=l,y=!1;this.setToolTipText=function(e){v=e;if(h||E){this.showToolTip();clearTimeout(d);h=!1}};this.setVisibilityParams=function(e,t){E=e;I=t;W()};this.showToolTip=function(){if(I||E){!i||v||h||function(){h=!0;e.emit(a,\"Wt-loadToolTip\")}();if(v){W();T=document.createElement(\"div\");T.className=s;T.innerHTML=v;const e=document.createElement(\"div\");e.className=c;document.body.appendChild(e);e.appendChild(T);if(E){const t=a.offsetLeft+a.offsetWidth/2,o=a.offsetTop+a.offsetHeight;u.fitToWindow(e,t+m,o+20,t-m,o)}else{const t=r.x,o=r.y;u.fitToWindow(e,t+m,o+m,t-m,o-m)}let t=0;const o=parseInt(u.css(e,\"zIndex\"),10);document.querySelectorAll(\".Wt-dialog, .modal, .modal-dialog\").forEach((function(n){t=Math.max(t,parseInt(u.css(n,\"zIndex\"),10));if(t>o){const o=t+1e3;e.style.zIndex=o}}));T.addEventListener(\"mouseenter\",(function(){y=!0}));T.addEventListener(\"mouseleave\",(function(){y=!1}))}clearInterval(f);f=null;f=setInterval((function(){document.querySelectorAll(`#${t}:hover`).length||L()}),200)}};function L(){clearTimeout(d);setTimeout((function(){y&&I||E||W()}),p)}function W(){if(T){T.parentElement.remove();T=null;clearInterval(f);f=null;y=!1}}function w(e){clearTimeout(d);r=u.pageCoordinates(e);T||(d=setTimeout((function(){a.toolTip.showToolTip()}),500))}a.addEventListener(\"mouseenter\",w);a.addEventListener(\"mousemove\",w);a.addEventListener(\"mouseleave\",L);E&&this.showToolTip()});if(d){d.setVisibilityParams(n,l);d.setToolTipText(o)}})");
   }
 
   static WJavaScriptPreamble wtjs3() {

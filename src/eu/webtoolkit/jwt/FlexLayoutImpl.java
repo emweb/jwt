@@ -120,7 +120,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
     }
     this.addedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_11_4.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_12_0.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
     if (this.canAdjustLayout_) {
@@ -187,7 +187,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_11_4.FlexLayout(")
+    js.append("layout=new Wt4_12_0.FlexLayout(")
         .append(app.getJavaScriptClass())
         .append(",'")
         .append(this.elId_)

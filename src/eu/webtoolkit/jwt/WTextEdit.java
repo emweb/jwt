@@ -54,7 +54,8 @@ public class WTextEdit extends WTextArea {
     super();
     this.onChange_ = new JSignal(this, "change");
     this.onRender_ = new JSignal(this, "render");
-    this.contentChanged_ = false;
+    this.initialised_ = false;
+    this.flags_ = new BitSet();
     this.configurationSettings_ = new HashMap<String, Object>();
     this.init();
     if (parentContainer != null) parentContainer.addWidget(this);
@@ -76,7 +77,8 @@ public class WTextEdit extends WTextArea {
     super(text, (WContainerWidget) null);
     this.onChange_ = new JSignal(this, "change");
     this.onRender_ = new JSignal(this, "render");
-    this.contentChanged_ = false;
+    this.initialised_ = false;
+    this.flags_ = new BitSet();
     this.configurationSettings_ = new HashMap<String, Object>();
     this.init();
     if (parentContainer != null) parentContainer.addWidget(this);
@@ -111,7 +113,7 @@ public class WTextEdit extends WTextArea {
    */
   public void setText(final String text) {
     super.setText(text);
-    this.contentChanged_ = true;
+    this.flags_.set(BIT_CONTENT_CHANGED);
   }
   /**
    * Sets the stylesheet for displaying the content.
@@ -260,19 +262,46 @@ public class WTextEdit extends WTextArea {
   /**
    * Sets the placeholder text.
    *
-   * <p>This method is not supported on {@link WTextEdit} and will thrown an exception instead.
+   * <p>This sets the text that is shown when the field is empty. This function will not work if
+   * called after this widget has been loaded.
+   *
+   * <p>This method is not supported on {@link WTextEdit} if the version of TinyMCE is lower than 5
+   * and will thrown an exception instead.
    */
   public void setPlaceholderText(final CharSequence placeholder) {
-    throw new WException("WTextEdit::setPlaceholderText() is not implemented.");
+    if (this.version_ < 5) {
+      throw new WException(
+          "WTextEdit::setPlaceholderText() is not implemented for TinyMCE version lower than 5.");
+    }
+    super.setPlaceholderText(placeholder);
   }
-
+  /**
+   * Sets the element read-only.
+   *
+   * <p>A read-only form element cannot be edited, but the contents can still be selected.
+   *
+   * <p>By default, a {@link WTextEdit} is not read-only.
+   *
+   * <p>
+   *
+   * <p><i><b>Note: </b>For TinyMCE 4 or lower, this method does not work after the {@link
+   * WTextEdit} has been initialised. </i>
+   */
   public void setReadOnly(boolean readOnly) {
+    if (this.initialised_ && this.version_ < 5) {
+      logger.warn(
+          new StringWriter()
+              .append(
+                  "Using setReadOnly after the WTextEdit initialisation does not work with TinyMCE version lower than 5")
+              .toString());
+    }
     super.setReadOnly(readOnly);
     if (readOnly) {
-      this.setConfigurationSetting("readonly", "1");
+      this.setConfigurationSetting("readonly", true);
     } else {
       this.setConfigurationSetting("readonly", null);
     }
+    this.flags_.set(BIT_READONLY_CHANGED);
   }
 
   public void propagateSetEnabled(boolean enabled) {
@@ -298,7 +327,7 @@ public class WTextEdit extends WTextArea {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".ed.remove();";
       if (!recursive) {
-        result += "Wt4_11_4.remove('" + this.getId() + "');";
+        result += "Wt4_12_0.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -312,6 +341,7 @@ public class WTextEdit extends WTextArea {
       element.removeProperty(Property.StyleDisplay);
     }
     if (all && element.getType() == DomElementType.TEXTAREA) {
+      this.initialised_ = true;
       StringWriter config = new StringWriter();
       config.append("{");
       boolean first = true;
@@ -348,11 +378,22 @@ public class WTextEdit extends WTextArea {
               + ","
               + (this.changed().isConnected() ? "true" : "false")
               + ");})();");
-      this.contentChanged_ = false;
+      this.flags_.clear(BIT_CONTENT_CHANGED);
+      this.flags_.clear(BIT_READONLY_CHANGED);
     }
-    if (!all && this.contentChanged_) {
-      element.callJavaScript(this.getJsRef() + ".ed.load();");
-      this.contentChanged_ = false;
+    if (!all) {
+      if (this.version_ > 4 && this.flags_.get(BIT_READONLY_CHANGED)) {
+        if (this.isReadOnly()) {
+          this.doJavaScript(this.getJsRef() + ".ed.mode.set('readonly');");
+        } else {
+          this.doJavaScript(this.getJsRef() + ".ed.mode.set('design');");
+        }
+        this.flags_.clear(BIT_READONLY_CHANGED);
+      }
+      if (this.flags_.get(BIT_CONTENT_CHANGED)) {
+        element.callJavaScript(this.getJsRef() + ".ed.load();");
+        this.flags_.clear(BIT_CONTENT_CHANGED);
+      }
     }
   }
 
@@ -378,7 +419,10 @@ public class WTextEdit extends WTextArea {
   private JSignal onChange_;
   private JSignal onRender_;
   private int version_;
-  private boolean contentChanged_;
+  private boolean initialised_;
+  private static final int BIT_CONTENT_CHANGED = 0;
+  private static final int BIT_READONLY_CHANGED = 1;
+  BitSet flags_;
   private Map<String, Object> configurationSettings_;
 
   private String getPlugins() {
@@ -399,7 +443,7 @@ public class WTextEdit extends WTextArea {
     this.version_ = getTinyMCEVersion();
     this.setJavaScriptMember(
         " WTextEdit",
-        "new Wt4_11_4.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_12_0.WTextEdit(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     this.setJavaScriptMember(
         WT_RESIZE_JS,
         "function(e, w, h, s) { var obj = "
@@ -444,32 +488,7 @@ public class WTextEdit extends WTextArea {
       if (app.getEnvironment().hasAjax()) {
         app.doJavaScript("window.tinyMCE_GZ = { loaded: true };", false);
       }
-      String tinyMCEURL = "";
-      tinyMCEURL = WApplication.readConfigurationProperty("tinyMCEURL", tinyMCEURL);
-      if (tinyMCEURL.length() == 0) {
-        int version = getTinyMCEVersion();
-        String folder = "";
-        String jsFile = "";
-        if (version < 3) {
-          folder = "tinymce/";
-          jsFile = "tinymce.js";
-        } else {
-          if (version == 3) {
-            folder = "tiny_mce/";
-            jsFile = "tiny_mce.js";
-          } else {
-            folder = "tinymce/";
-            jsFile = "tinymce.min.js";
-          }
-        }
-        String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl() + folder;
-        tinyMCEBaseURL = WApplication.readConfigurationProperty("tinyMCEBaseURL", tinyMCEBaseURL);
-        if (tinyMCEBaseURL.length() != 0
-            && tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
-          tinyMCEBaseURL += '/';
-        }
-        tinyMCEURL = tinyMCEBaseURL + jsFile;
-      }
+      String tinyMCEURL = getTinyMCEPath();
       app.require(tinyMCEURL, "window['tinyMCE']");
       app.getStyleSheet().addRule(".mceEditor", "display: block; position: absolute;");
       app.loadJavaScript(THIS_JS, wtjs1());
@@ -477,9 +496,44 @@ public class WTextEdit extends WTextArea {
   }
 
   private static int getTinyMCEVersion() {
-    String version = "3";
+    String version = "6";
     version = WApplication.readConfigurationProperty("tinyMCEVersion", version);
     return Integer.parseInt(version);
+  }
+
+  private static String getTinyMCEPath() {
+    String tinyMCEURL = "";
+    tinyMCEURL = WApplication.readConfigurationProperty("tinyMCEURL", tinyMCEURL);
+    if (tinyMCEURL.length() == 0) {
+      int version = getTinyMCEVersion();
+      String folder = "";
+      String jsFile = "";
+      if (version < 3) {
+        folder = "tinymce/";
+        jsFile = "tinymce.js";
+      } else {
+        if (version == 3) {
+          folder = "tiny_mce/";
+          jsFile = "tiny_mce.js";
+        } else {
+          if (version == 6) {
+            folder = "tinymce6/";
+            jsFile = "tinymce.min.js";
+          } else {
+            folder = "tinymce/";
+            jsFile = "tinymce.min.js";
+          }
+        }
+      }
+      String tinyMCEBaseURL = WApplication.getRelativeResourcesUrl() + folder;
+      tinyMCEBaseURL = WApplication.readConfigurationProperty("tinyMCEBaseURL", tinyMCEBaseURL);
+      if (tinyMCEBaseURL.length() != 0
+          && tinyMCEBaseURL.charAt(tinyMCEBaseURL.length() - 1) != '/') {
+        tinyMCEBaseURL += '/';
+      }
+      tinyMCEURL = tinyMCEBaseURL + jsFile;
+    }
+    return tinyMCEURL;
   }
 
   static WJavaScriptPreamble wtjs1() {
@@ -487,6 +541,6 @@ public class WTextEdit extends WTextArea {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WTextEdit",
-        "(function(e,t){t.wtObj=this;let i,o,n=0;const s=this,d=e.WT;let r;tinymce.dom.Event.domLoaded||(tinymce.dom.Event.domLoaded=!0);tinyMCE.init({mode:\"none\"});this.render=function(i,o,n){r=o;t.ed=new tinymce.Editor(t.id,i,tinymce.EditorManager);t.ed.render();n&&(tinymce.EditorManager.majorVersion<4?t.ed.onChange.add((function(){e.emit(t,\"change\")})):t.ed.on(\"change\",(function(){e.emit(t,\"change\")})));setTimeout((function(){e.emit(t,\"render\")}),0)};this.init=function(){const e=d.getElement(t.id+\"_ifr\");let n,a;if(tinymce.EditorManager.majorVersion<4){const t=e.parentNode.parentNode.parentNode.parentNode;a=t;n=t.parentNode}else{n=e.parentNode.parentNode.parentNode}if(a){a.style.cssText=\"width:100%;\"+r;t.style.height=a.offsetHeight+\"px\"}n.wtResize=t.wtResize;d.isGecko?setTimeout((function(){s.wtResize(t,i,o,!0)}),100):s.wtResize(t,i,o,!0);e.contentDocument.body.addEventListener(\"paste\",(function(e){const i=e.clipboardData||e.originalEvent.clipboardData;function o(e){return 0===e.indexOf(\"image/\")}if(i&&i.types)for(let n=0,s=i.types.length;n<s;++n){const s=i.types[n];if(o(s)||o(s.type)){const o=i.items[n].getAsFile(),s=new FileReader;s.onload=function(e){t.ed.insertContent('<img src=\"'+this.result+'\"></img>')};s.readAsDataURL(o);d.cancelEvent(e)}}}))};this.wtResize=function(r,a,l,p){if(l<0)return;const c=d.getElement(r.id+\"_ifr\");if(c){let p,f,h=0;h=d.px(r,\"marginTop\")+d.px(r,\"marginBottom\");d.boxSizing(r)||(h+=d.px(r,\"borderTopWidth\")+d.px(r,\"borderBottomWidth\")+d.px(r,\"paddingTop\")+d.px(r,\"paddingBottom\"));r.style.height=l-h+\"px\";const y=\"absolute\"!==t.style.position;if(tinymce.EditorManager.majorVersion<4){const e=c.parentNode.parentNode,t=e.parentNode.parentNode;f=t;p=t.parentNode;y||void 0===a||(p.style.width=a-2+\"px\");for(let i=0,o=t.rows.length;i<o;i++)t.rows[i]!==e&&(l-=t.rows[i].offsetHeight)}else{const e=c.parentNode,t=e.parentNode;p=t.parentNode;y||void 0===a||(p.style.width=a-2+\"px\");for(let i=0,o=t.childNodes.length;i<o;i++)t.childNodes[i]!==e&&(l-=t.childNodes[i].offsetHeight+1);l-=1}if(l<0){if(n<10){const e=100*Math.pow(2,n);setTimeout((function(){s.wtResize(t,i,o,!0)}),e)}n+=1;return}l+=\"px\";if(y){p.style.position=\"static\";p.style.display=\"block\"}else{p.style.position=r.style.position;p.style.left=r.style.left;p.style.top=r.style.top;!y&&f&&(f.style.width=a+\"px\");if(f){f.style.height=l+\"px\";p.style.height=r.style.height}}if(c.style.height!==l){n=0;c.style.height=l;e.layouts2&&e.layouts2.setElementDirty(t)}}else{i=a;o=l}};o=t.offsetHeight;i=t.offsetWidth})");
+        "(function(e,t){t.wtObj=this;let i,o,n=0;const s=this,r=e.WT;let d;tinymce.dom.Event.domLoaded||(tinymce.dom.Event.domLoaded=!0);tinyMCE.init({mode:\"none\"});this.render=function(i,o,n){d=o;t.ed=new tinymce.Editor(t.id,i,tinymce.EditorManager);t.ed.render();n&&(tinymce.EditorManager.majorVersion<4?t.ed.onChange.add((function(){e.emit(t,\"change\")})):t.ed.on(\"change\",(function(){e.emit(t,\"change\")})));setTimeout((function(){e.emit(t,\"render\")}),0)};this.init=function(){const e=r.getElement(t.id+\"_ifr\");let n,a;if(tinymce.EditorManager.majorVersion<4){const t=e.parentNode.parentNode.parentNode.parentNode;a=t;n=t.parentNode}else{n=e.parentNode.parentNode.parentNode}if(a){a.style.cssText=\"width:100%;\"+d;t.style.height=a.offsetHeight+\"px\"}n.wtResize=t.wtResize;r.isGecko?setTimeout((function(){s.wtResize(t,i,o,!0)}),100):s.wtResize(t,i,o,!0);e.contentDocument.body.addEventListener(\"paste\",(function(e){const i=e.clipboardData||e.originalEvent.clipboardData;function o(e){return 0===e.indexOf(\"image/\")}if(i&&i.types)for(let n=0,s=i.types.length;n<s;++n){const s=i.types[n];if(o(s)||o(s.type)){const o=i.items[n].getAsFile(),s=new FileReader;s.onload=function(e){t.ed.insertContent('<img src=\"'+this.result+'\"></img>')};s.readAsDataURL(o);r.cancelEvent(e)}}}))};this.wtResize=function(d,a,l,c){if(l<0)return;const p=l,h=r.getElement(d.id+\"_ifr\");if(h){let c,f,m=0;m=r.px(d,\"marginTop\")+r.px(d,\"marginBottom\");r.boxSizing(d)||(m+=r.px(d,\"borderTopWidth\")+r.px(d,\"borderBottomWidth\")+r.px(d,\"paddingTop\")+r.px(d,\"paddingBottom\"));d.style.height=l-m+\"px\";const y=\"absolute\"!==t.style.position;if(tinymce.EditorManager.majorVersion<4){const e=h.parentNode.parentNode,t=e.parentNode.parentNode;f=t;c=t.parentNode;y||void 0===a||(c.style.width=a-2+\"px\");for(let i=0,o=t.rows.length;i<o;i++)t.rows[i]!==e&&(l-=t.rows[i].offsetHeight)}else{let e;e=tinymce.EditorManager.majorVersion<5?h.parentNode:h.parentNode.parentNode;const t=e.parentNode;c=t.parentNode;y||void 0===a||(c.style.width=a-2+\"px\");for(let i=0,o=t.childNodes.length;i<o;i++)t.childNodes[i]!==e&&(l-=t.childNodes[i].offsetHeight+1);l-=1}if(tinymce.EditorManager.majorVersion<5&&l<0){if(n<10){const e=100*Math.pow(2,n);setTimeout((function(){s.wtResize(t,i,o,!0)}),e)}n+=1;return}l+=\"px\";if(y)if(tinymce.EditorManager.majorVersion<5){c.style.position=\"static\";c.style.display=\"block\"}else c.style.height=p+\"px\";else{c.style.position=d.style.position;c.style.left=d.style.left;c.style.top=d.style.top;!y&&f&&(f.style.width=a+\"px\");if(f){f.style.height=l+\"px\";c.style.height=d.style.height}}if(tinymce.EditorManager.majorVersion<5&&h.style.height!==l){n=0;h.style.height=l;e.layouts2&&e.layouts2.setElementDirty(t)}}else{i=a;o=l}};o=t.offsetHeight;i=t.offsetWidth})");
   }
 }

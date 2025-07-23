@@ -46,6 +46,9 @@ public class OAuthProcess extends WObject {
    * <p>The scope represents how much protected information the web application wants to access, and
    * in what way.
    *
+   * <p>By default, this is the scope given at the creation of the process but this can be changed
+   * by overriding this function.
+   *
    * <p>
    *
    * @see OAuthService#createProcess(String scope)
@@ -138,7 +141,7 @@ public class OAuthProcess extends WObject {
         && this.service_.isPopupEnabled()) {
       StringBuilder js = new StringBuilder();
       js.append("function(object, event) {")
-          .append("Wt4_11_4.PopupWindow(Wt4_11_4")
+          .append("Wt4_12_0.PopupWindow(Wt4_12_0")
           .append(",")
           .append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
           .append(", ")
@@ -339,6 +342,22 @@ public class OAuthProcess extends WObject {
   protected void setError(final CharSequence error) {
     this.error_ = WString.toWString(error);
   }
+  /**
+   * Return the authorization endpoint URL.
+   *
+   * <p>This is a remote URL which hosts the OAuth authorization user interface. This URL is loaded
+   * in the popup window at the start of the authorization process.
+   *
+   * <p>By default, this is the authorization endpoint URL configured in the {@link OAuthService} of
+   * this process, but this can be changed by overriding this function.
+   *
+   * <p>
+   *
+   * @see OAuthService#getAuthorizationEndpoint()
+   */
+  protected String getAuthorizationEndpoint() {
+    return this.service_.getAuthorizationEndpoint();
+  }
 
   final OAuthService service_;
   private String scope_;
@@ -498,7 +517,7 @@ public class OAuthProcess extends WObject {
 
   private String getAuthorizeUrl() {
     StringBuilder url = new StringBuilder();
-    url.append(this.service_.getAuthorizationEndpoint());
+    url.append(this.getAuthorizationEndpoint());
     boolean hasQuery = url.toString().indexOf('?') != -1;
     url.append(hasQuery ? '&' : '?')
         .append("client_id=")
@@ -506,7 +525,7 @@ public class OAuthProcess extends WObject {
         .append("&redirect_uri=")
         .append(Utils.urlEncode(this.service_.getGenerateRedirectEndpoint()))
         .append("&scope=")
-        .append(Utils.urlEncode(this.scope_))
+        .append(Utils.urlEncode(this.getScope()))
         .append("&response_type=code")
         .append("&state=")
         .append(Utils.urlEncode(this.oAuthState_));

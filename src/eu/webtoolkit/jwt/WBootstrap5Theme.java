@@ -142,9 +142,7 @@ public class WBootstrap5Theme extends WTheme {
           WApplication app = WApplication.getInstance();
           WIconPair iconPair = ObjectUtils.cast(child, WIconPair.class);
           iconPair.getUriIcon1().setInline(false);
-          iconPair.getUriIcon1().setImageLink(new WLink(app.getOnePixelGifUrl()));
           iconPair.getUriIcon2().setInline(false);
-          iconPair.getUriIcon2().setImageLink(new WLink(app.getOnePixelGifUrl()));
           iconPair.addStyleClass("Wt-collapse-button");
           break;
         }
@@ -362,12 +360,12 @@ public class WBootstrap5Theme extends WTheme {
             return;
           }
           WDateEdit dateEdit = ObjectUtils.cast(widget, WDateEdit.class);
-          if (dateEdit != null) {
+          if (dateEdit != null && !dateEdit.isNativeControl()) {
             element.addPropertyWord(Property.Class, "Wt-dateedit");
             return;
           }
           WTimeEdit timeEdit = ObjectUtils.cast(widget, WTimeEdit.class);
-          if (timeEdit != null) {
+          if (timeEdit != null && !timeEdit.isNativeControl()) {
             element.addPropertyWord(Property.Class, "Wt-timeedit");
             return;
           }
@@ -475,7 +473,7 @@ public class WBootstrap5Theme extends WTheme {
     app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_11_4.setValidationState(")
+      js.append("Wt4_12_0.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -483,8 +481,7 @@ public class WBootstrap5Theme extends WTheme {
           .append(WString.toWString(validation.getMessage()).getJsStringLiteral())
           .append(",")
           .append(EnumUtils.valueOf(styles))
-          .append(",")
-          .append("'is-valid', 'is-invalid');");
+          .append(");");
       widget.doJavaScript(js.toString());
     } else {
       boolean validStyle =

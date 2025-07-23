@@ -121,6 +121,7 @@ public class WValidator {
     this.mandatory_ = mandatory;
     this.mandatoryText_ = new WString();
     this.formWidgets_ = new ArrayList<WFormWidget>();
+    this.parentValidators_ = new ArrayList<WValidator>();
   }
   /**
    * Creates a new validator.
@@ -241,11 +242,15 @@ public class WValidator {
     for (int i = 0; i < this.formWidgets_.size(); ++i) {
       this.formWidgets_.get(i).validatorChanged();
     }
+    for (int i = 0; i < this.parentValidators_.size(); ++i) {
+      this.parentValidators_.get(i).repaint();
+    }
   }
 
   private boolean mandatory_;
   private WString mandatoryText_;
   private List<WFormWidget> formWidgets_;
+  private List<WValidator> parentValidators_;
 
   void addFormWidget(WFormWidget w) {
     this.formWidgets_.add(w);
@@ -253,5 +258,13 @@ public class WValidator {
 
   void removeFormWidget(WFormWidget w) {
     this.formWidgets_.remove(w);
+  }
+
+  void addParentValidator(WValidator v) {
+    this.parentValidators_.add(v);
+  }
+
+  void removeParentValidator(WValidator v) {
+    this.parentValidators_.remove(v);
   }
 }

@@ -201,7 +201,7 @@ public class WStackedWidget extends WContainerWidget {
                 + ");");
       }
     }
-    if (hasChanged || !this.hasEmittedChanged_) {
+    if ((hasChanged || !this.hasEmittedChanged_) && this.currentIndex_ >= 0) {
       if (this.loadPolicies_.get(this.currentIndex_) == ContentLoading.Lazy) {
         WContainerWidget container =
             ObjectUtils.cast(this.getCurrentWidget(), WContainerWidget.class);
@@ -343,7 +343,7 @@ public class WStackedWidget extends WContainerWidget {
       app.loadJavaScript("js/WStackedWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WStackedWidget",
-          "new Wt4_11_4.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_12_0.WStackedWidget(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
       this.setJavaScriptMember(WT_RESIZE_JS, this.getJsRef() + ".wtObj.wtResize");
       this.setJavaScriptMember(WT_GETPS_JS, this.getJsRef() + ".wtObj.wtGetPs");
       if (this.loadAnimateJS_) {

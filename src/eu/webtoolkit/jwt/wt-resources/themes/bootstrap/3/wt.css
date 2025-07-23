@@ -614,6 +614,27 @@ fieldset[disabled] .Wt-slider-v .handle.active {
 }
 
 /*
+ * WPanel
+ */
+
+.Wt-collapse-button {
+  display: block;
+  flex: none;
+  align-self: center;
+  width: 16px;
+  height: 23px;
+  float: left;
+  background-image: url(../../../collapse.gif);
+  background-repeat: no-repeat;
+  background-position: right center;
+  transition: transform .3s ease-in-out;
+}
+
+.Wt-collapsed .Wt-collapse-button {
+  transform: rotate(-90deg);
+}
+
+/*
  * WAbstractItemView (WTableView and WTreeView)
  */
 
@@ -764,11 +785,13 @@ body.Wt-rtl .Wt-itemview .Wt-tv-no-rh {
   background-color: #fff;
 }
 
-.Wt-tableview .Wt-tv-contents.Wt-striped div.Wt-tv-c:nth-child(odd) {
+.Wt-tableview .Wt-tv-contents.Wt-striped div.Wt-tv-c:nth-child(odd),
+.Wt-tableview .Wt-tv-contents.Wt-striped a.Wt-tv-c:nth-child(odd) {
   background-color: #f9f9f9;
 }
 
-.Wt-tableview .Wt-tv-contents.Wt-striped div.active:nth-child(odd) {
+.Wt-tableview .Wt-tv-contents.Wt-striped div.active:nth-child(odd),
+.Wt-tableview .Wt-tv-contents.Wt-striped a.active:nth-child(odd) {
   background-color: #428bca;
 }
 

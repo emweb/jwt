@@ -40,6 +40,7 @@ class LeafletMapExample extends WContainerWidget {
     this.map_.addTileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", options);
     this.map_.panTo(EMWEB_COORDS);
     this.addEmwebLogoMarker();
+    this.addGroteMarktPopup();
     WPen pen = new WPen(new WColor(0, 191, 255));
     pen.setCapStyle(PenCapStyle.Round);
     pen.setJoinStyle(PenJoinStyle.Round);
@@ -59,7 +60,18 @@ class LeafletMapExample extends WContainerWidget {
     emwebLogo.setInline(false);
     emwebLogo.resize(new WLength(118), new WLength(32));
     WLeafletMap.WidgetMarker emwebMarker = new WLeafletMap.WidgetMarker(EMWEB_COORDS, emwebLogo);
+    emwebMarker.addPopup(new WLeafletMap.Popup("This is where Wt is developed!"));
     this.map_.addMarker(emwebMarker);
+  }
+
+  private void addGroteMarktPopup() {
+    com.google.gson.JsonObject options = new com.google.gson.JsonObject();
+    options.add("autoClose", (new com.google.gson.JsonPrimitive(false)));
+    options.add("closeOnClick", (new com.google.gson.JsonPrimitive(false)));
+    WLeafletMap.Popup groteMarktPopup = new WLeafletMap.Popup(GROTE_MARKT_COORDS);
+    groteMarktPopup.setContent("You should check this place out.");
+    groteMarktPopup.setOptions(options);
+    this.map_.addPopup(groteMarktPopup);
   }
 
   private List<WLeafletMap.Coordinate> getRoadDescription() {
@@ -131,4 +143,6 @@ class LeafletMapExample extends WContainerWidget {
 
   private static final WLeafletMap.Coordinate EMWEB_COORDS =
       new WLeafletMap.Coordinate(50.906901, 4.655973);
+  private static final WLeafletMap.Coordinate GROTE_MARKT_COORDS =
+      new WLeafletMap.Coordinate(50.879161, 4.700751);
 }

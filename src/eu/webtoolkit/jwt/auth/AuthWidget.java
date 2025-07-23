@@ -719,14 +719,13 @@ public class AuthWidget extends WTemplateFormView {
       result.setFocus(true);
     } else {
       if (field == AuthModel.PasswordField) {
-        WLineEdit p = new WLineEdit();
+        WPasswordEdit p = new WPasswordEdit();
         p.enterPressed()
             .addListener(
                 this,
                 () -> {
                   AuthWidget.this.attemptPasswordLogin();
                 });
-        p.setEchoMode(EchoMode.Password);
         result = p;
       } else {
         if (field == AuthModel.RememberMeField) {

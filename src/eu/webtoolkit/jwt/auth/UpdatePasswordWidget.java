@@ -129,13 +129,11 @@ public class UpdatePasswordWidget extends WTemplateFormView {
       result = new WLineEdit();
     } else {
       if (field == AuthModel.PasswordField) {
-        WLineEdit p = new WLineEdit();
-        p.setEchoMode(EchoMode.Password);
+        WPasswordEdit p = new WPasswordEdit();
         result = p;
       } else {
         if (field == RegistrationModel.ChoosePasswordField) {
-          WLineEdit p = new WLineEdit();
-          p.setEchoMode(EchoMode.Password);
+          WPasswordEdit p = new WPasswordEdit();
           p.keyWentUp()
               .addListener(
                   this,
@@ -151,8 +149,7 @@ public class UpdatePasswordWidget extends WTemplateFormView {
           result = p;
         } else {
           if (field == RegistrationModel.RepeatPasswordField) {
-            WLineEdit p = new WLineEdit();
-            p.setEchoMode(EchoMode.Password);
+            WPasswordEdit p = new WPasswordEdit();
             p.changed()
                 .addListener(
                     this,

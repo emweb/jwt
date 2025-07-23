@@ -731,7 +731,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
   public WPainterPath getCrisp() {
     WPainterPath result = new WPainterPath();
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt4_11_4.gfxUtils.path_crisp(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt4_12_0.gfxUtils.path_crisp(" + this.getJsRef() + ')');
     }
     for (int i = 0; i < this.segments_.size(); ++i) {
       final WPainterPath.Segment segment = this.segments_.get(i);

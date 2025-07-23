@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.11.4</title>
+<title>JWt 4.12.0</title>
 </head>
 <body>
 
@@ -24,6 +24,173 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.12.0 (July 23, 2025)</h2>
+
+<p>Wt 4.12.0 is a major release that introduces the following new features:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12881" target="_blank">Issue #12881</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WPasswordEdit.html" target="_blank">WPasswordEdit</a> which ought to replace
+    <a href="eu/webtoolkit/jwt/WLineEdit.html#setEchoMode(eu.webtoolkit.jwt.EchoMode)" target="_blank">WLineEdit.setEchoMode(EchoMode.Password)</a>
+    that is now deprecated. You can find examples on how to use this new class in the
+    <a href="https://jwt.emweb.be/jwt-gallery/gallery//forms/password" target="_blank">Widget Gallery</a>.
+
+    It is also now possible to set the input mode of any
+    <a href="eu/webtoolkit/jwt/WLineEdit.html" target="_blank">WLineEdit</a> using
+    <a href="eu/webtoolkit/jwt/WLineEdit.html#setInputMode(eu.webtoolkit.jwt.InputMode)" target="_blank">WLineEdit.setInputMode(InputMode)</a>.
+    This is especially important for mobile devices, where the input mode impacts the
+    keyboard that is shown to the user when the input field is focused.
+
+    <br><strong>IMPORTANT:</strong> it is now possible to combine multiple
+    <a href="eu/webtoolkit/jwt/WValidator.html" target="_blank">WValidator</a>s into a single one,
+    using the new
+    <a href="eu/webtoolkit/jwt/WStackedValidator.html" target="_blank">WStackedValidator</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7228" target="_blank">Issue #7228</a>:
+    Wt now supports native HTML5 input types for <a href="eu/webtoolkit/jwt/WDateEdit.html" target="_blank">WDateEdit</a> and <a href="eu/webtoolkit/jwt/WTimeEdit.html" target="_blank">WTimeEdit</a>.
+    You can enable it by using <a href="eu/webtoolkit/jwt/WDateEdit.html#setNativeControl(boolean)" target="_blank">WDateEdit.setNativeControl(true)</a> or
+    <a href="eu/webtoolkit/jwt/WTimeEdit.html#setNativeControl(boolean)" target="_blank">WTimeEdit.setNativeControl(true)</a>
+    for <code>WDateEdit</code> and <code>WTimeEdit</code> respectively. Both are set to false by default.
+    Native controls will use the locale of the browser to determine the format displayed to the client.
+    They have a better responsive design than Wt's widgets, often deferring to a pop-up on small screens for example.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12789" target="_blank">Issue #12789</a>:
+    this feature allows you to force the tooltip from a
+    <a href="eu/webtoolkit/jwt/WWebWidget.html">WWebWidget</a> to be shown by calling
+    <a href="eu/webtoolkit/jwt/WWebWidget.html#showToolTip()" target="_blank">WWebWidget.showToolTip()</a>. Tooltips can still be shown when a
+    <a href="eu/webtoolkit/jwt/WWebWidget.html">WWebWidget</a> is hovered over by the mouse with
+    <a href="eu/webtoolkit/jwt/WWebWidget.html#showToolTipOnHover(boolean)" target="_blank">WWebWidget.showToolTipOnHover(boolean)</a>. The latter is default behavior.
+    If both options are enabled, the tooltip on hover will not be shown. Rather the forcibly shown tooltip will remain visible throughout.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12993" target="_blank">Parent Issue #12993</a>:
+    <ul>
+      <li>
+        <a href="https://redmine.emweb.be/issues/12995" target="_blank">Issue #12995</a>:
+        added the ability to add
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Popup.html" target="_blank">WLeafletMap.Popup</a>s to the
+        <a href="eu/webtoolkit/jwt/WLeafletMap.html" target="_blank">WLeafletMap</a>.
+        These popups can be added to any coordinate on the map, or to specific
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Marker.html" target="_blank">WLeafletMap.Marker</a>s.
+      </li>
+      <li>
+        <a href="https://redmine.emweb.be/issues/12996" target="_blank">Issue #12996</a>:
+        added the ability to add
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Tooltip.html" target="_blank">WLeafletMap.Tooltip</a>s to the
+        <a href="eu/webtoolkit/jwt/WLeafletMap.html" target="_blank">WLeafletMap</a>.
+        These tooltips can be added to any coordinate on the map, or to specific
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Marker.html" target="_blank">WLeafletMap.Marker</a>s.
+      </li>
+      <li>
+        <a href="https://redmine.emweb.be/issues/12994" target="_blank">Issue #12994</a>:
+        add the possibility to specify configuration for
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Marker.html" target="_blank">WLeafletMap.Marker</a> by using
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Marker.html#setOptions(com.google.gson.JsonElement)" target="_blank">WLeafletMap.Marker.setOptions()</a>.
+      </li>
+      <li>
+        <a href="https://redmine.emweb.be/issues/12997" target="_blank">Issue #12997</a>:
+        added signals to
+        <a href="eu/webtoolkit/jwt/WLeafletMap.AbstractMapItem.html" target="_blank">WLeafletMap.AbstractMapItem</a>
+        (this includes
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Marker.html" target="_blank">WLeafletMap.Marker</a>s,
+        <a href="eu/webtoolkit/jwt/WLeafletMap.Popup.html" target="_blank">WLeafletMap.Popup</a>s,
+        and <a href="eu/webtoolkit/jwt/WLeafletMap.Tooltip.html" target="_blank">WLeafletMap.Tooltip</a>s)
+        that are emitted when a mouse event triggers on the map item.
+      </li>
+    </ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/4948" target="_blank">Issue #4948</a>:
+    the style of the collapse icon of collapsible <a href="eu/webtoolkit/jwt/WPanel.html" target="_blank">WPanel</a>s
+    is now defined in CSS by styling the <code>Wt-collapse-button</code> style class.
+    <br><strong>IMPORTANT:</strong> the collapse icon will not be visible when using a custom theme that does not
+    define a styling for the <code>Wt-collapse-button</code> style class.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12817" target="_blank">Issue #12817</a>:
+    allows custom implementation of the scope and the authorization endpoint of the
+    <a href="eu/webtoolkit/jwt/Auth_1_1OAuthProcess.html" target="_blank">Auth.OAuthProcess</a> by overriding
+    <a href="eu/webtoolkit/jwt/Auth_1_1OAuthProcess.html#getScope()" target="_blank">Auth.OAuthProcess.getScope()</a> and
+    <a href="eu/webtoolkit/jwt/Auth_1_1OAuthProcess.html#getAuthorizationEndpoint()" target="_blank">Auth.OAuthProcess.getAuthorizationEndpoint()</a>.
+    This will allow developers to reuse the <a href="eu/webtoolkit/jwt/auth/AuthService.html" target="_blank">OAuthService</a> for near-identical authentication calls.
+  </li>
+</ul>
+
+<p>Wt 4.12.0 also fixes the following bugs:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13711" target="_blank">Issue #13711</a>:
+    removed the usage of URLs ending with '.'. These were sometimes (not for all requests) found in case no path
+    information was present, indicating the root. Modern servlet containers such as Jetty 12
+    <a href="https://jetty.org/docs/jetty/12/programming-guide/server/compliance.html#uri">block</a>
+    these if they are combined with path parameters, because of ambiguities and potential security problems.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13701" target="_blank">Issue #13701</a>:
+    checked the index's validity on changing the <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a>, when using a
+    <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a> to display content.
+    Unselecting the previous item uses a set <code>-1</code> index, which the <code>WStackedWidget</code> omitted to validate.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13699" target="_blank">Issue #13699</a>:
+    added the <a href="eu/webtoolkit/jwt/TextFormat.html#None" target="_blank">TextFormat.None</a> option.
+    This allows for widgets to specify the <code>none</code> value in the <code>text-decoration</code> attribute.
+    This used to be unavailable,  which rendered the "default" <code>text-decoration</code>, not allowing widget-specific control in case of CSS rules applying to the widget.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13553" target="_blank">Issue #13553</a>:
+    fixed an incorrect fallback in OpenID Connect claim parsing. A "true/false" string was not correctly converted to a boolean.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13712" target="_blank">Issue #13712</a>:
+    corrected the styling of <a href="eu/webtoolkit/jwt/ItemDataRole.html#Link" target="_blank">ItemDataRole.Link</a>
+    items in a <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a>, in case
+    <a href="eu/webtoolkit/jwt/WTableView.html#setAlternatingRowColors(boolean)" target="_blank">alternating row colors are enabled</a>.
+  </li>
+</ul>
+
+<p>Wt 4.12.0 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/13301" target="_blank">Issue #13301</a>:
+    added the possibility to handle all JavaScript errors inside JWt, also of scripts not directly related to JWt.
+    This can be done by setting the new <a href="eu/webtoolkit/jwt/Configuration.html#setClientSideErrorReportingLevel(eu.webtoolkit.jwt.Configuration.ClientSideErrorReportLevel)" target="_blank">setClientSideErrorReportingLevel</a> option.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11272" target="_blank">Parent Issue #11272</a>:
+    <ul>
+      <li>
+        <a href="https://redmine.emweb.be/issues/11272" target="_blank">Issue #11272</a>:
+        add support for TinyMCE 5, 6 and 7. JWt now assumes TinyMCE 6 is used by default instead of TinyMCE 3,
+        and the TinyMCE version bundled in Wt's Windows binaries has been updated to TinyMCE 6.
+        <br><strong>IMORTANT:</strong> TinyMCE 8 should work as well, but may require a license key.
+      </li>
+      <li>
+        <a href="https://redmine.emweb.be/issues/11249" target="_blank">Issue #11249</a>:
+        it is now possible to set placeholder text in
+        <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> when using TinyMCE 5 or higher.
+      </li>
+      <li>
+        <a href="https://redmine.emweb.be/issues/11267" target="_blank">Issue #11267</a>:
+        it is now possible to change the readonly state of a
+        <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> when using TinyMCE 5 or higher.
+      </li>
+    </ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13163" target="_blank">Issue #13163</a>:
+    improve the way touch selection works for
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a>. The selection of a single element will now
+    happen only after the user stopped touching the screen, to avoid selection happening while scrolling slowly.
+    Also, selection of multiple elements will now be cancel when moving the finger. This will avoid selection of
+    multiple elements happening while zooming.
+  </li>
+</ul>
 
 <h2>Release 4.11.4 (April 3, 2025)</h2>
 

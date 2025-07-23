@@ -79,6 +79,12 @@ class FormWidgets extends Topic {
               return FormWidgets.this.dateEntry();
             }));
     menu.addItem(
+        "Password",
+        DeferredWidget.deferCreate(
+            () -> {
+              return FormWidgets.this.passwordEdit();
+            }));
+    menu.addItem(
         "In-place edit",
         DeferredWidget.deferCreate(
             () -> {
@@ -195,7 +201,17 @@ class FormWidgets extends Topic {
     result.bindWidget("CalendarSimple", CalendarSimple());
     result.bindWidget("CalendarExtended", CalendarExtended());
     result.bindWidget("DateEdit", DateEdit());
+    result.bindWidget("DateEditNative", DateEditNative());
     result.bindWidget("TimeEdit", TimeEdit());
+    result.bindWidget("TimeEditNative", TimeEditNative());
+    return result;
+  }
+
+  private WWidget passwordEdit() {
+    TopicTemplate result = new TopicTemplate("forms-passwordEdit");
+    result.bindWidget("PasswordEditDefault", PasswordEditDefault());
+    result.bindWidget("PasswordEditAutocomplete", PasswordEditAutocomplete());
+    result.bindWidget("PasswordEditNative", PasswordEditNative());
     return result;
   }
 
@@ -851,6 +867,67 @@ class FormWidgets extends Topic {
                 }
               }
             });
+    form.setCondition("if:is-not-native", true);
+    return form;
+  }
+
+  WWidget DateEditNative() {
+    WTemplate form = new WTemplate(WString.tr("dateEdit-template"));
+    form.addFunction("id", WTemplate.Functions.id);
+    final WDateEdit de1 = new WDateEdit();
+    form.bindWidget("from", de1);
+    de1.setDate(WDate.getCurrentServerDate().addDays(1));
+    de1.setNativeControl(true);
+    final WDateEdit de2 = new WDateEdit();
+    form.bindWidget("to", de2);
+    de2.setFormat("dd MM yyyy");
+    de2.getCalendar().setHorizontalHeaderFormat(CalendarHeaderFormat.SingleLetterDayNames);
+    de2.setBottom(de1.getDate());
+    de2.setNativeControl(true);
+    WPushButton button = new WPushButton("Save");
+    form.bindWidget("save", button);
+    final WText out = new WText();
+    form.bindWidget("out", out);
+    de1.changed()
+        .addListener(
+            this,
+            () -> {
+              if (de1.validate() == ValidationState.Valid) {
+                de2.setBottom(de1.getDate());
+                out.setText("Date picker 1 is changed.");
+              }
+            });
+    de2.changed()
+        .addListener(
+            this,
+            () -> {
+              if (de1.validate() == ValidationState.Valid) {
+                de1.setTop(de2.getDate());
+                out.setText("Date picker 2 is changed.");
+              }
+            });
+    button
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              if (de1.getText().length() == 0 || de2.getText().length() == 0) {
+                out.setText("You should enter two dates!");
+              } else {
+                int days = de1.getDate().getDaysTo(de2.getDate()) + 1;
+                if (days == 1) {
+                  out.setText("It's fine to take holiday just for one day!");
+                } else {
+                  if (days > 1) {
+                    out.setText(
+                        new WString("So, you want to take holiday for a period of {1} days?")
+                            .arg(days));
+                  } else {
+                    out.setText("Invalid period!");
+                  }
+                }
+              }
+            });
     return form;
   }
 
@@ -905,6 +982,136 @@ class FormWidgets extends Topic {
                 }
               }
             });
+    form.setCondition("if:is-not-native", true);
+    return form;
+  }
+
+  WWidget TimeEditNative() {
+    WTemplate form = new WTemplate(WString.tr("timeEdit-template"));
+    form.addFunction("id", WTemplate.Functions.id);
+    final WTimeEdit te1 = new WTimeEdit();
+    form.bindWidget("from", te1);
+    form.bindString("from-format", te1.getFormat());
+    te1.setTime(WTime.getCurrentTime());
+    te1.setNativeControl(true);
+    final WTimeEdit te2 = new WTimeEdit();
+    form.bindWidget("to", te2);
+    te2.setFormat("h:mm:ss.SSS a");
+    te2.setTime(WTime.getCurrentTime().addSecs(60 * 15));
+    te2.setNativeControl(true);
+    form.bindString("to-format", te2.getFormat());
+    WPushButton button = new WPushButton("Save");
+    form.bindWidget("save", button);
+    final WText out = new WText();
+    form.bindWidget("out", out);
+    te1.changed()
+        .addListener(
+            this,
+            () -> {
+              if (te1.validate() == ValidationState.Valid) {
+                out.setText("Time picker 1 is changed.");
+              }
+            });
+    te2.changed()
+        .addListener(
+            this,
+            () -> {
+              if (te2.validate() == ValidationState.Valid) {
+                out.setText("Time picker 2 is changed.");
+              }
+            });
+    button
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              if (te1.getText().length() == 0 || te2.getText().length() == 0) {
+                out.setText("You should enter two times!");
+              } else {
+                long secs = te1.getTime().secsTo(te2.getTime()) + 1;
+                if (secs <= 60 * 10) {
+                  out.setText("This is a really small range of time");
+                } else {
+                  out.setText(
+                      new WString("So, you want your package to be delivered between {1} and {2}?")
+                          .arg(te1.getTime().toString())
+                          .arg(te2.getTime().toString()));
+                }
+              }
+            });
+    return form;
+  }
+
+  WWidget PasswordEditDefault() {
+    WTemplate form = new WTemplate(WString.tr("passwordEditDefault-template"));
+    form.addFunction("id", WTemplate.Functions.id);
+    final WPasswordEdit psw = new WPasswordEdit();
+    form.bindWidget("password", psw);
+    psw.setPlaceholderText("Enter a password");
+    psw.setAutoComplete(AutoCompleteMode.Off);
+    WPushButton button = new WPushButton("Save");
+    form.bindWidget("save", button);
+    final WText out = new WText();
+    form.bindWidget("out", out);
+    button
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              if (psw.validate() != ValidationState.Valid) {
+                out.setText("You should enter a password!");
+              } else {
+                out.setText("You entered the password " + psw.getText());
+              }
+            });
+    return form;
+  }
+
+  WWidget PasswordEditAutocomplete() {
+    WTemplate form = new WTemplate(WString.tr("PasswordEditAutocomplete-template"));
+    form.addFunction("id", WTemplate.Functions.id);
+    final WLineEdit username = new WLineEdit();
+    form.bindWidget("username", username);
+    username.setAutoComplete(AutoCompleteMode.Username);
+    final WPasswordEdit psw = new WPasswordEdit();
+    form.bindWidget("password", psw);
+    psw.setAutoComplete(AutoCompleteMode.CurrentPassword);
+    WPushButton button = new WPushButton("Login");
+    form.bindWidget("login", button);
+    final WText out = new WText();
+    form.bindWidget("out", out);
+    button
+        .clicked()
+        .addListener(
+            this,
+            () -> {
+              if (username.getText().length() == 0) {
+                out.setText("You should enter your Username!");
+              } else {
+                if (psw.validate() != ValidationState.Valid) {
+                  out.setText("You should enter your password!");
+                } else {
+                  out.setText("You are logged in as " + username.getText());
+                }
+              }
+            });
+    return form;
+  }
+
+  WWidget PasswordEditNative() {
+    WTemplate form = new WTemplate(WString.tr("PasswordEditNative-template"));
+    form.addFunction("id", WTemplate.Functions.id);
+    WLineEdit username = new WLineEdit();
+    form.bindWidget("username", username);
+    username.setAutoComplete(AutoCompleteMode.Username);
+    WPasswordEdit psw = new WPasswordEdit();
+    form.bindWidget("password", psw);
+    psw.setAutoComplete(AutoCompleteMode.NewPassword);
+    psw.setNativeControl(true);
+    psw.setPattern("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{1,}$");
+    psw.setMinLength(5);
+    psw.setToolTip(
+        "Password should be at least of lenth 5 and contain an uppercase letter, a lowercase letter and a number.");
     return form;
   }
 

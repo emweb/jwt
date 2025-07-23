@@ -57,7 +57,7 @@ public class WPanel extends WCompositeWidget {
     this.impl_.bindWidget("contents", centralArea);
     this.setJavaScriptMember(
         WT_RESIZE_JS,
-        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_11_4.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_11_4.boxSizing(self)) {h -= Wt4_11_4.px(self, 'borderTopWidth') + Wt4_11_4.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';c.querySelectorAll(':scope > *').forEach(function(self) { let padding = self.getBoundingClientRect().height - Wt4_11_4.px(self, 'height');self.style.height = (h - padding) + 'px';self.lh = true;});} else {c.style.height = '';c.lh = false;for (const child of c.children) {child.style.height = '';child.lh = false;}}};");
+        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_12_0.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_12_0.boxSizing(self)) {h -= Wt4_12_0.px(self, 'borderTopWidth') + Wt4_12_0.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';c.querySelectorAll(':scope > *').forEach(function(self) { let padding = self.getBoundingClientRect().height - Wt4_12_0.px(self, 'height');self.style.height = (h - padding) + 'px';self.lh = true;});} else {c.style.height = '';c.lh = false;for (const child of c.children) {child.style.height = '';child.lh = false;}}};");
     this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl.getSecondGetPSJS());
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -197,10 +197,9 @@ public class WPanel extends WCompositeWidget {
   public void setCollapsible(boolean on) {
     this.toggleStyleClass("Wt-collapsible", on);
     if (on && !this.isCollapsible()) {
-      String resources = WApplication.getRelativeResourcesUrl();
       this.setTitleBar(true);
       WApplication app = WApplication.getInstance();
-      WIconPair icon = new WIconPair(resources + "collapse.gif", resources + "expand.gif");
+      WIconPair icon = new WIconPair(app.getOnePixelGifUrl(), app.getOnePixelGifUrl());
       this.collapseIcon_ = icon;
       if (app.getTheme().getPanelCollapseIconSide() == Side.Left) {
         this.getTitleBarWidget().insertWidget(0, icon);

@@ -541,17 +541,22 @@ public class WCssDecorationStyle extends WObject {
     }
     if (this.textDecorationChanged_ || all) {
       String options = "";
-      if (this.textDecoration_.contains(TextDecoration.Underline)) {
-        options += " underline";
-      }
-      if (this.textDecoration_.contains(TextDecoration.Overline)) {
-        options += " overline";
-      }
-      if (this.textDecoration_.contains(TextDecoration.LineThrough)) {
-        options += " line-through";
-      }
-      if (this.textDecoration_.contains(TextDecoration.Blink)) {
-        options += " blink";
+      if (!this.textDecoration_.isEmpty()) {
+        if (this.textDecoration_.contains(TextDecoration.Underline)) {
+          options += " underline";
+        }
+        if (this.textDecoration_.contains(TextDecoration.Overline)) {
+          options += " overline";
+        }
+        if (this.textDecoration_.contains(TextDecoration.LineThrough)) {
+          options += " line-through";
+        }
+        if (this.textDecoration_.contains(TextDecoration.Blink)) {
+          options += " blink";
+        }
+        if (this.textDecoration_.contains(TextDecoration.None)) {
+          options += " none";
+        }
       }
       if (options.length() != 0 || this.textDecorationChanged_) {
         element.setProperty(Property.StyleTextDecoration, options);

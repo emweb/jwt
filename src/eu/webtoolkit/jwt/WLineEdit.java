@@ -67,7 +67,8 @@ public class WLineEdit extends WFormWidget {
     this.textSize_ = 10;
     this.maxLength_ = -1;
     this.echoMode_ = EchoMode.Normal;
-    this.autoComplete_ = true;
+    this.autoComplete_ = AutoCompleteMode.On;
+    this.inputMode_ = InputMode.Off;
     this.flags_ = new BitSet();
     this.maskChanged_ = false;
     this.mask_ = "";
@@ -97,7 +98,8 @@ public class WLineEdit extends WFormWidget {
     this.textSize_ = 10;
     this.maxLength_ = -1;
     this.echoMode_ = EchoMode.Normal;
-    this.autoComplete_ = true;
+    this.autoComplete_ = AutoCompleteMode.On;
+    this.inputMode_ = InputMode.Off;
     this.flags_ = new BitSet();
     this.maskChanged_ = false;
     this.mask_ = "";
@@ -242,6 +244,10 @@ public class WLineEdit extends WFormWidget {
    * Sets the echo mode.
    *
    * <p>The default echo mode is Normal.
+   *
+   * <p>
+   *
+   * @deprecated For {@link EchoMode#Password}, use {@link WPasswordEdit} instead.
    */
   public void setEchoMode(EchoMode echoMode) {
     if (this.echoMode_ != echoMode) {
@@ -255,7 +261,10 @@ public class WLineEdit extends WFormWidget {
    *
    * <p>
    *
+   * <p>
+   *
    * @see WLineEdit#setEchoMode(EchoMode echoMode)
+   * @deprecated For {@link EchoMode#Password}, use {@link WPasswordEdit} instead.
    */
   public EchoMode getEchoMode() {
     return this.echoMode_;
@@ -269,11 +278,32 @@ public class WLineEdit extends WFormWidget {
    * <p>The default value is <code>true</code>.
    */
   public void setAutoComplete(boolean enabled) {
-    if (this.autoComplete_ != enabled) {
-      this.autoComplete_ = enabled;
+    this.setAutoComplete(enabled ? AutoCompleteMode.On : AutoCompleteMode.Off);
+  }
+  /**
+   * Sets (built-in browser) autocomplete support.
+   *
+   * <p>Depending on the user agent, this may assist the user in filling in text for common input
+   * fields (e.g. address information) based on some heuristics.
+   *
+   * <p>The default value is {@link AutoCompleteMode#On}.
+   */
+  public void setAutoComplete(AutoCompleteMode token) {
+    if (this.autoComplete_ != token) {
+      this.autoComplete_ = token;
       this.flags_.set(BIT_AUTOCOMPLETE_CHANGED);
       this.repaint();
     }
+  }
+  /**
+   * Returns if auto-completion support is not off.
+   *
+   * <p>
+   *
+   * @see WLineEdit#setAutoComplete(boolean enabled)
+   */
+  public boolean isAutoComplete() {
+    return this.autoComplete_ != AutoCompleteMode.Off;
   }
   /**
    * Returns auto-completion support.
@@ -282,8 +312,36 @@ public class WLineEdit extends WFormWidget {
    *
    * @see WLineEdit#setAutoComplete(boolean enabled)
    */
-  public boolean isAutoComplete() {
+  public AutoCompleteMode getAutoCompleteToken() {
     return this.autoComplete_;
+  }
+  /**
+   * Sets (built-in browser) input mode support.
+   *
+   * <p>The input mode suggest what type of virtual keyboard should be used when applicable (mainly
+   * for phone users).
+   *
+   * <p>When {@link InputMode#Off} is used, the inputmode field is not specified. Not to be confused
+   * with {@link InputMode#None}, which suggest the browser to not use any virtual keybord.
+   *
+   * <p>The default value is {@link InputMode#Off}.
+   */
+  public void setInputMode(InputMode mode) {
+    if (mode != this.inputMode_) {
+      this.inputMode_ = mode;
+      this.flags_.set(BIT_INPUT_MODE_CHANGED);
+      this.repaint();
+    }
+  }
+  /**
+   * Returns inputMode support.
+   *
+   * <p>
+   *
+   * @see WLineEdit#setInputMode(InputMode mode)
+   */
+  public InputMode getInputMode() {
+    return this.inputMode_;
   }
   /**
    * Returns the current selection start.
@@ -338,7 +396,7 @@ public class WLineEdit extends WFormWidget {
     String s = String.valueOf(start);
     String e = String.valueOf(start + length);
     this.doJavaScript(
-        "Wt4_11_4.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
+        "Wt4_12_0.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
   }
   /**
    * Returns the current cursor position.
@@ -582,12 +640,14 @@ public class WLineEdit extends WFormWidget {
   private int textSize_;
   private int maxLength_;
   private EchoMode echoMode_;
-  private boolean autoComplete_;
+  private AutoCompleteMode autoComplete_;
+  private InputMode inputMode_;
   private static final int BIT_CONTENT_CHANGED = 0;
   private static final int BIT_TEXT_SIZE_CHANGED = 1;
   private static final int BIT_MAX_LENGTH_CHANGED = 2;
   private static final int BIT_ECHO_MODE_CHANGED = 3;
   private static final int BIT_AUTOCOMPLETE_CHANGED = 4;
+  private static final int BIT_INPUT_MODE_CHANGED = 5;
   BitSet flags_;
   private static final String SKIPPABLE_MASK_CHARS = "anx0d#hb";
   private boolean maskChanged_;
@@ -747,7 +807,7 @@ public class WLineEdit extends WFormWidget {
     String space = "";
     space += this.spaceChar_;
     String jsObj =
-        "new Wt4_11_4.WLineEdit("
+        "new Wt4_12_0.WLineEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -850,14 +910,64 @@ public class WLineEdit extends WFormWidget {
       this.flags_.clear(BIT_CONTENT_CHANGED);
     }
     if (all || this.flags_.get(BIT_ECHO_MODE_CHANGED)) {
-      element.setAttribute("type", this.echoMode_ == EchoMode.Normal ? "text" : "password");
+      element.setAttribute("type", this.getType());
       this.flags_.clear(BIT_ECHO_MODE_CHANGED);
     }
     if (all || this.flags_.get(BIT_AUTOCOMPLETE_CHANGED)) {
-      if (!all || !this.autoComplete_) {
-        element.setAttribute("autocomplete", this.autoComplete_ == true ? "on" : "off");
+      if (!all || this.autoComplete_ != AutoCompleteMode.On) {
+        switch (this.autoComplete_) {
+          case Off:
+            element.setAttribute("autocomplete", "off");
+            break;
+          case On:
+            element.setAttribute("autocomplete", "on");
+            break;
+          case NewPassword:
+            element.setAttribute("autocomplete", "new-password");
+            break;
+          case CurrentPassword:
+            element.setAttribute("autocomplete", "current-password");
+            break;
+          case Username:
+            element.setAttribute("autocomplete", "username");
+            break;
+        }
       }
       this.flags_.clear(BIT_AUTOCOMPLETE_CHANGED);
+    }
+    if (all || this.flags_.get(BIT_INPUT_MODE_CHANGED)) {
+      if (!all || this.inputMode_ != InputMode.Off) {
+        switch (this.inputMode_) {
+          case Off:
+            element.removeAttribute("inputmode");
+            break;
+          case None:
+            element.setAttribute("inputmode", "none");
+            break;
+          case Text:
+            element.setAttribute("inputmode", "text");
+            break;
+          case Tel:
+            element.setAttribute("inputmode", "tel");
+            break;
+          case Url:
+            element.setAttribute("inputmode", "url");
+            break;
+          case Email:
+            element.setAttribute("inputmode", "email");
+            break;
+          case Numeric:
+            element.setAttribute("inputmode", "numeric");
+            break;
+          case Decimal:
+            element.setAttribute("inputmode", "decimal");
+            break;
+          case Search:
+            element.setAttribute("inputmode", "search");
+            break;
+        }
+      }
+      this.flags_.clear(BIT_INPUT_MODE_CHANGED);
     }
     if (all || this.flags_.get(BIT_TEXT_SIZE_CHANGED)) {
       element.setAttribute("size", String.valueOf(this.textSize_));
@@ -943,6 +1053,10 @@ public class WLineEdit extends WFormWidget {
       this.defineJavaScript();
     }
     super.render(flags);
+  }
+
+  protected String getType() {
+    return this.echoMode_ == EchoMode.Normal ? "text" : "password";
   }
 
   static WJavaScriptPreamble wtjs1() {

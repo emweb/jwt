@@ -37,9 +37,11 @@ public class WTimeValidator extends WRegExpValidator {
     this.formats_ = new ArrayList<String>();
     this.bottom_ = null;
     this.top_ = null;
+    this.step_ = Duration.ZERO;
     this.tooEarlyText_ = new WString();
     this.tooLateText_ = new WString();
     this.notATimeText_ = new WString();
+    this.wrongStepText_ = new WString();
     this.setFormat(WTime.getDefaultFormat());
   }
   /** Creates a new {@link WTimeValidator}. */
@@ -48,9 +50,11 @@ public class WTimeValidator extends WRegExpValidator {
     this.formats_ = new ArrayList<String>();
     this.bottom_ = null;
     this.top_ = null;
+    this.step_ = Duration.ZERO;
     this.tooEarlyText_ = new WString();
     this.tooLateText_ = new WString();
     this.notATimeText_ = new WString();
+    this.wrongStepText_ = new WString();
     this.setFormat(format);
   }
   /**
@@ -64,9 +68,11 @@ public class WTimeValidator extends WRegExpValidator {
     this.formats_ = new ArrayList<String>();
     this.bottom_ = bottom;
     this.top_ = top;
+    this.step_ = Duration.ZERO;
     this.tooEarlyText_ = new WString();
     this.tooLateText_ = new WString();
     this.notATimeText_ = new WString();
+    this.wrongStepText_ = new WString();
     this.setFormat(format);
   }
   /** Sets the validator format. */
@@ -119,6 +125,31 @@ public class WTimeValidator extends WRegExpValidator {
   /** Returns the upper limit of the valid time range. */
   public WTime getTop() {
     return this.top_;
+  }
+  /**
+   * Sets the step (in seconds) between two valid values.
+   *
+   * <p>The default value is 0 seconds, meaning any step is accepted.
+   *
+   * <p>When the native HTML5 control is used, this sets the step to 1 or 60 automatically,
+   * denepding on the format, respectively HH:mm, or HH:mm:ss. Changing this value has no effect.
+   */
+  public void setStep(final Duration step) {
+    if (step.compareTo(Duration.ofSeconds(0)) < 0) {
+      logger.error(
+          new StringWriter()
+              .append("WTimeValidator::setStep(): ignoring call, value should not be negative")
+              .toString());
+      return;
+    }
+    if (!this.step_.equals(step)) {
+      this.step_ = step;
+      this.repaint();
+    }
+  }
+  /** Returns the step (in seconds) between two valid values. */
+  public Duration getStep() {
+    return this.step_;
   }
   /** Sets the message to display when the input is not a time. */
   public void setInvalidNotATimeText(final CharSequence text) {
@@ -186,6 +217,33 @@ public class WTimeValidator extends WRegExpValidator {
       }
     }
   }
+  /** Sets the message to display when the time increment is invalid. */
+  public void setInvalidWrongStepText(final CharSequence text) {
+    this.wrongStepText_ = WString.toWString(text);
+    this.repaint();
+  }
+  /** Returns the message displayed when the time increment is invalid. */
+  public WString getInvalidWrongStepText() {
+    if (this.step_.compareTo(Duration.ofSeconds(0)) <= 0) {
+      return WString.Empty;
+    } else {
+      if (!(this.wrongStepText_.length() == 0)) {
+        return this.wrongStepText_;
+      } else {
+        if (this.step_.getSeconds() % 60 == 0) {
+          return WString.tr("Wt.WTimeValidator.WrongStep-minutes")
+              .arg(this.step_.getSeconds() / 60);
+        } else {
+          if (this.step_.getSeconds() % 1 == 0) {
+            return WString.tr("Wt.WTimeValidator.WrongStep-seconds")
+                .arg(this.step_.getSeconds() / 1);
+          } else {
+            return WString.tr("Wt.WTimeValidator.WrongStep");
+          }
+        }
+      }
+    }
+  }
   /**
    * Validates the given input.
    *
@@ -206,6 +264,13 @@ public class WTimeValidator extends WRegExpValidator {
           if (!(this.top_ == null) && t.after(this.top_)) {
             return new WValidator.Result(ValidationState.Invalid, this.getInvalidTooLateText());
           }
+          if (this.step_.compareTo(Duration.ofSeconds(0)) > 0) {
+            WTime start = !(this.bottom_ == null) ? this.bottom_ : new WTime(0, 0);
+            long secs = start.secsTo(t);
+            if (secs % this.step_.getSeconds() != 0) {
+              return new WValidator.Result(ValidationState.Invalid, this.getInvalidWrongStepText());
+            }
+          }
           return new WValidator.Result(ValidationState.Valid);
         }
       } catch (final RuntimeException e) {
@@ -218,7 +283,7 @@ public class WTimeValidator extends WRegExpValidator {
   public String getJavaScriptValidate() {
     loadJavaScript(WApplication.getInstance());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_11_4.WTimeValidator(").append(this.isMandatory()).append(",[");
+    js.append("new Wt4_12_0.WTimeValidator(").append(this.isMandatory()).append(",[");
     for (int i = 0; i < this.formats_.size(); ++i) {
       WTime.RegExpInfo r = WTime.formatToRegExp(this.formats_.get(i));
       if (i != 0) {
@@ -270,6 +335,12 @@ public class WTimeValidator extends WRegExpValidator {
     } else {
       js.append("null");
     }
+    js.append(',');
+    if (this.step_.compareTo(Duration.ofSeconds(0)) > 0) {
+      js.append((int) this.step_.getSeconds());
+    } else {
+      js.append("null");
+    }
     js.append(',')
         .append(WString.toWString(this.getInvalidBlankText()).getJsStringLiteral())
         .append(',')
@@ -278,6 +349,8 @@ public class WTimeValidator extends WRegExpValidator {
         .append(WString.toWString(this.getInvalidTooEarlyText()).getJsStringLiteral())
         .append(',')
         .append(WString.toWString(this.getInvalidTooLateText()).getJsStringLiteral())
+        .append(',')
+        .append(WString.toWString(this.getInvalidWrongStepText()).getJsStringLiteral())
         .append(");");
     return js.toString();
   }
@@ -285,9 +358,11 @@ public class WTimeValidator extends WRegExpValidator {
   private List<String> formats_;
   private WTime bottom_;
   private WTime top_;
+  private Duration step_ = Duration.ofSeconds(0);
   private WString tooEarlyText_;
   private WString tooLateText_;
   private WString notATimeText_;
+  private WString wrongStepText_;
 
   private static void loadJavaScript(WApplication app) {
     app.loadJavaScript("js/WTimeValidator.js", wtjs1());
@@ -298,6 +373,6 @@ public class WTimeValidator extends WRegExpValidator {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "WTimeValidator",
-        "(function(e,t,i,s,n,a,l,g){this.validate=function(r){if(0===r.length)return e?{valid:!1,message:n}:{valid:!0};let o=null,d=-1,u=-1,c=-1,m=-1;for(const e of t){o=new RegExp(\"^\"+e.regexp+\"$\").exec(r);if(null!==o){d=e.getHour(o);r.toUpperCase().indexOf(\"P\")>-1&&d<12?d+=12:r.toUpperCase().indexOf(\"A\")>-1&&12===d&&(d=0);u=e.getMinutes(o);c=e.getSeconds(o);m=e.getMilliseconds(o);break}}if(null===o)return{valid:!1,message:a};if(d<0||d>23||u<0||u>59||c<0||c>59||m<0||m>999)return{valid:!1,message:a};const f=new Date(0,0,0,d,u,c,m);return f.getHours()!==d||f.getMinutes()!==u||f.getSeconds()!==c||f.getMilliseconds()!==m?{valid:!1,message:a}:i&&f.getTime()<i.getTime()?{valid:!1,message:l}:s&&f.getTime()>s.getTime()?{valid:!1,message:g}:{valid:!0}}})");
+        "(function(e,t,i,n,s,a,r,g,l,o){this.validate=function(u){if(0===u.length)return e?{valid:!1,message:a}:{valid:!0};let d=null,f=-1,m=-1,c=-1,v=-1;for(const e of t){d=new RegExp(\"^\"+e.regexp+\"$\").exec(u);if(null!==d){f=e.getHour(d);u.toUpperCase().indexOf(\"P\")>-1&&f<12?f+=12:u.toUpperCase().indexOf(\"A\")>-1&&12===f&&(f=0);m=e.getMinutes(d);c=e.getSeconds(d);v=e.getMilliseconds(d);break}}if(null===d)return{valid:!1,message:r};if(f<0||f>23||m<0||m>59||c<0||c>59||v<0||v>999)return{valid:!1,message:r};const T=new Date(0,0,0,f,m,c,v);if(T.getHours()!==f||T.getMinutes()!==m||T.getSeconds()!==c||T.getMilliseconds()!==v)return{valid:!1,message:r};if(i&&T.getTime()<i.getTime())return{valid:!1,message:g};if(n&&T.getTime()>n.getTime())return{valid:!1,message:l};if(s){const e=i?i.getTime():new Date(0,0,0).getTime();if(Math.round((T.getTime()-e)/1e3)%s!=0)return{valid:!1,message:o}}return{valid:!0}}})");
   }
 }
