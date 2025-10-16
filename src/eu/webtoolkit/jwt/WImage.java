@@ -58,6 +58,7 @@ public class WImage extends WInteractWidget {
     this.map_ = null;
     this.flags_ = new BitSet();
     this.targetJS_ = "";
+    this.botUrl_ = "";
     this.setLoadLaterWhenInvisible(false);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -81,6 +82,7 @@ public class WImage extends WInteractWidget {
     this.map_ = null;
     this.flags_ = new BitSet();
     this.targetJS_ = "";
+    this.botUrl_ = "";
     this.setLoadLaterWhenInvisible(false);
     this.setImageLink(link);
     if (parentContainer != null) parentContainer.addWidget(this);
@@ -106,6 +108,7 @@ public class WImage extends WInteractWidget {
     this.map_ = null;
     this.flags_ = new BitSet();
     this.targetJS_ = "";
+    this.botUrl_ = "";
     this.setLoadLaterWhenInvisible(false);
     this.setImageLink(link);
     if (parentContainer != null) parentContainer.addWidget(this);
@@ -192,6 +195,27 @@ public class WImage extends WInteractWidget {
   /** Returns the image link. */
   public WLink getImageLink() {
     return this.imageLink_;
+  }
+  /**
+   * Sets an alternative URL, given to bots, for this image.
+   *
+   * <p>If <code>url</code> is not empty, this URL will be used instead of the regular URL when the
+   * request comes from a bot (e.g., a web crawler).
+   *
+   * <p>By default, this is empty.
+   */
+  public void setAlternativeBotUrl(final String url) {
+    this.botUrl_ = url;
+  }
+  /**
+   * Returns the alternative URL, given to bots, for this image.
+   *
+   * <p>
+   *
+   * @see WImage#setAlternativeBotUrl(String url)
+   */
+  public String getAlternativeBotUrl() {
+    return this.botUrl_;
   }
   /**
    * Adds an interactive area.
@@ -329,6 +353,7 @@ public class WImage extends WInteractWidget {
   private MapWidget map_;
   BitSet flags_;
   String targetJS_;
+  private String botUrl_;
 
   private void resourceChanged() {
     this.flags_.set(BIT_IMAGE_LINK_CHANGED);
@@ -356,11 +381,15 @@ public class WImage extends WInteractWidget {
     if (this.flags_.get(BIT_IMAGE_LINK_CHANGED) || all) {
       String url = "";
       WApplication app = WApplication.getInstance();
-      if (!this.imageLink_.isNull()) {
-        url = resolveRelativeUrl(this.imageLink_.getUrl());
-        url = app.encodeUntrustedUrl(url);
+      if (this.getAlternativeBotUrl().length() != 0 && app.getEnvironment().agentIsSpiderBot()) {
+        url = resolveRelativeUrl(this.getAlternativeBotUrl());
       } else {
-        url = app.getOnePixelGifUrl();
+        if (!this.imageLink_.isNull()) {
+          url = resolveRelativeUrl(this.imageLink_.getUrl());
+          url = app.encodeUntrustedUrl(url);
+        } else {
+          url = app.getOnePixelGifUrl();
+        }
       }
       img.setProperty(Property.Src, url);
       this.flags_.clear(BIT_IMAGE_LINK_CHANGED);
@@ -383,7 +412,7 @@ public class WImage extends WInteractWidget {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WImage.js", wtjs1());
     StringBuilder ss = new StringBuilder();
-    ss.append("new Wt4_12_0.WImage(")
+    ss.append("new Wt4_12_1.WImage(")
         .append(app.getJavaScriptClass())
         .append(",")
         .append(this.getJsRef())

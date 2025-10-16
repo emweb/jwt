@@ -29,11 +29,12 @@
     <delete dir="${build.dir}"/>
     <delete dir="${dist.dir}"/>
     <delete dir="${lib.dir}"/>
+    <delete dir="${jwt-lib.dir}"/>
     <delete dir="${bin.dir}"/>
   </target>
 
   <!-- Compile Java source -->
-  <target name="build">
+  <target name="build" depends="clean">
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
     
     <mkdir dir="${jwt-lib.dir}"/>

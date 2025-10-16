@@ -9,6 +9,12 @@ import eu.webtoolkit.jwt.WtServlet;
 public class MiniWebGL extends WtServlet {
 	private static final long serialVersionUID = 1L;
 
+  public MiniWebGL() {
+    super();
+
+    getConfiguration().setUseScriptNonce(true);
+  }
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);

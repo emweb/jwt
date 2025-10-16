@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CollectionUtils {
 
@@ -76,10 +77,10 @@ public class CollectionUtils {
 	}
 
 	public static <K,V> K keyForValue(Map<K,V> map, V value) {
-		for (Map.Entry<K,V> entry : map.entrySet())
-			if (entry.getValue().equals(value))
-				return entry.getKey();
-
-		return null;
+		return map.entrySet().stream()
+				.filter(e -> Objects.equals(e.getValue(), value))
+				.map(Map.Entry::getKey)
+				.findFirst()
+				.orElse(null);
 	}
 }

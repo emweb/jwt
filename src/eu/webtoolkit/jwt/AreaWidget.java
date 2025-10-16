@@ -46,6 +46,10 @@ class AreaWidget extends WInteractWidget {
         element.setAttribute("href", "#");
       }
       element.addPropertyWord(Property.Class, WInteractWidget.noDefault);
+      List<String> styleClassesVector = Utils.getWidgetStyleClasses(this);
+      for (String className : styleClassesVector) {
+        element.addPropertyWord(Property.Class, className);
+      }
     }
     if (needsUrlResolution) {
       WAnchor.renderUrlResolution(this, element, all);

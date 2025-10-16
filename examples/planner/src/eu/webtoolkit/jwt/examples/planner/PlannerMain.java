@@ -8,6 +8,13 @@ import eu.webtoolkit.jwt.Configuration.ErrorReporting;
 public class PlannerMain extends WtServlet {
 	private static final long serialVersionUID = 1L;
 
+  public PlannerMain() {
+    super();
+
+    getConfiguration().setUseScriptNonce(true);
+  }
+
+  @Override
 	public WApplication createApplication(WEnvironment env) {
 		getConfiguration().setErrorReporting(ErrorReporting.NoErrors);
 		

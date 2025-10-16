@@ -15,6 +15,8 @@ public class MandelbrotMain extends WtServlet {
 
     public MandelbrotMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
     @Override

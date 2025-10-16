@@ -247,9 +247,7 @@ public class WInPlaceEdit extends WCompositeWidget {
   public void setButtonsEnabled(boolean enabled) {
     if (enabled && !(this.save_ != null)) {
       this.c2_.disconnect();
-      WApplication app = WApplication.getInstance();
-      WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
-      if (!(bs5Theme != null)) {
+      if (this.buttons_ != null) {
         this.buttons_.addWidget(
             this.save_ = new WPushButton(tr("Wt.WInPlaceEdit.Save"), (WContainerWidget) null));
         this.buttons_.addWidget(
@@ -260,8 +258,6 @@ public class WInPlaceEdit extends WCompositeWidget {
         this.editing_.addWidget(
             this.cancel_ = new WPushButton(tr("Wt.WInPlaceEdit.Cancel"), (WContainerWidget) null));
       }
-      app.getTheme().apply(this, this.save_, WidgetThemeRole.InPlaceEditingButton);
-      app.getTheme().apply(this, this.cancel_, WidgetThemeRole.InPlaceEditingButton);
       this.save_
           .clicked()
           .addListener(
@@ -346,15 +342,30 @@ public class WInPlaceEdit extends WCompositeWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
+    WApplication app = WApplication.getInstance();
+    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
+    if (!(this.buttons_ != null) && (!(bs5Theme != null) || !this.isThemeStyleEnabled())) {
+      this.editing_.addWidget(this.buttons_ = new WContainerWidget());
+      this.buttons_.setInline(true);
+      this.buttons_.setThemeStyleEnabled(this.isThemeStyleEnabled());
+      if (this.save_ != null) {
+        this.buttons_.addWidget(WidgetUtils.remove(this.editing_, this.save_));
+        this.buttons_.addWidget(WidgetUtils.remove(this.editing_, this.cancel_));
+      }
+    }
     if (this.save_ != null && flags.contains(RenderFlag.Full)) {
-      WApplication.getInstance()
-          .getTheme()
-          .apply(this, this.editing_, WidgetThemeRole.InPlaceEditing);
+      app.getTheme().apply(this, this.editing_, WidgetThemeRole.InPlaceEditing);
+      app.getTheme().apply(this, this.save_, WidgetThemeRole.InPlaceEditingButton);
+      app.getTheme().apply(this, this.cancel_, WidgetThemeRole.InPlaceEditingButton);
+      if (this.buttons_ != null) {
+        app.getTheme().apply(this, this.buttons_, WidgetThemeRole.InPlaceEditingButtonsContainer);
+      }
     }
     super.render(flags);
   }
 
   private void create() {
+    this.buttons_ = null;
     this.setImplementation(this.impl_ = new WContainerWidget());
     this.setInline(true);
     this.impl_.addWidget(
@@ -425,13 +436,6 @@ public class WInPlaceEdit extends WCompositeWidget {
               WInPlaceEdit.this.cancel();
             });
     this.edit_.escapePressed().preventPropagation();
-    WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
-    if (!(bs5Theme != null)) {
-      this.editing_.addWidget(this.buttons_ = new WContainerWidget());
-      this.buttons_.setInline(true);
-      app.getTheme().apply(this, this.buttons_, WidgetThemeRole.InPlaceEditingButtonsContainer);
-    }
     this.setButtonsEnabled();
   }
 

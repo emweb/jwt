@@ -83,6 +83,13 @@ public class WSplitButton extends WCompositeWidget {
     return this.getDropDownButton().getMenu();
   }
 
+  protected void render(EnumSet<RenderFlag> flags) {
+    if (this.getDropDownButton().isThemeStyleEnabled()) {
+      this.getDropDownButton().addStyleClass("dropdown-toggle");
+    }
+    super.render(flags);
+  }
+
   private WToolBar impl_;
 
   private void init(final CharSequence label) {
@@ -90,6 +97,5 @@ public class WSplitButton extends WCompositeWidget {
     this.impl_.setInline(true);
     this.impl_.addButton(new WPushButton(label, (WContainerWidget) null));
     this.impl_.addButton(new WPushButton());
-    this.getDropDownButton().setStyleClass("dropdown-toggle");
   }
 }

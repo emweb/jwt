@@ -74,111 +74,6 @@ public class WBootstrap5Theme extends WTheme {
     return result;
   }
 
-  public void apply(WWidget widget, WWidget child, int widgetRole) {
-    if (!widget.isThemeStyleEnabled()) {
-      return;
-    }
-    switch (widgetRole) {
-      case WidgetThemeRole.MenuItemIcon:
-        child.addStyleClass("Wt-icon");
-        break;
-      case WidgetThemeRole.MenuItemCheckBox:
-        child.addStyleClass("Wt-chkbox");
-        ((WFormWidget) child).getLabel().addStyleClass("form-checkbox");
-        break;
-      case WidgetThemeRole.MenuItemClose:
-        child.addStyleClass("Wt-close-icon");
-        ((WText) child).setText("&times;");
-        break;
-      case WidgetThemeRole.DialogContent:
-        child.addStyleClass("modal-content");
-        break;
-      case WidgetThemeRole.DialogCoverWidget:
-        child.addStyleClass("modal-backdrop in");
-        child.setAttributeValue("style", "opacity:0.5");
-        break;
-      case WidgetThemeRole.DialogTitleBar:
-        child.addStyleClass("modal-header");
-        break;
-      case WidgetThemeRole.DialogBody:
-        child.addStyleClass("modal-body");
-        break;
-      case WidgetThemeRole.DialogFooter:
-        child.addStyleClass("modal-footer");
-        break;
-      case WidgetThemeRole.DialogCloseIcon:
-        child.addStyleClass("btn-close");
-        break;
-      case WidgetThemeRole.TableViewRowContainer:
-        {
-          WAbstractItemView view = ObjectUtils.cast(widget, WAbstractItemView.class);
-          child.toggleStyleClass("Wt-striped", view.hasAlternatingRowColors());
-          break;
-        }
-      case WidgetThemeRole.DatePickerPopup:
-        child.addStyleClass("Wt-datepicker");
-        break;
-      case WidgetThemeRole.DatePickerIcon:
-        {
-          WImage icon = ObjectUtils.cast(child, WImage.class);
-          icon.setImageLink(new WLink(this.getResourcesUrl() + "calendar-date.svg"));
-          icon.setVerticalAlignment(AlignmentFlag.Middle);
-          icon.resize(new WLength(20), new WLength(20));
-          icon.setMargin(new WLength(5), EnumSet.of(Side.Left));
-          icon.addStyleClass("Wt-datepicker-icon");
-          break;
-        }
-      case WidgetThemeRole.TimePickerPopup:
-        child.addStyleClass("Wt-timepicker");
-        break;
-      case WidgetThemeRole.PanelTitleBar:
-        child.addStyleClass("card-header");
-        break;
-      case WidgetThemeRole.PanelBody:
-        child.addStyleClass("card-body");
-        break;
-      case WidgetThemeRole.PanelCollapseButton:
-        {
-          WApplication app = WApplication.getInstance();
-          WIconPair iconPair = ObjectUtils.cast(child, WIconPair.class);
-          iconPair.getUriIcon1().setInline(false);
-          iconPair.getUriIcon2().setInline(false);
-          iconPair.addStyleClass("Wt-collapse-button");
-          break;
-        }
-      case WidgetThemeRole.InPlaceEditing:
-        child.addStyleClass("input-group");
-        break;
-      case WidgetThemeRole.InPlaceEditingButton:
-        child.addStyleClass("btn-outline-secondary");
-        break;
-      case WidgetThemeRole.NavCollapse:
-        child.addStyleClass("navbar-collapse collapse");
-        break;
-      case WidgetThemeRole.NavBrand:
-        child.addStyleClass("navbar-brand");
-        break;
-      case WidgetThemeRole.NavbarSearchForm:
-        child.addStyleClass("d-flex");
-        break;
-      case WidgetThemeRole.NavbarMenu:
-        child.addStyleClass("navbar-nav");
-        break;
-      case WidgetThemeRole.NavbarBtn:
-        child.addStyleClass("navbar-toggler");
-        break;
-      case WidgetThemeRole.TimePickerPopupContent:
-        child.addStyleClass("d-flex");
-        break;
-      default:
-        if (child.hasStyleClass("form-inline")) {
-          child.removeStyleClass("form-inline");
-          child.addStyleClass("row");
-        }
-        break;
-    }
-  }
-
   public void apply(WWidget widget, final DomElement element, int elementRole) {
     boolean creating = element.getMode() == DomElement.Mode.Create;
     if (!widget.isThemeStyleEnabled()) {
@@ -208,15 +103,24 @@ public class WBootstrap5Theme extends WTheme {
           }
           WMenuItem item = ObjectUtils.cast(widget.getParent(), WMenuItem.class);
           if (item != null) {
+            if (!item.isThemeStyleEnabled()) {
+              return;
+            }
             WPopupMenu popupMenu = ObjectUtils.cast(item.getParentMenu(), WPopupMenu.class);
             if (popupMenu != null) {
               element.addPropertyWord(Property.Class, "dropdown-item");
             } else {
               element.addPropertyWord(Property.Class, "nav-link");
             }
+            break;
           }
-          if (element.getAttribute("href").length() == 0
-              && element.getProperty(Property.Class).length() == 0) {
+          WContainerWidget row = ObjectUtils.cast(widget.getParent(), WContainerWidget.class);
+          WContainerWidget list =
+              row != null ? ObjectUtils.cast(row.getParent(), WContainerWidget.class) : null;
+          WSuggestionPopup suggestionPopup =
+              list != null ? ObjectUtils.cast(list.getParent(), WSuggestionPopup.class) : null;
+          String href = element.getAttribute("href");
+          if (suggestionPopup != null && (href.length() == 0 || href.equals("#"))) {
             element.addPropertyWord(Property.Class, "dropdown-item");
           }
           break;
@@ -226,7 +130,8 @@ public class WBootstrap5Theme extends WTheme {
           WPushButton button = ObjectUtils.cast(widget, WPushButton.class);
           if (button != null) {
             if (creating && button.isDefault()) {
-              element.addPropertyWord(Property.Class, "btn btn-primary");
+              element.addPropertyWord(Property.Class, "btn");
+              element.addPropertyWord(Property.Class, "btn-primary");
             } else {
               if (creating) {
                 element.addPropertyWord(Property.Class, classBtn(widget));
@@ -246,12 +151,14 @@ public class WBootstrap5Theme extends WTheme {
         {
           WDialog dialog = ObjectUtils.cast(widget, WDialog.class);
           if (dialog != null) {
-            element.addPropertyWord(Property.Class, "modal Wt-dialog");
+            element.addPropertyWord(Property.Class, "modal");
+            element.addPropertyWord(Property.Class, "Wt-dialog");
             return;
           }
           WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null) {
-            element.addPropertyWord(Property.Class, "card Wt-panel");
+            element.addPropertyWord(Property.Class, "card");
+            element.addPropertyWord(Property.Class, "Wt-panel");
             return;
           }
           WProgressBar bar = ObjectUtils.cast(widget, WProgressBar.class);
@@ -434,7 +341,8 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case FORM:
         if (elementRole == ElementThemeRole.FileUploadForm) {
-          element.addPropertyWord(Property.Class, "input-group mb-2");
+          element.addPropertyWord(Property.Class, "input-group");
+          element.addPropertyWord(Property.Class, "mb-2");
           widget.removeStyleClass("form-control");
         }
         break;
@@ -466,14 +374,18 @@ public class WBootstrap5Theme extends WTheme {
     return true;
   }
 
+  public void loadValidationStyling(WApplication app) {
+    app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
+    app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
+  }
+
   public void applyValidationStyle(
       WWidget widget, final WValidator.Result validation, EnumSet<ValidationStyleFlag> styles) {
     WApplication app = WApplication.getInstance();
-    app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
-    app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
+    this.loadValidationStyling(app);
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_12_0.setValidationState(")
+      js.append("Wt4_12_1.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -501,6 +413,113 @@ public class WBootstrap5Theme extends WTheme {
 
   public Side getPanelCollapseIconSide() {
     return Side.Right;
+  }
+
+  protected void applyFunctionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    switch (widgetRole) {
+      case WidgetThemeRole.DialogCloseIcon:
+        child.addStyleClass("btn-close");
+        break;
+      case WidgetThemeRole.MenuItemIcon:
+        child.addStyleClass("Wt-icon");
+        break;
+      case WidgetThemeRole.MenuItemCheckBox:
+        child.addStyleClass("Wt-chkbox");
+        ((WFormWidget) child).getLabel().addStyleClass("form-checkbox");
+        break;
+      case WidgetThemeRole.MenuItemClose:
+        child.addStyleClass("Wt-close-icon");
+        ((WText) child).setText("&times;");
+        break;
+      case WidgetThemeRole.TableViewRowContainer:
+        {
+          WAbstractItemView view = ObjectUtils.cast(widget, WAbstractItemView.class);
+          child.toggleStyleClass("Wt-striped", view.hasAlternatingRowColors());
+          break;
+        }
+    }
+  }
+
+  protected void applyOptionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    switch (widgetRole) {
+      case WidgetThemeRole.DialogContent:
+        child.addStyleClass("modal-content");
+        break;
+      case WidgetThemeRole.DialogCoverWidget:
+        child.addStyleClass("modal-backdrop in");
+        child.setAttributeValue("style", "opacity:0.5");
+        break;
+      case WidgetThemeRole.DialogTitleBar:
+        child.addStyleClass("modal-header");
+        break;
+      case WidgetThemeRole.DialogBody:
+        child.addStyleClass("modal-body");
+        break;
+      case WidgetThemeRole.DialogFooter:
+        child.addStyleClass("modal-footer");
+        break;
+      case WidgetThemeRole.DatePickerPopup:
+        child.addStyleClass("Wt-datepicker");
+        break;
+      case WidgetThemeRole.DatePickerIcon:
+        {
+          WImage icon = ObjectUtils.cast(child, WImage.class);
+          icon.setImageLink(new WLink(this.getResourcesUrl() + "calendar-date.svg"));
+          icon.setVerticalAlignment(AlignmentFlag.Middle);
+          icon.resize(new WLength(20), new WLength(20));
+          icon.setMargin(new WLength(5), EnumSet.of(Side.Left));
+          icon.addStyleClass("Wt-datepicker-icon");
+          break;
+        }
+      case WidgetThemeRole.TimePickerPopup:
+        child.addStyleClass("Wt-timepicker");
+        break;
+      case WidgetThemeRole.PanelTitleBar:
+        child.addStyleClass("card-header");
+        break;
+      case WidgetThemeRole.PanelBody:
+        child.addStyleClass("card-body");
+        break;
+      case WidgetThemeRole.PanelCollapseButton:
+        {
+          WApplication app = WApplication.getInstance();
+          WIconPair iconPair = ObjectUtils.cast(child, WIconPair.class);
+          iconPair.getUriIcon1().setInline(false);
+          iconPair.getUriIcon2().setInline(false);
+          iconPair.addStyleClass("Wt-collapse-button");
+          break;
+        }
+      case WidgetThemeRole.InPlaceEditing:
+        child.addStyleClass("input-group");
+        break;
+      case WidgetThemeRole.InPlaceEditingButton:
+        child.addStyleClass("btn-outline-secondary");
+        break;
+      case WidgetThemeRole.NavCollapse:
+        child.addStyleClass("navbar-collapse collapse");
+        break;
+      case WidgetThemeRole.NavBrand:
+        child.addStyleClass("navbar-brand");
+        break;
+      case WidgetThemeRole.NavbarSearchForm:
+        child.addStyleClass("d-flex");
+        break;
+      case WidgetThemeRole.NavbarMenu:
+        child.addStyleClass("navbar-nav");
+        break;
+      case WidgetThemeRole.NavbarBtn:
+        child.addStyleClass("navbar-toggler");
+        break;
+      case WidgetThemeRole.TimePickerPopupContent:
+        child.addStyleClass("d-flex");
+        break;
+      default:
+        if (child.hasStyleClass("form-inline")) {
+          child.removeStyleClass("form-inline");
+          child.addStyleClass("row");
+        }
+        break;
+    }
   }
 
   private static String classBtn(WWidget widget) {

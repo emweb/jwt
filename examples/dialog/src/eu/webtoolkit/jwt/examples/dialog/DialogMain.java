@@ -14,8 +14,11 @@ public class DialogMain extends WtServlet {
 
     public DialogMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         return new DialogApplication(env);
     }

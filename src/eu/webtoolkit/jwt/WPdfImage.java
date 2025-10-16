@@ -34,9 +34,9 @@ import eu.webtoolkit.jwt.utils.EnumUtils;
 
 public class WPdfImage extends WResource implements WPaintDevice {
 	private static final Logger logger = LoggerFactory.getLogger(WPdfImage.class);
-	
-	private static Constructor<?> fontConstructor;	
-	
+
+	private static Constructor<?> fontConstructor;
+
 	static {
 		for (Constructor<?> c : Font.class.getConstructors()) {
 			Class<?>[] paramTypes = c.getParameterTypes();
@@ -50,30 +50,30 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			}
 		}
 	}
-	
+
 	public WPdfImage(WLength width, WLength height) {
 		this.width = width;
 		this.height = height;
-		
+
 		this.changeFlags = EnumSet.allOf(PainterChangeFlag.class);
-		
+
         try {
         	this.bos = new ByteArrayOutputStream();
 			this.pdf = new PDF(bos);
 			this.page = new Page(pdf, getSizeArray(width, height));
 			this.x = 0;
 			this.y = 0;
-			
+
 			trueTypeFonts = new FontSupport(this);
 		} catch (Exception e) {
 			logger.info("Exception", e);
 		}
 	}
-	
+
 	public WPdfImage(PDF pdf, Page page, int x, int y, double width, double height) {
 		this(pdf, page, x, y, new WLength(width), new WLength(height));
 	}
-	
+
 	public WPdfImage(PDF pdf, Page page, int x, int y, WLength width, WLength height) {
 		this.pdf = pdf;
 		this.page = page;
@@ -81,14 +81,14 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		
+
 		this.changeFlags = EnumSet.allOf(PainterChangeFlag.class);
-		
+
 		trueTypeFonts = new FontSupport(this);
-		
+
 		setDeviceTransform(new WTransform());
 	}
-	
+
 	public void addFontCollection(String directory, boolean recursive)
 	{
 	  trueTypeFonts.addFontCollection(directory, recursive);
@@ -130,7 +130,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	private void _drawArc(double x,	double y, double ray, double ang1, double ang2)
 	{
 		boolean cont_flg = false;
-		
+
 		double angle = Math.abs(ang2 - ang1);
 	    if (angle > 360)
 	    	throw new RuntimeException("Angle out of range: " + angle);
@@ -148,7 +148,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	            double tmp_ang = (ang2 > ang1 ? ang1 + 90 : ang1 - 90);
 
 	            _internalArc (x, y, ray, ang1, tmp_ang, cont_flg);
-	            
+
 	            cont_flg = true;
 
 	            ang1 = tmp_ang;
@@ -158,7 +158,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	            break;
 	    }
 	}
-	
+
 	private void _internalArc(double x, double y, double ray, double ang1, double ang2, boolean cont_flg) {
 		double rx0, ry0, rx1, ry1, rx2, ry2, rx3, ry3;
 		double x0, y0, x1, y1, x2, y2, x3, y3;
@@ -188,10 +188,10 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 		if (!cont_flg)
 			_lineTo(x0, y0);
-		
+
 		_cubicBezierCurveTo(x1, y1, x2, y2, x3, y3);
 	}
-	
+
 	@Override
 	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
 		WPainterPath pp = new WPainterPath();
@@ -206,48 +206,64 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 	@Override
 	public void drawImage(WRectF rect, String imgUrl, int imgWidth, int imgHeight, WRectF sourceRect) {
-		processChangeFlags();
-		
-		Image image = null;
-		
+		WDataInfo imgInfo = new WDataInfo();
 		if (DataUri.isDataUri(imgUrl)) {
-			DataUri uri = new DataUri(imgUrl);
+			imgInfo.setDataUri(imgUrl);
+		} else {
+			imgInfo.setFilePath(imgUrl);
+			imgInfo.setUrl(imgUrl);
+		}
+		doDrawImage(rect, imgInfo, imgWidth, imgHeight, sourceRect);
+	}
+
+	@Override
+	public void drawImage(WRectF rect, WAbstractDataInfo imgInfo, int imgWidth, int imgHeight, WRectF sourceRect) {
+		doDrawImage(rect, imgInfo, imgWidth, imgHeight, sourceRect);
+	}
+
+	private void doDrawImage(WRectF rect, WAbstractDataInfo imgInfo, int imgWidth, int imgHeight, WRectF sourceRect) {
+		processChangeFlags();
+
+		Image image = null;
+		if (imgInfo.hasDataUri()) {
+			String imgUri = imgInfo.getDataUri();
+			DataUri uri = new DataUri(imgUri);
 			try {
-				byte[] b = new byte[uri.data.size()];
-				for (int i = 0; i < uri.data.size(); ++i)
-					b[i] = uri.data.get(i);
-				
+				// we do not import the ImageUtils class from utils because we also use another ImageUtils
+				ByteArrayInputStream stream = eu.webtoolkit.jwt.utils.ImageUtils.getByteArrayInputStream(uri.data);
+
 				if ("image/png".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.PNG);
+					image = new Image(this.pdf, stream, ImageType.PNG);
 				else if ("image/jpeg".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.JPG);
+					image = new Image(this.pdf, stream, ImageType.JPG);
 				else if ("image/bmp".equals(uri.mimeType))
-					image = new Image(this.pdf, new ByteArrayInputStream(b), ImageType.BMP);
+					image = new Image(this.pdf, stream, ImageType.BMP);
 			} catch (Exception e) {
 				logger.info("Error converting data URI to image", e);
-				logger.trace("Data URI is {}", imgUrl, e);
+				logger.trace("Data URI is {}", imgUri, e);
 			}
 		} else {
-			String mimeType = ImageUtils.identifyMimeType(imgUrl);
+			String imgPath = imgInfo.getFilePath();
+			String mimeType = ImageUtils.identifyMimeType(imgPath);
 			try {
 				if ("image/png".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.PNG);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgPath)), ImageType.PNG);
 				else if ("image/jpeg".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.JPG);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgPath)), ImageType.JPG);
 				else if ("image/bmp".equals(mimeType))
-					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgUrl)), ImageType.BMP);
+					image = new Image(this.pdf, new BufferedInputStream(FileUtils.getResourceAsStream(imgPath)), ImageType.BMP);
 			} catch (Exception e) {
-				logger.info("Error creating image from {}", imgUrl, e);
+				logger.info("Error creating image from {}", imgPath, e);
 			}
 		}
-		
+
 		if (image != null) {
 			WPointF p = currentTransform.map(new WPointF(rect.getX(), rect.getY()));
 	        image.setPosition(p.getX(), p.getY());
-	        
+
 	        double w = image.getWidth();
 	        double h = image.getHeight();
-	        
+
 			TRSSDecomposition d = new TRSSDecomposition();
 			currentTransform.decomposeTranslateRotateScaleSkew(d);
 	        float xScale  = (float) ((rect.getWidth() / w) * d.sx);
@@ -272,13 +288,13 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	private WPointF _transform(double x, double y) {
 		return currentTransform.map(new WPointF(x, y));
 	}
-	
+
 	private Point _transformToPoint(double x, double y) {
 		WPointF p = _transform(x, y);
 		return new Point(p.getX(), p.getY());
 	}
-	
-	private void _moveTo(double x, double y){ 
+
+	private void _moveTo(double x, double y){
 		try {
 			WPointF p_t = _transform(x, y);
 			this.page.moveTo(p_t.getX(), p_t.getY());
@@ -286,7 +302,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			logger.info("IOException", e);
 		}
 	}
-	
+
 	private void _lineTo(double x, double y) {
 		try {
 			WPointF p_t = _transform(x, y);
@@ -295,7 +311,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			logger.info("IOException", e);
 		}
 	}
-	
+
 	private void _cubicBezierCurveTo(double x1, double y1, double x2, double y2, double x3, double y3) {
 		Point p1 = _transformToPoint(x1, y1);
 		Point p2 = _transformToPoint(x2, y2);
@@ -306,7 +322,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			logger.info("IOException", e);
 		}
 	}
-	
+
 	private void drawPlainPath(WPainterPath path) {
 		List<WPainterPath.Segment> segments = path.getSegments();
 
@@ -383,28 +399,28 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			}
 		}
 	}
-	
+
 	@Override
 	public void drawPath(WPainterPath path) {
 		processChangeFlags();
-		
+
 		try {
 			boolean hasPen = getPainter().getPen().getStyle() != PenStyle.None;
 			boolean hasBrush = getPainter().getBrush().getStyle() != BrushStyle.None;
-			
+
 			if (hasPen || hasBrush) {
 				if (hasBrush) {
 					prepareBrush();
 					drawPlainPath(path);
 					page.fillPath();
 				}
-				
+
 				if (hasPen) {
 	 				preparePen();
 	 				drawPlainPath(path);
 					page.strokePath();
 				}
-			} else { 
+			} else {
 				page.closePath();
 			}
 		} catch (Exception e) {
@@ -423,32 +439,32 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			return;
 		    }
 		}
-		
+
 		WColor penColor = painter.getPen().getColor();
 		try {
 			setBrushColor(penColor);
 		} catch (IOException e2) {
 			logger.info("IOException", e2);
 		}
-		
+
 		processChangeFlags();
-		
+
 		TRSSDecomposition d = new TRSSDecomposition();
 		currentTransform.decomposeTranslateRotateScaleSkew(d);
-		
+
 		try {
 			page.setTextDirection(360 - (int)Math.round(d.alpha *  180 / Math.PI));
 		} catch (Exception e1) {
 			logger.info("IOException", e1);
 		}
-		
+
 		double px = 0, py = 0;
 
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask));
 
 		String s = text.toString();
-		
+
 		switch (horizontalAlign) {
 		case Left:
 			px = rect.getLeft();
@@ -460,7 +476,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			px = rect.getCenter().getX() - this.font.stringWidth(s) / 2;
 			break;
 		}
-		
+
 		switch (verticalAlign) {
 		case Bottom:
 			py = rect.getBottom();
@@ -471,24 +487,24 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		case Middle:
 			py = rect.getCenter().getY() + getFontMetrics().getHeight()/2;
 		}
-		
+
 		py -= getFontMetrics().getDescent();
 
 		preparePen();
 		try {
 			WPointF p = new WPointF(px, py);
 			p = currentTransform.map(p);
-			
+
 			double originalSize = this.font.getSize();
 			this.font.setSize(originalSize * (d.sx + d.sy) / 2);
-			
+
 			page.drawString(font, s, p.getX(), p.getY());
-			
+
 			this.font.setSize(originalSize);
 		} catch (IOException e) {
 			logger.info("IOException", e);
 		}
-		
+
 		WColor brushColor = painter.getBrush().getColor();
 		try {
 			setBrushColor(brushColor);
@@ -507,7 +523,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			} else {
 				String previousWord = null;
 				double previousWordWidth = 0;
-				
+
 				for (int i = 0; i < text.length(); ++i) {
 					double w;
 					if (Character.isWhitespace(text.charAt(i)))
@@ -516,9 +532,9 @@ public class WPdfImage extends WResource implements WPaintDevice {
 						w = font.stringWidth(text.subSequence(0, i + 1).toString());
 					else
 						continue;
-					
+
 					String s = text.subSequence(0, i + 1).toString();
-						
+
 					if (w > maxWidth) {
 						if (previousWord == null)
 							return new WTextItem(s, w);
@@ -549,18 +565,18 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	@Override
 	public WFontMetrics getFontMetrics() {
 		processChangeFlags();
-		
+
 		double ascent = this.font.getAscent();
 		double descent = this.font.getDescent();
 		//TODO leading??
-		double leading = 0; 
+		double leading = 0;
 
 		return new WFontMetrics(getPainter().getFont(), leading, ascent, descent);
 	}
 
 	@Override
 	public void init() {
-		
+
 	}
 
 	@Override
@@ -588,29 +604,29 @@ public class WPdfImage extends WResource implements WPaintDevice {
 
 		write(response.getOutputStream());
 	}
-	
+
 	public void write(OutputStream os) throws IOException {
 		try {
 			this.pdf.flush();
 		} catch (Exception e) {
 			logger.info("Exception flushing pdf", e);
 		}
-		
+
 		os.write(bos.toByteArray());
 	}
-	
+
 	private void setPenColor(WColor c) throws IOException {
 		page.setPenColor(c.getRed() / 255., c.getGreen() / 255., c.getBlue() / 255.);
 	}
-	
+
 	private void preparePen() {
 		WColor c = painter.getPen().getColor();
 		try {
 			setPenColor(c);
-			
+
 			if (stroke.pattern != null)
 				page.setLinePattern(stroke.pattern);
-			else 
+			else
 				page.setDefaultLinePattern();
 			page.setLineCapStyle(stroke.cap);
 			page.setLineJoinStyle(stroke.join);
@@ -619,11 +635,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			logger.info("IOException", e);
 		}
 	}
-	
+
 	private void setBrushColor(WColor c) throws IOException {
 		page.setBrushColor(c.getRed() / 255., c.getGreen() / 255., c.getBlue() / 255.);
 	}
-	
+
 	private void prepareBrush() {
 		WColor c = painter.getBrush().getColor();
 		try {
@@ -632,7 +648,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			logger.info("IOException", e);
 		}
 	}
-	
+
 	private class Stroke {
 		public Stroke(int cap, int join, float width, String pattern) {
 			this.cap = cap;
@@ -682,12 +698,12 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		default:
 			pattern = "[] 0";
 			break;
-			
+
 		}
-		
+
 		return new Stroke(cap, join, width, pattern);
 	}
-	
+
 	private void processChangeFlags() {
 		boolean resetTransform = changeFlags.contains(PainterChangeFlag.Transform);
 
@@ -707,14 +723,14 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			if (deviceTransform != null)
 				currentTransform = deviceTransform.multiply(currentTransform);
 		}
-		
+
 		if (changeFlags.contains(PainterChangeFlag.Pen))
 			stroke = createStroke(painter, painter.getPen());
 
 		if (resetTransform || changeFlags.contains(PainterChangeFlag.Font)) {
 			TRSSDecomposition d = new TRSSDecomposition();
 			currentTransform.decomposeTranslateRotateScaleSkew(d);
-			
+
 			this.font = createFont(painter.getFont());
 		}
 
@@ -741,7 +757,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 				} catch (FileNotFoundException e) {
 					logger.info("FileNotFoundException while creating font {}", font.getCssText(), e);
 				}
-			} 
+			}
 		}
 
 		String name = PdfUtils.toBase14Font(font);
@@ -754,33 +770,33 @@ public class WPdfImage extends WResource implements WPaintDevice {
 			return null;
 		}
 	}
-	
+
 	public void setDeviceTransform(WTransform transform) {
 		this.deviceTransform = new WTransform();
 		this.deviceTransform.translate(this.x, this.y);
 		this.deviceTransform.multiplyAndAssign(transform);
 		changeFlags.add(PainterChangeFlag.Transform);
 	}
-	
+
 	private WPainter painter;
 	private EnumSet<PainterChangeFlag> changeFlags;
-	
+
 	private WTransform deviceTransform;
-	
+
 	private Font font;
 	private Stroke stroke;
 
     private PDF pdf;
     private Page page;
-    
+
     private double x;
     private double y;
     private WLength width;
     private WLength height;
-    
+
     private WTransform currentTransform;
-    
+
     private ByteArrayOutputStream bos;
-    
+
     private FontSupport trueTypeFonts;
 }

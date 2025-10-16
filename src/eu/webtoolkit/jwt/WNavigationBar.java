@@ -39,6 +39,9 @@ public class WNavigationBar extends WTemplate {
   /** Constructor. */
   public WNavigationBar(WContainerWidget parentContainer) {
     super(tr("Wt.WNavigationBar.template"), (WContainerWidget) null);
+    this.flags_ = new BitSet();
+    this.wantResponsive_ = false;
+    this.addFunction("block", Functions.block);
     this.bindEmpty("collapse-button");
     this.bindEmpty("expand-button");
     this.bindEmpty("title-link");
@@ -71,7 +74,7 @@ public class WNavigationBar extends WTemplate {
       titleLink = new WAnchor();
       this.bindWidget("title-link", titleLink);
       WApplication app = WApplication.getInstance();
-      app.getTheme().apply(this, titleLink, WidgetThemeRole.NavBrand);
+      this.scheduleThemeStyleApply(app.getTheme(), titleLink, WidgetThemeRole.NavBrand);
     }
     titleLink.setText(title);
     titleLink.setLink(link);
@@ -99,70 +102,9 @@ public class WNavigationBar extends WTemplate {
    * navbars</a> for more info. </i>
    */
   public void setResponsive(boolean responsive) {
-    NavContainer contents = (NavContainer) this.resolveWidget("contents");
-    WApplication app = WApplication.getInstance();
-    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
-    if (bs5Theme != null) {
-      if (!responsive || (WInteractWidget) this.resolveWidget("collapse-button") != null) {
-        return;
-      }
-    }
-    if (bs5Theme != null) {
-      WInteractWidget collapseButtonPtr = this.getCreateCollapseButton();
-      WInteractWidget collapseButton = collapseButtonPtr;
-      this.bindWidget("collapse-button", collapseButtonPtr);
-      collapseButton
-          .clicked()
-          .addListener(
-              "function(o){let navbarCollapse = o.parentElement.querySelector('.navbar-collapse');if (typeof navbarCollapse === 'null') return;new bootstrap.Collapse(navbarCollapse);}");
-      if (!app.getEnvironment().hasAjax()) {
-        collapseButton
-            .clicked()
-            .addListener(
-                this,
-                (WMouseEvent e1) -> {
-                  WNavigationBar.this.toggleContents();
-                });
-      }
-      WApplication.getInstance().getTheme().apply(this, contents, WidgetThemeRole.NavCollapse);
-    } else {
-      if (responsive) {
-        WInteractWidget collapseButton = (WInteractWidget) this.resolveWidget("collapse-button");
-        WInteractWidget expandButton = (WInteractWidget) this.resolveWidget("expand-button");
-        if (!(collapseButton != null)) {
-          WInteractWidget b = this.getCreateCollapseButton();
-          collapseButton = b;
-          this.bindWidget("collapse-button", b);
-          collapseButton
-              .clicked()
-              .addListener(
-                  this,
-                  (WMouseEvent e1) -> {
-                    WNavigationBar.this.collapseContents();
-                  });
-          collapseButton.hide();
-          b = this.getCreateExpandButton();
-          expandButton = b;
-          this.bindWidget("expand-button", b);
-          expandButton
-              .clicked()
-              .addListener(
-                  this,
-                  (WMouseEvent e1) -> {
-                    WNavigationBar.this.expandContents();
-                  });
-        }
-        WApplication.getInstance().getTheme().apply(this, contents, WidgetThemeRole.NavCollapse);
-        contents.hide();
-        if (contents.isBootstrap2Responsive()) {
-          contents.setJavaScriptMember(
-              "wtAnimatedHidden",
-              "function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
-        }
-      } else {
-        this.bindEmpty("collapse-button");
-      }
-    }
+    this.wantResponsive_ = responsive;
+    this.flags_.set(BIT_RESPONSIVE_CHANGED);
+    this.scheduleRender();
   }
   /**
    * Adds a menu to the navigation bar.
@@ -181,7 +123,7 @@ public class WNavigationBar extends WTemplate {
     WMenu m = menu;
     this.addWidget(menu, alignment);
     WApplication app = WApplication.getInstance();
-    app.getTheme().apply(this, m, WidgetThemeRole.NavbarMenu);
+    this.scheduleThemeStyleApply(app.getTheme(), m, WidgetThemeRole.NavbarMenu);
     return m;
   }
   /**
@@ -230,7 +172,7 @@ public class WNavigationBar extends WTemplate {
    */
   public void addSearch(WLineEdit field, AlignmentFlag alignment) {
     WApplication app = WApplication.getInstance();
-    app.getTheme().apply(this, field, WidgetThemeRole.NavbarSearchInput);
+    this.scheduleThemeStyleApply(app.getTheme(), field, WidgetThemeRole.NavbarSearchInput);
     this.addWrapped(field, alignment, WidgetThemeRole.NavbarSearchForm);
   }
   /**
@@ -282,9 +224,23 @@ public class WNavigationBar extends WTemplate {
         new WPushButton(tr("Wt.WNavigationBar.expand-button"), (WContainerWidget) null);
     result.setTextFormat(TextFormat.XHTML);
     WApplication app = WApplication.getInstance();
-    app.getTheme().apply(this, result, WidgetThemeRole.NavbarBtn);
+    this.scheduleThemeStyleApply(app.getTheme(), result, WidgetThemeRole.NavbarBtn);
     return result;
   }
+
+  protected void render(EnumSet<RenderFlag> flags) {
+    if (this.flags_.get(BIT_RESPONSIVE_CHANGED)) {
+      this.doSetResponsive();
+      this.flags_.clear(BIT_RESPONSIVE_CHANGED);
+    }
+    this.setCondition("if:theme-style-enabled", this.isThemeStyleEnabled());
+    this.setCondition("if:theme-style-disabled", !this.isThemeStyleEnabled());
+    super.render(flags);
+  }
+
+  private static final int BIT_RESPONSIVE_CHANGED = 0;
+  BitSet flags_;
+  private boolean wantResponsive_;
 
   private void toggleContents() {
     WApplication app = WApplication.getInstance();
@@ -341,11 +297,83 @@ public class WNavigationBar extends WTemplate {
     }
   }
 
+  private void doSetResponsive() {
+    NavContainer contents = (NavContainer) this.resolveWidget("contents");
+    WApplication app = WApplication.getInstance();
+    boolean bs5Theme =
+        ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class) != null
+            && this.isThemeStyleEnabled();
+    if (bs5Theme) {
+      if (!this.wantResponsive_
+          || (WInteractWidget) this.resolveWidget("collapse-button") != null) {
+        return;
+      }
+    }
+    if (bs5Theme) {
+      WInteractWidget collapseButtonPtr = this.getCreateCollapseButton();
+      WInteractWidget collapseButton = collapseButtonPtr;
+      this.bindWidget("collapse-button", collapseButtonPtr);
+      collapseButton
+          .clicked()
+          .addListener(
+              "function(o){let navbarCollapse = o.parentElement.querySelector('.navbar-collapse');if (typeof navbarCollapse === 'null') return;new bootstrap.Collapse(navbarCollapse);}");
+      if (!app.getEnvironment().hasAjax()) {
+        collapseButton
+            .clicked()
+            .addListener(
+                this,
+                (WMouseEvent e1) -> {
+                  WNavigationBar.this.toggleContents();
+                });
+      }
+      this.scheduleThemeStyleApply(
+          WApplication.getInstance().getTheme(), contents, WidgetThemeRole.NavCollapse);
+    } else {
+      if (this.wantResponsive_) {
+        WInteractWidget collapseButton = (WInteractWidget) this.resolveWidget("collapse-button");
+        WInteractWidget expandButton = (WInteractWidget) this.resolveWidget("expand-button");
+        if (!(collapseButton != null)) {
+          WInteractWidget b = this.getCreateCollapseButton();
+          collapseButton = b;
+          this.bindWidget("collapse-button", b);
+          collapseButton
+              .clicked()
+              .addListener(
+                  this,
+                  (WMouseEvent e1) -> {
+                    WNavigationBar.this.collapseContents();
+                  });
+          collapseButton.hide();
+          b = this.getCreateExpandButton();
+          expandButton = b;
+          this.bindWidget("expand-button", b);
+          expandButton
+              .clicked()
+              .addListener(
+                  this,
+                  (WMouseEvent e1) -> {
+                    WNavigationBar.this.expandContents();
+                  });
+        }
+        this.scheduleThemeStyleApply(
+            WApplication.getInstance().getTheme(), contents, WidgetThemeRole.NavCollapse);
+        contents.hide();
+        if (contents.isBootstrap2Responsive()) {
+          contents.setJavaScriptMember(
+              "wtAnimatedHidden",
+              "function(hidden) {if (hidden) this.style.height=''; this.style.display='';}");
+        }
+      } else {
+        this.bindEmpty("collapse-button");
+      }
+    }
+  }
+
   private void addWrapped(WWidget widget, AlignmentFlag alignment, int role) {
     WContainerWidget contents = (WContainerWidget) this.resolveWidget("contents");
     WContainerWidget wrap = new WContainerWidget((WContainerWidget) contents);
     WApplication app = WApplication.getInstance();
-    app.getTheme().apply(this, wrap, role);
+    this.scheduleThemeStyleApply(app.getTheme(), wrap, role);
     this.align(wrap, alignment);
     wrap.addWidget(widget);
   }
@@ -354,10 +382,10 @@ public class WNavigationBar extends WTemplate {
     WApplication app = WApplication.getInstance();
     switch (alignment) {
       case Left:
-        app.getTheme().apply(this, widget, WidgetThemeRole.NavbarAlignLeft);
+        this.scheduleThemeStyleApply(app.getTheme(), widget, WidgetThemeRole.NavbarAlignLeft);
         break;
       case Right:
-        app.getTheme().apply(this, widget, WidgetThemeRole.NavbarAlignRight);
+        this.scheduleThemeStyleApply(app.getTheme(), widget, WidgetThemeRole.NavbarAlignRight);
         break;
       default:
         logger.error(

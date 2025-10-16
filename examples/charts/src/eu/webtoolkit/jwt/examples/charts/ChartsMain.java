@@ -17,9 +17,12 @@ public class ChartsMain extends WtServlet {
 
     public ChartsMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
         getConfiguration().setSendXHTMLMimeType(false);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
         app.setTitle("Charts example");

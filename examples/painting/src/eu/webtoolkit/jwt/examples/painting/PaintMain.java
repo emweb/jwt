@@ -16,6 +16,8 @@ public class PaintMain extends WtServlet {
 
     public PaintMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
     @Override

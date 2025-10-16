@@ -25,6 +25,13 @@ import org.slf4j.LoggerFactory;
  *
  * <p>The WSvgImage is primarily used by {@link WPaintedWidget} to render to the browser in Support
  * Vector Graphics (SVG) format.
+ *
+ * <p>
+ *
+ * <p><i><b>Note: </b>To paint an image ({@link WPainter#drawImage(WPointF point, WPainter.Image
+ * image) WPainter#drawImage()}), this requires its URI. </i>
+ *
+ * @see WAbstractDataInfo
  */
 public class WSvgImage extends WResource implements WVectorImage {
   private static Logger logger = LoggerFactory.getLogger(WSvgImage.class);
@@ -116,57 +123,13 @@ public class WSvgImage extends WResource implements WVectorImage {
 
   public void drawImage(
       final WRectF rect, final String imgUri, int imgWidth, int imgHeight, final WRectF srect) {
-    this.finishPath();
-    this.makeNewGroup();
-    WApplication app = WApplication.getInstance();
-    String imageUri = imgUri;
-    if (app != null) {
-      imageUri = app.resolveRelativeUrl(imgUri);
-    }
-    WRectF drect = rect;
-    char[] buf = new char[30];
-    boolean transformed = false;
-    if (drect.getWidth() != srect.getWidth() || drect.getHeight() != srect.getHeight()) {
-      this.shapes_
-          .append("<g transform=\"matrix(")
-          .append(MathUtils.roundJs(drect.getWidth() / srect.getWidth(), 3));
-      this.shapes_
-          .append(" 0 0 ")
-          .append(MathUtils.roundJs(drect.getHeight() / srect.getHeight(), 3));
-      this.shapes_.append(' ').append(MathUtils.roundJs(drect.getX(), 3));
-      this.shapes_.append(' ').append(MathUtils.roundJs(drect.getY(), 3)).append(")\">");
-      drect = new WRectF(0, 0, srect.getWidth(), srect.getHeight());
-      transformed = true;
-    }
-    double scaleX = drect.getWidth() / srect.getWidth();
-    double scaleY = drect.getHeight() / srect.getHeight();
-    double x = drect.getX() - srect.getX() * scaleX;
-    double y = drect.getY() - srect.getY() * scaleY;
-    double width = imgWidth;
-    double height = imgHeight;
-    boolean useClipPath = false;
-    int imgClipId = nextClipId_++;
-    if (!new WRectF(x, y, width, height).equals(drect)) {
-      this.shapes_.append("<clipPath id=\"imgClip").append(imgClipId).append("\">");
-      this.shapes_.append("<rect x=\"").append(MathUtils.roundJs(drect.getX(), 3)).append('"');
-      this.shapes_.append(" y=\"").append(MathUtils.roundJs(drect.getY(), 3)).append('"');
-      this.shapes_.append(" width=\"").append(MathUtils.roundJs(drect.getWidth(), 3)).append('"');
-      this.shapes_.append(" height=\"").append(MathUtils.roundJs(drect.getHeight(), 3)).append('"');
-      this.shapes_.append(" /></clipPath>");
-      useClipPath = true;
-    }
-    this.shapes_.append("<image xlink:href=\"").append(imageUri).append("\"");
-    this.shapes_.append(" x=\"").append(MathUtils.roundJs(x, 3)).append('"');
-    this.shapes_.append(" y=\"").append(MathUtils.roundJs(y, 3)).append('"');
-    this.shapes_.append(" width=\"").append(MathUtils.roundJs(width, 3)).append('"');
-    this.shapes_.append(" height=\"").append(MathUtils.roundJs(height, 3)).append('"');
-    if (useClipPath) {
-      this.shapes_.append(" clip-path=\"url(#imgClip").append(imgClipId).append(")\"");
-    }
-    this.shapes_.append("/>");
-    if (transformed) {
-      this.shapes_.append("</g>");
-    }
+    WDataInfo dataInfo = new WDataInfo(imgUri, imgUri);
+    this.doDrawImage(rect, dataInfo, imgWidth, imgHeight, srect);
+  }
+
+  public void drawImage(
+      final WRectF rect, WAbstractDataInfo info, int imgWidth, int imgHeight, final WRectF srect) {
+    this.doDrawImage(rect, info, imgWidth, imgHeight, srect);
   }
 
   public void drawLine(double x1, double y1, double x2, double y2) {
@@ -846,6 +809,68 @@ public class WSvgImage extends WResource implements WVectorImage {
         out.append(MathUtils.roundJs(s.getX() + this.pathTranslation_.getX(), 3));
         out.append(',').append(MathUtils.roundJs(s.getY() + this.pathTranslation_.getY(), 3));
       }
+    }
+  }
+
+  private void doDrawImage(
+      final WRectF rect, WAbstractDataInfo info, int imgWidth, int imgHeight, final WRectF srect) {
+    this.finishPath();
+    this.makeNewGroup();
+    WApplication app = WApplication.getInstance();
+    String imageUri = "";
+    if (info.hasUrl()) {
+      imageUri = info.getUrl();
+      if (app != null) {
+        imageUri = app.resolveRelativeUrl(imageUri);
+      }
+    } else {
+      if (info.hasDataUri()) {
+        imageUri = info.getDataUri();
+      }
+    }
+    WRectF drect = rect;
+    char[] buf = new char[30];
+    boolean transformed = false;
+    if (drect.getWidth() != srect.getWidth() || drect.getHeight() != srect.getHeight()) {
+      this.shapes_
+          .append("<g transform=\"matrix(")
+          .append(MathUtils.roundJs(drect.getWidth() / srect.getWidth(), 3));
+      this.shapes_
+          .append(" 0 0 ")
+          .append(MathUtils.roundJs(drect.getHeight() / srect.getHeight(), 3));
+      this.shapes_.append(' ').append(MathUtils.roundJs(drect.getX(), 3));
+      this.shapes_.append(' ').append(MathUtils.roundJs(drect.getY(), 3)).append(")\">");
+      drect = new WRectF(0, 0, srect.getWidth(), srect.getHeight());
+      transformed = true;
+    }
+    double scaleX = drect.getWidth() / srect.getWidth();
+    double scaleY = drect.getHeight() / srect.getHeight();
+    double x = drect.getX() - srect.getX() * scaleX;
+    double y = drect.getY() - srect.getY() * scaleY;
+    double width = imgWidth;
+    double height = imgHeight;
+    boolean useClipPath = false;
+    int imgClipId = nextClipId_++;
+    if (!new WRectF(x, y, width, height).equals(drect)) {
+      this.shapes_.append("<clipPath id=\"imgClip").append(imgClipId).append("\">");
+      this.shapes_.append("<rect x=\"").append(MathUtils.roundJs(drect.getX(), 3)).append('"');
+      this.shapes_.append(" y=\"").append(MathUtils.roundJs(drect.getY(), 3)).append('"');
+      this.shapes_.append(" width=\"").append(MathUtils.roundJs(drect.getWidth(), 3)).append('"');
+      this.shapes_.append(" height=\"").append(MathUtils.roundJs(drect.getHeight(), 3)).append('"');
+      this.shapes_.append(" /></clipPath>");
+      useClipPath = true;
+    }
+    this.shapes_.append("<image xlink:href=\"").append(imageUri).append("\"");
+    this.shapes_.append(" x=\"").append(MathUtils.roundJs(x, 3)).append('"');
+    this.shapes_.append(" y=\"").append(MathUtils.roundJs(y, 3)).append('"');
+    this.shapes_.append(" width=\"").append(MathUtils.roundJs(width, 3)).append('"');
+    this.shapes_.append(" height=\"").append(MathUtils.roundJs(height, 3)).append('"');
+    if (useClipPath) {
+      this.shapes_.append(" clip-path=\"url(#imgClip").append(imgClipId).append(")\"");
+    }
+    this.shapes_.append("/>");
+    if (transformed) {
+      this.shapes_.append("</g>");
     }
   }
 

@@ -455,6 +455,11 @@ public abstract class WAbstractArea extends WObject {
     return this.widget_.mouseWheel();
   }
 
+  public void setObjectName(final String name) {
+    this.widget_.setObjectName(name);
+    super.setObjectName(name);
+  }
+
   WAbstractArea() {
     super();
     this.uWidget_ = new AreaWidget(this);

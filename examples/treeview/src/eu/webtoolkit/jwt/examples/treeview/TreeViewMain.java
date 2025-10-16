@@ -14,9 +14,12 @@ public class TreeViewMain extends WtServlet {
 
     public TreeViewMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
         getConfiguration().setSendXHTMLMimeType(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new TreeViewApplication(env);
         app.setTitle("WTreeView example");

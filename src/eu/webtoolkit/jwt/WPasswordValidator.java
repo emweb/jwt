@@ -141,7 +141,7 @@ public class WPasswordValidator extends WRegExpValidator {
   public String getJavaScriptValidate() {
     WApplication.getInstance().loadJavaScript("js/WPasswordValidator.js", wtjs1());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_12_0.WPasswordValidator(")
+    js.append("new Wt4_12_1.WPasswordValidator(")
         .append(this.isMandatory())
         .append(",")
         .append(this.getMinLength())

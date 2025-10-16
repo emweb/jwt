@@ -33,7 +33,7 @@
   </target>
 
   <!-- Compile Java source -->
-  <target name="build">
+  <target name="build" depends="clean">
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
     
     <mkdir dir="${jwt-lib.dir}"/>

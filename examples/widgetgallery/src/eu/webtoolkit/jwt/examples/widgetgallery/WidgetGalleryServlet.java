@@ -20,6 +20,7 @@ public class WidgetGalleryServlet extends WtServlet {
 	public WidgetGalleryServlet() {
 		setConfiguration(new Configuration() {
 			{
+				setUseScriptNonce(true);
 				setErrorReporting(ErrorReporting.NoErrors);
 				setUaCompatible("IE8=IE7");
 				setTinyMCEVersion(4);

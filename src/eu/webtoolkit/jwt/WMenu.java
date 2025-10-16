@@ -482,6 +482,31 @@ public class WMenu extends WCompositeWidget {
     return result;
   }
   /**
+   * Moves an item.
+   *
+   * <p>Moves the item at the index <code>fromIndex</code> to the index <code>toIndex</code>.
+   */
+  public void moveItem(int fromIndex, int toIndex) {
+    this.moveItem(this.itemAt(fromIndex), toIndex);
+  }
+  /**
+   * Moves an item.
+   *
+   * <p>Moves the item at the <code>item</code> to the index <code>toIndex</code>.
+   */
+  public void moveItem(WMenuItem item, int toIndex) {
+    if (item != null) {
+      boolean needReload = item.loadPolicy_ == ContentLoading.Lazy && item.isContentsLoaded();
+      WMenuItem realItem = this.removeItem(item);
+      if (realItem != null) {
+        this.insertItem(toIndex, realItem);
+        if (needReload) {
+          item.loadContents();
+        }
+      }
+    }
+  }
+  /**
    * Selects an item.
    *
    * <p>Select the menu item <code>item</code>.

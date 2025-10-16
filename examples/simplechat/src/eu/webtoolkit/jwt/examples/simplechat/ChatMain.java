@@ -13,8 +13,11 @@ public class ChatMain extends WtServlet {
 		chatServer = new SimpleChatServer(this);
         // Enable websockets only if the servlet container has support for JSR-356 (Jetty 9, Tomcat 7, ...)
         //getConfiguration().setWebSocketsEnabled(true);
+
+        getConfiguration().setUseScriptNonce(true);
 	}
 
+  @Override
 	public WApplication createApplication(WEnvironment env) {
 		return new ChatApplication(env, chatServer);
 	}

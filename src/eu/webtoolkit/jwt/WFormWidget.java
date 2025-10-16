@@ -335,10 +335,12 @@ public abstract class WFormWidget extends WInteractWidget {
     this.flags_.set(BIT_VALIDATOR_CHANGED);
     String validateJS = this.validator_.getJavaScriptValidate();
     if (validateJS.length() != 0) {
+      WApplication app = WApplication.getInstance();
+      app.getTheme().loadValidationStyling(app);
       this.setJavaScriptMember("wtValidate", validateJS);
       if (!(this.validateJs_ != null)) {
         this.validateJs_ = new JSlot();
-        this.validateJs_.setJavaScript("function(o){Wt4_12_0.validate(o)}");
+        this.validateJs_.setJavaScript("function(o){Wt4_12_1.validate(o)}");
         this.keyWentUp().addListener(this.validateJs_);
         this.changed().addListener(this.validateJs_);
         if (this.getDomElementType() != DomElementType.SELECT) {
@@ -356,7 +358,7 @@ public abstract class WFormWidget extends WInteractWidget {
       }
       StringUtils.replace(inputFilter, '/', "\\/");
       this.filterInput_.setJavaScript(
-          "function(o,e){Wt4_12_0.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
+          "function(o,e){Wt4_12_1.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
     } else {
       if (this.filterInput_ != null) {
         this.keyPressed().removeListener(this.filterInput_);
@@ -407,7 +409,7 @@ public abstract class WFormWidget extends WInteractWidget {
       app.loadJavaScript("js/WFormWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WFormWidget",
-          "new Wt4_12_0.WFormWidget("
+          "new Wt4_12_1.WFormWidget("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()
@@ -482,12 +484,6 @@ public abstract class WFormWidget extends WInteractWidget {
     if (flags.contains(RenderFlag.Full)) {
       if (this.flags_.get(BIT_JS_OBJECT)) {
         this.defineJavaScript(true);
-      }
-      if (this.getRealValidator() != null) {
-        WValidator.Result result = this.getRealValidator().validate(this.getValueText());
-        WApplication.getInstance()
-            .getTheme()
-            .applyValidationStyle(this, result, EnumSet.of(ValidationStyleFlag.InvalidStyle));
       }
     }
     super.render(flags);

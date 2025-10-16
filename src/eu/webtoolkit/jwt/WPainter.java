@@ -330,10 +330,33 @@ public class WPainter {
      * x <i>height</i>.
      */
     public Image(final String url, int width, int height) {
-      this.url_ = "";
       this.width_ = width;
       this.height_ = height;
-      this.setUrl(url);
+      this.useOld_ = true;
+      this.info_ = (WAbstractDataInfo) null;
+      WDataInfo info = new WDataInfo();
+      if (DataUri.isDataUri(url)) {
+        info.setDataUri(url);
+      } else {
+        info.setUrl(url);
+      }
+      this.info_ = info;
+    }
+    /**
+     * Creates an image.
+     *
+     * <p>Create an image which URI and/or file path is given by <code>info</code>, and which has
+     * dimensions <code>width</code> x <code>height</code>.
+     *
+     * <p>
+     *
+     * <p><i><b>Note: </b>The information required depends on the {@link WPaintDevice} used. </i>
+     */
+    public Image(WAbstractDataInfo info, int width, int height) {
+      this.width_ = width;
+      this.height_ = height;
+      this.useOld_ = false;
+      this.info_ = info;
     }
     /**
      * Creates an image.
@@ -342,28 +365,48 @@ public class WPainter {
      * as <i>file</i>. The image dimensions are retrieved from the file.
      */
     public Image(final String url, final String fileName) {
-      this.url_ = "";
-      this.setUrl(url);
+      this.useOld_ = true;
+      this.info_ = (WAbstractDataInfo) null;
+      WDataInfo info = new WDataInfo();
+      info.setFilePath(fileName);
       if (DataUri.isDataUri(url)) {
-        DataUri uri = new DataUri(url);
-        WPoint size = eu.webtoolkit.jwt.utils.ImageUtils.getSize(uri.data);
-        if (size.getX() == 0 || size.getY() == 0) {
-          throw new WException("data url: (" + uri.mimeType + "): could not determine image size");
-        }
-        this.width_ = size.getX();
-        this.height_ = size.getY();
+        info.setDataUri(url);
       } else {
-        WPoint size = eu.webtoolkit.jwt.utils.ImageUtils.getSize(fileName);
-        if (size.getX() == 0 || size.getY() == 0) {
-          throw new WException("'" + fileName + "': could not determine image size");
-        }
-        this.width_ = size.getX();
-        this.height_ = size.getY();
+        info.setUrl(url);
       }
+      this.info_ = info;
+      this.evaluateSize();
+    }
+    /**
+     * Creates an image.
+     *
+     * <p>Create an image which URI and/or file path is given by <code>info</code>. The image
+     * dimensions are retrieved from the file (or the URI if it is a data URI).
+     *
+     * <p>
+     *
+     * <p><i><b>Note: </b>The information required depends on the {@link WPaintDevice} used. </i>
+     */
+    public Image(WAbstractDataInfo info) {
+      this.useOld_ = false;
+      this.info_ = info;
+      this.evaluateSize();
     }
     /** Returns the url. */
     public String getUri() {
-      return this.url_;
+      String uri = "";
+      if (this.info_.hasUrl()) {
+        uri = this.info_.getUrl();
+      } else {
+        if (this.info_.hasDataUri()) {
+          uri = this.info_.getDataUri();
+        }
+      }
+      return uri;
+    }
+    /** Returns the data info of the image. */
+    public WAbstractDataInfo getInfo() {
+      return this.info_;
     }
     /** Returns the image width. */
     public int getWidth() {
@@ -374,12 +417,36 @@ public class WPainter {
       return this.height_;
     }
 
-    private String url_;
     private int width_;
     private int height_;
+    private boolean useOld_;
+    private WAbstractDataInfo info_;
 
-    private void setUrl(final String url) {
-      this.url_ = url;
+    private void evaluateSize() {
+      if (this.info_.hasDataUri()) {
+        DataUri uri = new DataUri(this.info_.getDataUri());
+        WPoint size = eu.webtoolkit.jwt.utils.ImageUtils.getSize(uri.data);
+        if (size.getX() == 0 || size.getY() == 0) {
+          throw new WException("data uri: (" + uri.mimeType + "): could not determine image size");
+        }
+        this.width_ = size.getX();
+        this.height_ = size.getY();
+      } else {
+        if (this.info_.hasFilePath()) {
+          String fileName = this.info_.getFilePath();
+          WPoint size = eu.webtoolkit.jwt.utils.ImageUtils.getSize(fileName);
+          if (size.getX() == 0 || size.getY() == 0) {
+            throw new WException("'" + fileName + "': could not determine image size");
+          }
+          this.width_ = size.getX();
+          this.height_ = size.getY();
+        } else {
+          throw new WException(
+              "'"
+                  + this.info_.getName()
+                  + "': could not determine image size. Add a filePath or a data uri.");
+        }
+      }
     }
   }
   /**
@@ -427,9 +494,18 @@ public class WPainter {
    * necessary, the image is scaled to fit into the rectangle).
    */
   public void drawImage(final WRectF rect, final WPainter.Image image, final WRectF sourceRect) {
+    if (image.useOld_) {
+      this.device_.drawImage(
+          rect.getNormalized(),
+          image.getInfo().getUrl(),
+          image.getWidth(),
+          image.getHeight(),
+          sourceRect.getNormalized());
+      return;
+    }
     this.device_.drawImage(
         rect.getNormalized(),
-        image.getUri(),
+        image.getInfo(),
         image.getWidth(),
         image.getHeight(),
         sourceRect.getNormalized());
@@ -448,9 +524,18 @@ public class WPainter {
     if (sh <= 0) {
       sh = image.getHeight() - sy;
     }
+    if (image.useOld_) {
+      this.device_.drawImage(
+          new WRectF(x, y, sw, sh),
+          image.getInfo().getUrl(),
+          image.getWidth(),
+          image.getHeight(),
+          new WRectF(sx, sy, sw, sh));
+      return;
+    }
     this.device_.drawImage(
         new WRectF(x, y, sw, sh),
-        image.getUri(),
+        image.getInfo(),
         image.getWidth(),
         image.getHeight(),
         new WRectF(sx, sy, sw, sh));

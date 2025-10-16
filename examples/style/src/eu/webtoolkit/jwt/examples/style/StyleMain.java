@@ -14,6 +14,8 @@ public class StyleMain extends WtServlet {
 
     public StyleMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
     @Override

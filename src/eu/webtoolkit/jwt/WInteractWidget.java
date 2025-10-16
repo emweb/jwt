@@ -44,6 +44,7 @@ public abstract class WInteractWidget extends WWebWidget {
     this.dragSlot_ = null;
     this.dragTouchSlot_ = null;
     this.dragTouchEndSlot_ = null;
+    this.themeStyle_ = "";
     this.mouseOverDelay_ = 0;
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -535,7 +536,7 @@ public abstract class WInteractWidget extends WWebWidget {
     if (popup && WApplication.getInstance().getEnvironment().hasAjax()) {
       this.clicked()
           .addListener(
-              "function(o,e) {  if (Wt4_12_0.WPopupWidget && o.wtPopup) {Wt4_12_0.WPopupWidget.popupClicked = o;document.dispatchEvent(new MouseEvent('click', e));Wt4_12_0.WPopupWidget.popupClicked = null; }}");
+              "function(o,e) {  if (Wt4_12_1.WPopupWidget && o.wtPopup) {Wt4_12_1.WPopupWidget.popupClicked = o;document.dispatchEvent(new MouseEvent('click', e));Wt4_12_1.WPopupWidget.popupClicked = null; }}");
       this.clicked().preventPropagation();
     }
     super.setPopup(popup);
@@ -565,6 +566,13 @@ public abstract class WInteractWidget extends WWebWidget {
    * disable the default browser action for all the events of that widget.
    */
   public static final String noDefault = "Wt-no-default";
+
+  protected void render(EnumSet<RenderFlag> flags) {
+    if (this.themeStyle_.length() != 0 && this.isThemeStyleEnabled()) {
+      this.addStyleClass(this.themeStyle_);
+    }
+    super.render(flags);
+  }
 
   void updateDom(final DomElement element, boolean all) {
     boolean updateKeyDown = false;
@@ -635,7 +643,7 @@ public abstract class WInteractWidget extends WWebWidget {
     String HandlerChecks =
         "if(o.classList.contains('"
             + app.getTheme().getDisabledClass()
-            + "')){Wt4_12_0.cancelEvent(e);return;}"
+            + "')){Wt4_12_1.cancelEvent(e);return;}"
             + "if(o.classList.contains('"
             + noDefault
             + "')){e.preventDefault();}";
@@ -650,11 +658,11 @@ public abstract class WInteractWidget extends WWebWidget {
               && mouseDown.isConnected()
               && (mouseUp != null && mouseUp.isConnected()
                   || mouseMove != null && mouseMove.isConnected())) {
-        js.append("Wt4_12_0.capture(this);");
+        js.append("Wt4_12_1.capture(this);");
       }
       if (mouseMove != null && mouseMove.isConnected()
           || mouseDrag != null && mouseDrag.isConnected()) {
-        js.append("Wt4_12_0.mouseDown(e);");
+        js.append("Wt4_12_1.mouseDown(e);");
       }
       if (mouseDown != null) {
         js.append(mouseDown.getJavaScript());
@@ -670,7 +678,7 @@ public abstract class WInteractWidget extends WWebWidget {
       js.append(HandlerChecks);
       if (mouseMove != null && mouseMove.isConnected()
           || mouseDrag != null && mouseDrag.isConnected()) {
-        js.append("Wt4_12_0.mouseUp(e);");
+        js.append("Wt4_12_1.mouseUp(e);");
       }
       if (mouseUp != null) {
         js.append(mouseUp.getJavaScript());
@@ -691,8 +699,8 @@ public abstract class WInteractWidget extends WWebWidget {
       if (mouseDrag != null) {
         actions.add(
             new DomElement.EventAction(
-                "Wt4_12_0.buttons",
-                mouseDrag.getJavaScript() + "Wt4_12_0.drag(e);",
+                "Wt4_12_1.buttons",
+                mouseDrag.getJavaScript() + "Wt4_12_1.drag(e);",
                 mouseDrag.encodeCmd(),
                 mouseDrag.isExposedSignal()));
         mouseDrag.updateOk();
@@ -715,7 +723,7 @@ public abstract class WInteractWidget extends WWebWidget {
           && touchStart.isConnected()
           && (touchEnd != null && touchEnd.isConnected()
               || touchMove != null && touchMove.isConnected())) {
-        js.append("Wt4_12_0.capture(this);");
+        js.append("Wt4_12_1.capture(this);");
       }
       if (touchStart != null) {
         js.append(touchStart.getJavaScript());
@@ -757,12 +765,12 @@ public abstract class WInteractWidget extends WWebWidget {
       StringBuilder js = new StringBuilder();
       js.append(HandlerChecks);
       if (mouseDrag != null) {
-        js.append("if (Wt4_12_0.dragged()) return;");
+        js.append("if (Wt4_12_1.dragged()) return;");
       }
       if (mouseDblClick != null && mouseDblClick.needsUpdate(all)) {
         if (mouseClick != null) {
           if (mouseClick.isDefaultActionPrevented() || mouseClick.isPropagationPrevented()) {
-            js.append("Wt4_12_0.cancelEvent(e");
+            js.append("Wt4_12_1.cancelEvent(e");
             if (mouseClick.isDefaultActionPrevented() && mouseClick.isPropagationPrevented()) {
               js.append(");");
             } else {
@@ -774,7 +782,7 @@ public abstract class WInteractWidget extends WWebWidget {
             }
           }
         }
-        js.append("if(Wt4_12_0.isDblClick(o, e)) {").append(mouseDblClick.getJavaScript());
+        js.append("if(Wt4_12_1.isDblClick(o, e)) {").append(mouseDblClick.getJavaScript());
         if (mouseDblClick.isExposedSignal()) {
           js.append(app.getJavaScriptClass())
               .append("._p_.update(o,'")
@@ -783,7 +791,7 @@ public abstract class WInteractWidget extends WWebWidget {
         }
         mouseDblClick.updateOk();
         js.append(
-            "}else{if (Wt4_12_0.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
+            "}else{if (Wt4_12_1.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
         if (mouseClick != null) {
           js.append(mouseClick.getJavaScript());
           if (mouseClick.isExposedSignal()) {
@@ -917,5 +925,11 @@ public abstract class WInteractWidget extends WWebWidget {
   private static String GESTURE_CHANGE_SIGNAL = "gesturechange";
   private static String GESTURE_END_SIGNAL = "gestureend";
   private static String DRAGSTART_SIGNAL = "dragstart";
+  private String themeStyle_;
+
+  void addThemeStyle(final String style) {
+    this.themeStyle_ = style;
+  }
+
   private int mouseOverDelay_;
 }

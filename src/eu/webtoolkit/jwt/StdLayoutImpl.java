@@ -99,6 +99,8 @@ public abstract class StdLayoutImpl extends StdLayoutItemImpl implements WLayout
       c.layoutChanged(false);
     }
   }
+
+  public void setObjectName(final String name) {}
   /** Returns the {@link WLayout}. */
   protected WLayout getLayout() {
     return this.layout_;

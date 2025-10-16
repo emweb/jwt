@@ -14,8 +14,11 @@ public class JavaScriptMain extends WtServlet {
 
     public JavaScriptMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         return new JavaScriptExample(env);
     }

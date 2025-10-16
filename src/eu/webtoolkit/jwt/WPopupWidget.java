@@ -262,7 +262,7 @@ public class WPopupWidget extends WCompositeWidget {
     app.loadJavaScript("js/WPopupWidget.js", wtjs1());
     StringBuilder jsObj = new StringBuilder();
     jsObj
-        .append("new Wt4_12_0.WPopupWidget(")
+        .append("new Wt4_12_1.WPopupWidget(")
         .append(app.getJavaScriptClass())
         .append(',')
         .append(this.getJsRef())

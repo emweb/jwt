@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.12.0</title>
+<title>JWt 4.12.1</title>
 </head>
 <body>
 
@@ -24,6 +24,211 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.12.1 (October 16, 2025)</h2>
+
+<p>JWt 4.12.1 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13768" target="_blank">Issue #13768</a>:
+    <a href="eu/webtoolkit/jwt/auth/UpdatePasswordWidget.html">UpdatePasswordWidget</a>
+    no longer automatically logs a user in after a successful password reset.
+    This would otherwise allow logging in using only a single factor (email),
+    even when MFA is enabled.
+    This follows the
+    <a href="https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html#user-resets-password" target="_blank">OWASP guidelines</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13987" target="_blank">Issue #13987</a>:
+    fixed a bug where a <a href="eu/webtoolkit/jwt/WAnchor.html" target="_blank">WAnchor</a> linking to the base application path could
+    crash the application if rendered from the base path itself.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13669" target="_blank">Issue #13669</a>:
+    <a href="eu/webtoolkit/jwt/WObject.html##setObjectName(java.lang.String)" target="_blank">setObjectName()</a> should now correctly set the
+    <code>data-object-name</code> attribute of the DOM element representing
+    <a href="eu/webtoolkit/jwt/WLayout.html" target="_blank">WLayout</a>,
+    <a href="eu/webtoolkit/jwt/WAbstractArea.html" target="_blank">WAbstractArea</a>,
+    <a href="eu/webtoolkit/jwt/WTableRow.html" target="_blank">WTableRow</a>, and
+    <a href="eu/webtoolkit/jwt/WTableColumn.html" target="_blank">WTableColumn</a>.
+
+    Additionally, flexbox-based sub-layouts should now correctly be updated when removing or adding a widget to it, or when update is called.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13720" target="_blank">Issue #13720</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WAnchor.html" target="_blank">WAnchor</a> and
+    <a href="eu/webtoolkit/jwt/WAbstractArea.html" target="_blank">WAbstractArea</a> with no link losing their style classes.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13508" target="_blank">Issue #13508</a>:
+    fixed validation style being applied to a
+    <a href="eu/webtoolkit/jwt/WFormWidget.html" target="_blank">WFormWidget</a> on its first
+    rendering. Now, the validation is only applied once the user selects the widget, or when validation is called, using
+    <a href="eu/webtoolkit/jwt/WFormWidget.html#validate()" target="_blank">WFormWidget.validate()</a>.
+
+    Additionally, this introduces <a href="eu/webtoolkit/jwt/WTheme.html#loadValidationStyling(eu.webtoolkit.jwt.WApplication)" target="_blank">WTheme.loadValidationStyling()</a>.
+    This needs to be called for client-side validation to be available if extra JavaScript is necessary for it.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14000" target="_blank">Issue #14000</a>:
+    all Throwables are now caught when handing requests. Previously, if an Error would be thrown instead of an
+    Exception, this could go undetected since it was only caught by the servlet container.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13464" target="_blank">Issue #13464</a>:
+    fixed an error happening when re-adding a
+    <a href="eu/webtoolkit/jwt/WMenuItem.html" target="_blank">WMenuItem</a> to a
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> if the load policy of the
+    <a href="eu/webtoolkit/jwt/WMenuItem.html" target="_blank">WMenuItem</a> was set to
+    <a href="eu/webtoolkit/jwt/ContentLoading.html#Lazy" target="_blank">ContentLoading.Lazy</a>.
+
+    Additionally,
+    <a href="eu/webtoolkit/jwt/WMenu.html#moveItem(int,int)" target="_blank">WMenu.moveItem(int fromIndex, int toIndex)</a>
+    and
+    <a href="eu/webtoolkit/jwt/WMenu.html#moveItem(eu.webtoolkit.jwt.WMenuItem,int)" target="_blank">WMenu.moveItem(WMenuItem item, int toIndex)</a>
+    were added to make it easier to move items in
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a>s.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12424" target="_blank">Issue #12424</a>:
+    fixed a crash that could happen when a
+    <a href="eu/webtoolkit/jwt/WAbstractMedia.html" target="_blank">WAbstractMedia</a> widget was
+    added on the same page as a large
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a>.
+
+    Additionally, the rendering of the event handlers is now the same regardless
+    of whether or not nonces (see <a href="https://redmine.emweb.be/issues/13600" target="_blank">Issue #13600</a>) are enabled.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13530" target="_blank">Issue #13530</a>:
+    fixed <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> being always too small by <code>2px</code> when using both
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a> and
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#JavaScript" target="_blank">LayoutImplementation.JavaScript</a>. This lead to scrollbars
+    being unnecessarily present.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13623" target="_blank">Issue #13623</a>:
+    fixed JavaScript executed via
+    <a href="eu/webtoolkit/jwt/WApplication.html#doJavaScript(java.lang.String,boolean)" target="_blank">WApplication.doJavaScript()</a>
+    with <code>afterLoaded = false</code> being sometimes executed twice on application startup if the call happened before a call to
+    <a href="eu/webtoolkit/jwt/WApplication.html#require(java.lang.String)" target="_blank">WApplication.require()</a>.
+
+    Additionally, fixed libraries being loaded before the JavaScript executed via
+    <a href="eu/webtoolkit/jwt/WApplication.html#doJavaScript(java.lang.String,boolean)" target="_blank">WApplication.doJavaScript()</a>
+    with <code>afterLoaded = false</code> when using progressive bootstrap.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13569" target="_blank">Issue #13569</a>:
+    most of the automatic application of the theme style are now delayed until the rendering of the widget.
+    This allows
+    <a href="classWt_1_1WWidget.html#setThemeStyleEnabled(boolean)" target="_blank">WWidget.setThemeStyleEnabled(false)</a>
+    to correctly disable the theme style for the widgets. Furthermore, if the theme changes
+    the DOM structure of the widget,
+    <a href="classWt_1_1WWidget.html#setThemeStyleEnabled(boolean)" target="_blank">WWidget.setThemeStyleEnabled(false)</a>
+    will now also stop that change from happening. The description of the function has
+    also been updated to describe more precisely what it does and what it does not do.
+
+    Additionally some cases of style classes being present several times in the same
+    widget are now fixed.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13683" target="_blank">Issue #13683</a>:
+    <a href="eu/webtoolkit/jwt/WSlider.html" target="_blank">WSlider</a> now also
+    displays a color from the edge of the widget to the current slider handle position
+    in Bootstrap 5 theme, as it does in Bootstrap 3 and 2 themes.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11129" target="_blank">Issue #11129</a>:
+    fixed the <code>lang</code> HTML tag always being set to <code>en</code> for plain HTML sessions.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/4362" target="_blank">Issue #4362</a>:
+    removed slf4j-simple as a depencendy of JWt. A library should not choose the logging tool, that is up to the developer.
+    Worst case the chosen default option may interfere with a developer's choice.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13602" target="_blank">Issue #13602</a>:
+    ensured that the items inside a
+    <a href="eu/webtoolkit/jwt/WSuggestionPopup.html" target="_blank">WSuggestionPopup</a>
+    receive the correct styling when using
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a>.
+  </li>
+</ul>
+
+<p>JWt 4.12.1 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13970" target="_blank">Issue #13970</a>:
+    killed sessions started from suspicious GET requests quicker. The GET request is considered suspect if they contain a <code>wtd</code> (session ID) in the URL for a new session.
+    This should prevent application from keeping a session that will not identify a regular client (but likely comes from a bot) alive for too long.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13391" target="_blank">Issue #13391</a>:
+    added the possibility to specify the square size and the error correction level of the
+    <a href="eu/webtoolkit/jwt/Auth_1_1Mfa_1_1TotpQrCode.html" target="_blank">TotpQrCode</a> in the
+    <a href="eu/webtoolkit/jwt/Auth_1_1AuthService.html" target="_blank">AuthService</a> using
+    <a href="eu/webtoolkit/jwt/Auth_1_1AuthService.html#setMfaQrCodeSquareSize(int)" target="_blank">AuthService.setMfaQrCodeSquareSize()</a> and
+    <a href="eu/webtoolkit/jwt/Auth_1_1AuthService.html#setMfaQrCodeErrCorrLvl(eu.webtoolkit.jwt.WQrCode.ErrorCorrectionLevel" target="_blank">AuthService.setMfaQrCodeErrCorrLvl()</a> respectively.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13788" target="_blank">Issue #13788</a>:
+    the version of Bootstrap 5 bundled with Wt was updated to 5.3.8.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13601" target="_blank">Issue #13601</a>:
+    updated the <a href="https://fontawesome.com/" target="_blank">Font Awsome library</a>
+    bundled with Wt to version 4.7.0.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13367" target="_blank">Issue #13367</a>:
+    <p>
+      when <a href="eu/webtoolkit/jwt/WPainter.html" target="_blank">WPainter.drawImage()</a> was called, the information needed to identify
+      the image was given via a string. Depending on what <a href="eu/webtoolkit/jwt/WPaintDevice.html" target="_blank">WPaintDevice</a> is used to draw the image, the content of this string could differ.
+      Some devices expected a URI, others a file path to the image or a data URI. This is problematic when using a <a href="eu/webtoolkit/jwt/WPaintedWidget.html" target="_blank">WPaintedWidget</a>
+      since you do not know in advance what <code>WPaintDevice</code> will be used. While this was kind of handled by assuming the file was in the docroot, this did not
+      give much control to the developer on how it should be handled, and could result in errors due to bad assumptions.
+    </p>
+    <p>
+      To solve this issue we introduce the <a href="eu/webtoolkit/jwt/WAbstractDataInfo.html" target="_blank">WAbstractDataInfo</a> class. This class is used by painters
+      and paint devices to get the location information of the image required to draw it. While <code>WAbstractDataInfo</code> is an abstract class, two subclasses are available
+      in Wt:
+      <ul>
+        <li>
+          <a href="eu/webtoolkit/jwt/WDataInfo.html" target="_blank">WDataInfo</a>, which is constructed by taking both the uri and the path to the file.
+        </li>
+        <li>
+          <a href="eu/webtoolkit/jwt/WWebRootDataInfo.html" target="_blank">WWebRootDataInfo</a>, which stores the information about a file in the WebRoot, and is
+          constructed using the file path relative to the WebRoot.
+        </li>
+      </ul>
+    </p>
+    <p>
+      The methods:
+      <ul>
+        <li><a href="eu/webtoolkit/jwt/WPainter.Image.html#<init>(java.lang.String,int,int)" target="_blank">WPainter.Image.Image(string, int, int)</a></li>
+        <li><a href="eu/webtoolkit/jwt/WPainter.Image.html#<init>(java.lang.String,java.lang.String)" target="_blank">WPainter.Image.Image(string, string)</a></li>
+        <li><a href="eu/webtoolkit/jwt/WPaintDevice.html#drawImage(eu.webtoolkit.jwt.WRectF,java.lang.String,int,int,eu.webtoolkit.jwt.WRectF)" target="_blank">WPaintDevice.drawImage(WRectF, string, int, int, WRectF)</a></li>
+      </ul>
+      are now deprecated in favor of versions that use <code>WAbstractDataInfo</code> in place of <code>java.lang.String</code>.
+    </p>
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13478" target="_blank">Issue #13478</a>:
+    the login views in
+    <a href="eu/webtoolkit/jwt/auth/package-summary.html" target="_blank">Wt.Auth</a> are now more consistent.
+    Additionally, the <code>resend-email-verification</code> view is not missing anymore for default, or polished CSS themes.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13881" target="_blank">Issue #13881</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WResource.html#setAlternativeBotUrl(java.lang.String)" target="_blank">WResource.setAlternativeBotUrl()</a> and
+    <a href="eu/webtoolkit/jwt/WImage.html#setAlternativeBotUrl(java.lang.String)" target="_blank">WImage.setAlternativeBotUrl()</a> that allow
+    to set an alternative URL that will be served to clients that are detected as bot agents (see <a href="eu/webtoolkit/jwt/WEnvironment.html#agentIsSpiderBot()" target="_blank">WEnvironment.agentIsSpiderBot()</a>).
+  </li>
+</ul>
 
 <h2>Release 4.12.0 (July 23, 2025)</h2>
 
@@ -710,7 +915,7 @@ behaviour. It also indicates the main changes from version to verison.
 <h2>Release 4.10.0 (May 30, 2023)</h2>
 
 <p>
-  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement. 
+  JWt 4.10.0 mainly consists of new features that provide some convenience and a back-end improvement.
 </p>
 
 <h3>New features</h3>
@@ -2045,7 +2250,7 @@ compress uploads client side.
 	method was added to <a href="eu/webtoolkit/jwt/WPainter.html">WPainter</a>.
       </li>
       <li>
-	Previously, WDialogs were movable by default. It's now possible to disable this with 
+	Previously, WDialogs were movable by default. It's now possible to disable this with
 	<a href="eu/webtoolkit/jwt/WDialog.html#setMovable-boolean-">WDialog#setMovable()</a>.
       </li>
     </ul>
@@ -2158,7 +2363,7 @@ compress uploads client side.
 
 	This is only available if the chart is drawn
 	on an HTML canvas. This is the default rendering method on modern browsers.
-	
+
 	When enabled, the crosshair will follow mouse movement,
 	and show in the top right corner the coordinate
 	(according to X axis and the first Y axis)  corresponding to this position.
@@ -2230,7 +2435,7 @@ compress uploads client side.
     changed now: an axis is now a polymorphic class and its behaviour
     can now be extended (e.g. to change the way its labels are being
     defined).
-  </dd>  
+  </dd>
 
   <dt>
     <a href="eu/webtoolkit/jwt/chart/WAbstractChart.html#setAutoLayoutEnabled(boolean)">chart.WAbstractChart::setAutoLayoutEnabled()</a>
@@ -2551,7 +2756,7 @@ compress uploads client side.
   </dt>
   <dd>
     Addition of a getValidator() function that returns the validator for
-    a field set using setValidator(), 
+    a field set using setValidator(),
   </dd>
 
   <dt>
@@ -2648,7 +2853,7 @@ compress uploads client side.
     noticable API changes, except for the changes in markup and CSS
     documented above.
   </dd>
-  
+
   <dt>
     <a href="eu/webtoolkit/jwt/WTreeNode.html">WTreeNode</a>,
     <a href="eu/webtoolkit/jwt/WTreeTable.html">WTreeTable</a>

@@ -251,7 +251,7 @@ public class WLink {
           if (app.getEnvironment().hasAjax()) {
             relativeUrl = app.getBookmarkUrl(this.getInternalPath());
           } else {
-            if (app.getEnvironment().agentIsSpiderBot()) {
+            if (app.getEnvironment().isTreatLikeBot()) {
               relativeUrl = app.getBookmarkUrl(this.getInternalPath());
             } else {
               relativeUrl = app.getSession().getMostRelativeUrl(this.getInternalPath());

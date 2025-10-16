@@ -47,11 +47,10 @@ public class WTableRow extends WObject {
     super();
     this.table_ = null;
     this.cells_ = new ArrayList<WTableCell>();
+    this.flags_ = new BitSet();
     this.height_ = new WLength();
     this.id_ = "";
     this.styleClass_ = "";
-    this.hidden_ = false;
-    this.hiddenChanged_ = false;
     // this.implementStateless(WTableRow.hide,WTableRow.undoHide);
     // this.implementStateless(WTableRow.show,WTableRow.undoHide);
   }
@@ -201,12 +200,12 @@ public class WTableRow extends WObject {
    * @see WTableRow#show()
    */
   public void setHidden(boolean how) {
-    if (WWebWidget.canOptimizeUpdates() && this.hidden_ == how) {
+    if (WWebWidget.canOptimizeUpdates() && this.flags_.get(BIT_HIDDEN) == how) {
       return;
     }
-    this.wasHidden_ = this.hidden_;
-    this.hidden_ = how;
-    this.hiddenChanged_ = true;
+    this.flags_.set(BIT_WAS_HIDDEN, this.flags_.get(BIT_HIDDEN));
+    this.flags_.set(BIT_HIDDEN, how);
+    this.flags_.set(BIT_HIDDEN_CHANGED);
     if (this.table_ != null) {
       this.table_.repaintRow(this);
     }
@@ -219,7 +218,7 @@ public class WTableRow extends WObject {
    * @see WTableRow#setHidden(boolean how)
    */
   public boolean isHidden() {
-    return this.hidden_;
+    return this.flags_.get(BIT_HIDDEN);
   }
   /**
    * Hides the row.
@@ -263,6 +262,16 @@ public class WTableRow extends WObject {
     }
   }
 
+  public void setObjectName(final String name) {
+    if (!this.getObjectName().equals(name)) {
+      super.setObjectName(name);
+      this.flags_.set(BIT_OBJECT_NAME_CHANGED);
+      if (this.table_ != null) {
+        this.table_.repaintRow(this);
+      }
+    }
+  }
+
   WTableCell createCell(int column) {
     if (this.table_ != null) {
       return this.table_.createCell(this.getRowNum(), column);
@@ -286,12 +295,14 @@ public class WTableRow extends WObject {
 
   WTable table_;
   List<WTableCell> cells_;
+  private static final int BIT_HIDDEN = 0;
+  private static final int BIT_WAS_HIDDEN = 1;
+  private static final int BIT_HIDDEN_CHANGED = 2;
+  private static final int BIT_OBJECT_NAME_CHANGED = 3;
+  private BitSet flags_;
   private WLength height_;
   private String id_;
   private String styleClass_;
-  private boolean hidden_;
-  private boolean hiddenChanged_;
-  private boolean wasHidden_;
 
   void updateDom(final DomElement element, boolean all) {
     if (!this.height_.isAuto()) {
@@ -300,9 +311,19 @@ public class WTableRow extends WObject {
     if (!all || this.styleClass_.length() != 0) {
       element.setProperty(Property.Class, this.styleClass_);
     }
-    if (all && this.hidden_ || !all && this.hiddenChanged_) {
-      element.setProperty(Property.StyleDisplay, this.hidden_ ? "none" : "");
-      this.hiddenChanged_ = false;
+    if (all && this.flags_.get(BIT_HIDDEN) || !all && this.flags_.get(BIT_HIDDEN_CHANGED)) {
+      element.setProperty(Property.StyleDisplay, this.flags_.get(BIT_HIDDEN) ? "none" : "");
+      this.flags_.clear(BIT_HIDDEN_CHANGED);
+    }
+    if (all || this.flags_.get(BIT_OBJECT_NAME_CHANGED)) {
+      if (this.getObjectName().length() != 0) {
+        element.setAttribute("data-object-name", this.getObjectName());
+      } else {
+        if (!all) {
+          element.removeAttribute("data-object-name");
+        }
+      }
+      this.flags_.clear(BIT_OBJECT_NAME_CHANGED);
     }
   }
 
@@ -336,6 +357,6 @@ public class WTableRow extends WObject {
   }
 
   private void undoHide() {
-    this.setHidden(this.wasHidden_);
+    this.setHidden(this.flags_.get(BIT_WAS_HIDDEN));
   }
 }

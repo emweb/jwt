@@ -36,7 +36,8 @@ class PaintingImagesWidget extends WPaintedWidget {
 
   protected void paintEvent(WPaintDevice paintDevice) {
     WPainter painter = new WPainter(paintDevice);
-    WPainter.Image image = new WPainter.Image("pics/sintel_trailer.jpg", 639, 354);
+    WPainter.Image image =
+        new WPainter.Image(new WWebRootDataInfo("pics/sintel_trailer.jpg"), 639, 354);
     painter.drawImage(0.0, 0.0, image);
     painter.drawImage(0.0, 364.0, image, 110.0, 75.0, 130.0, 110.0);
     WPointF location = new WPointF(0.0, 484.0);

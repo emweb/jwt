@@ -871,7 +871,7 @@ public abstract class WWebWidget extends WWidget {
     if (app.getEnvironment().hasJavaScript()) {
       stub.setProperty(Property.InnerHTML, "...");
     }
-    if (!app.getEnvironment().agentIsSpiderBot() || this.id_ != null) {
+    if (!app.getEnvironment().isTreatLikeBot() || this.id_ != null) {
       stub.setId(this.getId());
     }
     return stub;
@@ -1323,13 +1323,13 @@ public abstract class WWebWidget extends WWidget {
       if (this.layoutImpl_ != null) {
         if (this.layoutImpl_.zIndex_ > 0) {
           element.setProperty(Property.StyleZIndex, String.valueOf(this.layoutImpl_.zIndex_));
-          element.addPropertyWord(Property.Class, "Wt-popup");
           if (!all
               && !this.flags_.get(BIT_STYLECLASS_CHANGED)
               && this.lookImpl_ != null
               && this.lookImpl_.styleClass_.length() != 0) {
-            element.addPropertyWord(Property.Class, this.lookImpl_.styleClass_);
+            element.addPropertyWords(Property.Class, this.lookImpl_.styleClass_);
           }
+          element.addPropertyWord(Property.Class, "Wt-popup");
           if (!(app != null)) {
             app = WApplication.getInstance();
           }
@@ -1346,7 +1346,7 @@ public abstract class WWebWidget extends WWidget {
             app.addAutoJavaScript(
                 "{var w = "
                     + this.getJsRef()
-                    + ";if (w && !Wt4_12_0.isHidden(w)) {var i = Wt4_12_0.getElement('"
+                    + ";if (w && !Wt4_12_1.isHidden(w)) {var i = Wt4_12_1.getElement('"
                     + i.getId()
                     + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
             element.addChild(i);
@@ -1551,7 +1551,7 @@ public abstract class WWebWidget extends WWidget {
             String showOnHover = jsShowOnHover ? "true" : "false";
             String forceShow = this.flags_.get(BIT_TOOLTIP_FORCE_SHOW) ? "true" : "false";
             element.callJavaScript(
-                "Wt4_12_0.toolTip("
+                "Wt4_12_1.toolTip("
                     + app.getJavaScriptClass()
                     + ","
                     + jsStringLiteral(this.getId())
@@ -1601,7 +1601,7 @@ public abstract class WWebWidget extends WWidget {
       }
       if (all || this.flags_.get(BIT_STYLECLASS_CHANGED)) {
         if (!all || this.lookImpl_.styleClass_.length() != 0) {
-          element.addPropertyWord(Property.Class, this.lookImpl_.styleClass_);
+          element.addPropertyWords(Property.Class, this.lookImpl_.styleClass_);
         }
       }
       this.flags_.clear(BIT_STYLECLASS_CHANGED);
@@ -1609,7 +1609,7 @@ public abstract class WWebWidget extends WWidget {
     if (!all && this.transientImpl_ != null) {
       for (int i = 0; i < this.transientImpl_.addedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "Wt4_12_0.$('"
+            "Wt4_12_1.$('"
                 + this.getId()
                 + "').classList.add('"
                 + this.transientImpl_.addedStyleClasses_.get(i)
@@ -1617,7 +1617,7 @@ public abstract class WWebWidget extends WWidget {
       }
       for (int i = 0; i < this.transientImpl_.removedStyleClasses_.size(); ++i) {
         element.callJavaScript(
-            "Wt4_12_0.$('"
+            "Wt4_12_1.$('"
                 + this.getId()
                 + "').classList.remove('"
                 + this.transientImpl_.removedStyleClasses_.get(i)
@@ -1629,7 +1629,7 @@ public abstract class WWebWidget extends WWidget {
           for (int i = 0; i < this.transientImpl_.childRemoveChanges_.size(); ++i) {
             final String js = this.transientImpl_.childRemoveChanges_.get(i);
             if (js.charAt(0) == '_') {
-              element.callJavaScript("Wt4_12_0.remove('" + js.substring(1) + "');", true);
+              element.callJavaScript("Wt4_12_1.remove('" + js.substring(1) + "');", true);
             } else {
               element.callJavaScript(js, true);
             }
@@ -1653,7 +1653,7 @@ public abstract class WWebWidget extends WWidget {
         element.setAttribute("unselectable", "on");
         StringBuilder selectJS = new StringBuilder();
         selectJS
-            .append("Wt4_12_0")
+            .append("Wt4_12_1")
             .append(".$('")
             .append(this.getId())
             .append("').onselectstart = ")
@@ -1665,7 +1665,7 @@ public abstract class WWebWidget extends WWidget {
           element.setAttribute("unselectable", "off");
           StringBuilder selectJS = new StringBuilder();
           selectJS
-              .append("Wt4_12_0")
+              .append("Wt4_12_1")
               .append(".$('")
               .append(this.getId())
               .append("').onselectstart = ")
@@ -1743,7 +1743,7 @@ public abstract class WWebWidget extends WWidget {
     if (this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
       if (this.flags_.get(BIT_HIDDEN_CHANGED) || all && this.flags_.get(BIT_HIDDEN)) {
         if (this.flags_.get(BIT_HIDDEN)) {
-          element.callJavaScript("Wt4_12_0.$('" + this.getId() + "').classList.add('Wt-hidden');");
+          element.callJavaScript("Wt4_12_1.$('" + this.getId() + "').classList.add('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "hidden");
           if (this.flags_.get(BIT_HIDE_WITH_OFFSETS)) {
             element.setProperty(Property.StylePosition, "absolute");
@@ -1784,7 +1784,7 @@ public abstract class WWebWidget extends WWidget {
             }
           }
           element.callJavaScript(
-              "Wt4_12_0.$('" + this.getId() + "').classList.remove('Wt-hidden');");
+              "Wt4_12_1.$('" + this.getId() + "').classList.remove('Wt-hidden');");
           element.setProperty(Property.StyleVisibility, "visible");
         }
       }
@@ -1799,7 +1799,7 @@ public abstract class WWebWidget extends WWidget {
         app.loadJavaScript(THIS_JS, wtjs2());
         if (!this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_12_0")
+          ss.append("Wt4_12_1")
               .append(".animateDisplay(")
               .append(app.getJavaScriptClass())
               .append(",'")
@@ -1821,7 +1821,7 @@ public abstract class WWebWidget extends WWidget {
           }
         } else {
           StringBuilder ss = new StringBuilder();
-          ss.append("Wt4_12_0")
+          ss.append("Wt4_12_1")
               .append(".animateVisible('")
               .append(this.getId())
               .append("',")
@@ -1888,13 +1888,13 @@ public abstract class WWebWidget extends WWidget {
       if (!app.isJavaScriptLoaded(SCROLL_JS) && this.isScrollVisibilityEnabled()) {
         app.loadJavaScript(SCROLL_JS, wtjs3());
         StringBuilder ss = new StringBuilder();
-        ss.append("if (!Wt4_12_0.scrollVisibility) {Wt4_12_0.scrollVisibility = new ");
-        ss.append("Wt4_12_0.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
+        ss.append("if (!Wt4_12_1.scrollVisibility) {Wt4_12_1.scrollVisibility = new ");
+        ss.append("Wt4_12_1.ScrollVisibility(").append(app.getJavaScriptClass() + "); }");
         element.callJavaScript(ss.toString());
       }
       if (this.isScrollVisibilityEnabled()) {
         StringBuilder ss = new StringBuilder();
-        ss.append("Wt4_12_0.scrollVisibility.add({");
+        ss.append("Wt4_12_1.scrollVisibility.add({");
         ss.append("el:").append(this.getJsRef()).append(',');
         ss.append("margin:").append(this.getScrollVisibilityMargin()).append(',');
         ss.append("visible:").append(this.isScrollVisible());
@@ -1904,7 +1904,7 @@ public abstract class WWebWidget extends WWidget {
       } else {
         if (this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) {
           element.callJavaScript(
-              "Wt4_12_0.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
+              "Wt4_12_1.scrollVisibility.remove(" + jsStringLiteral(this.getId()) + ");");
           this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
         }
       }
@@ -1969,7 +1969,7 @@ public abstract class WWebWidget extends WWidget {
     final StringBuilder result = new StringBuilder();
     if (this.isRendered() && this.isScrollVisibilityEnabled()) {
       result
-          .append("Wt4_12_0.scrollVisibility.remove(")
+          .append("Wt4_12_1.scrollVisibility.remove(")
           .append(jsStringLiteral(this.getId()))
           .append(");");
       this.flags_.set(BIT_SCROLL_VISIBILITY_CHANGED);
@@ -1983,7 +1983,7 @@ public abstract class WWebWidget extends WWidget {
       if ((result.length() == 0)) {
         result.append("_").append(this.getId());
       } else {
-        result.append("Wt4_12_0.remove('").append(this.getId()).append("');");
+        result.append("Wt4_12_1.remove('").append(this.getId()).append("');");
       }
     }
     return result.toString();
@@ -2632,7 +2632,7 @@ public abstract class WWebWidget extends WWidget {
   }
 
   void setId(DomElement element, WApplication app) {
-    if (!app.getEnvironment().agentIsSpiderBot() || this.id_ != null) {
+    if (!app.getEnvironment().isTreatLikeBot() || this.id_ != null) {
       if (!this.flags_.get(BIT_FORM_OBJECT)) {
         element.setId(this.getId());
       } else {

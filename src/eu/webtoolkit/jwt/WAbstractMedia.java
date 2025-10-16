@@ -266,7 +266,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (this.mediaId_.length() == 0) {
       return "null";
     } else {
-      return "Wt4_12_0.getElement('" + this.mediaId_ + "')";
+      return "Wt4_12_1.getElement('" + this.mediaId_ + "')";
     }
   }
 
@@ -277,7 +277,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
       if (this.sourcesChanged_) {
         for (int i = 0; i < this.sourcesRendered_; ++i) {
           media.callJavaScript(
-              "Wt4_12_0.remove('" + this.mediaId_ + "s" + String.valueOf(i) + "');", true);
+              "Wt4_12_1.remove('" + this.mediaId_ + "s" + String.valueOf(i) + "');", true);
         }
         this.sourcesRendered_ = 0;
         for (int i = 0; i < this.sources_.size(); ++i) {
@@ -378,7 +378,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (all && this.alternative_ != null) {
       StringBuilder errorJS = new StringBuilder();
       errorJS
-          .append("Wt4_12_0")
+          .append("Wt4_12_1")
           .append(".$('")
           .append(this.getId())
           .append("').onerror = ")
@@ -387,7 +387,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
           .append("event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED) {")
           .append("while (this.hasChildNodes()) {")
           .append("if (")
-          .append("Wt4_12_0")
+          .append("Wt4_12_1")
           .append(".hasTag(this.firstChild,'SOURCE')) {")
           .append("this.removeChild(this.firstChild);")
           .append("} else {")
@@ -523,7 +523,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     if (isLast && this.alternative_ != null) {
       StringBuilder errorJS = new StringBuilder();
       errorJS
-          .append("Wt4_12_0")
+          .append("Wt4_12_1")
           .append(".$('")
           .append(element.getId())
           .append("').onerror = ")
@@ -532,7 +532,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
           .append("if(media) {")
           .append("while (media && media.children.length)")
           .append("if (")
-          .append("Wt4_12_0")
+          .append("Wt4_12_1")
           .append(".hasTag(media.firstChild,'SOURCE')) {")
           .append("media.removeChild(media.firstChild);")
           .append("} else {")
@@ -545,7 +545,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
     } else {
       StringBuilder errorJS = new StringBuilder();
       errorJS
-          .append("Wt4_12_0")
+          .append("Wt4_12_1")
           .append(".$('")
           .append(element.getId())
           .append("').onerror = null;");
@@ -580,7 +580,7 @@ public abstract class WAbstractMedia extends WInteractWidget {
       app.loadJavaScript("js/WAbstractMedia.js", wtjs1());
       this.setJavaScriptMember(
           " WAbstractMedia",
-          "new Wt4_12_0.WAbstractMedia(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+          "new Wt4_12_1.WAbstractMedia(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
     }
   }
 

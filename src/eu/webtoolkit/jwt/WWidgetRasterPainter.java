@@ -58,7 +58,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
     this.device_ = device;
     StringBuilder selectJS = new StringBuilder();
     selectJS
-        .append("Wt4_12_0")
+        .append("Wt4_12_1")
         .append(".$('")
         .append("i")
         .append(this.widget_.getId())
@@ -67,7 +67,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
     WApplication.getInstance().doJavaScript(selectJS.toString());
     StringBuilder mouseJS = new StringBuilder();
     mouseJS
-        .append("Wt4_12_0")
+        .append("Wt4_12_1")
         .append(".$('")
         .append("i")
         .append(this.widget_.getId())

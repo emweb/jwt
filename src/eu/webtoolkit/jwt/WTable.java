@@ -459,7 +459,7 @@ public class WTable extends WInteractWidget {
   }
 
   protected DomElement createDomElement(WApplication app) {
-    boolean withIds = !app.getEnvironment().agentIsSpiderBot();
+    boolean withIds = !app.getEnvironment().isTreatLikeBot();
     DomElement table = DomElement.createNew(this.getDomElementType());
     this.setId(table, app);
     DomElement thead = null;

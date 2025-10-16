@@ -30,6 +30,11 @@ import org.slf4j.LoggerFactory;
  *
  * <p><i><b>Note: </b>The current implementation has only limited support for clipping: only
  * rectangular areas aligned with the X/Y axes can be used as clipping path. </i>
+ *
+ * <p><i><b>Note: </b>To paint an image ({@link WPainter#drawImage(WPointF point, WPainter.Image
+ * image) WPainter#drawImage()}), this requires its URI. </i>
+ *
+ * @see WAbstractDataInfo
  */
 public class WVmlImage implements WVectorImage {
   private static Logger logger = LoggerFactory.getLogger(WVmlImage.class);
@@ -92,64 +97,17 @@ public class WVmlImage implements WVectorImage {
       int imgWidth,
       int imgHeight,
       final WRectF sourceRect) {
-    this.finishPaths();
-    this.processClipping();
-    WApplication app = WApplication.getInstance();
-    String imgUri = "";
-    if (app != null) {
-      imgUri = app.resolveRelativeUrl(imageUri);
-    }
-    WTransform t = this.getPainter().getCombinedTransform();
-    WPointF tl = t.map(rect.getTopLeft());
-    this.rendered_
-        .append("<v:group style=\"width:")
-        .append(String.valueOf(Z * this.getWidth().getValue()))
-        .append("px;height:")
-        .append(String.valueOf(Z * this.getHeight().getValue()))
-        .append("px;");
-    double cx = 1;
-    double cy = 1;
-    if (t.getM11() != 1.0 || t.getM22() != 1.0 || t.getM12() != 0.0 || t.getM21() != 0.0) {
-      cx = this.getWidth().getValue() / rect.getWidth();
-      cy = this.getHeight().getValue() / rect.getHeight();
-      this.rendered_
-          .append("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
-          .append(String.valueOf(t.getM11() / cx))
-          .append("',M12='")
-          .append(String.valueOf(t.getM21() / cy))
-          .append("',M21='")
-          .append(String.valueOf(t.getM12() / cx))
-          .append("',M22='")
-          .append(String.valueOf(t.getM22() / cy))
-          .append("',Dx='")
-          .append(String.valueOf(tl.getX()))
-          .append("',Dy='")
-          .append(String.valueOf(tl.getY()))
-          .append("',sizingmethod='clip');");
-    } else {
-      this.rendered_
-          .append("top:")
-          .append(String.valueOf(Z * tl.getY()))
-          .append("px;left:")
-          .append(String.valueOf(Z * tl.getX()))
-          .append("px;");
-    }
-    this.rendered_
-        .append("\"><v:image src=\"")
-        .append(imgUri)
-        .append("\" style=\"width:")
-        .append(String.valueOf(Z * rect.getWidth() * cx))
-        .append("px;height:")
-        .append(String.valueOf(Z * rect.getHeight() * cy))
-        .append("px\" cropleft=\"")
-        .append(String.valueOf(sourceRect.getX() / imgWidth))
-        .append("\" croptop=\"")
-        .append(String.valueOf(sourceRect.getY() / imgHeight))
-        .append("\" cropright=\"")
-        .append(String.valueOf((imgWidth - sourceRect.getRight()) / imgWidth))
-        .append("\" cropbottom=\"")
-        .append(String.valueOf((imgHeight - sourceRect.getBottom()) / imgHeight))
-        .append("\"/></v:group>");
+    WDataInfo dataInfo = new WDataInfo(imageUri, imageUri);
+    this.doDrawImage(rect, dataInfo, imgWidth, imgHeight, sourceRect);
+  }
+
+  public void drawImage(
+      final WRectF rect,
+      WAbstractDataInfo info,
+      int imgWidth,
+      int imgHeight,
+      final WRectF sourceRect) {
+    this.doDrawImage(rect, info, imgWidth, imgHeight, sourceRect);
   }
 
   public void drawLine(double x1, double y1, double x2, double y2) {
@@ -742,6 +700,76 @@ public class WVmlImage implements WVectorImage {
 
   private void stopClip() {
     this.rendered_.append("</v:group></div>");
+  }
+
+  private void doDrawImage(
+      final WRectF rect,
+      WAbstractDataInfo info,
+      int imgWidth,
+      int imgHeight,
+      final WRectF sourceRect) {
+    this.finishPaths();
+    this.processClipping();
+    WApplication app = WApplication.getInstance();
+    String imgUri = "";
+    if (app != null && info.hasUrl()) {
+      imgUri = app.resolveRelativeUrl(info.getUrl());
+    } else {
+      if (info.hasDataUri()) {
+        imgUri = info.getDataUri();
+      }
+    }
+    WTransform t = this.getPainter().getCombinedTransform();
+    WPointF tl = t.map(rect.getTopLeft());
+    this.rendered_
+        .append("<v:group style=\"width:")
+        .append(String.valueOf(Z * this.getWidth().getValue()))
+        .append("px;height:")
+        .append(String.valueOf(Z * this.getHeight().getValue()))
+        .append("px;");
+    double cx = 1;
+    double cy = 1;
+    if (t.getM11() != 1.0 || t.getM22() != 1.0 || t.getM12() != 0.0 || t.getM21() != 0.0) {
+      cx = this.getWidth().getValue() / rect.getWidth();
+      cy = this.getHeight().getValue() / rect.getHeight();
+      this.rendered_
+          .append("filter:progid:DXImageTransform.Microsoft.Matrix(M11='")
+          .append(String.valueOf(t.getM11() / cx))
+          .append("',M12='")
+          .append(String.valueOf(t.getM21() / cy))
+          .append("',M21='")
+          .append(String.valueOf(t.getM12() / cx))
+          .append("',M22='")
+          .append(String.valueOf(t.getM22() / cy))
+          .append("',Dx='")
+          .append(String.valueOf(tl.getX()))
+          .append("',Dy='")
+          .append(String.valueOf(tl.getY()))
+          .append("',sizingmethod='clip');");
+    } else {
+      this.rendered_
+          .append("top:")
+          .append(String.valueOf(Z * tl.getY()))
+          .append("px;left:")
+          .append(String.valueOf(Z * tl.getX()))
+          .append("px;");
+    }
+    this.rendered_
+        .append("\"><v:image src=\"")
+        .append(imgUri)
+        .append("\" style=\"width:")
+        .append(String.valueOf(Z * rect.getWidth() * cx))
+        .append("px;height:")
+        .append(String.valueOf(Z * rect.getHeight() * cy))
+        .append("px\" cropleft=\"")
+        .append(String.valueOf(sourceRect.getX() / imgWidth))
+        .append("\" croptop=\"")
+        .append(String.valueOf(sourceRect.getY() / imgHeight))
+        .append("\" cropright=\"")
+        .append(String.valueOf((imgWidth - sourceRect.getRight()) / imgWidth))
+        .append("\" cropbottom=\"")
+        .append(String.valueOf((imgHeight - sourceRect.getBottom()) / imgHeight))
+        .append("\"/></v:group>");
   }
 
   private WRectF currentRect_;

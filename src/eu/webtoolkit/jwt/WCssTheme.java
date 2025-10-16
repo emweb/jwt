@@ -345,81 +345,6 @@ public class WCssTheme extends WTheme {
     return result;
   }
 
-  public void apply(WWidget widget, WWidget child, int widgetRole) {
-    if (!widget.isThemeStyleEnabled()) {
-      return;
-    }
-    switch (widgetRole) {
-      case WidgetThemeRole.MenuItemIcon:
-        child.addStyleClass("Wt-icon");
-        break;
-      case WidgetThemeRole.MenuItemCheckBox:
-        child.addStyleClass("Wt-chkbox");
-        break;
-      case WidgetThemeRole.MenuItemClose:
-        widget.addStyleClass("Wt-closable");
-        child.addStyleClass("closeicon");
-        break;
-      case WidgetThemeRole.DialogCoverWidget:
-        child.setStyleClass("Wt-dialogcover in");
-        break;
-      case WidgetThemeRole.DialogTitleBar:
-        child.addStyleClass("titlebar");
-        break;
-      case WidgetThemeRole.DialogBody:
-        child.addStyleClass("body");
-        break;
-      case WidgetThemeRole.DialogFooter:
-        child.addStyleClass("footer");
-        break;
-      case WidgetThemeRole.DialogCloseIcon:
-        child.addStyleClass("closeicon");
-        break;
-      case WidgetThemeRole.TableViewRowContainer:
-        {
-          WAbstractItemView view = ObjectUtils.cast(widget, WAbstractItemView.class);
-          String backgroundImage = "";
-          if (view.hasAlternatingRowColors()) {
-            backgroundImage = "stripes/stripe-";
-          } else {
-            backgroundImage = "no-stripes/no-stripe-";
-          }
-          backgroundImage =
-              this.getResourcesUrl()
-                  + backgroundImage
-                  + String.valueOf((int) view.getRowHeight().toPixels())
-                  + "px.gif";
-          child.getDecorationStyle().setBackgroundImage(new WLink(backgroundImage));
-          break;
-        }
-      case WidgetThemeRole.DatePickerPopup:
-        child.addStyleClass("Wt-datepicker");
-        break;
-      case WidgetThemeRole.DatePickerIcon:
-        {
-          WImage icon = ObjectUtils.cast(child, WImage.class);
-          icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
-          icon.setVerticalAlignment(AlignmentFlag.Middle);
-          icon.resize(new WLength(16), new WLength(16));
-          break;
-        }
-      case WidgetThemeRole.PanelTitleBar:
-        child.addStyleClass("titlebar");
-        break;
-      case WidgetThemeRole.PanelBody:
-        child.addStyleClass("body");
-        break;
-      case WidgetThemeRole.PanelCollapseButton:
-        child.addStyleClass("Wt-collapse-button");
-        break;
-      case WidgetThemeRole.AuthWidgets:
-        WApplication app = WApplication.getInstance();
-        app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "form.css"));
-        app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthCssTheme_xml);
-        break;
-    }
-  }
-
   public void apply(WWidget widget, final DomElement element, int elementRole) {
     boolean creating = element.getMode() == DomElement.Mode.Create;
     if (!widget.isThemeStyleEnabled()) {
@@ -448,7 +373,8 @@ public class WCssTheme extends WTheme {
         break;
       case UL:
         if (ObjectUtils.cast(widget, WPopupMenu.class) != null) {
-          element.addPropertyWord(Property.Class, "Wt-popupmenu Wt-outset");
+          element.addPropertyWord(Property.Class, "Wt-popupmenu");
+          element.addPropertyWord(Property.Class, "Wt-outset");
         } else {
           WTabWidget tabs = ObjectUtils.cast(widget.getParent().getParent(), WTabWidget.class);
           if (tabs != null) {
@@ -486,7 +412,8 @@ public class WCssTheme extends WTheme {
           }
           WPanel panel = ObjectUtils.cast(widget, WPanel.class);
           if (panel != null) {
-            element.addPropertyWord(Property.Class, "Wt-panel Wt-outset");
+            element.addPropertyWord(Property.Class, "Wt-panel");
+            element.addPropertyWord(Property.Class, "Wt-outset");
             return;
           }
           WProgressBar bar = ObjectUtils.cast(widget, WProgressBar.class);
@@ -562,14 +489,18 @@ public class WCssTheme extends WTheme {
     return false;
   }
 
+  public void loadValidationStyling(WApplication app) {
+    app.loadJavaScript("js/CssThemeValidate.js", wtjs1());
+    app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
+  }
+
   public void applyValidationStyle(
       WWidget widget, final WValidator.Result validation, EnumSet<ValidationStyleFlag> styles) {
     WApplication app = WApplication.getInstance();
-    app.loadJavaScript("js/CssThemeValidate.js", wtjs1());
-    app.loadJavaScript("js/CssThemeValidate.js", wtjs2());
+    this.loadValidationStyling(app);
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_12_0.setValidationState(")
+      js.append("Wt4_12_1.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -593,6 +524,83 @@ public class WCssTheme extends WTheme {
 
   public boolean canBorderBoxElement(final DomElement element) {
     return true;
+  }
+
+  protected void applyFunctionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    switch (widgetRole) {
+      case WidgetThemeRole.DialogCloseIcon:
+        child.addStyleClass("closeicon");
+        break;
+      case WidgetThemeRole.MenuItemIcon:
+        child.addStyleClass("Wt-icon");
+        break;
+      case WidgetThemeRole.MenuItemCheckBox:
+        child.addStyleClass("Wt-chkbox");
+        break;
+      case WidgetThemeRole.MenuItemClose:
+        widget.addStyleClass("Wt-closable");
+        child.addStyleClass("closeicon");
+        break;
+      case WidgetThemeRole.TableViewRowContainer:
+        {
+          WAbstractItemView view = ObjectUtils.cast(widget, WAbstractItemView.class);
+          String backgroundImage = "";
+          if (view.hasAlternatingRowColors()) {
+            backgroundImage = "stripes/stripe-";
+          } else {
+            backgroundImage = "no-stripes/no-stripe-";
+          }
+          backgroundImage =
+              this.getResourcesUrl()
+                  + backgroundImage
+                  + String.valueOf((int) view.getRowHeight().toPixels())
+                  + "px.gif";
+          child.getDecorationStyle().setBackgroundImage(new WLink(backgroundImage));
+          break;
+        }
+    }
+  }
+
+  protected void applyOptionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    switch (widgetRole) {
+      case WidgetThemeRole.DialogCoverWidget:
+        child.setStyleClass("Wt-dialogcover in");
+        break;
+      case WidgetThemeRole.DialogTitleBar:
+        child.addStyleClass("titlebar");
+        break;
+      case WidgetThemeRole.DialogBody:
+        child.addStyleClass("body");
+        break;
+      case WidgetThemeRole.DialogFooter:
+        child.addStyleClass("footer");
+        break;
+      case WidgetThemeRole.DatePickerPopup:
+        child.addStyleClass("Wt-datepicker");
+        break;
+      case WidgetThemeRole.DatePickerIcon:
+        {
+          WImage icon = ObjectUtils.cast(child, WImage.class);
+          icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
+          icon.setVerticalAlignment(AlignmentFlag.Middle);
+          icon.resize(new WLength(16), new WLength(16));
+          break;
+        }
+      case WidgetThemeRole.PanelTitleBar:
+        child.addStyleClass("titlebar");
+        break;
+      case WidgetThemeRole.PanelBody:
+        child.addStyleClass("body");
+        break;
+      case WidgetThemeRole.PanelCollapseButton:
+        child.addStyleClass("Wt-collapse-button");
+        break;
+      case WidgetThemeRole.AuthWidgets:
+        WApplication app = WApplication.getInstance();
+        app.useStyleSheet(new WLink(WApplication.getRelativeResourcesUrl() + "form.css"));
+        app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.AuthCssTheme_xml);
+        break;
+    }
   }
 
   private String name_;

@@ -667,20 +667,23 @@ public class WMenuItem extends WContainerWidget {
    * be stateless as well.
    */
   public void renderSelected(boolean selected) {
-    WApplication app = WApplication.getInstance();
-    String active = app.getTheme().getActiveClass();
-    WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
-    if (active.equals("Wt-selected")) {
-      this.removeStyleClass(!selected ? "itemselected" : "item", true);
-      this.addStyleClass(selected ? "itemselected" : "item", true);
-    } else {
-      if (bs5Theme != null) {
-        WAnchor a = this.getAnchor();
-        if (a != null) {
-          a.toggleStyleClass(active, selected, true);
+    this.selected_ = selected;
+    if (this.setThemeStyle_) {
+      WApplication app = WApplication.getInstance();
+      String active = app.getTheme().getActiveClass();
+      WBootstrap5Theme bs5Theme = ObjectUtils.cast(app.getTheme(), WBootstrap5Theme.class);
+      if (active.equals("Wt-selected")) {
+        this.removeStyleClass(!selected ? "itemselected" : "item", true);
+        this.addStyleClass(selected ? "itemselected" : "item", true);
+      } else {
+        if (bs5Theme != null) {
+          WAnchor a = this.getAnchor();
+          if (a != null) {
+            a.toggleStyleClass(active, selected, true);
+          }
         }
+        this.toggleStyleClass(active, selected, true);
       }
-      this.toggleStyleClass(active, selected, true);
     }
   }
 
@@ -724,6 +727,10 @@ public class WMenuItem extends WContainerWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
+    if (this.isThemeStyleEnabled() && !this.signalsConnected_) {
+      this.setThemeStyle_ = true;
+      this.renderSelected(this.selected_);
+    }
     this.connectSignals();
     super.render(flags);
   }
@@ -771,6 +778,8 @@ public class WMenuItem extends WContainerWidget {
   private boolean customPathComponent_;
   private boolean internalPathEnabled_;
   private boolean closeable_;
+  private boolean selected_;
+  private boolean setThemeStyle_;
 
   private void create(
       final String iconPath, final CharSequence text, WWidget contents, ContentLoading policy) {
@@ -782,6 +791,8 @@ public class WMenuItem extends WContainerWidget {
     this.selectable_ = true;
     this.selectConnected_ = false;
     this.menuItemCheckedConnected_ = false;
+    this.selected_ = false;
+    this.setThemeStyle_ = false;
     this.text_ = null;
     this.icon_ = null;
     this.checkBox_ = null;
@@ -998,7 +1009,20 @@ public class WMenuItem extends WContainerWidget {
       if (!(this.uContents_ != null)) {
         this.uContents_ = this.oContentsContainer_.removeWidget(this.oContents_);
       }
-      this.oContentsContainer_ = (WContainerWidget) null;
+      WWidget realWidget = widget;
+      WContainerWidget uContentsContainer = ObjectUtils.cast(realWidget, WContainerWidget.class);
+      if (uContentsContainer != null) {
+        this.uContentsContainer_ = uContentsContainer;
+        this.oContentsContainer_ = this.uContentsContainer_;
+      } else {
+        if (realWidget != null) realWidget.remove();
+        this.oContentsContainer_ = (WContainerWidget) null;
+        logger.error(
+            new StringWriter()
+                .append(
+                    "returnContentsInStack: widget is not oContentsContainer_. This should not happen.")
+                .toString());
+      }
     } else {
       this.uContents_ = widget;
     }

@@ -253,6 +253,14 @@ public abstract class WLayout extends WObject implements WLayoutItem {
   public boolean isImplementationIsFlexLayout() {
     return false;
   }
+
+  public void setObjectName(final String name) {
+    StdLayoutImpl stdImpl = ObjectUtils.cast(this.impl_, StdLayoutImpl.class);
+    if (stdImpl != null) {
+      stdImpl.setObjectName(name);
+    }
+    super.setObjectName(name);
+  }
   /** Create a layout. */
   protected WLayout() {
     super();

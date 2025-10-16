@@ -74,9 +74,9 @@ public abstract class WtServlet extends HttpServlet {
 			session.destruct();
 		}
 	}
-	
+
 	private static Logger logger = LoggerFactory.getLogger(WtServlet.class);
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private static ServletApi servletApi = null;
@@ -91,7 +91,7 @@ public abstract class WtServlet extends HttpServlet {
 
 	private static final String WT_WEBSESSION_ID = "wt-websession";
 	private static final Map<String, String> mimeTypes = new HashMap<String, String>();
-	
+
 	private List<WResource> staticResources = new ArrayList<WResource>();
 
 	private int idForWebSocket = -1;
@@ -106,9 +106,10 @@ public abstract class WtServlet extends HttpServlet {
 	static final String AuthCssTheme_xml = "/eu/webtoolkit/jwt/auth/auth_css_theme";
 	static final String AuthBootstrapTheme_xml = "/eu/webtoolkit/jwt/auth/auth_bootstrap_theme";
 	static final String BootstrapTheme_xml = "/eu/webtoolkit/jwt/bootstrap_theme";
+	static final String Bootstrap2Theme_xml = "/eu/webtoolkit/jwt/bootstrap2_theme";
 	static final String Bootstrap3Theme_xml = "/eu/webtoolkit/jwt/bootstrap3_theme";
 	static final String Bootstrap5Theme_xml = "/eu/webtoolkit/jwt/bootstrap5_theme";
-	
+
 	private static WtServlet instance;
 
 	static {
@@ -125,18 +126,18 @@ public abstract class WtServlet extends HttpServlet {
 				{ "html", "text/html" },
 				{ "jpg", "image/jpeg" },
 				{ "png", "image/png" },
-				{ "js", "text/javascript" } 
+				{ "js", "text/javascript" }
 			};
 
 		for (String[] s : mimeTypes)
 			WtServlet.mimeTypes.put(s[0], s[1]);
-		
+
 		WObject.seedId(MathUtils.randomInt());
 	}
 
 	/**
 	 * This function is only to be used by JWt internals.
-	 * 
+	 *
 	 * @return the servlet API interface
 	 */
 	public static ServletApi getServletApi() {
@@ -147,7 +148,7 @@ public abstract class WtServlet extends HttpServlet {
 	 * Constructor.
 	 * <p>
 	 * Instantiates the servlet using the default configuration.
-	 * 
+	 *
 	 * @see #getConfiguration()
 	 */
 	public WtServlet() {
@@ -156,33 +157,33 @@ public abstract class WtServlet extends HttpServlet {
 				requestDataReceived(request, pBytesRead, pContentLength);
 			}
 		};
-		
+
 		this.configuration = new Configuration();
-		
+
 		redirectSecret_ = MathUtils.randomId(32);
-		
+
 		if (instance == null)
-			instance = this;		
+			instance = this;
 	}
-	
+
 	/**
 	 * Initiate the internal servlet api.
-	 * 
+	 *
 	 * If you want to override this function, make sure to call the super function,
 	 * to ensure the initialization of the servlet api.
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		
+
 		String configFile = this.getInitParameter("jwt-config-file");
 		if (configFile == null)
 			this.getServletContext().getInitParameter("jwt-config-file");
 		if (configFile != null)
 			this.configuration = new Configuration(new File(configFile));
-		
+
 		servletApi = ServletInit.getInstance(config.getServletContext()).getServletApi();
-		
+
 		if (getConfiguration().webSockets()) {
 			if (this.idForWebSocket < 0)
 				this.idForWebSocket = WebSocketRegistry.getInstance().addServlet(this);
@@ -193,7 +194,7 @@ public abstract class WtServlet extends HttpServlet {
 		String pathInfo = WebRequest.computePathInfo(request, configuration);
 		String resourcePath = configuration.getProperty(WApplication.RESOURCES_URL);
 		addDefaultHeader(response);
-		
+
 		if (pathInfo != null) {
 			String scriptName = WebRequest.computeScriptName(request, configuration);
 
@@ -209,7 +210,7 @@ public abstract class WtServlet extends HttpServlet {
 					staticResourcePath = StringUtils.append(scriptName, '/') + staticResource.getInternalPath();
 				else
 					staticResourcePath = staticResource.getInternalPath();
-				
+
 				if (requestPath.equals(staticResourcePath)) {
 					try {
 						WebRequest webRequest = new WebRequest(request, progressListener, configuration);
@@ -287,7 +288,7 @@ public abstract class WtServlet extends HttpServlet {
 	 * <p>
 	 * The Configuration is only definitively constructed after WtServlet#init() is invoked.
 	 * You should only modify the configuration from this method.
-	 * 
+	 *
 	 * @return the configuration.
 	 */
 	public Configuration getConfiguration() {
@@ -298,20 +299,20 @@ public abstract class WtServlet extends HttpServlet {
 	 * Sets the JWt configuration.
 	 * <p>
 	 * You should only set the configuration from the servlet constructor.
-	 * 
+	 *
 	 * @param configuration
 	 */
 	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
 	}
-	
+
 	WApplication doCreateApplication(WebSession session) {
 		return createApplication(session.getEnv());
 	}
 
 	/**
 	 * Creates a new application for a new session.
-	 * 
+	 *
 	 * @param env the environment that describes the new user (agent) and initial parameters
 	 * @return a new application object.
 	 */
@@ -332,7 +333,7 @@ public abstract class WtServlet extends HttpServlet {
 		sessions.remove(session.getSessionId());
 		return sessions.size();
 	}
-	
+
 
 	synchronized void removeSession(String sessionId) {
 		WebSession session = sessions.get(sessionId);
@@ -343,7 +344,7 @@ public abstract class WtServlet extends HttpServlet {
 	/*
 	 * Actual request handling, may be within an async call depending on the servlet API.
 	 */
-	void doHandleRequest(WebRequest request, WebResponse response) {		
+	void doHandleRequest(WebRequest request, WebResponse response) {
 		HttpSession jsession = request.getSession();
 		BoundSession bsession = (BoundSession) jsession.getAttribute(WtServlet.WT_WEBSESSION_ID);
 		WebSession wsession = null;
@@ -356,23 +357,23 @@ public abstract class WtServlet extends HttpServlet {
 		try {
 			if (wsession == null) {
 				String applicationTypeS = getServletConfig().getInitParameter("ApplicationType");
-				
+
 				EntryPointType applicationType;
 				if (applicationTypeS == null || applicationTypeS.equals("") || applicationTypeS.equals("Application")) {
-					applicationType = EntryPointType.Application; 
+					applicationType = EntryPointType.Application;
 				} else if (applicationTypeS.equals("WidgetSet")) {
-					applicationType = EntryPointType.WidgetSet; 
+					applicationType = EntryPointType.WidgetSet;
 				} else {
 					throw new WtException("Illegal application type: " + applicationTypeS);
 				}
-				
+
 				wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), request);
 				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession(wsession) + ")");
 				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
 			}
-	
+
 			logger.debug("Handling: (" + jsession.getId() + "): " + request.getRequestURI() + " " + request.getMethod() + " " + request.getScriptName() + " " + request.getPathInfo() + " " + request.getQueryString());
-			
+
 			WebSession.Handler handler = null;
 			try {
 				handler = new WebSession.Handler(wsession, request, response);
@@ -389,11 +390,11 @@ public abstract class WtServlet extends HttpServlet {
 					// If session was invalidated by another request...
 				}
 			}
-		} catch (Exception e) {
-			logger.info("doHandleRequest exception: {}", request.getRequestURI(), e);
+		} catch (Throwable e) {
+			logger.info("doHandleRequest throws: {}", request.getRequestURI(), e);
 		}
 	}
-	
+
 	void addUploadProgressUrl(String url) {
 		synchronized (uploadProgressUrls_) {
 			uploadProgressUrls_.add(url.substring(url.indexOf('?') + 1));
@@ -405,7 +406,7 @@ public abstract class WtServlet extends HttpServlet {
 			uploadProgressUrls_.remove(url.substring(url.indexOf('?') + 1));
 		}
 	}
-	
+
 	boolean requestDataReceived(WebRequest request, long current, long total) {
 		boolean found = false;
 
@@ -428,7 +429,7 @@ public abstract class WtServlet extends HttpServlet {
 
 			if (wsession != null) {
 				WebSession.Handler handler = null;
-				
+
 				try {
 					handler = new WebSession.Handler(wsession, null, null);
 
@@ -451,7 +452,7 @@ public abstract class WtServlet extends HttpServlet {
 							resource.dataReceived().trigger(current, total);
 						}
 					}
-					
+
 				} finally {
 					handler.release();
 				}
@@ -463,13 +464,13 @@ public abstract class WtServlet extends HttpServlet {
 
 	/**
 	 * Returns whether asynchronous I/O is supported.
-	 * 
+	 *
 	 * This is only the case when the servlet container implements the Servlet 3.0 API,
 	 * and when this application is configured to support asynchronous processing.
-	 * 
+	 *
 	 * Asynchronous I/O is required for recursive event loops, and encouraged for
 	 * scalable server push (although JWt doesn't strictly require it).
-	 * 
+	 *
 	 * @return whether asynchronous I/O is supported.
 	 */
 	public static boolean isAsyncSupported() {
@@ -477,10 +478,10 @@ public abstract class WtServlet extends HttpServlet {
 
 		return handler == null || handler.getRequest().isAsyncSupported();
 	}
-	
+
 	/**
 	 * Posts a task to be run within the scope of a session (and using the session lock).
-	 * 
+	 *
 	 * Rather than taking an #{@link WApplication.UpdateLock} explicitly, which may stall the
 	 * current thread and also creates the risk of a dead lock scenario, it's usually better
 	 * to post the task asynchronously to an application session. This will either run the
@@ -488,7 +489,7 @@ public abstract class WtServlet extends HttpServlet {
 	 * or queue the event to be run (by the thread currently holding the session lock) when
 	 * it is releasing the lock. Multiple posted events to the same session are thus guaranteed to
 	 * be run sequentially in the order they were posted.
-	 * 
+	 *
 	 * @param app the application instance which needs to be locked
 	 * @param function the task to be run
 	 * @param fallBackFunction the task to be run in case the application has been quit or its session expired.
@@ -525,7 +526,7 @@ public abstract class WtServlet extends HttpServlet {
     boolean limitPlainHtmlSessions() {
     	return false; // FIXME
 	}
-	
+
 	public String readConfigurationProperty(String name, String value) {
 		String result = configuration.getProperty(name);
 		if (result == null)
@@ -533,7 +534,7 @@ public abstract class WtServlet extends HttpServlet {
 		else
 			return result;
 	}
-	
+
 	private InputStream getResourceStream(final String fileName) throws IOException {
 		return FileUtils.getResourceAsStream("/eu/webtoolkit/jwt/" + fileName);
 	}
@@ -576,27 +577,27 @@ public abstract class WtServlet extends HttpServlet {
 				throw new RuntimeException(error.arg(path).toString());
 			}
 		}
-		
+
 		staticResource.setInternalPath(path);
 		staticResources.add(staticResource);
 	}
-	
+
 	public static WtServlet getInstance() {
 		return instance;
 	}
-	
+
 	WebSession getSession(String name) {
 		return sessions.get(name);
 	}
-	
+
 	int getIdForWebSocket() {
 		return idForWebSocket;
 	}
-	
+
 	String getContextPath() {
 		return getServletContext().getContextPath();
 	}
-	
+
 	private void addDefaultHeader(HttpServletResponse response) {
 		List<HttpHeader> httpHeaders = configuration.getHttpHeaders();
 		for (HttpHeader header : httpHeaders) {

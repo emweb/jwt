@@ -45,6 +45,7 @@ public class WTableColumn extends WObject {
    */
   public WTableColumn() {
     super();
+    this.flags_ = new BitSet();
     this.width_ = null;
     this.id_ = "";
     this.styleClass_ = "";
@@ -164,6 +165,18 @@ public class WTableColumn extends WObject {
     }
   }
 
+  public void setObjectName(final String name) {
+    if (!this.getObjectName().equals(name)) {
+      super.setObjectName(name);
+      this.flags_.set(BIT_OBJECT_NAME_CHANGED);
+      if (this.table_ != null) {
+        this.table_.repaintColumn(this);
+      }
+    }
+  }
+
+  private static final int BIT_OBJECT_NAME_CHANGED = 0;
+  private BitSet flags_;
   WTable table_;
   private WLength width_;
   private String id_;
@@ -179,6 +192,16 @@ public class WTableColumn extends WObject {
     }
     if (!all || this.styleClass_.length() != 0) {
       element.setProperty(Property.Class, this.styleClass_);
+    }
+    if (all || this.flags_.get(BIT_OBJECT_NAME_CHANGED)) {
+      if (this.getObjectName().length() != 0) {
+        element.setAttribute("data-object-name", this.getObjectName());
+      } else {
+        if (!all) {
+          element.removeAttribute("data-object-name");
+        }
+      }
+      this.flags_.clear(BIT_OBJECT_NAME_CHANGED);
     }
   }
 }

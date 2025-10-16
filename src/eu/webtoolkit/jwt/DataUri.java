@@ -20,7 +20,8 @@ import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DataUri {
+/** Internal class. Necessary for wt-port. */
+public class DataUri {
   private static Logger logger = LoggerFactory.getLogger(DataUri.class);
 
   public DataUri(final String uriString) {

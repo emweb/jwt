@@ -97,7 +97,7 @@ class RefEncoder extends XHtmlFilter {
 					value = htmlAttributeEncode(app.resolveRelativeUrl(url));
 				} else if (options.contains(RefEncoderOption.EncodeRedirectTrampoline)) {
 					if (path.indexOf("://") != -1) {
-						path = "?request=redirect&url=" + StringUtils.urlEncode(path);
+						path = "?request=redirect&amp;url=" + StringUtils.urlEncode(path);
 						value = path;
 					}
 				}

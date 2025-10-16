@@ -103,6 +103,7 @@ public class WPopupMenu extends WMenu {
    */
   public WPopupMenu(WStackedWidget contentsStack, WContainerWidget parentContainer) {
     super(contentsStack, (WContainerWidget) null);
+    this.flags_ = new BitSet();
     this.topLevel_ = null;
     this.result_ = null;
     this.location_ = null;
@@ -111,8 +112,8 @@ public class WPopupMenu extends WMenu {
     this.triggered_ = new Signal1<WMenuItem>();
     this.cancel_ = new JSignal(this, "cancel");
     this.recursiveEventLoop_ = false;
-    this.willPopup_ = false;
     this.hideOnSelect_ = true;
+    this.open_ = false;
     this.adjustFlags_ = Orientation.AllOrientations;
     this.autoHideDelay_ = -1;
     String CSS_RULES_NAME = "Wt::WPopupMenu";
@@ -174,7 +175,7 @@ public class WPopupMenu extends WMenu {
     String canAdjustX = this.adjustFlags_.contains(Orientation.Horizontal) ? "true" : "false";
     String canAdjustY = this.adjustFlags_.contains(Orientation.Vertical) ? "true" : "false";
     this.doJavaScript(
-        "Wt4_12_0.positionXY('"
+        "Wt4_12_1.positionXY('"
             + this.getId()
             + "',"
             + String.valueOf(p.getX())
@@ -211,7 +212,7 @@ public class WPopupMenu extends WMenu {
               (WMouseEvent e1) -> {
                 WPopupMenu.this.popupAtButton();
               });
-      this.button_.addStyleClass("dropdown-toggle");
+      this.button_.addThemeStyle("dropdown-toggle");
     }
   }
   /**
@@ -450,20 +451,32 @@ public class WPopupMenu extends WMenu {
 
   void getSDomChanges(final List<DomElement> result, WApplication app) {
     super.getSDomChanges(result, app);
-    this.willPopup_ = false;
+    this.flags_.clear(BIT_WILL_POPUP);
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
+    if (this.flags_.get(BIT_OPEN_CHANGED)) {
+      if (this.button_ != null && this.button_.isThemeStyleEnabled()) {
+        this.button_.toggleStyleClass("active", this.open_, true);
+      }
+      if (this.getParentItem() != null && this.isThemeStyleEnabled()) {
+        this.getParentItem().toggleStyleClass("open", this.open_);
+      }
+      this.flags_.clear(BIT_OPEN_CHANGED);
+    }
     super.render(flags);
-    this.willPopup_ = false;
+    this.flags_.clear(BIT_WILL_POPUP);
   }
 
   String renderRemoveJs(boolean recursive) {
     String result = super.renderRemoveJs(true);
-    result += "Wt4_12_0.remove('" + this.getId() + "');";
+    result += "Wt4_12_1.remove('" + this.getId() + "');";
     return result;
   }
 
+  private static final int BIT_WILL_POPUP = 0;
+  private static final int BIT_OPEN_CHANGED = 1;
+  private BitSet flags_;
   private WPopupMenu topLevel_;
   WMenuItem result_;
   private WWidget location_;
@@ -472,8 +485,8 @@ public class WPopupMenu extends WMenu {
   private Signal1<WMenuItem> triggered_;
   private JSignal cancel_;
   private boolean recursiveEventLoop_;
-  private boolean willPopup_;
   private boolean hideOnSelect_;
+  private boolean open_;
   private EnumSet<Orientation> adjustFlags_;
   private int autoHideDelay_;
 
@@ -493,7 +506,7 @@ public class WPopupMenu extends WMenu {
   }
 
   private void cancel() {
-    if (this.willPopup_) {
+    if (this.flags_.get(BIT_WILL_POPUP)) {
       return;
     }
     if (!this.isHidden()) {
@@ -506,10 +519,9 @@ public class WPopupMenu extends WMenu {
       return;
     }
     if (this.location_ != null && this.location_ == this.button_) {
-      this.button_.removeStyleClass("active", true);
-      if (this.getParentItem() != null) {
-        this.getParentItem().removeStyleClass("open");
-      }
+      this.open_ = false;
+      this.flags_.set(BIT_OPEN_CHANGED);
+      this.scheduleRender();
     }
     this.location_ = null;
     this.result_ = result;
@@ -532,7 +544,7 @@ public class WPopupMenu extends WMenu {
     WApplication app = WApplication.getInstance();
     this.prepareRender(app);
     this.show();
-    this.willPopup_ = true;
+    this.flags_.set(BIT_WILL_POPUP);
     this.scheduleRender();
   }
 
@@ -540,7 +552,7 @@ public class WPopupMenu extends WMenu {
     if (!this.cancel_.isConnected()) {
       app.loadJavaScript("js/WPopupMenu.js", wtjs1());
       StringBuilder s = new StringBuilder();
-      s.append("new Wt4_12_0.WPopupMenu(")
+      s.append("new Wt4_12_1.WPopupMenu(")
           .append(app.getJavaScriptClass())
           .append(',')
           .append(this.getJsRef())
@@ -582,11 +594,10 @@ public class WPopupMenu extends WMenu {
       return;
     }
     if (!(this.topLevel_ != null) || this.topLevel_ == this) {
-      this.button_.addStyleClass("active", true);
-      if (this.getParentItem() != null) {
-        this.getParentItem().addStyleClass("open");
-      }
+      this.open_ = true;
+      this.flags_.set(BIT_OPEN_CHANGED);
       this.popup(this.button_);
+      this.scheduleRender();
     }
   }
 

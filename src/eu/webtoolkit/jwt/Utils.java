@@ -15,13 +15,15 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 public class Utils {
 	private static final Logger logger = LoggerFactory.getLogger(Utils.class);
-	
+
 	/** Computes an MD5 hash.
 	 *
 	 * This utility function computes an MD5 hash, and returns the hash value.
@@ -37,7 +39,7 @@ public class Utils {
 		}
 		return null;
 	}
-	
+
 	public static byte[] sha1(String input) {
 		try {
 			MessageDigest mDigest = MessageDigest.getInstance("SHA1");
@@ -49,7 +51,7 @@ public class Utils {
 		}
 	  	return null;
 	}
-	
+
 
 	/** Performs url encoding (aka percentage encoding).
 	 *
@@ -61,7 +63,7 @@ public class Utils {
 	public static String urlEncode(String scope) {
 		return DomElement.urlEncodeS(scope);
 	}
-	
+
 	/** Performs url decoding.
 	 *
 	 * This utility function percent encodes a text so that it can be
@@ -132,14 +134,14 @@ public class Utils {
 			}
 		}
 	}
-	
+
 
 	/** Performs Base64-encoding of data.
 	 */
 	public static String base64Encode(String s) {
 		return base64Encode(s, true);
 	}
-	
+
 	public static String base64Encode(String s, boolean crlf) {
 		try {
 			return base64Encode(s.getBytes("UTF-8"), crlf);
@@ -148,7 +150,7 @@ public class Utils {
 		}
 		return null;
 	}
-	
+
 	/** Performs Base64-encoding of data.
 	 */
 	public static String base64Encode(byte[] bytes) {
@@ -157,15 +159,15 @@ public class Utils {
 	public static String base64Encode(byte[] bytes, boolean crlf) {
 		return Base64.encodeBytes(bytes, crlf);
 	}
-	
+
 	/** Performs Base64-decoding of data.
-	 * 
-	 * @throws IOException 
+	 *
+	 * @throws IOException
 	 */
 	public static byte[] base64Decode(String s) throws IOException {
 		return Base64.decode(s.getBytes("UTF-8"));
 	}
-	
+
 	public static String base64DecodeS(String s) {
 	  try {
 		return new String(Base64.decode(s.getBytes("US-ASCII")), "US-ASCII");
@@ -227,7 +229,7 @@ public class Utils {
 	   */
 	  EncodeNewLines
 	}
-	
+
 	/** Performs HTML encoding of text.
 	 *
 	 * This utility function escapes characters so that the text can
@@ -237,7 +239,7 @@ public class Utils {
 	{
 	  return WWebWidget.escapeText(text, flags.contains(HtmlEncodingFlag.EncodeNewLines) ? true : false);
 	}
-	
+
 	/**
 	 * Performs HTML encoding of text.
 	 * <p>
@@ -247,7 +249,7 @@ public class Utils {
 	public static String htmlEncode(String text) {
 		return Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class));
 	}
-	
+
 	/** Performs HTML encoding of text.
 	 *
 	 * This utility function escapes characters so that the text can
@@ -256,11 +258,11 @@ public class Utils {
 	 * By default, newlines are ignored. By passing the {@link HtmlEncodingFlag#EncodeNewLines}
 	 * flag, these may be encoded as line breaks (&lt;br&gt;).
 	 */
-	public static String htmlEncode(WString text, EnumSet<HtmlEncodingFlag> flags) 
+	public static String htmlEncode(WString text, EnumSet<HtmlEncodingFlag> flags)
 	{
 		return htmlEncode(text.toString(), flags);
 	}
-	
+
 	/**
 	 * Performs HTML encoding of text.
 	 * <p>
@@ -270,7 +272,7 @@ public class Utils {
 	public static String htmlEncode(WString text) {
 		return Utils.htmlEncode(text, EnumSet.noneOf(HtmlEncodingFlag.class));
 	}
-	
+
 	/**
 	 * Performs HTML encoding of text.
 	 * <p>
@@ -329,13 +331,13 @@ public class Utils {
 	}
 
 	private static boolean isWhiteSpace(char c, String whiteSpaces) {
-		for (int i = 0; i < whiteSpaces.length(); i++) { 
+		for (int i = 0; i < whiteSpaces.length(); i++) {
 			if (c == whiteSpaces.charAt(i))
 				return true;
 		}
 		return false;
 	}
-	
+
 	public static String strip(String s, String whiteSpaces) {
 		int start = -1;
 		int end = -1;
@@ -346,19 +348,19 @@ public class Utils {
 				break;
 			}
 		}
-		
-		if (start == -1) 
+
+		if (start == -1)
 			return "";
 		else
 			s = s.substring(start);
-		
+
 		for (int i = s.length() - 1; i >= 0; i--) {
 			if (!isWhiteSpace(s.charAt(i), whiteSpaces)) {
 				end = i + 1;
 				break;
 			}
 		}
-		 
+
 		return s.substring(0, end);
 	}
 
@@ -468,5 +470,14 @@ public class Utils {
 
 	public static byte[] hmac_md5(String msg, String key) {
         return hmac(msg,key,"HmacMD5");
+    }
+
+  public static List<String> getWidgetStyleClasses(WWidget widget) {
+    String styleClass = widget.getStyleClass();
+    ArrayList<String> styleClassVec = new ArrayList<String>();
+
+    StringUtils.split(styleClassVec, styleClass, " ", false);
+
+    return styleClassVec;
     }
 }

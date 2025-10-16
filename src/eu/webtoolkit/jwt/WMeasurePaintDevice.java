@@ -79,6 +79,15 @@ public class WMeasurePaintDevice implements WPaintDevice {
     this.expandBounds(rect);
   }
 
+  public void drawImage(
+      final WRectF rect,
+      WAbstractDataInfo info,
+      int imgWidth,
+      int imgHeight,
+      final WRectF sourceRect) {
+    this.expandBounds(rect);
+  }
+
   public void drawLine(double x1, double y1, double x2, double y2) {
     this.expandBounds(new WRectF(x1, y1, x2 - x1, y2 - y1));
   }

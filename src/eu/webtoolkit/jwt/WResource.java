@@ -74,6 +74,7 @@ public abstract class WResource extends WObject {
 	private String suggestedFileName_;
 	private String currentUrl_;
 	private String internalPath_;
+	private String botUrl_ = "";
 	private boolean trackUploadProgress_;
 	private DispositionType dispositionType_;
 	private int version_ = 0;
@@ -106,14 +107,18 @@ public abstract class WResource extends WObject {
 		WApplication app = WApplication.getInstance();
 		
 		if (app != null) {
-			if (currentUrl_ != null && trackUploadProgress_) {
-				WtServlet c = WebSession.getInstance().getController();
-				c.removeUploadProgressUrl(getUrl());
-			}
-			currentUrl_ = app.addExposedResource(this);
-			if (trackUploadProgress_) {
-				WtServlet c = WebSession.getInstance().getController();
-				c.addUploadProgressUrl(getUrl());
+			if (!botUrl_.isEmpty() && app.getEnvironment().agentIsSpiderBot()) {
+				currentUrl_ = botUrl_;
+			} else {
+				if (currentUrl_ != null && trackUploadProgress_) {
+					WtServlet c = WebSession.getInstance().getController();
+					c.removeUploadProgressUrl(getUrl());
+				}
+				currentUrl_ = app.addExposedResource(this);
+				if (trackUploadProgress_) {
+					WtServlet c = WebSession.getInstance().getController();
+					c.addUploadProgressUrl(getUrl());
+				}
 			}
 		} else {
 			currentUrl_ = internalPath_;
@@ -405,7 +410,44 @@ public abstract class WResource extends WObject {
 		
 		generateUrl();
 	}
-	
+
+	/** Sets an alternative URL, given to bots, for this resource.
+	 *
+	 * If <code>url</code> is not empty, this URL will be used instead of
+	 * the regular URL when the request comes from a bot (e.g., a web
+	 * crawler).
+	 *
+	 * As bots have their session terminated after sending a reply,
+	 * the {@link WApplication} linked to it, and thus also its resources
+	 * are removed. This means functionality such as continuations,
+	 * handling resource or application changes are not available.
+	 *
+	 * Only public resources can be accessed by bots (see
+	 * {@link WServer#addResource()}). Private resources (linked to the
+	 * {@link WApplication}) cannot be accessed by bots.
+	 *
+	 * By default, this is empty.
+	 *
+	 * <p><i><b>Note: </b> If this is not empty, the resource will not be
+	 * accessible to bots.
+	 */
+	public void setAlternativeBotUrl(String url) {
+		WApplication app = WApplication.getInstance();
+		boolean wasEmpty = botUrl_.isEmpty();
+		this.botUrl_ = url;
+
+		if (app != null && app.getEnvironment().agentIsSpiderBot()) {
+			if (wasEmpty) {
+				app.removeExposedResource(this);
+			}
+			generateUrl();
+		}
+	}
+
+	public String getAlternativeBotUrl() {
+		return botUrl_;
+	}
+
 	/**
 	 * Indicate interest in upload progress.
 	 * 

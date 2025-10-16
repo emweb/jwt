@@ -85,8 +85,17 @@ public abstract class WTheme extends WObject {
    *
    * <p>The <code>widgetRole</code> indicates the role that <code>child</code> has within the
    * implementation of the <code>widget</code>.
+   *
+   * <p>
+   *
+   * @see WWidget#setThemeStyleEnabled(boolean enabled)
    */
-  public abstract void apply(WWidget widget, WWidget child, int widgetRole);
+  public void apply(WWidget widget, WWidget child, int widgetRole) {
+    this.applyFunctionalStyling(widget, child, widgetRole);
+    if (widget.isThemeStyleEnabled()) {
+      this.applyOptionalStyling(widget, child, widgetRole);
+    }
+  }
   /**
    * Applies the theme to a DOM element that renders a widget.
    *
@@ -102,6 +111,19 @@ public abstract class WTheme extends WObject {
   public abstract String utilityCssClass(int utilityCssClassRole);
   /** Returns whether the theme allows for an anchor to be styled as a button. */
   public abstract boolean isCanStyleAnchorAsButton();
+  /**
+   * Load the required content for validation.
+   *
+   * <p>The styling, and scripts used for validation are separated. Loading these is not done on
+   * theme initialization.
+   */
+  public void loadValidationStyling(WApplication app) {
+    logger.warn(
+        new StringWriter()
+            .append(
+                "loadValidationStyling(): Using the default (empty) call. Override it if you make use of custom validation (using DOM.validate() or DOM.wtValdiate()).")
+            .toString());
+  }
   /** Applies a style that indicates the result of validation. */
   public abstract void applyValidationStyle(
       WWidget widget, final WValidator.Result validation, EnumSet<ValidationStyleFlag> flags);
@@ -129,4 +151,31 @@ public abstract class WTheme extends WObject {
   public Side getPanelCollapseIconSide() {
     return Side.Left;
   }
+  /**
+   * Applies the functional part of the theme to a widget&apos;s child.
+   *
+   * <p>Only applies the functional part of the theme. This means that only things that are
+   * mandatory for the widget to function properly but depend on the theme are applied.
+   *
+   * <p>
+   *
+   * @see WTheme#apply(WWidget widget, WWidget child, int widgetRole)
+   * @see WTheme#applyOptionalStyling(WWidget widget, WWidget child, int widgetRole)
+   */
+  protected abstract void applyFunctionalStyling(WWidget widget, WWidget child, int widgetRole);
+  /**
+   * Applies the optional part of the theme to a widget&apos;s child.
+   *
+   * <p>Only applies the optional part of the theme. This means that only things that are purely
+   * cosmetic and do not affect the functionality of the widget are applied.
+   *
+   * <p>This should only be called for widgets that have theme styling enabled.
+   *
+   * <p>
+   *
+   * @see WTheme#apply(WWidget widget, WWidget child, int widgetRole)
+   * @see WTheme#applyFunctionalStyling(WWidget widget, WWidget child, int widgetRole)
+   * @see WWidget#setThemeStyleEnabled(boolean enabled)
+   */
+  protected abstract void applyOptionalStyling(WWidget widget, WWidget child, int widgetRole);
 }

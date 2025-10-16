@@ -1,5 +1,5 @@
 <project name="jwt-examples" default="all" basedir=".">
-  <target name="all">
+  <target name="all" depends="clean">
     <subant target="all">
       <fileset dir="." includes="*/build.xml"/>
     </subant>

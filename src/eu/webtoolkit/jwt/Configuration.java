@@ -384,10 +384,10 @@ public class Configuration {
 		String text = n.getTextContent().trim();
 		if (text.equalsIgnoreCase("all")) {
 			clientSideErrorReportLevel = ClientSideErrorReportLevel.All;
-		} else if (text.equalsIgnoreCase("script")) {
+		} else if (text.equalsIgnoreCase("framework")) {
 			clientSideErrorReportLevel = ClientSideErrorReportLevel.Framework;
 		} else {
-			throw new RuntimeException(errorMessage + "Cannot parse value from element " + n.getNodeName() + "the value should be either 'all' or 'script'");
+			throw new RuntimeException(errorMessage + "Cannot parse value from element " + n.getNodeName() + "the value should be either 'all' or 'framework'");
 		}
 	}
 

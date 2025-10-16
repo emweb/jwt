@@ -97,106 +97,7 @@ public class WBootstrap2Theme extends WTheme {
 
   public void init(WApplication app) {
     app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.BootstrapTheme_xml);
-  }
-
-  public void apply(WWidget widget, WWidget child, int widgetRole) {
-    if (!widget.isThemeStyleEnabled()) {
-      return;
-    }
-    switch (widgetRole) {
-      case WidgetThemeRole.MenuItemIcon:
-        child.addStyleClass("Wt-icon");
-        break;
-      case WidgetThemeRole.MenuItemCheckBox:
-        child.setStyleClass("Wt-chkbox");
-        ((WFormWidget) child).getLabel().addStyleClass("checkbox-inline");
-        break;
-      case WidgetThemeRole.MenuItemClose:
-        {
-          child.addStyleClass("close");
-          ((WText) child).setText("&times;");
-          break;
-        }
-      case WidgetThemeRole.DialogCoverWidget:
-        child.addStyleClass("modal-backdrop Wt-bootstrap2");
-        break;
-      case WidgetThemeRole.DialogTitleBar:
-        child.addStyleClass("modal-header");
-        break;
-      case WidgetThemeRole.DialogBody:
-        child.addStyleClass("modal-body");
-        break;
-      case WidgetThemeRole.DialogFooter:
-        child.addStyleClass("modal-footer");
-        break;
-      case WidgetThemeRole.DialogCloseIcon:
-        {
-          child.addStyleClass("close");
-          ((WText) child).setText("&times;");
-          break;
-        }
-      case WidgetThemeRole.TableViewRowContainer:
-        {
-          WAbstractItemView view = (WAbstractItemView) widget;
-          child.toggleStyleClass("Wt-striped", view.hasAlternatingRowColors());
-          break;
-        }
-      case WidgetThemeRole.DatePickerPopup:
-        child.addStyleClass("Wt-datepicker");
-        break;
-      case WidgetThemeRole.DatePickerIcon:
-        {
-          WImage icon = ObjectUtils.cast(child, WImage.class);
-          icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
-          icon.setVerticalAlignment(AlignmentFlag.Middle);
-          icon.resize(new WLength(16), new WLength(16));
-          break;
-        }
-      case WidgetThemeRole.TimePickerPopup:
-        child.addStyleClass("Wt-timepicker");
-        break;
-      case WidgetThemeRole.PanelTitleBar:
-        child.addStyleClass("accordion-heading");
-        break;
-      case WidgetThemeRole.PanelCollapseButton:
-        child.addStyleClass("Wt-collapse-button");
-      case WidgetThemeRole.PanelTitle:
-        child.addStyleClass("accordion-toggle");
-        break;
-      case WidgetThemeRole.PanelBody:
-        child.addStyleClass("accordion-inner");
-        break;
-      case WidgetThemeRole.InPlaceEditing:
-        child.addStyleClass("input-append");
-        break;
-      case WidgetThemeRole.NavCollapse:
-        child.addStyleClass("nav-collapse");
-        break;
-      case WidgetThemeRole.NavBrand:
-        child.addStyleClass("brand");
-        break;
-      case WidgetThemeRole.NavbarForm:
-        child.addStyleClass("navbar-form");
-        break;
-      case WidgetThemeRole.NavbarSearchForm:
-        child.addStyleClass("navbar-search");
-        break;
-      case WidgetThemeRole.NavbarSearchInput:
-        child.addStyleClass("search-query");
-        break;
-      case WidgetThemeRole.NavbarAlignLeft:
-        child.addStyleClass("pull-left");
-        break;
-      case WidgetThemeRole.NavbarAlignRight:
-        child.addStyleClass("pull-right");
-        break;
-      case WidgetThemeRole.NavbarMenu:
-        child.addStyleClass("navbar-nav");
-        break;
-      case WidgetThemeRole.NavbarBtn:
-        child.addStyleClass("btn-navbar");
-        break;
-    }
+    app.getBuiltinLocalizedStrings().useBuiltin(WtServlet.Bootstrap2Theme_xml);
   }
 
   public void apply(WWidget widget, final DomElement element, int elementRole) {
@@ -429,14 +330,18 @@ public class WBootstrap2Theme extends WTheme {
     return true;
   }
 
+  public void loadValidationStyling(WApplication app) {
+    app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
+    app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
+  }
+
   public void applyValidationStyle(
       WWidget widget, final WValidator.Result validation, EnumSet<ValidationStyleFlag> styles) {
     WApplication app = WApplication.getInstance();
-    app.loadJavaScript("js/BootstrapValidate.js", wtjs1());
-    app.loadJavaScript("js/BootstrapValidate.js", wtjs2());
+    this.loadValidationStyling(app);
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_12_0.setValidationState(")
+      js.append("Wt4_12_1.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -460,6 +365,108 @@ public class WBootstrap2Theme extends WTheme {
 
   public boolean canBorderBoxElement(final DomElement element) {
     return element.getType() != DomElementType.INPUT;
+  }
+
+  protected void applyFunctionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    switch (widgetRole) {
+      case WidgetThemeRole.DialogCloseIcon:
+        {
+          child.addStyleClass("close");
+          ((WText) child).setText("&times;");
+          break;
+        }
+      case WidgetThemeRole.MenuItemIcon:
+        child.addStyleClass("Wt-icon");
+        break;
+      case WidgetThemeRole.MenuItemCheckBox:
+        child.setStyleClass("Wt-chkbox");
+        ((WFormWidget) child).getLabel().addStyleClass("checkbox-inline");
+        break;
+      case WidgetThemeRole.MenuItemClose:
+        {
+          child.addStyleClass("close");
+          ((WText) child).setText("&times;");
+          break;
+        }
+      case WidgetThemeRole.TableViewRowContainer:
+        {
+          WAbstractItemView view = (WAbstractItemView) widget;
+          child.toggleStyleClass("Wt-striped", view.hasAlternatingRowColors());
+          break;
+        }
+    }
+  }
+
+  protected void applyOptionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    switch (widgetRole) {
+      case WidgetThemeRole.DialogCoverWidget:
+        child.addStyleClass("modal-backdrop Wt-bootstrap2");
+        break;
+      case WidgetThemeRole.DialogTitleBar:
+        child.addStyleClass("modal-header");
+        break;
+      case WidgetThemeRole.DialogBody:
+        child.addStyleClass("modal-body");
+        break;
+      case WidgetThemeRole.DialogFooter:
+        child.addStyleClass("modal-footer");
+        break;
+      case WidgetThemeRole.DatePickerPopup:
+        child.addStyleClass("Wt-datepicker");
+        break;
+      case WidgetThemeRole.DatePickerIcon:
+        {
+          WImage icon = ObjectUtils.cast(child, WImage.class);
+          icon.setImageLink(new WLink(WApplication.getRelativeResourcesUrl() + "date.gif"));
+          icon.setVerticalAlignment(AlignmentFlag.Middle);
+          icon.resize(new WLength(16), new WLength(16));
+          break;
+        }
+      case WidgetThemeRole.TimePickerPopup:
+        child.addStyleClass("Wt-timepicker");
+        break;
+      case WidgetThemeRole.PanelTitleBar:
+        child.addStyleClass("accordion-heading");
+        break;
+      case WidgetThemeRole.PanelCollapseButton:
+        child.addStyleClass("Wt-collapse-button");
+      case WidgetThemeRole.PanelTitle:
+        child.addStyleClass("accordion-toggle");
+        break;
+      case WidgetThemeRole.PanelBody:
+        child.addStyleClass("accordion-inner");
+        break;
+      case WidgetThemeRole.InPlaceEditing:
+        child.addStyleClass("input-append");
+        break;
+      case WidgetThemeRole.NavCollapse:
+        child.addStyleClass("nav-collapse");
+        break;
+      case WidgetThemeRole.NavBrand:
+        child.addStyleClass("brand");
+        break;
+      case WidgetThemeRole.NavbarForm:
+        child.addStyleClass("navbar-form");
+        break;
+      case WidgetThemeRole.NavbarSearchForm:
+        child.addStyleClass("navbar-search");
+        break;
+      case WidgetThemeRole.NavbarSearchInput:
+        child.addStyleClass("search-query");
+        break;
+      case WidgetThemeRole.NavbarAlignLeft:
+        child.addStyleClass("pull-left");
+        break;
+      case WidgetThemeRole.NavbarAlignRight:
+        child.addStyleClass("pull-right");
+        break;
+      case WidgetThemeRole.NavbarMenu:
+        child.addStyleClass("navbar-nav");
+        break;
+      case WidgetThemeRole.NavbarBtn:
+        child.addStyleClass("btn-navbar");
+        break;
+    }
   }
 
   private boolean responsive_;

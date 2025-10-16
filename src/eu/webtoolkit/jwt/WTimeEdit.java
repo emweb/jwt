@@ -377,7 +377,8 @@ public class WTimeEdit extends WLineEdit {
     }
     this.popup_.setAnchorWidget(this);
     this.popup_.setTransient(true);
-    WApplication.getInstance().getTheme().apply(this, this.popup_, WidgetThemeRole.TimePickerPopup);
+    this.scheduleThemeStyleApply(
+        WApplication.getInstance().getTheme(), this.popup_, WidgetThemeRole.TimePickerPopup);
     this.escapePressed()
         .addListener(
             this.popup_,
@@ -509,7 +510,7 @@ public class WTimeEdit extends WLineEdit {
     WApplication app = WApplication.getInstance();
     app.loadJavaScript("js/WTimeEdit.js", wtjs1());
     String jsObj =
-        "new Wt4_12_0.WTimeEdit("
+        "new Wt4_12_1.WTimeEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

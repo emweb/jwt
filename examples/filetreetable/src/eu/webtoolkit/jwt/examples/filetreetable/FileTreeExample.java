@@ -23,8 +23,11 @@ public class FileTreeExample extends WtServlet {
 
     public FileTreeExample() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
         app.setTitle("File explorer example");

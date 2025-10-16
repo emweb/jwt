@@ -30,8 +30,11 @@ public class FormMain extends WtServlet {
 
     public FormMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
 

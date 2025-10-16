@@ -14,6 +14,8 @@ public class Chart3DMain extends WtServlet {
 
 	public Chart3DMain() {
 		super();
+
+    getConfiguration().setUseScriptNonce(true);
 	}
 
 	@Override

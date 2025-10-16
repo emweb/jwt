@@ -14,7 +14,13 @@ import eu.webtoolkit.jwt.WtServlet;
 
 public class ItemModel extends WtServlet implements Signal.Listener {
 	private static final long serialVersionUID = 1L;
-	
+
+  public ItemModel() {
+    super();
+
+    getConfiguration().setUseScriptNonce(true);
+  }
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);

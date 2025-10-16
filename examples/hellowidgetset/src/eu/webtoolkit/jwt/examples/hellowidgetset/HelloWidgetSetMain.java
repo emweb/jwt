@@ -12,6 +12,12 @@ import eu.webtoolkit.jwt.WtServlet;
 public class HelloWidgetSetMain extends WtServlet {
     private static final long serialVersionUID = 1L;
 
+    public HelloWidgetSetMain() {
+      super();
+
+      getConfiguration().setUseScriptNonce(true);
+    }
+
     @Override
     public WApplication createApplication(WEnvironment env) {
         return new HelloWidgetSetApplication(env, true);

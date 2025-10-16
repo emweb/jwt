@@ -196,6 +196,10 @@ public class WBootstrapTheme extends WTheme {
     return this.impl_.isCanStyleAnchorAsButton();
   }
 
+  public void loadValidationStyling(WApplication app) {
+    this.impl_.loadValidationStyling(app);
+  }
+
   public void applyValidationStyle(
       WWidget widget, final WValidator.Result validation, EnumSet<ValidationStyleFlag> styles) {
     this.impl_.applyValidationStyle(widget, validation, styles);
@@ -203,6 +207,14 @@ public class WBootstrapTheme extends WTheme {
 
   public boolean canBorderBoxElement(final DomElement element) {
     return this.impl_.canBorderBoxElement(element);
+  }
+
+  protected void applyFunctionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    this.impl_.applyFunctionalStyling(widget, child, widgetRole);
+  }
+
+  protected void applyOptionalStyling(WWidget widget, WWidget child, int widgetRole) {
+    this.impl_.applyOptionalStyling(widget, child, widgetRole);
   }
 
   private WTheme impl_;

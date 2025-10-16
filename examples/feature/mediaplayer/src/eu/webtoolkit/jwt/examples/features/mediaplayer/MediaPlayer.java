@@ -14,6 +14,12 @@ import eu.webtoolkit.jwt.WtServlet;
 public class MediaPlayer extends WtServlet {
 	private static final long serialVersionUID = 1L;
 
+  public MediaPlayer() {
+    super();
+
+    getConfiguration().setUseScriptNonce(true);
+  }
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		  WApplication app = new WApplication(env);

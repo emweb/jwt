@@ -22,6 +22,8 @@ public class MissionImpossibleMain extends WtServlet {
 
     public MissionImpossibleMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
     @Override

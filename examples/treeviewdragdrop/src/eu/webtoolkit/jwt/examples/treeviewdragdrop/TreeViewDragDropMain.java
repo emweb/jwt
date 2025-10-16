@@ -16,10 +16,12 @@ public class TreeViewDragDropMain extends WtServlet {
     public TreeViewDragDropMain() {
         super();
 
+        getConfiguration().setUseScriptNonce(true);
         //getConfiguration().setProgressiveBootstrap(true);
         //getConfiguration().setSendXHTMLMimeType(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new TreeViewDragDropApplication(env);
         app.setTitle("WTreeView Drag & Drop");

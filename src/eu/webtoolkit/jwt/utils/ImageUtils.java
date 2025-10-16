@@ -23,10 +23,7 @@ public class ImageUtils {
 
 	public static WPoint getSize(final List<Byte> data) {
 		try {
-			byte[] arr = new byte[data.size()];
-			for (int i = 0; i < data.size(); ++i)
-				arr[i] = data.get(i);
-			BufferedImage image = ImageIO.read(new ByteArrayInputStream(arr));
+			BufferedImage image = ImageIO.read(getByteArrayInputStream(data));
 			return new WPoint(image.getWidth(), image.getHeight());
 		} catch (java.io.IOException e) {
 			logger.error("An error occurred while attempting to get the size of an image", e);
@@ -43,5 +40,12 @@ public class ImageUtils {
 					fileName + "'", e);
 			return new WPoint();
 		}
+	}
+
+	public static ByteArrayInputStream getByteArrayInputStream(final List<Byte> data) {
+		byte[] arr = new byte[data.size()];
+		for (int i = 0; i < data.size(); ++i)
+			arr[i] = data.get(i);
+		return new ByteArrayInputStream(arr);
 	}
 }

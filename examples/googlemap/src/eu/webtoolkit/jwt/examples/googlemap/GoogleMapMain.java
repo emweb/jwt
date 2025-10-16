@@ -14,8 +14,11 @@ public class GoogleMapMain extends WtServlet {
 
 	public GoogleMapMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
         app.setTitle("GoogleMap example");

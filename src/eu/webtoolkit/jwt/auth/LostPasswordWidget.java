@@ -46,6 +46,7 @@ public class LostPasswordWidget extends WTemplate {
     this.addFunction("block", Functions.block);
     WLineEdit email = new WLineEdit();
     this.bindWidget("email", email);
+    this.bindString("email-info", tr("Wt.Auth.email-info"));
     email.setFocus(true);
     WPushButton okButton = new WPushButton(tr("Wt.Auth.send"));
     this.bindWidget("send-button", okButton);

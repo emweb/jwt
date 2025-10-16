@@ -443,11 +443,11 @@ public abstract class WWidget extends WObject {
     String canAdjustX = adjustOrientations.contains(Orientation.Horizontal) ? "true" : "false";
     String canAdjustY = adjustOrientations.contains(Orientation.Vertical) ? "true" : "false";
     this.doJavaScript(
-        "Wt4_12_0.positionAtWidget('"
+        "Wt4_12_1.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_12_0"
+            + "',Wt4_12_1"
             + side
             + ","
             + "false,"
@@ -996,7 +996,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_12_0.$('" + this.getId() + "')";
+    return "Wt4_12_1.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.
@@ -1473,10 +1473,16 @@ public abstract class WWidget extends WObject {
    * <p>By default all widgets are styled according to the chosen theme. Disabling the theme style
    * could be useful to completely customize the style of the widget outside of the theme.
    *
+   * <p>This function does, however, not always completely remove every style class added by JWt, as
+   * some of those are needed in order for the widget to function correctly. Additionally, Bootstrap
+   * 5 makes some changes to the default style of some widgets in the browser, like with buttons.
+   * These changes are not removed by this function.
+   *
    * <p>
    *
    * <p><i><b>Note: </b>This should be changed after the construction but before the rendering of
-   * the widget. </i>
+   * the widget or before the call to {@link WWidget#applyThemeStyles() applyThemeStyles()}
+   * (depending on what happens first). </i>
    */
   public abstract void setThemeStyleEnabled(boolean enabled);
   /**
@@ -1489,6 +1495,43 @@ public abstract class WWidget extends WObject {
    * @see WWidget#setThemeStyleEnabled(boolean enabled)
    */
   public abstract boolean isThemeStyleEnabled();
+  /**
+   * Schedules a theme style to be applied at the next render.
+   *
+   * <p>This schedules a theme style to be applied at the end of the next rendering of the widget,
+   * or when the next {@link WWidget#applyThemeStyles() applyThemeStyles()} is called (depending on
+   * what happens first).
+   *
+   * <p>
+   *
+   * @see WWidget#applyThemeStyles()
+   * @see WWidget#setThemeStyleEnabled(boolean enabled)
+   */
+  public void scheduleThemeStyleApply(WTheme theme, WWidget child, int role) {
+    this.themeStyles_.add(new WWidget.ThemeStyle(theme, child, role));
+  }
+  /**
+   * Apply the theme style scheduled.
+   *
+   * <p>This apllies the theme styles scheduled for the next render of this widget.
+   *
+   * <p>
+   *
+   * <p><i><b>Warning: </b>{@link WWidget#setThemeStyleEnabled(boolean enabled)
+   * setThemeStyleEnabled()} should not be called after using this method. </i>
+   *
+   * @see WWidget#scheduleThemeStyleApply(WTheme theme, WWidget child, int role)
+   * @see WWidget#setThemeStyleEnabled(boolean enabled)
+   */
+  public void applyThemeStyles() {
+    for (int i = 0; i < this.themeStyles_.size(); ++i) {
+      final WWidget.ThemeStyle ts = this.themeStyles_.get(i);
+      if (ts.oChild_ != null) {
+        ts.theme_.apply(this, ts.oChild_, ts.role_);
+      }
+    }
+    this.themeStyles_.clear();
+  }
 
   DomElement createSDomElement(WApplication app) {
     if (!this.needsToBeRendered()) {
@@ -1592,6 +1635,7 @@ public abstract class WWidget extends WObject {
     this.eventSignals_ = new LinkedList<AbstractEventSignal>();
     this.jsignals_ = new ArrayList<AbstractEventSignal>();
     this.parent_ = null;
+    this.themeStyles_ = new ArrayList<WWidget.ThemeStyle>();
     this.flags_.set(BIT_NEED_RERENDER);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -1758,7 +1802,9 @@ public abstract class WWidget extends WObject {
    * rendering implementation until the latest moment possible. In that case you should make sure
    * you call the base implementation however.
    */
-  protected void render(EnumSet<RenderFlag> flags) {}
+  protected void render(EnumSet<RenderFlag> flags) {
+    this.applyThemeStyles();
+  }
   /**
    * Renders the widget.
    *
@@ -1899,6 +1945,22 @@ public abstract class WWidget extends WObject {
   private LinkedList<AbstractEventSignal> eventSignals_;
   List<AbstractEventSignal> jsignals_;
   WWidget parent_;
+
+  static class ThemeStyle {
+    private static Logger logger = LoggerFactory.getLogger(ThemeStyle.class);
+
+    public WTheme theme_;
+    public WWidget oChild_;
+    public int role_;
+
+    public ThemeStyle(WTheme theme, WWidget child, int role) {
+      this.theme_ = theme;
+      this.oChild_ = child;
+      this.role_ = role;
+    }
+  }
+
+  private List<WWidget.ThemeStyle> themeStyles_;
 
   private void setJsSize() {
     if (!this.getHeight().isAuto()

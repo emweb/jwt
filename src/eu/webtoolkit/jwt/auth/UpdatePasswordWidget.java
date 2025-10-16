@@ -205,7 +205,6 @@ public class UpdatePasswordWidget extends WTemplateFormView {
     if (this.validate()) {
       String password = this.registrationModel_.valueText(RegistrationModel.ChoosePasswordField);
       this.registrationModel_.getPasswordAuth().updatePassword(this.user_, password);
-      this.registrationModel_.getLogin().login(this.user_);
       this.updated_.trigger();
     }
   }

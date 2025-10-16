@@ -16,8 +16,11 @@ public class BobSmithMain extends WtServlet {
 
     public BobSmithMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
+    @Override
     public WApplication createApplication(WEnvironment env) {
         WApplication app = new WApplication(env);
 

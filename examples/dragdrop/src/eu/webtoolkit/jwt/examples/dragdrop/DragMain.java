@@ -16,6 +16,8 @@ public class DragMain extends WtServlet {
 
     public DragMain() {
         super();
+
+        getConfiguration().setUseScriptNonce(true);
     }
 
     @Override

@@ -9,6 +9,12 @@ import eu.webtoolkit.jwt.WtServlet;
 public class Auth1 extends WtServlet {
 	private static final long serialVersionUID = 1L;
 
+  public Auth1() {
+    super();
+
+    getConfiguration().setUseScriptNonce(true);
+  }
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		return new AuthApplication(env);

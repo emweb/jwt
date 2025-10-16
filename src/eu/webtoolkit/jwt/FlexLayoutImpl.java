@@ -25,9 +25,11 @@ class FlexLayoutImpl extends StdLayoutImpl {
 
   public FlexLayoutImpl(WLayout layout, final Grid grid) {
     super(layout);
+    this.flags_ = new BitSet();
     this.grid_ = grid;
     this.addedItems_ = new ArrayList<WLayoutItem>();
     this.removedItems_ = new ArrayList<String>();
+    this.childLayouts_ = new ArrayList<StdLayoutImpl>();
     this.elId_ = "";
     this.canAdjustLayout_ = false;
     String THIS_JS = "js/FlexLayoutImpl.js";
@@ -87,11 +89,19 @@ class FlexLayoutImpl extends StdLayoutImpl {
 
   public void itemAdded(WLayoutItem item) {
     this.addedItems_.add(item);
+    StdLayoutImpl child = getStdLayoutImpl(item);
+    if (child != null) {
+      this.childLayouts_.add(child);
+    }
     this.update();
   }
 
   public void itemRemoved(WLayoutItem item) {
     this.addedItems_.remove(item);
+    StdLayoutImpl child = getStdLayoutImpl(item);
+    if (child != null) {
+      this.childLayouts_.remove(child);
+    }
     this.removedItems_.add(getImpl(item).getId());
     this.update();
   }
@@ -99,6 +109,14 @@ class FlexLayoutImpl extends StdLayoutImpl {
   public void updateDom(final DomElement parent) {
     WApplication app = WApplication.getInstance();
     DomElement div = DomElement.getForUpdate(this.elId_, DomElementType.DIV);
+    if (this.flags_.get(BIT_OBJECT_NAME_CHANGED) && this.getLayout().getParentLayout() != null) {
+      if (this.getObjectName().length() != 0) {
+        div.setAttribute("data-object-name", this.getObjectName());
+      } else {
+        div.removeAttribute("data-object-name");
+      }
+      this.flags_.clear(BIT_OBJECT_NAME_CHANGED);
+    }
     boolean skipLayoutAdjust = false;
     Orientation orientation = this.getOrientation();
     if (this.grid_.items_.size() > 0) {
@@ -118,9 +136,19 @@ class FlexLayoutImpl extends StdLayoutImpl {
       DomElement el = this.createElement(orientation, pos, totalStretch, app);
       div.insertChildAt(el, pos);
     }
+    for (int i = 0; i < this.childLayouts_.size(); ++i) {
+      boolean justAdded = false;
+      WLayoutItem childItem = this.childLayouts_.get(i).getLayoutItem();
+      for (int j = 0; j < this.addedItems_.size() && !justAdded; ++j) {
+        justAdded = childItem == this.addedItems_.get(j);
+      }
+      if (!justAdded) {
+        this.childLayouts_.get(i).updateDom(div);
+      }
+    }
     this.addedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_12_0.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_12_1.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
     if (this.canAdjustLayout_) {
@@ -164,6 +192,9 @@ class FlexLayoutImpl extends StdLayoutImpl {
       this.elId_ = this.getId();
       result.setId(this.elId_);
       result.setProperty(Property.StyleDisplay, this.getStyleDisplay());
+      if (this.getObjectName().length() != 0) {
+        result.setAttribute("data-object-name", this.getObjectName());
+      }
     }
     if (margin[0] != 0 || margin[1] != 0 || margin[2] != 0 || margin[3] != 0) {
       StringBuilder paddingProperty = new StringBuilder();
@@ -187,7 +218,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_12_0.FlexLayout(")
+    js.append("layout=new Wt4_12_1.FlexLayout(")
         .append(app.getJavaScriptClass())
         .append(",'")
         .append(this.elId_)
@@ -204,9 +235,20 @@ class FlexLayoutImpl extends StdLayoutImpl {
     return false;
   }
 
+  public void setObjectName(final String name) {
+    if (!this.getObjectName().equals(name)) {
+      super.setObjectName(name);
+      this.flags_.set(BIT_OBJECT_NAME_CHANGED);
+      this.update();
+    }
+  }
+
+  private static final int BIT_OBJECT_NAME_CHANGED = 0;
+  private BitSet flags_;
   private final Grid grid_;
   private List<WLayoutItem> addedItems_;
   private List<String> removedItems_;
+  private List<StdLayoutImpl> childLayouts_;
   private String elId_;
   private boolean canAdjustLayout_;
 
@@ -515,6 +557,14 @@ class FlexLayoutImpl extends StdLayoutImpl {
       }
     }
     return totalStretch;
+  }
+
+  private static StdLayoutImpl getStdLayoutImpl(WLayoutItem item) {
+    WLayout layout = ObjectUtils.cast(item, WLayout.class);
+    if (layout != null) {
+      return ObjectUtils.cast(layout.getImpl(), StdLayoutImpl.class);
+    }
+    return null;
   }
 
   private Grid.Item item(Orientation orientation, int i) {

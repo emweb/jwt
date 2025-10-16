@@ -455,7 +455,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
       wrap.setProperty(Property.StyleRight, "0");
     }
     DomElement canvas = DomElement.createNew(DomElementType.DIV);
-    if (!app.getEnvironment().agentIsSpiderBot()) {
+    if (!app.getEnvironment().isTreatLikeBot()) {
       canvas.setId('p' + this.getId());
     }
     WPaintDevice device = this.painter_.getPaintDevice(false);

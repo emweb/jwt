@@ -165,13 +165,17 @@ public class TotpProcess extends AbstractMfaProcess {
     } else {
       this.currentSecretKey_ = totpSecretKey.toString();
     }
-    view.bindWidget(
-        "qr-code",
-        new TotpQrCode(
-            this.getCurrentSecretKey(),
-            this.getBaseAuth().getMfaProvider(),
-            this.getLogin().getUser().getEmail(),
-            this.getBaseAuth().getMfaCodeLength()));
+    TotpQrCode qrcode =
+        (TotpQrCode)
+            view.bindWidget(
+                "qr-code",
+                new TotpQrCode(
+                    this.getCurrentSecretKey(),
+                    this.getBaseAuth().getMfaProvider(),
+                    this.getLogin().getUser().getEmail(),
+                    this.getBaseAuth().getMfaCodeLength()));
+    qrcode.setSquareSize(this.getBaseAuth().getMfaQrCodeSquareSize());
+    qrcode.setErrorCorrectionLevel(this.getBaseAuth().getMfaQrCodeErrCorrLvl());
     view.bindString("secret-key", this.getCurrentSecretKey());
   }
   /**

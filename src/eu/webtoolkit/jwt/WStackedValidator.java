@@ -100,7 +100,7 @@ public class WStackedValidator extends WValidator {
   public String getJavaScriptValidate() {
     WApplication.getInstance().loadJavaScript("js/WStackedValidator.js", wtjs1());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_12_0.WStackedValidator([");
+    js.append("new Wt4_12_1.WStackedValidator([");
     for (int i = 0; i < this.validators_.size(); ++i) {
       if (i > 0) {
         js.append(",");

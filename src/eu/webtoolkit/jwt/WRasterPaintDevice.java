@@ -17,6 +17,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import eu.webtoolkit.jwt.WPainterPath.Segment;
 import eu.webtoolkit.jwt.servlet.WebRequest;
 import eu.webtoolkit.jwt.servlet.WebResponse;
 import eu.webtoolkit.jwt.utils.EnumUtils;
+import eu.webtoolkit.jwt.utils.ImageUtils;
 
 public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	private static Logger logger = LoggerFactory.getLogger(WRasterPaintDevice.class);
@@ -66,7 +68,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		else
 		    throw new RuntimeException("Unsupported format: " + format);
 		this.changeFlags = EnumSet.noneOf(PainterChangeFlag.class);
-		
+
 		if (width.toPixels() > 0 && height.toPixels() > 0)
 			this.image = new BufferedImage((int)width.toPixels(), (int)height.toPixels(), BufferedImage.TYPE_INT_ARGB);
 	}
@@ -92,13 +94,13 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		}
 	}
 
-	
+
 	public void drawArc(WRectF rect, double startAngle, double spanAngle) {
 		drawShape(new Arc2D.Double(rect.getLeft(), rect.getTop(), rect.getWidth(), rect.getHeight(),
 			startAngle, spanAngle, Arc2D.OPEN));
 	}
 
-	
+
 	public void drawImage(WRectF rect, String imageUri, int imgWidth, int imgHeight, WRectF sourceRect) {
 		processChangeFlags();
 		try {
@@ -108,18 +110,40 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
       			ServletContext context = WApplication.getInstance().getEnvironment().getServer().getServletContext();
 				realImageUri = context.getRealPath(imageUri);
 			}
+
 			BufferedImage image = ImageIO.read(new File(realImageUri));
-			BufferedImage subImg = image.getSubimage((int)sourceRect.getLeft(), (int)sourceRect.getTop(), (int)sourceRect.getWidth(), (int)sourceRect.getHeight());
-			float xScale = (float)(rect.getWidth() / sourceRect.getWidth());
-			float yScale = (float)(rect.getHeight() / sourceRect.getHeight());
-			AffineTransform t = new AffineTransform(xScale, 0f, 0f, yScale, rect.getLeft(), rect.getTop());
-			g2.drawImage(subImg, t, null);
+			doDrawImage(rect, image, imgWidth, imgHeight, sourceRect);
 		} catch (IOException e) {
 			logger.error("IOException when reading image: " + imageUri, e);
 		}
 	}
 
-	
+	public void drawImage(WRectF rect, WAbstractDataInfo imgInfo, int imgWidth, int imgHeight, WRectF sourceRect) {
+		processChangeFlags();
+		try {
+			BufferedImage image;
+			if (imgInfo.hasDataUri()) {
+				DataUri uri = new DataUri(imgInfo.getDataUri());
+				image = ImageIO.read(ImageUtils.getByteArrayInputStream(uri.data));
+			} else {
+				image = ImageIO.read(new File(imgInfo.getFilePath()));
+			}
+
+			doDrawImage(rect, image, imgWidth, imgHeight, sourceRect);
+		} catch (IOException e) {
+			logger.error("IOException when reading image: " + imgInfo.getName(), e);
+		}
+	}
+
+	private void doDrawImage(WRectF rect, BufferedImage image, int imgWidth, int imgHeight, WRectF sourceRect) {
+		BufferedImage subImg = image.getSubimage((int)sourceRect.getLeft(), (int)sourceRect.getTop(), (int)sourceRect.getWidth(), (int)sourceRect.getHeight());
+		float xScale = (float)(rect.getWidth() / sourceRect.getWidth());
+		float yScale = (float)(rect.getHeight() / sourceRect.getHeight());
+		AffineTransform t = new AffineTransform(xScale, 0f, 0f, yScale, rect.getLeft(), rect.getTop());
+		g2.drawImage(subImg, t, null);
+	}
+
+
 	public void drawLine(double x1, double y1, double x2, double y2) {
 		drawShape(new Line2D.Double(x1, y1, x2, y2));
 	}
@@ -128,14 +152,14 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		drawShape(new Rectangle2D.Double(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()));
 	}
 
-	
+
 	public void drawPath(WPainterPath path) {
 		drawShape(createShape(path));
 	}
 
 	/**
 	 * Converts a jwt.WPainterPath to an awt.Shape
-	 * 
+	 *
 	 * @param path
 	 * @return a shape that represents the path
 	 */
@@ -194,16 +218,16 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 				return;
 			}
 		}
-		
+
 		processChangeFlags();
-		
+
 		double px = 0, py = 0;
 
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask));
 
 		String s = text.toString();
-		
+
 		switch (horizontalAlign) {
 		case Left:
 			px = rect.getLeft();
@@ -215,7 +239,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			px = rect.getCenter().getX() - g2.getFontMetrics().stringWidth(s)/2;
 			break;
 		}
-		
+
 		switch (verticalAlign) {
 		case Bottom:
 			py = rect.getBottom();
@@ -226,51 +250,51 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		case Middle:
 			py = rect.getCenter().getY() + g2.getFontMetrics().getHeight()/2;
 		}
-		
+
 		py -= g2.getFontMetrics().getDescent();
 
 		g2.setPaint(penPaint);
 		g2.drawString(s, (float)px, (float)py);
 	}
 
-	
+
 	public WLength getHeight() {
 		return height;
 	}
-	
+
 
 	public WPainter getPainter() {
 		return painter;
 	}
 
-	
+
 	public WLength getWidth() {
 		return width;
 	}
 
-	
+
 	public void init() {
 		if (image != null) {
 			this.g2 = image.createGraphics();
 			g2.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		}
-		
+
 		changeFlags.add(PainterChangeFlag.Pen);
 		changeFlags.add(PainterChangeFlag.Brush);
 		changeFlags.add(PainterChangeFlag.Font);
 	}
 
-	
+
 	public boolean isPaintActive() {
 		return painter != null;
 	}
 
-	
+
 	public void setChanged(EnumSet<PainterChangeFlag> flags) {
 		this.changeFlags.addAll(flags);
 	}
 
-	
+
 	public void setChanged(PainterChangeFlag flag, PainterChangeFlag... flags) {
 		setChanged(EnumSet.of(flag, flags));
 	}
@@ -315,10 +339,10 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 		if (changeFlags.contains(PainterChangeFlag.Brush))
 			brushPaint = createColor(painter.getBrush().getColor());
-		
+
 		if (changeFlags.contains(PainterChangeFlag.Font))
 			g2.setFont(createFont(painter.getFont()));
-		
+
 		if (changeFlags.contains(PainterChangeFlag.Hints)) {
 			if (painter.getRenderHints().contains(RenderHint.Antialiasing))
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -339,7 +363,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	}
 
 	/** converts a jwt.WPen to an awt.Stroke
-	 * 
+	 *
 	 * @param painter the painter used to take into account transformations for the pen width
 	 * @param pen the JWt pen
 	 * @return the corresponding AWT Stroke
@@ -388,10 +412,10 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			return new BasicStroke(width, cap, join);
 		}
 	}
-	
+
 	private Font createFont(WFont font) {
 		String name = "";
-		
+
 		switch (font.getGenericFamily()) {
 		case Default: break;
 		case Cursive: break; // ??
@@ -399,35 +423,35 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		case Serif:     name = "Serif";      break;
 		case SansSerif: name = "SansSerif"; break;
 		}
-		
+
 		if (font.getSpecificFamilies().length() != 0) {
 			if (name.length() != 0)
 				name += " ";
 			name += font.getSpecificFamilies().toString();
 		}
-	
+
 		int style = Font.PLAIN;
 		switch (font.getStyle()) {
 		case Italic: style = Font.ITALIC;  break;
 		case Normal:                       break;
 		case Oblique: style = Font.ITALIC; break; // ??
 		}
-		
+
 		switch (font.getWeight()) {
 		case Normal: break;
 		case Bolder:
 		case Bold: style |= Font.BOLD; break;
 		}
-	
+
 		int size = (int) (font.getSizeLength(16).toPixels());
-		
+
 		return new Font(name, style, size);
 	}
 
 	private void setTransform(WTransform t) {
 		g2.setTransform(new AffineTransform(t.getM11(), t.getM12(), t.getM21(), t.getM22(), t.getM31(), t.getM32()));
 	}
-	
+
 	/**
 	 * Clears the image (resets the background to solid white).
 	 */
@@ -448,7 +472,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 
 	@Override
-	public WTextItem measureText(CharSequence text, double maxWidth, boolean wordWrap) {	
+	public WTextItem measureText(CharSequence text, double maxWidth, boolean wordWrap) {
 		if (!wordWrap) {
 			processChangeFlags();
 			FontMetrics metrics = g2.getFontMetrics(g2.getFont());

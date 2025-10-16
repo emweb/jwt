@@ -203,7 +203,9 @@ public class WDialog extends WPopupWidget {
   public WContainerWidget getFooter() {
     if (!(this.footer_ != null)) {
       WContainerWidget footer = this.footer_ = new WContainerWidget();
-      WApplication.getInstance().getTheme().apply(this, this.footer_, WidgetThemeRole.DialogFooter);
+      (this)
+          .scheduleThemeStyleApply(
+              WApplication.getInstance().getTheme(), this.footer_, WidgetThemeRole.DialogFooter);
       WContainerWidget layoutContainer = (WContainerWidget) this.impl_.resolveWidget("layout");
       layoutContainer.getLayout().addWidget(footer);
     }
@@ -398,7 +400,7 @@ public class WDialog extends WPopupWidget {
         Resizable.loadJavaScript(WApplication.getInstance());
         this.setJavaScriptMember(
             " Resizable",
-            "(new Wt4_12_0.Resizable(Wt4_12_0,"
+            "(new Wt4_12_1.Resizable(Wt4_12_1,"
                 + this.getJsRef()
                 + ")).onresize(function(w, h, done) {var obj = "
                 + this.getJsRef()
@@ -425,7 +427,6 @@ public class WDialog extends WPopupWidget {
    */
   public void setMovable(boolean movable) {
     this.movable_ = movable;
-    this.layoutContainer_.toggleStyleClass("movable", this.movable_);
   }
   /**
    * Returns whether the dialog can be moved.
@@ -704,7 +705,7 @@ public class WDialog extends WPopupWidget {
         }
       }
       this.doJavaScript(
-          "new Wt4_12_0.WDialog("
+          "new Wt4_12_1.WDialog("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()
@@ -738,6 +739,13 @@ public class WDialog extends WPopupWidget {
       } else {
         this.impl_.bindEmpty("center-script");
       }
+      this.impl_.setCondition("if:theme-style-enabled", this.isThemeStyleEnabled());
+      this.impl_.setCondition("if:theme-style-disabled", !this.isThemeStyleEnabled());
+      if (this.isThemeStyleEnabled()) {
+        this.layoutContainer_.toggleStyleClass("movable", this.movable_);
+      }
+      this.caption_.setCondition("if:theme-style-enabled", this.isThemeStyleEnabled());
+      this.caption_.setCondition("if:theme-style-disabled", !this.isThemeStyleEnabled());
     }
     if (!this.isModal()) {
       this.impl_
@@ -791,6 +799,7 @@ public class WDialog extends WPopupWidget {
     this.escapeIsReject_ = false;
     this.autoFocus_ = true;
     this.impl_ = ObjectUtils.cast(this.getImplementation(), WTemplate.class);
+    this.impl_.addFunction("block", WTemplate.Functions.block);
     String CSS_RULES_NAME = "Wt::WDialog";
     WApplication app = WApplication.getInstance();
     if (!app.getStyleSheet().isDefined(CSS_RULES_NAME)) {
@@ -823,9 +832,8 @@ public class WDialog extends WPopupWidget {
     WContainerWidget layoutContainer = new WContainerWidget();
     this.layoutContainer_ = layoutContainer;
     layoutContainer.setGlobalUnfocused(true);
-    WApplication.getInstance()
-        .getTheme()
-        .apply(this, layoutContainer, WidgetThemeRole.DialogContent);
+    this.scheduleThemeStyleApply(
+        WApplication.getInstance().getTheme(), layoutContainer, WidgetThemeRole.DialogContent);
     layoutContainer.addStyleClass("dialog-layout");
     WVBoxLayout layoutPtr = new WVBoxLayout();
     WVBoxLayout layout = layoutPtr;
@@ -834,10 +842,11 @@ public class WDialog extends WPopupWidget {
     layoutContainer.setLayout(layoutPtr);
     this.impl_.bindWidget("layout", layoutContainer);
     this.titleBar_ = new WContainerWidget();
-    app.getTheme().apply(this, this.titleBar_, WidgetThemeRole.DialogTitleBar);
+    this.scheduleThemeStyleApply(app.getTheme(), this.titleBar_, WidgetThemeRole.DialogTitleBar);
     this.caption_ = new WTemplate(tr("Wt.WDialog.titlebar"), (WContainerWidget) this.titleBar_);
+    this.caption_.addFunction("block", WTemplate.Functions.block);
     this.contents_ = new WContainerWidget();
-    app.getTheme().apply(this, this.contents_, WidgetThemeRole.DialogBody);
+    this.scheduleThemeStyleApply(app.getTheme(), this.contents_, WidgetThemeRole.DialogBody);
     layout.addWidget(this.titleBar_);
     layout.addWidget(this.contents_, 1);
     if (app.getEnvironment().hasAjax()) {

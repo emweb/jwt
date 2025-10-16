@@ -96,6 +96,21 @@ public interface WPaintDevice {
       int imgHeight,
       final WRectF sourceRect);
   /**
+   * Draws an image.
+   *
+   * <p>Draws <code>sourceRect</code> from the image with the information contained in <code>
+   * imageInfo</code> and original dimensions <code>imgWidth</code> and <code>imgHeight</code> to
+   * the location, into the rectangle defined by <code>rect</code>.
+   *
+   * <p>The image is transformed using the current painter settings.
+   */
+  public void drawImage(
+      final WRectF rect,
+      WAbstractDataInfo imageInfo,
+      int imgWidth,
+      int imgHeight,
+      final WRectF sourceRect);
+  /**
    * Draws a line.
    *
    * <p>The line must be stroked and transformed using the current painter settings.
