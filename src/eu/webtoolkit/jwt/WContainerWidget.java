@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -157,14 +157,7 @@ public class WContainerWidget extends WInteractWidget {
    * @see WContainerWidget#getLayout()
    */
   public void setLayout(WLayout layout) {
-    this.clear();
-    this.layout_ = layout;
-    if (this.layout_ != null) {
-      this.layout_.setParentWidget(this);
-    }
-    EnumUtils.setOnly(this.contentAlignment_, AlignmentFlag.Justify);
-    this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
-    this.repaint();
+    this.setLogicalLayout(layout);
   }
   // public Layout  setLayout(<Woow... some pseudoinstantiation type!> layout) ;
   /**
@@ -175,7 +168,7 @@ public class WContainerWidget extends WInteractWidget {
    * <p>
    */
   public WLayout getLayout() {
-    return this.layout_;
+    return this.getLogicalLayout();
   }
   /**
    * Adds a child widget to this container.
@@ -893,7 +886,7 @@ public class WContainerWidget extends WInteractWidget {
     this.flags_.clear(BIT_LAYOUT_NEEDS_RERENDER);
     this.flags_.clear(BIT_LAYOUT_NEEDS_UPDATE);
     if (this.layout_ != null && deep) {
-      this.propagateLayoutItemsOk(this.getLayout());
+      this.propagateLayoutItemsOk(this.getRealLayout());
     } else {
       this.addedChildren_ = null;
     }
@@ -938,6 +931,25 @@ public class WContainerWidget extends WInteractWidget {
                 .toString());
       }
     }
+  }
+
+  void setLogicalLayout(WLayout layout) {
+    this.clear();
+    this.layout_ = layout;
+    if (this.layout_ != null) {
+      this.layout_.setParentWidget(this);
+    }
+    EnumUtils.setOnly(this.contentAlignment_, AlignmentFlag.Justify);
+    this.flags_.set(BIT_LAYOUT_NEEDS_RERENDER);
+    this.repaint();
+  }
+
+  private WLayout getRealLayout() {
+    return this.layout_;
+  }
+
+  WLayout getLogicalLayout() {
+    return this.getRealLayout();
   }
 
   private void propagateLayoutItemsOk(WLayoutItem item) {

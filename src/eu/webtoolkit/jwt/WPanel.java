@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class WPanel extends WCompositeWidget {
     this.impl_.bindWidget("contents", centralArea);
     this.setJavaScriptMember(
         WT_RESIZE_JS,
-        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_12_1.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_12_1.boxSizing(self)) {h -= Wt4_12_1.px(self, 'borderTopWidth') + Wt4_12_1.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';c.querySelectorAll(':scope > *').forEach(function(self) { let padding = self.getBoundingClientRect().height - Wt4_12_1.px(self, 'height');self.style.height = (h - padding) + 'px';self.lh = true;});} else {c.style.height = '';c.lh = false;for (const child of c.children) {child.style.height = '';child.lh = false;}}};");
+        "function(self, w, h, s) {var hdefined = h >= 0;if (hdefined) {var mh = Wt4_12_2.px(self, 'maxHeight');if (mh > 0) h = Math.min(h, mh);}if (Wt4_12_2.boxSizing(self)) {h -= Wt4_12_2.px(self, 'borderTopWidth') + Wt4_12_2.px(self, 'borderBottomWidth');}var c = self.lastChild;var t = c.previousSibling;if (t)h -= t.offsetHeight;h -= 8;if (hdefined && h > 0) {c.lh = true;c.style.height = h + 'px';c.querySelectorAll(':scope > *').forEach(function(self) { let padding = self.getBoundingClientRect().height - Wt4_12_2.px(self, 'height');self.style.height = (h - padding) + 'px';self.lh = true;});} else {c.style.height = '';c.lh = false;for (const child of c.children) {child.style.height = '';child.lh = false;}}};");
     this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl.getSecondGetPSJS());
     if (parentContainer != null) parentContainer.addWidget(this);
   }

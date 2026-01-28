@@ -7,7 +7,10 @@ package eu.webtoolkit.jwt;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -136,7 +139,7 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		public Map<String, Resource> resources = new HashMap<>();
 	}
 
-	private Map<String, Bundle> bundles = new HashMap<>();
+	private Map<String, Bundle> bundles = new LinkedHashMap<>();
 
 	/**
 	 * Constructor.
@@ -148,6 +151,11 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 	/**
 	 * Use an XML file as input resource.
 	 *
+	 * <p>When resolving a key ({@link resolveKey}, or {@link
+	 * resolvePluralKey}), the added bundles will be checked in reverse
+	 * order. The last added bundle, will be checked first. This way the
+	 * keys can be "overridden".
+	 *
 	 * @param bundleName
 	 */
 	public void use(String bundleName) {
@@ -155,8 +163,19 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 			this.bundles.put(bundleName, new Bundle(bundleName));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The order in which the bundles are iterated is the reverse order
+	 * in which they are added. If a bundle that is added after a first
+	 * bundle also specifies the same key, the value of the latest added
+	 * bundle is retrieved.
+	 */
 	public LocalizedString resolveKey(final Locale locale, final String key) {
-		for (String bundleName : bundles.keySet()) {
+		// Always look in reverse order
+		List<String> keySet = new ArrayList<String>(bundles.keySet());
+		Collections.reverse(keySet);
+		for (String bundleName : keySet) {
 			LocalizedString result = bundles.get(bundleName).resolveKey(locale, key);
 			if (result.success)
 				return result;
@@ -164,8 +183,19 @@ public class WXmlLocalizedStrings extends WLocalizedStrings {
 		return new LocalizedString();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The order in which the bundles are iterated is the reverse order
+	 * in which they are added. If a bundle that is added after a first
+	 * bundle also specifies the same key, the value of the latest added
+	 * bundle is retrieved.
+	 */
 	public LocalizedString resolvePluralKey(final Locale locale, final String key, long amount) {
-		for (String bundleName : bundles.keySet()) {
+		// Always look in reverse order
+		List<String> keySet = new ArrayList<String>(bundles.keySet());
+		Collections.reverse(keySet);
+		for (String bundleName : keySet) {
 			LocalizedString result = bundles.get(bundleName).resolvePluralKey(locale, key, amount);
 			if (result.success)
 				return result;

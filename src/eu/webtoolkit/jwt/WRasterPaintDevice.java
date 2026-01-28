@@ -29,7 +29,6 @@ import java.util.EnumSet;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +106,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 			String realImageUri = imageUri;
 			Path p = Paths.get(imageUri);
 			if (!DataUri.isDataUri(imageUri) && !p.isAbsolute()) {
-      			ServletContext context = WApplication.getInstance().getEnvironment().getServer().getServletContext();
-				realImageUri = context.getRealPath(imageUri);
+				realImageUri = WApplication.getInstance().getEnvironment().getServer().getServletContext().getRealPath(imageUri);
 			}
 
 			BufferedImage image = ImageIO.read(new File(realImageUri));
@@ -301,6 +299,37 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 	public void setPainter(WPainter painter) {
 		this.painter = painter;
+	}
+
+	/**
+	 * Creates a new bot resource.
+	 *
+	 * <p>By default, this returns a {@link WMemoryResource}, if the {@link
+	 * WResource#getBotResourceId()} was set, or a {@link WSelfDeletingResource} otherwise.
+	 *
+	 * <p>In both cases, the resource will serve the image data as if it was served just before the
+	 * destruction of the {@link WApplication} (still after the execution of {@link
+	 * WApplication#destroy()}).
+	 *
+	 * <p>
+	 *
+	 * @see #setBotResourceId(String id)
+	 */
+	public WResource getBotResource() {
+		WMemoryResource res = null;
+		if (this.useCustomBotResourceId()) {
+			res = new WMemoryResource("image/png");
+		} else {
+			res = new WSelfDeletingResource("image/png");
+		}
+
+		try {
+			res.setData(this.writeToMemory());
+		} catch (IOException e) {
+			logger.error("Error while generating resource for bot: {}", e.getMessage());
+		}
+
+		return res;
 	}
 
 	private void drawShape(Shape shape) {

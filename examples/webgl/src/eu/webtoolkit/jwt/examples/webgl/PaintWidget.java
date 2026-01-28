@@ -11,6 +11,8 @@ import java.util.StringTokenizer;
 
 import javax.vecmath.Matrix4f;
 
+import eu.webtoolkit.jwt.WApplication;
+import eu.webtoolkit.jwt.WEnvironment;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WGLWidget;
 import eu.webtoolkit.jwt.WebGLUtils;
@@ -20,7 +22,7 @@ public class PaintWidget extends WGLWidget {
 	public static List<Double> data = new ArrayList<Double>();
 	static {
 		try {
-			InputStream is = PaintWidget.class.getResourceAsStream("/eu/webtoolkit/jwt/examples/webgl/teapot.obj");
+			InputStream is = WApplication.getInstance().getEnvironment().getServer().getServletContext().getResourceAsStream("/teapot.obj");
 			readObj(is, data);
 		} catch (NumberFormatException e) {
 			e.printStackTrace();

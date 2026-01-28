@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -566,7 +566,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt4_12_1.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_12_1.glMatrix.mat4.create())";
+          "Wt4_12_2.glMatrix.mat4.inverse(" + this.jsRef_ + ", Wt4_12_2.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
       return copy;
     }
@@ -577,7 +577,7 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       copy.jsRef_ =
-          "Wt4_12_1.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_12_1.glMatrix.mat4.create())";
+          "Wt4_12_2.glMatrix.mat4.transpose(" + this.jsRef_ + ", Wt4_12_2.glMatrix.mat4.create())";
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
       return copy;
     }
@@ -588,10 +588,10 @@ public class WGLWidget extends WInteractWidget {
       }
       WGLWidget.JavaScriptMatrix4x4 copy = this.clone();
       StringWriter ss = new StringWriter();
-      ss.append("Wt4_12_1.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
+      ss.append("Wt4_12_2.glMatrix.mat4.multiply(").append(this.jsRef_).append(",");
       javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
       WebGLUtils.renderfv(ss, t, this.context_.pImpl_.getArrayType());
-      ss.append(", Wt4_12_1.glMatrix.mat4.create())");
+      ss.append(", Wt4_12_2.glMatrix.mat4.create())");
       copy.jsRef_ = ss.toString();
       copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
       copy.matrices_.add(m);

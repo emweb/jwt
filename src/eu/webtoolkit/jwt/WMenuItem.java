@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,27 +123,12 @@ public class WMenuItem extends WContainerWidget {
       this.text_.setTextFormat(TextFormat.Plain);
     }
     this.text_.setText(text);
+    this.textChanged_ = true;
     if (!this.customPathComponent_) {
-      String result = "";
-      WString t = WString.toWString(text);
-      if (t.isLiteral()) {
-        result = t.toString();
-      } else {
-        result = t.getKey();
+      this.updateInternalPath();
+      if (this.menu_ != null) {
+        this.menu_.itemPathChanged(this);
       }
-      for (int i = 0; i < result.length(); ++i) {
-        if (Character.isWhitespace((char) result.charAt(i))) {
-          result = StringUtils.put(result, i, '-');
-        } else {
-          if (Character.isLetterOrDigit((char) result.charAt(i))) {
-            result = StringUtils.put(result, i, Character.toLowerCase((char) result.charAt(i)));
-          } else {
-            result = StringUtils.put(result, i, '_');
-          }
-        }
-      }
-      this.setPathComponent(result);
-      this.customPathComponent_ = false;
     }
   }
   /**
@@ -283,6 +268,10 @@ public class WMenuItem extends WContainerWidget {
    * @see WMenuItem#setPathComponent(String path)
    */
   public String getPathComponent() {
+    if (!this.customPathComponent_ && this.textChanged_) {
+      this.pathComponent_ = this.getPathComponentFromText();
+      this.textChanged_ = false;
+    }
     return this.pathComponent_;
   }
   /**
@@ -727,7 +716,7 @@ public class WMenuItem extends WContainerWidget {
   }
 
   protected void render(EnumSet<RenderFlag> flags) {
-    if (this.isThemeStyleEnabled() && !this.signalsConnected_) {
+    if (this.isThemeStyleEnabled()) {
       this.setThemeStyle_ = true;
       this.renderSelected(this.selected_);
     }
@@ -780,6 +769,7 @@ public class WMenuItem extends WContainerWidget {
   private boolean closeable_;
   private boolean selected_;
   private boolean setThemeStyle_;
+  private boolean textChanged_;
 
   private void create(
       final String iconPath, final CharSequence text, WWidget contents, ContentLoading policy) {
@@ -793,6 +783,7 @@ public class WMenuItem extends WContainerWidget {
     this.menuItemCheckedConnected_ = false;
     this.selected_ = false;
     this.setThemeStyle_ = false;
+    this.textChanged_ = true;
     this.text_ = null;
     this.icon_ = null;
     this.checkBox_ = null;
@@ -974,6 +965,28 @@ public class WMenuItem extends WContainerWidget {
         this.checkBox_.checked().trigger();
       }
     }
+  }
+
+  private String getPathComponentFromText() {
+    String result = "";
+    WString t = this.getText();
+    if (t.isLiteral()) {
+      result = t.toString();
+    } else {
+      result = t.getKey();
+    }
+    for (int i = 0; i < result.length(); ++i) {
+      if (Character.isWhitespace((char) result.charAt(i))) {
+        result = StringUtils.put(result, i, '-');
+      } else {
+        if (Character.isLetterOrDigit((char) result.charAt(i))) {
+          result = StringUtils.put(result, i, Character.toLowerCase((char) result.charAt(i)));
+        } else {
+          result = StringUtils.put(result, i, '_');
+        }
+      }
+    }
+    return result;
   }
 
   WWidget takeContentsForStack() {

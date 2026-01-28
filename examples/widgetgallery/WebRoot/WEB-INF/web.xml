@@ -13,12 +13,10 @@
     <description>JWt Gallery example</description>
     <servlet-class>eu.webtoolkit.jwt.examples.widgetgallery.WidgetGalleryServlet</servlet-class>
     <async-supported>true</async-supported>
-    <!--
     <init-param>
-      <param-name>jwt-config-file</param-name>
-      <param-value>/etc/jwt/config.xml</param-value>
+      <param-name>jwt-config</param-name>
+      <param-value>jwt_config.xml</param-value>
     </init-param>
-    -->
   </servlet>
 
   <servlet-mapping>

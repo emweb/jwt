@@ -7,8 +7,8 @@ package eu.webtoolkit.jwt.examples.filetreetable;
 
 import java.io.File;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 
 import eu.webtoolkit.jwt.ChildCountPolicy;
 import eu.webtoolkit.jwt.SelectionMode;

@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.*;
 import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -274,10 +274,8 @@ public class WEquidistantGridData extends WAbstractGridData {
     for (int k = 0; k < nbXaxisBuffers - 1; k++) {
       for (int l = 0; l < nbYaxisBuffers - 1; l++) {
         bufferIndex = k * nbYaxisBuffers + l;
-        int cnt1 = 0;
         int i = k * SURFACE_SIDE_LIMIT;
         for (; i < (k + 1) * SURFACE_SIDE_LIMIT + 1; i++) {
-          int cnt2 = 0;
           int j = l * SURFACE_SIDE_LIMIT;
           for (; j < (l + 1) * SURFACE_SIDE_LIMIT + 1; j++) {
             simplePtsArrays.get(bufferIndex).putFloat(scaledXAxis.getFloat(4 * (i)));
@@ -287,13 +285,10 @@ public class WEquidistantGridData extends WAbstractGridData {
                 .putFloat(
                     (float)
                         ((StringUtils.asNumber(this.model_.getData(i, j)) - zMin) / (zMax - zMin)));
-            cnt2++;
           }
-          cnt1++;
         }
       }
       bufferIndex = k * nbYaxisBuffers + nbYaxisBuffers - 1;
-      int cnt1 = 0;
       int i = k * SURFACE_SIDE_LIMIT;
       for (; i < (k + 1) * SURFACE_SIDE_LIMIT + 1; i++) {
         int j = (nbYaxisBuffers - 1) * SURFACE_SIDE_LIMIT;
@@ -306,14 +301,12 @@ public class WEquidistantGridData extends WAbstractGridData {
                   (float)
                       ((StringUtils.asNumber(this.model_.getData(i, j)) - zMin) / (zMax - zMin)));
         }
-        cnt1++;
       }
     }
     for (int l = 0; l < nbYaxisBuffers - 1; l++) {
       bufferIndex = (nbXaxisBuffers - 1) * nbYaxisBuffers + l;
       int i = (nbXaxisBuffers - 1) * SURFACE_SIDE_LIMIT;
       for (; i < Nx; i++) {
-        int cnt2 = 0;
         int j = l * SURFACE_SIDE_LIMIT;
         for (; j < (l + 1) * SURFACE_SIDE_LIMIT + 1; j++) {
           simplePtsArrays.get(bufferIndex).putFloat(scaledXAxis.getFloat(4 * (i)));
@@ -323,7 +316,6 @@ public class WEquidistantGridData extends WAbstractGridData {
               .putFloat(
                   (float)
                       ((StringUtils.asNumber(this.model_.getData(i, j)) - zMin) / (zMax - zMin)));
-          cnt2++;
         }
       }
     }

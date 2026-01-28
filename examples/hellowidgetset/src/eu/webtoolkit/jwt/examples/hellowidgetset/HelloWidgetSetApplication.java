@@ -59,11 +59,15 @@ public class HelloWidgetSetApplication extends WApplication {
             }
         }
 
-        if (!embedded)
+        if (!embedded) {
+            final String[] fullDeploymentPath = env.getDeploymentPath().split("/");
+            // Omit first empy result (empty string before '/...')
+            final String basePath = "/" + fullDeploymentPath[1];
             new WText(
                     "<p><emph>Note: you can also run this application "
-                            + "from within <a href=\"hello.html\">a web page</a>.</emph></p>",
+                            + "from within <a href=\"" + basePath + "\">a web page</a>.</emph></p>",
                     getRoot());
+        }
 
         /*
          * Everything else is business as usual.

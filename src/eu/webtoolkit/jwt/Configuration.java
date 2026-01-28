@@ -174,63 +174,80 @@ public class Configuration {
 		public final int prefixLength;
 	}
 
-	private HashMap<String, String> properties_ = new HashMap<String, String>();
-	private String redirectMessage_ = "Plain HTML version";
-	private boolean sendXHTMLMimeType = false;
-	private boolean inlineCss_ = true;
-	private boolean webGLDetect_ = true;
-	private ArrayList<String> botList = new ArrayList<String>();
-	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
-	private boolean ajaxAgentWhiteList = false;
+  // Session management
+	private int sessionTimeout = 600;
+	private int idleTimeout = -1;
+	private int bootstrapTimeout = 10;
+	private int serverPushTimeout = 50;
+
+  // Debug
 	private ErrorReporting errorReporting = ErrorReporting.ErrorMessage;
 	private ClientSideErrorReportLevel clientSideErrorReportLevel = ClientSideErrorReportLevel.Framework;
 
-	private String favicon = "/favicon.ico";
+  // Request management
+	private long maxRequestSize = 1024*1024; // 1 Megabyte
+	private long maxFormDataSize = 1024*1024; // 1 Megabyte
+	private int maxPendingEvents = 1000;
+
+  // Environment config
+	private boolean webSocketsEnabled = false;
+	private boolean webGLDetect = true;
+	private String redirectMessage = "Plain HTML version";
+	private boolean inlineCss = true;
+	private int indicatorTimeout = 500;
+	private int doubleClickTimeout = 200;
+
+  // User agent handling
+	private ArrayList<String> botList = new ArrayList<String>();
+	private ArrayList<String> ajaxAgentList = new ArrayList<String>();
+	private boolean ajaxAgentWhiteList = false;
+	private boolean sendXHTMLMimeType = false;
+	private String uaCompatible = "";
+
+  // Boot
 	private boolean progressiveBootstrap = false;
 	private boolean delayLoadAtBoot = true;
 
-	private int sessionTimeout = 600;
-	private int idleTimeout = -1;
-	private int indicatorTimeout = 500;
-	private int doubleClickTimeout = 200;
-	private int bootstrapTimeout = 10;
-	private int serverPushTimeout = 50;
-	private String uaCompatible = "";
+  // Headers
 	private List<MetaHeader> metaHeaders = new ArrayList<MetaHeader>();
 	private List<HeadMatter> headMatter = new ArrayList<HeadMatter>();
 	private boolean useXFrameSameOrigin = true;
 	private List<HttpHeader> httpHeaders = new ArrayList<HttpHeader>();
 	private boolean useScriptNonce = false;
+	private Collection<String> allowedOrigins = Collections.<String>emptySet();
+
 	private int internalDeploymentSize = 0;
-	private long maxRequestSize = 1024*1024; // 1 Megabyte
-	private long maxFormDataSize = 1024*1024; // 1 Megabyte
-	private int maxPendingEvents = 1000;
+
+  // Proxy config
 	private boolean behindReverseProxy = false;
 	private String originalIPHeader = "X-Forwarded-For";
 	private List<Network> trustedProxies = Collections.emptyList();
-	private boolean webSocketsEnabled = false;
 	private long asyncContextTimeout = 90000;
+	private boolean servePrivateResourcesToBots = false;
+	private String botResourcesPath = "jwt-temp";
+	private int maxAutoRemovablePublicResources = 1000;
 
-	private Collection<String> allowedOrigins_ = Collections.<String>emptySet();
-
+	private HashMap<String, String> properties = new HashMap<String, String>();
+	private String favicon = "/favicon.ico";
 	/**
 	 * Creates a default configuration.
 	 */
 	public Configuration() {
-		properties_.put(WApplication.RESOURCES_URL, "/wt-resources/");
+		this.properties.put(WApplication.RESOURCES_URL, "/wt-resources/");
 
-		botList.add(".*Googlebot.*");
-		botList.add(".*msnbot.*");
-		botList.add(".*Slurp.*");
-		botList.add(".*Crawler.*");
-		botList.add(".*Bot.*");
-		botList.add(".ia_archiver.*");
-		botList.add(".*Googlebot.*");
-		botList.add(".*Twiceler.*");
+		this.botList.add(".*bot.*");
+		this.botList.add(".*Bot.*");
+		this.botList.add(".*crawler.*");
+		this.botList.add(".*Crawler.*");
+		this.botList.add(".*spider.*");
+		this.botList.add(".*Spider.*");
+		this.botList.add(".*Slurp.*");
+		this.botList.add(".*ia_archiver.*");
+		this.botList.add(".*Twiceler.*");
 
-		httpHeaders.add(new HttpHeader("X-Content-Type-Options", "nosniff"));
-		httpHeaders.add(new HttpHeader("Strict-Transport-Security", "max-age=15724800; includeSubDomains"));
-		httpHeaders.add(new HttpHeader("Referrer-Policy", "strict-origin-when-cross-origin"));
+		this.httpHeaders.add(new HttpHeader("X-Content-Type-Options", "nosniff"));
+		this.httpHeaders.add(new HttpHeader("Strict-Transport-Security", "max-age=15724800; includeSubDomains"));
+		this.httpHeaders.add(new HttpHeader("Referrer-Policy", "strict-origin-when-cross-origin"));
 	}
 
 	/**
@@ -243,7 +260,7 @@ public class Configuration {
 	public Configuration(File configurationFile) {
 		logger.info("Reading configuration file: " + configurationFile.getAbsolutePath());
 
-		properties_.put(WApplication.RESOURCES_URL, "/wt-resources/");
+		this.properties.put(WApplication.RESOURCES_URL, "/wt-resources/");
 
 		final String errorMessage = "Error parsing configuration file: ";
 
@@ -263,77 +280,161 @@ public class Configuration {
 				throw new RuntimeException(errorMessage + e.getMessage());
 			}
 
-			NodeList nl = doc.getElementsByTagName("wt-app");
+			parseConfigurationFile(errorMessage, doc);
+		} else {
+			logger.warn("Configuration file: {} not found", configurationFile.getAbsolutePath());
+		}
+	}
 
-			if (nl.getLength() > 0) {
-				NodeList elements = nl.item(0).getChildNodes();
-				Node node;
-				for (int i = 0; i < elements.getLength(); i++) {
-					node = elements.item(i);
-					if (node.getNodeName().equalsIgnoreCase("debug")) {
-						setDebug(parseBoolean(errorMessage, node));
-					} else if (node.getNodeName().equalsIgnoreCase("debug-level")) {
-						parseClientSideErrorReportLevel(errorMessage, node);
-					} else if (node.getNodeName().equalsIgnoreCase("properties")) {
-						NodeList properties = node.getChildNodes();
-						for (int j = 0; j < properties.getLength(); j++) {
-							Node n = properties.item(j);
-							if (n.getNodeName().equals("property")) {
-								Node propertyName = n.getAttributes().getNamedItem("name");
-								if (propertyName != null)
-									properties_.put(propertyName.getTextContent().trim(), n.getTextContent().trim());
-							}
-						}
-					} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
-						setProgressiveBootstrap(parseBoolean(errorMessage, node));
-					} else if (node.getNodeName().equalsIgnoreCase("delay-load-at-boot")) {
-						setDelayLoadAtBoot(parseBoolean(errorMessage, node));
-					} else if (node.getNodeName().equalsIgnoreCase("ua-compatible")) {
-						setUaCompatible(node.getTextContent().trim());
-					} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
-						setSendXHTMLMimeType(parseBoolean(errorMessage, node));
-					} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
-						setRedirectMessage(node.getTextContent().trim());
-					} else if (node.getNodeName().equalsIgnoreCase("inline-css")) {
-						setInlineCss(parseBoolean(errorMessage, node));
-					} else if (node.getNodeName().equalsIgnoreCase("favicon")) {
-						setFavicon(node.getTextContent().trim());
-					} else if (node.getNodeName().equalsIgnoreCase("user-agents")) {
-						if (node.getAttributes().getNamedItem("type") == null) {
-							throw new RuntimeException(errorMessage + "user-agent elements require  a type specification");
-						} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("ajax")) {
-							String mode = node.getAttributes().getNamedItem("mode").getTextContent().trim();
+  private void parseConfigurationFile(String errorMessage, Document doc) {
+    NodeList nl = doc.getElementsByTagName("jwt-app");
 
-							if (mode.equals("black-list"))
-								ajaxAgentWhiteList = false;
-							else if (mode.equals("white-list"))
-								ajaxAgentWhiteList = true;
-							else
-								throw new RuntimeException(errorMessage + "unsupported li mode: " + mode);
+    if (nl.getLength() > 0) {
+      NodeList elements = nl.item(0).getChildNodes();
+      Node node;
+      for (int i = 0; i < elements.getLength(); i++) {
+        node = elements.item(i);
 
-							parseUserAgents(errorMessage, node, ajaxAgentList);
-						} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("bot")) {
-							parseUserAgents(errorMessage, node, botList);
-						}
-					} else if (node.getNodeName().equalsIgnoreCase("allowed-origins")) {
-						String origins = node.getTextContent().trim();
-						for (String origin : origins.split(",")) {
-							origin = origin.trim();
-							if (origin.isEmpty())
-								continue;
-							if (this.allowedOrigins_.isEmpty())
-								this.allowedOrigins_ = new HashSet<String>();
-							this.allowedOrigins_.add(origin);
-						}
-					} else if (node.getNodeName().equalsIgnoreCase("x-frame-same-origin")) {
-						setUseXFrameSameOrigin(parseBoolean(errorMessage, node));
-					} else if (node.getNodeName().equalsIgnoreCase("http-headers")) {
-						parseHttpHeaders(errorMessage, node);
-					} else if (node.getNodeName().equalsIgnoreCase("use-script-nonce")) {
-						setUseScriptNonce(parseBoolean(errorMessage, node));
+				if (node.getNodeName().equalsIgnoreCase("session-management")) {
+					parseSessionManagement(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("debug")) {
+					parseDebug(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("debug-level")) {
+					parseClientSideErrorReportLevel(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("max-request-size")) {
+					setMaximumRequestSize(parseInt(errorMessage, node) * 1024);
+				} else if (node.getNodeName().equalsIgnoreCase("max-formdata-size")) {
+					setMaxFormDataSize(parseInt(errorMessage, node) * 1024);
+				} else if (node.getNodeName().equalsIgnoreCase("max-pending-events")) {
+					setMaxPendingEvents(parseInt(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("web-sockets")) {
+					setWebSocketsEnabled(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("webgl-detection")) {
+					setWebglDetect(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("redirect-message")) {
+					setRedirectMessage(node.getTextContent().trim());
+				} else if (node.getNodeName().equalsIgnoreCase("inline-css")) {
+					setInlineCss(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("indicator-timeout")) {
+					setIndicatorTimeout(parseInt(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("double-click-timeout")) {
+					setDoubleClickTimeout(parseInt(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("user-agents")) {
+					parseUserAgents(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("send-xhtml-mime-type")) {
+					setSendXHTMLMimeType(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("ua-compatible")) {
+					setUaCompatible(node.getTextContent().trim());
+				} else if (node.getNodeName().equalsIgnoreCase("progressive-bootstrap")) {
+					setProgressiveBootstrap(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("delay-load-at-boot")) {
+					setDelayLoadAtBoot(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("meta-headers")) {
+					parseMetaHeaders(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("head-matter")) {
+					parseHeadMatter(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("http-headers")) {
+					this.httpHeaders.clear();
+					parseHttpHeaders(errorMessage, node);
+				} else if (node.getNodeName().equalsIgnoreCase("x-frame-same-origin")) {
+					setUseXFrameSameOrigin(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("use-script-nonce")) {
+					setUseScriptNonce(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("serve-private-resources-to-bots")) {
+					setServePrivateResourcesToBots(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("bot-resources-path")) {
+					setBotResourcesPath(node.getTextContent().trim());
+				} else if (node.getNodeName().equalsIgnoreCase("max-auto-removable-public-resources")) {
+					setMaxAutoRemovablePublicResources(parseInt(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("allowed-origins")) {
+					parseAllowedOrigins(node);
+				} else if (node.getNodeName().equalsIgnoreCase("properties")) {
+					parseProperties(node);
+					String favicon = getProperty("favicon");
+					if (favicon != null) {
+						setFavicon(favicon);
 					}
 				}
 			}
+		}
+	}
+
+	private void parseDebug(String errorMessage, Node n) {
+		String value = n.getTextContent().trim();
+		if (value.equals("stack") || value.equals("false")) {
+			this.errorReporting = ErrorReporting.ErrorMessage;
+		} else if (value.equals("naked")) {
+			this.errorReporting = ErrorReporting.NoErrors;
+		} else if (value.equals("true")) {
+			this.errorReporting = ErrorReporting.ErrorMessageWithStack;
+		} else {
+			throw new RuntimeException(errorMessage + "Cannot parse value from element " + n.getNodeName() + " expecting 'true', 'false', 'naked', or 'stack'");
+		}
+	}
+
+	private int parseInt(String errorMessage, Node n) {
+		try {
+			return Integer.parseInt(n.getTextContent().trim());
+		} catch (Exception e) {
+			throw new RuntimeException(errorMessage + "Cannot parse integer value from element " + n.getNodeName());
+		}
+	}
+
+	private boolean parseBoolean(String errorMessage, Node n) {
+		try {
+			return Boolean.parseBoolean(n.getTextContent().trim());
+		} catch (Exception e) {
+			throw new RuntimeException(errorMessage + "Cannot parse boolean value from element " + n.getNodeName());
+		}
+	}
+
+	private void parseSessionManagement(String errorMessage, Node node) {
+		NodeList sessionManagement = node.getChildNodes();
+		for (int j = 0; j < sessionManagement.getLength(); j++) {
+			Node n = sessionManagement.item(j);
+			if (n.getNodeName().equalsIgnoreCase("timeout")) {
+				setSessionTimeout(parseInt(errorMessage, n));
+			} else if (n.getNodeName().equalsIgnoreCase("idle-timeout")) {
+				setIdleTimeout(parseInt(errorMessage, n));
+			} else if (n.getNodeName().equalsIgnoreCase("bootstrap-timeout")) {
+				setBootstrapTimeout(parseInt(errorMessage, n));
+			} else if (n.getNodeName().equalsIgnoreCase("server-push-timeout")) {
+				setServerPushTimeout(parseInt(errorMessage, n));
+			} else if (n.getNodeName().equalsIgnoreCase("async-context-timeout")) {
+				setAsyncContextTimeout(parseInt(errorMessage, n));
+			}
+		}
+	}
+
+	private void parseClientSideErrorReportLevel(String errorMessage, Node n) {
+		String text = n.getTextContent().trim();
+		if (text.equalsIgnoreCase("all")) {
+			this.clientSideErrorReportLevel = ClientSideErrorReportLevel.All;
+		} else if (text.equalsIgnoreCase("framework")) {
+			this.clientSideErrorReportLevel = ClientSideErrorReportLevel.Framework;
+		} else {
+			throw new RuntimeException(errorMessage + "Cannot parse value from element " + n.getNodeName() + "the value should be either 'all' or 'framework'");
+		}
+	}
+
+	private void parseUserAgents(String errorMessage, Node node) {
+		if (node.getAttributes().getNamedItem("type") == null) {
+			throw new RuntimeException(errorMessage + "user-agent elements require	a type specification");
+		} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("ajax")) {
+			String mode = node.getAttributes().getNamedItem("mode").getTextContent().trim();
+
+			if (mode.equals("black-list")) {
+				this.ajaxAgentWhiteList = false;
+			} else if (mode.equals("white-list")) {
+				this.ajaxAgentWhiteList = true;
+			} else {
+				throw new RuntimeException(errorMessage + "unsupported li mode: " + mode);
+			}
+
+			parseUserAgents(errorMessage, node, ajaxAgentList);
+		} else if (node.getAttributes().getNamedItem("type").getTextContent().trim().equals("bot")) {
+			this.botList.clear();
+			parseUserAgents(errorMessage, node, botList);
 		}
 	}
 
@@ -343,7 +444,71 @@ public class Configuration {
 		for (int i = 0; i < userAgents.getLength(); i++) {
 			n = userAgents.item(i);
 			if (n.getNodeName().equals("user-agent")) {
-				list.add(node.getTextContent().trim());
+				list.add(n.getTextContent().trim());
+			}
+		}
+	}
+
+	private void parseMetaHeaders(String errorMessage, Node node) {
+		NodeList metaHeaders = node.getChildNodes();
+		Node n;
+		for (int i = 0; i < metaHeaders.getLength(); i++) {
+			n = metaHeaders.item(i);
+			if (n.getNodeName().equalsIgnoreCase("meta")) {
+				Node metaName = n.getAttributes().getNamedItem("name");
+				Node metaProperty = n.getAttributes().getNamedItem("property");
+				Node metaHttpEquiv = n.getAttributes().getNamedItem("http-equiv");
+
+				MetaHeaderType type;
+				String name;
+				if (metaName == null && metaProperty == null && metaHttpEquiv == null) {
+					throw new RuntimeException(errorMessage + "meta element must contain a name, property, or http-equiv");
+				} else if (metaProperty == null && metaHttpEquiv == null) {
+					type = MetaHeaderType.Meta;
+					name = metaName.getTextContent().trim();
+				} else if (metaName == null && metaHttpEquiv == null) {
+					type = MetaHeaderType.Property;
+					name = metaProperty.getTextContent().trim();
+				} else if (metaName == null && metaProperty == null) {
+					type = MetaHeaderType.HttpHeader;
+					name = metaHttpEquiv.getTextContent().trim();
+				} else {
+					throw new RuntimeException(errorMessage + "unsupported meta header format");
+				}
+
+				String content = new String();
+
+				Node metaContent = n.getAttributes().getNamedItem("content");
+				if (metaContent != null) {
+					content = metaContent.getTextContent().trim();
+				}
+
+				MetaHeader header = new MetaHeader(type, name, content, "", "");
+				this.metaHeaders.add(header);
+			}
+		}
+	}
+
+	private void parseHeadMatter(String errorMessage, Node node) {
+		NodeList headMatters = node.getChildNodes();
+		Node n;
+		for (int i = 0; i < headMatters.getLength(); i++) {
+			n = headMatters.item(i);
+			if (n.getNodeName().equalsIgnoreCase("header")) {
+				Node headerName = n.getAttributes().getNamedItem("name");
+				if (headerName == null) {
+					throw new RuntimeException(errorMessage + "header element must contain a name");
+				}
+				String name = headerName.getTextContent().trim();
+				String content = new String();
+
+				Node headerContent = n.getAttributes().getNamedItem("content");
+				if (headerContent != null) {
+					content = headerContent.getTextContent().trim();
+				}
+
+				HeadMatter head = new HeadMatter(name, content);
+				this.headMatter.add(head);
 			}
 		}
 	}
@@ -372,22 +537,27 @@ public class Configuration {
 		}
 	}
 
-	private boolean parseBoolean(String errorMessage, Node n) {
-		try {
-			return Boolean.parseBoolean(n.getTextContent().trim());
-		} catch (Exception e) {
-			throw new RuntimeException(errorMessage + "Cannot parse boolean value from element " + n.getNodeName());
+	private void parseAllowedOrigins(Node node) {
+		String origins = node.getTextContent().trim();
+		for (String origin : origins.split(",")) {
+			origin = origin.trim();
+			if (origin.isEmpty())
+				continue;
+			if (this.allowedOrigins.isEmpty())
+				this.allowedOrigins = new HashSet<String>();
+			this.allowedOrigins.add(origin);
 		}
 	}
 
-	private void parseClientSideErrorReportLevel(String errorMessage, Node n) {
-		String text = n.getTextContent().trim();
-		if (text.equalsIgnoreCase("all")) {
-			clientSideErrorReportLevel = ClientSideErrorReportLevel.All;
-		} else if (text.equalsIgnoreCase("framework")) {
-			clientSideErrorReportLevel = ClientSideErrorReportLevel.Framework;
-		} else {
-			throw new RuntimeException(errorMessage + "Cannot parse value from element " + n.getNodeName() + "the value should be either 'all' or 'framework'");
+	private void parseProperties(Node node) {
+		NodeList properties = node.getChildNodes();
+		for (int j = 0; j < properties.getLength(); j++) {
+			Node n = properties.item(j);
+			if (n.getNodeName().equals("property")) {
+				Node propertyName = n.getAttributes().getNamedItem("name");
+				if (propertyName != null)
+					this.properties.put(propertyName.getTextContent().trim(), n.getTextContent().trim());
+			}
 		}
 	}
 
@@ -406,7 +576,7 @@ public class Configuration {
 	 * @see #getProperty(String)
 	 */
 	public void setProperties(HashMap<String, String> properties) {
-		this.properties_ = properties;
+		this.properties = properties;
 	}
 
 	/**
@@ -417,7 +587,7 @@ public class Configuration {
 	 * @return a map of all properties.
 	 */
 	public HashMap<String, String> getProperties() {
-		return properties_;
+		return this.properties;
 	}
 
 	/**
@@ -429,7 +599,7 @@ public class Configuration {
 	 * @return the property value, or <code>null</code> if the property has not been defined.
 	 */
 	public String getProperty(String name) {
-		return properties_.get(name);
+		return this.properties.get(name);
 	}
 
 	/**
@@ -443,7 +613,7 @@ public class Configuration {
 	 * version of your application.
 	 */
 	public void setRedirectMessage(String redirectMessage) {
-		this.redirectMessage_ = redirectMessage;
+		this.redirectMessage = redirectMessage;
 	}
 
 	/**
@@ -454,7 +624,7 @@ public class Configuration {
 	 * @see #setRedirectMessage(String)
 	 */
 	public String getRedirectMessage() {
-		return redirectMessage_;
+		return this.redirectMessage;
 	}
 
 	/**
@@ -467,7 +637,11 @@ public class Configuration {
 	 * it. Most notably, Internet Explorer does not support it. Because XHTML and HTML are slightly different with
 	 * respect to default CSS rules, you may want to disable sending the XHTML mime-type all-together, at least if you
 	 * are not using SVG (used by the {@link WPaintedWidget}).
+	 *
+	 * @deprecated
+	 * No longer required thanks to HTML5. Setting this value will have no effect.
 	 */
+	@Deprecated
 	public void setSendXHTMLMimeType(boolean sendXHTMLMimeType) {
 		this.sendXHTMLMimeType = sendXHTMLMimeType;
 	}
@@ -479,11 +653,7 @@ public class Configuration {
 	 * @see #setSendXHTMLMimeType(boolean)
 	 */
 	public boolean sendXHTMLMimeType() {
-		return sendXHTMLMimeType;
-	}
-
-	boolean serializedEvents() {
-		return false;
+		return this.sendXHTMLMimeType;
 	}
 
 	/**
@@ -496,11 +666,12 @@ public class Configuration {
 	 *
 	 * @deprecated use {@link #setErrorReporting(ErrorReporting)} instead.
 	 */
+	@Deprecated
 	public void setDebug(boolean how) {
 		if (how)
-			errorReporting = ErrorReporting.NoErrors;
+			this.errorReporting = ErrorReporting.NoErrors;
 		else
-			errorReporting = ErrorReporting.ErrorMessage;
+			this.errorReporting = ErrorReporting.ErrorMessage;
 	}
 
 	/**
@@ -511,8 +682,9 @@ public class Configuration {
 	 * @see #setDebug(boolean)
 	 * @deprecated use {@link #getErrorReporting()} instead.
 	 */
+	@Deprecated
 	public boolean debug() {
-		return errorReporting == ErrorReporting.NoErrors;
+		return this.errorReporting != ErrorReporting.ErrorMessage;
 	}
 
 	/**
@@ -530,7 +702,7 @@ public class Configuration {
 	 * @see #setServerPushTimeout(int)
 	 */
 	public int getServerPushTimeout() {
-		return serverPushTimeout;
+		return this.serverPushTimeout;
 	}
 
 	/**
@@ -548,7 +720,7 @@ public class Configuration {
 	 * @see #getServerPushTimeout()
 	 */
 	public void setServerPushTimeout(int timeout) {
-		serverPushTimeout = timeout;
+		this.serverPushTimeout = timeout;
 	}
 
 	/**
@@ -565,7 +737,7 @@ public class Configuration {
 	 * @param inlineCss
 	 */
 	public void setInlineCss(boolean inlineCss) {
-		this.inlineCss_ = inlineCss;
+		this.inlineCss = inlineCss;
 	}
 
 	/**
@@ -576,11 +748,26 @@ public class Configuration {
 	 * @see #setInlineCss(boolean)
 	 */
 	public boolean isInlineCss() {
-		return inlineCss_;
+		return this.inlineCss;
 	}
 
 	public boolean isWebglDetect() {
-		return webGLDetect_;
+		return this.webGLDetect;
+	}
+
+	/**
+	 * Sets whether or not WebGL support is to be detected.
+	 * <p>
+	 * This option will try to create a webgl-context to verify the
+	 * browser is able to render it. This is necessary when using
+	 * {@link WGLWidget}.
+	 * <p>
+	 * This can take up some load time. When your application does not
+	 * use {@link WGLWidget}, this option can be set to false. It will
+	 * improve the initial loading time of the web application.
+	 */
+	public void setWebglDetect(boolean detect) {
+		this.webGLDetect = detect;
 	}
 
 	/**
@@ -614,7 +801,7 @@ public class Configuration {
 	 * @see #agentSupportsAjax(String)
 	 */
 	public ArrayList<String> getAjaxAgentList() {
-		return ajaxAgentList;
+		return this.ajaxAgentList;
 	}
 
 	/**
@@ -626,7 +813,7 @@ public class Configuration {
 	 * @see #agentSupportsAjax(String)
 	 */
 	public boolean isAjaxAgentWhiteList() {
-		return ajaxAgentWhiteList;
+		return this.ajaxAgentWhiteList;
 	}
 
 
@@ -640,7 +827,7 @@ public class Configuration {
 	public boolean agentSupportsAjax(String userAgent) {
 		boolean inList = false;
 
-		for (String regex : ajaxAgentList) {
+		for (String regex : this.ajaxAgentList) {
 			if (userAgent.matches(regex)) {
 				inList = true;
 				break;
@@ -668,15 +855,18 @@ public class Configuration {
 	 * enabled), and has an AJAX DOM API, then AJAX sessions are chosen,
 	 * otherwise plain HTML sessions.
 	 * <p>
-     * Here, you can specify user agents that should be should be
-     * treated as bots.
-     * <p>
-     * The default configuration sets the following list:
-     * <ul>
-     *   <li>.*Googlebot.*</li>
-     *   <li>.*msnbot.*</li>
-	 *   <li>.*Slurp.*</li>
+ 	 * Here, you can specify user agents that should be should be
+ 	 * treated as bots.
+ 	 * <p>
+ 	 * The default configuration sets the following list:
+ 	 * <ul>
+ 	 *   <li>.*bot.*</li>
+ 	 *   <li>.*Bot.*</li>
+ 	 *   <li>.*crawler.*</li>
 	 *   <li>.*Crawler.*</li>
+ 	 *   <li>.*spider.*</li>
+	 *   <li>.*Spider.*</li>
+	 *   <li>.*Slurp.*</li>
 	 *   <li>.*Bot.*</li>
 	 *   <li>.*ia_archiver.*</li>
 	 *   <li>.*Twiceler.*</li>
@@ -694,7 +884,7 @@ public class Configuration {
 	 * @see #setBotList(ArrayList)
 	 */
 	public ArrayList<String> getBotList() {
-		return botList;
+		return this.botList;
 	}
 
 	/**
@@ -703,7 +893,7 @@ public class Configuration {
 	 * @see #setBotList(ArrayList)
 	 */
 	public boolean agentIsBot(String userAgent) {
-		for (String regex : botList) {
+		for (String regex : this.botList) {
 			if (userAgent.matches(regex))
 				return true;
 		}
@@ -717,7 +907,7 @@ public class Configuration {
 	 * By default, a browser will fetch a favicon from "/favicon.ico". <br>
 	 * Using this setting, you may provide a custom path to the favicon.
 	 * <p>
-	 * The default value is "".
+	 * The default value is "/favicon.ico".
 	 */
 	public void setFavicon(String favicon) {
 		this.favicon = favicon;
@@ -816,11 +1006,11 @@ public class Configuration {
 	}
 
 	public int getKeepAlive() {
-		return getSessionTimeout() / 2;
+		return this.getSessionTimeout() / 2;
 	}
 
 	public int getMultiSessionCookieTimeout() {
-		return getSessionTimeout() * 2;
+		return this.getSessionTimeout() * 2;
 	}
 
 	/**
@@ -829,7 +1019,7 @@ public class Configuration {
 	 * @return the session timeout.
 	 */
 	public int getSessionTimeout() {
-		return sessionTimeout;
+		return this.sessionTimeout;
 	}
 
 	/**
@@ -838,7 +1028,7 @@ public class Configuration {
 	 * @return the idle timeout.
 	 */
 	public int getIdleTimeout() {
-		return idleTimeout;
+		return this.idleTimeout;
 	}
 
 	/**
@@ -879,7 +1069,7 @@ public class Configuration {
 	 * Returns the double click timeout.
 	 */
 	public int getDoubleClickTimeout() {
-		return doubleClickTimeout;
+		return this.doubleClickTimeout;
 	}
 
 	/**
@@ -899,7 +1089,7 @@ public class Configuration {
 	 * @return the loading indicator timeout in milliseconds.
 	 */
 	public int getIndicatorTimeout() {
-		return indicatorTimeout;
+		return this.indicatorTimeout;
 	}
 
 	/**
@@ -915,35 +1105,48 @@ public class Configuration {
 
 
 	public int getBootstrapTimeout() {
-		return bootstrapTimeout;
+		return this.bootstrapTimeout;
+	}
+
+	/**
+	 * Sets the bootstrap timeout.
+	 * <p>
+	 * This option configures the time (in seconds) after which
+	 * a new plain HTML session is timed out if it has not been
+	 * upgraded to an Ajax session.
+	 *
+	 * @param timeout the timeout in seconds.
+	 */
+	public void setBootstrapTimeout(int timeout) {
+		this.bootstrapTimeout = timeout;
 	}
 
 	/**
 	 * Returns the error reporting mode.
 	 */
 	public ErrorReporting getErrorReporting() {
-		return errorReporting;
+		return this.errorReporting;
 	}
 
 	/**
 	 * Sets the error reporting mode.
 	 */
 	public void setErrorReporting(ErrorReporting err) {
-		errorReporting = err;
+		this.errorReporting = err;
 	}
 
 	/**
 	 * Returns the error reporting level.
 	 */
 	public ClientSideErrorReportLevel getClientSideErrorReportingLevel() {
-		return clientSideErrorReportLevel;
+		return this.clientSideErrorReportLevel;
 	}
 
 	/**
 	 * Sets the error reporting level.
 	 */
 	public void setClientSideErrorReportingLevel(ClientSideErrorReportLevel lvl) {
-		clientSideErrorReportLevel = lvl;
+		this.clientSideErrorReportLevel = lvl;
 	}
 
 	/**
@@ -968,7 +1171,7 @@ public class Configuration {
 	 * @see #setUaCompatible(String)
 	 */
 	public String getUaCompatible() {
-		return uaCompatible;
+		return this.uaCompatible;
 	}
 
 	/**
@@ -981,7 +1184,7 @@ public class Configuration {
 	 * @see WTextEdit
 	 */
 	public void setTinyMCEVersion(int version) {
-		this.properties_.put("tinyMCEVersion", "" + version);
+		this.properties.put("tinyMCEVersion", "" + version);
 	}
 
 	/**
@@ -992,7 +1195,7 @@ public class Configuration {
 	}
 
 	boolean webSockets() {
-		return webSocketsEnabled;
+		return this.webSocketsEnabled;
 	}
 
 	/*
@@ -1011,22 +1214,44 @@ public class Configuration {
 		return false;
 	}
 
+	boolean serializedEvents() {
+		return false;
+	}
+
+	/*
+	 * The following are always enabled for JWt
+	 */
+
+	boolean reloadIsNewSession() {
+		return true;
+	}
+
+	public boolean isCookieChecks() {
+		return true;
+	}
+
 	/** Returns the maximum request size.
 	 */
 	public long getMaxRequestSize() {
-		return maxRequestSize;
+		return this.maxRequestSize;
 	}
 
 	/** Returns the maximum request size.
 	 */
 	public long getMaxFormDataSize() {
-		return maxFormDataSize;
+		return this.maxFormDataSize;
+	}
+
+	/** Sets the maximum request size.
+	 */
+	public void setMaxFormDataSize(int maxFormDataSize) {
+		this.maxFormDataSize = maxFormDataSize;
 	}
 
 	/** Returns the maximum amount of pending events.
 	*/
 	public int getMaxPendingEvents() {
-		return maxPendingEvents;
+		return this.maxPendingEvents;
 	}
 
 	/** Sets the maximum amount of pending events.
@@ -1037,10 +1262,6 @@ public class Configuration {
 
 	SessionTracking getSessionTracking() {
 		return SessionTracking.Auto;
-	}
-
-	boolean reloadIsNewSession() {
-		return true;
 	}
 
 	/**
@@ -1122,7 +1343,7 @@ public class Configuration {
 	public boolean isTrustedProxy(String addressStr) {
 		try {
 			final InetAddress address = InetAddress.getByName(addressStr);
-			for (Network trustedProxy : trustedProxies) {
+			for (Network trustedProxy : this.trustedProxies) {
 				if (trustedProxy.contains(address)) {
 					return true;
 				}
@@ -1133,12 +1354,8 @@ public class Configuration {
 		}
 	}
 
-	public boolean isCookieChecks() {
-		return true;
-	}
-
 	public int internalDeploymentSize() {
-		return internalDeploymentSize;
+		return this.internalDeploymentSize;
 	}
 
 	public void setInternalDeploymentSize(int size) {
@@ -1153,7 +1370,7 @@ public class Configuration {
 	 * Returns configured meta headers.
 	 */
 	public List<MetaHeader> getMetaHeaders() {
-		return metaHeaders;
+		return this.metaHeaders;
 	}
 
 	/**
@@ -1161,7 +1378,7 @@ public class Configuration {
 	 * Like meta headers, but also supports e.g. &lt;link&gt; tags.
 	 */
 	public List<HeadMatter> getHeadMatter() {
-		return headMatter;
+		return this.headMatter;
 	}
 
 	/**
@@ -1218,6 +1435,104 @@ public class Configuration {
 	}
 
 	/**
+	 * Configures whether private resources are served to bots.
+	 *
+	 * Private resources are resources that are tied to a session in
+	 * which it was usually created. Such a resource is deleted when the
+	 * session ends.
+	 *
+	 * Since bots do not keep an active session, they cannot access
+	 * private resources by default. This setting allows you to enable
+	 * serving private resources to bots by adding them to the public
+	 * resources.
+	 *
+	 * Not all private resources will be served to bots if you set this
+	 * to true. Only the {@link WResource}s that have overridden
+	 * {@link WResource#getBotResource()} to return something other than
+	 * null will be served to bots, which is only the case for
+	 * {@link WSvgImage} and {@link WRasterImage} (and the
+	 * {@link WResource} for which you decide to override that method).
+	 *
+	 * @note This setting will change the url of all of your private
+	 *       resources created in a bot session.
+	 *
+	 * @see #setBotResourcesPath(String)
+	 * @see WResource#getBotResource()
+	 */
+	public void setServePrivateResourcesToBots(boolean enable) {
+		this.servePrivateResourcesToBots = enable;
+	}
+
+	/**
+	 * @return Whether private resources are served to bots.
+	 */
+	public boolean isServePrivateResourcesToBots() {
+		return servePrivateResourcesToBots;
+	}
+
+	/**
+	 * Configure the path where bot resources are exposed.
+	 *
+	 * This is the path under which all bot resources are exposed. It is
+	 * only used when {@link #isServePrivateResourcesToBots()} is set to
+	 * <code>true</code> and has no effect otherwise.
+	 *
+	 * The default value is <code>wt-temp</code>, which means that every
+	 * bot resource will be served under a subpath of
+	 * <code>/wt-temp</code>.
+	 *
+	 * You can change this to any other path, but it should not conflict
+	 * with other resources or entrypoints, and the value cannot start or
+	 * end with a slash.
+	 *
+	 * @see #setServePrivateResourcesToBots(boolean enable)
+	 * @see WResource#setBotResourceId(String id)
+	 * @see WResource#getBotResource()
+	 */
+	public void setBotResourcesPath(String botResourcesPath) {
+		this.botResourcesPath = botResourcesPath;
+	}
+
+	/**
+	 * @return The path where bot resources are exposed.
+	 *
+	 * @see #setBotResourcesPath(String botResourcesPath)
+	 */
+	public String getBotResourcesPath() {
+		return botResourcesPath;
+	}
+
+	/**
+	 * Configures the maximum number of auto-removable resources.
+	 *
+	 * This setting configures the maximum number of auto-removable
+	 * resources that can be public at the same time. When a new
+	 * auto-removable resource is made public and the limit is
+	 * reached, the oldest auto-removable resource will be
+	 * automatically removed.
+	 *
+	 * If this is set to a negative value, no limit will be enforced.
+	 *
+	 * By default, the number of auto-removable resources is limited
+	 * to 1000.
+	 *
+	 * @see WResource#setAllowAutoRemoval(boolean)
+	 * @see WResource#getBotResource()
+	 */
+	public void setMaxAutoRemovablePublicResources(int limit) {
+		this.maxAutoRemovablePublicResources = limit;
+	}
+
+	/**
+	 * @return The maximum number of auto-removable resources.
+	 *
+	 * @see #setMaxAutoRemovablePublicResources(int limit)
+	 */
+	public int getMaxAutoRemovablePublicResources() {
+		return maxAutoRemovablePublicResources;
+	}
+
+	/**
 	 * Configures whether the header X-Frame-Option "SAMEORIGIN" is
 	 * sent when serving the main page or the bootstrap.
 	 */
@@ -1236,11 +1551,11 @@ public class Configuration {
 	}
 
 	public boolean isAllowedOrigin(String origin) {
-		if (this.allowedOrigins_.size() == 1 &&
-			"*".equals(this.allowedOrigins_.iterator().next()))
+		if (this.allowedOrigins.size() == 1 &&
+			"*".equals(this.allowedOrigins.iterator().next()))
 			return true;
 		else
-			return this.allowedOrigins_.contains(origin);
+			return this.allowedOrigins.contains(origin);
 	}
 
 	/**
@@ -1250,14 +1565,14 @@ public class Configuration {
 	 * The default is empty (no origins are allowed).
 	 */
 	public void setAllowedOrigins(Collection<String> origins) {
-		this.allowedOrigins_ = origins;
+		this.allowedOrigins = origins;
 	}
 
 	/**
 	 * Get async context timeout for WtServlet requests
 	 */
 	public long getAsyncContextTimeout() {
-		return asyncContextTimeout;
+		return this.asyncContextTimeout;
 	}
 
 	/**

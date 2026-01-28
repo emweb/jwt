@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     WApplication app = WApplication.getInstance();
     {
       StringBuilder ss = new StringBuilder();
-      ss.append("new Wt4_12_1.WPaintedWidget(")
+      ss.append("new Wt4_12_2.WPaintedWidget(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.widget_.getJsRef())
@@ -76,7 +76,7 @@ class WWidgetCanvasPainter extends WWidgetPainter {
     String updateAreasJs = "";
     if (hasJsObjects) {
       StringBuilder ss = new StringBuilder();
-      ss.append("new Wt4_12_1.WJavaScriptObjectStorage(")
+      ss.append("new Wt4_12_2.WJavaScriptObjectStorage(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.widget_.getJsRef())

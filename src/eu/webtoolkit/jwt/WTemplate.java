@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -518,6 +518,11 @@ public class WTemplate extends WInteractWidget {
    * <p><i><b>Note: </b>Depending on the <code>textFormat</code>, the <code>value</code> is
    * validated according as for a {@link WText}. The default ({@link TextFormat#XHTML}) filters
    * &quot;active&quot; content, to avoid XSS-based security risks. </i>
+   *
+   * <p><i><b>Note: </b>When binding to attributes of HTML elements (like <code>href</code>, it is
+   * possible that the <code>value</code> will need to be properly encoded (e.g. via
+   * Utils::htmlEncode()). Otherwise an error may be show in the logs from the <code>RefEncoder
+   * </code>. </i>
    *
    * @see WTemplate#bindWidget(String varName, WWidget widget)
    * @see WTemplate#bindInt(String varName, int value)
@@ -1430,7 +1435,7 @@ public class WTemplate extends WInteractWidget {
   private void unrenderWidget(WWidget w, final DomElement el) {
     String removeJs = w.renderRemoveJs(false);
     if (removeJs.charAt(0) == '_') {
-      el.callJavaScript("Wt4_12_1.remove('" + removeJs.substring(1) + "');", true);
+      el.callJavaScript("Wt4_12_2.remove('" + removeJs.substring(1) + "');", true);
     } else {
       el.callJavaScript(removeJs, true);
     }

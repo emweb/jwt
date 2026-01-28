@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -338,8 +338,8 @@ public abstract class AbstractMfaProcess extends WObject {
             .append(" with validity (in seconds): ")
             .append(String.valueOf(duration))
             .toString());
-    javax.servlet.http.Cookie cookie =
-        new javax.servlet.http.Cookie(
+    Cookie cookie =
+        new Cookie(
             this.getBaseAuth().getMfaTokenCookieName(),
             this.getBaseAuth().createAuthToken(user, AuthTokenType.MFA));
     cookie.setMaxAge(duration);

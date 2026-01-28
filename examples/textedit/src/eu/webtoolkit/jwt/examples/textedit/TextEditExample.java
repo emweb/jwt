@@ -9,6 +9,7 @@ import eu.webtoolkit.jwt.Signal1;
 import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WLength;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WText;
@@ -30,6 +31,7 @@ public class TextEditExample extends WtServlet {
 
         WContainerWidget cw = new WContainerWidget(app.getRoot());
         final WTextEdit edit = new WTextEdit(cw);
+        edit.setHeight(new WLength("400px"));
         WPushButton button = new WPushButton("Push the button!", cw);
         final WText text = new WText(cw);
 

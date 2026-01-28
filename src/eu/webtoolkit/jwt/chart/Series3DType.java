@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.*;
 import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 /** Enumeration with the possible representations of a {@link WAbstractGridData}. */
 public enum Series3DType {

@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,7 +144,7 @@ final class PaintedSlider extends WPaintedWidget {
     char[] buf = new char[30];
     StringBuilder mouseDownJS = new StringBuilder();
     mouseDownJS
-        .append("obj.setAttribute('down', Wt4_12_1")
+        .append("obj.setAttribute('down', Wt4_12_2")
         .append(".widgetCoordinates(obj, event).")
         .append(u)
         .append(");");
@@ -200,7 +200,7 @@ final class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseMovedJS = new StringBuilder();
     mouseMovedJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt4_12_1;")
+        .append("var WT = Wt4_12_2;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString());
     mouseMovedJS
@@ -244,7 +244,7 @@ final class PaintedSlider extends WPaintedWidget {
     StringBuilder mouseUpJS = new StringBuilder();
     mouseUpJS
         .append("var down = obj.getAttribute('down');")
-        .append("var WT = Wt4_12_1;")
+        .append("var WT = Wt4_12_2;")
         .append("if (down != null && down != '') {")
         .append(computeD.toString())
         .append("d += ")

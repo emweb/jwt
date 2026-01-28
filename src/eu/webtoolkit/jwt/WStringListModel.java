@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,7 +169,17 @@ public class WStringListModel extends WAbstractListModel {
     }
   }
 
+  public WModelIndex getIndex(int row, int column, final WModelIndex parent) {
+    if (row >= this.getRowCount()) {
+      return null;
+    }
+    return this.createIndex(row, 0, null);
+  }
+
   public boolean setData(final WModelIndex index, final Object value, ItemDataRole role) {
+    if (index.getColumn() > 0) {
+      return false;
+    }
     if (role.equals(ItemDataRole.Edit)) {
       role = ItemDataRole.Display;
     }
@@ -206,6 +216,13 @@ public class WStringListModel extends WAbstractListModel {
   }
 
   public boolean insertRows(int row, int count, final WModelIndex parent) {
+    if (row > this.getRowCount()) {
+      throw new WException(
+          "Row to insert to is too large: "
+              + String.valueOf(row)
+              + " > "
+              + String.valueOf(this.getRowCount()));
+    }
     if (!(parent != null)) {
       this.beginInsertRows(parent, row, row + count - 1);
       {
@@ -237,6 +254,12 @@ public class WStringListModel extends WAbstractListModel {
   }
 
   public boolean removeRows(int row, int count, final WModelIndex parent) {
+    if (row >= this.getRowCount()) {
+      return false;
+    }
+    if (row + count > this.getRowCount()) {
+      count = this.getRowCount() - row;
+    }
     if (!(parent != null)) {
       this.beginRemoveRows(parent, row, row + count - 1);
       for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii) this.displayData_.remove(0 + row);
@@ -255,7 +278,12 @@ public class WStringListModel extends WAbstractListModel {
       return false;
     }
   }
-
+  /**
+   * Sorts the model.
+   *
+   * <p>The <code>column</code> is ignored, as this model only holds a singular list. It will always
+   * result in the first (and only) column of the model being sorted.
+   */
   public void sort(int column, SortOrder order) {
     this.layoutAboutToBeChanged().trigger();
     if (!(this.otherData_ != null) && this.flags_.isEmpty()) {

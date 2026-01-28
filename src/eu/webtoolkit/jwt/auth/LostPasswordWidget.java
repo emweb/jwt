@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,11 +82,22 @@ public class LostPasswordWidget extends WTemplate {
     try {
       WFormWidget email = (WFormWidget) this.resolveWidget("email");
       this.baseAuth_.lostPassword(email.getValueText(), this.users_);
+      int validity = this.baseAuth_.getEmailTokenValidity();
       this.cancel();
+      int hours = validity / 60;
+      int minutes = validity % 60;
+      WString validityStr =
+          hours != 0 && minutes != 0 ? WString.tr("Wt.Auth.and") : new WString("{1}");
+      if (hours != 0) {
+        validityStr.arg(WString.trn("Wt.Auth.time.hours-only", hours).arg(hours));
+      }
+      if (minutes != 0) {
+        validityStr.arg(WString.trn("Wt.Auth.time.minutes-only", minutes).arg(minutes));
+      }
       WMessageBox box =
           new WMessageBox(
               tr("Wt.Auth.lost-password"),
-              tr("Wt.Auth.mail-sent"),
+              tr("Wt.Auth.mail-sent").arg(validityStr),
               Icon.None,
               EnumSet.of(StandardButton.Ok));
       box.show();

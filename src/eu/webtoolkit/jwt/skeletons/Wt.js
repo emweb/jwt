@@ -1251,6 +1251,10 @@ if (!window._$_WT_CLASS_$_) {
       return WT.parsePct(c.style[s], 0);
     };
 
+    this.pxComputedStyle = function(c, s) {
+      return WT.parsePx(getComputedStyle(c)[s]);
+    };
+
     // Convert from css property to element attribute (possibly a vendor name)
     this.styleAttribute = function(cssProp) {
       function toCamelCase(str) {
@@ -1307,7 +1311,7 @@ if (!window._$_WT_CLASS_$_) {
       let result = el.offsetWidth;
       if (!WT.boxSizing(el)) {
         result -= WT.px(el, "paddingLeft") + WT.px(el, "paddingRight") +
-          WT.px(el, "borderLeftWidth") + WT.px(el, "borderRightWidth");
+          WT.pxComputedStyle(el, "borderLeftWidth") + WT.pxComputedStyle(el, "borderRightWidth");
       }
       return result;
     };
@@ -1316,7 +1320,7 @@ if (!window._$_WT_CLASS_$_) {
       let result = el.offsetHeight;
       if (!WT.boxSizing(el)) {
         result -= WT.px(el, "paddingTop") + WT.px(el, "paddingBottom") +
-          WT.px(el, "borderTopWidth") + WT.px(el, "borderBottomWidth");
+          WT.pxComputedStyle(el, "borderTopWidth") + WT.pxComputedStyle(el, "borderBottomWidth");
       }
       return result;
     };
@@ -1326,8 +1330,8 @@ if (!window._$_WT_CLASS_$_) {
         const r = c.parentNode.clientWidth -
           WT.px(c, "marginLeft") -
           WT.px(c, "marginRight") -
-          WT.px(c, "borderLeftWidth") -
-          WT.px(c, "borderRightWidth") -
+          WT.pxComputedStyle(c, "borderLeftWidth") -
+          WT.pxComputedStyle(c, "borderRightWidth") -
           WT.px(c.parentNode, "paddingLeft") -
           WT.px(c.parentNode, "paddingRight");
 
@@ -1847,7 +1851,7 @@ if (!window._$_WT_CLASS_$_) {
         }
         bottomy = bottomy - offsetParent.y + scrollY;
         y = op.clientHeight -
-          (bottomy + WT.px(e, "marginBottom") + WT.px(e, "borderBottomWidth"));
+          (bottomy + WT.px(e, "marginBottom") + WT.pxComputedStyle(e, "borderBottomWidth"));
         vside = 1;
       } else {
         let scrollY = op.scrollTop;
@@ -1855,7 +1859,7 @@ if (!window._$_WT_CLASS_$_) {
           scrollY = 0;
         }
         y = y - offsetParent.y + scrollY;
-        y = y - WT.px(e, "marginTop") + WT.px(e, "borderTopWidth");
+        y = y - WT.px(e, "marginTop") + WT.pxComputedStyle(e, "borderTopWidth");
         vside = 0;
       }
 
@@ -2304,6 +2308,10 @@ window._$_APP_CLASS_$_ = new (function() {
 
   let currentHash = null;
 
+  function removeUrlFragments(loc) {
+    return new URL(loc, window.location.origin).pathname;
+  }
+
   function onHashChange() {
     const newLocation = _$_WT_CLASS_$_.history.getCurrentState();
 
@@ -2315,11 +2323,13 @@ window._$_APP_CLASS_$_ = new (function() {
       return;
     }
 
-    if (currentHash === newLocation) {
+    const newHash = removeUrlFragments(newLocation);
+
+    if (currentHash === newHash) {
       return;
     }
 
-    currentHash = newLocation;
+    currentHash = newHash;
 
     setTimeout(function() {
       update(null, "hash", null, true);
@@ -2332,7 +2342,7 @@ window._$_APP_CLASS_$_ = new (function() {
     }
 
     if (!generateEvent) {
-      currentHash = newLocation;
+      currentHash = removeUrlFragments(newLocation);
     }
 
     WT.history.navigate(newLocation, generateEvent);
@@ -2845,9 +2855,10 @@ window._$_APP_CLASS_$_ = new (function() {
     let se, result = "", feedback = false;
 
     let i = 0;
+    let eventData = "";
     for (; i < pendingEvents.length; ++i) {
       se = i > 0 ? "&e" + i : "&";
-      let eventData = se + pendingEvents[i].data.join(se);
+      eventData = se + pendingEvents[i].data.join(se);
       if (pendingEvents[i].evAckId < ackUpdateId) {
         eventData += se + "evAckId=" + pendingEvents[i].evAckId;
       }
@@ -2862,8 +2873,16 @@ window._$_APP_CLASS_$_ = new (function() {
     }
 
     if (i === 0) {
-      const errMsg = "single event exceeds max-formdata-size, cannot proceed";
-      sendError(errMsg, "Wt internal error; description: " + errMsg);
+      const errMsg = {
+        "client_url": window.location.href,
+        "exception": "single event exceeds max-formdata-size, cannot proceed" +
+          " (event size: " + eventData.length + " bytes , max-formdata-size: " + maxLength + " bytes)",
+      };
+      sendError(
+        errMsg,
+        "Wt internal error; " +
+          "description: " + errMsg["exception"]
+      );
       throw new Error(errMsg);
     }
 
@@ -3132,12 +3151,17 @@ window._$_APP_CLASS_$_ = new (function() {
       } catch (e) {
         const stack = e.stack || e.stacktrace;
         const description = e.description || e.message;
-        const err = { "exception_code": e.code, "exception_description": description, "exception_js": msg };
+        const err = {
+          "exception_code": e.code,
+          "client_url": window.location.href,
+          "exception_description": description,
+          "exception_js": msg,
+        };
         err.stack = stack;
         sendError(
           err,
-          "Wt internal error; code: " + e.code +
-            ", description: " + description
+          "Wt internal error; code: " + e.code + ", " +
+            "description: " + description
         );
         throw e;
       }
@@ -3621,9 +3645,13 @@ window._$_APP_CLASS_$_ = new (function() {
         } catch (e) {
           const stack = e.stack || e.stacktrace;
           const description = e.description || e.message;
-          const err = { "exception_description": description };
+          const err = { "client_url": window.location.href, "exception_description": description };
           err.stack = stack;
-          sendError(err, "Wt internal error; description: " + description);
+          sendError(
+            err,
+            "Wt internal error; " +
+              "description: " + description
+          );
           throw e;
         }
       }
@@ -3712,8 +3740,12 @@ window._$_APP_CLASS_$_ = new (function() {
       _$_MAX_PENDING_EVENTS_$_ > 0 &&
       pendingEvents.length >= _$_MAX_PENDING_EVENTS_$_
     ) {
-      const errMsg = "too many pending events";
-      sendError(errMsg, "Wt internal error; description: " + errMsg);
+      const errMsg = { "client_url": window.location.href, "exception": "too many pending events" };
+      sendError(
+        errMsg,
+        "Wt internal error; " +
+          "description: " + errMsg["exception"]
+      );
 
       pendingEvents = [];
       throw new Error(errMsg);
@@ -3792,6 +3824,7 @@ window._$_APP_CLASS_$_ = new (function() {
         } else {
           const err = {
             "error-description": "Fatal error: failed loading " + uri,
+            "client_url": window.location.href,
           };
           sendError(err, err["error-description"]);
           quit(null);
@@ -3939,7 +3972,7 @@ window._$_APP_CLASS_$_ = new (function() {
   /////////////////////////////////////////////////////////////////////
 
   function enableInternalPaths(initialHash) {
-    currentHash = initialHash;
+    currentHash = removeUrlFragments(initialHash);
     WT.history.register(initialHash, onHashChange);
   }
 
@@ -4095,7 +4128,7 @@ window._$_APP_CLASS_$_ = new (function() {
   _$_$if_CATCH_ALL_ERROR_$_();
   window.onerror = function(message, source, lineno, colno, error) {
     let code;
-    const err = { "exception_code": code, "exception_description": message };
+    const err = { "client_url": window.location.href, "exception_code": code, "exception_description": message };
     if (typeof error !== "undefined") {
       code = error.code;
       err.stack = error.stack || error.stacktrace;

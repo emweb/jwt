@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -266,8 +266,7 @@ public class AuthModel extends FormBaseModel {
           if (t != null) {
             t.commit();
           }
-          app.removeCookie(
-              new javax.servlet.http.Cookie(this.getBaseAuth().getAuthTokenCookieName(), ""));
+          app.removeCookie(new Cookie(this.getBaseAuth().getAuthTokenCookieName(), ""));
         } catch (RuntimeException e) {
           throw e;
         } catch (Exception e) {
